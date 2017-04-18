@@ -16,7 +16,7 @@ import {MdInputModule} from '../input/index';
 import {Dir, LayoutDirection} from '../core/rtl/dir';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {Subscription} from 'rxjs/Subscription';
-import {ENTER, DOWN_ARROW, SPACE, UP_ARROW} from '../core/keyboard/keycodes';
+import {ENTER, DOWN_ARROW, SPACE, UP_ARROW, HOME, END} from '../core/keyboard/keycodes';
 import {MdOption} from '../core/option/option';
 import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
 import {FakeViewportRuler} from '../core/overlay/position/fake-viewport-ruler';
@@ -745,6 +745,36 @@ describe('MdAutocomplete', () => {
 
       // Expect option bottom minus the panel height (528 - 256 = 272)
       expect(scrollContainer.scrollTop).toEqual(272, `Expected panel to reveal last option.`);
+    }));
+
+    it('should scroll the active option into view when pressing END', fakeAsync(() => {
+      tick();
+      const scrollContainer =
+          document.querySelector('.cdk-overlay-pane .mat-autocomplete-panel');
+
+      const END_EVENT = new MockKeyboardEvent(END) as KeyboardEvent;
+      fixture.componentInstance.trigger._handleKeydown(END_EVENT);
+      tick();
+      fixture.detectChanges();
+
+      // Expect option bottom minus the panel height (528 - 256 = 272)
+      expect(scrollContainer.scrollTop).toEqual(272, 'Expected panel to reveal the last option.');
+    }));
+
+    it('should scroll the active option into view when pressing HOME', fakeAsync(() => {
+      tick();
+      const scrollContainer =
+          document.querySelector('.cdk-overlay-pane .mat-autocomplete-panel');
+
+      scrollContainer.scrollTop = 100;
+      fixture.detectChanges();
+
+      const HOME_EVENT = new MockKeyboardEvent(HOME) as KeyboardEvent;
+      fixture.componentInstance.trigger._handleKeydown(HOME_EVENT);
+      tick();
+      fixture.detectChanges();
+
+      expect(scrollContainer.scrollTop).toEqual(0, 'Expected panel to reveal the first option.');
     }));
 
   });
