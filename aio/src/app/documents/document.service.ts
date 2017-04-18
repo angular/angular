@@ -72,6 +72,52 @@ export class DocumentService {
       // deal with root url
       url = 'index';
     }
-    return 'content/docs/' + url + '.json';
+    return 'content/docs/' + this.applyRedirects(url) + '.json';
+  }
+
+  private applyRedirects(url: string): string {
+    const tsLatestRe = /^docs\/ts\/latest\//;
+
+    if (tsLatestRe.test(url)) {
+      // docs/ts/latest/guide/<GUIDE> --> guide/<GUIDE>
+      // docs/ts/latest/tutorial/<PART> --> tutorial/<PART>
+      // docs/ts/latest/<ANYTHING> --> <ANYTHING>
+      url = url.replace(tsLatestRe, '');
+
+      // docs/ts/latest/cli-quickstart --> guide/cli-quickstart
+      // docs/ts/latest/glossary       --> guide/glossary
+      // docs/ts/latest/quickstart     --> guide/quickstart
+      if (['cli-quickstart', 'glossary', 'quickstart'].indexOf(url) !== -1) {
+        return `guide/${url}`;
+      }
+
+      // docs/ts/latest/cookbook  --> docs/ts/latest/cookbook/index
+      // docs/ts/latest/cookbook/ --> docs/ts/latest/cookbook/index
+      if (/^cookbook\/?$/.test(url)) {
+        url = 'cookbook/index';
+      }
+
+      // docs/ts/latest/cookbook/index               --> guide/cb-index
+      // docs/ts/latest/cookbook/dependency-injection --> guide/cd-dependency-injection
+      // docs/ts/latest/cookbook/<COOKBOOK> --> guide/<COOKBOOK>
+      const cookbookMatch = /^cookbook\/(.+)$/.exec(url);
+      if (cookbookMatch) {
+        url = cookbookMatch[1];
+
+        if (['index', 'dependency-injection'].indexOf(url) !== -1) {
+          url = `cb-${url}`;
+        }
+
+        return `guide/${url}`;
+      }
+
+      // docs/ts/latest/api/<PACKAGE>/index/<API>-type --> api/<PACKAGE>/<API>
+      const apiMatch = /^api\/([^/]+)\/index\/(.+)-type$/.exec(url);
+      if (apiMatch) {
+        return `api/${apiMatch[1]}/${apiMatch[2]}`;
+      }
+    }
+
+    return url;
   }
 }

@@ -173,10 +173,86 @@ describe('DocumentService', () => {
     });
 
     it('should map the "folder" locations to the correct document request', () => {
-      const { docService, backend, locationService} = getServices('guide/');
+      const { docService, backend } = getServices('guide/');
       docService.currentDocument.subscribe();
 
       expect(backend.connectionsArray[0].request.url).toEqual(CONTENT_URL_PREFIX + 'guide.json');
+    });
+
+    it('should redirect old URLs to new ones', () => {
+      const { backend, docService, locationService } = getServices();
+      const connections = backend.connectionsArray;
+
+      const testRedirect = (inputUrl: string, outputUrl: string = inputUrl) => {
+        locationService.urlSubject.next('');
+        locationService.urlSubject.next(inputUrl);
+        expect(connections[connections.length - 1].request.url).toBe(`${CONTENT_URL_PREFIX}${outputUrl}.json`);
+      };
+
+      docService.currentDocument.subscribe();
+
+      // docs/ts/latest/<ANYTHING> --> <ANYTHING>
+      testRedirect('docs/ts/latest/foo', 'foo');
+      testRedirect('docs/ts/latest/foo/bar', 'foo/bar');
+      testRedirect('docs/ts/latest/foo/bar/baz.qux', 'foo/bar/baz.qux');
+      testRedirect('docs/ts/quux/foo/bar/baz.qux');
+      testRedirect('docs/quuux/latest/foo/bar/baz.qux');
+      testRedirect('quuuux/ts/latest/foo/bar/baz.qux');
+
+      // docs/ts/latest/api/<PACKAGE>/index/<API>-type --> api/<PACKAGE>/<API>
+      testRedirect('docs/ts/latest/api/foo/index/bar-baz-type', 'api/foo/bar-baz');
+      testRedirect('docs/ts/qux/api/foo/index/bar-baz-type');
+      testRedirect('docs/ts/latest/qux/api/foo/index/bar-baz-type', 'qux/api/foo/index/bar-baz-type');
+      testRedirect('docs/ts/latest/api/index/bar-baz-type', 'api/index/bar-baz-type');
+      testRedirect('docs/ts/latest/api/foo/bar-baz-type', 'api/foo/bar-baz-type');
+      testRedirect('docs/ts/latest/api/fo/o/index/bar-baz-type', 'api/fo/o/index/bar-baz-type');
+      testRedirect('docs/ts/latest/api/foo/index/bar-baz', 'api/foo/index/bar-baz');
+      testRedirect('docs/ts/latest/api/foo/index/bar-baztype', 'api/foo/index/bar-baztype');
+      testRedirect('docs/ts/latest/api/foo/index/-type', 'api/foo/index/-type');
+
+      // docs/ts/latest/cookbook/<COOKBOOK> --> guide/<COOKBOOK>
+      testRedirect('docs/ts/latest/cookbook/cookbook-1', 'guide/cookbook-1');
+      testRedirect('docs/ts/latest/cookbook/cookbook-2/part-3', 'guide/cookbook-2/part-3');
+      testRedirect('docs/ts/latest/foo/cookbook/cookbook-4', 'foo/cookbook/cookbook-4');
+      testRedirect('docs/ts/foo/cookbook/cookbook-5');
+
+      // docs/ts/latest/cookbook                      --> guide/cb-index
+      // docs/ts/latest/cookbook/                     --> guide/cb-index
+      // docs/ts/latest/cookbook/index                --> guide/cb-index
+      // docs/ts/latest/cookbook/dependency-injection --> guide/cd-dependency-injection
+      testRedirect('docs/ts/latest/cookbook', 'guide/cb-index');
+      testRedirect('docs/ts/latest/cookbook/', 'guide/cb-index');
+      testRedirect('docs/ts/latest/cookbook/index', 'guide/cb-index');
+      testRedirect('docs/ts/latest/cookbook/dependency-injection', 'guide/cb-dependency-injection');
+      testRedirect('docs/ts/latest/foo/cookbook/index', 'foo/cookbook/index');
+      testRedirect('docs/ts/latest/bar/cookbook/dependency-injection', 'bar/cookbook/dependency-injection');
+      testRedirect('docs/ts/foo/cookbook/index');
+      testRedirect('docs/ts/bar/cookbook/dependency-injection');
+
+      // docs/ts/latest/guide/<GUIDE> --> guide/<GUIDE>
+      testRedirect('docs/ts/latest/guide/guide-1', 'guide/guide-1');
+      testRedirect('docs/ts/latest/guide/guide-2/part-3', 'guide/guide-2/part-3');
+      testRedirect('docs/ts/latest/foo/guide/guide-4', 'foo/guide/guide-4');
+      testRedirect('docs/ts/foo/guide/guide-5');
+
+      // docs/ts/latest/tutorial/<PART> --> tutorial/<PART>
+      testRedirect('docs/ts/latest/tutorial/part-1', 'tutorial/part-1');
+      testRedirect('docs/ts/latest/tutorial/part-2/subpart-3', 'tutorial/part-2/subpart-3');
+      testRedirect('docs/ts/latest/foo/tutorial/part-4', 'foo/tutorial/part-4');
+      testRedirect('docs/ts/foo/tutorial/part-5');
+
+      // docs/ts/latest/cli-quickstart --> guide/cli-quickstart
+      // docs/ts/latest/glossary       --> guide/glossary
+      // docs/ts/latest/quickstart     --> guide/quickstart
+      testRedirect('docs/ts/latest/cli-quickstart', 'guide/cli-quickstart');
+      testRedirect('docs/ts/latest/glossary', 'guide/glossary');
+      testRedirect('docs/ts/latest/quickstart', 'guide/quickstart');
+      testRedirect('docs/ts/latest/foo/cli-quickstart', 'foo/cli-quickstart');
+      testRedirect('docs/ts/latest/bar/glossary', 'bar/glossary');
+      testRedirect('docs/ts/latest/baz/quickstart', 'baz/quickstart');
+      testRedirect('docs/ts/foo/cli-quickstart');
+      testRedirect('docs/ts/bar/glossary');
+      testRedirect('docs/ts/baz/quickstart');
     });
   });
 });
