@@ -300,6 +300,11 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
       expect(s('b {c}/* #sourceMappingURL=data:x */', 'contenta'))
           .toEqual('b[contenta] {c}/* #sourceMappingURL=data:x */');
     });
+
+    it('should keep sourceURL comments', () => {
+      expect(s('/*# sourceMappingURL=data:x */b {c}/*# sourceURL=xxx */', 'contenta'))
+          .toEqual('b[contenta] {c}/*# sourceMappingURL=data:x *//*# sourceURL=xxx */');
+    });
   });
 
   describe('processRules', () => {
