@@ -1,5 +1,13 @@
 import {TestBed, async, fakeAsync, tick, ComponentFixture} from '@angular/core/testing';
-import {Component, OnDestroy, QueryList, ViewChild, ViewChildren} from '@angular/core';
+import {
+  Component,
+  OnDestroy,
+  QueryList,
+  ViewChild,
+  ViewChildren,
+  ChangeDetectionStrategy,
+  OnInit,
+} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MdAutocompleteModule, MdAutocompleteTrigger} from './index';
@@ -38,7 +46,8 @@ describe('MdAutocomplete', () => {
         SimpleAutocomplete,
         AutocompleteWithoutForms,
         NgIfAutocomplete,
-        AutocompleteWithNgModel
+        AutocompleteWithNgModel,
+        AutocompleteWithOnPushDelay
       ],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
@@ -1090,6 +1099,24 @@ describe('MdAutocomplete', () => {
     expect(Math.ceil(parseFloat(overlayPane.style.width))).toEqual(500);
 
   });
+
+  it('should show the panel when the options are initialized later within a component with ' +
+    'OnPush change detection', fakeAsync(() => {
+      let fixture = TestBed.createComponent(AutocompleteWithOnPushDelay);
+
+      fixture.detectChanges();
+      dispatchFakeEvent(fixture.debugElement.query(By.css('input')).nativeElement, 'focus');
+      tick(1000);
+      fixture.detectChanges();
+
+      Promise.resolve().then(() => {
+        let panel = overlayContainerElement.querySelector('.mat-autocomplete-panel') as HTMLElement;
+        let visibleClass = 'mat-autocomplete-visible';
+
+        fixture.detectChanges();
+        expect(panel.classList).toContain(visibleClass, `Expected panel to be visible.`);
+      });
+    }));
 });
 
 @Component({
@@ -1238,6 +1265,30 @@ class AutocompleteWithNgModel {
   }
 
 }
+
+
+@Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <md-input-container>
+      <input type="text" mdInput [mdAutocomplete]="auto">
+    </md-input-container>
+
+    <md-autocomplete #auto="mdAutocomplete">
+      <md-option *ngFor="let option of options" [value]="option">{{ option }}</md-option>
+    </md-autocomplete>
+  `
+})
+class AutocompleteWithOnPushDelay implements OnInit {
+  options: string[];
+
+  ngOnInit() {
+    setTimeout(() => {
+      this.options = ['One'];
+    }, 1000);
+  }
+}
+
 
 /** This is a mock keyboard event to test keyboard events in the autocomplete. */
 class MockKeyboardEvent {

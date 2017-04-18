@@ -7,7 +7,8 @@ import {
   QueryList,
   TemplateRef,
   ViewChild,
-  ViewEncapsulation
+  ViewEncapsulation,
+  ChangeDetectorRef,
 } from '@angular/core';
 import {MdOption} from '../core';
 import {ActiveDescendantKeyManager} from '../core/a11y/activedescendant-key-manager';
@@ -52,6 +53,8 @@ export class MdAutocomplete implements AfterContentInit {
   /** Unique ID to be used by autocomplete trigger's "aria-owns" property. */
   id: string = `md-autocomplete-${_uniqueAutocompleteIdCounter++}`;
 
+  constructor(private _changeDetectorRef: ChangeDetectorRef) { }
+
   ngAfterContentInit() {
     this._keyManager = new ActiveDescendantKeyManager(this.options).withWrap();
   }
@@ -68,7 +71,10 @@ export class MdAutocomplete implements AfterContentInit {
 
   /** Panel should hide itself when the option list is empty. */
   _setVisibility() {
-    Promise.resolve().then(() => this.showPanel = !!this.options.length);
+    Promise.resolve().then(() => {
+      this.showPanel = !!this.options.length;
+      this._changeDetectorRef.markForCheck();
+    });
   }
 
   /** Sets a class on the panel based on its position (used to set y-offset). */
