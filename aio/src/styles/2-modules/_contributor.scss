@@ -51,33 +51,57 @@ aio-contributor {
     .contributor-image {
       transform: scale(1.05);
     }
+
+    .contributor-info {
+      opacity: 1;
+    }
   }
 
   .contributor-info {
-    height: 48px;
+    background: rgba($darkgray, 0.5);
+    height: 200px;
+    width: 200px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
     text-align: center;
-    padding: 16px 8px;
-    background: $blue;
+    opacity: 0;
+    border-radius: 50%;
+
+    button {
+      background: none;
+      border: none;
+      padding: 0;
+      margin: 8px;
+      text-transform: uppercase;
+      cursor: pointer;
+
+      &.icon {
+        width: 20px;
+        min-width: 20px;
+      }
+
+    }
 
     a {
       color: $white;
-      margin-right: 8px;
       font-size: 14px;
+      font-weight: 500;
 
       .fa-2x {
         font-size: 20px;
       }
 
       &:hover {
-        opacity: 0.7;
-        color: rgba($white, 0.7);
+        color: $blue;
       }
     }
   }
 
     div.contributor-card {
-      width: 240px;
-      height: 300px;
+      width: 250px;
+      height: 270px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -98,7 +122,7 @@ aio-contributor {
       }
 
       .card-front {
-        justify-content: space-between;
+        justify-content: center;
       }
 
       .card-back {
@@ -106,13 +130,11 @@ aio-contributor {
         display: flex;
         flex-direction: column;
         justify-content: center;
-        padding: 16px;
+        padding: 16px 24px;
         transform:rotateY(180deg);
 
         h3 {
-          overflow: auto;
-          padding: 8px;
-          margin: 0;
+          display: none;
         }
 
         p {
@@ -133,23 +155,28 @@ aio-contributor {
     }
 
   .contributor-image {
+    display: flex;
+    justify-content: center;
     border-radius: 50%;
     align-items: center;
-    height: 130px;
-    width: 130px;
+    height: 200px;
+    width: 200px;
     background-size: cover;
     background-position: center;
-    margin: 16px auto 0px;
-    border: 1px solid $lightgray;
+    margin: 8px auto;
+    border: 2px solid $lightgray;
     transition: all .2s ease-in-out;
     }
 
   h3 {
-    font-size: 16px;
-    padding: 0 16px;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 8px;
+    margin: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-transform: uppercase;
   }
 
   p {
