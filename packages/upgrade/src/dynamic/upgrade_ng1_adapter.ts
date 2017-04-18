@@ -101,49 +101,50 @@ export class UpgradeNg1ComponentAdapterBuilder {
     const context = (btcIsObject) ? this.directive !.bindToController : this.directive !.scope;
 
     if (typeof context == 'object') {
-      for (const name in context) {
-        if ((<any>context).hasOwnProperty(name)) {
-          let localName = context[name];
-          const type = localName.charAt(0);
-          const typeOptions = localName.charAt(1);
-          localName = typeOptions === '?' ? localName.substr(2) : localName.substr(1);
-          localName = localName || name;
+      Object.keys(context).forEach(propName => {
+        const definition = context[propName];
+        const bindingType = definition.charAt(0);
+        const bindingOptions = definition.charAt(1);
+        const attrName = definition.substring(bindingOptions === '?' ? 2 : 1) || propName;
 
-          const outputName = 'output_' + name;
-          const outputNameRename = outputName + ': ' + name;
-          const outputNameRenameChange = outputName + ': ' + name + 'Change';
-          const inputName = 'input_' + name;
-          const inputNameRename = inputName + ': ' + name;
-          switch (type) {
-            case '=':
-              this.propertyOutputs.push(outputName);
-              this.checkProperties.push(localName);
-              this.outputs.push(outputName);
-              this.outputsRename.push(outputNameRenameChange);
-              this.propertyMap[outputName] = localName;
-              this.inputs.push(inputName);
-              this.inputsRename.push(inputNameRename);
-              this.propertyMap[inputName] = localName;
-              break;
-            case '@':
-            // handle the '<' binding of angular 1.5 components
-            case '<':
-              this.inputs.push(inputName);
-              this.inputsRename.push(inputNameRename);
-              this.propertyMap[inputName] = localName;
-              break;
-            case '&':
-              this.outputs.push(outputName);
-              this.outputsRename.push(outputNameRename);
-              this.propertyMap[outputName] = localName;
-              break;
-            default:
-              let json = JSON.stringify(context);
-              throw new Error(
-                  `Unexpected mapping '${type}' in '${json}' in '${this.name}' directive.`);
-          }
+        // QUESTION: What about `=*`? Ignore? Throw? Support?
+
+        const inputName = `input_${attrName}`;
+        const inputNameRename = `${inputName}: ${attrName}`;
+        const outputName = `output_${attrName}`;
+        const outputNameRename = `${outputName}: ${attrName}`;
+        const outputNameRenameChange = `${outputNameRename}Change`;
+
+        switch (bindingType) {
+          case '@':
+          case '<':
+            this.inputs.push(inputName);
+            this.inputsRename.push(inputNameRename);
+            this.propertyMap[inputName] = propName;
+            break;
+          case '=':
+            this.inputs.push(inputName);
+            this.inputsRename.push(inputNameRename);
+            this.propertyMap[inputName] = propName;
+
+            this.outputs.push(outputName);
+            this.outputsRename.push(outputNameRenameChange);
+            this.propertyMap[outputName] = propName;
+
+            this.checkProperties.push(propName);
+            this.propertyOutputs.push(outputName);
+            break;
+          case '&':
+            this.outputs.push(outputName);
+            this.outputsRename.push(outputNameRename);
+            this.propertyMap[outputName] = propName;
+            break;
+          default:
+            let json = JSON.stringify(context);
+            throw new Error(
+                `Unexpected mapping '${bindingType}' in '${json}' in '${this.name}' directive.`);
         }
-      }
+      });
     }
   }
 
@@ -239,13 +240,11 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
       (this as any /** TODO #9100 */)[inputs[i]] = null;
     }
     for (let j = 0; j < outputs.length; j++) {
-      const emitter = (this as any /** TODO #9100 */)[outputs[j]] = new EventEmitter();
+      const emitter = (this as any)[outputs[j]] = new EventEmitter<any>();
       this.setComponentProperty(
-          outputs[j], ((emitter: any /** TODO #9100 */) => (value: any /** TODO #9100 */) =>
-                           emitter.emit(value))(emitter));
+          outputs[j], (emitter => (value: any) => emitter.emit(value))(emitter));
     }
     for (let k = 0; k < propOuts.length; k++) {
-      (this as any /** TODO #9100 */)[propOuts[k]] = new EventEmitter();
       this.checkLastValues.push(INITIAL_VALUE);
     }
   }
@@ -306,18 +305,16 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
     const destinationObj = this.destinationObj;
     const lastValues = this.checkLastValues;
     const checkProperties = this.checkProperties;
-    for (let i = 0; i < checkProperties.length; i++) {
-      const value = destinationObj ![checkProperties[i]];
+    const propOuts = this.propOuts;
+    checkProperties.forEach((propName, i) => {
+      const value = destinationObj ![propName];
       const last = lastValues[i];
-      if (value !== last) {
-        if (typeof value == 'number' && isNaN(value) && typeof last == 'number' && isNaN(last)) {
-          // ignore because NaN != NaN
-        } else {
-          const eventEmitter: EventEmitter<any> = (this as any /** TODO #9100 */)[this.propOuts[i]];
-          eventEmitter.emit(lastValues[i] = value);
-        }
+      if (value !== last &&
+          (value === value || last === last)) {  // ignore NaN values (NaN !== NaN)
+        const eventEmitter: EventEmitter<any> = (this as any)[propOuts[i]];
+        eventEmitter.emit(lastValues[i] = value);
       }
-    }
+    });
 
     if (this.controllerInstance && isFunction(this.controllerInstance.$doCheck)) {
       this.controllerInstance.$doCheck();
