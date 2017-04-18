@@ -233,7 +233,7 @@ Although deploying directly from the development environment works, it's far fro
 
 The client makes many small requests for individual application code and template files,
 a fact you can quickly confirm by looking at the network tab in a browser's developer tools.
-Each small file download can spend more time communicating with the server than tranfering data.
+Each small file download can spend more time communicating with the server than transferring data.
 
 Development files are full of comments and whitespace for easy reading and debugging.
 The browser downloads entire libraries, instead of just the parts the app needs.
@@ -242,7 +242,7 @@ can be significantly larger than is strictly necessary to execute the applicatio
 
 The many requests and large payloads mean
 the app takes longer to launch than it would if you optimized it.
-Several seconds may pass (or worse) before the user can see or do anything userful.
+Several seconds may pass (or worse) before the user can see or do anything useful.
 
 Does it matter? That depends upon business and technical factors you must evaluate for yourself.
 
