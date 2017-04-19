@@ -1,3 +1,3 @@
-@title Document not found
+@title
 @description
 <h3>Document not found</h3>

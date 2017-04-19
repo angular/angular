@@ -4,7 +4,7 @@ var Dgeni = require('dgeni');
 describe('convertToJson processor', () => {
   var dgeni, injector, processor, log;
 
-  beforeEach(function() {
+  beforeAll(function() {
     dgeni = new Dgeni([testPackage('angular.io-package')]);
     injector = dgeni.configureInjector();
     processor = injector.get('convertToJsonProcessor');
@@ -32,6 +32,20 @@ describe('convertToJson processor', () => {
     const docs = [{ docType: 'test-doc', name: 'The Name' }];
     processor.$process(docs);
     expect(JSON.parse(docs[0].renderedContent).title).toEqual('The Name');
+  });
+
+  it('should accept an empty title', () => {
+    const docs = [{ docType: 'test-doc', title: '' }];
+    processor.$process(docs);
+    expect(JSON.parse(docs[0].renderedContent).title).toEqual('');
+    expect(log.warn).not.toHaveBeenCalled();
+  });
+
+  it('should accept an empty name if title is not provided', () => {
+    const docs = [{ docType: 'test-doc', name: '' }];
+    processor.$process(docs);
+    expect(JSON.parse(docs[0].renderedContent).title).toEqual('');
+    expect(log.warn).not.toHaveBeenCalled();
   });
 
   it('should get the title from the first `h1` if no title nor name is specified', () => {
