@@ -123,9 +123,7 @@ module.exports =
               exclude: [
                 '**/*plnkr.no-link.html',
                 '**/node_modules/**',
-                // _boilerplate files
-                '**/_boilerplate/**',
-                '**/*/src/styles.css',
+                // boilerplate files
                 '**/*/src/systemjs-angular-loader.js',
                 '**/*/src/systemjs.config.js',
                 '**/*/src/tsconfig.json',

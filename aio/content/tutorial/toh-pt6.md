@@ -144,7 +144,7 @@ section of the [HTTP Client](guide/server-communication#in-mem-web-api) page.
 In the current `HeroService` implementation, a Promise resolved with mock heroes is returned.
 
 
-<code-example path="toh-4/src/app/hero.service.ts" region="get-heroes" title="src/app/hero.service.ts (old getHeroes)">
+<code-example path="toh-pt4/src/app/hero.service.ts" region="get-heroes" title="src/app/hero.service.ts (old getHeroes)">
 
 </code-example>
 

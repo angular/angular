@@ -669,7 +669,7 @@ is revised and ready to be navigated to.
 Here's what the `HeroDetailComponent` looks like now:
 
 
-<code-example path="toh-4/src/app/hero-detail.component.ts" title="src/app/hero-detail.component.ts (current)">
+<code-example path="toh-pt4/src/app/hero-detail.component.ts" title="src/app/hero-detail.component.ts (current)">
 
 </code-example>
 
@@ -936,7 +936,7 @@ the current template exhibits a "master/detail" style with the list of heroes
 at the top and details of the selected hero below.
 
 
-<code-example path="toh-4/src/app/app.component.ts" region="template" title="src/app/heroes.component.ts (current template)" linenums="false">
+<code-example path="toh-pt4/src/app/app.component.ts" region="template" title="src/app/heroes.component.ts (current template)" linenums="false">
 
 </code-example>
 
@@ -1200,7 +1200,7 @@ These correspond to the full set of master styles that you installed earlier dur
 Here's an excerpt:
 
 
-<code-example path="toh-pt5/src/styles.css" region="toh" title="src/styles.css (excerpt)">
+<code-example path="toh-pt5/src/styles.css" region="toh"  title="src/styles.css (excerpt)">
 
 </code-example>
 

@@ -206,7 +206,7 @@ The following example creates four route definitions, configures the router via 
 and adds the result to the `AppModule`'s `imports` array.
 
 
-<code-example path="router/src/app/app.module.0.ts" linenums="false" title="src/app/app.module.ts (excerpt)" region="excerpt">
+<code-example path="router/src/app/app.module.0.ts" linenums="false" title="src/app/app.module.ts (excerpt)">
 
 </code-example>
 
@@ -915,7 +915,7 @@ Instead of adding the `"/sidekicks"` route, define a `wildcard` route instead an
 
 Create the `PageNotFoundComponent` to display when users visit invalid URLs.
 
-<code-example path="router/src/app/not-found.component.ts" linenums="false" title="src/app/not-found.component.ts (404 component)" region="404 component">
+<code-example path="router/src/app/not-found.component.ts" linenums="false" title="src/app/not-found.component.ts (404 component)">
 
 </code-example>
 
@@ -1436,7 +1436,7 @@ Remove the `HeroListComponent` import and the `/heroes` route from the `app-rout
 These are concerns at the top level of the application itself.
 
 
-<code-example path="router/src/app/app-routing.module.2.ts" linenums="false" title="src/app/app-routing.module.ts (v2)" region="v2">
+<code-example path="router/src/app/app-routing.module.2.ts" linenums="false" title="src/app/app-routing.module.ts (v2)">
 
 </code-example>
 
@@ -3138,7 +3138,7 @@ The `redirectUrl` property will store the attempted URL so you can navigate to i
 Revise the `AuthGuard` to call it.
 
 
-<code-example path="router/src/app/auth-guard.service.2.ts" linenums="false" title="src/app/auth-guard.service.ts (v2)" region="v2">
+<code-example path="router/src/app/auth-guard.service.2.ts" linenums="false" title="src/app/auth-guard.service.ts (v2)">
 
 </code-example>
 
@@ -3348,7 +3348,7 @@ wanted to use this guard for this component and needed to get
 the component's properties or confirm whether the router should allow navigation away from it.
 
 
-<code-example path="router/src/app/can-deactivate-guard.service.1.ts" linenums="false" title="src/app/can-deactivate-guard.service.ts (component-specific)" region="component-specific">
+<code-example path="router/src/app/can-deactivate-guard.service.1.ts" linenums="false" title="src/app/can-deactivate-guard.service.ts (component-specific)">
 
 </code-example>
 
@@ -3372,7 +3372,7 @@ to resolve to truthy (navigate) or falsy (stay put).
 Add the `Guard` to the crisis detail route in `crisis-center-routing.module.ts` using the `canDeactivate` array.
 
 
-<code-example path="router/src/app/crisis-center/crisis-center-routing.module.3.ts" linenums="false" title="src/app/crisis-center/crisis-center-routing.module.ts (can deactivate guard)" region="can deactivate guard">
+<code-example path="router/src/app/crisis-center/crisis-center-routing.module.3.ts" linenums="false" title="src/app/crisis-center/crisis-center-routing.module.ts (can deactivate guard)">
 
 </code-example>
 
@@ -3559,7 +3559,7 @@ Add an `anchor` element so you can jump to a certain point on the page.
 Add the `NavigationExtras` object to the `router.navigate` method that navigates you to the `/login` route.
 
 
-<code-example path="router/src/app/auth-guard.service.4.ts" linenums="false" title="src/app/auth-guard.service.ts (v3)" region="v3">
+<code-example path="router/src/app/auth-guard.service.4.ts" linenums="false" title="src/app/auth-guard.service.ts (v3)">
 
 </code-example>
 
@@ -3582,7 +3582,7 @@ Since you'll be navigating to the *Admin Dashboard* route after logging in, you'
 query parameters and fragment.
 
 
-<code-example path="router/src/app/admin/admin-dashboard.component.2.ts" linenums="false" title="src/app/admin/admin-dashboard.component.ts (v2)" region="v2">
+<code-example path="router/src/app/admin/admin-dashboard.component.2.ts" linenums="false" title="src/app/admin/admin-dashboard.component.ts (v2)">
 
 </code-example>
 
@@ -3923,7 +3923,7 @@ Now edit the `AdminDashboardComponent` to display the log of preloaded routes.
 When you're done it looks like this.
 
 
-<code-example path="router/src/app/admin/admin-dashboard.component.ts" linenums="false" title="src/app/admin/admin-dashboard.component.ts (preloaded modules)" region="preloaded modules">
+<code-example path="router/src/app/admin/admin-dashboard.component.ts" linenums="false" title="src/app/admin/admin-dashboard.component.ts (preloaded modules)">
 
 </code-example>
 
@@ -4196,7 +4196,7 @@ providing the `useHash: true` in an object as the second argument of the `Router
 in the `AppModule`.
 
 
-<code-example path="router/src/app/app.module.6.ts" linenums="false" title="src/app/app.module.ts (hash URL strategy)" region="hash URL strategy">
+<code-example path="router/src/app/app.module.6.ts" linenums="false" title="src/app/app.module.ts (hash URL strategy)">
 
 </code-example>
 
