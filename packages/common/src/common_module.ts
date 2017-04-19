@@ -11,7 +11,6 @@ import {NgModule} from '@angular/core';
 import {COMMON_DEPRECATED_DIRECTIVES, COMMON_DIRECTIVES} from './directives/index';
 import {NgLocaleLocalization, NgLocalization} from './localization';
 import {COMMON_PIPES} from './pipes/index';
-import {COMMON_PROVIDERS} from './providers/index';
 
 // Note: This does not contain the location providers,
 // as they need some platform specific implementations to work.
@@ -25,7 +24,6 @@ import {COMMON_PROVIDERS} from './providers/index';
   exports: [COMMON_DIRECTIVES, COMMON_PIPES],
   providers: [
     {provide: NgLocalization, useClass: NgLocaleLocalization},
-    COMMON_PROVIDERS
   ],
 })
 export class CommonModule {
