@@ -8,11 +8,12 @@
   "scripts": {
     "ng": "yarn check-env && ng",
     "start": "yarn check-env && ng serve",
-    "build": "yarn check-env && yarn docs && ng build -prod -sm",
+    "build": "yarn check-env && yarn setup && ng build -prod -sm",
     "lint": "yarn check-env && yarn docs-lint && ng lint",
     "test": "yarn check-env && ng test --sourcemap=false",
     "pree2e": "yarn ~~update-webdriver",
     "e2e": "yarn check-env && ng e2e --no-webdriver-update",
+    "setup": "yarn && yarn boilerplate:add && yarn docs &&  yarn generate-plunkers && yarn generate-zips",
     "pretest-pwa-score-local": "yarn build",
     "test-pwa-score-local": "concurrently --kill-others --success first \"http-server dist -p 4200 --silent\" \"yarn test-pwa-score -- http://localhost:4200 90\"",
     "test-pwa-score": "node scripts/test-pwa-score",
