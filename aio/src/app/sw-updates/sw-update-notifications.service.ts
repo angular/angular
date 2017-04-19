@@ -12,9 +12,8 @@ import { SwUpdatesService } from './sw-updates.service';
  *
  * @description
  * Once enabled:
- * 1. Subscribes to ServiceWorker updates and prompts the user to activate.
- * 2. When the user confirms, it activates the update and notifies the user (upon activation success
- *    or failure).
+ * 1. Subscribes to ServiceWorker updates and prompts the user to update.
+ * 2. When the user confirms, it activates the update and reloads the page upon activation success.
  * 3. Continues to listen for available ServiceWorker updates.
  *
  * @method
@@ -64,7 +63,7 @@ export class SwUpdateNotificationsService {
   }
 
   private notifyForUpdate() {
-    this.openSnackBar('ServiceWorker update available.', 'Activate')
+    this.openSnackBar('New update for angular.io is available.', 'Update now')
         .onAction().subscribe(() => this.activateUpdate());
   }
 
@@ -74,9 +73,7 @@ export class SwUpdateNotificationsService {
   }
 
   private onActivateSuccess() {
-    const message = 'Update activated successfully! Reload the page to see the latest content.';
-    this.openSnackBar(message, 'Reload')
-        .onAction().subscribe(() => this.reloadPage());
+    this.reloadPage();
   }
 
   private openSnackBar(message: string, action?: string, config?: MdSnackBarConfig): MdSnackBarRef<any> {
