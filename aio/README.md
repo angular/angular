@@ -13,6 +13,7 @@ You should run all these tasks from the `angular/aio` folder.
 Here are the most important tasks you might need to use:
 
 * `yarn` - install all the dependencies.
+* `yarn setup` - Install all the dependencies, boilerplate, plunkers, zips and runs dgeni on the docs.
 
 * `yarn start` - run a development web server that watches the files; then builds the doc-viewer and reloads the page, as necessary.
 * `yarn lint` - check that the doc-viewer code follows our style rules.
