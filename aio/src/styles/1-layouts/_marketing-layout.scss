@@ -11,6 +11,7 @@
 div[layout=row]{
     display: flex;
     box-sizing: border-box;
+    align-items: center;
 
     @media (max-width: 480px) {
       display: block;
