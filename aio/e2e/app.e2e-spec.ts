@@ -49,6 +49,13 @@ describe('site App', function() {
     });
   });
 
+  describe('tutorial docs', () => {
+    it('should not render a paragraph element inside the h1 element', () => {
+      page.navigateTo('tutorial/toh-pt1');
+      expect(element(by.css('h1 p')).isPresent()).toBeFalsy();
+    });
+  });
+
   describe('google analytics', () => {
     beforeEach(done => page.gaReady.then(done));
 
