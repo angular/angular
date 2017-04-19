@@ -272,6 +272,14 @@ describe('AppComponent', () => {
       fixture.detectChanges();
       expect(titleService.setTitle).toHaveBeenCalledWith('Angular - Pipes');
     });
+
+    it('should update the document title, with a default value if the document has no title', () => {
+      const titleService = TestBed.get(Title);
+      spyOn(titleService, 'setTitle');
+      locationService.go('file-not-found');
+      fixture.detectChanges();
+      expect(titleService.setTitle).toHaveBeenCalledWith('Angular');
+    });
   });
 
   describe('autoScrolling', () => {
@@ -424,12 +432,18 @@ class TestHttp {
     "contents": "<h1>Test Doc</h1>"
   };
 
+  fileNotFoundDoc = {
+    "title": "",
+    "contents": "Page not found"
+  };
+
   // get = jasmine.createSpy('get').and.callFake((url: string) => { ... });
   get(url: string) {
     const json =
       /navigation.json/.test(url) ? this.navJson :
       /api/.test(url) ? this.apiDoc :
       /pipes/.test(url) ? this.pipesDoc :
+      /file-not-found/.test(url) ? this.fileNotFoundDoc :
       this.testDoc;
     return of({ json: () => json });
   }

@@ -150,6 +150,10 @@ export class AppComponent implements OnInit {
   }
 
   setDocumentTitle(title) {
-    this.titleService.setTitle(`Angular - ${title}`);
+    if (title.trim()) {
+      this.titleService.setTitle(`Angular - ${title}`);
+    } else {
+      this.titleService.setTitle('Angular');
+    }
   }
 }
