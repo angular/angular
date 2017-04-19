@@ -55,7 +55,7 @@ export function main(
 
     let host = ts.createCompilerHost(parsed.options, true);
 
-    // If the comilation is a flat module index then produce the flat module index
+    // If the compilation is a flat module index then produce the flat module index
     // metadata and the synthetic flat module index.
     if (ngOptions.flatModuleOutFile && !ngOptions.skipMetadataEmit) {
       const files = parsed.fileNames.filter(f => !DTS.test(f));
@@ -170,7 +170,7 @@ export function main(
 // CLI entry point
 if (require.main === module) {
   const args = process.argv.slice(2);
-  let {options, fileNames, errors} = (ts as any).parseCommandLine(args);
+  let {options, errors} = (ts as any).parseCommandLine(args);
   check(errors);
   const project = options.project || '.';
   // TODO(alexeagle): command line should be TSC-compatible, remove "CliOptions" here
