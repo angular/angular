@@ -1,4 +1,4 @@
-{% if doc.title %}<h1>{$ doc.title | marked $}</h1>{% endif %}
+{% if doc.title %}{$ ('# ' + doc.title.trim()) | marked $}{% endif %}
 <div class="content">
 {$ doc.description | marked $}
 </div>
