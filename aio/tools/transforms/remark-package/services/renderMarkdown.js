@@ -1,4 +1,6 @@
 const remark = require('remark');
+const slug = require('remark-slug');
+const autolinkHeadings = require('remark-autolink-headings');
 const html = require('remark-html');
 
 /**
@@ -15,6 +17,8 @@ module.exports = function renderMarkdown() {
                     // .use(() => tree => {
                     //   console.log(require('util').inspect(tree, { colors: true, depth: 4 }));
                     // })
+                    .use(slug)
+                    .use(autolinkHeadings)
                     .use(html);
 
   return function renderMarkdownImpl(content) {
