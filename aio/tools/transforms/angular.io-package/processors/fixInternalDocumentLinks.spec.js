@@ -13,7 +13,7 @@ describe('fixInternalDocumentLinks processor', () => {
 
   it('should run before the correct processor', () => {
     const processor = processorFactory();
-    expect(processor.$runBefore).toEqual(['writeFilesProcessor']);
+    expect(processor.$runBefore).toEqual(['convertToJsonProcessor']);
   });
 
   it('should run after the correct processor', () => {

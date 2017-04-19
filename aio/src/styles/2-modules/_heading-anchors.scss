@@ -1,0 +1,42 @@
+h1, h2, h3, h4, h5, h6 {
+  .icon-link {
+    color: $darkgray;
+    vertical-align: middle;
+    visibility: hidden;
+    margin: 8px;
+
+    font: normal normal 24px 'Material Icons';
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+
+    /* Support for all WebKit browsers. */
+    -webkit-font-smoothing: antialiased;
+    /* Support for Safari and Chrome. */
+    text-rendering: optimizeLegibility;
+
+    /* Support for Firefox. */
+    -moz-osx-font-smoothing: grayscale;
+
+    /* Support for IE. */
+    font-feature-settings: 'liga';
+
+    &:before { content: 'link'; }
+  }
+
+  a {
+    text-decoration: none;
+    padding-left: 8px;
+    margin-left: -30px;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  &:hover .icon-link {
+    visibility: visible
+  }
+}
