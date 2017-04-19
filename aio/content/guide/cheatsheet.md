@@ -2,10 +2,6 @@
 Cheat Sheet
 
 @description
-// SCSS from
-//   resources/css/module/_cheatsheet.scss
-//   resources/css/layout/_grids.scss:  grid-fluid
-//   resources/css/layout/_layout.scss: docs-content, l-content-small
 <div class="l-content-small grid-fluid docs-content cheatsheet">
 
 <table>
