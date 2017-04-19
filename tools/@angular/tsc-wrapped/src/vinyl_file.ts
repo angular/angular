@@ -12,8 +12,7 @@ export interface VinylFile extends Object {
   // Content of the virtual file
   contents: Buffer;
 }
-;
 
 export function isVinylFile(obj: any): obj is VinylFile {
   return (typeof obj === 'object') && ('path' in obj) && ('contents' in obj);
-};
+}
