@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Inject, InjectionToken, Optional, Renderer, forwardRef} from '@angular/core';
+import {Directive, ElementRef, Inject, InjectionToken, Optional, Renderer2, forwardRef} from '@angular/core';
 import {ɵgetDOM as getDOM} from '@angular/platform-browser';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
@@ -64,7 +64,7 @@ export class DefaultValueAccessor implements ControlValueAccessor {
   private _composing = false;
 
   constructor(
-      private _renderer: Renderer, private _elementRef: ElementRef,
+      private _renderer: Renderer2, private _elementRef: ElementRef,
       @Optional() @Inject(COMPOSITION_BUFFER_MODE) private _compositionMode: boolean) {
     if (this._compositionMode == null) {
       this._compositionMode = !_isAndroid();
@@ -73,14 +73,14 @@ export class DefaultValueAccessor implements ControlValueAccessor {
 
   writeValue(value: any): void {
     const normalizedValue = value == null ? '' : value;
-    this._renderer.setElementProperty(this._elementRef.nativeElement, 'value', normalizedValue);
+    this._renderer.setProperty(this._elementRef.nativeElement, 'value', normalizedValue);
   }
 
   registerOnChange(fn: (_: any) => void): void { this.onChange = fn; }
   registerOnTouched(fn: () => void): void { this.onTouched = fn; }
 
   setDisabledState(isDisabled: boolean): void {
-    this._renderer.setElementProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
+    this._renderer.setProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
   }
 
   _handleInput(value: any): void {

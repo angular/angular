@@ -109,7 +109,7 @@ export interface AsyncValidatorFn {
 export declare class CheckboxControlValueAccessor implements ControlValueAccessor {
     onChange: (_: any) => void;
     onTouched: () => void;
-    constructor(_renderer: Renderer, _elementRef: ElementRef);
+    constructor(_renderer: Renderer2, _elementRef: ElementRef);
     registerOnChange(fn: (_: any) => {}): void;
     registerOnTouched(fn: () => {}): void;
     setDisabledState(isDisabled: boolean): void;
@@ -143,7 +143,7 @@ export interface ControlValueAccessor {
 export declare class DefaultValueAccessor implements ControlValueAccessor {
     onChange: (_: any) => void;
     onTouched: () => void;
-    constructor(_renderer: Renderer, _elementRef: ElementRef, _compositionMode: boolean);
+    constructor(_renderer: Renderer2, _elementRef: ElementRef, _compositionMode: boolean);
     _compositionEnd(value: any): void;
     _compositionStart(): void;
     _handleInput(value: any): void;
@@ -448,7 +448,7 @@ export declare class NgSelectOption implements OnDestroy {
     id: string;
     ngValue: any;
     value: any;
-    constructor(_element: ElementRef, _renderer: Renderer, _select: SelectControlValueAccessor);
+    constructor(_element: ElementRef, _renderer: Renderer2, _select: SelectControlValueAccessor);
     ngOnDestroy(): void;
 }
 
@@ -467,7 +467,7 @@ export declare class RadioControlValueAccessor implements ControlValueAccessor, 
     onChange: () => void;
     onTouched: () => void;
     value: any;
-    constructor(_renderer: Renderer, _elementRef: ElementRef, _registry: RadioControlRegistry, _injector: Injector);
+    constructor(_renderer: Renderer2, _elementRef: ElementRef, _registry: RadioControlRegistry, _injector: Injector);
     fireUncheck(value: any): void;
     ngOnDestroy(): void;
     ngOnInit(): void;
@@ -494,7 +494,7 @@ export declare class SelectControlValueAccessor implements ControlValueAccessor 
     onChange: (_: any) => void;
     onTouched: () => void;
     value: any;
-    constructor(_renderer: Renderer, _elementRef: ElementRef);
+    constructor(_renderer: Renderer2, _elementRef: ElementRef);
     registerOnChange(fn: (value: any) => any): void;
     registerOnTouched(fn: () => any): void;
     setDisabledState(isDisabled: boolean): void;
@@ -507,7 +507,7 @@ export declare class SelectMultipleControlValueAccessor implements ControlValueA
     onChange: (_: any) => void;
     onTouched: () => void;
     value: any;
-    constructor(_renderer: Renderer, _elementRef: ElementRef);
+    constructor(_renderer: Renderer2, _elementRef: ElementRef);
     registerOnChange(fn: (value: any) => any): void;
     registerOnTouched(fn: () => any): void;
     setDisabledState(isDisabled: boolean): void;
