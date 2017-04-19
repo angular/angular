@@ -223,7 +223,7 @@ There are _no leading slashes_ in the _path_.
 The router parses and builds the final URL for you,
 allowing you to use both relative and absolute paths when navigating between application views.
 
-The `:id` in the first route is a token for a route parameter. In a URL such as `/hero/42`, "42"
+The `:id` in the second route is a token for a route parameter. In a URL such as `/hero/42`, "42"
 is the value of the `id` parameter. The corresponding `HeroDetailComponent`
 will use that value to find and present the hero whose `id` is 42.
 You'll learn more about route parameters later in this guide.
