@@ -16,7 +16,7 @@ describe('remark: renderMarkdown service', () => {
     const output = renderMarkdown(content);
 
     expect(output).toEqual(
-        '<h1>heading 1</h1>\n' +
+        '<h1 id="heading-1"><a href="#heading-1" aria-hidden="true"><span class="icon icon-link"></span></a>heading 1</h1>\n' +
         '<p>A paragraph with <strong>bold</strong> and <em>italic</em>.</p>\n' +
         '<ul>\n' +
         '<li>List item 1</li>\n' +
@@ -25,9 +25,9 @@ describe('remark: renderMarkdown service', () => {
   });
 
   it('should not process markdown inside inline tags', () => {
-    const content = '# heading {@link some_url_path}';
+    const content = '* list item {@link some_url_path}';
     const output = renderMarkdown(content);
-    expect(output).toEqual('<h1>heading {@link some_url_path}</h1>\n');
+    expect(output).toEqual('<ul>\n<li>list item {@link some_url_path}</li>\n</ul>\n');
   });
 
   it('should not put block level inline tags inside paragraphs', () => {
@@ -66,5 +66,15 @@ describe('remark: renderMarkdown service', () => {
     const content = 'some text\n\n    indented text\n\nother text';
     const output = renderMarkdown(content);
     expect(output).toEqual('<p>some text</p>\n<p>    indented text</p>\n<p>other text</p>\n');
+  });
+
+  it('should add id slugs and links to headings', () => {
+    const content = '# heading 1\n\nSome text\n\n## heading 2\n\nMore text';
+    const output = renderMarkdown(content);
+    expect(output).toEqual(
+      '<h1 id="heading-1"><a href="#heading-1" aria-hidden="true"><span class="icon icon-link"></span></a>heading 1</h1>\n' +
+      '<p>Some text</p>\n' +
+      '<h2 id="heading-2"><a href="#heading-2" aria-hidden="true"><span class="icon icon-link"></span></a>heading 2</h2>\n' +
+      '<p>More text</p>\n');
   });
 });

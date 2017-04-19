@@ -12,7 +12,7 @@ module.exports = function fixInternalDocumentLinks() {
 
   return {
     $runAfter: ['inlineTagProcessor'],
-    $runBefore: ['writeFilesProcessor'],
+    $runBefore: ['convertToJsonProcessor'],
     $process: function(docs) {
       docs.forEach(doc => {
         doc.renderedContent = doc.renderedContent.replace(INTERNAL_LINK, (_, pre, hash) => {
