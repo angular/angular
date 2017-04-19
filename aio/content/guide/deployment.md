@@ -45,7 +45,7 @@ The techniques progress from _easy but suboptimal_ to _more optimal and more inv
 
 * [_Ahead of Time_ compilation (AOT)](guide/deployment#aot "AOT Compilation") is the first of
 [several optimization strategies](guide/deployment#optimize).
-You'll also want to read the [detailed instructions in the AOT Cookbook](cookbook/aot-compiler "AOT Cookbook").
+You'll also want to read the [detailed instructions in the AOT Cookbook](guide/aot-compiler "AOT Cookbook").
 
 * [Webpack](guide/deployment#webpack "Webpack Optimization") is a popular general purpose packaging tool with a rich ecosystem, including plugins for AOT.
 The Angular [webpack guide](guide/webpack "Webpack: an introduction") can get you started and
@@ -280,7 +280,7 @@ Apps compiled with AOT launch faster for several reasons.
 * You don't download the Angular compiler, which is pretty big on its own.
 * The compiler discards unused Angular directives that a tree-shaking tool can then exclude.
 
-Learn more about AOT Compilation in the [AOT Cookbook](cookbook/aot-compiler "AOT Cookbook")
+Learn more about AOT Compilation in the [AOT Cookbook](guide/aot-compiler "AOT Cookbook")
 which describes running the AOT compiler from the command line
 and using [_rollup_](guide/deployment#rollup) for bundling, minification, uglification and tree shaking.
 
@@ -628,4 +628,4 @@ Read about how to enable CORS for specific servers at
 
 ## Next steps
  If you want to go beyond the [simple _copy-deploy_](guide/deployment#dev-deploy "Simplest deployment possible") approach,
- read the [AOT Cookbook](cookbook/aot-compiler "AOT Cookbook") next.
+ read the [AOT Cookbook](guide/aot-compiler "AOT Cookbook") next.
