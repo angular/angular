@@ -3,9 +3,6 @@ import { By } from '@angular/platform-browser';
 import { Component, DebugElement, ElementRef } from '@angular/core';
 import { Location } from '@angular/common';
 
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-
-import { DeviceService } from 'app/shared/device.service';
 import { LiveExampleComponent, EmbeddedPlunkerComponent } from './live-example.component';
 
 const defaultTestPath = '/test';
@@ -19,14 +16,6 @@ describe('LiveExampleComponent', () => {
   let liveExampleContent: string;
 
   //////// test helpers ////////
-  class TestDeviceService {
-    displayWidth = new BehaviorSubject(1001);
-  }
-
-  class TestMobileDeviceService {
-    // 1000 is the trigger width for "narrow mobile device""
-    displayWidth = new BehaviorSubject(999);
-  }
 
   @Component({
     selector: 'aio-host-comp',
@@ -62,6 +51,8 @@ describe('LiveExampleComponent', () => {
         liveExampleDe.nativeElement.liveExampleContent = liveExampleContent;
 
         fixture.detectChanges();
+        liveExampleComponent.onResize(1033); // wide by default
+        fixture.detectChanges();
       })
       .then(testFn);
   }
@@ -71,7 +62,6 @@ describe('LiveExampleComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ HostComponent, LiveExampleComponent, EmbeddedPlunkerComponent ],
       providers: [
-        { provide: DeviceService, useClass: TestDeviceService },
         { provide: Location, useClass: TestLocation }
       ]
     })
@@ -295,15 +285,11 @@ describe('LiveExampleComponent', () => {
 
   describe('when narrow display (mobile)', () => {
 
-    beforeEach(() => {
-      TestBed.configureTestingModule({
-        providers: [{ provide: DeviceService, useClass: TestMobileDeviceService }]
-      });
-    });
-
     it('should be embedded style when no style defined', async(() => {
       setHostTemplate('<live-example></live-example>');
       testComponent(() => {
+        liveExampleComponent.onResize(600); // narrow
+        fixture.detectChanges();
         const hrefs = getHrefs();
         expect(hrefs[0]).toContain(defaultTestPath + '/eplnkr.html');
       });
@@ -312,6 +298,8 @@ describe('LiveExampleComponent', () => {
     it('should be embedded style even when flat-style requested', async(() => {
       setHostTemplate('<live-example flat-style></live-example>');
       testComponent(() => {
+        liveExampleComponent.onResize(600); // narrow
+        fixture.detectChanges();
         const hrefs = getHrefs();
         expect(hrefs[0]).toContain(defaultTestPath + '/eplnkr.html');
       });

@@ -1,11 +1,6 @@
 /* tslint:disable component-selector */
-import { Component, ElementRef, Input, OnInit, OnDestroy, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, Input, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { Location } from '@angular/common';
-
-import { Subject } from 'rxjs/Subject';
-import 'rxjs/add/operator/takeUntil';
-
-import { DeviceService } from 'app/shared/device.service';
 
 const defaultPlnkrImg = 'plunker/placeholder.png';
 const imageBase  = 'assets/images/';
@@ -68,7 +63,7 @@ const zipBase = 'content/zips/';
   selector: 'live-example',
   templateUrl: 'live-example.component.html'
 })
-export class LiveExampleComponent implements OnInit, OnDestroy {
+export class LiveExampleComponent implements OnInit {
 
   // Will force to embedded-style when viewport width is narrow
   // "narrow" value was picked based on phone dimensions from http://screensiz.es/phone
@@ -79,7 +74,6 @@ export class LiveExampleComponent implements OnInit, OnDestroy {
   exampleDir: string;
   isEmbedded = false;
   mode = 'disabled';
-  onDestroy = new Subject();
   plnkr: string;
   plnkrName: string;
   plnkrImg: string;
@@ -88,7 +82,6 @@ export class LiveExampleComponent implements OnInit, OnDestroy {
   zip: string;
 
   constructor(
-    private deviceService: DeviceService,
     private elementRef: ElementRef,
     location: Location ) {
 
@@ -154,12 +147,12 @@ export class LiveExampleComponent implements OnInit, OnDestroy {
     // Angular will sanitize this title when displayed so should be plain text.
     const title = this.elementRef.nativeElement.liveExampleContent;
     this.title = (title || this.attrs.title || 'live example').trim();
-
-    this.deviceService.displayWidth.takeUntil(this.onDestroy).subscribe(width => this.calcPlnkrLink(width));
+    this.onResize(window.innerWidth);
   }
 
-  ngOnDestroy() {
-    this.onDestroy.next();
+  @HostListener('window:resize', ['$event.target.innerWidth'])
+  onResize(width) {
+    this.calcPlnkrLink(width);
   }
 
   toggleEmbedded () { this.showEmbedded = !this.showEmbedded; }
