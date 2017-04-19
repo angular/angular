@@ -8,8 +8,14 @@ module.exports = function convertToJsonProcessor(log, createDocMessage) {
       const docTypes = this.docTypes;
       docs.forEach((doc) => {
         if (docTypes.indexOf(doc.docType) !== -1) {
-          let title = doc.title || doc.name;
           let contents = doc.renderedContent || '';
+
+          let title = doc.title;
+
+          // We do allow an empty `title` but resort to `name` if it is not even defined
+          if (title === undefined) {
+            title = doc.name;
+          }
 
           // If there is no title then try to extract it from the first h1 in the renderedContent
           if (title === undefined) {
