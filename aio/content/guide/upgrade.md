@@ -1141,7 +1141,7 @@ After this, the service is injectable anywhere in our AngularJS code:
 We can take advantage of Ahead-of-time (AoT) compilation on hybrid apps just like on any other
 Angular application.
 The setup for an hybrid app is mostly the same as described in 
-[the Ahead-of-time Compilation chapter](cookbook/aot-compiler)
+[the Ahead-of-time Compilation chapter](guide/aot-compiler)
 save for differences in `index.html` and `main-aot.ts`
 
 Our `index.html` will likely have script tags loading AngularJS files, so the `index.html` we
@@ -2152,7 +2152,7 @@ remove the filter &lt;script&gt; tag from `index.html`:
 ## AoT compile the hybrid app
 
 To use AoT with our hybrid app we have to first set it up like any other Angular application,
-as shown in [the Ahead-of-time Compilation chapter](cookbook/aot-compiler).
+as shown in [the Ahead-of-time Compilation chapter](guide/aot-compiler).
 
 Then we have to change `main-aot.ts` bootstrap also bootstrap the AngularJS app 
 via `UpgradeModule`:

@@ -170,7 +170,7 @@ Docs and code samples updated and tested with Angular v.2.1.0.
 
 ## NEW "Ahead of time (AOT) Compilation" cookbook (2016-10-11)
 
-The NEW [Ahead of time (AOT) Compilation](cookbook/aot-compiler) cookbook
+The NEW [Ahead of time (AOT) Compilation](guide/aot-compiler) cookbook
 explains what AOT compilation is and why you'd want it.
 It demonstrates the basics with a QuickStart app
 followed by the more advanced considerations of compiling and bundling the Tour of Heroes.
