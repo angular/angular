@@ -5,7 +5,6 @@ import { Title } from '@angular/platform-browser';
 
 import { AutoScrollService } from 'app/shared/auto-scroll.service';
 import { CurrentNode, NavigationService, NavigationViews, NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
-import { DeviceService } from 'app/shared/device.service';
 import { DocumentService, DocumentContents } from 'app/documents/document.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { LocationService } from 'app/shared/location.service';
@@ -30,6 +29,7 @@ export class AppComponent implements OnInit {
   private isSideNavDoc = false;
   private previousNavView: string;
 
+  private sideBySideWidth = 1032;
   sideNavNodes: NavigationNode[];
   topMenuNodes: NavigationNode[];
   versionInfo: VersionInfo;
@@ -57,7 +57,6 @@ export class AppComponent implements OnInit {
 
   constructor(
     private autoScrollService: AutoScrollService,
-    private deviceService: DeviceService,
     private documentService: DocumentService,
     private locationService: LocationService,
     private navigationService: NavigationService,
@@ -66,6 +65,8 @@ export class AppComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.onResize(window.innerWidth);
+
     /* No need to unsubscribe because this root component never dies */
 
     this.documentService.currentDocument.subscribe(doc => {
@@ -101,8 +102,6 @@ export class AppComponent implements OnInit {
     this.navigationService.versionInfo.subscribe( vi => this.versionInfo = vi );
 
     this.swUpdateNotifications.enable();
-
-    this.deviceService.displayWidth.subscribe(width => this.onResize(width));
   }
 
   // Scroll to the anchor in the hash fragment.
@@ -116,8 +115,9 @@ export class AppComponent implements OnInit {
     this.autoScroll();
   }
 
+  @HostListener('window:resize', ['$event.target.innerWidth'])
   onResize(width) {
-    this.isSideBySide = width > this.deviceService.sideBySideWidth;
+    this.isSideBySide = width > this.sideBySideWidth;
   }
 
   @HostListener('click', ['$event.target', '$event.button', '$event.ctrlKey', '$event.metaKey', '$event.altKey'])
