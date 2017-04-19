@@ -42,7 +42,9 @@ Before the browser can render the application,
 the components and templates must be converted to executable JavaScript by the _Angular compiler_.
 
 <div class="l-sub-section">
+
   <a href="https://www.youtube.com/watch?v=kW9cJsvcsGo" target="_blank">Watch compiler author Tobias Bosch explain the Angular Compiler</a> at AngularConnect 2016.
+
 </div>
 
 You can compile the app in the browser, at runtime, as the application loads, using the **_just-in-time_ (JIT) compiler**.
@@ -161,10 +163,12 @@ Initiate AOT compilation from the command line using the previously installed `n
 </code-example>
 
 <div class="l-sub-section">
+
   Windows users should surround the `ngc` command in double quotes:
   <code-example format='.'>
     "node_modules/.bin/ngc" -p tsconfig-aot.json
   </code-example>
+
 </div>
 
 `ngc` expects the `-p` switch to point to a `tsconfig.json` file or a folder containing a `tsconfig.json` file.
@@ -178,15 +182,19 @@ and a JavaScript representation of the component's template.
 Note that the original component class is still referenced internally by the generated factory.
 
 <div class="l-sub-section">
+
   The curious can open `aot/app.component.ngfactory.ts` to see the original Angular template syntax
   compiled to TypeScript, its intermediate form.
 
   JIT compilation generates these same _NgFactories_ in memory where they are largely invisible.
   AOT compilation reveals them as separate, physical files.
+
 </div>
 
 <div class="alert is-important">
+
   Do not edit the _NgFactories_! Re-compilation replaces these files and all edits will be lost.
+
 </div>
 
 {@a bootstrap}
@@ -247,9 +255,11 @@ It produces a final code _bundle_ that excludes code that is exported, but never
 Rollup can only tree shake `ES2015` modules which have `import` and `export` statements.
 
 <div class="l-sub-section">
+
   Recall that `tsconfig-aot.json` is configured to produce `ES2015` modules.
   It's not important that the code itself be written with `ES2015` syntax such as `class` and `const`.
   What matters is that the code uses ES `import` and `export` statements rather than `require` statements.
+
 </div>
 
 In the terminal window, install the Rollup dependencies with this command:
@@ -304,8 +314,10 @@ Add the following to the `plugins` array:
 </code-example>
 
 <div class="l-sub-section">
+
   In a production setting, you would also enable gzip on the web server to compress
   the code into an even smaller package going over the wire.
+  
 </div>
 
 {@a run-rollup}
@@ -319,10 +331,12 @@ Execute the Rollup process with this command:
 </code-example>
 
 <div class="l-sub-section">
+
   Windows users should surround the `rollup` command in double quotes:
   <code-example language="none" class="code-shell">
     "node_modules/.bin/rollup"  -c rollup-config.js
   </code-example>
+
 </div>
 
 {@a load}
@@ -489,6 +503,7 @@ You'll need separate TypeScript configuration files such as these:
 </code-tabs>
 
 <div class="callout is-helpful">
+
   <header>
     @Types and node modules
   </header>
@@ -500,6 +515,7 @@ You'll need separate TypeScript configuration files such as these:
   In a more typical project, `node_modules` would be a sibling of `tsconfig-aot.json`
   and `"typeRoots"` would be set to `"node_modules/@types/"`.
   Edit your `tsconfig-aot.json` to fit your project's file structure.
+
 </div>
 
 {@a shaking}
@@ -516,6 +532,7 @@ Rollup does the tree shaking as before.
 ### Running the application
 
 <div class="alert is-important">
+
   The general audience instructions for running the AOT build of the Tour of Heroes app are not ready.
 
   The following instructions presuppose that you have cloned the
@@ -523,6 +540,7 @@ Rollup does the tree shaking as before.
   github repository and prepared it for development as explained in the repo's README.md.
 
   The _Tour of Heroes_ source code is in the `public/docs/_examples/toh-6/ts` folder.
+
 </div>
 
 Run the JIT-compiled app with `npm start` as for all other JIT examples.
@@ -549,7 +567,9 @@ Copy the AOT distribution files into the `/aot` folder with the node script:
 </code-example>
 
 <div class="l-sub-section">
+
   You won't do that again until there are updates to `zone.js` or the `core-js` shim for old browsers.
+
 </div>
 
 Now AOT-compile the app and launch it with the `lite-server`:
