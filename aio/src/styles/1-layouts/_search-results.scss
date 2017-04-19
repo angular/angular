@@ -5,6 +5,7 @@ aio-search-results {
 .search-results {
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
     overflow: auto;
     padding: 68px 32px 0;
     color: $offwhite;
@@ -34,12 +35,23 @@ aio-search-results {
     flex-direction: column;
     margin: 16px 16px;
     height: 100%;
+
     h3 {
         font-size: 16px;
         font-weight: 400;
         margin: 10px 0px 5px;
         text-transform: uppercase;
     }
+
+    ul {
+        margin: 0;
+        padding: 0;
+
+        li {
+            list-style: none;
+        }
+    }
+
     a {
         font-size: 14px;
         color: $lightgray;
@@ -55,7 +67,6 @@ aio-search-results {
     }
 
     @include bp(tiny) {
-        width: 100%;
         display: block;
     }
 }
