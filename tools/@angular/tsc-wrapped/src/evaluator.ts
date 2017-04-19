@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 
 import {CollectorOptions} from './collector';
-import {MetadataEntry, MetadataError, MetadataGlobalReferenceExpression, MetadataImportedSymbolReferenceExpression, MetadataSymbolicCallExpression, MetadataSymbolicReferenceExpression, MetadataValue, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportedSymbolReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSpreadExpression} from './schema';
+import {MetadataEntry, MetadataError, MetadataImportedSymbolReferenceExpression, MetadataSymbolicCallExpression, MetadataValue, isMetadataError, isMetadataModuleReferenceExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSpreadExpression} from './schema';
 import {Symbols} from './symbols';
 
 // In TypeScript 2.1 the spread element kind was renamed.
@@ -86,7 +86,7 @@ export function errorSymbol(
       const {line, character} =
           ts.getLineAndCharacterOfPosition(sourceFile, node.getStart(sourceFile));
       result = {__symbolic: 'error', message, line, character};
-    };
+    }
   }
   if (!result) {
     result = {__symbolic: 'error', message};

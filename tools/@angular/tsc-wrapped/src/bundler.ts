@@ -9,14 +9,11 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import {MetadataCollector} from './collector';
-import {ClassMetadata, ConstructorMetadata, FunctionMetadata, MemberMetadata, MetadataArray, MetadataEntry, MetadataError, MetadataImportedSymbolReferenceExpression, MetadataMap, MetadataObject, MetadataSymbolicBinaryExpression, MetadataSymbolicCallExpression, MetadataSymbolicExpression, MetadataSymbolicIfExpression, MetadataSymbolicIndexExpression, MetadataSymbolicPrefixExpression, MetadataSymbolicReferenceExpression, MetadataSymbolicSelectExpression, MetadataSymbolicSpreadExpression, MetadataValue, MethodMetadata, ModuleMetadata, VERSION, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isInterfaceMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportedSymbolReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicExpression, isMetadataSymbolicReferenceExpression, isMethodMetadata} from './schema';
+import {ClassMetadata, ConstructorMetadata, FunctionMetadata, MemberMetadata, MetadataEntry, MetadataError, MetadataImportedSymbolReferenceExpression, MetadataMap, MetadataObject, MetadataSymbolicExpression, MetadataSymbolicReferenceExpression, MetadataValue, MethodMetadata, ModuleMetadata, VERSION, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isInterfaceMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportedSymbolReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicExpression, isMethodMetadata} from './schema';
 
 
 // The character set used to produce private names.
-const PRIVATE_NAME_CHARS = [
-  'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
-  'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
-];
+const PRIVATE_NAME_CHARS = 'abcdefghijklmnopqrstuvwxyz';
 
 interface Symbol {
   module: string;
@@ -199,7 +196,6 @@ export class MetadataBundler {
   private canonicalizeSymbols(exportedSymbols: Symbol[]) {
     const symbols = Array.from(this.symbolMap.values());
     this.exported = new Set(exportedSymbols);
-    ;
     symbols.forEach(this.canonicalizeSymbol, this);
   }
 
@@ -433,18 +429,15 @@ export class MetadataBundler {
 
     if (isMetadataImportedSymbolReferenceExpression(value)) {
       // References to imported symbols are separated into two, references to bundled modules and
-      // references to modules
-      // external to the bundle. If the module reference is relative it is assuemd to be in the
-      // bundle. If it is Global
-      // it is assumed to be outside the bundle. References to symbols outside the bundle are left
-      // unmodified. Refernces
-      // to symbol inside the bundle need to be converted to a bundle import reference reachable
-      // from the bundle index.
+      // references to modules external to the bundle. If the module reference is relative it is
+      // assumed to be in the bundle. If it is Global it is assumed to be outside the bundle.
+      // References to symbols outside the bundle are left unmodified. References to symbol inside
+      // the bundle need to be converted to a bundle import reference reachable from the bundle
+      // index.
 
       if (value.module.startsWith('.')) {
         // Reference is to a symbol defined inside the module. Convert the reference to a reference
-        // to the canonical
-        // symbol.
+        // to the canonical symbol.
         const referencedModule = resolveModule(value.module, moduleName);
         const referencedName = value.name;
         return createReference(this.canonicalSymbolOf(referencedModule, referencedName));
@@ -453,7 +446,7 @@ export class MetadataBundler {
       // Value is a reference to a symbol defined outside the module.
       if (value.arguments) {
         // If a reference has arguments the arguments need to be converted.
-        const result: MetadataImportedSymbolReferenceExpression = {
+        return {
           __symbolic: 'reference',
           name: value.name,
           module: value.module,
@@ -536,10 +529,6 @@ function resolveModule(importName: string, from: string): string {
 
 function isPrimitive(o: any): o is boolean|string|number {
   return o === null || (typeof o !== 'function' && typeof o !== 'object');
-}
-
-function isMetadataArray(o: MetadataValue): o is MetadataArray {
-  return Array.isArray(o);
 }
 
 function getRootExport(symbol: Symbol): Symbol {

@@ -8,7 +8,6 @@
 
 import {writeFileSync} from 'fs';
 import {normalize} from 'path';
-import * as tsickle from 'tsickle';
 import * as ts from 'typescript';
 
 import NgOptions from './options';
@@ -98,8 +97,7 @@ export class MetadataWriterHost extends DelegatingHost {
         }
         if (isDts) {
           // TODO: remove this early return after https://github.com/Microsoft/TypeScript/pull/8412
-          // is
-          // released
+          // is released
           return;
         }
 

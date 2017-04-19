@@ -94,7 +94,6 @@ export class MetadataCollector {
                 value: evaluator.evaluateNode(returnStatement.expression)
               };
               if (functionDeclaration.parameters.some(p => p.initializer != null)) {
-                const defaults: MetadataValue[] = [];
                 func.defaults = functionDeclaration.parameters.map(
                     p => p.initializer && evaluator.evaluateNode(p.initializer));
               }
@@ -358,7 +357,6 @@ export class MetadataCollector {
         case ts.SyntaxKind.ClassDeclaration:
           const classDeclaration = <ts.ClassDeclaration>node;
           if (classDeclaration.name) {
-            const className = classDeclaration.name.text;
             if (isExported(classDeclaration)) {
               if (!metadata) metadata = {};
               metadata[exportedName(classDeclaration)] = classMetadataOf(classDeclaration);
