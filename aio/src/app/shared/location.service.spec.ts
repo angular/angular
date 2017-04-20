@@ -124,6 +124,37 @@ describe('LocationService', () => {
     });
   });
 
+  describe('path', () => {
+    it('should ask Location for the current path without the hash', () => {
+      const location: MockLocationStrategy = injector.get(LocationStrategy);
+      const service: LocationService = injector.get(LocationService);
+
+      // We cannot test this directly in the following test because the `MockLocationStrategy`
+      // does not remove the hash from the path, even if we do pass `false`.
+
+      spyOn(location, 'path').and.callThrough();
+      service.path();
+      expect(location.path).toHaveBeenCalledWith(false);
+    });
+
+    it('should return the current location.path, with the query and trailing slash stripped off', () => {
+      const location: MockLocationStrategy = injector.get(LocationStrategy);
+      const service: LocationService = injector.get(LocationService);
+
+      location.simulatePopState('a/b/c?foo=bar&moo=car');
+      expect(service.path()).toEqual('a/b/c');
+
+      location.simulatePopState('c/d/e');
+      expect(service.path()).toEqual('c/d/e');
+
+      location.simulatePopState('a/b/c/?foo=bar&moo=car');
+      expect(service.path()).toEqual('a/b/c');
+
+      location.simulatePopState('c/d/e/');
+      expect(service.path()).toEqual('c/d/e');
+    });
+  });
+
   describe('search', () => {
     it('should read the query from the current location.path', () => {
       const location: MockLocationStrategy = injector.get(LocationStrategy);
