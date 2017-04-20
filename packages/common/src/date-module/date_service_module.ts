@@ -6,12 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DateService} from './date_service';
-import {NgModule, Injector} from '@angular/core';
+import {Injector, NgModule} from '@angular/core';
 
-@NgModule({
-  providers: [
-    DateService
-  ]
-})
-export class DateServiceModule{}
+import {DateService} from './date_service';
+
+@NgModule({providers: [DateService]})
+export class DateServiceModule {
+}

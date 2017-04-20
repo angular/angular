@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, LOCALE_ID, Pipe, PipeTransform, Injector, Injectable} from '@angular/core';
+import {Inject, Injectable, Injector, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
+
 import {DateFormatter} from '../pipes/intl';
 import {invalidPipeArgumentError} from '../pipes/invalid_pipe_argument_error';
 import {isNumeric} from '../pipes/number_pipe';
@@ -29,9 +30,7 @@ export class DateService {
     'shortTime': 'jm'
   };
 
-  constructor(@Inject(LOCALE_ID) private _locale: string) {
-
-  }
+  constructor(@Inject(LOCALE_ID) private _locale: string) {}
 
   transform(value: any, pattern: string = 'mediumDate'): string|null {
     let date: Date;

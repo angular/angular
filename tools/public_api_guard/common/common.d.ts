@@ -23,7 +23,7 @@ export declare class CurrencyPipe implements PipeTransform {
 
 /** @stable */
 export declare class DatePipe implements PipeTransform {
-    constructor(_locale: string);
+    constructor(_locale: string, injector?: Injector);
     transform(value: any, pattern?: string): string | null;
 }
 

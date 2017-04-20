@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import { DateService } from './../date-module/date_service';
-import {Inject, LOCALE_ID, Pipe, PipeTransform, Injector, Optional} from '@angular/core';
+import {Inject, Injector, LOCALE_ID, Optional, Pipe, PipeTransform} from '@angular/core';
+
+import {DateService} from './../date-module/date_service';
 import {DateFormatter} from './intl';
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 import {isNumeric} from './number_pipe';
@@ -90,7 +91,12 @@ export class DatePipe implements PipeTransform {
   private dateService: DateService;
 
   constructor(@Inject(LOCALE_ID) private _locale: string, @Optional() injector?: Injector) {
-    this.dateService = injector ? injector.get(DateService) || new DateService(_locale) : new DateService(_locale);
+    // check to see if we have a injector - this is for if someone wants to use `new DatePipe()`
+    // if we don't have an injector new up a DateService
+    // if we do have an injector try get the DateService out of the injector, if it's not there new
+    // one up
+    this.dateService =
+        injector ? injector.get(DateService) || new DateService(_locale) : new DateService(_locale);
   }
 
   transform(value: any, pattern: string = 'mediumDate'): string|null {
