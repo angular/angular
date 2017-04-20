@@ -21,9 +21,11 @@ describe('convertToJson processor', () => {
       docType: 'test-doc',
       title: 'The Title',
       name: 'The Name',
+      path: 'test/doc',
       renderedContent: 'Some Content'
     }];
     processor.$process(docs);
+    expect(JSON.parse(docs[0].renderedContent).id).toEqual('test/doc');
     expect(JSON.parse(docs[0].renderedContent).title).toEqual('The Title');
     expect(JSON.parse(docs[0].renderedContent).contents).toEqual('Some Content');
   });
