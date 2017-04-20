@@ -207,7 +207,7 @@ describe('AppComponent', () => {
 
   describe('pageId', () => {
 
-    it('should set the id of the doc viewer container based on the current url', () => {
+    it('should set the id of the doc viewer container based on the current doc', () => {
       const container = fixture.debugElement.query(By.css('section.sidenav-content'));
 
       locationService.go('guide/pipes');
@@ -226,7 +226,7 @@ describe('AppComponent', () => {
       expect(container.properties['id']).toEqual('home');
     });
 
-    it('should not be affected by changes to the query or hash', () => {
+    it('should not be affected by changes to the query', () => {
       const container = fixture.debugElement.query(By.css('section.sidenav-content'));
 
       locationService.go('guide/pipes');
@@ -236,11 +236,6 @@ describe('AppComponent', () => {
       fixture.detectChanges();
       expect(component.pageId).toEqual('guide-other');
       expect(container.properties['id']).toEqual('guide-other');
-
-      locationService.go('guide/http#anchor-1');
-      fixture.detectChanges();
-      expect(component.pageId).toEqual('guide-http');
-      expect(container.properties['id']).toEqual('guide-http');
     });
   });
 
@@ -261,7 +256,7 @@ describe('AppComponent', () => {
     it('should display a marketing page', () => {
       locationService.go('features');
       fixture.detectChanges();
-      expect(docViewer.innerText).toMatch(/Test Doc/i);
+      expect(docViewer.innerText).toMatch(/Features Doc/i);
     });
 
     it('should update the document title', () => {
@@ -275,7 +270,7 @@ describe('AppComponent', () => {
     it('should update the document title, with a default value if the document has no title', () => {
       const titleService = TestBed.get(Title);
       spyOn(titleService, 'setTitle');
-      locationService.go('file-not-found');
+      locationService.go('no-title');
       fixture.detectChanges();
       expect(titleService.setTitle).toHaveBeenCalledWith('Angular');
     });
@@ -431,35 +426,20 @@ class TestHttp {
     }
   };
 
-  apiDoc = {
-    "title": "API",
-    "contents": "<h1>API Doc</h1>"
-  };
-
-  pipesDoc = {
-    "title": "Pipes",
-    "contents": "<h1>Pipes Doc</h1>"
-  };
-
-  testDoc = {
-    "title": "Test",
-    "contents": "<h1>Test Doc</h1>"
-  };
-
-  fileNotFoundDoc = {
-    "title": "",
-    "contents": "Page not found"
-  };
-
-  // get = jasmine.createSpy('get').and.callFake((url: string) => { ... });
   get(url: string) {
-    const json =
-      /navigation.json/.test(url) ? this.navJson :
-      /api/.test(url) ? this.apiDoc :
-      /pipes/.test(url) ? this.pipesDoc :
-      /file-not-found/.test(url) ? this.fileNotFoundDoc :
-      this.testDoc;
-    return of({ json: () => json });
+    let data;
+    if (/navigation\.json/.test(url)) {
+      data = this.navJson;
+    } else {
+      const match = /content\/docs\/(.+)\.json/.exec(url);
+      const id = match[1];
+      const title = id.split('/').pop().replace(/^([a-z])/, (_, letter) => letter.toUpperCase());
+      const contents = `<h1>${title} Doc</h1>`;
+      data = { id, title, contents };
+      if (id === 'no-title') {
+        data.title = '';
+      }
+    }
+    return of({ json: () => data });
   }
-
 }

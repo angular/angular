@@ -72,12 +72,7 @@ export class AppComponent implements OnInit {
     this.documentService.currentDocument.subscribe(doc => {
       this.currentDocument = doc;
       this.setDocumentTitle(doc.title);
-      this.pageId = this.currentDocument.url.replace('/', '-');
-
-      // Special case the home page
-      if (this.pageId === 'index') {
-        this.pageId = 'home';
-      }
+      this.setPageId(doc.id);
     });
 
     // scroll even if only the hash fragment changed
@@ -151,11 +146,16 @@ export class AppComponent implements OnInit {
     this.sidenav.toggle(value);
   }
 
-  setDocumentTitle(title) {
+  setDocumentTitle(title: string) {
     if (title.trim()) {
       this.titleService.setTitle(`Angular - ${title}`);
     } else {
       this.titleService.setTitle('Angular');
     }
+  }
+
+  setPageId(id: string) {
+    // Special case the home page
+    this.pageId = (id === 'index') ? 'home' : id.replace('/', '-');
   }
 }

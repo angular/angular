@@ -86,15 +86,14 @@ describe('DocumentService', () => {
       connections[0].mockError(new Response(new ResponseOptions({ status: 404, statusText: 'NOT FOUND'})) as any);
       expect(connections.length).toEqual(2);
       expect(connections[1].request.url).toEqual(CONTENT_URL_PREFIX + 'file-not-found.json');
-      const fileNotFoundDoc = { title: 'File Not Found' };
+      const fileNotFoundDoc = { id: 'file-not-found', title: 'Page Not Found', contents: '<h1>Page Not Found</h1>' };
       connections[1].mockRespond(createResponse(fileNotFoundDoc));
-      expect(currentDocument).toEqual(jasmine.objectContaining(fileNotFoundDoc));
-      expect(currentDocument.url).toEqual('file-not-found');
+      expect(currentDocument).toEqual(fileNotFoundDoc);
     });
 
     it('should emit a hard-coded not-found document if the not-found document is not found on the server', () => {
       let currentDocument: DocumentContents;
-      const notFoundDoc: DocumentContents = { title: 'Not Found', contents: 'Document not found', url: 'file-not-found' };
+      const notFoundDoc: DocumentContents = { title: 'Not Found', contents: 'Document not found', id: 'file-not-found' };
       const nextDoc = { title: 'Next Doc', url: 'new/url' };
       const { docService, backend, locationService } = getServices('file-not-found');
       const connections = backend.connectionsArray;
@@ -178,7 +177,7 @@ describe('DocumentService', () => {
     });
 
     it('should map the "folder" locations to the correct document request', () => {
-      const { docService, backend, locationService} = getServices('guide/');
+      const { docService, backend, locationService} = getServices('guide');
       docService.currentDocument.subscribe();
 
       expect(backend.connectionsArray[0].request.url).toEqual(CONTENT_URL_PREFIX + 'guide.json');
