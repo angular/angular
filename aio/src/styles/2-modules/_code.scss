@@ -224,7 +224,7 @@ code-example.code-shell, code-example[language=sh], code-example[language=bash] 
 }
 
 // REMOVE RIPPLE EFFECT FROM MATERIAL TABS
-code-tabs md-tab-group *.mat-ripple-element, code-tabs md-tab-group *.mat-tab-body-active, code-tabs md-tab-group *.mat-tab-body-content, code-tabs md-tab-group *.mat-tab-list, code-tabs md-tab-gropu *.mat-tab-body-content {
+code-tabs md-tab-group *.mat-ripple-element, code-tabs md-tab-group *.mat-tab-body-active, code-tabs md-tab-group *.mat-tab-body-content, code-tabs md-tab-group *.mat-tab-body-content {
   transform: none !important;
 }
 
