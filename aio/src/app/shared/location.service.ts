@@ -42,6 +42,16 @@ export class LocationService {
     return url.replace(/^\/+/, '');
   }
 
+  /**
+   * Get the current path, without trailing slash, hash fragment or query params
+   */
+  path(): string {
+    let path = this.location.path(false);
+    path = path.match(/[^?]*/)[0]; // strip off query
+    path = path.replace(/\/$/, ''); // strip off trailing slash
+    return path;
+  }
+
   search(): { [index: string]: string; } {
     const search = {};
     const path = this.location.path();
