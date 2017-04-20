@@ -14,8 +14,18 @@ export { DocumentContents } from './document-contents';
 import { LocationService } from 'app/shared/location.service';
 import { Logger } from 'app/shared/logger.service';
 
-const FILE_NOT_FOUND_URL = 'file-not-found';
-const FETCHING_ERROR_URL = 'fetching-error';
+const CONTENT_URL_PREFIX = 'content/docs/';
+const FILE_NOT_FOUND_ID = 'file-not-found';
+const FETCHING_ERROR_ID = 'fetching-error';
+const FETCHING_ERROR_CONTENTS = `
+<div class="nf-container l-flex-wrap flex-center">
+<div class="nf-icon material-icons">error_outline</div>
+<div class="nf-response l-flex-wrap">
+<h1>Request for document failed.</h1>
+<p>We are unable to retrieve the "<current-location></current-location>" page at this time.
+Please check your connection and try again later.</p>
+</div></div>
+`;
 
 @Injectable()
 export class DocumentService {
@@ -49,32 +59,33 @@ export class DocumentService {
       .get(requestPath)
       .map(response => response.json())
       .catch((error: Response) => {
-        return error.status === 404 ? this.getFileNotFoundDoc(id) : this.getErrorDoc(error);
+        return error.status === 404 ? this.getFileNotFoundDoc(id) : this.getErrorDoc(id, error);
       })
       .subscribe(subject);
     return subject.asObservable();
   }
 
-  private getFileNotFoundDoc(url: string): Observable<DocumentContents> {
-    if (url !== FILE_NOT_FOUND_URL) {
-      this.logger.error(`Document file not found at '${url}'`);
+  private getFileNotFoundDoc(id: string): Observable<DocumentContents> {
+    if (id !== FILE_NOT_FOUND_ID) {
+      this.logger.error(`Document file not found at '${id}'`);
       // using `getDocument` means that we can fetch the 404 doc contents from the server and cache it
-      return this.getDocument(FILE_NOT_FOUND_URL);
+      return this.getDocument(FILE_NOT_FOUND_ID);
     } else {
       return of({
         title: 'Not Found',
         contents: 'Document not found',
-        id: FILE_NOT_FOUND_URL
+        id: FILE_NOT_FOUND_ID
       });
     }
   }
 
-  private getErrorDoc(error: Response): Observable<DocumentContents> {
+  private getErrorDoc(id: string, error: Response): Observable<DocumentContents> {
     this.logger.error('Error fetching document', error);
+    this.cache.delete(id);
     return Observable.of({
-      title: 'Error fetching document',
-      contents: 'Sorry we were not able to fetch that document.',
-      id: FETCHING_ERROR_URL
+      title: 'Document retrieval error',
+      contents: FETCHING_ERROR_CONTENTS,
+      id: FETCHING_ERROR_ID
     });
   }
 }
