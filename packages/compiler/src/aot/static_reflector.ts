@@ -182,16 +182,16 @@ export class StaticReflector implements CompileReflector {
         const ctorData = members ? members['__ctor__'] : null;
         if (ctorData) {
           const ctor = (<any[]>ctorData).find(a => a['__symbolic'] == 'constructor');
-          const parameterTypes = <any[]>this.simplify(type, ctor['parameters'] || []);
+          const rawParameterTypes = <any[]>ctor['parameters'] || [];
           const parameterDecorators = <any[]>this.simplify(type, ctor['parameterDecorators'] || []);
           parameters = [];
-          parameterTypes.forEach((paramType, index) => {
+          rawParameterTypes.forEach((rawParamType, index) => {
             const nestedResult: any[] = [];
-            if (paramType) {
-              nestedResult.push(paramType);
-            }
+            const paramType = this.trySimplify(type, rawParamType);
+            if (paramType) nestedResult.push(paramType);
             const decorators = parameterDecorators ? parameterDecorators[index] : null;
             if (decorators) {
+              if (paramType) nestedResult.push(paramType);
               nestedResult.push(...decorators);
             }
             parameters !.push(nestedResult);
