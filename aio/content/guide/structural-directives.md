@@ -696,7 +696,7 @@ Here's how you might begin:
 
 The directive's _selector_ is typically the directive's **attribute name** in square brackets, `[myUnless]`.
 The brackets define a CSS
-<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Attribute_selectors" target="_blank" title="MDN: Attribute selectors">attribute selector</a>.
+<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Attribute_selectors" title="MDN: Attribute selectors">attribute selector</a>.
 
 The directive _attribute name_ should be spelled in _lowerCamelCase_ and begin with a prefix.
 Don't use `ng`. That prefix belongs to Angular.

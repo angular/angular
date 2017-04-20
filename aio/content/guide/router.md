@@ -620,7 +620,7 @@ Begin with a simple version of the app that navigates between two empty views.
 ### Set the *&lt;base href>*
 
 The router uses the browser's
-<a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" target="_blank" title="HTML5 browser history push-state">history.pushState</a>
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" title="HTML5 browser history push-state">history.pushState</a>
 for navigation. Thanks to `pushState`, you can make in-app URL paths look the way you want them to
 look, e.g. `localhost:3000/crisis-center`. The in-app URLs can be indistinguishable from server URLs.
 
@@ -643,7 +643,7 @@ older hash (#) style, if necessary.
 
 
 You must **add a
-<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base" target="_blank" title="base href">&lt;base href&gt; element</a>**
+<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base" title="base href">&lt;base href&gt; element</a>**
 to the app's `index.html` for `pushState` routing to work.
 The browser uses the `<base href>` value to prefix *relative* URLs when referencing
 CSS files, scripts, and images.
@@ -2370,7 +2370,7 @@ and decide later if the differences are worthwhile.
 
 
 In keeping with the
-<a href="https://blog.8thlight.com/uncle-bob/2014/05/08/SingleReponsibilityPrinciple.html" target="_blank" title="Separation of Concerns">*Separation of Concerns* principle</a>,
+<a href="https://blog.8thlight.com/uncle-bob/2014/05/08/SingleReponsibilityPrinciple.html" title="Separation of Concerns">*Separation of Concerns* principle</a>,
 changes to the *Crisis Center* won't affect the `AppModule` or
 any other feature's component.
 
@@ -4084,7 +4084,7 @@ This is a strictly local URL. The browser shouldn't send this URL to the server
 and should not reload the page.
 
 Modern HTML5 browsers support
-<a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" target="_blank" title="HTML5 browser history push-state">history.pushState</a>,
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" title="HTML5 browser history push-state">history.pushState</a>,
 a technique that changes a browser's location and history without triggering a server page request.
 The router can compose a "natural" URL that is indistinguishable from
 one that would otherwise require a page load.
@@ -4159,11 +4159,11 @@ resort to hash routes.
 ### HTML5 URLs and the  *&lt;base href>*
 
 While the router uses the 
-<a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" target="_blank" title="Browser history push-state">HTML5 pushState</a>
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" title="Browser history push-state">HTML5 pushState</a>
 style by default, you *must* configure that strategy with a **base href**.
 
 The preferred way to configure the strategy is to add a
-<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base" target="_blank" title="base href">&lt;base href&gt; element</a>
+<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base" title="base href">&lt;base href&gt; element</a>
 tag in the `<head>` of the `index.html`.
 
 
