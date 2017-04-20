@@ -49,7 +49,6 @@ dist/
 **/*.metadata.json
 !aot/bs-config.json
 !aot/index.html
-!copy-dist-files.js
 !rollup-config.js
 
 # testing
