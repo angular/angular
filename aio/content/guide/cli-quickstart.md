@@ -26,7 +26,7 @@ You'll pursue these ends in the following high-level steps:
 3. [Serve](guide/cli-quickstart#serve) the application.
 4. [Edit](guide/cli-quickstart#first-component) the application.
 
-And you can also <a href="/resources/zips/cli-quickstart/cli-quickstart.zip">download the example.</a>
+And you can also <a href="/content/zips/cli-quickstart/cli-quickstart.zip" target="_blank">download the example.</a>
 
 
 

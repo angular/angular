@@ -34,7 +34,7 @@ can read and write Angular apps in their preferred dialect.
 * [View and Child Decorators](guide/ts-to-js#view-child-decorators)<br>
 * [AOT compilation in _TypeScript_ Only](guide/ts-to-js#aot)<br>
 
-**Run and compare the live <live-example name="cb-ts-to-js">TypeScript</live-example> and <live-example name="cb-ts-to-js" lang="js">JavaScript</live-example>
+**Run and compare the live <live-example name="cb-ts-to-js/ts">TypeScript</live-example> and <live-example name="cb-ts-to-js/js">JavaScript</live-example>
 code shown in this cookbook.**
 
 

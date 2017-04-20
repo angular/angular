@@ -200,6 +200,15 @@ describe('LiveExampleComponent', () => {
         expect(anchor.getAttribute('title')).toBe(liveExampleContent, 'title');
       });
     }));
+
+    it('should not duplicate the exampleDir on a zip when there is a / on the name', async(() => {
+      setHostTemplate('<live-example name="testing/ts"></live-example>');
+      testComponent(() => {
+        const hrefs = getHrefs();
+        expect(hrefs[0]).toContain('/testing/ts/eplnkr.html');
+        expect(hrefs[1]).toContain('/testing/ts/testing.zip');
+      });
+    }));
   });
 
   describe('when embedded', () => {
