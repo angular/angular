@@ -472,8 +472,9 @@ do
       rsync -a ${OUT_DIR}/ ${NPM_DIR}
     fi
 
-    echo "======        Copy ${PACKAGE} package.json files"
+    echo "======        Copy ${PACKAGE} package.json and .externs.js files"
     rsync -am --include="package.json" --include="*/" --exclude=* ${SRC_DIR}/ ${NPM_DIR}/
+    rsync -am --include="*.externs.js" --include="*/" --exclude=* ${SRC_DIR}/ ${NPM_DIR}/
 
     cp ${ROOT_DIR}/README.md ${NPM_DIR}/
   fi
