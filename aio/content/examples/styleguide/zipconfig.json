@@ -1,4 +1,0 @@
-{
-  "zipRegion": "class",
-  "files": ["**/*.*", "!**/*zipconfig.json"]
-}
