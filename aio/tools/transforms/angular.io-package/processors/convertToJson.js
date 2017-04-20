@@ -31,7 +31,7 @@ module.exports = function convertToJsonProcessor(log, createDocMessage) {
             log.warn(createDocMessage('Title property expected', doc));
           }
 
-          doc.renderedContent = JSON.stringify({ title, contents }, null, 2);
+          doc.renderedContent = JSON.stringify({ id: doc.path, title, contents }, null, 2);
         }
       });
     }
