@@ -1,7 +1,9 @@
 {%- if doc.decorators.length %}
-<section class="annotations">
-  <h2>Annotations</h2>
-  <div class="annotation">
+<section class="annotations api-section">
+  <div class="api-section-header">
+    <h2>Annotations</h2>
+  </div>
+  <div class="annotation api-section-content">
     {%- for decorator in doc.decorators %}
       <pre class="prettyprint no-bg">
         <code>@{$ decorator.name $}{$ params.paramList(decorator.arguments) | indent(10, false) $}</code>
