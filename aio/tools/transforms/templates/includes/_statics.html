@@ -1,7 +1,9 @@
 {% if doc.statics.length %}
-<section class="static-members">
-  <h2>Static Members</h2>
-  <div class="description">
+<section class="static-members api-section">
+  <div class="api-section-header">
+    <h2>Static Members</h2>
+  </div>
+  <div class="api-section-content">
   {% for member in doc.statics %}{% if not member.internal %}
     <div class="static-member">
       <a name="{$ member.name $}-anchor" class="anchor-offset"></a>

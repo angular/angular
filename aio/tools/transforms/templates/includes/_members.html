@@ -1,7 +1,9 @@
 {% if doc.members.length %}
-<section class="instance-members">
-  <h2>Class Details</h2>
-  <div class="description">
+<section class="instance-members api-section">
+  <div class="api-section-header">
+    <h2>Class Details</h2>
+  </div>
+  <div class="description api-section-content">
     {% for member in doc.members %}{% if not member.internal %}
     <div class="instance-member">
       <a name="{$ member.name $}-anchor" class="anchor-offset"></a>
