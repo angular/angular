@@ -361,7 +361,7 @@ export class StaticReflector implements CompileReflector {
   /** @internal */
   public simplify(context: StaticSymbol, value: any): any {
     const self = this;
-    let scope = BindingScope.empty;
+    let scope = moduleScope;
     const calling = new Map<StaticSymbol, boolean>();
 
     function simplifyInContext(
@@ -387,7 +387,7 @@ export class StaticReflector implements CompileReflector {
               if (defaults && defaults.length > args.length) {
                 args.push(...defaults.slice(args.length).map((value: any) => simplify(value)));
               }
-              const functionScope = BindingScope.build();
+              const functionScope = BindingScope.build(scope);
               for (let i = 0; i < parameters.length; i++) {
                 functionScope.define(parameters[i], args[i]);
               }
@@ -560,6 +560,8 @@ export class StaticReflector implements CompileReflector {
                 if (localValue != BindingScope.missing) {
                   return localValue;
                 }
+                self.reportError(
+                    new Error(`Unsupported reference to ambient symbol ${name}`), context);
                 break;
               case 'class':
                 return context;
@@ -723,12 +725,16 @@ interface BindingScopeBuilder {
   done(): BindingScope;
 }
 
+function first<T>(t: Iterable<T>) {
+  return Array.from(t)[0];
+}
+
 abstract class BindingScope {
   abstract resolve(name: string): any;
   public static missing = {};
   public static empty: BindingScope = {resolve: name => BindingScope.missing};
 
-  public static build(): BindingScopeBuilder {
+  public static build(parent?: BindingScope): BindingScopeBuilder {
     const current = new Map<string, any>();
     return {
       define: function(name, value) {
@@ -736,7 +742,15 @@ abstract class BindingScope {
         return this;
       },
       done: function() {
-        return current.size > 0 ? new PopulatedScope(current) : BindingScope.empty;
+        const scope = current.size <= 0 ?
+            BindingScope.empty :
+            current.size == 1 ? new SingletonScope(first(current.keys()), first(current.values())) :
+                                new PopulatedScope(current);
+        if (!parent || parent == BindingScope.empty)
+          return scope;
+        else if (!scope || scope == BindingScope.empty)
+          return parent;
+        return new MultiScope(scope, parent);
       }
     };
   }
@@ -749,6 +763,32 @@ class PopulatedScope extends BindingScope {
     return this.bindings.has(name) ? this.bindings.get(name) : BindingScope.missing;
   }
 }
+
+class SingletonScope extends BindingScope {
+  constructor(private name: string, private value: any) { super(); }
+
+  resolve(name: string): any { return name == this.name ? this.value : BindingScope.missing; }
+}
+
+class MultiScope extends BindingScope {
+  private scopes: BindingScope[];
+  constructor(...scopes: BindingScope[]) {
+    super();
+    this.scopes = scopes;
+  }
+  resolve(name: string): any {
+    for (const scope of this.scopes) {
+      const result = scope.resolve(name);
+      if (result != BindingScope.missing) return result;
+    }
+    return BindingScope.missing;
+  }
+}
+
+const moduleScope =
+    BindingScope.build()
+        .define('module', {id: '', filename: '', loaded: true, parent: null, children: []})
+        .done();
 
 function positionalError(message: string, fileName: string, line: number, column: number): Error {
   const result = new Error(message);

@@ -247,7 +247,7 @@ describe('StaticSymbolResolver', () => {
         .toBeFalsy();
   });
 
-  it('should fill references to ambient symbols with undefined', () => {
+  it('should leave ambient symbols as references', () => {
     init({
       '/test.ts': `
         export var y = 1;
@@ -256,7 +256,7 @@ describe('StaticSymbolResolver', () => {
     });
 
     expect(symbolResolver.resolveSymbol(symbolCache.get('/test.ts', 'z')).metadata).toEqual([
-      undefined, symbolCache.get('/test.ts', 'z')
+      {__symbolic: 'reference', name: 'window'}, symbolCache.get('/test.ts', 'z')
     ]);
   });
 

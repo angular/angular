@@ -390,7 +390,7 @@ export class StaticSymbolResolver {
               return self.getStaticSymbol(topLevelPath, name);
             }
             // ambient value
-            null;
+            return map;
           }
         } else {
           return super.visitStringMap(map, functionParams);
