@@ -370,7 +370,7 @@ Angular configuration can make the difference between whether the app launches q
 
 ### The `base` tag
 
-The HTML [_&lt;base href="..."/&gt;_](https://angular.io/docs/ts/latest/guide/router.html#!)
+The HTML [_&lt;base href="..."/&gt;_](/guide/router)
 specifies a base path for resolving relative URLs to assets such as images, scripts, and style sheets.
 For example, given the `<base href="/my/app/">`, the browser resolves a URL such as `some/place/foo.jpg`
 into a server request for `my/app/some/place/foo.jpg`.

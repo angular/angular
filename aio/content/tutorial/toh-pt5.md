@@ -1207,7 +1207,7 @@ Here's an excerpt:
 
 
 Create the file <code>styles.css</code>.
-Ensure that the file contains the [master styles provided here](https://raw.githubusercontent.com/angular/angular.io/master/public/docs/_examples/_boilerplate/src/styles.css).
+Ensure that the file contains the [master styles provided here](https://raw.githubusercontent.com/angular/angular/master/aio/tools/examples/shared/boilerplate/src/styles.css).
 Also edit <code>index.html</code> to refer to this stylesheet.
 
 
