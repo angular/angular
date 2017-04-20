@@ -49,21 +49,21 @@ describe('DocumentService', () => {
 
   describe('currentDocument', () => {
 
-    it('should fetch a document for the initial location url', () => {
-      const { docService, backend } = getServices('initial/url');
+    it('should fetch a document for the initial location', () => {
+      const { docService, backend } = getServices('initial/doc');
       const connections = backend.connectionsArray;
       docService.currentDocument.subscribe();
 
       expect(connections.length).toEqual(1);
-      expect(connections[0].request.url).toEqual(CONTENT_URL_PREFIX + 'initial/url.json');
-      expect(backend.connectionsArray[0].request.url).toEqual(CONTENT_URL_PREFIX + 'initial/url.json');
+      expect(connections[0].request.url).toEqual(CONTENT_URL_PREFIX + 'initial/doc.json');
+      expect(backend.connectionsArray[0].request.url).toEqual(CONTENT_URL_PREFIX + 'initial/doc.json');
     });
 
     it('should emit a document each time the location changes', () => {
       let latestDocument: DocumentContents;
-      const doc0 = { title: 'doc 0', url: 'initial/url' };
-      const doc1 = { title: 'doc 1', url: 'new/url'  };
-      const { docService, backend, locationService } = getServices('initial/url');
+      const doc0 = { title: 'doc 0', id: 'initial/doc' };
+      const doc1 = { title: 'doc 1', id: 'new/doc'  };
+      const { docService, backend, locationService } = getServices('initial/doc');
       const connections = backend.connectionsArray;
 
       docService.currentDocument.subscribe(doc => latestDocument = doc);
@@ -72,13 +72,13 @@ describe('DocumentService', () => {
       connections[0].mockRespond(createResponse(doc0));
       expect(latestDocument).toEqual(doc0);
 
-      locationService.go('new/url');
+      locationService.go('new/doc');
       connections[1].mockRespond(createResponse(doc1));
       expect(latestDocument).toEqual(doc1);
     });
 
     it('should emit the not-found document if the document is not found on the server', () => {
-      const { docService, backend } = getServices('missing/url');
+      const { docService, backend } = getServices('missing/doc');
       const connections = backend.connectionsArray;
       let currentDocument: DocumentContents;
       docService.currentDocument.subscribe(doc => currentDocument = doc);
@@ -94,7 +94,7 @@ describe('DocumentService', () => {
     it('should emit a hard-coded not-found document if the not-found document is not found on the server', () => {
       let currentDocument: DocumentContents;
       const notFoundDoc: DocumentContents = { title: 'Not Found', contents: 'Document not found', id: 'file-not-found' };
-      const nextDoc = { title: 'Next Doc', url: 'new/url' };
+      const nextDoc = { title: 'Next Doc', id: 'new/doc' };
       const { docService, backend, locationService } = getServices('file-not-found');
       const connections = backend.connectionsArray;
       docService.currentDocument.subscribe(doc => currentDocument = doc);
@@ -104,23 +104,23 @@ describe('DocumentService', () => {
       expect(currentDocument).toEqual(notFoundDoc);
 
       // now check that we haven't killed the currentDocument observable sequence
-      locationService.go('new/url');
+      locationService.go('new/doc');
       connections[1].mockRespond(createResponse(nextDoc));
       expect(currentDocument).toEqual(nextDoc);
     });
 
-    it('should not crash the app if the response is not valid JSON', () => {
+    it('should not crash the app if the response is invalid JSON', () => {
       let latestDocument: DocumentContents;
-      const { docService, backend, locationService} = getServices('initial/url');
+      const { docService, backend, locationService} = getServices('initial/doc');
       const connections = backend.connectionsArray;
 
       docService.currentDocument.subscribe(doc => latestDocument = doc);
 
       connections[0].mockRespond(new Response(new ResponseOptions({ body: 'this is invalid JSON' })));
-      expect(latestDocument.title).toEqual('Error fetching document');
+      expect(latestDocument.title).toMatch('Document retrieval error');
 
       const doc1 = { title: 'doc 1' };
-      locationService.go('new/url');
+      locationService.go('new/doc');
       connections[1].mockRespond(createResponse(doc1));
       expect(latestDocument).toEqual(jasmine.objectContaining(doc1));
     });
