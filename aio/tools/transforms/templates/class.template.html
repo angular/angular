@@ -2,6 +2,7 @@
 {% extends 'layout/api-base.template.html' -%}
 
 {% block details %}
+<div class="api-container">
   {% include "includes/_class-overview.html" %}
   {% block additional %}{% endblock %}
   {% include "includes/_description.html" %}
@@ -9,4 +10,5 @@
   {% include "includes/_constructor.html" %}
   {% include "includes/_statics.html" %}
   {% include "includes/_members.html" %}
+</div>
 {% endblock %}
