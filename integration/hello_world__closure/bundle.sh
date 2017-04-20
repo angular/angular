@@ -34,7 +34,7 @@ CLOSURE_ARGS=(
   # Uncomment for easier debugging
   # "--formatting=PRETTY_PRINT"
 
-  e2e/testability.externs.js
+  node_modules/@angular/core/src/testability/testability.externs.js
   node_modules/zone.js/dist/zone.js
   $(find -L vendor/rxjs -name *.js)
   node_modules/@angular/core/@angular/core.js
