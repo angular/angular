@@ -24,7 +24,7 @@ describe('authors-package', () => {
       expect(files).toContain(resolve(outputPath, '../resources.json'));
       done();
     });
-  }, 2000);
+  }, 4000);
 
   it('should generate tutorial docs if the "fileChanged" is a tutorial doc', (done) => {
     generateDocs('aio/content/tutorial/toh-pt5.md').then(() => {
@@ -38,7 +38,7 @@ describe('authors-package', () => {
       expect(files).toContain(resolve(outputPath, 'tutorial/toh-pt6.json'));
       done();
     });
-  }, 2000);
+  }, 4000);
 
   it('should generate tutorial docs if the "fileChanged" is the tutorial index', (done) => {
     generateDocs('aio/content/tutorial/index.md').then(() => {
@@ -52,7 +52,7 @@ describe('authors-package', () => {
       expect(files).toContain(resolve(outputPath, 'tutorial/toh-pt6.json'));
       done();
     });
-  }, 2000);
+  }, 4000);
 
   it('should generate tutorial docs if the "fileChanged" is a tutorial example', (done) => {
     generateDocs('aio/content/examples/toh-3/app/app.component.1.html').then(() => {
@@ -66,7 +66,7 @@ describe('authors-package', () => {
       expect(files).toContain(resolve(outputPath, 'tutorial/toh-pt6.json'));
       done();
     });
-  }, 2000);
+  }, 4000);
 
   it('should generate guide doc if the "fileChanged" is a guide doc', (done) => {
     generateDocs('aio/content/guide/architecture.md').then(() => {
@@ -74,7 +74,7 @@ describe('authors-package', () => {
       expect(files).toContain(resolve(outputPath, 'guide/architecture.json'));
       done();
     });
-  }, 2000);
+  }, 4000);
 
   it('should generate guide doc if the "fileChanged" is a guide example', (done) => {
     generateDocs('aio/content/examples/architecture/src/app/app.module.ts').then(() => {
@@ -82,7 +82,7 @@ describe('authors-package', () => {
       expect(files).toContain(resolve(outputPath, 'guide/architecture.json'));
       done();
     });
-  }, 2000);
+  }, 4000);
 
   it('should generate API doc if the "fileChanged" is an API doc', (done) => {
     generateDocs('packages/forms/src/form_builder.ts').then(() => {
