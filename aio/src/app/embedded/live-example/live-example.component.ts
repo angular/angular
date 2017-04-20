@@ -80,6 +80,7 @@ export class LiveExampleComponent implements OnInit {
   showEmbedded = false;
   title: string;
   zip: string;
+  zipName: string;
 
   constructor(
     private elementRef: ElementRef,
@@ -92,8 +93,9 @@ export class LiveExampleComponent implements OnInit {
       exampleDir = location.path(false).match(/[^\/?\#]+(?=\/?(?:$|\#|\?))/)[0];
     }
     this.exampleDir = exampleDir.trim();
+    this.zipName = exampleDir.indexOf('/') === -1 ? this.exampleDir : exampleDir.split('/')[0];
     this.plnkrName = attrs.plnkr ? attrs.plnkr.trim() + '.' : '';
-    this.zip = `${zipBase}${exampleDir}/${this.plnkrName}${exampleDir}.zip`;
+    this.zip = `${zipBase}${exampleDir}/${this.plnkrName}${this.zipName}.zip`;
 
     const noDownload = this.getAttrValue(['noDownload', 'nodownload']); // noDownload aliases
     this.enableDownload = !boolFromAtty(noDownload);

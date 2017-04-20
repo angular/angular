@@ -57,7 +57,7 @@ This guide offers a taste of Webpack and explains how to use it with Angular app
 * [Highlights](guide/webpack#highlights)
 * [Conclusion](guide/webpack#conclusion)
 
-You can also <a href="/resources/zips/webpack/webpack.zip">download the final result.</a>
+You can also <a href="/content/zips/webpack/webpack.zip" target="_blank">download the final result.</a>
 
 {@a what-is-webpack}
 
