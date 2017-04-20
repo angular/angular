@@ -7,6 +7,8 @@ export class MockLocationService {
   setSearch = jasmine.createSpy('setSearch');
   go = jasmine.createSpy('Location.go').and
               .callFake((url: string) => this.urlSubject.next(url));
+  path = jasmine.createSpy('Location.path').and
+              .callFake(() => this.urlSubject.getValue().split('?')[0]);
   handleAnchorClick = jasmine.createSpy('Location.handleAnchorClick')
       .and.returnValue(false); // prevent click from causing a browser navigation
 
