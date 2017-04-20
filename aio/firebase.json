@@ -6,10 +6,11 @@
     "public": "dist",
     "cleanUrls": true,
     "redirects": [
-      // cli-quickstart.html glossary.html, quickstart.html
-      {"type": 301, "source": "/docs/ts/latest/cli-quickstart.html", "destination": "/guide/cli-quickstart"},
-      {"type": 301, "source": "/docs/ts/latest/glossary.html",       "destination": "/guide/glossary"},
-      {"type": 301, "source": "/docs/ts/latest/quickstart.html",     "destination": "/guide/quickstart"},
+      // cli-quickstart.html glossary.html, quickstart.html, server-communication.html
+      {"type": 301, "source": "/docs/ts/latest/cli-quickstart.html",             "destination": "/guide/cli-quickstart"},
+      {"type": 301, "source": "/docs/ts/latest/glossary.html",                   "destination": "/guide/glossary"},
+      {"type": 301, "source": "/docs/ts/latest/quickstart.html",                 "destination": "/guide/quickstart"},
+      {"type": 301, "source": "/docs/ts/latest/guide/server-communication.html", "destination": "/guide/http"},
 
       // cookbook, cookbook/, cookbook/index.html
       {"type": 301, "source": "/docs/ts/latest/cookbook",            "destination": "/guide/cb-index"},

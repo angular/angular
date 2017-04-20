@@ -226,9 +226,9 @@
         ]},
 
         {
-          "url": "guide/server-communication",
-          "title": "HTTP Client",
-          "tooltip": "Use an HTTP Client to talk to a remote server."
+          "url": "guide/http",
+          "title": "HTTP",
+          "tooltip": "Use HTTP to talk to a remote server."
         },
 
         {
