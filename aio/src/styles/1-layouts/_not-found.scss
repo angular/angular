@@ -1,6 +1,6 @@
 #file-not-found {
     padding: 3rem 3rem 3rem;
-} 
+}
 
 .nf-container {
     align-items: center;
@@ -18,4 +18,10 @@
         text-transform: uppercase;
         margin: 8px 0;
     }
+}
+
+.nf-icon.material-icons {
+    color: $blue;
+    font-size: 100px;
+    position: static;
 }
