@@ -1,4 +1,17 @@
 /**
+ * We want to avoid emitting selectors that are deprecated but don't have a way to mark
+ * them as such in the source code. Thus, we maintain a separate blacklist of selectors
+ * that should not be emitted in the documentation.
+ */
+const SELECTOR_BLACKLIST  = new Set([
+  '[portal]',
+  '[portalHost]',
+  'textarea[md-autosize]',
+  '[overlay-origin]',
+  '[connected-overlay]',
+]);
+
+/**
  * Processor to add properties to docs objects.
  *
  * isMethod     | Whether the doc is for a method on a class.
@@ -29,11 +42,12 @@ module.exports = function categorizer() {
     classDoc.properties.forEach(doc => decoratePropertyDoc(doc));
 
     decoratePublicDoc(classDoc);
-    
+
     // Categorize the current visited classDoc into its Angular type.
     if (isDirective(classDoc)) {
       classDoc.isDirective = true;
       classDoc.directiveExportAs = getDirectiveExportAs(classDoc);
+      classDoc.directiveSelectors =  getDirectiveSelectors(classDoc);
     } else if (isService(classDoc)) {
       classDoc.isService = true;
     } else if (isNgModule(classDoc)) {
@@ -169,6 +183,18 @@ function getDirectiveInputAlias(doc) {
 
 function getDirectiveOutputAlias(doc) {
   return isDirectiveOutput(doc) ? doc.decorators.find(d => d.name == 'Output').arguments[0] : '';
+}
+
+function getDirectiveSelectors(classDoc) {
+  let metadata = classDoc.decorators
+    .find(d => d.name === 'Component' || d.name === 'Directive').arguments[0];
+
+  let selectorMatches = /selector\s*:\s*(?:"|')([^']*?)(?:"|')/g.exec(metadata);
+  selectorMatches = selectorMatches && selectorMatches[1];
+
+  return selectorMatches ? selectorMatches.split(/\s*,\s*/)
+    .filter(s => s !== '' && !s.includes('mat') && !SELECTOR_BLACKLIST.has(s))
+    : selectorMatches;
 }
 
 function getDirectiveExportAs(doc) {

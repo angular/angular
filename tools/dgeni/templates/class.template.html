@@ -3,6 +3,15 @@
 </h4>
 <p class="docs-api-class-description">{$ class.description $}</p>
 
+{%- if class.directiveSelectors -%}
+<div class="docs-api-directive-selectors">
+  <span class="docs-api-class-selector-label">selector:</span>
+  {% for s in class.directiveSelectors %}
+    <span class="docs-api-class-selector-name">{$ s $}</span>
+  {% endfor %}
+</div>
+{%- endif -%}
+
 {%- if class.directiveExportAs -%}
 <span class="docs-api-h4 docs-api-class-export-label">Exported as:</span>
 <span class="docs-api-class-export-name">{$ class.directiveExportAs $}</span>
@@ -10,7 +19,7 @@
 
 {%- if class.isDeprecated -%}
 <div class="docs-api-class-deprecated-marker">Deprecated</div>
-{%- endif -%}   
+{%- endif -%}
 
 {$ propertyList(class.properties) $}
 
