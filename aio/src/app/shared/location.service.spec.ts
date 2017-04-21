@@ -137,7 +137,7 @@ describe('LocationService', () => {
       expect(location.path).toHaveBeenCalledWith(false);
     });
 
-    it('should return the current location.path, with the query and trailing slash stripped off', () => {
+    it('should return the current location.path, with the query, leading slash and trailing slash stripped off', () => {
       const location: MockLocationStrategy = injector.get(LocationStrategy);
       const service: LocationService = injector.get(LocationService);
 
@@ -147,10 +147,10 @@ describe('LocationService', () => {
       location.simulatePopState('c/d/e');
       expect(service.path()).toEqual('c/d/e');
 
-      location.simulatePopState('a/b/c/?foo=bar&moo=car');
+      location.simulatePopState('/a/b/c/?foo=bar&moo=car');
       expect(service.path()).toEqual('a/b/c');
 
-      location.simulatePopState('c/d/e/');
+      location.simulatePopState('/c/d/e/');
       expect(service.path()).toEqual('c/d/e');
     });
   });
