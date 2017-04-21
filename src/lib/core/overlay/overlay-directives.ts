@@ -9,7 +9,8 @@ import {
     Input,
     OnDestroy,
     Output,
-    ElementRef
+    ElementRef,
+    Renderer2,
 } from '@angular/core';
 import {Overlay, OVERLAY_PROVIDERS} from './overlay';
 import {OverlayRef} from './overlay-ref';
@@ -21,10 +22,12 @@ import {
 } from './position/connected-position';
 import {PortalModule} from '../portal/portal-directives';
 import {ConnectedPositionStrategy} from './position/connected-position-strategy';
-import {Subscription} from 'rxjs/Subscription';
 import {Dir, LayoutDirection} from '../rtl/dir';
 import {Scrollable} from './scroll/scrollable';
 import {coerceBooleanProperty} from '../coercion/boolean-property';
+import {ESCAPE} from '../keyboard/keycodes';
+import {Subscription} from 'rxjs/Subscription';
+
 
 /** Default set of positions for the overlay. Follows the behavior of a dropdown. */
 let defaultPositionList = [
@@ -68,6 +71,7 @@ export class ConnectedOverlayDirective implements OnDestroy {
   private _offsetX: number = 0;
   private _offsetY: number = 0;
   private _position: ConnectedPositionStrategy;
+  private _escapeListener: Function;
 
   /** Origin for the connected overlay. */
   @Input() origin: OverlayOrigin;
@@ -152,6 +156,7 @@ export class ConnectedOverlayDirective implements OnDestroy {
 
   constructor(
       private _overlay: Overlay,
+      private _renderer: Renderer2,
       templateRef: TemplateRef<any>,
       viewContainerRef: ViewContainerRef,
       @Optional() private _dir: Dir) {
@@ -249,6 +254,7 @@ export class ConnectedOverlayDirective implements OnDestroy {
 
     this._position.withDirection(this.dir);
     this._overlayRef.getState().direction = this.dir;
+    this._initEscapeListener();
 
     if (!this._overlayRef.hasAttached()) {
       this._overlayRef.attach(this._templatePortal);
@@ -273,6 +279,10 @@ export class ConnectedOverlayDirective implements OnDestroy {
       this._backdropSubscription.unsubscribe();
       this._backdropSubscription = null;
     }
+
+    if (this._escapeListener) {
+      this._escapeListener();
+    }
   }
 
   /** Destroys the overlay created by this directive. */
@@ -284,9 +294,23 @@ export class ConnectedOverlayDirective implements OnDestroy {
     if (this._backdropSubscription) {
       this._backdropSubscription.unsubscribe();
     }
+
     if (this._positionSubscription) {
       this._positionSubscription.unsubscribe();
     }
+
+    if (this._escapeListener) {
+      this._escapeListener();
+    }
+  }
+
+  /** Sets the event listener that closes the overlay when pressing Escape. */
+  private _initEscapeListener() {
+    this._escapeListener = this._renderer.listen('document', 'keydown', (event: KeyboardEvent) => {
+      if (event.keyCode === ESCAPE) {
+        this._detachOverlay();
+      }
+    });
   }
 }
 

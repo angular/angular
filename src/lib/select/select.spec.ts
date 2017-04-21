@@ -20,8 +20,9 @@ import {
   ControlValueAccessor, FormControl, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule
 } from '@angular/forms';
 import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
-import {dispatchFakeEvent} from '../core/testing/dispatch-events';
+import {dispatchFakeEvent, dispatchKeyboardEvent} from '../core/testing/dispatch-events';
 import {wrappedErrorMessage} from '../core/testing/wrapped-error-message';
+import {TAB} from '../core/keyboard/keycodes';
 
 
 describe('MdSelect', () => {
@@ -202,6 +203,20 @@ describe('MdSelect', () => {
 
         const pane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
         expect(parseInt(pane.style.minWidth)).toBeGreaterThan(0);
+      });
+    }));
+
+    it('should close the panel when tabbing out', async(() => {
+      trigger.click();
+      fixture.detectChanges();
+      expect(fixture.componentInstance.select.panelOpen).toBe(true);
+
+      const panel = overlayContainerElement.querySelector('.mat-select-panel');
+      dispatchKeyboardEvent(panel, 'keydown', TAB);
+      fixture.detectChanges();
+
+      fixture.whenStable().then(() => {
+        expect(fixture.componentInstance.select.panelOpen).toBe(false);
       });
     }));
 

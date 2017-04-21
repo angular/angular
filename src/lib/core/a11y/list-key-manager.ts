@@ -18,7 +18,7 @@ export interface CanDisable {
 export class ListKeyManager<T extends CanDisable> {
   private _activeItemIndex: number = null;
   private _activeItem: T;
-  private _tabOut: Subject<any> = new Subject();
+  private _tabOut = new Subject<void>();
   private _wrap: boolean = false;
 
   constructor(private _items: QueryList<T>) {

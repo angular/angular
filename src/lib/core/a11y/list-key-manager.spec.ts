@@ -48,7 +48,6 @@ describe('Key managers', () => {
     TAB_EVENT = new FakeEvent(TAB) as KeyboardEvent;
     HOME_EVENT = new FakeEvent(HOME) as KeyboardEvent;
     END_EVENT = new FakeEvent(END) as KeyboardEvent;
-
   });
 
 
@@ -218,11 +217,11 @@ describe('Key managers', () => {
       });
 
       it('should emit tabOut when the tab key is pressed', () => {
-        let tabOutEmitted = false;
-        keyManager.tabOut.first().subscribe(() => tabOutEmitted = true);
+        let spy = jasmine.createSpy('tabOut spy');
+        keyManager.tabOut.first().subscribe(spy);
         keyManager.onKeydown(TAB_EVENT);
 
-        expect(tabOutEmitted).toBe(true);
+        expect(spy).toHaveBeenCalled();
       });
 
       it('should prevent the default keyboard action', () => {
