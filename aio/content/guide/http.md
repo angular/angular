@@ -1008,7 +1008,7 @@ See the [XSRF topic on the Security page](guide/security#xsrf) for more informat
 ## Override default request headers (and other request options)
 
 Request options (such as headers) are merged into the
-[default _RequestOptions_](https://angular.io/docs/ts/latest/api/http/index/BaseRequestOptions-class.html "API: BaseRequestOptions")
+[default _RequestOptions_](/api/http/BaseRequestOptions "API: BaseRequestOptions")
 before the request is processed.
 The `HttpModule` provides these default options via the `RequestOptions` token.
 
