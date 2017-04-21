@@ -16,14 +16,6 @@ export { CurrentNode, NavigationNode, NavigationResponse, NavigationViews, Versi
 
 const navigationPath = 'content/navigation.json';
 
-const urlParser = document.createElement('a');
-function cleanUrl(url: string) {
-  // remove hash (#) and query params (?)
-  urlParser.href = '/' + url;
-  // strip leading and trailing slashes
-  return urlParser.pathname.replace(/^\/+|\/$/g, '');
-}
-
 @Injectable()
 export class NavigationService {
   /**
@@ -91,10 +83,9 @@ export class NavigationService {
   private getCurrentNode(navigationViews: Observable<NavigationViews>): Observable<CurrentNode> {
     const currentNode = combineLatest(
       navigationViews.map(this.computeUrlToNavNodesMap),
-      this.location.currentUrl,
+      this.location.currentPath,
       (navMap, url) => {
-        let urlKey = cleanUrl(url);
-        urlKey = urlKey.startsWith('api/') ? 'api' : urlKey;
+        const urlKey = url.startsWith('api/') ? 'api' : url;
         return navMap[urlKey] || { view: '', url: urlKey, nodes: [] };
       })
       .publishReplay(1);

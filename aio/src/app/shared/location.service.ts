@@ -14,8 +14,11 @@ export class LocationService {
   private readonly urlParser = document.createElement('a');
   private urlSubject = new Subject<string>();
   currentUrl = this.urlSubject
+    .map(url => this.stripSlashes(url))
     .do(url => this.gaService.locationChanged(url))
     .publishReplay(1);
+  currentPath = this.currentUrl
+    .map(url => url.match(/[^?#]*/)[0]);   // strip off query and hash
 
   constructor(
     private gaService: GaService,
@@ -23,33 +26,22 @@ export class LocationService {
     private platformLocation: PlatformLocation) {
 
     this.currentUrl.connect();
-    const initialUrl = this.stripLeadingSlashes(location.path(true));
-    this.urlSubject.next(initialUrl);
+    this.urlSubject.next(location.path(true));
 
     this.location.subscribe(state => {
-      const url = this.stripLeadingSlashes(state.url);
-      return this.urlSubject.next(url);
+      return this.urlSubject.next(state.url);
     });
   }
 
   // TODO?: ignore if url-without-hash-or-search matches current location?
   go(url: string) {
+    url = this.stripSlashes(url);
     this.location.go(url);
     this.urlSubject.next(url);
   }
 
-  private stripLeadingSlashes(url: string) {
-    return url.replace(/^\/+/, '');
-  }
-
-  /**
-   * Get the current path, without trailing slash, hash fragment or query params
-   */
-  path(): string {
-    let path = this.location.path(false);
-    path = path.match(/[^?]*/)[0]; // strip off query
-    path = path.replace(/\/$/, ''); // strip off trailing slash
-    return path;
+  private stripSlashes(url: string) {
+    return url.replace(/^\/+/, '').replace(/\/+(\?|#|$)/, '$1');
   }
 
   search(): { [index: string]: string; } {
@@ -122,7 +114,7 @@ export class LocationService {
       return true;
     }
 
-    this.go(this.stripLeadingSlashes(relativeUrl));
+    this.go(relativeUrl);
     return false;
   }
 }

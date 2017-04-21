@@ -7,7 +7,7 @@ import { LocationService } from 'app/shared/location.service';
  */
 @Component({
   selector: 'current-location',
-  template: '{{location.path()}}'
+  template: '{{ location.currentPath | async }}'
 })
 export class CurrentLocationComponent {
   constructor(public location: LocationService) {
