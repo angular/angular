@@ -1,46 +1,33 @@
 @import '../core/theming/palette';
 @import '../core/theming/theming';
 
+@mixin _mat-select-inner-content-theme($palette) {
+  $color: mat-color($palette);
+
+  .mat-select-trigger, .mat-select-arrow {
+    color: $color;
+  }
+
+  .mat-select-underline {
+    background-color: $color;
+  }
+}
+
 @mixin mat-select-theme($theme) {
   $foreground: map-get($theme, foreground);
   $background: map-get($theme, background);
   $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
   $warn: map-get($theme, warn);
-
-  .mat-select-trigger {
-    color: mat-color($foreground, hint-text);
-
-    .mat-select:focus:not(.mat-select-disabled) & {
-      color: mat-color($primary);
-    }
-
-    .mat-select:not(:focus).ng-invalid.ng-touched:not(.mat-select-disabled) & {
-      color: mat-color($warn);
-    }
-  }
 
   .mat-select-underline {
     background-color: mat-color($foreground, divider);
-
-    .mat-select:focus:not(.mat-select-disabled) & {
-      background-color: mat-color($primary);
-    }
-
-    .mat-select:not(:focus).ng-invalid.ng-touched:not(.mat-select-disabled) & {
-      background-color: mat-color($warn);
-    }
   }
 
-  .mat-select-arrow {
+  .mat-select-disabled .mat-select-value,
+  .mat-select-arrow,
+  .mat-select-trigger {
     color: mat-color($foreground, hint-text);
-
-    .mat-select:focus:not(.mat-select-disabled) & {
-      color: mat-color($primary);
-    }
-
-    .mat-select:not(:focus).ng-invalid.ng-touched:not(.mat-select-disabled) & {
-      color: mat-color($warn);
-    }
   }
 
   .mat-select-content, .mat-select-panel-done-animating {
@@ -49,9 +36,20 @@
 
   .mat-select-value {
     color: mat-color($foreground, text);
+  }
 
-    .mat-select-disabled & {
-      color: mat-color($foreground, hint-text);
+  .mat-select:focus:not(.mat-select-disabled) {
+    &.mat-primary {
+      @include _mat-select-inner-content-theme($primary);
     }
+
+    &.mat-accent {
+      @include _mat-select-inner-content-theme($accent);
+    }
+  }
+
+  .mat-select:focus:not(.mat-select-disabled).mat-warn,
+  .mat-select:not(:focus).ng-invalid.ng-touched:not(.mat-select-disabled) {
+    @include _mat-select-inner-content-theme($warn);
   }
 }

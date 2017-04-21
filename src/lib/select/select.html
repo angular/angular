@@ -18,7 +18,7 @@
   [offsetY]="_offsetY" [offsetX]="_offsetX" (attach)="_setScrollTop()" (detach)="close()">
   <div class="mat-select-panel" [@transformPanel]="'showing'" (@transformPanel.done)="_onPanelDone()"
     (keydown)="_keyManager.onKeydown($event)" [style.transformOrigin]="_transformOrigin"
-      [class.mat-select-panel-done-animating]="_panelDoneAnimating">
+      [class.mat-select-panel-done-animating]="_panelDoneAnimating" [ngClass]="'mat-' + color">
     <div class="mat-select-content" [@fadeInContent]="'showing'" (@fadeInContent.done)="_onFadeInDone()">
       <ng-content></ng-content>
     </div>

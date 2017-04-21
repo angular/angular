@@ -50,7 +50,8 @@ describe('MdSelect', () => {
         SelectWithPlainTabindex,
         SelectEarlyAccessSibling,
         BasicSelectInitiallyHidden,
-        BasicSelectNoPlaceholder
+        BasicSelectNoPlaceholder,
+        BasicSelectWithTheming
       ],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
@@ -1709,6 +1710,55 @@ describe('MdSelect', () => {
 
   });
 
+  describe('theming', () => {
+    let fixture: ComponentFixture<BasicSelectWithTheming>;
+    let testInstance: BasicSelectWithTheming;
+    let selectElement: HTMLElement;
+
+    beforeEach(async(() => {
+      fixture = TestBed.createComponent(BasicSelectWithTheming);
+      testInstance = fixture.componentInstance;
+      fixture.detectChanges();
+
+      selectElement = fixture.debugElement.query(By.css('.mat-select')).nativeElement;
+    }));
+
+    it('should default to the primary theme', () => {
+      expect(fixture.componentInstance.select.color).toBe('primary');
+      expect(selectElement.classList).toContain('mat-primary');
+    });
+
+    it('should be able to override the theme', () => {
+      fixture.componentInstance.theme = 'accent';
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.select.color).toBe('accent');
+      expect(selectElement.classList).toContain('mat-accent');
+      expect(selectElement.classList).not.toContain('mat-primary');
+    });
+
+    it('should not be able to set a blank theme', () => {
+      fixture.componentInstance.theme = '';
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.select.color).toBe('primary');
+      expect(selectElement.classList).toContain('mat-primary');
+    });
+
+    it('should pass the theme to the panel', () => {
+      fixture.componentInstance.theme = 'warn';
+      fixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement.click();
+      fixture.detectChanges();
+
+      const panel = overlayContainerElement.querySelector('.mat-select-panel');
+
+      expect(fixture.componentInstance.select.color).toBe('warn');
+      expect(selectElement.classList).toContain('mat-warn');
+      expect(panel.classList).toContain('mat-warn');
+    });
+
+  });
+
 });
 
 
@@ -2039,6 +2089,20 @@ class BasicSelectInitiallyHidden {
   `
 })
 class BasicSelectNoPlaceholder { }
+
+@Component({
+  selector: 'basic-select-with-theming',
+  template: `
+    <md-select placeholder="Food" [color]="theme">
+      <md-option value="steak-0">Steak</md-option>
+      <md-option value="pizza-1">Pizza</md-option>
+    </md-select>
+  `
+})
+class BasicSelectWithTheming {
+  @ViewChild(MdSelect) select: MdSelect;
+  theme: string;
+}
 
 class FakeViewportRuler {
   getViewportRect() {

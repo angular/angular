@@ -19,6 +19,8 @@ export class SelectDemo {
   latestChangeEvent: MdSelectChange;
   floatPlaceholder: string = 'auto';
   foodControl = new FormControl('pizza-1');
+  drinksTheme = 'primary';
+  pokemonTheme = 'primary';
 
   foods = [
     {value: 'steak-0', viewValue: 'Steak'},
@@ -46,6 +48,12 @@ export class SelectDemo {
     {value: 'eevee-4', viewValue: 'Eevee'},
     {value: 'ditto-5', viewValue: 'Ditto'},
     {value: 'psyduck-6', viewValue: 'Psyduck'},
+  ];
+
+  availableThemes = [
+    {value: 'primary', name: 'Primary' },
+    {value: 'accent', name: 'Accent' },
+    {value: 'warn', name: 'Warn' }
   ];
 
   toggleDisabled() {

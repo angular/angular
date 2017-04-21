@@ -9,7 +9,7 @@ import {
   Optional,
   Output,
   QueryList,
-  Renderer,
+  Renderer2,
   Self,
   ViewEncapsulation,
   ViewChild,
@@ -111,7 +111,7 @@ export type MdSelectFloatPlaceholderType = 'always' | 'never' | 'auto';
     '[class.mat-select-disabled]': 'disabled',
     '[class.mat-select]': 'true',
     '(keydown)': '_handleKeydown($event)',
-    '(blur)': '_onBlur()'
+    '(blur)': '_onBlur()',
   },
   animations: [
     transformPlaceholder,
@@ -156,6 +156,9 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
 
   /** Tab index for the element. */
   private _tabIndex: number;
+
+  /** Theme color for the component. */
+  private _color: string;
 
   /**
    * The width of the trigger. Must be saved to set the min width of the overlay panel
@@ -287,6 +290,17 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
   /** Input that can be used to specify the `aria-labelledby` attribute. */
   @Input('aria-labelledby') ariaLabelledby: string = '';
 
+  /** Theme color for the component. */
+  @Input()
+  get color(): string { return this._color; }
+  set color(value: string) {
+    if (value && value !== this._color) {
+      this._renderer.removeClass(this._element.nativeElement, `mat-${this._color}`);
+      this._renderer.addClass(this._element.nativeElement, `mat-${value}`);
+      this._color = value;
+    }
+  }
+
   /** Combined stream of all of the child options' change events. */
   get optionSelectionChanges(): Observable<MdOptionSelectionChange> {
     return Observable.merge(...this.options.map(option => option.onSelectionChange));
@@ -301,7 +315,7 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
   /** Event emitted when the selected value has been changed by the user. */
   @Output() change: EventEmitter<MdSelectChange> = new EventEmitter<MdSelectChange>();
 
-  constructor(private _element: ElementRef, private _renderer: Renderer,
+  constructor(private _element: ElementRef, private _renderer: Renderer2,
               private _viewportRuler: ViewportRuler, private _changeDetectorRef: ChangeDetectorRef,
               @Optional() private _dir: Dir, @Self() @Optional() public _control: NgControl,
               @Attribute('tabindex') tabIndex: string) {
@@ -314,6 +328,7 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
 
   ngOnInit() {
     this._selectionModel = new SelectionModel<MdOption>(this.multiple, null, false);
+    this.color = this.color || 'primary';
   }
 
   ngAfterContentInit() {
@@ -686,7 +701,7 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
 
   /** Focuses the host element when the panel closes. */
   private _focusHost(): void {
-    this._renderer.invokeElementMethod(this._element.nativeElement, 'focus');
+    this._element.nativeElement.focus();
   }
 
   /** Gets the index of the provided option in the option list. */

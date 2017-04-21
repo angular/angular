@@ -5,19 +5,29 @@
   $foreground: map-get($theme, foreground);
   $background: map-get($theme, background);
   $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+  $warn: map-get($theme, warn);
 
   .mat-option {
     &:hover:not(.mat-option-disabled), &:focus:not(.mat-option-disabled) {
       background: mat-color($background, hover);
     }
 
-    &.mat-selected {
+    &.mat-selected.mat-primary, .mat-primary &.mat-selected {
       color: mat-color($primary);
+    }
 
-      // In multiple mode there is a checkbox to show that the option is selected.
-      &:not(.mat-option-multiple) {
-        background: mat-color($background, hover);
-      }
+    &.mat-selected.mat-accent, .mat-accent &.mat-selected {
+      color: mat-color($accent);
+    }
+
+    &.mat-selected.mat-warn, .mat-warn &.mat-selected {
+      color: mat-color($warn);
+    }
+
+    // In multiple mode there is a checkbox to show that the option is selected.
+    &.mat-selected:not(.mat-option-multiple) {
+      background: mat-color($background, hover);
     }
 
     &.mat-active {
@@ -28,6 +38,5 @@
     &.mat-option-disabled {
       color: mat-color($foreground, hint-text);
     }
-
   }
 }

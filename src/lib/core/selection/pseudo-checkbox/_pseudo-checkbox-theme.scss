@@ -1,5 +1,16 @@
 @import '../../theming/theming';
 
+@mixin _mat-pseudo-checkbox-inner-content-theme($theme, $pallete-name) {
+  $pallete: map-get($theme, $pallete-name);
+  $color: mat-color($pallete, 500);
+
+  .mat-pseudo-checkbox-checked.mat-#{$pallete-name},
+  .mat-pseudo-checkbox-indeterminate.mat-#{$pallete-name},
+  .mat-#{$pallete-name} .mat-pseudo-checkbox-checked,
+  .mat-#{$pallete-name} .mat-pseudo-checkbox-indeterminate {
+    background: $color;
+  }
+}
 
 @mixin mat-pseudo-checkbox-theme($theme) {
   $is-dark-theme: map-get($theme, is-dark);
@@ -14,6 +25,7 @@
   $white-30pct-opacity-on-dark: #686868;
   $black-26pct-opacity-on-light: #b0b0b0;
   $disabled-color: if($is-dark-theme, $white-30pct-opacity-on-dark, $black-26pct-opacity-on-light);
+  $colored-box-selector: '.mat-pseudo-checkbox-checked, .mat-pseudo-checkbox-indeterminate';
 
   .mat-pseudo-checkbox {
     color: mat-color(map-get($theme, foreground), secondary-text);
@@ -23,19 +35,11 @@
     }
   }
 
+  @include _mat-pseudo-checkbox-inner-content-theme($theme, primary);
+  @include _mat-pseudo-checkbox-inner-content-theme($theme, accent);
+  @include _mat-pseudo-checkbox-inner-content-theme($theme, warn);
+
   .mat-pseudo-checkbox-checked, .mat-pseudo-checkbox-indeterminate {
-    &.mat-primary {
-      background: mat-color($primary, 500);
-    }
-
-    &.mat-accent {
-      background: mat-color($accent, 500);
-    }
-
-    &.mat-warn {
-      background: mat-color($warn, 500);
-    }
-
     &.mat-pseudo-checkbox-disabled {
       background: $disabled-color;
     }

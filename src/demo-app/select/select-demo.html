@@ -4,7 +4,7 @@
   <md-card>
     <md-card-subtitle>ngModel</md-card-subtitle>
 
-    <md-select placeholder="Drink" [(ngModel)]="currentDrink" [required]="drinksRequired" [disabled]="drinksDisabled"
+    <md-select placeholder="Drink" [color]="drinksTheme" [(ngModel)]="currentDrink" [required]="drinksRequired" [disabled]="drinksDisabled"
       [floatPlaceholder]="floatPlaceholder" #drinkControl="ngModel">
       <md-option *ngFor="let drink of drinks" [value]="drink.value" [disabled]="drink.disabled">
         {{ drink.viewValue }}
@@ -22,6 +22,12 @@
         <option value="never">Never</option>
       </select>
     </p>
+    <p>
+      <label for="drinks-theme">Theme:</label>
+      <select [(ngModel)]="drinksTheme" id="drinks-theme">
+        <option *ngFor="let theme of availableThemes" [value]="theme.value">{{ theme.name }}</option>
+      </select>
+    </p>
 
     <button md-button (click)="currentDrink='water-2'">SET VALUE</button>
     <button md-button (click)="drinksRequired=!drinksRequired">TOGGLE REQUIRED</button>
@@ -33,7 +39,7 @@
     <md-card-subtitle>Multiple selection</md-card-subtitle>
 
     <md-card-content>
-      <md-select multiple placeholder="Pokemon" [(ngModel)]="currentPokemon"
+      <md-select multiple [color]="pokemonTheme" placeholder="Pokemon" [(ngModel)]="currentPokemon"
         [required]="pokemonRequired" [disabled]="pokemonDisabled" #pokemonControl="ngModel">
         <md-option *ngFor="let creature of pokemon" [value]="creature.value">
           {{ creature.viewValue }}
@@ -43,6 +49,12 @@
       <p> Touched: {{ pokemonControl.touched }} </p>
       <p> Dirty: {{ pokemonControl.dirty }} </p>
       <p> Status: {{ pokemonControl.control?.status }} </p>
+      <p>
+        <label for="pokemon-theme">Theme:</label>
+        <select [(ngModel)]="pokemonTheme" id="pokemon-theme">
+          <option *ngFor="let theme of availableThemes" [value]="theme.value">{{ theme.name }}</option>
+        </select>
+      </p>
       <button md-button (click)="setPokemonValue()">SET VALUE</button>
       <button md-button (click)="pokemonRequired=!pokemonRequired">TOGGLE REQUIRED</button>
       <button md-button (click)="pokemonDisabled=!pokemonDisabled">TOGGLE DISABLED</button>
