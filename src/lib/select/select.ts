@@ -195,13 +195,6 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
   _panelDoneAnimating: boolean = false;
 
   /**
-   * The x-offset of the overlay panel in relation to the trigger's top start corner.
-   * This must be adjusted to align the selected option text over the trigger text when
-   * the panel opens. Will change based on LTR or RTL text direction.
-   */
-  _offsetX = 0;
-
-  /**
    * The y-offset of the overlay panel in relation to the trigger's top start corner.
    * This must be adjusted to align the selected option text over the trigger text.
    * when the panel opens. Will change based on the y-position of the selected option.
@@ -505,6 +498,7 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
     } else {
       this.onClose.emit();
       this._panelDoneAnimating = false;
+      this.overlayDir.offsetX = 0;
     }
   }
 
@@ -527,11 +521,19 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
   }
 
   /**
+   * Callback that is invoked when the overlay panel has been attached.
+   */
+  _onAttached(): void {
+    this._calculateOverlayOffsetX();
+    this._setScrollTop();
+  }
+
+  /**
    * Sets the scroll position of the scroll container. This must be called after
    * the overlay pane is attached or the scroll container element will not yet be
    * present in the DOM.
    */
-  _setScrollTop(): void {
+  private _setScrollTop(): void {
     const scrollContainer =
         this.overlayDir.overlayRef.overlayElement.querySelector('.mat-select-panel');
     scrollContainer.scrollTop = this._scrollTop;
@@ -729,12 +731,6 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
 
   /** Calculates the scroll position and x- and y-offsets of the overlay panel. */
   private _calculateOverlayPosition(): void {
-    this._offsetX = this.multiple ? SELECT_MULTIPLE_PANEL_PADDING_X : SELECT_PANEL_PADDING_X;
-
-    if (!this._isRtl()) {
-      this._offsetX *= -1;
-    }
-
     const panelHeight =
         Math.min(this.options.length * SELECT_OPTION_HEIGHT, SELECT_PANEL_MAX_HEIGHT);
     const scrollContainerHeight = this.options.length * SELECT_OPTION_HEIGHT;
@@ -748,7 +744,7 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
       // center of the overlay panel rather than the top.
       const scrollBuffer = panelHeight / 2;
       this._scrollTop = this._calculateOverlayScroll(selectedIndex, scrollBuffer, maxScroll);
-      this._offsetY = this._calculateOverlayOffset(selectedIndex, scrollBuffer, maxScroll);
+      this._offsetY = this._calculateOverlayOffsetY(selectedIndex, scrollBuffer, maxScroll);
     } else {
       // If no option is selected, the panel centers on the first option. In this case,
       // we must only adjust for the height difference between the option element
@@ -811,11 +807,45 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
   }
 
   /**
+   * Sets the x-offset of the overlay panel in relation to the trigger's top start corner.
+   * This must be adjusted to align the selected option text over the trigger text when
+   * the panel opens. Will change based on LTR or RTL text direction. Note that the offset
+   * can't be calculated until the panel has been attached, because we need to know the
+   * content width in order to constrain the panel within the viewport.
+   */
+  private _calculateOverlayOffsetX(): void {
+    const overlayRect = this.overlayDir.overlayRef.overlayElement.getBoundingClientRect();
+    const viewportRect = this._viewportRuler.getViewportRect();
+    const isRtl = this._isRtl();
+    let offsetX = this.multiple ? SELECT_MULTIPLE_PANEL_PADDING_X : SELECT_PANEL_PADDING_X;
+
+    if (!isRtl) {
+      offsetX *= -1;
+    }
+
+    const leftOverflow = 0 - (overlayRect.left + offsetX
+        - (isRtl ? SELECT_PANEL_PADDING_X * 2 : 0));
+    const rightOverflow = overlayRect.right + offsetX - viewportRect.width
+        + (isRtl ? 0 : SELECT_PANEL_PADDING_X * 2);
+
+    if (leftOverflow > 0) {
+      offsetX += leftOverflow + SELECT_PANEL_VIEWPORT_PADDING;
+    } else if (rightOverflow > 0) {
+      offsetX -= rightOverflow + SELECT_PANEL_VIEWPORT_PADDING;
+    }
+
+    // Set the offset directly in order to avoid having to go through change detection and
+    // potentially triggering "changed after it was checked" errors.
+    this.overlayDir.offsetX = offsetX;
+    this.overlayDir.overlayRef.updatePosition();
+  }
+
+  /**
    * Calculates the y-offset of the select's overlay panel in relation to the
    * top start corner of the trigger. It has to be adjusted in order for the
    * selected option to be aligned over the trigger when the panel opens.
    */
-  private _calculateOverlayOffset(selectedIndex: number, scrollBuffer: number,
+  private _calculateOverlayOffsetY(selectedIndex: number, scrollBuffer: number,
                                   maxScroll: number): number {
     let optionOffsetFromPanelTop: number;
 

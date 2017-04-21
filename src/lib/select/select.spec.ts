@@ -27,10 +27,23 @@ import {TAB} from '../core/keyboard/keycodes';
 import {ScrollDispatcher} from '../core/overlay/scroll/scroll-dispatcher';
 
 
+class FakeViewportRuler {
+  getViewportRect() {
+    return {
+      left: 0, top: 0, width: 1014, height: 686, bottom: 686, right: 1014
+    };
+  }
+
+  getViewportScrollPosition() {
+    return {top: 0, left: 0};
+  }
+}
+
 describe('MdSelect', () => {
   let overlayContainerElement: HTMLElement;
   let dir: {value: 'ltr'|'rtl'};
   let scrolledSubject = new Subject();
+  let fakeViewportRuler = new FakeViewportRuler();
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -69,10 +82,10 @@ describe('MdSelect', () => {
 
           return {getContainerElement: () => overlayContainerElement};
         }},
+        {provide: ViewportRuler, useValue: fakeViewportRuler},
         {provide: Dir, useFactory: () => {
           return dir = { value: 'ltr' };
         }},
-        {provide: ViewportRuler, useClass: FakeViewportRuler},
         {provide: ScrollDispatcher, useFactory: () => {
           return {scrolled: (delay: number, callback: () => any) => {
             return scrolledSubject.asObservable().subscribe(callback);
@@ -942,6 +955,91 @@ describe('MdSelect', () => {
 
     });
 
+    describe('limited space to open horizontally', () => {
+      beforeEach(() => {
+        select.style.position = 'absolute';
+        select.style.top = '200px';
+      });
+
+      it('should stay within the viewport when overflowing on the left in ltr', fakeAsync(() => {
+        select.style.left = '-100px';
+        trigger.click();
+        tick(400);
+        fixture.detectChanges();
+
+        const panelLeft = document.querySelector('.mat-select-panel')
+            .getBoundingClientRect().left;
+        expect(panelLeft).toBeGreaterThan(0,
+            `Expected select panel to be inside the viewport in ltr.`);
+      }));
+
+      it('should stay within the viewport when overflowing on the left in rtl', fakeAsync(() => {
+        dir.value = 'rtl';
+        select.style.left = '-100px';
+        trigger.click();
+        tick(400);
+        fixture.detectChanges();
+
+        const panelLeft = document.querySelector('.mat-select-panel')
+            .getBoundingClientRect().left;
+
+        expect(panelLeft).toBeGreaterThan(0,
+            `Expected select panel to be inside the viewport in rtl.`);
+      }));
+
+      it('should stay within the viewport when overflowing on the right in ltr', fakeAsync(() => {
+        select.style.right = '-100px';
+        trigger.click();
+        tick(400);
+        fixture.detectChanges();
+
+        const viewportRect = fakeViewportRuler.getViewportRect().right;
+        const panelRight = document.querySelector('.mat-select-panel')
+            .getBoundingClientRect().right;
+
+        expect(viewportRect - panelRight).toBeGreaterThan(0,
+            `Expected select panel to be inside the viewport in ltr.`);
+      }));
+
+      it('should stay within the viewport when overflowing on the right in rtl', fakeAsync(() => {
+        dir.value = 'rtl';
+        select.style.right = '-100px';
+        trigger.click();
+        tick(400);
+        fixture.detectChanges();
+
+        const viewportRect = fakeViewportRuler.getViewportRect().right;
+        const panelRight = document.querySelector('.mat-select-panel')
+            .getBoundingClientRect().right;
+
+        expect(viewportRect - panelRight).toBeGreaterThan(0,
+            `Expected select panel to be inside the viewport in rtl.`);
+      }));
+
+      it('should keep the position within the viewport on repeat openings', async(() => {
+        select.style.left = '-100px';
+        trigger.click();
+        fixture.detectChanges();
+
+        let panelLeft = document.querySelector('.mat-select-panel').getBoundingClientRect().left;
+
+        expect(panelLeft).toBeGreaterThan(0, `Expected select panel to be inside the viewport.`);
+
+        fixture.componentInstance.select.close();
+        fixture.detectChanges();
+
+        fixture.whenStable().then(() => {
+          trigger.click();
+          fixture.detectChanges();
+          panelLeft = document.querySelector('.mat-select-panel').getBoundingClientRect().left;
+
+          expect(panelLeft).toBeGreaterThan(0,
+              `Expected select panel continue being inside the viewport.`);
+        });
+      }));
+
+    });
+
     describe('when scrolled', () => {
 
       // Need to set the scrollTop two different ways to support
@@ -1063,42 +1161,38 @@ describe('MdSelect', () => {
         select.style.marginRight = '30px';
       });
 
-      it('should align the trigger and the selected option on the x-axis in ltr', async(() => {
+      it('should align the trigger and the selected option on the x-axis in ltr', fakeAsync(() => {
         trigger.click();
+        tick(400);
         fixture.detectChanges();
 
-        fixture.whenStable().then(() => {
-          const triggerLeft = trigger.getBoundingClientRect().left;
-          const firstOptionLeft = document.querySelector('.cdk-overlay-pane md-option')
-              .getBoundingClientRect().left;
+        const triggerLeft = trigger.getBoundingClientRect().left;
+        const firstOptionLeft = document.querySelector('.cdk-overlay-pane md-option')
+            .getBoundingClientRect().left;
 
-          // Each option is 32px wider than the trigger, so it must be adjusted 16px
-          // to ensure the text overlaps correctly.
-          expect(firstOptionLeft.toFixed(2)).toEqual((triggerLeft - 16).toFixed(2),
-              `Expected trigger to align with the selected option on the x-axis in LTR.`);
-        });
+        // Each option is 32px wider than the trigger, so it must be adjusted 16px
+        // to ensure the text overlaps correctly.
+        expect(firstOptionLeft.toFixed(2)).toEqual((triggerLeft - 16).toFixed(2),
+            `Expected trigger to align with the selected option on the x-axis in LTR.`);
       }));
 
-      it('should align the trigger and the selected option on the x-axis in rtl', async(() => {
+      it('should align the trigger and the selected option on the x-axis in rtl', fakeAsync(() => {
         dir.value = 'rtl';
-        fixture.whenStable().then(() => {
-          fixture.detectChanges();
+        fixture.detectChanges();
 
-          trigger.click();
-          fixture.detectChanges();
+        trigger.click();
+        tick(400);
+        fixture.detectChanges();
 
-          fixture.whenStable().then(() => {
-            const triggerRight = trigger.getBoundingClientRect().right;
-            const firstOptionRight =
-                document.querySelector('.cdk-overlay-pane md-option').getBoundingClientRect().right;
+        const triggerRight = trigger.getBoundingClientRect().right;
+        const firstOptionRight =
+            document.querySelector('.cdk-overlay-pane md-option').getBoundingClientRect().right;
 
-            // Each option is 32px wider than the trigger, so it must be adjusted 16px
-            // to ensure the text overlaps correctly.
-            expect(firstOptionRight.toFixed(2))
-                .toEqual((triggerRight + 16).toFixed(2),
-                    `Expected trigger to align with the selected option on the x-axis in RTL.`);
-          });
-        });
+        // Each option is 32px wider than the trigger, so it must be adjusted 16px
+        // to ensure the text overlaps correctly.
+        expect(firstOptionRight.toFixed(2))
+            .toEqual((triggerRight + 16).toFixed(2),
+                `Expected trigger to align with the selected option on the x-axis in RTL.`);
       }));
     });
 
@@ -1111,8 +1205,8 @@ describe('MdSelect', () => {
         trigger = multiFixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement;
         select = multiFixture.debugElement.query(By.css('md-select')).nativeElement;
 
-        select.style.marginLeft = '20px';
-        select.style.marginRight = '20px';
+        select.style.marginLeft = '60px';
+        select.style.marginRight = '60px';
       });
 
       it('should adjust for the checkbox in ltr', async(() => {
@@ -1131,21 +1225,20 @@ describe('MdSelect', () => {
         });
       }));
 
-      it('should adjust for the checkbox in rtl', async(() => {
+      it('should adjust for the checkbox in rtl', fakeAsync(() => {
         dir.value = 'rtl';
         trigger.click();
+        tick(400);
         multiFixture.detectChanges();
 
-        multiFixture.whenStable().then(() => {
-          const triggerRight = trigger.getBoundingClientRect().right;
-          const firstOptionRight =
-              document.querySelector('.cdk-overlay-pane md-option').getBoundingClientRect().right;
+        const triggerRight = trigger.getBoundingClientRect().right;
+        const firstOptionRight =
+            document.querySelector('.cdk-overlay-pane md-option').getBoundingClientRect().right;
 
-          // 48px accounts for the checkbox size, margin and the panel's padding.
-          expect(firstOptionRight.toFixed(2))
-              .toEqual((triggerRight + 48).toFixed(2),
-                  `Expected trigger label to align along x-axis, accounting for the checkbox.`);
-          });
+        // 48px accounts for the checkbox size, margin and the panel's padding.
+        expect(firstOptionRight.toFixed(2))
+            .toEqual((triggerRight + 48).toFixed(2),
+                `Expected trigger label to align along x-axis, accounting for the checkbox.`);
       }));
     });
 
@@ -2125,16 +2218,4 @@ class BasicSelectNoPlaceholder { }
 class BasicSelectWithTheming {
   @ViewChild(MdSelect) select: MdSelect;
   theme: string;
-}
-
-class FakeViewportRuler {
-  getViewportRect() {
-    return {
-      left: 0, top: 0, width: 1014, height: 686, bottom: 686, right: 1014
-    };
-  }
-
-  getViewportScrollPosition() {
-    return {top: 0, left: 0};
-  }
 }
