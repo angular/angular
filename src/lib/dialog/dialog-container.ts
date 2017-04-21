@@ -6,6 +6,8 @@ import {
   Renderer,
   ElementRef,
   EventEmitter,
+  Inject,
+  Optional,
 } from '@angular/core';
 import {
   animate,
@@ -15,6 +17,7 @@ import {
   transition,
   AnimationEvent,
 } from '@angular/animations';
+import {DOCUMENT} from '@angular/platform-browser';
 import {BasePortalHost, ComponentPortal, PortalHostDirective, TemplatePortal} from '../core';
 import {MdDialogConfig} from './dialog-config';
 import {MdDialogContentAlreadyAttachedError} from './dialog-errors';
@@ -57,6 +60,9 @@ export class MdDialogContainer extends BasePortalHost {
   /** Element that was focused before the dialog was opened. Save this to restore upon close. */
   private _elementFocusedBeforeDialogWasOpened: HTMLElement = null;
 
+  /** Reference to the global document object. */
+  private _document: Document;
+
   /** The dialog configuration. */
   dialogConfig: MdDialogConfig;
 
@@ -69,9 +75,11 @@ export class MdDialogContainer extends BasePortalHost {
   constructor(
     private _renderer: Renderer,
     private _elementRef: ElementRef,
-    private _focusTrapFactory: FocusTrapFactory) {
+    private _focusTrapFactory: FocusTrapFactory,
+    @Optional() @Inject(DOCUMENT) _document: any) {
 
     super();
+    this._document = _document;
   }
 
   /**
@@ -83,6 +91,7 @@ export class MdDialogContainer extends BasePortalHost {
       throw new MdDialogContentAlreadyAttachedError();
     }
 
+    this._savePreviouslyFocusedElement();
     return this._portalHost.attachComponentPortal(portal);
   }
 
@@ -95,6 +104,7 @@ export class MdDialogContainer extends BasePortalHost {
       throw new MdDialogContentAlreadyAttachedError();
     }
 
+    this._savePreviouslyFocusedElement();
     return this._portalHost.attachTemplatePortal(portal);
   }
 
@@ -109,8 +119,16 @@ export class MdDialogContainer extends BasePortalHost {
     // If were to attempt to focus immediately, then the content of the dialog would not yet be
     // ready in instances where change detection has to run first. To deal with this, we simply
     // wait for the microtask queue to be empty.
-    this._elementFocusedBeforeDialogWasOpened = document.activeElement as HTMLElement;
     this._focusTrap.focusFirstTabbableElementWhenReady();
+  }
+
+  /**
+   * Saves a reference to the element that was focused before the dialog was opened.
+   */
+  private _savePreviouslyFocusedElement() {
+    if (this._document) {
+      this._elementFocusedBeforeDialogWasOpened = this._document.activeElement as HTMLElement;
+    }
   }
 
   /**
