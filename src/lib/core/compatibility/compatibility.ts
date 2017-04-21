@@ -32,6 +32,8 @@ export class MdCompatibilityInvalidPrefixError extends MdError {
 /** Selector that matches all elements that may have style collisions with AngularJS Material. */
 export const MAT_ELEMENTS_SELECTOR = `
   [mat-button],
+  [mat-card-subtitle],
+  [mat-card-title],
   [mat-dialog-actions],
   [mat-dialog-close],
   [mat-dialog-content],
@@ -92,6 +94,8 @@ export const MAT_ELEMENTS_SELECTOR = `
 /** Selector that matches all elements that may have style collisions with AngularJS Material. */
 export const MD_ELEMENTS_SELECTOR = `
   [md-button],
+  [md-card-subtitle],
+  [md-card-title],
   [md-dialog-actions],
   [md-dialog-close],
   [md-dialog-content],
