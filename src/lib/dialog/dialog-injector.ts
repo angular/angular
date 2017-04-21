@@ -15,7 +15,7 @@ export class DialogInjector implements Injector {
       return this._dialogRef;
     }
 
-    if (token === MD_DIALOG_DATA && this._data) {
+    if (token === MD_DIALOG_DATA) {
       return this._data;
     }
 

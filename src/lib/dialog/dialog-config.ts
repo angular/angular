@@ -40,7 +40,7 @@ export class MdDialogConfig {
   position?: DialogPosition;
 
   /** Data being injected into the child component. */
-  data?: any;
+  data?: any = null;
 
   // TODO(jelbourn): add configuration for lifecycle hooks, ARIA labelling.
 }
