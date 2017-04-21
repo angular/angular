@@ -922,10 +922,19 @@ Use an ES `import` statement *and* add it to the `NgModule.imports` list.
 
 Here is the revised `AppModule`, compared to its pre-refactor state:
 
+
 <code-tabs>
-  <code-pane path="toh-pt5/src/app/app.module.ts" title="src/app/app.module.ts (after)"></code-pane>
-  <code-pane path="toh-pt5/src/app/app.module.3.ts" title="src/app/app.module.ts (before)"></code-pane>
+
+  <code-pane title="src/app/app.module.ts (after)" path="toh-pt5/src/app/app.module.ts">
+
+  </code-pane>
+
+  <code-pane title="src/app/app.module.ts (before)" path="toh-pt5/src/app/app.module.3.ts">
+
+  </code-pane>
+
 </code-tabs>
+
 
 The revised and simplified `AppModule` is focused on identifying the key pieces of the app.
 
