@@ -8,7 +8,7 @@
 
   .mat-list, .mat-nav-list {
     .mat-list-item {
-      color: mat-color($foreground, base);
+      color: mat-color($foreground, text);
     }
 
     .mat-subheader {
