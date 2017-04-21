@@ -9,13 +9,13 @@
   <a *ngIf="node.url != null" href="{{node.url}}" [ngClass]="classes" title="{{node.tooltip}}"
     (click)="headerClicked()" class="vertical-menu-item heading">
     {{node.title}}
-    <md-icon class="rotating-icon">keyboard_arrow_right</md-icon>
+    <md-icon class="rotating-icon" svgIcon="keyboard_arrow_right"></md-icon>
   </a>
 
   <a *ngIf="node.url == null" [ngClass]="classes" title="{{node.tooltip}}"
     (click)="headerClicked()" class="vertical-menu-item heading">
     {{node.title}}
-    <md-icon class="rotating-icon">keyboard_arrow_right</md-icon>
+    <md-icon class="rotating-icon" svgIcon="keyboard_arrow_right"></md-icon>
   </a>
 
   <div class="heading-children" [ngClass]="classes">

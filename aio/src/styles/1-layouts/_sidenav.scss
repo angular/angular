@@ -58,7 +58,7 @@ md-sidenav-container div.mat-sidenav-content {
   }
 
   //icons _within_ nav
-  .material-icons {
+  .mat-icon {
     position: absolute;
     top: 6px;
     margin-left: 10px;
@@ -83,11 +83,12 @@ md-sidenav-container div.mat-sidenav-content {
   width: 100%;
 }
 
-.material-icons {
+.mat-icon {
   display: inline-block;
   position: absolute;
   top: 6px;
   right: 8px;
+  color: $mediumgray;
 }
 
 .heading-children.expanded {
@@ -138,11 +139,11 @@ a.selected.level-1,
   padding-left: 30px;
 }
 
-.level-1.expanded .material-icons, .level-2.expanded .material-icons {
+.level-1.expanded .mat-icon, .level-2.expanded .mat-icon {
   @include rotate(90deg);
 }
 
-.level-1:not(.expanded) .material-icons, .level-2:not(.expanded) .material-icons {
+.level-1:not(.expanded) .mat-icon, .level-2:not(.expanded) .mat-icon {
   @include rotate(0deg);
 }
 
@@ -161,5 +162,5 @@ aio-nav-menu.top-menu {
   aio-nav-item:last-child div {
     border-bottom: 2px solid rgba($mediumgray, 0.5);
   }
-  
+
 }
