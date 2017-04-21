@@ -535,11 +535,9 @@ Rollup does the tree shaking as before.
 
   The general audience instructions for running the AOT build of the Tour of Heroes app are not ready.
 
-  The following instructions presuppose that you have cloned the
-  <a href="https://github.com/angular/angular.io" target="_blank">angular.io</a>
-  github repository and prepared it for development as explained in the repo's README.md.
-
-  The _Tour of Heroes_ source code is in the `public/docs/_examples/toh-6/ts` folder.
+  The following instructions presuppose that you have downloaded the
+  <a href="/content/zips/toh-pt6/toh-pt6.zip" target="_blank">Tour of Heroes' zip</a>
+  and run `npm install` on it.
 
 </div>
 

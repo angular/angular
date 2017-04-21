@@ -361,7 +361,7 @@ As much fun as this is ...
 Use the <live-example title="QuickStart Seed in Plunker">live coding</live-example> environment as a _playground_, 
 a place to try the documentation samples and experiment on your own.
 It's the perfect place to reproduce a bug when you want to
-<a href="https://github.com/angular/angular.io/issues/new" target="_blank" title="File a documentation issue">file a documentation issue</a> or
-<a href="https://github.com/angular/angular/issues/new" target="_blank" title="File an Angular issue">file an issue with Angular itself</a>.
+<a href="https://github.com/angular/angular/issues/new" title="File a documentation issue">file a documentation issue</a> or
+<a href="https://github.com/angular/angular/issues/new" title="File an Angular issue">file an issue with Angular itself</a>.
 
 For real development, we strongly recommend [developing locally](guide/setup#develop-locally).
