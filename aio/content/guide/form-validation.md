@@ -530,7 +530,7 @@ The optional second value is a validator function or an array of validator funct
 Most of the validator functions are stock validators provided by Angular as static methods of the `Validators` class.
 Angular has stock validators that correspond to the standard HTML validation attributes.
 
-The `forbiddenNames` validator on the `"name"` control is a custom validator,
+The `forbiddenName` validator on the `"name"` control is a custom validator,
 discussed in a separate [section below](guide/form-validation#custom-validation).
 
 
@@ -626,11 +626,11 @@ and to compare all of the files in this cookbook sample.
 
 
 ## Custom validation
-This cookbook sample has a custom `forbiddenNamevalidator()` function that's applied to both the
+This cookbook sample has a custom `forbiddenNameValidator()` function that's applied to both the
 template-driven and the reactive form controls. It's in the `src/app/shared` folder
 and declared in the `SharedModule`.
 
-Here's the `forbiddenNamevalidator()` function:
+Here's the `forbiddenNameValidator()` function:
 
 <code-example path="cb-form-validation/src/app/shared/forbidden-name.directive.ts" region="custom-validator" title="shared/forbidden-name.directive.ts (forbiddenNameValidator)" linenums="false">
 
