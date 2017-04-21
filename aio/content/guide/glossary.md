@@ -18,7 +18,7 @@ unexpected definitions.
 [S](guide/glossary#S) [T](guide/glossary#T) [U](guide/glossary#U) [V](guide/glossary#V) [W](guide/glossary#W) [X](guide/glossary#X) [Y](guide/glossary#Y) [Z](guide/glossary#Z)
 
 
-
+{@a A}
 {@a aot}
 
 
@@ -95,6 +95,7 @@ Learn about them in the [_Attribute Directives_](guide/attribute-directives) gui
 
 
 
+{@a B}
 
 ## Barrel
 
@@ -200,7 +201,7 @@ You can bootstrap multiple apps in the same `index.html`, each app with its own 
 </div>
 
 
-
+{@a C}
 
 ## camelCase
 
@@ -247,7 +248,7 @@ the component in the role of "controller" or "view model".
 </div>
 
 
-
+{@a D}
 
 ## dash-case
 
@@ -454,7 +455,7 @@ elements and their children.
 </div>
 
 
-
+{@a E}
 
 ## ECMAScript
 
@@ -526,7 +527,7 @@ Short hand for [ECMAScript](guide/glossary#ecmascript) 2015.
 
 {@a H}
 
-
+{@a I}
 
 ## Injector
 
@@ -588,7 +589,7 @@ Read more about [interpolation](guide/template-syntax#interpolation) in the
 </div>
 
 
-
+{@a J}
 
 {@a jit}
 
@@ -607,7 +608,7 @@ Consider using the [ahead-of-time](guide/glossary#aot) mode for production apps.
 </div>
 
 
-
+{@a K}
 
 ## kebab-case
 
@@ -621,7 +622,7 @@ See [dash-case](guide/glossary#dash-case).
 </div>
 
 
-
+{@a L}
 
 ## Lifecycle hooks
 
@@ -655,7 +656,7 @@ Read more in the [Lifecycle Hooks](guide/lifecycle-hooks) page.
 </div>
 
 
-
+{@a M}
 
 ## Module
 
@@ -709,7 +710,7 @@ You rarely access Angular feature modules directly. You usually import them from
 
 {@a N}
 
-
+{@a O}
 
 ## Observable
 
@@ -726,8 +727,6 @@ Observables are a proposed feature for ES2016, the next version of JavaScript.
 
 
 </div>
-
-
 
 ## Output
 
@@ -747,7 +746,7 @@ See the [Input and output properties](guide/template-syntax#inputs-outputs) sect
 </div>
 
 
-
+{@a P}
 
 ## PascalCase
 
@@ -810,7 +809,7 @@ It relates a lookup token to code&mdash;sometimes called a "recipe"&mdash;that c
 
 {@a Q}
 
-
+{@a R}
 
 ## Reactive forms
 
@@ -894,7 +893,7 @@ For more information, see the [Routing & Navigation](guide/router) page.
 </div>
 
 
-
+{@a S}
 
 ## Scoped package
 
@@ -987,7 +986,7 @@ Read more in the [Structural Directives](guide/structural-directives) page.
 </div>
 
 
-
+{@a T}
 
 ## Template
 
@@ -1088,7 +1087,7 @@ Read more about TypeScript at [typescriptlang.org](http://www.typescriptlang.org
 
 {@a U}
 
-
+{@a V}
 
 ## View
 
@@ -1122,6 +1121,7 @@ under the control of a [router](guide/glossary#router).
 {@a Y}
 
 
+{@a Z}
 
 ## Zone
 
