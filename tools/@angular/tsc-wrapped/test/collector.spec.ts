@@ -707,6 +707,30 @@ describe('Collector', () => {
     });
   });
 
+  it('should ignore |null or |undefined in type expressions', () => {
+    const source = ts.createSourceFile(
+        'somefile.ts', `
+      import {Foo} from './foo';
+      export class SomeClass {
+        constructor (a: Foo, b: Foo | null, c: Foo | undefined, d: Foo | undefined | null, e: Foo | undefined | null | Foo) {}
+      }
+    `,
+        ts.ScriptTarget.Latest, true);
+    const metadata = collector.getMetadata(source);
+    expect((metadata.metadata['SomeClass'] as ClassMetadata).members).toEqual({
+      __ctor__: [{
+        __symbolic: 'constructor',
+        parameters: [
+          {__symbolic: 'reference', module: './foo', name: 'Foo'},
+          {__symbolic: 'reference', module: './foo', name: 'Foo'},
+          {__symbolic: 'reference', module: './foo', name: 'Foo'},
+          {__symbolic: 'reference', module: './foo', name: 'Foo'},
+          {__symbolic: 'reference', module: './foo', name: 'Foo'}
+        ]
+      }]
+    });
+  });
+
   describe('in strict mode', () => {
     it('should throw if an error symbol is collecting a reference to a non-exported symbol', () => {
       const source = program.getSourceFile('/local-symbol-ref.ts');
