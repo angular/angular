@@ -19,15 +19,18 @@ import {Dir} from '../core/rtl/dir';
 import {
   ControlValueAccessor, FormControl, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule
 } from '@angular/forms';
+import {Subject} from 'rxjs/Subject';
 import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
 import {dispatchFakeEvent, dispatchKeyboardEvent} from '../core/testing/dispatch-events';
 import {wrappedErrorMessage} from '../core/testing/wrapped-error-message';
 import {TAB} from '../core/keyboard/keycodes';
+import {ScrollDispatcher} from '../core/overlay/scroll/scroll-dispatcher';
 
 
 describe('MdSelect', () => {
   let overlayContainerElement: HTMLElement;
   let dir: {value: 'ltr'|'rtl'};
+  let scrolledSubject = new Subject();
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -69,7 +72,12 @@ describe('MdSelect', () => {
         {provide: Dir, useFactory: () => {
           return dir = { value: 'ltr' };
         }},
-        {provide: ViewportRuler, useClass: FakeViewportRuler}
+        {provide: ViewportRuler, useClass: FakeViewportRuler},
+        {provide: ScrollDispatcher, useFactory: () => {
+          return {scrolled: (delay: number, callback: () => any) => {
+            return scrolledSubject.asObservable().subscribe(callback);
+          }};
+        }}
       ]
     });
 
@@ -971,7 +979,6 @@ describe('MdSelect', () => {
         checkTriggerAlignedWithOption(0);
       });
 
-
       it('should align a centered option properly when scrolled', () => {
         // Give the select enough space to open
         fixture.componentInstance.heightBelow = 400;
@@ -984,6 +991,22 @@ describe('MdSelect', () => {
         setScrollTop(1700);
 
         trigger.click();
+        fixture.detectChanges();
+
+        checkTriggerAlignedWithOption(4);
+      });
+
+      it('should align a centered option properly when scrolling while the panel is open', () => {
+        fixture.componentInstance.heightBelow = 400;
+        fixture.componentInstance.heightAbove = 400;
+        fixture.componentInstance.control.setValue('chips-4');
+        fixture.detectChanges();
+
+        trigger.click();
+        fixture.detectChanges();
+
+        setScrollTop(100);
+        scrolledSubject.next();
         fixture.detectChanges();
 
         checkTriggerAlignedWithOption(4);
