@@ -5,7 +5,7 @@ describe('checkUnbalancedBackTicks', function() {
   var dgeni, injector, processor, log;
 
   beforeEach(function() {
-    dgeni = new Dgeni([testPackage('angular.io-package')]);
+    dgeni = new Dgeni([testPackage('angular-base-package')]);
     injector = dgeni.configureInjector();
     processor = injector.get('checkUnbalancedBackTicks');
     log = injector.get('log');
