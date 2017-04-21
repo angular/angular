@@ -12,8 +12,11 @@
   .mat-tab-nav-bar,
   .mat-tab-header {
     border-bottom: $header-border;
+  }
 
-    .mat-tab-group-inverted-header & {
+  .mat-tab-group-inverted-header {
+    .mat-tab-nav-bar,
+    .mat-tab-header {
       border-top: $header-border;
       border-bottom: none;
     }

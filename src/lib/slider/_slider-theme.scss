@@ -1,6 +1,17 @@
 @import '../core/theming/palette';
 @import '../core/theming/theming';
 
+@mixin _mat-slider-inner-content-theme($palette) {
+  .mat-slider-track-fill,
+  .mat-slider-thumb,
+  .mat-slider-thumb-label {
+    background-color: mat-color($palette);
+  }
+
+  .mat-slider-thumb-label-text {
+    color: mat-color($palette, default-contrast);
+  }
+}
 
 @mixin mat-slider-theme($theme) {
   $primary: map-get($theme, primary);
@@ -19,38 +30,20 @@
     background-color: $mat-slider-off-color;
   }
 
-  .mat-slider-track-fill,
-  .mat-slider-thumb,
-  .mat-slider-thumb-label {
-    .mat-primary & {
-      background-color: mat-color($primary);
-    }
+  .mat-primary {
+    @include _mat-slider-inner-content-theme($primary);
+  }
 
-    .mat-accent & {
-      background-color: mat-color($accent);
-    }
+  .mat-accent {
+    @include _mat-slider-inner-content-theme($accent);
+  }
 
-    .mat-warn & {
-      background-color: mat-color($warn);
-    }
+  .mat-warn {
+    @include _mat-slider-inner-content-theme($warn);
   }
 
   .mat-slider-focus-ring {
     background-color: $mat-slider-focus-ring-color;
-  }
-
-  .mat-slider-thumb-label-text {
-    .mat-primary & {
-      color: mat-color($primary, default-contrast);
-    }
-
-    .mat-accent & {
-      color: mat-color($accent, default-contrast);
-    }
-
-    .mat-warn & {
-      color: mat-color($warn, default-contrast);
-    }
   }
 
   .mat-slider:hover,

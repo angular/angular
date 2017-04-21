@@ -22,18 +22,19 @@
 
   .mat-input-placeholder {
     color: $input-placeholder-color;
+  }
 
-    // :focus is applied to the input, but we apply mat-focused to the other elements
-    // that need to listen to it.
-    .mat-focused & {
-      color: $input-floating-placeholder-color;
+  // :focus is applied to the input, but we apply mat-focused to the other elements
+  // that need to listen to it.
+  .mat-focused .mat-input-placeholder {
+    color: $input-floating-placeholder-color;
 
-      &.mat-accent {
-        color: $input-underline-color-accent;
-      }
-      &.mat-warn {
-        color: $input-underline-color-warn;
-      }
+    &.mat-accent {
+      color: $input-underline-color-accent;
+    }
+
+    &.mat-warn {
+      color: $input-underline-color-warn;
     }
   }
 

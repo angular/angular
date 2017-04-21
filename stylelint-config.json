@@ -1,9 +1,15 @@
 {
   "plugins": [
-    "./tools/stylelint/no-prefixes/no-prefixes.js"
+    "./tools/stylelint/no-prefixes/no-prefixes.js",
+    "./tools/stylelint/selector-nested-pattern-scoped/index.js"
   ],
   "rules": {
     "material/no-prefixes": [["last 2 versions", "not ie <= 10", "not ie_mob <= 10"]],
+    "material/selector-nested-pattern-scoped": [".*[^&]$", {
+      "message": "The & operator is not allowed at the end of theme selectors.",
+      "filePattern": "-theme\\.scss$"
+    }],
+
     "color-hex-case": "lower",
     "color-no-invalid-hex": true,
 

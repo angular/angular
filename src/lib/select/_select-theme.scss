@@ -20,6 +20,11 @@
   $accent: map-get($theme, accent);
   $warn: map-get($theme, warn);
 
+  .mat-select-trigger,
+  .mat-select-arrow {
+    color: mat-color($foreground, hint-text);
+  }
+
   .mat-select-underline {
     background-color: mat-color($foreground, divider);
   }

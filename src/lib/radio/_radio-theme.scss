@@ -11,28 +11,26 @@
 
   .mat-radio-outer-circle {
     border-color: mat-color($foreground, secondary-text);
+  }
 
-    .mat-radio-checked & {
-      border-color: mat-color($accent);
-    }
+  .mat-radio-checked .mat-radio-outer-circle {
+    border-color: mat-color($accent);
+  }
 
-    .mat-radio-disabled & {
-      border-color: mat-color($foreground, disabled);
-    }
+  .mat-radio-disabled .mat-radio-outer-circle {
+    border-color: mat-color($foreground, disabled);
   }
 
   .mat-radio-inner-circle {
     background-color: mat-color($accent);
-
-    .mat-radio-disabled & {
-      background-color: mat-color($foreground, disabled);
-    }
   }
 
   .mat-radio-ripple .mat-ripple-element {
     background-color: mat-color($accent, 0.26);
+  }
 
-    .mat-radio-disabled & {
+  .mat-radio-disabled {
+    .mat-radio-ripple .mat-ripple-element, .mat-radio-inner-circle {
       background-color: mat-color($foreground, disabled);
     }
   }
