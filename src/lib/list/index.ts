@@ -10,7 +10,6 @@ import {
   MdNavListCssMatStyler,
   MdDividerCssMatStyler,
   MdListSubheaderCssMatStyler,
-  MdNavListTokenSetter,
 } from './list';
 
 
@@ -28,7 +27,6 @@ import {
     MdNavListCssMatStyler,
     MdDividerCssMatStyler,
     MdListSubheaderCssMatStyler,
-    MdNavListTokenSetter,
   ],
   declarations: [
     MdList,
@@ -40,7 +38,6 @@ import {
     MdNavListCssMatStyler,
     MdDividerCssMatStyler,
     MdListSubheaderCssMatStyler,
-    MdNavListTokenSetter,
   ],
 })
 export class MdListModule {

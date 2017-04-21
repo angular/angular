@@ -125,17 +125,35 @@ describe('MdList', () => {
     items.forEach(item => expect(item.isRippleEnabled()).toBe(false));
   });
 
-  it('should maybe show ripples for nav lists', () => {
+  it('should allow disabling ripples for specific nav-list items', () => {
     let fixture = TestBed.createComponent(NavListWithOneAnchorItem);
     fixture.detectChanges();
 
-    const items: QueryList<MdListItem> = fixture.debugElement.componentInstance.listItems;
+    const items = fixture.componentInstance.listItems;
     expect(items.length).toBeGreaterThan(0);
+
     // Ripples should be enabled by default, and can be disabled with a binding.
     items.forEach(item => expect(item.isRippleEnabled()).toBe(true));
 
-    fixture.debugElement.componentInstance.disableRipple = true;
+    fixture.componentInstance.disableItemRipple = true;
     fixture.detectChanges();
+
+    items.forEach(item => expect(item.isRippleEnabled()).toBe(false));
+  });
+
+  it('should allow disabling ripples for the whole nav-list', () => {
+    let fixture = TestBed.createComponent(NavListWithOneAnchorItem);
+    fixture.detectChanges();
+
+    const items = fixture.componentInstance.listItems;
+    expect(items.length).toBeGreaterThan(0);
+
+    // Ripples should be enabled by default, and can be disabled with a binding.
+    items.forEach(item => expect(item.isRippleEnabled()).toBe(true));
+
+    fixture.componentInstance.disableListRipple = true;
+    fixture.detectChanges();
+
     items.forEach(item => expect(item.isRippleEnabled()).toBe(false));
   });
 });
@@ -163,14 +181,15 @@ class ListWithOneAnchorItem extends BaseTestList {
 }
 
 @Component({template: `
-  <md-nav-list>
-    <a md-list-item [disableRipple]="disableRipple">
+  <md-nav-list [disableRipple]="disableListRipple">
+    <a md-list-item [disableRipple]="disableItemRipple">
       Paprika
     </a>
   </md-nav-list>`})
 class NavListWithOneAnchorItem extends BaseTestList {
   @ViewChildren(MdListItem) listItems: QueryList<MdListItem>;
-  disableRipple: boolean = false;
+  disableItemRipple: boolean = false;
+  disableListRipple: boolean = false;
 }
 
 @Component({template: `
