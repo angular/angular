@@ -50,7 +50,6 @@ let nextId = 0;
     '[class.mat-checked]': 'checked',
     '[class.mat-disabled]': 'disabled',
     '[class.mat-slide-toggle-label-before]': 'labelPosition == "before"',
-    '(mousedown)': '_setMousedown()'
   },
   templateUrl: 'slide-toggle.html',
   styleUrls: ['slide-toggle.css'],
@@ -66,7 +65,6 @@ export class MdSlideToggle implements OnDestroy, AfterContentInit, ControlValueA
   // A unique id for the slide-toggle. By default the id is auto-generated.
   private _uniqueId = `md-slide-toggle-${++nextId}`;
   private _color: string;
-  private _isMousedown: boolean = false;
   private _slideRenderer: SlideToggleRenderer = null;
   private _disabled: boolean = false;
   private _required: boolean = false;
@@ -173,15 +171,6 @@ export class MdSlideToggle implements OnDestroy, AfterContentInit, ControlValueA
     // This will lead to multiple click events.
     // Preventing bubbling for the second event will solve that issue.
     event.stopPropagation();
-  }
-
-  _setMousedown() {
-    // We only *show* the focus style when focus has come to the button via the keyboard.
-    // The Material Design spec is silent on this topic, and without doing this, the
-    // button continues to look :active after clicking.
-    // @see http://marcysutton.com/button-focus-hell/
-    this._isMousedown = true;
-    setTimeout(() => this._isMousedown = false, 100);
   }
 
   /** Implemented as part of ControlValueAccessor. */
