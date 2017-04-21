@@ -1,4 +1,4 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
 import {Component, ViewChild, ViewContainerRef} from '@angular/core';
 import {LayoutDirection, Dir} from '../core/rtl/dir';
 import {MdTabHeader} from './tab-header';
@@ -11,6 +11,7 @@ import {RIGHT_ARROW, LEFT_ARROW, ENTER} from '../core/keyboard/keycodes';
 import {FakeViewportRuler} from '../core/overlay/position/fake-viewport-ruler';
 import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
 import {dispatchKeyboardEvent} from '../core/testing/dispatch-events';
+import {dispatchFakeEvent} from '../core/testing/dispatch-events';
 import {Subject} from 'rxjs/Subject';
 
 
@@ -210,6 +211,21 @@ describe('MdTabHeader', () => {
 
       expect(inkBar.alignToElement).toHaveBeenCalled();
     });
+
+    it('should re-align the ink bar when the window is resized', fakeAsync(() => {
+      fixture = TestBed.createComponent(SimpleTabHeaderApp);
+      fixture.detectChanges();
+
+      const inkBar = fixture.componentInstance.mdTabHeader._inkBar;
+
+      spyOn(inkBar, 'alignToElement');
+
+      dispatchFakeEvent(window, 'resize');
+      tick(10);
+      fixture.detectChanges();
+
+      expect(inkBar.alignToElement).toHaveBeenCalled();
+    }));
 
   });
 });

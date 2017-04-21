@@ -9,12 +9,17 @@ import {
   Inject,
   Optional,
   OnDestroy,
+  AfterContentInit,
 } from '@angular/core';
 import {MdInkBar} from '../ink-bar';
 import {MdRipple} from '../../core/ripple/index';
 import {ViewportRuler} from '../../core/overlay/position/viewport-ruler';
 import {MD_RIPPLE_GLOBAL_OPTIONS, RippleGlobalOptions, Dir} from '../../core';
+import {Observable} from 'rxjs/Observable';
 import {Subscription} from 'rxjs/Subscription';
+import 'rxjs/add/operator/auditTime';
+import 'rxjs/add/observable/of';
+import 'rxjs/add/observable/merge';
 
 /**
  * Navigation component matching the styles of the tab group header.
@@ -30,23 +35,32 @@ import {Subscription} from 'rxjs/Subscription';
   },
   encapsulation: ViewEncapsulation.None,
 })
-export class MdTabNavBar implements OnDestroy {
-  private _directionChange: Subscription;
+export class MdTabNavBar implements AfterContentInit, OnDestroy {
+  /** Combines listeners that will re-align the ink bar whenever they're invoked. */
+  private _realignInkBar: Subscription = null;
+
   _activeLinkChanged: boolean;
   _activeLinkElement: ElementRef;
 
   @ViewChild(MdInkBar) _inkBar: MdInkBar;
 
-  constructor(@Optional() private _dir: Dir) {
-    if (_dir) {
-      this._directionChange = _dir.dirChange.subscribe(() => this._alignInkBar());
-    }
-  }
+  constructor(@Optional() private _dir: Dir, private _ngZone: NgZone) { }
 
   /** Notifies the component that the active link has been changed. */
   updateActiveLink(element: ElementRef) {
     this._activeLinkChanged = this._activeLinkElement != element;
     this._activeLinkElement = element;
+  }
+
+  ngAfterContentInit(): void {
+    this._realignInkBar = this._ngZone.runOutsideAngular(() => {
+      let dirChange = this._dir ? this._dir.dirChange : Observable.of(null);
+      let resize = typeof window !== 'undefined' ?
+          Observable.fromEvent(window, 'resize').auditTime(10) :
+          Observable.of(null);
+
+      return Observable.merge(dirChange, resize).subscribe(() => this._alignInkBar());
+    });
   }
 
   /** Checks if the active link has been changed and, if so, will update the ink bar. */
@@ -58,15 +72,17 @@ export class MdTabNavBar implements OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this._directionChange) {
-      this._directionChange.unsubscribe();
-      this._directionChange = null;
+    if (this._realignInkBar) {
+      this._realignInkBar.unsubscribe();
+      this._realignInkBar = null;
     }
   }
 
   /** Aligns the ink bar to the active link. */
   private _alignInkBar(): void {
-    this._inkBar.alignToElement(this._activeLinkElement.nativeElement);
+    if (this._activeLinkElement) {
+      this._inkBar.alignToElement(this._activeLinkElement.nativeElement);
+    }
   }
 }
 

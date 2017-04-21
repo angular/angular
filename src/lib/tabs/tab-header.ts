@@ -12,13 +12,20 @@ import {
   AfterContentChecked,
   AfterContentInit,
   OnDestroy,
+  NgZone,
 } from '@angular/core';
 import {RIGHT_ARROW, LEFT_ARROW, ENTER, Dir, LayoutDirection} from '../core';
 import {MdTabLabelWrapper} from './tab-label-wrapper';
 import {MdInkBar} from './ink-bar';
 import {Subscription} from 'rxjs/Subscription';
+import {Observable} from 'rxjs/Observable';
 import {applyCssTransform} from '../core/style/apply-transform';
 import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/auditTime';
+import 'rxjs/add/observable/of';
+import 'rxjs/add/observable/merge';
+import 'rxjs/add/operator/startWith';
+
 
 /**
  * The directions that scrolling can go in when the header's tabs exceed the header width. 'After'
@@ -68,8 +75,8 @@ export class MdTabHeader implements AfterContentChecked, AfterContentInit, OnDes
   /** Whether the header should scroll to the selected index after the view has been checked. */
   private _selectedIndexChanged = false;
 
-  /** Subscription to changes in the layout direction. */
-  private _directionChange: Subscription;
+  /** Combines listeners that will re-align the ink bar whenever they're invoked. */
+  private _realignInkBar: Subscription = null;
 
   /** Whether the controls for pagination should be displayed */
   _showPaginationControls = false;
@@ -92,13 +99,14 @@ export class MdTabHeader implements AfterContentChecked, AfterContentInit, OnDes
   private _selectedIndex: number = 0;
 
   /** The index of the active tab. */
-  @Input() set selectedIndex(value: number) {
+  @Input()
+  get selectedIndex(): number { return this._selectedIndex; }
+  set selectedIndex(value: number) {
     this._selectedIndexChanged = this._selectedIndex != value;
 
     this._selectedIndex = value;
     this._focusIndex = value;
   }
-  get selectedIndex(): number { return this._selectedIndex; }
 
   /** Event emitted when the option is selected. */
   @Output() selectFocusedIndex = new EventEmitter();
@@ -106,7 +114,10 @@ export class MdTabHeader implements AfterContentChecked, AfterContentInit, OnDes
   /** Event emitted when a label is focused. */
   @Output() indexFocused = new EventEmitter();
 
-  constructor(private _elementRef: ElementRef, @Optional() private _dir: Dir) {}
+  constructor(
+    private _elementRef: ElementRef,
+    private _ngZone: NgZone,
+    @Optional() private _dir: Dir) { }
 
   ngAfterContentChecked(): void {
     // If the number of tab labels have changed, check if scrolling should be enabled
@@ -150,17 +161,23 @@ export class MdTabHeader implements AfterContentChecked, AfterContentInit, OnDes
    * Aligns the ink bar to the selected tab on load.
    */
   ngAfterContentInit() {
-    this._alignInkBarToSelectedTab();
+    this._realignInkBar = this._ngZone.runOutsideAngular(() => {
+      let dirChange = this._dir ? this._dir.dirChange : Observable.of(null);
+      let resize = typeof window !== 'undefined' ?
+          Observable.fromEvent(window, 'resize').auditTime(10) :
+          Observable.of(null);
 
-    if (this._dir) {
-      this._directionChange = this._dir.dirChange.subscribe(() => this._alignInkBarToSelectedTab());
-    }
+      return Observable.merge(dirChange, resize).startWith(null).subscribe(() => {
+        this._updatePagination();
+        this._alignInkBarToSelectedTab();
+      });
+    });
   }
 
   ngOnDestroy() {
-    if (this._directionChange) {
-      this._directionChange.unsubscribe();
-      this._directionChange = null;
+    if (this._realignInkBar) {
+      this._realignInkBar.unsubscribe();
+      this._realignInkBar = null;
     }
   }
 

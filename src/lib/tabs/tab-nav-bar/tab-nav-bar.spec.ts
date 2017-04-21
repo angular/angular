@@ -1,13 +1,18 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
 import {MdTabsModule} from '../index';
-import {Component} from '@angular/core';
+import {MdTabNavBar} from './tab-nav-bar';
+import {Component, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {ViewportRuler} from '../../core/overlay/position/viewport-ruler';
 import {FakeViewportRuler} from '../../core/overlay/position/fake-viewport-ruler';
-import {dispatchMouseEvent} from '../../core/testing/dispatch-events';
+import {dispatchMouseEvent, dispatchFakeEvent} from '../../core/testing/dispatch-events';
+import {LayoutDirection, Dir} from '../../core/rtl/dir';
+import {Subject} from 'rxjs/Subject';
 
 
 describe('MdTabNavBar', () => {
+  let dir: LayoutDirection = 'ltr';
+  let dirChange = new Subject();
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -17,6 +22,9 @@ describe('MdTabNavBar', () => {
         TabLinkWithNgIf,
       ],
       providers: [
+        {provide: Dir, useFactory: () => {
+          return {value: dir,  dirChange: dirChange.asObservable()};
+        }},
         {provide: ViewportRuler, useClass: FakeViewportRuler},
       ]
     });
@@ -44,6 +52,29 @@ describe('MdTabNavBar', () => {
       tabLink.nativeElement.click();
       expect(component.activeIndex).toBe(2);
     });
+
+    it('should re-align the ink bar when the direction changes', () => {
+      const inkBar = fixture.componentInstance.tabNavBar._inkBar;
+
+      spyOn(inkBar, 'alignToElement');
+
+      dirChange.next();
+      fixture.detectChanges();
+
+      expect(inkBar.alignToElement).toHaveBeenCalled();
+    });
+
+    it('should re-align the ink bar when the window is resized', fakeAsync(() => {
+      const inkBar = fixture.componentInstance.tabNavBar._inkBar;
+
+      spyOn(inkBar, 'alignToElement');
+
+      dispatchFakeEvent(window, 'resize');
+      tick(10);
+      fixture.detectChanges();
+
+      expect(inkBar.alignToElement).toHaveBeenCalled();
+    }));
   });
 
   it('should clean up the ripple event handlers on destroy', () => {
@@ -73,6 +104,8 @@ describe('MdTabNavBar', () => {
   `
 })
 class SimpleTabNavBarTestApp {
+  @ViewChild(MdTabNavBar) tabNavBar: MdTabNavBar;
+
   activeIndex = 0;
 }
 
