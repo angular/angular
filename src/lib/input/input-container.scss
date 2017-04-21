@@ -225,11 +225,14 @@ $mat-input-underline-disabled-background-image:
 // Wrapper for the hints and error messages. Provides positioning and text size.
 // Note that we're using `top` in order to allow for stacked children to flow downwards.
 .mat-input-subscript-wrapper {
+  $line-height: 1.2em;
+
   position: absolute;
   font-size: 75%;
   top: 100%;
   width: 100%;
-  margin-top: -$mat-input-wrapper-spacing;
+  margin-top: -$line-height;
+  line-height: $line-height;
   overflow: hidden; // prevents multi-line errors from overlapping the input
 }
 
