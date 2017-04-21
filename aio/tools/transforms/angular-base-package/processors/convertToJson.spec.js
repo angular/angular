@@ -5,7 +5,7 @@ describe('convertToJson processor', () => {
   var dgeni, injector, processor, log;
 
   beforeAll(function() {
-    dgeni = new Dgeni([testPackage('angular.io-package')]);
+    dgeni = new Dgeni([testPackage('angular-base-package')]);
     injector = dgeni.configureInjector();
     processor = injector.get('convertToJsonProcessor');
     log = injector.get('log');

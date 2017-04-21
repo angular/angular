@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 const Package = require('dgeni').Package;
-const { basePackage, API_SOURCE_PATH } = require('./base-package');
+const apiPackage = require('../angular-api-package');
+const { API_SOURCE_PATH } = require('../config');
+
 const packageMap = {
   common: ['common/index.ts', 'common/testing/index.ts'],
   core: ['core/index.ts', 'core/testing/index.ts'],
@@ -20,22 +22,12 @@ const packageMap = {
   router: ['router/index.ts', 'router/testing/index.ts'],
   upgrade: ['upgrade/index.ts', 'upgrade/static.ts']
 };
+
+
 function createPackage(packageName) {
 
-  return new Package('author-api', [require('dgeni-packages/typescript'), basePackage])
-    .processor(require('../angular.io-package/processors/convertPrivateClassesToInterfaces'))
-    .processor(require('../angular.io-package/processors/mergeDecoratorDocs'))
-    .processor(require('../angular.io-package/processors/extractDecoratedClasses'))
-    .processor(require('../angular.io-package/processors/matchUpDirectiveDecorators'))
-    .processor(require('../angular.io-package/processors/filterMemberDocs'))
-    .processor(require('../angular.io-package/processors/markBarredODocsAsPrivate'))
-    .processor(require('../angular.io-package/processors/filterPrivateDocs'))
-    .processor(require('../angular.io-package/processors/filterIgnoredDocs'))
+  return new Package('author-api', [apiPackage])
     .config(function(readTypeScriptModules) {
-      // API files are typescript
-      readTypeScriptModules.basePath = API_SOURCE_PATH;
-      readTypeScriptModules.ignoreExportsMatching = [/^_/];
-      readTypeScriptModules.hidePrivateMembers = true;
       readTypeScriptModules.sourceFiles = packageMap[packageName];
     })
     .config(function(readFilesProcessor) {
@@ -46,43 +38,6 @@ function createPackage(packageName) {
           fileReader: 'exampleFileReader'
         }
       ];
-    })
-    .config(function(
-        computeIdsProcessor, computePathsProcessor, EXPORT_DOC_TYPES) {
-
-      const API_SEGMENT = 'api';
-
-      // Replace any path templates inherited from other packages
-      // (we want full and transparent control)
-      computePathsProcessor.pathTemplates = [
-        {
-          docTypes: ['module'],
-          getPath: function computeModulePath(doc) {
-            doc.moduleFolder = `${API_SEGMENT}/${doc.id.replace(/\/index$/, '')}`;
-            return doc.moduleFolder;
-          },
-          outputPathTemplate: '${moduleFolder}.json'
-        },
-        {
-          docTypes: EXPORT_DOC_TYPES.concat(['decorator', 'directive', 'pipe']),
-          pathTemplate: '${moduleDoc.moduleFolder}/${name}',
-          outputPathTemplate: '${moduleDoc.moduleFolder}/${name}.json',
-        },
-        {docTypes: ['example-region'], getOutputPath: function() {}},
-        {
-          docTypes: ['content'],
-          getPath: (doc) => `${doc.id.replace(/\/index$/, '')}`,
-          outputPathTemplate: '${path}.json'
-        },
-        {docTypes: ['navigation-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'},
-        {docTypes: ['contributors-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'}
-      ];
-    })
-
-    .config(function(convertToJsonProcessor, EXPORT_DOC_TYPES) {
-      convertToJsonProcessor.docTypes = EXPORT_DOC_TYPES.concat([
-        'content', 'decorator', 'directive', 'pipe', 'module'
-      ]);
     });
 }
 
