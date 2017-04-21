@@ -10,9 +10,6 @@ Install the Angular QuickStart seed for faster, more efficient development on yo
 
 {@a develop-locally}
 
-
-## Setup a local development environment
-
 The <live-example name=quickstart>QuickStart live-coding</live-example> example is an Angular _playground_.
 It's not where you'd develop a real application. 
 You [should develop locally](guide/setup#why-locally "Why develop locally") on your own machine ... and that's also how we think you should learn Angular.
