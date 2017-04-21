@@ -442,6 +442,36 @@ export class Evaluator {
           (<MetadataImportedSymbolReferenceExpression>typeReference).arguments = args;
         }
         return recordEntry(typeReference, node);
+      case ts.SyntaxKind.UnionType:
+        const unionType = <ts.UnionTypeNode>node;
+
+        // Remove null and undefined from the list of unions.
+        const references = unionType.types
+                               .filter(
+                                   n => n.kind != ts.SyntaxKind.NullKeyword &&
+                                       n.kind != ts.SyntaxKind.UndefinedKeyword)
+                               .map(n => this.evaluateNode(n));
+
+        // The remmaining reference must be the same. If two have type arguments consider them
+        // different even if the type arguments are the same.
+        let candidate: any = null;
+        for (let i = 0; i < references.length; i++) {
+          const reference = references[i];
+          if (isMetadataSymbolicReferenceExpression(reference)) {
+            if (candidate) {
+              if ((reference as any).name == candidate.name &&
+                  (reference as any).module == candidate.module && !(reference as any).arguments) {
+                candidate = reference;
+              }
+            } else {
+              candidate = reference;
+            }
+          } else {
+            return reference;
+          }
+        }
+        if (candidate) return candidate;
+        break;
       case ts.SyntaxKind.NoSubstitutionTemplateLiteral:
       case ts.SyntaxKind.StringLiteral:
       case ts.SyntaxKind.TemplateHead:

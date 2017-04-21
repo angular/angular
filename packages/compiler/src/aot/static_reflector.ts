@@ -203,7 +203,6 @@ export class StaticReflector implements ɵReflectorReader {
             if (paramType) nestedResult.push(paramType);
             const decorators = parameterDecorators ? parameterDecorators[index] : null;
             if (decorators) {
-              if (paramType) nestedResult.push(paramType);
               nestedResult.push(...decorators);
             }
             parameters !.push(nestedResult);
