@@ -76,7 +76,7 @@ export class AppComponent implements OnInit {
     });
 
     // scroll even if only the hash fragment changed
-    this.locationService.currentUrl.subscribe(url => this.autoScroll());
+    this.locationService.currentUrl.subscribe(() => this.autoScroll());
 
     this.navigationService.currentNode.subscribe(currentNode => {
       this.currentNode = currentNode;
