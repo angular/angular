@@ -10,6 +10,7 @@ import {
 import {
   DIST_BUNDLES, DIST_ROOT, SOURCE_ROOT, PROJECT_ROOT, LICENSE_BANNER, MATERIAL_VERSION
 } from '../constants';
+import {addPureAnnotations} from './annotate-pure';
 
 // There are no type definitions available for these imports.
 const uglify = require('uglify-js');
@@ -38,6 +39,7 @@ export function composeRelease(packageName: string) {
   updatePackageVersion(releasePath);
   createTypingFile(releasePath, packageName);
   createMetadataFile(releasePath, packageName);
+  addPureAnnotationCommentsToEs5Bundle(releasePath, packageName);
 }
 
 /** Builds the bundles for the specified package. */
@@ -155,4 +157,13 @@ function inlinePackageMetadataFiles(packagePath: string) {
     inlineMetadataResources(metadata, componentResources);
     writeFileSync(path , JSON.stringify(metadata), 'utf-8');
   });
+}
+
+/** Adds Uglify "@__PURE__" decorations to the generated ES5 bundle. */
+function addPureAnnotationCommentsToEs5Bundle(outputDir: string, entryName: string) {
+  const es5BundlePath = join(outputDir, '@angular', `${entryName}.es5.js`);
+  const originalContent = readFileSync(es5BundlePath, 'utf-8');
+  const annotatedContent = addPureAnnotations(originalContent);
+
+  writeFileSync(es5BundlePath, annotatedContent, 'utf-8');
 }
