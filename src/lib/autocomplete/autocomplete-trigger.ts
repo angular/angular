@@ -22,6 +22,7 @@ import {MdOptionSelectionChange, MdOption} from '../core/option/option';
 import {ENTER, UP_ARROW, DOWN_ARROW} from '../core/keyboard/keycodes';
 import {Dir} from '../core/rtl/dir';
 import {MdInputContainer} from '../input/input-container';
+import {ScrollDispatcher} from '../core/overlay/scroll/scroll-dispatcher';
 import {Subscription} from 'rxjs/Subscription';
 import 'rxjs/add/observable/merge';
 import 'rxjs/add/observable/fromEvent';
@@ -76,6 +77,10 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   /** The subscription to positioning changes in the autocomplete panel. */
   private _panelPositionSubscription: Subscription;
 
+  /** Subscription to global scroll events. */
+  private _scrollSubscription: Subscription;
+
+  /** Strategy that is used to position the panel. */
   private _positionStrategy: ConnectedPositionStrategy;
 
   /** Whether or not the placeholder state is being overridden. */
@@ -103,6 +108,7 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   constructor(private _element: ElementRef, private _overlay: Overlay,
               private _viewContainerRef: ViewContainerRef,
               private _changeDetectorRef: ChangeDetectorRef,
+              private _scrollDispatcher: ScrollDispatcher,
               @Optional() private _dir: Dir, private _zone: NgZone,
               @Optional() @Host() private _inputContainer: MdInputContainer,
               @Optional() @Inject(DOCUMENT) private _document: any) {}
@@ -134,6 +140,12 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
       this._subscribeToClosingActions();
     }
 
+    if (!this._scrollSubscription) {
+      this._scrollSubscription = this._scrollDispatcher.scrolled(0, () => {
+        this._overlayRef.updatePosition();
+      });
+    }
+
     this.autocomplete._setVisibility();
     this._floatPlaceholder();
     this._panelOpen = true;
@@ -143,6 +155,11 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   closePanel(): void {
     if (this._overlayRef && this._overlayRef.hasAttached()) {
       this._overlayRef.detach();
+    }
+
+    if (this._scrollSubscription) {
+      this._scrollSubscription.unsubscribe();
+      this._scrollSubscription = null;
     }
 
     this._panelOpen = false;

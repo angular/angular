@@ -23,14 +23,17 @@ import {FakeViewportRuler} from '../core/overlay/position/fake-viewport-ruler';
 import {MdAutocomplete} from './autocomplete';
 import {MdInputContainer} from '../input/input-container';
 import {Observable} from 'rxjs/Observable';
+import {Subject} from 'rxjs/Subject';
 import {dispatchFakeEvent} from '../core/testing/dispatch-events';
 import {typeInElement} from '../core/testing/type-in-element';
+import {ScrollDispatcher} from '../core/overlay/scroll/scroll-dispatcher';
 
 import 'rxjs/add/operator/map';
 
 describe('MdAutocomplete', () => {
   let overlayContainerElement: HTMLElement;
   let dir: LayoutDirection;
+  let scrolledSubject = new Subject();
 
   beforeEach(async(() => {
     dir = 'ltr';
@@ -52,6 +55,8 @@ describe('MdAutocomplete', () => {
       providers: [
         {provide: OverlayContainer, useFactory: () => {
           overlayContainerElement = document.createElement('div');
+          overlayContainerElement.classList.add('cdk-overlay-container');
+
           document.body.appendChild(overlayContainerElement);
 
           // remove body padding to keep consistent cross-browser
@@ -63,7 +68,12 @@ describe('MdAutocomplete', () => {
         {provide: Dir, useFactory: () => {
           return {value: dir};
         }},
-        {provide: ViewportRuler, useClass: FakeViewportRuler}
+        {provide: ViewportRuler, useClass: FakeViewportRuler},
+        {provide: ScrollDispatcher, useFactory: () => {
+          return {scrolled: (delay: number, callback: () => any) => {
+            return scrolledSubject.asObservable().subscribe(callback);
+          }};
+        }}
       ]
     });
 
@@ -923,6 +933,29 @@ describe('MdAutocomplete', () => {
           .toEqual(panelTop.toFixed(1), `Expected panel top to match input bottom by default.`);
       expect(fixture.componentInstance.trigger.autocomplete.positionY)
           .toEqual('below', `Expected autocomplete positionY to default to below.`);
+    });
+
+    it('should reposition the panel on scroll', () => {
+      const spacer = document.createElement('div');
+
+      spacer.style.height = '1000px';
+      document.body.appendChild(spacer);
+
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      window.scroll(0, 100);
+      scrolledSubject.next();
+      fixture.detectChanges();
+
+      const inputBottom = input.getBoundingClientRect().bottom;
+      const panel = overlayContainerElement.querySelector('.mat-autocomplete-panel');
+      const panelTop = panel.getBoundingClientRect().top;
+
+      expect((inputBottom + 6).toFixed(1)).toEqual(panelTop.toFixed(1),
+          'Expected panel top to match input bottom after scrolling.');
+
+      document.body.removeChild(spacer);
     });
 
     it('should fall back to above position if panel cannot fit below', () => {
