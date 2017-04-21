@@ -14,18 +14,20 @@ function createPackage(changedFile) {
     return require('./marketing-package').createPackage();
   }
 
-  const tutorialMatch = /^aio\/content\/tutorial\/|^aio\/content\/examples\/toh-\d/.exec(changedFile);
-  if (tutorialMatch) {
+  const tutorialMatch = /^aio\/content\/tutorial\/([^.]+)\.md/.exec(changedFile);
+  const tutorialExampleMatch = /^aio\/content\/examples\/(toh-[^\/]+)\//.exec(changedFile);
+  if (tutorialMatch || tutorialExampleMatch) {
+    const tutorialName = tutorialMatch && tutorialMatch[1] || tutorialExampleMatch[1];
     console.log('Building tutorial docs');
-    return require('./tutorial-package').createPackage();
+    return require('./tutorial-package').createPackage(tutorialName);
   }
 
-  const guideMatch = /^aio\/content\/guide\/([^\.]+)\.md/.exec(changedFile);
+  const guideMatch = /^aio\/content\/guide\/([^.]+)\.md/.exec(changedFile);
   const exampleMatch = /^aio\/content\/examples\/(?:cb-)?([^\/]+)\//.exec(changedFile);
   if (guideMatch || exampleMatch) {
-    const exampleName = guideMatch && guideMatch[1] || exampleMatch[1];
-    console.log(`Building guide doc: ${exampleName}.md`);
-    return require('./guide-package').createPackage(exampleName);
+    const guideName = guideMatch && guideMatch[1] || exampleMatch[1];
+    console.log(`Building guide doc: ${guideName}.md`);
+    return require('./guide-package').createPackage(guideName);
   }
 
   const apiExamplesMatch = /^packages\/examples\/([^\/]+)\//.exec(changedFile);
@@ -38,9 +40,13 @@ function createPackage(changedFile) {
 }
 
 module.exports = {
-  generateDocs: function(changedFile) {
+  generateDocs: function(changedFile, options = {}) {
     const {Dgeni} = require('dgeni');
-    var dgeni = new Dgeni([createPackage(changedFile)]);
+    const package = createPackage(changedFile);
+    if (options.silent) {
+      package.config(function(log) { log.level = 'error'; });
+    }
+    var dgeni = new Dgeni([package]);
     const start = Date.now();
     return dgeni.generate()
       .then(

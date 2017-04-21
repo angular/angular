@@ -5,7 +5,7 @@ const Dgeni = require('dgeni');
 describe('fixInternalDocumentLinks processor', () => {
 
   it('should be available on the injector', () => {
-    const dgeni = new Dgeni([testPackage('angular.io-package')]);
+    const dgeni = new Dgeni([testPackage('angular-base-package')]);
     const injector = dgeni.configureInjector();
     const processor = injector.get('fixInternalDocumentLinks');
     expect(processor.$process).toBeDefined();

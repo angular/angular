@@ -5,7 +5,7 @@ const Dgeni = require('dgeni');
 describe('filterIgnoredDocs processor', () => {
 
   it('should be available on the injector', () => {
-    const dgeni = new Dgeni([testPackage('angular.io-package')]);
+    const dgeni = new Dgeni([testPackage('angular-api-package')]);
     const injector = dgeni.configureInjector();
     const processor = injector.get('filterIgnoredDocs');
     expect(processor.$process).toBeDefined();

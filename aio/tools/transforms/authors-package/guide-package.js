@@ -9,9 +9,10 @@
 /* eslint no-console: "off" */
 
 const Package = require('dgeni').Package;
-const { basePackage, CONTENTS_PATH } = require('./base-package');
+const contentPackage = require('../angular-content-package');
 const { readFileSync } = require('fs');
 const { resolve } = require('canonical-path');
+const { CONTENTS_PATH } = require('../config');
 
 function createPackage(guideName) {
 
@@ -25,7 +26,7 @@ function createPackage(guideName) {
     console.log(examples.map(example => ' - ' + example).join('\n'));
   }
 
-  return new Package('author-guide', [basePackage])
+  return new Package('author-guide', [contentPackage])
     .config(function(readFilesProcessor) {
       readFilesProcessor.sourceFiles = [
         {
@@ -41,6 +42,5 @@ function createPackage(guideName) {
       ];
     });
 }
-
 
 module.exports = { createPackage };
