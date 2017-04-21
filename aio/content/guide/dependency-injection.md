@@ -1191,10 +1191,9 @@ it supports typing of the configuration object within the class.
 
 
 
-Aternatively, you can provide and inject the configuration object in an ngModule like `AppModule`.
+Alternatively, you can provide and inject the configuration object in an ngModule like `AppModule`.
 
-+makeExcerpt('src/app/app.module.ts','ngmodule-providers')
-
+<code-example path="dependency-injection/src/app/app.module.ts" region="ngmodule-providers" title="src/app/app.module.ts (ngmodule-providers)"></code-example>
 
 <div id='optional'>
 
