@@ -6,7 +6,7 @@ describe('extractDecoratedClasses processor', function() {
   let dgeni, injector, processor;
 
   beforeEach(function() {
-    dgeni = new Dgeni([testPackage('angular.io-package')]);
+    dgeni = new Dgeni([testPackage('angular-content-package')]);
     injector = dgeni.configureInjector();
     processor = injector.get('copyContentAssetsProcessor');
   });
