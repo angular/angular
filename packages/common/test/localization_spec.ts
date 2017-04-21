@@ -10,6 +10,7 @@ import {LOCALE_ID} from '@angular/core';
 import {TestBed, inject} from '@angular/core/testing';
 
 import {NgLocaleLocalization, NgLocalization, getPluralCategory} from '../src/localization';
+import {Location} from '../src/location/location';
 
 export function main() {
   describe('l10n', () => {
@@ -154,6 +155,23 @@ export function main() {
             getPluralCategory(2, ['one'], l10n);
           }).toThrowError('No plural message found for value "2"');
         });
+      });
+    });
+  });
+
+  describe('Location', () => {
+    describe('stripTrailingSlash', () => {
+      describe('should strip trailing slash when url contains', () => {
+        it('no params', () => {
+          expect(Location.stripTrailingSlash('/test')).toBe('/test');
+          expect(Location.stripTrailingSlash('/test/')).toBe('/test');
+        });
+
+        it('query params',
+           () => { expect(Location.stripTrailingSlash('/test/?a=b')).toBe('/test?a=b'); });
+
+        it('hash path',
+           () => { expect(Location.stripTrailingSlash('/test/#ab')).toBe('/test#ab'); });
       });
     });
   });
