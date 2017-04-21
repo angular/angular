@@ -1,23 +1,18 @@
 import {spawn} from 'child_process';
-import {existsSync, readFileSync, statSync, writeFileSync} from 'fs-extra';
-import {basename, join} from 'path';
+import {existsSync, statSync, writeFileSync} from 'fs-extra';
+import {join} from 'path';
 import {dest, src, task} from 'gulp';
-import {inlineMetadataResources} from '../util/inline-resources';
-import {execNodeTask, execTask, sequenceTask} from '../util/task_helpers';
+import {execTask, sequenceTask} from '../util/task_helpers';
 import {composeRelease} from '../util/package-build';
+import {Bundler} from 'scss-bundle';
 import {
   COMPONENTS_DIR,
-  DIST_BUNDLES,
   DIST_MATERIAL,
   DIST_RELEASES,
-  DIST_ROOT,
-  LICENSE_BANNER,
-  PROJECT_ROOT,
 } from '../constants';
 import * as minimist from 'minimist';
 
 // There are no type definitions available for these imports.
-const glob = require('glob');
 const gulpRename = require('gulp-rename');
 
 /** Parse command-line arguments for release task. */
@@ -31,6 +26,9 @@ const themingEntryPointPath = join(COMPONENTS_DIR, 'core', 'theming', '_all-them
 
 // Output path for the scss theming bundle.
 const themingBundlePath = join(releasePath, '_theming.scss');
+
+// Matches all SCSS files in the library.
+const allScssGlob = join(COMPONENTS_DIR, '**/*.scss');
 
 // Matches all pre-built theme css files
 const prebuiltThemeGlob = join(DIST_MATERIAL, '**/theming/prebuilt/*.css');
@@ -51,26 +49,20 @@ task(':package:theming', [':bundle:theming-scss'], () => {
 });
 
 /** Bundles all scss requires for theming into a single scss file in the root of the package. */
-task(':bundle:theming-scss', execNodeTask(
-  'scss-bundle',
-  'scss-bundle', [
-    '-e', themingEntryPointPath,
-    '-d', themingBundlePath
-  ], {silentStdout: true}
-));
+task(':bundle:theming-scss', () => {
+  // Instantiates the SCSS bundler and bundles all imports of the specified entry point SCSS file.
+  // A glob of all SCSS files in the library will be passed to the bundler. The bundler takes an
+  // array of globs, which will match SCSS files that will be only included once in the bundle.
+  new Bundler().Bundle(themingEntryPointPath, [allScssGlob]).then(result => {
+    writeFileSync(themingBundlePath, result.bundledContent);
+  });
+});
 
 /** Make sure we're logged in. */
 task(':publish:whoami', execTask('npm', ['whoami'], {
   silent: true,
   errMessage: 'You must be logged in to publish.'
 }));
-
-/** Create a typing file that links to the bundled definitions of NGC. */
-function createTypingFile() {
-  writeFileSync(join(releasePath, 'material.d.ts'),
-    LICENSE_BANNER + '\nexport * from "./typings/index";'
-  );
-}
 
 task(':publish:logout', execTask('npm', ['logout']));
 

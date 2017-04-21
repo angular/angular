@@ -106,7 +106,7 @@
     "rollup": "^0.41.6",
     "run-sequence": "^1.2.2",
     "sass": "^0.5.0",
-    "scss-bundle": "^1.0.1",
+    "scss-bundle": "^2.0.1-beta.7",
     "selenium-webdriver": "^3.1.0",
     "sorcery": "^0.10.0",
     "stylelint": "^7.8.0",
