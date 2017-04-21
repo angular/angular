@@ -10,7 +10,7 @@
     "start": "yarn check-env && ng serve",
     "build": "yarn check-env && yarn setup && ng build -prod -sm",
     "lint": "yarn check-env && yarn docs-lint && ng lint",
-    "test": "yarn check-env && ng test --sourcemap=false",
+    "test": "yarn check-env && ng test",
     "pree2e": "yarn ~~update-webdriver",
     "e2e": "yarn check-env && ng e2e --no-webdriver-update",
     "setup": "yarn && yarn boilerplate:add && yarn docs &&  yarn generate-plunkers && yarn generate-zips",
