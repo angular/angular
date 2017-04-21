@@ -97,7 +97,7 @@ describe('MdSnackBar', () => {
 
     let messageElement = overlayContainerElement.querySelector('snack-bar-container');
     expect(messageElement.textContent)
-        .toContain(simpleMessage, `Expected the snack bar message to be '${simpleMessage}''`);
+        .toContain(simpleMessage, `Expected the snack bar message to be '${simpleMessage}'`);
 
     let buttonElement = overlayContainerElement.querySelector('button.mat-simple-snackbar-action');
     expect(buttonElement.tagName)
@@ -121,7 +121,7 @@ describe('MdSnackBar', () => {
 
     let messageElement = overlayContainerElement.querySelector('snack-bar-container');
     expect(messageElement.textContent)
-        .toContain(simpleMessage, `Expected the snack bar message to be '${simpleMessage}''`);
+        .toContain(simpleMessage, `Expected the snack bar message to be '${simpleMessage}'`);
     expect(overlayContainerElement.querySelector('button.mat-simple-snackbar-action'))
         .toBeNull('Expected the query selection for action label to be null');
   });
