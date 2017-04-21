@@ -57,8 +57,8 @@ A custom theme file does two things:
 1. Imports the `mat-core()` sass mixin. This includes all common styles that are used by multiple
 components. **This should only be included once in your application.** If this mixin is included
 multiple times, your application will end up with multiple copies of these common styles.
-2. Defines a **theme** data structure as the composition of multiple palettes. This object can be 
-created with either the `mat-light-theme` function or the `mat-dark-theme` function. The output of 
+2. Defines a **theme** data structure as the composition of multiple palettes. This object can be
+created with either the `mat-light-theme` function or the `mat-dark-theme` function. The output of
 this function is then passed to the  `angular-material-theme` mixin, which will output all of the
 corresponding styles for the theme.
 
@@ -105,7 +105,7 @@ node-sass src/unicorn-app-theme.scss dist/unicorn-app-theme.css
 and then include the output file in your index.html.
 
 The theme file **should not** be imported into other SCSS files. This will cause duplicate styles
-to be written into your CSS output. If you want to consume the theme definition object 
+to be written into your CSS output. If you want to consume the theme definition object
 (e.g., `$candy-app-theme`) in other SCSS files, then the definition of the theme object should be
 broken into its own file, separate from the inclusion of the `mat-core` and
 `angular-material-theme` mixins.
@@ -119,8 +119,8 @@ styles will be subject to that component's [view encapsulation](https://angular.
 You can create multiple themes for your application by including the `angular-material-theme` mixin
 multiple times, where each inclusion is gated by an additional CSS class.
 
-Remember to only ever include the `@mat-core` mixin only once; it should not be included for each 
-theme. 
+Remember to only ever include the `@mat-core` mixin only once; it should not be included for each
+theme.
 
 ##### Example of defining multiple themes:
 ```scss
@@ -148,25 +148,25 @@ $dark-warn:    mat-palette($mat-deep-orange);
 $dark-theme:   mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
 
 // Include the alternative theme styles inside of a block with a CSS class. You can make this
-// CSS class whatever you want. In this example, any component inside of an element with 
-// `.unicorn-dark-theme` will be affected by this alternate dark theme instead of the default theme. 
+// CSS class whatever you want. In this example, any component inside of an element with
+// `.unicorn-dark-theme` will be affected by this alternate dark theme instead of the default theme.
 .unicorn-dark-theme {
   @include angular-material-theme($dark-theme);
 }
 ```
 
-In the above example, any component inside of a parent with the `unicorn-dark-theme` class will use 
+In the above example, any component inside of a parent with the `unicorn-dark-theme` class will use
 the dark theme, while other components will fall back to the default `$candy-app-theme`.
 
-You can include as many themes as you like in this manner. You can also `@include` the 
-`angular-material-theme` in separate files and then lazily load them based on an end-user 
+You can include as many themes as you like in this manner. You can also `@include` the
+`angular-material-theme` in separate files and then lazily load them based on an end-user
 interaction (how to lazily load the CSS assets will vary based on your application).
 
 It's important to remember, however, that the `mat-core` mixin should only ever be included _once_.
 
 ##### Multiple themes and overlay-based components
 Since certain components (e.g. menu, select, dialog, etc.) are inside of a global overlay container,
-an additional step is required for those components to be affected by the theme's css class selector 
+an additional step is required for those components to be affected by the theme's css class selector
 (`.unicorn-dark-theme` in the example above).
 
 To do this, you can specify a `themeClass` on the global overlay container. For the example above,
@@ -209,13 +209,13 @@ $candy-app-accent:  mat-palette($mat-pink, A200, A100, A400);
 $candy-app-theme:   mat-light-theme($candy-app-primary, $candy-app-accent);
 
 // Include the theme styles for only specified components.
-@include mat-core-theme($theme);
-@include mat-button-theme($theme);
-@include mat-checkbox-theme($theme);
+@include mat-core-theme($candy-app-theme);
+@include mat-button-theme($candy-app-theme);
+@include mat-checkbox-theme($candy-app-theme);
 ```
 
 ### Theming your own components
-For more details about theming your own components, 
+For more details about theming your own components,
 see [theming-your-components.md](./theming-your-components.md)
 
 ### Future work
