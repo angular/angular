@@ -56,12 +56,6 @@ describe('SearchBoxComponent', () => {
       input.triggerEventHandler('keyup', { target: { value: 'some query' }, which: 27 });
       expect(search.search).not.toHaveBeenCalled();
     }));
-
-    it('should set the search part of the browser location', inject([LocationService], (location: MockLocationService) => {
-      const input = fixture.debugElement.query(By.css('input'));
-      input.triggerEventHandler('keyup', { target: { value: 'some query' } });
-      expect(location.setSearch).toHaveBeenCalledWith('Full Text Search', { search: 'some query' });
-    }));
   });
 
   describe('on focus', () => {
