@@ -33,8 +33,6 @@ $mat-progress-spinner-viewport-size: 100px !default;
   path {
     fill: transparent;
 
-    // Stroke width of 10px defines stroke as 10% of the viewBox.
-    stroke-width: $mat-progress-spinner-stroke-width;
     transition: stroke $swift-ease-in-duration $ease-in-out-curve-function;
   }
 

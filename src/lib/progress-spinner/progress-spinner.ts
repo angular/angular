@@ -24,10 +24,12 @@ const DURATION_DETERMINATE = 225;
 const startIndeterminate = 3;
 /** End animation value of the indeterminate animation */
 const endIndeterminate = 80;
-/* Maximum angle for the arc. The angle can't be exactly 360, because the arc becomes hidden. */
+/** Maximum angle for the arc. The angle can't be exactly 360, because the arc becomes hidden. */
 const MAX_ANGLE = 359.99 / 100;
 /** Whether the user's browser supports requestAnimationFrame. */
 const HAS_RAF = typeof requestAnimationFrame !== 'undefined';
+/** Default stroke width as a percentage of the viewBox. */
+export const PROGRESS_SPINNER_STROKE_WIDTH = 10;
 
 export type ProgressSpinnerMode = 'determinate' | 'indeterminate';
 
@@ -76,6 +78,9 @@ export class MdProgressSpinner implements OnDestroy {
   private _mode: ProgressSpinnerMode = 'determinate';
   private _value: number;
   private _color: string = 'primary';
+
+  /** Stroke width of the progress spinner. By default uses 10px as stroke width. */
+  @Input() strokeWidth: number = PROGRESS_SPINNER_STROKE_WIDTH;
 
   /**
    * Values for aria max and min are only defined as numbers when in a determinate mode.  We do this
@@ -248,7 +253,8 @@ export class MdProgressSpinner implements OnDestroy {
    */
   private _renderArc(currentValue: number, rotation = 0) {
     if (this._path) {
-      this._renderer.setAttribute(this._path.nativeElement, 'd', getSvgArc(currentValue, rotation));
+      const svgArc = getSvgArc(currentValue, rotation, this.strokeWidth);
+      this._renderer.setAttribute(this._path.nativeElement, 'd', svgArc);
     }
   }
 }
@@ -336,13 +342,14 @@ function materialEase(currentTime: number, startValue: number,
  * @param currentValue The current percentage value of the progress circle, the percentage of the
  *    circle to fill.
  * @param rotation The starting point of the circle with 0 being the 0 degree point.
+ * @param strokeWidth Stroke width of the progress spinner arc.
  * @return A string for an SVG path representing a circle filled from the starting point to the
  *    percentage value provided.
  */
-function getSvgArc(currentValue: number, rotation: number) {
+function getSvgArc(currentValue: number, rotation: number, strokeWidth: number) {
   let startPoint = rotation || 0;
   let radius = 50;
-  let pathRadius = 40;
+  let pathRadius = radius - strokeWidth;
 
   let startAngle = startPoint * MAX_ANGLE;
   let endAngle = currentValue * MAX_ANGLE;

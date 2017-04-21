@@ -2,6 +2,7 @@ import {TestBed, async} from '@angular/core/testing';
 import {Component} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {MdProgressSpinnerModule} from './index';
+import {PROGRESS_SPINNER_STROKE_WIDTH} from './progress-spinner';
 
 
 describe('MdProgressSpinner', () => {
@@ -14,6 +15,7 @@ describe('MdProgressSpinner', () => {
         IndeterminateProgressSpinner,
         ProgressSpinnerWithValueAndBoundMode,
         ProgressSpinnerWithColor,
+        ProgressSpinnerCustomStrokeWidth,
         IndeterminateProgressSpinnerWithNgIf,
         SpinnerWithNgIf,
         SpinnerWithColor
@@ -108,6 +110,27 @@ describe('MdProgressSpinner', () => {
     expect(progressElement.componentInstance.interdeterminateInterval).toBeFalsy();
   });
 
+  it('should set a default stroke width', () => {
+    let fixture = TestBed.createComponent(BasicProgressSpinner);
+    let pathElement = fixture.nativeElement.querySelector('path');
+
+    fixture.detectChanges();
+
+    expect(parseInt(pathElement.style.strokeWidth))
+      .toBe(PROGRESS_SPINNER_STROKE_WIDTH, 'Expected the default stroke-width to be applied.');
+  });
+
+  it('should allow a custom stroke width', () => {
+    let fixture = TestBed.createComponent(ProgressSpinnerCustomStrokeWidth);
+    let pathElement = fixture.nativeElement.querySelector('path');
+
+    fixture.componentInstance.strokeWidth = 40;
+    fixture.detectChanges();
+
+    expect(parseInt(pathElement.style.strokeWidth))
+      .toBe(40, 'Expected the custom stroke width to be applied to the path element.');
+  });
+
   it('should set the color class on the md-spinner', () => {
     let fixture = TestBed.createComponent(SpinnerWithColor);
     fixture.detectChanges();
@@ -159,7 +182,12 @@ describe('MdProgressSpinner', () => {
 
 
 @Component({template: '<md-progress-spinner></md-progress-spinner>'})
-class BasicProgressSpinner { }
+class BasicProgressSpinner {}
+
+@Component({template: '<md-progress-spinner [strokeWidth]="strokeWidth"></md-progress-spinner>'})
+class ProgressSpinnerCustomStrokeWidth {
+  strokeWidth: number;
+}
 
 @Component({template: '<md-progress-spinner mode="indeterminate"></md-progress-spinner>'})
 class IndeterminateProgressSpinner { }
