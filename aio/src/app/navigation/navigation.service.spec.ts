@@ -178,9 +178,6 @@ describe('NavigationService', () => {
       locationService.go('c');
       expect(currentNode).toEqual(cnode, 'location: c');
 
-      locationService.go('c/');
-      expect(currentNode).toEqual(cnode, 'location: c/');
-
       locationService.go('c#foo');
       expect(currentNode).toEqual(cnode, 'location: c#foo');
 
