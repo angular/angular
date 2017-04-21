@@ -1,6 +1,85 @@
-// Implement the rem unit with SCSS so we don't have to actually set a font-size on
-// the user's body element.
-@function rem($multiplier) {
-  $font-size: 10px;
-  @return $multiplier * $font-size;
+@import 'typography-utils';
+
+// Represents a typography level from the Material design spec.
+@function mat-typography-level($font-size, $line-height: $font-size, $font-weight: 400) {
+  @return (
+    font-size: $font-size,
+    line-height: $line-height,
+    font-weight: $font-weight
+  );
+}
+
+// Represents a collection of typography levels.
+// Defaults come from https://material.io/guidelines/style/typography.html
+@function mat-typography-config(
+  $font-family: 'Roboto, sans-serif',
+  $display-4:   mat-typography-level(112px, 112px, 300),
+  $display-3:   mat-typography-level(56px, 56px, 400),
+  $display-2:   mat-typography-level(45px, 48px, 400),
+  $display-1:   mat-typography-level(34px, 40px, 400),
+  $headline:    mat-typography-level(24px, 32px, 400),
+  $title:       mat-typography-level(20px, 20px, 500),
+  $subheading:  mat-typography-level(16px, 28px, 400),
+  $body-2:      mat-typography-level(14px, 24px, 500),
+  $body-1:      mat-typography-level(14px, 20px, 400),
+  $caption:     mat-typography-level(12px, 12px, 400),
+  $button:      mat-typography-level(14px, 14px, 500)
+) {
+  @return (
+    font-family: $font-family,
+    display-4:   $display-4,
+    display-3:   $display-3,
+    display-2:   $display-2,
+    display-1:   $display-1,
+    headline:    $headline,
+    title:       $title,
+    subheading:  $subheading,
+    body-2:      $body-2,
+    body-1:      $body-1,
+    caption:     $caption,
+    button:      $button
+  );
+}
+
+// Adds the base typography styles, based on a config.
+@mixin mat-typography($config: mat-typography-config(), $selector: '.mat-typography') {
+  .mat-h0, .mat-hero-header {
+    @include mat-typography-level-to-styles($config, display-4);
+  }
+
+  .mat-h1, #{$selector} h1 {
+    @include mat-typography-level-to-styles($config, display-3);
+  }
+
+  .mat-h2, #{$selector} h2 {
+    @include mat-typography-level-to-styles($config, display-2);
+  }
+
+  .mat-h3, #{$selector} h3 {
+    @include mat-typography-level-to-styles($config, display-1);
+  }
+
+  .mat-h4, #{$selector} h4 {
+    @include mat-typography-level-to-styles($config, headline);
+  }
+
+  .mat-h5, #{$selector} h5 {
+    @include mat-typography-level-to-styles($config, title);
+  }
+
+  .mat-h6, #{$selector} h6 {
+    @include mat-typography-level-to-styles($config, subheading);
+  }
+
+  .mat-body-strong {
+    @include mat-typography-level-to-styles($config, body-2);
+  }
+
+  .mat-body, #{$selector} {
+    @include mat-typography-level-to-styles($config, body-1);
+  }
+
+  .mat-small {
+    @include mat-typography-level-to-styles($config, caption);
+  }
 }
