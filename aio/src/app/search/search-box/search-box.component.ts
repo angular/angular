@@ -41,11 +41,9 @@ export class SearchBoxComponent implements OnInit {
   }
 
   onSearch(query: string, keyCode?: number) {
-    if (keyCode === 27) {
-      // Ignore escape key
+    if (keyCode === 27) { // ignore escape key
       return;
     }
-    this.locationService.setSearch('Full Text Search', { search: query });
     this.searchService.search(query);
   }
 }
