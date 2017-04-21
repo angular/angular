@@ -5,7 +5,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { Location, LocationStrategy, PathLocationStrategy } from '@angular/common';
 
-import { MdToolbarModule, MdButtonModule, MdIconModule, MdInputModule, MdSidenavModule, MdTabsModule, Platform} from '@angular/material';
+import { MdToolbarModule, MdButtonModule, MdIconModule, MdInputModule, MdSidenavModule, MdTabsModule, Platform,
+         MdIconRegistry } from '@angular/material';
 
 // Temporary fix for MdSidenavModule issue:
 // crashes with "missing first" operator when SideNav.mode is "over"
@@ -31,6 +32,29 @@ import { NavItemComponent } from 'app/layout/nav-item/nav-item.component';
 import { SearchResultsComponent } from './search/search-results/search-results.component';
 import { SearchBoxComponent } from './search/search-box/search-box.component';
 import { AutoScrollService } from 'app/shared/auto-scroll.service';
+import { CustomMdIconRegistry, SVG_ICONS } from 'app/shared/custom-md-icon-registry';
+
+// These are the hardcoded inline svg sources to be used by the `<md-icon>` component
+export const svgIconProviders = [
+  {
+    provide: SVG_ICONS,
+    useValue: {
+      name: 'keyboard_arrow_right',
+      svgSource: '<svg xmlns="http://www.w3.org/2000/svg" focusable="false" ' +
+                 'viewBox="0 0 24 24"><path d="M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z"/></svg>'
+    },
+    multi: true
+  },
+  {
+    provide: SVG_ICONS,
+    useValue: {
+      name: 'menu',
+      svgSource: '<svg xmlns="http://www.w3.org/2000/svg" focusable="false" ' +
+                 'viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>'
+    },
+    multi: true
+  }
+];
 
 @NgModule({
   imports: [
@@ -69,6 +93,8 @@ import { AutoScrollService } from 'app/shared/auto-scroll.service';
     SearchService,
     Platform,
     AutoScrollService,
+    { provide: MdIconRegistry, useClass: CustomMdIconRegistry },
+    svgIconProviders
   ],
   bootstrap: [AppComponent]
 })
