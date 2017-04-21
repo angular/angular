@@ -95,8 +95,7 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
    * Change events are only emitted when the value changes due to user interaction with
    * a radio button (the same behavior as `<input type-"radio">`).
    */
-  @Output()
-  change: EventEmitter<MdRadioChange> = new EventEmitter<MdRadioChange>();
+  @Output() change: EventEmitter<MdRadioChange> = new EventEmitter<MdRadioChange>();
 
   /** Child radio buttons. */
   @ContentChildren(forwardRef(() => MdRadioButton))
@@ -379,8 +378,7 @@ export class MdRadioButton implements OnInit, AfterViewInit, OnDestroy {
    * Change events are only emitted when the value changes due to user interaction with
    * the radio button (the same behavior as `<input type-"radio">`).
    */
-  @Output()
-  change: EventEmitter<MdRadioChange> = new EventEmitter<MdRadioChange>();
+  @Output() change: EventEmitter<MdRadioChange> = new EventEmitter<MdRadioChange>();
 
   /** The parent radio group. May or may not be present. */
   radioGroup: MdRadioGroup;

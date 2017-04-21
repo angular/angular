@@ -84,20 +84,11 @@ export class MdTabGroup {
     return this.selectChange.map(event => event.index);
   }
 
-  private _onFocusChange: EventEmitter<MdTabChangeEvent> = new EventEmitter<MdTabChangeEvent>();
-
   /** Event emitted when focus has changed within a tab group. */
-  @Output() get focusChange(): Observable<MdTabChangeEvent> {
-    return this._onFocusChange.asObservable();
-  }
-
-  private _onSelectChange: EventEmitter<MdTabChangeEvent> =
-      new EventEmitter<MdTabChangeEvent>(true);
+  @Output() focusChange: EventEmitter<MdTabChangeEvent> = new EventEmitter<MdTabChangeEvent>();
 
   /** Event emitted when the tab selection has changed. */
-  @Output() get selectChange(): Observable<MdTabChangeEvent> {
-    return this._onSelectChange.asObservable();
-  }
+  @Output() selectChange: EventEmitter<MdTabChangeEvent> = new EventEmitter<MdTabChangeEvent>(true);
 
   private _groupId: number;
 
@@ -121,7 +112,7 @@ export class MdTabGroup {
     // If there is a change in selected index, emit a change event. Should not trigger if
     // the selected index has not yet been initialized.
     if (this._selectedIndex != this._indexToSelect && this._selectedIndex != null) {
-      this._onSelectChange.emit(this._createChangeEvent(this._indexToSelect));
+      this.selectChange.emit(this._createChangeEvent(this._indexToSelect));
     }
 
     // Setup the position for each tab and optionally setup an origin on the next selected tab.
@@ -147,7 +138,7 @@ export class MdTabGroup {
   }
 
   _focusChanged(index: number) {
-    this._onFocusChange.emit(this._createChangeEvent(index));
+    this.focusChange.emit(this._createChangeEvent(index));
   }
 
   private _createChangeEvent(index: number): MdTabChangeEvent {

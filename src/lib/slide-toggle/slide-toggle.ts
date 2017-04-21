@@ -109,9 +109,8 @@ export class MdSlideToggle implements OnDestroy, AfterContentInit, ControlValueA
   get disableRipple(): boolean { return this._disableRipple; }
   set disableRipple(value) { this._disableRipple = coerceBooleanProperty(value); }
 
-  private _change: EventEmitter<MdSlideToggleChange> = new EventEmitter<MdSlideToggleChange>();
   /** An event will be dispatched each time the slide-toggle changes its value. */
-  @Output() change: Observable<MdSlideToggleChange> = this._change.asObservable();
+  @Output() change: EventEmitter<MdSlideToggleChange> = new EventEmitter<MdSlideToggleChange>();
 
   /** Returns the unique id for the visual hidden input. */
   get inputId(): string { return `${this.id || this._uniqueId}-input`; }
@@ -262,7 +261,7 @@ export class MdSlideToggle implements OnDestroy, AfterContentInit, ControlValueA
     let event = new MdSlideToggleChange();
     event.source = this;
     event.checked = this.checked;
-    this._change.emit(event);
+    this.change.emit(event);
   }
 
 

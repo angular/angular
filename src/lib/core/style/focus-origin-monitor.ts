@@ -284,8 +284,7 @@ export class FocusOriginMonitor {
   selector: '[cdkMonitorElementFocus], [cdkMonitorSubtreeFocus]',
 })
 export class CdkMonitorFocus implements OnDestroy {
-  @Output()
-  cdkFocusChange = new EventEmitter<FocusOrigin>();
+  @Output() cdkFocusChange = new EventEmitter<FocusOrigin>();
 
   constructor(private _elementRef: ElementRef, private _focusOriginMonitor: FocusOriginMonitor,
               renderer: Renderer) {

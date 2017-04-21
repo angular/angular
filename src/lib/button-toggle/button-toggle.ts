@@ -160,10 +160,7 @@ export class MdButtonToggleGroup implements AfterViewInit, ControlValueAccessor 
   }
 
   /** Event emitted when the group's value changes. */
-  @Output() get change(): Observable<MdButtonToggleChange> {
-    return this._change.asObservable();
-  }
-  private _change: EventEmitter<MdButtonToggleChange> = new EventEmitter<MdButtonToggleChange>();
+  @Output() change: EventEmitter<MdButtonToggleChange> = new EventEmitter<MdButtonToggleChange>();
 
   private _updateButtonToggleNames(): void {
     if (this._buttonToggles) {
@@ -198,7 +195,7 @@ export class MdButtonToggleGroup implements AfterViewInit, ControlValueAccessor 
     event.source = this._selected;
     event.value = this._value;
     this._controlValueAccessorChangeFn(event.value);
-    this._change.emit(event);
+    this.change.emit(event);
   }
 
   /**
@@ -372,10 +369,7 @@ export class MdButtonToggle implements OnInit {
   }
 
   /** Event emitted when the group value changes. */
-  private _change: EventEmitter<MdButtonToggleChange> = new EventEmitter<MdButtonToggleChange>();
-  @Output() get change(): Observable<MdButtonToggleChange> {
-    return this._change.asObservable();
-  }
+  @Output() change: EventEmitter<MdButtonToggleChange> = new EventEmitter<MdButtonToggleChange>();
 
   constructor(@Optional() toggleGroup: MdButtonToggleGroup,
               @Optional() toggleGroupMultiple: MdButtonToggleGroupMultiple,
@@ -460,6 +454,6 @@ export class MdButtonToggle implements OnInit {
     let event = new MdButtonToggleChange();
     event.source = this;
     event.value = this._value;
-    this._change.emit(event);
+    this.change.emit(event);
   }
 }

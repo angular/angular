@@ -78,12 +78,10 @@ export class MdTabBody implements OnInit, AfterViewChecked {
   @ViewChild(PortalHostDirective) _portalHost: PortalHostDirective;
 
   /** Event emitted when the tab begins to animate towards the center as the active tab. */
-  @Output()
-  onCentering: EventEmitter<number> = new EventEmitter<number>();
+  @Output() onCentering: EventEmitter<number> = new EventEmitter<number>();
 
   /** Event emitted when the tab completes its animation towards the center. */
-  @Output()
-  onCentered: EventEmitter<void> = new EventEmitter<void>(true);
+  @Output() onCentered: EventEmitter<void> = new EventEmitter<void>(true);
 
   /** The tab body content to display. */
   @Input('content') _content: TemplatePortal;
