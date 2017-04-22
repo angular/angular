@@ -12,7 +12,7 @@ const PROTRACTOR_CONFIG_FILENAME = path.join(__dirname, './shared/protractor.con
 const SPEC_FILENAME = 'e2e-spec.ts';
 const EXAMPLE_CONFIG_FILENAME = 'example-config.json';
 const IGNORED_EXAMPLES = [
-  'cb-ts-to-js/'
+  'ts-to-js/'
 ];
 
 /**
