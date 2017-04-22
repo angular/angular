@@ -1,5 +1,5 @@
 @title
-Additional techniques
+Techniques
 
 @description
-Learn important techniques such as how to secure, style, animate, and deploy your application.
+Learn important Angular application techniques such as how to setup, secure, and deploy your application.

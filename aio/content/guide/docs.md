@@ -29,16 +29,16 @@ Angular Docs
         <p class="card-footer">View API Reference</p>
     </a>
 
-    <a href="guide/core" class="card">
+    <a href="guide/fundamentals" class="card">
         <h2>Core Guide</h2>
-        <p>Core features of Angular.</p>
-        <p class="card-footer">View Core Guide</p>
+        <p>The Fundamentals of Angular.</p>
+        <p class="card-footer">View Fundamentals</p>
     </a>
 
-    <a href="guide/additional" class="card">
-        <h2>Additional Techniques</h2>
-        <p>Additional modules and techniques.</p>
-        <p class="card-footer">View Additional Techniques</p>
+    <a href="guide/techniques" class="card">
+        <h2>Angular Techniques</h2>
+        <p>Techniques for setting up, configuring, and deploying your application.</p>
+        <p class="card-footer">View Techniques</p>
     </a>
 
 <div>

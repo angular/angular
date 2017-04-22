@@ -1,5 +1,5 @@
 @title
-Setup Anatomy
+Anatomy of the Setup Project
 
 @intro
 Inside the local development environment for SystemJS.
