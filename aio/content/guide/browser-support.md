@@ -389,7 +389,7 @@ Here are the features which may require additional polyfills:
   <tr style="vertical-align: top">
  
     <td>
-      <a href="./server-communication.html">Http</a>      <span> when sending and receiving binary data</span>
+      <a href="./http.html">Http</a>      <span> when sending and receiving binary data</span>
     </td>
 
     <td>

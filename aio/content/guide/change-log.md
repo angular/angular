@@ -75,7 +75,7 @@ Revised samples are clearer and cover all topics discussed.
 added (optional) instructions on how to remove _non-essential_ files. 
 * No longer consolidate RxJS operator imports in `rxjs-extensions` file; each file should import what it needs.
 * All samples prepend template/style URLs with `./` as a best practice.
-* [Style Guide](guide/style-guide): copy edits and revised rules.
+* [Style Guide](guide/styleguide): copy edits and revised rules.
 
 ## Router: more detail (2016-12-21)
 
@@ -85,7 +85,7 @@ including sections named outlets, wildcard routes, and preload strategies.
 ## HTTP: how to set default request headers (and other request options) (2016-12-14)
 
 Added section on how to set default request headers (and other request options) to 
-[HTTP](guide/server-communication#override-default-request-options) guide.
+[HTTP](guide/http#override-default-request-options) guide.
 
 ## Testing: added component test plunkers (2016-12-02)
 
@@ -205,7 +205,7 @@ The new "angular-in-memory-web-api" has new features.
 
 ## "Style Guide" with _NgModules_ (2016-09-27)
 
-[StyleGuide](guide/style-guide) explains recommended conventions for Angular modules (NgModule).
+[StyleGuide](guide/styleguide) explains recommended conventions for Angular modules (NgModule).
 Barrels now are far less useful and have been removed from the style guide;
 they remain valuable but are not a matter of Angular style.
 Also relaxed the rule that discouraged use of the `@Component.host` property.

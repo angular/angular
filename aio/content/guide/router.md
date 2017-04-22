@@ -1244,7 +1244,7 @@ Now you'll learn the following:
 This example recreates the heroes feature in the "Services" episode of the
 [Tour of Heroes tutorial](tutorial/toh-pt4 "Tour of Heroes: Services"),
 and you'll be copying much of the code 
-from the <live-example name="toh-4" title="Tour of Heroes: Services example code"></live-example>.
+from the <live-example name="toh-pt4" title="Tour of Heroes: Services example code"></live-example>.
 
 Here's how the user will experience this version of the app:
 
@@ -1277,7 +1277,7 @@ Follow these steps:
 * Delete the placeholder `hero-list.component.ts` that's in the `app` folder.
 * Create a new `hero-list.component.ts` under `src/app/heroes`.
 * Copy into it the contents of the `app.component.ts` from
-  the <live-example name="toh-4" title="Tour of Heroes: Services example code">"Services" tutorial</live-example>.
+  the <live-example name="toh-pt4" title="Tour of Heroes: Services example code">"Services" tutorial</live-example>.
 * Make a few minor but necessary changes:
 
   * Delete the `selector` (routed components don't need them).

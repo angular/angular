@@ -26,7 +26,7 @@ export function getTestNavMapResponse(): Response {
           "tooltip": "Introduction to the Tour of Heroes tutorial"
         },
         {
-          "docId": "tutorial/toh-1",
+          "docId": "tutorial/toh-pt1",
           "navTitle": "The Hero Editor",
           "tooltip": "Build a simple hero editor."
         }

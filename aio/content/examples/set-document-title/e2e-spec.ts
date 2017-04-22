@@ -1,8 +1,7 @@
-'use strict'; // necessary for es6 output in node 
+'use strict'; // necessary for es6 output in node
 
 import { browser, element, by, ElementFinder } from 'protractor';
 
-// gulp run-e2e-tests --filter=cb-set-document-title
 describe('Set Document Title', function () {
 
     beforeAll(function () {

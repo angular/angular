@@ -17,7 +17,7 @@ This guide helps you transition from AngularJS to Angular
 by mapping AngularJS syntax to the equivalent Angular syntax.
 
 
-**See the Angular syntax in this <live-example name="cb-ajs-quick-reference"></live-example>**.
+**See the Angular syntax in this <live-example name="ajs-quick-reference"></live-example>**.
 
 ## Contents
 
@@ -84,7 +84,7 @@ The following table lists some of the key AngularJS template features with their
 
 
       ### Bindings/interpolation
-      <code-example path="cb-ajs-quick-reference/src/app/movie-list.component.html" region="interpolation" title="cb-ajs-quick-reference/src/app/movie-list.component.html" linenums="false">
+      <code-example path="ajs-quick-reference/src/app/movie-list.component.html" region="interpolation" title="ajs-quick-reference/src/app/movie-list.component.html" linenums="false">
 
       </code-example>
 
@@ -120,7 +120,7 @@ The following table lists some of the key AngularJS template features with their
 
 
       ### Pipes
-      <code-example path="cb-ajs-quick-reference/src/app/app.component.html" region="uppercase" title="cb-ajs-quick-reference/src/app/app.component.html" linenums="false">
+      <code-example path="ajs-quick-reference/src/app/app.component.html" region="uppercase" title="ajs-quick-reference/src/app/app.component.html" linenums="false">
 
       </code-example>
 
@@ -154,7 +154,7 @@ The following table lists some of the key AngularJS template features with their
 
 
       ### Input variables
-      <code-example path="cb-ajs-quick-reference/src/app/app.component.html" region="local" title="cb-ajs-quick-reference/src/app/app.component.html" linenums="false">
+      <code-example path="ajs-quick-reference/src/app/app.component.html" region="local" title="ajs-quick-reference/src/app/app.component.html" linenums="false">
 
       </code-example>
 
@@ -225,11 +225,11 @@ The following are some of the key AngularJS built-in directives and their equiva
 
 
       ### Bootstrapping
-      <code-example path="cb-ajs-quick-reference/src/main.ts" title="main.ts" linenums="false">
+      <code-example path="ajs-quick-reference/src/main.ts" title="main.ts" linenums="false">
 
       </code-example>
       <br>
-      <code-example path="cb-ajs-quick-reference/src/app/app.module.1.ts" title="app.module.ts" linenums="false">
+      <code-example path="ajs-quick-reference/src/app/app.module.1.ts" title="app.module.ts" linenums="false">
 
       </code-example>
 
@@ -271,7 +271,7 @@ The following are some of the key AngularJS built-in directives and their equiva
 
 
       ### ngClass
-      <code-example path="cb-ajs-quick-reference/src/app/app.component.html" region="ngClass" title="cb-ajs-quick-reference/src/app/app.component.html" linenums="false">
+      <code-example path="ajs-quick-reference/src/app/app.component.html" region="ngClass" title="ajs-quick-reference/src/app/app.component.html" linenums="false">
 
       </code-example>
 
@@ -317,7 +317,7 @@ The following are some of the key AngularJS built-in directives and their equiva
 
 
       ### Bind to the `click` event
-      <code-example path="cb-ajs-quick-reference/src/app/app.component.html" region="event-binding" title="cb-ajs-quick-reference/src/app/app.component.html" linenums="false">
+      <code-example path="ajs-quick-reference/src/app/app.component.html" region="event-binding" title="ajs-quick-reference/src/app/app.component.html" linenums="false">
 
       </code-example>
 
@@ -364,7 +364,7 @@ The following are some of the key AngularJS built-in directives and their equiva
 
 
       ### Component decorator
-      <code-example path="cb-ajs-quick-reference/src/app/movie-list.component.ts" region="component" title="cb-ajs-quick-reference/src/app/movie-list.component.ts" linenums="false">
+      <code-example path="ajs-quick-reference/src/app/movie-list.component.ts" region="component" title="ajs-quick-reference/src/app/movie-list.component.ts" linenums="false">
 
       </code-example>
 
@@ -426,7 +426,7 @@ The following are some of the key AngularJS built-in directives and their equiva
 
 
       ### Bind to the `href` property
-      <code-example path="cb-ajs-quick-reference/src/app/app.component.html" region="href" title="cb-ajs-quick-reference/src/app/app.component.html" linenums="false">
+      <code-example path="ajs-quick-reference/src/app/app.component.html" region="href" title="ajs-quick-reference/src/app/app.component.html" linenums="false">
 
       </code-example>
 
@@ -438,7 +438,7 @@ The following are some of the key AngularJS built-in directives and their equiva
       section of the [Template Syntax](guide/template-syntax) page.
 
       In Angular, `href` is no longer used for routing. Routing uses `routerLink`, as shown in the following example.
-      <code-example path="cb-ajs-quick-reference/src/app/app.component.html" region="router-link" title="cb-ajs-quick-reference/src/app/app.component.html" linenums="false">
+      <code-example path="ajs-quick-reference/src/app/app.component.html" region="router-link" title="ajs-quick-reference/src/app/app.component.html" linenums="false">
 
       </code-example>
 
@@ -471,7 +471,7 @@ The following are some of the key AngularJS built-in directives and their equiva
 
 
       ### *ngIf
-      <code-example path="cb-ajs-quick-reference/src/app/movie-list.component.html" region="ngIf" title="cb-ajs-quick-reference/src/app/movie-list.component.html" linenums="false">
+      <code-example path="ajs-quick-reference/src/app/movie-list.component.html" region="ngIf" title="ajs-quick-reference/src/app/movie-list.component.html" linenums="false">
 
       </code-example>
 
@@ -506,7 +506,7 @@ The following are some of the key AngularJS built-in directives and their equiva
 
 
       ### ngModel
-      <code-example path="cb-ajs-quick-reference/src/app/movie-list.component.html" region="ngModel" title="cb-ajs-quick-reference/src/app/movie-list.component.html" linenums="false">
+      <code-example path="ajs-quick-reference/src/app/movie-list.component.html" region="ngModel" title="ajs-quick-reference/src/app/movie-list.component.html" linenums="false">
 
       </code-example>
 
@@ -542,7 +542,7 @@ The following are some of the key AngularJS built-in directives and their equiva
 
 
       ### *ngFor
-      <code-example path="cb-ajs-quick-reference/src/app/movie-list.component.html" region="ngFor" title="cb-ajs-quick-reference/src/app/movie-list.component.html" linenums="false">
+      <code-example path="ajs-quick-reference/src/app/movie-list.component.html" region="ngFor" title="ajs-quick-reference/src/app/movie-list.component.html" linenums="false">
 
       </code-example>
 
@@ -585,7 +585,7 @@ The following are some of the key AngularJS built-in directives and their equiva
 
 
       ### Bind to the `hidden` property
-      <code-example path="cb-ajs-quick-reference/src/app/movie-list.component.html" region="hidden" title="cb-ajs-quick-reference/src/app/movie-list.component.html" linenums="false">
+      <code-example path="ajs-quick-reference/src/app/movie-list.component.html" region="hidden" title="ajs-quick-reference/src/app/movie-list.component.html" linenums="false">
 
       </code-example>
 
@@ -624,7 +624,7 @@ The following are some of the key AngularJS built-in directives and their equiva
 
 
       ### Bind to the `src` property
-      <code-example path="cb-ajs-quick-reference/src/app/app.component.html" region="src" title="cb-ajs-quick-reference/src/app/app.component.html" linenums="false">
+      <code-example path="ajs-quick-reference/src/app/app.component.html" region="src" title="ajs-quick-reference/src/app/app.component.html" linenums="false">
 
       </code-example>
 
@@ -661,7 +661,7 @@ The following are some of the key AngularJS built-in directives and their equiva
 
 
       ### ngStyle
-      <code-example path="cb-ajs-quick-reference/src/app/app.component.html" region="ngStyle" title="cb-ajs-quick-reference/src/app/app.component.html" linenums="false">
+      <code-example path="ajs-quick-reference/src/app/app.component.html" region="ngStyle" title="ajs-quick-reference/src/app/app.component.html" linenums="false">
 
       </code-example>
 
@@ -716,7 +716,7 @@ The following are some of the key AngularJS built-in directives and their equiva
 
 
       ### ngSwitch
-      <code-example path="cb-ajs-quick-reference/src/app/movie-list.component.html" region="ngSwitch" title="cb-ajs-quick-reference/src/app/movie-list.component.html" linenums="false">
+      <code-example path="ajs-quick-reference/src/app/movie-list.component.html" region="ngSwitch" title="ajs-quick-reference/src/app/movie-list.component.html" linenums="false">
 
       </code-example>
 
@@ -795,7 +795,7 @@ For more information on pipes, see [Pipes](guide/pipes).
 
 
       ### currency
-      <code-example path="cb-ajs-quick-reference/src/app/app.component.html" region="currency" title="cb-ajs-quick-reference/src/app/app.component.html" linenums="false">
+      <code-example path="ajs-quick-reference/src/app/app.component.html" region="currency" title="ajs-quick-reference/src/app/app.component.html" linenums="false">
 
       </code-example>
 
@@ -823,7 +823,7 @@ For more information on pipes, see [Pipes](guide/pipes).
 
 
       ### date
-      <code-example path="cb-ajs-quick-reference/src/app/app.component.html" region="date" title="cb-ajs-quick-reference/src/app/app.component.html" linenums="false">
+      <code-example path="ajs-quick-reference/src/app/app.component.html" region="date" title="ajs-quick-reference/src/app/app.component.html" linenums="false">
 
       </code-example>
 
@@ -876,7 +876,7 @@ For more information on pipes, see [Pipes](guide/pipes).
 
 
       ### json
-      <code-example path="cb-ajs-quick-reference/src/app/app.component.html" region="json" title="cb-ajs-quick-reference/src/app/app.component.html" linenums="false">
+      <code-example path="ajs-quick-reference/src/app/app.component.html" region="json" title="ajs-quick-reference/src/app/app.component.html" linenums="false">
 
       </code-example>
 
@@ -905,7 +905,7 @@ For more information on pipes, see [Pipes](guide/pipes).
 
 
       ### slice
-      <code-example path="cb-ajs-quick-reference/src/app/app.component.html" region="slice" title="cb-ajs-quick-reference/src/app/app.component.html" linenums="false">
+      <code-example path="ajs-quick-reference/src/app/app.component.html" region="slice" title="ajs-quick-reference/src/app/app.component.html" linenums="false">
 
       </code-example>
 
@@ -936,7 +936,7 @@ For more information on pipes, see [Pipes](guide/pipes).
 
 
       ### lowercase
-      <code-example path="cb-ajs-quick-reference/src/app/app.component.html" region="lowercase" title="cb-ajs-quick-reference/src/app/app.component.html" linenums="false">
+      <code-example path="ajs-quick-reference/src/app/app.component.html" region="lowercase" title="ajs-quick-reference/src/app/app.component.html" linenums="false">
 
       </code-example>
 
@@ -964,7 +964,7 @@ For more information on pipes, see [Pipes](guide/pipes).
 
 
       ### number
-      <code-example path="cb-ajs-quick-reference/src/app/app.component.html" region="number" title="cb-ajs-quick-reference/src/app/app.component.html" linenums="false">
+      <code-example path="ajs-quick-reference/src/app/app.component.html" region="number" title="ajs-quick-reference/src/app/app.component.html" linenums="false">
 
       </code-example>
 
@@ -1098,7 +1098,7 @@ The Angular code is shown using TypeScript.
 
 
       ### Angular modules
-      <code-example path="cb-ajs-quick-reference/src/app/app.module.1.ts" title="cb-ajs-quick-reference/src/app/app.module.ts" linenums="false">
+      <code-example path="ajs-quick-reference/src/app/app.module.1.ts" title="ajs-quick-reference/src/app/app.module.ts" linenums="false">
 
       </code-example>
 
@@ -1139,7 +1139,7 @@ The Angular code is shown using TypeScript.
 
 
       ### Component decorator
-      <code-example path="cb-ajs-quick-reference/src/app/movie-list.component.ts" region="component" title="cb-ajs-quick-reference/src/app/movie-list.component.ts" linenums="false">
+      <code-example path="ajs-quick-reference/src/app/movie-list.component.ts" region="component" title="ajs-quick-reference/src/app/movie-list.component.ts" linenums="false">
 
       </code-example>
 
@@ -1175,7 +1175,7 @@ The Angular code is shown using TypeScript.
 
 
       ### Component class
-      <code-example path="cb-ajs-quick-reference/src/app/movie-list.component.ts" region="class" title="cb-ajs-quick-reference/src/app/movie-list.component.ts" linenums="false">
+      <code-example path="ajs-quick-reference/src/app/movie-list.component.ts" region="class" title="ajs-quick-reference/src/app/movie-list.component.ts" linenums="false">
 
       </code-example>
 
@@ -1214,7 +1214,7 @@ The Angular code is shown using TypeScript.
 
 
       ### Dependency injection
-      <code-example path="cb-ajs-quick-reference/src/app/movie-list.component.ts" region="di" title="cb-ajs-quick-reference/src/app/movie-list.component.ts" linenums="false">
+      <code-example path="ajs-quick-reference/src/app/movie-list.component.ts" region="di" title="ajs-quick-reference/src/app/movie-list.component.ts" linenums="false">
 
       </code-example>
 
@@ -1289,7 +1289,7 @@ also encapsulate a style sheet within a specific component.
 
 
       ### Link tag
-      <code-example path="cb-ajs-quick-reference/src/index.html" region="style" title="cb-ajs-quick-reference/src/index.html" linenums="false">
+      <code-example path="ajs-quick-reference/src/index.html" region="style" title="ajs-quick-reference/src/index.html" linenums="false">
 
       </code-example>
 
@@ -1300,7 +1300,7 @@ also encapsulate a style sheet within a specific component.
       ### StyleUrls
       In Angular, you can use the `styles` or `styleUrls` property of the `@Component` metadata to define
       a style sheet for a particular component.
-      <code-example path="cb-ajs-quick-reference/src/app/movie-list.component.ts" region="style-url" title="cb-ajs-quick-reference/src/app/movie-list.component.ts" linenums="false">
+      <code-example path="ajs-quick-reference/src/app/movie-list.component.ts" region="style-url" title="ajs-quick-reference/src/app/movie-list.component.ts" linenums="false">
 
       </code-example>
 

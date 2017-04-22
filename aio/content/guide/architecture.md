@@ -743,7 +743,7 @@ publishing and subscribing to events.
 
 > [**Forms**](guide/forms): Support complex data entry scenarios with HTML-based validation and dirty checking.
 
-> [**HTTP**](guide/server-communication): Communicate with a server to get data, save data, and invoke server-side actions with an HTTP client.
+> [**HTTP**](guide/http): Communicate with a server to get data, save data, and invoke server-side actions with an HTTP client.
 
 > [**Lifecycle hooks**](guide/lifecycle-hooks): Tap into key moments in the lifetime of a component, from its creation to its destruction,
 by implementing the lifecycle hook interfaces.

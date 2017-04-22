@@ -120,11 +120,11 @@ describe('LiveExampleComponent', () => {
 
     it('should have expected plunker & download hrefs when has example directory (name)', async(() => {
       testPath = '/guide/somewhere';
-      setHostTemplate('<live-example name="toh-1"></live-example>');
+      setHostTemplate('<live-example name="toh-pt1"></live-example>');
       testComponent(() => {
         const hrefs = getHrefs();
-        expect(hrefs[0]).toContain('/toh-1/eplnkr.html');
-        expect(hrefs[1]).toContain('/toh-1/toh-1.zip');
+        expect(hrefs[0]).toContain('/toh-pt1/eplnkr.html');
+        expect(hrefs[1]).toContain('/toh-pt1/toh-pt1.zip');
       });
     }));
 

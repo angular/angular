@@ -34,7 +34,7 @@ make incremental upgrading seamless.
 
 1. [Preparation](guide/upgrade#preparation)
 
-    1. [Follow the Angular Style Guide](guide/upgrade#follow-the-angular-style-guide)
+    1. [Follow the Angular Style Guide](guide/upgrade#follow-the-angular-styleguide)
     2. [Using a Module Loader](guide/upgrade#using-a-module-loader)
     3. [Migrating to TypeScript](guide/upgrade#migrating-to-typescript)
     4. [Using Component Directives](guide/upgrade#using-component-directives)
@@ -1451,7 +1451,7 @@ In terms of project structure, this is where our work begins:
 This is actually a pretty good starting point. The code uses the AngularJS 1.5
 component API and the organization follows the
 [AngularJS Style Guide](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md),
-which is an important [preparation step](guide/upgrade#following-the-angular-style-guide) before
+which is an important [preparation step](guide/upgrade#following-the-angular-styleguide) before
 a successful upgrade.
 
 * Each component, service, and filter is in its own source file, as per the

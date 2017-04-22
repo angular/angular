@@ -56,15 +56,15 @@ dist/
 !testing/karma*.js
 
 # TS to JS
-!cb-ts-to-js/js*/**/*.js
-cb-ts-to-js/js*/**/system*.js
+!ts-to-js/js*/**/*.js
+ts-to-js/js*/**/system*.js
 
 # webpack
 !webpack/**/config/*.js
 !webpack/**/*webpack*.js
 
-# style-guide
-!style-guide/src/systemjs.custom.js
+# styleguide
+!styleguide/src/systemjs.custom.js
 
 # plunkers
 *plnkr.no-link.html

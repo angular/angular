@@ -13,7 +13,7 @@ Setting the document or window title using the Title service.
 Your app should be able to make the browser title bar say whatever you want it to say.
 This cookbook explains how to do it.
 
-See the <live-example name="cb-set-document-title"></live-example>.
+See the <live-example name="set-document-title"></live-example>.
 
 
 <table>
@@ -80,7 +80,7 @@ for getting and setting the current HTML document title:
 You can inject the `Title` service into the root `AppComponent` and expose a bindable `setTitle` method that calls it:
 
 
-<code-example path="cb-set-document-title/src/app/app.component.ts" region="class" title="src/app/app.component.ts (class)" linenums="false">
+<code-example path="set-document-title/src/app/app.component.ts" region="class" title="src/app/app.component.ts (class)" linenums="false">
 
 </code-example>
 
@@ -99,15 +99,15 @@ Here's the complete solution:
 
 <code-tabs>
 
-  <code-pane title="src/main.ts" path="cb-set-document-title/src/main.ts">
+  <code-pane title="src/main.ts" path="set-document-title/src/main.ts">
 
   </code-pane>
 
-  <code-pane title="src/app/app.module.ts" path="cb-set-document-title/src/app/app.module.ts">
+  <code-pane title="src/app/app.module.ts" path="set-document-title/src/app/app.module.ts">
 
   </code-pane>
 
-  <code-pane title="src/app/app.component.ts" path="cb-set-document-title/src/app/app.component.ts">
+  <code-pane title="src/app/app.component.ts" path="set-document-title/src/app/app.component.ts">
 
   </code-pane>
 

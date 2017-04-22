@@ -13,47 +13,47 @@ This cookbook explores many of the features of Dependency Injection (DI) in Angu
 
 # Contents
 
-* [Application-wide dependencies](guide/cb-dependency-injection#app-wide-dependencies)
-* [External module configuration](guide/cb-dependency-injection#external-module-configuration)
-* [`@Injectable()` and nested service dependencies](guide/cb-dependency-injection#nested-dependencies)
+* [Application-wide dependencies](guide/dependency-injection-in-action#app-wide-dependencies)
+* [External module configuration](guide/dependency-injection-in-action#external-module-configuration)
+* [`@Injectable()` and nested service dependencies](guide/dependency-injection-in-action#nested-dependencies)
 
-  * [`@Injectable()`](guide/cb-dependency-injection#injectable-1)
+  * [`@Injectable()`](guide/dependency-injection-in-action#injectable-1)
 
-* [Limit service scope to a component subtree](guide/cb-dependency-injection#service-scope)
-* [Multiple service instances (sandboxing)](guide/cb-dependency-injection#multiple-service-instances)
-* [Qualify dependency lookup with `@Optional()` and `@Host()`](guide/cb-dependency-injection#qualify-dependency-lookup)
+* [Limit service scope to a component subtree](guide/dependency-injection-in-action#service-scope)
+* [Multiple service instances (sandboxing)](guide/dependency-injection-in-action#multiple-service-instances)
+* [Qualify dependency lookup with `@Optional()` and `@Host()`](guide/dependency-injection-in-action#qualify-dependency-lookup)
 
-  * [Demonstration](guide/cb-dependency-injection#demonstration)
+  * [Demonstration](guide/dependency-injection-in-action#demonstration)
 
-* [Inject the component's DOM element](guide/cb-dependency-injection#component-element)
-* [Define dependencies with providers](guide/cb-dependency-injection#providers)
+* [Inject the component's DOM element](guide/dependency-injection-in-action#component-element)
+* [Define dependencies with providers](guide/dependency-injection-in-action#providers)
 
-  * [Defining providers](guide/cb-dependency-injection#defining-providers)
-  * [The *provide* object literal](guide/cb-dependency-injection#provide)
-  * [`useValue`&mdash;the *value provider*](guide/cb-dependency-injection#usevalue)
-  * [`useClass`&mdash;the *class provider*](guide/cb-dependency-injection#useclass)
-  * [`useExisting`&mdash;the *alias provider*](guide/cb-dependency-injection#useexisting)
-  * [`useFactory`&mdash;the *factory provider*](guide/cb-dependency-injection#usefactory)
+  * [Defining providers](guide/dependency-injection-in-action#defining-providers)
+  * [The *provide* object literal](guide/dependency-injection-in-action#provide)
+  * [`useValue`&mdash;the *value provider*](guide/dependency-injection-in-action#usevalue)
+  * [`useClass`&mdash;the *class provider*](guide/dependency-injection-in-action#useclass)
+  * [`useExisting`&mdash;the *alias provider*](guide/dependency-injection-in-action#useexisting)
+  * [`useFactory`&mdash;the *factory provider*](guide/dependency-injection-in-action#usefactory)
 
-* [Provider token alternatives: the class-interface and `InjectionToken`](guide/cb-dependency-injection#tokens)
+* [Provider token alternatives: the class-interface and `InjectionToken`](guide/dependency-injection-in-action#tokens)
 
-  * [class-interface](guide/cb-dependency-injection#class-interface)
-  * [`InjectionToken`](guide/cb-dependency-injection#injection-token)
+  * [class-interface](guide/dependency-injection-in-action#class-interface)
+  * [`InjectionToken`](guide/dependency-injection-in-action#injection-token)
 
-* [Inject into a derived class](guide/cb-dependency-injection#di-inheritance)
-* [Find a parent component by injection](guide/cb-dependency-injection#find-parent)
+* [Inject into a derived class](guide/dependency-injection-in-action#di-inheritance)
+* [Find a parent component by injection](guide/dependency-injection-in-action#find-parent)
 
-  * [Find parent with a known component type](guide/cb-dependency-injection#known-parent)
-  * [Cannot find a parent by its base class](guide/cb-dependency-injection#base-parent)
-  * [Find a parent by its class-interface](guide/cb-dependency-injection#class-interface-parent)
-  * [Find a parent in a tree of parents with `@SkipSelf()`](guide/cb-dependency-injection#parent-tree)
-  * [The `Parent` class-interface](guide/cb-dependency-injection#parent-token)
-  * [A `provideParent()` helper function](guide/cb-dependency-injection#provideparent)
+  * [Find parent with a known component type](guide/dependency-injection-in-action#known-parent)
+  * [Cannot find a parent by its base class](guide/dependency-injection-in-action#base-parent)
+  * [Find a parent by its class-interface](guide/dependency-injection-in-action#class-interface-parent)
+  * [Find a parent in a tree of parents with `@SkipSelf()`](guide/dependency-injection-in-action#parent-tree)
+  * [The `Parent` class-interface](guide/dependency-injection-in-action#parent-token)
+  * [A `provideParent()` helper function](guide/dependency-injection-in-action#provideparent)
 
-* [Break circularities with a forward class reference (*forwardRef*)](guide/cb-dependency-injection#forwardref)
+* [Break circularities with a forward class reference (*forwardRef*)](guide/dependency-injection-in-action#forwardref)
 
 
-See the <live-example name="cb-dependency-injection"></live-example>
+See the <live-example name="dependency-injection-in-action"></live-example>
 of the code in this cookbook.
 
 {@a app-wide-dependencies}
@@ -66,7 +66,7 @@ the `LoggerService`, `UserContext`, and the `UserService`
 in the `@Component` metadata `providers` array.
 
 
-<code-example path="cb-dependency-injection/src/app/app.component.ts" region="import-services" title="src/app/app.component.ts (excerpt)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/app.component.ts" region="import-services" title="src/app/app.component.ts (excerpt)" linenums="false">
 
 </code-example>
 
@@ -92,13 +92,13 @@ guide.
 Now that you've registered these services,
 Angular can inject them into the constructor of *any* component or service, *anywhere* in the application.
 
-<code-example path="cb-dependency-injection/src/app/hero-bios.component.ts" region="ctor" title="src/app/hero-bios.component.ts (component constructor injection)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="ctor" title="src/app/hero-bios.component.ts (component constructor injection)" linenums="false">
 
 </code-example>
 
 
 
-<code-example path="cb-dependency-injection/src/app/user-context.service.ts" region="ctor" title="src/app/user-context.service.ts (service constructor injection)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/user-context.service.ts" region="ctor" title="src/app/user-context.service.ts (service constructor injection)" linenums="false">
 
 </code-example>
 
@@ -116,7 +116,7 @@ Here is an example of the second case, where the component router configuration 
 in the `providers` list of the `AppModule`.
 
 
-<code-example path="cb-dependency-injection/src/app/app.module.ts" region="providers" title="src/app/app.module.ts (providers)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/app.module.ts" region="providers" title="src/app/app.module.ts (providers)" linenums="false">
 
 </code-example>
 
@@ -141,7 +141,7 @@ constructor and the framework takes over.
 
 The following example shows injecting both the `LoggerService` and the `UserContext` in the `AppComponent`.
 
-<code-example path="cb-dependency-injection/src/app/app.component.ts" region="ctor" title="src/app/app.component.ts" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/app.component.ts" region="ctor" title="src/app/app.component.ts" linenums="false">
 
 </code-example>
 
@@ -151,7 +151,7 @@ The `UserContext` in turn has its own dependencies on both the `LoggerService` a
 a `UserService` that gathers information about a particular user.
 
 
-<code-example path="cb-dependency-injection/src/app/user-context.service.ts" region="injectables" title="user-context.service.ts (injection)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/user-context.service.ts" region="injectables" title="user-context.service.ts (injection)" linenums="false">
 
 </code-example>
 
@@ -182,7 +182,7 @@ Once all the dependencies are in place, the `AppComponent` displays the user inf
 ### *@Injectable()*
 Notice the `@Injectable()`decorator on the `UserContextService` class.
 
-<code-example path="cb-dependency-injection/src/app/user-context.service.ts" region="injectable" title="user-context.service.ts (@Injectable)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/user-context.service.ts" region="injectable" title="user-context.service.ts (@Injectable)" linenums="false">
 
 </code-example>
 
@@ -249,7 +249,7 @@ This example shows how similar providing a service to a sub-root component is
 to providing a service in the root `AppComponent`. The syntax is the same.
 Here, the `HeroService` is availble to the `HeroesBaseComponent` because it is in the `providers` array:
 
-<code-example path="cb-dependency-injection/src/app/sorted-heroes.component.ts" region="injection" title="src/app/sorted-heroes.component.ts (HeroesBaseComponent excerpt)">
+<code-example path="dependency-injection-in-action/src/app/sorted-heroes.component.ts" region="injection" title="src/app/sorted-heroes.component.ts (HeroesBaseComponent excerpt)">
 
 </code-example>
 
@@ -301,7 +301,7 @@ This is called *sandboxing* because each service and component instance has its 
 {@a hero-bios-component}
 Imagine a `HeroBiosComponent` that presents three instances of the `HeroBioComponent`.
 
-<code-example path="cb-dependency-injection/src/app/hero-bios.component.ts" region="simple" title="ap/hero-bios.component.ts">
+<code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="simple" title="ap/hero-bios.component.ts">
 
 </code-example>
 
@@ -310,7 +310,7 @@ Imagine a `HeroBiosComponent` that presents three instances of the `HeroBioCompo
 Each `HeroBioComponent` can edit a single hero's biography.
 A `HeroBioComponent` relies on a `HeroCacheService` to fetch, cache, and perform other persistence operations on that hero.
 
-<code-example path="cb-dependency-injection/src/app/hero-cache.service.ts" region="service" title="src/app/hero-cache.service.ts">
+<code-example path="dependency-injection-in-action/src/app/hero-cache.service.ts" region="service" title="src/app/hero-cache.service.ts">
 
 </code-example>
 
@@ -322,7 +322,7 @@ They'd be competing with each other to determine which hero to cache.
 Each `HeroBioComponent` gets its *own* `HeroCacheService` instance
 by listing the `HeroCacheService` in its metadata `providers` array.
 
-<code-example path="cb-dependency-injection/src/app/hero-bio.component.ts" region="component" title="src/app/hero-bio.component.ts">
+<code-example path="dependency-injection-in-action/src/app/hero-bio.component.ts" region="component" title="src/app/hero-bio.component.ts">
 
 </code-example>
 
@@ -333,7 +333,7 @@ The `ngOnInit` passes that `id` to the service, which fetches and caches the her
 The getter for the `hero` property pulls the cached hero from the service.
 And the template displays this data-bound property.
 
-Find this example in <live-example name="cb-dependency-injection">live code</live-example>
+Find this example in <live-example name="dependency-injection-in-action">live code</live-example>
 and confirm that the three `HeroBioComponent` instances have their own cached hero data.
 
 <figure class='image-display'>
@@ -374,9 +374,9 @@ The next example covers this second case.
 
 
 ### Demonstration
-The `HeroBiosAndContactsComponent` is a revision of the `HeroBiosComponent` that you looked at [above](guide/cb-dependency-injection#hero-bios-component).
+The `HeroBiosAndContactsComponent` is a revision of the `HeroBiosComponent` that you looked at [above](guide/dependency-injection-in-action#hero-bios-component).
 
-<code-example path="cb-dependency-injection/src/app/hero-bios.component.ts" region="hero-bios-and-contacts" title="src/app/hero-bios.component.ts (HeroBiosAndContactsComponent)">
+<code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="hero-bios-and-contacts" title="src/app/hero-bios.component.ts (HeroBiosAndContactsComponent)">
 
 </code-example>
 
@@ -384,7 +384,7 @@ The `HeroBiosAndContactsComponent` is a revision of the `HeroBiosComponent` that
 
 Focus on the template:
 
-<code-example path="cb-dependency-injection/src/app/hero-bios.component.ts" region="template" title="cb-dependency-injection/src/app/hero-bios.component.ts" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="template" title="dependency-injection-in-action/src/app/hero-bios.component.ts" linenums="false">
 
 </code-example>
 
@@ -394,7 +394,7 @@ Now there is a new `<hero-contact>` element between the `<hero-bio>` tags.
 Angular *projects*, or *transcludes*, the corresponding `HeroContactComponent` into the `HeroBioComponent` view,
 placing it in the `<ng-content>` slot of the `HeroBioComponent` template:
 
-<code-example path="cb-dependency-injection/src/app/hero-bio.component.ts" region="template" title="src/app/hero-bio.component.ts (template)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/hero-bio.component.ts" region="template" title="src/app/hero-bio.component.ts (template)" linenums="false">
 
 </code-example>
 
@@ -410,7 +410,7 @@ It looks like this, with the hero's telephone number from `HeroContactComponent`
 
 Here's the `HeroContactComponent` which demonstrates the qualifying decorators:
 
-<code-example path="cb-dependency-injection/src/app/hero-contact.component.ts" region="component" title="src/app/hero-contact.component.ts">
+<code-example path="dependency-injection-in-action/src/app/hero-contact.component.ts" region="component" title="src/app/hero-contact.component.ts">
 
 </code-example>
 
@@ -418,7 +418,7 @@ Here's the `HeroContactComponent` which demonstrates the qualifying decorators:
 
 Focus on the constructor parameters:
 
-<code-example path="cb-dependency-injection/src/app/hero-contact.component.ts" region="ctor-params" title="src/app/hero-contact.component.ts" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/hero-contact.component.ts" region="ctor-params" title="src/app/hero-contact.component.ts" linenums="false">
 
 </code-example>
 
@@ -470,7 +470,7 @@ require DOM access.
 To illustrate, here's a simplified version of the `HighlightDirective` from
 the [Attribute Directives](guide/attribute-directives) page.
 
-<code-example path="cb-dependency-injection/src/app/highlight.directive.ts" title="src/app/highlight.directive.ts">
+<code-example path="dependency-injection-in-action/src/app/highlight.directive.ts" title="src/app/highlight.directive.ts">
 
 </code-example>
 
@@ -486,7 +486,7 @@ Its `nativeElement` property exposes the DOM element for the directive to manipu
 The sample code applies the directive's `myHighlight` attribute to two `<div>` tags,
 first without a value (yielding the default color) and then with an assigned color value.
 
-<code-example path="cb-dependency-injection/src/app/app.component.html" region="highlight" title="src/app/app.component.html (highlight)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/app.component.html" region="highlight" title="src/app/app.component.html (highlight)" linenums="false">
 
 </code-example>
 
@@ -513,7 +513,7 @@ Angular passes this token to the injector and assigns the result to the paramete
 Here's a typical example:
 
 
-<code-example path="cb-dependency-injection/src/app/hero-bios.component.ts" region="ctor" title="src/app/hero-bios.component.ts (component constructor injection)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="ctor" title="src/app/hero-bios.component.ts (component constructor injection)" linenums="false">
 
 </code-example>
 
@@ -533,7 +533,7 @@ A *provider* is a recipe for delivering a service associated with a *token*.
 
 If the injector doesn't have a provider for the requested *token*, it delegates the request
 to its parent injector, where the process repeats until there are no more injectors.
-If the search is futile, the injector throws an error&mdash;unless the request was [optional](guide/cb-dependency-injection#optional).
+If the search is futile, the injector throws an error&mdash;unless the request was [optional](guide/dependency-injection-in-action#optional).
 
 
 </div>
@@ -545,7 +545,7 @@ Angular initializes the injectors it creates with some providers it cares about.
 You have to register your _own_ application providers manually,
 usually in the `providers` array of the `Component` or `Directive` metadata:
 
-<code-example path="cb-dependency-injection/src/app/app.component.ts" region="providers" title="src/app/app.component.ts (providers)">
+<code-example path="dependency-injection-in-action/src/app/app.component.ts" region="providers" title="src/app/app.component.ts (providers)">
 
 </code-example>
 
@@ -559,7 +559,7 @@ usually in the `providers` array of the `Component` or `Directive` metadata:
 The simple class provider is the most typical by far.
 You mention the class in the `providers` array and you're done.
 
-<code-example path="cb-dependency-injection/src/app/hero-bios.component.ts" region="class-provider" title="src/app/hero-bios.component.ts (class provider)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="class-provider" title="src/app/hero-bios.component.ts (class provider)" linenums="false">
 
 </code-example>
 
@@ -580,7 +580,7 @@ It's visually simple: a few properties and the logs produced by a logger.
 
 The code behind it gives you plenty to think about.
 
-<code-example path="cb-dependency-injection/src/app/hero-of-the-month.component.ts" region="hero-of-the-month" title="hero-of-the-month.component.ts">
+<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="hero-of-the-month" title="hero-of-the-month.component.ts">
 
 </code-example>
 
@@ -593,7 +593,7 @@ The code behind it gives you plenty to think about.
 #### The *provide* object literal
 
 The `provide` object literal takes a *token* and a *definition object*.
-The *token* is usually a class but [it doesn't have to be](guide/cb-dependency-injection#tokens).
+The *token* is usually a class but [it doesn't have to be](guide/dependency-injection-in-action#tokens).
 
 The *definition* object has a required property that specifies how to create the singleton instance of the service. In this case, the property. 
 
@@ -613,7 +613,7 @@ The `HeroOfTheMonthComponent` example has two *value providers*.
 The first provides an instance of the `Hero` class;
 the second specifies a literal string resource:
 
-<code-example path="cb-dependency-injection/src/app/hero-of-the-month.component.ts" region="use-value" title="cb-dependency-injection/src/app/hero-of-the-month.component.ts" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-value" title="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" linenums="false">
 
 </code-example>
 
@@ -623,7 +623,7 @@ The `Hero` provider token is a class which makes sense because the value is a `H
 and the consumer of the injected hero would want the type information.
 
 The `TITLE` provider token is *not a class*.
-It's a special kind of provider lookup key called an [InjectionToken](guide/cb-dependency-injection#injection-token).
+It's a special kind of provider lookup key called an [InjectionToken](guide/dependency-injection-in-action#injection-token).
 You can use an `InjectionToken` for any kind of provider but it's particular
 helpful when the dependency is a simple value like a string, a number, or a function.
 
@@ -631,7 +631,7 @@ The value of a *value provider* must be defined *now*. You can't create the valu
 Obviously the title string literal is immediately available.
 The `someHero` variable in this example was set earlier in the file:
 
-<code-example path="cb-dependency-injection/src/app/hero-of-the-month.component.ts" region="some-hero" title="cb-dependency-injection/src/app/hero-of-the-month.component.ts">
+<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="some-hero" title="dependency-injection-in-action/src/app/hero-of-the-month.component.ts">
 
 </code-example>
 
@@ -654,7 +654,7 @@ or fake the behavior of the real class in a test case.
 
 Here are two examples in the `HeroOfTheMonthComponent`:
 
-<code-example path="cb-dependency-injection/src/app/hero-of-the-month.component.ts" region="use-class" title="cb-dependency-injection/src/app/hero-of-the-month.component.ts" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-class" title="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" linenums="false">
 
 </code-example>
 
@@ -681,7 +681,7 @@ Components outside the tree continue to receive the original `LoggerService` ins
 
 The `DateLoggerService` inherits from `LoggerService`; it appends the current date/time to each message:
 
-<code-example path="cb-dependency-injection/src/app/date-logger.service.ts" region="date-logger-service" title="src/app/date-logger.service.ts" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/date-logger.service.ts" region="date-logger-service" title="src/app/date-logger.service.ts" linenums="false">
 
 </code-example>
 
@@ -697,7 +697,7 @@ The `useExisting` provider maps one token to another.
 In effect, the first token is an ***alias*** for the service associated with the second token,
 creating ***two ways to access the same service object***.
 
-<code-example path="cb-dependency-injection/src/app/hero-of-the-month.component.ts" region="use-existing" title="cb-dependency-injection/src/app/hero-of-the-month.component.ts">
+<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-existing" title="dependency-injection-in-action/src/app/hero-of-the-month.component.ts">
 
 </code-example>
 
@@ -708,10 +708,10 @@ The following example shows aliasing for that purpose.
 
 Imagine that the `LoggerService` had a large API, much larger than the actual three methods and a property.
 You might want to shrink that API surface to just the members you actually need.
-Here the `MinimalLogger` [*class-interface*](guide/cb-dependency-injection#class-interface) reduces the API to two members:
+Here the `MinimalLogger` [*class-interface*](guide/dependency-injection-in-action#class-interface) reduces the API to two members:
 
 
-<code-example path="cb-dependency-injection/src/app/minimal-logger.service.ts" title="src/app/minimal-logger.service.ts" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/minimal-logger.service.ts" title="src/app/minimal-logger.service.ts" linenums="false">
 
 </code-example>
 
@@ -719,7 +719,7 @@ Here the `MinimalLogger` [*class-interface*](guide/cb-dependency-injection#class
 
 Now put it to use in a simplified version of the `HeroOfTheMonthComponent`.
 
-<code-example path="cb-dependency-injection/src/app/hero-of-the-month.component.1.ts" title="src/app/hero-of-the-month.component.ts (minimal version)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.1.ts" title="src/app/hero-of-the-month.component.ts (minimal version)" linenums="false">
 
 </code-example>
 
@@ -733,7 +733,7 @@ The `HeroOfTheMonthComponent` constructor's `logger` parameter is typed as `Mini
 
 
 
-Behind the scenes, Angular actually sets the `logger` parameter to the full service registered under the `LoggingService` token which happens to be the `DateLoggerService` that was [provided above](guide/cb-dependency-injection#useclass).
+Behind the scenes, Angular actually sets the `logger` parameter to the full service registered under the `LoggingService` token which happens to be the `DateLoggerService` that was [provided above](guide/dependency-injection-in-action#useclass).
 
 
 <div class="l-sub-section">
@@ -761,7 +761,7 @@ The following image, which displays the logging date, confirms the point:
 The `useFactory` provider creates a dependency object by calling a factory function
 as in this example.
 
-<code-example path="cb-dependency-injection/src/app/hero-of-the-month.component.ts" region="use-factory" title="cb-dependency-injection/src/app/hero-of-the-month.component.ts">
+<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-factory" title="dependency-injection-in-action/src/app/hero-of-the-month.component.ts">
 
 </code-example>
 
@@ -781,7 +781,7 @@ The `runnersUpFactory` itself isn't the provider factory function.
 The true provider factory function is the function that `runnersUpFactory` returns.
 
 
-<code-example path="cb-dependency-injection/src/app/runners-up.ts" region="factory-synopsis" title="runners-up.ts (excerpt)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/runners-up.ts" region="factory-synopsis" title="runners-up.ts (excerpt)" linenums="false">
 
 </code-example>
 
@@ -804,7 +804,7 @@ and Angular injects it into the `runnersUp` parameter of the `HeroOfTheMonthComp
 
 The function retrieves candidate heroes from the `HeroService`,
 takes `2` of them to be the runners-up, and returns their concatenated names.
-Look at the <live-example name="cb-dependency-injection"></live-example>
+Look at the <live-example name="dependency-injection-in-action"></live-example>
 for the full source code.
 
 
@@ -830,7 +830,7 @@ That's the subject of the next section.
 The previous *Hero of the Month* example used the `MinimalLogger` class
 as the token for a provider of a `LoggerService`.
 
-<code-example path="cb-dependency-injection/src/app/hero-of-the-month.component.ts" region="use-existing" title="cb-dependency-injection/src/app/hero-of-the-month.component.ts">
+<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-existing" title="dependency-injection-in-action/src/app/hero-of-the-month.component.ts">
 
 </code-example>
 
@@ -838,7 +838,7 @@ as the token for a provider of a `LoggerService`.
 
 The `MinimalLogger` is an abstract class.
 
-<code-example path="cb-dependency-injection/src/app/minimal-logger.service.ts" title="cb-dependency-injection/src/app/minimal-logger.service.ts" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/minimal-logger.service.ts" title="dependency-injection-in-action/src/app/minimal-logger.service.ts" linenums="false">
 
 </code-example>
 
@@ -878,7 +878,7 @@ Using a class as an interface gives you the characteristics of an interface in a
 Of course a real object occupies memory. To minimize memory cost, the class should have *no implementation*.
 The `MinimalLogger` transpiles to this unoptimized, pre-minified JavaScript for a constructor function:
 
-<code-example path="cb-dependency-injection/src/app/minimal-logger.service.ts" region="minimal-logger-transpiled" title="cb-dependency-injection/src/app/minimal-logger.service.ts" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/minimal-logger.service.ts" region="minimal-logger-transpiled" title="dependency-injection-in-action/src/app/minimal-logger.service.ts" linenums="false">
 
 </code-example>
 
@@ -908,7 +908,7 @@ The `InjectionToken` has these characteristics.
 You encountered them twice in the *Hero of the Month* example,
 in the *title* value provider and in the *runnersUp* factory provider.
 
-<code-example path="cb-dependency-injection/src/app/hero-of-the-month.component.ts" region="provide-injection-token" title="cb-dependency-injection/src/app/hero-of-the-month.component.ts" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="provide-injection-token" title="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" linenums="false">
 
 </code-example>
 
@@ -916,7 +916,7 @@ in the *title* value provider and in the *runnersUp* factory provider.
 
 You created the `TITLE` token like this:
 
-<code-example path="cb-dependency-injection/src/app/hero-of-the-month.component.ts" region="injection-token" title="cb-dependency-injection/src/app/hero-of-the-month.component.ts" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="injection-token" title="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" linenums="false">
 
 </code-example>
 
@@ -951,7 +951,7 @@ It demands its own instance of the `HeroService` to get heroes
 and displays them in the order they arrive from the database.
 
 
-<code-example path="cb-dependency-injection/src/app/sorted-heroes.component.ts" region="heroes-base" title="src/app/sorted-heroes.component.ts (HeroesBaseComponent)">
+<code-example path="dependency-injection-in-action/src/app/sorted-heroes.component.ts" region="heroes-base" title="src/app/sorted-heroes.component.ts (HeroesBaseComponent)">
 
 </code-example>
 
@@ -980,7 +980,7 @@ You must provide the `HeroService` again for *this* component,
 then pass it down to the base class inside the constructor.
 
 
-<code-example path="cb-dependency-injection/src/app/sorted-heroes.component.ts" region="sorted-heroes" title="src/app/sorted-heroes.component.ts (SortedHeroesComponent)">
+<code-example path="dependency-injection-in-action/src/app/sorted-heroes.component.ts" region="sorted-heroes" title="src/app/sorted-heroes.component.ts (SortedHeroesComponent)">
 
 </code-example>
 
@@ -1035,7 +1035,7 @@ In the following example, the parent `AlexComponent` has several children includ
 {@a alex}
 
 
-<code-example path="cb-dependency-injection/src/app/parent-finder.component.ts" region="alex-1" title="parent-finder.component.ts (AlexComponent v.1)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-1" title="parent-finder.component.ts (AlexComponent v.1)" linenums="false">
 
 </code-example>
 
@@ -1044,15 +1044,15 @@ In the following example, the parent `AlexComponent` has several children includ
 *Cathy* reports whether or not she has access to *Alex*
 after injecting an `AlexComponent` into her constructor:
 
-<code-example path="cb-dependency-injection/src/app/parent-finder.component.ts" region="cathy" title="parent-finder.component.ts (CathyComponent)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="cathy" title="parent-finder.component.ts (CathyComponent)" linenums="false">
 
 </code-example>
 
 
 
-Notice that even though the [@Optional](guide/cb-dependency-injection#optional) qualifier 
+Notice that even though the [@Optional](guide/dependency-injection-in-action#optional) qualifier 
 is there for safety,
-the <live-example name="cb-dependency-injection"></live-example>
+the <live-example name="dependency-injection-in-action"></live-example>
 confirms that the `alex` parameter is set.
 
 
@@ -1090,10 +1090,10 @@ This isn't necessarily good design.
 This example is examining *whether a component can 
 inject its parent via the parent's base class*.
 
-The sample's `CraigComponent` explores this question. [Looking back](guide/cb-dependency-injection#alex),
+The sample's `CraigComponent` explores this question. [Looking back](guide/dependency-injection-in-action#alex),
 you see that the `Alex` component *extends* (*inherits*) from a class named `Base`.
 
-<code-example path="cb-dependency-injection/src/app/parent-finder.component.ts" region="alex-class-signature" title="parent-finder.component.ts (Alex class signature)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-class-signature" title="parent-finder.component.ts (Alex class signature)" linenums="false">
 
 </code-example>
 
@@ -1101,14 +1101,14 @@ you see that the `Alex` component *extends* (*inherits*) from a class named `Bas
 
 The `CraigComponent` tries to inject `Base` into its `alex` constructor parameter and reports if it succeeded.
 
-<code-example path="cb-dependency-injection/src/app/parent-finder.component.ts" region="craig" title="parent-finder.component.ts (CraigComponent)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="craig" title="parent-finder.component.ts (CraigComponent)" linenums="false">
 
 </code-example>
 
 
 
 Unfortunately, this does not work.
-The <live-example name="cb-dependency-injection"></live-example>
+The <live-example name="dependency-injection-in-action"></live-example>
 confirms that the `alex` parameter is null.
 *You cannot inject a parent by its base class.*
 
@@ -1119,33 +1119,33 @@ confirms that the `alex` parameter is null.
 
 ### Find a parent by its class-interface
 
-You can find a parent component with a [class-interface](guide/cb-dependency-injection#class-interface).
+You can find a parent component with a [class-interface](guide/dependency-injection-in-action#class-interface).
 
 The parent must cooperate by providing an *alias* to itself in the name of a *class-interface* token.
 
 Recall that Angular always adds a component instance to its own injector;
-that's why you could inject *Alex* into *Cathy* [earlier](guide/cb-dependency-injection#known-parent).
+that's why you could inject *Alex* into *Cathy* [earlier](guide/dependency-injection-in-action#known-parent).
 
-Write an [*alias provider*](guide/cb-dependency-injection#useexisting)&mdash;a `provide` object literal with a `useExisting` 
+Write an [*alias provider*](guide/dependency-injection-in-action#useexisting)&mdash;a `provide` object literal with a `useExisting` 
 definition&mdash;that creates an *alternative* way to inject the same component instance
 and add that provider to the `providers` array of the `@Component` metadata for the `AlexComponent`:
 
 {@a alex-providers}
 
 
-<code-example path="cb-dependency-injection/src/app/parent-finder.component.ts" region="alex-providers" title="parent-finder.component.ts (AlexComponent providers)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-providers" title="parent-finder.component.ts (AlexComponent providers)" linenums="false">
 
 </code-example>
 
 
 
-[Parent](guide/cb-dependency-injection#parent-token) is the provider's *class-interface* token.
-The [*forwardRef*](guide/cb-dependency-injection#forwardref) breaks the circular reference you just created by having the `AlexComponent` refer to itself.
+[Parent](guide/dependency-injection-in-action#parent-token) is the provider's *class-interface* token.
+The [*forwardRef*](guide/dependency-injection-in-action#forwardref) breaks the circular reference you just created by having the `AlexComponent` refer to itself.
 
 *Carol*, the third of *Alex*'s child components, injects the parent into its `parent` parameter, 
 the same way you've done it before:
 
-<code-example path="cb-dependency-injection/src/app/parent-finder.component.ts" region="carol-class" title="parent-finder.component.ts (CarolComponent class)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="carol-class" title="parent-finder.component.ts (CarolComponent class)" linenums="false">
 
 </code-example>
 
@@ -1173,24 +1173,24 @@ That means he must both *inject* the `Parent` *class-interface* to get *Alice* a
 
 Here's *Barry*:
 
-<code-example path="cb-dependency-injection/src/app/parent-finder.component.ts" region="barry" title="parent-finder.component.ts (BarryComponent)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="barry" title="parent-finder.component.ts (BarryComponent)" linenums="false">
 
 </code-example>
 
 
 
-*Barry*'s `providers` array looks just like [*Alex*'s](guide/cb-dependency-injection#alex-providers).
-If you're going to keep writing [*alias providers*](guide/cb-dependency-injection#useexisting) like this you should create a [helper function](guide/cb-dependency-injection#provideparent).
+*Barry*'s `providers` array looks just like [*Alex*'s](guide/dependency-injection-in-action#alex-providers).
+If you're going to keep writing [*alias providers*](guide/dependency-injection-in-action#useexisting) like this you should create a [helper function](guide/dependency-injection-in-action#provideparent).
 
 For now, focus on *Barry*'s constructor:
 
 <code-tabs>
 
-  <code-pane title="Barry's constructor" path="cb-dependency-injection/src/app/parent-finder.component.ts" region="barry-ctor">
+  <code-pane title="Barry's constructor" path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="barry-ctor">
 
   </code-pane>
 
-  <code-pane title="Carol's constructor" path="cb-dependency-injection/src/app/parent-finder.component.ts" region="carol-ctor">
+  <code-pane title="Carol's constructor" path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="carol-ctor">
 
   </code-pane>
 
@@ -1224,11 +1224,11 @@ Here's *Alice*, *Barry* and family in action:
 
 
 ### The *Parent* class-interface
-You [learned earlier](guide/cb-dependency-injection#class-interface) that a *class-interface* is an abstract class used as an interface rather than as a base class.
+You [learned earlier](guide/dependency-injection-in-action#class-interface) that a *class-interface* is an abstract class used as an interface rather than as a base class.
 
 The example defines a `Parent` *class-interface*.
 
-<code-example path="cb-dependency-injection/src/app/parent-finder.component.ts" region="parent" title="parent-finder.component.ts (Parent class-interface)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="parent" title="parent-finder.component.ts (Parent class-interface)" linenums="false">
 
 </code-example>
 
@@ -1240,7 +1240,7 @@ Such a narrow interface helps decouple the child component class from its parent
 
 A component that could serve as a parent *should* implement the *class-interface* as the `AliceComponent` does:
 
-<code-example path="cb-dependency-injection/src/app/parent-finder.component.ts" region="alice-class-signature" title="parent-finder.component.ts (AliceComponent class signature)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alice-class-signature" title="parent-finder.component.ts (AliceComponent class signature)" linenums="false">
 
 </code-example>
 
@@ -1250,7 +1250,7 @@ Doing so adds clarity to the code.  But it's not technically necessary.
 Although the `AlexComponent` has a `name` property, as required by its `Base` class,
 its class signature doesn't mention `Parent`:
 
-<code-example path="cb-dependency-injection/src/app/parent-finder.component.ts" region="alex-class-signature" title="parent-finder.component.ts (AlexComponent class signature)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-class-signature" title="parent-finder.component.ts (AlexComponent class signature)" linenums="false">
 
 </code-example>
 
@@ -1274,9 +1274,9 @@ It doesn't in this example *only* to demonstrate that the code will compile and 
 ### A _provideParent()_ helper function
 
 Writing variations of the same parent *alias provider* gets old quickly,
-especially this awful mouthful with a [*forwardRef*](guide/cb-dependency-injection#forwardref):
+especially this awful mouthful with a [*forwardRef*](guide/dependency-injection-in-action#forwardref):
 
-<code-example path="cb-dependency-injection/src/app/parent-finder.component.ts" region="alex-providers" title="cb-dependency-injection/src/app/parent-finder.component.ts" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-providers" title="dependency-injection-in-action/src/app/parent-finder.component.ts" linenums="false">
 
 </code-example>
 
@@ -1284,7 +1284,7 @@ especially this awful mouthful with a [*forwardRef*](guide/cb-dependency-injecti
 
 You can extract that logic into a helper function like this:
 
-<code-example path="cb-dependency-injection/src/app/parent-finder.component.ts" region="provide-the-parent" title="cb-dependency-injection/src/app/parent-finder.component.ts" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="provide-the-parent" title="dependency-injection-in-action/src/app/parent-finder.component.ts" linenums="false">
 
 </code-example>
 
@@ -1292,7 +1292,7 @@ You can extract that logic into a helper function like this:
 
 Now you can add a simpler, more meaningful parent provider to your components:
 
-<code-example path="cb-dependency-injection/src/app/parent-finder.component.ts" region="alice-providers" title="cb-dependency-injection/src/app/parent-finder.component.ts" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alice-providers" title="dependency-injection-in-action/src/app/parent-finder.component.ts" linenums="false">
 
 </code-example>
 
@@ -1303,7 +1303,7 @@ The application might have a variety of parent types, each with its own *class-i
 
 Here's a revised version that defaults to `parent` but also accepts an optional second parameter for a different parent *class-interface*.
 
-<code-example path="cb-dependency-injection/src/app/parent-finder.component.ts" region="provide-parent" title="cb-dependency-injection/src/app/parent-finder.component.ts" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="provide-parent" title="dependency-injection-in-action/src/app/parent-finder.component.ts" linenums="false">
 
 </code-example>
 
@@ -1311,7 +1311,7 @@ Here's a revised version that defaults to `parent` but also accepts an optional 
 
 And here's how you could use it with a different parent type:
 
-<code-example path="cb-dependency-injection/src/app/parent-finder.component.ts" region="beth-providers" title="cb-dependency-injection/src/app/parent-finder.component.ts" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="beth-providers" title="dependency-injection-in-action/src/app/parent-finder.component.ts" linenums="false">
 
 </code-example>
 
@@ -1343,7 +1343,7 @@ appear *above* the class definition.
 
 Break the circularity with `forwardRef`:
 
-<code-example path="cb-dependency-injection/src/app/parent-finder.component.ts" region="alex-providers" title="parent-finder.component.ts (AlexComponent providers)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-providers" title="parent-finder.component.ts (AlexComponent providers)" linenums="false">
 
 </code-example>
 
