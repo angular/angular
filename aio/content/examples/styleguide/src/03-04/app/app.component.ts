@@ -22,6 +22,6 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.toastService.activate('Hello style-guide!');
+    this.toastService.activate('Hello Style Guide!');
   }
 }

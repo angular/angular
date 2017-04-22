@@ -704,7 +704,7 @@ Pick something short that fits you or your company.
 In this example, the prefix is `my`.
 
 
-The directive _class_ name ends in `Directive` per the [style guide](guide/style-guide#02-03 "Angular Style Guide").
+The directive _class_ name ends in `Directive` per the [style guide](guide/styleguide#02-03 "Angular Style Guide").
 Angular's own directives do not.
 
 ### _TemplateRef_ and _ViewContainerRef_
