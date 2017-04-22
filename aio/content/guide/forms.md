@@ -60,7 +60,7 @@ You'll learn to build a template-driven form that looks like this:
 
 
 <figure class='image-display'>
-  <img src="assets/images/devguide/forms/hero-form-1.png" width="400px" alt="Clean Form"></img>
+  <img src="assets/images/guide/forms/hero-form-1.png" width="400px" alt="Clean Form"></img>
 </figure>
 
 
@@ -74,7 +74,7 @@ If you delete the hero name, the form displays a validation error in an attentio
 
 
 <figure class='image-display'>
-  <img src="assets/images/devguide/forms/hero-form-2.png" width="400px" alt="Invalid, Name Required"></img>
+  <img src="assets/images/guide/forms/hero-form-2.png" width="400px" alt="Invalid, Name Required"></img>
 </figure>
 
 
@@ -372,7 +372,7 @@ Running the app right now would be disappointing.
 
 
 <figure class='image-display'>
-  <img src="assets/images/devguide/forms/hero-form-3.png" width="400px" alt="Early form with no binding"></img>
+  <img src="assets/images/guide/forms/hero-form-3.png" width="400px" alt="Early form with no binding"></img>
 </figure>
 
 
@@ -456,7 +456,7 @@ At some point it might look like this:
 
 
 <figure class='image-display'>
-  <img src="assets/images/devguide/forms/ng-model-in-action.png" width="400px" alt="ngModel in action"></img>
+  <img src="assets/images/guide/forms/ng-model-in-action.png" width="400px" alt="ngModel in action"></img>
 </figure>
 
 
@@ -529,7 +529,7 @@ If you run the app now and change every hero model property, the form might disp
 
 
 <figure class='image-display'>
-  <img src="assets/images/devguide/forms/ng-model-in-action-2.png" width="400px" alt="ngModel in action"></img>
+  <img src="assets/images/guide/forms/ng-model-in-action-2.png" width="400px" alt="ngModel in action"></img>
 </figure>
 
 
@@ -642,7 +642,7 @@ The actions and effects are as follows:
 
 
 <figure class='image-display'>
-  <img src="assets/images/devguide/forms/control-state-transitions-anim.gif" alt="Control State Transition"></img>
+  <img src="assets/images/guide/forms/control-state-transitions-anim.gif" alt="Control State Transition"></img>
 </figure>
 
 
@@ -651,7 +651,7 @@ You should see the following transitions and class names:
 
 
 <figure class='image-display'>
-  <img src="assets/images/devguide/forms/ng-control-class-changes.png" width="500px" alt="Control state transitions"></img>
+  <img src="assets/images/guide/forms/ng-control-class-changes.png" width="500px" alt="Control state transitions"></img>
 </figure>
 
 
@@ -671,7 +671,7 @@ on the left of the input box:
 
 
 <figure class='image-display'>
-  <img src="assets/images/devguide/forms/validity-required-indicator.png" width="400px" alt="Invalid Form"></img>
+  <img src="assets/images/guide/forms/validity-required-indicator.png" width="400px" alt="Invalid Form"></img>
 </figure>
 
 
@@ -705,7 +705,7 @@ When the user deletes the name, the form should look like this:
 
 
 <figure class='image-display'>
-  <img src="assets/images/devguide/forms/name-required-error.png" width="400px" alt="Name required"></img>
+  <img src="assets/images/guide/forms/name-required-error.png" width="400px" alt="Name required"></img>
 </figure>
 
 
