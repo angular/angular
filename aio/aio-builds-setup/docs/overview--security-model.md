@@ -81,7 +81,7 @@ This section describes how each of the aforementioned sub-tasks is accomplished:
 
 4. **Deploy the artifacts to the corresponding PR's directory.**
 
-   With the preceeding steps, we have verified that the uploaded artifacts have been uploaded by
+   With the preceding steps, we have verified that the uploaded artifacts have been uploaded by
    Travis and correspond to a PR whose author is a member of a trusted team. Essentially, as long as
    sub-tasks 1, 2 and 3 can be securely accomplished, it is possible to "project" the trust we have
    in a team's members through the PR and Travis to the build artifacts.
