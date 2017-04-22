@@ -98,7 +98,7 @@ Here's what the UI displays:
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/user-input/keyup1-anim.gif' alt="key up 1"></img>
+  <img src='assets/images/guide/user-input/keyup1-anim.gif' alt="key up 1"></img>
 </figure>
 
 
@@ -181,7 +181,7 @@ Type something in the input box, and watch the display update with each keystrok
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/user-input/keyup-loop-back-anim.gif' alt="loop back"></img>
+  <img src='assets/images/guide/user-input/keyup-loop-back-anim.gif' alt="loop back"></img>
 </figure>
 
 
@@ -235,7 +235,7 @@ Then Angular calls the event handler only when the user presses _Enter_.
 Here's how it works.
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/user-input/keyup3-anim.gif' alt="key up 3"></img>
+  <img src='assets/images/guide/user-input/keyup3-anim.gif' alt="key up 3"></img>
 </figure>
 
 
@@ -269,7 +269,7 @@ clicking **Add**.
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/user-input/little-tour-anim.gif' alt="Little Tour of Heroes"></img>
+  <img src='assets/images/guide/user-input/little-tour-anim.gif' alt="Little Tour of Heroes"></img>
 </figure>
 
 

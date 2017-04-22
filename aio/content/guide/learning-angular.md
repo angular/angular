@@ -9,7 +9,7 @@ A suggested path through the documentation for Angular newcomers.
 
 
 <figure>
-  <img src="assets/images/devguide/intro/people.png" width="200px" height="152px" alt="Us" align="left" style="margin-left:-40px;margin-right:10px"></img>
+  <img src="assets/images/guide/intro/people.png" width="200px" height="152px" alt="Us" align="left" style="margin-left:-40px;margin-right:10px"></img>
 </figure>
 
 
