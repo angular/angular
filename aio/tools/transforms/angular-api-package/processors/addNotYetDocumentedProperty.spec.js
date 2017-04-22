@@ -101,7 +101,7 @@ describe('addNotYetDocumentedProperty', function() {
   });
 
 
-  it('should not mark documents explicity tagged as `@noDescription`', function() {
+  it('should not mark documents explicitly tagged as `@noDescription`', function() {
     var a, a1, a2, b, b1, b2, c, c1, c2;
     var docs = [
       a = {
