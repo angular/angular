@@ -111,9 +111,9 @@ Take the <a href='../guide/setup.html'>Setup</a> as a starting point.
 A few minor changes to the lone `app.component` lead to these two class and HTML files:
 
 <code-tabs>
-  <code-pane title="src/app/app.component.html" path="cb-aot-compiler/src/app/app.component.html">
+  <code-pane title="src/app/app.component.html" path="aot-compiler/src/app/app.component.html">
   </code-pane>
-  <code-pane title="src/app/app.component.ts" path="cb-aot-compiler/src/app/app.component.ts">
+  <code-pane title="src/app/app.component.ts" path="aot-compiler/src/app/app.component.ts">
   </code-pane>
 </code-tabs>
 
@@ -132,7 +132,7 @@ instead of the TypeScript compiler (`tsc`).
 Copy the original `src/tsconfig.json` to a file called `tsconfig-aot.json` on the project root,
 then modify it as follows.
 
-<code-example path="cb-aot-compiler/tsconfig-aot.json" title="tsconfig-aot.json" linenums="false">
+<code-example path="aot-compiler/tsconfig-aot.json" title="tsconfig-aot.json" linenums="false">
 </code-example>
 
 The `compilerOptions` section is unchanged except for one property.
@@ -215,9 +215,9 @@ Switch from the `platformBrowserDynamic.bootstrap` used in JIT compilation to
 Here is AOT bootstrap in `main.ts` next to the original JIT version:
 
 <code-tabs>
-  <code-pane title="src/main.ts" path="cb-aot-compiler/src/main.ts">
+  <code-pane title="src/main.ts" path="aot-compiler/src/main.ts">
   </code-pane>
-  <code-pane title="src/main-jit.ts" path="cb-aot-compiler/src/main-jit.ts">
+  <code-pane title="src/main-jit.ts" path="aot-compiler/src/main-jit.ts">
   </code-pane>
 </code-tabs>
 
@@ -272,7 +272,7 @@ Next, create a configuration file (`rollup-config.js`)
 in the project root directory to tell Rollup how to process the application.
 The cookbook configuration file looks like this.
 
-<code-example path="cb-aot-compiler/rollup-config.js" title="rollup-config.js" linenums="false">
+<code-example path="aot-compiler/rollup-config.js" title="rollup-config.js" linenums="false">
 </code-example>
 
 This config file tells Rollup that the app entry point is `src/app/main.js` .
@@ -301,7 +301,7 @@ Rollup then preserves the parts of `RxJS` referenced by the application
 in the final bundle. Using it is straigthforward. Add the following to 
 the `plugins` array in `rollup-config.js`:
 
-<code-example path="cb-aot-compiler/rollup-config.js" region="commonjs" title="rollup-config.js (CommonJs to ES2015 Plugin)" linenums="false">
+<code-example path="aot-compiler/rollup-config.js" region="commonjs" title="rollup-config.js (CommonJs to ES2015 Plugin)" linenums="false">
 </code-example>
 
 *Minification*
@@ -310,7 +310,7 @@ Rollup tree shaking reduces code size considerably.  Minification makes it small
 This cookbook relies on the _uglify_ Rollup plugin to minify and mangle the code. 
 Add the following to the `plugins` array:
 
-<code-example path="cb-aot-compiler/rollup-config.js" region="uglify" title="rollup-config.js (CommonJs to ES2015 Plugin)" linenums="false">
+<code-example path="aot-compiler/rollup-config.js" region="uglify" title="rollup-config.js (CommonJs to ES2015 Plugin)" linenums="false">
 </code-example>
 
 <div class="l-sub-section">
@@ -347,7 +347,7 @@ Loading the generated application bundle does not require a module loader like S
 Remove the scripts that concern SystemJS.
 Instead, load the bundle file using a single `<script>` tag **_after_** the `</body>` tag:
 
-<code-example path="cb-aot-compiler/src/index.html" region="bundle" title="index.html (load bundle)" linenums="false">
+<code-example path="aot-compiler/src/index.html" region="bundle" title="index.html (load bundle)" linenums="false">
 </code-example>
 
 {@a serve}
@@ -370,17 +370,17 @@ The server starts, launches a browser, and the app should appear.
 Here's the pertinent source code:
 
 <code-tabs>
-  <code-pane title="src/app/app.component.html" path="cb-aot-compiler/src/app/app.component.html">
+  <code-pane title="src/app/app.component.html" path="aot-compiler/src/app/app.component.html">
   </code-pane>
-  <code-pane title="src/app/app.component.ts" path="cb-aot-compiler/src/app/app.component.ts">
+  <code-pane title="src/app/app.component.ts" path="aot-compiler/src/app/app.component.ts">
   </code-pane>
-  <code-pane title="src/main.ts" path="cb-aot-compiler/src/main.ts">
+  <code-pane title="src/main.ts" path="aot-compiler/src/main.ts">
   </code-pane>
-  <code-pane title="src/index.html" path="cb-aot-compiler/src/index.html">
+  <code-pane title="src/index.html" path="aot-compiler/src/index.html">
   </code-pane>
-  <code-pane title="tsconfig-aot.json" path="cb-aot-compiler/tsconfig-aot.json">
+  <code-pane title="tsconfig-aot.json" path="aot-compiler/tsconfig-aot.json">
   </code-pane>
-  <code-pane title="rollup-config.js" path="cb-aot-compiler/rollup-config.js">
+  <code-pane title="rollup-config.js" path="aot-compiler/rollup-config.js">
   </code-pane>
 </code-tabs>
 
@@ -411,7 +411,7 @@ The same source code can be built both ways. Here's one way to do that.
 * Delete the script at the bottom of `index-jit.html` that loads `bundle.js`
 * Restore the SystemJS scripts like this:
 
-<code-example path="cb-aot-compiler/src/index-jit.html" region="jit" title="src/index-jit.html (SystemJS scripts)" linenums="false">
+<code-example path="aot-compiler/src/index-jit.html" region="jit" title="src/index-jit.html (SystemJS scripts)" linenums="false">
 </code-example>
 
 Notice the slight change to the `system.import` which now specifies `src/app/main-jit`.
@@ -603,6 +603,6 @@ showing exactly which application and Angular modules and classes are included i
 Here's the map for _Tour of Heroes_.
 <a href="assets/images/cookbooks/aot-compiler/toh6-bundle.png" target="_blank" title="View larger image">
   <figure class='image-display'>
-    <img src="assets/images/cookbooks/aot-compiler/toh6-bundle.png" alt="TOH-6-bundle"></img>
+    <img src="assets/images/cookbooks/aot-compiler/toh6-bundle.png" alt="toh-pt6-bundle"></img>
   </figure>
 </a>

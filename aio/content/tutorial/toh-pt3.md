@@ -101,7 +101,7 @@ Add a file named `hero-detail.component.ts` to the `app/` folder.
 This file will hold the new `HeroDetailComponent`.
 
 The file and component names follow the standard described in the Angular
-[style guide](guide/style-guide#naming).
+[style guide](guide/styleguide#naming).
 
 * The component _class_ name should be written in _upper camel case_ and end in the word "Component".
 The hero detail component class is `HeroDetailComponent`.
@@ -162,7 +162,7 @@ Add that property to the `HeroDetailComponent` class like this:
 The `hero` property is typed as an instance of `Hero`.
 The `Hero` class is still in the `app.component.ts` file.
 Now there are two components that need to reference the `Hero` class.
-The Angular [style guide](guide/style-guide#rule-of-one "Style guide: rule of one") recommends one class per file anyway.
+The Angular [style guide](guide/styleguide#rule-of-one "Style guide: rule of one") recommends one class per file anyway.
 
 Move the `Hero` class from `app.component.ts` to its own `hero.ts` file.
 

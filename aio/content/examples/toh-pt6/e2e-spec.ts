@@ -108,7 +108,7 @@ describe('Tutorial part 6', () => {
 
     it(`cancels and shows ${targetHero.name} in Dashboard`, () => {
       element(by.buttonText('Back')).click();
-      browser.waitForAngular(); // seems necessary to gets tests to past for toh-6
+      browser.waitForAngular(); // seems necessary to gets tests to past for toh-pt6
 
       let targetHeroElt = getPageElts().topHeroes.get(targetHeroDashboardIndex);
       expect(targetHeroElt.getText()).toEqual(targetHero.name);
@@ -120,7 +120,7 @@ describe('Tutorial part 6', () => {
 
     it(`saves and shows ${newHeroName} in Dashboard`, () => {
       element(by.buttonText('Save')).click();
-      browser.waitForAngular(); // seems necessary to gets tests to past for toh-6
+      browser.waitForAngular(); // seems necessary to gets tests to past for toh-pt6
 
       let targetHeroElt = getPageElts().topHeroes.get(targetHeroDashboardIndex);
       expect(targetHeroElt.getText()).toEqual(newHeroName);
@@ -164,7 +164,7 @@ describe('Tutorial part 6', () => {
 
     it(`shows ${newHeroName} in Heroes list`, () => {
       element(by.buttonText('Save')).click();
-      browser.waitForAngular(); // seems necessary to gets tests to past for toh-6
+      browser.waitForAngular(); // seems necessary to gets tests to past for toh-pt6
       let expectedHero = {id: targetHero.id, name: newHeroName};
       expect(Hero.fromLi(getHeroLiEltById(targetHero.id))).toEqual(expectedHero);
     });
@@ -242,7 +242,7 @@ describe('Tutorial part 6', () => {
     let targetHeroElt = getPageElts().topHeroes.get(targetHeroDashboardIndex);
     expect(targetHeroElt.getText()).toEqual(targetHero.name);
     targetHeroElt.click();
-    browser.waitForAngular(); // seems necessary to gets tests to past for toh-6
+    browser.waitForAngular(); // seems necessary to gets tests to past for toh-pt6
 
     let page = getPageElts();
     expect(page.heroDetail.isPresent()).toBeTruthy('shows hero detail');

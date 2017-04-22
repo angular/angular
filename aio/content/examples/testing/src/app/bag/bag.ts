@@ -163,7 +163,7 @@ export class InputComponent {
 //   valueChange: EventEmitter<any> = new EventEmitter();
 // }
 
-// As the style-guide recommends
+// As the styleguide recommends
 @Directive({ selector: 'input[value]' })
 export class InputValueBinderDirective {
   @HostBinding()

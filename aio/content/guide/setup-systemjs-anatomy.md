@@ -359,7 +359,7 @@ If you do, this page can help you understand their purpose.
       and complains when you violate one of its rules.
 
       This file defines linting rules favored by the
-      [Angular style guide](guide/style-guide) and by the authors of the documentation.
+      [Angular style guide](guide/styleguide) and by the authors of the documentation.
     </td>
 
   </tr>
