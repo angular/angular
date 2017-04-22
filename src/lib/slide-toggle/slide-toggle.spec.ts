@@ -295,23 +295,18 @@ describe('MdSlideToggle', () => {
       expect(slideToggleControl.pristine).toBe(true);
       expect(slideToggleControl.touched).toBe(false);
 
-      // After changing the value from the view, the control should
-      // become dirty (not pristine), but remain untouched if focus is still there.
+      // After changing the value programmatically, the control should
+      // become dirty (not pristine), but remain untouched.
       slideToggle.checked = true;
-
-      // Dispatch a change event on the input element to fake a user interaction that triggered
-      // the state change.
-      dispatchFakeEvent(inputElement, 'change');
-
       fixture.detectChanges();
 
       expect(slideToggleControl.valid).toBe(true);
       expect(slideToggleControl.pristine).toBe(false);
       expect(slideToggleControl.touched).toBe(false);
 
-      // Once the input element looses focus, the control should remain dirty but should
-      // also turn touched.
-      dispatchFakeEvent(inputElement, 'blur');
+      // After a user interaction occurs (such as a click), the control should remain dirty and
+      // now also be touched.
+      labelElement.click();
       fixture.detectChanges();
 
       expect(slideToggleControl.valid).toBe(true);
@@ -329,13 +324,13 @@ describe('MdSlideToggle', () => {
       expect(slideToggleControl.touched).toBe(false);
       expect(slideToggleElement.classList).toContain('mat-checked');
 
-      // Once the input element looses focus, the control should remain dirty but should
-      // also turn touched.
-      dispatchFakeEvent(inputElement, 'blur');
+      // After a user interaction occurs (such as a click), the control should remain dirty and
+      // now also be touched.
+      inputElement.click();
       fixture.detectChanges();
 
       expect(slideToggleControl.touched).toBe(true);
-      expect(slideToggleElement.classList).toContain('mat-checked');
+      expect(slideToggleElement.classList).not.toContain('mat-checked');
     });
 
     // TODO(kara): update when core/testing adds fix
@@ -439,6 +434,7 @@ describe('MdSlideToggle', () => {
     }));
 
     it('should prevent the form from submit when being required', () => {
+
       if ('reportValidity' in inputElement === false) {
         // If the browser does not report the validity then the tests will break.
         // e.g Safari 8 on Mobile.
@@ -446,6 +442,7 @@ describe('MdSlideToggle', () => {
       }
 
       testComponent.isRequired = true;
+
       fixture.detectChanges();
 
       buttonElement.click();

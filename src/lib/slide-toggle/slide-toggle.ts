@@ -64,6 +64,7 @@ export class MdSlideToggle implements OnDestroy, AfterContentInit, ControlValueA
 
   // A unique id for the slide-toggle. By default the id is auto-generated.
   private _uniqueId = `md-slide-toggle-${++nextId}`;
+  private _checked: boolean = false;
   private _color: string;
   private _slideRenderer: SlideToggleRenderer = null;
   private _disabled: boolean = false;
@@ -84,9 +85,6 @@ export class MdSlideToggle implements OnDestroy, AfterContentInit, ControlValueA
 
   /** Whether the label should appear after or before the slide-toggle. Defaults to 'after' */
   @Input() labelPosition: 'before' | 'after' = 'after';
-
-  /** Whether the slide-toggle element is checked or not */
-  @Input() checked: boolean = false;
 
   /** Used to set the aria-label attribute on the underlying input element. */
   @Input('aria-label') ariaLabel: string = null;
@@ -138,7 +136,9 @@ export class MdSlideToggle implements OnDestroy, AfterContentInit, ControlValueA
   }
 
   /**
-   * This function will called if the underlying input changed its value through user interaction.
+   * The onChangeEvent method will be also called on click.
+   * This is because everything for the slide-toggle is wrapped inside of a label,
+   * which triggers a onChange event on click.
    */
   _onChangeEvent(event: Event) {
     // We always have to stop propagation on the change event.
@@ -146,22 +146,19 @@ export class MdSlideToggle implements OnDestroy, AfterContentInit, ControlValueA
     // emit its event object to the component's `change` output.
     event.stopPropagation();
 
-    // Sync the value from the underlying input element with the slide-toggle component.
-    this.checked = this._inputElement.nativeElement.checked;
+    // Once a drag is currently in progress, we do not want to toggle the slide-toggle on a click.
+    if (!this.disabled && !this._slideRenderer.dragging) {
+      this.toggle();
 
-    // Emit our custom change event if the native input emitted one.
-    // It is important to only emit it, if the native input triggered one, because we don't want
-    // to trigger a change event, when the `checked` variable changes programmatically.
-    this._emitChangeEvent();
+      // Emit our custom change event if the native input emitted one.
+      // It is important to only emit it, if the native input triggered one, because
+      // we don't want to trigger a change event, when the `checked` variable changes for example.
+      this._emitChangeEvent();
+    }
   }
 
   _onInputClick(event: Event) {
-    // In some situations the user will release the mouse on the label element. The label element
-    // redirects the click to the underlying input element and will result in a value change.
-    // Prevent the default behavior if dragging, because the value will be set after drag.
-    if (this._slideRenderer.dragging) {
-      event.preventDefault();
-    }
+    this.onTouched();
 
     // We have to stop propagation for click events on the visual hidden input element.
     // By default, when a user clicks on a label element, a generated click event will be
@@ -196,6 +193,16 @@ export class MdSlideToggle implements OnDestroy, AfterContentInit, ControlValueA
   /** Focuses the slide-toggle. */
   focus() {
     this._focusOriginMonitor.focusVia(this._inputElement.nativeElement, this._renderer, 'keyboard');
+  }
+
+  /** Whether the slide-toggle is checked. */
+  @Input()
+  get checked() { return !!this._checked; }
+  set checked(value) {
+    if (this.checked !== !!value) {
+      this._checked = value;
+      this.onChange(this._checked);
+    }
   }
 
   /** The color of the slide-toggle. Can be primary, accent, or warn. */
@@ -238,15 +245,12 @@ export class MdSlideToggle implements OnDestroy, AfterContentInit, ControlValueA
     }
   }
 
-  /**
-   * Emits a change event on the `change` output. Also notifies the FormControl about the change.
-   */
+  /** Emits the change event to the `change` output EventEmitter */
   private _emitChangeEvent() {
     let event = new MdSlideToggleChange();
     event.source = this;
     event.checked = this.checked;
     this.change.emit(event);
-    this.onChange(this.checked);
   }
 
 
