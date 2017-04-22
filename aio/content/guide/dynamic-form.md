@@ -217,7 +217,7 @@ Saving and retrieving the data is an exercise for another time.
 The final form looks like this:
 
 <figure class='image-display'>
-  <img src="assets/images/cookbooks/dynamic-form/dynamic-form.png" alt="Dynamic-Form"></img>
+  <img src="assets/images/guide/dynamic-form/dynamic-form.png" alt="Dynamic-Form"></img>
 </figure>
 
 
