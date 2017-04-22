@@ -16,6 +16,7 @@ import {MdSelect, MdSelectFloatPlaceholderType} from './select';
 import {MdSelectDynamicMultipleError, MdSelectNonArrayValueError} from './select-errors';
 import {MdOption} from '../core/option/option';
 import {Dir} from '../core/rtl/dir';
+import {DOWN_ARROW, UP_ARROW} from '../core/keyboard/keycodes';
 import {
   ControlValueAccessor, FormControl, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule
 } from '@angular/forms';
@@ -1340,6 +1341,81 @@ describe('MdSelect', () => {
         fixture.componentInstance.control.enable();
         fixture.detectChanges();
         expect(select.getAttribute('tabindex')).toEqual('0');
+      });
+
+      it('should be able to select options via the arrow keys on a closed select', () => {
+        const formControl = fixture.componentInstance.control;
+        const options = fixture.componentInstance.options.toArray();
+
+        expect(formControl.value).toBeFalsy('Expected no initial value.');
+
+        dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
+
+        expect(options[0].selected).toBe(true, 'Expected first option to be selected.');
+        expect(formControl.value).toBe(options[0].value,
+          'Expected value from first option to have been set on the model.');
+
+        dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
+        dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
+
+        // Note that the third option is skipped, because it is disabled.
+        expect(options[3].selected).toBe(true, 'Expected fourth option to be selected.');
+        expect(formControl.value).toBe(options[3].value,
+          'Expected value from fourth option to have been set on the model.');
+
+        dispatchKeyboardEvent(select, 'keydown', UP_ARROW);
+
+        expect(options[1].selected).toBe(true, 'Expected second option to be selected.');
+        expect(formControl.value).toBe(options[1].value,
+          'Expected value from second option to have been set on the model.');
+      });
+
+      it('should do nothing if the key manager did not change the active item', () => {
+        const formControl = fixture.componentInstance.control;
+
+        expect(formControl.value).toBeNull('Expected form control value to be empty.');
+        expect(formControl.pristine).toBe(true, 'Expected form control to be clean.');
+
+        dispatchKeyboardEvent(select, 'keydown', 16); // Press a random key.
+
+        expect(formControl.value).toBeNull('Expected form control value to stay empty.');
+        expect(formControl.pristine).toBe(true, 'Expected form control to stay clean.');
+      });
+
+      it('should continue from the selected option when the value is set programmatically', () => {
+        const formControl = fixture.componentInstance.control;
+
+        formControl.setValue('eggs-5');
+        fixture.detectChanges();
+
+        dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
+
+        expect(formControl.value).toBe('pasta-6');
+        expect(fixture.componentInstance.options.toArray()[6].selected).toBe(true);
+      });
+
+      it('should not cycle through the options if the control is disabled', () => {
+        const formControl = fixture.componentInstance.control;
+
+        formControl.setValue('eggs-5');
+        formControl.disable();
+        dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
+
+        expect(formControl.value).toBe('eggs-5', 'Expected value to remain unchaged.');
+      });
+
+      it('should not wrap selection around after reaching the end of the options', () => {
+        const lastOption = fixture.componentInstance.options.last;
+
+        fixture.componentInstance.options.forEach(() => {
+          dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
+        });
+
+        expect(lastOption.selected).toBe(true, 'Expected last option to be selected.');
+
+        dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
+
+        expect(lastOption.selected).toBe(true, 'Expected last option to stay selected.');
       });
 
     });

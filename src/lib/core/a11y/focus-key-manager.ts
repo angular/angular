@@ -23,7 +23,10 @@ export class FocusKeyManager extends ListKeyManager<Focusable> {
    */
   setActiveItem(index: number): void {
     super.setActiveItem(index);
-    this.activeItem.focus();
+
+    if (this.activeItem) {
+      this.activeItem.focus();
+    }
   }
 
 }

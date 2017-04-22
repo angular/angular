@@ -484,6 +484,24 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
   _handleKeydown(event: KeyboardEvent): void {
     if (event.keyCode === ENTER || event.keyCode === SPACE) {
       this.open();
+    } else if (!this.disabled) {
+      let prevActiveItem = this._keyManager.activeItem;
+
+      // Cycle though the select options even when the select is closed,
+      // matching the behavior of the native select element.
+      // TODO(crisbeto): native selects also cycle through the options with left/right arrows,
+      // however the key manager only supports up/down at the moment.
+      this._keyManager.onKeydown(event);
+
+      let currentActiveItem = this._keyManager.activeItem as MdOption;
+
+      if (this._multiple) {
+        this.open();
+      } else if (currentActiveItem !== prevActiveItem) {
+        this._clearSelection();
+        this._setSelectionByValue(currentActiveItem.value);
+        this._propagateChanges();
+      }
     }
   }
 
@@ -572,11 +590,13 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
    * @returns Option that has the corresponding value.
    */
   private _selectValue(value: any): MdOption {
-    let correspondingOption = this.options.find(option => option.value === value);
+    let optionsArray = this.options.toArray();
+    let correspondingOption = optionsArray.find(option => option.value === value);
 
     if (correspondingOption) {
       correspondingOption.select();
       this._selectionModel.select(correspondingOption);
+      this._keyManager.setActiveItem(optionsArray.indexOf(correspondingOption));
     }
 
     return correspondingOption;
