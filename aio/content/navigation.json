@@ -91,10 +91,11 @@
       "url": "guide/fundamentals",
       "tooltip": "The fundamentals of Angular",
       "children": [
+
         {
-          "url": "guide/architecture",
-          "title": "Architecture",
-          "tooltip": "The basic building blocks of Angular applications."
+          "url": "guide/animations",
+          "title": "Animations",
+          "tooltip": "A guide to Angular's animation system."
         },
 
         {
@@ -117,6 +118,13 @@
               "tooltip": "Answers to frequently asked questions about @NgModule."
             }
         ]},
+
+        {
+          "url": "guide/architecture",
+          "title": "Architecture",
+          "tooltip": "The basic building blocks of Angular applications."
+        },
+
         {
           "title": "Components",
           "tooltip": "Components present information to users and collect their input.",
@@ -155,23 +163,6 @@
         },
 
         {
-          "title": "Directives",
-          "tooltip": "Learn how directives modify the layout and behavior of elements.",
-          "children": [
-            {
-              "url": "guide/attribute-directives",
-              "title": "Attribute Directives",
-              "tooltip": "Attribute directives attach behavior to elements."
-            },
-            {
-              "url": "guide/structural-directives",
-              "title": "Structural Directives",
-              "tooltip": "Structural directives manipulate the layout of the page."
-            }
-          ]
-        },
-
-        {
           "title": "Dependency Injection",
           "tooltip": "Dependency Injection: creating and injecting services",
           "children": [
@@ -191,6 +182,47 @@
               "tooltip": "Techniques for Dependency Injection."
             }
           ]
+        },
+
+        {
+          "title": "Directives",
+          "tooltip": "Learn how directives modify the layout and behavior of elements.",
+          "children": [
+            {
+              "url": "guide/attribute-directives",
+              "title": "Attribute Directives",
+              "tooltip": "Attribute directives attach behavior to elements."
+            },
+            {
+              "url": "guide/structural-directives",
+              "title": "Structural Directives",
+              "tooltip": "Structural directives manipulate the layout of the page."
+            }
+          ]
+        },
+
+        {
+          "url": "guide/http",
+          "title": "HTTP",
+          "tooltip": "Use HTTP to talk to a remote server."
+        },
+
+        {
+          "url": "guide/i18n",
+          "title": "Internationalization (i18n)",
+          "tooltip": "Translate the app's template text into multiple languages."
+        },
+
+        {
+          "url": "guide/pipes",
+          "title": "Pipes",
+          "tooltip": "Pipes transform displayed values within a template."
+        },
+
+        {
+          "url": "guide/router",
+          "title": "Routing & Navigation",
+          "tooltip": "Discover the basics of screen navigation with the Angular Router."
         },
 
         {
@@ -224,37 +256,7 @@
               "title": "Dynamic forms",
               "tooltip": "Render dynamic forms with FormGroup."
             }
-        ]},
-
-        {
-          "url": "guide/http",
-          "title": "HTTP",
-          "tooltip": "Use HTTP to talk to a remote server."
-        },
-
-        {
-          "url": "guide/router",
-          "title": "Routing & Navigation",
-          "tooltip": "Discover the basics of screen navigation with the Angular Router."
-        },
-
-        {
-          "url": "guide/pipes",
-          "title": "Pipes",
-          "tooltip": "Pipes transform displayed values within a template."
-        },
-
-        {
-          "url": "guide/animations",
-          "title": "Animations",
-          "tooltip": "A guide to Angular's animation system."
-        },
-
-        {
-          "url": "guide/i18n",
-          "title": "Internationalization (i18n)",
-          "tooltip": "Translate the app's template text into multiple languages."
-        }
+        ]}
     ]},
 
     {
@@ -262,6 +264,19 @@
       "url": "guide/techniques",
       "tooltip": "Techniques for putting Angular to work in your environment",
       "children": [
+
+        {
+          "url": "guide/security",
+          "title": "Security",
+          "tooltip": "Developing for content security in Angular applications."
+        },
+
+        {
+          "url": "guide/set-document-title",
+          "title": "Set the document tab title",
+          "tooltip": "Set the browser tab title dynamically with the Angular Title service"
+        },
+
         {
           "title": "Setup & Deployment",
           "tooltip": "Setup and Deployment",
@@ -306,6 +321,18 @@
         },
 
         {
+          "url": "guide/testing",
+          "title": "Testing",
+          "tooltip": "Techniques and practices for testing an Angular app."
+        },
+
+        {
+          "url": "guide/ts-to-js",
+          "title": "TypeScript to JavaScript",
+          "tooltip": "Convert Angular TypeScript examples into ES6 and ES5 JavaScript."
+        },
+
+        {
           "title": "Upgrading",
           "tooltip": "Incrementally upgrade an AngularJS application to Angular.",
           "children": [
@@ -320,30 +347,6 @@
               "tooltip": "Incrementally upgrade an AngularJS application to Angular."
             }
           ]
-        },
-
-        {
-          "url": "guide/security",
-          "title": "Security",
-          "tooltip": "Developing for content security in Angular applications."
-        },
-
-        {
-          "url": "guide/testing",
-          "title": "Testing",
-          "tooltip": "Techniques and practices for testing an Angular app."
-        },
-
-        {
-          "url": "guide/set-document-title",
-          "title": "Set the document tab title",
-          "tooltip": "Set the browser tab title dynamically with the Angular Title service"
-        },
-
-        {
-          "url": "guide/ts-to-js",
-          "title": "TypeScript to JavaScript",
-          "tooltip": "Convert Angular TypeScript examples into ES6 and ES5 JavaScript."
         },
 
         {
