@@ -4,6 +4,10 @@ aio-nav-menu.top-menu .vertical-menu-item  {
 }
 
 md-sidenav.mat-sidenav.sidenav {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+
   position: fixed;
   bottom: 0;
   padding: 80px 0px 0px;
@@ -12,16 +16,22 @@ md-sidenav.mat-sidenav.sidenav {
   box-shadow: 6px 0 6px rgba(0,0,0,0.10);
 }
 
+md-sidenav-container>footer {
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+
 md-sidenav.mat-sidenav.sidenav.collapsed {
-    padding-top: 32px;
+  padding-top: 32px;
 }
 
 md-sidenav-container.sidenav-container {
-    min-height: 100%;
-    height: auto !important;
-    margin: 0 auto;
-    transform: none;
-    padding-top: 64px;
+  flex-grow: 1;
+  min-height: 100%;
+  height: auto !important;
+  margin: 0 auto;
+  transform: none;
+  padding-top: 64px;
 }
 
 // md-sidenav.sidenav.mat-sidenav.mat-sidenav-side.mat-sidenav-opened {
@@ -161,5 +171,5 @@ aio-nav-menu.top-menu {
   aio-nav-item:last-child div {
     border-bottom: 2px solid rgba($mediumgray, 0.5);
   }
-  
+
 }
