@@ -167,8 +167,18 @@ describe('LiveExampleComponent', () => {
     it('should not have a download link when `noDownload` atty present', async(() => {
       setHostTemplate('<live-example noDownload></live-example>');
       testComponent(() => {
-        expect(getAnchors().length).toBe(1, 'only the live-example anchor');
+        const hrefs = getHrefs();
+        expect(hrefs.length).toBe(1, 'only the plunker live-example anchor');
+        expect(hrefs[0]).toContain('plnkr.html');
       });
+    }));
+
+    it('should only have a download link when `downloadOnly` atty present', async(() => {
+      setHostTemplate('<live-example downloadOnly>download this</live-example>');
+      testComponent(() => {
+        const hrefs = getHrefs();
+        expect(hrefs.length).toBe(1, 'only the zip anchor');
+        expect(hrefs[0]).toContain('.zip');      });
     }));
 
     it('should have default title when no title attribute or content', async(() => {
