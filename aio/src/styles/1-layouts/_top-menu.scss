@@ -3,9 +3,15 @@
   flex: 1 1 auto;
 }
 
-.nav-link {
+aio-top-menu a.nav-link {
   margin: 0 16px;
   cursor: pointer;
+  
+  &:focus {
+    background-color: $accentblue;
+    outline: none;
+    padding: 21px 16px;
+  }
 }
 
 .nav-link.home img {
