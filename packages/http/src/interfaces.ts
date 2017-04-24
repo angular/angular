@@ -6,11 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+
 import {ReadyState, RequestMethod, ResponseContentType, ResponseType} from './enums';
 import {Headers} from './headers';
 import {Request} from './static_request';
 import {URLSearchParams} from './url_search_params';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+
 
 /**
  * Abstract class from which real backends are derived.

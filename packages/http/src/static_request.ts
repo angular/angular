@@ -6,13 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+
 import {Body} from './body';
 import {ContentType, RequestMethod, ResponseContentType} from './enums';
 import {Headers} from './headers';
 import {normalizeMethodName} from './http_utils';
 import {RequestArgs} from './interfaces';
 import {URLSearchParams} from './url_search_params';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+
 
 
 // TODO(jeffbcross): properly implement body accessors

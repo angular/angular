@@ -9,6 +9,8 @@
 import {Injectable} from '@angular/core';
 import {AsyncTestCompleter, SpyObject, afterEach, beforeEach, beforeEachProviders, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
 import {ɵgetDOM as getDOM} from '@angular/platform-browser';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+
 import {BrowserXhr} from '../../src/backends/browser_xhr';
 import {CookieXSRFStrategy, XHRBackend, XHRConnection} from '../../src/backends/xhr_backend';
 import {BaseRequestOptions, RequestOptions} from '../../src/base_request_options';
@@ -19,7 +21,6 @@ import {XSRFStrategy} from '../../src/interfaces';
 import {Request} from '../../src/static_request';
 import {Response} from '../../src/static_response';
 import {URLSearchParams} from '../../src/url_search_params';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
 let abortSpy: any;
 let sendSpy: any;
@@ -765,9 +766,7 @@ Connection: keep-alive`;
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            const base = new BaseRequestOptions();
            const connection = new XHRConnection(
-               new Request(
-                   base.merge(new RequestOptions({chunks$:null}))),
-               new MockBrowserXHR());
+               new Request(base.merge(new RequestOptions({chunks$:null}))), new MockBrowserXHR());
            connection.response.subscribe((res: Response) => {
              expect(res.json()).toBe(null);
              expect(connection.request.chunks$).toBeFalsy();
@@ -783,9 +782,7 @@ Connection: keep-alive`;
            const base = new BaseRequestOptions();
            let chunkObs = new BehaviorSubject<string>('');
            const connection = new XHRConnection(
-               new Request(
-                   base.merge(new RequestOptions({chunks$:chunkObs}))),
-               new MockBrowserXHR());
+               new Request(base.merge(new RequestOptions({chunks$:chunkObs}))), new MockBrowserXHR());
            connection.response.subscribe((res: Response) => {
              expect(res.json()).toBe(null);
              expect(connection.request.chunks$).toBeTruthy();
@@ -797,18 +794,17 @@ Connection: keep-alive`;
            existingXHRs[0].dispatchEvent('load');
          }));
 
-      it('should complete a request', 
-        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+      it('should complete a request', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            sampleRequest.chunks$ = null;
            const connection = new XHRConnection(
                sampleRequest, new MockBrowserXHR(),
                new ResponseOptions({type: ResponseType.Error}));
            connection.response.subscribe(
-               (res: Response) => { 
+               (res: Response) => {
                  expect(res.type).toBe(ResponseType.Error); 
                  expect(connection.request.chunks$).toBeFalsy();
-               }, null !,
-               () => { async.done(); });
+               },
+               null !, () => { async.done(); });
            existingXHRs[0].setStatusCode(200);
            existingXHRs[0].dispatchEvent('load');
          }));

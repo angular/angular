@@ -7,13 +7,14 @@
  */
 
 import {Injectable} from '@angular/core';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
 import {RequestMethod, ResponseContentType} from './enums';
 import {Headers} from './headers';
 import {normalizeMethodName} from './http_utils';
 import {RequestOptionsArgs} from './interfaces';
 import {URLSearchParams} from './url_search_params';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+
 
 /**
  * Creates a request options object to be optionally provided when instantiating a
@@ -84,8 +85,8 @@ export class RequestOptions {
 
   // TODO(Dzmitry): remove search when this.search is removed
   constructor(
-      {method, headers, body, url, search, params, withCredentials,
-       responseType, chunks$}: RequestOptionsArgs = {}) {
+      {method, headers, body, url, search, params, withCredentials, responseType, 
+       chunks$}: RequestOptionsArgs = {}) {
     this.method = method != null ? normalizeMethodName(method) : null;
     this.headers = headers != null ? headers : null;
     this.body = body != null ? body : null;
