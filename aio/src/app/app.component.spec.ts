@@ -265,19 +265,49 @@ describe('AppComponent', () => {
     });
   });
 
-  describe('autoScrolling', () => {
-    it('should AutoScrollService.scroll when the url changes', () => {
-      const scrollService: AutoScrollService = fixture.debugElement.injector.get(AutoScrollService);
-      spyOn(scrollService, 'scroll');
-      locationService.go('some/url#fragment');
-      expect(scrollService.scroll).toHaveBeenCalledWith();
+  describe('autoScrolling with AutoScrollService', () => {
+    let scrollService: AutoScrollService;
+    let scrollSpy: jasmine.Spy;
+
+    beforeEach(() => {
+      scrollService = fixture.debugElement.injector.get(AutoScrollService);
+      scrollSpy = spyOn(scrollService, 'scroll');
     });
 
-    it('should be called when a document has been rendered', () => {
-      const scrollService: AutoScrollService = fixture.debugElement.injector.get(AutoScrollService);
-      spyOn(scrollService, 'scroll');
+    it('should not scroll immediately when the docId (path) changes', () => {
+      locationService.go('guide/pipes');
+      // deliberately not calling `fixture.detectChanges` because don't want `onDocRendered`
+      expect(scrollSpy).not.toHaveBeenCalled();
+    });
+
+    it('should scroll when just the hash changes (# alone)', () => {
+      locationService.go('guide/pipes');
+      locationService.go('guide/pipes#somewhere');
+      expect(scrollSpy).toHaveBeenCalled();
+    });
+
+    it('should scroll when just the hash changes (/#)', () => {
+      locationService.go('guide/pipes');
+      locationService.go('guide/pipes/#somewhere');
+      expect(scrollSpy).toHaveBeenCalled();
+    });
+
+    it('should scroll again when nav to the same hash twice in succession', () => {
+      locationService.go('guide/pipes');
+      locationService.go('guide/pipes#somewhere');
+      locationService.go('guide/pipes#somewhere');
+      expect(scrollSpy.calls.count()).toBe(2);
+    });
+
+    it('should scroll when call onDocRendered directly', () => {
       component.onDocRendered();
-      expect(scrollService.scroll).toHaveBeenCalledWith();
+      expect(scrollSpy).toHaveBeenCalled();
+    });
+
+    it('should scroll (via onDocRendered) when finish navigating to a new doc', () => {
+      locationService.go('guide/pipes');
+      fixture.detectChanges(); // triggers the event that calls onDocRendered
+      expect(scrollSpy).toHaveBeenCalled();
     });
   });
 
@@ -464,7 +494,7 @@ class TestHttp {
       const match = /content\/docs\/(.+)\.json/.exec(url);
       const id = match[1];
       const title = id.split('/').pop().replace(/^([a-z])/, (_, letter) => letter.toUpperCase());
-      const contents = `<h1>${title} Doc</h1>`;
+      const contents = `<h1>${title} Doc</h1><h2 id="#somewhere">Some heading</h2>`;
       data = { id, title, contents };
       if (id === 'no-title') {
         data.title = '';

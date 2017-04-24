@@ -17,8 +17,9 @@ export class LocationService {
     .map(url => this.stripSlashes(url))
     .do(url => this.gaService.locationChanged(url))
     .publishReplay(1);
+
   currentPath = this.currentUrl
-    .map(url => url.match(/[^?#]*/)[0]);   // strip off query and hash
+    .map(url => url.match(/[^?#]*/)[0]); // strip query and hash
 
   constructor(
     private gaService: GaService,
