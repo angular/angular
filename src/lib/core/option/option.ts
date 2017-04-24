@@ -6,7 +6,6 @@ import {
   Output,
   NgModule,
   ModuleWithProviders,
-  Renderer,
   ViewEncapsulation,
   Inject,
   Optional,
@@ -84,7 +83,6 @@ export class MdOption {
 
   constructor(
     private _element: ElementRef,
-    private _renderer: Renderer,
     @Optional() @Inject(MATERIAL_COMPATIBILITY_MODE) public _isCompatibilityMode: boolean) {}
 
   /**
@@ -120,7 +118,7 @@ export class MdOption {
 
   /** Sets focus onto this option. */
   focus(): void {
-    this._renderer.invokeElementMethod(this._getHostElement(), 'focus');
+    this._getHostElement().focus();
   }
 
   /**
