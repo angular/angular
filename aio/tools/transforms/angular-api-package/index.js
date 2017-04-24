@@ -33,6 +33,9 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
     readTypeScriptModules.ignoreExportsMatching = [/^[_ɵ]/];
     readTypeScriptModules.hidePrivateMembers = true;
     readTypeScriptModules.sourceFiles = [
+      'animations/index.ts',
+      'animations/browser/index.ts',
+      'animations/browser/testing/index.ts',
       'common/index.ts',
       'common/testing/index.ts',
       'core/index.ts',
@@ -41,6 +44,7 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
       'http/index.ts',
       'http/testing/index.ts',
       'platform-browser/index.ts',
+      'platform-browser/animations/index.ts',
       'platform-browser/testing/index.ts',
       'platform-browser-dynamic/index.ts',
       'platform-browser-dynamic/testing/index.ts',
@@ -50,8 +54,9 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
       'platform-webworker-dynamic/index.ts',
       'router/index.ts',
       'router/testing/index.ts',
+      'router/upgrade/index.ts',
       'upgrade/index.ts',
-      'upgrade/static.ts',
+      'upgrade/static/index.ts',
     ];
 
     // API Examples
