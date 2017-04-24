@@ -1,42 +1,7 @@
 .api-section {
-    display: flex;
-    flex-direction: row;
-    vertical-align: top;
     position: relative;
-    margin-bottom: 32px;
-    padding: 8px 0 16px;
 
     pre {
         white-space: pre-line;
-    }
-
-    &:after {
-        content:"";
-        display: block;
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        border-bottom: 1px solid $lightgray;
-        width: 100%;
-    }
-}
-
-.api-section-header {
-    width: 30%;
-    display: inline-block;
-    margin-right: 32px;
-
-    h2, p {
-        margin: 0;
-    }
-}
-
-.api-section-content {
-    width: 60%;
-    display: inline-block;
-
-    p {
-        margin: 0 0 8px 0;
     }
 }
