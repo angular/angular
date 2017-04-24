@@ -318,7 +318,7 @@ Alternatively, you can temporarily target a JSON file by changing the endpoint U
 
 {@a rxjs}
 If you are familiar with asynchronous methods in modern JavaScript, you might expect the `get` method to return a
-<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise" target="_blank" title="Promise">promise</a>.
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise" title="Promise">promise</a>.
 You'd expect to chain a call to `then()` and extract the heroes.
 Instead you're calling a `map()` method.
 Clearly this is not a promise.
@@ -332,9 +332,9 @@ and `map()` is one of the RxJS *operators*.
 
 
 ## RxJS library
-<a href="http://reactivex.io/rxjs" target="_blank" title="RxJS Reactive Extensions">RxJS</a>
+<a href="http://reactivex.io/rxjs" title="RxJS Reactive Extensions">RxJS</a>
 is a third party library, endorsed by Angular, that implements the 
-<a href="https://www.youtube.com/watch?v=VLGCCpOWFFw" target="_blank" title="Video: Rob Wormald on Observables"><b>asynchronous Observable</b></a> pattern.
+<a href="https://www.youtube.com/watch?v=VLGCCpOWFFw" title="Video: Rob Wormald on Observables"><b>asynchronous Observable</b></a> pattern.
 
 All of the Developer Guide samples have installed the RxJS npm package
 because Observables are used widely in Angular applications.
@@ -962,13 +962,13 @@ processes that stream _before_ calling the service.
 
 
 
-* <a href="https://github.com/Reactive-Extensions/RxJS/blob/master/doc/api/core/operators/debounce.md" target="_blank" title="debounce operator"><i>debounceTime</i></a>
+* <a href="https://github.com/Reactive-Extensions/RxJS/blob/master/doc/api/core/operators/debounce.md" title="debounce operator"><i>debounceTime</i></a>
 waits for the user to stop typing for at least 300 milliseconds.
 
-* <a href="https://github.com/Reactive-Extensions/RxJS/blob/master/doc/api/core/operators/distinctuntilchanged.md" target="_blank" title="distinctUntilChanged operator"><i>distinctUntilChanged</i></a>
+* <a href="https://github.com/Reactive-Extensions/RxJS/blob/master/doc/api/core/operators/distinctuntilchanged.md" title="distinctUntilChanged operator"><i>distinctUntilChanged</i></a>
 ensures that the service is called only when the new search term is different from the previous search term.
 
-* The <a href="https://github.com/Reactive-Extensions/RxJS/blob/master/doc/api/core/operators/flatmaplatest.md" target="_blank" title="switchMap operator"><i>switchMap</i></a>
+* The <a href="https://github.com/Reactive-Extensions/RxJS/blob/master/doc/api/core/operators/flatmaplatest.md" title="switchMap operator"><i>switchMap</i></a>
 calls the `WikipediaService` with a fresh, debounced search term and coordinates the stream(s) of service response.
 
 The role of `switchMap` is particularly important.
@@ -1104,11 +1104,11 @@ it substitutes the Angular _in-memory web api_ simulator for the actual XHR back
 
 The in-memory web api is not part of Angular _proper_.
 It's an optional service in its own
-<a href="https://github.com/angular/in-memory-web-api" target="_blank" title="In-memory Web API"><i>angular-in-memory-web-api</i></a>
+<a href="https://github.com/angular/in-memory-web-api" title="In-memory Web API"><i>angular-in-memory-web-api</i></a>
 library installed with npm (see `package.json`).
 
 See the
-<a href="https://github.com/angular/in-memory-web-api/blob/master/README.md" target="_blank" title='In-memory Web API "README.md"'><i>README file</i></a>
+<a href="https://github.com/angular/in-memory-web-api/blob/master/README.md" title='In-memory Web API "README.md"'><i>README file</i></a>
 for configuration options, default behaviors, and limitations.
 
 

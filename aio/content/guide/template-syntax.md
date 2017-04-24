@@ -2220,7 +2220,7 @@ For example, you could replace the `<confused-hero>` switch case with the follow
 
 A **template reference variable** is often a reference to a DOM element within a template.
 It can also be a reference to an Angular component or directive or a
-<a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components" target="_blank" title="MDN: Web Components">web component</a>.
+<a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components" title="MDN: Web Components">web component</a>.
 
 Use the hash symbol (#) to declare a reference variable.
 The `#phone` declares a `phone` variable on an `<input>` element.

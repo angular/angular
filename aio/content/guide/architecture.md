@@ -91,7 +91,7 @@ An Angular module, whether a _root_ or _feature_, is a class with an `@NgModule`
 Decorators are functions that modify JavaScript classes.
 Angular has many decorators that attach metadata to classes so that it knows
 what those classes mean and how they should work.
-<a href="https://medium.com/google-developers/exploring-es7-decorators-76ecb65fb841#.x5c2ndtx0" target="_blank">
+<a href="https://medium.com/google-developers/exploring-es7-decorators-76ecb65fb841#.x5c2ndtx0">
 Learn more</a> about decorators on the web.
 
 </div>
@@ -169,7 +169,7 @@ Other JavaScript modules use *import statements* to access public objects from o
 
 
 
-<a href="http://exploringjs.com/es6/ch_modules.html" target="_blank">Learn more about the JavaScript module system on the web.</a>
+<a href="http://exploringjs.com/es6/ch_modules.html">Learn more about the JavaScript module system on the web.</a>
 
 </div>
 

@@ -154,7 +154,7 @@ Notice the `paths` key:
 
 In the standard SystemJS config, the `npm` path points to the `node_modules/`.
 In this server config, it points to
-<a href="https://unpkg.com/" target="_blank" title="unpkg.com">https://unpkg.com</a>,
+<a href="https://unpkg.com/" title="unpkg.com">https://unpkg.com</a>,
 a site that hosts _npm packages_,
 and loads them from the web directly.
 There are other service providers that do the same thing.
@@ -290,13 +290,13 @@ and using [_rollup_](guide/deployment#rollup) for bundling, minification, uglifi
 
 ### Webpack (and AOT)
 
-<a href="https://webpack.js.org/" target="_blank" title="Webpack 2">Webpack 2</a> is another
+<a href="https://webpack.js.org/" title="Webpack 2">Webpack 2</a> is another
 great option for inlining templates and style-sheets, for bundling, minifying, and uglifying the application.
 The "[Webpack: an introduction](guide/webpack "Webpack: an introduction")" guide will get you started
 using webpack with Angular.
 
 Consider configuring _Webpack_ with the official
-<a href="https://github.com/angular/angular-cli/tree/master/packages/%40ngtools/webpack" target="_blank" title="Ahead-of-Time Webpack Plugin">
+<a href="https://github.com/angular/angular-cli/tree/master/packages/%40ngtools/webpack" title="Ahead-of-Time Webpack Plugin">
 Angular Ahead-of-Time Webpack Plugin</a>.
 This plugin transpiles the TypeScript application code,
 bundles lazy loaded `NgModules` separately,
@@ -315,10 +315,10 @@ _Tree shaking_ is a _dead code elimination_ technique that removes entire export
 If a library exports something that the application doesn't import, a tree shaking tool removes it from the code base.
 
 Tree shaking was popularized by
-<a href="http://rollupjs.org/" target="_blank" title="Rollup">Rollup</a>, a popular tool with an ecosystem of
+<a href="http://rollupjs.org/" title="Rollup">Rollup</a>, a popular tool with an ecosystem of
 plugins for bundling, minification, and uglification.
 Learn more about tree shaking and dead code elmination in
-<a href="https://medium.com/@Rich_Harris/tree-shaking-versus-dead-code-elimination-d3765df85c80#.15ih9cyvl" target="_blank" title="Tree-shaking and Dead Code Elimination">
+<a href="https://medium.com/@Rich_Harris/tree-shaking-versus-dead-code-elimination-d3765df85c80#.15ih9cyvl" title="Tree-shaking and Dead Code Elimination">
 this post</a> by rollup-creator, Rich Harris.
 
 
@@ -349,7 +349,7 @@ You can waste a lot of time and money optimizing something that has no tangible 
 You should measure the app's actual behavior when running in the environments that are important to you.
 
 The
-<a href="https://developers.google.com/web/tools/chrome-devtools/network-performance/understanding-resource-timing" target="_blank" title="Chrome DevTools Network Performance">
+<a href="https://developers.google.com/web/tools/chrome-devtools/network-performance/understanding-resource-timing" title="Chrome DevTools Network Performance">
 Chrome DevTools Network Performance page</a> is a good place to start learning about measuring performance.
 
 The [WebPageTest](https://www.webpagetest.org/) tool is another good choice
@@ -611,7 +611,7 @@ and to
 ### Requesting services from a different server (CORS)
 
 Angular developers may encounter a
-<a href="https://en.wikipedia.org/wiki/Cross-origin_resource_sharing" target="_blank" title="Cross-origin resource sharing">
+<a href="https://en.wikipedia.org/wiki/Cross-origin_resource_sharing" title="Cross-origin resource sharing">
 <i>cross-origin resource sharing</i></a> error when making a service request (typically a data service request).
 to a server other than the application's own host server.
 Browsers forbid such requests unless the server permits them explicitly.
@@ -619,7 +619,7 @@ Browsers forbid such requests unless the server permits them explicitly.
 There isn't anything the client application can do about these errors.
 The server must be configured to accept the application's requests.
 Read about how to enable CORS for specific servers at
-<a href="http://enable-cors.org/server.html" target="_blank" title="Enabling CORS server">enable-cors.org</a>.
+<a href="http://enable-cors.org/server.html" title="Enabling CORS server">enable-cors.org</a>.
 
 
 {@a next-steps}

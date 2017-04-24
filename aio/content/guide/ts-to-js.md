@@ -45,7 +45,7 @@ code shown in this cookbook.**
 ## _TypeScript_ to _ES6_ to _ES5_
 
 _TypeScript_
-<a href="https://www.typescriptlang.org" target="_blank" title='"TypeScript is a typed, superset of JavaScript"'>is a typed superset of _ES6 JavaScript_</a>.
+<a href="https://www.typescriptlang.org" title='"TypeScript is a typed, superset of JavaScript"'>is a typed superset of _ES6 JavaScript_</a>.
 _ES6 JavaScript_ is a superset of _ES5 JavaScript_. _ES5_ is the kind of JavaScript that runs natively in all modern browsers.
 The transformation of _TypeScript_ code all the way down to _ES5_ code can be seen as "shedding" features.
 
@@ -409,7 +409,7 @@ that prepares a toggle-button label for the next clicked state:
 
 This _TypeScript_ "getter" property is transpiled to an _ES5_
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty"
-   target="_blank" title="Defined Properties">defined property</a>.
+   title="Defined Properties">defined property</a>.
 The _ES5 DSL_ does not support _defined properties_ directly
 but you can still create them by extracting the "class" prototype and
 adding the _defined property_ in raw JavaScript like this:

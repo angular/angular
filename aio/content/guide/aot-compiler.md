@@ -43,7 +43,7 @@ the components and templates must be converted to executable JavaScript by the _
 
 <div class="l-sub-section">
 
-  <a href="https://www.youtube.com/watch?v=kW9cJsvcsGo" target="_blank">Watch compiler author Tobias Bosch explain the Angular Compiler</a> at AngularConnect 2016.
+  <a href="https://www.youtube.com/watch?v=kW9cJsvcsGo">Watch compiler author Tobias Bosch explain the Angular Compiler</a> at AngularConnect 2016.
 
 </div>
 
@@ -582,7 +582,7 @@ Now AOT-compile the app and launch it with the `lite-server`:
 
 It's fascinating to see what the generated JavaScript bundle looks like after Rollup.
 The code is minified, so you won't learn much from inspecting the bundle directly.
-But the <a href="https://github.com/danvk/source-map-explorer/blob/master/README.md" target="_blank">source-map-explorer</a>
+But the <a href="https://github.com/danvk/source-map-explorer/blob/master/README.md">source-map-explorer</a>
 tool can be quite revealing.
 
 Install it:
@@ -601,7 +601,8 @@ The `source-map-explorer` analyzes the source map generated with the bundle and 
 showing exactly which application and Angular modules and classes are included in the bundle.
 
 Here's the map for _Tour of Heroes_.
-<a href="assets/images/guide/aot-compiler/toh-pt6-bundle.png" target="_blank" title="View larger image">
+
+<a href="assets/images/guide/aot-compiler/toh-pt6-bundle.png" title="View larger image">
   <figure class='image-display'>
     <img src="assets/images/guide/aot-compiler/toh-pt6-bundle.png" alt="toh-pt6-bundle"></img>
   </figure>

@@ -61,7 +61,7 @@ In the example, change the component class's `name` property from `'Angular'` to
 
 
 <p>
-  This example is written in <a href="http://www.typescriptlang.org/" target="_blank" title="TypeScript">TypeScript</a>, a superset of JavaScript. Angular
+  This example is written in <a href="http://www.typescriptlang.org/" title="TypeScript">TypeScript</a>, a superset of JavaScript. Angular
   uses TypeScript because its types make it easy to support developer productivity with tooling. You can also write Angular code in JavaScript; <a href="cookbook/ts-to-js.html">this guide</a> explains how.
 
 </p>
