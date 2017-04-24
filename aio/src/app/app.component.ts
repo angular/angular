@@ -21,6 +21,7 @@ const sideNavView = 'SideNav';
 export class AppComponent implements OnInit {
 
   currentNode: CurrentNode;
+  currentPath: string;
   dtOn = false;
   pageId: string;
   currentDocument: DocumentContents;
@@ -76,8 +77,15 @@ export class AppComponent implements OnInit {
       this.setPageId(doc.id);
     });
 
-    // scroll even if only the hash fragment changed
-    this.locationService.currentUrl.subscribe(() => this.autoScroll());
+    this.locationService.currentPath.subscribe(path => {
+        if (this.currentPath && path === this.currentPath) {
+          // scroll only if on same page (most likely a change to the hash)
+          this.autoScroll();
+        } else {
+          // don't scroll; leave that to `onDocRendered`
+          this.currentPath = path;
+        }
+      });
 
     this.navigationService.currentNode.subscribe(currentNode => {
       this.currentNode = currentNode;
@@ -100,7 +108,7 @@ export class AppComponent implements OnInit {
     this.swUpdateNotifications.enable();
   }
 
-  // Scroll to the anchor in the hash fragment.
+  // Scroll to the anchor in the hash fragment or top of doc.
   autoScroll() {
     this.autoScrollService.scroll();
   }
