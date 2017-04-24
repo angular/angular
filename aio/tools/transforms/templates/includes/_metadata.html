@@ -4,10 +4,10 @@
     {% for metadata in doc.members %}{% if not metadata.internal %}
     <div class="metadata-member">
       <a name="{$ metadata.name $}-anchor" class="anchor-offset"></a>
-      <pre class="prettyprint no-bg" ng-class="{ 'anchor-focused': appCtrl.isApiDocMemberFocused('{$ metadata.name $}') }">
+      <pre>
         <code>{$ metadata.name $}{$ params.paramList(metadata.parameters) | trim $}{$ params.returnType(metadata.returnType) $}</code>
       </pre>
-      {%- if not metadata.notYetDocumented %}{$ metadata.description | replace('### Example', '') | replace('## Example', '') | replace('# Example', '') | trimBlankLines | marked $}{% endif -%}
+      {%- if not metadata.notYetDocumented %}{$ metadata.description | trimBlankLines | marked $}{% endif -%}
     </div>
     {% if not loop.last %}<hr class="hr-margin">{% endif %}
   {% endif %}{% endfor %}
