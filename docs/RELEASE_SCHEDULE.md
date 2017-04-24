@@ -65,6 +65,13 @@ Week Of       | Stable Release<br>(@latest npm tag) | Beta/RC Release<br>(@n
 
  `*` The primary goal of the backwards compatibility promise is to ensure that changes in the core framework and tooling don't break the existing ecosystem of components and applications and don't put undue upgrade/migration burden on Angular application and component authors.
 
+## Long-Term Supported (LTS) Versions
+
+ Version     | LTS Start Date | LTS End Date
+ ----------- | -------------- | ------------
+ ^4.0.0      | October 2017   | October 2018
+
+In the long-term support state, only the critical fixes and security patches will be merged and released.
 
 ## More Info & Resources
 
