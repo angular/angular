@@ -1,5 +1,0 @@
-{
-  "currentEnvironment": {$ doc.currentEnvironment | json | trim $},
-  "version": {$ doc.version.currentVersion | json | indent(2) | trim $},
-  "sections": {$ doc.sections | json | indent(2) | trim $}
-}
