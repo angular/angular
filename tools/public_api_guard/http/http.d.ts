@@ -112,6 +112,7 @@ export declare enum ReadyState {
 
 /** @experimental */
 export declare class Request extends Body {
+    chunks$: BehaviorSubject<string> | null;
     headers: Headers;
     method: RequestMethod;
     responseType: ResponseContentType;
@@ -137,6 +138,7 @@ export declare enum RequestMethod {
 /** @experimental */
 export declare class RequestOptions {
     body: any;
+    chunks$?: BehaviorSubject<string> | null;
     headers: Headers | null;
     method: RequestMethod | string | null;
     params: URLSearchParams;
@@ -144,13 +146,14 @@ export declare class RequestOptions {
     /** @deprecated */ search: URLSearchParams;
     url: string | null;
     withCredentials: boolean | null;
-    constructor({method, headers, body, url, search, params, withCredentials, responseType}?: RequestOptionsArgs);
+    constructor({method, headers, body, url, search, params, withCredentials, responseType, chunks$}?: RequestOptionsArgs);
     merge(options?: RequestOptionsArgs): RequestOptions;
 }
 
 /** @experimental */
 export interface RequestOptionsArgs {
     body?: any;
+    chunks$?: BehaviorSubject<string> | null;
     headers?: Headers | null;
     method?: string | RequestMethod | null;
     params?: string | URLSearchParams | {
