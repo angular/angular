@@ -102,7 +102,7 @@ The guideline uses the shortcut `hero.component.ts|html|css|spec` to represent t
 ## Single responsibility
 
 Apply the 
-<a href="https://wikipedia.org/wiki/Single_responsibility_principle" target="_blank"><i>single responsibility principle</i> (SRP)</a>
+<a href="https://wikipedia.org/wiki/Single_responsibility_principle"><i>single responsibility principle</i> (SRP)</a>
 to all components, services, and other symbols. 
 This helps make the app cleaner, easier to read and maintain, and more testable.
 
@@ -1915,7 +1915,7 @@ It is rarely worth the effort to change them at the risk of breaking existing co
 
 
 
-**Why?** <a href="https://github.com/Microsoft/TypeScript/wiki/Coding-guidelines" target="_blank">TypeScript guidelines</a> 
+**Why?** <a href="https://github.com/Microsoft/TypeScript/wiki/Coding-guidelines">TypeScript guidelines</a> 
 discourage the `I` prefix.
 
 
@@ -2326,7 +2326,7 @@ in a single file than as multiple files. Be wary of this loophole.
 A flat structure is easy to scan.
 
 On the other hand,
-<a href="https://en.wikipedia.org/wiki/The_Magical_Number_Seven,_Plus_or_Minus_Two" target="_blank">psychologists believe</a>
+<a href="https://en.wikipedia.org/wiki/The_Magical_Number_Seven,_Plus_or_Minus_Two">psychologists believe</a>
 that humans start to struggle when the number of adjacent interesting things exceeds nine.
 So when a folder has ten or more files, it may be time to create subfolders. 
 

@@ -79,7 +79,7 @@ If you do, this page can help you understand their purpose.
 
       _End-to-end_ (e2e) tests of the application,
       written in Jasmine and run by the
-      <a href="http://www.protractortest.org/" target="_blank" title="Protractor: end-to-end testing for Angular">protractor</a>
+      <a href="http://www.protractortest.org/" title="Protractor: end-to-end testing for Angular">protractor</a>
       e2e test runner.
 
       Initialized with an e2e test for the "Hello Angular" sample.
@@ -176,7 +176,7 @@ If you do, this page can help you understand their purpose.
     <td>
 
 
-      Configuration for the <a href="https://karma-runner.github.io/1.0/index.html" target="_blank" title="Karma unit test runner">karma</a>
+      Configuration for the <a href="https://karma-runner.github.io/1.0/index.html" title="Karma unit test runner">karma</a>
       test runner described in the [Testing](guide/testing) guide.
     </td>
 
@@ -191,7 +191,7 @@ If you do, this page can help you understand their purpose.
     <td>
 
 
-      Script to run <a href="https://karma-runner.github.io/1.0/index.html" target="_blank" title="Karma unit test runner">karma</a>
+      Script to run <a href="https://karma-runner.github.io/1.0/index.html" title="Karma unit test runner">karma</a>
       with SystemJS as described in the [Testing](guide/testing) guide.
     </td>
 
@@ -243,7 +243,7 @@ If you do, this page can help you understand their purpose.
       Contains command scripts for running the application,
       running tests, and more. Enter `npm run` for a listing.
       <a href="https://github.com/angular/quickstart/blob/master/README.md#npm-scripts"
-         target="_blank" title="npm scripts for Angular documentation samples">Read more</a> about them.
+         title="npm scripts for Angular documentation samples">Read more</a> about them.
     </td>
 
   </tr>
@@ -258,7 +258,7 @@ If you do, this page can help you understand their purpose.
 
 
       Configuration for the
-      <a href="http://www.protractortest.org/" target="_blank" title="Protractor: end-to-end testing for Angular">protractor</a>
+      <a href="http://www.protractortest.org/" title="Protractor: end-to-end testing for Angular">protractor</a>
       _end-to-end_ (e2e) test runner.
     </td>
 

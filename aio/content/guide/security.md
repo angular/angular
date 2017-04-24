@@ -334,13 +334,13 @@ Or you can implement and provide an entirely custom `XSRFStrategy`:
 
 
 For information about CSRF at the Open Web Application Security Project (OWASP), see
-<a href="https://www.owasp.org/index.php/Cross-Site_Request_Forgery_%28CSRF%29" target="_blank">Cross-Site Request Forgery (CSRF)</a> and
-<a href="https://www.owasp.org/index.php/CSRF_Prevention_Cheat_Sheet" target="_blank">Cross-Site Request Forgery (CSRF) Prevention Cheat Sheet</a>.
+<a href="https://www.owasp.org/index.php/Cross-Site_Request_Forgery_%28CSRF%29">Cross-Site Request Forgery (CSRF)</a> and
+<a href="https://www.owasp.org/index.php/CSRF_Prevention_Cheat_Sheet">Cross-Site Request Forgery (CSRF) Prevention Cheat Sheet</a>.
 The Stanford University paper 
-<a href="https://seclab.stanford.edu/websec/csrf/csrf.pdf" target="_blank">Robust Defenses for Cross-Site Request Forgery</a> is a rich source of detail.
+<a href="https://seclab.stanford.edu/websec/csrf/csrf.pdf">Robust Defenses for Cross-Site Request Forgery</a> is a rich source of detail.
 
 See also Dave Smith's easy-to-understand 
-<a href="https://www.youtube.com/watch?v=9inczw6qtpY" target="_blank" title="Cross Site Request Funkery Securing Your Angular Apps From Evil Doers">talk on XSRF at AngularConnect 2016</a>.
+<a href="https://www.youtube.com/watch?v=9inczw6qtpY" title="Cross Site Request Funkery Securing Your Angular Apps From Evil Doers">talk on XSRF at AngularConnect 2016</a>.
 
 
 <h3 id='xssi'>

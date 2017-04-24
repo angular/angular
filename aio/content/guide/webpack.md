@@ -783,7 +783,7 @@ Webpack techniques covered in this guide.
 
 
 The <code>app.component.html</code> displays this downloadable Angular logo
-<a href="assets/images/logos/angular/angular.png" target="_blank">
+<a href="assets/images/logos/angular/angular.png">
 <img src="assets/images/logos/angular/angular.png" height="40px" title="download Angular logo"></a>.
 Create a folder called `images` under the project's `assets` folder, then right-click (Cmd+click on Mac) 
 on the image and download it to that folder.
