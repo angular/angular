@@ -3,7 +3,7 @@
   <div [hidden]="submitted">
     <h1>Hero Form 3 (Reactive)</h1>
     <!-- #docregion form-tag-->
-    <form [formGroup]="heroForm"  *ngIf="active"  (ngSubmit)="onSubmit()">
+    <form [formGroup]="heroForm"  (ngSubmit)="onSubmit()">
     <!-- #enddocregion form-tag-->
       <div class="form-group">
         <!-- #docregion name-with-error-msg -->

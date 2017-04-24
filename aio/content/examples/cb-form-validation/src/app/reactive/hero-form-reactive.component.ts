@@ -11,6 +11,7 @@ import { forbiddenNameValidator } from '../shared/forbidden-name.directive';
   selector: 'hero-form-reactive3',
   templateUrl: './hero-form-reactive.component.html'
 })
+// #docregion class
 export class HeroFormReactiveComponent implements OnInit {
 
   powers = ['Really Smart', 'Super Flexible', 'Weather Changer'];
@@ -25,25 +26,11 @@ export class HeroFormReactiveComponent implements OnInit {
     this.hero = this.heroForm.value;
   }
   // #enddocregion on-submit
-// #enddocregion
 
-  // Reset the form with a new hero AND restore 'pristine' class state
-  // by toggling 'active' flag which causes the form
-  // to be removed/re-added in a tick via NgIf
-  // TODO: Workaround until NgForm has a reset method (#6822)
-  active = true;
-// #docregion class
   // #docregion add-hero
   addHero() {
     this.hero = new Hero(42, '', '');
     this.buildForm();
-  // #enddocregion add-hero
-// #enddocregion class
-
-    this.active = false;
-    setTimeout(() => this.active = true, 0);
-// #docregion
-  // #docregion add-hero
   }
   // #enddocregion add-hero
 
@@ -113,4 +100,5 @@ export class HeroFormReactiveComponent implements OnInit {
     }
   };
 }
+// #enddocregion class
 // #enddocregion
