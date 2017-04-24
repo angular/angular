@@ -1,11 +1,16 @@
 .l-sub-section {
     color: $darkgray;
-    background-color: $lightgray;
-    border-left: 8px solid $mediumgray;
+    background-color: rgba($blue, 0.05);
+    border-left: 8px solid $blue;
     padding: 16px;
     margin-bottom: 8px;
 
     h3 {
         margin: 8px 0 0;
+    }
+
+    a:hover {
+        color: $blue;
+        text-decoration: underline;
     }
 }
