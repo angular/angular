@@ -266,7 +266,7 @@ you need `[formControl]="name"` in the template on the `<input>`.
 
 
 Disregard the `form-control` _CSS_ class. It belongs to the 
-<a href="http://getbootstrap.com/" target="_blank" title="Bootstrap CSS">Bootstrap CSS library</a>,
+<a href="http://getbootstrap.com/" title="Bootstrap CSS">Bootstrap CSS library</a>,
 not Angular.
 It _styles_ the form but in no way impacts the logic of the form.
 
@@ -421,7 +421,7 @@ to look for a `FormControl` called `name`.
 
 
 Disregard the `form-group` _CSS_ class. It belongs to the 
-<a href="http://getbootstrap.com/" target="_blank" title="Bootstrap CSS">Bootstrap CSS library</a>,
+<a href="http://getbootstrap.com/" title="Bootstrap CSS">Bootstrap CSS library</a>,
 not Angular.
 Like the `form-control` class, it _styles_ the form 
 but in no way impacts its logic.

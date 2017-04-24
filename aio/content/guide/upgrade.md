@@ -524,7 +524,7 @@ will result in the same thing:
 
 Now introduce Angular to the project. Inspired by instructions in
 [the Setup](guide/setup), you can selectively copy in material from the
-<a href="https://github.com/angular/quickstart" target="_blank">QuickStart github repository</a>.
+<a href="https://github.com/angular/quickstart">QuickStart github repository</a>.
 
 Next, create an `app.module.ts` file and add the following `NgModule` class:
 
@@ -1803,7 +1803,7 @@ so let's do that next.
 #### Why declare _angular_ as _angular.IAngularStatic_?
 
 `@types/angular` is declared as a UMD module, and due to the way 
-<a href="https://github.com/Microsoft/TypeScript/wiki/What's-new-in-TypeScript#support-for-umd-module-definitions" target="_blank">UMD typings</a>
+<a href="https://github.com/Microsoft/TypeScript/wiki/What's-new-in-TypeScript#support-for-umd-module-definitions">UMD typings</a>
 work, once you have an ES6 `import` statement in a file all UMD typed modules must also be
 imported via `import` statements instead of being globally available.
 
