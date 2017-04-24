@@ -202,8 +202,8 @@ Angular supports most recent browsers. This includes the following specific vers
 
 
 Angular's continuous integration process runs unit tests of the framework on all of these browsers for every pull request, 
-using <a href="https://saucelabs.com/" target="_blank">SauceLabs</a> and 
-<a href="https://www.browserstack.com" target="_blank">Browserstack</a>.
+using <a href="https://saucelabs.com/">SauceLabs</a> and 
+<a href="https://www.browserstack.com">Browserstack</a>.
 
 
 </div>
@@ -353,7 +353,7 @@ Here are the features which may require additional polyfills:
   <tr style="vertical-align: top">
  
     <td>
-      <a href="../api/common/index/DatePipe-pipe.html" target="_blank">Date</a>      <span>,  </span>      <a href="../api/common/index/CurrencyPipe-pipe.html" target="_blank">currency</a>      <span>, </span>      <a href="../api/common/index/DecimalPipe-pipe.html" target="_blank">decimal</a>      <span> and </span>      <a href="../api/common/index/PercentPipe-pipe.html" target="_blank">percent</a>      <span> pipes</span>
+      <a href="../api/common/index/DatePipe-pipe.html">Date</a>      <span>,  </span>      <a href="../api/common/index/CurrencyPipe-pipe.html">currency</a>      <span>, </span>      <a href="../api/common/index/DecimalPipe-pipe.html">decimal</a>      <span> and </span>      <a href="../api/common/index/PercentPipe-pipe.html">percent</a>      <span> pipes</span>
     </td>
 
     <td>
@@ -371,7 +371,7 @@ Here are the features which may require additional polyfills:
   <tr style="vertical-align: top">
  
     <td>
-       <a href="../api/common/index/NgClass-directive.html" target="_blank">NgClass</a>      <span> on SVG elements</span>
+       <a href="../api/common/index/NgClass-directive.html">NgClass</a>      <span> on SVG elements</span>
     </td>
 
     <td>
@@ -433,7 +433,7 @@ Below are the polyfills which are used to test the framework itself. They are a 
   <tr>
 
     <td>
-      <a id='core-es6' href="https://github.com/zloirock/core-js" target="_blank">ES6</a>
+      <a id='core-es6' href="https://github.com/zloirock/core-js">ES6</a>
     </td>
 
     <td>
@@ -449,7 +449,7 @@ Below are the polyfills which are used to test the framework itself. They are a 
   <tr>
 
     <td>
-      <a id='classlist' href="https://github.com/eligrey/classList.js" target="_blank">classList</a>
+      <a id='classlist' href="https://github.com/eligrey/classList.js">classList</a>
     </td>
 
     <td>
@@ -465,7 +465,7 @@ Below are the polyfills which are used to test the framework itself. They are a 
   <tr>
 
     <td>
-      <a id='intl' href="https://github.com/andyearnshaw/Intl.js" target="_blank">Intl</a>
+      <a id='intl' href="https://github.com/andyearnshaw/Intl.js">Intl</a>
     </td>
 
     <td>
@@ -481,7 +481,7 @@ Below are the polyfills which are used to test the framework itself. They are a 
   <tr>
 
     <td>
-       <a id='web-animations' href="https://github.com/web-animations/web-animations-js" target="_blank">Web Animations</a>
+       <a id='web-animations' href="https://github.com/web-animations/web-animations-js">Web Animations</a>
     </td>
 
     <td>
@@ -497,7 +497,7 @@ Below are the polyfills which are used to test the framework itself. They are a 
   <tr>
 
     <td>
-      <a id='typedarray' href="https://github.com/inexorabletash/polyfill/blob/master/typedarray.js" target="_blank">Typed Array</a>
+      <a id='typedarray' href="https://github.com/inexorabletash/polyfill/blob/master/typedarray.js">Typed Array</a>
     </td>
 
     <td>
@@ -513,7 +513,7 @@ Below are the polyfills which are used to test the framework itself. They are a 
   <tr>
 
     <td>
-       <a id='blob' href="https://github.com/eligrey/Blob.js" target="_blank">Blob</a>
+       <a id='blob' href="https://github.com/eligrey/Blob.js">Blob</a>
     </td>
 
     <td>
@@ -529,7 +529,7 @@ Below are the polyfills which are used to test the framework itself. They are a 
   <tr>
 
     <td>
-       <a id='formdata' href="https://github.com/francois2metz/html5-formdata" target="_blank">FormData</a>
+       <a id='formdata' href="https://github.com/francois2metz/html5-formdata">FormData</a>
     </td>
 
     <td>
@@ -547,4 +547,4 @@ Below are the polyfills which are used to test the framework itself. They are a 
 
 
 \* Figures are for minified and gzipped code, 
-computed with the <a href="http://closure-compiler.appspot.com/home" target="_blank">closure compiler</a>.
+computed with the <a href="http://closure-compiler.appspot.com/home">closure compiler</a>.
