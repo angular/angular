@@ -341,7 +341,7 @@ You don't really need a dedicated method to wrap one line.  Write it anyway:
 
  You might be tempted to call the `getHeroes()` method in a constructor, but
 a constructor should not contain complex logic,
-especially a constructor that calls a server, such as as a data access method.
+especially a constructor that calls a server, such as a data access method.
 The constructor is for simple initializations, like wiring constructor parameters to properties.
 
 To have Angular call `getHeroes()`, you can implement the Angular *ngOnInit lifecycle hook*.
