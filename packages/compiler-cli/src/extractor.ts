@@ -48,7 +48,7 @@ export class Extractor {
     return this.ngExtractor.extract(files);
   }
 
-  serialize(bundle: compiler.MessageBundle, formatName: string): string {
+  serialize(bundle: compiler.MessageBundle, formatName = 'xlf'): string {
     const format = formatName.toLowerCase();
     let serializer: compiler.Serializer;
 
