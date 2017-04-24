@@ -61,17 +61,22 @@ export class CodeGenerator {
       ngCompilerHost = usePathMapping ? new PathMappedCompilerHost(program, options, context) :
                                         new CompilerHost(program, options, context);
     }
-    let transContent: string = '';
-    if (cliOptions.i18nFile) {
-      if (!cliOptions.locale) {
+
+    const transFile = cliOptions.i18nFile || options.i18nFile;
+    const locale = cliOptions.locale || options.translationLocale;
+    let translations: string = '';
+    if (transFile) {
+      if (!locale) {
         throw new Error(
-            `The translation file (${cliOptions.i18nFile}) locale must be provided. Use the --locale option.`);
+            `The translation file (${transFile}) locale must be provided. Use the --locale option.`);
       }
-      transContent = readFileSync(cliOptions.i18nFile, 'utf8');
+      translations = readFileSync(transFile, 'utf8');
     }
+
+    const optMissingTranslation = cliOptions.missingTranslation || options.missingTranslation;
     let missingTranslation = MissingTranslationStrategy.Warning;
-    if (cliOptions.missingTranslation) {
-      switch (cliOptions.missingTranslation) {
+    if (optMissingTranslation) {
+      switch (optMissingTranslation) {
         case 'error':
           missingTranslation = MissingTranslationStrategy.Error;
           break;
@@ -83,13 +88,20 @@ export class CodeGenerator {
           break;
         default:
           throw new Error(
-              `Unknown option for missingTranslation (${cliOptions.missingTranslation}). Use either error, warning or ignore.`);
+              `Unknown option for missingTranslation (${optMissingTranslation}). Use either error, warning or ignore.`);
       }
     }
+
+    let i18nFormat = cliOptions.i18nFormat || options.i18nTranslationFormat || options.i18nFormat;
+    if (i18nFormat && i18nFormat.toLowerCase() === 'xmb') {
+      i18nFormat = 'xtb';
+    }
+
     const {compiler: aotCompiler} = compiler.createAotCompiler(ngCompilerHost, {
-      translations: transContent,
-      i18nFormat: cliOptions.i18nFormat,
-      locale: cliOptions.locale, missingTranslation,
+      translations,
+      i18nFormat,
+      locale,
+      missingTranslation,
       enableLegacyTemplate: options.enableLegacyTemplate !== false,
       genFilePreamble: PREAMBLE,
     });

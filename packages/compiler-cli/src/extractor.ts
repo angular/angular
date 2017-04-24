@@ -49,7 +49,7 @@ export class Extractor {
   }
 
   serialize(bundle: compiler.MessageBundle, formatName: string): string {
-    const format = formatName.toLowerCase();
+    const format = (formatName || 'xlf').toLowerCase();
     let serializer: compiler.Serializer;
 
     switch (format) {
@@ -98,7 +98,8 @@ export class Extractor {
                                         new CompilerHost(program, options, context);
     }
 
-    const {extractor: ngExtractor} = compiler.Extractor.create(ngCompilerHost, locale || null);
+    const {extractor: ngExtractor} =
+        compiler.Extractor.create(ngCompilerHost, locale || options.locale || null);
 
     return new Extractor(options, ngExtractor, tsCompilerHost, ngCompilerHost, program);
   }

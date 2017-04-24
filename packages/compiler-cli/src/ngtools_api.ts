@@ -150,6 +150,6 @@ export class NgTools_InternalApi_NG_2 {
     const extractor = Extractor.create(
         options.angularCompilerOptions, options.program, options.host, locale, hostContext);
 
-    return extractor.extract(options.i18nFormat !, options.outFile || null);
+    return extractor.extract(options.i18nFormat || 'xlf', options.outFile || null);
   }
 }

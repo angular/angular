@@ -81,6 +81,27 @@ interface Options extends ts.CompilerOptions {
 
   // Whether to enable support for <template> and the template attribute (true by default)
   enableLegacyTemplate?: boolean;
+
+  // format for extracted messages file (xlf, xlf2, xmb)
+  i18nFormat?: string;
+
+  // locale of your application for extracted messages file
+  locale?: string;
+
+  // path & name for the extracted messages file
+  outFile?: string;
+
+  // format for imported translation files (xlf, xlf2, xtb)
+  i18nTranslationFormat?: string;
+
+  // locale for imported translation files
+  translationLocale?: string;
+
+  // path & name of your translations file
+  i18nFile?: string;
+
+  // strategy to use for missing translations (error, warning or ignore)
+  missingTranslation?: string;
 }
 
 export default Options;
