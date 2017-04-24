@@ -1,12 +1,8 @@
 {%- if doc.directiveOptions.exportAs %}
-<section class="export-as api-section">
-  <div class="api-section-header">
-    <h2>Exported as</h2>
-  </div>
-  <div class="api-section-content">
-    <p>
-      <code>{$ doc.directiveOptions.exportAs $}</code>
-    </p>
-  </div>
-</section>
+<div class="export-as api-section">
+  <h2>Exported as</h2>
+  <p>
+    <code>{$ doc.directiveOptions.exportAs $}</code>
+  </p>
+</div>
 {% endif %}
