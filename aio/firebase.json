@@ -25,7 +25,7 @@
       {"type": 301, "source": "/docs/ts/latest/cookbook/:cookbook.html", "destination": "/guide/:cookbook"},
 
       // docs/ts/latest/api/*/index/*-type.html
-      {"type": 301, "source": "/docs/ts/latest/api/:package/index/:api-type.html", "destination": "/api/:package/:api"},
+      {"type": 301, "source": "/docs/ts/latest/api/:package/index/:api-*.html", "destination": "/api/:package/:api"},
 
       // guide/*, tutorial/*, **/*
       {"type": 301, "source": "/docs/ts/latest/:any*", "destination": "/:any*"}
