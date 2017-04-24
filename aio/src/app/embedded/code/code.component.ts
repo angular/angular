@@ -2,6 +2,7 @@ import { Component, ElementRef, ViewChild, OnChanges, OnDestroy, Input } from '@
 import { Logger } from 'app/shared/logger.service';
 import { PrettyPrinter } from './pretty-printer.service';
 import { CopierService } from 'app/shared/copier.service';
+import { MdSnackBar } from '@angular/material';
 
 const originalLabel = 'Copy Code';
 const copiedLabel = 'Copied!';
@@ -55,16 +56,12 @@ export class CodeComponent implements OnChanges {
   code: string;
 
   /**
-   * The label to show on the copy button
-   */
-  buttonLabel = originalLabel;
-
-  /**
    * The element in the template that will display the formatted code
    */
   @ViewChild('codeContainer') codeContainer: ElementRef;
 
   constructor(
+    private snackbar: MdSnackBar,
     private pretty: PrettyPrinter,
     private copier: CopierService,
     private logger: Logger) {}
@@ -97,11 +94,16 @@ export class CodeComponent implements OnChanges {
     const code = this.codeContainer.nativeElement.innerText;
     if (this.copier.copyText(code)) {
       this.logger.log('Copied code to clipboard:', code);
-      // change the button label (for one second)
-      this.buttonLabel = copiedLabel;
-      setTimeout(() => this.buttonLabel = originalLabel, 1000);
+      // success snackbar alert
+      this.snackbar.open('Code Copied', '', {
+        duration: 800,
+      });
     } else {
       this.logger.error('ERROR copying code to clipboard:', code);
+      // failure snackbar alert
+      this.snackbar.open('Copy failed. Please try again!', '', {
+        duration: 800,
+      });
     }
   }
 
