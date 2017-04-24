@@ -9,6 +9,9 @@
       You can also <a [href]="zip" download title="Download example">download this example</a>.
     </p>
   </span>
+  <span *ngSwitchCase="'downloadOnly'">
+    <a [href]="zip" download title="{{title}}">{{title}}</a>
+  </span>
   <span *ngSwitchDefault>
     <a [href]="plnkr" target="_blank" title="{{title}}">{{title}}</a>
     <span *ngIf="enableDownload">

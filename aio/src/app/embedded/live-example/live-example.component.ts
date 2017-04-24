@@ -23,6 +23,7 @@ const zipBase = 'content/zips/';
 *      [embedded-style]  // show plnkr in embedded style (default and on narrow screens)
 *      [flat-style]      // show plnkr in flat (original) style
 *      [noDownload]      // no downloadable zip option
+*      [downloadOnly]    // just the zip
 *      [title="..."]>    // text for live example link and tooltip
 *        text            // higher precedence way to specify text for live example link and tooltip
 *  </live-example>
@@ -99,7 +100,12 @@ export class LiveExampleComponent implements OnInit {
 
     const noDownload = this.getAttrValue(['noDownload', 'nodownload']); // noDownload aliases
     this.enableDownload = !boolFromAtty(noDownload);
+
     this.plnkrImg = imageBase + (attrs.img || defaultPlnkrImg);
+
+    if (boolFromAtty(this.getAttrValue(['downloadOnly', 'downloadonly']))) {
+      this.mode = 'downloadOnly';
+    }
   }
 
   calcPlnkrLink(width: number) {
@@ -154,7 +160,9 @@ export class LiveExampleComponent implements OnInit {
 
   @HostListener('window:resize', ['$event.target.innerWidth'])
   onResize(width) {
-    this.calcPlnkrLink(width);
+    if (this.mode !== 'downloadOnly') {
+      this.calcPlnkrLink(width);
+    }
   }
 
   toggleEmbedded () { this.showEmbedded = !this.showEmbedded; }
