@@ -13,7 +13,7 @@ import {Headers} from './headers';
 import {normalizeMethodName} from './http_utils';
 import {RequestOptionsArgs} from './interfaces';
 import {URLSearchParams} from './url_search_params';
-
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
 /**
  * Creates a request options object to be optionally provided when instantiating a
@@ -77,11 +77,15 @@ export class RequestOptions {
    * Select a buffer to store the response, such as ArrayBuffer, Blob, Json (or Document)
    */
   responseType: ResponseContentType|null;
+  /**
+   * BehaviorSubject observable for HTTP chunk stream
+   */
+  chunks$?: BehaviorSubject<string>|null;
 
   // TODO(Dzmitry): remove search when this.search is removed
   constructor(
       {method, headers, body, url, search, params, withCredentials,
-       responseType}: RequestOptionsArgs = {}) {
+       responseType, chunks$}: RequestOptionsArgs = {}) {
     this.method = method != null ? normalizeMethodName(method) : null;
     this.headers = headers != null ? headers : null;
     this.body = body != null ? body : null;
@@ -89,6 +93,7 @@ export class RequestOptions {
     this.params = this._mergeSearchParams(params || search);
     this.withCredentials = withCredentials != null ? withCredentials : null;
     this.responseType = responseType != null ? responseType : null;
+    this.chunks$ = chunks$ != null ? chunks$ : null;
   }
 
   /**
@@ -124,7 +129,8 @@ export class RequestOptions {
       withCredentials: options && options.withCredentials != null ? options.withCredentials :
                                                                     this.withCredentials,
       responseType: options && options.responseType != null ? options.responseType :
-                                                              this.responseType
+                                                              this.responseType,
+      chunks$: options && options.chunks$ != null ? options.chunks$ : this.chunks$
     });
   }
 

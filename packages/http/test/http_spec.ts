@@ -11,6 +11,7 @@ import {TestBed, getTestBed} from '@angular/core/testing';
 import {AsyncTestCompleter, afterEach, beforeEach, describe, inject, it} from '@angular/core/testing/src/testing_internal';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {Observable} from 'rxjs/Observable';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {zip} from 'rxjs/observable/zip';
 
 import {BaseRequestOptions, ConnectionBackend, Http, HttpModule, JSONPBackend, Jsonp, JsonpModule, Request, RequestMethod, RequestOptions, Response, ResponseContentType, ResponseOptions, URLSearchParams, XHRBackend} from '../index';
@@ -212,6 +213,34 @@ export function main() {
              expect(http.request).not.toHaveBeenCalled();
              http.get(url).subscribe((res: Response) => {});
            }));
+
+        it('should perform a get request with null chunk BehaviorSubject',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+             backend.connections.subscribe((c: MockConnection) => {
+               expect(c.request.method).toBe(RequestMethod.Get);
+               expect(c.request.chunks$).toBeFalsy();
+               expect(http.request).toHaveBeenCalled();
+               backend.resolveAllConnections();
+               async.done();
+             });
+             expect(http.request).not.toHaveBeenCalled();
+             http.get(url, { chunks$:null }).subscribe((res: Response) => {});
+           }));
+
+        it('should perform a get request with valid chunk BehaviorSubject',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+             backend.connections.subscribe((c: MockConnection) => {
+               expect(c.request.method).toBe(RequestMethod.Get);
+               expect(c.request.chunks$).toBeTruthy();
+               expect(c.request.chunks$).toBeAnInstanceOf(BehaviorSubject);
+               expect(http.request).toHaveBeenCalled();
+               backend.resolveAllConnections();
+               async.done();
+             });
+             expect(http.request).not.toHaveBeenCalled();
+             let chunkStreamObs = new BehaviorSubject<string>('');
+             http.get(url, { chunks$:chunkStreamObs }).subscribe((res: Response) => {});
+           }));
       });
 
 
@@ -238,6 +267,34 @@ export function main() {
                async.done();
              });
              http.post(url, body).subscribe((res: Response) => {});
+           }));
+
+        it('should perform a post request with explicit null BehaviorSubject parameter',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+             backend.connections.subscribe((c: MockConnection) => {
+               expect(c.request.method).toBe(RequestMethod.Post);
+               expect(c.request.chunks$).toBeFalsy();
+               expect(http.request).toHaveBeenCalled();
+               backend.resolveAllConnections();
+               async.done();
+             });
+             expect(http.request).not.toHaveBeenCalled();
+             http.post(url, 'post me', { chunks$:null }).subscribe((res: Response) => {});
+           }));
+
+        it('should perform a post request with a valid BehaviorSubject (an instance)',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+             backend.connections.subscribe((c: MockConnection) => {
+               expect(c.request.method).toBe(RequestMethod.Post);
+               expect(c.request.chunks$).toBeTruthy;
+               expect(c.request.chunks$).toBeAnInstanceOf(BehaviorSubject);
+               expect(http.request).toHaveBeenCalled();
+               backend.resolveAllConnections();
+               async.done();
+             });
+             expect(http.request).not.toHaveBeenCalled();
+             let chunkStreamObs = new BehaviorSubject<string>('');
+             http.post(url, 'post me', { chunks$:chunkStreamObs }).subscribe((res: Response) => {});
            }));
       });
 

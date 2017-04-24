@@ -10,6 +10,7 @@ import {ReadyState, RequestMethod, ResponseContentType, ResponseType} from './en
 import {Headers} from './headers';
 import {Request} from './static_request';
 import {URLSearchParams} from './url_search_params';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
 /**
  * Abstract class from which real backends are derived.
@@ -55,6 +56,7 @@ export interface RequestOptionsArgs {
   body?: any;
   withCredentials?: boolean|null;
   responseType?: ResponseContentType|null;
+  chunks$?: BehaviorSubject<string>|null;
 }
 
 /**

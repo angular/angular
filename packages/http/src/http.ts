@@ -33,7 +33,8 @@ function mergeOptions(
       headers: providedOpts.headers,
       body: providedOpts.body,
       withCredentials: providedOpts.withCredentials,
-      responseType: providedOpts.responseType
+      responseType: providedOpts.responseType,
+      chunks$: providedOpts.chunks$
     })) as RequestArgs;
   }
 
@@ -137,8 +138,10 @@ export class Http {
    */
   post(url: string, body: any, options?: RequestOptionsArgs): Observable<Response> {
     return this.request(new Request(mergeOptions(
-        this._defaultOptions.merge(new RequestOptions({body: body})), options, RequestMethod.Post,
-        url)));
+        this._defaultOptions.merge(new RequestOptions({
+            body: body,
+            chunks$: options && options.chunks$ ? options.chunks$ : null
+        })), options, RequestMethod.Post, url)));
   }
 
   /**

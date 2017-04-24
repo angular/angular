@@ -41,8 +41,10 @@ export class XHRConnection implements Connection {
   readyState: ReadyState;
   constructor(req: Request, browserXHR: BrowserXhr, baseResponseOptions?: ResponseOptions) {
     this.request = req;
+    const chunkStream$ = req.chunks$;
     this.response = new Observable<Response>((responseObserver: Observer<Response>) => {
       const _xhr: XMLHttpRequest = browserXHR.build();
+      let lastIndex = 0;
       _xhr.open(RequestMethod[req.method].toUpperCase(), req.url);
       if (req.withCredentials != null) {
         _xhr.withCredentials = req.withCredentials;
@@ -137,13 +139,24 @@ export class XHRConnection implements Connection {
         }
       }
 
+      const onChunkReceived = () => {
+        let currentIndex = _xhr.responseText.length;
+        if(lastIndex === currentIndex) return;
+        let chunkReceived = _xhr.responseText.substring(lastIndex, currentIndex);
+        lastIndex = currentIndex;
+        if(chunkStream$) 
+          chunkStream$.next(chunkReceived);
+      }
+
       _xhr.addEventListener('load', onLoad);
+      _xhr.addEventListener('progress', onChunkReceived);
       _xhr.addEventListener('error', onError);
 
       _xhr.send(this.request.getBody());
 
       return () => {
         _xhr.removeEventListener('load', onLoad);
+        _xhr.removeEventListener('progress', onChunkReceived);
         _xhr.removeEventListener('error', onError);
         _xhr.abort();
       };
