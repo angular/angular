@@ -315,7 +315,7 @@ operations and supporting declaration syntax.
 
 A *function* that adds metadata to a class, its members (properties, methods) and function arguments.
 
-Decorators are a JavaScript language [feature](https://github.com/wycats/javascript-decorators), implemented in TypeScript and proposed for ES2016 (also known as ES7).
+Decorators are an experimental (stage 2), JavaScript language [feature](https://github.com/wycats/javascript-decorators). TypeScript adds support for decorators.
 
 To apply a decorator, position it immediately above or to the left of the item it decorates.
 
