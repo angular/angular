@@ -766,7 +766,7 @@ Connection: keep-alive`;
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            const base = new BaseRequestOptions();
            const connection = new XHRConnection(
-               new Request(base.merge(new RequestOptions({chunks$:null}))), new MockBrowserXHR());
+               new Request(base.merge(new RequestOptions({chunks$: null}))), new MockBrowserXHR());
            connection.response.subscribe((res: Response) => {
              expect(res.json()).toBe(null);
              expect(connection.request.chunks$).toBeFalsy();
@@ -782,7 +782,8 @@ Connection: keep-alive`;
            const base = new BaseRequestOptions();
            let chunkObs = new BehaviorSubject<string>('');
            const connection = new XHRConnection(
-               new Request(base.merge(new RequestOptions({chunks$:chunkObs}))), new MockBrowserXHR());
+               new Request(base.merge(new RequestOptions({chunks$: chunkObs}))),
+               new MockBrowserXHR());
            connection.response.subscribe((res: Response) => {
              expect(res.json()).toBe(null);
              expect(connection.request.chunks$).toBeTruthy();
@@ -801,7 +802,7 @@ Connection: keep-alive`;
                new ResponseOptions({type: ResponseType.Error}));
            connection.response.subscribe(
                (res: Response) => {
-                 expect(res.type).toBe(ResponseType.Error); 
+                 expect(res.type).toBe(ResponseType.Error);
                  expect(connection.request.chunks$).toBeFalsy();
                },
                null !, () => { async.done(); });

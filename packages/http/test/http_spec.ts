@@ -224,7 +224,7 @@ export function main() {
                async.done();
              });
              expect(http.request).not.toHaveBeenCalled();
-             http.get(url, {chunks$:null}).subscribe((res: Response) => {});
+             http.get(url, {chunks$: null}).subscribe((res: Response) => {});
            }));
 
         it('should perform a get request with valid chunk BehaviorSubject',
@@ -239,7 +239,7 @@ export function main() {
              });
              expect(http.request).not.toHaveBeenCalled();
              let chunkStreamObs = new BehaviorSubject<string>('');
-             http.get(url, {chunks$:chunkStreamObs}).subscribe((res: Response) => {});
+             http.get(url, {chunks$: chunkStreamObs}).subscribe((res: Response) => {});
            }));
       });
 
@@ -279,7 +279,7 @@ export function main() {
                async.done();
              });
              expect(http.request).not.toHaveBeenCalled();
-             http.post(url, 'post me', {chunks$:null}).subscribe((res: Response) => {});
+             http.post(url, 'post me', {chunks$: null}).subscribe((res: Response) => {});
            }));
 
         it('should perform a post request with a valid BehaviorSubject (an instance)',
@@ -294,7 +294,7 @@ export function main() {
              });
              expect(http.request).not.toHaveBeenCalled();
              let chunkStreamObs = new BehaviorSubject<string>('');
-             http.post(url, 'post me', {chunks$:chunkStreamObs}).subscribe((res: Response) => {});
+             http.post(url, 'post me', {chunks$: chunkStreamObs}).subscribe((res: Response) => {});
            }));
       });
 

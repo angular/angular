@@ -138,8 +138,8 @@ export class Http {
    */
   post(url: string, body: any, options?: RequestOptionsArgs): Observable<Response> {
     return this.request(new Request(mergeOptions(
-        this._defaultOptions.merge(new RequestOptions({
-            body: body, chunks$: options && options.chunks$ ? options.chunks$ : null})),
+        this._defaultOptions.merge(new RequestOptions(
+            {body: body, chunks$: options && options.chunks$ ? options.chunks$ : null})),
         options, RequestMethod.Post, url)));
   }
 

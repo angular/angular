@@ -85,7 +85,7 @@ export class RequestOptions {
 
   // TODO(Dzmitry): remove search when this.search is removed
   constructor(
-      {method, headers, body, url, search, params, withCredentials, responseType, 
+      {method, headers, body, url, search, params, withCredentials, responseType,
        chunks$}: RequestOptionsArgs = {}) {
     this.method = method != null ? normalizeMethodName(method) : null;
     this.headers = headers != null ? headers : null;

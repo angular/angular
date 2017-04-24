@@ -145,7 +145,7 @@ export class XHRConnection implements Connection {
         let chunkReceived = _xhr.responseText.substring(lastIndex, currentIndex);
         lastIndex = currentIndex;
         if (chunkStream$) chunkStream$.next(chunkReceived);
-      }
+      };
 
       _xhr.addEventListener('load', onLoad);
       _xhr.addEventListener('progress', onChunkReceived);
