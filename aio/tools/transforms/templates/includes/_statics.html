@@ -1,9 +1,6 @@
 {% if doc.statics.length %}
-<section class="static-members api-section">
-  <div class="api-section-header">
+<div class="static-members api-section">
     <h2>Static Members</h2>
-  </div>
-  <div class="api-section-content">
   {% for member in doc.statics %}{% if not member.internal %}
     <div class="static-member">
       <a name="{$ member.name $}-anchor" class="anchor-offset"></a>
@@ -20,6 +17,5 @@
     {% endif %}
 
   {% endif %}{% endfor %}
-  </div>
-</section>
+</div>
 {% endif %}

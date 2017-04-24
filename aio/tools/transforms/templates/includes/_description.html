@@ -1,10 +1,6 @@
-<section class="api-section">
-  <div class="api-section-header">
-    <h2 class="text-display-1" id="api-description">Description<a href="#api-description" class="header-link"><i class="material-icons">link</i></a></h2>
-  </div>
-  <div class="api-section-content">
+<div class="api-section">
+  <h2 class="text-display-1" id="api-description">Description<a href="#api-description" class="header-link"><i class="material-icons">link</i></a></h2>
   {%- if doc.description.length > 2 %}
   {$ doc.description | trimBlankLines | marked $}
   {% endif %}
-  </div>
-</section>
+</div>

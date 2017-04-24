@@ -1,14 +1,10 @@
 {%- if doc.directiveOptions.selector.split(',').length %}
-<section class="selectors api-section">
-  <div class="api-section-header">
-    <h2>Selectors</h2>
-  </div>
-  <div class="api-section-content">
-    {% for selector in doc.directiveOptions.selector.split(',') %}
-    <p class="selector">
-      <code>{$ selector $}</code>
-    </p>
-    {% endfor %}
-  </div>
-</section>
+<div class="selectors api-section">
+  <h2>Selectors</h2>
+  {% for selector in doc.directiveOptions.selector.split(',') %}
+  <p class="selector">
+    <code>{$ selector $}</code>
+  </p>
+  {% endfor %}
+</div>
 {% endif %}

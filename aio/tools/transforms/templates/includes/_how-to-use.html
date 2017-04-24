@@ -1,11 +1,7 @@
 {%- if doc.howToUse %}
   <!-- QUICK REFERENCE CODE EXAMPLE -->
-  <section class="how-to-use api-section">
-    <div class="api-section-header">
-      <h2>How To Use</h2>
-    </div>
-    <div class="api-section-content">
-      {$ doc.howToUse | marked $}
-    </div>
-  </section>
+  <div class="how-to-use api-section">
+    <h2>How To Use</h2>
+    {$ doc.howToUse | marked $}
+  </div>
 {% endif %}
