@@ -17,6 +17,7 @@ aio-nav-menu.top-menu .vertical-menu-item  {
 md-sidenav.mat-sidenav.sidenav {
   position: fixed;
   bottom: 0;
+  left: 0;
   padding: 80px 0px 0px;
   min-width: 260px;
   background-color: $offwhite;
@@ -30,7 +31,8 @@ md-sidenav.mat-sidenav.sidenav.collapsed {
 md-sidenav-container.sidenav-container {
     min-height: 100%;
     height: auto !important;
-    margin: 0 auto;
+    max-width: 1400px;
+    margin: 0;
     transform: none;
     padding-top: 64px;
 }
