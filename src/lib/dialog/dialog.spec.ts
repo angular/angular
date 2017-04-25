@@ -398,6 +398,54 @@ describe('MdDialog', () => {
     });
   });
 
+  describe('hasBackdrop option', () => {
+    it('should have a backdrop', () => {
+      dialog.open(PizzaMsg, {
+        hasBackdrop: true,
+        viewContainerRef: testViewContainerRef
+      });
+
+      viewContainerFixture.detectChanges();
+
+      expect(overlayContainerElement.querySelector('.cdk-overlay-backdrop')).toBeTruthy();
+    });
+
+    it('should not have a backdrop', () => {
+      dialog.open(PizzaMsg, {
+        hasBackdrop: false,
+        viewContainerRef: testViewContainerRef
+      });
+
+      viewContainerFixture.detectChanges();
+
+      expect(overlayContainerElement.querySelector('.cdk-overlay-backdrop')).toBeFalsy();
+    });
+  });
+
+  describe('backdropClass option', () => {
+    it('should have default backdrop class', () => {
+      dialog.open(PizzaMsg, {
+        backdropClass: '',
+        viewContainerRef: testViewContainerRef
+      });
+
+      viewContainerFixture.detectChanges();
+
+      expect(overlayContainerElement.querySelector('.cdk-overlay-dark-backdrop')).toBeTruthy();
+    });
+
+    it('should have custom backdrop class', () => {
+      dialog.open(PizzaMsg, {
+        backdropClass: 'custom-backdrop-class',
+        viewContainerRef: testViewContainerRef
+      });
+
+      viewContainerFixture.detectChanges();
+
+      expect(overlayContainerElement.querySelector('.custom-backdrop-class')).toBeTruthy();
+    });
+  });
+
   describe('focus management', () => {
 
     // When testing focus, all of the elements must be in the DOM.

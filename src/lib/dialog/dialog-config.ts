@@ -27,6 +27,12 @@ export class MdDialogConfig {
   /** The ARIA role of the dialog element. */
   role?: DialogRole = 'dialog';
 
+  /** Whether the dialog has a backdrop. */
+  hasBackdrop?: boolean = true;
+
+  /** Custom class for the backdrop, */
+  backdropClass?: string = '';
+
   /** Whether the user can use escape or clicking outside to close a modal. */
   disableClose?: boolean = false;
 

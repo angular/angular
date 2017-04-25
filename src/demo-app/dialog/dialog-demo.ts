@@ -15,6 +15,8 @@ export class DialogDemo {
   actionsAlignment: string;
   config: MdDialogConfig = {
     disableClose: false,
+    hasBackdrop: true,
+    backdropClass: '',
     width: '',
     height: '',
     position: {

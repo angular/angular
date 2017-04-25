@@ -108,7 +108,10 @@ export class MdDialog {
    */
   private _getOverlayState(dialogConfig: MdDialogConfig): OverlayState {
     let overlayState = new OverlayState();
-    overlayState.hasBackdrop = true;
+    overlayState.hasBackdrop = dialogConfig.hasBackdrop;
+    if (dialogConfig.backdropClass) {
+      overlayState.backdropClass = dialogConfig.backdropClass;
+    }
     overlayState.positionStrategy = this._overlay.position().global();
 
     return overlayState;
