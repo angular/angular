@@ -25,6 +25,7 @@ export class AppComponent implements OnInit {
   pageId: string;
   currentDocument: DocumentContents;
   footerNodes: NavigationNode[];
+  isStarting = true;
   isSideBySide = false;
   private isSideNavDoc = false;
   private previousNavView: string;
@@ -105,9 +106,9 @@ export class AppComponent implements OnInit {
   }
 
   onDocRendered() {
-    // This handler is needed because the subscription to the `currentUrl` in `ngOnInit`
-    // gets triggered too early before the doc-viewer has finished rendering the doc
+    // Scroll after the doc-viewer has finished rendering the new doc
     this.autoScroll();
+    this.isStarting = false;
   }
 
   @HostListener('window:resize', ['$event.target.innerWidth'])
