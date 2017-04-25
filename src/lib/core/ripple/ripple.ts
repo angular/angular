@@ -87,6 +87,8 @@ export class MdRipple implements OnChanges, OnDestroy {
   ) {
     this._rippleRenderer = new RippleRenderer(elementRef, ngZone, ruler);
     this._globalOptions = globalOptions ? globalOptions : {};
+
+    this._updateRippleRenderer();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -94,8 +96,7 @@ export class MdRipple implements OnChanges, OnDestroy {
       this._rippleRenderer.setTriggerElement(this.trigger);
     }
 
-    this._rippleRenderer.rippleDisabled = this._globalOptions.disabled || this.disabled;
-    this._rippleRenderer.rippleConfig = this.rippleConfig;
+    this._updateRippleRenderer();
   }
 
   ngOnDestroy() {
@@ -121,5 +122,11 @@ export class MdRipple implements OnChanges, OnDestroy {
       radius: this.radius,
       color: this.color
     };
+  }
+
+  /** Updates the ripple renderer with the latest ripple configuration. */
+  private _updateRippleRenderer() {
+    this._rippleRenderer.rippleDisabled = this._globalOptions.disabled || this.disabled;
+    this._rippleRenderer.rippleConfig = this.rippleConfig;
   }
 }

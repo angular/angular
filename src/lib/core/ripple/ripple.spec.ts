@@ -24,6 +24,7 @@ describe('MdRipple', () => {
       declarations: [
         BasicRippleContainer,
         RippleContainerWithInputBindings,
+        RippleContainerWithoutBindings,
         RippleContainerWithNgIf,
       ],
     });
@@ -351,22 +352,37 @@ describe('MdRipple', () => {
   describe('global ripple options', () => {
     let rippleDirective: MdRipple;
 
-    function createTestComponent(rippleConfig: RippleGlobalOptions) {
+    function createTestComponent(rippleConfig: RippleGlobalOptions,
+                                 testComponent: any = BasicRippleContainer) {
       // Reset the previously configured testing module to be able set new providers.
       // The testing module has been initialized in the root describe group for the ripples.
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
         imports: [MdRippleModule],
-        declarations: [BasicRippleContainer],
+        declarations: [testComponent],
         providers: [{ provide: MD_RIPPLE_GLOBAL_OPTIONS, useValue: rippleConfig }]
       });
 
-      fixture = TestBed.createComponent(BasicRippleContainer);
+      fixture = TestBed.createComponent(testComponent);
       fixture.detectChanges();
 
       rippleTarget = fixture.nativeElement.querySelector('[mat-ripple]');
       rippleDirective = fixture.componentInstance.ripple;
     }
+
+    it('should work without having any binding set', () => {
+      createTestComponent({ disabled: true }, RippleContainerWithoutBindings);
+
+      dispatchMouseEvent(rippleTarget, 'mousedown');
+      dispatchMouseEvent(rippleTarget, 'mouseup');
+
+      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
+
+      dispatchMouseEvent(rippleTarget, 'mousedown');
+      dispatchMouseEvent(rippleTarget, 'mouseup');
+
+      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
+    });
 
     it('when disabled should not show any ripples on mousedown', () => {
       createTestComponent({ disabled: true });
@@ -576,6 +592,11 @@ class RippleContainerWithInputBindings {
   color = '';
   @ViewChild(MdRipple) ripple: MdRipple;
 }
+
+@Component({
+  template: `<div id="container" #ripple="mdRipple" mat-ripple></div>`,
+})
+class RippleContainerWithoutBindings {}
 
 @Component({ template: `<div id="container" mat-ripple [mdRippleSpeedFactor]="0"
                              *ngIf="!isDestroyed"></div>` })
