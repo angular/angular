@@ -1,16 +1,16 @@
 {% import "lib/githubLinks.html" as github -%}
 
 <!-- INFO BAR -->
-<div class="info-bar">
-  <span class="info-bar-item is-left">
+<div class="info-banner api-info-bar">
+  <span class="info-bar-item">
     npm package: <a href="#">{$ doc.package $}</a>
   </span>
 
-  <span class="info-bar-item is-left">
+  <span class="info-bar-item">
     NgModule: <a href="#">{$ doc.moduleDoc.name $}</a>
   </span>
 
-  <span class="info-bar-item is-right">
+  <span class="info-bar-item">
     {$ github.githubViewLink(doc, versionInfo) $}
   </span>
 </div>
