@@ -92,7 +92,7 @@ export class RouterOutlet implements OnDestroy {
     }
   }
 
-  /** @deprecated since v4, use {@link activateWith} */
+  /** @deprecated since v4, use {@link #activateWith} */
   activate(
       activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver, injector: Injector,
       providers: ResolvedReflectiveProvider[], outletMap: RouterOutletMap): void {

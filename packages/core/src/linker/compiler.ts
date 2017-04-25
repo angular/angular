@@ -54,14 +54,14 @@ export class Compiler {
   compileModuleAsync<T>(moduleType: Type<T>): Promise<NgModuleFactory<T>> { throw _throwError(); }
 
   /**
-   * Same as {@link compileModuleSync} but also creates ComponentFactories for all components.
+   * Same as {@link #compileModuleSync} but also creates ComponentFactories for all components.
    */
   compileModuleAndAllComponentsSync<T>(moduleType: Type<T>): ModuleWithComponentFactories<T> {
     throw _throwError();
   }
 
   /**
-   * Same as {@link compileModuleAsync} but also creates ComponentFactories for all components.
+   * Same as {@link #compileModuleAsync} but also creates ComponentFactories for all components.
    */
   compileModuleAndAllComponentsAsync<T>(moduleType: Type<T>):
       Promise<ModuleWithComponentFactories<T>> {

@@ -287,7 +287,7 @@ export const ContentChild: ContentChildDecorator = makePropDecorator(
 /**
  * Type of the ViewChildren decorator / constructor function.
  *
- * See {@ViewChildren}.
+ * See {@link ViewChildren}.
  *
  * @stable
  */
