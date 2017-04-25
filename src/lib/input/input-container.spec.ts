@@ -371,6 +371,20 @@ describe('MdInputContainer', function () {
     expect(el.nativeElement.textContent).toMatch(/hello\s+\*/g);
   });
 
+  it('hide placeholder required star when set to hide the required marker', () => {
+    let fixture = TestBed.createComponent(MdInputContainerPlaceholderRequiredTestComponent);
+    fixture.detectChanges();
+
+    let el = fixture.debugElement.query(By.css('label'));
+    expect(el).not.toBeNull();
+    expect(el.nativeElement.textContent).toMatch(/hello\s+\*/g);
+
+    fixture.componentInstance.hideRequiredMarker = true;
+    fixture.detectChanges();
+
+    expect(el.nativeElement.textContent).toMatch(/hello/g);
+  });
+
   it('supports the disabled attribute as binding', async(() => {
     const fixture = TestBed.createComponent(MdInputContainerWithDisabled);
     fixture.detectChanges();
@@ -741,9 +755,13 @@ class MdInputContainerWithType {
 }
 
 @Component({
-  template: `<md-input-container><input mdInput required placeholder="hello"></md-input-container>`
+  template: `<md-input-container [hideRequiredMarker]="hideRequiredMarker">
+                <input mdInput required placeholder="hello">
+             </md-input-container>`
 })
-class MdInputContainerPlaceholderRequiredTestComponent {}
+class MdInputContainerPlaceholderRequiredTestComponent {
+  hideRequiredMarker: boolean;
+}
 
 @Component({
   template: `

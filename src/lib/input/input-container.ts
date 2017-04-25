@@ -297,6 +297,14 @@ export class MdInputContainer implements AfterViewInit, AfterContentInit {
   get dividerColor() { return this.color; }
   set dividerColor(value) { this.color = value; }
 
+  /** Whether we should hide the required marker. */
+  @Input()
+  get hideRequiredMarker() { return this._hideRequiredMarker; }
+  set hideRequiredMarker(value: any) {
+    this._hideRequiredMarker = coerceBooleanProperty(value);
+  }
+  private _hideRequiredMarker: boolean;
+
   /** Whether the floating label should always float or not. */
   get _shouldAlwaysFloat() { return this._floatPlaceholder === 'always'; }
 

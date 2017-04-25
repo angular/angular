@@ -16,6 +16,7 @@ export class InputDemo {
   floatingLabel: string = 'auto';
   color: boolean;
   requiredField: boolean;
+  hideRequiredMarker: boolean;
   ctrlDisabled = false;
 
   name: string;

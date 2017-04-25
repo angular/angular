@@ -245,6 +245,14 @@
       </md-input-container>
     </p>
     <p>
+      <md-checkbox [(ngModel)]="hideRequiredMarker">Check to hide the required marker:</md-checkbox>
+      <md-input-container [hideRequiredMarker]="hideRequiredMarker" style="width: 300px">
+        <input mdInput
+               required
+               [placeholder]="hideRequiredMarker ? 'Required Without Marker' : 'Required With Marker'">
+      </md-input-container>
+    </p>
+    <p>
       <md-button-toggle-group [(ngModel)]="floatingLabel">
         <md-button-toggle value="auto">Auto Float</md-button-toggle>
         <md-button-toggle value="always">Always Float</md-button-toggle>

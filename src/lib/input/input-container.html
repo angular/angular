@@ -18,7 +18,7 @@
                *ngIf="_hasPlaceholder()">
           <ng-content select="md-placeholder, mat-placeholder"></ng-content>
           {{_mdInputChild.placeholder}}
-          <span class="mat-placeholder-required" *ngIf="_mdInputChild.required">*</span>
+          <span class="mat-placeholder-required" *ngIf="!hideRequiredMarker && _mdInputChild.required">*</span>
         </label>
       </span>
     </div>
