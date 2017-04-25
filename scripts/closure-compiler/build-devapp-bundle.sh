@@ -9,8 +9,8 @@ set -e -o pipefail
 cd $(dirname $0)/../..
 
 
-# Build a release of the library and of the CDK package.
-$(npm bin)/gulp build:release
+# Build a release of material and of the CDK package.
+$(npm bin)/gulp material:build-release:clean
 $(npm bin)/gulp cdk:build-release
 
 # Build demo-app with ES2015 modules. Closure compiler is then able to parse imports.

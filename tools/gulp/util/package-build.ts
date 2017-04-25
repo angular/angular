@@ -91,7 +91,8 @@ export async function buildPackageBundles(entryFile: string, packageName: string
  * This is useful when multiple transformation happen (e.g TSC -> Rollup -> Uglify)
  **/
 async function remapSourcemap(sourceFile: string) {
-  (await sorcery.load(sourceFile)).write();
+  // Once sorcery loaded the chain of sourcemaps, the new sourcemap will be written asynchronously.
+  return (await sorcery.load(sourceFile)).write();
 }
 
 /** Minifies a JavaScript file using UglifyJS2. Also writes sourcemaps to the output. */

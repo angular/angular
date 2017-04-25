@@ -5,7 +5,7 @@ import {DIST_MATERIAL} from '../constants';
 gulp.task('lint', ['tslint', 'stylelint', 'madge', 'dashboardlint']);
 
 /** Task that runs madge to detect circular dependencies. */
-gulp.task('madge', ['library:clean-build'], execNodeTask('madge', ['--circular', DIST_MATERIAL]));
+gulp.task('madge', ['material:clean-build'], execNodeTask('madge', ['--circular', DIST_MATERIAL]));
 
 /** Task to lint Angular Material's scss stylesheets. */
 gulp.task('stylelint', execNodeTask(

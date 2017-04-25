@@ -26,5 +26,5 @@ task('build:devapp', buildAppTask('devapp'));
 task(':serve:devapp', serverTask(outDir, true));
 
 task('serve:devapp', ['build:devapp'], sequenceTask(
-  [':serve:devapp', 'library:watch', ':watch:devapp']
+  [':serve:devapp', 'material:watch', ':watch:devapp']
 ));

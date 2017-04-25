@@ -21,7 +21,7 @@ repoUrl="https://github.com/angular/material2-builds.git"
 repoDir="tmp/$repoName"
 
 # Create a release of the current repository.
-$(npm bin)/gulp build:release
+$(npm bin)/gulp material:build-release:clean
 
 # Prepare cloning the builds repository
 rm -rf $repoDir

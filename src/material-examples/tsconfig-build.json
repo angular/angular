@@ -7,7 +7,7 @@
     "experimentalDecorators": true,
     "module": "es2015",
     "moduleResolution": "node",
-    "outDir": "../../dist/packages/examples",
+    "outDir": "../../dist/packages/material-examples",
     "rootDir": ".",
     "sourceMap": true,
     "inlineSources": true,

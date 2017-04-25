@@ -9,8 +9,8 @@
 5. From the root of the project, run `npm install`.
 
 
-To build the components in dev mode, run `gulp build:components`.
-To build the components in release mode, run `gulp build:release`
+To build Material in dev mode, run `gulp material:build`.
+To build Material in release mode, run `gulp material:build-release`
  
 To bring up a local server, run `gulp serve:devapp`. This will automatically watch for changes 
 and rebuild. The browser should refresh automatically when changes are made.

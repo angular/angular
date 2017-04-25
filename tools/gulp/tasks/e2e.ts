@@ -48,7 +48,7 @@ task('serve:e2eapp', sequenceTask('build:e2eapp', ':serve:e2eapp'));
  * [Watch task] Builds and serves e2e app, rebuilding whenever the sources change.
  * This should only be used when running e2e tests locally.
  */
-task('serve:e2eapp:watch', ['serve:e2eapp', 'library:watch', ':watch:e2eapp']);
+task('serve:e2eapp:watch', ['serve:e2eapp', 'material:watch', ':watch:e2eapp']);
 
 /**
  * Builds and serves the e2e-app and runs protractor once the e2e-app is ready.
