@@ -1,4 +1,5 @@
 import {NgModule, ModuleWithProviders} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {
   OverlayModule,
   PortalModule,
@@ -17,6 +18,7 @@ import {
 
 @NgModule({
   imports: [
+    CommonModule,
     OverlayModule,
     PortalModule,
     A11yModule,

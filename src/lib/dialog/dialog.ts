@@ -1,4 +1,5 @@
 import {Injector, ComponentRef, Injectable, Optional, SkipSelf, TemplateRef} from '@angular/core';
+import {Location} from '@angular/common';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {Overlay, OverlayRef, ComponentType, OverlayState, ComponentPortal} from '../core';
@@ -47,7 +48,16 @@ export class MdDialog {
   constructor(
       private _overlay: Overlay,
       private _injector: Injector,
-      @Optional() @SkipSelf() private _parentDialog: MdDialog) { }
+      @Optional() private _location: Location,
+      @Optional() @SkipSelf() private _parentDialog: MdDialog) {
+
+    // Close all of the dialogs when the user goes forwards/backwards in history or when the
+    // location hash changes. Note that this usually doesn't include clicking on links (unless
+    // the user is using the `HashLocationStrategy`).
+    if (!_parentDialog && _location) {
+      _location.subscribe(() => this.closeAll());
+    }
+  }
 
   /**
    * Opens a modal dialog containing the given component.

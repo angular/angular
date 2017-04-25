@@ -18,6 +18,8 @@ import {
 } from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {Location} from '@angular/common';
+import {SpyLocation} from '@angular/common/testing';
 import {MdDialogModule} from './index';
 import {MdDialog} from './dialog';
 import {MdDialogContainer} from './dialog-container';
@@ -33,6 +35,7 @@ describe('MdDialog', () => {
 
   let testViewContainerRef: ViewContainerRef;
   let viewContainerFixture: ComponentFixture<ComponentWithChildViewContainer>;
+  let mockLocation: SpyLocation;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -41,15 +44,17 @@ describe('MdDialog', () => {
         {provide: OverlayContainer, useFactory: () => {
           overlayContainerElement = document.createElement('div');
           return {getContainerElement: () => overlayContainerElement};
-        }}
+        }},
+        {provide: Location, useClass: SpyLocation}
       ],
     });
 
     TestBed.compileComponents();
   }));
 
-  beforeEach(inject([MdDialog], (d: MdDialog) => {
+  beforeEach(inject([MdDialog, Location], (d: MdDialog, l: Location) => {
     dialog = d;
+    mockLocation = l as SpyLocation;
   }));
 
   beforeEach(() => {
@@ -334,6 +339,34 @@ describe('MdDialog', () => {
     expect(dialogContainer._state).toBe('exit');
   });
 
+  it('should close all dialogs when the user goes forwards/backwards in history', async(() => {
+    dialog.open(PizzaMsg);
+    dialog.open(PizzaMsg);
+
+    expect(overlayContainerElement.querySelectorAll('md-dialog-container').length).toBe(2);
+
+    mockLocation.simulateUrlPop('');
+    viewContainerFixture.detectChanges();
+
+    viewContainerFixture.whenStable().then(() => {
+      expect(overlayContainerElement.querySelectorAll('md-dialog-container').length).toBe(0);
+    });
+  }));
+
+  it('should close all open dialogs when the location hash changes', async(() => {
+    dialog.open(PizzaMsg);
+    dialog.open(PizzaMsg);
+
+    expect(overlayContainerElement.querySelectorAll('md-dialog-container').length).toBe(2);
+
+    mockLocation.simulateHashChange('');
+    viewContainerFixture.detectChanges();
+
+    viewContainerFixture.whenStable().then(() => {
+      expect(overlayContainerElement.querySelectorAll('md-dialog-container').length).toBe(0);
+    });
+  }));
+
   describe('passing in data', () => {
     it('should be able to pass in data', () => {
       let config = {
@@ -588,7 +621,8 @@ describe('MdDialog with a parent MdDialog', () => {
         {provide: OverlayContainer, useFactory: () => {
           overlayContainerElement = document.createElement('div');
           return {getContainerElement: () => overlayContainerElement};
-        }}
+        }},
+        {provide: Location, useClass: SpyLocation}
       ],
     });
 
