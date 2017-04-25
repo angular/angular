@@ -17,10 +17,10 @@ import {RippleRef} from './ripple-ref';
 /** OpaqueToken that can be used to specify the global ripple options. */
 export const MD_RIPPLE_GLOBAL_OPTIONS = new OpaqueToken('md-ripple-global-options');
 
-export type RippleGlobalOptions = {
+export interface RippleGlobalOptions {
   disabled?: boolean;
   baseSpeedFactor?: number;
-};
+}
 
 @Directive({
   selector: '[md-ripple], [mat-ripple], [mdRipple], [matRipple]',
@@ -82,8 +82,7 @@ export class MdRipple implements OnChanges, OnDestroy {
     elementRef: ElementRef,
     ngZone: NgZone,
     ruler: ViewportRuler,
-    // Type needs to be `any` because of https://github.com/angular/angular/issues/12631
-    @Optional() @Inject(MD_RIPPLE_GLOBAL_OPTIONS) globalOptions: any
+    @Optional() @Inject(MD_RIPPLE_GLOBAL_OPTIONS) globalOptions: RippleGlobalOptions
   ) {
     this._rippleRenderer = new RippleRenderer(elementRef, ngZone, ruler);
     this._globalOptions = globalOptions ? globalOptions : {};
