@@ -133,7 +133,7 @@ aio-contributor {
         padding: 16px 24px;
         transform:rotateY(180deg);
 
-        h3 {
+        section {
           display: none;
         }
 
@@ -168,7 +168,7 @@ aio-contributor {
     transition: all .2s ease-in-out;
     }
 
-  h3 {
+  section {
     font-size: 14px;
     font-weight: 500;
     padding: 8px;

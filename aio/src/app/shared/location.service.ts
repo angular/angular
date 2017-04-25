@@ -36,9 +36,19 @@ export class LocationService {
 
   // TODO?: ignore if url-without-hash-or-search matches current location?
   go(url: string) {
+    if (!url) { return; }
     url = this.stripSlashes(url);
-    this.location.go(url);
-    this.urlSubject.next(url);
+    if (/^http/.test(url)) {
+      // Has http protocol so leave the site
+      this.goExternal(url);
+    } else {
+      this.location.go(url);
+      this.urlSubject.next(url);
+    }
+  }
+
+  goExternal(url: string) {
+    location.assign(url);
   }
 
   private stripSlashes(url: string) {

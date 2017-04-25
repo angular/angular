@@ -15,6 +15,12 @@
   <md-sidenav [ngClass]="{'collapsed': !isSideBySide }" #sidenav class="sidenav" [opened]="isOpened" [mode]="mode">
     <aio-nav-menu *ngIf="!isSideBySide" class="top-menu" [nodes]="topMenuNodes" [currentNode]="currentNode"></aio-nav-menu>
     <aio-nav-menu [nodes]="sideNavNodes" [currentNode]="currentNode" ></aio-nav-menu>
+
+    <div class="doc-version" title="Angular docs version {{currentDocVersion?.title}}">
+      <select (change)="onDocVersionChange($event.target.selectedIndex)">
+        <option *ngFor="let version of docVersions" [value]="version.title">{{version.title}}</option>
+      </select>
+    </div>
   </md-sidenav>
 
   <section class="sidenav-content" [id]="pageId" role="content">

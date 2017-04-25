@@ -15,12 +15,13 @@ import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { GaService } from 'app/shared/ga.service';
 import { LocationService } from 'app/shared/location.service';
 import { Logger } from 'app/shared/logger.service';
-import { MockLogger } from 'testing/logger.service';
 import { MockLocationService } from 'testing/location.service';
+import { MockLogger } from 'testing/logger.service';
 import { MockSearchService } from 'testing/search.service';
 import { MockSwUpdateNotificationsService } from 'testing/sw-update-notifications.service';
-import { SearchResultsComponent } from 'app/search/search-results/search-results.component';
+import { NavigationNode } from 'app/navigation/navigation.service';
 import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
+import { SearchResultsComponent } from 'app/search/search-results/search-results.component';
 import { SearchService } from 'app/search/search.service';
 import { SwUpdateNotificationsService } from 'app/sw-updates/sw-update-notifications.service';
 
@@ -191,6 +192,31 @@ describe('AppComponent', () => {
         expect(sidenav.className).toMatch(/sidenav-clos/);
       });
 
+    });
+  });
+
+  describe('SideNav version selector', () => {
+    beforeEach(() => {
+      component.onResize(1033); // side-by-side
+    });
+
+    it('should pick first (current) version by default', () => {
+      const versionSelector = sidenav.querySelector('select');
+      expect(versionSelector.value).toEqual(TestHttp.docVersions[0].title);
+      expect(versionSelector.selectedIndex).toEqual(0);
+    });
+
+    // Older docs versions have an href
+    it('should navigate when change to a version with an href', () => {
+      component.onDocVersionChange(1);
+      expect(locationService.go).toHaveBeenCalledWith(TestHttp.docVersions[1].url);
+    });
+
+    // The current docs version should not have an href
+    // This may change when we perfect our docs versioning approach
+    it('should not navigate when change to a version without an href', () => {
+      component.onDocVersionChange(0);
+      expect(locationService.go).not.toHaveBeenCalled();
     });
   });
 
@@ -437,6 +463,11 @@ class TestSearchService {
 class TestHttp {
   static versionFull = '4.0.0-local+sha.73808dd';
 
+  static docVersions: NavigationNode[] = [
+    { title: 'v4.0.0' },
+    { title: 'v2', url: 'https://v2.angular.io' }
+  ];
+
   // tslint:disable:quotemark
   navJson = {
     "TopBar": [
@@ -472,6 +503,8 @@ class TestHttp {
         "tooltip": "Details of the Angular classes and values."
       }
     ],
+    "docVersions": TestHttp.docVersions,
+
     "__versionInfo": {
       "raw": "4.0.0-rc.6",
       "major": 4,

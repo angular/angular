@@ -33,6 +33,9 @@ export class AppComponent implements OnInit {
   private sideBySideWidth = 1032;
   sideNavNodes: NavigationNode[];
   topMenuNodes: NavigationNode[];
+
+  currentDocVersion: NavigationNode;
+  docVersions: NavigationNode[];
   versionInfo: VersionInfo;
 
   get homeImageUrl() {
@@ -95,9 +98,12 @@ export class AppComponent implements OnInit {
     });
 
     this.navigationService.navigationViews.subscribe(views => {
+      this.docVersions  = views['docVersions']  || [];
       this.footerNodes  = views['Footer']  || [];
       this.sideNavNodes = views['SideNav'] || [];
       this.topMenuNodes = views['TopBar']  || [];
+
+      this.currentDocVersion = this.docVersions[0];
     });
 
     this.navigationService.versionInfo.subscribe( vi => this.versionInfo = vi );
@@ -114,6 +120,13 @@ export class AppComponent implements OnInit {
     // Scroll after the doc-viewer has finished rendering the new doc
     this.autoScroll();
     this.isStarting = false;
+  }
+
+  onDocVersionChange(versionIndex: number) {
+    const version = this.docVersions[versionIndex];
+    if (version.url) {
+      this.locationService.go(version.url);
+    }
   }
 
   @HostListener('window:resize', ['$event.target.innerWidth'])

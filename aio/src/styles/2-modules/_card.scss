@@ -16,7 +16,7 @@
   &:hover {
     text-decoration: none;
 
-    h2 {
+    section {
       color: $blue;
     }
 
@@ -34,7 +34,7 @@
   }
 
 
-  h2 {
+  section {
     color: $darkgray;
     font-size: 20px;
     line-height: 24px;
@@ -68,5 +68,8 @@
       color: $mediumgray;
       font-size: 13px;
     }
+  }
+  .card-footer.center {
+    text-align: center;
   }
 }
