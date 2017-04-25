@@ -169,3 +169,13 @@ aio-nav-menu.top-menu {
   }
 
 }
+
+// Angular version selector
+md-sidenav .doc-version {
+  padding: 10px;
+
+  &:hover {
+    text-shadow: 0 0 5px #ffffff;
+    background-color: $lightgray;
+  }
+}

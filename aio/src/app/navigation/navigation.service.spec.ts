@@ -9,6 +9,8 @@ import { Logger } from 'app/shared/logger.service';
 describe('NavigationService', () => {
 
   let injector: ReflectiveInjector;
+  let backend: MockBackend;
+  let navService: NavigationService;
 
   function createResponse(body: any) {
     return new Response(new ResponseOptions({ body: JSON.stringify(body) }));
@@ -25,19 +27,16 @@ describe('NavigationService', () => {
     ]);
   });
 
+  beforeEach(() => {
+    backend = injector.get(ConnectionBackend);
+    navService = injector.get(NavigationService);
+  });
+
   it('should be creatable', () => {
-    const navService: NavigationService = injector.get(NavigationService);
     expect(navService).toBeTruthy();
   });
 
   describe('navigationViews', () => {
-    let backend: MockBackend;
-    let navService: NavigationService;
-
-    beforeEach(() => {
-      backend = injector.get(ConnectionBackend);
-      navService = injector.get(NavigationService);
-    });
 
     it('should make a single connection to the server', () => {
       expect(backend.connectionsArray.length).toEqual(1);
@@ -78,14 +77,12 @@ describe('NavigationService', () => {
       expect(views3).toBe(views1);
     });
 
-
     it('should do WHAT(?) if the request fails');
   });
 
   describe('currentNode', () => {
     let currentNode: CurrentNode;
     let locationService: MockLocationService;
-    let navService: NavigationService;
 
     const topBarNodes: NavigationNode[] = [{ url: 'features', title: 'Features' }];
     const sideNavNodes: NavigationNode[] = [
@@ -105,14 +102,9 @@ describe('NavigationService', () => {
       __versionInfo: {}
     };
 
-
     beforeEach(() => {
       locationService = injector.get(LocationService);
-
-      navService = injector.get(NavigationService);
       navService.currentNode.subscribe(selected => currentNode = selected);
-
-      const backend = injector.get(ConnectionBackend);
       backend.connectionsArray[0].mockRespond(createResponse(navJson));
     });
 
@@ -190,13 +182,10 @@ describe('NavigationService', () => {
   });
 
   describe('versionInfo', () => {
-    let navService: NavigationService, versionInfo: VersionInfo;
+    let versionInfo: VersionInfo;
 
     beforeEach(() => {
-      navService = injector.get(NavigationService);
       navService.versionInfo.subscribe(info => versionInfo = info);
-
-      const backend = injector.get(ConnectionBackend);
       backend.connectionsArray[0].mockRespond(createResponse({
         __versionInfo: { raw: '4.0.0' }
       }));
@@ -204,6 +193,26 @@ describe('NavigationService', () => {
 
     it('should extract the version info', () => {
       expect(versionInfo).toEqual({ raw: '4.0.0' });
+    });
+  });
+
+  describe('docVersions', () => {
+    let actualDocVersions: NavigationNode[];
+    let docVersions: NavigationNode[];
+
+    beforeEach(() => {
+      actualDocVersions = [];
+      docVersions = [
+        { title: 'v4.0.0' },
+        { title: 'v2', url: 'https://v2.angular.io' }
+      ];
+
+      navService.navigationViews.subscribe(views => actualDocVersions = views.docVersions);
+    });
+
+    it('should extract the docVersions', () => {
+      backend.connectionsArray[0].mockRespond(createResponse({ docVersions }));
+      expect(actualDocVersions).toEqual(docVersions);
     });
   });
 });

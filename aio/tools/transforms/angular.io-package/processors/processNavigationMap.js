@@ -34,13 +34,15 @@ function walk(node, map, path) {
   let errors = [];
   for(const key in node) {
     const child = node[key];
-    if (key === 'url') {
-      const url = child.replace(/#.*$/, ''); // strip hash
-      if (isRelative(url) && !map[url]) {
-        errors.push({ path: path.join('.'), url });
+    if (child !== null) { // null is allowed
+      if (key === 'url') {
+        const url = child.replace(/#.*$/, ''); // strip hash
+        if (isRelative(url) && !map[url]) {
+          errors.push({ path: path.join('.'), url });
+        }
+      } else if (typeof child !== 'string') {
+        errors = errors.concat(walk(child, map, path.concat([key])));
       }
-    } else if (typeof child !== 'string') {
-      errors = errors.concat(walk(child, map, path.concat([key])));
     }
   }
   return errors;
