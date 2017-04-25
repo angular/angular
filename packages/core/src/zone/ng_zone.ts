@@ -11,6 +11,12 @@
 import {} from 'zone.js';
 import {EventEmitter} from '../event_emitter';
 
+export type ZoneSpecName = 'wtfZoneSpec' | 'longStackTraceZoneSpec' | 'TaskTrackingZoneSpec';
+
+function getZoneSpec(name: ZoneSpecName): ZoneSpec {
+  return (Zone as any)[name];
+}
+
 /**
  * An injectable service for executing work inside or outside of the Angular zone.
  *
@@ -128,12 +134,17 @@ export class NgZone {
 
     self._outer = self._inner = Zone.current;
 
-    if ((Zone as any)['wtfZoneSpec']) {
-      self._inner = self._inner.fork((Zone as any)['wtfZoneSpec']);
+    if (NgZone.isZoneEnabled('wtfZoneSpec')) {
+      self._inner = self._inner.fork(getZoneSpec('wtfZoneSpec'));
     }
 
-    if (enableLongStackTrace && (Zone as any)['longStackTraceZoneSpec']) {
-      self._inner = self._inner.fork((Zone as any)['longStackTraceZoneSpec']);
+    if (NgZone.isZoneEnabled('TaskTrackingZoneSpec')) {
+      self._inner = self._inner.fork(getZoneSpec('TaskTrackingZoneSpec'));
+    }
+
+    let forceLongStackTrace = enableLongStackTrace && getZoneSpec('longStackTraceZoneSpec');
+    if (forceLongStackTrace || NgZone.isZoneEnabled('longStackTraceZoneSpec')) {
+      self._inner = self._inner.fork(getZoneSpec('longStackTraceZoneSpec'));
     }
 
     forkInnerZoneWithAngularBehavior(self);
@@ -151,6 +162,46 @@ export class NgZone {
     if (NgZone.isInAngularZone()) {
       throw new Error('Expected to not be in Angular Zone, but it is!');
     }
+  }
+
+  static isZoneEnabled(specName: ZoneSpecName) {
+    if (!(Zone as any)[specName]) {
+      return false;
+    }
+
+    // By default, specs are enabled if they're loaded.
+    if (!window.sessionStorage) {
+      return true;
+    }
+
+    const override = JSON.parse(window.sessionStorage.getItem('ngZoneOverride') || '{}');
+    if (override && override.hasOwnProperty(specName)) {
+      return override[specName];
+    }
+
+    return true;
+  }
+
+  static setZoneEnabled(specName: ZoneSpecName, enabled: boolean) {
+    if (!window.sessionStorage) {
+      return;
+    }
+
+    let override = JSON.parse(window.sessionStorage.getItem('ngZoneOverride') || '{}');
+    if (!getZoneSpec(specName) && enabled) {
+      console.warn(`Cannot enable zone ${specName}, spec is not loaded!`);
+      return;
+    }
+
+    override[specName] = enabled;
+    window.sessionStorage.setItem('ngZoneOverride', JSON.stringify(override));
+  }
+
+  static resetEnabledZones() {
+    if (!window.sessionStorage) {
+      return;
+    }
+    window.sessionStorage.removeItem('ngZoneOverride');
   }
 
   /**
