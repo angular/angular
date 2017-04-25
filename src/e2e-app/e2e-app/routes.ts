@@ -13,20 +13,22 @@ import {ProgressBarE2E} from '../progress-bar/progress-bar-e2e';
 import {ProgressSpinnerE2E} from '../progress-spinner/progress-spinner-e2e';
 import {SlideToggleE2E} from '../slide-toggle/slide-toggle-e2e';
 import {FullscreenE2E} from '../fullscreen/fullscreen-e2e';
+import {InputE2E} from '../input/input-e2e';
 
 export const E2E_APP_ROUTES: Routes = [
   {path: '', component: Home},
   {path: 'button', component: ButtonE2E},
   {path: 'checkbox', component: SimpleCheckboxes},
-  {path: 'menu', component: MenuE2E},
-  {path: 'icon', component: IconE2E},
-  {path: 'radio', component: SimpleRadioButtons},
-  {path: 'tabs', component: BasicTabs},
   {path: 'dialog', component: DialogE2E},
+  {path: 'fullscreen', component: FullscreenE2E},
   {path: 'grid-list', component: GridListE2E},
+  {path: 'icon', component: IconE2E},
+  {path: 'input', component: InputE2E},
   {path: 'list', component: ListE2E},
+  {path: 'menu', component: MenuE2E},
   {path: 'progress-bar', component: ProgressBarE2E},
   {path: 'progress-spinner', component: ProgressSpinnerE2E},
+  {path: 'radio', component: SimpleRadioButtons},
   {path: 'slide-toggle', component: SlideToggleE2E},
-  {path: 'fullscreen', component: FullscreenE2E}
+  {path: 'tabs', component: BasicTabs},
 ];
