@@ -162,8 +162,8 @@ export function getPlatform(): PlatformRef|null {
  * has exactly one platform, and services (such as reflection) which are common
  * to every Angular application running on the page are bound in its scope.
  *
- * A page's platform is initialized implicitly when {@link bootstrap}() is called, or
- * explicitly by calling {@link createPlatform}().
+ * A page's platform is initialized implicitly when a platform is created via a platform factory
+ * (e.g. {@link platformBrowser}), or explicitly by calling the {@link createPlatform} function.
  *
  * @stable
  */
@@ -343,8 +343,6 @@ export class PlatformRef_ extends PlatformRef {
 
 /**
  * A reference to an Angular application running on a page.
- *
- * For more about Angular applications, see the documentation for {@link bootstrap}.
  *
  * @stable
  */
