@@ -2,11 +2,10 @@ import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as gulp from 'gulp';
 import * as path from 'path';
-import {NPM_VENDOR_FILES, PROJECT_ROOT, DIST_ROOT} from '../constants';
+import {PROJECT_ROOT} from '../constants';
 
 /* Those imports lack typings. */
 const gulpClean = require('gulp-clean');
-const gulpMerge = require('merge2');
 const gulpRunSequence = require('run-sequence');
 const gulpSass = require('gulp-sass');
 const gulpSourcemaps = require('gulp-sourcemaps');
@@ -145,16 +144,6 @@ export function buildAppTask(appName: string) {
       done
     );
   };
-}
-
-
-/** Create a task that copies vendor files in the proper destination. */
-export function vendorTask(outDir = path.join(DIST_ROOT, 'vendor')) {
-  return () => gulpMerge(
-    NPM_VENDOR_FILES.map(pkg => {
-      const glob = path.join(PROJECT_ROOT, 'node_modules', pkg, '**/*.+(js|js.map)');
-      return gulp.src(glob).pipe(gulp.dest(path.join(outDir, pkg)));
-    }));
 }
 
 /**
