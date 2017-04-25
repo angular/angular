@@ -11,6 +11,7 @@ $mat-menu-overlay-max-width: 280px !default;   // 56 * 5
 $mat-menu-item-height: 48px !default;
 $mat-menu-font-size: 16px !default;
 $mat-menu-side-padding: 16px !default;
+$mat-menu-icon-margin: 16px !default;
 
 @mixin mat-menu-base() {
   @include mat-elevation(8);
@@ -44,10 +45,11 @@ $mat-menu-side-padding: 16px !default;
   }
 
   .mat-icon {
-    margin-right: 16px;
+    margin-right: $mat-menu-icon-margin;
 
     [dir='rtl'] & {
-      margin-left: 16px;
+      margin-left: $mat-menu-icon-margin;
+      margin-right: 0;
     }
   }
 }
