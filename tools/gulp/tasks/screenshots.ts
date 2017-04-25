@@ -94,7 +94,7 @@ function extractScreenshotName(fileName: string) {
 
 function getLocalScreenshotFiles(dir: string): string[] {
   return readdirSync(dir)
-    .filter((fileName: string) => !statSync(path.join(SCREENSHOT_DIR, fileName)).isDirectory())
+    .filter((fileName: string) => !statSync(path.join(dir, fileName)).isDirectory())
     .filter((fileName: string) => fileName.endsWith('.screenshot.png'));
 }
 
