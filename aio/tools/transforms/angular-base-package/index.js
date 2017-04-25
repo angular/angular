@@ -33,7 +33,8 @@ module.exports = new Package('angular-base', [
   .factory(require('./readers/json'))
 
   .config(function(checkAnchorLinksProcessor) {
-    // TODO: re-enable
+    // This is disabled here to prevent false negatives for the `docs-watch` task.
+    // It is re-enabled in the main `angular.io-package`
     checkAnchorLinksProcessor.$enabled = false;
   })
 
