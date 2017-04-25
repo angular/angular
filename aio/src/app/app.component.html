@@ -10,7 +10,7 @@
 </md-toolbar>
 
 <a id="top-of-page"></a>
-<md-sidenav-container class="sidenav-container" role="main">
+<md-sidenav-container class="sidenav-container" [class.starting]="isStarting" role="main">
 
   <md-sidenav [ngClass]="{'collapsed': !isSideBySide }" #sidenav class="sidenav" [opened]="isOpened" [mode]="mode">
     <aio-nav-menu *ngIf="!isSideBySide" class="top-menu" [nodes]="topMenuNodes" [currentNode]="currentNode"></aio-nav-menu>
