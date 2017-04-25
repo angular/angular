@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Animation, AnimationBuilder, AnimationMetadata, AnimationOptions, AnimationPlayer, NoopAnimationPlayer, sequence} from '@angular/animations';
+import {AnimationBuilder, AnimationFactory, AnimationMetadata, AnimationOptions, AnimationPlayer, NoopAnimationPlayer, sequence} from '@angular/animations';
 import {Injectable, RendererFactory2, RendererType2, ViewEncapsulation} from '@angular/core';
 
 import {AnimationRenderer} from './animation_renderer';
@@ -26,16 +26,16 @@ export class BrowserAnimationBuilder extends AnimationBuilder {
     this._renderer = rootRenderer.createRenderer(document.body, typeData) as AnimationRenderer;
   }
 
-  build(animation: AnimationMetadata|AnimationMetadata[]): Animation {
+  build(animation: AnimationMetadata|AnimationMetadata[]): AnimationFactory {
     const id = this._nextAnimationId.toString();
     this._nextAnimationId++;
     const entry = Array.isArray(animation) ? sequence(animation) : animation;
     issueAnimationCommand(this._renderer, null, id, 'register', [entry]);
-    return new BrowserAnimation(id, this._renderer);
+    return new BrowserAnimationFactory(id, this._renderer);
   }
 }
 
-export class BrowserAnimation extends Animation {
+export class BrowserAnimationFactory extends AnimationFactory {
   constructor(private _id: string, private _renderer: AnimationRenderer) { super(); }
 
   create(element: any, options?: AnimationOptions): AnimationPlayer {

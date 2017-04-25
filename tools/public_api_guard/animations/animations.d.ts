@@ -20,11 +20,6 @@ export declare type AnimateTimings = {
 export declare function animation(steps: AnimationMetadata | AnimationMetadata[], options?: AnimationOptions | null): AnimationReferenceMetadata;
 
 /** @experimental */
-export declare abstract class Animation {
-    abstract create(element: any, options?: AnimationOptions): AnimationPlayer;
-}
-
-/** @experimental */
 export interface AnimationAnimateChildMetadata extends AnimationMetadata {
     options: AnimationOptions | null;
 }
@@ -43,7 +38,7 @@ export interface AnimationAnimateRefMetadata extends AnimationMetadata {
 
 /** @experimental */
 export declare abstract class AnimationBuilder {
-    abstract build(animation: AnimationMetadata | AnimationMetadata[]): Animation;
+    abstract build(animation: AnimationMetadata | AnimationMetadata[]): AnimationFactory;
 }
 
 /** @experimental */
@@ -54,6 +49,11 @@ export interface AnimationEvent {
     toState: string;
     totalTime: number;
     triggerName: string;
+}
+
+/** @experimental */
+export declare abstract class AnimationFactory {
+    abstract create(element: any, options?: AnimationOptions): AnimationPlayer;
 }
 
 /** @experimental */
