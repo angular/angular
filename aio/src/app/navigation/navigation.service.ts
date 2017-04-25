@@ -4,6 +4,7 @@ import { Http } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import { AsyncSubject } from 'rxjs/AsyncSubject';
 import { combineLatest } from 'rxjs/observable/combineLatest';
+import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/publishLast';
 import 'rxjs/add/operator/publishReplay';
 
@@ -37,10 +38,11 @@ export class NavigationService {
 
   constructor(private http: Http, private location: LocationService, private logger: Logger) {
     const navigationInfo = this.fetchNavigationInfo();
+    this.navigationViews = this.getNavigationViews(navigationInfo);
+
+    this.currentNode = this.getCurrentNode(this.navigationViews);
     // The version information is packaged inside the navigation response to save us an extra request.
     this.versionInfo = this.getVersionInfo(navigationInfo);
-    this.navigationViews = this.getNavigationViews(navigationInfo);
-    this.currentNode = this.getCurrentNode(this.navigationViews);
   }
 
   /**
@@ -69,7 +71,13 @@ export class NavigationService {
   }
 
   private getNavigationViews(navigationInfo: Observable<NavigationResponse>): Observable<NavigationViews> {
-    const navigationViews = navigationInfo.map(response => unpluck(response, '__versionInfo')).publishReplay(1);
+    const navigationViews = navigationInfo.map(response => {
+      const views: NavigationViews = Object.assign({}, response);
+      Object.keys(views).forEach(key => {
+        if (key[0] === '_') { delete views[key]; }
+      });
+      return views;
+    }).publishReplay(1);
     navigationViews.connect();
     return navigationViews;
   }
@@ -119,10 +127,4 @@ export class NavigationService {
       }
     }
   }
-}
-
-function unpluck(obj: any, property: string) {
-  const result = Object.assign({}, obj);
-  delete result[property];
-  return result;
 }
