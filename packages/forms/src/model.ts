@@ -886,7 +886,7 @@ export class FormGroup extends AbstractControl {
    * Check whether there is an enabled control with the given name in the group.
    *
    * It will return false for disabled controls. If you'd like to check for
-   * existence in the group only, use {@link AbstractControl.get} instead.
+   * existence in the group only, use {@link AbstractControl#get} instead.
    */
   contains(controlName: string): boolean {
     return this.controls.hasOwnProperty(controlName) && this.controls[controlName].enabled;

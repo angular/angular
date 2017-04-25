@@ -24,9 +24,6 @@ function isEmptyInputValue(value: any): boolean {
  *
  * Provide this using `multi: true` to add validators.
  *
- * ### Example
- *
- * {@example core/forms/ts/ng_validators/ng_validators.ts region='ng_validators'}
  * @stable
  */
 export const NG_VALIDATORS = new InjectionToken<Array<Validator|Function>>('NgValidators');
