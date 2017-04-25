@@ -1,8 +1,11 @@
 /* API EDIT ICON */
 #api {
-  .info-bar .material-icons {
-    top: 24px;
+  .info-banner .material-icons {
     right: 48px;
+
+    @media screen and (max-width: 600px) {
+        left: 50px;
+    }
   }
 }
 
@@ -18,11 +21,6 @@ aio-api-list {
         width: 182px;
     }
 
-    .api-filter.banner {
-        border: 1px solid rgba($lightgray, 0.5);
-        border-radius: 4px;
-    }
-
     .api-list-container {
       display: flex;
       flex-direction: column;
@@ -33,8 +31,10 @@ aio-api-list {
 aio-api-list > div {
     display: flex;
     margin: 32px auto;
+    
     @media (max-width: 600px) {
         flex-direction: column;
+        margin: 16px auto;
     }
 
     > div {
@@ -44,32 +44,6 @@ aio-api-list > div {
 
 $phone-breakpoint: 480px;
 $tablet-breakpoint: 800px;
-
-$layer-1: 1;
-$layer-2: 2;
-$layer-3: 3;
-$layer-4: 4;
-$layer-5: 5;
-
-
-$amber-700: #FFA000;
-$blue-400: #42A5F5;
-$blue-500: #2196F3;
-$blue-600: #1E88E5;
-$blue-800: #1565C0;
-$blue-grey-50: #ECEFF1;
-$blue-grey-100: #CFD8DC;
-$blue-grey-500: #607D8B;
-$blue-grey-600: #546E7A;
-$green-500: #4CAF50;
-$green-800: #2E7D32;
-$light-green-600: #7CB342;
-$pink-600: #D81B60;
-$purple-600: #8E24AA;
-$teal-500: #009688;
-
-$lightgrey: #F5F6F7;
-
 
 /* LAYOUT */
 
@@ -219,51 +193,6 @@ $form-select-width: 200px;
 
 /* API SYMBOLS */
 
-/* VARIABLES */
-
-$api-symbols: (
-  all: (
-    content: ' ',
-    background: $white
-  ),
-  decorator: (
-    content: '@',
-    background: $blue-800
-  ),
-  directive: (
-    content: 'D',
-    background: $pink-600
-  ),
-  pipe: (
-    content: 'P',
-    background: $blue-grey-600
-  ),
-  class: (
-    content: 'C',
-    background: $blue-500
-  ),
-  interface: (
-    content: 'I',
-    background: $teal-500
-  ),
-  function: (
-    content: 'F',
-    background: $green-500
-  ),
-  enum: (
-    content: 'E',
-    background: $amber-700
-  ),
-  const: (
-    content: 'K',
-    background: $purple-600
-  ),
-  type-alias: (
-    content: 'T',
-    background: $light-green-600
-  )
-);
-
 /* SYMBOL CLASS */
 
 .symbol {
@@ -278,6 +207,7 @@ $api-symbols: (
   width: 16px;
 
   // SYMBOL TYPES
+  // Symbol mapping variables in *constants*
   @each $name, $symbol in $api-symbols {
     &.#{$name} {
       background: map-get($symbol, background);
@@ -310,6 +240,10 @@ $api-symbols: (
   margin: 0 0 48px 0;
   padding: 0;
   overflow: hidden;
+
+  @media screen and (max-width: 600px) {
+        margin: 0;
+    }
 
   li {
     font-size: 14px;
@@ -394,16 +328,6 @@ p {
 
 .code-margin {
   margin-bottom: $unit;
-}
-
-.hr-margin {
-  display: block;
-  height: 1px;
-  border: 0;
-  border-top: 1px solid $lightgrey;
-  margin-top: 15px;
-  margin-bottom: 20px;
-  padding: 0;
 }
 
 .no-bg {
