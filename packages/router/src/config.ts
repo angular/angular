@@ -20,7 +20,6 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  * - `path` is a string that uses the route matcher DSL.
  * - `pathMatch` is a string that specifies the matching strategy.
  * - `matcher` defines a custom strategy for path matching and supersedes `path` and `pathMatch`.
- *   See {@link UrlMatcher} for more info.
  * - `component` is a component type.
  * - `redirectTo` is the url fragment which will replace the current matched segment.
  * - `outlet` is the name of the outlet the component should be placed into.

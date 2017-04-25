@@ -13,8 +13,9 @@ import {WebWorkerPlatformLocation} from './platform_location';
 
 
 /**
- * Those providers should be added when the router is used in a worker context in addition to the
- * {@link ROUTER_PROVIDERS} and after them.
+ * The {@link PlatformLocation} providers that should be added when the {@link Location} is used in
+ * a worker context.
+ *
  * @experimental
  */
 export const WORKER_APP_LOCATION_PROVIDERS = [
