@@ -1,8 +1,8 @@
 {
   "static.ignore": [
     "\\.js\\.map$",
-    "^\/assets\/images\/(bios|cookbooks|devguide|examples)\/",
-    "^\/content\/docs\/.*\/"
+    "^/assets/images/.*/unused/",
+    "^/content/(?:docs/(?!api/api-list\\.json).*|images|live-examples|zips)/"
   ],
   "routing": {
     "index": "/index.html",
