@@ -58,6 +58,17 @@
       margin: 8px 0px;
     }
 
+    h1, h2 {
+      @media screen and (max-width: 600px) {
+        margin: 16px 0;
+      }
+    }
+
+    h3, h4, h5, h6 {
+      @media screen and (max-width: 600px) {
+        margin: 8px 0;
+      }
+    }
 
     .mat-tab-body-wrapper h2 {
       margin-top: 0;
