@@ -121,9 +121,9 @@
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@angular/router/-/router-4.0.0.tgz#f4a2dc83b44e023db1d6f2c12ca5a37a22c66afc"
 
-"@angular/service-worker@^1.0.0-beta.8":
-  version "1.0.0-beta.8"
-  resolved "https://registry.yarnpkg.com/@angular/service-worker/-/service-worker-1.0.0-beta.8.tgz#dccaea1a530d09f9bc54108379a946b3a62f9da8"
+"@angular/service-worker@^1.0.0-beta.10":
+  version "1.0.0-beta.10"
+  resolved "https://registry.yarnpkg.com/@angular/service-worker/-/service-worker-1.0.0-beta.10.tgz#273ef15e26b4ff87a1076d601b3087dabc8cc8d2"
   dependencies:
     base64-js "^1.1.2"
     jshashes "^1.0.5"
@@ -7555,14 +7555,13 @@ yargs-parser@^4.2.0:
   dependencies:
     camelcase "^3.0.0"
 
-yargs@3.32.0, yargs@^3.32.0:
 yargs-parser@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-5.0.0.tgz#275ecf0d7ffe05c77e64e7c86e4cd94bf0e1228a"
   dependencies:
     camelcase "^3.0.0"
 
-yargs@^3.32.0:
+yargs@3.32.0, yargs@^3.32.0:
   version "3.32.0"
   resolved "https://registry.yarnpkg.com/yargs/-/yargs-3.32.0.tgz#03088e9ebf9e756b69751611d2a5ef591482c995"
   dependencies:
