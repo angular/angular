@@ -8,6 +8,9 @@
 export interface ɵStyleData { [key: string]: string|number; }
 
 /**
+ * Metadata representing the entry of animations. Instances of this interface are created internally
+ * within the Angular animation DSL.
+ *
  * @experimental Animation support is experimental.
  */
 export declare type AnimateTimings = {
@@ -17,6 +20,23 @@ export declare type AnimateTimings = {
 };
 
 /**
+ * `AnimationOptions` represents options that can be passed into most animation DSL methods.
+ * When options are provided, the delay value of an animation can be changed and animation input
+ * parameters can be passed in to change styling and timing data when an animation is started.
+ *
+ * The following animation DSL functions are able to accept animation option data:
+ *
+ * - {@link transition transition()}
+ * - {@link sequence sequence()}
+ * - {@link group group()}
+ * - {@link query query()}
+ * - {@link animation animation()}
+ * - {@link useAnimation useAnimation()}
+ * - {@link animateChild animateChild()}
+ *
+ * Programmatic animations built using {@link AnimationBuilder the AnimationBuilder service} also
+ * make use of AnimationOptions.
+ *
  * @experimental Animation support is experimental.
  */
 export declare interface AnimationOptions {
@@ -25,11 +45,17 @@ export declare interface AnimationOptions {
 }
 
 /**
+ * Metadata representing the entry of animations. Instances of this interface are created internally
+ * within the Angular animation DSL when {@link animateChild animateChild()} is used.
+ *
  * @experimental Animation support is experimental.
  */
 export declare interface AnimateChildOptions extends AnimationOptions { duration?: number|string; }
 
 /**
+ * Metadata representing the entry of animations. Usages of this enum are created
+ * each time an animation DSL function is used.
+ *
  * @experimental Animation support is experimental.
  */
 export const enum AnimationMetadataType {
@@ -59,6 +85,9 @@ export const AUTO_STYLE = '*';
 export interface AnimationMetadata { type: AnimationMetadataType; }
 
 /**
+ * Metadata representing the entry of animations. Instances of this interface are provided via the
+ * animation DSL when the {@link trigger trigger animation function} is called.
+ *
  * @experimental Animation support is experimental.
  */
 export interface AnimationTriggerMetadata extends AnimationMetadata {
@@ -68,7 +97,7 @@ export interface AnimationTriggerMetadata extends AnimationMetadata {
 }
 
 /**
- * Metadata representing the entry of animations. Instances of this class are provided via the
+ * Metadata representing the entry of animations. Instances of this interface are provided via the
  * animation DSL when the {@link state state animation function} is called.
  *
  * @experimental Animation support is experimental.
@@ -79,7 +108,7 @@ export interface AnimationStateMetadata extends AnimationMetadata {
 }
 
 /**
- * Metadata representing the entry of animations. Instances of this class are provided via the
+ * Metadata representing the entry of animations. Instances of this interface are provided via the
  * animation DSL when the {@link transition transition animation function} is called.
  *
  * @experimental Animation support is experimental.
@@ -108,7 +137,7 @@ export interface AnimationQueryMetadata extends AnimationMetadata {
 }
 
 /**
- * Metadata representing the entry of animations. Instances of this class are provided via the
+ * Metadata representing the entry of animations. Instances of this interface are provided via the
  * animation DSL when the {@link keyframes keyframes animation function} is called.
  *
  * @experimental Animation support is experimental.
@@ -118,7 +147,7 @@ export interface AnimationKeyframesSequenceMetadata extends AnimationMetadata {
 }
 
 /**
- * Metadata representing the entry of animations. Instances of this class are provided via the
+ * Metadata representing the entry of animations. Instances of this interface are provided via the
  * animation DSL when the {@link style style animation function} is called.
  *
  * @experimental Animation support is experimental.
@@ -129,7 +158,7 @@ export interface AnimationStyleMetadata extends AnimationMetadata {
 }
 
 /**
- * Metadata representing the entry of animations. Instances of this class are provided via the
+ * Metadata representing the entry of animations. Instances of this interface are provided via the
  * animation DSL when the {@link animate animate animation function} is called.
  *
  * @experimental Animation support is experimental.
@@ -140,6 +169,9 @@ export interface AnimationAnimateMetadata extends AnimationMetadata {
 }
 
 /**
+ * Metadata representing the entry of animations. Instances of this interface are provided via the
+ * animation DSL when the {@link animateChild animateChild animation function} is called.
+ *
  * @experimental Animation support is experimental.
  */
 export interface AnimationAnimateChildMetadata extends AnimationMetadata {
@@ -147,6 +179,9 @@ export interface AnimationAnimateChildMetadata extends AnimationMetadata {
 }
 
 /**
+ * Metadata representing the entry of animations. Instances of this interface are provided via the
+ * animation DSL when the {@link useAnimation useAnimation animation function} is called.
+ *
  * @experimental Animation support is experimental.
  */
 export interface AnimationAnimateRefMetadata extends AnimationMetadata {
@@ -155,7 +190,7 @@ export interface AnimationAnimateRefMetadata extends AnimationMetadata {
 }
 
 /**
- * Metadata representing the entry of animations. Instances of this class are provided via the
+ * Metadata representing the entry of animations. Instances of this interface are provided via the
  * animation DSL when the {@link sequence sequence animation function} is called.
  *
  * @experimental Animation support is experimental.
@@ -166,7 +201,7 @@ export interface AnimationSequenceMetadata extends AnimationMetadata {
 }
 
 /**
- * Metadata representing the entry of animations. Instances of this class are provided via the
+ * Metadata representing the entry of animations. Instances of this interface are provided via the
  * animation DSL when the {@link group group animation function} is called.
  *
  * @experimental Animation support is experimental.
@@ -177,6 +212,20 @@ export interface AnimationGroupMetadata extends AnimationMetadata {
 }
 
 /**
+ * Metadata representing the entry of animations. Instances of this interface are provided via the
+ * animation DSL when the {@link query query animation function} is called.
+ *
+ * @experimental Animation support is experimental.
+ */
+export declare interface AnimationQueryOptions extends AnimationOptions {
+  optional?: boolean;
+  limit?: number;
+}
+
+/**
+ * Metadata representing the entry of animations. Instances of this interface are provided via the
+ * animation DSL when the {@link stagger stagger animation function} is called.
+ *
 * @experimental Animation support is experimental.
 */
 export interface AnimationStaggerMetadata extends AnimationMetadata {
@@ -628,6 +677,38 @@ export function transition(
 }
 
 /**
+ * `animation` is an animation-specific function that is designed to be used inside of Angular's
+ * animation DSL language.
+ *
+ * `var myAnimation = animation(...)` is designed to produce a reusable animation that can be later
+ * invoked in another animation or sequence. Reusable animations are designed to make use of
+ * animation parameters and the produced animation can be used via the `useAnimation` method.
+ *
+ * ```
+ * var fadeAnimation = animation([
+ *   style({ opacity: '{{ start }}' }),
+ *   animate('{{ time }}',
+ *     style({ opacity: '{{ end }}'))
+ * ], { params: { time: '1000ms', start: 0, end: 1 }});
+ * ```
+ *
+ * If parameters are attached to an animation then they act as **default parameter values**. When an
+ * animation is invoked via `useAnimation` then parameter values are allowed to be passed in
+ * directly. If any of the passed in parameter values are missing then the default values will be
+ * used.
+ *
+ * ```
+ * useAnimation(fadeAnimation, {
+ *   params: {
+ *     time: '2s',
+ *     start: 1,
+ *     end: 0
+ *   }
+ * })
+ * ```
+ *
+ * If one or more parameter values are missing before animated then an error will be thrown.
+ *
  * @experimental Animation support is experimental.
  */
 export function animation(
@@ -637,6 +718,100 @@ export function animation(
 }
 
 /**
+ * `animateChild` is an animation-specific function that is designed to be used inside of Angular's
+ * animation DSL language. It works by allowing a queried element to execute its own
+ * animation within the animation sequence.
+ *
+ * Each time an animation is triggered in angular, the parent animation
+ * will always get priority and any child animations will be blocked. In order
+ * for a child animation to run, the parent animation must query each of the elements
+ * containing child animations and then allow the animations to run using `animateChild`.
+ *
+ * The example HTML code below shows both parent and child elements that have animation
+ * triggers that will execute at the same time.
+ *
+ * ```html
+ * <!-- parent-child.component.html -->
+ * <button (click)="exp =! exp">Toggle</button>
+ * <hr>
+ *
+ * <div [@parentAnimation]="exp">
+ *   <header>Hello</header>
+ *   <div [@childAnimation]="exp">
+ *       one
+ *   </div>
+ *   <div [@childAnimation]="exp">
+ *       two
+ *   </div>
+ *   <div [@childAnimation]="exp">
+ *       three
+ *   </div>
+ * </div>
+ * ```
+ *
+ * Now when the `exp` value changes to true, only the `parentAnimation` animation will animate
+ * because it has priority. However, using `query` and `animateChild` each of the inner animations
+ * can also fire:
+ *
+ * ```ts
+ * // parent-child.component.ts
+ * import {trigger, transition, animate, style, query, animateChild} from '@angular/animations';
+ * @Component({
+ *   selector: 'parent-child-component',
+ *   animations: [
+ *     trigger('parentAnimation', [
+ *       transition('false => true', [
+ *         query('header', [
+ *           style({ opacity: 0 }),
+ *           animate(500, style({ opacity: 1 }))
+ *         ]),
+ *         query('@childAnimation', [
+ *           animateChild()
+ *         ])
+ *       ])
+ *     ]),
+ *     trigger('childAnimation', [
+ *       transition('false => true', [
+ *         style({ opacity: 0 }),
+ *         animate(500, style({ opacity: 1 }))
+ *       ])
+ *     ])
+ *   ]
+ * })
+ * class ParentChildCmp {
+ *   exp: boolean = false;
+ * }
+ * ```
+ *
+ * In the animation code above, when the `parentAnimation` transition kicks off it first queries to
+ * find the header element and fades it in. It then finds each of the sub elements that contain the
+ * `@childAnimation` trigger and then allows for their animations to fire.
+ *
+ * This example can be further extended by using stagger:
+ *
+ * ```ts
+ * query('@childAnimation', stagger(100, [
+ *   animateChild()
+ * ]))
+ * ```
+ *
+ * Now each of the sub animations start off with respect to the `100ms` staggering step.
+ *
+ * ## The first frame of child animations
+ * When sub animations are executed using `animateChild` the animation engine will always apply the
+ * first frame of every sub animation immediately at the start of the animation sequence. This way
+ * the parent animation does not need to set any initial styling data on the sub elements before the
+ * sub animations kick off.
+ *
+ * In the example above the first frame of the `childAnimation`'s `false => true` transition
+ * consists of a style of `opacity: 0`. This is applied immediately when the `parentAnimation`
+ * animation transition sequence starts. Only then when the `@childAnimation` is queried and called
+ * with `animateChild` will it then animate to its destination of `opacity: 1`.
+ *
+ * Note that this feature designed to be used alongside {@link query query()} and it will only work
+ * with animations that are assigned using the Angular animation DSL (this means that CSS keyframes
+ * and transitions are not handled by this API).
+ *
  * @experimental Animation support is experimental.
  */
 export function animateChild(options: AnimateChildOptions | null = null):
@@ -645,6 +820,10 @@ export function animateChild(options: AnimateChildOptions | null = null):
 }
 
 /**
+ * `useAnimation` is an animation-specific function that is designed to be used inside of Angular's
+ * animation DSL language. It is used to kick off a reusable animation that is created using {@link
+ * animation animation()}.
+ *
  * @experimental Animation support is experimental.
  */
 export function useAnimation(
@@ -654,14 +833,95 @@ export function useAnimation(
 }
 
 /**
- * @experimental Animation support is experimental.
- */
-export declare interface AnimationQueryOptions extends AnimationOptions {
-  optional?: boolean;
-  limit?: number;
-}
-
-/**
+ * `query` is an animation-specific function that is designed to be used inside of Angular's
+ * animation DSL language.
+ *
+ * query() is used to find one or more inner elements within the current element that is
+ * being animated within the sequence. The provided animation steps are applied
+ * to the queried element (by default, an array is provided, then this will be
+ * treated as an animation sequence).
+ *
+ * ### Usage
+ *
+ * query() is designed to collect mutiple elements and works internally by using
+ * `element.querySelectorAll`. An additional options object can be provided which
+ * can be used to limit the total amount of items to be collected.
+ *
+ * ```js
+ * query('div', [
+ *   animate(...),
+ *   animate(...)
+ * ], { limit: 1 })
+ * ```
+ *
+ * query(), by default, will throw an error when zero items are found. If a query
+ * has the `optional` flag set to true then this error will be ignored.
+ *
+ * ```js
+ * query('.some-element-that-may-not-be-there', [
+ *   animate(...),
+ *   animate(...)
+ * ], { optional: true })
+ * ```
+ *
+ * ### Special Selector Values
+ *
+ * The selector value within a query can collect elements that contain angular-specific
+ * characteristics
+ * using special pseudo-selectors tokens.
+ *
+ * These include:
+ *
+ *  - Querying for newly inserted/removed elements using `query(":enter")`/`query(":leave")`
+ *  - Querying all currently animating elements using `query(":animating")`
+ *  - Querying elements that contain an animation trigger using `query("@triggerName")`
+ *  - Querying all elements that contain an animation triggers using `query("@*")`
+ *  - Including the current element into the animation sequence using `query(":self")`
+ *
+ *
+ *  Each of these pseudo-selector tokens can be merged together into a combined query selector
+ * string:
+ *
+ *  ```
+ *  query(':self, .record:enter, .record:leave, @subTrigger', [...])
+ *  ```
+ *
+ * ### Demo
+ *
+ * ```
+ * @Component({
+ *   selector: 'inner',
+ *   template: `
+ *     <div [@queryAnimation]="exp">
+ *       <h1>Title</h1>
+ *       <div class="content">
+ *         Blah blah blah
+ *       </div>
+ *     </div>
+ *   `,
+ *   animations: [
+ *    trigger('queryAnimation', [
+ *      transition('* => goAnimate', [
+ *        // hide the inner elements
+ *        query('h1', style({ opacity: 0 })),
+ *        query('.content', style({ opacity: 0 })),
+ *
+ *        // animate the inner elements in, one by one
+ *        query('h1', animate(1000, style({ opacity: 1 })),
+ *        query('.content', animate(1000, style({ opacity: 1 })),
+ *      ])
+ *    ])
+ *  ]
+ * })
+ * class Cmp {
+ *   exp = '';
+ *
+ *   goAnimate() {
+ *     this.exp = 'goAnimate';
+ *   }
+ * }
+ * ```
+ *
  * @experimental Animation support is experimental.
  */
 export function query(
@@ -671,6 +931,81 @@ export function query(
 }
 
 /**
+ * `stagger` is an animation-specific function that is designed to be used inside of Angular's
+ * animation DSL language. It is designed to be used inside of an animation {@link query query()}
+ * and works by issuing a timing gap between after each queried item is animated.
+ *
+ * ### Usage
+ *
+ * In the example below there is a container element that wraps a list of items stamped out
+ * by an ngFor. The container element contains an animation trigger that will later be set
+ * to query for each of the inner items.
+ *
+ * ```html
+ * <!-- list.component.html -->
+ * <button (click)="toggle()">Show / Hide Items</button>
+ * <hr />
+ * <div [@listAnimation]="items.length">
+ *   <div *ngFor="let item of items">
+ *     {{ item }}
+ *   </div>
+ * </div>
+ * ```
+ *
+ * The component code for this looks as such:
+ *
+ * ```ts
+ * import {trigger, transition, style, animate, query, stagger} from '@angular/animations';
+ * @Component({
+ *   templateUrl: 'list.component.html',
+ *   animations: [
+ *     trigger('listAnimation', [
+ *        //...
+ *     ])
+ *   ]
+ * })
+ * class ListComponent {
+ *   items = [];
+ *
+ *   showItems() {
+ *     this.items = [0,1,2,3,4];
+ *   }
+ *
+ *   hideItems() {
+ *     this.items = [];
+ *   }
+ *
+ *   toggle() {
+ *     this.items.length ? this.hideItems() : this.showItems();
+ *   }
+ * }
+ * ```
+ *
+ * And now for the animation trigger code:
+ *
+ * ```ts
+ * trigger('listAnimation', [
+ *   transition('* => *', [ // each time the binding value changes
+ *     query(':leave', [
+ *       stagger(100, [
+ *         animate('0.5s', style({ opacity: 0 }))
+ *       ])
+ *     ]),
+ *     query(':enter', [
+ *       style({ opacity: 0 }),
+ *       stagger(100, [
+ *         animate('0.5s', style({ opacity: 1 }))
+ *       ])
+ *     ])
+ *   ])
+ * ])
+ * ```
+ *
+ * Now each time the items are added/removed then either the opacity
+ * fade-in animation will run or each removed item will be faded out.
+ * When either of these animations occur then a stagger effect will be
+ * applied after each item's animation is started.
+ *
  * @experimental Animation support is experimental.
  */
 export function stagger(
