@@ -9,14 +9,14 @@
 /**
  * Defines template and style encapsulation options available for Component's {@link Component}.
  *
- * See {@link ViewMetadata#encapsulation}.
+ * See {@link Component#encapsulation}.
  * @stable
  */
 export enum ViewEncapsulation {
   /**
    * Emulate `Native` scoping of styles by adding an attribute containing surrogate id to the Host
    * Element and pre-processing the style rules provided via
-   * {@link ViewMetadata#styles} or {@link ViewMetadata#stylesUrls}, and adding the new Host Element
+   * {@link Component#styles} or {@link Component#styleUrls}, and adding the new Host Element
    * attribute to all selectors.
    *
    * This is the default option.
