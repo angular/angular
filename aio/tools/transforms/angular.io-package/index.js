@@ -9,6 +9,7 @@ const Package = require('dgeni').Package;
 const gitPackage = require('dgeni-packages/git');
 const apiPackage = require('../angular-api-package');
 const contentPackage = require('../angular-content-package');
+const { extname } = require('canonical-path');
 
 module.exports = new Package('angular.io', [gitPackage, apiPackage, contentPackage])
 
@@ -20,5 +21,15 @@ module.exports = new Package('angular.io', [gitPackage, apiPackage, contentPacka
   .config(function(renderDocsProcessor, versionInfo) {
     // Add the version data to the renderer, for use in things like github links
     renderDocsProcessor.extraData.versionInfo = versionInfo;
+  })
 
+  .config(function(checkAnchorLinksProcessor) {
+    checkAnchorLinksProcessor.$enabled = true;
+    // since we encode the HTML to JSON we need to ensure that this processor runs before that encoding happens.
+    checkAnchorLinksProcessor.$runBefore = ['convertToJsonProcessor'];
+    checkAnchorLinksProcessor.$runAfter = ['fixInternalDocumentLinks'];
+    // We only want to check docs that are going to be output as JSON docs.
+    checkAnchorLinksProcessor.checkDoc = (doc) => doc.path && doc.outputPath && extname(doc.outputPath) === '.json';
+    // Since we have a `base[href="/"]` arrangement all links are relative to that and not relative to the source document's path
+    checkAnchorLinksProcessor.base = '/';
   });
