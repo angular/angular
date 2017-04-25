@@ -51,7 +51,7 @@ Usage:
 ```
 
 A component can use `@ViewChild` or `@ViewChildren` to get a reference to a
-`TemplatePortalDiective`.
+`TemplatePortalDirective`.
 
 ##### `ComponentPortal`
 Used to create a portal from a component type.
