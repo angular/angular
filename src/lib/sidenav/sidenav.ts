@@ -371,6 +371,16 @@ export class MdSidenavContainer implements AfterContentInit {
     this._ngZone.onMicrotaskEmpty.first().subscribe(() => this._enableTransitions = true);
   }
 
+  /** Calls `open` of both start and end sidenavs */
+  public open() {
+    return Promise.all([this._start, this._end].map(sidenav => sidenav && sidenav.open()));
+  }
+
+  /** Calls `close` of both start and end sidenavs */
+  public close() {
+    return Promise.all([this._start, this._end].map(sidenav => sidenav && sidenav.close()));
+  }
+
   /**
    * Subscribes to sidenav events in order to set a class on the main container element when the
    * sidenav is open and the backdrop is visible. This ensures any overflow on the container element

@@ -1,11 +1,10 @@
 import {fakeAsync, async, tick, ComponentFixture, TestBed} from '@angular/core/testing';
-import {Component} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {MdSidenav, MdSidenavModule, MdSidenavToggleResult} from './index';
+import {MdSidenav, MdSidenavModule, MdSidenavToggleResult, MdSidenavContainer} from './index';
 import {A11yModule} from '../core/a11y/index';
 import {PlatformModule} from '../core/platform/index';
 import {ESCAPE} from '../core/keyboard/keycodes';
-
 
 function endSidenavTransition(fixture: ComponentFixture<any>) {
   let sidenav: any = fixture.debugElement.query(By.directive(MdSidenav)).componentInstance;
@@ -23,7 +22,6 @@ describe('MdSidenav', () => {
       imports: [MdSidenavModule.forRoot(), A11yModule.forRoot(), PlatformModule.forRoot()],
       declarations: [
         BasicTestApp,
-        SidenavContainerTwoSidenavTestApp,
         SidenavContainerNoSidenavTestApp,
         SidenavSetToOpenedFalse,
         SidenavSetToOpenedTrue,
@@ -446,6 +444,43 @@ describe('MdSidenav', () => {
   });
 });
 
+describe('MdSidenavContainer', () => {
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [MdSidenavModule.forRoot(), A11yModule.forRoot(), PlatformModule.forRoot()],
+      declarations: [
+        SidenavContainerTwoSidenavTestApp
+      ],
+    });
+
+    TestBed.compileComponents();
+  }));
+
+  describe('methods', () => {
+    it('should be able to open and close', async(() => {
+      const fixture = TestBed.createComponent(SidenavContainerTwoSidenavTestApp);
+
+      fixture.detectChanges();
+
+      const testComponent: SidenavContainerTwoSidenavTestApp =
+        fixture.debugElement.componentInstance;
+      const sidenavs = fixture.debugElement.queryAll(By.directive(MdSidenav));
+
+      expect(sidenavs.every(sidenav => sidenav.componentInstance.opened)).toBeFalsy();
+
+      return testComponent.sidenavContainer.open()
+        .then(() => {
+          expect(sidenavs.every(sidenav => sidenav.componentInstance.opened)).toBeTruthy();
+
+          return testComponent.sidenavContainer.close();
+        })
+        .then(() => {
+          expect(sidenavs.every(sidenav => sidenav.componentInstance.opened)).toBeTruthy();
+        });
+    }));
+  });
+});
+
 
 /** Test component that contains an MdSidenavContainer but no MdSidenav. */
 @Component({template: `<md-sidenav-container></md-sidenav-container>`})
@@ -455,11 +490,14 @@ class SidenavContainerNoSidenavTestApp { }
 @Component({
   template: `
     <md-sidenav-container>
-      <md-sidenav> </md-sidenav>
-      <md-sidenav> </md-sidenav>
+      <md-sidenav align="start"> </md-sidenav>
+      <md-sidenav align="end"> </md-sidenav>
     </md-sidenav-container>`,
 })
-class SidenavContainerTwoSidenavTestApp { }
+class SidenavContainerTwoSidenavTestApp {
+  @ViewChild(MdSidenavContainer)
+  sidenavContainer: MdSidenavContainer;
+}
 
 /** Test component that contains an MdSidenavContainer and one MdSidenav. */
 @Component({
