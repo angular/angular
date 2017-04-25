@@ -1032,7 +1032,7 @@ You could call `reset` at the top of `ngOnChanges` like this.
 
 
 
-The `reset` method has an optional `state` value so you can reset the flags _and_ the control values at the same.
+The `reset` method has an optional `state` value so you can reset the flags _and_ the control values at the same time.
 Internally, `reset` passes the argument to `setValue`.
 A little refactoring and `ngOnChanges` becomes this:
 
