@@ -8,16 +8,8 @@
     "index": "/index.html",
     "routes": {
       "/": {
-        "prefix": false
-      },
-      "/about": {
-        "prefix": true
-      },
-      "/tutorial": {
-        "prefix": true
-      },
-      "/guide": {
-        "prefix": true
+        "prefix": true,
+        "onlyWithoutExtension": true
       }
     }
   }
