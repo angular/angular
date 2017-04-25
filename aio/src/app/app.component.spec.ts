@@ -1,3 +1,4 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, inject, ComponentFixture, TestBed } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { APP_BASE_HREF } from '@angular/common';
@@ -21,6 +22,7 @@ import { Logger } from 'app/shared/logger.service';
 import { MockLogger } from 'testing/logger.service';
 import { SwUpdateNotificationsService } from 'app/sw-updates/sw-update-notifications.service';
 import { MockSwUpdateNotificationsService } from 'testing/sw-update-notifications.service';
+import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -31,21 +33,8 @@ describe('AppComponent', () => {
   let locationService: MockLocationService;
   let sidenav: HTMLElement;
 
-  const initialUrl = 'a/b';
-
   beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [ AppModule ],
-      providers: [
-        { provide: APP_BASE_HREF, useValue: '/' },
-        { provide: GaService, useClass: TestGaService },
-        { provide: Http, useClass: TestHttp },
-        { provide: LocationService, useFactory: () => new MockLocationService(initialUrl) },
-        { provide: Logger, useClass: MockLogger },
-        { provide: SearchService, useClass: MockSearchService },
-        { provide: SwUpdateNotificationsService, useClass: MockSwUpdateNotificationsService },
-      ]
-    });
+    createTestingModule('a/b');
     TestBed.compileComponents();
   }));
 
@@ -292,12 +281,37 @@ describe('AppComponent', () => {
     });
   });
 
-  describe('initialization', () => {
+  describe('search worker', () => {
     it('should initialize the search worker', inject([SearchService], (searchService: SearchService) => {
       fixture.detectChanges(); // triggers ngOnInit
       expect(searchService.initWorker).toHaveBeenCalled();
       expect(searchService.loadIndex).toHaveBeenCalled();
     }));
+  });
+
+  describe('initial rendering', () => {
+    beforeEach(async(() => {
+      createTestingModule('a/b');
+      // Remove the DocViewer for this test and hide the missing component message
+      TestBed.overrideModule(AppModule, {
+        remove: { declarations: [DocViewerComponent] },
+        add: { schemas: [NO_ERRORS_SCHEMA] }
+      });
+      TestBed.compileComponents();
+    }));
+
+    it('should initially add the starting class until the first document is rendered', () => {
+      fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.isStarting).toBe(true);
+      expect(fixture.debugElement.query(By.css('md-sidenav-container')).classes['starting']).toBe(true);
+
+      fixture.debugElement.query(By.css('aio-doc-viewer')).triggerEventHandler('docRendered', {});
+      fixture.detectChanges();
+      expect(fixture.componentInstance.isStarting).toBe(false);
+      expect(fixture.debugElement.query(By.css('md-sidenav-container')).classes['starting']).toBe(false);
+    });
   });
 
   describe('click intercepting', () => {
@@ -364,6 +378,22 @@ describe('AppComponent', () => {
 });
 
 //// test helpers ////
+
+function createTestingModule(initialUrl: string) {
+  TestBed.resetTestingModule();
+  TestBed.configureTestingModule({
+    imports: [ AppModule ],
+    providers: [
+      { provide: APP_BASE_HREF, useValue: '/' },
+      { provide: GaService, useClass: TestGaService },
+      { provide: Http, useClass: TestHttp },
+      { provide: LocationService, useFactory: () => new MockLocationService(initialUrl) },
+      { provide: Logger, useClass: MockLogger },
+      { provide: SearchService, useClass: MockSearchService },
+      { provide: SwUpdateNotificationsService, useClass: MockSwUpdateNotificationsService },
+    ]
+  });
+}
 
 class TestGaService {
   locationChanged = jasmine.createSpy('locationChanged');
