@@ -55,7 +55,7 @@ export class MdSliderChange {
   /** The MdSlider that changed. */
   source: MdSlider;
 
-  /** Thew new value of the source slider. */
+  /** The new value of the source slider. */
   value: number;
 }
 
