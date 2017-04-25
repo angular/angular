@@ -1,79 +1,55 @@
-# Angular Docs
+# What is Angular?
 
-Welcome to the Angular documentation where you'll find guidance for beginners and experts alike.
+Angular is a platform that makes it easy to build applications with the web. Angular combines declarative templates, dependency injection, end to end tooling, and integrated best practices to solve development challenges. Angular empowers developers to build applications that live on the web, mobile, or the desktop
 
-## What is Angular?
+<div class="card-container clearfix">
+  <a href="/content/live-examples/quickstart/eplnkr.html" target="_blank" class="card" 
+    title="Experience Angular in a live coding environment">
+      <section>Experience Angular</section>
+      <p>A quick look at an Angular application.</p>
+      <p class="card-footer">Angular in Action</p>
+  </a>
 
-Angular is a platform for building and running web applications on desktop and mobile devices.
-It's an architecture, a modular library, and a set of tools to help teams
-build amazing web apps that run anywhere at scales large and small.
+  <div class="card">
+      <section>Get Going with Angular</section>
+      <p>Get going on your own environment with the Quickstart and Tutorial</p>
+      <p class="card-footer center" >
+        <a href="guide/quickstart" title="Angular Quickstart">Quickstart</a> &nbsp; 
+        <a href="tutorial" title="Angular Tutorial">Tutorial</a>
+      </p>
+      <!--<p class="card-footer"><a href="guide/quickstart">Quickstart</a></p>
+      <p class="card-footer"><a href="guide/tutorial">Tutorial</a></p>-->
+  </div>
 
-## Organization
-
-Navigate the docs with the tree-view in the left side panel. Each top level category unfolds into topics that cover Angular from a distinct perspective:
-
-- **Getting Started** is a taste of Angular in under five minutes.
-
-- **Tutorial** is a step-by-step introduction to the essentials of Angular as you build a data-driven application with multi-page navigation.
-
-<div class="alert is-important">
-
-If you're new to Angular, we recommend that you start with these two categories before moving selectively through the others.
-
+  <a href="fundamentals" class="card" title="Angular Fundamentals">
+      <section>Fundamentals</section>
+      <p>Get additional information on specific topics in the Fundamentals section.</p>
+      <p class="card-footer">Fundamentals</p>
+  </a>
 </div>
 
-- **Fundamentals** explains each Angular concept and feature in practical terms with loads of examples.
-
-- **Techniques** covers tools and techniques for setting up, testing, securing, and deploying your application.
-
-- **API** is the comprehensive, searchable documentation for every Angular class, interface, and programmable feature.
-
-- **References** include answers to common questions about usage and style.
-
-## Sample code
-
-<style>live-example a {font-weight: 800}</style>
-
-Guide pages are full of code snippets that you can copy and use in your own projects. The snippets are typically drawn from an example app.
-Look for the <live-example name="quickstart" noDownload style="font-weight: 800 !important;"></live-example> **link** that launches a browser-based editor where you can see it run, inspect the code, modify it, and save changes.
-
-In most cases you can also <live-example name="quickstart" downloadOnly>download the example,</live-example> 
-unzip it, and run locally with these terminal commands:
-
-<code-example language="sh" class="code-shell" linenums="false">
-npm install
-npm start
-</code-example>
-
 ## Assumptions
-
-While we strive to keep these pages beginner-friendly, we have to make a few assumptions about your skills and experience in order to stay focused on Angular.  
-
-We assume that you are a seasoned, front-end web developer with a working knowledge of
-**HTML, CSS, JavaScript**. The [Mozilla Developer Network](https://developer.mozilla.org/en-US/ "MDN - Mozilla Developer Network") is an excellent resource for reference and general learning.
-
-Effective Angular developers become familiar with two other technologies:
-
-**npm** - Modern web development depends on the [npm package management](https://www.npmjs.com/ "npm") system for distribution and installation of third party libraries. Angular is one such library.
-
-**TypeScript** - [TypeScript](http://www.typescriptlang.org/ "TypeScript") is a _typed_ superset of JavaScript. For the most part it is ES2015 JavaScript with type annotations to improve your design time experience and make it easier for teams to develop sophisticated applications.
-
-You _can_ write Angular applications in [JavaScript without TypeScript](guide/ts-to-js "Writing Angular in JavaScript"). But you should be able to _read_ TypeScript to understand this documentation and participate in conversations within the Angular community. The Angular CLI productivity tool and AOT high performance compiler only apply to TypeScript applications.
-
-You don't have to be an expert in npm or TypeScript to get started with Angular. A little knowledge will get you going and you can pick up what you need along the way.
-
-## Versions
-
-This is the Angular **version 4** documentation. See what's new in the [documentation changelog](guide/change-log). View the [Angular change log](https://github.com/angular/angular/blob/master/CHANGELOG.md) for enhancement and fixes to Angular itself.
-
-The Angular **version 2** documentation has been archived at [v2.angular.io](https://v2.angular.io "Angular v2 Docs").
-
+This documentation assumes that you are already familiar with 
+[JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/A_re-introduction_to_JavaScript "Learn JavaScript"), 
+and some of the tools from the 
+[latest standards](https://babeljs.io/learn-es2015/ "Latest JavaScript standards") such as 
+[classes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes "ES2015 Classes") 
+and [modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import "ES2015 Modules"). 
+The code samples are written using [TypeScript](https://www.typescriptlang.org/ "TypeScript"). 
+Most Angular code can be written with just the latest JavaScript, 
+using [types](https://www.typescriptlang.org/docs/handbook/classes.html "TypeScript Types") for dependency injection, 
+and using [decorators](https://www.typescriptlang.org/docs/handbook/decorators.html "Decorators") for metadata.
 
 ## Feedback
 
-We welcome feedback!
+You can sit with us!
 
-You can file documentation [issues](https://github.com/angular/angular/issues "Angular Github Issues") and create [pull requests](https://github.com/angular/angular/pulls "Angular Github PRs") on the Angular Github repository.
-Please prefix your issue or pull request title with "**docs:**" so that we know it concerns _documentation_ and draws the prompt attention of the appropriate people.
-
-Remember that a respectful, supportive approach produce the best results. Please consult and adhere to our [code of conduct](https://github.com/angular/code-of-conduct/blob/master/CODE_OF_CONDUCT.md "contributor code of conduct") when engaging with the Angular community.
+You can file documentation 
+[issues](https://github.com/angular/angular/issues "Angular Github issues") and create 
+[pull requests](https://github.com/angular/angular/pulls "Angular Github pull requests")
+on the Angular Github repository.
+The [contributing guide](https://github.com/angular/angular/blob/master/CONTRIBUTING.md "Contributing guide")
+will help you contribute to the community. 
+Our community values  respectful, supportive communication. 
+Please consult and adhere to the 
+[code of conduct](https://github.com/angular/code-of-conduct/blob/master/CODE_OF_CONDUCT.md "contributor code of conduct").
