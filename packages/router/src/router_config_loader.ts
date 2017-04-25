@@ -12,7 +12,7 @@ import {fromPromise} from 'rxjs/observable/fromPromise';
 import {of } from 'rxjs/observable/of';
 import {map} from 'rxjs/operator/map';
 import {mergeMap} from 'rxjs/operator/mergeMap';
-import {LoadChildren, LoadedRouterConfig, Route} from './config';
+import {LoadChildren, LoadedRouterConfig, Route, Routes} from './config';
 import {flatten, wrapIntoObservable} from './utils/collection';
 
 /**
@@ -25,7 +25,7 @@ export class RouterConfigLoader {
   constructor(
       private loader: NgModuleFactoryLoader, private compiler: Compiler,
       private onLoadStartListener?: (r: Route) => void,
-      private onLoadEndListener?: (r: Route) => void) {}
+      private onLoadEndListener?: (r: Route, routes: Routes) => void) {}
 
   load(parentInjector: Injector, route: Route): Observable<LoadedRouterConfig> {
     if (this.onLoadStartListener) {
@@ -35,13 +35,14 @@ export class RouterConfigLoader {
     const moduleFactory$ = this.loadModuleFactory(route.loadChildren !);
 
     return map.call(moduleFactory$, (factory: NgModuleFactory<any>) => {
+      const module = factory.create(parentInjector);
+      const routes = flatten(module.injector.get(ROUTES));
+
       if (this.onLoadEndListener) {
-        this.onLoadEndListener(route);
+        this.onLoadEndListener(route, routes);
       }
 
-      const module = factory.create(parentInjector);
-
-      return new LoadedRouterConfig(flatten(module.injector.get(ROUTES)), module);
+      return new LoadedRouterConfig(routes, module);
     });
   }
 
