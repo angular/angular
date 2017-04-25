@@ -5,7 +5,8 @@
 
 var SEARCH_TERMS_URL = '/content/docs/app/search-data.json';
 
-importScripts('https://unpkg.com/lunr@0.7.2');
+// NOTE: This needs to be kept in sync with `ngsw-manifest.json`.
+importScripts('https://unpkg.com/lunr@0.7.2/lunr.min.js');
 
 var index = createIndex();
 var pages = {};
