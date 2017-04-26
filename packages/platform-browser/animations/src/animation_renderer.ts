@@ -11,18 +11,33 @@ import {Injectable, NgZone, Renderer2, RendererFactory2, RendererStyleFlags2, Re
 
 @Injectable()
 export class AnimationRendererFactory implements RendererFactory2 {
+  private _currentId: number = 0;
+
   constructor(
       private delegate: RendererFactory2, private _engine: AnimationEngine, private _zone: NgZone) {
+    _engine.onRemovalComplete = (element: any, delegate: any) => {
+      // Note: if an component element has a leave animation, and the component
+      // a host leave animation, the view engine will call `removeChild` for the parent
+      // component renderer as well as for the child component renderer.
+      // Therefore, we need to check if we already removed the element.
+      if (delegate && delegate.parentNode(element)) {
+        delegate.removeChild(element.parentNode, element);
+      }
+    };
   }
 
   createRenderer(hostElement: any, type: RendererType2): Renderer2 {
     let delegate = this.delegate.createRenderer(hostElement, type);
     if (!hostElement || !type || !type.data || !type.data['animation']) return delegate;
 
-    const namespaceId = type.id;
+    const componentId = type.id;
+    const namespaceId = type.id + '-' + this._currentId;
+    this._currentId++;
+
     const animationTriggers = type.data['animation'] as AnimationTriggerMetadata[];
     animationTriggers.forEach(
-        trigger => this._engine.registerTrigger(trigger, namespaceify(namespaceId, trigger.name)));
+        trigger => this._engine.registerTrigger(
+            componentId, namespaceId, hostElement, trigger.name, trigger));
     return new AnimationRenderer(delegate, this._engine, this._zone, namespaceId);
   }
 
@@ -31,7 +46,9 @@ export class AnimationRendererFactory implements RendererFactory2 {
       this.delegate.begin();
     }
   }
+  
   end() {
+    this._zone.runOutsideAngular(() => this._engine.flush());
     if (this.delegate.end) {
       this.delegate.end();
     }
@@ -40,7 +57,7 @@ export class AnimationRendererFactory implements RendererFactory2 {
 
 export class AnimationRenderer implements Renderer2 {
   public destroyNode: ((node: any) => any)|null = null;
-  private _flushPromise: Promise<any>|null = null;
+  private _animationCallbacksBuffer: [(e: any) => any, any][] = [];
 
   constructor(
       public delegate: Renderer2, private _engine: AnimationEngine, private _zone: NgZone,
@@ -50,7 +67,10 @@ export class AnimationRenderer implements Renderer2 {
 
   get data() { return this.delegate.data; }
 
-  destroy(): void { this.delegate.destroy(); }
+  destroy(): void {
+    this._engine.destroy(this._namespaceId, this.delegate);
+    this.delegate.destroy();
+  }
 
   createElement(name: string, namespace?: string): any {
     return this.delegate.createElement(name, namespace);
@@ -91,32 +111,23 @@ export class AnimationRenderer implements Renderer2 {
   setValue(node: any, value: string): void { this.delegate.setValue(node, value); }
 
   appendChild(parent: any, newChild: any): void {
-    this._engine.onInsert(newChild, () => this.delegate.appendChild(parent, newChild));
-    this._queueFlush();
+    this.delegate.appendChild(parent, newChild);
+    this._engine.onInsert(this._namespaceId, newChild, parent, false);
   }
 
   insertBefore(parent: any, newChild: any, refChild: any): void {
-    this._engine.onInsert(newChild, () => this.delegate.insertBefore(parent, newChild, refChild));
-    this._queueFlush();
+    this.delegate.insertBefore(parent, newChild, refChild);
+    this._engine.onInsert(this._namespaceId, newChild, parent, true);
   }
 
   removeChild(parent: any, oldChild: any): void {
-    this._engine.onRemove(oldChild, () => {
-      // Note: if an component element has a leave animation, and the component
-      // a host leave animation, the view engine will call `removeChild` for the parent
-      // component renderer as well as for the child component renderer.
-      // Therefore, we need to check if we already removed the element.
-      if (this.delegate.parentNode(oldChild)) {
-        this.delegate.removeChild(parent, oldChild);
-      }
-    });
-    this._queueFlush();
+    this._engine.onRemove(this._namespaceId, oldChild, this.delegate);
   }
 
   setProperty(el: any, name: string, value: any): void {
     if (name.charAt(0) == '@') {
-      this._engine.setProperty(el, namespaceify(this._namespaceId, name.substr(1)), value);
-      this._queueFlush();
+      name = name.substr(1);
+      this._engine.setProperty(this._namespaceId, el, name, value);
     } else {
       this.delegate.setProperty(el, name, value);
     }
@@ -126,28 +137,32 @@ export class AnimationRenderer implements Renderer2 {
       () => void {
     if (eventName.charAt(0) == '@') {
       const element = resolveElementFromTarget(target);
-      const [name, phase] = parseTriggerCallbackName(eventName.substr(1));
-      return this._engine.listen(
-          element, namespaceify(this._namespaceId, name), phase, (event: any) => {
-            const e = event as any;
-            if (e.triggerName) {
-              e.triggerName = deNamespaceify(this._namespaceId, e.triggerName);
-            }
-            this._zone.run(() => callback(event));
-          });
+      let name = eventName.substr(1);
+      let phase = '';
+      if (name.charAt(0) != '@') {  // transition-specific
+        [name, phase] = parseTriggerCallbackName(name);
+      }
+      return this._engine.listen(this._namespaceId, element, name, phase, event => {
+        this._bufferMicrotaskIntoZone(callback, event);
+      });
     }
     return this.delegate.listen(target, eventName, callback);
   }
 
-  private _queueFlush() {
-    if (!this._flushPromise) {
-      this._zone.runOutsideAngular(() => {
-        this._flushPromise = Promise.resolve(null).then(() => {
-          this._flushPromise = null !;
-          this._engine.flush();
+  private _bufferMicrotaskIntoZone(fn: (e: any) => any, data: any) {
+    if (this._animationCallbacksBuffer.length == 0) {
+      Promise.resolve(null).then(() => {
+        this._zone.run(() => {
+          this._animationCallbacksBuffer.forEach(tuple => {
+            const [fn, data] = tuple;
+            fn(data);
+          });
+          this._animationCallbacksBuffer = [];
         });
-      });
+      })
     }
+
+    this._animationCallbacksBuffer.push([fn, data]);
   }
 }
 
@@ -169,12 +184,4 @@ function parseTriggerCallbackName(triggerName: string) {
   const trigger = triggerName.substring(0, dotIndex);
   const phase = triggerName.substr(dotIndex + 1);
   return [trigger, phase];
-}
-
-function namespaceify(namespaceId: string, value: string): string {
-  return `${namespaceId}#${value}`;
-}
-
-function deNamespaceify(namespaceId: string, value: string): string {
-  return value.replace(namespaceId + '#', '');
 }

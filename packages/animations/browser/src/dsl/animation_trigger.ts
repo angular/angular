@@ -5,22 +5,18 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationAnimateMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationSequenceMetadata, AnimationStateMetadata, AnimationStyleMetadata, AnimationTransitionMetadata, ɵStyleData} from '@angular/animations';
+import {ɵStyleData} from '@angular/animations';
 
-import {copyStyles, normalizeStyles} from '../util';
+import {copyStyles} from '../util';
 
-import {AnimationDslVisitor, visitAnimationNode} from './animation_dsl_visitor';
-import {parseTransitionExpr} from './animation_transition_expr';
+import {SequenceAst, TransitionAst, TriggerAst} from './animation_ast';
 import {AnimationTransitionFactory} from './animation_transition_factory';
-import {AnimationTransitionInstruction, createTransitionInstruction} from './animation_transition_instruction';
-import {validateAnimationSequence} from './animation_validator_visitor';
-
 
 /**
  * @experimental Animation support is experimental.
  */
-export function buildTrigger(name: string, definitions: AnimationMetadata[]): AnimationTrigger {
-  return new AnimationTriggerVisitor().buildTrigger(name, definitions);
+export function buildTrigger(name: string, ast: TriggerAst): AnimationTrigger {
+  return new AnimationTrigger(name, ast);
 }
 
 /**
@@ -28,90 +24,51 @@ export function buildTrigger(name: string, definitions: AnimationMetadata[]): An
 */
 export class AnimationTrigger {
   public transitionFactories: AnimationTransitionFactory[] = [];
+  public fallbackTransition: AnimationTransitionFactory;
   public states: {[stateName: string]: ɵStyleData} = {};
 
-  constructor(
-      public name: string, states: {[stateName: string]: ɵStyleData},
-      private _transitionAsts: AnimationTransitionMetadata[]) {
-    Object.keys(states).forEach(
-        stateName => { this.states[stateName] = copyStyles(states[stateName], false); });
-
-    const errors: string[] = [];
-    _transitionAsts.forEach(ast => {
-      const exprs = parseTransitionExpr(ast.expr, errors);
-      const sequenceErrors = validateAnimationSequence(ast);
-      if (sequenceErrors.length) {
-        errors.push(...sequenceErrors);
-      } else {
-        this.transitionFactories.push(
-            new AnimationTransitionFactory(this.name, ast, exprs, states));
-      }
+  constructor(public name: string, public ast: TriggerAst) {
+    ast.states.forEach(ast => {
+      const obj = this.states[ast.name] = {};
+      ast.style.styles.forEach(styleTuple => {
+        if (typeof styleTuple == 'object') {
+          copyStyles(styleTuple as ɵStyleData, false, obj);
+        }
+      });
     });
 
-    if (errors.length) {
-      const LINE_START = '\n - ';
-      throw new Error(
-          `Animation parsing for the ${name} trigger have failed:${LINE_START}${errors.join(LINE_START)}`);
-    }
+    balanceProperties(this.states, 'true', '1');
+    balanceProperties(this.states, 'false', '0');
+
+    ast.transitions.forEach(ast => {
+      this.transitionFactories.push(new AnimationTransitionFactory(name, ast, this.states));
+    });
+
+    this.fallbackTransition = createFallbackTransition(name, this.states);
   }
 
-  createFallbackInstruction(currentState: any, nextState: any): AnimationTransitionInstruction {
-    const backupStateStyles = this.states['*'] || {};
-    const currentStateStyles = this.states[currentState] || backupStateStyles;
-    const nextStateStyles = this.states[nextState] || backupStateStyles;
-    return createTransitionInstruction(
-        this.name, currentState, nextState, nextState == 'void', currentStateStyles,
-        nextStateStyles, []);
-  }
+  get containsQueries() { return this.ast.queryCount > 0; }
 
-  matchTransition(currentState: any, nextState: any): AnimationTransitionInstruction|null {
-    for (let i = 0; i < this.transitionFactories.length; i++) {
-      let result = this.transitionFactories[i].match(currentState, nextState);
-      if (result) return result;
-    }
-    return null;
+  matchTransition(currentState: any, nextState: any): AnimationTransitionFactory|null {
+    const entry = this.transitionFactories.find(f => f.match(currentState, nextState));
+    return entry || null;
   }
 }
 
-class AnimationTriggerContext {
-  public errors: string[] = [];
-  public states: {[stateName: string]: ɵStyleData} = {};
-  public transitions: AnimationTransitionMetadata[] = [];
+function createFallbackTransition(
+    triggerName: string, states: {[stateName: string]: ɵStyleData}): AnimationTransitionFactory {
+  const matchers = [(fromState: any, toState: any) => true];
+  const animation = new SequenceAst([]);
+  const transition = new TransitionAst(matchers, animation);
+  return new AnimationTransitionFactory(triggerName, transition, states);
 }
 
-class AnimationTriggerVisitor implements AnimationDslVisitor {
-  buildTrigger(name: string, definitions: AnimationMetadata[]): AnimationTrigger {
-    const context = new AnimationTriggerContext();
-    definitions.forEach(def => visitAnimationNode(this, def, context));
-    return new AnimationTrigger(name, context.states, context.transitions);
-  }
-
-  visitState(ast: AnimationStateMetadata, context: any): any {
-    const styles = normalizeStyles(ast.styles.styles);
-    ast.name.split(/\s*,\s*/).forEach(name => { context.states[name] = styles; });
-  }
-
-  visitTransition(ast: AnimationTransitionMetadata, context: any): any {
-    context.transitions.push(ast);
-  }
-
-  visitSequence(ast: AnimationSequenceMetadata, context: any) {
-    // these values are not visited in this AST
-  }
-
-  visitGroup(ast: AnimationGroupMetadata, context: any) {
-    // these values are not visited in this AST
-  }
-
-  visitAnimate(ast: AnimationAnimateMetadata, context: any) {
-    // these values are not visited in this AST
-  }
-
-  visitStyle(ast: AnimationStyleMetadata, context: any) {
-    // these values are not visited in this AST
-  }
-
-  visitKeyframeSequence(ast: AnimationKeyframesSequenceMetadata, context: any) {
-    // these values are not visited in this AST
+function balanceProperties(obj: {[key: string]: any}, key1: string, key2: string) {
+  if (obj.hasOwnProperty(key1)) {
+    if (!obj.hasOwnProperty(key2)) {
+      obj[key2] = obj[key1];
+    }
+  } else if (obj.hasOwnProperty(key2)) {
+    obj[key1] = obj[key2];
   }
 }

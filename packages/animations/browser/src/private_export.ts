@@ -10,7 +10,7 @@ export {Animation as ɵAnimation} from './dsl/animation';
 export {AnimationStyleNormalizer as ɵAnimationStyleNormalizer, NoopAnimationStyleNormalizer as ɵNoopAnimationStyleNormalizer} from './dsl/style_normalization/animation_style_normalizer';
 export {WebAnimationsStyleNormalizer as ɵWebAnimationsStyleNormalizer} from './dsl/style_normalization/web_animations_style_normalizer';
 export {NoopAnimationDriver as ɵNoopAnimationDriver} from './render/animation_driver';
-export {DomAnimationEngine as ɵDomAnimationEngine} from './render/dom_animation_engine';
+export {DomAnimationEngine as ɵDomAnimationEngine} from './render/dom_animation_engine_next';
 export {NoopAnimationEngine as ɵNoopAnimationEngine} from './render/noop_animation_engine';
 export {WebAnimationsDriver as ɵWebAnimationsDriver, supportsWebAnimations as ɵsupportsWebAnimations} from './render/web_animations/web_animations_driver';
 export {WebAnimationsPlayer as ɵWebAnimationsPlayer} from './render/web_animations/web_animations_player';

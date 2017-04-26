@@ -6,3 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 export {AnimationGroupPlayer as ɵAnimationGroupPlayer} from './players/animation_group_player';
+export const ɵPRE_STYLE = '!';
