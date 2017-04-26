@@ -89,5 +89,9 @@ module.exports = {
     }
 
     return attrMap;
+  },
+
+  renderAttributes(attrMap) {
+    return Object.keys(attrMap).map(key => ` ${key}="${attrMap[key].replace(/"/g, '&quot;')}"`).join('');
   }
 };
