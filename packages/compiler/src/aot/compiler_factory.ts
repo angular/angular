@@ -35,7 +35,6 @@ import {StaticSymbolResolver} from './static_symbol_resolver';
 import {AotSummaryResolver} from './summary_resolver';
 
 
-
 /**
  * Creates a new AotCompiler based on options and a host.
  */
@@ -69,16 +68,10 @@ export function createAotCompiler(compilerHost: AotCompilerHost, options: AotCom
       new PipeResolver(staticReflector), summaryResolver, elementSchemaRegistry, normalizer,
       console, symbolCache, staticReflector);
   // TODO(vicb): do not pass options.i18nFormat here
-  const importResolver = {
-    getImportAs: (symbol: StaticSymbol) => symbolResolver.getImportAs(symbol) !,
-    fileNameToModuleName: (fileName: string, containingFilePath: string) =>
-                              compilerHost.fileNameToModuleName(fileName, containingFilePath),
-    getTypeArity: (symbol: StaticSymbol) => symbolResolver.getTypeArity(symbol) !
-  };
   const viewCompiler = new ViewCompiler(config, elementSchemaRegistry);
   const compiler = new AotCompiler(
       config, compilerHost, resolver, tmplParser, new StyleCompiler(urlResolver), viewCompiler,
-      new NgModuleCompiler(), new TypeScriptEmitter(importResolver), summaryResolver,
+      new NgModuleCompiler(), new TypeScriptEmitter(symbolResolver), summaryResolver,
       options.locale || null, options.i18nFormat || null, options.genFilePreamble || null,
       symbolResolver);
   return {compiler, reflector: staticReflector};
