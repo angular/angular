@@ -88,6 +88,11 @@ aio-code.headed-code {
 }
 
 .copy-button {
+  display: inline-block;
+  position: absolute;
+  top: 6px;
+  right: 8px;
+
   color: $lightgray;
   background-color: transparent;
   border: none;
@@ -95,10 +100,10 @@ aio-code.headed-code {
   &:hover {
     color: $mediumgray;
   }
-  
+
   @media (max-width: 480px) {
     top: 0;
-    bottom: 0;
+    right: 0;
   }
 }
 
