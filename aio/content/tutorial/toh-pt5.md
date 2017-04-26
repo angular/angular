@@ -19,7 +19,7 @@ When you’re done, users will be able to navigate the app like this:
 
 
 <figure class='image-display'>
-  <img src='assets/images/guide/toh/nav-diagram.png' alt="View navigations"></img>
+  <img src='content/images/guide/toh/nav-diagram.png' alt="View navigations"></img>
 </figure>
 
 
@@ -967,7 +967,7 @@ After clicking a hero, users should see something like this below the hero list:
 
 
 <figure class='image-display'>
-  <img src='assets/images/guide/toh/mini-hero-detail.png' alt="Mini Hero Detail" height="70"></img>
+  <img src='content/images/guide/toh/mini-hero-detail.png' alt="Mini Hero Detail" height="70"></img>
 </figure>
 
 
@@ -1007,12 +1007,12 @@ You still have to update the component class to support navigation to the
 The component file is big.
 It's difficult to find the component logic amidst the noise of HTML and CSS.
 
-Before making any more changes, migrate the template and styles to their own files. 
+Before making any more changes, migrate the template and styles to their own files.
 
-First, move the template contents from `heroes.component.ts` 
-into a new <code>heroes.component.html</code> file. 
-Don't copy the backticks. As for `heroes.component.ts`, you'll 
-come back to it in a minute. Next, move the 
+First, move the template contents from `heroes.component.ts`
+into a new <code>heroes.component.html</code> file.
+Don't copy the backticks. As for `heroes.component.ts`, you'll
+come back to it in a minute. Next, move the
 styles contents into a new <code>heroes.component.css</code> file.
 
 The two new files should look like this:
@@ -1032,8 +1032,8 @@ The two new files should look like this:
 
 
 
-Now, back in the component metadata for `heroes.component.ts`, 
-delete `template` and `styles`, replacing them with 
+Now, back in the component metadata for `heroes.component.ts`,
+delete `template` and `styles`, replacing them with
 `templateUrl` and `styleUrls` respectively.
 Set their properties to refer to the new files.
 
@@ -1221,7 +1221,7 @@ Look at the app now. The dashboard, heroes, and navigation links are styled.
 
 
 <figure class='image-display'>
-  <img src='assets/images/guide/toh/heroes-dashboard-1.png' alt="View navigations"></img>
+  <img src='content/images/guide/toh/heroes-dashboard-1.png' alt="View navigations"></img>
 </figure>
 
 

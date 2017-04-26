@@ -29,7 +29,7 @@ See the <live-example name="set-document-title"></live-example>.
     </td>
 
     <td>
-      <img src='assets/images/plunker/plunker-switch-to-editor-button.png' width="200px" height="70px" alt="pop out the window" align="right"></img>      <br></br>      <img src='assets/images/plunker/plunker-separate-window-button.png' width="200px" height="47px" alt="pop out the window" align="right"></img>
+      <img src='content/images/plunker/plunker-switch-to-editor-button.png' width="200px" height="70px" alt="pop out the window" align="right"></img>      <br></br>      <img src='content/images/plunker/plunker-separate-window-button.png' width="200px" height="47px" alt="pop out the window" align="right"></img>
     </td>
 
   </tr>
@@ -75,7 +75,7 @@ The [Title](api/platform-browser/index/Title-class) service is a simple class th
 for getting and setting the current HTML document title:
 
 * `getTitle() : string`&mdash;Gets the title of the current HTML document.
-* `setTitle( newTitle : string )`&mdash;Sets the title of the current HTML document. 
+* `setTitle( newTitle : string )`&mdash;Sets the title of the current HTML document.
 
 You can inject the `Title` service into the root `AppComponent` and expose a bindable `setTitle` method that calls it:
 
@@ -89,7 +89,7 @@ You can inject the `Title` service into the root `AppComponent` and expose a bin
 Bind that method to three anchor tags and voilà!
 
 <figure class='image-display'>
-  <img src="assets/images/guide/set-document-title/set-title-anim.gif" alt="Set title"></img>
+  <img src="content/images/guide/set-document-title/set-title-anim.gif" alt="Set title"></img>
 </figure>
 
 
@@ -126,7 +126,7 @@ a location you reserve for configuring the runtime Angular environment.
 That's exactly what you're doing.
 The `Title` service is part of the Angular *browser platform*.
 If you bootstrap your application into a different platform,
-you'll have to provide a different `Title` service that understands 
+you'll have to provide a different `Title` service that understands
 the concept of a "document title" for that specific platform.
 Ideally, the application itself neither knows nor cares about the runtime environment.
 

@@ -102,8 +102,8 @@ because it doesn't render any additional output.
 Take a closer look at the methods in `ad-banner.component.ts`.
 
 `AdBannerComponent` takes an array of `AdItem` objects as input,
-which ultimately comes from `AdService`.  `AdItem` objects specify 
-the type of component to load and any data to bind to the 
+which ultimately comes from `AdService`.  `AdItem` objects specify
+the type of component to load and any data to bind to the
 component.`AdService` returns the actual ads making up the ad campaign.
 
 Passing an array of components to `AdBannerComponent` allows for a
@@ -141,17 +141,17 @@ value to select an `adItem` from the array.
 
 
 
-After `loadComponent()` selects an ad, it uses `ComponentFactoryResolver` 
-to resolve a `ComponentFactory` for each specific component. 
+After `loadComponent()` selects an ad, it uses `ComponentFactoryResolver`
+to resolve a `ComponentFactory` for each specific component.
 The `ComponentFactory` then creates an instance of each component.
 
-Next, you're targeting the `viewContainerRef` that 
-exists on this specific instance of the component. How do you know it's 
-this specific instance? Because it's referring to `adHost` and `adHost` is the 
+Next, you're targeting the `viewContainerRef` that
+exists on this specific instance of the component. How do you know it's
+this specific instance? Because it's referring to `adHost` and `adHost` is the
 directive you set up earlier to tell Angular where to insert dynamic components.
 
-As you may recall, `AdDirective` injects `ViewContainerRef` into its constructor. 
-This is how the directive accesses the element that you want to use to host the dynamic component. 
+As you may recall, `AdDirective` injects `ViewContainerRef` into its constructor.
+This is how the directive accesses the element that you want to use to host the dynamic component.
 
 To add the component to the template, you call `createComponent()` on `ViewContainerRef`.
 
@@ -214,7 +214,7 @@ Here are two sample components and the `AdComponent` interface for reference:
  The final ad banner looks like this:
 
 <figure class='image-display'>
-  <img src="assets/images/guide/dynamic-component-loader/ads.gif" alt="Ads"></img>
+  <img src="content/images/guide/dynamic-component-loader/ads.gif" alt="Ads"></img>
 </figure>
 
 

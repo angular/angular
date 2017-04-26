@@ -7,20 +7,20 @@ Render dynamic forms with FormGroup.
 @description
 
 
-Building handcrafted forms can be costly and time-consuming, 
+Building handcrafted forms can be costly and time-consuming,
 especially if you need a great number of them, they're similar to each other, and they change frequently
 to meet rapidly changing business and regulatory requirements.
 
-It may be more economical to create the forms dynamically, based on 
+It may be more economical to create the forms dynamically, based on
 metadata that describes the business object model.
 
-This cookbook shows you how to use `formGroup` to dynamically 
+This cookbook shows you how to use `formGroup` to dynamically
 render a simple form with different control types and validation.
 It's a primitive start.
 It might evolve to support a much richer variety of questions, more graceful rendering, and superior user experience.
 All such greatness has humble beginnings.
 
-The example in this cookbook is a dynamic form to build an 
+The example in this cookbook is a dynamic form to build an
 online application experience for heroes seeking employment.
 The agency is constantly tinkering with the application process.
 You can create the forms on the fly *without changing the application code*.
@@ -44,8 +44,8 @@ Start by creating an `NgModule` called `AppModule`.
 
 This cookbook uses [reactive forms](guide/reactive-forms).
 
-Reactive forms belongs to a different `NgModule` called `ReactiveFormsModule`, 
-so in order to access any reactive forms directives, you have to import 
+Reactive forms belongs to a different `NgModule` called `ReactiveFormsModule`,
+so in order to access any reactive forms directives, you have to import
 `ReactiveFormsModule` from the `@angular/forms` library.
 
 Bootstrap the `AppModule` in `main.ts`.
@@ -81,12 +81,12 @@ The following `QuestionBase` is a fundamental question class.
 
 
 
-From this base you can derive two new classes in `TextboxQuestion` and `DropdownQuestion` 
+From this base you can derive two new classes in `TextboxQuestion` and `DropdownQuestion`
 that represent textbox and dropdown questions.
-The idea is that the form will be bound to specific question types and render the 
+The idea is that the form will be bound to specific question types and render the
 appropriate controls dynamically.
 
-`TextboxQuestion` supports multiple HTML5 types such as text, email, and url 
+`TextboxQuestion` supports multiple HTML5 types such as text, email, and url
 via the `type` property.
 
 
@@ -106,7 +106,7 @@ via the `type` property.
 
 
 Next is `QuestionControlService`, a simple service for transforming the questions to a `FormGroup`.
-In a nutshell, the form group consumes the metadata from the question model and 
+In a nutshell, the form group consumes the metadata from the question model and
 allows you to specify default values and validation rules.
 
 
@@ -117,7 +117,7 @@ allows you to specify default values and validation rules.
 {@a form-component}
 
 ## Question form components
-Now that you have defined the complete model you are ready 
+Now that you have defined the complete model you are ready
 to create components to represent the dynamic form.
 
 
@@ -139,7 +139,7 @@ to create components to represent the dynamic form.
 
 It presents a list of questions, each bound to a `<df-question>` component element.
 The `<df-question>` tag matches the `DynamicFormQuestionComponent`,
-the component responsible for rendering the details of each _individual_ 
+the component responsible for rendering the details of each _individual_
 question based on values in the data-bound question object.
 
 
@@ -164,8 +164,8 @@ The `ngSwitch` determines which type of question to display.
 In both components  you're relying on Angular's **formGroup** to connect the template HTML to the
 underlying control objects, populated from the question model with display and validation rules.
 
-`formControlName` and `formGroup` are directives defined in 
-`ReactiveFormsModule`. The templates can access these directives 
+`formControlName` and `formGroup` are directives defined in
+`ReactiveFormsModule`. The templates can access these directives
 directly since you imported `ReactiveFormsModule` from `AppModule`.
 {@a questionnaire-data}
 
@@ -176,9 +176,9 @@ directly since you imported `ReactiveFormsModule` from `AppModule`.
  The set of questions you've defined for the job application is returned from the `QuestionService`.
  In a real app you'd retrieve these questions from storage.
 
- The key point is that you control the hero job application questions 
+ The key point is that you control the hero job application questions
  entirely through the objects returned from `QuestionService`.
- Questionnaire maintenance is a simple matter of adding, updating, 
+ Questionnaire maintenance is a simple matter of adding, updating,
  and removing objects from the `questions` array.
 
 
@@ -198,7 +198,7 @@ Finally, display an instance of the form in the `AppComponent` shell.
 {@a dynamic-template}
 
 ## Dynamic Template
-Although in this example you're modelling a job application for heroes, there are 
+Although in this example you're modelling a job application for heroes, there are
 no references to any specific hero question
 outside the objects returned by `QuestionService`.
 
@@ -217,7 +217,7 @@ Saving and retrieving the data is an exercise for another time.
 The final form looks like this:
 
 <figure class='image-display'>
-  <img src="assets/images/guide/dynamic-form/dynamic-form.png" alt="Dynamic-Form"></img>
+  <img src="content/images/guide/dynamic-form/dynamic-form.png" alt="Dynamic-Form"></img>
 </figure>
 
 

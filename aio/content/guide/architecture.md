@@ -27,7 +27,7 @@ You'll learn the details in the pages that follow. For now, focus on the big pic
 
 
 <figure>
-  <img src="assets/images/guide/architecture/overview2.png" alt="overview" style="margin-left:-40px;" width="700"></img>
+  <img src="content/images/guide/architecture/overview2.png" alt="overview" style="margin-left:-40px;" width="700"></img>
 </figure>
 
 
@@ -64,23 +64,23 @@ Learn these building blocks, and you're on your way.
 ## Modules
 
 <figure>
-  <img src="assets/images/guide/architecture/module.png" alt="Component" align="left" style="width:240px; margin-left:-40px;margin-right:10px"></img>
+  <img src="content/images/guide/architecture/module.png" alt="Component" align="left" style="width:240px; margin-left:-40px;margin-right:10px"></img>
 </figure>
 
 
 
 Angular apps are modular and Angular has its own modularity system called _Angular modules_ or _NgModules_.
 
-_Angular modules_ are a big deal. 
+_Angular modules_ are a big deal.
 This page introduces modules; the [Angular modules](guide/ngmodule) page covers them in depth.
 <br class="l-clear-both"><br>
 
-Every Angular app has at least one Angular module class, [the _root module_](guide/appmodule "AppModule: the root module"),  
+Every Angular app has at least one Angular module class, [the _root module_](guide/appmodule "AppModule: the root module"),
 conventionally named `AppModule`.
 
-While the _root module_ may be the only module in a small application, most apps have many more 
+While the _root module_ may be the only module in a small application, most apps have many more
 _feature modules_, each a cohesive block of code dedicated to an application domain,
-a workflow, or a closely related set of capabilities. 
+a workflow, or a closely related set of capabilities.
 
 An Angular module, whether a _root_ or _feature_, is a class with an `@NgModule` decorator.
 
@@ -98,7 +98,7 @@ Learn more</a> about decorators on the web.
 
 
 
-`NgModule` is a decorator function that takes a single metadata object whose properties describe the module. 
+`NgModule` is a decorator function that takes a single metadata object whose properties describe the module.
 The most important properties are:
 * `declarations` - the _view classes_ that belong to this module.
 Angular has three kinds of view classes: [components](guide/architecture#components), [directives](guide/architecture#directives), and [pipes](guide/pipes).
@@ -110,7 +110,7 @@ Angular has three kinds of view classes: [components](guide/architecture#compone
 * `providers` - creators of [services](guide/architecture#services) that this module contributes to
 the global collection of services; they become accessible in all parts of the app.
 
-* `bootstrap` - the main application view, called the _root component_, 
+* `bootstrap` - the main application view, called the _root component_,
 that hosts all other app views. Only the _root module_ should set this `bootstrap` property.
 
 Here's a simple root module:
@@ -125,15 +125,15 @@ Here's a simple root module:
 
 
 
-The `export` of `AppComponent` is just to show how to export; it isn't actually necessary in this example. A root module has no reason to _export_ anything because other components don't need to _import_ the root module. 
+The `export` of `AppComponent` is just to show how to export; it isn't actually necessary in this example. A root module has no reason to _export_ anything because other components don't need to _import_ the root module.
 
 </div>
 
 
 
-Launch an application by _bootstrapping_ its root module. 
+Launch an application by _bootstrapping_ its root module.
 During development you're likely to bootstrap the `AppModule` in a `main.ts` file like this one.
-  
+
 
 <code-example path="architecture/src/main.ts" title="src/main.ts" linenums="false">
 
@@ -149,7 +149,7 @@ JavaScript also has its own module system for managing collections of JavaScript
 It's completely different and unrelated to the Angular module system.
 
 In JavaScript each _file_ is a module and all objects defined in the file belong to that module.
-The module declares some objects to be public by marking them with the `export` key word. 
+The module declares some objects to be public by marking them with the `export` key word.
 Other JavaScript modules use *import statements* to access public objects from other modules.
 
 
@@ -182,12 +182,12 @@ These are two different and _complementary_ module systems. Use them both to wri
 
 
 <figure>
-  <img src="assets/images/guide/architecture/library-module.png" alt="Component" align="left" style="width:240px; margin-left:-40px;margin-right:10px"></img>
+  <img src="content/images/guide/architecture/library-module.png" alt="Component" align="left" style="width:240px; margin-left:-40px;margin-right:10px"></img>
 </figure>
 
 
 
-Angular ships as a collection of JavaScript modules. You can think of them as library modules. 
+Angular ships as a collection of JavaScript modules. You can think of them as library modules.
 
 Each Angular library name begins with the `@angular` prefix.
 
@@ -244,7 +244,7 @@ Learn more from the [Angular modules](guide/ngmodule) page.
 
 
 <figure>
-  <img src="assets/images/guide/architecture/hero-component.png" alt="Component" align="left" style="width:200px; margin-left:-40px;margin-right:10px"></img>
+  <img src="content/images/guide/architecture/hero-component.png" alt="Component" align="left" style="width:200px; margin-left:-40px;margin-right:10px"></img>
 </figure>
 
 
@@ -284,7 +284,7 @@ Your app can take action at each moment in this lifecycle through optional [life
 ## Templates
 
 <figure>
-  <img src="assets/images/guide/architecture/template.png" alt="Template" align="left" style="width:200px; margin-left:-40px;margin-right:10px"></img>
+  <img src="content/images/guide/architecture/template.png" alt="Template" align="left" style="width:200px; margin-left:-40px;margin-right:10px"></img>
 </figure>
 
 
@@ -314,7 +314,7 @@ The `HeroDetailComponent` is a **child** of the `HeroListComponent`.
 
 
 <figure>
-  <img src="assets/images/guide/architecture/component-tree.png" alt="Metadata" align="left" style="width:300px; margin-left:-40px;margin-right:10px"></img>
+  <img src="content/images/guide/architecture/component-tree.png" alt="Metadata" align="left" style="width:300px; margin-left:-40px;margin-right:10px"></img>
 </figure>
 
 
@@ -330,7 +330,7 @@ Notice how `<hero-detail>` rests comfortably among native HTML elements. Custom 
 ## Metadata
 
 <figure>
-  <img src="assets/images/guide/architecture/metadata.png" alt="Metadata" align="left" style="width:150px; margin-left:-40px;margin-right:10px"></img>
+  <img src="content/images/guide/architecture/metadata.png" alt="Metadata" align="left" style="width:150px; margin-left:-40px;margin-right:10px"></img>
 </figure>
 
 
@@ -375,11 +375,11 @@ Angular inserts an instance of the `HeroListComponent` view between those tags.
 
 * `providers`: array of **dependency injection providers** for services that the component requires.
 This is one way to tell Angular that the component's constructor requires a `HeroService`
-so it can get the list of heroes to display. 
+so it can get the list of heroes to display.
 
 
 <figure>
-  <img src="assets/images/guide/architecture/template-metadata-component.png" alt="Metadata" align="left" style="height:200px; margin-left:-40px;margin-right:10px"></img>
+  <img src="content/images/guide/architecture/template-metadata-component.png" alt="Metadata" align="left" style="height:200px; margin-left:-40px;margin-right:10px"></img>
 </figure>
 
 
@@ -406,7 +406,7 @@ into actions and value updates. Writing such push/pull logic by hand is tedious,
 read as any experienced jQuery programmer can attest.
 
 <figure>
-  <img src="assets/images/guide/architecture/databinding.png" alt="Data Binding" style="width:220px; float:left; margin-left:-40px;margin-right:20px"></img>
+  <img src="content/images/guide/architecture/databinding.png" alt="Data Binding" style="width:220px; float:left; margin-left:-40px;margin-right:20px"></img>
 </figure>
 
 
@@ -454,7 +454,7 @@ from the root of the application component tree through all child components.
 
 
 <figure>
-  <img src="assets/images/guide/architecture/component-databinding.png" alt="Data Binding" style="float:left; width:300px; margin-left:-40px;margin-right:10px"></img>
+  <img src="content/images/guide/architecture/component-databinding.png" alt="Data Binding" style="float:left; width:300px; margin-left:-40px;margin-right:10px"></img>
 </figure>
 
 
@@ -463,7 +463,7 @@ Data binding plays an important role in communication
 between a template and its component.<br class="l-clear-both">
 
 <figure>
-  <img src="assets/images/guide/architecture/parent-child-binding.png" alt="Parent/Child binding" style="float:left; width:300px; margin-left:-40px;margin-right:10px"></img>
+  <img src="content/images/guide/architecture/parent-child-binding.png" alt="Parent/Child binding" style="float:left; width:300px; margin-left:-40px;margin-right:10px"></img>
 </figure>
 
 
@@ -478,7 +478,7 @@ Data binding is also important for communication between parent and child compon
 ## Directives
 
 <figure>
-  <img src="assets/images/guide/architecture/directive.png" alt="Parent child" style="float:left; width:150px; margin-left:-40px;margin-right:10px"></img>
+  <img src="content/images/guide/architecture/directive.png" alt="Parent child" style="float:left; width:150px; margin-left:-40px;margin-right:10px"></img>
 </figure>
 
 
@@ -556,7 +556,7 @@ Of course, you can also write your own directives. Components such as
 ## Services
 
 <figure>
-  <img src="assets/images/guide/architecture/service.png" alt="Service" style="float:left; margin-left:-40px;margin-right:10px"></img>
+  <img src="content/images/guide/architecture/service.png" alt="Service" style="float:left; margin-left:-40px;margin-right:10px"></img>
 </figure>
 
 
@@ -624,7 +624,7 @@ application logic into services and make those services available to components 
 ## Dependency injection
 
 <figure>
-  <img src="assets/images/guide/architecture/dependency-injection.png" alt="Service" style="float:left; width:200px; margin-left:-40px;margin-right:10px"></img>
+  <img src="content/images/guide/architecture/dependency-injection.png" alt="Service" style="float:left; width:200px; margin-left:-40px;margin-right:10px"></img>
 </figure>
 
 
@@ -656,7 +656,7 @@ This is *dependency injection*.
 The process of `HeroService` injection looks a bit like this:
 
 <figure>
-  <img src="assets/images/guide/architecture/injector-injects.png" alt="Service"></img>
+  <img src="content/images/guide/architecture/injector-injects.png" alt="Service"></img>
 </figure>
 
 

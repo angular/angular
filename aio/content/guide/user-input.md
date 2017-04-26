@@ -86,7 +86,7 @@ In this case, `target` refers to the [`<input>` element](https://developer.mozil
 After each call, the `onKey()` method appends the contents of the input box value to the list
 in the component's `values` property, followed by a  separator character (|).
 The [interpolation](guide/template-syntax#interpolation)
-displays the accumulating input box changes from the `values` property. 
+displays the accumulating input box changes from the `values` property.
 
 Suppose the user enters the letters "abc", and then backspaces to remove them one by one.
 Here's what the UI displays:
@@ -98,7 +98,7 @@ Here's what the UI displays:
 
 
 <figure class='image-display'>
-  <img src='assets/images/guide/user-input/keyup1-anim.gif' alt="key up 1"></img>
+  <img src='content/images/guide/user-input/keyup1-anim.gif' alt="key up 1"></img>
 </figure>
 
 
@@ -127,7 +127,7 @@ for `event.target.value` in which case the same user input would produce:
 ### Type the _$event_
 
 The example above casts the `$event` as an `any` type.
-That simplifies the code at a cost. 
+That simplifies the code at a cost.
 There is no type information
 that could reveal properties of the event object and prevent silly mistakes.
 
@@ -139,7 +139,7 @@ The following example rewrites the method with types:
 
 
 
-The `$event` is now a specific `KeyboardEvent`. 
+The `$event` is now a specific `KeyboardEvent`.
 Not all elements have a `value` property so it casts `target` to an input element.
 The `OnKey` method more clearly expresses what it expects from the template and how it interprets the event.
 
@@ -147,7 +147,7 @@ The `OnKey` method more clearly expresses what it expects from the template and 
 Typing the event object reveals a significant objection to passing the entire DOM event into the method:
 the component has too much awareness of the template details.
 It can't extract information without knowing more than it should about the HTML implementation.
-That breaks the separation of concerns between the template (_what the user sees_) 
+That breaks the separation of concerns between the template (_what the user sees_)
 and the component (_how the application processes user data_).
 
 The next section shows how to use template reference variables to address this problem.
@@ -181,7 +181,7 @@ Type something in the input box, and watch the display update with each keystrok
 
 
 <figure class='image-display'>
-  <img src='assets/images/guide/user-input/keyup-loop-back-anim.gif' alt="loop back"></img>
+  <img src='content/images/guide/user-input/keyup-loop-back-anim.gif' alt="loop back"></img>
 </figure>
 
 
@@ -195,8 +195,8 @@ Type something in the input box, and watch the display update with each keystrok
 Angular updates the bindings (and therefore the screen)
 only if the app does something in response to asynchronous events, such as keystrokes.
 This example code binds the `keyup` event
-to the number 0, the shortest template statement possible. 
-While the statement does nothing useful, 
+to the number 0, the shortest template statement possible.
+While the statement does nothing useful,
 it satisfies Angular's requirement so that Angular will update the screen.
 
 </div>
@@ -223,7 +223,7 @@ The `(keyup)` event handler hears *every keystroke*.
 Sometimes only the _Enter_ key matters, because it signals that the user has finished typing.
 One way to reduce the noise would be to examine every `$event.keyCode` and take action only when the key is _Enter_.
 
-There's an easier way: bind to Angular's `keyup.enter` pseudo-event. 
+There's an easier way: bind to Angular's `keyup.enter` pseudo-event.
 Then Angular calls the event handler only when the user presses _Enter_.
 
 <code-example path="user-input/src/app/keyup.components.ts" region="key-up-component-3" title="src/app/keyup.components.ts (v3)" linenums="false">
@@ -235,7 +235,7 @@ Then Angular calls the event handler only when the user presses _Enter_.
 Here's how it works.
 
 <figure class='image-display'>
-  <img src='assets/images/guide/user-input/keyup3-anim.gif' alt="key up 3"></img>
+  <img src='content/images/guide/user-input/keyup3-anim.gif' alt="key up 3"></img>
 </figure>
 
 
@@ -269,7 +269,7 @@ clicking **Add**.
 
 
 <figure class='image-display'>
-  <img src='assets/images/guide/user-input/little-tour-anim.gif' alt="Little Tour of Heroes"></img>
+  <img src='content/images/guide/user-input/little-tour-anim.gif' alt="Little Tour of Heroes"></img>
 </figure>
 
 

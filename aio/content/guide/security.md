@@ -85,13 +85,13 @@ attacker-controlled data enters the DOM, expect security vulnerabilities.
 ### Angular’s cross-site scripting security model
 
 To systematically block XSS bugs, Angular treats all values as untrusted by default. When a value
-is inserted into the DOM from a template, via property, attribute, style, class binding, or interpolation, 
+is inserted into the DOM from a template, via property, attribute, style, class binding, or interpolation,
 Angular sanitizes and escapes untrusted values.
 
 _Angular templates are the same as executable code_: HTML, attributes, and binding expressions
 (but not the values bound) in templates are trusted to be safe. This means that applications must
 prevent values that an attacker can control from ever making it into the source code of a
-template. Never generate template source code by concatenating user input and templates. 
+template. Never generate template source code by concatenating user input and templates.
 To prevent these vulnerabilities, use
 the [offline template compiler](guide/security#offline-template-compiler), also known as _template injection_.
 
@@ -143,7 +143,7 @@ tag but keeps safe content such as the text content of the `<script>` tag and th
 
 
 <figure class='image-display'>
-  <img src='assets/images/guide/security/binding-inner-html.png' alt='A screenshot showing interpolated and bound HTML values'></img>
+  <img src='content/images/guide/security/binding-inner-html.png' alt='A screenshot showing interpolated and bound HTML values'></img>
 </figure>
 
 
@@ -159,7 +159,7 @@ templates where possible.
 
 Content Security Policy (CSP) is a defense-in-depth
 technique to prevent XSS. To enable CSP, configure your web server to return an appropriate
-`Content-Security-Policy` HTTP header. Read more about content security policy at 
+`Content-Security-Policy` HTTP header. Read more about content security policy at
 [An Introduction to Content Security Policy](http://www.html5rocks.com/en/tutorials/security/content-security-policy/)
 on the HTML5Rocks website.
 
@@ -172,15 +172,15 @@ on the HTML5Rocks website.
 The offline template compiler prevents a whole class of vulnerabilities called template injection,
 and greatly improves application performance. Use the offline template compiler in production
 deployments; don't dynamically generate templates. Angular trusts template code, so generating
-templates, in particular templates containing user data, circumvents Angular's built-in protections. 
-For information about dynamically constructing forms in a safe way, see the 
+templates, in particular templates containing user data, circumvents Angular's built-in protections.
+For information about dynamically constructing forms in a safe way, see the
 [Dynamic Forms](cookbook/dynamic-form) cookbook page.
 
 ### Server-side XSS protection
 
 HTML constructed on the server is vulnerable to injection attacks. Injecting template code into an
 Angular application is the same as injecting executable code into the
-application: it gives the attacker full control over the application. To prevent this, 
+application: it gives the attacker full control over the application. To prevent this,
 use a templating language that automatically escapes values to prevent XSS vulnerabilities on
 the server. Don't generate Angular templates on the server side using a templating language; doing this
 carries a high risk of introducing template-injection vulnerabilities.
@@ -194,10 +194,10 @@ carries a high risk of introducing template-injection vulnerabilities.
 
 
 Sometimes applications genuinely need to include executable code, display an `<iframe>` from some
-URL, or construct potentially dangerous URLs. To prevent automatic sanitization in any of these 
-situations, you can tell Angular that you inspected a value, checked how it was generated, and made 
-sure it will always be secure. But *be careful*. If you trust a value that might be malicious, you 
-are introducing a security vulnerability into your application. If in doubt, find a professional 
+URL, or construct potentially dangerous URLs. To prevent automatic sanitization in any of these
+situations, you can tell Angular that you inspected a value, checked how it was generated, and made
+sure it will always be secure. But *be careful*. If you trust a value that might be malicious, you
+are introducing a security vulnerability into your application. If in doubt, find a professional
 security reviewer.
 
 To mark a value as trusted, inject `DomSanitizer` and call one of the
@@ -232,7 +232,7 @@ this, mark the URL value as a trusted URL using the `bypassSecurityTrustUrl` cal
 
 
 <figure class='image-display'>
-  <img src='assets/images/guide/security/bypass-security-component.png' alt='A screenshot showing an alert box created from a trusted URL'></img>
+  <img src='content/images/guide/security/bypass-security-component.png' alt='A screenshot showing an alert box created from a trusted URL'></img>
 </figure>
 
 
@@ -240,7 +240,7 @@ this, mark the URL value as a trusted URL using the `bypassSecurityTrustUrl` cal
 If you need to convert user input into a trusted value, use a
 controller method. The following template allows users to enter a YouTube video ID and load the
 corresponding video in an `<iframe>`. The `<iframe src>` attribute is a resource URL security
-context, because an untrusted source can, for example, smuggle in file downloads that unsuspecting users 
+context, because an untrusted source can, for example, smuggle in file downloads that unsuspecting users
 could execute. So call a method on the controller to construct a trusted video URL, which causes
 Angular to allow binding into `<iframe src>`:
 
@@ -265,7 +265,7 @@ Angular to allow binding into `<iframe src>`:
 
 
 Angular has built-in support to help prevent two common HTTP vulnerabilities, cross-site request
-forgery (CSRF or XSRF) and cross-site script inclusion (XSSI). Both of these must be mitigated primarily 
+forgery (CSRF or XSRF) and cross-site script inclusion (XSSI). Both of these must be mitigated primarily
 on the server side, but Angular provides helpers to make integration on the client side easier.
 
 
@@ -276,8 +276,8 @@ on the server side, but Angular provides helpers to make integration on the clie
 
 
 In a cross-site request forgery (CSRF or XSRF), an attacker tricks the user into visiting
-a different web page (such as `evil.com`) with malignant code that secretly sends a malicious request 
-to the application's web server (such as `example-bank.com`). 
+a different web page (such as `evil.com`) with malignant code that secretly sends a malicious request
+to the application's web server (such as `example-bank.com`).
 
 Assume the user is logged into the application at `example-bank.com`.
 The user opens an email and clicks a link to `evil.com`, which opens in a new tab.
@@ -286,11 +286,11 @@ The `evil.com` page immediately sends a malicious request to `example-bank.com`.
 Perhaps it's a request to transfer money from the user's account to the attacker's account.
 The browser automatically sends the `example-bank.com` cookies (including the authentication cookie) with this request.
 
-If the `example-bank.com` server lacks XSRF protection, it can't tell the difference between a legitimate 
+If the `example-bank.com` server lacks XSRF protection, it can't tell the difference between a legitimate
 request from the application and the forged request from `evil.com`.
 
 To prevent this, the application must ensure that a user request originates from the real
-application, not from a different site. 
+application, not from a different site.
 The server and client must cooperate to thwart this attack.
 
 In a common anti-XSRF technique, the application server sends a randomly
@@ -298,14 +298,14 @@ generated authentication token in a cookie.
 The client code reads the cookie and adds a custom request header with the token in all subsequent requests.
 The server compares the received cookie value to the request header value and rejects the request if the values are missing or don't match.
 
-This technique is effective because all browsers implement the _same origin policy_. Only code from the website 
+This technique is effective because all browsers implement the _same origin policy_. Only code from the website
 on which cookies are set can read the cookies from that site and set custom headers on requests to that site.
 That means only your application can read this cookie token and set the custom header. The malicious code on `evil.com` can't.
 
-Angular's `http` has built-in support for the client-side half of this technique in its `XSRFStrategy`. 
+Angular's `http` has built-in support for the client-side half of this technique in its `XSRFStrategy`.
 The default `CookieXSRFStrategy` is turned on automatically.
-Before sending an HTTP request, the `CookieXSRFStrategy` looks for a cookie called `XSRF-TOKEN` and 
-sets a header named `X-XSRF-TOKEN` with the value of that cookie. 
+Before sending an HTTP request, the `CookieXSRFStrategy` looks for a cookie called `XSRF-TOKEN` and
+sets a header named `X-XSRF-TOKEN` with the value of that cookie.
 
 The server must do its part by setting the
 initial `XSRF-TOKEN` cookie and confirming that each subsequent state-modifying request
@@ -336,10 +336,10 @@ Or you can implement and provide an entirely custom `XSRFStrategy`:
 For information about CSRF at the Open Web Application Security Project (OWASP), see
 <a href="https://www.owasp.org/index.php/Cross-Site_Request_Forgery_%28CSRF%29">Cross-Site Request Forgery (CSRF)</a> and
 <a href="https://www.owasp.org/index.php/CSRF_Prevention_Cheat_Sheet">Cross-Site Request Forgery (CSRF) Prevention Cheat Sheet</a>.
-The Stanford University paper 
+The Stanford University paper
 <a href="https://seclab.stanford.edu/websec/csrf/csrf.pdf">Robust Defenses for Cross-Site Request Forgery</a> is a rich source of detail.
 
-See also Dave Smith's easy-to-understand 
+See also Dave Smith's easy-to-understand
 <a href="https://www.youtube.com/watch?v=9inczw6qtpY" title="Cross Site Request Funkery Securing Your Angular Apps From Evil Doers">talk on XSRF at AngularConnect 2016</a>.
 
 

@@ -178,7 +178,7 @@ The app uses the Angular <code>Http</code> client to communicate via **XMLHttpRe
 It works like this:
 
 <figure class='image-display'>
-  <img src='assets/images/guide/http/http-toh.gif' alt="ToH mini app" width="250"></img>
+  <img src='content/images/guide/http/http-toh.gif' alt="ToH mini app" width="250"></img>
 </figure>
 
 
@@ -333,13 +333,13 @@ and `map()` is one of the RxJS *operators*.
 
 ## RxJS library
 <a href="http://reactivex.io/rxjs" title="RxJS Reactive Extensions">RxJS</a>
-is a third party library, endorsed by Angular, that implements the 
+is a third party library, endorsed by Angular, that implements the
 <a href="https://www.youtube.com/watch?v=VLGCCpOWFFw" title="Video: Rob Wormald on Observables"><b>asynchronous Observable</b></a> pattern.
 
 All of the Developer Guide samples have installed the RxJS npm package
 because Observables are used widely in Angular applications.
 _This_ app needs it when working with the HTTP client.
-But you must take a critical extra step to make RxJS Observables usable: 
+But you must take a critical extra step to make RxJS Observables usable:
 _you must import the RxJS operators individually_.
 
 ### Enable RxJS operators
@@ -646,8 +646,8 @@ highlighting just the parts that are different.
 You can follow the Promise `then(this.extractData).catch(this.handleError)` pattern as in
 this example.
 
-Alternatively, you can call `toPromise(success, fail)`. The Observable's `map` callback moves to the 
-first *success* parameter and its `catch` callback to the second *fail* parameter 
+Alternatively, you can call `toPromise(success, fail)`. The Observable's `map` callback moves to the
+first *success* parameter and its `catch` callback to the second *fail* parameter
 in this pattern: `.toPromise(this.extractData, this.handleError)`.
 
 The `errorHandler` forwards an error message as a failed `Promise` instead of a failed `Observable`.
@@ -680,15 +680,15 @@ Both methods take the same functional arguments.
 
 The less obvious but critical difference is that these two methods return very different results.
 
-The Promise-based `then()` returns another Promise. You can keep chaining 
+The Promise-based `then()` returns another Promise. You can keep chaining
 more `then()` and `catch()` calls, getting a new promise each time.
 
 The `subscribe()` method returns a `Subscription`. A `Subscription` is not another `Observable`.
 It's the end of the line for Observables. You can't call `map()` on it or call `subscribe()` again.
 The `Subscription` object has a different purpose, signified by its primary method, `unsubscribe`.
 
-To understand the implications and consequences of subscriptions, 
-watch [Ben Lesh's talk on Observables](https://www.youtube.com/watch?v=3LKMwkuK0ZE) 
+To understand the implications and consequences of subscriptions,
+watch [Ben Lesh's talk on Observables](https://www.youtube.com/watch?v=3LKMwkuK0ZE)
 or his video course on [egghead.io](https://egghead.io/lessons/rxjs-rxjs-observables-vs-promises).
 
 
@@ -746,7 +746,7 @@ types in a text box:
 
 
 <figure class='image-display'>
-  <img src='assets/images/guide/http/wiki-1.gif' alt="Wikipedia search app (v.1)" width="250"></img>
+  <img src='content/images/guide/http/wiki-1.gif' alt="Wikipedia search app (v.1)" width="250"></img>
 </figure>
 
 
@@ -831,7 +831,7 @@ turn your attention to the component (template and class) that takes user input 
 The template presents an `<input>` element *search box* to gather search terms from the user,
 and calls a `search(term)` method after each `keyup` event.
 
-The component's `search(term)` method delegates to the `WikipediaService`, which returns an 
+The component's `search(term)` method delegates to the `WikipediaService`, which returns an
 Observable array of string results (`Observable<string[]>`).
 Instead of subscribing to the Observable inside the component, as in the `HeroListComponent`,
 the app forwards the Observable result to the template (via `items`) where the `async` pipe
@@ -865,7 +865,7 @@ It should only make requests when the user *stops typing*.
 Here's how it will work after refactoring:
 
 <figure class='image-display'>
-  <img src='assets/images/guide/http/wiki-2.gif' alt="Wikipedia search app (v.2)" width="250"></img>
+  <img src='content/images/guide/http/wiki-2.gif' alt="Wikipedia search app (v.2)" width="250"></img>
 </figure>
 
 

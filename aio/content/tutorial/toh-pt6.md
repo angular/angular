@@ -700,7 +700,7 @@ If you enter characters that match any existing hero names, you'll see something
 
 
 <figure class='image-display'>
-  <img src='assets/images/guide/toh/toh-hero-search.png' alt="Hero Search Component"></img>
+  <img src='content/images/guide/toh/toh-hero-search.png' alt="Hero Search Component"></img>
 </figure>
 
 

@@ -171,7 +171,7 @@ Once all the dependencies are in place, the `AppComponent` displays the user inf
 
 
 <figure class='image-display'>
-  <img src="assets/images/guide/dependency-injection/logged-in-user.png" alt="Logged In User"></img>
+  <img src="content/images/guide/dependency-injection/logged-in-user.png" alt="Logged In User"></img>
 </figure>
 
 
@@ -337,7 +337,7 @@ Find this example in <live-example name="dependency-injection-in-action">live co
 and confirm that the three `HeroBioComponent` instances have their own cached hero data.
 
 <figure class='image-display'>
-  <img src="assets/images/guide/dependency-injection/hero-bios.png" alt="Bios"></img>
+  <img src="content/images/guide/dependency-injection/hero-bios.png" alt="Bios"></img>
 </figure>
 
 
@@ -403,7 +403,7 @@ placing it in the `<ng-content>` slot of the `HeroBioComponent` template:
 It looks like this, with the hero's telephone number from `HeroContactComponent` projected above the hero description:
 
 <figure class='image-display'>
-  <img src="assets/images/guide/dependency-injection/hero-bio-and-content.png" alt="bio and contact"></img>
+  <img src="content/images/guide/dependency-injection/hero-bio-and-content.png" alt="bio and contact"></img>
 </figure>
 
 
@@ -440,7 +440,7 @@ Thanks to `@Optional()`, Angular sets the `loggerService` to null and the rest o
 Here's the `HeroBiosAndContactsComponent` in action.
 
 <figure class='image-display'>
-  <img src="assets/images/guide/dependency-injection/hero-bios-and-contacts.png" alt="Bios with contact into"></img>
+  <img src="content/images/guide/dependency-injection/hero-bios-and-contacts.png" alt="Bios with contact into"></img>
 </figure>
 
 
@@ -450,7 +450,7 @@ until it finds the logger at the `AppComponent` level. The logger logic kicks in
 with the gratuitous "!!!", indicating that the logger was found.
 
 <figure class='image-display'>
-  <img src="assets/images/guide/dependency-injection/hero-bio-contact-no-host.png" alt="Without @Host"></img>
+  <img src="content/images/guide/dependency-injection/hero-bio-contact-no-host.png" alt="Without @Host"></img>
 </figure>
 
 
@@ -495,7 +495,7 @@ first without a value (yielding the default color) and then with an assigned col
 The following image shows the effect of mousing over the `<hero-bios-and-contacts>` tag.
 
 <figure class='image-display'>
-  <img src="assets/images/guide/dependency-injection/highlight.png" alt="Highlighted bios"></img>
+  <img src="content/images/guide/dependency-injection/highlight.png" alt="Highlighted bios"></img>
 </figure>
 
 {@a providers}
@@ -570,10 +570,10 @@ But not every dependency can be satisfied by creating a new instance of a class.
 You need other ways to deliver dependency values and that means you need other ways to specify a provider.
 
 The `HeroOfTheMonthComponent` example demonstrates many of the alternatives and why you need them.
-It's visually simple: a few properties and the logs produced by a logger. 
+It's visually simple: a few properties and the logs produced by a logger.
 
 <figure class='image-display'>
-  <img src="assets/images/guide/dependency-injection/hero-of-month.png" alt="Hero of the month" width="300px"></img>
+  <img src="content/images/guide/dependency-injection/hero-of-month.png" alt="Hero of the month" width="300px"></img>
 </figure>
 
 
@@ -595,7 +595,7 @@ The code behind it gives you plenty to think about.
 The `provide` object literal takes a *token* and a *definition object*.
 The *token* is usually a class but [it doesn't have to be](guide/dependency-injection-in-action#tokens).
 
-The *definition* object has a required property that specifies how to create the singleton instance of the service. In this case, the property. 
+The *definition* object has a required property that specifies how to create the singleton instance of the service. In this case, the property.
 
 
 
@@ -728,7 +728,7 @@ Now put it to use in a simplified version of the `HeroOfTheMonthComponent`.
 The `HeroOfTheMonthComponent` constructor's `logger` parameter is typed as `MinimalLogger` so only the `logs` and `logInfo` members are visible in a TypeScript-aware editor:
 
 <figure class='image-display'>
-  <img src="assets/images/guide/dependency-injection/minimal-logger-intellisense.png" alt="MinimalLogger restricted API"></img>
+  <img src="content/images/guide/dependency-injection/minimal-logger-intellisense.png" alt="MinimalLogger restricted API"></img>
 </figure>
 
 
@@ -743,7 +743,7 @@ Behind the scenes, Angular actually sets the `logger` parameter to the full serv
 The following image, which displays the logging date, confirms the point:
 
 <figure class='image-display'>
-  <img src="assets/images/guide/dependency-injection/date-logger-entry.png" alt="DateLoggerService entry" width="300px"></img>
+  <img src="content/images/guide/dependency-injection/date-logger-entry.png" alt="DateLoggerService entry" width="300px"></img>
 </figure>
 
 
@@ -849,7 +849,7 @@ But *no class* in this application inherits from `MinimalLogger`.
 
 The `LoggerService` and the `DateLoggerService` _could_ have inherited from `MinimalLogger`.
 They could have _implemented_ it instead in the manner of an interface.
-But they did neither. 
+But they did neither.
 The `MinimalLogger` is used exclusively as a dependency injection token.
 
 When you use a class this way, it's called a ***class-interface***.
@@ -941,7 +941,7 @@ to display a *sorted* list of heroes.
 
 
 <figure class='image-display'>
-  <img src="assets/images/guide/dependency-injection/sorted-heroes.png" alt="Sorted Heroes"></img>
+  <img src="content/images/guide/dependency-injection/sorted-heroes.png" alt="Sorted Heroes"></img>
 </figure>
 
 
@@ -1003,8 +1003,8 @@ These complications argue for *avoiding component inheritance*.
 ## Find a parent component by injection
 
 Application components often need to share information.
-More loosely coupled techniques such as data binding and service sharing 
-are preferable. But sometimes it makes sense for one component 
+More loosely coupled techniques such as data binding and service sharing
+are preferable. But sometimes it makes sense for one component
 to have a direct reference to another component
 perhaps to access values or call methods on that component.
 
@@ -1013,7 +1013,7 @@ Although an Angular application is a tree of components,
 there is no public API for inspecting and traversing that tree.
 
 There is an API for acquiring a child reference.
-Check out `Query`, `QueryList`, `ViewChildren`, and `ContentChildren` 
+Check out `Query`, `QueryList`, `ViewChildren`, and `ContentChildren`
 in the [API Reference](api/).
 
 There is no public API for acquiring a parent reference.
@@ -1050,7 +1050,7 @@ after injecting an `AlexComponent` into her constructor:
 
 
 
-Notice that even though the [@Optional](guide/dependency-injection-in-action#optional) qualifier 
+Notice that even though the [@Optional](guide/dependency-injection-in-action#optional) qualifier
 is there for safety,
 the <live-example name="dependency-injection-in-action"></live-example>
 confirms that the `alex` parameter is set.
@@ -1078,8 +1078,8 @@ whose API your `NewsComponent` understands.
 
 
 Looking for components that implement an interface would be better.
-That's not possible because TypeScript interfaces disappear 
-from the transpiled JavaScript, which doesn't support interfaces. 
+That's not possible because TypeScript interfaces disappear
+from the transpiled JavaScript, which doesn't support interfaces.
 There's no artifact to look for.
 
 </div>
@@ -1087,7 +1087,7 @@ There's no artifact to look for.
 
 
 This isn't necessarily good design.
-This example is examining *whether a component can 
+This example is examining *whether a component can
 inject its parent via the parent's base class*.
 
 The sample's `CraigComponent` explores this question. [Looking back](guide/dependency-injection-in-action#alex),
@@ -1126,7 +1126,7 @@ The parent must cooperate by providing an *alias* to itself in the name of a *cl
 Recall that Angular always adds a component instance to its own injector;
 that's why you could inject *Alex* into *Cathy* [earlier](guide/dependency-injection-in-action#known-parent).
 
-Write an [*alias provider*](guide/dependency-injection-in-action#useexisting)&mdash;a `provide` object literal with a `useExisting` 
+Write an [*alias provider*](guide/dependency-injection-in-action#useexisting)&mdash;a `provide` object literal with a `useExisting`
 definition&mdash;that creates an *alternative* way to inject the same component instance
 and add that provider to the `providers` array of the `@Component` metadata for the `AlexComponent`:
 
@@ -1142,7 +1142,7 @@ and add that provider to the `providers` array of the `@Component` metadata for 
 [Parent](guide/dependency-injection-in-action#parent-token) is the provider's *class-interface* token.
 The [*forwardRef*](guide/dependency-injection-in-action#forwardref) breaks the circular reference you just created by having the `AlexComponent` refer to itself.
 
-*Carol*, the third of *Alex*'s child components, injects the parent into its `parent` parameter, 
+*Carol*, the third of *Alex*'s child components, injects the parent into its `parent` parameter,
 the same way you've done it before:
 
 <code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="carol-class" title="parent-finder.component.ts (CarolComponent class)" linenums="false">
@@ -1154,7 +1154,7 @@ the same way you've done it before:
 Here's *Alex* and family in action:
 
 <figure class='image-display'>
-  <img src="assets/images/guide/dependency-injection/alex.png" alt="Alex in action"></img>
+  <img src="content/images/guide/dependency-injection/alex.png" alt="Alex in action"></img>
 </figure>
 
 
@@ -1215,7 +1215,7 @@ Here's *Alice*, *Barry* and family in action:
 
 
 <figure class='image-display'>
-  <img src="assets/images/guide/dependency-injection/alice.png" alt="Alice in action"></img>
+  <img src="content/images/guide/dependency-injection/alice.png" alt="Alice in action"></img>
 </figure>
 
 

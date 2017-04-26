@@ -9,7 +9,7 @@ Angular calls lifecycle hook methods on directives and components as it creates,
 
 
 <figure>
-  <img src="assets/images/guide/lifecycle-hooks/hooks-in-sequence.png" alt="Us" align="left" style="width:200px; margin-left:-40px;margin-right:30px"></img>
+  <img src="content/images/guide/lifecycle-hooks/hooks-in-sequence.png" alt="Us" align="left" style="width:200px; margin-left:-40px;margin-right:30px"></img>
 </figure>
 
 
@@ -262,7 +262,7 @@ calls the lifecycle hook methods in the following sequence at specific moments:
 
 {@a interface-optional}
 
- 
+
 
 ## Interfaces are optional (technically)
 
@@ -465,7 +465,7 @@ The peek-a-boo exists to show how Angular calls the hooks in the expected order.
 This snapshot reflects the state of the log after the user clicked the *Create...* button and then the *Destroy...* button.
 
 <figure class='image-display'>
-  <img src="assets/images/guide/lifecycle-hooks/peek-a-boo.png" alt="Peek-a-boo"></img>
+  <img src="content/images/guide/lifecycle-hooks/peek-a-boo.png" alt="Peek-a-boo"></img>
 </figure>
 
 
@@ -549,7 +549,7 @@ with an entry in the *Hook Log* as seen here:
 
 
 <figure class='image-display'>
-  <img src='assets/images/guide/lifecycle-hooks/spy-directive.gif' alt="Spy Directive"></img>
+  <img src='content/images/guide/lifecycle-hooks/spy-directive.gif' alt="Spy Directive"></img>
 </figure>
 
 
@@ -672,7 +672,7 @@ Here's the sample in action as the user makes changes.
 
 
 <figure class='image-display'>
-  <img src='assets/images/guide/lifecycle-hooks/on-changes-anim.gif' alt="OnChanges"></img>
+  <img src='content/images/guide/lifecycle-hooks/on-changes-anim.gif' alt="OnChanges"></img>
 </figure>
 
 
@@ -718,7 +718,7 @@ so you can see how often `DoCheck` is called. The results are illuminating:
 
 
 <figure class='image-display'>
-  <img src='assets/images/guide/lifecycle-hooks/do-check-anim.gif' alt="DoCheck"></img>
+  <img src='content/images/guide/lifecycle-hooks/do-check-anim.gif' alt="DoCheck"></img>
 </figure>
 
 
@@ -788,14 +788,14 @@ Angular's unidirectional data flow rule forbids updates to the view *after* it h
 Both of these hooks fire _after_ the component's view has been composed.
 
 Angular throws an error if the hook updates the component's data-bound `comment` property immediately (try it!).
-The `LoggerService.tick_then()` postpones the log update 
+The `LoggerService.tick_then()` postpones the log update
 for one turn of the browser's JavaScript cycle and that's just long enough.
 
 
 Here's *AfterView* in action:
 
 <figure class='image-display'>
-  <img src='assets/images/guide/lifecycle-hooks/after-view-anim.gif' alt="AfterView"></img>
+  <img src='content/images/guide/lifecycle-hooks/after-view-anim.gif' alt="AfterView"></img>
 </figure>
 
 
@@ -859,7 +859,7 @@ It tells Angular where to insert that content.
 In this case, the projected content is the `<my-child>` from the parent.
 
 <figure class='image-display'>
-  <img src='assets/images/guide/lifecycle-hooks/projected-child-view.png' width="230" alt="Projected Content"></img>
+  <img src='content/images/guide/lifecycle-hooks/projected-child-view.png' width="230" alt="Projected Content"></img>
 </figure>
 
 
