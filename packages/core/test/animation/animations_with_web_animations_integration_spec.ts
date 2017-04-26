@@ -26,25 +26,23 @@ export function main() {
       });
     });
 
-    it('should animate a component that captures height during an animation', () => {
+    it('should compute pre (!) and post (*) animation styles with different dom states', () => {
       @Component({
-        selector: 'if-cmp',
+        selector: 'ani-cmp',
         template: `
-          <div *ngIf="exp" #element [@myAnimation]="exp">
-            hello {{ text }} 
-          </div>
-        `,
+            <div [@myAnimation]="exp" #parent>
+              <div *ngFor="let item of items" class="child" style="line-height:20px">
+                - {{ item }} 
+              </div>
+            </div>
+          `,
         animations: [trigger(
             'myAnimation',
-            [
-              transition('* => *', [style({height: '0px'}), animate(1000, style({height: '*'}))]),
-            ])]
+            [transition('* => *', [style({height: '!'}), animate(1000, style({height: '*'}))])])]
       })
       class Cmp {
-        exp: any = false;
-        text: string;
-
-        @ViewChild('element') public element: any;
+        public exp: number;
+        public items = [0, 1, 2, 3, 4];
       }
 
       TestBed.configureTestingModule({declarations: [Cmp]});
@@ -52,33 +50,36 @@ export function main() {
       const engine = TestBed.get(ɵAnimationEngine);
       const fixture = TestBed.createComponent(Cmp);
       const cmp = fixture.componentInstance;
+
       cmp.exp = 1;
-      cmp.text = '';
       fixture.detectChanges();
       engine.flush();
 
-      const element = cmp.element.nativeElement;
-      element.style.lineHeight = '20px';
-      element.style.width = '50px';
+      expect(engine.players.length).toEqual(1);
+      let player = engine.players[0];
+      let webPlayer = player.getRealPlayer() as ɵWebAnimationsPlayer;
+
+      expect(webPlayer.keyframes).toEqual([
+        {height: '0px', offset: 0}, {height: '100px', offset: 1}
+      ]);
+
+      // we destroy the player because since it has started and is
+      // at 0ms duration a height value of `0px` will be extracted
+      // from the element and passed into the follow-up animation.
+      player.destroy();
 
       cmp.exp = 2;
-      cmp.text = '12345';
+      cmp.items = [0, 1, 2, 6];
       fixture.detectChanges();
       engine.flush();
 
-      let player = engine.activePlayers.pop() as ɵWebAnimationsPlayer;
-      player.setPosition(1);
+      expect(engine.players.length).toEqual(1);
+      player = engine.players[0];
+      webPlayer = player.getRealPlayer() as ɵWebAnimationsPlayer;
 
-      assertStyleBetween(element, 'height', 15, 25);
-
-      cmp.exp = 3;
-      cmp.text = '12345-12345-12345-12345';
-      fixture.detectChanges();
-      engine.flush();
-
-      player = engine.activePlayers.pop() as ɵWebAnimationsPlayer;
-      player.setPosition(1);
-      assertStyleBetween(element, 'height', 35, 45);
+      expect(webPlayer.keyframes).toEqual([
+        {height: '100px', offset: 0}, {height: '80px', offset: 1}
+      ]);
     });
   });
 }
