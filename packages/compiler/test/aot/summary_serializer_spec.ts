@@ -66,11 +66,14 @@ export function main() {
               }
             }
           ],
-          [<any>{
-            summaryKind: CompileSummaryKind.Injectable,
-            type: {
-              reference: symbolCache.get('/tmp/some_service.ts', 'SomeService'),
-            }
+          [{
+            summary: {
+              summaryKind: CompileSummaryKind.Injectable,
+              type: {
+                reference: symbolCache.get('/tmp/some_service.ts', 'SomeService'),
+              }
+            } as any,
+            metadata: null as any
           }]);
 
 
@@ -103,17 +106,25 @@ export function main() {
        () => {
          init();
          const externalSerialized = serializeSummaries(summaryResolver, symbolResolver, [], [
-           <any>{
-             summaryKind: CompileSummaryKind.Pipe,
-             type: {
-               reference: symbolCache.get('/tmp/external.ts', 'SomeExternalPipe'),
-             }
+           {
+             summary: {
+               summaryKind: CompileSummaryKind.Pipe,
+               type: {
+                 reference: symbolCache.get('/tmp/external.ts', 'SomeExternalPipe'),
+               }
+             } as any,
+             metadata: null as any
            },
-           <any>{
-             summaryKind: CompileSummaryKind.Directive,
-             type: {
-               reference: symbolCache.get('/tmp/external.ts', 'SomeExternalDir'),
-             }
+           {
+             summary: {
+               summaryKind: CompileSummaryKind.Directive,
+               type: {
+                 reference: symbolCache.get('/tmp/external.ts', 'SomeExternalDir'),
+               },
+               providers: [],
+               viewProviders: [],
+             } as any,
+             metadata: null as any
            }
          ]);
          init({
@@ -121,17 +132,22 @@ export function main() {
          });
 
          const serialized = serializeSummaries(
-             summaryResolver, symbolResolver, [], [<any>{
-               summaryKind: CompileSummaryKind.NgModule,
-               type: {reference: symbolCache.get('/tmp/some_module.ts', 'SomeModule')},
-               exportedPipes: [
-                 {reference: symbolCache.get('/tmp/some_pipe.ts', 'SomePipe')},
-                 {reference: symbolCache.get('/tmp/external.d.ts', 'SomeExternalPipe')}
-               ],
-               exportedDirectives: [
-                 {reference: symbolCache.get('/tmp/some_dir.ts', 'SomeDir')},
-                 {reference: symbolCache.get('/tmp/external.d.ts', 'SomeExternalDir')}
-               ]
+             summaryResolver, symbolResolver, [], [{
+               summary: <any>{
+                 summaryKind: CompileSummaryKind.NgModule,
+                 type: {reference: symbolCache.get('/tmp/some_module.ts', 'SomeModule')},
+                 exportedPipes: [
+                   {reference: symbolCache.get('/tmp/some_pipe.ts', 'SomePipe')},
+                   {reference: symbolCache.get('/tmp/external.d.ts', 'SomeExternalPipe')}
+                 ],
+                 exportedDirectives: [
+                   {reference: symbolCache.get('/tmp/some_dir.ts', 'SomeDir')},
+                   {reference: symbolCache.get('/tmp/external.d.ts', 'SomeExternalDir')}
+                 ],
+                 providers: [],
+                 modules: [],
+               },
+               metadata: null as any
              }]);
 
          const summaries = deserializeSummaries(symbolCache, serialized.json).summaries;
@@ -157,11 +173,14 @@ export function main() {
                  metadata: {__symbolic: 'class'}
                }
              ],
-             [<any>{
-               summaryKind: CompileSummaryKind.Injectable,
-               type: {
-                 reference: symbolCache.get('/tmp/external_svc.ts', 'SomeService'),
-               }
+             [{
+               summary: {
+                 summaryKind: CompileSummaryKind.Injectable,
+                 type: {
+                   reference: symbolCache.get('/tmp/external_svc.ts', 'SomeService'),
+                 }
+               } as any,
+               metadata: null as any
              }]);
          init(
              {

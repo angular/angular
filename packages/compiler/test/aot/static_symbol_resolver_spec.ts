@@ -372,7 +372,7 @@ export class MockSummaryResolver implements SummaryResolver<StaticSymbol> {
     symbol: StaticSymbol,
     importAs: StaticSymbol
   }[] = []) {}
-
+  addSummary(summary: Summary<StaticSymbol>) { this.summaries.push(summary); };
   resolveSummary(reference: StaticSymbol): Summary<StaticSymbol> {
     return this.summaries.find(summary => summary.symbol === reference);
   };
@@ -440,6 +440,10 @@ export class MockStaticSymbolResolverHost implements StaticSymbolResolverHost {
       return undefined !;
     }
     return '/tmp/' + modulePath + '.d.ts';
+  }
+
+  fileNameToModuleName(filePath: string, containingFile: string) {
+    return filePath.replace(/(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/, '');
   }
 
   getMetadataFor(moduleId: string): any { return this._getMetadataFor(moduleId); }
