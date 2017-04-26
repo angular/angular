@@ -1,4 +1,4 @@
-const { parseAttributes } = require('../utils');
+const { parseAttributes, renderAttributes } = require('../../helpers/utils');
 
 /**
  * Search the renderedContent looking for code examples that have a path (and optionally a region) attribute.
@@ -17,8 +17,7 @@ module.exports = function renderExamples(getExampleRegion) {
             if (attrMap.path) {
               // We found a path attribute so look up the example and rebuild the HTML
               const exampleContent = getExampleRegion(doc, attrMap.path, attrMap.region);
-              attributes = Object.keys(attrMap).map(key => ` ${key}="${attrMap[key].replace(/"/g, '&quot;')}"`).join('');
-              return `<${element}${attributes}>\n${exampleContent}\n</${element}>`;
+              return `<${element}${renderAttributes(attrMap)}>\n${exampleContent}\n</${element}>`;
             }
             // No path attribute so just ignore this one
             return original;

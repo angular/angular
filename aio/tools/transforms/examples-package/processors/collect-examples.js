@@ -1,5 +1,5 @@
 const {extname} = require('canonical-path');
-const {mapObject} = require('../utils');
+const {mapObject} = require('../../helpers/utils');
 
 module.exports = function collectExamples(exampleMap, regionParser, log, createDocMessage) {
   return {
