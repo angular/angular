@@ -9,7 +9,7 @@ import { Contributor } from './contributors.model';
 
         <div class="card-front" (click)="flipCard(person)">
             <h3>{{person.name}}</h3>
-            
+
             <div *ngIf="person.picture" class="contributor-image" [style.background-image]="'url('+pictureBase+person.picture+')'">
                 <div class="contributor-info">
                     <button>
