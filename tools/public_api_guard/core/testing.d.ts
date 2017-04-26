@@ -69,7 +69,7 @@ export declare class TestBed implements Injector {
     createComponent<T>(component: Type<T>): ComponentFixture<T>;
     execute(tokens: any[], fn: Function, context?: any): any;
     get(token: any, notFoundValue?: any): any;
-    /** @experimental */ initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef): void;
+    /** @experimental */ initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): void;
     overrideComponent(component: Type<any>, override: MetadataOverride<Component>): void;
     overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>): void;
     overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): void;
@@ -84,7 +84,7 @@ export declare class TestBed implements Injector {
     static configureTestingModule(moduleDef: TestModuleMetadata): typeof TestBed;
     static createComponent<T>(component: Type<T>): ComponentFixture<T>;
     static get(token: any, notFoundValue?: any): any;
-    /** @experimental */ static initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef): TestBed;
+    /** @experimental */ static initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): TestBed;
     static overrideComponent(component: Type<any>, override: MetadataOverride<Component>): typeof TestBed;
     static overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>): typeof TestBed;
     static overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): typeof TestBed;

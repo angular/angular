@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompileProviderMetadata, CompileTypeSummary, componentFactoryName, createHostComponentMeta, flatten, identifierName, sourceUrl, templateSourceUrl} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileIdentifierMetadata, CompileNgModuleMetadata, CompileNgModuleSummary, CompilePipeMetadata, CompileProviderMetadata, CompileSummaryKind, CompileTypeMetadata, CompileTypeSummary, componentFactoryName, createHostComponentMeta, flatten, identifierName, sourceUrl, templateSourceUrl} from '../compile_metadata';
 import {CompilerConfig} from '../config';
 import {Identifiers, createIdentifier, createIdentifierToken} from '../identifiers';
 import {CompileMetadataResolver} from '../metadata_resolver';
@@ -22,9 +22,9 @@ import {ViewCompiler} from '../view_compiler/view_compiler';
 import {AotCompilerHost} from './compiler_host';
 import {GeneratedFile} from './generated_file';
 import {StaticSymbol} from './static_symbol';
-import {StaticSymbolResolver} from './static_symbol_resolver';
+import {ResolvedStaticSymbol, StaticSymbolResolver} from './static_symbol_resolver';
 import {serializeSummaries} from './summary_serializer';
-import {ngfactoryFilePath, splitTypescriptSuffix, summaryFileName} from './util';
+import {ngfactoryFilePath, splitTypescriptSuffix, summaryFileName, summaryForJitFileName, summaryForJitName} from './util';
 
 export class AotCompiler {
   constructor(
@@ -59,12 +59,12 @@ export class AotCompiler {
       srcFileUrl: string, ngModuleByPipeOrDirective: Map<StaticSymbol, CompileNgModuleMetadata>,
       directives: StaticSymbol[], pipes: StaticSymbol[], ngModules: StaticSymbol[],
       injectables: StaticSymbol[]): GeneratedFile[] {
-    const fileSuffix = splitTypescriptSuffix(srcFileUrl)[1];
+    const fileSuffix = splitTypescriptSuffix(srcFileUrl, true)[1];
     const statements: o.Statement[] = [];
     const exportedVars: string[] = [];
     const generatedFiles: GeneratedFile[] = [];
 
-    generatedFiles.push(this._createSummary(
+    generatedFiles.push(...this._createSummary(
         srcFileUrl, directives, pipes, ngModules, injectables, statements, exportedVars));
 
     // compile all ng modules
@@ -101,7 +101,7 @@ export class AotCompiler {
     });
     if (statements.length > 0) {
       const srcModule = this._codegenSourceModule(
-          srcFileUrl, ngfactoryFilePath(srcFileUrl), statements, exportedVars);
+          srcFileUrl, ngfactoryFilePath(srcFileUrl, true), statements, exportedVars);
       generatedFiles.unshift(srcModule);
     }
     return generatedFiles;
@@ -110,23 +110,45 @@ export class AotCompiler {
   private _createSummary(
       srcFileUrl: string, directives: StaticSymbol[], pipes: StaticSymbol[],
       ngModules: StaticSymbol[], injectables: StaticSymbol[], targetStatements: o.Statement[],
-      targetExportedVars: string[]): GeneratedFile {
+      targetExportedVars: string[]): GeneratedFile[] {
     const symbolSummaries = this._symbolResolver.getSymbolsOf(srcFileUrl)
                                 .map(symbol => this._symbolResolver.resolveSymbol(symbol));
-    const typeSummaries: CompileTypeSummary[] = [
-      ...ngModules.map(ref => this._metadataResolver.getNgModuleSummary(ref) !),
-      ...directives.map(ref => this._metadataResolver.getDirectiveSummary(ref) !),
-      ...pipes.map(ref => this._metadataResolver.getPipeSummary(ref) !),
-      ...injectables.map(ref => this._metadataResolver.getInjectableSummary(ref) !)
-    ];
-    const {json, exportAs} = serializeSummaries(
-        this._summaryResolver, this._symbolResolver, symbolSummaries, typeSummaries);
+    const typeData: {
+      summary: CompileTypeSummary,
+      metadata: CompileNgModuleMetadata | CompileDirectiveMetadata | CompilePipeMetadata |
+          CompileTypeMetadata
+    }[] =
+        [
+          ...ngModules.map(ref => ({
+                             summary: this._metadataResolver.getNgModuleSummary(ref) !,
+                             metadata: this._metadataResolver.getNgModuleMetadata(ref) !
+                           })),
+          ...directives.map(ref => ({
+                              summary: this._metadataResolver.getDirectiveSummary(ref) !,
+                              metadata: this._metadataResolver.getDirectiveMetadata(ref) !
+                            })),
+          ...pipes.map(ref => ({
+                         summary: this._metadataResolver.getPipeSummary(ref) !,
+                         metadata: this._metadataResolver.getPipeMetadata(ref) !
+                       })),
+          ...injectables.map(ref => ({
+                               summary: this._metadataResolver.getInjectableSummary(ref) !,
+                               metadata: this._metadataResolver.getInjectableSummary(ref) !.type
+                             }))
+        ];
+    const {json, exportAs, forJit} =
+        serializeSummaries(this._summaryResolver, this._symbolResolver, symbolSummaries, typeData);
     exportAs.forEach((entry) => {
       targetStatements.push(
           o.variable(entry.exportAs).set(o.importExpr({reference: entry.symbol})).toDeclStmt());
       targetExportedVars.push(entry.exportAs);
     });
-    return new GeneratedFile(srcFileUrl, summaryFileName(srcFileUrl), json);
+    return [
+      new GeneratedFile(srcFileUrl, summaryFileName(srcFileUrl), json),
+      this._codegenSourceModule(
+          srcFileUrl, summaryForJitFileName(srcFileUrl, true), forJit.statements,
+          forJit.exportedVars)
+    ];
   }
 
   private _compileModule(ngModuleType: StaticSymbol, targetStatements: o.Statement[]): string {

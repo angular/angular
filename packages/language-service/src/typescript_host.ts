@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotSummaryResolver, CompileMetadataResolver, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, InterpolationConfig, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, PipeResolver, ResourceLoader, StaticAndDynamicReflectionCapabilities, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, SummaryResolver, analyzeNgModules, componentModuleUrl, createOfflineCompileUrlResolver, extractProgramSymbols} from '@angular/compiler';
+import {AotSummaryResolver, CompileMetadataResolver, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, InterpolationConfig, JitSummaryResolver, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, PipeResolver, ResourceLoader, StaticAndDynamicReflectionCapabilities, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, analyzeNgModules, componentModuleUrl, createOfflineCompileUrlResolver, extractProgramSymbols} from '@angular/compiler';
 import {AngularCompilerOptions} from '@angular/compiler-cli';
 import {ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 import * as fs from 'fs';
@@ -118,7 +118,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
           new DirectiveNormalizer(resourceLoader, urlResolver, htmlParser, config);
 
       result = this._resolver = new CompileMetadataResolver(
-          config, moduleResolver, directiveResolver, pipeResolver, new SummaryResolver(),
+          config, moduleResolver, directiveResolver, pipeResolver, new JitSummaryResolver(),
           elementSchemaRegistry, directiveNormalizer, new Console(), this._staticSymbolCache,
           this.reflector, (error, type) => this.collectError(error, type && type.filePath));
     }

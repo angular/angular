@@ -26,9 +26,9 @@ export * from './directive_resolver_mock';
 export * from './ng_module_resolver_mock';
 export * from './pipe_resolver_mock';
 
-import {createPlatformFactory, ModuleWithComponentFactories, Injectable, CompilerOptions, COMPILER_OPTIONS, CompilerFactory, NgModuleFactory, Injector, NgModule, Component, Directive, Pipe, Type, PlatformRef} from '@angular/core';
+import {createPlatformFactory, ModuleWithComponentFactories, Injectable, CompilerOptions, COMPILER_OPTIONS, CompilerFactory, ComponentFactory, NgModuleFactory, Injector, NgModule, Component, Directive, Pipe, Type, PlatformRef, ɵstringify} from '@angular/core';
 import {MetadataOverride, ɵTestingCompilerFactory as TestingCompilerFactory, ɵTestingCompiler as TestingCompiler} from '@angular/core/testing';
-import {platformCoreDynamic, JitCompiler, DirectiveResolver, NgModuleResolver, PipeResolver} from '@angular/compiler';
+import {platformCoreDynamic, JitCompiler, DirectiveResolver, NgModuleResolver, PipeResolver, CompileMetadataResolver} from '@angular/compiler';
 import {MockDirectiveResolver} from './directive_resolver_mock';
 import {MockNgModuleResolver} from './ng_module_resolver_mock';
 import {MockPipeResolver} from './pipe_resolver_mock';
@@ -42,7 +42,8 @@ export class TestingCompilerFactoryImpl implements TestingCompilerFactory {
     const compiler = <JitCompiler>this._compilerFactory.createCompiler(options);
     return new TestingCompilerImpl(
         compiler, compiler.injector.get(MockDirectiveResolver),
-        compiler.injector.get(MockPipeResolver), compiler.injector.get(MockNgModuleResolver));
+        compiler.injector.get(MockPipeResolver), compiler.injector.get(MockNgModuleResolver),
+        compiler.injector.get(CompileMetadataResolver));
   }
 }
 
@@ -50,7 +51,8 @@ export class TestingCompilerImpl implements TestingCompiler {
   private _overrider = new MetadataOverrider();
   constructor(
       private _compiler: JitCompiler, private _directiveResolver: MockDirectiveResolver,
-      private _pipeResolver: MockPipeResolver, private _moduleResolver: MockNgModuleResolver) {}
+      private _pipeResolver: MockPipeResolver, private _moduleResolver: MockNgModuleResolver,
+      private _metadataResolver: CompileMetadataResolver) {}
   get injector(): Injector { return this._compiler.injector; }
 
   compileModuleSync<T>(moduleType: Type<T>): NgModuleFactory<T> {
@@ -73,25 +75,40 @@ export class TestingCompilerImpl implements TestingCompiler {
     return this._compiler.getNgContentSelectors(component);
   }
 
+  getComponentFactory<T>(component: Type<T>): ComponentFactory<T> {
+    return this._compiler.getComponentFactory(component);
+  }
+
+  checkOverrideAllowed(type: Type<any>) {
+    if (this._compiler.hasAotSummary(type)) {
+      throw new Error(`${ɵstringify(type)} was AOT compiled, so its metadata cannot be changed.`);
+    }
+  }
+
   overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): void {
+    this.checkOverrideAllowed(ngModule);
     const oldMetadata = this._moduleResolver.resolve(ngModule, false);
     this._moduleResolver.setNgModule(
         ngModule, this._overrider.overrideMetadata(NgModule, oldMetadata, override));
   }
   overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>): void {
+    this.checkOverrideAllowed(directive);
     const oldMetadata = this._directiveResolver.resolve(directive, false);
     this._directiveResolver.setDirective(
         directive, this._overrider.overrideMetadata(Directive, oldMetadata !, override));
   }
   overrideComponent(component: Type<any>, override: MetadataOverride<Component>): void {
+    this.checkOverrideAllowed(component);
     const oldMetadata = this._directiveResolver.resolve(component, false);
     this._directiveResolver.setDirective(
         component, this._overrider.overrideMetadata(Component, oldMetadata !, override));
   }
   overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): void {
+    this.checkOverrideAllowed(pipe);
     const oldMetadata = this._pipeResolver.resolve(pipe, false);
     this._pipeResolver.setPipe(pipe, this._overrider.overrideMetadata(Pipe, oldMetadata, override));
   }
+  loadAotSummaries(summaries: () => any[]) { this._compiler.loadAotSummaries(summaries); }
   clearCache(): void { this._compiler.clearCache(); }
   clearCacheFor(type: Type<any>) { this._compiler.clearCacheFor(type); }
 }

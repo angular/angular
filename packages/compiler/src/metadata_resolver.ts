@@ -167,8 +167,7 @@ export class CompileMetadataResolver {
     return typeSummary && typeSummary.summaryKind === kind ? typeSummary : null;
   }
 
-  private _loadDirectiveMetadata(ngModuleType: any, directiveType: any, isSync: boolean):
-      Promise<any>|null {
+  loadDirectiveMetadata(ngModuleType: any, directiveType: any, isSync: boolean): Promise<any>|null {
     if (this._directiveCache.has(directiveType)) {
       return null;
     }
@@ -377,9 +376,20 @@ export class CompileMetadataResolver {
     return dirSummary;
   }
 
-  isDirective(type: any) { return this._directiveResolver.isDirective(type); }
+  isDirective(type: any) {
+    return !!this._loadSummary(type, cpl.CompileSummaryKind.Directive) ||
+        this._directiveResolver.isDirective(type);
+  }
 
-  isPipe(type: any) { return this._pipeResolver.isPipe(type); }
+  isPipe(type: any) {
+    return !!this._loadSummary(type, cpl.CompileSummaryKind.Pipe) ||
+        this._pipeResolver.isPipe(type);
+  }
+
+  isNgModule(type: any) {
+    return !!this._loadSummary(type, cpl.CompileSummaryKind.NgModule) ||
+        this._ngModuleResolver.isNgModule(type);
+  }
 
   getNgModuleSummary(moduleType: any): cpl.CompileNgModuleSummary|null {
     let moduleSummary: cpl.CompileNgModuleSummary|null =
@@ -403,7 +413,7 @@ export class CompileMetadataResolver {
     const loading: Promise<any>[] = [];
     if (ngModule) {
       ngModule.declaredDirectives.forEach((id) => {
-        const promise = this._loadDirectiveMetadata(moduleType, id.reference, isSync);
+        const promise = this.loadDirectiveMetadata(moduleType, id.reference, isSync);
         if (promise) {
           loading.push(promise);
         }
@@ -501,11 +511,11 @@ export class CompileMetadataResolver {
           return;
         }
         const declaredIdentifier = this._getIdentifierMetadata(declaredType);
-        if (this._directiveResolver.isDirective(declaredType)) {
+        if (this.isDirective(declaredType)) {
           transitiveModule.addDirective(declaredIdentifier);
           declaredDirectives.push(declaredIdentifier);
           this._addTypeToModule(declaredType, moduleType);
-        } else if (this._pipeResolver.isPipe(declaredType)) {
+        } else if (this.isPipe(declaredType)) {
           transitiveModule.addPipe(declaredIdentifier);
           transitiveModule.pipes.push(declaredIdentifier);
           declaredPipes.push(declaredIdentifier);
@@ -604,15 +614,15 @@ export class CompileMetadataResolver {
   }
 
   private _getTypeDescriptor(type: Type<any>): string {
-    if (this._directiveResolver.isDirective(type)) {
+    if (this.isDirective(type)) {
       return 'directive';
     }
 
-    if (this._pipeResolver.isPipe(type)) {
+    if (this.isPipe(type)) {
       return 'pipe';
     }
 
-    if (this._ngModuleResolver.isNgModule(type)) {
+    if (this.isNgModule(type)) {
       return 'module';
     }
 
