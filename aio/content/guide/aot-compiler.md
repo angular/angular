@@ -297,8 +297,8 @@ The _RxJs_ Observable library is an essential Angular dependency published as an
 
 Luckily, there is a Rollup plugin that modifies _RxJs_
 to use the ES `import` and `export` statements that Rollup requires.
-Rollup then preserves the parts of `RxJS` referenced by the application 
-in the final bundle. Using it is straigthforward. Add the following to 
+Rollup then preserves the parts of `RxJS` referenced by the application
+in the final bundle. Using it is straigthforward. Add the following to
 the `plugins` array in `rollup-config.js`:
 
 <code-example path="aot-compiler/rollup-config.js" region="commonjs" title="rollup-config.js (CommonJs to ES2015 Plugin)" linenums="false">
@@ -307,7 +307,7 @@ the `plugins` array in `rollup-config.js`:
 *Minification*
 
 Rollup tree shaking reduces code size considerably.  Minification makes it smaller still.
-This cookbook relies on the _uglify_ Rollup plugin to minify and mangle the code. 
+This cookbook relies on the _uglify_ Rollup plugin to minify and mangle the code.
 Add the following to the `plugins` array:
 
 <code-example path="aot-compiler/rollup-config.js" region="uglify" title="rollup-config.js (CommonJs to ES2015 Plugin)" linenums="false">
@@ -317,7 +317,7 @@ Add the following to the `plugins` array:
 
   In a production setting, you would also enable gzip on the web server to compress
   the code into an even smaller package going over the wire.
-  
+
 </div>
 
 {@a run-rollup}
@@ -602,8 +602,8 @@ showing exactly which application and Angular modules and classes are included i
 
 Here's the map for _Tour of Heroes_.
 
-<a href="assets/images/guide/aot-compiler/toh-pt6-bundle.png" title="View larger image">
+<a href="content/images/guide/aot-compiler/toh-pt6-bundle.png" title="View larger image">
   <figure class='image-display'>
-    <img src="assets/images/guide/aot-compiler/toh-pt6-bundle.png" alt="toh-pt6-bundle"></img>
+    <img src="content/images/guide/aot-compiler/toh-pt6-bundle.png" alt="toh-pt6-bundle"></img>
   </figure>
 </a>

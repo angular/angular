@@ -123,7 +123,7 @@ Your app greets you with a message:
 
 
 <figure class='image-display'>
-  <img src='assets/images/guide/cli-quickstart/app-works.png' alt="The app works!"></img>
+  <img src='content/images/guide/cli-quickstart/app-works.png' alt="The app works!"></img>
 </figure>
 
 
@@ -161,7 +161,7 @@ Open `src/app/app.component.css` and give the component some style.
 
 
 <figure class='image-display'>
-  <img src='assets/images/guide/cli-quickstart/my-first-app.png' alt="Output of QuickStart app"></img>
+  <img src='content/images/guide/cli-quickstart/my-first-app.png' alt="Output of QuickStart app"></img>
 </figure>
 
 

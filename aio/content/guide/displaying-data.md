@@ -18,7 +18,7 @@ The final UI looks like this:
 
 
 <figure class='image-display'>
-  <img src="assets/images/guide/displaying-data/final.png" alt="Final UI"></img>
+  <img src="content/images/guide/displaying-data/final.png" alt="Final UI"></img>
 </figure>
 
 
@@ -126,7 +126,7 @@ inside the `<my-app>` tag.
 Now run the app. It should display the title and hero name:
 
 <figure class='image-display'>
-  <img src="assets/images/guide/displaying-data/title-and-hero.png" alt="Title and Hero"></img>
+  <img src="content/images/guide/displaying-data/title-and-hero.png" alt="Title and Hero"></img>
 </figure>
 
 
@@ -233,7 +233,7 @@ Now the heroes appear in an unordered list.
 
 
 <figure class='image-display'>
-  <img src="assets/images/guide/displaying-data/hero-names-list.png" alt="After ngfor"></img>
+  <img src="content/images/guide/displaying-data/hero-names-list.png" alt="After ngfor"></img>
 </figure>
 
 

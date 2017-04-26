@@ -39,7 +39,7 @@ Two examples are [NgFor](guide/template-syntax#ngFor) and [NgIf](guide/template-
 Learn about them in the [Structural Directives](guide/structural-directives) guide.
 
 *Attribute directives* are used as attributes of elements.
-The built-in [NgStyle](guide/template-syntax#ngStyle) directive in the 
+The built-in [NgStyle](guide/template-syntax#ngStyle) directive in the
 [Template Syntax](guide/template-syntax) guide, for example,
 can change several element styles at the same time.
 
@@ -108,7 +108,7 @@ they don't conflict with standard HTML attributes.
 This also reduces the risk of colliding with third-party directive names.
 
 Make sure you do **not** prefix the `highlight` directive name with **`ng`** because
-that prefix is reserved for Angular and using it could cause bugs that are difficult to diagnose. 
+that prefix is reserved for Angular and using it could cause bugs that are difficult to diagnose.
 For a simple demo, the short prefix, `my`, helps distinguish your custom directive.
 
 
@@ -116,7 +116,7 @@ For a simple demo, the short prefix, `my`, helps distinguish your custom directi
 
 
 
-After the `@Directive` metadata comes the directive's controller class, 
+After the `@Directive` metadata comes the directive's controller class,
 called `HighlightDirective`, which contains the logic for the directive.
 Exporting `HighlightDirective` makes it accessible to other components.
 
@@ -168,7 +168,7 @@ Now when the app runs, the `myHighlight` directive highlights the paragraph text
 
 
 <figure class='image-display'>
-  <img src="assets/images/guide/attribute-directives/first-highlight.png" alt="First Highlight"></img>
+  <img src="content/images/guide/attribute-directives/first-highlight.png" alt="First Highlight"></img>
 </figure>
 
 
@@ -179,7 +179,7 @@ Now when the app runs, the `myHighlight` directive highlights the paragraph text
 
 ### Your directive isn't working?
 
-Did you remember to add the directive to the `declarations` attribute of `@NgModule`? 
+Did you remember to add the directive to the `declarations` attribute of `@NgModule`?
 It is easy to forget!
 Open the console in the browser tools and look for an error like this:
 
@@ -236,7 +236,7 @@ each adorned by the `HostListener` decorator.
 
 
 
-The `@HostListener` decorator lets you subscribe to events of the DOM 
+The `@HostListener` decorator lets you subscribe to events of the DOM
 element that hosts an attribute directive, the `<p>` in this case.
 
 
@@ -280,7 +280,7 @@ the mouse hovers over the `p` and disappears as it moves out.
 
 
 <figure class='image-display'>
-  <img src="assets/images/guide/attribute-directives/highlight-directive-anim.gif" alt="Second Highlight"></img>
+  <img src="content/images/guide/attribute-directives/highlight-directive-anim.gif" alt="Second Highlight"></img>
 </figure>
 
 
@@ -438,7 +438,7 @@ Here are the harness and directive in action.
 
 
 <figure class='image-display'>
-  <img src="assets/images/guide/attribute-directives/highlight-directive-v2-anim.gif" alt="Highlight v.2"></img>
+  <img src="content/images/guide/attribute-directives/highlight-directive-v2-anim.gif" alt="Highlight v.2"></img>
 </figure>
 
 
@@ -491,7 +491,7 @@ Here's how the harness should work when you're done coding.
 
 
 <figure class='image-display'>
-  <img src="assets/images/guide/attribute-directives/highlight-directive-final-anim.gif" alt="Final Highlight"></img>
+  <img src="content/images/guide/attribute-directives/highlight-directive-final-anim.gif" alt="Final Highlight"></img>
 </figure>
 
 

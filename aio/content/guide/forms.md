@@ -41,7 +41,7 @@ the form-specific directives and techniques described in this page.
 
 
 
-You can also use a reactive (or model-driven) approach to build forms. 
+You can also use a reactive (or model-driven) approach to build forms.
 However, this page focuses on template-driven forms.
 
 
@@ -60,7 +60,7 @@ You'll learn to build a template-driven form that looks like this:
 
 
 <figure class='image-display'>
-  <img src="assets/images/guide/forms/hero-form-1.png" width="400px" alt="Clean Form"></img>
+  <img src="content/images/guide/forms/hero-form-1.png" width="400px" alt="Clean Form"></img>
 </figure>
 
 
@@ -74,7 +74,7 @@ If you delete the hero name, the form displays a validation error in an attentio
 
 
 <figure class='image-display'>
-  <img src="assets/images/guide/forms/hero-form-2.png" width="400px" alt="Invalid, Name Required"></img>
+  <img src="content/images/guide/forms/hero-form-2.png" width="400px" alt="Invalid, Name Required"></img>
 </figure>
 
 
@@ -148,7 +148,7 @@ You can create a new hero like this:
 
 ## Create a form component
 
-An Angular form has two parts: an HTML-based _template_ and a component _class_ 
+An Angular form has two parts: an HTML-based _template_ and a component _class_
 to handle data and user interactions programmatically.
 Begin with the class because it states, in brief, what the hero editor can do.
 
@@ -301,7 +301,7 @@ You added a *Submit* button at the bottom with some classes on it for styling.
 
 
 
-In template driven forms, if you've imported `FormsModule`, you don't have to do anything 
+In template driven forms, if you've imported `FormsModule`, you don't have to do anything
 to the `<form>` tag in order to make use of `FormsModule`. Continue on to see how this works.
 
 
@@ -372,7 +372,7 @@ Running the app right now would be disappointing.
 
 
 <figure class='image-display'>
-  <img src="assets/images/guide/forms/hero-form-3.png" width="400px" alt="Early form with no binding"></img>
+  <img src="content/images/guide/forms/hero-form-3.png" width="400px" alt="Early form with no binding"></img>
 </figure>
 
 
@@ -413,8 +413,8 @@ You left yourself a note to throw it away when you're done.
 
 Focus on the binding syntax: `[(ngModel)]="..."`.
 
-You need one more addition to display the data. Declare 
-a template variable for the form. Update the `<form>` tag with 
+You need one more addition to display the data. Declare
+a template variable for the form. Update the `<form>` tag with
 `#heroForm="ngForm"` as follows:
 
 
@@ -456,7 +456,7 @@ At some point it might look like this:
 
 
 <figure class='image-display'>
-  <img src="assets/images/guide/forms/ng-model-in-action.png" width="400px" alt="ngModel in action"></img>
+  <img src="content/images/guide/forms/ng-model-in-action.png" width="400px" alt="ngModel in action"></img>
 </figure>
 
 
@@ -529,7 +529,7 @@ If you run the app now and change every hero model property, the form might disp
 
 
 <figure class='image-display'>
-  <img src="assets/images/guide/forms/ng-model-in-action-2.png" width="400px" alt="ngModel in action"></img>
+  <img src="content/images/guide/forms/ng-model-in-action-2.png" width="400px" alt="ngModel in action"></img>
 </figure>
 
 
@@ -642,7 +642,7 @@ The actions and effects are as follows:
 
 
 <figure class='image-display'>
-  <img src="assets/images/guide/forms/control-state-transitions-anim.gif" alt="Control State Transition"></img>
+  <img src="content/images/guide/forms/control-state-transitions-anim.gif" alt="Control State Transition"></img>
 </figure>
 
 
@@ -651,7 +651,7 @@ You should see the following transitions and class names:
 
 
 <figure class='image-display'>
-  <img src="assets/images/guide/forms/ng-control-class-changes.png" width="500px" alt="Control state transitions"></img>
+  <img src="content/images/guide/forms/ng-control-class-changes.png" width="500px" alt="Control state transitions"></img>
 </figure>
 
 
@@ -671,7 +671,7 @@ on the left of the input box:
 
 
 <figure class='image-display'>
-  <img src="assets/images/guide/forms/validity-required-indicator.png" width="400px" alt="Invalid Form"></img>
+  <img src="content/images/guide/forms/validity-required-indicator.png" width="400px" alt="Invalid Form"></img>
 </figure>
 
 
@@ -705,7 +705,7 @@ When the user deletes the name, the form should look like this:
 
 
 <figure class='image-display'>
-  <img src="assets/images/guide/forms/name-required-error.png" width="400px" alt="Name required"></img>
+  <img src="content/images/guide/forms/name-required-error.png" width="400px" alt="Name required"></img>
 </figure>
 
 
@@ -833,8 +833,8 @@ to the hero form component's `onSubmit()` method:
 
 
 
-You'd already defined a template reference variable, 
-`#heroForm`, and initialized it with the value "ngForm". 
+You'd already defined a template reference variable,
+`#heroForm`, and initialized it with the value "ngForm".
 Now, use that variable to access the form with the Submit button.
 
 
@@ -849,7 +849,7 @@ using an event binding. Here's the code:
 
 
 
-If you run the application now, you find that the button is enabled&mdash;although 
+If you run the application now, you find that the button is enabled&mdash;although
 it doesn't do anything useful yet.
 
 Now if you delete the Name, you violate the "required" rule, which
