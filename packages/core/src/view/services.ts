@@ -455,6 +455,9 @@ class DebugRendererFactory2 implements RendererFactory2 {
   createRenderer(element: any, renderData: RendererType2|null): Renderer2 {
     return new DebugRenderer2(this.delegate.createRenderer(element, renderData));
   }
+
+  begin() { this.delegate.begin(); }
+  end() { this.delegate.end(); }
 }
 
 

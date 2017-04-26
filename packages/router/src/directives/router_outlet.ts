@@ -62,10 +62,7 @@ export class RouterOutlet implements OnDestroy {
     if (!this.activated) throw new Error('Outlet is not activated');
     return this.activated.instance;
   }
-  get activatedRoute(): ActivatedRoute {
-    if (!this.activated) throw new Error('Outlet is not activated');
-    return this._activatedRoute;
-  }
+  get activatedRoute(): ActivatedRoute { return this._activatedRoute; }
 
   detach(): ComponentRef<any> {
     if (!this.activated) throw new Error('Outlet is not activated');

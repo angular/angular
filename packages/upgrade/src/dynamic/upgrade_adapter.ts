@@ -126,7 +126,7 @@ export class UpgradeAdapter {
   /**
    * Allows Angular Component to be used from AngularJS.
    *
-   * Use `downgradeNg2Component` to create an AngularJS Directive Definition Factory from
+   * Use `downgradeNg2Component` to create an AngularJS Directive Reference Factory from
    * Angular Component. The adapter will bootstrap Angular component from within the
    * AngularJS template.
    *
@@ -210,7 +210,7 @@ export class UpgradeAdapter {
    *   - Event:  `<comp (close)="doSomething()">`
    * - Transclusion: yes
    * - Only some of the features of
-   *   [Directive Definition Object](https://docs.angularjs.org/api/ng/service/$compile) are
+   *   [Directive Reference Object](https://docs.angularjs.org/api/ng/service/$compile) are
    *   supported:
    *   - `compile`: not supported because the host element is owned by Angular, which does
    *     not allow modifying DOM structure during compilation.

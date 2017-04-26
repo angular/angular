@@ -26,6 +26,8 @@ export abstract class AnimationPlayer {
   abstract getPosition(): number;
   get parentPlayer(): AnimationPlayer|null { throw new Error('NOT IMPLEMENTED: Base Class'); }
   set parentPlayer(player: AnimationPlayer|null) { throw new Error('NOT IMPLEMENTED: Base Class'); }
+  get totalTime(): number { throw new Error('NOT IMPLEMENTED: Base Class'); }
+  beforeDestroy?: () => any;
 }
 
 /**
@@ -39,6 +41,7 @@ export class NoopAnimationPlayer implements AnimationPlayer {
   private _destroyed = false;
   private _finished = false;
   public parentPlayer: AnimationPlayer|null = null;
+  public totalTime = 0;
   constructor() {}
   private _onFinish() {
     if (!this._finished) {
@@ -54,15 +57,20 @@ export class NoopAnimationPlayer implements AnimationPlayer {
   init(): void {}
   play(): void {
     if (!this.hasStarted()) {
-      scheduleMicroTask(() => this._onFinish());
+      this.triggerMicrotask();
       this._onStart();
     }
     this._started = true;
   }
+
+  /* @internal */
+  triggerMicrotask() { scheduleMicroTask(() => this._onFinish()); }
+
   private _onStart() {
     this._onStartFns.forEach(fn => fn());
     this._onStartFns = [];
   }
+
   pause(): void {}
   restart(): void {}
   finish(): void { this._onFinish(); }

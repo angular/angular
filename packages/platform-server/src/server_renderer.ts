@@ -52,6 +52,9 @@ export class ServerRendererFactory2 implements RendererFactory2 {
       }
     }
   }
+
+  begin() {}
+  end() {}
 }
 
 class DefaultServerRenderer2 implements Renderer2 {

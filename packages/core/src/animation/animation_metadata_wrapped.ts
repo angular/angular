@@ -53,8 +53,8 @@ export interface AnimationKeyframesSequenceMetadata extends AnimationMetadata {
  * @deprecated This symbol has moved. Please Import from @angular/animations instead!
  */
 export interface AnimationStyleMetadata extends AnimationMetadata {
-  styles: {[key: string]: string | number}|{[key: string]: string | number}[];
-  offset?: number;
+  styles: '*'|{[key: string]: string | number}|Array<{[key: string]: string | number}|'*'>;
+  offset: number|null;
 }
 
 /**
@@ -131,9 +131,8 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
 /**
  * @deprecated This symbol has moved. Please Import from @angular/animations instead!
  */
-export function transition(
-    stateChangeExpr: string | ((fromState: string, toState: string) => boolean),
-    steps: AnimationMetadata | AnimationMetadata[]): AnimationTransitionMetadata {
+export function transition(stateChangeExpr: string, steps: AnimationMetadata | AnimationMetadata[]):
+    AnimationTransitionMetadata {
   return _transition(stateChangeExpr, steps);
 }
 
