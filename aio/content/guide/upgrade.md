@@ -1816,7 +1816,7 @@ load every file in our AngularJS app to use ES6 modules in order to ensure Angul
 loaded correctly.
 
 This is a considerable effort and it often isn't worth it, especially since we are in the
-process of moving our our to Angular already.
+process of moving our code to Angular.
 Instead we declare `angular` as `angular.IAngularStatic` to indicate it is a global variable
 and still have full typing support.
 
