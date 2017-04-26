@@ -10,7 +10,7 @@ import {Summary, SummaryResolver} from '../summary_resolver';
 
 import {StaticSymbol, StaticSymbolCache} from './static_symbol';
 import {deserializeSummaries} from './summary_serializer';
-import {ngfactoryFilePath, stripNgFactory, summaryFileName} from './util';
+import {ngfactoryFilePath, stripGeneratedFileSuffix, summaryFileName} from './util';
 
 export interface AotSummaryResolverHost {
   /**
@@ -43,7 +43,7 @@ export class AotSummaryResolver implements SummaryResolver<StaticSymbol> {
     // Note: We need to strip the .ngfactory. file path,
     // so this method also works for generated files
     // (for which host.isSourceFile will always return false).
-    return !this.host.isSourceFile(stripNgFactory(filePath));
+    return !this.host.isSourceFile(stripGeneratedFileSuffix(filePath));
   }
 
   getLibraryFileName(filePath: string) { return this.host.getOutputFileName(filePath); }
@@ -67,6 +67,8 @@ export class AotSummaryResolver implements SummaryResolver<StaticSymbol> {
     staticSymbol.assertNoMembers();
     return this.importAs.get(staticSymbol) !;
   }
+
+  addSummary(summary: Summary<StaticSymbol>) { this.summaryCache.set(summary.symbol, summary); }
 
   private _loadSummaryFile(filePath: string) {
     if (this.loadedFilePaths.has(filePath)) {

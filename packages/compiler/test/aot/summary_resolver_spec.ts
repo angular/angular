@@ -27,17 +27,17 @@ export function main() {
       summaryResolver = new AotSummaryResolver(host, symbolCache);
     }
 
-    function serialize(symbols: ResolvedStaticSymbol[], types: CompileTypeSummary[]): string {
+    function serialize(symbols: ResolvedStaticSymbol[]): string {
       // Note: Don't use the top level host / summaryResolver as they might not be created yet
       const mockSummaryResolver = new MockSummaryResolver([]);
       const symbolResolver = new StaticSymbolResolver(
           new MockStaticSymbolResolverHost({}), symbolCache, mockSummaryResolver);
-      return serializeSummaries(mockSummaryResolver, symbolResolver, symbols, types).json;
+      return serializeSummaries(mockSummaryResolver, symbolResolver, symbols, []).json;
     }
 
     it('should load serialized summary files', () => {
       const asymbol = symbolCache.get('/a.d.ts', 'a');
-      init({'/a.ngsummary.json': serialize([{symbol: asymbol, metadata: 1}], [])});
+      init({'/a.ngsummary.json': serialize([{symbol: asymbol, metadata: 1}])});
       expect(summaryResolver.resolveSummary(asymbol)).toEqual({symbol: asymbol, metadata: 1});
     });
 
@@ -51,13 +51,13 @@ export function main() {
 
     it('should cache summaries', () => {
       const asymbol = symbolCache.get('/a.d.ts', 'a');
-      init({'/a.ngsummary.json': serialize([{symbol: asymbol, metadata: 1}], [])});
+      init({'/a.ngsummary.json': serialize([{symbol: asymbol, metadata: 1}])});
       expect(summaryResolver.resolveSummary(asymbol)).toBe(summaryResolver.resolveSummary(asymbol));
     });
 
     it('should return all symbols in a summary', () => {
       const asymbol = symbolCache.get('/a.d.ts', 'a');
-      init({'/a.ngsummary.json': serialize([{symbol: asymbol, metadata: 1}], [])});
+      init({'/a.ngsummary.json': serialize([{symbol: asymbol, metadata: 1}])});
       expect(summaryResolver.getSymbolsOf('/a.d.ts')).toEqual([asymbol]);
     });
 
@@ -66,13 +66,13 @@ export function main() {
       const srcSymbol = symbolCache.get('/src.ts', 'Src');
       init({
         '/src.ngsummary.json':
-            serialize([{symbol: srcSymbol, metadata: 1}, {symbol: libSymbol, metadata: 2}], [])
+            serialize([{symbol: srcSymbol, metadata: 1}, {symbol: libSymbol, metadata: 2}])
       });
       summaryResolver.getSymbolsOf('/src.d.ts');
 
       expect(summaryResolver.getImportAs(symbolCache.get('/src.d.ts', 'Src'))).toBeFalsy();
       expect(summaryResolver.getImportAs(libSymbol))
-          .toBe(symbolCache.get('/src.ngfactory.ts', 'Lib_1'));
+          .toBe(symbolCache.get('/src.ngfactory.d.ts', 'Lib_1'));
     });
 
     describe('isLibraryFile', () => {

@@ -15,9 +15,9 @@ import * as ts from 'typescript';
 const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 const DTS = /\.d\.ts$/;
 const NODE_MODULES = '/node_modules/';
-const IS_GENERATED = /\.(ngfactory|ngstyle)$/;
-const GENERATED_FILES = /\.ngfactory\.ts$|\.ngstyle\.ts$/;
-const GENERATED_OR_DTS_FILES = /\.d\.ts$|\.ngfactory\.ts$|\.ngstyle\.ts$/;
+const IS_GENERATED = /\.(ngfactory|ngstyle|ngsummary)$/;
+const GENERATED_FILES = /\.ngfactory\.ts$|\.ngstyle\.ts$|\.ngsummary\.ts$/;
+const GENERATED_OR_DTS_FILES = /\.d\.ts$|\.ngfactory\.ts$|\.ngstyle\.ts$|\.ngsummary\.ts$/;
 const SHALLOW_IMPORT = /^((\w|-)+|(@(\w|-)+(\/(\w|-)+)+))$/;
 
 export interface CompilerHostContext extends ts.ModuleResolutionHost {
