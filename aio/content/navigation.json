@@ -5,7 +5,7 @@
       "title": "Features"
     },
     {
-      "url": "guide/docs",
+      "url": "docs",
       "title": "Docs",
       "hidden": true
     },
@@ -21,7 +21,7 @@
 
   "SideNav": [
     {
-      "url": "guide/docs",
+      "url": "docs",
       "title": "Docs",
       "tooltip": "Angular Documentation",
       "hidden": true
