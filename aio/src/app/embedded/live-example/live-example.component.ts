@@ -3,7 +3,7 @@ import { Component, ElementRef, HostListener, Input, OnInit, AfterViewInit, View
 import { Location } from '@angular/common';
 
 const defaultPlnkrImg = 'plunker/placeholder.png';
-const imageBase  = 'assets/images/';
+const imageBase  = 'content/images/';
 const liveExampleBase = 'content/live-examples/';
 const zipBase = 'content/zips/';
 

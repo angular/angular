@@ -53,57 +53,57 @@ But they diverge markedly in philosophy, programming style, and technique.
 They even have their own modules: the `ReactiveFormsModule` and the `FormsModule`.
 
 ### _Reactive_ forms
-Angular _reactive_ forms facilitate a _reactive style_ of programming 
+Angular _reactive_ forms facilitate a _reactive style_ of programming
 that favors explicit management of the data flowing between
-a non-UI _data model_ (typically retrieved from a server) and a 
-UI-oriented _form model_ that retains the states 
-and values of the HTML controls on screen. Reactive forms offer the ease 
+a non-UI _data model_ (typically retrieved from a server) and a
+UI-oriented _form model_ that retains the states
+and values of the HTML controls on screen. Reactive forms offer the ease
 of using reactive patterns, testing, and validation.
 
 With _reactive_ forms, you create a tree of Angular form control objects
-in the component class and bind them to native form control elements in the 
-component template, using techniques described in this guide. 
+in the component class and bind them to native form control elements in the
+component template, using techniques described in this guide.
 
-You create and manipulate form control objects directly in the 
-component class. As the component class has immediate access to both the data 
-model and the form control structure, you can push data model values into 
-the form controls and pull user-changed values back out. The component can 
+You create and manipulate form control objects directly in the
+component class. As the component class has immediate access to both the data
+model and the form control structure, you can push data model values into
+the form controls and pull user-changed values back out. The component can
 observe changes in form control state and react to those changes.
 
-One advantage of working with form control objects directly is that value and validity updates 
-are [always synchronous and under your control](guide/reactive-forms#async-vs-sync "Async vs sync"). 
+One advantage of working with form control objects directly is that value and validity updates
+are [always synchronous and under your control](guide/reactive-forms#async-vs-sync "Async vs sync").
 You won't encounter the timing issues that sometimes plague a template-driven form
 and reactive forms can be easier to unit test.
 
-In keeping with the reactive paradigm, the component 
+In keeping with the reactive paradigm, the component
 preserves the immutability of the _data model_,
 treating it as a pure source of original values.
-Rather than update the data model directly, 
-the component extracts user changes and forwards them to an external component or service, 
-which does something with them (such as saving them) 
-and returns a new _data model_ to the component that reflects the updated model state. 
-  
-Using reactive form directives does not require you to follow all reactive priniciples, 
+Rather than update the data model directly,
+the component extracts user changes and forwards them to an external component or service,
+which does something with them (such as saving them)
+and returns a new _data model_ to the component that reflects the updated model state.
+
+Using reactive form directives does not require you to follow all reactive priniciples,
 but it does facilitate the reactive programming approach should you choose to use it.
 
 ### _Template-driven_ forms
 
 _Template-driven_ forms, introduced in the [Template guide](guide/forms), take a completely different approach.
 
-You place HTML form controls (such as `<input>` and `<select>`) in the component template and 
-bind them to _data model_ properties in the component, using directives 
+You place HTML form controls (such as `<input>` and `<select>`) in the component template and
+bind them to _data model_ properties in the component, using directives
 like `ngModel`.
 
-You don't create Angular form control objects. Angular directives 
-create them for you, using the information in your data bindings. 
+You don't create Angular form control objects. Angular directives
+create them for you, using the information in your data bindings.
 You don't push and pull data values. Angular handles that for you with `ngModel`.
 Angular updates the mutable _data model_ with user changes as they happen.
 
 For this reason, the `ngModel` directive is not part of the ReactiveFormsModule.
 
-While this means less code in the component class, 
+While this means less code in the component class,
 [template-driven forms are asynchronous](guide/reactive-forms#async-vs-sync "Async vs sync")
-which may complicate development in more advanced scenarios. 
+which may complicate development in more advanced scenarios.
 
 
 {@a async-vs-sync}
@@ -113,37 +113,37 @@ which may complicate development in more advanced scenarios.
 
 Reactive forms are synchronous. Template-driven forms are asynchronous. It's a difference that matters.
 
-In reactive forms, you create the entire form control tree in code. 
-You can immediately update a value or drill down through the descendents of the parent form 
+In reactive forms, you create the entire form control tree in code.
+You can immediately update a value or drill down through the descendents of the parent form
 because all controls are always available.
 
 Template-driven forms delegate creation of their form controls to directives.
-To avoid "_changed after checked_" errors, 
+To avoid "_changed after checked_" errors,
 these directives take more than one cycle to build the entire control tree.
 That means you must wait a tick before manipulating any of the controls
 from within the component class.
 
-For example, if you inject the form control with a `@ViewChild(NgForm)` query and examine it in the 
+For example, if you inject the form control with a `@ViewChild(NgForm)` query and examine it in the
 [`ngAfterViewInit` lifecycle hook](guide/lifecycle-hooks#afterview "Lifecycle hooks guide: AfterView"),
 you'll discover that it has no children.
 You must wait a tick, using `setTimeout`, before you can
 extract a value from a control, test its validity, or set it to a new value.
 
-The asynchrony of template-driven forms also complicates unit testing. 
-You must wrap your test block in `async()` or `fakeAsync()` to 
-avoid looking for values in the form that aren't there yet. 
+The asynchrony of template-driven forms also complicates unit testing.
+You must wrap your test block in `async()` or `fakeAsync()` to
+avoid looking for values in the form that aren't there yet.
 With reactive forms, everything is available when you expect it to be.
 
-### Which is better, reactive or template-driven? 
+### Which is better, reactive or template-driven?
 
 Neither is "better".
-They're two different architectural paradigms, 
+They're two different architectural paradigms,
 with their own strengths and weaknesses.
 Choose the approach that works best for you.
 You may decide to use both in the same application.
 
-The balance of this _reactive forms_ guide explores the _reactive_ paradigm and 
-concentrates exclusively on reactive forms techniques. 
+The balance of this _reactive forms_ guide explores the _reactive_ paradigm and
+concentrates exclusively on reactive forms techniques.
 For information on _template-driven forms_, see the [_Forms_](guide/forms) guide.
 
 In the next section, you'll set up your project for the reactive form demo.
@@ -156,7 +156,7 @@ Then you'll learn about the [Angular form classes](guide/reactive-forms#essentia
 
 ## Setup
 
-Follow the steps in the [_Setup_ guide](guide/setup "Setup guide") 
+Follow the steps in the [_Setup_ guide](guide/setup "Setup guide")
 for creating a new project folder (perhaps called `reactive-forms`)
 based on the _QuickStart seed_.
 
@@ -177,9 +177,9 @@ Create a new `data-model.ts` file in the `app` directory and copy the content be
 
 
 
-The file exports two classes and two constants. The `Address` 
-and `Hero` classes define the application _data model_. 
-The `heroes` and `states` constants supply the test data. 
+The file exports two classes and two constants. The `Address`
+and `Hero` classes define the application _data model_.
+The `heroes` and `states` constants supply the test data.
 
 
 
@@ -187,7 +187,7 @@ The `heroes` and `states` constants supply the test data.
 
 
 ## Create a _reactive forms_ component
-Make a new file called 
+Make a new file called
 `hero-detail.component.ts` in the `app` directory and import these symbols:
 
 
@@ -206,8 +206,8 @@ Now enter the `@Component` decorator that specifies the `HeroDetailComponent` me
 
 
 
-Next, create an exported `HeroDetailComponent` class with a `FormControl`. 
-`FormControl` is a directive that allows you to create and manage 
+Next, create an exported `HeroDetailComponent` class with a `FormControl`.
+`FormControl` is a directive that allows you to create and manage
 a `FormControl` instance directly.
 
 
@@ -218,14 +218,14 @@ a `FormControl` instance directly.
 
 
 
-Here you are creating a `FormControl` called `name`. 
-It will be bound in the template to an HTML `input` box for the hero name. 
+Here you are creating a `FormControl` called `name`.
+It will be bound in the template to an HTML `input` box for the hero name.
 
-A `FormControl` constructor accepts three, optional arguments: 
+A `FormControl` constructor accepts three, optional arguments:
 the initial data value, an array of validators, and an array of async validators.
 
 This simple control doesn't have data or validators.
-In real apps, most form controls have both. 
+In real apps, most form controls have both.
 
 
 <div class="l-sub-section">
@@ -255,9 +255,9 @@ Now create the component's template, `src/app/hero-detail.component.html`, with 
 
 
 
-To let Angular know that this is the input that you want to 
-associate to the `name` `FormControl` in the class, 
-you need `[formControl]="name"` in the template on the `<input>`. 
+To let Angular know that this is the input that you want to
+associate to the `name` `FormControl` in the class,
+you need `[formControl]="name"` in the template on the `<input>`.
 
 
 
@@ -265,7 +265,7 @@ you need `[formControl]="name"` in the template on the `<input>`.
 
 
 
-Disregard the `form-control` _CSS_ class. It belongs to the 
+Disregard the `form-control` _CSS_ class. It belongs to the
 <a href="http://getbootstrap.com/" title="Bootstrap CSS">Bootstrap CSS library</a>,
 not Angular.
 It _styles_ the form but in no way impacts the logic of the form.
@@ -280,13 +280,13 @@ It _styles_ the form but in no way impacts the logic of the form.
 
 ## Import the _ReactiveFormsModule_
 
-The HeroDetailComponent template uses `formControlName` 
+The HeroDetailComponent template uses `formControlName`
 directive from the `ReactiveFormsModule`.
 
 In this sample, you declare the `HeroDetailComponent` in the `AppModule`.
 Therefore, do the following three things in `app.module.ts`:
 
-1. Use a JavaScript `import` statement to access 
+1. Use a JavaScript `import` statement to access
 the `ReactiveFormsModule` and the `HeroDetailComponent`.
 1. Add `ReactiveFormsModule` to the `AppModule`'s `imports` list.
 1. Add `HeroDetailComponent` to the declarations array.
@@ -318,11 +318,11 @@ Revise the `AppComponent` template so it displays the `HeroDetailComponent`.
 It may be helpful to read a brief description of the core form classes.
 
 * [_AbstractControl_](api/forms/index/AbstractControl-class "API Reference: AbstractControl")
-is the abstract base class for the three concrete form control classes: 
+is the abstract base class for the three concrete form control classes:
 `FormControl`, `FormGroup`, and `FormArray`.
 It provides their common behaviors and properties, some of which are _observable_.
 
-* [_FormControl_](api/forms/index/FormControl-class "API Reference: FormControl") 
+* [_FormControl_](api/forms/index/FormControl-class "API Reference: FormControl")
 tracks the value and validity status of an _individual_ form control.
 It corresponds to an HTML form control such as an input box or selector.
 
@@ -349,11 +349,11 @@ Add the `bootstrap` _CSS stylesheet_ to the head of `index.html`:
 
 
 
-Now that everything is wired up, the browser should display something like this: 
+Now that everything is wired up, the browser should display something like this:
 
 
 <figure class='image-display'>
-  <img src="assets/images/guide/reactive-forms/just-formcontrol.png" width="400px" alt="Single FormControl"></img>
+  <img src="content/images/guide/reactive-forms/just-formcontrol.png" width="400px" alt="Single FormControl"></img>
 </figure>
 
 
@@ -362,9 +362,9 @@ Now that everything is wired up, the browser should display something like this:
 
 
 ## Add a FormGroup
-Usually, if you have multiple *FormControls*, you'll want to register 
+Usually, if you have multiple *FormControls*, you'll want to register
 them within a parent `FormGroup`.
-This is simple to do. To add a `FormGroup`, add it to the imports section 
+This is simple to do. To add a `FormGroup`, add it to the imports section
 of `hero-detail.component.ts`:
 
 
@@ -383,7 +383,7 @@ In the class, wrap the `FormControl` in a `FormGroup` called `heroForm` as follo
 
 
 
-Now that you've made changes in the class, they need to be reflected in the 
+Now that you've made changes in the class, they need to be reflected in the
 template. Update `hero-detail.component.html` by replacing it with the following.
 
 
@@ -393,26 +393,26 @@ template. Update `hero-detail.component.html` by replacing it with the following
 
 
 
-Notice that now the single input is in a `form` element. The `novalidate` 
-attribute in the `<form>` element prevents the browser 
-from attempting native HTML validations. 
+Notice that now the single input is in a `form` element. The `novalidate`
+attribute in the `<form>` element prevents the browser
+from attempting native HTML validations.
 
-`formGroup` is a reactive form directive that takes an existing 
-`FormGroup` instance and associates it with an HTML element. 
-In this case, it associates the `FormGroup` you saved as 
+`formGroup` is a reactive form directive that takes an existing
+`FormGroup` instance and associates it with an HTML element.
+In this case, it associates the `FormGroup` you saved as
 `heroForm` with the form element.
 
-Because the class now has a `FormGroup`, you must update the template 
-syntax for associating the input with the corresponding 
-`FormControl` in the component class. 
-Without a parent `FormGroup`, 
-`[formControl]="name"` worked earlier because that directive 
-can stand alone, that is, it works without being in a `FormGroup`. 
-With a parent `FormGroup`, the `name` input needs the syntax 
-`formControlName=name` in order to be associated 
-with the correct `FormControl` 
-in the class. This syntax tells Angular to look for the parent 
-`FormGroup`, in this case `heroForm`, and then _inside_ that group 
+Because the class now has a `FormGroup`, you must update the template
+syntax for associating the input with the corresponding
+`FormControl` in the component class.
+Without a parent `FormGroup`,
+`[formControl]="name"` worked earlier because that directive
+can stand alone, that is, it works without being in a `FormGroup`.
+With a parent `FormGroup`, the `name` input needs the syntax
+`formControlName=name` in order to be associated
+with the correct `FormControl`
+in the class. This syntax tells Angular to look for the parent
+`FormGroup`, in this case `heroForm`, and then _inside_ that group
 to look for a `FormControl` called `name`.
 
 
@@ -420,10 +420,10 @@ to look for a `FormControl` called `name`.
 
 
 
-Disregard the `form-group` _CSS_ class. It belongs to the 
+Disregard the `form-group` _CSS_ class. It belongs to the
 <a href="http://getbootstrap.com/" title="Bootstrap CSS">Bootstrap CSS library</a>,
 not Angular.
-Like the `form-control` class, it _styles_ the form 
+Like the `form-control` class, it _styles_ the form
 but in no way impacts its logic.
 
 
@@ -432,8 +432,8 @@ but in no way impacts its logic.
 
 
 
-The form looks great. But does it work? 
-When the user enters a name, where does the value go? 
+The form looks great. But does it work?
+When the user enters a name, where does the value go?
 
 
 {@a json}
@@ -442,7 +442,7 @@ When the user enters a name, where does the value go?
 ## Taking a look at the form model
 
 The value goes into the **_form model_** that backs the group's `FormControls`.
-To see the form model, add the following line after the 
+To see the form model, add the following line after the
 closing `form` tag in the `hero-detail.component.html`:
 
 
@@ -457,20 +457,20 @@ Piping it through the `JsonPipe` renders the model as JSON in the browser:
 
 
 <figure class='image-display'>
-  <img src="assets/images/guide/reactive-forms/json-output.png" width="400px" alt="JSON output"></img>
+  <img src="content/images/guide/reactive-forms/json-output.png" width="400px" alt="JSON output"></img>
 </figure>
 
 
 
-The initial `name` property value is the empty string. 
+The initial `name` property value is the empty string.
 Type into the _name_ input box and watch the keystokes appear in the JSON.
 
 
 
 
-Great! You have the basics of a form. 
+Great! You have the basics of a form.
 
-In real life apps, forms get big fast. 
+In real life apps, forms get big fast.
 `FormBuilder` makes form development and maintenance easier.
 
 
@@ -481,8 +481,8 @@ In real life apps, forms get big fast.
 
 ## Introduction to _FormBuilder_
 
-The `FormBuilder` class helps reduce repetition and 
-clutter by handling details of control creation for you. 
+The `FormBuilder` class helps reduce repetition and
+clutter by handling details of control creation for you.
 
 To use `FormBuilder`, you need to import it into `hero-detail.component.ts`:
 
@@ -509,7 +509,7 @@ The revised `HeroDetailComponent` looks like this:
 
 
 `FormBuilder.group` is a factory method that creates a `FormGroup`. &nbsp;
-`FormBuilder.group` takes an object whose keys and values are `FormControl` names and their definitions. 
+`FormBuilder.group` takes an object whose keys and values are `FormControl` names and their definitions.
 In this example, the `name` control is defined by its initial data value, an empty string.
 
 Defining a group of controls in a single object makes for a compact, readable style.
@@ -520,8 +520,8 @@ It beats writing an equivalent series of `new FormControl(...)` statements.
 
 
 ### Validators.required
-Though this guide doesn't go deeply into validations, here is one example that 
-demonstrates the simplicity of using `Validators.required` in reactive forms. 
+Though this guide doesn't go deeply into validations, here is one example that
+demonstrates the simplicity of using `Validators.required` in reactive forms.
 
 First, import the `Validators` symbol.
 
@@ -531,8 +531,8 @@ First, import the `Validators` symbol.
 
 
 
-To make the `name` `FormControl` required, replace the `name` 
-property in the `FormGroup` with an array. 
+To make the `name` `FormControl` required, replace the `name`
+property in the `FormGroup` with an array.
 The first item is the initial value for `name`;
 the second is the required validator, `Validators.required`.
 
@@ -548,7 +548,7 @@ the second is the required validator, `Validators.required`.
 
 
 Reactive validators are simple, composable functions.
-Configuring validation is harder in template-driven forms where you must wrap validators in a directive. 
+Configuring validation is harder in template-driven forms where you must wrap validators in a directive.
 
 </div>
 
@@ -567,29 +567,29 @@ The browser displays the following:
 
 
 <figure class='image-display'>
-  <img src="assets/images/guide/reactive-forms/validators-json-output.png" width="400px" alt="Single FormControl"></img>
+  <img src="content/images/guide/reactive-forms/validators-json-output.png" width="400px" alt="Single FormControl"></img>
 </figure>
 
 
 
 `Validators.required` is working. The status is `INVALID` because the input box has no value.
-Type into the input box to see the status change from `INVALID` to `VALID`. 
+Type into the input box to see the status change from `INVALID` to `VALID`.
 
 In a real app, you'd replace the diagnosic message with a user-friendly experience.
 
 
-Using `Validators.required` is optional for the rest of the guide. 
+Using `Validators.required` is optional for the rest of the guide.
 It remains in each of the following examples with the same configuration.
 
 For more on validating Angular forms, see the
-[Form Validation](cookbook/form-validation) guide. 
+[Form Validation](cookbook/form-validation) guide.
 
 
 ### More FormControls
-A hero has more than a name. 
-A hero has an address, a super power and sometimes a sidekick too. 
+A hero has more than a name.
+A hero has an address, a super power and sometimes a sidekick too.
 
-The address has a state property. The user will select a state with a `<select>` box and you'll populate 
+The address has a state property. The user will select a state with a `<select>` box and you'll populate
 the `<option>` elements with states. So import `states` from `data-model.ts`.
 
 <code-example path="reactive-forms/src/app/hero-detail-4.component.ts" region="imports" title="src/app/hero-detail.component.ts (excerpt)" linenums="false">
@@ -598,7 +598,7 @@ the `<option>` elements with states. So import `states` from `data-model.ts`.
 
 
 
-Declare the `states` property and add some address `FormControls` to the `heroForm` as follows. 
+Declare the `states` property and add some address `FormControls` to the `heroForm` as follows.
 
 
 <code-example path="reactive-forms/src/app/hero-detail-4.component.ts" region="v4" title="src/app/hero-detail.component.ts (excerpt)" linenums="false">
@@ -607,7 +607,7 @@ Declare the `states` property and add some address `FormControls` to the `heroFo
 
 
 
-Then add corresponding markup in `hero-detail.component.html` 
+Then add corresponding markup in `hero-detail.component.html`
 within the `form` element.
 
 
@@ -621,11 +621,11 @@ within the `form` element.
 
 
 
-*Reminder*: Ignore the many mentions of `form-group`, 
+*Reminder*: Ignore the many mentions of `form-group`,
 `form-control`, `center-block`, and `checkbox` in this markup.
 Those are _bootstrap_ CSS classes that Angular itself ignores.
 Pay attention to the `formGroupName` and `formControlName` attributes.
-They are the Angular directives that bind the HTML controls to the 
+They are the Angular directives that bind the HTML controls to the
 Angular `FormGroup` and `FormControl` properties in the component class.
 
 
@@ -633,19 +633,19 @@ Angular `FormGroup` and `FormControl` properties in the component class.
 
 
 
-The revised template includes more text inputs, a select box for the `state`, radio buttons for the `power`, 
-and a checkbox for the `sidekick`. 
+The revised template includes more text inputs, a select box for the `state`, radio buttons for the `power`,
+and a checkbox for the `sidekick`.
 
-You must bind the option's value property with `[value]="state"`. 
+You must bind the option's value property with `[value]="state"`.
 If you do not bind the value, the select shows the first option from the data model.
 
 The component _class_ defines control properties without regard for their representation in the template.
 You define the `state`, `power`, and `sidekick` controls the same way you defined the `name` control.
-You tie these controls to the template HTML elements in the same way, 
-specifiying the `FormControl` name with the `formControlName` directive. 
+You tie these controls to the template HTML elements in the same way,
+specifiying the `FormControl` name with the `formControlName` directive.
 
-See the API reference for more information about 
-[radio buttons](api/forms/index/RadioControlValueAccessor-directive "API: RadioControlValueAccessor"), 
+See the API reference for more information about
+[radio buttons](api/forms/index/RadioControlValueAccessor-directive "API: RadioControlValueAccessor"),
 [selects](api/forms/index/SelectControlValueAccessor-directive "API: SelectControlValueAccessor"), and
 [checkboxes](api/forms/index/CheckboxControlValueAccessor-directive "API: CheckboxControlValueAccessor").
 
@@ -656,12 +656,12 @@ See the API reference for more information about
 
 ### Nested FormGroups
 
-This form is getting big and unwieldy. You can group some of the related `FormControls` 
-into a nested `FormGroup`. The `street`, `city`, `state`, and `zip` are properties 
+This form is getting big and unwieldy. You can group some of the related `FormControls`
+into a nested `FormGroup`. The `street`, `city`, `state`, and `zip` are properties
 that would make a good _address_ `FormGroup`.
-Nesting groups and controls in this way allows you to 
-mirror the hierarchical structure of the data model 
-and helps track validation and state for related sets of controls. 
+Nesting groups and controls in this way allows you to
+mirror the hierarchical structure of the data model
+and helps track validation and state for related sets of controls.
 
 You used the `FormBuilder` to create one `FormGroup` in this component called `heroForm`.
 Let that be the parent `FormGroup`.
@@ -674,14 +674,14 @@ assign the result to a new `address` property of the parent `FormGroup`.
 
 
 
-You’ve changed the structure of the form controls in the component class; 
+You’ve changed the structure of the form controls in the component class;
 you must make corresponding adjustments to the component template.
 
 In `hero-detail.component.html`, wrap the address-related `FormControls` in a `div`.
 Add a `formGroupName` directive to the `div` and bind it to `"address"`.
 That's the property of the _address_ child `FormGroup` within the parent `FormGroup` called `heroForm`.
 
-To make this change visually obvious, slip in an `<h4>` header near the top with the text, _Secret Lair_. 
+To make this change visually obvious, slip in an `<h4>` header near the top with the text, _Secret Lair_.
 The new _address_ HTML looks like this:
 
 
@@ -692,16 +692,16 @@ The new _address_ HTML looks like this:
 
 
 After these changes, the JSON output in the browser shows the revised _form model_
-with the nested address `FormGroup`: 
+with the nested address `FormGroup`:
 
 
 <figure class='image-display'>
-  <img src="assets/images/guide/reactive-forms/address-group.png" width="400px" alt="JSON output"></img>
+  <img src="content/images/guide/reactive-forms/address-group.png" width="400px" alt="JSON output"></img>
 </figure>
 
 
 
-Great! You’ve made a group and you can see that the template 
+Great! You’ve made a group and you can see that the template
 and the form model are talking to one another.
 
 
@@ -714,9 +714,9 @@ At the moment, you're dumping the entire form model onto the page.
 Sometimes you're interested only in the state of one particular `FormControl`.
 
 You can inspect an individual `FormControl` within a form by extracting it with the `.get()` method.
-You can do this _within_ the component class or display it on the 
-page by adding the following to the template, 
-immediately after the `{{form.value | json}}` interpolation as follows: 
+You can do this _within_ the component class or display it on the
+page by adding the following to the template,
+immediately after the `{{form.value | json}}` interpolation as follows:
 
 
 <code-example path="reactive-forms/src/app/hero-detail-5.component.html" region="inspect-value" title="src/app/hero-detail.component.html" linenums="false">
@@ -734,7 +734,7 @@ To get the state of a `FormControl` that’s inside a `FormGroup`, use dot notat
 
 
 
-You can use this technique to display _any_ property of a `FormControl` 
+You can use this technique to display _any_ property of a `FormControl`
 such as one of the following:
 
 <style>
@@ -788,7 +788,7 @@ such as one of the following:
     <td>
 
 
-      the validity of a `FormControl`. Possible values: `VALID`, 
+      the validity of a `FormControl`. Possible values: `VALID`,
        `INVALID`, `PENDING`, or `DISABLED`.
     </td>
 
@@ -820,7 +820,7 @@ such as one of the following:
 
       `true` if the control user has not yet entered the HTML control
        and triggered its blur event. Its opposite is `myControl.touched`.
-                         
+
     </td>
 
   </tr>
@@ -829,13 +829,13 @@ such as one of the following:
 
 
 
-Learn about other `FormControl` properties in the 
+Learn about other `FormControl` properties in the
 [_AbstractControl_](api/forms/index/AbstractControl-class) API reference.
 
-One common reason for inspecting `FormControl` properties is to 
-make sure the user entered valid values. 
-Read more about validating Angular forms in the 
-[Form Validation](cookbook/form-validation) guide. 
+One common reason for inspecting `FormControl` properties is to
+make sure the user entered valid values.
+Read more about validating Angular forms in the
+[Form Validation](cookbook/form-validation) guide.
 
 
 
@@ -856,7 +856,7 @@ The `FormControl` structure is the **_form model_**.
 The component must copy the hero values in the _data model_ into the _form model_.
 There are two important implications:
 
-1. The developer must understand how the properties of the _data model_ 
+1. The developer must understand how the properties of the _data model_
 map to the properties of the _form model_.
 
 2. User changes flow from the DOM elements to the _form model_, not to the _data model_.
@@ -917,8 +917,8 @@ Also be sure to update the import from `data-model` so you can reference the `He
 
 
 ## Populate the form model with _setValue_ and _patchValue_
-Previously you created a control and initialized its value at the same time. 
-You can also initialize or reset the values _later_ with the 
+Previously you created a control and initialized its value at the same time.
+You can also initialize or reset the values _later_ with the
 `setValue` and `patchValue` methods.
 
 ### _setValue_
@@ -934,13 +934,13 @@ by passing in a data object whose properties exactly match the _form model_ behi
 
 The `setValue` method checks the data object thoroughly before assigning any form control values.
 
-It will not accept a data object that doesn't match the FormGroup structure or is 
-missing values for any control in the group. This way, it can return helpful 
-error messages if you have a typo or if you've nested controls incorrectly. 
+It will not accept a data object that doesn't match the FormGroup structure or is
+missing values for any control in the group. This way, it can return helpful
+error messages if you have a typo or if you've nested controls incorrectly.
 `patchValue` will fail silently.
 
-On the other hand,`setValue` will catch 
-the error and report it clearly. 
+On the other hand,`setValue` will catch
+the error and report it clearly.
 
 Notice that you can _almost_ use the entire `hero` as the argument to `setValue`
 because its shape is similar to the component's `FormGroup` structure.
@@ -956,7 +956,7 @@ This explains the conditional setting of the `address` property in the data obje
 
 ### _patchValue_
 With **`patchValue`**, you can assign values to specific controls in a `FormGroup`
-by supplying an object of key/value pairs for just the controls of interest. 
+by supplying an object of key/value pairs for just the controls of interest.
 
 This example sets only the form's `name` control.
 
@@ -967,7 +967,7 @@ This example sets only the form's `name` control.
 
 
 With **`patchValue`** you have more flexibility to cope with wildly divergent data and form models.
-But unlike `setValue`,  `patchValue` cannot check for missing control 
+But unlike `setValue`,  `patchValue` cannot check for missing control
 values and does not throw helpful errors.
 
 ### When to set form model values (_ngOnChanges_)
@@ -987,7 +987,7 @@ by binding to its `hero` input property.
 
 
 
-In this approach, the value of `hero` in the `HeroDetailComponent` changes 
+In this approach, the value of `hero` in the `HeroDetailComponent` changes
 every time the user selects a new hero.
 You should call  _setValue_ in the [ngOnChanges](guide/lifecycle-hooks#onchanges)
 hook, which Angular calls whenever the input `hero` property changes
@@ -1021,8 +1021,8 @@ Add the `ngOnChanges` method to the class as follows:
 
 ### _reset_ the form flags
 
-You should  reset the form when the hero changes so that 
-control values from the previous hero are cleared and 
+You should  reset the form when the hero changes so that
+control values from the previous hero are cleared and
 status flags are restored to the _pristine_ state.
 You could call `reset` at the top of `ngOnChanges` like this.
 
@@ -1032,8 +1032,8 @@ You could call `reset` at the top of `ngOnChanges` like this.
 
 
 
-The `reset` method has an optional `state` value so you can reset the flags _and_ the control values at the same. 
-Internally, `reset` passes the argument to `setValue`. 
+The `reset` method has an optional `state` value so you can reset the flags _and_ the control values at the same.
+Internally, `reset` passes the argument to `setValue`.
 A little refactoring and `ngOnChanges` becomes this:
 
 <code-example path="reactive-forms/src/app/hero-detail-7.component.ts" region="ngOnChanges" title="src/app/hero-detail.component.ts (ngOnchanges - revised)" linenums="false">
@@ -1052,16 +1052,16 @@ Together they look a bit like this:
 
 
 <figure class='image-display'>
-  <img src="assets/images/guide/reactive-forms/hero-list.png" width="420px" alt="HeroListComponent"></img>
+  <img src="content/images/guide/reactive-forms/hero-list.png" width="420px" alt="HeroListComponent"></img>
 </figure>
 
 
 
 The `HeroListComponent` uses an injected `HeroService` to retrieve heroes from the server
 and then presents those heroes to the user as a series of buttons.
-The `HeroService` emulates an HTTP service. 
-It returns an `Observable` of heroes that resolves after a short delay, 
-both to simulate network latency and to indicate visually 
+The `HeroService` emulates an HTTP service.
+It returns an `Observable` of heroes that resolves after a short delay,
+both to simulate network latency and to indicate visually
 the necessarily asynchronous nature of the application.
 
 When the user clicks on a hero,
@@ -1076,11 +1076,11 @@ The remaining `HeroListComponent` and `HeroService` implementation details are n
 The techniques involved are covered elsewhere in the documentation, including the _Tour of Heroes_
 [here](tutorial/toh-pt3 "ToH: Multiple Components") and [here](tutorial/toh-pt4 "ToH: Services").
 
-If you're coding along with the steps in this reactive forms tutorial, 
-create the pertinent files based on the 
-[source code displayed below](guide/reactive-forms#source-code "Reactive Forms source code"). 
+If you're coding along with the steps in this reactive forms tutorial,
+create the pertinent files based on the
+[source code displayed below](guide/reactive-forms#source-code "Reactive Forms source code").
 Notice that `hero-list.component.ts` imports `Observable` and `finally` while `hero.service.ts` imports `Observable`, `of`,
-and `delay` from `rxjs`. 
+and `delay` from `rxjs`.
 Then return here to learn about _form array_ properties.
 
 
@@ -1116,7 +1116,7 @@ In this guide, you define a `FormArray` for `Hero.addresses` and
 let the user add or modify addresses (removing addresses is your homework).
 
 You’ll need to redefine the form model in the `HeroDetailComponent` constructor,
-which currently only displays the first hero address in an _address_ `FormGroup`. 
+which currently only displays the first hero address in an _address_ `FormGroup`.
 
 <code-example path="reactive-forms/src/app/hero-detail-7.component.ts" region="address-form-group" title="src/app/hero-detail-7.component.ts" linenums="false">
 
@@ -1143,7 +1143,7 @@ Replace the _address_ `FormGroup` definition with a _secretLairs_ `FormArray` de
 Changing the form control name from `address` to `secretLairs` drives home an important point:
 the _form model_ doesn't have to match the _data model_.
 
-Obviously there has to be a relationship between the two. 
+Obviously there has to be a relationship between the two.
 But it can be anything that makes sense within the application domain.
 
 _Presentation_ requirements often differ from _data_ requirements.
@@ -1187,21 +1187,21 @@ Wrap the expression in a `secretLairs` convenience property for clarity and re-u
 
 
 
-### Display the _FormArray_ 
+### Display the _FormArray_
 
 The current HTML template displays a single _address_ `FormGroup`.
 Revise it to display zero, one, or more of the hero's _address_ `FormGroups`.
 
-This is mostly a matter of wrapping the previous template HTML for an address in a `<div>` and 
+This is mostly a matter of wrapping the previous template HTML for an address in a `<div>` and
 repeating that `<div>` with `*ngFor`.
 
 The trick lies in knowing how to write the `*ngFor`. There are three key points:
 
-1. Add another wrapping `<div>`, around the `<div>` with `*ngFor`, and 
+1. Add another wrapping `<div>`, around the `<div>` with `*ngFor`, and
 set its `formArrayName` directive to `"secretLairs"`.
-This step establishes the _secretLairs_ `FormArray` as the context for form controls in the inner, repeated HTML template. 
+This step establishes the _secretLairs_ `FormArray` as the context for form controls in the inner, repeated HTML template.
 
-1. The source of the repeated items is the `FormArray.controls`, not the `FormArray` itself. 
+1. The source of the repeated items is the `FormArray.controls`, not the `FormArray` itself.
 Each control is an _address_ `FormGroup`, exactly what the previous (now repeated) template HTML expected.
 
 1. Each repeated `FormGroup` needs a unique `formGroupName` which must be the index of the `FormGroup` in the `FormArray`.
@@ -1225,7 +1225,7 @@ Here's the complete template for the _secret lairs_ section:
 
 ### Add a new lair to the _FormArray_
 
-Add an `addLair` method that gets the _secretLairs_ `FormArray` and appends a new _address_ `FormGroup` to it. 
+Add an `addLair` method that gets the _secretLairs_ `FormArray` and appends a new _address_ `FormGroup` to it.
 
 <code-example path="reactive-forms/src/app/hero-detail-8.component.ts" region="add-lair" title="src/app/hero-detail.component.ts (addLair method)" linenums="false">
 
@@ -1246,7 +1246,7 @@ Place a button on the form so the user can add a new _secret lair_ and wire it t
 
 
 
-Be sure to **add the `type="button"` attribute**. 
+Be sure to **add the `type="button"` attribute**.
 In fact, you should always specify a button's `type`.
 Without an explict type, the button type defaults to "submit".
 When you later add a _form submit_ action, every "submit" button triggers the submit action which
@@ -1265,12 +1265,12 @@ Back in the browser, select the hero named "Magneta".
 
 
 <figure class='image-display'>
-  <img src="assets/images/guide/reactive-forms/addresses-array.png" width="400px" alt="JSON output of addresses array"></img>
+  <img src="content/images/guide/reactive-forms/addresses-array.png" width="400px" alt="JSON output of addresses array"></img>
 </figure>
 
 
 
-Click the "_Add a Secret Lair_" button. 
+Click the "_Add a Secret Lair_" button.
 A new address section appears. Well done!
 
 ### Remove a lair
@@ -1289,7 +1289,7 @@ Angular calls `ngOnChanges` when the user picks a hero in the parent `HeroListCo
 Picking a hero changes the `HeroDetailComponent.hero` input property.
 
 Angular does _not_ call `ngOnChanges` when the user modifies the hero's _name_ or _secret lairs_.
-Fortunately, you can learn about such changes by subscribing to one of the form control properties 
+Fortunately, you can learn about such changes by subscribing to one of the form control properties
 that raises a change event.
 
 These are properties, such as `valueChanges`, that return an RxJS `Observable`.
@@ -1326,7 +1326,7 @@ You should see a new name in the log after each keystroke.
 ### When to use it
 
 An interpolation binding is the easier way to _display_ a name change.
-Subscribing to an observable form control property is handy for triggering 
+Subscribing to an observable form control property is handy for triggering
 application logic _within_ the component class.
 
 
@@ -1343,7 +1343,7 @@ After you implement both features in this section, the form will look like this:
 
 
 <figure class='image-display'>
-  <img src="assets/images/guide/reactive-forms/save-revert-buttons.png" width="389px" alt="Form with save & revert buttons"></img>
+  <img src="content/images/guide/reactive-forms/save-revert-buttons.png" width="389px" alt="Form with save & revert buttons"></img>
 </figure>
 
 
@@ -1361,7 +1361,7 @@ to a save method on the injected `HeroService`.
 
 This original `hero` had the pre-save values. The user's changes are still in the _form model_.
 So you create a new `hero` from a combination of original hero values (the `hero.id`)
-and deep copies of the changed form model values, using the `prepareSaveHero` helper. 
+and deep copies of the changed form model values, using the `prepareSaveHero` helper.
 
 
 <code-example path="reactive-forms/src/app/hero-detail.component.ts" region="prepare-save-hero" title="src/app/hero-detail.component.ts (prepareSaveHero)" linenums="false">
@@ -1377,7 +1377,7 @@ and deep copies of the changed form model values, using the `prepareSaveHero` he
 **Address deep copy**
 
 Had you assigned the `formModel.secretLairs` to `saveHero.addresses` (see line commented out),
-the addresses in `saveHero.addresses` array would be the same objects 
+the addresses in `saveHero.addresses` array would be the same objects
 as the lairs in the `formModel.secretLairs`.
 A user's subsequent changes to a lair street would mutate an address street in the `saveHero`.
 

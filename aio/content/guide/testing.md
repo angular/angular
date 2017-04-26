@@ -389,7 +389,7 @@ The Angular CLI has different commands to do the same thing. Adjust accordingly.
 After a few moments, karma opens a browser and starts writing to the console.
 
 <figure class='image-display'>
-  <img src='assets/images/guide/testing/karma-browser.png' style="width:400px;" alt="Karma browser"></img>
+  <img src='content/images/guide/testing/karma-browser.png' style="width:400px;" alt="Karma browser"></img>
 </figure>
 
 
@@ -473,7 +473,7 @@ Debug specs in the browser in the same way that you debug an application.
 
 
 <figure class='image-display'>
-  <img src='assets/images/guide/testing/karma-1st-spec-debug.png' style="width:700px;" alt="Karma debugging"></img>
+  <img src='content/images/guide/testing/karma-1st-spec-debug.png' style="width:700px;" alt="Karma debugging"></img>
 </figure>
 
 
@@ -1914,7 +1914,7 @@ Inspect and download _all_ of the guide's application test code with this <live-
 The `HeroDetailComponent` is a simple view with a title, two hero fields, and two buttons.
 
 <figure class='image-display'>
-  <img src='assets/images/guide/testing/hero-detail.component.png' alt="HeroDetailComponent in action"></img>
+  <img src='content/images/guide/testing/hero-detail.component.png' alt="HeroDetailComponent in action"></img>
 </figure>
 
 
@@ -2505,7 +2505,7 @@ A better solution is to create an artificial test component that demonstrates al
 
 
 <figure class='image-display'>
-  <img src='assets/images/guide/testing/highlight-directive-spec.png' width="200px" alt="HighlightDirective spec in action"></img>
+  <img src='content/images/guide/testing/highlight-directive-spec.png' width="200px" alt="HighlightDirective spec in action"></img>
 </figure>
 
 
@@ -2847,7 +2847,7 @@ Here's a summary of the stand-alone functions, in order of likely utility:
 
       Simulates the passage of time and the completion of pending asynchronous activities
       by flushing both _timer_ and _micro-task_ queues within the _fakeAsync test zone_.
-      
+
 
 <div class="l-sub-section">
 
@@ -2855,7 +2855,7 @@ Here's a summary of the stand-alone functions, in order of likely utility:
 
       The curious, dedicated reader might enjoy this lengthy blog post,
       "<a href="https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/"
-    >_Tasks, microtasks, queues and schedules_</a>".      
+    >_Tasks, microtasks, queues and schedules_</a>".
 
 </div>
 
@@ -3601,7 +3601,7 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
 
 
       The immediate `DebugElement` children. Walk the tree by descending through `children`.
-      
+
 
 <div class="l-sub-section">
 
@@ -3609,7 +3609,7 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
 
       `DebugElement` also has `childNodes`, a list of `DebugNode` objects.
       `DebugElement` derives from `DebugNode` objects and there are often
-      more nodes than elements. Testers can usually ignore plain nodes.      
+      more nodes than elements. Testers can usually ignore plain nodes.
 
 </div>
 
