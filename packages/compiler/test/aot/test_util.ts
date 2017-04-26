@@ -6,19 +6,26 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompilerHost} from '@angular/compiler';
+import {AotCompilerHost, AotCompilerOptions, GeneratedFile, createAotCompiler} from '@angular/compiler';
+import {ɵReflectionCapabilities as ReflectionCapabilities, ɵreflector as reflector} from '@angular/core';
 import {MetadataBundlerHost, MetadataCollector, ModuleMetadata} from '@angular/tsc-wrapped';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-export type MockData = string | MockDirectory;
+let nodeModulesPath: string;
+let angularSourcePath: string;
+let rootPath: string;
+
+calcPathsOnDisc();
+
+export type MockFileOrDirectory = string | MockDirectory;
 
 export type MockDirectory = {
-  [name: string]: MockData | undefined;
+  [name: string]: MockFileOrDirectory | undefined;
 };
 
-export function isDirectory(data: MockData | undefined): data is MockDirectory {
+export function isDirectory(data: MockFileOrDirectory | undefined): data is MockDirectory {
   return typeof data !== 'string';
 }
 
@@ -43,12 +50,21 @@ export const settings: ts.CompilerOptions = {
 
 export interface EmitterOptions {
   emitMetadata: boolean;
-  mockData?: MockData;
+  mockData?: MockDirectory;
 }
 
+function calcPathsOnDisc() {
+  const moduleFilename = module.filename.replace(/\\/g, '/');
+  const distIndex = moduleFilename.indexOf('/dist/all');
+  if (distIndex >= 0) {
+    rootPath = moduleFilename.substr(0, distIndex);
+    nodeModulesPath = path.join(rootPath, 'node_modules');
+    angularSourcePath = path.join(rootPath, 'packages');
+  }
+}
+
+
 export class EmittingCompilerHost implements ts.CompilerHost {
-  private angularSourcePath: string|undefined;
-  private nodeModulesPath: string|undefined;
   private addedFiles = new Map<string, string>();
   private writtenFiles = new Map<string, string>();
   private scriptNames: string[];
@@ -56,19 +72,18 @@ export class EmittingCompilerHost implements ts.CompilerHost {
   private collector = new MetadataCollector();
 
   constructor(scriptNames: string[], private options: EmitterOptions) {
-    const moduleFilename = module.filename.replace(/\\/g, '/');
-    const distIndex = moduleFilename.indexOf('/dist/all');
-    if (distIndex >= 0) {
-      const root = moduleFilename.substr(0, distIndex);
-      this.nodeModulesPath = path.join(root, 'node_modules');
-      this.angularSourcePath = path.join(root, 'packages');
+    // Rewrite references to scripts with '@angular' to its corresponding location in
+    // the source tree.
+    this.scriptNames = scriptNames.map(f => this.effectiveName(f));
+    this.root = rootPath;
+  }
 
-      // Rewrite references to scripts with '@angular' to its corresponding location in
-      // the source tree.
-      this.scriptNames = scriptNames.map(f => this.effectiveName(f));
-
-      this.root = root;
-    }
+  public writtenAngularFiles(target = new Map<string, string>()): Map<string, string> {
+    this.written.forEach((value, key) => {
+      const path = `/node_modules/@angular${key.substring(angularSourcePath.length)}`;
+      target.set(path, value);
+    });
+    return target;
   }
 
   public addScript(fileName: string, content: string) {
@@ -97,7 +112,7 @@ export class EmittingCompilerHost implements ts.CompilerHost {
   public effectiveName(fileName: string): string {
     const prefix = '@angular/';
     return fileName.startsWith('@angular/') ?
-        path.join(this.angularSourcePath, fileName.substr(prefix.length)) :
+        path.join(angularSourcePath, fileName.substr(prefix.length)) :
         fileName;
   }
 
@@ -171,31 +186,17 @@ export class EmittingCompilerHost implements ts.CompilerHost {
   getNewLine(): string { return '\n'; }
 }
 
-const MOCK_NODEMODULES_PREFIX = '/node_modules/';
-
 export class MockCompilerHost implements ts.CompilerHost {
   scriptNames: string[];
 
-  private angularSourcePath: string|undefined;
-  private nodeModulesPath: string|undefined;
   public overrides = new Map<string, string>();
   public writtenFiles = new Map<string, string>();
   private sourceFiles = new Map<string, ts.SourceFile>();
   private assumeExists = new Set<string>();
   private traces: string[] = [];
 
-  constructor(
-      scriptNames: string[], private data: MockData, private angular: Map<string, string>,
-      private libraries?: Map<string, string>[]) {
+  constructor(scriptNames: string[], private data: MockDirectory) {
     this.scriptNames = scriptNames.slice(0);
-    const moduleFilename = module.filename.replace(/\\/g, '/');
-    let angularIndex = moduleFilename.indexOf('@angular');
-    let distIndex = moduleFilename.indexOf('/dist/all');
-    if (distIndex >= 0) {
-      const root = moduleFilename.substr(0, distIndex);
-      this.nodeModulesPath = path.join(root, 'node_modules');
-      this.angularSourcePath = path.join(root, 'packages');
-    }
   }
 
   // Test API
@@ -234,22 +235,13 @@ export class MockCompilerHost implements ts.CompilerHost {
     const effectiveName = this.getEffectiveName(fileName);
     if (effectiveName == fileName) {
       let result = open(fileName, this.data) != null;
-      if (!result && fileName.startsWith(MOCK_NODEMODULES_PREFIX)) {
-        const libraryPath = fileName.substr(MOCK_NODEMODULES_PREFIX.length - 1);
-        for (const library of this.libraries !) {
-          if (library.has(libraryPath)) {
-            return true;
-          }
-        }
-      }
       return result;
     } else {
       if (fileName.match(rxjs)) {
         let result = fs.existsSync(effectiveName);
         return result;
       }
-      const result = this.angular.has(effectiveName);
-      return result;
+      return false;
     }
   }
 
@@ -315,12 +307,6 @@ export class MockCompilerHost implements ts.CompilerHost {
       let effectiveName = this.getEffectiveName(fileName);
       if (effectiveName === fileName) {
         const result = open(fileName, this.data);
-        if (!result && fileName.startsWith(MOCK_NODEMODULES_PREFIX)) {
-          const libraryPath = fileName.substr(MOCK_NODEMODULES_PREFIX.length - 1);
-          for (const library of this.libraries !) {
-            if (library.has(libraryPath)) return library.get(libraryPath);
-          }
-        }
         return result;
       } else {
         if (fileName.match(rxjs)) {
@@ -328,22 +314,16 @@ export class MockCompilerHost implements ts.CompilerHost {
             return fs.readFileSync(fileName, 'utf8');
           }
         }
-        return this.angular.get(effectiveName);
       }
     }
   }
 
   private getEffectiveName(name: string): string {
     const node_modules = 'node_modules';
-    const at_angular = '/@angular';
     const rxjs = '/rxjs';
     if (name.startsWith('/' + node_modules)) {
-      if (this.angularSourcePath && name.startsWith('/' + node_modules + at_angular)) {
-        return path.join(
-            this.angularSourcePath, name.substr(node_modules.length + at_angular.length + 1));
-      }
-      if (this.nodeModulesPath && name.startsWith('/' + node_modules + rxjs)) {
-        return path.join(this.nodeModulesPath, name.substr(node_modules.length + 1));
+      if (nodeModulesPath && name.startsWith('/' + node_modules + rxjs)) {
+        return path.join(nodeModulesPath, name.substr(node_modules.length + 1));
       }
     }
     return name;
@@ -439,11 +419,12 @@ export class MockMetadataBundlerHost implements MetadataBundlerHost {
   }
 }
 
-function find(fileName: string, data: MockData | undefined): MockData|undefined {
+function find(fileName: string, data: MockFileOrDirectory | undefined): MockFileOrDirectory|
+    undefined {
   if (!data) return undefined;
   let names = fileName.split('/');
   if (names.length && !names[0].length) names.shift();
-  let current: MockData|undefined = data;
+  let current: MockFileOrDirectory|undefined = data;
   for (let name of names) {
     if (typeof current === 'string')
       return undefined;
@@ -454,7 +435,7 @@ function find(fileName: string, data: MockData | undefined): MockData|undefined 
   return current;
 }
 
-function open(fileName: string, data: MockData | undefined): string|undefined {
+function open(fileName: string, data: MockFileOrDirectory | undefined): string|undefined {
   let result = find(fileName, data);
   if (typeof result === 'string') {
     return result;
@@ -462,7 +443,204 @@ function open(fileName: string, data: MockData | undefined): string|undefined {
   return undefined;
 }
 
-function directoryExists(dirname: string, data: MockData | undefined): boolean {
+function directoryExists(dirname: string, data: MockFileOrDirectory | undefined): boolean {
   let result = find(dirname, data);
   return !!result && typeof result !== 'string';
+}
+
+export type MockFileArray = {
+  fileName: string,
+  content: string
+}[];
+
+export type MockData = MockDirectory | Map<string, string>| (MockDirectory | Map<string, string>)[];
+
+export function toMockFileArray(data: MockData, target: MockFileArray = []): MockFileArray {
+  if (data instanceof Map) {
+    mapToMockFileArray(data, target);
+  } else if (Array.isArray(data)) {
+    data.forEach(entry => toMockFileArray(entry, target));
+  } else {
+    mockDirToFileArray(data, '', target);
+  }
+  return target;
+}
+
+function mockDirToFileArray(dir: MockDirectory, path: string, target: MockFileArray) {
+  Object.keys(dir).forEach((localFileName) => {
+    const value = dir[localFileName] !;
+    const fileName = `${path}/${localFileName}`;
+    if (typeof value === 'string') {
+      target.push({fileName, content: value});
+    } else {
+      mockDirToFileArray(value, fileName, target);
+    }
+  });
+}
+
+function mapToMockFileArray(files: Map<string, string>, target: MockFileArray) {
+  files.forEach((content, fileName) => { target.push({fileName, content}); });
+}
+
+export function arrayToMockMap(arr: MockFileArray): Map<string, string> {
+  const map = new Map<string, string>();
+  arr.forEach(({fileName, content}) => { map.set(fileName, content); });
+  return map;
+}
+
+export function arrayToMockDir(arr: MockFileArray): MockDirectory {
+  const rootDir: MockDirectory = {};
+  arr.forEach(({fileName, content}) => {
+    let pathParts = fileName.split('/');
+    // trim trailing slash
+    let startIndex = pathParts[0] ? 0 : 1;
+    // get/create the directory
+    let currentDir = rootDir;
+    for (let i = startIndex; i < pathParts.length - 1; i++) {
+      const pathPart = pathParts[i];
+      let localDir = <MockDirectory>currentDir[pathPart];
+      if (!localDir) {
+        currentDir[pathPart] = localDir = {};
+      }
+      currentDir = localDir;
+    }
+    // write the file
+    currentDir[pathParts[pathParts.length - 1]] = content;
+  });
+  return rootDir;
+}
+
+const minCoreIndex = `
+  export * from './src/application_module';
+  export * from './src/change_detection';
+  export * from './src/metadata';
+  export * from './src/di/metadata';
+  export * from './src/di/injector';
+  export * from './src/di/injection_token';
+  export * from './src/linker';
+  export * from './src/render';
+  export * from './src/codegen_private_exports';
+`;
+
+export function setup(options: {compileAngular: boolean} = {
+  compileAngular: true
+}) {
+  let angularFiles = new Map<string, string>();
+
+  beforeAll(() => {
+    if (options.compileAngular) {
+      const emittingHost = new EmittingCompilerHost([], {emitMetadata: true});
+      emittingHost.addScript('@angular/core/index.ts', minCoreIndex);
+      const emittingProgram = ts.createProgram(emittingHost.scripts, settings, emittingHost);
+      emittingProgram.emit();
+      emittingHost.writtenAngularFiles(angularFiles);
+    }
+  });
+  // Restore reflector since AoT compiler will update it with a new static reflector
+  afterEach(() => { reflector.updateCapabilities(new ReflectionCapabilities()); });
+
+  return angularFiles;
+}
+
+export function expectNoDiagnostics(program: ts.Program) {
+  function fileInfo(diagnostic: ts.Diagnostic): string {
+    if (diagnostic.file) {
+      return `${diagnostic.file.fileName}(${diagnostic.start}): `;
+    }
+    return '';
+  }
+
+  function chars(len: number, ch: string): string { return new Array(len).fill(ch).join(''); }
+
+  function lineNoOf(offset: number, text: string): number {
+    let result = 1;
+    for (let i = 0; i < offset; i++) {
+      if (text[i] == '\n') result++;
+    }
+    return result;
+  }
+
+  function lineInfo(diagnostic: ts.Diagnostic): string {
+    if (diagnostic.file) {
+      const start = diagnostic.start;
+      let end = diagnostic.start + diagnostic.length;
+      const source = diagnostic.file.text;
+      let lineStart = start;
+      let lineEnd = end;
+      while (lineStart > 0 && source[lineStart] != '\n') lineStart--;
+      if (lineStart < start) lineStart++;
+      while (lineEnd < source.length && source[lineEnd] != '\n') lineEnd++;
+      let line = source.substring(lineStart, lineEnd);
+      const lineIndex = line.indexOf('/n');
+      if (lineIndex > 0) {
+        line = line.substr(0, lineIndex);
+        end = start + lineIndex;
+      }
+      const lineNo = lineNoOf(start, source) + ': ';
+      return '\n' + lineNo + line + '\n' + chars(start - lineStart + lineNo.length, ' ') +
+          chars(end - start, '^');
+    }
+    return '';
+  }
+
+  function expectNoDiagnostics(diagnostics: ts.Diagnostic[]) {
+    if (diagnostics && diagnostics.length) {
+      throw new Error(
+          'Errors from TypeScript:\n' +
+          diagnostics.map(d => `${fileInfo(d)}${d.messageText}${lineInfo(d)}`).join(' \n'));
+    }
+  }
+  expectNoDiagnostics(program.getOptionsDiagnostics());
+  expectNoDiagnostics(program.getSyntacticDiagnostics());
+  expectNoDiagnostics(program.getSemanticDiagnostics());
+}
+
+function isSource(fileName: string): boolean {
+  return !/\.d\.ts$/.test(fileName) && /\.ts$/.test(fileName);
+}
+
+export function compile(rootDirs: MockData, options: {
+  emit?: boolean,
+  useSummaries?: boolean,
+  preCompile?: (program: ts.Program) => void,
+  postCompile?: (program: ts.Program) => void,
+}& AotCompilerOptions = {}): Promise<{genFiles: GeneratedFile[], outDir: MockDirectory}> {
+  // Make sure we always return errors via the promise...
+  return Promise.resolve(null).then(() => {
+    // when using summaries, always emit so the next step can use the results.
+    const emit = options.emit || options.useSummaries;
+    const preCompile = options.preCompile || expectNoDiagnostics;
+    const postCompile = options.postCompile || expectNoDiagnostics;
+    const rootDirArr = toMockFileArray(rootDirs);
+    const scriptNames = rootDirArr.map(entry => entry.fileName).filter(isSource);
+
+    const host = new MockCompilerHost(scriptNames, arrayToMockDir(rootDirArr));
+    const aotHost = new MockAotCompilerHost(host);
+    if (options.useSummaries) {
+      aotHost.hideMetadata();
+      aotHost.tsFilesOnly();
+    }
+    const scripts = host.scriptNames.slice(0);
+    const program = ts.createProgram(scripts, settings, host);
+    if (preCompile) preCompile(program);
+    const {compiler, reflector} = createAotCompiler(aotHost, options);
+    return compiler.compileAll(program.getSourceFiles().map(sf => sf.fileName)).then(genFiles => {
+      genFiles.forEach(
+          file => isSource(file.genFileUrl) ? host.addScript(file.genFileUrl, file.source) :
+                                              host.override(file.genFileUrl, file.source));
+      const scripts = host.scriptNames.slice(0);
+      const newProgram = ts.createProgram(scripts, settings, host);
+      if (postCompile) postCompile(newProgram);
+      if (emit) {
+        newProgram.emit();
+      }
+      let outDir: MockDirectory = {};
+      if (emit) {
+        outDir = arrayToMockDir(toMockFileArray([
+                                  host.writtenFiles, host.overrides
+                                ]).filter((entry) => !isSource(entry.fileName)));
+      }
+      return {genFiles, outDir};
+    });
+  });
 }
