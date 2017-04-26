@@ -70,12 +70,12 @@ export declare type AnimationStateTransitionMetadata = any;
 
 /** @deprecated */
 export interface AnimationStyleMetadata extends AnimationMetadata {
-    offset?: number;
-    styles: {
+    offset: number | null;
+    styles: '*' | {
         [key: string]: string | number;
-    } | {
+    } | Array<{
         [key: string]: string | number;
-    }[];
+    } | '*'>;
 }
 
 /** @deprecated */
@@ -1007,7 +1007,7 @@ export interface TrackByFunction<T> {
 }
 
 /** @deprecated */
-export declare function transition(stateChangeExpr: string | ((fromState: string, toState: string) => boolean), steps: AnimationMetadata | AnimationMetadata[]): AnimationTransitionMetadata;
+export declare function transition(stateChangeExpr: string, steps: AnimationMetadata | AnimationMetadata[]): AnimationTransitionMetadata;
 
 /** @experimental */
 export declare const TRANSLATIONS: InjectionToken<string>;
