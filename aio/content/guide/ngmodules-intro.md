@@ -6,8 +6,9 @@ Introduction to Angular
 
 @description
 
-Angular modules are the building blocks of Angular apps. There are three 
-approaches to choose from:
+Angular modules are the building blocks of Angular apps. See 
+the following pages to learn about them.
+
 
 #### Modules 101
 
