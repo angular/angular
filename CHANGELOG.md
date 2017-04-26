@@ -1,3 +1,38 @@
+<a name="4.1.0"></a>
+# [4.1.0](https://github.com/angular/angular/compare/4.1.0-rc.0...4.1.0) (2017-04-26)
+
+
+### Bug Fixes
+
+* **aio:** AppComponent should scroll only once when location changes ([ac5e6ba](https://github.com/angular/angular/commit/ac5e6ba))
+* **aio:** copy button placement fix ([23e6502](https://github.com/angular/angular/commit/23e6502))
+* **aio:** fix URL redirection for API pages ([54e587a](https://github.com/angular/angular/commit/54e587a))
+* **aio:** header anchor placement ([b0c5d21](https://github.com/angular/angular/commit/b0c5d21))
+* **aio:** resource nav ([35a2dfc](https://github.com/angular/angular/commit/35a2dfc))
+* **aio:** strip leading slashes from path (and improve DRY-ness) ([#16238](https://github.com/angular/angular/issues/16238)) ([9c1318d](https://github.com/angular/angular/commit/9c1318d)), closes [#16230](https://github.com/angular/angular/issues/16230)
+* **aio:** use SVG icons for page load sensitive UI ([c3fa880](https://github.com/angular/angular/commit/c3fa880)), closes [#16100](https://github.com/angular/angular/issues/16100)
+* **router:** forward the query parameters in the ng1 -> ng2 url sync ([#16249](https://github.com/angular/angular/issues/16249)) ([2f97731](https://github.com/angular/angular/commit/2f97731)), closes [#16067](https://github.com/angular/angular/issues/16067)
+* **upgrade:** use correct attribute name for upgraded component's bindings ([#16128](https://github.com/angular/angular/issues/16128)) ([d1fb066](https://github.com/angular/angular/commit/d1fb066)), closes [#8856](https://github.com/angular/angular/issues/8856)
+
+
+### Features
+
+* **aio:** api page column layout ([64ef69f](https://github.com/angular/angular/commit/64ef69f))
+* **aio:** api page styles ([cf034f7](https://github.com/angular/angular/commit/cf034f7))
+* **aio:** api pages styling ([bb52e22](https://github.com/angular/angular/commit/bb52e22))
+* **aio:** boilerplate:add cleans (removes) before adding ([d8e2829](https://github.com/angular/angular/commit/d8e2829))
+* **aio:** copy code snackbar and design updates ([e7c37d7](https://github.com/angular/angular/commit/e7c37d7))
+* **aio:** don't animate sidenav on launch. ([11b2f62](https://github.com/angular/angular/commit/11b2f62))
+* **aio:** dont set query params during search [#16125](https://github.com/angular/angular/issues/16125) ([#16217](https://github.com/angular/angular/issues/16217)) ([7520ddc](https://github.com/angular/angular/commit/7520ddc))
+* **aio:** layout max width and design cleanup ([710b4a3](https://github.com/angular/angular/commit/710b4a3))
+
+
+### Performance Improvements
+
+* **aio:** improve unit test rebuild time ([d7719aa](https://github.com/angular/angular/commit/d7719aa))
+
+
+
 <a name="4.1.0-rc.0"></a>
 # [4.1.0-rc.0](https://github.com/angular/angular/compare/4.1.0-beta.0...4.1.0-rc.0) (2017-04-21)
 
