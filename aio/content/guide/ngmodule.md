@@ -185,7 +185,7 @@ compiles the application in the browser and then launches the app.
 
 The samples in this page demonstrate the dynamic bootstrapping approach.
 
-<live-example embedded plnkr="minimal.0" img="devguide/ngmodule/minimal-plunker.png">Try the live example.</live-example>
+<live-example embedded plnkr="minimal.0" img="guide/ngmodule/minimal-plunker.png">Try the live example.</live-example>
 
 
 ### Static bootstrapping with the ahead-of-time (AOT) compiler
@@ -682,7 +682,7 @@ The app file structure looks like this:
 
 
 Try the example:
-<live-example embedded plnkr="contact.1b" img="devguide/ngmodule/contact-1b-plunker.png"></live-example>
+<live-example embedded plnkr="contact.1b" img="guide/ngmodule/contact-1b-plunker.png"></live-example>
 
 
 {@a resolve-conflicts}
@@ -896,7 +896,7 @@ There's a lot to like in the revised `AppModule`.
 
 Try this `ContactModule` version of the sample.
 
-<live-example embedded plnkr="contact.2" img="devguide/ngmodule/contact-2-plunker.png">Try the live example.</live-example>
+<live-example embedded plnkr="contact.2" img="guide/ngmodule/contact-2-plunker.png">Try the live example.</live-example>
 
 
 {@a lazy-load}
@@ -915,7 +915,7 @@ Their specifics aren't important to the story and this page doesn't discuss ever
 
 
 Examine and download the complete source for this version from
-the <live-example plnkr="pre-shared.3" img="devguide/ngmodule/v3-plunker.png">live example.</live-example>
+the <live-example plnkr="pre-shared.3" img="guide/ngmodule/v3-plunker.png">live example.</live-example>
 
 </div>
 
@@ -1194,7 +1194,7 @@ It imports the `HeroRoutingModule` from `hero-routing.module.ts` just as `Contac
 
 The `CrisisModule` is much the same.
 
-<live-example embedded plnkr="pre-shared.3" img="devguide/ngmodule/v3-plunker.png">Try the live example.</live-example>
+<live-example embedded plnkr="pre-shared.3" img="guide/ngmodule/v3-plunker.png">Try the live example.</live-example>
 
 
 {@a shared-module}
@@ -1549,7 +1549,7 @@ Now `parentModule` exists and the constructor throws the error.
 ### Conclusion
 
 You made it! You can examine and download the complete source for this final version from the live example.
-<live-example embedded  img="devguide/ngmodule/final-plunker.png"></live-example>
+<live-example embedded  img="guide/ngmodule/final-plunker.png"></live-example>
 
 ### Frequently asked questions
 
