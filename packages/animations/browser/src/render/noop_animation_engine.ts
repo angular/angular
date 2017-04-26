@@ -5,20 +5,30 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationEvent, AnimationMetadataType, AnimationPlayer, AnimationStateMetadata, AnimationTriggerMetadata, ɵStyleData} from '@angular/animations';
+import {AnimationEvent, AnimationPlayer, AnimationTriggerMetadata, ɵStyleData} from '@angular/animations';
 
 import {AnimationEngine} from '../animation_engine';
+import {TriggerAst} from '../dsl/animation_ast';
+import {buildAnimationAst} from '../dsl/animation_ast_builder';
+import {buildTrigger} from '../dsl/animation_trigger';
+import {AnimationStyleNormalizer} from '../dsl/style_normalization/animation_style_normalizer';
 import {copyStyles, eraseStyles, normalizeStyles, setStyles} from '../util';
+
+import {AnimationDriver} from './animation_driver';
+import {parseTimelineCommand} from './shared';
+import {TimelineAnimationEngine} from './timeline_animation_engine';
 
 interface ListenerTuple {
   eventPhase: string;
   triggerName: string;
+  namespacedName: string;
   callback: (event: any) => any;
   doRemove?: boolean;
 }
 
 interface ChangeTuple {
   element: any;
+  namespacedName: string;
   triggerName: string;
   oldValue: string;
   newValue: string;
@@ -35,36 +45,55 @@ export class NoopAnimationEngine extends AnimationEngine {
   private _triggerStyles: {[triggerName: string]: {[stateName: string]: ɵStyleData}} =
       Object.create(null);
 
-  registerTrigger(trigger: AnimationTriggerMetadata, name?: string): void {
-    name = name || trigger.name;
+  private _timelineEngine: TimelineAnimationEngine;
+
+  // this method is designed to be overridden by the code that uses this engine
+  public onRemovalComplete = (element: any, context: any) => {};
+
+  constructor(driver: AnimationDriver, normalizer: AnimationStyleNormalizer) {
+    super();
+    this._timelineEngine = new TimelineAnimationEngine(driver, normalizer);
+  }
+
+  registerTrigger(
+      componentId: string, namespaceId: string, hostElement: any, name: string,
+      metadata: AnimationTriggerMetadata): void {
+    name = name || metadata.name;
+    name = namespaceId + '#' + name;
     if (this._triggerStyles[name]) {
       return;
     }
-    const stateMap: {[stateName: string]: ɵStyleData} = {};
-    trigger.definitions.forEach(def => {
-      if (def.type === AnimationMetadataType.State) {
-        const stateDef = def as AnimationStateMetadata;
-        stateMap[stateDef.name] = normalizeStyles(stateDef.styles.styles);
-      }
-    });
-    this._triggerStyles[name] = stateMap;
+
+    const errors: any[] = [];
+    const ast = buildAnimationAst(metadata, errors) as TriggerAst;
+    const trigger = buildTrigger(name, ast);
+    this._triggerStyles[name] = trigger.states;
   }
 
-  onInsert(element: any, domFn: () => any): void { domFn(); }
+  onInsert(namespaceId: string, element: any, parent: any, insertBefore: boolean): void {}
 
-  onRemove(element: any, domFn: () => any): void {
-    domFn();
+  onRemove(namespaceId: string, element: any, context: any): void {
+    this.onRemovalComplete(element, context);
     if (element['nodeType'] == 1) {
       this._flaggedRemovals.add(element);
     }
   }
 
-  setProperty(element: any, property: string, value: any): void {
-    const storageProp = makeStorageProp(property);
-    const oldValue = element[storageProp] || DEFAULT_STATE_VALUE;
-    this._changes.push(<ChangeTuple>{element, oldValue, newValue: value, triggerName: property});
+  setProperty(namespaceId: string, element: any, property: string, value: any): boolean {
+    if (property.charAt(0) == '@') {
+      const [id, action] = parseTimelineCommand(property);
+      const args = value as any[];
+      this._timelineEngine.command(id, element, action, args);
+      return false;
+    }
 
-    const triggerStateStyles = this._triggerStyles[property] || {};
+    const namespacedName = namespaceId + '#' + property;
+    const storageProp = makeStorageProp(namespacedName);
+    const oldValue = element[storageProp] || DEFAULT_STATE_VALUE;
+    this._changes.push(
+        <ChangeTuple>{element, oldValue, newValue: value, triggerName: property, namespacedName});
+
+    const triggerStateStyles = this._triggerStyles[namespacedName] || {};
     const fromStateStyles =
         triggerStateStyles[oldValue] || triggerStateStyles[DEFAULT_STATE_STYLES];
     if (fromStateStyles) {
@@ -78,16 +107,27 @@ export class NoopAnimationEngine extends AnimationEngine {
         setStyles(element, toStateStyles);
       }
     });
+
+    return true;
   }
 
-  listen(element: any, eventName: string, eventPhase: string, callback: (event: any) => any):
-      () => any {
+  listen(
+      namespaceId: string, element: any, eventName: string, eventPhase: string,
+      callback: (event: any) => any): () => any {
+    if (eventName.charAt(0) == '@') {
+      const [id, action] = parseTimelineCommand(eventName);
+      return this._timelineEngine.listen(id, element, action, callback);
+    }
+
     let listeners = this._listeners.get(element);
     if (!listeners) {
       this._listeners.set(element, listeners = []);
     }
 
-    const tuple = <ListenerTuple>{triggerName: eventName, eventPhase, callback};
+    const tuple = <ListenerTuple>{
+      namespacedName: namespaceId + '#' + eventName,
+      triggerName: eventName, eventPhase, callback
+    };
     listeners.push(tuple);
 
     return () => tuple.doRemove = true;
@@ -113,7 +153,7 @@ export class NoopAnimationEngine extends AnimationEngine {
       const listeners = this._listeners.get(element);
       if (listeners) {
         listeners.forEach(listener => {
-          if (listener.triggerName == change.triggerName) {
+          if (listener.namespacedName == change.namespacedName) {
             handleListener(listener, change);
           }
         });
@@ -126,10 +166,12 @@ export class NoopAnimationEngine extends AnimationEngine {
       if (listeners) {
         listeners.forEach(listener => {
           const triggerName = listener.triggerName;
-          const storageProp = makeStorageProp(triggerName);
+          const namespacedName = listener.namespacedName;
+          const storageProp = makeStorageProp(namespacedName);
           handleListener(listener, <ChangeTuple>{
-            element: element,
-            triggerName: triggerName,
+            element,
+            triggerName,
+            namespacedName: listener.namespacedName,
             oldValue: element[storageProp] || DEFAULT_STATE_VALUE,
             newValue: DEFAULT_STATE_VALUE
           });
@@ -156,8 +198,9 @@ export class NoopAnimationEngine extends AnimationEngine {
     this._onDoneFns = [];
   }
 
-  get activePlayers(): AnimationPlayer[] { return []; }
-  get queuedPlayers(): AnimationPlayer[] { return []; }
+  get players(): AnimationPlayer[] { return []; }
+
+  destroy(namespaceId: string) {}
 }
 
 function makeAnimationEvent(

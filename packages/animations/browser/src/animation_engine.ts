@@ -8,15 +8,19 @@
 import {AnimationPlayer, AnimationTriggerMetadata} from '@angular/animations';
 
 export abstract class AnimationEngine {
-  abstract registerTrigger(trigger: AnimationTriggerMetadata, name?: string): void;
-  abstract onInsert(element: any, domFn: () => any): void;
-  abstract onRemove(element: any, domFn: () => any): void;
-  abstract setProperty(element: any, property: string, value: any): void;
+  abstract registerTrigger(
+      componentId: string, namespaceId: string, hostElement: any, name: string,
+      metadata: AnimationTriggerMetadata): void;
+  abstract onInsert(namespaceId: string, element: any, parent: any, insertBefore: boolean): void;
+  abstract onRemove(namespaceId: string, element: any, context: any): void;
+  abstract setProperty(namespaceId: string, element: any, property: string, value: any): void;
   abstract listen(
-      element: any, eventName: string, eventPhase: string,
+      namespaceId: string, element: any, eventName: string, eventPhase: string,
       callback: (event: any) => any): () => any;
   abstract flush(): void;
+  abstract destroy(namespaceId: string, context: any): void;
 
-  get activePlayers(): AnimationPlayer[] { throw new Error('...'); }
-  get queuedPlayers(): AnimationPlayer[] { throw new Error('...'); }
+  onRemovalComplete: (delegate: any, element: any) => void;
+
+  public players: AnimationPlayer[];
 }
