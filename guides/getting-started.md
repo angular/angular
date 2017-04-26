@@ -72,6 +72,9 @@ import {MdButtonModule, MdCheckboxModule} from '@angular/material';
 export class MyOwnCustomMaterialModule { }
 ```
 
+Whichever approach you use, be sure to import the Angular Material modules _after_ Angular's 
+`BrowserModule`, as the import order matters for NgModules.
+
 ## Step 4: Include a theme
 
 Including a theme is **required** to apply all of the core and theme styles to your application.
