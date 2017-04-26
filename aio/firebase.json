@@ -14,9 +14,9 @@
       {"type": 301, "source": "/docs/ts/latest/guide/style-guide.html", "destination": "/guide/styleguide"},
 
       // cookbook, cookbook/, cookbook/index.html
-      {"type": 301, "source": "/docs/ts/latest/cookbook",            "destination": "/guide/docs"},
-      {"type": 301, "source": "/docs/ts/latest/cookbook/",           "destination": "/guide/docs"},
-      {"type": 301, "source": "/docs/ts/latest/cookbook/index.html", "destination": "/guide/docs"},
+      {"type": 301, "source": "/docs/ts/latest/cookbook",            "destination": "/docs"},
+      {"type": 301, "source": "/docs/ts/latest/cookbook/",           "destination": "/docs"},
+      {"type": 301, "source": "/docs/ts/latest/cookbook/index.html", "destination": "/docs"},
 
       // cookbook/dependency-injection.html
       {"type": 301, "source": "/docs/ts/latest/cookbook/dependency-injection.html", "destination": "/guide/dependency-injection-in-action"},
