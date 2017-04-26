@@ -55,7 +55,7 @@ open simultaneously.
 
 
 <figure class='image-display'>
-  <img src="assets/images/guide/dependency-injection/component-hierarchy.png" alt="injector tree" width="600"></img>
+  <img src="content/images/guide/dependency-injection/component-hierarchy.png" alt="injector tree" width="600"></img>
 </figure>
 
 
@@ -149,7 +149,7 @@ Each tax return component has the following characteristics:
 
 
 <figure class='image-display'>
-  <img src="assets/images/guide/dependency-injection/hid-heroes-anim.gif" width="400" alt="Heroes in action"></img>
+  <img src="content/images/guide/dependency-injection/hid-heroes-anim.gif" width="400" alt="Heroes in action"></img>
 </figure>
 
 
@@ -234,7 +234,7 @@ Component (B) is the parent of another component (C) that defines its own, even 
 
 
 <figure class='image-display'>
-  <img src="assets/images/guide/dependency-injection/car-components.png" alt="car components" width="220"></img>
+  <img src="content/images/guide/dependency-injection/car-components.png" alt="car components" width="220"></img>
 </figure>
 
 
@@ -247,7 +247,7 @@ its injector produces an instance of `Car` resolved by injector (C) with an `Eng
 
 
 <figure class='image-display'>
-  <img src="assets/images/guide/dependency-injection/injector-tree.png" alt="car injector tree" width="600"></img>
+  <img src="content/images/guide/dependency-injection/injector-tree.png" alt="car injector tree" width="600"></img>
 </figure>
 
 

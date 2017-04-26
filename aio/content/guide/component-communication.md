@@ -54,7 +54,7 @@ The running application displays three heroes:
 
 
 <figure class='image-display'>
-  <img src="assets/images/guide/component-communication/parent-to-child.png" alt="Parent-to-child"></img>
+  <img src="content/images/guide/component-communication/parent-to-child.png" alt="Parent-to-child"></img>
 </figure>
 
 
@@ -98,7 +98,7 @@ Here's the `NameParentComponent` demonstrating name variations including a name 
 
 
 <figure class='image-display'>
-  <img src="assets/images/guide/component-communication/setter.png" alt="Parent-to-child-setter"></img>
+  <img src="content/images/guide/component-communication/setter.png" alt="Parent-to-child-setter"></img>
 </figure>
 
 
@@ -156,7 +156,7 @@ Here's the output of a button-pushing sequence:
 
 
 <figure class='image-display'>
-  <img src="assets/images/guide/component-communication/parent-to-child-on-changes.gif" alt="Parent-to-child-onchanges"></img>
+  <img src="content/images/guide/component-communication/parent-to-child-on-changes.gif" alt="Parent-to-child-onchanges"></img>
 </figure>
 
 
@@ -210,7 +210,7 @@ and the method processes it:
 
 
 <figure class='image-display'>
-  <img src="assets/images/guide/component-communication/child-to-parent.gif" alt="Child-to-parent"></img>
+  <img src="content/images/guide/component-communication/child-to-parent.gif" alt="Child-to-parent"></img>
 </figure>
 
 
@@ -272,7 +272,7 @@ Here we see the parent and child working together.
 
 
 <figure class='image-display'>
-  <img src="assets/images/guide/component-communication/countdown-timer-anim.gif" alt="countdown timer"></img>
+  <img src="content/images/guide/component-communication/countdown-timer-anim.gif" alt="countdown timer"></img>
 </figure>
 
 
@@ -309,7 +309,7 @@ must read or write child component values or must call child component methods.
 When the parent component *class* requires that kind of access,
 ***inject*** the child component into the parent as a *ViewChild*.
 
-The following example illustrates this technique with the same 
+The following example illustrates this technique with the same
 [Countdown Timer](guide/component-communication#countdown-timer-example) example.
 Neither its appearance nor its behavior will change.
 The child [CountdownTimerComponent](guide/component-communication#countdown-timer-example) is the same as well.
@@ -424,7 +424,7 @@ facilitated by the service:
 
 
 <figure class='image-display'>
-  <img src="assets/images/guide/component-communication/bidirectional-service.gif" alt="bidirectional-service"></img>
+  <img src="content/images/guide/component-communication/bidirectional-service.gif" alt="bidirectional-service"></img>
 </figure>
 
 

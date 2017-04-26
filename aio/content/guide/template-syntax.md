@@ -17,10 +17,10 @@ Learn how to write templates that display data and consume user events with the 
 
 
 
-The Angular application manages what the user sees and can do, achieving this through the interaction of a 
+The Angular application manages what the user sees and can do, achieving this through the interaction of a
 component class instance (the *component*) and its user-facing template.
 
-You may be familiar with the component/template duality from your experience with model-view-controller (MVC) or model-view-viewmodel (MVVM). 
+You may be familiar with the component/template duality from your experience with model-view-controller (MVC) or model-view-viewmodel (MVVM).
 In Angular, the component plays the part of the controller/viewmodel, and the template represents the view.
 
 
@@ -78,17 +78,17 @@ demonstrates all of the syntax and code snippets described in this guide.
 ## HTML in templates
 
 HTML is the language of the Angular template.
-Almost all HTML syntax is valid template syntax. 
-The `<script>` element is a notable exception; 
+Almost all HTML syntax is valid template syntax.
+The `<script>` element is a notable exception;
 it is forbidden, eliminating the risk of script injection attacks.
 In practice, `<script>` is ignored and a warning appears in the browser console.
 See the [Security](guide/security) page for details.
 
-Some legal HTML doesn't make much sense in a template. 
-The `<html>`, `<body>`, and `<base>` elements have no useful role. 
+Some legal HTML doesn't make much sense in a template.
+The `<html>`, `<body>`, and `<base>` elements have no useful role.
 Pretty much everything else is fair game.
 
-You can extend the HTML vocabulary of your templates with components and directives that appear as new elements and attributes. 
+You can extend the HTML vocabulary of your templates with components and directives that appear as new elements and attributes.
 In the following sections, you'll learn how to get and set DOM (Document Object Model) values dynamically through data binding.
 
 Begin with the first form of data binding&mdash;interpolation&mdash;to see how much richer template HTML can be.
@@ -1067,7 +1067,7 @@ content harmlessly.
 
 
 <figure class='image-display'>
-  <img src='assets/images/guide/template-syntax/evil-title.png' alt="evil title made safe" width='500px'></img>
+  <img src='content/images/guide/template-syntax/evil-title.png' alt="evil title made safe" width='500px'></img>
 </figure>
 
 
@@ -1837,7 +1837,7 @@ Here are all variations in action, including the uppercase version:
 
 
 <figure class='image-display'>
-  <img src='assets/images/guide/template-syntax/ng-model-anim.gif' alt="NgModel variations"></img>
+  <img src='content/images/guide/template-syntax/ng-model-anim.gif' alt="NgModel variations"></img>
 </figure>
 
 
@@ -2132,7 +2132,7 @@ Here is an illustration of the _trackBy_ effect.
 
 
 <figure class='image-display'>
-  <img src='assets/images/guide/template-syntax/ng-for-track-by-anim.gif' alt="trackBy"></img>
+  <img src='content/images/guide/template-syntax/ng-for-track-by-anim.gif' alt="trackBy"></img>
 </figure>
 
 
@@ -2167,7 +2167,7 @@ Angular puts only the *selected* element into the DOM.
 
 
 <figure class='image-display'>
-  <img src='assets/images/guide/template-syntax/switch-anim.gif' alt="trackBy"></img>
+  <img src='content/images/guide/template-syntax/switch-anim.gif' alt="trackBy"></img>
 </figure>
 
 
@@ -2417,7 +2417,7 @@ The terms _input_ and _output_ reflect the perspective of the target directive.
 
 
 <figure class='image-display'>
-  <img src='assets/images/guide/template-syntax/input-output.png' alt="Inputs and outputs"></img>
+  <img src='content/images/guide/template-syntax/input-output.png' alt="Inputs and outputs"></img>
 </figure>
 
 
@@ -2669,5 +2669,5 @@ It works perfectly with long property paths such as `a?.b?.c?.d`.
 
 
 ## Summary
-You've completed this survey of template syntax. 
+You've completed this survey of template syntax.
 Now it's time to put that knowledge to work on your own components and directives.
