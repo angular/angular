@@ -3,12 +3,12 @@ import {FormsModule} from '@angular/forms';
 import {HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 import {MdSlideToggle} from './slide-toggle';
 import {
-  GestureConfig, CompatibilityModule, MdRippleModule, FOCUS_ORIGIN_MONITOR_PROVIDER
+  GestureConfig, MdCommonModule, MdRippleModule, FOCUS_ORIGIN_MONITOR_PROVIDER
 } from '../core';
 
 @NgModule({
-  imports: [FormsModule, MdRippleModule, CompatibilityModule],
-  exports: [MdSlideToggle, CompatibilityModule],
+  imports: [FormsModule, MdRippleModule, MdCommonModule],
+  exports: [MdSlideToggle, MdCommonModule],
   declarations: [MdSlideToggle],
   providers: [
     FOCUS_ORIGIN_MONITOR_PROVIDER,

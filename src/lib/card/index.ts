@@ -1,5 +1,5 @@
 import {NgModule, ModuleWithProviders} from '@angular/core';
-import {CompatibilityModule} from '../core';
+import {MdCommonModule} from '../core';
 import {
   MdCard,
   MdCardHeader,
@@ -19,7 +19,7 @@ import {
 
 
 @NgModule({
-  imports: [CompatibilityModule],
+  imports: [MdCommonModule],
   exports: [
     MdCard,
     MdCardHeader,
@@ -35,7 +35,7 @@ import {
     MdCardImage,
     MdCardXlImage,
     MdCardAvatar,
-    CompatibilityModule,
+    MdCommonModule,
   ],
   declarations: [
     MdCard, MdCardHeader, MdCardTitleGroup, MdCardContent, MdCardTitle, MdCardSubtitle,

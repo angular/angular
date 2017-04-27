@@ -1,12 +1,12 @@
 import {NgModule, ModuleWithProviders} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {CompatibilityModule} from '../core/compatibility/compatibility';
+import {MdCommonModule} from '../core';
 import {MdProgressBar} from './progress-bar';
 
 
 @NgModule({
-  imports: [CommonModule, CompatibilityModule],
-  exports: [MdProgressBar, CompatibilityModule],
+  imports: [CommonModule, MdCommonModule],
+  exports: [MdProgressBar, MdCommonModule],
   declarations: [MdProgressBar],
 })
 export class MdProgressBarModule {

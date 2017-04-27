@@ -113,6 +113,9 @@ export {coerceNumberProperty} from './coercion/number-property';
 // Compatibility
 export {CompatibilityModule, NoConflictStyleCompatibilityMode} from './compatibility/compatibility';
 
+// Common material module
+export {MdCommonModule} from './common-behaviors/common-module';
+
 
 @NgModule({
   imports: [

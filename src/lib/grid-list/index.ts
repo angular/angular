@@ -1,5 +1,5 @@
 import {NgModule, ModuleWithProviders} from '@angular/core';
-import {MdLineModule, CompatibilityModule} from '../core';
+import {MdLineModule, MdCommonModule} from '../core';
 import {
   MdGridTile, MdGridTileText, MdGridTileFooterCssMatStyler,
   MdGridTileHeaderCssMatStyler, MdGridAvatarCssMatStyler
@@ -8,13 +8,13 @@ import {MdGridList} from './grid-list';
 
 
 @NgModule({
-  imports: [MdLineModule, CompatibilityModule],
+  imports: [MdLineModule, MdCommonModule],
   exports: [
     MdGridList,
     MdGridTile,
     MdGridTileText,
     MdLineModule,
-    CompatibilityModule,
+    MdCommonModule,
     MdGridTileHeaderCssMatStyler,
     MdGridTileFooterCssMatStyler,
     MdGridAvatarCssMatStyler

@@ -1,12 +1,12 @@
 import {NgModule, ModuleWithProviders} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {MdRippleModule, CompatibilityModule, FocusOriginMonitor} from '../core';
+import {MdRippleModule, MdCommonModule, FocusOriginMonitor} from '../core';
 import {MdCheckbox} from './checkbox';
 
 
 @NgModule({
-  imports: [CommonModule, MdRippleModule, CompatibilityModule],
-  exports: [MdCheckbox, CompatibilityModule],
+  imports: [CommonModule, MdRippleModule, MdCommonModule],
+  exports: [MdCheckbox, MdCommonModule],
   declarations: [MdCheckbox],
   providers: [FocusOriginMonitor]
 })

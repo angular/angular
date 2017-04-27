@@ -1,5 +1,5 @@
 import {NgModule, ModuleWithProviders} from '@angular/core';
-import {CompatibilityModule} from '../core';
+import {MdCommonModule} from '../core';
 import {
   MdProgressSpinner,
   MdSpinner,
@@ -8,11 +8,11 @@ import {
 
 
 @NgModule({
-  imports: [CompatibilityModule],
+  imports: [MdCommonModule],
   exports: [
     MdProgressSpinner,
     MdSpinner,
-    CompatibilityModule,
+    MdCommonModule,
     MdProgressSpinnerCssMatStyler
   ],
   declarations: [

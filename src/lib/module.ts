@@ -7,7 +7,7 @@ import {
   PortalModule,
   OverlayModule,
   A11yModule,
-  CompatibilityModule,
+  MdCommonModule,
 } from './core/index';
 
 import {MdButtonToggleModule} from './button-toggle/index';
@@ -67,7 +67,7 @@ const MATERIAL_MODULES = [
   StyleModule,
   A11yModule,
   PlatformModule,
-  CompatibilityModule,
+  MdCommonModule,
   ObserveContentModule
 ];
 
@@ -106,7 +106,7 @@ const MATERIAL_MODULES = [
     MdTooltipModule.forRoot(),
     PlatformModule.forRoot(),
     OverlayModule.forRoot(),
-    CompatibilityModule.forRoot(),
+    MdCommonModule,
   ],
   exports: MATERIAL_MODULES,
 })

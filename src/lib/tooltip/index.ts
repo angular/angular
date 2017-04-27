@@ -1,12 +1,12 @@
 import {NgModule, ModuleWithProviders} from '@angular/core';
-import {OverlayModule, CompatibilityModule} from '../core';
+import {OverlayModule, MdCommonModule} from '../core';
 import {PlatformModule} from '../core/platform/index';
 import {MdTooltip, TooltipComponent} from './tooltip';
 
 
 @NgModule({
-  imports: [OverlayModule, CompatibilityModule, PlatformModule],
-  exports: [MdTooltip, TooltipComponent, CompatibilityModule],
+  imports: [OverlayModule, MdCommonModule, PlatformModule],
+  exports: [MdTooltip, TooltipComponent, MdCommonModule],
   declarations: [MdTooltip, TooltipComponent],
   entryComponents: [TooltipComponent],
 })

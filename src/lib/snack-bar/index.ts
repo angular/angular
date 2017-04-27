@@ -1,5 +1,5 @@
 import {NgModule, ModuleWithProviders} from '@angular/core';
-import {OverlayModule, PortalModule, CompatibilityModule, LIVE_ANNOUNCER_PROVIDER} from '../core';
+import {OverlayModule, PortalModule, MdCommonModule, LIVE_ANNOUNCER_PROVIDER} from '../core';
 import {CommonModule} from '@angular/common';
 import {MdSnackBar} from './snack-bar';
 import {MdSnackBarContainer} from './snack-bar-container';
@@ -11,9 +11,9 @@ import {SimpleSnackBar} from './simple-snack-bar';
     OverlayModule,
     PortalModule,
     CommonModule,
-    CompatibilityModule,
+    MdCommonModule,
   ],
-  exports: [MdSnackBarContainer, CompatibilityModule],
+  exports: [MdSnackBarContainer, MdCommonModule],
   declarations: [MdSnackBarContainer, SimpleSnackBar],
   entryComponents: [MdSnackBarContainer, SimpleSnackBar],
   providers: [MdSnackBar, LIVE_ANNOUNCER_PROVIDER]
