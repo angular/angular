@@ -16,6 +16,8 @@ import { SwUpdatesModule } from 'app/sw-updates/sw-updates.module';
 
 import { AppComponent } from 'app/app.component';
 import { ApiService } from 'app/embedded/api/api.service';
+import { AutoScrollService } from 'app/shared/auto-scroll.service';
+import { CustomMdIconRegistry, SVG_ICONS } from 'app/shared/custom-md-icon-registry';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { DtComponent } from 'app/layout/doc-viewer/dt.component';
 import { EmbeddedModule } from 'app/embedded/embedded.module';
@@ -31,8 +33,7 @@ import { NavMenuComponent } from 'app/layout/nav-menu/nav-menu.component';
 import { NavItemComponent } from 'app/layout/nav-item/nav-item.component';
 import { SearchResultsComponent } from './search/search-results/search-results.component';
 import { SearchBoxComponent } from './search/search-box/search-box.component';
-import { AutoScrollService } from 'app/shared/auto-scroll.service';
-import { CustomMdIconRegistry, SVG_ICONS } from 'app/shared/custom-md-icon-registry';
+import { TocService } from 'app/shared/toc.service';
 
 // These are the hardcoded inline svg sources to be used by the `<md-icon>` component
 export const svgIconProviders = [
@@ -83,18 +84,19 @@ export const svgIconProviders = [
   ],
   providers: [
     ApiService,
+    AutoScrollService,
+    DocumentService,
     GaService,
     Logger,
     Location,
     { provide: LocationStrategy, useClass: PathLocationStrategy },
     LocationService,
+    { provide: MdIconRegistry, useClass: CustomMdIconRegistry },
     NavigationService,
-    DocumentService,
     SearchService,
     Platform,
-    AutoScrollService,
-    { provide: MdIconRegistry, useClass: CustomMdIconRegistry },
-    svgIconProviders
+    svgIconProviders,
+    TocService
   ],
   bootstrap: [AppComponent]
 })

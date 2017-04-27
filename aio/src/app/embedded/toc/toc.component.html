@@ -1,0 +1,24 @@
+<div *ngIf="hasToc" [class.closed]="isClosed">
+  <div *ngIf="!hasSecondary"class="toc-heading">Contents</div>
+  <div *ngIf="hasSecondary" class="toc-heading secondary"
+      (click)="toggle()"
+      title="Expand/collapse contents"
+      aria-label="Expand/collapse contents">
+      Contents
+      <button type="button"
+        class="toc-show-all material-icons" [class.closed]="isClosed">
+      </button>
+  </div>
+
+  <ul class="toc-list">
+    <li *ngFor="let toc of tocList" title="{{toc.title}}" class="{{toc.level}}" [class.secondary]="toc.isSecondary">
+      <a [href]="toc.href" [innerHTML]="toc.content"></a>
+    </li>
+  </ul>
+
+  <button type="button" (click)="toggle()" *ngIf="hasSecondary"
+    class="toc-more-items material-icons" [class.closed]="isClosed"
+    title="Expand/collapse contents"
+    aria-label="Expand/collapse contents">
+  </button>
+</div>
