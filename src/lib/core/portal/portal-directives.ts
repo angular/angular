@@ -22,7 +22,7 @@ import {Portal, TemplatePortal, ComponentPortal, BasePortalHost} from './portal'
  * </ng-template>
  */
 @Directive({
-  selector: '[cdk-portal], [portal]',
+  selector: '[cdk-portal], [cdkPortal], [portal]',
   exportAs: 'cdkPortal',
 })
 export class TemplatePortalDirective extends TemplatePortal {

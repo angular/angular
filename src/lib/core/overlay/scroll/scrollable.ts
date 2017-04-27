@@ -11,7 +11,7 @@ import 'rxjs/add/observable/fromEvent';
  * can be listened to through the service.
  */
 @Directive({
-  selector: '[cdk-scrollable]'
+  selector: '[cdk-scrollable], [cdkScrollable]'
 })
 export class Scrollable implements OnInit, OnDestroy {
   private _elementScrolled: Subject<Event> = new Subject();
