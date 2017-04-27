@@ -14,11 +14,12 @@ const linksPackage = require('../links-package');
 const examplesPackage = require('../examples-package');
 const targetPackage = require('../target-package');
 const remarkPackage = require('../remark-package');
+const postProcessPackage = require('../post-process-package');
 
 const { PROJECT_ROOT, DOCS_OUTPUT_PATH, TEMPLATES_PATH, requireFolder } = require('../config');
 
 module.exports = new Package('angular-base', [
-  jsdocPackage, nunjucksPackage, linksPackage, examplesPackage, targetPackage, remarkPackage
+  jsdocPackage, nunjucksPackage, linksPackage, examplesPackage, targetPackage, remarkPackage, postProcessPackage
 ])
 
   // Register the processors
