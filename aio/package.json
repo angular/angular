@@ -82,6 +82,7 @@
     "lighthouse": "^1.6.3",
     "lodash": "^4.17.4",
     "protractor": "~5.1.0",
+    "rehype": "^4.0.0",
     "remark": "^7.0.0",
     "remark-autolink-headings": "^4.0.0",
     "remark-html": "^6.0.0",
