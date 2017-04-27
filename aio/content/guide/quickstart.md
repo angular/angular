@@ -1,12 +1,7 @@
-@title
-QuickStart
-
-@description
-
-
+<h1 class="no-toc">QuickStart</h1>
 
 Angular applications are made up of _components_.
-  A _component_ is the combination of an HTML template and a component class that controls a portion of the screen. Here is an example of a component that displays a simple string:
+A _component_ is the combination of an HTML template and a component class that controls a portion of the screen. Here is an example of a component that displays a simple string:
 
 
 <code-example path="quickstart/src/app/app.component.ts" title="src/app/app.component.ts" linenums="false">

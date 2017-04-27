@@ -1,16 +1,11 @@
-@title
-Animations
-
-@intro
-A guide to Angular's animation system.
-
-@description
-
+# Animations
 
 Motion is an important aspect in the design of modern web applications. Good
 user interfaces transition smoothly between states with engaging animations
 that call attention where it's needed. Well-designed animations can make a UI not only
 more fun but also easier to use.
+
+## Overview
 
 Angular's animation system lets you build animations that run with the same kind of native
 performance found in pure CSS animations. You can also tightly integrate your
@@ -33,7 +28,7 @@ add it to your page.
 </div>
 
 
-
+<!--
 # Contents
 
 * [Example: Transitioning between two states](guide/animations#example-transitioning-between-states).
@@ -46,7 +41,7 @@ add it to your page.
 * [Multi-step animations with keyframes](guide/animations#multi-step-animations-with-keyframes).
 * [Parallel animation groups](guide/animations#parallel-animation-groups).
 * [Animation callbacks](guide/animations#animation-callbacks).
-
+-->
 
 <div class="l-sub-section">
 

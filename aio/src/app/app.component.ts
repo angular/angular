@@ -1,7 +1,6 @@
 import { Component, ElementRef, HostListener, OnInit,
          QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { MdSidenav } from '@angular/material';
-import { Title } from '@angular/platform-browser';
 
 import { AutoScrollService } from 'app/shared/auto-scroll.service';
 import { CurrentNode, NavigationService, NavigationViews, NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
@@ -62,8 +61,7 @@ export class AppComponent implements OnInit {
     private documentService: DocumentService,
     private locationService: LocationService,
     private navigationService: NavigationService,
-    private swUpdateNotifications: SwUpdateNotificationsService,
-    private titleService: Title
+    private swUpdateNotifications: SwUpdateNotificationsService
   ) { }
 
   ngOnInit() {
@@ -73,7 +71,6 @@ export class AppComponent implements OnInit {
 
     this.documentService.currentDocument.subscribe(doc => {
       this.currentDocument = doc;
-      this.setDocumentTitle(doc.title);
       this.setPageId(doc.id);
     });
 
@@ -153,14 +150,6 @@ export class AppComponent implements OnInit {
 
   sideNavToggle(value?: boolean) {
     this.sidenav.toggle(value);
-  }
-
-  setDocumentTitle(title: string) {
-    if (title.trim()) {
-      this.titleService.setTitle(`Angular - ${title}`);
-    } else {
-      this.titleService.setTitle('Angular');
-    }
   }
 
   setPageId(id: string) {

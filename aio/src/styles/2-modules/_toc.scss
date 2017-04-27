@@ -1,0 +1,103 @@
+aio-toc > div {
+  font-size: 13px;
+  border-left: 10px solid #4285f4;
+  overflow-y: visible;
+  padding: 4px 0 0 10px;
+
+  .toc-heading {
+    font-size: 22px;
+    font-weight: 500;
+    margin-left: 8px;
+    padding-bottom: 8px;
+  }
+
+  .toc-heading.secondary {
+    padding-bottom: 0;
+    position: relative;
+    top: -8px;
+
+    &:hover {
+      color: $accentblue;
+    }
+  }
+
+  button.toc-show-all,
+  button.toc-more-items {
+    display: inline-block;
+    position: relative;
+    background: 0;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    color: $mediumgray;
+    padding: 0;
+
+    &:hover {
+      color: $accentblue;
+    }
+    &:focus {
+      outline: none;
+    }
+  }
+
+  button.toc-show-all {
+    min-width: 34px;
+  }
+
+  button.toc-show-all::after {
+    content: 'expand_less';
+  }
+
+  button.toc-show-all.closed::after {
+    content: 'expand_more';
+  }
+
+  button.toc-more-items {
+    top: 10px;
+  }
+
+  button.toc-more-items::after {
+    content: 'expand_less';
+  }
+
+  button.toc-more-items.closed::after {
+    content: 'more_horiz';
+  }
+
+  ul.toc-list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0 8px;
+  }
+
+  ul.toc-list li {
+    line-height: 16px;
+    margin: 0;
+
+    a {
+      color: $mediumgray;
+      display:inline-block;
+      overflow: visible;
+
+      &:hover {
+        color: $accentblue;
+      }
+    }
+
+  }
+
+  ul.toc-list li.h3 {
+    margin-left: 15px;
+  }
+}
+
+aio-toc > div.closed li.secondary {
+    display: none;
+}
+
+@media screen and (max-width: 1200px) {
+  aio-toc.embedded:not(:empty) {
+      display: block;
+      margin: 20px 0 24px;
+  }
+}
