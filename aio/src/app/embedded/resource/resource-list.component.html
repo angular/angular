@@ -26,17 +26,4 @@
         </div>
       </div>
     </div>
-  <!--</div>-->
-
-  <!--<div class="c3">-->
-    <div class="c-resource-nav shadow-1 l-flex--column h-affix" [ngClass]="{ 'affix-top': scrollPos > 200 }">
-      <div class="category" *ngFor="let category of categories">
-        <a class="category-link h-capitalize" [href]="href(category)">{{category.title}}</a>
-        <div class="subcategory" *ngFor="let subCategory of category.subCategories">
-          <a class="subcategory-link" [href]="href(subCategory)">{{subCategory.title}}</a>
-        </div>
-      </div>
-    </div>
-  <!--</div>-->
-
 </div>

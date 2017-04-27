@@ -1,10 +1,5 @@
-@title
-Contribute
+# Contribute to Angular
 
-@intro
-Contribute to Angular
-
-@description
 Help us build the framework of the future!
 
 ## Angular Projects

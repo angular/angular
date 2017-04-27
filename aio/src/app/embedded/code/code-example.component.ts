@@ -19,7 +19,7 @@ import { Component, ElementRef, OnInit } from '@angular/core';
     <aio-code [ngClass]="{'headed-code':title, 'simple-code':!title}" [code]="code" [language]="language" [linenums]="linenums"></aio-code>
   `
 })
-export class CodeExampleComponent implements OnInit { // implements AfterViewInit {
+export class CodeExampleComponent implements OnInit {
 
   code: string;
   language: string;
