@@ -26,6 +26,7 @@ import {
   FocusOrigin,
 } from '../core';
 import {coerceBooleanProperty} from '../core/coercion/boolean-property';
+import {mixinDisabled, CanDisable} from '../core/common-behaviors/disabled';
 
 
 /**
@@ -49,6 +50,11 @@ export class MdRadioChange {
   value: any;
 }
 
+
+// Boilerplate for applying mixins to MdRadioGroup.
+export class MdRadioGroupBase { }
+export const _MdRadioGroupMixinBase = mixinDisabled(MdRadioGroupBase);
+
 /**
  * A group of radio buttons. May contain one or more `<md-radio-button>` elements.
  */
@@ -59,8 +65,10 @@ export class MdRadioChange {
     'role': 'radiogroup',
     '[class.mat-radio-group]': 'true',
   },
+  inputs: ['disabled'],
 })
-export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
+export class MdRadioGroup extends _MdRadioGroupMixinBase
+    implements AfterContentInit, ControlValueAccessor, CanDisable {
   /**
    * Selected value for group. Should equal the value of the selected radio button if there *is*
    * a corresponding radio button with a matching value. If there is *not* such a corresponding
@@ -71,9 +79,6 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
 
   /** The HTML name attribute applied to radio buttons in this group. */
   private _name: string = `md-radio-group-${_uniqueIdCounter++}`;
-
-  /** Disables all individual radio buttons assigned to this group. */
-  private _disabled: boolean = false;
 
   /** The currently selected radio button. Should match value. */
   private _selected: MdRadioButton = null;
@@ -126,14 +131,6 @@ export class MdRadioGroup implements AfterContentInit, ControlValueAccessor {
 
   /** Whether the labels should appear after or before the radio-buttons. Defaults to 'after' */
   @Input() labelPosition: 'before' | 'after' = 'after';
-
-  /** Whether the radio button is disabled. */
-  @Input()
-  get disabled(): boolean { return this._disabled; }
-  set disabled(value) {
-    // The presence of *any* disabled value makes the component disabled, *except* for false.
-    this._disabled = (value != null && value !== false) ? true : null;
-  }
 
   /** Value of the radio button. */
   @Input()
@@ -369,8 +366,7 @@ export class MdRadioButton implements OnInit, AfterViewInit, OnDestroy {
   }
 
   set disabled(value: boolean) {
-    // The presence of *any* disabled value makes the component disabled, *except* for false.
-    this._disabled = (value != null && value !== false) ? true : null;
+    this._disabled = coerceBooleanProperty(value);
   }
 
   /**

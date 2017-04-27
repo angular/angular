@@ -24,6 +24,8 @@ import {
   UP_ARROW
 } from '../core/keyboard/keycodes';
 import {FocusOrigin, FocusOriginMonitor} from '../core/style/focus-origin-monitor';
+import {mixinDisabled, CanDisable} from '../core/common-behaviors/disabled';
+
 
 /**
  * Visually, a 30px separation between tick marks looks best. This is very subjective but it is
@@ -59,6 +61,11 @@ export class MdSliderChange {
   value: number;
 }
 
+
+// Boilerplate for applying mixins to MdSlider.
+export class MdSliderBase { }
+export const _MdSliderMixinBase = mixinDisabled(MdSliderBase);
+
 /**
  * Allows users to select from a range of values by moving the slider thumb. It is similar in
  * behavior to the native `<input type="range">` element.
@@ -68,7 +75,6 @@ export class MdSliderChange {
   selector: 'md-slider, mat-slider',
   providers: [MD_SLIDER_VALUE_ACCESSOR],
   host: {
-    '[class.mat-slider]': 'true',
     '(focus)': '_onFocus()',
     '(blur)': '_onBlur()',
     '(click)': '_onClick($event)',
@@ -78,6 +84,7 @@ export class MdSliderChange {
     '(slide)': '_onSlide($event)',
     '(slideend)': '_onSlideEnd()',
     '(slidestart)': '_onSlideStart($event)',
+    'class': 'mat-slider',
     'role': 'slider',
     'tabindex': '0',
     '[attr.aria-disabled]': 'disabled',
@@ -99,15 +106,11 @@ export class MdSliderChange {
   },
   templateUrl: 'slider.html',
   styleUrls: ['slider.css'],
+  inputs: ['disabled'],
   encapsulation: ViewEncapsulation.None,
 })
-export class MdSlider implements ControlValueAccessor, OnDestroy {
-  /** Whether or not the slider is disabled. */
-  @Input()
-  get disabled(): boolean { return this._disabled; }
-  set disabled(value) { this._disabled = coerceBooleanProperty(value); }
-  private _disabled: boolean = false;
-
+export class MdSlider extends _MdSliderMixinBase
+    implements ControlValueAccessor, OnDestroy, CanDisable {
   /** Whether the slider is inverted. */
   @Input()
   get invert() { return this._invert; }
@@ -379,6 +382,7 @@ export class MdSlider implements ControlValueAccessor, OnDestroy {
 
   constructor(renderer: Renderer, private _elementRef: ElementRef,
               private _focusOriginMonitor: FocusOriginMonitor, @Optional() private _dir: Dir) {
+    super();
     this._focusOriginMonitor.monitor(this._elementRef.nativeElement, renderer, true)
         .subscribe((origin: FocusOrigin) => this._isActive = !!origin && origin !== 'keyboard');
     this._renderer = new SliderRenderer(this._elementRef);

@@ -1,26 +1,22 @@
 import {
-  ChangeDetectorRef,
+  AfterViewInit,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
+  forwardRef,
   Input,
+  OnDestroy,
   Output,
   Renderer,
-  ViewEncapsulation,
-  forwardRef,
   ViewChild,
-  AfterViewInit,
-  OnDestroy,
+  ViewEncapsulation,
 } from '@angular/core';
-import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {coerceBooleanProperty} from '../core/coercion/boolean-property';
-import {
-  MdRipple,
-  RippleRef,
-  FocusOriginMonitor,
-  FocusOrigin,
-} from '../core';
+import {FocusOrigin, FocusOriginMonitor, MdRipple, RippleRef} from '../core';
+import {mixinDisabled, CanDisable} from '../core/common-behaviors/disabled';
 
 
 /** Monotonically increasing integer used to auto-generate unique ids for checkbox components. */
@@ -60,6 +56,11 @@ export class MdCheckboxChange {
   checked: boolean;
 }
 
+// Boilerplate for applying mixins to MdCheckbox.
+export class MdCheckboxBase { }
+export const _MdCheckboxMixinBase = mixinDisabled(MdCheckboxBase);
+
+
 /**
  * A material design checkbox component. Supports all of the functionality of an HTML5 checkbox,
  * and exposes a similar API. A MdCheckbox can be either checked, unchecked, indeterminate, or
@@ -74,17 +75,19 @@ export class MdCheckboxChange {
   templateUrl: 'checkbox.html',
   styleUrls: ['checkbox.css'],
   host: {
-    '[class.mat-checkbox]': 'true',
+    'class': 'mat-checkbox',
     '[class.mat-checkbox-indeterminate]': 'indeterminate',
     '[class.mat-checkbox-checked]': 'checked',
     '[class.mat-checkbox-disabled]': 'disabled',
     '[class.mat-checkbox-label-before]': 'labelPosition == "before"',
   },
   providers: [MD_CHECKBOX_CONTROL_VALUE_ACCESSOR],
+  inputs: ['disabled'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MdCheckbox implements ControlValueAccessor, AfterViewInit, OnDestroy {
+export class MdCheckbox extends _MdCheckboxMixinBase
+    implements ControlValueAccessor, AfterViewInit, OnDestroy, CanDisable {
   /**
    * Attached to the aria-label attribute of the host element. In most cases, arial-labelledby will
    * take precedence so this may be omitted.
@@ -137,13 +140,6 @@ export class MdCheckbox implements ControlValueAccessor, AfterViewInit, OnDestro
   /** Whether the label should appear after or before the checkbox. Defaults to 'after' */
   @Input() labelPosition: 'before' | 'after' = 'after';
 
-  private _disabled: boolean = false;
-
-  /** Whether the checkbox is disabled. */
-  @Input()
-  get disabled(): boolean { return this._disabled; }
-  set disabled(value) { this._disabled = coerceBooleanProperty(value); }
-
   /** Tabindex value that is passed to the underlying input element. */
   @Input() tabIndex: number = 0;
 
@@ -189,6 +185,7 @@ export class MdCheckbox implements ControlValueAccessor, AfterViewInit, OnDestro
               private _elementRef: ElementRef,
               private _changeDetectorRef: ChangeDetectorRef,
               private _focusOriginMonitor: FocusOriginMonitor) {
+    super();
     this.color = 'accent';
   }
 

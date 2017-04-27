@@ -97,9 +97,9 @@ export const _MdButtonMixinBase = mixinDisabled(MdButtonBase);
   host: {
     '[disabled]': 'disabled || null',
   },
-  inputs: ['disabled'],
   templateUrl: 'button.html',
   styleUrls: ['button.css'],
+  inputs: ['disabled'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
