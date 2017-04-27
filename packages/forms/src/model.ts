@@ -659,17 +659,18 @@ export class FormControl extends AbstractControl {
    * If `emitViewToModelChange` is `true`, an ngModelChange event will be fired to update the
    * model.  This is the default behavior if `emitViewToModelChange` is not specified.
    */
-  setValue(value: any, {onlySelf, emitEvent, emitModelToViewChange, emitViewToModelChange}: {
+  setValue(value: any, options: {
     onlySelf?: boolean,
     emitEvent?: boolean,
     emitModelToViewChange?: boolean,
     emitViewToModelChange?: boolean
   } = {}): void {
     this._value = value;
-    if (this._onChange.length && emitModelToViewChange !== false) {
-      this._onChange.forEach((changeFn) => changeFn(this._value, emitViewToModelChange !== false));
+    if (this._onChange.length && options.emitModelToViewChange !== false) {
+      this._onChange.forEach(
+          (changeFn) => changeFn(this._value, options.emitViewToModelChange !== false));
     }
-    this.updateValueAndValidity({onlySelf, emitEvent});
+    this.updateValueAndValidity(options);
   }
 
   /**
@@ -716,12 +717,11 @@ export class FormControl extends AbstractControl {
    * console.log(this.control.status);  // 'DISABLED'
    * ```
    */
-  reset(formState: any = null, {onlySelf, emitEvent}: {onlySelf?: boolean,
-                                                       emitEvent?: boolean} = {}): void {
+  reset(formState: any = null, options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     this._applyFormState(formState);
-    this.markAsPristine({onlySelf});
-    this.markAsUntouched({onlySelf});
-    this.setValue(this._value, {onlySelf, emitEvent});
+    this.markAsPristine(options);
+    this.markAsUntouched(options);
+    this.setValue(this._value, options);
   }
 
   /**
@@ -914,15 +914,14 @@ export class FormGroup extends AbstractControl {
    *
    *  ```
    */
-  setValue(
-      value: {[key: string]: any},
-      {onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
+  setValue(value: {[key: string]: any}, options: {onlySelf?: boolean, emitEvent?: boolean} = {}):
+      void {
     this._checkAllValuesPresent(value);
     Object.keys(value).forEach(name => {
       this._throwIfControlMissing(name);
-      this.controls[name].setValue(value[name], {onlySelf: true, emitEvent});
+      this.controls[name].setValue(value[name], {onlySelf: true, emitEvent: options.emitEvent});
     });
-    this.updateValueAndValidity({onlySelf, emitEvent});
+    this.updateValueAndValidity(options);
   }
 
   /**
@@ -946,15 +945,14 @@ export class FormGroup extends AbstractControl {
    *
    *  ```
    */
-  patchValue(
-      value: {[key: string]: any},
-      {onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
+  patchValue(value: {[key: string]: any}, options: {onlySelf?: boolean, emitEvent?: boolean} = {}):
+      void {
     Object.keys(value).forEach(name => {
       if (this.controls[name]) {
-        this.controls[name].patchValue(value[name], {onlySelf: true, emitEvent});
+        this.controls[name].patchValue(value[name], {onlySelf: true, emitEvent: options.emitEvent});
       }
     });
-    this.updateValueAndValidity({onlySelf, emitEvent});
+    this.updateValueAndValidity(options);
   }
 
   /**
@@ -989,14 +987,13 @@ export class FormGroup extends AbstractControl {
    * console.log(this.form.get('first').status);  // 'DISABLED'
    * ```
    */
-  reset(value: any = {}, {onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}):
-      void {
+  reset(value: any = {}, options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     this._forEachChild((control: AbstractControl, name: string) => {
-      control.reset(value[name], {onlySelf: true, emitEvent});
+      control.reset(value[name], {onlySelf: true, emitEvent: options.emitEvent});
     });
-    this.updateValueAndValidity({onlySelf, emitEvent});
-    this._updatePristine({onlySelf});
-    this._updateTouched({onlySelf});
+    this.updateValueAndValidity(options);
+    this._updatePristine(options);
+    this._updateTouched(options);
   }
 
   /**
@@ -1222,14 +1219,13 @@ export class FormArray extends AbstractControl {
    *  console.log(arr.value);   // ['Nancy', 'Drew']
    *  ```
    */
-  setValue(value: any[], {onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}):
-      void {
+  setValue(value: any[], options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     this._checkAllValuesPresent(value);
     value.forEach((newValue: any, index: number) => {
       this._throwIfControlMissing(index);
-      this.at(index).setValue(newValue, {onlySelf: true, emitEvent});
+      this.at(index).setValue(newValue, {onlySelf: true, emitEvent: options.emitEvent});
     });
-    this.updateValueAndValidity({onlySelf, emitEvent});
+    this.updateValueAndValidity(options);
   }
 
   /**
@@ -1252,14 +1248,13 @@ export class FormArray extends AbstractControl {
    *  console.log(arr.value);   // ['Nancy', null]
    *  ```
    */
-  patchValue(value: any[], {onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}):
-      void {
+  patchValue(value: any[], options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     value.forEach((newValue: any, index: number) => {
       if (this.at(index)) {
-        this.at(index).patchValue(newValue, {onlySelf: true, emitEvent});
+        this.at(index).patchValue(newValue, {onlySelf: true, emitEvent: options.emitEvent});
       }
     });
-    this.updateValueAndValidity({onlySelf, emitEvent});
+    this.updateValueAndValidity(options);
   }
 
   /**
@@ -1293,14 +1288,13 @@ export class FormArray extends AbstractControl {
    * console.log(this.arr.get(0).status);  // 'DISABLED'
    * ```
    */
-  reset(value: any = [], {onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}):
-      void {
+  reset(value: any = [], options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     this._forEachChild((control: AbstractControl, index: number) => {
-      control.reset(value[index], {onlySelf: true, emitEvent});
+      control.reset(value[index], {onlySelf: true, emitEvent: options.emitEvent});
     });
-    this.updateValueAndValidity({onlySelf, emitEvent});
-    this._updatePristine({onlySelf});
-    this._updateTouched({onlySelf});
+    this.updateValueAndValidity(options);
+    this._updatePristine(options);
+    this._updateTouched(options);
   }
 
   /**
