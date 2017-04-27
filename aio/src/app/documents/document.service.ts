@@ -14,9 +14,10 @@ export { DocumentContents } from './document-contents';
 import { LocationService } from 'app/shared/location.service';
 import { Logger } from 'app/shared/logger.service';
 
+export const FILE_NOT_FOUND_ID = 'file-not-found';
+export const FETCHING_ERROR_ID = 'fetching-error';
+
 const CONTENT_URL_PREFIX = 'content/docs/';
-const FILE_NOT_FOUND_ID = 'file-not-found';
-const FETCHING_ERROR_ID = 'fetching-error';
 const FETCHING_ERROR_CONTENTS = `
 <div class="nf-container l-flex-wrap flex-center">
 <div class="nf-icon material-icons">error_outline</div>
@@ -72,9 +73,8 @@ export class DocumentService {
       return this.getDocument(FILE_NOT_FOUND_ID);
     } else {
       return of({
-        title: 'Not Found',
-        contents: 'Document not found',
-        id: FILE_NOT_FOUND_ID
+        id: FILE_NOT_FOUND_ID,
+        contents: 'Document not found'
       });
     }
   }
@@ -83,9 +83,8 @@ export class DocumentService {
     this.logger.error('Error fetching document', error);
     this.cache.delete(id);
     return Observable.of({
-      title: 'Document retrieval error',
-      contents: FETCHING_ERROR_CONTENTS,
-      id: FETCHING_ERROR_ID
+      id: FETCHING_ERROR_ID,
+      contents: FETCHING_ERROR_CONTENTS
     });
   }
 }
