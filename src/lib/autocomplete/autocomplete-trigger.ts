@@ -27,7 +27,6 @@ import {Subscription} from 'rxjs/Subscription';
 import 'rxjs/add/observable/merge';
 import 'rxjs/add/observable/fromEvent';
 import 'rxjs/add/operator/filter';
-import 'rxjs/add/operator/startWith';
 import 'rxjs/add/operator/switchMap';
 
 /**
