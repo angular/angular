@@ -57,6 +57,7 @@ filegroup(
         "//:node_modules/zone.js/dist/async-test.js",
         "//:node_modules/zone.js/dist/sync-test.js",
         "//:node_modules/zone.js/dist/fake-async-test.js",
+        "//:node_modules/zone.js/dist/task-tracking.js",
         "//:node_modules/zone.js/dist/proxy.js",
         "//:node_modules/zone.js/dist/jasmine-patch.js",
     ],

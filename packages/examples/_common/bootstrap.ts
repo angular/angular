@@ -7,6 +7,7 @@
  */
 (function(global: any) {
   writeScriptTag('/vendor/zone.js');
+  writeScriptTag('/vendor/task-tracking.js');
   writeScriptTag('/vendor/system.js');
   writeScriptTag('/vendor/Reflect.js');
   writeScriptTag('/_common/system-config.js');

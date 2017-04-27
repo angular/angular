@@ -12,6 +12,7 @@ import 'zone.js/dist/proxy.js';
 import 'zone.js/dist/sync-test.js';
 import 'zone.js/dist/async-test.js';
 import 'zone.js/dist/fake-async-test.js';
+import 'zone.js/dist/task-tracking.js';
 import 'reflect-metadata/Reflect';
 
 // This hack is needed to get jasmine, node and zone working inside bazel.
