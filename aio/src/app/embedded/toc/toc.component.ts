@@ -17,9 +17,9 @@ export class TocComponent implements OnInit {
   tocList: TocItem[];
 
   constructor(
-    private elementRef: ElementRef,
+    elementRef: ElementRef,
     private tocService: TocService) {
-    const hostElement = this.elementRef.nativeElement;
+    const hostElement = elementRef.nativeElement;
     this.isEmbedded = hostElement.className.indexOf('embedded') !== -1;
   }
 

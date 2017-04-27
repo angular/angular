@@ -1,6 +1,6 @@
 <div *ngIf="hasToc" [class.closed]="isClosed">
-  <div *ngIf="!hasSecondary"class="toc-heading">Contents</div>
-  <div *ngIf="hasSecondary" class="toc-heading secondary"
+  <div *ngIf="!hasSecondary" class="toc-heading">Contents</div>
+  <div *ngIf="hasSecondary"  class="toc-heading secondary"
       (click)="toggle()"
       title="Expand/collapse contents"
       aria-label="Expand/collapse contents">
