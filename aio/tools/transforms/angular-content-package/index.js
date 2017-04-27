@@ -112,6 +112,7 @@ module.exports = new Package('angular-content', [basePackage, contentPackage])
   })
 
   // We want the content files to be converted
-  .config(function(convertToJsonProcessor) {
+  .config(function(convertToJsonProcessor, postProcessHtml) {
     convertToJsonProcessor.docTypes.push('content');
+    postProcessHtml.docTypes.push('content');
   });
