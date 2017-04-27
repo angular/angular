@@ -7,14 +7,15 @@ import {
   Optional,
   isDevMode,
   ElementRef,
+  InjectionToken,
 } from '@angular/core';
 import {DOCUMENT} from '@angular/platform-browser';
 import {MdError} from '../errors/error';
 
-/** Whether we've done the global sanity checks (e.g. a theme is loaded, there is a doctype). */
-let hasDoneGlobalChecks = false;
-
 export const MATERIAL_COMPATIBILITY_MODE = new OpaqueToken('md-compatibility-mode');
+
+/** Injection token that configures whether the Material sanity checks are enabled. */
+export const MATERIAL_SANITY_CHECKS = new InjectionToken<boolean>('md-sanity-checks');
 
 /**
  * Exception thrown if the consumer has used an invalid Material prefix on a component.
@@ -188,8 +189,14 @@ export class MdPrefixRejector {
 @NgModule({
   declarations: [MatPrefixRejector, MdPrefixRejector],
   exports: [MatPrefixRejector, MdPrefixRejector],
+  providers: [{
+    provide: MATERIAL_SANITY_CHECKS, useValue: true,
+  }],
 })
 export class CompatibilityModule {
+  /** Whether we've done the global sanity checks (e.g. a theme is loaded, there is a doctype). */
+  private _hasDoneGlobalChecks = false;
+
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: CompatibilityModule,
@@ -197,16 +204,20 @@ export class CompatibilityModule {
     };
   }
 
-  constructor(@Optional() @Inject(DOCUMENT) private _document: any) {
-    if (!hasDoneGlobalChecks && isDevMode()) {
+  constructor(
+    @Optional() @Inject(DOCUMENT) private _document: any,
+    @Optional() @Inject(MATERIAL_SANITY_CHECKS) _sanityChecksEnabled: boolean) {
+
+    if (_sanityChecksEnabled && !this._hasDoneGlobalChecks && _document && isDevMode()) {
+      // Delay running the check to allow more time for the user's styles to load.
       this._checkDoctype();
       this._checkTheme();
-      hasDoneGlobalChecks = true;
+      this._hasDoneGlobalChecks = true;
     }
   }
 
   private _checkDoctype(): void {
-    if (this._document && !this._document.doctype) {
+    if (!this._document.doctype) {
       console.warn(
         'Current document does not have a doctype. This may cause ' +
         'some Angular Material components not to behave as expected.'
@@ -215,7 +226,7 @@ export class CompatibilityModule {
   }
 
   private _checkTheme(): void {
-    if (this._document && typeof getComputedStyle === 'function') {
+    if (typeof getComputedStyle === 'function') {
       const testElement = this._document.createElement('div');
 
       testElement.classList.add('mat-theme-loaded-marker');
