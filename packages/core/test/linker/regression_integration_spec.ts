@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, ContentChild, Directive, InjectionToken, Injector, Input, Pipe, PipeTransform, Provider, QueryList, Renderer2, SimpleChanges, TemplateRef, ViewChildren, ViewContainerRef} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, ContentChild, Directive, InjectionToken, Injector, Input, NgModule, NgModuleRef, Pipe, PipeTransform, Provider, QueryList, Renderer2, SimpleChanges, TemplateRef, ViewChildren, ViewContainerRef} from '@angular/core';
 import {TestBed, fakeAsync, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 export function main() {
@@ -364,6 +365,23 @@ function declareTests({useJit}: {useJit: boolean}) {
       expect(testDirs[0].tpl).toBeUndefined();
       expect(testDirs[1].tpl).toBeDefined();
       expect(testDirs[2].tpl).toBeDefined();
+    });
+
+    it('should not add ng-version for dynamically created components', () => {
+      @Component({template: ''})
+      class App {
+      }
+
+      @NgModule({declarations: [App], entryComponents: [App]})
+      class MyModule {
+      }
+
+      const modRef = TestBed.configureTestingModule({imports: [MyModule]})
+                         .get(NgModuleRef) as NgModuleRef<MyModule>;
+      const compRef =
+          modRef.componentFactoryResolver.resolveComponentFactory(App).create(Injector.NULL);
+
+      expect(getDOM().hasAttribute(compRef.location.nativeElement, 'ng-version')).toBe(false);
     });
   });
 }
