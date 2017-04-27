@@ -652,6 +652,46 @@ export function main() {
         expect(compEl.nativeElement).toHaveText('1');
       });
 
+      it('should inject ChangeDetectorRef of a same element component into a directive', () => {
+        TestBed.configureTestingModule(
+            {declarations: [PushComponentNeedsChangeDetectorRef, DirectiveNeedsChangeDetectorRef]});
+        const cf = createComponentFixture(
+            '<div componentNeedsChangeDetectorRef directiveNeedsChangeDetectorRef></div>');
+        cf.detectChanges();
+        const compEl = cf.debugElement.children[0];
+        const comp = compEl.injector.get(PushComponentNeedsChangeDetectorRef);
+        const dir = compEl.injector.get(DirectiveNeedsChangeDetectorRef);
+        comp.counter = 1;
+        cf.detectChanges();
+        expect(compEl.nativeElement).toHaveText('0');
+        dir.changeDetectorRef.markForCheck();
+        cf.detectChanges();
+        expect(compEl.nativeElement).toHaveText('1');
+      });
+
+      it(`should not inject ChangeDetectorRef of a parent element's component into a directive`, () => {
+        TestBed
+            .configureTestingModule({
+              declarations: [PushComponentNeedsChangeDetectorRef, DirectiveNeedsChangeDetectorRef]
+            })
+            .overrideComponent(
+                PushComponentNeedsChangeDetectorRef,
+                {set: {template: '<ng-content></ng-content>{{counter}}'}});
+        const cf = createComponentFixture(
+            '<div componentNeedsChangeDetectorRef><div directiveNeedsChangeDetectorRef></div></div>');
+        cf.detectChanges();
+        const compEl = cf.debugElement.children[0];
+        const comp = compEl.injector.get(PushComponentNeedsChangeDetectorRef);
+        const dirEl = compEl.children[0];
+        const dir = dirEl.injector.get(DirectiveNeedsChangeDetectorRef);
+        comp.counter = 1;
+        cf.detectChanges();
+        expect(compEl.nativeElement).toHaveText('0');
+        dir.changeDetectorRef.markForCheck();
+        cf.detectChanges();
+        expect(compEl.nativeElement).toHaveText('0');
+      });
+
       it('should inject ViewContainerRef', () => {
         TestBed.configureTestingModule({declarations: [NeedsViewContainerRef]});
         const el = createComponent('<div needsViewContainerRef></div>');
