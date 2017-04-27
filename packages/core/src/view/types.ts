@@ -324,9 +324,12 @@ export interface ViewData {
  */
 export const enum ViewState {
   FirstCheck = 1 << 0,
-  ChecksEnabled = 1 << 1,
-  Errored = 1 << 2,
-  Destroyed = 1 << 3
+  Attached = 1 << 1,
+  ChecksEnabled = 1 << 2,
+  Errored = 1 << 3,
+  Destroyed = 1 << 4,
+
+  CatDetectChanges = Attached | ChecksEnabled,
 }
 
 export interface DisposableFn { (): void; }

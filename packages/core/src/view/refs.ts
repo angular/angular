@@ -236,11 +236,11 @@ export class ViewRef_ implements EmbeddedViewRef<any>, InternalViewRef {
   get destroyed(): boolean { return (this._view.state & ViewState.Destroyed) !== 0; }
 
   markForCheck(): void { markParentViewsForCheck(this._view); }
-  detach(): void { this._view.state &= ~ViewState.ChecksEnabled; }
+  detach(): void { this._view.state &= ~ViewState.Attached; }
   detectChanges(): void { Services.checkAndUpdateView(this._view); }
   checkNoChanges(): void { Services.checkNoChangesView(this._view); }
 
-  reattach(): void { this._view.state |= ViewState.ChecksEnabled; }
+  reattach(): void { this._view.state |= ViewState.Attached; }
   onDestroy(callback: Function) {
     if (!this._view.disposables) {
       this._view.disposables = [];

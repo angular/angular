@@ -211,7 +211,7 @@ function createView(
     viewContainerParent: null, parentNodeDef,
     context: null,
     component: null, nodes,
-    state: ViewState.FirstCheck | ViewState.ChecksEnabled, root, renderer,
+    state: ViewState.FirstCheck | ViewState.CatDetectChanges, root, renderer,
     oldValues: new Array(def.bindingCount), disposables
   };
   return view;
@@ -542,13 +542,13 @@ function callViewAction(view: ViewData, action: ViewAction) {
   const viewState = view.state;
   switch (action) {
     case ViewAction.CheckNoChanges:
-      if ((viewState & ViewState.ChecksEnabled) &&
+      if ((viewState & ViewState.CatDetectChanges) === ViewState.CatDetectChanges &&
           (viewState & (ViewState.Errored | ViewState.Destroyed)) === 0) {
         checkNoChangesView(view);
       }
       break;
     case ViewAction.CheckAndUpdate:
-      if ((viewState & ViewState.ChecksEnabled) &&
+      if ((viewState & ViewState.CatDetectChanges) === ViewState.CatDetectChanges &&
           (viewState & (ViewState.Errored | ViewState.Destroyed)) === 0) {
         checkAndUpdateView(view);
       }
