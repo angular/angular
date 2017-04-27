@@ -109,5 +109,15 @@ export function main() {
 
       expect(req.text()).toEqual('');
     });
+
+    it('should use object params', () => {
+      const req = new Request({url: 'http://test.com', params: {'a': 3, 'b': ['x', 'y']}});
+      expect(req.url).toBe('http://test.com?a=3&b=x&b=y');
+    });
+
+    it('should use search if present', () => {
+      const req = new Request({url: 'http://test.com', search: 'a=1&b=2'});
+      expect(req.url).toBe('http://test.com?a=1&b=2');
+    })
   });
 }
