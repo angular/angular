@@ -113,6 +113,13 @@ module.exports = new Package('angular-base', [
     ];
   })
 
+
+  .config(function(postProcessHtml) {
+    postProcessHtml.plugins = [
+      require('./post-processors/autolink-headings')
+    ];
+  })
+
   .config(function(convertToJsonProcessor) {
     convertToJsonProcessor.docTypes = [];
   });
