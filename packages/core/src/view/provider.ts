@@ -355,6 +355,12 @@ export function resolveDep(
   }
   const tokenKey = depDef.tokenKey;
 
+  if (tokenKey === ChangeDetectorRefTokenKey) {
+    // directives on the same element as a component should be able to control the change detector
+    // of that component as well.
+    allowPrivateServices = !!(elDef && elDef.element !.componentView);
+  }
+
   if (elDef && (depDef.flags & DepFlags.SkipSelf)) {
     allowPrivateServices = false;
     elDef = elDef.parent !;
