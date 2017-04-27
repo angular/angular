@@ -132,6 +132,10 @@ export class NgZone {
       self._inner = self._inner.fork((Zone as any)['wtfZoneSpec']);
     }
 
+    if ((Zone as any)['TaskTrackingZoneSpec']) {
+      self._inner = self._inner.fork(new ((Zone as any)['TaskTrackingZoneSpec'] as any));
+    }
+
     if (enableLongStackTrace && (Zone as any)['longStackTraceZoneSpec']) {
       self._inner = self._inner.fork((Zone as any)['longStackTraceZoneSpec']);
     }

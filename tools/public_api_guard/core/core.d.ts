@@ -998,12 +998,12 @@ export declare abstract class TemplateRef<C> {
 /** @experimental */
 export declare class Testability implements PublicTestability {
     constructor(_ngZone: NgZone);
-    decreasePendingRequestCount(): number;
+    /** @deprecated */ decreasePendingRequestCount(): number;
     findProviders(using: any, provider: string, exactMatch: boolean): any[];
-    getPendingRequestCount(): number;
-    increasePendingRequestCount(): number;
+    /** @deprecated */ getPendingRequestCount(): number;
+    /** @deprecated */ increasePendingRequestCount(): number;
     isStable(): boolean;
-    whenStable(callback: Function): void;
+    whenStable(doneCb: Function, timeout?: number, updateCb?: Function): void;
 }
 
 /** @experimental */
