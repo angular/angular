@@ -1646,13 +1646,13 @@ describe('MdSelect', () => {
       fixture.componentInstance.floatPlaceholder = 'never';
       fixture.detectChanges();
 
-      expect(placeholder.style.visibility).toBe('visible');
+      expect(placeholder.style.opacity).toBe('1');
       expect(fixture.componentInstance.select._getPlaceholderAnimationState()).toBeFalsy();
 
       fixture.componentInstance.control.setValue('pizza-1');
       fixture.detectChanges();
 
-      expect(placeholder.style.visibility).toBe('hidden');
+      expect(placeholder.style.opacity).toBe('0');
       expect(fixture.componentInstance.select._getPlaceholderAnimationState()).toBeFalsy();
     });
 

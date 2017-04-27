@@ -812,11 +812,11 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
   }
 
   /**
-   * Determines the CSS `visibility` of the placeholder element.
+   * Determines the CSS `opacity` of the placeholder element.
    */
-  _getPlaceholderVisibility(): 'visible'|'hidden' {
+  _getPlaceholderOpacity(): string {
     return (this.floatPlaceholder !== 'never' || this._selectionModel.isEmpty()) ?
-        'visible' : 'hidden';
+        '1' : '0';
   }
 
   /** Returns the aria-label of the select component. */

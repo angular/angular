@@ -3,7 +3,7 @@
     class="mat-select-placeholder"
     [class.mat-floating-placeholder]="_selectionModel.hasValue()"
     [@transformPlaceholder]="_getPlaceholderAnimationState()"
-    [style.visibility]="_getPlaceholderVisibility()"
+    [style.opacity]="_getPlaceholderOpacity()"
     [style.width.px]="_selectedValueWidth"> {{ placeholder }} </span>
   <span class="mat-select-value" *ngIf="_selectionModel.hasValue()">
     <span class="mat-select-value-text">{{ triggerValue }}</span>
