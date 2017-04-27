@@ -76,8 +76,14 @@ export class Request extends Body {
     // TODO: assert that url is present
     const url = requestOptions.url;
     this.url = requestOptions.url !;
-    if (requestOptions.params) {
-      const params = requestOptions.params.toString();
+    const paramsArg = requestOptions.params || requestOptions.search;
+    if (paramsArg) {
+      let params: string;
+      if (typeof paramsArg === 'object' && !(paramsArg instanceof URLSearchParams)) {
+        params = urlEncodeParams(paramsArg).toString();
+      } else {
+        params = paramsArg.toString();
+      }
       if (params.length > 0) {
         let prefix = '?';
         if (this.url.indexOf('?') != -1) {
@@ -161,6 +167,19 @@ export class Request extends Body {
         return null;
     }
   }
+}
+
+function urlEncodeParams(params: {[key: string]: any}): URLSearchParams {
+  const searchParams = new URLSearchParams();
+  Object.keys(params).forEach(key => {
+    const value = params[key];
+    if (value && Array.isArray(value)) {
+      value.forEach(element => searchParams.append(key, element.toString()));
+    } else {
+      searchParams.append(key, value.toString());
+    }
+  });
+  return searchParams;
 }
 
 const noop = function() {};
