@@ -15,7 +15,7 @@ export class I18nExtractionCliOptions extends CliOptions {
   locale: string|null;
   outFile: string|null;
 
-  constructor({i18nFormat = null, locale = null, outFile = null}: {
+  constructor({i18nFormat = 'xlf', locale = null, outFile = null}: {
     i18nFormat?: string,
     locale?: string,
     outFile?: string,

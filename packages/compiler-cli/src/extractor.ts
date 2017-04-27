@@ -49,7 +49,6 @@ export class Extractor {
   }
 
   serialize(bundle: compiler.MessageBundle, formatName: string): string {
-    formatName = formatName || 'xlf';
     const format = formatName.toLowerCase();
     let serializer: compiler.Serializer;
 
