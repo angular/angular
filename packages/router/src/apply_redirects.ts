@@ -358,7 +358,13 @@ class ApplyRedirects {
   private createQueryParams(redirectToParams: Params, actualParams: Params): Params {
     const res: Params = {};
     forEach(redirectToParams, (v: any, k: string) => {
-      res[k] = v.startsWith(':') ? actualParams[v.substring(1)] : v;
+      const copySourceValue = typeof v === 'string' && v.startsWith(':');
+      if (copySourceValue) {
+        const sourceName = v.substring(1);
+        res[k] = actualParams[sourceName];
+      } else {
+        res[k] = v;
+      }
     });
     return res;
   }

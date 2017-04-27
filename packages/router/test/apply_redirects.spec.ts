@@ -41,6 +41,17 @@ describe('applyRedirects', () => {
         (t: UrlTree) => { expectTreeToBe(t, '/a/b/c'); });
   });
 
+  it('should support redirecting with to an URL with query parameters', () => {
+    const config: Routes = [
+      {path: 'single_value', redirectTo: '/dst?k=v1'},
+      {path: 'multiple_values', redirectTo: '/dst?k=v1&k=v2'},
+      {path: '**', component: ComponentA},
+    ];
+
+    checkRedirect(config, 'single_value', (t: UrlTree) => expectTreeToBe(t, '/dst?k=v1'));
+    checkRedirect(config, 'multiple_values', (t: UrlTree) => expectTreeToBe(t, '/dst?k=v1&k=v2'));
+  });
+
   it('should handle positional parameters', () => {
     checkRedirect(
         [
