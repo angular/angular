@@ -94,10 +94,3 @@ aio-toc > div {
 aio-toc > div.closed li.secondary {
     display: none;
 }
-
-@media screen and (max-width: 1200px) {
-  aio-toc.embedded:not(:empty) {
-      display: block;
-      margin: 20px 0 24px;
-  }
-}
