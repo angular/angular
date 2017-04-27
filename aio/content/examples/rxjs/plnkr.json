@@ -1,0 +1,10 @@
+{
+  "description": "RxJS",
+  "basePath": "src/",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[0-9].*"
+  ],
+  "tags": ["rxjs", "observable"]
+}

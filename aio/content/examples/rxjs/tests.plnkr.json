@@ -1,0 +1,21 @@
+{
+  "description": "Testing - app.specs",
+  "basePath": "src/",
+  "files":[
+    "browser-test-shim.js",
+    "systemjs.config.extras.js",
+
+    "app/event-aggregator.service.ts",
+    "app/event-aggregator.service.spec.ts",
+    "app/hero-detail.component.ts",
+    "app/hero-detail.component.spec.ts",
+    "app/hero.service.ts",
+    "app/hero.service.spec.ts",
+    "app/hero.ts",
+
+    "tests.html"
+  ],
+  "main": "tests.html",
+  "open": "app/hero-detail.component.spec.ts",
+  "tags": ["testing"]
+}

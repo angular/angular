@@ -83,3 +83,7 @@ aot-compiler/**/*.factory.d.ts
 # ngUpgrade testing
 !upgrade-phonecat-*/**/karma.conf.js
 !upgrade-phonecat-*/**/karma-test-shim.js
+
+# rxjs
+!rxjs/src/browser-test-shim.js
+!rxjs/src/jasmine-marbles.umd.js
