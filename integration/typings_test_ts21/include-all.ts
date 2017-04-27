@@ -9,6 +9,7 @@
 import * as compiler from '@angular/compiler';
 import * as compilerTesting from '@angular/compiler/testing';
 import * as coreTesting from '@angular/core';
+import * as forms from '@angular/forms';
 import * as core from '@angular/core/testing';
 import * as httpTesting from '@angular/http';
 import * as http from '@angular/http/testing';
@@ -26,6 +27,7 @@ export default {
   compilerTesting,
   core,
   coreTesting,
+  forms,
   http,
   httpTesting,
   platformBrowser,
