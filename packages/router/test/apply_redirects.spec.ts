@@ -32,13 +32,13 @@ describe('applyRedirects', () => {
             ],
           },
         ],
-        '/a/b', (t: UrlTree) => { compareTrees(t, tree('/a/b')); });
+        '/a/b', (t: UrlTree) => { expectTreeToBe(t, '/a/b'); });
   });
 
   it('should add new segments when needed', () => {
     checkRedirect(
         [{path: 'a/b', redirectTo: 'a/b/c'}, {path: '**', component: ComponentC}], '/a/b',
-        (t: UrlTree) => { compareTrees(t, tree('/a/b/c')); });
+        (t: UrlTree) => { expectTreeToBe(t, '/a/b/c'); });
   });
 
   it('should handle positional parameters', () => {
@@ -47,7 +47,7 @@ describe('applyRedirects', () => {
           {path: 'a/:aid/b/:bid', redirectTo: 'newa/:aid/newb/:bid'},
           {path: '**', component: ComponentC}
         ],
-        '/a/1/b/2', (t: UrlTree) => { compareTrees(t, tree('/newa/1/newb/2')); });
+        '/a/1/b/2', (t: UrlTree) => { expectTreeToBe(t, '/newa/1/newb/2'); });
   });
 
   it('should throw when cannot handle a positional parameter', () => {
@@ -61,7 +61,7 @@ describe('applyRedirects', () => {
   it('should pass matrix parameters', () => {
     checkRedirect(
         [{path: 'a/:id', redirectTo: 'd/a/:id/e'}, {path: '**', component: ComponentC}],
-        '/a;p1=1/1;p2=2', (t: UrlTree) => { compareTrees(t, tree('/d/a;p1=1/1;p2=2/e')); });
+        '/a;p1=1/1;p2=2', (t: UrlTree) => { expectTreeToBe(t, '/d/a;p1=1/1;p2=2/e'); });
   });
 
   it('should handle preserve secondary routes', () => {
@@ -70,7 +70,7 @@ describe('applyRedirects', () => {
           {path: 'a/:id', redirectTo: 'd/a/:id/e'},
           {path: 'c/d', component: ComponentA, outlet: 'aux'}, {path: '**', component: ComponentC}
         ],
-        '/a/1(aux:c/d)', (t: UrlTree) => { compareTrees(t, tree('/d/a/1/e(aux:c/d)')); });
+        '/a/1(aux:c/d)', (t: UrlTree) => { expectTreeToBe(t, '/d/a/1/e(aux:c/d)'); });
   });
 
   it('should redirect secondary routes', () => {
@@ -80,7 +80,7 @@ describe('applyRedirects', () => {
           {path: 'c/d', redirectTo: 'f/c/d/e', outlet: 'aux'},
           {path: '**', component: ComponentC, outlet: 'aux'}
         ],
-        '/a/1(aux:c/d)', (t: UrlTree) => { compareTrees(t, tree('/a/1(aux:f/c/d/e)')); });
+        '/a/1(aux:c/d)', (t: UrlTree) => { expectTreeToBe(t, '/a/1(aux:f/c/d/e)'); });
   });
 
   it('should use the configuration of the route redirected to', () => {
@@ -95,7 +95,7 @@ describe('applyRedirects', () => {
           },
           {path: 'c', redirectTo: 'a'}
         ],
-        'c/b', (t: UrlTree) => { compareTrees(t, tree('a/b')); });
+        'c/b', (t: UrlTree) => { expectTreeToBe(t, 'a/b'); });
   });
 
   it('should support redirects with both main and aux', () => {
@@ -109,7 +109,7 @@ describe('applyRedirects', () => {
             {path: 'b', redirectTo: 'cc', outlet: 'aux'}
           ]
         }],
-        'a/(b//aux:b)', (t: UrlTree) => { compareTrees(t, tree('a/(bb//aux:cc)')); });
+        'a/(b//aux:b)', (t: UrlTree) => { expectTreeToBe(t, 'a/(bb//aux:cc)'); });
   });
 
   it('should support redirects with both main and aux (with a nested redirect)', () => {
@@ -128,7 +128,7 @@ describe('applyRedirects', () => {
             {path: 'b', redirectTo: 'cc/d', outlet: 'aux'}
           ]
         }],
-        'a/(b//aux:b)', (t: UrlTree) => { compareTrees(t, tree('a/(bb//aux:cc/dd)')); });
+        'a/(b//aux:b)', (t: UrlTree) => { expectTreeToBe(t, 'a/(bb//aux:cc/dd)'); });
   });
 
   it('should redirect wild cards', () => {
@@ -137,7 +137,7 @@ describe('applyRedirects', () => {
           {path: '404', component: ComponentA},
           {path: '**', redirectTo: '/404'},
         ],
-        '/a/1(aux:c/d)', (t: UrlTree) => { compareTrees(t, tree('/404')); });
+        '/a/1(aux:c/d)', (t: UrlTree) => { expectTreeToBe(t, '/404'); });
   });
 
   it('should support absolute redirects', () => {
@@ -150,7 +150,7 @@ describe('applyRedirects', () => {
           },
           {path: '**', component: ComponentC}
         ],
-        '/a/b/1?b=2', (t: UrlTree) => { compareTrees(t, tree('/absolute/1?a=1&b=2#f1')); });
+        '/a/b/1?b=2', (t: UrlTree) => { expectTreeToBe(t, '/absolute/1?a=1&b=2#f1'); });
   });
 
   describe('lazy loading', () => {
@@ -166,7 +166,7 @@ describe('applyRedirects', () => {
 
       applyRedirects(testModule.injector, <any>loader, serializer, tree('a/b'), config)
           .forEach(r => {
-            compareTrees(r, tree('/a/b'));
+            expectTreeToBe(r, '/a/b');
             expect(config[0]._loadedConfig).toBe(loadedConfig);
           });
     });
@@ -198,7 +198,7 @@ describe('applyRedirects', () => {
       }];
 
       applyRedirects(<any>injector, <any>loader, serializer, tree('a/b'), config).forEach(r => {
-        compareTrees(r, tree('/a/b'));
+        expectTreeToBe(r, '/a/b');
       });
     });
 
@@ -279,8 +279,7 @@ describe('applyRedirects', () => {
           [{path: 'a', component: ComponentA, canLoad: ['guard'], loadChildren: 'children'}];
 
       applyRedirects(<any>injector, <any>loader, serializer, tree('a/b'), config)
-          .subscribe(
-              (r) => { compareTrees(r, tree('/a/b')); }, (e) => { throw 'Should not reach'; });
+          .subscribe((r) => { expectTreeToBe(r, '/a/b'); }, (e) => { throw 'Should not reach'; });
 
     });
 
@@ -293,7 +292,7 @@ describe('applyRedirects', () => {
           [{path: '', pathMatch: 'full', redirectTo: '/a'}, {path: 'a', loadChildren: 'children'}];
 
       applyRedirects(testModule.injector, <any>loader, serializer, tree(''), config).forEach(r => {
-        compareTrees(r, tree('a'));
+        expectTreeToBe(r, 'a');
         expect(config[1]._loadedConfig).toBe(loadedConfig);
       });
     });
@@ -318,7 +317,7 @@ describe('applyRedirects', () => {
       applyRedirects(testModule.injector, <any>loader, serializer, tree('a?k2'), config)
           .subscribe(
               r => {
-                compareTrees(r, tree('a?k2'));
+                expectTreeToBe(r, 'a?k2');
                 expect(config[0]._loadedConfig).toBe(loadedConfig);
               },
               (e) => { throw 'Should not reach'; });
@@ -373,7 +372,7 @@ describe('applyRedirects', () => {
             },
             {path: '', redirectTo: 'a'}
           ],
-          'b', (t: UrlTree) => { compareTrees(t, tree('a/b')); });
+          'b', (t: UrlTree) => { expectTreeToBe(t, 'a/b'); });
     });
 
     it('redirect from an empty path should work (absolute redirect)', () => {
@@ -388,7 +387,7 @@ describe('applyRedirects', () => {
             },
             {path: '', redirectTo: '/a/b'}
           ],
-          '', (t: UrlTree) => { compareTrees(t, tree('a/b')); });
+          '', (t: UrlTree) => { expectTreeToBe(t, 'a/b'); });
     });
 
     it('should redirect empty path route only when terminal', () => {
@@ -419,7 +418,7 @@ describe('applyRedirects', () => {
             },
             {path: '', redirectTo: 'a'}
           ],
-          '', (t: UrlTree) => { compareTrees(t, tree('a/b')); });
+          '', (t: UrlTree) => { expectTreeToBe(t, 'a/b'); });
     });
 
     it('redirect to an empty path should work', () => {
@@ -428,7 +427,7 @@ describe('applyRedirects', () => {
             {path: '', component: ComponentA, children: [{path: 'b', component: ComponentB}]},
             {path: 'a', redirectTo: ''}
           ],
-          'a/b', (t: UrlTree) => { compareTrees(t, tree('b')); });
+          'a/b', (t: UrlTree) => { expectTreeToBe(t, 'b'); });
     });
 
     describe('aux split is in the middle', () => {
@@ -442,7 +441,7 @@ describe('applyRedirects', () => {
                 {path: '', redirectTo: 'c', outlet: 'aux'}
               ]
             }],
-            'a/b', (t: UrlTree) => { compareTrees(t, tree('a/(b//aux:c)')); });
+            'a/b', (t: UrlTree) => { expectTreeToBe(t, 'a/(b//aux:c)'); });
       });
 
       it('should create a new url segment (terminal)', () => {
@@ -455,7 +454,7 @@ describe('applyRedirects', () => {
                 {path: '', pathMatch: 'full', redirectTo: 'c', outlet: 'aux'}
               ]
             }],
-            'a/b', (t: UrlTree) => { compareTrees(t, tree('a/b')); });
+            'a/b', (t: UrlTree) => { expectTreeToBe(t, 'a/b'); });
       });
     });
 
@@ -470,7 +469,7 @@ describe('applyRedirects', () => {
                 {path: '', redirectTo: 'c', outlet: 'aux'}
               ]
             }],
-            'a', (t: UrlTree) => { compareTrees(t, tree('a/(b//aux:c)')); });
+            'a', (t: UrlTree) => { expectTreeToBe(t, 'a/(b//aux:c)'); });
       });
 
       it('should create a new child (terminal)', () => {
@@ -483,7 +482,7 @@ describe('applyRedirects', () => {
                 {path: '', pathMatch: 'full', redirectTo: 'c', outlet: 'aux'}
               ]
             }],
-            'a', (t: UrlTree) => { compareTrees(t, tree('a/(b//aux:c)')); });
+            'a', (t: UrlTree) => { expectTreeToBe(t, 'a/(b//aux:c)'); });
       });
 
       it('should work only only primary outlet', () => {
@@ -495,7 +494,7 @@ describe('applyRedirects', () => {
                 {path: 'c', component: ComponentC, outlet: 'aux'}
               ]
             }],
-            'a/(aux:c)', (t: UrlTree) => { compareTrees(t, tree('a/(b//aux:c)')); });
+            'a/(aux:c)', (t: UrlTree) => { expectTreeToBe(t, 'a/(b//aux:c)'); });
       });
     });
 
@@ -515,7 +514,7 @@ describe('applyRedirects', () => {
                 {path: '', redirectTo: 'c', outlet: 'aux'}
               ]
             }],
-            'a/(d//aux:e)', (t: UrlTree) => { compareTrees(t, tree('a/(b/d//aux:c/e)')); });
+            'a/(d//aux:e)', (t: UrlTree) => { expectTreeToBe(t, 'a/(b/d//aux:c/e)'); });
       });
 
       it('should not create a new child (terminal)', () => {
@@ -545,7 +544,7 @@ describe('applyRedirects', () => {
     it('should not error when no children matching and no url is left', () => {
       checkRedirect(
           [{path: 'a', component: ComponentA, children: [{path: 'b', component: ComponentB}]}],
-          '/a', (t: UrlTree) => { compareTrees(t, tree('a')); });
+          '/a', (t: UrlTree) => { expectTreeToBe(t, 'a'); });
     });
 
     it('should not error when no children matching and no url is left (aux routes)', () => {
@@ -559,7 +558,7 @@ describe('applyRedirects', () => {
               {path: 'c', component: ComponentC, outlet: 'aux'},
             ]
           }],
-          '/a', (t: UrlTree) => { compareTrees(t, tree('a/(aux:c)')); });
+          '/a', (t: UrlTree) => { expectTreeToBe(t, 'a/(aux:c)'); });
     });
 
     it('should error when no children matching and some url is left', () => {
@@ -588,7 +587,7 @@ describe('applyRedirects', () => {
             component: ComponentA,
             children: [{path: 'b', component: ComponentB}]
           }] as any,
-          '/a/1/b', (t: UrlTree) => { compareTrees(t, tree('a/1/b')); });
+          '/a/1/b', (t: UrlTree) => { expectTreeToBe(t, 'a/1/b'); });
     });
   });
 
@@ -600,7 +599,7 @@ describe('applyRedirects', () => {
             {path: 'b/:id', component: ComponentB},
             {path: 'c/:id', component: ComponentC, outlet: 'aux'}
           ],
-          'a/1;p=99', (t: UrlTree) => { compareTrees(t, tree('/b/1;p=99(aux:c/1;p=99)')); });
+          'a/1;p=99', (t: UrlTree) => { expectTreeToBe(t, '/b/1;p=99(aux:c/1;p=99)'); });
     });
 
     it('should work when using absolute redirects (wildcard)', () => {
@@ -609,7 +608,7 @@ describe('applyRedirects', () => {
             {path: '**', redirectTo: '/b(aux:c)'}, {path: 'b', component: ComponentB},
             {path: 'c', component: ComponentC, outlet: 'aux'}
           ],
-          'a/1', (t: UrlTree) => { compareTrees(t, tree('/b(aux:c)')); });
+          'a/1', (t: UrlTree) => { expectTreeToBe(t, '/b(aux:c)'); });
     });
 
     it('should throw when using non-absolute redirects', () => {
@@ -637,7 +636,8 @@ function tree(url: string): UrlTree {
   return new DefaultUrlSerializer().parse(url);
 }
 
-function compareTrees(actual: UrlTree, expected: UrlTree): void {
+function expectTreeToBe(actual: UrlTree, expectedUrl: string): void {
+  const expected = tree(expectedUrl);
   const serializer = new DefaultUrlSerializer();
   const error =
       `"${serializer.serialize(actual)}" is not equal to "${serializer.serialize(expected)}"`;
