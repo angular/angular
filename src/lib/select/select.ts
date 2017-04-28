@@ -18,7 +18,7 @@ import {
   OnInit,
 } from '@angular/core';
 import {MdOption, MdOptionSelectionChange} from '../core/option/option';
-import {ENTER, SPACE} from '../core/keyboard/keycodes';
+import {ENTER, SPACE, UP_ARROW, DOWN_ARROW} from '../core/keyboard/keycodes';
 import {FocusKeyManager} from '../core/a11y/focus-key-manager';
 import {Dir} from '../core/rtl/dir';
 import {Observable} from 'rxjs/Observable';
@@ -480,27 +480,14 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
     this._triggerWidth = this._getTriggerRect().width;
   }
 
-  /** Ensures the panel opens if activated by the keyboard. */
+  /** Handles the keyboard interactions of a closed select. */
   _handleKeydown(event: KeyboardEvent): void {
-    if (event.keyCode === ENTER || event.keyCode === SPACE) {
-      this.open();
-    } else if (!this.disabled) {
-      let prevActiveItem = this._keyManager.activeItem;
-
-      // Cycle though the select options even when the select is closed,
-      // matching the behavior of the native select element.
-      // TODO(crisbeto): native selects also cycle through the options with left/right arrows,
-      // however the key manager only supports up/down at the moment.
-      this._keyManager.onKeydown(event);
-
-      let currentActiveItem = this._keyManager.activeItem as MdOption;
-
-      if (this._multiple) {
+    if (!this.disabled) {
+      if (event.keyCode === ENTER || event.keyCode === SPACE) {
+        event.preventDefault(); // prevents the page from scrolling down when pressing space
         this.open();
-      } else if (currentActiveItem !== prevActiveItem) {
-        this._clearSelection();
-        this._setSelectionByValue(currentActiveItem.value);
-        this._propagateChanges();
+      } else if (event.keyCode === UP_ARROW || event.keyCode === DOWN_ARROW) {
+        this._handleArrowKey(event);
       }
     }
   }
@@ -975,6 +962,31 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
   private _floatPlaceholderState(): string {
     return this._isRtl() ? 'floating-rtl' : 'floating-ltr';
   }
+
+  /** Handles the user pressing the arrow keys on a closed select.  */
+  private _handleArrowKey(event: KeyboardEvent): void {
+    if (this._multiple) {
+      event.preventDefault();
+      this.open();
+    } else {
+      const prevActiveItem = this._keyManager.activeItem;
+
+      // Cycle though the select options even when the select is closed,
+      // matching the behavior of the native select element.
+      // TODO(crisbeto): native selects also cycle through the options with left/right arrows,
+      // however the key manager only supports up/down at the moment.
+      this._keyManager.onKeydown(event);
+
+      const currentActiveItem = this._keyManager.activeItem as MdOption;
+
+      if (currentActiveItem !== prevActiveItem) {
+        this._clearSelection();
+        this._setSelectionByValue(currentActiveItem.value);
+        this._propagateChanges();
+      }
+    }
+  }
+
 }
 
 /** Clamps a value n between min and max values. */

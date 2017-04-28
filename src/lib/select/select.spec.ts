@@ -16,7 +16,7 @@ import {MdSelect, MdSelectFloatPlaceholderType} from './select';
 import {MdSelectDynamicMultipleError, MdSelectNonArrayValueError} from './select-errors';
 import {MdOption} from '../core/option/option';
 import {Dir} from '../core/rtl/dir';
-import {DOWN_ARROW, UP_ARROW} from '../core/keyboard/keycodes';
+import {DOWN_ARROW, UP_ARROW, ENTER, SPACE} from '../core/keyboard/keycodes';
 import {
   ControlValueAccessor, FormControl, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule
 } from '@angular/forms';
@@ -1370,6 +1370,26 @@ describe('MdSelect', () => {
           'Expected value from second option to have been set on the model.');
       });
 
+      it('should open the panel when pressing the arrow keys on a closed multiple select', () => {
+        fixture.destroy();
+
+        const multiFixture = TestBed.createComponent(MultiSelect);
+        const instance = multiFixture.componentInstance;
+
+        multiFixture.detectChanges();
+        select = multiFixture.debugElement.query(By.css('md-select')).nativeElement;
+
+        const initialValue = instance.control.value;
+
+        expect(instance.select.panelOpen).toBe(false, 'Expected panel to be closed.');
+
+        const event = dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
+
+        expect(instance.select.panelOpen).toBe(true, 'Expected panel to be open.');
+        expect(instance.control.value).toBe(initialValue, 'Expected value to stay the same.');
+        expect(event.defaultPrevented).toBe(true, 'Expected default to be prevented.');
+      });
+
       it('should do nothing if the key manager did not change the active item', () => {
         const formControl = fixture.componentInstance.control;
 
@@ -1416,6 +1436,29 @@ describe('MdSelect', () => {
         dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
 
         expect(lastOption.selected).toBe(true, 'Expected last option to stay selected.');
+      });
+
+      it('should not open a multiple select when tabbing through', () => {
+        fixture.destroy();
+
+        const multiFixture = TestBed.createComponent(MultiSelect);
+
+        multiFixture.detectChanges();
+        select = multiFixture.debugElement.query(By.css('md-select')).nativeElement;
+
+        expect(multiFixture.componentInstance.select.panelOpen)
+            .toBe(false, 'Expected panel to be closed initially.');
+
+        dispatchKeyboardEvent(select, 'keydown', TAB);
+
+        expect(multiFixture.componentInstance.select.panelOpen)
+            .toBe(false, 'Expected panel to stay closed.');
+      });
+
+      it('should prevent the default action when pressing space', () => {
+        let event = dispatchKeyboardEvent(select, 'keydown', SPACE);
+
+        expect(event.defaultPrevented).toBe(true);
       });
 
     });
