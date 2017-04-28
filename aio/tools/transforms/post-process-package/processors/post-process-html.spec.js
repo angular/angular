@@ -59,4 +59,24 @@ describe('postProcessHtml', function() {
     processor.$process(docs);
     expect(elements).toEqual(['A1', 'B1']);
   });
+
+  it('should report non-fatal errors', () => {
+    const log = injector.get('log');
+    const addWarning = (ast, file) => {
+      file.message('There was a problem');
+    };
+    processor.plugins = [() => addWarning];
+    processor.$process([{ docType: 'a', renderedContent: '' }]);
+    expect(log.warn).toHaveBeenCalled();
+  });
+
+  it('should throw on fatal errors', () => {
+    const log = injector.get('log');
+    const addError = (ast, file) => {
+      file.fail('There was an error');
+    };
+    processor.plugins = [() => addError];
+    expect(() => processor.$process([{ docType: 'a', renderedContent: '' }])).toThrow();
+    expect(log.error).not.toHaveBeenCalled();
+  });
 });
