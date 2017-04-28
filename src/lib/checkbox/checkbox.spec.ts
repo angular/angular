@@ -32,6 +32,7 @@ describe('MdCheckbox', () => {
         CheckboxWithNameAttribute,
         CheckboxWithChangeEvent,
         CheckboxWithFormControl,
+        CheckboxWithoutLabel,
       ],
       providers: [
         {provide: ViewportRuler, useClass: FakeViewportRuler}
@@ -436,28 +437,28 @@ describe('MdCheckbox', () => {
       it('should apply class based on color attribute', () => {
         testComponent.checkboxColor = 'primary';
         fixture.detectChanges();
-        expect(checkboxDebugElement.nativeElement.classList.contains('mat-primary')).toBe(true);
+        expect(checkboxNativeElement.classList.contains('mat-primary')).toBe(true);
 
         testComponent.checkboxColor = 'accent';
         fixture.detectChanges();
-        expect(checkboxDebugElement.nativeElement.classList.contains('mat-accent')).toBe(true);
+        expect(checkboxNativeElement.classList.contains('mat-accent')).toBe(true);
       });
 
       it('should should not clear previous defined classes', () => {
-        checkboxDebugElement.nativeElement.classList.add('custom-class');
+        checkboxNativeElement.classList.add('custom-class');
 
         testComponent.checkboxColor = 'primary';
         fixture.detectChanges();
 
-        expect(checkboxDebugElement.nativeElement.classList.contains('mat-primary')).toBe(true);
-        expect(checkboxDebugElement.nativeElement.classList.contains('custom-class')).toBe(true);
+        expect(checkboxNativeElement.classList.contains('mat-primary')).toBe(true);
+        expect(checkboxNativeElement.classList.contains('custom-class')).toBe(true);
 
         testComponent.checkboxColor = 'accent';
         fixture.detectChanges();
 
-        expect(checkboxDebugElement.nativeElement.classList.contains('mat-primary')).toBe(false);
-        expect(checkboxDebugElement.nativeElement.classList.contains('mat-accent')).toBe(true);
-        expect(checkboxDebugElement.nativeElement.classList.contains('custom-class')).toBe(true);
+        expect(checkboxNativeElement.classList.contains('mat-primary')).toBe(false);
+        expect(checkboxNativeElement.classList.contains('mat-accent')).toBe(true);
+        expect(checkboxNativeElement.classList.contains('custom-class')).toBe(true);
 
       });
     });
@@ -730,7 +731,6 @@ describe('MdCheckbox', () => {
     });
   });
 
-
   describe('with form control', () => {
     let checkboxDebugElement: DebugElement;
     let checkboxInstance: MdCheckbox;
@@ -761,6 +761,22 @@ describe('MdCheckbox', () => {
 
       expect(checkboxInstance.disabled).toBe(false);
       expect(inputElement.disabled).toBe(false);
+    });
+  });
+
+  describe('without label', () => {
+    let checkboxDebugElement: DebugElement;
+    let checkboxNativeElement: HTMLElement;
+
+    it('should add a css class to inner-container to remove side margin', () => {
+      fixture = TestBed.createComponent(CheckboxWithoutLabel);
+      fixture.detectChanges();
+      checkboxDebugElement = fixture.debugElement.query(By.directive(MdCheckbox));
+      checkboxNativeElement = checkboxDebugElement.nativeElement;
+
+      let checkboxInnerContainerWithoutMarginCount = checkboxNativeElement
+          .querySelectorAll('.mat-checkbox-inner-container-no-side-margin').length;
+      expect(checkboxInnerContainerWithoutMarginCount).toBe(1);
     });
   });
 });
@@ -872,3 +888,9 @@ class CheckboxWithChangeEvent {
 class CheckboxWithFormControl {
   formControl = new FormControl();
 }
+
+/** Test component without label */
+@Component({
+  template: `<md-checkbox></md-checkbox>`
+})
+class CheckboxWithoutLabel {}

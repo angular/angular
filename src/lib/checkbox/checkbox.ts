@@ -158,6 +158,15 @@ export class MdCheckbox extends _MdCheckboxMixinBase
   /** The native `<input type="checkbox"> element */
   @ViewChild('input') _inputElement: ElementRef;
 
+  @ViewChild('labelWrapper') _labelWrapper: ElementRef;
+
+  /** Whether the checkbox has label */
+  _hasLabel(): boolean {
+    const labelText = this._labelWrapper.nativeElement.textContent || '';
+    return !!labelText.trim().length;
+  }
+
+  /** Called when the checkbox is blurred. Needed to properly implement ControlValueAccessor. */
   @ViewChild(MdRipple) _ripple: MdRipple;
 
   /**
