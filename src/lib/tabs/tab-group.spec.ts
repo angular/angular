@@ -3,7 +3,7 @@ import {
 } from '@angular/core/testing';
 import {MdTabGroup, MdTabsModule, MdTabHeaderPosition} from './index';
 import {Component, ViewChild} from '@angular/core';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {NoopAnimationsModule, BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {By} from '@angular/platform-browser';
 import {Observable} from 'rxjs/Observable';
 import {MdTab} from './tab';
@@ -290,6 +290,26 @@ describe('MdTabGroup', () => {
   }
 });
 
+
+describe('nested MdTabGroup with enabled animations', () => {
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [MdTabsModule.forRoot(), BrowserAnimationsModule],
+      declarations: [NestedTabs]
+    });
+
+    TestBed.compileComponents();
+  }));
+
+  it('should not throw when creating a component with nested tab groups', async(() => {
+    expect(() => {
+      let fixture = TestBed.createComponent(NestedTabs);
+      fixture.detectChanges();
+    }).not.toThrow();
+  }));
+});
+
+
 @Component({
   template: `
     <md-tab-group class="tab-group"
@@ -443,3 +463,22 @@ class TabGroupWithSimpleApi {
   otherContent = 'Apples, grapes';
   @ViewChild('legumes') legumes: any;
 }
+
+
+@Component({
+  selector: 'nested-tabs',
+  template: `
+    <md-tab-group>
+      <md-tab label="One">Tab one content</md-tab>
+      <md-tab label="Two">
+        Tab two content
+         <md-tab-group [dynamicHeight]="true">
+          <md-tab label="Inner tab one">Inner content one</md-tab>
+          <md-tab label="Inner tab two">Inner content two</md-tab>
+        </md-tab-group>
+      </md-tab>
+    </md-tab-group>
+  `,
+})
+class NestedTabs {}
+

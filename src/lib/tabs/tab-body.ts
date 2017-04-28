@@ -55,6 +55,7 @@ export type MdTabBodyOriginState = 'left' | 'right';
   },
   animations: [
     trigger('translateTab', [
+      state('void', style({transform: 'translate3d(0, 0, 0)'})),
       state('left', style({transform: 'translate3d(-100%, 0, 0)'})),
       state('left-origin-center', style({transform: 'translate3d(0, 0, 0)'})),
       state('right-origin-center', style({transform: 'translate3d(0, 0, 0)'})),
