@@ -21,6 +21,9 @@ export function isParseSourceSpan(value: any): value is ParseSourceSpan {
   return value && !!value.start;
 }
 
+export function spanOf(span: SpanHolder): Span;
+export function spanOf(span: ParseSourceSpan): Span;
+export function spanOf(span: SpanHolder | ParseSourceSpan | undefined): Span|undefined;
 export function spanOf(span?: SpanHolder | ParseSourceSpan): Span|undefined {
   if (!span) return undefined;
   if (isParseSourceSpan(span)) {
@@ -39,8 +42,8 @@ export function spanOf(span?: SpanHolder | ParseSourceSpan): Span|undefined {
 }
 
 export function inSpan(position: number, span?: Span, exclusive?: boolean): boolean {
-  return span && exclusive ? position >= span.start && position < span.end :
-                             position >= span !.start && position <= span !.end;
+  return span != null && (exclusive ? position >= span.start && position < span.end :
+                                      position >= span.start && position <= span.end);
 }
 
 export function offsetSpan(span: Span, amount: number): Span {
@@ -54,7 +57,8 @@ export function isNarrower(spanA: Span, spanB: Span): boolean {
 export function hasTemplateReference(type: CompileTypeMetadata): boolean {
   if (type.diDeps) {
     for (let diDep of type.diDeps) {
-      if (diDep.token !.identifier && identifierName(diDep.token !.identifier !) == 'TemplateRef')
+      if (diDep.token && diDep.token.identifier &&
+          identifierName(diDep.token !.identifier !) == 'TemplateRef')
         return true;
     }
   }
