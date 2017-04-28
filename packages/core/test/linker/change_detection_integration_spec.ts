@@ -765,6 +765,7 @@ export function main() {
              try {
                ctx.detectChanges(false);
              } catch (e) {
+               expect(e.message).toBe('Boom!');
                errored = true;
              }
              expect(errored).toBe(true);
@@ -776,7 +777,8 @@ export function main() {
              try {
                ctx.detectChanges(false);
              } catch (e) {
-               throw new Error('Second detectChanges() should not have run detection.');
+               expect(e.message).toBe('Boom!');
+               throw new Error('Second detectChanges() should not have called ngOnInit.');
              }
              expect(directiveLog.filter(['ngOnInit'])).toEqual([]);
            }));
