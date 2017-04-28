@@ -170,14 +170,16 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
   }
 
   function diagnosticToDiagnostic(d: Diagnostic, file: ts.SourceFile): ts.Diagnostic {
-    return {
+    const result = {
       file,
       start: d.span.start,
       length: d.span.end - d.span.start,
       messageText: d.message,
       category: ts.DiagnosticCategory.Error,
-      code: 0
+      code: 0,
+      source: 'ng'
     };
+    return result;
   }
 
   function tryOperation<T>(attempting: string, callback: () => T): T|null {
@@ -229,7 +231,7 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
       if (ours) {
         const displayParts: ts.SymbolDisplayPart[] = [];
         for (const part of ours.text) {
-          displayParts.push({kind: part.language !, text: part.text});
+          displayParts.push({kind: part.language || 'angular', text: part.text});
         }
         const tags = base && (<any>base).tags;
         base = <any>{

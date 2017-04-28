@@ -21,22 +21,25 @@ export interface SymbolInfo {
 }
 
 export function locateSymbol(info: TemplateInfo): SymbolInfo|undefined {
-  const templatePosition = info.position ! - info.template.span.start;
+  if (!info.position) return undefined;
+  const templatePosition = info.position - info.template.span.start;
   const path = new TemplateAstPath(info.templateAst, templatePosition);
   if (path.tail) {
-    let symbol: Symbol = undefined !;
-    let span: Span = undefined !;
+    let symbol: Symbol|undefined = undefined;
+    let span: Span|undefined = undefined;
     const attributeValueSymbol = (ast: AST, inEvent: boolean = false): boolean => {
       const attribute = findAttribute(info);
       if (attribute) {
         if (inSpan(templatePosition, spanOf(attribute.valueSpan))) {
           const scope = getExpressionScope(info, path, inEvent);
-          const expressionOffset = attribute.valueSpan !.start.offset + 1;
-          const result = getExpressionSymbol(
-              scope, ast, templatePosition - expressionOffset, info.template.query);
-          if (result) {
-            symbol = result.symbol;
-            span = offsetSpan(result.span, expressionOffset);
+          if (attribute.valueSpan) {
+            const expressionOffset = attribute.valueSpan.start.offset + 1;
+            const result = getExpressionSymbol(
+                scope, ast, templatePosition - expressionOffset, info.template.query);
+            if (result) {
+              symbol = result.symbol;
+              span = offsetSpan(result.span, expressionOffset);
+            }
           }
           return true;
         }
@@ -52,28 +55,28 @@ export function locateSymbol(info: TemplateInfo): SymbolInfo|undefined {
             if (component) {
               symbol = info.template.query.getTypeSymbol(component.directive.type.reference);
               symbol = symbol && new OverrideKindSymbol(symbol, 'component');
-              span = spanOf(ast) !;
+              span = spanOf(ast);
             } else {
               // Find a directive that matches the element name
-              const directive =
-                  ast.directives.find(d => d.directive.selector !.indexOf(ast.name) >= 0);
+              const directive = ast.directives.find(
+                  d => d.directive.selector != null && d.directive.selector.indexOf(ast.name) >= 0);
               if (directive) {
                 symbol = info.template.query.getTypeSymbol(directive.directive.type.reference);
                 symbol = symbol && new OverrideKindSymbol(symbol, 'directive');
-                span = spanOf(ast) !;
+                span = spanOf(ast);
               }
             }
           },
           visitReference(ast) {
             symbol = info.template.query.getTypeSymbol(tokenReference(ast.value));
-            span = spanOf(ast) !;
+            span = spanOf(ast);
           },
           visitVariable(ast) {},
           visitEvent(ast) {
             if (!attributeValueSymbol(ast.handler, /* inEvent */ true)) {
-              symbol = findOutputBinding(info, path, ast) !;
+              symbol = findOutputBinding(info, path, ast);
               symbol = symbol && new OverrideKindSymbol(symbol, 'event');
-              span = spanOf(ast) !;
+              span = spanOf(ast);
             }
           },
           visitElementProperty(ast) { attributeValueSymbol(ast.value); },
@@ -93,12 +96,12 @@ export function locateSymbol(info: TemplateInfo): SymbolInfo|undefined {
           visitText(ast) {},
           visitDirective(ast) {
             symbol = info.template.query.getTypeSymbol(ast.directive.type.reference);
-            span = spanOf(ast) !;
+            span = spanOf(ast);
           },
           visitDirectiveProperty(ast) {
             if (!attributeValueSymbol(ast.value)) {
-              symbol = findInputBinding(info, path, ast) !;
-              span = spanOf(ast) !;
+              symbol = findInputBinding(info, path, ast);
+              span = spanOf(ast);
             }
           }
         },
@@ -110,9 +113,11 @@ export function locateSymbol(info: TemplateInfo): SymbolInfo|undefined {
 }
 
 function findAttribute(info: TemplateInfo): Attribute|undefined {
-  const templatePosition = info.position ! - info.template.span.start;
-  const path = new HtmlAstPath(info.htmlAst, templatePosition);
-  return path.first(Attribute);
+  if (info.position) {
+    const templatePosition = info.position - info.template.span.start;
+    const path = new HtmlAstPath(info.htmlAst, templatePosition);
+    return path.first(Attribute);
+  }
 }
 
 function findInputBinding(
