@@ -1,28 +1,15 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-
 import { NavMenuComponent } from './nav-menu.component';
+import { NavigationNode } from 'app/navigation/navigation.service';
 
+// Testing the component class behaviors, independent of its template
+// No dependencies, no life-cycle hooks. Just new it and test :)
+// Let e2e tests verify how it displays.
 describe('NavMenuComponent', () => {
-  let component: NavMenuComponent;
-  let fixture: ComponentFixture<NavMenuComponent>;
-
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      declarations: [ NavMenuComponent ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    });
+  it('should filter out hidden nodes', () => {
+    const component = new NavMenuComponent();
+    const nodes: NavigationNode[] =
+      [ { title: 'a' }, { title: 'b', hidden: 'true'}, { title: 'c'} ];
+    component.nodes = nodes;
+    expect(component.filteredNodes).toEqual([ nodes[0], nodes[2] ]);
   });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(NavMenuComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  // TODO: Add TestHostComponent and tests.
 });

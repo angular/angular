@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, OnInit,
+import { Component, ElementRef, HostBinding, HostListener, OnInit,
          QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { MdSidenav } from '@angular/material';
 
@@ -25,6 +25,10 @@ export class AppComponent implements OnInit {
   pageId: string;
   currentDocument: DocumentContents;
   footerNodes: NavigationNode[];
+
+  @HostBinding('class.marketing')
+  isMarketing = false;
+
   isStarting = true;
   isSideBySide = false;
   private isSideNavDoc = false;
@@ -94,6 +98,7 @@ export class AppComponent implements OnInit {
       if (this.previousNavView === currentNode.view) { return; }
       this.previousNavView = currentNode.view;
       this.isSideNavDoc = currentNode.view === sideNavView;
+      this.isMarketing = !this.isSideNavDoc;
       this.sideNavToggle(this.isSideNavDoc && this.isSideBySide);
     });
 
