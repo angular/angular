@@ -76,7 +76,7 @@ export class RouterOutlet implements OnDestroy {
     return r;
   }
 
-  attach(ref: ComponentRef<any>, activatedRoute: ActivatedRoute) {
+  attach(ref: ComponentRef<any>, activatedRoute: ActivatedRoute): void {
     this.activated = ref;
     this._activatedRoute = activatedRoute;
     this.location.insert(ref.hostView);
@@ -117,7 +117,7 @@ export class RouterOutlet implements OnDestroy {
 
   activateWith(
       activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver|null,
-      outletMap: RouterOutletMap) {
+      outletMap: RouterOutletMap): void {
     if (this.isActivated) {
       throw new Error('Cannot activate an already activated outlet');
     }
