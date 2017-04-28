@@ -81,6 +81,8 @@ class TestCodeComponent {
   @Input() code = '';
   @Input() language: string;
   @Input() linenums: boolean | number;
+  @Input() path: string;
+  @Input() region: string;
 
   get someCode() {
     return this.code && this.code.length > 30 ? this.code.substr(0, 30) + '...' : this.code;
