@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, ContentChild, Directive, InjectionToken, Injector, Input, NgModule, NgModuleRef, Pipe, PipeTransform, Provider, QueryList, Renderer2, SimpleChanges, TemplateRef, ViewChildren, ViewContainerRef} from '@angular/core';
-import {TestBed, fakeAsync, tick} from '@angular/core/testing';
-import {By} from '@angular/platform-browser';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, ApplicationRef, Component, ComponentRef, ContentChild, Directive, ErrorHandler, EventEmitter, HostListener, InjectionToken, Injector, Input, NgModule, NgModuleRef, NgZone, Output, Pipe, PipeTransform, Provider, QueryList, Renderer2, SimpleChanges, TemplateRef, ViewChildren, ViewContainerRef, destroyPlatform} from '@angular/core';
+import {TestBed, async, fakeAsync, inject, tick} from '@angular/core/testing';
+import {BrowserModule, By, DOCUMENT} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -16,6 +17,8 @@ export function main() {
   describe('jit', () => { declareTests({useJit: true}); });
 
   describe('no jit', () => { declareTests({useJit: false}); });
+
+  declareTestsUsingBootstrap();
 }
 
 function declareTests({useJit}: {useJit: boolean}) {
@@ -383,6 +386,115 @@ function declareTests({useJit}: {useJit: boolean}) {
 
       expect(getDOM().hasAttribute(compRef.location.nativeElement, 'ng-version')).toBe(false);
     });
+  });
+}
+
+function declareTestsUsingBootstrap() {
+  // Place to put reproductions for regressions
+  describe('regressions using bootstrap', () => {
+    const COMP_SELECTOR = 'root-comp';
+
+    class MockConsole {
+      errors: any[][] = [];
+      error(...s: any[]): void { this.errors.push(s); }
+    }
+
+    let logger: MockConsole;
+    let errorHandler: ErrorHandler;
+
+    beforeEach(inject([DOCUMENT], (doc: any) => {
+      destroyPlatform();
+      const el = getDOM().createElement(COMP_SELECTOR, doc);
+      getDOM().appendChild(doc.body, el);
+
+      logger = new MockConsole();
+      errorHandler = new ErrorHandler();
+      errorHandler._console = logger as any;
+    }));
+
+    afterEach(() => { destroyPlatform(); });
+
+    if (getDOM().supportsDOMEvents()) {
+      // This test needs a real DOM....
+
+      it('should keep change detecting if there was an error', (done) => {
+        @Component({
+          selector: COMP_SELECTOR,
+          template:
+              '<button (click)="next()"></button><button (click)="nextAndThrow()"></button><button (dirClick)="nextAndThrow()"></button><span>Value:{{value}}</span><span>{{throwIfNeeded()}}</span>'
+        })
+        class ErrorComp {
+          value = 0;
+          thrownValue = 0;
+          next() { this.value++; }
+          nextAndThrow() {
+            this.value++;
+            this.throwIfNeeded();
+          }
+          throwIfNeeded() {
+            NgZone.assertInAngularZone();
+            if (this.thrownValue !== this.value) {
+              this.thrownValue = this.value;
+              throw new Error(`Error: ${this.value}`);
+            }
+          }
+        }
+
+        @Directive({selector: '[dirClick]'})
+        class EventDir {
+          @Output()
+          dirClick = new EventEmitter();
+
+          @HostListener('click', ['$event'])
+          onClick(event: any) { this.dirClick.next(event); }
+        }
+
+        @NgModule({
+          imports: [BrowserModule],
+          declarations: [ErrorComp, EventDir],
+          bootstrap: [ErrorComp],
+          providers: [{provide: ErrorHandler, useValue: errorHandler}],
+        })
+        class TestModule {
+        }
+
+        platformBrowserDynamic().bootstrapModule(TestModule).then((ref) => {
+          NgZone.assertNotInAngularZone();
+          const appRef = ref.injector.get(ApplicationRef) as ApplicationRef;
+          const compRef = appRef.components[0] as ComponentRef<ErrorComp>;
+          const compEl = compRef.location.nativeElement;
+          const nextBtn = compEl.children[0];
+          const nextAndThrowBtn = compEl.children[1];
+          const nextAndThrowDirBtn = compEl.children[2];
+
+          nextBtn.click();
+          assertValueAndErrors(compEl, 1, 0);
+          nextBtn.click();
+          assertValueAndErrors(compEl, 2, 2);
+
+          nextAndThrowBtn.click();
+          assertValueAndErrors(compEl, 3, 4);
+          nextAndThrowBtn.click();
+          assertValueAndErrors(compEl, 4, 6);
+
+          nextAndThrowDirBtn.click();
+          assertValueAndErrors(compEl, 5, 8);
+          nextAndThrowDirBtn.click();
+          assertValueAndErrors(compEl, 6, 10);
+
+          // Assert that there were no more errors
+          expect(logger.errors.length).toBe(12);
+          done();
+        });
+
+        function assertValueAndErrors(compEl: any, value: number, errorIndex: number) {
+          expect(compEl).toHaveText(`Value:${value}`);
+          expect(logger.errors[errorIndex][0]).toBe('ERROR');
+          expect(logger.errors[errorIndex][1].message).toBe(`Error: ${value}`);
+          expect(logger.errors[errorIndex + 1][0]).toBe('ERROR CONTEXT');
+        }
+      });
+    }
   });
 }
 

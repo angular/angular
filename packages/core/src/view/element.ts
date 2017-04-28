@@ -189,7 +189,14 @@ export function listenToElementOutputs(view: ViewData, compView: ViewData, def: 
 }
 
 function renderEventHandlerClosure(view: ViewData, index: number, eventName: string) {
-  return (event: any) => dispatchEvent(view, index, eventName, event);
+  return (event: any) => {
+    try {
+      return dispatchEvent(view, index, eventName, event);
+    } catch (e) {
+      // Attention: Don't rethrow, to keep in sync with directive events.
+      view.root.errorHandler.handleError(e);
+    }
+  }
 }
 
 
