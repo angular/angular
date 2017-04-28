@@ -17,7 +17,7 @@ const rehype = require('rehype');
  * @property plugins {Function[]} the rehype plugins that will modify the HAST.
  *
  */
-module.exports = function postProcessHtml() {
+module.exports = function postProcessHtml(log, createDocMessage) {
   return {
     $runAfter: ['docs-rendered'],
     $runBefore: ['writing-files'],
@@ -30,8 +30,18 @@ module.exports = function postProcessHtml() {
 
       docs
         .filter(doc => this.docTypes.indexOf(doc.docType) !== -1)
-        .forEach(doc =>
-          doc.renderedContent = engine.processSync(doc.renderedContent).contents);
+        .forEach(doc => {
+          const vFile = engine.processSync(doc.renderedContent);
+          vFile.messages.forEach(m => {
+            const message = createDocMessage(m.message, doc);
+            if (m.fatal) {
+              throw new Error(message);
+            } else {
+              log.warn(message);
+            }
+          });
+          doc.renderedContent = vFile.contents;
+        });
     }
   };
 };
