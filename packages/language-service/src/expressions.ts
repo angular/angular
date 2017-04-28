@@ -495,8 +495,9 @@ class AstType implements ExpressionVisitor {
     // The type of a method is the selected methods result type.
     const method = receiverType.members().get(ast.name);
     if (!method) return this.reportError(`Unknown method ${ast.name}`, ast);
-    if (!method.type !.callable) return this.reportError(`Member ${ast.name} is not callable`, ast);
-    const signature = method.type !.selectSignature(ast.args.map(arg => this.getType(arg)));
+    if (!method.type) return this.reportError(`Could not find a type for ${ast.name}`, ast);
+    if (!method.type.callable) return this.reportError(`Member ${ast.name} is not callable`, ast);
+    const signature = method.type.selectSignature(ast.args.map(arg => this.getType(arg)));
     if (!signature)
       return this.reportError(`Unable to resolve signature for call of method ${ast.name}`, ast);
     return signature.result;
@@ -601,7 +602,9 @@ function visitChildren(ast: AST, visitor: ExpressionVisitor) {
       visit(ast.falseExp);
     },
     visitFunctionCall(ast) {
-      visit(ast.target !);
+      if (ast.target) {
+        visit(ast.target);
+      }
       visitAll(ast.args);
     },
     visitImplicitReceiver(ast) {},
@@ -676,7 +679,7 @@ function getReferences(info: TemplateInfo): SymbolDeclaration[] {
 
   function processReferences(references: ReferenceAst[]) {
     for (const reference of references) {
-      let type: Symbol = undefined !;
+      let type: Symbol|undefined = undefined;
       if (reference.value) {
         type = info.template.query.getTypeSymbol(tokenReference(reference.value));
       }
@@ -721,7 +724,7 @@ function getVarDeclarations(info: TemplateInfo, path: TemplateAstPath): SymbolDe
                 .find(c => !!c);
 
         // Determine the type of the context field referenced by variable.value.
-        let type: Symbol = undefined !;
+        let type: Symbol|undefined = undefined;
         if (context) {
           const value = context.get(variable.value);
           if (value) {
@@ -762,7 +765,10 @@ function refinedVariableType(
       const bindingType =
           new AstType(info.template.members, info.template.query, {}).getType(ngForOfBinding.value);
       if (bindingType) {
-        return info.template.query.getElementType(bindingType) !;
+        const result = info.template.query.getElementType(bindingType);
+        if (result) {
+          return result;
+        }
       }
     }
   }

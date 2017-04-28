@@ -13,7 +13,9 @@ export class AstPath<T> {
   get head(): T|undefined { return this.path[0]; }
   get tail(): T|undefined { return this.path[this.path.length - 1]; }
 
-  parentOf(node: T): T|undefined { return this.path[this.path.indexOf(node) - 1]; }
+  parentOf(node: T|undefined): T|undefined {
+    return node && this.path[this.path.indexOf(node) - 1];
+  }
   childOf(node: T): T|undefined { return this.path[this.path.indexOf(node) + 1]; }
 
   first<N extends T>(ctor: {new (...args: any[]): N}): N|undefined {

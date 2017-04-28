@@ -8,8 +8,6 @@
 
 import {CompileDirectiveMetadata, CompileMetadataResolver, NgAnalyzedModules, StaticSymbol} from '@angular/compiler';
 
-
-
 /**
  * The range of a span of text in a source file.
  *
@@ -455,7 +453,7 @@ export interface LanguageServiceHost {
    * refers to a template file then the `position` should be ignored. If the `position` is not in a
    * template literal string then this method should return `undefined`.
    */
-  getTemplateAt(fileName: string, position: number): TemplateSource /* |undefined */;
+  getTemplateAt(fileName: string, position: number): TemplateSource|undefined;
 
   /**
    * Return the template source information for all templates in `fileName` or for `fileName` if it

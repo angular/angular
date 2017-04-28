@@ -74,22 +74,22 @@ export class DummyResourceLoader extends ResourceLoader {
  * @experimental
  */
 export class TypeScriptServiceHost implements LanguageServiceHost {
-  private _resolver: CompileMetadataResolver;
+  private _resolver: CompileMetadataResolver|null;
   private _staticSymbolCache = new StaticSymbolCache();
   private _summaryResolver: AotSummaryResolver;
   private _staticSymbolResolver: StaticSymbolResolver;
-  private _reflector: StaticReflector;
+  private _reflector: StaticReflector|null;
   private _reflectorHost: ReflectorHost;
-  private _checker: ts.TypeChecker;
+  private _checker: ts.TypeChecker|null;
   private _typeCache: Symbol[] = [];
   private context: string|undefined;
   private lastProgram: ts.Program|undefined;
   private modulesOutOfDate: boolean = true;
-  private analyzedModules: NgAnalyzedModules;
+  private analyzedModules: NgAnalyzedModules|null;
   private service: LanguageService;
-  private fileToComponent: Map<string, StaticSymbol>;
-  private templateReferences: string[];
-  private collectedErrors: Map<string, any[]>;
+  private fileToComponent: Map<string, StaticSymbol>|null;
+  private templateReferences: string[]|null;
+  private collectedErrors: Map<string, any[]>|null;
   private fileVersions = new Map<string, string>();
 
   constructor(private host: ts.LanguageServiceHost, private tsService: ts.LanguageService) {}
@@ -127,28 +127,28 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
 
   getTemplateReferences(): string[] {
     this.ensureTemplateMap();
-    return this.templateReferences;
+    return this.templateReferences || [];
   }
 
-  getTemplateAt(fileName: string, position: number): TemplateSource {
+  getTemplateAt(fileName: string, position: number): TemplateSource|undefined {
     let sourceFile = this.getSourceFile(fileName);
     if (sourceFile) {
       this.context = sourceFile.fileName;
       let node = this.findNode(sourceFile, position);
       if (node) {
         return this.getSourceFromNode(
-            fileName, this.host.getScriptVersion(sourceFile.fileName), node) !;
+            fileName, this.host.getScriptVersion(sourceFile.fileName), node);
       }
     } else {
       this.ensureTemplateMap();
       // TODO: Cannocalize the file?
-      const componentType = this.fileToComponent.get(fileName);
+      const componentType = this.fileToComponent !.get(fileName);
       if (componentType) {
         return this.getSourceFromType(
-            fileName, this.host.getScriptVersion(fileName), componentType) !;
+            fileName, this.host.getScriptVersion(fileName), componentType);
       }
     }
-    return null !;
+    return undefined;
   }
 
   getAnalyzedModules(): NgAnalyzedModules {
@@ -172,7 +172,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
 
   getTemplates(fileName: string): TemplateSources {
     this.ensureTemplateMap();
-    const componentType = this.fileToComponent.get(fileName);
+    const componentType = this.fileToComponent !.get(fileName);
     if (componentType) {
       const templateSource = this.getTemplateAt(fileName, 0);
       if (templateSource) {
@@ -225,10 +225,10 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   updateAnalyzedModules() {
     this.validate();
     if (this.modulesOutOfDate) {
-      this.analyzedModules = null !;
-      this._reflector = null !;
-      this.templateReferences = null !;
-      this.fileToComponent = null !;
+      this.analyzedModules = null;
+      this._reflector = null;
+      this.templateReferences = null;
+      this.fileToComponent = null;
       this.ensureAnalyzedModules();
       this.modulesOutOfDate = false;
     }
@@ -273,10 +273,10 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   }
 
   private clearCaches() {
-    this._checker = null !;
+    this._checker = null;
     this._typeCache = [];
-    this._resolver = null !;
-    this.collectedErrors = null !;
+    this._resolver = null;
+    this.collectedErrors = null;
     this.modulesOutOfDate = true;
   }
 
@@ -345,7 +345,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
         if (declaration && declaration.name) {
           const sourceFile = this.getSourceFile(fileName);
           return this.getSourceFromDeclaration(
-              fileName, version, this.stringOf(node) !, shrink(spanOf(node)),
+              fileName, version, this.stringOf(node) || '', shrink(spanOf(node)),
               this.reflector.getStaticSymbol(sourceFile.fileName, declaration.name.text),
               declaration, node, sourceFile);
         }
@@ -359,11 +359,13 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     let result: TemplateSource|undefined = undefined;
     const declaration = this.getTemplateClassFromStaticSymbol(type);
     if (declaration) {
-      const snapshot = this.host.getScriptSnapshot(fileName) !;
-      const source = snapshot.getText(0, snapshot.getLength());
-      result = this.getSourceFromDeclaration(
-          fileName, version, source, {start: 0, end: source.length}, type, declaration, declaration,
-          declaration.getSourceFile());
+      const snapshot = this.host.getScriptSnapshot(fileName);
+      if (snapshot) {
+        const source = snapshot.getText(0, snapshot.getLength());
+        result = this.getSourceFromDeclaration(
+            fileName, version, source, {start: 0, end: source.length}, type, declaration,
+            declaration, declaration.getSourceFile());
+      }
     }
     return result;
   }
@@ -398,17 +400,19 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     return result;
   }
 
-  private collectError(error: any, filePath: string) {
-    let errorMap = this.collectedErrors;
-    if (!errorMap) {
-      errorMap = this.collectedErrors = new Map();
+  private collectError(error: any, filePath: string|null) {
+    if (filePath) {
+      let errorMap = this.collectedErrors;
+      if (!errorMap || !this.collectedErrors) {
+        errorMap = this.collectedErrors = new Map();
+      }
+      let errors = errorMap.get(filePath);
+      if (!errors) {
+        errors = [];
+        this.collectedErrors.set(filePath, errors);
+      }
+      errors.push(error);
     }
-    let errors = errorMap.get(filePath);
-    if (!errors) {
-      errors = [];
-      this.collectedErrors.set(filePath, errors);
-    }
-    errors.push(error);
   }
 
   private get staticSymbolResolver(): StaticSymbolResolver {
@@ -416,9 +420,9 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     if (!result) {
       this._summaryResolver = new AotSummaryResolver(
           {
-            loadSummary(filePath: string) { return null !; },
-            isSourceFile(sourceFilePath: string) { return true !; },
-            getOutputFileName(sourceFilePath: string) { return null !; }
+            loadSummary(filePath: string) { return null; },
+            isSourceFile(sourceFilePath: string) { return true; },
+            getOutputFileName(sourceFilePath: string) { return sourceFilePath; }
           },
           this._staticSymbolCache);
       result = this._staticSymbolResolver = new StaticSymbolResolver(
@@ -445,7 +449,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       const declarationNode = ts.forEachChild(source, child => {
         if (child.kind === ts.SyntaxKind.ClassDeclaration) {
           const classDeclaration = child as ts.ClassDeclaration;
-          if (classDeclaration.name !.text === type.name) {
+          if (classDeclaration.name != null && classDeclaration.name.text === type.name) {
             return classDeclaration;
           }
         }
@@ -614,7 +618,7 @@ class TypeScriptSymbolQuery implements SymbolQuery {
       private program: ts.Program, private checker: ts.TypeChecker, private source: ts.SourceFile,
       private fetchPipes: () => SymbolTable) {}
 
-  getTypeKind(symbol: Symbol): BuiltinType { return typeKindOf(this.getTsTypeOf(symbol) !); }
+  getTypeKind(symbol: Symbol): BuiltinType { return typeKindOf(this.getTsTypeOf(symbol)); }
 
   getBuiltinType(kind: BuiltinType): Symbol {
     // TODO: Replace with typeChecker API when available.
@@ -1303,7 +1307,7 @@ function getTypeParameterOf(type: ts.Type, name: string): ts.Type|undefined {
   }
 }
 
-function typeKindOf(type: ts.Type): BuiltinType {
+function typeKindOf(type: ts.Type | undefined): BuiltinType {
   if (type) {
     if (type.flags & ts.TypeFlags.Any) {
       return BuiltinType.Any;
@@ -1318,17 +1322,19 @@ function typeKindOf(type: ts.Type): BuiltinType {
       return BuiltinType.Null;
     } else if (type.flags & ts.TypeFlags.Union) {
       // If all the constituent types of a union are the same kind, it is also that kind.
-      let candidate: BuiltinType = undefined !;
+      let candidate: BuiltinType|null = null;
       const unionType = type as ts.UnionType;
       if (unionType.types.length > 0) {
-        candidate = typeKindOf(unionType.types[0]) !;
+        candidate = typeKindOf(unionType.types[0]);
         for (const subType of unionType.types) {
           if (candidate != typeKindOf(subType)) {
             return BuiltinType.Other;
           }
         }
       }
-      return candidate;
+      if (candidate != null) {
+        return candidate;
+      }
     } else if (type.flags & ts.TypeFlags.TypeParameter) {
       return BuiltinType.Unbound;
     }

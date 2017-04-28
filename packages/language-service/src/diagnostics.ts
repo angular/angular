@@ -29,7 +29,7 @@ export function getTemplateDiagnostics(
         results.push(...ast.parseErrors.map<Diagnostic>(
             e => ({
               kind: DiagnosticKind.Error,
-              span: offsetSpan(spanOf(e.span) !, template.span.start),
+              span: offsetSpan(spanOf(e.span), template.span.start),
               message: e.msg
             })));
       } else if (ast.templateAst) {
@@ -91,20 +91,24 @@ export function getDeclarationDiagnostics(
 
 function getTemplateExpressionDiagnostics(
     template: TemplateSource, astResult: AstResult): Diagnostics {
-  const info: TemplateInfo = {
-    template,
-    htmlAst: astResult.htmlAst !,
-    directive: astResult.directive !,
-    directives: astResult.directives !,
-    pipes: astResult.pipes !,
-    templateAst: astResult.templateAst !,
-    expressionParser: astResult.expressionParser !
-  };
-  const visitor = new ExpressionDiagnosticsVisitor(
-      info, (path: TemplateAstPath, includeEvent: boolean) =>
-                getExpressionScope(info, path, includeEvent));
-  templateVisitAll(visitor, astResult.templateAst !);
-  return visitor.diagnostics;
+  if (astResult.htmlAst && astResult.directive && astResult.directives && astResult.pipes &&
+      astResult.templateAst && astResult.expressionParser) {
+    const info: TemplateInfo = {
+      template,
+      htmlAst: astResult.htmlAst,
+      directive: astResult.directive,
+      directives: astResult.directives,
+      pipes: astResult.pipes,
+      templateAst: astResult.templateAst,
+      expressionParser: astResult.expressionParser
+    };
+    const visitor = new ExpressionDiagnosticsVisitor(
+        info, (path: TemplateAstPath, includeEvent: boolean) =>
+                  getExpressionScope(info, path, includeEvent));
+    templateVisitAll(visitor, astResult.templateAst !);
+    return visitor.diagnostics;
+  }
+  return [];
 }
 
 class ExpressionDiagnosticsVisitor extends TemplateAstChildVisitor {
@@ -158,11 +162,11 @@ class ExpressionDiagnosticsVisitor extends TemplateAstChildVisitor {
       if (context && !context.has(ast.value)) {
         if (ast.value === '$implicit') {
           this.reportError(
-              'The template context does not have an implicit value', spanOf(ast.sourceSpan) !);
+              'The template context does not have an implicit value', spanOf(ast.sourceSpan));
         } else {
           this.reportError(
               `The template context does not defined a member called '${ast.value}'`,
-              spanOf(ast.sourceSpan) !);
+              spanOf(ast.sourceSpan));
         }
       }
     }
@@ -233,11 +237,13 @@ class ExpressionDiagnosticsVisitor extends TemplateAstChildVisitor {
     }
   }
 
-  private reportError(message: string, span: Span) {
-    this.diagnostics.push({
-      span: offsetSpan(span, this.info.template.span.start),
-      kind: DiagnosticKind.Error, message
-    });
+  private reportError(message: string, span: Span|undefined) {
+    if (span) {
+      this.diagnostics.push({
+        span: offsetSpan(span, this.info.template.span.start),
+        kind: DiagnosticKind.Error, message
+      });
+    }
   }
 
   private reportWarning(message: string, span: Span) {
