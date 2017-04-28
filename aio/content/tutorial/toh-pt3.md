@@ -276,7 +276,7 @@ This module declares only the two application components, `AppComponent` and `He
 
 
 
-Read more about Angular modules in the [NgModules](guide/ngmodule "Angular Modules (NgModule)") guide.
+Read more about Angular modules in the [NgModules](guide/ngmodule "Angular Modules") guide.
 
 
 </div>
