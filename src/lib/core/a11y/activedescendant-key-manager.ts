@@ -13,10 +13,6 @@ export interface Highlightable extends CanDisable {
 
 export class ActiveDescendantKeyManager extends ListKeyManager<Highlightable> {
 
-  constructor(items: QueryList<Highlightable>) {
-    super(items);
-  }
-
   /**
    * This method sets the active item to the item at the specified index.
    * It also adds active styles to the newly active item and removes active
