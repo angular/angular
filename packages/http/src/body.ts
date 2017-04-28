@@ -37,14 +37,32 @@ export abstract class Body {
 
   /**
    * Returns the body as a string, presuming `toString()` can be called on the response body.
+   *
+   * When decoding an `ArrayBuffer`, the optional `encodingHint` parameter determines how the
+   * bytes in the buffer will be interpreted. Valid values are:
+   *
+   * - `legacy` - incorrectly interpret the bytes as UTF-16 (technically, UCS-2). Only characters
+   *   in the Basic Multilingual Plane are supported, surrogate pairs are not handled correctly.
+   *   In addition, the endianness of the 16-bit octet pairs in the `ArrayBuffer` is not taken
+   *   into consideration. This is the default behavior to avoid breaking apps, but should be
+   *   considered deprecated.
+   *
+   * - `iso-8859` - interpret the bytes as ISO-8859 (which can be used for ASCII encoded text).
    */
-  text(): string {
+  text(encodingHint: 'legacy'|'iso-8859' = 'legacy'): string {
     if (this._body instanceof URLSearchParams) {
       return this._body.toString();
     }
 
     if (this._body instanceof ArrayBuffer) {
-      return String.fromCharCode.apply(null, new Uint16Array(<ArrayBuffer>this._body));
+      switch (encodingHint) {
+        case 'legacy':
+          return String.fromCharCode.apply(null, new Uint16Array(this._body as ArrayBuffer));
+        case 'iso-8859':
+          return String.fromCharCode.apply(null, new Uint8Array(this._body as ArrayBuffer));
+        default:
+          throw new Error(`Invalid value for encodingHint: ${encodingHint}`);
+      }
     }
 
     if (this._body == null) {
