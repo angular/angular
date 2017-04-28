@@ -19,13 +19,16 @@ export const FETCHING_ERROR_ID = 'fetching-error';
 
 const CONTENT_URL_PREFIX = 'content/docs/';
 const FETCHING_ERROR_CONTENTS = `
-<div class="nf-container l-flex-wrap flex-center">
-<div class="nf-icon material-icons">error_outline</div>
-<div class="nf-response l-flex-wrap">
-<h1>Request for document failed.</h1>
-<p>We are unable to retrieve the "<current-location></current-location>" page at this time.
-Please check your connection and try again later.</p>
-</div></div>
+  <div class="nf-container l-flex-wrap flex-center">
+    <div class="nf-icon material-icons">error_outline</div>
+    <div class="nf-response l-flex-wrap">
+      <h1 class="no-toc">Request for document failed.</h1>
+      <p>
+        We are unable to retrieve the "<current-location></current-location>" page at this time.
+        Please check your connection and try again later.
+      </p>
+    </div>
+  </div>
 `;
 
 @Injectable()
