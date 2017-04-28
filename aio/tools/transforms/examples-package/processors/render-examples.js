@@ -17,8 +17,6 @@ module.exports = function renderExamples(getExampleRegion) {
             if (attrMap.path) {
               // We found a path attribute so look up the example and rebuild the HTML
               const exampleContent = getExampleRegion(doc, attrMap.path, attrMap.region);
-              delete attrMap.path;
-              delete attrMap.region;
               attributes = Object.keys(attrMap).map(key => ` ${key}="${attrMap[key].replace(/"/g, '&quot;')}"`).join('');
               return `<${element}${attributes}>\n${exampleContent}\n</${element}>`;
             }

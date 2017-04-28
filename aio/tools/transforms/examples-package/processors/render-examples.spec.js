@@ -45,7 +45,7 @@ describe('renderExamples processor', () => {
           { renderedContent: `<${CODE_TAG} path="test/url">Some code</${CODE_TAG}>`}
         ];
         processor.$process(docs);
-        expect(docs[0].renderedContent).toEqual(`<${CODE_TAG}>\nwhole file\n</${CODE_TAG}>`);
+        expect(docs[0].renderedContent).toEqual(`<${CODE_TAG} path="test/url">\nwhole file\n</${CODE_TAG}>`);
       });
 
       it(`should replace all instances of <${CODE_TAG}> tags`, () => {
@@ -53,7 +53,7 @@ describe('renderExamples processor', () => {
           { renderedContent: `<${CODE_TAG} path="test/url">Some code</${CODE_TAG}><${CODE_TAG} path="test/url" region="region-1">Other code</${CODE_TAG}>`}
         ];
         processor.$process(docs);
-        expect(docs[0].renderedContent).toEqual(`<${CODE_TAG}>\nwhole file\n</${CODE_TAG}><${CODE_TAG}>\nregion 1 contents\n</${CODE_TAG}>`);
+        expect(docs[0].renderedContent).toEqual(`<${CODE_TAG} path="test/url">\nwhole file\n</${CODE_TAG}><${CODE_TAG} path="test/url" region="region-1">\nregion 1 contents\n</${CODE_TAG}>`);
       });
 
       it('should contain the region contents from the example file if a region is specified', () => {
@@ -61,7 +61,7 @@ describe('renderExamples processor', () => {
           { renderedContent: `<${CODE_TAG} path="test/url" region="region-1">Some code</${CODE_TAG}>` }
         ];
         processor.$process(docs);
-        expect(docs[0].renderedContent).toEqual(`<${CODE_TAG}>\nregion 1 contents\n</${CODE_TAG}>`);
+        expect(docs[0].renderedContent).toEqual(`<${CODE_TAG} path="test/url" region="region-1">\nregion 1 contents\n</${CODE_TAG}>`);
       });
 
       it(`should replace the content of the <${CODE_TAG}> tag with the whole contents from an example file if the region is empty`, () => {
@@ -69,15 +69,16 @@ describe('renderExamples processor', () => {
           { renderedContent: `<${CODE_TAG} path="test/url" region="">Some code</${CODE_TAG}>` }
         ];
         processor.$process(docs);
-        expect(docs[0].renderedContent).toEqual(`<${CODE_TAG}>\nwhole file\n</${CODE_TAG}>`);
+        expect(docs[0].renderedContent).toEqual(`<${CODE_TAG} path="test/url" region="">\nwhole file\n</${CODE_TAG}>`);
       });
 
-      it('should remove the path and region attributes but leave the other attributes alone', () => {
-        const docs = [
-          { renderedContent: `<${CODE_TAG} class="special" path="test/url" linenums="15" region="region-1" id="some-id">Some code</${CODE_TAG}>` }
+      it('should pass along all attributes including path and region', () => {
+        const openTag = `<${CODE_TAG} class="special" path="test/url" linenums="15" region="region-1" id="some-id">`;
+
+        const docs = [  { renderedContent: `${openTag}Some code</${CODE_TAG}>` }
         ];
         processor.$process(docs);
-        expect(docs[0].renderedContent).toEqual(`<${CODE_TAG} class="special" linenums="15" id="some-id">\nregion 1 contents\n</${CODE_TAG}>`);
+        expect(docs[0].renderedContent).toEqual(`${openTag}\nregion 1 contents\n</${CODE_TAG}>`);
       });
 
       it('should cope with spaces and double quotes inside attribute values', () => {
@@ -85,7 +86,7 @@ describe('renderExamples processor', () => {
           { renderedContent: `<${CODE_TAG} title='a "quoted" value' path="test/url"></${CODE_TAG}>`}
         ];
         processor.$process(docs);
-        expect(docs[0].renderedContent).toEqual(`<${CODE_TAG} title="a &quot;quoted&quot; value">\nwhole file\n</${CODE_TAG}>`);
+        expect(docs[0].renderedContent).toEqual(`<${CODE_TAG} title="a &quot;quoted&quot; value" path="test/url">\nwhole file\n</${CODE_TAG}>`);
       });
     })
   );

@@ -12,13 +12,15 @@ import { PrettyPrinter } from './pretty-printer.service';
 
 const oneLineCode = 'const foo = "bar";';
 
-const multiLineCode = `
+const smallMultiLineCode = `
 &lt;hero-details&gt;
   &lt;h2&gt;Bah Dah Bing&lt;/h2&gt;
   &lt;hero-team&gt;
     &lt;h3&gt;NYC Team&lt;/h3&gt;
   &lt;/hero-team&gt;
 &lt;/hero-details&gt;`;
+
+const bigMultiLineCode = smallMultiLineCode + smallMultiLineCode + smallMultiLineCode;
 
 describe('CodeComponent', () => {
   let codeComponentDe: DebugElement;
@@ -75,38 +77,38 @@ describe('CodeComponent', () => {
       expect(spans.length).toBeGreaterThan(0, 'formatted spans');
     });
 
+    function hasLineNumbers() {
+      // presence of `<li>`s are a tell-tale for line numbers
+      return 0 < codeComponentDe.nativeElement.querySelectorAll('li').length;
+    }
+
     it('should format a one-line code sample without linenums by default', () => {
-      // `<li>`s are a tell-tale for line numbers
-      const lis = codeComponentDe.nativeElement.querySelectorAll('li');
-      expect(lis.length).toBe(0, 'should be no linenums');
+      expect(hasLineNumbers()).toBe(false);
     });
 
     it('should add line numbers to one-line code sample when linenums set true', () => {
       hostComponent.linenums = 'true';
       fixture.detectChanges();
-
-      // `<li>`s are a tell-tale for line numbers
-      const lis = codeComponentDe.nativeElement.querySelectorAll('li');
-      expect(lis.length).toBe(1, 'has linenums');
+      expect(hasLineNumbers()).toBe(true);
     });
 
-    it('should format multi-line code with linenums by default', () => {
-      hostComponent.code = multiLineCode;
+    it('should format a small multi-line code without linenums by default', () => {
+      hostComponent.code = smallMultiLineCode;
       fixture.detectChanges();
-
-      // `<li>`s are a tell-tale for line numbers
-      const lis = codeComponentDe.nativeElement.querySelectorAll('li');
-      expect(lis.length).toBeGreaterThan(0, 'has linenums');
+      expect(hasLineNumbers()).toBe(false);
     });
 
-    it('should not format multi-line code when linenums set false', () => {
+    it('should add line numbers to a big multi-line code by default', () => {
+      hostComponent.code = bigMultiLineCode;
+      fixture.detectChanges();
+      expect(hasLineNumbers()).toBe(true);
+    });
+
+    it('should format big multi-line code without linenums when linenums set false', () => {
       hostComponent.linenums = false;
-      hostComponent.code = multiLineCode;
+      hostComponent.code = bigMultiLineCode;
       fixture.detectChanges();
-
-      // `<li>`s are a tell-tale for line numbers
-      const lis = codeComponentDe.nativeElement.querySelectorAll('li');
-      expect(lis.length).toBe(0, 'should be no linenums');
+      expect(hasLineNumbers()).toBe(false);
     });
   });
 
@@ -121,7 +123,7 @@ describe('CodeComponent', () => {
 
     it('should trim whitespace from the code before rendering', () => {
       hostComponent.linenums = false;
-      hostComponent.code = '\n\n\n' + multiLineCode + '\n\n\n';
+      hostComponent.code = '\n\n\n' + smallMultiLineCode + '\n\n\n';
       fixture.detectChanges();
       const codeContent = codeComponentDe.nativeElement.querySelector('code').innerText;
       expect(codeContent).toEqual(codeContent.trim());
@@ -137,18 +139,42 @@ describe('CodeComponent', () => {
   });
 
   describe('error message', () => {
-    it('should display error message when there is no code (after trimming)', () => {
-      hostComponent.code = ' \n ';
-      fixture.detectChanges();
-      const missing = codeComponentDe.nativeElement.querySelector('.code-missing') as HTMLElement;
-      expect(missing).not.toBeNull('should have element with "code-missing" class');
-      expect(missing.innerText).toContain('missing', 'error message');
-    });
+
+    function getErrorMessage() {
+      const missing: HTMLElement = codeComponentDe.nativeElement.querySelector('.code-missing');
+      return missing ? missing.innerText : null;
+    }
 
     it('should not display "code-missing" class when there is some code', () => {
       fixture.detectChanges();
-      const missing = codeComponentDe.nativeElement.querySelector('.code-missing');
-      expect(missing).toBeNull('should not have element with "code-missing" class');
+      expect(getErrorMessage()).toBeNull('should not have element with "code-missing" class');
+    });
+
+    it('should display error message when there is no code (after trimming)', () => {
+      hostComponent.code = ' \n ';
+      fixture.detectChanges();
+      expect(getErrorMessage()).toContain('missing');
+    });
+
+    it('should show path and region in missing-code error message', () => {
+      hostComponent.code = ' \n ';
+      hostComponent.path = 'fizz/buzz/foo.html';
+      hostComponent.region = 'something';
+      fixture.detectChanges();
+      expect(getErrorMessage()).toMatch(/for[\s\S]fizz\/buzz\/foo\.html#something$/);
+    });
+
+    it('should show path only in missing-code error message when no region', () => {
+      hostComponent.code = ' \n ';
+      hostComponent.path = 'fizz/buzz/foo.html';
+      fixture.detectChanges();
+      expect(getErrorMessage()).toMatch(/for[\s\S]fizz\/buzz\/foo\.html$/);
+    });
+
+    it('should show simple missing-code error message when no path/region', () => {
+      hostComponent.code = ' \n ';
+      fixture.detectChanges();
+      expect(getErrorMessage()).toMatch(/missing.$/);
     });
   });
 
@@ -197,13 +223,16 @@ describe('CodeComponent', () => {
 @Component({
   selector: 'aio-host-comp',
   template: `
-      <aio-code md-no-ink [code]="code" [language]="language" [linenums]="linenums"></aio-code>
+      <aio-code md-no-ink [code]="code" [language]="language"
+      [linenums]="linenums" [path]="path" [region]="region"></aio-code>
   `
 })
 class HostComponent {
   code = oneLineCode;
   language: string;
   linenums: boolean | number | string;
+  path: string;
+  region: string;
 }
 
 class TestLogger {

@@ -2,9 +2,13 @@
 import { Component, ElementRef, OnInit } from '@angular/core';
 
 export interface TabInfo {
-  title: string;
-  language: string;
+  class: string;
   code: string;
+  language: string;
+  linenums: any;
+  path: string;
+  region: string;
+  title: string;
 }
 
 /**
@@ -17,14 +21,15 @@ export interface TabInfo {
 @Component({
   selector: 'code-tabs',
   template: `
-    <md-tab-group class="code-tab-group">
-      <md-tab style="overflow-y: hidden;" *ngFor="let tab of tabs">
-        <ng-template md-tab-label>
-          <span class="{{tab.class}}">{{ tab.title }}</span>
-        </ng-template>
-        <aio-code [code]="tab.code" [language]="tab.language" [linenums]="tab.linenums" class="{{ tab.class }}"></aio-code>
-      </md-tab>
-    </md-tab-group>
+  <md-tab-group class="code-tab-group">
+    <md-tab style="overflow-y: hidden;" *ngFor="let tab of tabs">
+      <ng-template md-tab-label>
+        <span class="{{tab.class}}">{{ tab.title }}</span>
+      </ng-template>
+      <aio-code [code]="tab.code" [language]="tab.language" [linenums]="tab.linenums"
+      [path]="tab.path" [region]="tab.region" class="{{ tab.class }}"></aio-code>
+    </md-tab>
+  </md-tab-group>
   `
 })
 export class CodeTabsComponent implements OnInit {
@@ -59,6 +64,8 @@ export class CodeTabsComponent implements OnInit {
         class: codeExample.getAttribute('class'),
         language: codeExample.getAttribute('language'),
         linenums: this.getLinenums(codeExample),
+        path: codeExample.getAttribute('path') || '',
+        region: codeExample.getAttribute('region') || '',
         title: codeExample.getAttribute('title')
       };
       this.tabs.push(tab);
