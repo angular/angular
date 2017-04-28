@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Compiler, ComponentFactory, EventEmitter, Host, Inject, Injectable, InjectionToken, Injector, NO_ERRORS_SCHEMA, NgModule, NgModuleRef, OnDestroy, ReflectiveInjector, SkipSelf} from '@angular/core';
+import {Compiler, ComponentFactory, ErrorHandler, EventEmitter, Host, Inject, Injectable, InjectionToken, Injector, NO_ERRORS_SCHEMA, NgModule, NgModuleRef, OnDestroy, ReflectiveInjector, SkipSelf} from '@angular/core';
 import {ChangeDetectionStrategy, ChangeDetectorRef, PipeTransform} from '@angular/core/src/change_detection/change_detection';
 import {getDebugContext} from '@angular/core/src/errors';
 import {ComponentFactoryResolver} from '@angular/core/src/linker/component_factory_resolver';
@@ -1480,16 +1480,18 @@ function declareTests({useJit}: {useJit: boolean}) {
 
              const tc = fixture.debugElement.children[0];
 
-             try {
-               tc.injector.get(DirectiveEmittingEvent).fireEvent('boom');
-             } catch (e) {
-               const c = getDebugContext(e);
-               expect(getDOM().nodeName(c.renderNode).toUpperCase()).toEqual('SPAN');
-               expect(getDOM().nodeName(c.componentRenderElement).toUpperCase()).toEqual('DIV');
-               expect((<Injector>c.injector).get).toBeTruthy();
-               expect(c.context).toBe(fixture.componentInstance);
-               expect(c.references['local']).toBeDefined();
-             }
+             const errorHandler = tc.injector.get(ErrorHandler);
+             let err: any;
+             spyOn(errorHandler, 'handleError').and.callFake((e: any) => err = e);
+             tc.injector.get(DirectiveEmittingEvent).fireEvent('boom');
+
+             expect(err).toBeTruthy();
+             const c = getDebugContext(err);
+             expect(getDOM().nodeName(c.renderNode).toUpperCase()).toEqual('SPAN');
+             expect(getDOM().nodeName(c.componentRenderElement).toUpperCase()).toEqual('DIV');
+             expect((<Injector>c.injector).get).toBeTruthy();
+             expect(c.context).toBe(fixture.componentInstance);
+             expect(c.references['local']).toBeDefined();
            }));
       }
     });

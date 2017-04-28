@@ -211,7 +211,7 @@ function createView(
     viewContainerParent: null, parentNodeDef,
     context: null,
     component: null, nodes,
-    state: ViewState.FirstCheck | ViewState.CatDetectChanges, root, renderer,
+    state: ViewState.CatInit, root, renderer,
     oldValues: new Array(def.bindingCount), disposables
   };
   return view;
@@ -323,6 +323,12 @@ export function checkNoChangesView(view: ViewData) {
 }
 
 export function checkAndUpdateView(view: ViewData) {
+  if (view.state & ViewState.BeforeFirstCheck) {
+    view.state &= ~ViewState.BeforeFirstCheck;
+    view.state |= ViewState.FirstCheck;
+  } else {
+    view.state &= ~ViewState.FirstCheck;
+  }
   Services.updateDirectives(view, CheckType.CheckAndUpdate);
   execEmbeddedViewsAction(view, ViewAction.CheckAndUpdate);
   execQueriesAction(
@@ -345,7 +351,6 @@ export function checkAndUpdateView(view: ViewData) {
   if (view.def.flags & ViewFlags.OnPush) {
     view.state &= ~ViewState.ChecksEnabled;
   }
-  view.state &= ~ViewState.FirstCheck;
 }
 
 export function checkAndUpdateNode(
@@ -453,7 +458,7 @@ function checkNoChangesQuery(view: ViewData, nodeDef: NodeDef) {
   if (queryList.dirty) {
     throw expressionChangedAfterItHasBeenCheckedError(
         Services.createDebugContext(view, nodeDef.index), `Query ${nodeDef.query!.id} not dirty`,
-        `Query ${nodeDef.query!.id} dirty`, (view.state & ViewState.FirstCheck) !== 0);
+        `Query ${nodeDef.query!.id} dirty`, (view.state & ViewState.BeforeFirstCheck) !== 0);
   }
 }
 
@@ -543,13 +548,13 @@ function callViewAction(view: ViewData, action: ViewAction) {
   switch (action) {
     case ViewAction.CheckNoChanges:
       if ((viewState & ViewState.CatDetectChanges) === ViewState.CatDetectChanges &&
-          (viewState & (ViewState.Errored | ViewState.Destroyed)) === 0) {
+          (viewState & ViewState.Destroyed) === 0) {
         checkNoChangesView(view);
       }
       break;
     case ViewAction.CheckAndUpdate:
       if ((viewState & ViewState.CatDetectChanges) === ViewState.CatDetectChanges &&
-          (viewState & (ViewState.Errored | ViewState.Destroyed)) === 0) {
+          (viewState & ViewState.Destroyed) === 0) {
         checkAndUpdateView(view);
       }
       break;
