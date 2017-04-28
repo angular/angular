@@ -382,7 +382,7 @@ class ChocolateInjector {
   constructor(public parentInjector: Injector) { }
 
   get(token: any) {
-    return token === Chocolate ? new Chocolate() : this.parentInjector.get(token);
+    return token === Chocolate ? new Chocolate() : this.parentInjector.get<any>(token);
   }
 }
 

@@ -25,7 +25,7 @@ describe('MdTextareaAutosize', () => {
 
     textarea = fixture.nativeElement.querySelector('textarea');
     autosize = fixture.debugElement.query(
-        By.directive(MdTextareaAutosize)).injector.get(MdTextareaAutosize);
+        By.directive(MdTextareaAutosize)).injector.get<MdTextareaAutosize>(MdTextareaAutosize);
   });
 
   it('should resize the textarea based on its content', () => {

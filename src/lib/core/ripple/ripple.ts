@@ -7,20 +7,21 @@ import {
   OnChanges,
   SimpleChanges,
   OnDestroy,
-  OpaqueToken,
+  InjectionToken,
   Optional,
 } from '@angular/core';
 import {RippleConfig, RippleRenderer} from './ripple-renderer';
 import {ViewportRuler} from '../overlay/position/viewport-ruler';
 import {RippleRef} from './ripple-ref';
 
-/** OpaqueToken that can be used to specify the global ripple options. */
-export const MD_RIPPLE_GLOBAL_OPTIONS = new OpaqueToken('md-ripple-global-options');
-
 export interface RippleGlobalOptions {
   disabled?: boolean;
   baseSpeedFactor?: number;
 }
+
+/** Injection token that can be used to specify the global ripple options. */
+export const MD_RIPPLE_GLOBAL_OPTIONS =
+    new InjectionToken<RippleGlobalOptions>('md-ripple-global-options');
 
 @Directive({
   selector: '[md-ripple], [mat-ripple], [mdRipple], [matRipple]',

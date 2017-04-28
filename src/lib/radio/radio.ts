@@ -4,7 +4,7 @@ import {
   ContentChildren,
   Directive,
   ElementRef,
-  Renderer,
+  Renderer2,
   EventEmitter,
   Input,
   OnInit,
@@ -407,7 +407,7 @@ export class MdRadioButton implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(@Optional() radioGroup: MdRadioGroup,
               private _elementRef: ElementRef,
-              private _renderer: Renderer,
+              private _renderer: Renderer2,
               private _focusOriginMonitor: FocusOriginMonitor,
               private _radioDispatcher: UniqueSelectionDispatcher) {
     // Assertions. Ideally these should be stripped out by the compiler.

@@ -6,7 +6,7 @@ import {
   TestBed,
   tick,
 } from '@angular/core/testing';
-import {NgControl, FormsModule, ReactiveFormsModule, FormControl} from '@angular/forms';
+import {NgModel, FormsModule, ReactiveFormsModule, FormControl} from '@angular/forms';
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {MdCheckbox, MdCheckboxChange, MdCheckboxModule} from './index';
@@ -692,11 +692,11 @@ describe('MdCheckbox', () => {
       flushMicrotasks();
 
       let checkboxElement = fixture.debugElement.query(By.directive(MdCheckbox));
-      let ngControl = <NgControl> checkboxElement.injector.get(NgControl);
+      let ngModel = checkboxElement.injector.get<NgModel>(NgModel);
 
-      expect(ngControl.valid).toBe(true);
-      expect(ngControl.pristine).toBe(true);
-      expect(ngControl.touched).toBe(false);
+      expect(ngModel.valid).toBe(true);
+      expect(ngModel.pristine).toBe(true);
+      expect(ngModel.touched).toBe(false);
 
       // TODO(jelbourn): test that `touched` and `pristine` state are modified appropriately.
       // This is currently blocked on issues with async() and fakeAsync().

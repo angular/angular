@@ -1,12 +1,12 @@
 import {
   Injectable,
-  OpaqueToken,
+  InjectionToken,
   Optional,
   Inject,
   SkipSelf,
 } from '@angular/core';
 
-export const LIVE_ANNOUNCER_ELEMENT_TOKEN  = new OpaqueToken('liveAnnouncerElement');
+export const LIVE_ANNOUNCER_ELEMENT_TOKEN = new InjectionToken<HTMLElement>('liveAnnouncerElement');
 
 /** Possible politeness levels. */
 export type AriaLivePoliteness = 'off' | 'polite' | 'assertive';

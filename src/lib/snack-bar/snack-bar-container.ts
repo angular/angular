@@ -4,7 +4,7 @@ import {
   ViewChild,
   NgZone,
   OnDestroy,
-  Renderer,
+  Renderer2,
   ElementRef,
 } from '@angular/core';
 import {
@@ -77,7 +77,7 @@ export class MdSnackBarContainer extends BasePortalHost implements OnDestroy {
 
   constructor(
     private _ngZone: NgZone,
-    private _renderer: Renderer,
+    private _renderer: Renderer2,
     private _elementRef: ElementRef) {
     super();
   }
@@ -92,7 +92,7 @@ export class MdSnackBarContainer extends BasePortalHost implements OnDestroy {
       // Not the most efficient way of adding classes, but the renderer doesn't allow us
       // to pass in an array or a space-separated list.
       for (let cssClass of this.snackBarConfig.extraClasses) {
-        this._renderer.setElementClass(this._elementRef.nativeElement, cssClass, true);
+        this._renderer.addClass(this._elementRef.nativeElement, cssClass);
       }
     }
 

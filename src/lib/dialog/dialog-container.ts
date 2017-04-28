@@ -3,7 +3,8 @@ import {
   ComponentRef,
   ViewChild,
   ViewEncapsulation,
-  Renderer,
+  NgZone,
+  OnDestroy,
   ElementRef,
   EventEmitter,
   Inject,
@@ -73,7 +74,7 @@ export class MdDialogContainer extends BasePortalHost {
   _onAnimationStateChange = new EventEmitter<AnimationEvent>();
 
   constructor(
-    private _renderer: Renderer,
+    private _ngZone: NgZone,
     private _elementRef: ElementRef,
     private _focusTrapFactory: FocusTrapFactory,
     @Optional() @Inject(DOCUMENT) _document: any) {

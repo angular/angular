@@ -1,4 +1,4 @@
-import {Directive, ElementRef, Renderer, Input} from '@angular/core';
+import {Directive, ElementRef, Input} from '@angular/core';
 import {coerceBooleanProperty} from '../core/coercion/boolean-property';
 
 
@@ -13,7 +13,7 @@ import {coerceBooleanProperty} from '../core/coercion/boolean-property';
   }
 })
 export class MdTabLabelWrapper {
-  constructor(public elementRef: ElementRef, private _renderer: Renderer) {}
+  constructor(public elementRef: ElementRef) {}
 
   /** Whether the tab label is disabled.  */
   private _disabled: boolean = false;
@@ -25,7 +25,7 @@ export class MdTabLabelWrapper {
 
   /** Sets focus on the wrapper element */
   focus(): void {
-    this._renderer.invokeElementMethod(this.elementRef.nativeElement, 'focus');
+    this.elementRef.nativeElement.focus();
   }
 
   getOffsetLeft(): number {

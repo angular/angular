@@ -5,7 +5,7 @@ import {
   ViewEncapsulation,
   Directive,
   ElementRef,
-  Renderer
+  Renderer2,
 } from '@angular/core';
 
 
@@ -33,7 +33,7 @@ export class MdToolbar {
 
   private _color: string;
 
-  constructor(private elementRef: ElementRef, private renderer: Renderer) { }
+  constructor(private _elementRef: ElementRef, private _renderer: Renderer2) { }
 
   /** The color of the toolbar. Can be primary, accent, or warn. */
   @Input()
@@ -53,7 +53,13 @@ export class MdToolbar {
 
   private _setElementColor(color: string, isAdd: boolean) {
     if (color != null && color != '') {
-      this.renderer.setElementClass(this.elementRef.nativeElement, `mat-${color}`, isAdd);
+      let element = this._elementRef.nativeElement;
+
+      if (isAdd) {
+        this._renderer.addClass(element, `mat-${color}`);
+      } else {
+        this._renderer.removeClass(element, `mat-${color}`);
+      }
     }
   }
 

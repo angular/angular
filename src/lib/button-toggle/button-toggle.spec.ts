@@ -5,7 +5,7 @@ import {
   ComponentFixture,
   TestBed,
 } from '@angular/core/testing';
-import {NgControl, FormsModule, ReactiveFormsModule, FormControl} from '@angular/forms';
+import {NgModel, FormsModule, ReactiveFormsModule, FormControl} from '@angular/forms';
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {
@@ -56,7 +56,7 @@ describe('MdButtonToggle', () => {
 
       groupDebugElement = fixture.debugElement.query(By.directive(MdButtonToggleGroup));
       groupNativeElement = groupDebugElement.nativeElement;
-      groupInstance = groupDebugElement.injector.get(MdButtonToggleGroup);
+      groupInstance = groupDebugElement.injector.get<MdButtonToggleGroup>(MdButtonToggleGroup);
 
       buttonToggleDebugElements = fixture.debugElement.queryAll(By.directive(MdButtonToggle));
 
@@ -215,7 +215,7 @@ describe('MdButtonToggle', () => {
     let groupInstance: MdButtonToggleGroup;
     let buttonToggleInstances: MdButtonToggle[];
     let testComponent: ButtonToggleGroupWithNgModel;
-    let groupNgControl: NgControl;
+    let groupNgModel: NgModel;
 
     beforeEach(async(() => {
       fixture = TestBed.createComponent(ButtonToggleGroupWithNgModel);
@@ -225,8 +225,8 @@ describe('MdButtonToggle', () => {
 
       groupDebugElement = fixture.debugElement.query(By.directive(MdButtonToggleGroup));
       groupNativeElement = groupDebugElement.nativeElement;
-      groupInstance = groupDebugElement.injector.get(MdButtonToggleGroup);
-      groupNgControl = groupDebugElement.injector.get(NgControl);
+      groupInstance = groupDebugElement.injector.get<MdButtonToggleGroup>(MdButtonToggleGroup);
+      groupNgModel = groupDebugElement.injector.get<NgModel>(NgModel);
 
       buttonToggleDebugElements = fixture.debugElement.queryAll(By.directive(MdButtonToggle));
       buttonToggleNativeElements =
@@ -259,28 +259,29 @@ describe('MdButtonToggle', () => {
       expect(groupInstance.selected.value).toBe(groupInstance.value);
     });
 
-    it('should have the correct ngControl state initially and after interaction', fakeAsync(() => {
-      expect(groupNgControl.valid).toBe(true);
-      expect(groupNgControl.pristine).toBe(true);
-      expect(groupNgControl.touched).toBe(false);
+    it('should have the correct FormControl state initially and after interaction',
+      fakeAsync(() => {
+        expect(groupNgModel.valid).toBe(true);
+        expect(groupNgModel.pristine).toBe(true);
+        expect(groupNgModel.touched).toBe(false);
 
-      buttonToggleInstances[1].checked = true;
-      fixture.detectChanges();
-      tick();
+        buttonToggleInstances[1].checked = true;
+        fixture.detectChanges();
+        tick();
 
-      expect(groupNgControl.valid).toBe(true);
-      expect(groupNgControl.pristine).toBe(false);
-      expect(groupNgControl.touched).toBe(false);
+        expect(groupNgModel.valid).toBe(true);
+        expect(groupNgModel.pristine).toBe(false);
+        expect(groupNgModel.touched).toBe(false);
 
-      let nativeRadioLabel = buttonToggleDebugElements[2].query(By.css('label')).nativeElement;
-      nativeRadioLabel.click();
-      fixture.detectChanges();
-      tick();
+        let nativeRadioLabel = buttonToggleDebugElements[2].query(By.css('label')).nativeElement;
+        nativeRadioLabel.click();
+        fixture.detectChanges();
+        tick();
 
-      expect(groupNgControl.valid).toBe(true);
-      expect(groupNgControl.pristine).toBe(false);
-      expect(groupNgControl.touched).toBe(true);
-    }));
+        expect(groupNgModel.valid).toBe(true);
+        expect(groupNgModel.pristine).toBe(false);
+        expect(groupNgModel.touched).toBe(true);
+      }));
 
     it('should update the ngModel value when selecting a button toggle', fakeAsync(() => {
       buttonToggleInstances[1].checked = true;
@@ -301,7 +302,7 @@ describe('MdButtonToggle', () => {
     let groupInstance: MdButtonToggleGroup;
     let buttonToggleInstances: MdButtonToggle[];
     let testComponent: ButtonToggleGroupWithNgModel;
-    let groupNgControl: NgControl;
+    let groupNgModel: NgModel;
 
     beforeEach(async(() => {
       fixture = TestBed.createComponent(ButtonToggleGroupWithNgModel);
@@ -310,8 +311,8 @@ describe('MdButtonToggle', () => {
 
       groupDebugElement = fixture.debugElement.query(By.directive(MdButtonToggleGroup));
       groupNativeElement = groupDebugElement.nativeElement;
-      groupInstance = groupDebugElement.injector.get(MdButtonToggleGroup);
-      groupNgControl = groupDebugElement.injector.get(NgControl);
+      groupInstance = groupDebugElement.injector.get<MdButtonToggleGroup>(MdButtonToggleGroup);
+      groupNgModel = groupDebugElement.injector.get<NgModel>(NgModel);
 
       buttonToggleDebugElements = fixture.debugElement.queryAll(By.directive(MdButtonToggle));
       buttonToggleNativeElements =
@@ -341,7 +342,8 @@ describe('MdButtonToggle', () => {
       let fixture = TestBed.createComponent(ButtonToggleGroupWithInitialValue);
       let testComponent = fixture.debugElement.componentInstance;
       let groupDebugElement = fixture.debugElement.query(By.directive(MdButtonToggleGroup));
-      let groupInstance: MdButtonToggleGroup = groupDebugElement.injector.get(MdButtonToggleGroup);
+      let groupInstance: MdButtonToggleGroup = groupDebugElement.injector
+          .get<MdButtonToggleGroup>(MdButtonToggleGroup);
 
       fixture.detectChanges();
 
@@ -376,7 +378,8 @@ describe('MdButtonToggle', () => {
 
       groupDebugElement = fixture.debugElement.query(By.directive(MdButtonToggleGroupMultiple));
       groupNativeElement = groupDebugElement.nativeElement;
-      groupInstance = groupDebugElement.injector.get(MdButtonToggleGroupMultiple);
+      groupInstance = groupDebugElement.injector.get<MdButtonToggleGroupMultiple>(
+          MdButtonToggleGroupMultiple);
 
       buttonToggleDebugElements = fixture.debugElement.queryAll(By.directive(MdButtonToggle));
       buttonToggleNativeElements = buttonToggleDebugElements
@@ -479,7 +482,7 @@ describe('MdButtonToggle', () => {
       testComponent = fixture.debugElement.componentInstance;
 
       groupDebugElement = fixture.debugElement.query(By.directive(MdButtonToggleGroup));
-      groupInstance = groupDebugElement.injector.get(MdButtonToggleGroup);
+      groupInstance = groupDebugElement.injector.get<MdButtonToggleGroup>(MdButtonToggleGroup);
     }));
 
     it('should toggle the disabled state', () => {

@@ -12,7 +12,7 @@ import {
   Optional,
   Output,
   QueryList,
-  Renderer,
+  Renderer2,
   Self,
   ViewEncapsulation
 } from '@angular/core';
@@ -172,7 +172,7 @@ export class MdInputDirective {
     // input element. To ensure that bindings for `type` work, we need to sync the setter
     // with the native property. Textarea elements don't support the type property or attribute.
     if (!this._isTextarea() && getSupportedInputTypes().has(this._type)) {
-      this._renderer.setElementProperty(this._elementRef.nativeElement, 'type', this._type);
+      this._renderer.setProperty(this._elementRef.nativeElement, 'type', this._type);
     }
   }
 
@@ -206,7 +206,7 @@ export class MdInputDirective {
   ].filter(t => getSupportedInputTypes().has(t));
 
   constructor(private _elementRef: ElementRef,
-              private _renderer: Renderer,
+              private _renderer: Renderer2,
               @Optional() @Self() public _ngControl: NgControl) {
 
     // Force setter to be called in case id was not specified.
@@ -214,7 +214,7 @@ export class MdInputDirective {
   }
 
   /** Focuses the input element. */
-  focus() { this._renderer.invokeElementMethod(this._elementRef.nativeElement, 'focus'); }
+  focus() { this._elementRef.nativeElement.focus(); }
 
   _onFocus() { this.focused = true; }
 

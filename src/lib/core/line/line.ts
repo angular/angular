@@ -1,9 +1,9 @@
 import {
-    NgModule,
-    Directive,
-    Renderer,
-    ElementRef,
-    QueryList
+  NgModule,
+  Directive,
+  Renderer2,
+  ElementRef,
+  QueryList,
 } from '@angular/core';
 import {MdCommonModule} from '../common-behaviors/common-module';
 
@@ -26,7 +26,7 @@ export class MdLine {}
  * @docs-private
  */
 export class MdLineSetter {
-  constructor(private _lines: QueryList<MdLine>, private _renderer: Renderer,
+  constructor(private _lines: QueryList<MdLine>, private _renderer: Renderer2,
               private _element: ElementRef) {
     this._setLineClass(this._lines.length);
 
@@ -50,8 +50,12 @@ export class MdLineSetter {
     this._setClass('mat-multi-line', false);
   }
 
-  private _setClass(className: string, bool: boolean): void {
-    this._renderer.setElementClass(this._element.nativeElement, className, bool);
+  private _setClass(className: string, isAdd: boolean): void {
+    if (isAdd) {
+      this._renderer.addClass(this._element.nativeElement, className);
+    } else {
+      this._renderer.removeClass(this._element.nativeElement, className);
+    }
   }
 
 }

@@ -2,7 +2,6 @@ import {
   NgModule,
   ModuleWithProviders,
   Directive,
-  OpaqueToken,
   Inject,
   Optional,
   isDevMode,
@@ -12,7 +11,7 @@ import {
 import {DOCUMENT} from '@angular/platform-browser';
 import {MdError} from '../errors/error';
 
-export const MATERIAL_COMPATIBILITY_MODE = new OpaqueToken('md-compatibility-mode');
+export const MATERIAL_COMPATIBILITY_MODE = new InjectionToken<boolean>('md-compatibility-mode');
 
 /** Injection token that configures whether the Material sanity checks are enabled. */
 export const MATERIAL_SANITY_CHECKS = new InjectionToken<boolean>('md-sanity-checks');

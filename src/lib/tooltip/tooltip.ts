@@ -7,7 +7,7 @@ import {
   NgZone,
   Optional,
   OnDestroy,
-  Renderer,
+  Renderer2,
   OnInit,
   ChangeDetectorRef,
 } from '@angular/core';
@@ -152,7 +152,7 @@ export class MdTooltip implements OnInit, OnDestroy {
     private _scrollDispatcher: ScrollDispatcher,
     private _viewContainerRef: ViewContainerRef,
     private _ngZone: NgZone,
-    private _renderer: Renderer,
+    private _renderer: Renderer2,
     private _platform: Platform,
     @Optional() private _dir: Dir) {
 

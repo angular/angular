@@ -6,7 +6,7 @@ import {
   HostBinding,
   Input,
   OnDestroy,
-  Renderer,
+  Renderer2,
   ViewEncapsulation
 } from '@angular/core';
 import {coerceBooleanProperty, FocusOriginMonitor} from '../core';
@@ -120,7 +120,7 @@ export class MdButton extends _MdButtonMixinBase implements OnDestroy, CanDisabl
   get disableRipple() { return this._disableRipple; }
   set disableRipple(v) { this._disableRipple = coerceBooleanProperty(v); }
 
-  constructor(private _elementRef: ElementRef, private _renderer: Renderer,
+  constructor(private _elementRef: ElementRef, private _renderer: Renderer2,
               private _focusOriginMonitor: FocusOriginMonitor) {
     super();
     this._focusOriginMonitor.monitor(this._elementRef.nativeElement, this._renderer, true);
@@ -143,13 +143,17 @@ export class MdButton extends _MdButtonMixinBase implements OnDestroy, CanDisabl
 
   _setElementColor(color: string, isAdd: boolean) {
     if (color != null && color != '') {
-      this._renderer.setElementClass(this._getHostElement(), `mat-${color}`, isAdd);
+      if (isAdd) {
+        this._renderer.addClass(this._getHostElement(), `mat-${color}`);
+      } else {
+        this._renderer.removeClass(this._getHostElement(), `mat-${color}`);
+      }
     }
   }
 
   /** Focuses the button. */
   focus(): void {
-    this._renderer.invokeElementMethod(this._getHostElement(), 'focus');
+    this._getHostElement().focus();
   }
 
   _getHostElement() {
@@ -191,7 +195,7 @@ export class MdButton extends _MdButtonMixinBase implements OnDestroy, CanDisabl
   encapsulation: ViewEncapsulation.None
 })
 export class MdAnchor extends MdButton {
-  constructor(elementRef: ElementRef, renderer: Renderer, focusOriginMonitor: FocusOriginMonitor) {
+  constructor(elementRef: ElementRef, renderer: Renderer2, focusOriginMonitor: FocusOriginMonitor) {
     super(elementRef, renderer, focusOriginMonitor);
   }
 

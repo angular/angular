@@ -61,7 +61,7 @@ describe('MdTooltip', () => {
       fixture.detectChanges();
       buttonDebugElement = fixture.debugElement.query(By.css('button'));
       buttonElement = <HTMLButtonElement> buttonDebugElement.nativeElement;
-      tooltipDirective = buttonDebugElement.injector.get(MdTooltip);
+      tooltipDirective = buttonDebugElement.injector.get<MdTooltip>(MdTooltip);
     });
 
     it('should show and hide the tooltip', fakeAsync(() => {
@@ -362,7 +362,7 @@ describe('MdTooltip', () => {
       fixture.detectChanges();
       buttonDebugElement = fixture.debugElement.query(By.css('button'));
       buttonElement = <HTMLButtonElement> buttonDebugElement.nativeElement;
-      tooltipDirective = buttonDebugElement.injector.get(MdTooltip);
+      tooltipDirective = buttonDebugElement.injector.get<MdTooltip>(MdTooltip);
     });
 
     it('should hide tooltip if clipped after changing positions', fakeAsync(() => {
@@ -399,7 +399,7 @@ describe('MdTooltip', () => {
       fixture.detectChanges();
       buttonDebugElement = fixture.debugElement.query(By.css('button'));
       buttonElement = <HTMLButtonElement> buttonDebugElement.nativeElement;
-      tooltipDirective = buttonDebugElement.injector.get(MdTooltip);
+      tooltipDirective = buttonDebugElement.injector.get<MdTooltip>(MdTooltip);
     });
 
     it('should show and hide the tooltip', fakeAsync(() => {

@@ -203,7 +203,7 @@ describe('MdInputContainer', function () {
     fixture.detectChanges();
 
     let input = fixture.debugElement.query(By.directive(MdInputDirective))
-      .injector.get(MdInputDirective) as MdInputDirective;
+      .injector.get<MdInputDirective>(MdInputDirective);
 
     expect(input.value).toBeFalsy();
 

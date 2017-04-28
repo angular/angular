@@ -1,4 +1,4 @@
-import {Component, Renderer} from '@angular/core';
+import {Component, Renderer2} from '@angular/core';
 import {FocusOriginMonitor} from '@angular/material';
 
 
@@ -9,5 +9,5 @@ import {FocusOriginMonitor} from '@angular/material';
   styleUrls: ['style-demo.css'],
 })
 export class StyleDemo {
-  constructor(public renderer: Renderer, public fom: FocusOriginMonitor) {}
+  constructor(public renderer: Renderer2, public fom: FocusOriginMonitor) {}
 }

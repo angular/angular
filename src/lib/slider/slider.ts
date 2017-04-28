@@ -7,7 +7,7 @@ import {
   OnDestroy,
   Optional,
   Output,
-  Renderer,
+  Renderer2,
   ViewEncapsulation
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
@@ -380,7 +380,7 @@ export class MdSlider extends _MdSliderMixinBase
     return (this._dir && this._dir.value == 'rtl') ? 'rtl' : 'ltr';
   }
 
-  constructor(renderer: Renderer, private _elementRef: ElementRef,
+  constructor(renderer: Renderer2, private _elementRef: ElementRef,
               private _focusOriginMonitor: FocusOriginMonitor, @Optional() private _dir: Dir) {
     super();
     this._focusOriginMonitor.monitor(this._elementRef.nativeElement, renderer, true)

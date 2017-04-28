@@ -5,7 +5,7 @@ import {
   Input,
   OnChanges,
   OnInit,
-  Renderer,
+  Renderer2,
   SimpleChange,
   ViewEncapsulation,
   AfterViewChecked,
@@ -98,7 +98,7 @@ export class MdIcon implements OnChanges, OnInit, AfterViewChecked {
 
   constructor(
       private _elementRef: ElementRef,
-      private _renderer: Renderer,
+      private _renderer: Renderer2,
       private _mdIconRegistry: MdIconRegistry) { }
 
   _updateColor(newColor: string) {
@@ -109,7 +109,11 @@ export class MdIcon implements OnChanges, OnInit, AfterViewChecked {
 
   _setElementColor(color: string, isAdd: boolean) {
     if (color != null && color != '') {
-      this._renderer.setElementClass(this._elementRef.nativeElement, `mat-${color}`, isAdd);
+      if (isAdd) {
+        this._renderer.addClass(this._elementRef.nativeElement, `mat-${color}`);
+      } else {
+        this._renderer.removeClass(this._elementRef.nativeElement, `mat-${color}`);
+      }
     }
   }
 
@@ -177,7 +181,7 @@ export class MdIcon implements OnChanges, OnInit, AfterViewChecked {
       const ariaLabel = this._getAriaLabel();
       if (ariaLabel && ariaLabel !== this._previousAriaLabel) {
         this._previousAriaLabel = ariaLabel;
-        this._renderer.setElementAttribute(this._elementRef.nativeElement, 'aria-label', ariaLabel);
+        this._renderer.setAttribute(this._elementRef.nativeElement, 'aria-label', ariaLabel);
       }
   }
 
@@ -214,7 +218,7 @@ export class MdIcon implements OnChanges, OnInit, AfterViewChecked {
     // We would use renderer.detachView(Array.from(layoutElement.childNodes)) here,
     // but it fails in IE11: https://github.com/angular/angular/issues/6327
     layoutElement.innerHTML = '';
-    this._renderer.projectNodes(layoutElement, [svg]);
+    this._renderer.appendChild(layoutElement, svg);
   }
 
   private _updateFontIconClasses() {
@@ -227,20 +231,20 @@ export class MdIcon implements OnChanges, OnInit, AfterViewChecked {
         this._mdIconRegistry.getDefaultFontSetClass();
     if (fontSetClass != this._previousFontSetClass) {
       if (this._previousFontSetClass) {
-        this._renderer.setElementClass(elem, this._previousFontSetClass, false);
+        this._renderer.removeClass(elem, this._previousFontSetClass);
       }
       if (fontSetClass) {
-        this._renderer.setElementClass(elem, fontSetClass, true);
+        this._renderer.addClass(elem, fontSetClass);
       }
       this._previousFontSetClass = fontSetClass;
     }
 
     if (this.fontIcon != this._previousFontIconClass) {
       if (this._previousFontIconClass) {
-        this._renderer.setElementClass(elem, this._previousFontIconClass, false);
+        this._renderer.removeClass(elem, this._previousFontIconClass);
       }
       if (this.fontIcon) {
-        this._renderer.setElementClass(elem, this.fontIcon, true);
+        this._renderer.addClass(elem, this.fontIcon);
       }
       this._previousFontIconClass = this.fontIcon;
     }

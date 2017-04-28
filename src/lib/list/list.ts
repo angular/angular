@@ -8,7 +8,7 @@ import {
   ElementRef,
   Input,
   Optional,
-  Renderer,
+  Renderer2,
   AfterContentInit,
 } from '@angular/core';
 import {MdLine, MdLineSetter, coerceBooleanProperty} from '../core';
@@ -142,11 +142,14 @@ export class MdListItem implements AfterContentInit {
 
   @ContentChild(MdListAvatarCssMatStyler)
   set _hasAvatar(avatar: MdListAvatarCssMatStyler) {
-    this._renderer.setElementClass(
-        this._element.nativeElement, 'mat-list-item-avatar', avatar != null);
+    if (avatar != null) {
+      this._renderer.addClass(this._element.nativeElement, 'mat-list-item-avatar');
+    } else {
+      this._renderer.removeClass(this._element.nativeElement, 'mat-list-item-avatar');
+    }
   }
 
-  constructor(private _renderer: Renderer,
+  constructor(private _renderer: Renderer2,
               private _element: ElementRef,
               @Optional() private _list: MdList,
               @Optional() navList: MdNavListCssMatStyler) {

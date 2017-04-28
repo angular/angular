@@ -6,7 +6,7 @@ import {
   Input,
   ContentChildren,
   QueryList,
-  Renderer,
+  Renderer2,
   ElementRef,
   Optional,
 } from '@angular/core';
@@ -60,7 +60,7 @@ export class MdGridList implements OnInit, AfterContentChecked {
   @ContentChildren(MdGridTile) _tiles: QueryList<MdGridTile>;
 
   constructor(
-      private _renderer: Renderer,
+      private _renderer: Renderer2,
       private _element: ElementRef,
       @Optional() private _dir: Dir) {}
 
@@ -136,7 +136,7 @@ export class MdGridList implements OnInit, AfterContentChecked {
   /** Sets style on the main grid-list element, given the style name and value. */
   _setListStyle(style: [string, string]): void {
     if (style) {
-      this._renderer.setElementStyle(this._element.nativeElement, style[0], style[1]);
+      this._renderer.setStyle(this._element.nativeElement, style[0], style[1]);
     }
   }
 }

@@ -1,5 +1,5 @@
 import {async, ComponentFixture, inject, TestBed} from '@angular/core/testing';
-import {Component, Renderer} from '@angular/core';
+import {Component, Renderer2} from '@angular/core';
 import {StyleModule} from './index';
 import {By} from '@angular/platform-browser';
 import {TAB} from '../keyboard/keycodes';
@@ -12,7 +12,7 @@ import {
 describe('FocusOriginMonitor', () => {
   let fixture: ComponentFixture<PlainButton>;
   let buttonElement: HTMLElement;
-  let buttonRenderer: Renderer;
+  let buttonRenderer: Renderer2;
   let focusOriginMonitor: FocusOriginMonitor;
   let changeHandler: (origin: FocusOrigin) => void;
 
@@ -456,7 +456,7 @@ describe('cdkMonitorFocus', () => {
   template: `<button>focus me!</button>`
 })
 class PlainButton {
-  constructor(public renderer: Renderer) {}
+  constructor(public renderer: Renderer2) {}
 }
 
 

@@ -9,7 +9,7 @@ import {
   QueryList,
   ChangeDetectionStrategy,
   EventEmitter,
-  Renderer,
+  Renderer2,
   ViewEncapsulation,
   NgZone,
   OnDestroy,
@@ -128,11 +128,7 @@ export class MdSidenav implements AfterContentInit, OnDestroy {
    * @param _elementRef The DOM element reference. Used for transition and width calculation.
    *     If not available we do not hook on transitions.
    */
-  constructor(
-    private _elementRef: ElementRef,
-    private _renderer: Renderer,
-    private _focusTrapFactory: FocusTrapFactory) {
-
+  constructor(private _elementRef: ElementRef, private _focusTrapFactory: FocusTrapFactory) {
     this.onOpen.subscribe(() => {
       this._elementFocusedBeforeSidenavWasOpened = document.activeElement as HTMLElement;
 
@@ -143,9 +139,9 @@ export class MdSidenav implements AfterContentInit, OnDestroy {
 
     this.onClose.subscribe(() => {
       if (this._elementFocusedBeforeSidenavWasOpened instanceof HTMLElement) {
-        this._renderer.invokeElementMethod(this._elementFocusedBeforeSidenavWasOpened, 'focus');
+        this._elementFocusedBeforeSidenavWasOpened.focus();
       } else {
-        this._renderer.invokeElementMethod(this._elementRef.nativeElement, 'blur');
+        this._elementRef.nativeElement.blur();
       }
 
       this._elementFocusedBeforeSidenavWasOpened = null;
@@ -350,7 +346,7 @@ export class MdSidenavContainer implements AfterContentInit {
   _enableTransitions = false;
 
   constructor(@Optional() private _dir: Dir, private _element: ElementRef,
-              private _renderer: Renderer, private _ngZone: NgZone) {
+              private _renderer: Renderer2, private _ngZone: NgZone) {
     // If a `Dir` directive exists up the tree, listen direction changes and update the left/right
     // properties to point to the proper start/end.
     if (_dir != null) {
@@ -407,8 +403,12 @@ export class MdSidenavContainer implements AfterContentInit {
   }
 
   /** Toggles the 'mat-sidenav-opened' class on the main 'md-sidenav-container' element. */
-  private _setContainerClass(sidenav: MdSidenav, bool: boolean): void {
-    this._renderer.setElementClass(this._element.nativeElement, 'mat-sidenav-opened', bool);
+  private _setContainerClass(sidenav: MdSidenav, isAdd: boolean): void {
+    if (isAdd) {
+      this._renderer.addClass(this._element.nativeElement, 'mat-sidenav-opened');
+    } else {
+      this._renderer.removeClass(this._element.nativeElement, 'mat-sidenav-opened');
+    }
   }
 
   /** Validate the state of the sidenav children components. */

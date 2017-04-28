@@ -7,7 +7,6 @@ import {
     OnDestroy,
     Optional,
     Output,
-    Renderer,
     ViewContainerRef,
 } from '@angular/core';
 import {MdMenuPanel} from './menu-panel';
@@ -79,8 +78,7 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
   @Output() onMenuClose = new EventEmitter<void>();
 
   constructor(private _overlay: Overlay, private _element: ElementRef,
-              private _viewContainerRef: ViewContainerRef, private _renderer: Renderer,
-              @Optional() private _dir: Dir) {}
+              private _viewContainerRef: ViewContainerRef, @Optional() private _dir: Dir) { }
 
   ngAfterViewInit() {
     this._checkMenu();
@@ -128,7 +126,7 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
 
   /** Focuses the menu trigger. */
   focus() {
-    this._renderer.invokeElementMethod(this._element.nativeElement, 'focus');
+    this._element.nativeElement.focus();
   }
 
   /** The text direction of the containing app. */

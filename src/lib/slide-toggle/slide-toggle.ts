@@ -8,7 +8,7 @@ import {
   Input,
   OnDestroy,
   Output,
-  Renderer,
+  Renderer2,
   ViewChild,
   ViewEncapsulation
 } from '@angular/core';
@@ -120,7 +120,7 @@ export class MdSlideToggle extends _MdSlideToggleMixinBase
   @ViewChild(MdRipple) _ripple: MdRipple;
 
   constructor(private _elementRef: ElementRef,
-              private _renderer: Renderer,
+              private _renderer: Renderer2,
               private _focusOriginMonitor: FocusOriginMonitor) {
     super();
   }
@@ -243,7 +243,11 @@ export class MdSlideToggle extends _MdSlideToggleMixinBase
 
   private _setElementColor(color: string, isAdd: boolean) {
     if (color != null && color != '') {
-      this._renderer.setElementClass(this._elementRef.nativeElement, `mat-${color}`, isAdd);
+      if (isAdd) {
+        this._renderer.addClass(this._elementRef.nativeElement, `mat-${color}`);
+      } else {
+        this._renderer.removeClass(this._elementRef.nativeElement, `mat-${color}`);
+      }
     }
   }
 
