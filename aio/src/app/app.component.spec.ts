@@ -274,6 +274,22 @@ describe('AppComponent', () => {
       expect(docViewer.innerText).toMatch(/Features/i);
     });
 
+    const marketingClassName = 'marketing';
+
+    it('should not have marketing CSS class on host element for a guide page (guide/pipes)', () => {
+      locationService.go('guide/pipes');
+      fixture.detectChanges();
+      const classes: string[] = fixture.nativeElement.className;
+      expect(classes).not.toContain(marketingClassName);
+    });
+
+    it('should have marketing CSS class on host element for a marketing page', () => {
+      locationService.go('features');
+      fixture.detectChanges();
+      const classes: string[] = fixture.nativeElement.className;
+      expect(classes).toContain(marketingClassName);
+    });
+
     it('should update the document title', () => {
       const titleService = TestBed.get(Title);
       spyOn(titleService, 'setTitle');
