@@ -12,7 +12,7 @@ describe('Chips', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdChipsModule.forRoot()],
+      imports: [MdChipsModule],
       declarations: [
         BasicChip, SingleChip
       ]

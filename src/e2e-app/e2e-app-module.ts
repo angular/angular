@@ -24,7 +24,7 @@ import {InputE2E} from './input/input-e2e';
   imports: [
     BrowserModule,
     RouterModule.forRoot(E2E_APP_ROUTES),
-    MaterialModule.forRoot(),
+    MaterialModule,
     NoopAnimationsModule,
   ],
   declarations: [

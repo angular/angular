@@ -1,4 +1,4 @@
-import {NgModule, ModuleWithProviders} from '@angular/core';
+import {NgModule} from '@angular/core';
 import {MdLineModule, MdRippleModule, MdCommonModule} from '../core';
 import {
   MdList,
@@ -40,15 +40,7 @@ import {
     MdListSubheaderCssMatStyler,
   ],
 })
-export class MdListModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: MdListModule,
-      providers: []
-    };
-  }
-}
+export class MdListModule {}
 
 
 export * from './list';

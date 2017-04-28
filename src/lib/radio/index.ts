@@ -1,4 +1,4 @@
-import {NgModule, ModuleWithProviders} from '@angular/core';
+import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {VIEWPORT_RULER_PROVIDER} from '../core/overlay/position/viewport-ruler';
 import {
@@ -16,15 +16,7 @@ import {MdRadioGroup, MdRadioButton} from './radio';
   providers: [UNIQUE_SELECTION_DISPATCHER_PROVIDER, VIEWPORT_RULER_PROVIDER, FocusOriginMonitor],
   declarations: [MdRadioGroup, MdRadioButton],
 })
-export class MdRadioModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: MdRadioModule,
-      providers: [],
-    };
-  }
-}
+export class MdRadioModule {}
 
 
 export * from './radio';

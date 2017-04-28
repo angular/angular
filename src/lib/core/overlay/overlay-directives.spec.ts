@@ -17,7 +17,7 @@ describe('Overlay directives', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [OverlayModule.forRoot()],
+      imports: [OverlayModule],
       declarations: [ConnectedOverlayDirectiveTest],
       providers: [
         {provide: OverlayContainer, useFactory: () => {

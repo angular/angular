@@ -1,4 +1,4 @@
-import {ModuleWithProviders, NgModule} from '@angular/core';
+import {NgModule} from '@angular/core';
 import {HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
@@ -13,15 +13,7 @@ import {RtlModule} from '../core/rtl/dir';
   declarations: [MdSlider],
   providers: [{provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig}]
 })
-export class MdSliderModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: MdSliderModule,
-      providers: []
-    };
-  }
-}
+export class MdSliderModule {}
 
 
 export * from './slider';

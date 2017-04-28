@@ -1,4 +1,4 @@
-import {ModuleWithProviders, NgModule} from '@angular/core';
+import {NgModule} from '@angular/core';
 import {
   MdErrorDirective,
   MdHint,
@@ -41,15 +41,7 @@ import {PlatformModule} from '../core/platform/index';
     MdTextareaAutosize,
   ],
 })
-export class MdInputModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: MdInputModule,
-      providers: [],
-    };
-  }
-}
+export class MdInputModule {}
 
 
 export * from './autosize';

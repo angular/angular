@@ -29,7 +29,7 @@ describe('MdSnackBar', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdSnackBarModule.forRoot(), SnackBarTestModule, NoopAnimationsModule],
+      imports: [MdSnackBarModule, SnackBarTestModule, NoopAnimationsModule],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
           overlayContainerElement = document.createElement('div');
@@ -352,7 +352,7 @@ describe('MdSnackBar with parent MdSnackBar', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdSnackBarModule.forRoot(), SnackBarTestModule, NoopAnimationsModule],
+      imports: [MdSnackBarModule, SnackBarTestModule, NoopAnimationsModule],
       declarations: [ComponentThatProvidesMdSnackBar],
       providers: [
         {provide: OverlayContainer, useFactory: () => {

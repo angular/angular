@@ -1,6 +1,5 @@
-import {ModuleWithProviders, NgModule} from '@angular/core';
-
-import {MdOptionModule, OverlayModule, OVERLAY_PROVIDERS, MdCommonModule} from '../core';
+import {NgModule} from '@angular/core';
+import {MdOptionModule, OverlayModule, MdCommonModule} from '../core';
 import {CommonModule} from '@angular/common';
 import {MdAutocomplete} from './autocomplete';
 import {MdAutocompleteTrigger} from './autocomplete-trigger';
@@ -10,15 +9,7 @@ import {MdAutocompleteTrigger} from './autocomplete-trigger';
   exports: [MdAutocomplete, MdOptionModule, MdAutocompleteTrigger, MdCommonModule],
   declarations: [MdAutocomplete, MdAutocompleteTrigger],
 })
-export class MdAutocompleteModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: MdAutocompleteModule,
-      providers: [OVERLAY_PROVIDERS]
-    };
-  }
-}
+export class MdAutocompleteModule {}
 
 
 export * from './autocomplete';

@@ -25,7 +25,7 @@ describe('MdChipList', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdChipsModule.forRoot()],
+      imports: [MdChipsModule],
       declarations: [
         StaticChipList
       ]

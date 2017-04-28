@@ -1,4 +1,4 @@
-import {NgModule, ModuleWithProviders} from '@angular/core';
+import {NgModule} from '@angular/core';
 import {OverlayModule, MdCommonModule} from '../core';
 import {PlatformModule} from '../core/platform/index';
 import {MdTooltip, TooltipComponent} from './tooltip';
@@ -10,15 +10,7 @@ import {MdTooltip, TooltipComponent} from './tooltip';
   declarations: [MdTooltip, TooltipComponent],
   entryComponents: [TooltipComponent],
 })
-export class MdTooltipModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: MdTooltipModule,
-      providers: []
-    };
-  }
-}
+export class MdTooltipModule {}
 
 
 export * from './tooltip';

@@ -9,7 +9,7 @@ describe('Scroll Dispatcher', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [OverlayModule.forRoot(), ScrollTestModule],
+      imports: [OverlayModule, ScrollTestModule],
     });
 
     TestBed.compileComponents();

@@ -19,7 +19,7 @@ function endSidenavTransition(fixture: ComponentFixture<any>) {
 describe('MdSidenav', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdSidenavModule.forRoot(), A11yModule.forRoot(), PlatformModule.forRoot()],
+      imports: [MdSidenavModule, A11yModule, PlatformModule],
       declarations: [
         BasicTestApp,
         SidenavContainerNoSidenavTestApp,
@@ -447,7 +447,7 @@ describe('MdSidenav', () => {
 describe('MdSidenavContainer', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdSidenavModule.forRoot(), A11yModule.forRoot(), PlatformModule.forRoot()],
+      imports: [MdSidenavModule, A11yModule, PlatformModule],
       declarations: [
         SidenavContainerTwoSidenavTestApp
       ],

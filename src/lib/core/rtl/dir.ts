@@ -1,6 +1,5 @@
 import {
   NgModule,
-  ModuleWithProviders,
   Directive,
   HostBinding,
   Output,
@@ -51,12 +50,4 @@ export class Dir {
   exports: [Dir],
   declarations: [Dir]
 })
-export class RtlModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: RtlModule,
-      providers: []
-    };
-  }
-}
+export class RtlModule {}

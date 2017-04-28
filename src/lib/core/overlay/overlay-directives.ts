@@ -1,6 +1,5 @@
 import {
     NgModule,
-    ModuleWithProviders,
     Directive,
     EventEmitter,
     TemplateRef,
@@ -321,12 +320,4 @@ export class ConnectedOverlayDirective implements OnDestroy {
   declarations: [ConnectedOverlayDirective, OverlayOrigin, Scrollable],
   providers: [OVERLAY_PROVIDERS],
 })
-export class OverlayModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: OverlayModule,
-      providers: [],
-    };
-  }
-}
+export class OverlayModule {}

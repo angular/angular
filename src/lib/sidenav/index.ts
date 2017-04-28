@@ -1,4 +1,4 @@
-import {NgModule, ModuleWithProviders} from '@angular/core';
+import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {MdCommonModule} from '../core';
 import {A11yModule} from '../core/a11y/index';
@@ -11,15 +11,7 @@ import {MdSidenav, MdSidenavContainer} from './sidenav';
   exports: [MdSidenavContainer, MdSidenav, MdCommonModule],
   declarations: [MdSidenavContainer, MdSidenav],
 })
-export class MdSidenavModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: MdSidenavModule,
-      providers: []
-    };
-  }
-}
+export class MdSidenavModule {}
 
 
 export * from './sidenav';

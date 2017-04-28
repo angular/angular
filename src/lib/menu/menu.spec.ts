@@ -29,7 +29,7 @@ describe('MdMenu', () => {
   beforeEach(async(() => {
     dir = 'ltr';
     TestBed.configureTestingModule({
-      imports: [MdMenuModule.forRoot(), NoopAnimationsModule],
+      imports: [MdMenuModule, NoopAnimationsModule],
       declarations: [SimpleMenu, PositionedMenu, OverlapMenu, CustomMenuPanel, CustomMenu],
       providers: [
         {provide: OverlayContainer, useFactory: () => {

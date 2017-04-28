@@ -14,7 +14,7 @@ import {FakeViewportRuler} from '../core/overlay/position/fake-viewport-ruler';
 describe('MdTabGroup', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdTabsModule.forRoot(), NoopAnimationsModule],
+      imports: [MdTabsModule, NoopAnimationsModule],
       declarations: [
         SimpleTabsTestApp,
         SimpleDynamicTabsTestApp,

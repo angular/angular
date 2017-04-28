@@ -1,6 +1,5 @@
 import {
     NgModule,
-    ModuleWithProviders,
     ComponentRef,
     Directive,
     TemplateRef,
@@ -128,12 +127,4 @@ export class PortalHostDirective extends BasePortalHost implements OnDestroy {
   exports: [TemplatePortalDirective, PortalHostDirective],
   declarations: [TemplatePortalDirective, PortalHostDirective],
 })
-export class PortalModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: PortalModule,
-      providers: []
-    };
-  }
-}
+export class PortalModule {}

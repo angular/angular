@@ -16,7 +16,7 @@ describe('MdTabNavBar', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdTabsModule.forRoot()],
+      imports: [MdTabsModule],
       declarations: [
         SimpleTabNavBarTestApp,
         TabLinkWithNgIf,

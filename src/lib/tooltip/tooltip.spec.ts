@@ -32,7 +32,7 @@ describe('MdTooltip', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdTooltipModule.forRoot(), OverlayModule, NoopAnimationsModule],
+      imports: [MdTooltipModule, OverlayModule, NoopAnimationsModule],
       declarations: [BasicTooltipDemo, ScrollableTooltipDemo, OnPushTooltipDemo],
       providers: [
         {provide: Platform, useValue: {IOS: false}},

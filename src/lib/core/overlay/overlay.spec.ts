@@ -18,7 +18,7 @@ describe('Overlay', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [OverlayModule.forRoot(), PortalModule, OverlayTestModule],
+      imports: [OverlayModule, PortalModule, OverlayTestModule],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
           overlayContainerElement = document.createElement('div');

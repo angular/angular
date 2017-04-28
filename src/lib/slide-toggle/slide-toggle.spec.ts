@@ -13,7 +13,7 @@ describe('MdSlideToggle', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdSlideToggleModule.forRoot(), FormsModule, ReactiveFormsModule],
+      imports: [MdSlideToggleModule, FormsModule, ReactiveFormsModule],
       declarations: [SlideToggleTestApp, SlideToggleFormsTestApp, SlideToggleWithFormControl],
       providers: [
         {provide: HAMMER_GESTURE_CONFIG, useFactory: () => gestureConfig = new TestGestureConfig()}

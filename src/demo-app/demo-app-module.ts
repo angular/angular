@@ -53,7 +53,7 @@ import {StyleDemo} from './style/style-demo';
     HttpModule,
     ReactiveFormsModule,
     RouterModule.forRoot(DEMO_APP_ROUTES),
-    MaterialModule.forRoot(),
+    MaterialModule,
     MdSelectionModule,
   ],
   declarations: [

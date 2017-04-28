@@ -36,7 +36,7 @@ describe('MdIcon', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdIconModule.forRoot()],
+      imports: [MdIconModule],
       declarations: [
         MdIconColorTestApp,
         MdIconLigatureTestApp,

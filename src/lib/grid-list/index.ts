@@ -1,4 +1,4 @@
-import {NgModule, ModuleWithProviders} from '@angular/core';
+import {NgModule} from '@angular/core';
 import {MdLineModule, MdCommonModule} from '../core';
 import {
   MdGridTile, MdGridTileText, MdGridTileFooterCssMatStyler,
@@ -28,15 +28,7 @@ import {MdGridList} from './grid-list';
     MdGridAvatarCssMatStyler
   ],
 })
-export class MdGridListModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: MdGridListModule,
-      providers: []
-    };
-  }
-}
+export class MdGridListModule {}
 
 
 export * from './grid-list';

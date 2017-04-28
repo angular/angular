@@ -1,4 +1,4 @@
-import {NgModule, ModuleWithProviders} from '@angular/core';
+import {NgModule} from '@angular/core';
 import {MdCommonModule} from '../core';
 import {
   MdProgressSpinner,
@@ -21,15 +21,7 @@ import {
     MdProgressSpinnerCssMatStyler
   ],
 })
-class MdProgressSpinnerModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: MdProgressSpinnerModule,
-      providers: []
-    };
-  }
-}
+class MdProgressSpinnerModule {}
 
 export {MdProgressSpinnerModule};
 export * from './progress-spinner';

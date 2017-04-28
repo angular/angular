@@ -48,7 +48,7 @@ describe('MdSelect', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdSelectModule.forRoot(), ReactiveFormsModule, FormsModule, NoopAnimationsModule],
+      imports: [MdSelectModule, ReactiveFormsModule, FormsModule, NoopAnimationsModule],
       declarations: [
         BasicSelect,
         NgModelSelect,

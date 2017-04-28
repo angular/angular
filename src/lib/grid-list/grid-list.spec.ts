@@ -8,7 +8,7 @@ import {MdGridTile, MdGridTileText} from './grid-tile';
 describe('MdGridList', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdGridListModule.forRoot()],
+      imports: [MdGridListModule],
       declarations: [
         GridListWithoutCols,
         GridListWithInvalidRowHeightRatio,

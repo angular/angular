@@ -8,7 +8,7 @@ describe('MdProgressBar', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdProgressBarModule.forRoot()],
+      imports: [MdProgressBarModule],
       declarations: [
         BasicProgressBar,
         BufferProgressBar,

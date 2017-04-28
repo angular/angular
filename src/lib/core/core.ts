@@ -1,4 +1,4 @@
-import {NgModule, ModuleWithProviders} from '@angular/core';
+import {NgModule} from '@angular/core';
 import {MdLineModule} from './line/line';
 import {RtlModule} from './rtl/dir';
 import {ObserveContentModule} from './observe-content/observe-content';
@@ -141,12 +141,4 @@ export {MdCommonModule} from './common-behaviors/common-module';
     MdSelectionModule,
   ],
 })
-export class MdCoreModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: MdCoreModule,
-      providers: [],
-    };
-  }
-}
+export class MdCoreModule {}

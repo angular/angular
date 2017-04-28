@@ -21,7 +21,7 @@ describe('MdButtonToggle', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdButtonToggleModule.forRoot(), FormsModule, ReactiveFormsModule],
+      imports: [MdButtonToggleModule, FormsModule, ReactiveFormsModule],
       declarations: [
         ButtonTogglesInsideButtonToggleGroup,
         ButtonToggleGroupWithNgModel,

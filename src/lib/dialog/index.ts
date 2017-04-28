@@ -1,4 +1,4 @@
-import {NgModule, ModuleWithProviders} from '@angular/core';
+import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {
   OverlayModule,
@@ -44,15 +44,7 @@ import {
   ],
   entryComponents: [MdDialogContainer],
 })
-export class MdDialogModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: MdDialogModule,
-      providers: [],
-    };
-  }
-}
+export class MdDialogModule {}
 
 export * from './dialog';
 export * from './dialog-container';

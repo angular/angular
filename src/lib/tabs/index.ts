@@ -1,4 +1,4 @@
-import {NgModule, ModuleWithProviders} from '@angular/core';
+import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {PortalModule} from '../core';
 import {MdRippleModule} from '../core/ripple/index';
@@ -45,15 +45,7 @@ import {SCROLL_DISPATCHER_PROVIDER} from '../core/overlay/scroll/scroll-dispatch
   ],
   providers: [VIEWPORT_RULER_PROVIDER, SCROLL_DISPATCHER_PROVIDER],
 })
-export class MdTabsModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: MdTabsModule,
-      providers: []
-    };
-  }
-}
+export class MdTabsModule {}
 
 
 export * from './tab-group';

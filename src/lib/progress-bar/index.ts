@@ -1,4 +1,4 @@
-import {NgModule, ModuleWithProviders} from '@angular/core';
+import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {MdCommonModule} from '../core';
 import {MdProgressBar} from './progress-bar';
@@ -9,15 +9,7 @@ import {MdProgressBar} from './progress-bar';
   exports: [MdProgressBar, MdCommonModule],
   declarations: [MdProgressBar],
 })
-export class MdProgressBarModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: MdProgressBarModule,
-      providers: []
-    };
-  }
-}
+export class MdProgressBarModule {}
 
 
 export * from './progress-bar';

@@ -10,7 +10,7 @@ describe('MdButton', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdButtonModule.forRoot()],
+      imports: [MdButtonModule],
       declarations: [TestApp],
       providers: [
         {provide: ViewportRuler, useClass: FakeViewportRuler},

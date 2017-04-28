@@ -39,7 +39,7 @@ describe('MdDialog', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdDialogModule.forRoot(), DialogTestModule],
+      imports: [MdDialogModule, DialogTestModule],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
           overlayContainerElement = document.createElement('div');
@@ -615,7 +615,7 @@ describe('MdDialog with a parent MdDialog', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdDialogModule.forRoot(), DialogTestModule],
+      imports: [MdDialogModule, DialogTestModule],
       declarations: [ComponentThatProvidesMdDialog],
       providers: [
         {provide: OverlayContainer, useFactory: () => {

@@ -12,7 +12,7 @@ describe('MdToolbar', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdToolbarModule.forRoot()],
+      imports: [MdToolbarModule],
       declarations: [TestApp],
     });
 

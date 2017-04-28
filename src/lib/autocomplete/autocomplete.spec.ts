@@ -39,8 +39,8 @@ describe('MdAutocomplete', () => {
     dir = 'ltr';
     TestBed.configureTestingModule({
       imports: [
-        MdAutocompleteModule.forRoot(),
-        MdInputModule.forRoot(),
+        MdAutocompleteModule,
+        MdInputModule,
         FormsModule,
         ReactiveFormsModule,
         NoopAnimationsModule

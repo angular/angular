@@ -5,7 +5,6 @@ import {
   Input,
   Output,
   NgModule,
-  ModuleWithProviders,
   ViewEncapsulation,
   Inject,
   Optional,
@@ -179,11 +178,4 @@ export class MdOption {
   exports: [MdOption],
   declarations: [MdOption]
 })
-export class MdOptionModule {
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: MdOptionModule,
-      providers: []
-    };
-  }
-}
+export class MdOptionModule {}

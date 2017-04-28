@@ -2,7 +2,6 @@ import {
   Directive,
   ElementRef,
   NgModule,
-  ModuleWithProviders,
   Output,
   EventEmitter,
   OnDestroy,
@@ -45,12 +44,4 @@ export class ObserveContent implements AfterContentInit, OnDestroy {
   exports: [ObserveContent],
   declarations: [ObserveContent]
 })
-export class ObserveContentModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: ObserveContentModule,
-      providers: []
-    };
-  }
-}
+export class ObserveContentModule {}

@@ -26,7 +26,7 @@ describe('Style compatibility', () => {
       TestBed.configureTestingModule({
         // Specifically do *not* directly import the DefaultStyleCompatibilityModeModule
         // to ensure that it is the default behavior.
-        imports: [MdCheckboxModule.forRoot()],
+        imports: [MdCheckboxModule],
         declarations: [ComponentWithMdCheckbox, ComponentWithMatCheckbox],
       });
 
@@ -45,7 +45,7 @@ describe('Style compatibility', () => {
   describe('in no-conflict mode', () => {
     beforeEach(async(() => {
       TestBed.configureTestingModule({
-        imports: [MdCheckboxModule.forRoot(), NoConflictStyleCompatibilityMode],
+        imports: [MdCheckboxModule, NoConflictStyleCompatibilityMode],
         declarations: [ComponentWithMdCheckbox, ComponentWithMatCheckbox],
       });
 
@@ -97,7 +97,7 @@ class ComponentWithMatCheckbox { }
 
 
 @NgModule({
-  imports: [MdCheckboxModule.forRoot()],
+  imports: [MdCheckboxModule],
   exports: [ComponentWithMdCheckbox, ComponentWithMatCheckbox],
   declarations: [ComponentWithMdCheckbox, ComponentWithMatCheckbox],
 })

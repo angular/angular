@@ -13,7 +13,7 @@ describe('MdRadio', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdRadioModule.forRoot(), FormsModule, ReactiveFormsModule],
+      imports: [MdRadioModule, FormsModule, ReactiveFormsModule],
       declarations: [
         RadiosInsideRadioGroup,
         RadioGroupWithNgModel,

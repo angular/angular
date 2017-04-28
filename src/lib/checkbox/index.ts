@@ -1,4 +1,4 @@
-import {NgModule, ModuleWithProviders} from '@angular/core';
+import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {MdRippleModule, MdCommonModule, FocusOriginMonitor} from '../core';
 import {MdCheckbox} from './checkbox';
@@ -10,15 +10,7 @@ import {MdCheckbox} from './checkbox';
   declarations: [MdCheckbox],
   providers: [FocusOriginMonitor]
 })
-export class MdCheckboxModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: MdCheckboxModule,
-      providers: []
-    };
-  }
-}
+export class MdCheckboxModule {}
 
 
 export * from './checkbox';

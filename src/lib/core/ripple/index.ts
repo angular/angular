@@ -1,4 +1,4 @@
-import {ModuleWithProviders, NgModule} from '@angular/core';
+import {NgModule} from '@angular/core';
 import {MdRipple} from './ripple';
 import {MdCommonModule} from '../common-behaviors/common-module';
 import {VIEWPORT_RULER_PROVIDER} from '../overlay/position/viewport-ruler';
@@ -14,12 +14,4 @@ export {RippleConfig, RIPPLE_FADE_IN_DURATION, RIPPLE_FADE_OUT_DURATION} from '.
   declarations: [MdRipple],
   providers: [VIEWPORT_RULER_PROVIDER, SCROLL_DISPATCHER_PROVIDER],
 })
-export class MdRippleModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: MdRippleModule,
-      providers: []
-    };
-  }
-}
+export class MdRippleModule {}

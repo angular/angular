@@ -1,4 +1,4 @@
-import {NgModule, ModuleWithProviders} from '@angular/core';
+import {NgModule} from '@angular/core';
 import {MdCommonModule} from '../core';
 import {
   MdCard,
@@ -43,15 +43,7 @@ import {
     MdCardXlImage, MdCardAvatar,
   ],
 })
-export class MdCardModule {
-  /** @deprecated */
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: MdCardModule,
-      providers: []
-    };
-  }
-}
+export class MdCardModule {}
 
 
 export * from './card';
