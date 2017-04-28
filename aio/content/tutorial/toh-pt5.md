@@ -918,7 +918,7 @@ such as `RouterLink` and `RouterOutlet`.
 ### Update *AppModule*
 
 Delete the routing configuration from `AppModule` and import the `AppRoutingModule`.
-Use an ES `import` statement *and* add it to the `NgModule.imports` list.
+Use an ES2015 `import` statement *and* add it to the `NgModule.imports` list.
 
 Here is the revised `AppModule`, compared to its pre-refactor state:
 
