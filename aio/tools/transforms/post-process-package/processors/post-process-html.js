@@ -9,8 +9,8 @@ const rehype = require('rehype');
  * See https://github.com/wooorm/rehype
  *
  * Each plugin is a factory function that will be called with the "rehype" engine as `this`.
- * The factory should return a function that takes a HAST and returns a `boolean` or `undefined`.
- * The HAST can be mutated by the this function.
+ * The factory should return a "transform" function that takes a HAST and returns a `boolean` or `undefined`.
+ * The HAST can be mutated by the "transform" function.
  * If `false` is returned then the processing stops with that plugin.
  *
  * @property docTypes {string[]} the `docTypes` of docs that should be post-processed
