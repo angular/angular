@@ -1,11 +1,14 @@
-const processorFactory = require('../../post-process-package/processors/post-process-html');
+var testPackage = require('../../helpers/test-package');
+var Dgeni = require('dgeni');
 const plugin = require('./autolink-headings');
 
 describe('autolink-headings postprocessor', () => {
   let processor;
 
   beforeEach(() => {
-    processor = processorFactory();
+    const dgeni = new Dgeni([testPackage('angular-base-package')]);
+    const injector = dgeni.configureInjector();
+    processor = injector.get('postProcessHtml');
     processor.docTypes = ['a'];
     processor.plugins = [plugin];
   });
