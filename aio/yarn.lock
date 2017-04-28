@@ -3283,7 +3283,7 @@ ignorepatterns@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/ignorepatterns/-/ignorepatterns-1.1.0.tgz#ac8f436f2239b5dfb66d5f0d3a904a87ac67cc5e"
 
-image-size@~0.5.0:
+image-size@^0.5.1, image-size@~0.5.0:
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/image-size/-/image-size-0.5.1.tgz#28eea8548a4b1443480ddddc1e083ae54652439f"
 
@@ -7015,13 +7015,19 @@ unist-util-remove-position@^1.0.0:
   dependencies:
     unist-util-visit "^1.1.0"
 
+unist-util-source@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/unist-util-source/-/unist-util-source-1.0.1.tgz#989fb50f8c8508d4cdd629162a38f06d7e08cc29"
+  dependencies:
+    vfile-location "^2.0.1"
+
 unist-util-stringify-position@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/unist-util-stringify-position/-/unist-util-stringify-position-1.1.0.tgz#e8ba9d6b6af891b5f8336b3a31c63a9dc85c2af0"
   dependencies:
     has "^1.0.1"
 
-unist-util-visit@^1.0.0, unist-util-visit@^1.1.0:
+unist-util-visit@^1.0.0, unist-util-visit@^1.1.0, unist-util-visit@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/unist-util-visit/-/unist-util-visit-1.1.1.tgz#e917a3b137658b335cb4420c7da2e74d928e4e94"
 
@@ -7218,7 +7224,7 @@ verror@1.3.6:
   dependencies:
     extsprintf "1.0.2"
 
-vfile-location@^2.0.0:
+vfile-location@^2.0.0, vfile-location@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/vfile-location/-/vfile-location-2.0.1.tgz#0bf8816f732b0f8bd902a56fda4c62c8e935dc52"
 
