@@ -6,6 +6,7 @@ import { MdSnackBar } from '@angular/material';
 
 const originalLabel = 'Copy Code';
 const copiedLabel = 'Copied!';
+const defaultLineNumsCount = 10; // by default, show linenums over this number
 
 /**
  * Formatted Code Block
@@ -17,14 +18,18 @@ const copiedLabel = 'Copied!';
  * Example usage:
  *
  * ```
- *   <aio-code [code]="variableContainingCode" [language]="ts" [linenums]="true"></aio-code>
+ * <aio-code
+ *   [code]="variableContainingCode"
+ *   [language]="ts"
+ *   [linenums]="true"
+ *   [path]="ts-to-js/ts/src/app/app.module.ts"
+ *   [region]="ng2import">
+ * </aio-code>
  * ```
- *
  */
 @Component({
   selector: 'aio-code',
   template: `
-
     <pre class="prettyprint lang-{{language}}">
       <button *ngIf="code" class="material-icons copy-button" (click)="doCopy()">content_copy</button>
       <code class="animated fadeIn" #codeContainer></code>
@@ -32,6 +37,12 @@ const copiedLabel = 'Copied!';
     `
 })
 export class CodeComponent implements OnChanges {
+
+  /**
+   * The code to be formatted, this should already be HTML encoded
+   */
+  @Input()
+  code: string;
 
   /**
    * The language of the code to render
@@ -50,10 +61,16 @@ export class CodeComponent implements OnChanges {
   linenums: boolean | number | string;
 
   /**
-   * The code to be formatted, this should already be HTML encoded
+   * path to the source of the code being displayed
    */
   @Input()
-  code: string;
+  path: string;
+
+  /**
+   * region of the source of the code being displayed
+   */
+  @Input()
+  region: string;
 
   /**
    * The element in the template that will display the formatted code
@@ -70,7 +87,9 @@ export class CodeComponent implements OnChanges {
     this.code = this.code && leftAlign(this.code);
 
     if (!this.code) {
-      this.setCodeHtml('<p class="code-missing">The code sample is missing.</p>');
+      const src = this.path ? this.path + (this.region ? '#' + this.region : '') : '';
+      const srcMsg = src ? ` for<br>${src}` : '.';
+      this.setCodeHtml(`<p class="code-missing">The code sample is missing${srcMsg}</p>`);
       return;
     }
 
@@ -117,7 +136,7 @@ export class CodeComponent implements OnChanges {
 
     // if no linenums, enable line numbers if more than one line
     return linenums == null || linenums === NaN ?
-      (this.code.match(/\n/g) || []).length > 1 : linenums;
+      (this.code.match(/\n/g) || []).length > defaultLineNumsCount : linenums;
   }
 }
 
