@@ -6,10 +6,33 @@ By default, a ripple is activated when the host element of the `md-ripple` direc
 
 Ripples can also be triggered programmatically by getting a reference to the MdRipple directive and calling its `start` and `end` methods.
 
+### Global options
 
-### Upcoming work
+Developers are able to specify options for all ripples inside of their application.
 
-Ripples will be added to the `md-button`, `md-radio-button`, `md-checkbox`, and `md-nav-list` components.
+The speed of the ripples can be adjusted and the ripples can be disabled globally as well.
+
+Global ripple options can be specified by setting the `MD_RIPPLE_GLOBAL_OPTIONS` provider.
+
+```ts
+const globalRippleConfig: RippleGlobalOptions = {
+  disabled: true,
+  baseSpeedFactor: 1.5 // Ripples will animate 50% faster than before.
+}
+
+@NgModule({
+  providers: [
+    {provide: MD_RIPPLE_GLOBAL_OPTIONS, useValue: globalRippleConfig} 
+  ]
+})
+```
+
+Here are all available global options listed:
+
+| Name            | Type    | Description                               |
+| --------------- | ------- | ----------------------------------------- |
+| disabled        | boolean | Whether ripples should show or not.       |
+| baseSpeedFactor | number  | Factor to adjust ripple speed.            |
 
 ### API Summary
 
