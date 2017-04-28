@@ -7,10 +7,12 @@
  */
 
 import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
+import {ɵgetDOM as getDOM} from '@angular/platform-browser';
 
 import {RequestOptions} from '../src/base_request_options';
 import {ContentType} from '../src/enums';
 import {Headers} from '../src/headers';
+import {stringToArrayBuffer, stringToArrayBuffer8} from '../src/http_utils';
 import {ArrayBuffer, Request} from '../src/static_request';
 
 export function main() {
@@ -118,6 +120,19 @@ export function main() {
     it('should use search if present', () => {
       const req = new Request({url: 'http://test.com', search: 'a=1&b=2'});
       expect(req.url).toBe('http://test.com?a=1&b=2');
-    })
+    });
+
+    if (getDOM().supportsWebAnimation()) {
+      it('should serialize an ArrayBuffer to string via legacy encoding', () => {
+        const str = '\u89d2\u5ea6';
+        expect(new Request({body: stringToArrayBuffer(str), url: '/'}).text()).toEqual(str);
+      });
+
+      it('should serialize an ArrayBuffer to string via iso-8859 encoding', () => {
+        const str = 'abcd';
+        expect(new Request({body: stringToArrayBuffer8(str), url: '/'}).text('iso-8859'))
+            .toEqual(str);
+      });
+    }
   });
 }
