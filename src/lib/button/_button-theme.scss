@@ -74,16 +74,10 @@
   $background: map-get($theme, background);
   $foreground: map-get($theme, foreground);
 
-  .mat-button, .mat-icon-button, .mat-raised-button, .mat-fab, .mat-mini-fab {
-    // Apply color to focus overlay.
-    // The focus overlay will be visible when any button type is focused or when
-    // flat buttons or icon buttons are hovered.
-    @include _mat-button-focus-color($theme);
-  }
-
   .mat-button, .mat-icon-button {
     background: transparent;
 
+    @include _mat-button-focus-color($theme);
     @include _mat-button-theme-color($theme, 'color');
   }
 
@@ -98,7 +92,7 @@
     // Add ripple effect with contrast color to buttons that don't have a focus overlay.
     @include _mat-button-ripple-color($theme, default-contrast);
   }
-  
+
   // Add ripple effect with default color to flat buttons, which also have a focus overlay.
   .mat-button {
     @include _mat-button-ripple-color($theme, default, 0.1);
