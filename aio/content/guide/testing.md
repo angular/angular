@@ -1778,7 +1778,7 @@ The `forEach` passes the new `id` value to the component's `getHero` method (not
 which fetches a hero and sets the component's `hero` property.
 If the`id` parameter is missing, the `pluck` operator fails and the `catch` treats failure as a request to edit a new hero.
 
-The [Router](guide/router#route-parameters) guide covers `ActivatedRoute.params` in more detail.
+The [Router](guide/router-4#route-parameters) guide covers `ActivatedRoute.params` in more detail.
 
 </div>
 
@@ -1827,7 +1827,7 @@ drives the stub's `params` _Observable_ and returns the same value to every `par
 
 
 
-The [_snapshot_](guide/router#snapshot "Router guide: snapshot") is another popular way for components to consume route parameters.
+The [_snapshot_](guide/router-4#snapshot "Router guide: snapshot") is another popular way for components to consume route parameters.
 
 </div>
 

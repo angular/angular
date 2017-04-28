@@ -1219,10 +1219,10 @@ Next we declare both AngularJS and Angular routes as normal:
 
 
 
-In our `app.module.ts` we need to add `AppComponent` to the declarations and boostrap array.
+In our `app.module.ts` we need to add `AppComponent` to the declarations and bootstrap array.
 
 Next we configure the router itself.
-We want to use [hash navigation](guide/router#hashlocationstrategy) in Angular
+We want to use [hash navigation](guide/router-appendix#location-strategy) in Angular
 because that's what we're also using in AngularJS.
 
 Lastly, and most importantly, we want to use a custom `UrlHandlingStrategy` that will tell
@@ -2205,7 +2205,7 @@ while keeping `/phones/:phoneId` in the AngularJS router.
 
 #### Add the Angular router
 
-Angular has an [all-new router](guide/router).
+Angular has [its own router](guide/router).
 
 Like all routers, it needs a place in the UI to display routed views.
 For Angular that's the `<router-outlet>` and it belongs in a *root component*

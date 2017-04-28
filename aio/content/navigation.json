@@ -221,7 +221,42 @@
         {
           "url": "guide/router",
           "title": "Routing & Navigation",
-          "tooltip": "Discover the basics of screen navigation with the Angular Router."
+          "tooltip": "Discover the basics of screen navigation with the Angular Router.",
+          "children": [
+            {
+              "url": "guide/router-1",
+              "title": "Router Overview"
+            },
+            {
+              "url": "guide/router-2",
+              "title": "Getting started",
+              "tooltip": "Getting started with the router"
+            },
+            {
+              "url": "guide/router-3",
+              "title": "Add a Routing Module"
+            },
+            {
+              "url": "guide/router-4",
+              "title": "Routing to a Feature"
+            },
+            {
+              "url": "guide/router-5",
+              "title": "Child Routes"
+            },
+            {
+              "url": "guide/router-6",
+              "title": "Route Guards"
+            },
+            {
+              "url": "guide/router-7",
+              "title": "Async \"lazy\" Routing"
+            },
+            {
+              "url": "guide/router-appendix",
+              "title": "Appendix"
+            }
+          ]
         },
 
         {
