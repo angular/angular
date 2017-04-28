@@ -5,23 +5,17 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-const path = require('path');
 const Package = require('dgeni').Package;
 
 const basePackage = require('../angular-base-package');
 const contentPackage = require('../content-package');
 
-const { CONTENTS_PATH, OUTPUT_PATH } = require('../config');
+const { CONTENTS_PATH } = require('../config');
 
 module.exports = new Package('angular-content', [basePackage, contentPackage])
 
-  // Register the processors
-  .processor(require('./processors/copyContentAssets'))
-
-  .factory(require('./services/copyFolder'))
-
   // Where do we get the source files?
-  .config(function(readFilesProcessor, collectExamples, copyContentAssetsProcessor) {
+  .config(function(readFilesProcessor, collectExamples) {
 
     readFilesProcessor.sourceFiles = readFilesProcessor.sourceFiles.concat([
       {
@@ -82,10 +76,6 @@ module.exports = new Package('angular-content', [basePackage, contentPackage])
     ]);
 
     collectExamples.exampleFolders.push('examples');
-
-    copyContentAssetsProcessor.assetMappings.push(
-      { from: path.resolve(CONTENTS_PATH, 'images'), to: path.resolve(OUTPUT_PATH, 'images') }
-    );
   })
 
 
