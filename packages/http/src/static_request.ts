@@ -186,4 +186,5 @@ const noop = function() {};
 const w = typeof window == 'object' ? window : noop;
 const FormData = (w as any /** TODO #9100 */)['FormData'] || noop;
 const Blob = (w as any /** TODO #9100 */)['Blob'] || noop;
-export const ArrayBuffer = (w as any /** TODO #9100 */)['ArrayBuffer'] || noop;
+export const ArrayBuffer: ArrayBufferConstructor =
+    (w as any /** TODO #9100 */)['ArrayBuffer'] || noop;
