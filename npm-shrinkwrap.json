@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "4.1.0-beta.1",
+  "version": "4.1.0",
   "dependencies": {
     "@types/angularjs": {
       "version": "1.5.13-alpha",
@@ -10062,9 +10062,9 @@
       }
     },
     "zone.js": {
-      "version": "0.8.5",
-      "from": "zone.js@0.8.5",
-      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.8.5.tgz"
+      "version": "0.8.9",
+      "from": "zone.js@latest",
+      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.8.9.tgz"
     }
   }
 }
