@@ -230,7 +230,7 @@ export function main() {
         });
       }
 
-      it('should stop dirty checking views that threw errors in change detection', () => {
+      it('should not stop dirty checking views that threw errors in change detection', () => {
         class AComp {
           a: any;
         }
@@ -255,8 +255,8 @@ export function main() {
         expect(update).toHaveBeenCalled();
 
         update.calls.reset();
-        Services.checkAndUpdateView(view);
-        expect(update).not.toHaveBeenCalled();
+        expect(() => Services.checkAndUpdateView(view)).toThrowError('Test');
+        expect(update).toHaveBeenCalled();
       });
 
     });

@@ -10,7 +10,7 @@ import {ResourceLoader} from '@angular/compiler';
 import {SourceMap} from '@angular/compiler/src/output/source_map';
 import {extractSourceMap, originalPositionFor} from '@angular/compiler/test/output/source_map_util';
 import {MockResourceLoader} from '@angular/compiler/testing/src/resource_loader_mock';
-import {Attribute, Component, Directive, ɵglobal} from '@angular/core';
+import {Attribute, Component, Directive, ErrorHandler, ɵglobal} from '@angular/core';
 import {getErrorLogger} from '@angular/core/src/errors';
 import {ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
 
@@ -231,11 +231,10 @@ export function main() {
            const comp = compileAndCreateComponent(MyComp);
 
            let error: any;
-           try {
-             comp.debugElement.children[0].children[0].triggerEventHandler('click', 'EVENT');
-           } catch (e) {
-             error = e;
-           }
+           const errorHandler = TestBed.get(ErrorHandler);
+           spyOn(errorHandler, 'handleError').and.callFake((e: any) => error = e);
+           comp.debugElement.children[0].children[0].triggerEventHandler('click', 'EVENT');
+           expect(error).toBeTruthy();
            // the stack should point to the binding
            expect(getSourcePositionForStack(error.stack)).toEqual({
              line: 2,

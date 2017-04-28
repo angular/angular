@@ -560,6 +560,9 @@ export class ApplicationRef_ extends ApplicationRef {
       if (this._enforceNoNewChanges) {
         this._views.forEach((view) => view.checkNoChanges());
       }
+    } catch (e) {
+      // Attention: Don't rethrow as it could cancel subscriptions to Observables!
+      this._exceptionHandler.handleError(e);
     } finally {
       this._runningTick = false;
       wtfLeave(scope);

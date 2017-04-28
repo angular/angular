@@ -131,20 +131,33 @@ export function main() {
     describe('ApplicationRef', () => {
       beforeEach(() => { TestBed.configureTestingModule({imports: [createModule()]}); });
 
-      it('should throw when reentering tick', inject([ApplicationRef], (ref: ApplicationRef_) => {
-           const view = jasmine.createSpyObj('view', ['detach', 'attachToAppRef']);
-           const viewRef = jasmine.createSpyObj(
-               'viewRef', ['detectChanges', 'detachFromAppRef', 'attachToAppRef']);
-           viewRef.internalView = view;
-           view.ref = viewRef;
-           try {
-             ref.attachView(viewRef);
-             viewRef.detectChanges.and.callFake(() => ref.tick());
-             expect(() => ref.tick()).toThrowError('ApplicationRef.tick is called recursively');
-           } finally {
-             ref.detachView(viewRef);
-           }
-         }));
+      it('should throw when reentering tick', () => {
+        @Component({template: '{{reenter()}}'})
+        class ReenteringComponent {
+          reenterCount = 1;
+          reenterErr: any;
+
+          constructor(private appRef: ApplicationRef) {}
+
+          reenter() {
+            if (this.reenterCount--) {
+              try {
+                this.appRef.tick();
+              } catch (e) {
+                this.reenterErr = e;
+              }
+            }
+          }
+        }
+
+        const fixture = TestBed.configureTestingModule({declarations: [ReenteringComponent]})
+                            .createComponent(ReenteringComponent);
+        const appRef = TestBed.get(ApplicationRef) as ApplicationRef;
+        appRef.attachView(fixture.componentRef.hostView);
+        appRef.tick();
+        expect(fixture.componentInstance.reenterErr.message)
+            .toBe('ApplicationRef.tick is called recursively');
+      });
 
       describe('APP_BOOTSTRAP_LISTENER', () => {
         let capturedCompRefs: ComponentRef<any>[];

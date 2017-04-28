@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectorRef, DoCheck, ElementRef, EventEmitter, Injector, OnChanges, OnDestroy, OnInit, RenderComponentType, Renderer, Renderer2, RootRenderer, Sanitizer, SecurityContext, SimpleChange, TemplateRef, ViewContainerRef, ViewEncapsulation, WrappedValue, getDebugNode} from '@angular/core';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectorRef, DoCheck, ElementRef, ErrorHandler, EventEmitter, Injector, OnChanges, OnDestroy, OnInit, RenderComponentType, Renderer, Renderer2, RootRenderer, Sanitizer, SecurityContext, SimpleChange, TemplateRef, ViewContainerRef, ViewEncapsulation, WrappedValue, getDebugNode} from '@angular/core';
 import {getDebugContext} from '@angular/core/src/errors';
 import {ArgumentType, BindingFlags, DebugContext, DepFlags, NodeDef, NodeFlags, RootData, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, asProviderData, directiveDef, elementDef, providerDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
 import {TestBed, inject, withModule} from '@angular/core/testing';
@@ -381,6 +381,7 @@ export function main() {
       });
 
       it('should report debug info on event errors', () => {
+        const handleErrorSpy = spyOn(TestBed.get(ErrorHandler), 'handleError');
         let emitter = new EventEmitter<any>();
 
         class SomeService {
@@ -395,12 +396,8 @@ export function main() {
               NodeFlags.None, null !, 0, SomeService, [], null !, {emitter: 'someEventName'})
         ]));
 
-        let err: any;
-        try {
-          emitter.emit('someEventInstance');
-        } catch (e) {
-          err = e;
-        }
+        emitter.emit('someEventInstance');
+        const err = handleErrorSpy.calls.mostRecent().args[0];
         expect(err).toBeTruthy();
         const debugCtx = getDebugContext(err);
         expect(debugCtx.view).toBe(view);

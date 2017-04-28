@@ -100,10 +100,10 @@ export function checkAndUpdateBinding(
 export function checkBindingNoChanges(
     view: ViewData, def: NodeDef, bindingIdx: number, value: any) {
   const oldValue = view.oldValues[def.bindingIndex + bindingIdx];
-  if ((view.state & ViewState.FirstCheck) || !devModeEqual(oldValue, value)) {
+  if ((view.state & ViewState.BeforeFirstCheck) || !devModeEqual(oldValue, value)) {
     throw expressionChangedAfterItHasBeenCheckedError(
         Services.createDebugContext(view, def.index), oldValue, value,
-        (view.state & ViewState.FirstCheck) !== 0);
+        (view.state & ViewState.BeforeFirstCheck) !== 0);
   }
 }
 

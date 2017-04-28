@@ -9,6 +9,7 @@
 import {isDevMode} from '../application_ref';
 import {DebugElement, DebugNode, EventListener, getDebugNode, indexDebugNode, removeDebugNodeFromIndex} from '../debug/debug_node';
 import {Injector} from '../di';
+import {ErrorHandler} from '../error_handler';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2} from '../render/api';
 import {Sanitizer} from '../security';
@@ -104,11 +105,12 @@ function createRootData(
     elInjector: Injector, ngModule: NgModuleRef<any>, rendererFactory: RendererFactory2,
     projectableNodes: any[][], rootSelectorOrNode: any): RootData {
   const sanitizer = ngModule.injector.get(Sanitizer);
+  const errorHandler = ngModule.injector.get(ErrorHandler);
   const renderer = rendererFactory.createRenderer(null, null);
   return {
     ngModule,
     injector: elInjector, projectableNodes,
-    selectorOrNode: rootSelectorOrNode, sanitizer, rendererFactory, renderer
+    selectorOrNode: rootSelectorOrNode, sanitizer, rendererFactory, renderer, errorHandler
   };
 }
 
@@ -439,7 +441,6 @@ function callWithDebugContext(action: DebugAction, fn: any, self: any, args: any
     if (isViewDebugError(e) || !_currentView) {
       throw e;
     }
-    _currentView.state |= ViewState.Errored;
     throw viewWrappedDebugError(e, getCurrentDebugContext() !);
   }
 }
