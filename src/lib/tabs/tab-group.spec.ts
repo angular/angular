@@ -294,7 +294,7 @@ describe('MdTabGroup', () => {
 describe('nested MdTabGroup with enabled animations', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdTabsModule.forRoot(), BrowserAnimationsModule],
+      imports: [MdTabsModule, BrowserAnimationsModule],
       declarations: [NestedTabs]
     });
 
