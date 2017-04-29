@@ -1,5 +1,6 @@
 const remark = require('remark');
 const html = require('remark-html');
+const code = require('./handlers/code');
 
 /**
  * @dgService renderMarkdown
@@ -7,6 +8,7 @@ const html = require('remark-html');
  * Render the markdown in the given string as HTML.
  */
 module.exports = function renderMarkdown() {
+  const handlers = { code };
   const renderer = remark()
                     .use(inlineTagDefs)
                     .use(noIndentedCodeBlocks)
@@ -15,7 +17,7 @@ module.exports = function renderMarkdown() {
                     // .use(() => tree => {
                     //   console.log(require('util').inspect(tree, { colors: true, depth: 4 }));
                     // })
-                    .use(html);
+                    .use(html, { handlers });
 
   return function renderMarkdownImpl(content) {
     return renderer.processSync(content).toString();
