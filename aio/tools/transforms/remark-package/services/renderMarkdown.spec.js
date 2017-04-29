@@ -67,4 +67,21 @@ describe('remark: renderMarkdown service', () => {
     const output = renderMarkdown(content);
     expect(output).toEqual('<p>some text</p>\n<p>    indented text</p>\n<p>other text</p>\n');
   });
+
+  it('should format triple backtick code blocks as `code-example` tags', () => {
+    const content =
+    '```ts\n' +
+    '  class MyClass {\n' +
+    '    method1() { ... }\n' +
+    '  }\n' +
+    '```';
+    const output = renderMarkdown(content);
+    expect(output).toEqual(
+    '<code-example language="ts">\n' +
+    '  class MyClass {\n' +
+    '    method1() { ... }\n' +
+    '  }\n' +
+    '</code-example>\n'
+    );
+  });
 });
