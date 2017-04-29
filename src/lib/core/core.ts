@@ -16,7 +16,7 @@ export {Dir, LayoutDirection, RtlModule} from './rtl/dir';
 // Mutation Observer
 export {ObserveContentModule, ObserveContent} from './observe-content/observe-content';
 
-export {MdOptionModule, MdOption} from './option/option';
+export {MdOptionModule, MdOption, MdOptionSelectionChange} from './option/option';
 
 // Portals
 export {
