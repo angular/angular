@@ -157,6 +157,11 @@
               "url": "guide/dynamic-component-loader",
               "title": "Dynamic Components",
               "tooltip": "Load components dynamically."
+            },
+            {
+              "url": "guide/pipes",
+              "title": "Pipes",
+              "tooltip": "Pipes transform displayed values within a template."
             }
           ]
         },
@@ -210,12 +215,6 @@
           "url": "guide/i18n",
           "title": "Internationalization (i18n)",
           "tooltip": "Translate the app's template text into multiple languages."
-        },
-
-        {
-          "url": "guide/pipes",
-          "title": "Pipes",
-          "tooltip": "Pipes transform displayed values within a template."
         },
 
         {
