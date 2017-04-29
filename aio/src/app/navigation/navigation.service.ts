@@ -90,7 +90,7 @@ export class NavigationService {
    */
   private getCurrentNode(navigationViews: Observable<NavigationViews>): Observable<CurrentNode> {
     const currentNode = combineLatest(
-      navigationViews.map(this.computeUrlToNavNodesMap),
+      navigationViews.map(views => this.computeUrlToNavNodesMap(views)),
       this.location.currentPath,
       (navMap, url) => {
         const urlKey = url.startsWith('api/') ? 'api' : url;
@@ -110,21 +110,42 @@ export class NavigationService {
   private computeUrlToNavNodesMap(navigation: NavigationViews) {
     const navMap = new Map<string, CurrentNode>();
     Object.keys(navigation)
-      .forEach(view => navigation[view].forEach(node => walkNodes(view, node)));
+      .forEach(view => navigation[view]
+        .forEach(node => this.walkNodes(view, navMap, node)));
     return navMap;
+  }
 
-    function walkNodes(view: string, node: NavigationNode, ancestors: NavigationNode[] = []) {
+  /**
+   * Add tooltip to node if it doesn't have one and have title.
+   * If don't want tooltip, specify `"tooltip": ""` in navigation.json
+   */
+  private ensureHasTooltip(node: NavigationNode) {
+    const title = node.title;
+    const tooltip = node.tooltip;
+    if (tooltip == null && title ) {
+      // add period if no trailing punctuation
+      node.tooltip = title + (/[a-zA-Z0-9]$/.test(title) ? '.' : '');
+    }
+  }
+  /**
+   * Walk the nodes of a navigation tree-view,
+   * patching them and computing their ancestor nodes
+   */
+  private walkNodes(
+    view: string, navMap: Map<string, CurrentNode>,
+    node: NavigationNode, ancestors: NavigationNode[] = []) {
       const nodes = [node, ...ancestors];
       const url = node.url;
+      this.ensureHasTooltip(node);
 
-      // only map to this node if it has a url associated with it
+      // only map to this node if it has a url
       if (url) {
         // Strip off trailing slashes from nodes in the navMap - they are not relevant to matching
         navMap[url.replace(/\/$/, '')] = { url, view, nodes };
       }
+
       if (node.children) {
-        node.children.forEach(child => walkNodes(view, child, nodes));
+        node.children.forEach(child => this.walkNodes(view, navMap, child, nodes));
       }
     }
-  }
 }
