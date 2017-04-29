@@ -150,7 +150,11 @@ function _extractLazyRoutesFromStaticModule(
       }, []);
 
   const importedSymbols = ((moduleMetadata.imports || []) as any[])
-                              .filter(i => i instanceof StaticSymbol) as StaticSymbol[];
+                              .filter(i => i instanceof StaticSymbol || i.ngModule instanceof StaticSymbol)
+                              .map(i => {
+                                if(i instanceof StaticSymbol) return i;
+                                if(i.ngModule instanceof StaticSymbol) return i.ngModule;
+                              }) as StaticSymbol[];
 
   return importedSymbols
       .reduce(
