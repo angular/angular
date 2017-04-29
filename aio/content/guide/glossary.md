@@ -698,7 +698,7 @@ for any particular third-party library (although most examples use SystemJS).
 You can use any module library that conforms to the standard.
 
 Modules are typically named after the file in which the exported thing is defined.
-The Angular [DatePipe](https://github.com/angular/angular/blob/master/modules/@angular/common/src/pipes/date_pipe.ts)
+The Angular [DatePipe](https://github.com/angular/angular/blob/master/packages/common/src/pipes/date_pipe.ts)
 class belongs to a feature module named `date_pipe` in the file `date_pipe.ts`.
 
 You rarely access Angular feature modules directly. You usually import them from an Angular [scoped package](guide/glossary#scoped-package) such as `@angular/core`.
