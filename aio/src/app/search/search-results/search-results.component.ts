@@ -20,7 +20,7 @@ export class SearchResultsComponent implements OnInit {
 
   readonly defaultArea = 'other';
 
-  showResults = false;
+  notFound = false;
 
   @Output()
   resultSelected = new EventEmitter<SearchResult>();
@@ -29,6 +29,7 @@ export class SearchResultsComponent implements OnInit {
    * A mapping of the search results grouped into areas
    */
   searchAreas = new ReplaySubject<SearchArea[]>(1);
+  hasAreas = this.searchAreas.map(areas => areas.length > 0);
 
   constructor(private searchService: SearchService) {}
 
@@ -50,11 +51,12 @@ export class SearchResultsComponent implements OnInit {
 
   hideResults() {
     this.searchAreas.next([]);
+    this.notFound = false;
   }
 
   // Map the search results into groups by area
   private processSearchResults(search: SearchResults) {
-    this.showResults = true;
+    this.notFound = search.query.trim() && search.results.length === 0;
     const searchAreaMap = {};
     search.results.forEach(result => {
       if (!result.title) { return; } // bad data; should fix
