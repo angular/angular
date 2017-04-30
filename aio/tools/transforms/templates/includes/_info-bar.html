@@ -3,12 +3,14 @@
 <!-- INFO BAR -->
 <div class="info-banner api-info-bar">
   <span class="info-bar-item">
-    npm package: <a href="#">{$ doc.package $}</a>
+    npm package: <code>@angular/{$ doc.moduleDoc.id $}</code>
   </span>
 
+  {% if doc.ngModule %}
   <span class="info-bar-item">
-    NgModule: <a href="#">{$ doc.moduleDoc.name $}</a>
+    NgModule: {@link {$ doc.ngModule $}}
   </span>
+  {% endif %}
 
   <span class="info-bar-item">
     {$ github.githubViewLink(doc, versionInfo) $}
