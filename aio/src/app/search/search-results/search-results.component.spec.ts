@@ -13,6 +13,9 @@ describe('SearchResultsComponent', () => {
   let searchResults: Subject<SearchResults>;
   let currentAreas: SearchArea[];
 
+  /** Get all text from component element */
+  function getText() { return fixture.debugElement.nativeElement.innerText; }
+
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ SearchResultsComponent ],
@@ -138,7 +141,30 @@ describe('SearchResultsComponent', () => {
       fixture.detectChanges();
       component.hideResults();
       fixture.detectChanges();
-      expect(fixture.debugElement.queryAll(By.css('a'))).toEqual([]);
+      expect(getText()).toBe('');
+    });
+  });
+
+  describe('when no query results', () => {
+
+    it('should display "not found" message', () => {
+      searchResults.next({ query: 'something', results: [] });
+      fixture.detectChanges();
+      expect(getText()).toContain('No results');
+    });
+
+    it('should not display "not found" message after hideResults()', () => {
+      searchResults.next({ query: 'something', results: [] });
+      fixture.detectChanges();
+      component.hideResults();
+      fixture.detectChanges();
+      expect(getText()).toBe('');
+    });
+
+    it('should not display "not found" message when query is empty', () => {
+      searchResults.next({ query: '', results: [] });
+      fixture.detectChanges();
+      expect(getText()).toBe('');
     });
   });
 });
