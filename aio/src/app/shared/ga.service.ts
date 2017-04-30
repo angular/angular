@@ -5,7 +5,7 @@ import { Logger } from 'app/shared/logger.service';
 
 @Injectable()
 /**
- * Google Analytics Service - captures app behaviours and sends them to Google Analytics (GA).
+ * Google Analytics Service - captures app behaviors and sends them to Google Analytics (GA).
  * Presupposes that GA script has been loaded from a script on the host web page.
  * Associates data with a GA "property" from the environment (`gaId`).
  */
@@ -27,6 +27,9 @@ export class GaService {
   }
 
   sendPage(url: string) {
+    // Won't re-send if the url (including fragment) hasn't changed.
+    // TODO: Perhaps we don't want to track clicks on in-page links.
+    // Could easily report only when the page (base url) changes.
     if (url === this.previousUrl) { return; }
     this.previousUrl = url;
     this.ga('set', 'page', '/' + url);
