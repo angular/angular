@@ -49,38 +49,38 @@
       "children": [
         {
           "url": "tutorial",
-          "title": "Introduction",
-          "tooltip": "Introduction to the Tour of Heroes tutorial"
+          "title": "1. Introduction",
+          "tooltip": "Part 1: Introduction to the Tour of Heroes tutorial"
         },
         {
           "url": "tutorial/toh-pt1",
-          "title": "The Hero Editor",
-          "tooltip": "Build a simple hero editor"
+          "title": "2. The Hero Editor",
+          "tooltip": "Part 2: Build a simple hero editor"
         },
         {
           "url": "tutorial/toh-pt2",
-          "title": "Master/Detail",
-          "tooltip": "Build a master/detail page with a list of heroes."
+          "title": "3. Master/Detail",
+          "tooltip": "Part 3: Build a master/detail page with a list of heroes."
         },
         {
           "url": "tutorial/toh-pt3",
-          "title": "Multiple Components",
-          "tooltip": "Refactor the master/detail view into separate components."
+          "title": "4. Multiple Components",
+          "tooltip": "Part 4: Refactor the master/detail view into separate components."
         },
         {
           "url": "tutorial/toh-pt4",
-          "title": "Services",
-          "tooltip": "Create a reusable service to manage hero data."
+          "title": "5. Services",
+          "tooltip": "Part 5: Create a reusable service to manage hero data."
         },
         {
           "url": "tutorial/toh-pt5",
-          "title": "Routing",
-          "tooltip": "Add the Angular router and navigate among the views."
+          "title": "6. Routing",
+          "tooltip": "Part 6: Add the Angular router and navigate among the views."
         },
         {
           "url": "tutorial/toh-pt6",
-          "title": "HTTP",
-          "tooltip": "Use HTTP to retrieve and save hero data."
+          "title": "7. HTTP",
+          "tooltip": "Part 7: Use HTTP to retrieve and save hero data."
         }
       ]
     },
