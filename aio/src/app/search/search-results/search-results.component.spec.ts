@@ -16,6 +16,25 @@ describe('SearchResultsComponent', () => {
   /** Get all text from component element */
   function getText() { return fixture.debugElement.nativeElement.innerText; }
 
+  /** Get a full set of test results. "Take" what you need */
+  function getTestResults(take?: number) {
+    const results: SearchResult[] = [
+      { path: 'guide/a', title: 'Guide A'},
+      { path: 'api/d', title: 'API D'},
+      { path: 'guide/b', title: 'Guide B' },
+      { path: 'guide/a/c', title: 'Guide A - C'},
+      { path: 'api/c', title: 'API C' }
+    ]
+    // fill it out to exceed 10 guide pages
+    .concat('nmlkjihgfe'.split('').map(l => {
+      return { path: 'guide/' + l, title: 'Guide ' + l};
+    }))
+    // add these empty fields to satisfy interface
+    .map(r => ({...r, ...{ keywords: '', titleWords: '', type: '' }}));
+
+    return take === undefined ? results : results.slice(0, take);
+  }
+
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ SearchResultsComponent ],
@@ -36,48 +55,55 @@ describe('SearchResultsComponent', () => {
   });
 
   it('should map the search results into groups based on their containing folder', () => {
-    const results = [
-      {path: 'guide/a', title: 'Guide A', type: 'content', keywords: '', titleWords: '' },
-      {path: 'guide/b', title: 'Guide B', type: 'content', keywords: '', titleWords: '' },
-      {path: 'api/c', title: 'API C', type: 'class', keywords: '', titleWords: '' },
-      {path: 'guide/b/c', title: 'Guide B - C', type: 'content', keywords: '', titleWords: '' },
-    ];
+    const results = getTestResults(3);
 
     searchResults.next({ query: '', results: results});
     expect(currentAreas).toEqual([
       { name: 'api', pages: [
-        { path: 'api/c', title: 'API C', type: 'class', keywords: '', titleWords: '' }
-      ] },
+        { path: 'api/d', title: 'API D', type: '', keywords: '', titleWords: '' }
+      ], priorityPages: [] },
       { name: 'guide', pages: [
-        { path: 'guide/a', title: 'Guide A', type: 'content', keywords: '', titleWords: '' },
-        { path: 'guide/b', title: 'Guide B', type: 'content', keywords: '', titleWords: '' },
-        { path: 'guide/b/c', title: 'Guide B - C', type: 'content', keywords: '', titleWords: '' }
-      ] }
+        { path: 'guide/a', title: 'Guide A', type: '', keywords: '', titleWords: '' },
+        { path: 'guide/b', title: 'Guide B', type: '', keywords: '', titleWords: '' },
+      ], priorityPages: [] }
     ]);
   });
 
   it('should sort by title within sorted area', () => {
-    const results = [
-      {path: 'guide/b', title: 'Guide B', type: 'content', keywords: '', titleWords: '' },
-      {path: 'guide/a', title: 'Guide A', type: 'content', keywords: '', titleWords: '' },
-      {path: 'api/d', title: 'API D', type: 'class', keywords: '', titleWords: '' },
-      {path: 'guide/a/c', title: 'Guide A - C', type: 'content', keywords: '', titleWords: '' },
-      {path: 'api/c', title: 'API C', type: 'class', keywords: '', titleWords: '' },
-    ];
-
+    const results = getTestResults(5);
     searchResults.next({ query: '', results: results });
 
     expect(currentAreas).toEqual([
       { name: 'api', pages: [
-        {path: 'api/c', title: 'API C', type: 'class', keywords: '', titleWords: '' },
-        {path: 'api/d', title: 'API D', type: 'class', keywords: '', titleWords: '' },
-      ] },
+        {path: 'api/c', title: 'API C', type: '', keywords: '', titleWords: '' },
+        {path: 'api/d', title: 'API D', type: '', keywords: '', titleWords: '' },
+      ], priorityPages: [] },
       { name: 'guide', pages: [
-        {path: 'guide/a', title: 'Guide A', type: 'content', keywords: '', titleWords: '' },
-        {path: 'guide/a/c', title: 'Guide A - C', type: 'content', keywords: '', titleWords: '' },
-        {path: 'guide/b', title: 'Guide B', type: 'content', keywords: '', titleWords: '' },
-      ] }
+        {path: 'guide/a', title: 'Guide A',       type: '', keywords: '', titleWords: '' },
+        {path: 'guide/a/c', title: 'Guide A - C', type: '', keywords: '', titleWords: '' },
+        {path: 'guide/b', title: 'Guide B',       type: '', keywords: '', titleWords: '' },
+      ], priorityPages: [] }
     ]);
+  });
+
+  it('should put first 5 area results into priorityPages when more than 10 pages', () => {
+    const results = getTestResults();
+    const sorted = results.slice().sort((l, r) => l.title > r.title ? 1 : -1);
+    const expected = [
+      {
+        name: 'api',
+        pages: sorted.filter(p => p.path.startsWith('api')),
+        priorityPages: []
+      },
+      {
+        name: 'guide',
+        pages: sorted.filter(p => p.path.startsWith('guide')),
+        priorityPages: results.filter(p => p.path.startsWith('guide')).slice(0, 5)
+      }
+    ];
+
+    searchResults.next({ query: '', results: results });
+    expect(currentAreas).toEqual(expected);
   });
 
   it('should put search results with no containing folder into the default area (other)', () => {
@@ -89,7 +115,7 @@ describe('SearchResultsComponent', () => {
     expect(currentAreas).toEqual([
       { name: 'other', pages: [
         { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '' }
-      ] }
+      ], priorityPages: [] }
     ]);
   });
 
