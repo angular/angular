@@ -940,7 +940,7 @@ provide shared data or logic across components, or encapsulate external interact
 
 Applications often require services such as a data service or a logging service.
 
-For more information, see the [Services](guide/.ial/toh-pt4) page of the [Tour of Heroes](guide/.ial/) tutorial.
+For more information, see the [Services](tutorial/toh-pt4) page of the [Tour of Heroes](tutorial) tutorial.
 
 
 </div>

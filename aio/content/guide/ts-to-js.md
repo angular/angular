@@ -180,7 +180,7 @@ Use the constructor function pattern instead, adding methods to the prototype.
 When writing in _TypeScript_ or _ES6-with-decorators_,
 provide configuration and metadata by adorning a class with one or more *decorators*.
 For example, you supply metadata to a component class by preceding its definition with a
-[`@Component`](api/core/index/Component-decorator) decorator function whose
+[`@Component`](api/core/Component) decorator function whose
 argument is an object literal with metadata properties.
 
 In _plain ES6_, you provide metadata by attaching an `annotations` array to the _class_.
@@ -459,12 +459,12 @@ You can qualify injection behavior with injection decorators from `@angular/core
 In _TypeScript_ and _ES6-with-decorators_,
 you precede the constructor parameters with injection qualifiers such as:
 
-* [`@Optional`](api/core/index/Optional-decorator) sets the parameter to `null` if the service is missing.
-* [`@Attribute`](api/core/index/Attribute-interface) to inject a host element attribute value.
-* [`@ContentChild`](api/core/index/ContentChild-decorator) to inject a content child.
-* [`@ViewChild`](api/core/index/ViewChild-decorator) to inject a view child.
-* [`@Host`](api/core/index/Host-decorator) to inject a service in this component or its host.
-* [`@SkipSelf`](api/core/index/SkipSelf-decorator) to inject a service provided in an ancestor of this component.
+* [`@Optional`](api/core/Optional) sets the parameter to `null` if the service is missing.
+* [`@Attribute`](api/core/Attribute) to inject a host element attribute value.
+* [`@ContentChild`](api/core/ContentChild) to inject a content child.
+* [`@ViewChild`](api/core/ViewChild) to inject a view child.
+* [`@Host`](api/core/Host) to inject a service in this component or its host.
+* [`@SkipSelf`](api/core/SkipSelf) to inject a service provided in an ancestor of this component.
 
 In _plain ES6_ and _ES5_, create an instance of the equivalent injection qualifier in a nested array within the `parameters` array.
 For example, you'd write `new Optional()` in _plain ES6_ and `new ng.core.Optional()` in _ES5_.
@@ -505,9 +505,9 @@ element whose tag matches the component selector.
 
 In _TypeScript_ and _ES6-with-decorators_, you can use host property decorators to bind a host
 element to a component or directive.
-The [`@HostBinding`](api/core/index/HostBinding-interface) decorator
+The [`@HostBinding`](api/core/HostBinding) decorator
 binds host element properties to component data properties.
-The [`@HostListener`](api/core/index/HostListener-interface) decorator binds
+The [`@HostListener`](api/core/HostListener) decorator binds
 host element events to component event handlers.
 
 In _plain ES6_ or _ES5_, add a `host` attribute to the component metadata to achieve the
@@ -564,8 +564,8 @@ Several _property_ decorators query a component's nested view and content compon
 
 </div>
 
-The [`@ViewChild`](api/core/index/ViewChild-decorator) and
-[`@ViewChildren`](api/core/index/ViewChildren-decorator) property decorators
+The [`@ViewChild`](api/core/ViewChild) and
+[`@ViewChildren`](api/core/ViewChildren) property decorators
 allow a component to query instances of other components that are used in
 its view.
 
@@ -586,13 +586,13 @@ The `queries` property value is a hash map.
   </code-pane>
 </code-tabs>
 
-The [`@ContentChild`](api/core/index/ContentChild-decorator) and
-[`@ContentChildren`](api/core/index/ContentChildren-decorator) property decorators
+The [`@ContentChild`](api/core/ContentChild) and
+[`@ContentChildren`](api/core/ContentChildren) property decorators
 allow a component to query instances of other components that have been projected
 into its view from elsewhere.
 
-They can be added in the same way as [`@ViewChild`](api/core/index/ViewChild-decorator) and
-[`@ViewChildren`](api/core/index/ViewChildren-decorator).
+They can be added in the same way as [`@ViewChild`](api/core/ViewChild) and
+[`@ViewChildren`](api/core/ViewChildren).
 
 <code-tabs>
   <code-pane title="TypeScript" path="ts-to-js/ts/src/app/hero-queries.component.ts" region="content">

@@ -71,7 +71,7 @@ means that you could run your app inside Electron.js or Windows Universal to del
 
 ## Use the *Title* service
 Fortunately, Angular bridges the gap by providing a `Title` service as part of the *Browser platform*.
-The [Title](api/platform-browser/index/Title-class) service is a simple class that provides an API
+The [Title](api/platform-browser/Title) service is a simple class that provides an API
 for getting and setting the current HTML document title:
 
 * `getTitle() : string`&mdash;Gets the title of the current HTML document.
