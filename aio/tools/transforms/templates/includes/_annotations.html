@@ -2,9 +2,7 @@
 <div class="annotations api-section">
     <h2>Annotations</h2>
     {%- for decorator in doc.decorators %}
-      <pre class="prettyprint no-bg">
-        <code>@{$ decorator.name $}{$ params.paramList(decorator.arguments) | indent(10, false) $}</code>
-      </pre>
+      <code-example>@{$ decorator.name $}{$ params.paramList(decorator.arguments) | indent(10, false) $}</code-example>
       {%- if not decorator.notYetDocumented %}{$ decorator.description | marked $}{% endif %}
     {% endfor %}
 </div>
