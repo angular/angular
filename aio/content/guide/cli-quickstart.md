@@ -13,7 +13,7 @@ as testing, bundling, and deployment.
 
 The goal in this guide is to build and run a simple Angular
 application in TypeScript, using the Angular CLI
-while adhering to the [Style Guide](guide/guide/styleguide) recommendations that
+while adhering to the [Style Guide](guide/styleguide) recommendations that
 benefit _every_ Angular project.
 
 By the end of the chapter, you'll have a basic understanding of development with the CLI
@@ -64,7 +64,7 @@ Then **install the [Angular CLI](https://github.com/angular/angular-cli)** globa
 
 
 
-<h2 id='create-project'>
+<h2 id='create-proj'>
   Step 2. Create a new project
 </h2>
 
@@ -173,7 +173,7 @@ Looking good!
 ## What's next?
 That's about all you'd expect to do in a "Hello, World" app.
 
-You're ready to take the [Tour of Heroes Tutorial](guide/tutorial) and build
+You're ready to take the [Tour of Heroes Tutorial](tutorial) and build
 a small application that demonstrates the great things you can build with Angular.
 
 Or you can stick around a bit longer to learn about the files in your brand new project.
@@ -355,7 +355,7 @@ Any files outside of this folder are meant to support building your app.
     <td>
 
 
-      Defines `AppModule`, the [root module](guide/guide/appmodule "AppModule: the root module") that tells Angular how to assemble the application.
+      Defines `AppModule`, the [root module](guide/appmodule "AppModule: the root module") that tells Angular how to assemble the application.
       Right now it declares only the `AppComponent`.
       Soon there will be more components to declare.
     </td>
@@ -459,7 +459,7 @@ Any files outside of this folder are meant to support building your app.
       Different browsers have different levels of support of the web standards.
       Polyfills help normalize those differences.
       You should be pretty safe with `core-js` and `zone.js`, but be sure to check out
-      the [Browser Support guide](guide/guide/browser-support) for more information.
+      the [Browser Support guide](guide/browser-support) for more information.
     </td>
 
   </tr>
@@ -812,8 +812,8 @@ These files go in the root folder next to `src/`.
 
 ### Next Step
 
-If you're new to Angular, continue on the
-[learning path](guide/guide/learning-angular "Angular learning path").
+If you're new to Angular, continue with the
+[tutorial](tutorial "Tour of Heroes tutorial").
 You can skip the "Setup" step since you're already using the Angular CLI setup.
 
 </div>

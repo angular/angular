@@ -372,7 +372,7 @@ The following are some of the key AngularJS built-in directives and their equiva
       In Angular, the template no longer specifies its associated controller.
       Rather, the component specifies its associated template as part of the component class decorator.
 
-      For more information, see [Architecture Overview](guide/architecture#component).
+      For more information, see [Architecture Overview](guide/architecture#components).
 
     </td>
 

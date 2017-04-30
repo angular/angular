@@ -104,7 +104,7 @@ the pieces that help render into the DOM.
 This package also includes the `bootstrapStatic()` method
 for bootstrapping applications for production builds that pre-compile templates offline.
 
-***@angular/platform-browser-dynamic***: Includes [Providers](api/core/index/Provider-type-alias)
+***@angular/platform-browser-dynamic***: Includes [Providers](api/core/Provider)
 and a [bootstrap](guide/ngmodule#bootstrap) method for applications that
 compile templates on the client. Don’t use offline compilation.
 Use this package for bootstrapping during development and for bootstrapping plunker samples.

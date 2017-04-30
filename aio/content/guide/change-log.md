@@ -13,7 +13,7 @@ This log calls attention to recent significant changes.
 
 ## Updated to Angular 4.0. Documentation for Angular 2.x can be found at [v2.angular.io](https://v2.angular.io).
 
-## All mention of moduleId removed. "Component relative paths" cookbook deleted (2017-03-13)
+## All mention of moduleId removed. "Component relative paths" guide deleted (2017-03-13)
 We added a new SystemJS plugin (systemjs-angular-loader.js) to our recommended SystemJS configuration.
 This plugin dynamically converts "component-relative" paths in templateUrl and styleUrls to "absolute paths" for you.
 
@@ -94,7 +94,7 @@ Linked to these plunkers in [Testing](guide/testing#live-examples) and [Setup an
 
 ## Internationalization: pluralization and _select_ (2016-11-30)
 
-The [Internationalization (i18n)](cookbook/i18n) guide explains how to handle pluralization and
+The [Internationalization (i18n)](guide/i18n) guide explains how to handle pluralization and
 translation of alternative texts with `select`.
 The sample demonstrates these features too.
 
@@ -126,7 +126,7 @@ The documentation for the version prior to v.2.2.0 has been removed.
 
 ## ES6  described in "TypeScript to JavaScript" (2016-11-14)
 
-The updated [TypeScript to JavaScript](cookbook/ts-to-js) cookbook 
+The updated [TypeScript to JavaScript](guide/ts-to-js) guide 
 now explains how to write apps in ES6/7
 by translating the common idioms in the TypeScript documentation examples
 (and elsewhere on the web) to ES6/7 and ES5.
@@ -168,9 +168,9 @@ New `:enter` and `:leave` aliases make animation more natural.
 
 Docs and code samples updated and tested with Angular v.2.1.0.
 
-## NEW "Ahead of time (AOT) Compilation" cookbook (2016-10-11)
+## NEW "Ahead of time (AOT) Compilation" guide (2016-10-11)
 
-The NEW [Ahead of time (AOT) Compilation](guide/aot-compiler) cookbook
+The NEW [Ahead of time (AOT) Compilation](guide/aot-compiler) guide
 explains what AOT compilation is and why you'd want it.
 It demonstrates the basics with a QuickStart app
 followed by the more advanced considerations of compiling and bundling the Tour of Heroes.
@@ -187,11 +187,11 @@ The _Routing Module_ replaces the previous _routing object_ involving the `Modul
 
 All guided samples with routing use the _Routing Module_ and prose content has been updated,
 most conspicuously in the 
-[NgModule](guide/ngmodule) guide and [NgModule FAQ](cookbook/ngmodule-faq) cookbook.
+[NgModule](guide/ngmodule) guide and [NgModule FAQ](guide/ngmodule-faq) guide.
 
-## New "Internationalization" Cookbook (2016-09-30)
+## New "Internationalization" guide (2016-09-30)
 
-Added a new [Internationalization (i18n)](cookbook/i18n) cookbook that shows how
+Added a new [Internationalization (i18n)](guide/i18n) guide that shows how
 to use Angular "i18n" facilities to translate template text into multiple languages.
 
 ## "angular-in-memory-web-api" package rename (2016-09-27)

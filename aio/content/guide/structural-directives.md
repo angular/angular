@@ -339,7 +339,7 @@ It's intended source is implicit.
 Angular sets `let-hero` to the value of the context's `$implicit` property
 which `NgFor` has initialized with the hero for the current iteration.
 
-* The [API guide](api/common/index/NgFor-directive "API: NgFor")
+* The [API guide](api/common/NgFor "API: NgFor")
 describes additional `NgFor` directive properties and context properties.
 
 These microsyntax mechanisms are available to you when you write your own structural directives.
@@ -710,15 +710,15 @@ Angular's own directives do not.
 ### _TemplateRef_ and _ViewContainerRef_
 
 A simple structural directive like this one creates an
-[_embedded view_](api/core/index/EmbeddedViewRef-class "API: EmbeddedViewRef")
+[_embedded view_](api/core/EmbeddedViewRef "API: EmbeddedViewRef")
 from the Angular-generated `<ng-template>` and inserts that view in a
-[_view container_](api/core/index/ViewContainerRef-class "API: ViewContainerRef")
+[_view container_](api/core/ViewContainerRef "API: ViewContainerRef")
 adjacent to the directive's original `<p>` host element.
 
 You'll acquire the `<ng-template>` contents with a
-[`TemplateRef`](api/core/index/TemplateRef-class "API: TemplateRef")
+[`TemplateRef`](api/core/TemplateRef "API: TemplateRef")
 and access the _view container_ through a
-[`ViewContainerRef`](api/core/index/ViewContainerRef-class "API: ViewContainerRef").
+[`ViewContainerRef`](api/core/ViewContainerRef "API: ViewContainerRef").
 
 You inject both in the directive constructor as private variables of the class.
 

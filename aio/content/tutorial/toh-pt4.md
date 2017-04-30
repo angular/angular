@@ -137,7 +137,7 @@ Create a file in the `app` folder called `hero.service.ts`.
 
 
 The naming convention for service files is the service name in lowercase followed by `.service`.
-For a multi-word service name, use lower [dash-case](guide/glossary#!).
+For a multi-word service name, use lower [dash-case](guide/glossary).
 For example, the filename for `SpecialSuperHeroService` is `special-super-hero.service.ts`.
 
 </div>

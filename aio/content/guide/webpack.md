@@ -402,7 +402,7 @@ The configuration imports dependencies with `require` statements
 and exports several objects as properties of a `module.exports` object.
 
 * [`entry`](guide/webpack#common-entries)&mdash;the entry-point files that define the bundles.
-* [`resolve`](guide/webpack#common-resolve)&mdash;how to resolve file names when they lack extensions.
+* [`resolve`](guide/webpack#common-resolves)&mdash;how to resolve file names when they lack extensions.
 * [`module.rules`](guide/webpack#common-rules)&mdash; `module` is an object with `rules` for deciding how files are loaded.
 * [`plugins`](guide/webpack#common-plugins)&mdash;creates instances of the plugins.
 
@@ -428,7 +428,7 @@ This `entry` object defines the three bundles:
 * `app`&mdash;the application code.
 
 
-{@a common-resolve}
+{@a common-resolves}
 
 
 #### _resolve_ extension-less imports

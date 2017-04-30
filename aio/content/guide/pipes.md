@@ -51,7 +51,7 @@ Focus on the component's template.
 
 
 Inside the interpolation expression, you flow the component's `birthday` value through the
-[pipe operator](guide/template-syntax#pipe) ( | ) to the [Date pipe](api/common/index/DatePipe-pipe)
+[pipe operator](guide/template-syntax#pipe) ( | ) to the [Date pipe](api/common/DatePipe)
 function on the right. All pipes work this way.
 
 
@@ -85,7 +85,7 @@ They are all available for use in any template.
 
 
 
-Read more about these and many other built-in pipes in the [pipes topics](api/#!?query=pipe) of the
+Read more about these and many other built-in pipes in the [pipes topics](api?type=pipe) of the
 [API Reference](api); filter for entries that include the word "pipe".
 
 Angular doesn't have a `FilterPipe` or an `OrderByPipe` for reasons explained in the [Appendix](guide/pipes#no-filter-pipe) of this page.
@@ -154,7 +154,7 @@ As you click the button, the displayed date alternates between
 
 
 
-Read more about the `DatePipe` format options in the [Date Pipe](api/common/index/DatePipe-pipe)
+Read more about the `DatePipe` format options in the [Date Pipe](api/common/DatePipe)
 API Reference page.
 
 
@@ -586,7 +586,7 @@ It displays the same hero data in JSON format by chaining through to the built-i
 
 
 
-The [JsonPipe](api/common/index/JsonPipe-pipe)
+The [JsonPipe](api/common/JsonPipe)
 provides an easy way to diagnosis a mysteriously failing data binding or
 inspect an object for future binding.
 
@@ -621,7 +621,7 @@ transformations. Use them like styles, dropping them
 into your template's expressions to enrich the appeal and usability
 of your views.
 
-Explore Angular's inventory of built-in pipes in the [API Reference](api/#!?query=pipe).
+Explore Angular's inventory of built-in pipes in the [API Reference](api?type=pipe).
 Try writing a custom pipe and perhaps contributing it to the community.
 
 

@@ -276,7 +276,7 @@ at the top of the `<head>` section.
 
 
 
-For more information, see the [Set the base href](guide/router#!)
+For more information, see the [Set the base href](guide/router)
 section of the [Routing and Navigation](guide/router) page.
 
 
@@ -482,7 +482,7 @@ to the array of route definitions:
 
 
 
-Read more about *redirects* in the [Redirecting routes](guide/router#!) section
+Read more about *redirects* in the [Redirecting routes](guide/router) section
 of the [Routing & Navigation](guide/router) page.
 
 
@@ -793,7 +793,7 @@ using the `Location` service you injected previously.
 
 Going back too far could take users out of the app.
 In a real app, you can prevent this issue with the <em>CanDeactivate</em> guard.
-Read more on the [CanDeactivate](api/router/index/CanDeactivate-interface) page.
+Read more on the [CanDeactivate](api/router/CanDeactivate) page.
 
 
 </div>

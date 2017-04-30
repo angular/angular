@@ -21,7 +21,7 @@ An **Attribute** directive changes the appearance or behavior of a DOM element.
 
 Try the <live-example title="Attribute Directive example"></live-example>.
 
-
+{@a directive-overview}
 
 ## Directives overview
 
@@ -32,7 +32,7 @@ There are three kinds of directives in Angular:
 1. Attribute directives&mdash;change the appearance or behavior of an element, component, or another directive.
 
 *Components* are the most common of the three directives.
-You saw a component for the first time in the [QuickStart](quickstart) guide.
+You saw a component for the first time in the [QuickStart](guide/quickstart) guide.
 
 *Structural Directives* change the structure of the view.
 Two examples are [NgFor](guide/template-syntax#ngFor) and [NgIf](guide/template-syntax#ngIf).
@@ -61,7 +61,7 @@ when the user hovers over that element. You can apply it like this:
 
 </code-example>
 
-
+{@a write-directive}
 
 ### Write the directive code
 
@@ -126,7 +126,7 @@ into the constructor.
 `ElementRef` is a service that grants direct access to the DOM element
 through its `nativeElement` property.
 
-
+{@a apply-directive}
 
 ## Apply the attribute directive
 
@@ -207,7 +207,7 @@ It created an instance of the `HighlightDirective` class and
 injected a reference to the `<p>` element into the directive's constructor
 which sets the `<p>` element's background style to yellow.
 
-
+{@a respond-to-user}
 
 ## Respond to user-initiated events
 
@@ -284,7 +284,7 @@ the mouse hovers over the `p` and disappears as it moves out.
 </figure>
 
 
-
+{@a bindings}
 
 ## Pass values into the directive with an _@Input_ data binding
 
@@ -442,7 +442,7 @@ Here are the harness and directive in action.
 </figure>
 
 
-
+{@a second-property}
 
 ## Bind to a second property
 
@@ -541,7 +541,7 @@ The final source code follows:
 
 You can also experience and download the <live-example title="Attribute Directive example"></live-example>.
 
-
+{@a why-input}
 
 ### Appendix: Why add _@Input_?
 

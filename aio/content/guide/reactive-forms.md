@@ -233,7 +233,7 @@ In real apps, most form controls have both.
 
 
 This guide touches only briefly on `Validators`. For an in-depth look at them,
-read the [Form Validation](cookbook/form-validation) cookbook.
+read the [Form Validation](guide/form-validation) guide.
 
 
 </div>
@@ -317,21 +317,21 @@ Revise the `AppComponent` template so it displays the `HeroDetailComponent`.
 ### Essential form classes
 It may be helpful to read a brief description of the core form classes.
 
-* [_AbstractControl_](api/forms/index/AbstractControl-class "API Reference: AbstractControl")
+* [_AbstractControl_](api/forms/AbstractControl "API Reference: AbstractControl")
 is the abstract base class for the three concrete form control classes:
 `FormControl`, `FormGroup`, and `FormArray`.
 It provides their common behaviors and properties, some of which are _observable_.
 
-* [_FormControl_](api/forms/index/FormControl-class "API Reference: FormControl")
+* [_FormControl_](api/forms/FormControl "API Reference: FormControl")
 tracks the value and validity status of an _individual_ form control.
 It corresponds to an HTML form control such as an input box or selector.
 
-* [_FormGroup_](api/forms/index/FormGroup-class "API Reference: FormGroup")
+* [_FormGroup_](api/forms/FormGroup "API Reference: FormGroup")
 tracks the value and validity state of a _group_ of `AbstractControl` instances.
 The group's properties include its child controls.
 The top-level form in your component is a `FormGroup`.
 
-* [_FormArray_](api/forms/index/FormArray-class "API Reference: FormArray")
+* [_FormArray_](api/forms/FormArray "API Reference: FormArray")
 tracks the value and validity state of a numerically indexed _array_ of `AbstractControl` instances.
 
 You'll learn more about these classes as you work through this guide.
@@ -582,7 +582,7 @@ Using `Validators.required` is optional for the rest of the guide.
 It remains in each of the following examples with the same configuration.
 
 For more on validating Angular forms, see the
-[Form Validation](cookbook/form-validation) guide.
+[Form Validation](guide/form-validation) guide.
 
 
 ### More FormControls
@@ -645,9 +645,9 @@ You tie these controls to the template HTML elements in the same way,
 specifiying the `FormControl` name with the `formControlName` directive.
 
 See the API reference for more information about
-[radio buttons](api/forms/index/RadioControlValueAccessor-directive "API: RadioControlValueAccessor"),
-[selects](api/forms/index/SelectControlValueAccessor-directive "API: SelectControlValueAccessor"), and
-[checkboxes](api/forms/index/CheckboxControlValueAccessor-directive "API: CheckboxControlValueAccessor").
+[radio buttons](api/forms/RadioControlValueAccessor "API: RadioControlValueAccessor"),
+[selects](api/forms/SelectControlValueAccessor "API: SelectControlValueAccessor"), and
+[checkboxes](api/forms/CheckboxControlValueAccessor "API: CheckboxControlValueAccessor").
 
 
 
@@ -830,12 +830,12 @@ such as one of the following:
 
 
 Learn about other `FormControl` properties in the
-[_AbstractControl_](api/forms/index/AbstractControl-class) API reference.
+[_AbstractControl_](api/forms/AbstractControl) API reference.
 
 One common reason for inspecting `FormControl` properties is to
 make sure the user entered valid values.
 Read more about validating Angular forms in the
-[Form Validation](cookbook/form-validation) guide.
+[Form Validation](guide/form-validation) guide.
 
 
 

@@ -381,7 +381,7 @@ During navigation, the Angular router uses the _base href_ as the base path to c
 
 
 
-See also the [*APP_BASE_HREF*](api/common/index/APP_BASE_HREF-let "API: APP_BASE_HREF") alternative.
+See also the [*APP_BASE_HREF*](api/common/APP_BASE_HREF "API: APP_BASE_HREF") alternative.
 
 </div>
 
@@ -415,7 +415,7 @@ console:
 
 Switching to production mode can make it run faster by disabling development specific checks such as the dual change detection cycles.
 
-To enable [production mode](api/core/index/enableProdMode-function) when running remotely, add the following code to the `main.ts`.
+To enable [production mode](api/core/enableProdMode) when running remotely, add the following code to the `main.ts`.
 
 
 <code-example path="deployment/src/main.ts" region="enableProdMode" title="src/main.ts (enableProdMode)" linenums="false">

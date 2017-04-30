@@ -82,7 +82,7 @@ is all the registration you need.
 
 A *provider* is something that can create or deliver a service.
 Angular creates a service instance from a class provider by using `new`.
-Read more about providers in the [Dependency Injection](guide/dependency-injection#!)
+Read more about providers in the [Dependency Injection](guide/dependency-injection#injector-providers)
 guide.
 
 </div>
