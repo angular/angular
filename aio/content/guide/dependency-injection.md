@@ -53,7 +53,7 @@ and [how to use it](guide/dependency-injection#angular-di) in an Angular app.
 
 Run the <live-example></live-example>.
 
-
+{@a why-di }
 
 ## Why dependency injection?
 
@@ -248,7 +248,7 @@ This is what a **dependency injection framework** is all about.
 Now that you know what dependency injection is and appreciate its benefits,
 read on to see how it is implemented in Angular.
 
-
+{@a angular-di}
 
 ## Angular dependency injection
 
@@ -440,7 +440,7 @@ the `HeroesComponent`.
 
 
 Also see *"Should I add app-wide providers to the root `AppModule` or
-the root `AppComponent`?"* in the [NgModule FAQ](cookbook/ngmodule-faq#q-root-component-or-module).
+the root `AppComponent`?"* in the [NgModule FAQ](guide/ngmodule-faq#q-root-component-or-module).
 
 
 </div>
@@ -611,7 +611,7 @@ You call that property within the `getHeroes()` method when anyone asks for hero
 
 ### Why _@Injectable()_?
 
-**<a href="../api/core/index/Injectable-decorator.html">@Injectable()</a>** marks a class as available to an
+**[@Injectable()](api/core/Injectable)** marks a class as available to an
 injector for instantiation. Generally speaking, an injector reports an
 error when trying to instantiate a class that is not marked as
 `@Injectable()`.
@@ -671,7 +671,7 @@ like `HeroesComponent`. So why doesn't `HeroesComponent` have
 You *can* add it if you really want to. It isn't necessary because the
 `HeroesComponent` is already marked with `@Component`, and this
 decorator class (like `@Directive` and `@Pipe`, which you learn about later)
-is a subtype of <a href="../api/core/index/Injectable-decorator.html">@Injectable()</a>.  It is in
+is a subtype of [@Injectable()](api/core/Injectable).  It is in
 fact `@Injectable()` decorators that
 identify a class as a target for instantiation by an injector.
 
@@ -692,7 +692,7 @@ the compiler adds the metadata to the generated JavaScript
 for _every class with at least one decorator_.
 
 While any decorator will trigger this effect, mark the service class with the
-<a href="../api/core/index/Injectable-decorator.html">@Injectable()</a> decorator
+[@Injectable()](api/core/Injectable) decorator
 to make the intent clear.
 
 
@@ -717,7 +717,7 @@ The application will fail mysteriously if you forget the parentheses.
 </div>
 
 
-
+{@a logger-service}
 
 ## Creating and registering a logger service
 
@@ -762,7 +762,7 @@ create and inject into a new `HeroListComponent`.
 
 The chain of creations started with the `Logger` provider. *Providers* are the subject of the next section.
 
-
+{@a providers}
 
 ## Injector providers
 
@@ -1038,7 +1038,7 @@ Here you see the new and the old implementation side-by-side:
 </code-tabs>
 
 
-
+{@a token}
 
 ## Dependency injection tokens
 
@@ -1147,7 +1147,7 @@ There is no interface type information left for Angular to find at runtime.
 ### _InjectionToken_
 
 One solution to choosing a provider token for non-class dependencies is
-to define and use an <a href="../api/core/index/InjectionToken-class.html"><b>InjectionToken</b></a>.
+to define and use an [*InjectionToken*](api/core/InjectionToken).
 The definition of such a token looks like this:
 
 
@@ -1239,7 +1239,7 @@ You can learn more about its advanced features, beginning with its support for
 nested injectors, in
 [Hierarchical Dependency Injection](guide/hierarchical-dependency-injection).
 
-
+{@a explicit-injector}
 
 ## Appendix: Working with injectors directly
 
@@ -1286,8 +1286,7 @@ must acquire services generically and dynamically.
 
 </div>
 
-
-
+{@a one-class-per-file}
 
 ## Appendix: Why have one class per file
 

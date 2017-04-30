@@ -29,7 +29,7 @@ This page shows you how to build a simple form from scratch. Along the way you'l
 
 You can run the <live-example></live-example> in Plunker and download the code from there.
 
-
+{@a template-driven}
 
 ## Template-driven forms
 
@@ -364,7 +364,7 @@ This code repeats the `<option>` tag for each power in the list of powers.
 The `pow` template input variable is a different power in each iteration;
 you display its name using the interpolation syntax.
 
-
+{@a ngModel}
 
 ## Two-way data binding with _ngModel_
 
@@ -429,12 +429,12 @@ The variable `heroForm` is now a reference to the `NgForm` directive that govern
 
 <div class="l-sub-section">
 
-
+{@a ngForm}
 
 ### The _NgForm_ directive
 
 What `NgForm` directive?
-You didn't add an [NgForm](api/forms/index/NgForm-directive) directive.
+You didn't add an [NgForm](api/forms/NgForm) directive.
 
 Angular did. Angular automatically creates and attaches an `NgForm` directive to the `<form>` tag.
 
@@ -733,7 +733,7 @@ Here you created a variable called `name` and gave it the value "ngModel".
 
 
 Why "ngModel"?
-A directive's [exportAs](api/core/index/Directive-decorator) property
+A directive's [exportAs](api/core/Directive) property
 tells Angular how to link the reference variable to the directive.
 You set `name` to `ngModel` because the `ngModel` directive's `exportAs` property happens to be "ngModel".
 
@@ -762,7 +762,7 @@ you'll see the error message immediately, before you've done anything.
 
 Some developers want the message to display only when the user makes an invalid change.
 Hiding the message while the control is "pristine" achieves that goal.
-You'll see the significance of this choice when you [add a new hero](guide/forms#new-hero) to the form.
+You'll see the significance of this choice when you add a new hero to the form.
 
 The hero *Alter Ego* is optional so you can leave that be.
 

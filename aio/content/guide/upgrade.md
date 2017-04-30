@@ -75,6 +75,8 @@ much more easy to work with than others. There are a few key techniques
 and patterns that we can apply to future proof our apps even before we
 begin the migration.
 
+{@a follow-the-angular-styleguide}
+
 ### Follow the Angular Style Guide
 
 The [AngularJS Style Guide](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#single-responsibility)
@@ -418,7 +420,7 @@ bindings get updated.
 In Angular things are different. While change detection still
 occurs after every event, no one needs to call `scope.$apply()` for
 that to happen. This is because all Angular code runs inside something
-called the [Angular zone](api/core/index/NgZone-class). Angular always
+called the [Angular zone](api/core/NgZone). Angular always
 knows when the code finishes, so it also knows when it should kick off
 change detection. The code itself doesn't have to call `scope.$apply()`
 or anything like it.
@@ -452,7 +454,7 @@ When we downgrade an Angular component and then use it from AngularJS,
 the component's inputs will be watched using AngularJS change detection.
 When those inputs change, the corresponding properties in the component
 are set. We can also hook into the changes by implementing the
-[OnChanges](api/core/index/OnChanges-class) interface in the component,
+[OnChanges](api/core/OnChanges) interface in the component,
 just like we could if it hadn't been downgraded.
 
 Correspondingly, when we upgrade an AngularJS component and use it from Angular,
@@ -1220,7 +1222,7 @@ Next we declare both AngularJS and Angular routes as normal:
 In our `app.module.ts` we need to add `AppComponent` to the declarations and boostrap array.
 
 Next we configure the router itself.
-We want to use [hash navigation](guide/router#-hashlocationstrategy-) in Angular
+We want to use [hash navigation](guide/router#hashlocationstrategy) in Angular
 because that's what we're also using in AngularJS.
 
 Lastly, and most importantly, we want to use a custom `UrlHandlingStrategy` that will tell
@@ -1451,7 +1453,7 @@ In terms of project structure, this is where our work begins:
 This is actually a pretty good starting point. The code uses the AngularJS 1.5
 component API and the organization follows the
 [AngularJS Style Guide](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md),
-which is an important [preparation step](guide/upgrade#following-the-angular-styleguide) before
+which is an important [preparation step](guide/upgrade#follow-the-angular-styleguide) before
 a successful upgrade.
 
 * Each component, service, and filter is in its own source file, as per the
