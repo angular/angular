@@ -4,11 +4,9 @@
   {% for member in doc.statics %}{% if not member.internal %}
     <div class="static-member">
       <a name="{$ member.name $}-anchor" class="anchor-offset"></a>
-      <pre class="prettyprint no-bg" ng-class="{ 'anchor-focused': appCtrl.isApiDocMemberFocused('{$ member.name $}') }">
-        <code>{$ member.name $}{$ params.paramList(member.parameters) | trim $}{$ params.returnType(member.returnType) $}</code>
-      </pre>
+      <code-example>{$ member.name $}{$ params.paramList(member.parameters) | trim $}{$ params.returnType(member.returnType) $}</code-example>
       {%- if not member.notYetDocumented %}
-      {$ member.description | replace('### Example', '') | replace('## Example', '') | replace('# Example', '') | trimBlankLines | marked $}
+      {$ member.description | marked $}
       {% endif %}
     </div>
 

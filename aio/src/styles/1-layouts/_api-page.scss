@@ -2,12 +2,12 @@
     position: relative;
 
     pre {
-        white-space: pre-line;
+        white-space: pre-wrap;
     }
 
     table.api-table {
         min-width: 680px;
-        
+
         tbody {
             pre {
                 white-space: normal;
