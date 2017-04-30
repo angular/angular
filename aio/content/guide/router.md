@@ -602,7 +602,7 @@ This short introduction will do for now.
 
 Proceed to the first application milestone.
 
-
+{@a getting-started}
 
 ## Milestone 1: Getting started with the router
 
@@ -710,7 +710,7 @@ A router must be configured with a list of route definitions.
 The first configuration defines an array of two routes with simple paths leading to the
 `CrisisListComponent` and `HeroListComponent`.
 
-Each definition translates to a [Route](api/router/index/Route-interface) object which has two things: a
+Each definition translates to a [Route](api/router/Route) object which has two things: a
 `path`, the URL path segment for this route; and a
 `component`, the component associated with this route.
 
@@ -1137,7 +1137,7 @@ Here are the files discussed in this milestone.
 </code-tabs>
 
 
-
+{@a routing-module}
 
 ## Milestone 2: *Routing module*
 
@@ -1152,7 +1152,7 @@ The **Routing Module** has several characteristics:
 * Separates routing concerns from other application concerns.
 * Provides a module to replace or remove when testing the application.
 * Provides a well-known location for routing service providers including guards and resolvers.
-* Does **not** [declare components](cookbook/ngmodule-faq#routing-module).
+* Does **not** [declare components](guide/ngmodule-faq#routing-module).
 
 
 {@a routing-refactor}
@@ -1230,7 +1230,7 @@ It makes testing the feature module easier.
 Its existence calls attention to the fact that a module is routed.
 It is where developers expect to find and expand routing configuration.
 
-
+{@a heroes-feature}
 
 ## Milestone 3: Heroes feature
 
@@ -1658,7 +1658,7 @@ the `HeroDetailComponent` via the `ActivatedRoute` service.
 ### ActivatedRoute: the one-stop-shop for route information
 
 The route path and parameters are available through an injected router service called the
-[ActivatedRoute](api/router/index/ActivatedRoute-interface).
+[ActivatedRoute](api/router/ActivatedRoute).
 It has a great deal of useful information including:
 
 
@@ -1859,7 +1859,7 @@ It holds the _path to the `HeroListComponent`_:
 </code-example>
 
 
-
+{@a optional-route-parameters}
 
 ### Route Parameters: Required or optional?
 
@@ -2861,7 +2861,7 @@ This time, the value of `'popup'` is `null`. That's not a route, but it is a leg
 Setting the popup `RouterOutlet` to `null` clears the outlet and removes
 the secondary popup route from the current URL.
 
-
+{@a guards}
 
 ## Milestone 5: Route guards
 
@@ -2903,15 +2903,15 @@ router will wait for the observable to resolve to `true` or `false`.
 
 The router supports multiple kinds of guards:
 
-1. [`CanActivate`](api/router/index/CanActivate-interface) to mediate navigation *to* a route.
+1. [`CanActivate`](api/router/CanActivate) to mediate navigation *to* a route.
 
-2. [`CanActivateChild()`](api/router/index/CanActivateChild-interface) to mediate navigation *to* a child route.
+2. [`CanActivateChild()`](api/router/CanActivateChild) to mediate navigation *to* a child route.
 
-3. [`CanDeactivate`](api/router/index/CanDeactivate-interface) to mediate navigation *away* from the current route.
+3. [`CanDeactivate`](api/router/CanDeactivate) to mediate navigation *away* from the current route.
 
-4. [`Resolve`](api/router/index/Resolve-interface) to perform route data retrieval *before* route activation.
+4. [`Resolve`](api/router/Resolve) to perform route data retrieval *before* route activation.
 
-5. [`CanLoad`](api/router/index/CanLoad-interface) to mediate navigation *to* a feature module loaded _asynchronously_.
+5. [`CanLoad`](api/router/CanLoad) to mediate navigation *to* a feature module loaded _asynchronously_.
 
 
 You can have multiple guards at every level of a routing hierarchy.
@@ -3612,7 +3612,7 @@ the `preserveQueryParams` and `preserveFragment` bindings respectively.
 </div>
 
 
-
+{@a asynchronous-routing}
 
 ## Milestone 6: Asynchronous routing
 
@@ -4186,8 +4186,7 @@ Those developers may still use HTML5 URLs by taking two remedial steps:
 1. Provide the router with an appropriate [APP_BASE_HREF][] value.
 1. Use _root URLs_ for all web resources: CSS, images, scripts, and template HTML files.
 
-[APP_BASE_HREF]: ../api/common/index/APP_BASE_HREF-let.html
-
+{@a hashlocationstrategy}
 
 ### *HashLocationStrategy*
 

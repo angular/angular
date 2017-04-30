@@ -358,7 +358,7 @@ The `forRoot` static method is a convention that makes it easy for developers to
 
 The `RouterModule.forRoot` method is a good example.
 Apps pass a `Routes` object to `RouterModule.forRoot` in order to configure the app-wide `Router` service with routes.
-`RouterModule.forRoot` returns a [ModuleWithProviders](api/core/index/ModuleWithProviders-interface).
+`RouterModule.forRoot` returns a [ModuleWithProviders](api/core/ModuleWithProviders).
 You add that result to the `imports` list of the root `AppModule`.
 
 
