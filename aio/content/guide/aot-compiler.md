@@ -13,7 +13,7 @@ during a build process.
 
 # Contents
 
-* [Overview](guide/overview)
+* [Overview](guide/aot-compiler#overview)
 * [Ahead-of-time (AOT) vs just-in-time (JIT)](guide/aot-compiler#aot-jit)
 * [Why do AOT compilation?](guide/aot-compiler#why-aot)
 * [Compile with AOT](guide/aot-compiler#compile)
@@ -221,7 +221,7 @@ Here is AOT bootstrap in `main.ts` next to the original JIT version:
   </code-pane>
 </code-tabs>
 
-Be sure to [recompile](guide/aot-compiler#compiling-aot) with `ngc`!
+Be sure to [recompile](guide/aot-compiler#compile) with `ngc`!
 
 {@a tree-shaking}
 

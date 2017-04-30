@@ -669,7 +669,7 @@ A provider is something that can create or return a service, typically the servi
 
 You can register providers in modules or in components.
 
-In general, add providers to the [root module](guide/architecture#module) so that
+In general, add providers to the [root module](guide/architecture#modules) so that
 the same instance of a service is available everywhere.
 
 

@@ -41,7 +41,7 @@ snippets described in this page.
 </div>
 
 
-
+{@a interpolation}
 
 ## Showing component properties with interpolation
 The easiest way to display a component property
@@ -162,7 +162,7 @@ Although this example uses variable assignment to initialize the components, you
 
 This app uses more terse "variable assignment" style simply for brevity.
 
-
+{@a ngFor}
 
 ## Showing an array property with ***ngFor**
 
@@ -306,7 +306,7 @@ Fix that to display only the hero's `name` property.
 
 The display looks the same, but the code is clearer.
 
-
+{@a ngIf}
 
 ## Conditional display with NgIf
 

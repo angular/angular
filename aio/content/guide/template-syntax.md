@@ -151,7 +151,7 @@ it assigns this composite interpolated result to an **element or directive prope
 You appear to be inserting the result between element tags and assigning it to attributes.
 It's convenient to think so, and you rarely suffer for this mistake.
 Though this is not exactly true. Interpolation is a special syntax that Angular converts into a
-[property binding](guide/template-syntax#property-binding), as is explained [below](guide/template-syntax#property-binding-or-interpolation-).
+[property binding](guide/template-syntax#property-binding), as is explained [below](guide/template-syntax#property-binding-or-interpolation).
 
 But first, let's take a closer look at template expressions and statements.
 <a href="#toc">back to top</a>
@@ -888,8 +888,8 @@ If the element raises events, you can listen to them with an [event binding](gui
 If you must read a target element property or call one of its methods,
 you'll need a different technique.
 See the API reference for
-[ViewChild](api/core/index/ViewChild-decorator) and
-[ContentChild](api/core/index/ContentChild-decorator).
+[ViewChild](api/core/ViewChild) and
+[ContentChild](api/core/ContentChild).
 
 
 </div>
@@ -1016,6 +1016,8 @@ not a template expression. Angular sets it and forgets about it.
 
 
 The `[hero]` binding, on the other hand, remains a live binding to the component's `currentHero` property.
+
+{@a property-binding-or-interpolation}
 
 ### Property binding or interpolation?
 
@@ -1407,7 +1409,7 @@ If the event belongs to a directive (recall that components are directives),
 
 ### Custom events with <span class="syntax">EventEmitter</span>
 
-Directives typically raise custom events with an Angular [EventEmitter](api/core/index/EventEmitter-class).
+Directives typically raise custom events with an Angular [EventEmitter](api/core/EventEmitter).
 The directive creates an `EventEmitter` and exposes it as a property.
 The directive calls `EventEmitter.emit(payload)` to fire an event, passing in a message payload, which can be anything.
 Parent directives listen for the event by binding to this property and accessing the payload through the `$event` object.
@@ -1786,7 +1788,7 @@ The `ngModel` data property sets the element's value property and the `ngModelCh
 listens for changes to the element's value.
 
 The details are specific to each kind of element and therefore the `NgModel` directive only works for an element
-supported by a [ControlValueAccessor](api/forms/index/ControlValueAccessor-interface)
+supported by a [ControlValueAccessor](api/forms/ControlValueAccessor)
 that adapts an element to this protocol.
 The `<input>` box is one of those elements.
 Angular provides *value accessors* for all of the basic HTML form elements and the
@@ -2081,7 +2083,7 @@ The next example captures the `index` in a variable named `i` and displays it wi
 
 
 Learn about the other `NgFor` context values such as `last`, `even`,
-and `odd` in the [NgFor API reference](api/common/index/NgFor-directive).
+and `odd` in the [NgFor API reference](api/common/NgFor).
 
 
 </div>
@@ -2266,7 +2268,7 @@ What is the value of `heroForm`?
 
 If Angular hadn't taken it over when you imported the `FormsModule`,
 it would be the [HTMLFormElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement).
-The `heroForm` is actually a reference to an Angular [NgForm](api/forms/index/NgForm-directive "API: NgForm")
+The `heroForm` is actually a reference to an Angular [NgForm](api/forms/NgForm "API: NgForm")
 directive with the ability to track the value and validity of every control in the form.
 
 The native `<form>` element doesn't have a `form` property.

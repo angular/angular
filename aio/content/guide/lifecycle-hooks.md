@@ -292,7 +292,7 @@ Other Angular sub-systems may have their own lifecycle hooks apart from these co
 3rd party libraries might implement their hooks as well in order to give developers more
 control over how these libraries are used.
 
-
+{@a the-sample}
 
 ## Lifecycle examples
 
@@ -648,7 +648,7 @@ This example monitors the `OnChanges` hook.
 
 
 The `ngOnChanges()` method takes an object that maps each changed property name to a
-[SimpleChange](api/core/index/SimpleChange-class) object holding the current and previous property values.
+[SimpleChange](api/core/SimpleChange) object holding the current and previous property values.
 This hook iterates over the changed properties and logs them.
 
 The example component, `OnChangesComponent`, has two input properties: `hero` and `power`.
@@ -760,7 +760,7 @@ The `AfterViewComponent` displays this child view *within its template*:
 
 The following hooks take action based on changing values *within the child view*,
 which can only be reached by querying for the child view via the property decorated with
-[@ViewChild](api/core/index/ViewChild-decorator).
+[@ViewChild](api/core/ViewChild).
 
 
 <code-example path="lifecycle-hooks/src/app/after-view.component.ts" region="hooks" title="AfterViewComponent (class excerpts)" linenums="false">
@@ -896,7 +896,7 @@ projected into the component.
 
 The following *AfterContent* hooks take action based on changing values in a *content child*,
 which can only be reached by querying for them via the property decorated with
-[@ContentChild](api/core/index/ContentChild-decorator).
+[@ContentChild](api/core/ContentChild).
 
 
 <code-example path="lifecycle-hooks/src/app/after-content.component.ts" region="hooks" title="AfterContentComponent (class excerpts)" linenums="false">

@@ -284,7 +284,7 @@ The following are all in `src/`
     <td>
 
 
-      Compiles the application with the [JIT compiler](glossary#jit) and
+      Compiles the application with the [JIT compiler](guide/glossary#jit) and
       [bootstraps](guide/appmodule#main "bootstrap the application") 
       the application's main module (`AppModule`) to run in the browser.
       The JIT compiler is a reasonable choice during the development of most projects and
@@ -305,7 +305,7 @@ The following are all in `src/`
 
 ### Next Step
 
-If you're new to Angular, we recommend staying on the [learning path](guide/learning-angular "Angular learning path").
+If you're new to Angular, we recommend you follow the [tutorial](tutorial "Tour of Heroes tutorial").
 
 
 </div>
@@ -346,7 +346,7 @@ use other versions of node and npm.
 Links on almost every documentation page open completed samples in the browser.
 You can play with the sample code, share your changes with friends, and download and run the code on your own machine.
 
-The [QuickStart](quickstart "Angular QuickStart Playground") shows just the `AppComponent` file.
+The [QuickStart](guide/quickstart "Angular QuickStart Playground") shows just the `AppComponent` file.
 It creates the equivalent of `app.module.ts` and `main.ts` internally _for the playground only_.
 so the reader can discover Angular without distraction.
 The other samples are based on the QuickStart seed. 

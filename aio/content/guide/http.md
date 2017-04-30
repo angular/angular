@@ -103,7 +103,7 @@ The root `AppComponent` orchestrates these demos:
 </code-example>
 
 
-
+{@a http-providers}
 
 # Providing HTTP services
 
@@ -167,7 +167,7 @@ Loading its module now saves time.
 </div>
 
 
-
+{@a http-client}
 
 ## The Tour of Heroes HTTP client demo
 
@@ -257,7 +257,7 @@ With a basic understanding of the component, you're ready to look inside the `He
 
 {@a HeroService}
 
-
+{@a fetch-data}
 
 ## Fetch data with _http.get()_
 
@@ -580,7 +580,7 @@ In the `headers` object, the `Content-Type` specifies that the body represents J
 
 Next, the `headers` object is used to configure the `options` object. The `options`
 object is a new instance of `RequestOptions`, a class that allows you to specify
-certain settings when instantiating a request. In this way, [headers](api/http/index/Headers-class) is one of the [RequestOptions](api/http/index/RequestOptions-class).
+certain settings when instantiating a request. In this way, [headers](api/http/Headers) is one of the [RequestOptions](api/http/RequestOptions).
 
 In the `return` statement, `options` is the *third* argument of the `post()` method, as shown above.
 

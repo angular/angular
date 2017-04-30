@@ -898,6 +898,8 @@ into a `compileComponents().then(...)` callback and write only one `beforeEach`.
 Most developers find that hard to read.
 The two `beforeEach` calls are widely preferred.
 
+{@a live-external-template-example}
+
 ### Try the live example
 
 Take a moment to explore this component spec as a <live-example plnkr="banner-specs" title="Spec for component with external template" embedded-style></live-example>.
@@ -3013,6 +3015,7 @@ appropriate to the method, that is, the parameter of an `@NgModule`,
 
 
 {@a testbed-methods}
+{@a testbed-api-summary}
 
 
 The `TestBed` API consists of static class methods that either update or reference a _global_ instance of the`TestBed`.

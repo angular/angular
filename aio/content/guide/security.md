@@ -37,7 +37,7 @@ You can run the <live-example></live-example> in Plunker and download the code f
 
 
 
-To report vulnerabilities in Angular itself, email us at [security@angular.io](guide/mailto:security@angular).
+To report vulnerabilities in Angular itself, email us at [security@angular.io](mailto:security@angular.io).
 
 For more information about how Google handles security issues, see [Google's security
 philosophy](https://www.google.com/about/appsecurity/).
@@ -174,7 +174,7 @@ and greatly improves application performance. Use the offline template compiler 
 deployments; don't dynamically generate templates. Angular trusts template code, so generating
 templates, in particular templates containing user data, circumvents Angular's built-in protections.
 For information about dynamically constructing forms in a safe way, see the
-[Dynamic Forms](cookbook/dynamic-form) cookbook page.
+[Dynamic Forms](guide/dynamic-form) guide page.
 
 ### Server-side XSS protection
 
