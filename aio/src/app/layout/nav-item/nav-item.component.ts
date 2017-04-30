@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { NavigationNode } from 'app/navigation/navigation.service';
+import { NavigationNode } from 'app/navigation/navigation.model';
 
 @Component({
   selector: 'aio-nav-item',
@@ -16,8 +16,9 @@ export class NavItemComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['selectedNodes'] || changes['node']) {
-      this.isSelected = this.selectedNodes.indexOf(this.node) !== -1;
-      this.isExpanded = this.isSelected;
+      const ix = this.selectedNodes.indexOf(this.node);
+      this.isSelected = ix !== -1;
+      if (ix !== 0) { this.isExpanded = this.isSelected; }
     }
     this.setClasses();
   }
@@ -29,11 +30,6 @@ export class NavItemComponent implements OnChanges {
       expanded: this.isExpanded,
       selected: this.isSelected
     };
-  }
-
-  itemClicked() {
-    this.isExpanded = true;
-    this.isSelected = !!this.node;
   }
 
   headerClicked() {
