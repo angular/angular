@@ -6,6 +6,7 @@ import { SearchResult, SearchResults, SearchService } from '../search.service';
 export interface SearchArea {
   name: string;
   pages: SearchResult[];
+  priorityPages: SearchResult[];
 }
 
 /**
@@ -65,10 +66,12 @@ export class SearchResultsComponent implements OnInit {
       area.push(result);
     });
     const keys = Object.keys(searchAreaMap).sort((l, r) => l > r ? 1 : -1);
-    return keys.map(name => ({
-      name,
-      pages: searchAreaMap[name].sort(compareResults)
-    }));
+    return keys.map(name => {
+      let pages = searchAreaMap[name];
+      const priorityPages = pages.length > 10 ? searchAreaMap[name].slice(0, 5) : [];
+      pages = pages.sort(compareResults);
+      return { name, pages, priorityPages };
+  });
   }
 
   // Split the search result path and use the top level folder, if there is one, as the area name.
