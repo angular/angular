@@ -68,6 +68,7 @@ md-sidenav-container div.mat-sidenav-content {
   &:hover {
     text-shadow: 0 0 5px #ffffff;
     background-color: $lightgray;
+
   }
 
   //icons _within_ nav
@@ -146,10 +147,12 @@ a.selected.level-1,
 
 .level-1.expanded .mat-icon, .level-2.expanded .mat-icon {
   @include rotate(90deg);
+  top: 10px;
 }
 
 .level-1:not(.expanded) .mat-icon, .level-2:not(.expanded) .mat-icon {
   @include rotate(0deg);
+  margin: 4px;
 }
 
 .promo-img-container img {
