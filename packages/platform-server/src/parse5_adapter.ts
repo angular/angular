@@ -84,6 +84,8 @@ export class Parse5DomAdapter extends DomAdapter {
       this.setText(el, value);
     } else if (name === 'className') {
       el.attribs['class'] = el.className = value;
+    } else if (name === 'id') {
+      el.attribs['id'] = el.id = value;
     } else {
       el[name] = value;
     }
@@ -497,6 +499,8 @@ export class Parse5DomAdapter extends DomAdapter {
       element.attribs[attribute] = value;
       if (attribute === 'class') {
         element.className = value;
+      } else if (attribute === 'id') {
+        element.id = value;
       }
     }
   }

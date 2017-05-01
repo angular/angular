@@ -8,7 +8,7 @@
 
 import {animate, style, transition, trigger} from '@angular/animations';
 import {APP_BASE_HREF, PlatformLocation, isPlatformServer} from '@angular/common';
-import {ApplicationRef, CompilerFactory, Component, HostListener, Input, NgModule, NgModuleRef, NgZone, PLATFORM_ID, PlatformRef, ViewEncapsulation, destroyPlatform, getPlatform} from '@angular/core';
+import {ApplicationRef, CompilerFactory, Component, ElementRef, HostListener, Input, NgModule, NgModuleRef, NgZone, PLATFORM_ID, PlatformRef, Renderer2, ViewEncapsulation, destroyPlatform, getPlatform} from '@angular/core';
 import {TestBed, async, inject} from '@angular/core/testing';
 import {Http, HttpModule, Response, ResponseOptions, XHRBackend} from '@angular/http';
 import {MockBackend, MockConnection} from '@angular/http/testing';
@@ -54,8 +54,16 @@ class TitleApp {
 class TitleAppModule {
 }
 
-@Component({selector: 'app', template: '{{text}}<h1 [innerText]="h1"></h1>'})
+@Component({
+  host: {
+    '[id]': 'id',
+    '(window:resize)': 'onResize($event)',
+  },
+  selector: 'app',
+  template: '{{text}}<h1 [innerText]="h1"></h1>'
+})
 class MyAsyncServerApp {
+  id = '';
   text = '';
   h1 = '';
 
@@ -64,6 +72,7 @@ class MyAsyncServerApp {
 
   ngOnInit() {
     Promise.resolve(null).then(() => setTimeout(() => {
+                                 this.id = 'my-super-id';
                                  this.text = 'Works!';
                                  this.h1 = 'fine';
                                }, 10));
@@ -185,6 +194,21 @@ class MyHostComponent {
   imports: [ServerModule, BrowserModule.withServerTransition({appId: 'false-attributes'})]
 })
 class FalseAttributesModule {
+}
+
+@Component({selector: 'app', template: '<h1>Hello world!</h1>'})
+class SetAttributeIdComponent {
+  constructor(private renderer: Renderer2, private elementRef: ElementRef) {
+    this.renderer.setAttribute(elementRef.nativeElement, 'id', 'my-super-id');
+  }
+}
+
+@NgModule({
+  declarations: [SetAttributeIdComponent],
+  bootstrap: [SetAttributeIdComponent],
+  imports: [ServerModule, BrowserModule.withServerTransition({appId: 'id-attribute'})]
+})
+class IdAttributeModule {
 }
 
 export function main() {
@@ -357,7 +381,7 @@ export function main() {
       let doc: string;
       let called: boolean;
       let expectedOutput =
-          '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">Works!<h1 innerText="fine">fine</h1></app></body></html>';
+          '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER" id="my-super-id">Works!<h1 innerText="fine">fine</h1></app></body></html>';
 
       beforeEach(() => {
         // PlatformConfig takes in a parsed document so that it can be cached across requests.
@@ -433,6 +457,15 @@ export function main() {
              expect(output).toBe(
                  '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
                  '<my-child ng-reflect-attr="false">Works!</my-child></app></body></html>');
+             called = true;
+           });
+         }));
+
+      it('should set element id attribute using renderer', async(() => {
+           renderModule(IdAttributeModule, {document: doc}).then((output) => {
+             expect(output).toBe(
+                 '<html><head></head><body><app id="my-super-id" ng-version="0.0.0-PLACEHOLDER">' +
+                 '<h1>Hello world!</h1></app></body></html>');
              called = true;
            });
          }));
