@@ -19,10 +19,10 @@ describe('SearchResultsComponent', () => {
   /** Get a full set of test results. "Take" what you need */
   function getTestResults(take?: number) {
     const results: SearchResult[] = [
-      { path: 'guide/a', title: 'Guide A'},
-      { path: 'api/d', title: 'API D'},
+      { path: 'guide/a', title: 'Guide A' },
+      { path: 'api/d', title: 'API D' },
       { path: 'guide/b', title: 'Guide B' },
-      { path: 'guide/a/c', title: 'Guide A - C'},
+      { path: 'guide/a/c', title: 'Guide A - C' },
       { path: 'api/c', title: 'API C' }
     ]
     // fill it out to exceed 10 guide pages
@@ -30,7 +30,7 @@ describe('SearchResultsComponent', () => {
       return { path: 'guide/' + l, title: 'Guide ' + l};
     }))
     // add these empty fields to satisfy interface
-    .map(r => ({...r, ...{ keywords: '', titleWords: '', type: '' }}));
+    .map(r => ({...{ keywords: '', titleWords: '', type: '' }, ...r }));
 
     return take === undefined ? results : results.slice(0, take);
   }
@@ -75,13 +75,13 @@ describe('SearchResultsComponent', () => {
 
     expect(currentAreas).toEqual([
       { name: 'api', pages: [
-        {path: 'api/c', title: 'API C', type: '', keywords: '', titleWords: '' },
-        {path: 'api/d', title: 'API D', type: '', keywords: '', titleWords: '' },
+        { path: 'api/c', title: 'API C', type: '', keywords: '', titleWords: '' },
+        { path: 'api/d', title: 'API D', type: '', keywords: '', titleWords: '' },
       ], priorityPages: [] },
       { name: 'guide', pages: [
-        {path: 'guide/a', title: 'Guide A',       type: '', keywords: '', titleWords: '' },
-        {path: 'guide/a/c', title: 'Guide A - C', type: '', keywords: '', titleWords: '' },
-        {path: 'guide/b', title: 'Guide B',       type: '', keywords: '', titleWords: '' },
+        { path: 'guide/a', title: 'Guide A',       type: '', keywords: '', titleWords: '' },
+        { path: 'guide/a/c', title: 'Guide A - C', type: '', keywords: '', titleWords: '' },
+        { path: 'guide/b', title: 'Guide B',       type: '', keywords: '', titleWords: '' },
       ], priorityPages: [] }
     ]);
   });
@@ -108,7 +108,7 @@ describe('SearchResultsComponent', () => {
 
   it('should put search results with no containing folder into the default area (other)', () => {
     const results = [
-      {path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '' }
+      { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '' }
     ];
 
     searchResults.next({ query: '', results: results });
@@ -121,7 +121,7 @@ describe('SearchResultsComponent', () => {
 
   it('should omit search results with no title', () => {
     const results = [
-      {path: 'news', title: undefined, type: 'marketing', keywords: '', titleWords: '' }
+      { path: 'news', title: undefined, type: 'marketing', keywords: '', titleWords: '' }
     ];
 
     searchResults.next({ query: '', results: results });
@@ -132,7 +132,7 @@ describe('SearchResultsComponent', () => {
     let selectedResult: SearchResult;
     component.resultSelected.subscribe((result: SearchResult) => selectedResult = result);
     const results = [
-      {path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '' }
+      { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '' }
     ];
 
     searchResults.next({ query: '', results: results });
@@ -140,12 +140,12 @@ describe('SearchResultsComponent', () => {
     const anchor = fixture.debugElement.query(By.css('a'));
 
     anchor.triggerEventHandler('click', {});
-    expect(selectedResult).toEqual({path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '' });
+    expect(selectedResult).toEqual({ path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '' });
   });
 
   it('should clear the results when a search result is clicked', () => {
     const results = [
-      {path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '' }
+      { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '' }
     ];
 
     searchResults.next({ query: '', results: results });
@@ -160,7 +160,7 @@ describe('SearchResultsComponent', () => {
   describe('hideResults', () => {
     it('should clear the results', () => {
       const results = [
-        {path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '' }
+        { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '' }
       ];
 
       searchResults.next({ query: '', results: results });
