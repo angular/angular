@@ -5,12 +5,12 @@ aio-search-results {
 .search-results {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: space-around;
     overflow: auto;
     padding: 68px 32px 0;
     color: $offwhite;
     width: auto;
-    max-height: 40%;
+    max-height: 50%;
     position: fixed;
     top: 0;
     left: 0;
@@ -58,8 +58,7 @@ aio-search-results {
         text-decoration: none;
         font-weight: 300;
         &:hover {
-            color: $blue;
-            font-weight: 500;
+            color: $white;
         }
         &:visited {
         text-decoration: none;
