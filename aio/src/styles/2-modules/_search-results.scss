@@ -61,8 +61,19 @@ aio-search-results {
             color: $white;
         }
         &:visited {
-        text-decoration: none;
+          text-decoration: none;
         }
+
+        span.symbol {
+          margin-right: 8px;
+        }
+    }
+
+    .more-items {
+      content: 'more_horiz';
+      font-size: 20px;
+      color: $mediumgray;
+      padding: 0;
     }
 
     @include bp(tiny) {
