@@ -7,6 +7,15 @@
 
     table.api-table {
         min-width: 680px;
+
+        thead th {
+            color: white;
+            font-size: 16px;
+            background-color: $blue;
+            border-radius: 4px 4px 0 0;
+            text-transform: none;
+            padding: 8px 24px;
+        }
         
         tbody {
             pre {
@@ -17,6 +26,10 @@
 
             td, th {
                 padding: 0;
+            }
+
+            th {
+                max-width: 150px;
             }
         }
 
