@@ -89,7 +89,7 @@ If you fully understand the meaning behind the guideline and have a good reason 
 
 ## File structure conventions
 
-Some code examples display a file that has one or more similarly named companion files. 
+Some code examples display a file that has one or more similarly named companion files.
 For example, `hero.component.ts` and `hero.component.html`.
 
 The guideline uses the shortcut `hero.component.ts|html|css|spec` to represent those various files. Using this shortcut makes this guide's file structures easier to read and more terse.
@@ -101,14 +101,16 @@ The guideline uses the shortcut `hero.component.ts|html|css|spec` to represent t
 
 ## Single responsibility
 
-Apply the 
+Apply the
 <a href="https://wikipedia.org/wiki/Single_responsibility_principle"><i>single responsibility principle</i> (SRP)</a>
-to all components, services, and other symbols. 
+to all components, services, and other symbols.
 This helps make the app cleaner, easier to read and maintain, and more testable.
 
-### {@a 01-01}Rule of One
+{@a 01-01}
 
-#### <a href="#01-01">Style 01-01</a>
+### Rule of One
+
+#### Style 01-01
 
 
 <div class="s-rule do">
@@ -137,7 +139,7 @@ This helps make the app cleaner, easier to read and maintain, and more testable.
 
 
 
-**Why?** One component per file makes it far easier to read, maintain, and avoid 
+**Why?** One component per file makes it far easier to read, maintain, and avoid
 collisions with teams in source control.
 
 
@@ -168,8 +170,8 @@ collisions with teams in source control.
 
 The key is to make the code more reusable, easier to read, and less mistake prone.
 
-The following *negative* example defines the `AppComponent`, bootstraps the app, 
-defines the `Hero` model object, and loads heroes from the server all in the same file. 
+The following *negative* example defines the `AppComponent`, bootstraps the app,
+defines the `Hero` model object, and loads heroes from the server all in the same file.
 *Don't do this*.
 
 
@@ -179,7 +181,7 @@ defines the `Hero` model object, and loads heroes from the server all in the sam
 
 
 
-It is a better practice to redistribute the component and its 
+It is a better practice to redistribute the component and its
 supporting classes into their own, dedicated files.
 
 
@@ -221,9 +223,11 @@ As the app grows, this rule becomes even more important.
 <a href="#toc">Back to top</a>
 
 
-### {@a 01-02}Small functions
+{@a 01-02}
 
-#### <a href="#01-02">Style 01-02</a>
+### Small functions
+
+#### Style 01-02
 
 
 <div class="s-rule do">
@@ -310,9 +314,11 @@ Naming conventions are hugely important to maintainability and readability. This
 
 
 
-### {@a 02-01}General Naming Guidelines
+{@a 02-01}
 
-#### <a href="#02-01">Style 02-01</a>
+### General Naming Guidelines
+
+#### Style 02-01
 
 
 <div class="s-rule do">
@@ -371,9 +377,11 @@ Naming conventions are hugely important to maintainability and readability. This
 <a href="#toc">Back to top</a>
 
 
-### {@a 02-02}Separate file names with dots and dashes
+{@a 02-02}
 
-#### <a href="#02-02">Style 02-02</a>
+### Separate file names with dots and dashes
+
+#### Style 02-02
 
 
 <div class="s-rule do">
@@ -413,7 +421,7 @@ Naming conventions are hugely important to maintainability and readability. This
 
 
 
-**Do** use conventional type names including `.service`, `.component`, `.pipe`, `.module`, and `.directive`. 
+**Do** use conventional type names including `.service`, `.component`, `.pipe`, `.module`, and `.directive`.
 Invent additional type names if you must but take care not to create too many.
 
 
@@ -467,9 +475,11 @@ Abbreviations such as `.srv`, `.svc`, and `.serv` can be confusing.
 <a href="#toc">Back to top</a>
 
 
-### {@a 02-03}Symbols and file names
+{@a 02-03}
 
-#### <a href="#02-03">Style 02-03</a>
+### Symbols and file names
+
+#### Style 02-03
 
 
 <div class="s-rule do">
@@ -509,7 +519,7 @@ Abbreviations such as `.srv`, `.svc`, and `.serv` can be confusing.
 
 
 
-**Do** append the symbol name with the conventional suffix (such as `Component`, 
+**Do** append the symbol name with the conventional suffix (such as `Component`,
 `Directive`, `Module`, `Pipe`, or `Service`) for a thing of that type.
 
 
@@ -521,7 +531,7 @@ Abbreviations such as `.srv`, `.svc`, and `.serv` can be confusing.
 
 
 
-**Do** give the filename the conventional suffix (such as `.component.ts`, `.directive.ts`, 
+**Do** give the filename the conventional suffix (such as `.component.ts`, `.directive.ts`,
 `.module.ts`, `.pipe.ts`, or `.service.ts`) for a file of that type.
 
 </div>
@@ -532,7 +542,7 @@ Abbreviations such as `.srv`, `.svc`, and `.serv` can be confusing.
 
 
 
-**Why?** Consistent conventions make it easy to quickly identify 
+**Why?** Consistent conventions make it easy to quickly identify
 and reference assets of different types.
 
 
@@ -721,10 +731,11 @@ and reference assets of different types.
 <a href="#toc">Back to top</a>
 
 
-### {@a 02-04}Service names
+{@a 02-04}
 
-#### <a href="#02-04">Style 02-04</a>
+### Service names
 
+#### Style 02-04
 
 <div class="s-rule do">
 
@@ -741,14 +752,14 @@ and reference assets of different types.
 
 
 
-**Do** suffix a service class name with `Service`. 
-For example, something that gets data or heroes 
+**Do** suffix a service class name with `Service`.
+For example, something that gets data or heroes
 should be called a `DataService` or a `HeroService`.
 
-A few terms are unambiguously services. They typically 
-indicate agency by ending in "-er". You may prefer to name 
-a service that logs messages `Logger` rather than `LoggerService`. 
-Decide if this exception is agreeable in your project. 
+A few terms are unambiguously services. They typically
+indicate agency by ending in "-er". You may prefer to name
+a service that logs messages `Logger` rather than `LoggerService`.
+Decide if this exception is agreeable in your project.
 As always, strive for consistency.
 
 
@@ -875,9 +886,11 @@ As always, strive for consistency.
 <a href="#toc">Back to top</a>
 
 
-### {@a 02-05}Bootstrapping
+{@a 02-05}
 
-#### <a href="#02-05">Style 02-05</a>
+### Bootstrapping
+
+#### Style 02-05
 
 
 <div class="s-rule do">
@@ -943,10 +956,11 @@ As always, strive for consistency.
 
 <a href="#toc">Back to top</a>
 
+{@a 02-06}
 
-### {@a 02-06}Directive selectors
+### Directive selectors
 
-#### <a href="#02-06">Style 02-06</a>
+#### Style 02-06
 
 
 <div class="s-rule do">
@@ -982,17 +996,18 @@ As always, strive for consistency.
 
 <a href="#toc">Back to top</a>
 
+{@a 02-07}
 
-### {@a 02-07}Custom prefix for components
+### Custom prefix for components
 
-#### <a href="#02-07">Style 02-07</a>
+#### Style 02-07
 
 
 <div class="s-rule do">
 
 
 
-**Do** use a hyphenated, lowercase element selector value (e.g. `admin-users`). 
+**Do** use a hyphenated, lowercase element selector value (e.g. `admin-users`).
 
 
 
@@ -1004,7 +1019,7 @@ As always, strive for consistency.
 
 
 
-**Do** use a custom prefix for a component selector. 
+**Do** use a custom prefix for a component selector.
 For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the prefix `admin` represents an admin feature area.
 
 
@@ -1088,10 +1103,11 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 
 
-### {@a 02-08}Custom prefix for directives
+{@a 02-08}
 
-#### <a href="#02-08">Style 02-08</a>
+### Custom prefix for directives
 
+#### Style 02-08
 
 <div class="s-rule do">
 
@@ -1154,10 +1170,11 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <a href="#toc">Back to top</a>
 
 
-### {@a 02-09}Pipe names
+{@a 02-09}
 
-#### <a href="#02-09">Style 02-09</a>
+### Pipe names
 
+#### Style 02-09
 
 <div class="s-rule do">
 
@@ -1248,10 +1265,11 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <a href="#toc">Back to top</a>
 
 
-### {@a 02-10}Unit test file names
+{@a 02-10}
 
-#### <a href="#02-10">Style 02-10</a>
+### Unit test file names
 
+#### Style 02-10
 
 <div class="s-rule do">
 
@@ -1386,10 +1404,11 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <a href="#toc">Back to top</a>
 
 
-### {@a 02-11}_End-to-End_ (E2E) test file names
+{@a 02-11}
 
-#### <a href="#02-11">Style 02-11</a>
+### _End-to-End_ (E2E) test file names
 
+#### Style 02-11
 
 <div class="s-rule do">
 
@@ -1474,10 +1493,11 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 <a href="#toc">Back to top</a>
 
+{@a 02-12}
 
-### {@a 02-12}Angular _NgModule_ names
+### Angular _NgModule_ names
 
-#### <a href="#02-12">Style 02-12</a>
+#### Style 02-12
 
 
 <div class="s-rule do">
@@ -1691,7 +1711,7 @@ A consistent class and file name convention make these modules easy to spot and 
     <td>
 
 
-      heroes-routing.module.ts        
+      heroes-routing.module.ts
     </td>
 
   </tr>
@@ -1709,10 +1729,11 @@ Have a consistent set of coding, naming, and whitespace conventions.
 
 
 
-### {@a 03-01}Classes
+{@a 03-01}
 
-#### <a href="#03-01">Style 03-01</a>
+### Classes
 
+#### Style 03-01
 
 <div class="s-rule do">
 
@@ -1740,7 +1761,7 @@ Have a consistent set of coding, naming, and whitespace conventions.
 
 
 
-**Why?** Classes can be instantiated and construct an instance. 
+**Why?** Classes can be instantiated and construct an instance.
 By convention, upper camel case indicates a constructable asset.
 
 
@@ -1765,10 +1786,11 @@ By convention, upper camel case indicates a constructable asset.
 <a href="#toc">Back to top</a>
 
 
-### {@a 03-02}Constants
+{@a 03-02}
 
-#### <a href="#03-02">Style 03-02</a>
+### Constants
 
+#### Style 03-02
 
 <div class="s-rule do">
 
@@ -1833,7 +1855,7 @@ than the traditional UPPER_SNAKE_CASE names (`HERO_ROUTES`).
 
 **Why?** The tradition of naming constants in UPPER_SNAKE_CASE reflects
 an era before the modern IDEs that quickly reveal the `const` declaration.
-TypeScript prevents accidental reassignment. 
+TypeScript prevents accidental reassignment.
 
 
 </div>
@@ -1873,10 +1895,11 @@ It is rarely worth the effort to change them at the risk of breaking existing co
 <a href="#toc">Back to top</a>
 
 
-### {@a 03-03}Interfaces
+{@a 03-03}
 
-#### <a href="#03-03">Style 03-03</a>
+### Interfaces
 
+#### Style 03-03
 
 <div class="s-rule do">
 
@@ -1904,7 +1927,7 @@ It is rarely worth the effort to change them at the risk of breaking existing co
 
 
 
-**Consider** using a class instead of an interface. 
+**Consider** using a class instead of an interface.
 
 
 </div>
@@ -1915,7 +1938,7 @@ It is rarely worth the effort to change them at the risk of breaking existing co
 
 
 
-**Why?** <a href="https://github.com/Microsoft/TypeScript/wiki/Coding-guidelines">TypeScript guidelines</a> 
+**Why?** <a href="https://github.com/Microsoft/TypeScript/wiki/Coding-guidelines">TypeScript guidelines</a>
 discourage the `I` prefix.
 
 
@@ -1972,10 +1995,11 @@ discourage the `I` prefix.
 
 <a href="#toc">Back to top</a>
 
+{@a 03-04}
 
-### {@a 03-04}Properties and methods
+### Properties and methods
 
-#### <a href="#03-04">Style 03-04</a>
+#### Style 03-04
 
 
 <div class="s-rule do">
@@ -2049,10 +2073,11 @@ discourage the `I` prefix.
 
 <a href="#toc">Back to top</a>
 
+{@a 03-06}
 
-### {@a 03-06}Import line spacing
+### Import line spacing
 
-#### <a href="#03-06">Style 03-06</a>
+#### Style 03-06
 
 
 <div class="s-rule consider">
@@ -2131,28 +2156,29 @@ discourage the `I` prefix.
 
 Have a near-term view of implementation and a long-term vision. Start small but keep in mind where the app is heading down the road.
 
-All of the app's code goes in a folder named `src`. 
-All feature areas are in their own folder, with their own Angular module. 
+All of the app's code goes in a folder named `src`.
+All feature areas are in their own folder, with their own Angular module.
 
-All content is one asset per file. Each component, service, and pipe is in its own file. 
-All third party vendor scripts are stored in another folder and not in the `src` folder. 
-You didn't write them and you don't want them cluttering `src`. 
+All content is one asset per file. Each component, service, and pipe is in its own file.
+All third party vendor scripts are stored in another folder and not in the `src` folder.
+You didn't write them and you don't want them cluttering `src`.
 Use the naming conventions for files in this guide.
 <a href="#toc">Back to top</a>
 
+{@a 04-01}
 
-### {@a 04-01}_LIFT_
+### _LIFT_
 
-#### <a href="#04-01">Style 04-01</a>
+#### Style 04-01
 
 
 <div class="s-rule do">
 
 
 
-**Do** structure the app such that you can **L**ocate code quickly, 
-**I**dentify the code at a glance, 
-keep the **F**lattest structure you can, and 
+**Do** structure the app such that you can **L**ocate code quickly,
+**I**dentify the code at a glance,
+keep the **F**lattest structure you can, and
 **T**ry to be DRY.
 
 
@@ -2175,8 +2201,8 @@ keep the **F**lattest structure you can, and
 
 
 
-**Why?** LIFT Provides a consistent structure that scales well, is modular, and makes it easier to increase developer efficiency by finding code quickly. 
-To confirm your intuition about a particular structure, ask: 
+**Why?** LIFT Provides a consistent structure that scales well, is modular, and makes it easier to increase developer efficiency by finding code quickly.
+To confirm your intuition about a particular structure, ask:
 _can I quickly open and start work in all of the related files for this feature_?
 
 
@@ -2184,10 +2210,11 @@ _can I quickly open and start work in all of the related files for this feature_
 
 <a href="#toc">Back to top</a>
 
+{@a 04-02}
 
-### {@a 04-02}Locate
+### Locate
 
-#### <a href="#04-02">Style 04-02</a>
+#### Style 04-02
 
 
 <div class="s-rule do">
@@ -2205,9 +2232,9 @@ _can I quickly open and start work in all of the related files for this feature_
 
 
 
-**Why?** To work efficiently you must be able to find files quickly, 
-especially when you do not know (or do not remember) the file _names_. 
-Keeping related files near each other in an intuitive location saves time. 
+**Why?** To work efficiently you must be able to find files quickly,
+especially when you do not know (or do not remember) the file _names_.
+Keeping related files near each other in an intuitive location saves time.
 A descriptive folder structure makes a world of difference to you and the people who come after you.
 
 
@@ -2215,10 +2242,11 @@ A descriptive folder structure makes a world of difference to you and the people
 
 <a href="#toc">Back to top</a>
 
+{@a 04-03}
 
-### {@a 04-03}Identify
+### Identify
 
-#### <a href="#04-03">Style 04-03</a>
+#### Style 04-03
 
 
 <div class="s-rule do">
@@ -2258,7 +2286,7 @@ A descriptive folder structure makes a world of difference to you and the people
 
 
 
-**Why?** Spend less time hunting and pecking for code, and become more efficient. 
+**Why?** Spend less time hunting and pecking for code, and become more efficient.
 Longer file names are far better than _short-but-obscure_ abbreviated names.
 
 
@@ -2270,7 +2298,7 @@ Longer file names are far better than _short-but-obscure_ abbreviated names.
 
 
 
-It may be advantageous to deviate from the _one-thing-per-file_ rule when 
+It may be advantageous to deviate from the _one-thing-per-file_ rule when
 you have a set of small, closely-related features that are better discovered and understood
 in a single file than as multiple files. Be wary of this loophole.
 
@@ -2280,10 +2308,11 @@ in a single file than as multiple files. Be wary of this loophole.
 <a href="#toc">Back to top</a>
 
 
-### {@a 04-04}Flat
+{@a 04-04}
 
-#### <a href="#04-04">Style 04-04</a>
+### Flat
 
+#### Style 04-04
 
 <div class="s-rule do">
 
@@ -2322,15 +2351,15 @@ in a single file than as multiple files. Be wary of this loophole.
 
 
 
-**Why?** No one wants to search for a file through seven levels of folders. 
+**Why?** No one wants to search for a file through seven levels of folders.
 A flat structure is easy to scan.
 
 On the other hand,
 <a href="https://en.wikipedia.org/wiki/The_Magical_Number_Seven,_Plus_or_Minus_Two">psychologists believe</a>
 that humans start to struggle when the number of adjacent interesting things exceeds nine.
-So when a folder has ten or more files, it may be time to create subfolders. 
+So when a folder has ten or more files, it may be time to create subfolders.
 
-Base your decision on your comfort level. 
+Base your decision on your comfort level.
 Use a flatter structure until there is an obvious value to creating a new folder.
 
 
@@ -2339,10 +2368,11 @@ Use a flatter structure until there is an obvious value to creating a new folder
 <a href="#toc">Back to top</a>
 
 
-### {@a 04-05}_T-DRY_ (Try to be _DRY_)
+{@a 04-05}
 
-#### <a href="#04-05">Style 04-05</a>
+### _T-DRY_ (Try to be _DRY_)
 
+#### Style 04-05
 
 <div class="s-rule do">
 
@@ -2371,9 +2401,9 @@ Use a flatter structure until there is an obvious value to creating a new folder
 
 
 **Why?** Being DRY is important, but not crucial if it sacrifices the other elements of LIFT.
-That's why it's called _T-DRY_. 
-For example, it's redundant to name a template `hero-view.component.html` because 
-with the `.html` extension, it is obviously a view. 
+That's why it's called _T-DRY_.
+For example, it's redundant to name a template `hero-view.component.html` because
+with the `.html` extension, it is obviously a view.
 But if something is not obvious or departs from a convention, then spell it out.
 
 
@@ -2382,10 +2412,11 @@ But if something is not obvious or departs from a convention, then spell it out.
 <a href="#toc">Back to top</a>
 
 
-### {@a 04-06}Overall structural guidelines
+{@a 04-06}
 
-#### <a href="#04-06">Style 04-06</a>
+### Overall structural guidelines
 
+#### Style 04-06
 
 <div class="s-rule do">
 
@@ -2691,9 +2722,9 @@ Here is a compliant folder and file structure:
 
 
 
-While components in dedicated folders are widely preferred, 
-another option for small apps is to keep components flat (not in a dedicated folder). 
-This adds up to four files to the existing folder, but also reduces the folder nesting. 
+While components in dedicated folders are widely preferred,
+another option for small apps is to keep components flat (not in a dedicated folder).
+This adds up to four files to the existing folder, but also reduces the folder nesting.
 Whatever you choose, be consistent.
 
 
@@ -2701,10 +2732,11 @@ Whatever you choose, be consistent.
 
 <a href="#toc">Back to top</a>
 
+{@a 04-07}
 
-### {@a 04-07}_Folders-by-feature_ structure
+### _Folders-by-feature_ structure
 
-#### <a href="#04-07">Style 04-07</a>
+#### Style 04-07
 
 
 <div class="s-rule do">
@@ -2722,7 +2754,7 @@ Whatever you choose, be consistent.
 
 
 
-**Why?** A developer can locate the code and identify what each file represents 
+**Why?** A developer can locate the code and identify what each file represents
 at a glance. The structure is as flat as it can be and there are no repetitive or redundant names.
 
 
@@ -2745,7 +2777,7 @@ at a glance. The structure is as flat as it can be and there are no repetitive o
 
 
 
-**Why?** Helps reduce the app from becoming cluttered through organizing the 
+**Why?** Helps reduce the app from becoming cluttered through organizing the
 content and keeping them aligned with the LIFT guidelines.
 
 
@@ -2757,8 +2789,8 @@ content and keeping them aligned with the LIFT guidelines.
 
 
 
-**Why?** When there are a lot of files, for example 10+, 
-locating them is easier with a consistent folder structure 
+**Why?** When there are a lot of files, for example 10+,
+locating them is easier with a consistent folder structure
 and more difficult in a flat structure.
 
 
@@ -2808,10 +2840,11 @@ and more difficult in a flat structure.
 </a>
 
 
-### {@a 04-08}App _root module_
+{@a 04-08}
 
-#### <a href="#04-08">Style 04-08</a>
+### App _root module_
 
+#### Style 04-08
 
 <div class="s-rule do">
 
@@ -2867,16 +2900,18 @@ for example, in `/src/app`.
 <a href="#toc">Back to top</a>
 
 
-### {@a 04-09}Feature modules
+{@a 04-09}
 
-#### <a href="#04-09">Style 04-09</a>
+### Feature modules
+
+#### Style 04-09
 
 
 <div class="s-rule do">
 
 
 
-**Do** create an Angular module for all distinct features in an application; 
+**Do** create an Angular module for all distinct features in an application;
 for example, a `Heroes` feature.
 
 
@@ -2900,7 +2935,7 @@ for example, in `app/heroes`.
 
 
 
-**Do** name the feature module file reflecting the name of the feature area 
+**Do** name the feature module file reflecting the name of the feature area
 and folder; for example, `app/heroes/heroes.module.ts`.
 
 
@@ -2912,7 +2947,7 @@ and folder; for example, `app/heroes/heroes.module.ts`.
 
 
 
-**Do** name the feature module symbol reflecting the name of the feature 
+**Do** name the feature module symbol reflecting the name of the feature
 area, folder, and file; for example, `app/heroes/heroes.module.ts` defines `HeroesModule`.
 
 
@@ -2935,7 +2970,7 @@ area, folder, and file; for example, `app/heroes/heroes.module.ts` defines `Hero
 
 
 
-**Why?** A feature module identifies distinct sets of related components that comprise the feature area. 
+**Why?** A feature module identifies distinct sets of related components that comprise the feature area.
 
 
 </div>
@@ -2946,7 +2981,7 @@ area, folder, and file; for example, `app/heroes/heroes.module.ts` defines `Hero
 
 
 
-**Why?** A feature module can easily be routed to both eagerly and lazily. 
+**Why?** A feature module can easily be routed to both eagerly and lazily.
 
 
 </div>
@@ -2957,7 +2992,7 @@ area, folder, and file; for example, `app/heroes/heroes.module.ts` defines `Hero
 
 
 
-**Why?** A feature module defines clear boundaries between specific functionality and other application features. 
+**Why?** A feature module defines clear boundaries between specific functionality and other application features.
 
 
 </div>
@@ -2986,17 +3021,18 @@ area, folder, and file; for example, `app/heroes/heroes.module.ts` defines `Hero
 
 <a href="#toc">Back to top</a>
 
+{@a 04-10}
 
-### {@a 04-10}Shared feature module
+### Shared feature module
 
-#### <a href="#04-10">Style 04-10</a>
+#### Style 04-10
 
 
 <div class="s-rule do">
 
 
 
-**Do** create a feature module named `SharedModule` in a `shared` folder; 
+**Do** create a feature module named `SharedModule` in a `shared` folder;
 for example, `app/shared/shared.module.ts` defines `SharedModule`.
 
 
@@ -3008,7 +3044,7 @@ for example, `app/shared/shared.module.ts` defines `SharedModule`.
 
 
 
-**Do** declare components, directives, and pipes in a shared module when those 
+**Do** declare components, directives, and pipes in a shared module when those
 items will be re-used and referenced by the components declared in other feature modules.
 
 
@@ -3020,7 +3056,7 @@ items will be re-used and referenced by the components declared in other feature
 
 
 
-**Consider** using the name SharedModule when the contents of a shared 
+**Consider** using the name SharedModule when the contents of a shared
 module are referenced across the entire application.
 
 
@@ -3032,8 +3068,8 @@ module are referenced across the entire application.
 
 
 
-**Avoid** providing services in shared modules. Services are usually 
-singletons that are provided once for the entire application or 
+**Avoid** providing services in shared modules. Services are usually
+singletons that are provided once for the entire application or
 in a particular feature module.
 
 
@@ -3057,8 +3093,8 @@ for example, `CommonModule` and `FormsModule`.
 
 
 
-**Why?** `SharedModule` will contain components, directives and pipes 
-that may need features from another common module; for example, 
+**Why?** `SharedModule` will contain components, directives and pipes
+that may need features from another common module; for example,
 `ngFor` in `CommonModule`.
 
 
@@ -3081,7 +3117,7 @@ that may need features from another common module; for example,
 
 
 
-**Do** export all symbols from the `SharedModule` that other feature modules need to use.  
+**Do** export all symbols from the `SharedModule` that other feature modules need to use.
 
 
 </div>
@@ -3125,7 +3161,7 @@ that may need features from another common module; for example,
 
 
 
-**Why?** You don't want each module to have its own separate instance of singleton services. 
+**Why?** You don't want each module to have its own separate instance of singleton services.
 Yet there is a real danger of that happening if the `SharedModule` provides a service.
 
 
@@ -3237,10 +3273,11 @@ Yet there is a real danger of that happening if the `SharedModule` provides a se
 
 <a href="#toc">Back to top</a>
 
+{@a 04-11}
 
-### {@a 04-11}Core feature module
+### Core feature module
 
-#### <a href="#04-11">Style 04-11</a>
+#### Style 04-11
 
 
 <div class="s-rule consider">
@@ -3260,7 +3297,7 @@ to simplify the apparent structure of a feature module.
 
 
 **Consider** calling the application-wide core module, `CoreModule`.
-Importing `CoreModule` into the root `AppModule` reduces its complexity 
+Importing `CoreModule` into the root `AppModule` reduces its complexity
 and emphasizes its role as orchestrator of the application as a whole.
 
 
@@ -3339,8 +3376,8 @@ Import it once (in the `AppModule`) when the app starts and never import it anyw
 
 
 
-**Why?** Real world apps can have several single-use components (e.g., spinners, message toasts, and modal dialogs) that appear only in the `AppComponent` template. 
-They are not imported elsewhere so they're not shared in that sense. 
+**Why?** Real world apps can have several single-use components (e.g., spinners, message toasts, and modal dialogs) that appear only in the `AppComponent` template.
+They are not imported elsewhere so they're not shared in that sense.
 Yet they're too big and messy to leave loose in the root folder.
 
 
@@ -3374,7 +3411,7 @@ Yet they're too big and messy to leave loose in the root folder.
 
 
 
-**Why?** An eagerly loaded feature module already has access to the `AppModule`'s injector, and thus the `CoreModule`'s services. 
+**Why?** An eagerly loaded feature module already has access to the `AppModule`'s injector, and thus the `CoreModule`'s services.
 
 
 </div>
@@ -3385,7 +3422,7 @@ Yet they're too big and messy to leave loose in the root folder.
 
 
 
-**Do** export all symbols from the `CoreModule` that the `AppModule` will import and make available for other feature modules to use.  
+**Do** export all symbols from the `CoreModule` that the `AppModule` will import and make available for other feature modules to use.
 
 
 </div>
@@ -3408,7 +3445,7 @@ Yet they're too big and messy to leave loose in the root folder.
 
 
 **Why?** You want the entire app to use the one, singleton instance.
-You don't want each module to have its own separate instance of singleton services. 
+You don't want each module to have its own separate instance of singleton services.
 Yet there is a real danger of that happening accidentally if the `CoreModule` provides a service.
 
 
@@ -3553,9 +3590,9 @@ Yet there is a real danger of that happening accidentally if the `CoreModule` pr
 
 
 
-`AppModule` is a little smaller because many app/root classes have moved to other modules. 
-`AppModule` is stable because you will add future components and providers to other modules, not this one. 
-`AppModule` delegates to imported modules rather than doing work. 
+`AppModule` is a little smaller because many app/root classes have moved to other modules.
+`AppModule` is stable because you will add future components and providers to other modules, not this one.
+`AppModule` delegates to imported modules rather than doing work.
 `AppModule` is focused on its main task, orchestrating the app as a whole.
 
 
@@ -3563,12 +3600,13 @@ Yet there is a real danger of that happening accidentally if the `CoreModule` pr
 
 <a href="#toc">Back to top</a>
 
+{@a 04-12}
 
-### {@a 04-12}Prevent re-import of the core module
+### Prevent re-import of the core module
 
-#### <a href="#04-12">Style 04-12</a>
+#### Style 04-12
 
-Only the root `AppModule` should import the `CoreModule`. 
+Only the root `AppModule` should import the `CoreModule`.
 
 
 <div class="s-rule do">
@@ -3620,10 +3658,11 @@ Only the root `AppModule` should import the `CoreModule`.
 
 <a href="#toc">Back to top</a>
 
+{@a 04-13}
 
-### {@a 04-13}Lazy Loaded folders
+### Lazy Loaded folders
 
-#### <a href="#04-13">Style 04-13</a>
+#### Style 04-13
 
 A distinct application feature or workflow may be *lazy loaded* or *loaded on demand* rather than when the application starts.
 
@@ -3651,10 +3690,11 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 <a href="#toc">Back to top</a>
 
+{@a 04-14}
 
-### {@a 04-14}Never directly import lazy loaded folders
+### Never directly import lazy loaded folders
 
-#### <a href="#04-14">Style 04-14</a>
+#### Style 04-14
 
 
 <div class="s-rule avoid">
@@ -3682,9 +3722,11 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 ## Components
 
-### {@a 05-02}Component selector names
+{@a 05-02}
 
-#### <a href="#05-02">Style 05-02</a>
+### Component selector names
+
+#### Style 05-02
 
 
 <div class="s-rule do">
@@ -3733,10 +3775,11 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 <a href="#toc">Back to top</a>
 
+{@a 05-03}
 
-### {@a 05-03}Components as elements
+### Components as elements
 
-#### <a href="#05-03">Style 05-03</a>
+#### Style 05-03
 
 
 <div class="s-rule do">
@@ -3755,7 +3798,7 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 
 **Why?** components have templates containing HTML and optional Angular template syntax.
-They display content. 
+They display content.
 Developers place components on the page as they would native HTML elements and web components.
 
 
@@ -3806,10 +3849,11 @@ Developers place components on the page as they would native HTML elements and w
 
 <a href="#toc">Back to top</a>
 
+{@a 05-04}
 
-### {@a 05-04}Extract templates and styles to their own files
+### Extract templates and styles to their own files
 
-#### <a href="#05-04">Style 05-04</a>
+#### Style 05-04
 
 
 <div class="s-rule do">
@@ -3931,17 +3975,18 @@ in those editors that support it; it won't help with CSS styles.
 
 <a href="#toc">Back to top</a>
 
+{@a 05-12}
 
-### {@a 05-12}Decorate _input_ and _output_ properties
+### Decorate _input_ and _output_ properties
 
-#### <a href="#05-12">Style 05-12</a>
+#### Style 05-12
 
 
 <div class="s-rule do">
 
 
 
-**Do** use the `@Input()` and `@Output()` class decorators instead of the `inputs` and `outputs` properties of the 
+**Do** use the `@Input()` and `@Output()` class decorators instead of the `inputs` and `outputs` properties of the
 `@Directive` and `@Component` metadata:
 
 
@@ -3975,7 +4020,7 @@ in those editors that support it; it won't help with CSS styles.
 
 
 
-**Why?** If you ever need to rename the property or event name associated with 
+**Why?** If you ever need to rename the property or event name associated with
 `@Input` or `@Output`, you can modify it in a single place.
 
 
@@ -4023,9 +4068,11 @@ Put it on the line above when doing so is clearly more readable.
 <a href="#toc">Back to top</a>
 
 
-### {@a 05-13}Avoid aliasing _inputs_ and _outputs_
+{@a 05-13}
 
-#### <a href="#05-13">Style 05-13</a>
+### Avoid aliasing _inputs_ and _outputs_
+
+#### Style 05-13
 
 
 <div class="s-rule avoid">
@@ -4054,7 +4101,7 @@ Put it on the line above when doing so is clearly more readable.
 
 
 
-**Why?** You should use an alias when the directive name is also an _input_ property, 
+**Why?** You should use an alias when the directive name is also an _input_ property,
 and the directive name doesn't describe the property.
 
 
@@ -4098,10 +4145,11 @@ and the directive name doesn't describe the property.
 
 <a href="#toc">Back to top</a>
 
+{@a 05-14}
 
-### {@a 05-14}Member sequence
+### Member sequence
 
-#### <a href="#05-14">Style 05-14</a>
+#### Style 05-14
 
 
 <div class="s-rule do">
@@ -4130,7 +4178,7 @@ and the directive name doesn't describe the property.
 
 
 
-**Why?** Placing members in a consistent sequence makes it easy to read and 
+**Why?** Placing members in a consistent sequence makes it easy to read and
 helps instantly identify which members of the component serve which purpose.
 
 
@@ -4154,10 +4202,11 @@ helps instantly identify which members of the component serve which purpose.
 
 <a href="#toc">Back to top</a>
 
+{@a 05-15}
 
-### {@a 05-15}Delegate complex component logic to services
+### Delegate complex component logic to services
 
-#### <a href="#05-15">Style 05-15</a>
+#### Style 05-15
 
 
 <div class="s-rule do">
@@ -4242,10 +4291,11 @@ helps instantly identify which members of the component serve which purpose.
 
 <a href="#toc">Back to top</a>
 
+{@a 05-16}
 
-### {@a 05-16}Don't prefix _output_ properties
+### Don't prefix _output_ properties
 
-#### <a href="#05-16">Style 05-16</a>
+#### Style 05-16
 
 
 <div class="s-rule do">
@@ -4324,10 +4374,11 @@ helps instantly identify which members of the component serve which purpose.
 
 <a href="#toc">Back to top</a>
 
+{@a 05-17}
 
-### {@a 05-17}Put presentation logic in the component class
+### Put presentation logic in the component class
 
-#### <a href="#05-17">Style 05-17</a>
+#### Style 05-17
 
 
 <div class="s-rule do">
@@ -4382,11 +4433,11 @@ helps instantly identify which members of the component serve which purpose.
 
 ## Directives
 
+{@a 06-01}
 
+### Use directives to enhance an element
 
-### {@a 06-01}Use directives to enhance an element
-
-#### <a href="#06-01">Style 06-01</a>
+#### Style 06-01
 
 
 <div class="s-rule do">
@@ -4438,17 +4489,18 @@ helps instantly identify which members of the component serve which purpose.
 
 <a href="#toc">Back to top</a>
 
+{@a 06-03}
 
-### {@a 06-03}_HostListener_/_HostBinding_ decorators versus _host_ metadata
+### _HostListener_/_HostBinding_ decorators versus _host_ metadata
 
-#### <a href="#06-03">Style 06-03</a>
+#### Style 06-03
 
 
 <div class="s-rule consider">
 
 
 
-**Consider** preferring the `@HostListener` and `@HostBinding` to the 
+**Consider** preferring the `@HostListener` and `@HostBinding` to the
 `host` property of the `@Directive` and `@Component` decorators.
 
 
@@ -4471,9 +4523,9 @@ helps instantly identify which members of the component serve which purpose.
 
 
 
-**Why?** The property associated with `@HostBinding` or the method associated with `@HostListener` 
-can be modified only in a single place&mdash;in the directive's class. 
-If you use the `host` metadata property, you must modify both the property declaration inside the controller, 
+**Why?** The property associated with `@HostBinding` or the method associated with `@HostListener`
+can be modified only in a single place&mdash;in the directive's class.
+If you use the `host` metadata property, you must modify both the property declaration inside the controller,
 and the metadata associated with the directive.
 
 
@@ -4512,9 +4564,11 @@ Compare with the less preferred `host` metadata alternative.
 
 ## Services
 
-### {@a 07-01}Services are singletons
+{@a 07-01}
 
-#### <a href="#07-01">Style 07-01</a>
+### Services are singletons
+
+#### Style 07-01
 
 
 <div class="s-rule do">
@@ -4558,10 +4612,11 @@ Compare with the less preferred `host` metadata alternative.
 
 <a href="#toc">Back to top</a>
 
+{@a 07-02}
 
-### {@a 07-02}Single responsibility
+### Single responsibility
 
-#### <a href="#07-02">Style 07-02</a>
+#### Style 07-02
 
 
 <div class="s-rule do">
@@ -4608,10 +4663,11 @@ Compare with the less preferred `host` metadata alternative.
 
 <a href="#toc">Back to top</a>
 
+{@a 07-03}
 
-### {@a 07-03}Providing a service
+### Providing a service
 
-#### <a href="#07-03">Style 07-03</a>
+#### Style 07-03
 
 
 <div class="s-rule do">
@@ -4640,7 +4696,7 @@ Compare with the less preferred `host` metadata alternative.
 
 
 
-**Why?** When providing the service to a top level component, 
+**Why?** When providing the service to a top level component,
 that instance is shared and available to all child components of that top level component.
 
 
@@ -4686,10 +4742,11 @@ that instance is shared and available to all child components of that top level 
 
 <a href="#toc">Back to top</a>
 
+{@a 07-04}
 
-### {@a 07-04}Use the @Injectable() class decorator
+### Use the @Injectable() class decorator
 
-#### <a href="#07-04">Style 07-04</a>
+#### Style 07-04
 
 
 <div class="s-rule do">
@@ -4707,7 +4764,7 @@ that instance is shared and available to all child components of that top level 
 
 
 
-**Why?** The Angular Dependency Injection (DI) mechanism resolves a service's own 
+**Why?** The Angular Dependency Injection (DI) mechanism resolves a service's own
 dependencies based on the declared types of that service's constructor parameters.
 
 
@@ -4745,9 +4802,11 @@ dependencies based on the declared types of that service's constructor parameter
 
 ## Data Services
 
-### {@a 08-01}Talk to the server through a service
+{@a 08-01}
 
-#### <a href="#08-01">Style 08-01</a>
+### Talk to the server through a service
+
+#### Style 08-01
 
 
 <div class="s-rule do">
@@ -4798,12 +4857,12 @@ dependencies based on the declared types of that service's constructor parameter
 
 
 
-**Why?** The details of data management, such as headers, HTTP methods, 
-caching, error handling, and retry logic, are irrelevant to components 
+**Why?** The details of data management, such as headers, HTTP methods,
+caching, error handling, and retry logic, are irrelevant to components
 and other data consumers.
 
-A data service encapsulates these details. It's easier to evolve these 
-details inside the service without affecting its consumers. And it's 
+A data service encapsulates these details. It's easier to evolve these
+details inside the service without affecting its consumers. And it's
 easier to test the consumers with mock service implementations.
 
 
@@ -4815,12 +4874,14 @@ easier to test the consumers with mock service implementations.
 ## Lifecycle hooks
 
 Use Lifecycle hooks to tap into important events exposed by Angular.
+
 <a href="#toc">Back to top</a>
 
+{@a 09-01}
 
-### {@a 09-01}Implement lifecycle hook interfaces
+### Implement lifecycle hook interfaces
 
-#### <a href="#09-01">Style 09-01</a>
+#### Style 09-01
 
 
 <div class="s-rule do">
@@ -4838,7 +4899,7 @@ Use Lifecycle hooks to tap into important events exposed by Angular.
 
 
 
-**Why?** Lifecycle interfaces prescribe typed method 
+**Why?** Lifecycle interfaces prescribe typed method
 signatures. use those signatures to flag spelling and syntax mistakes.
 
 
@@ -4866,12 +4927,14 @@ signatures. use those signatures to flag spelling and syntax mistakes.
 ## Appendix
 
 Useful tools and tips for Angular.
+
 <a href="#toc">Back to top</a>
 
+{@a A-01}
 
-### {@a A-01}Codelyzer
+### Codelyzer
 
-#### <a href="#A-01">Style A-01</a>
+#### Style A-01
 
 
 <div class="s-rule do">
@@ -4896,10 +4959,11 @@ Useful tools and tips for Angular.
 
 <a href="#toc">Back to top</a>
 
+{@a A-02}
 
-### {@a A-02}File templates and snippets
+### File templates and snippets
 
-#### <a href="#A-02">Style A-02</a>
+#### Style A-02
 
 
 <div class="s-rule do">
@@ -4921,7 +4985,7 @@ Useful tools and tips for Angular.
 
 <a href="https://marketplace.visualstudio.com/items?itemName=johnpapa.Angular2">
   <img src="https://github.com/johnpapa/vscode-angular2-snippets/raw/master/images/use-extension.gif" width="80%" alt="Use Extension">
-</a>  
+</a>
 
 **Consider** using [snippets](https://atom.io/packages/angular-2-typescript-snippets) for [Atom](https://atom.io/) that follow these styles and guidelines.
 
