@@ -8,6 +8,12 @@
   }
 }
 
+aio-shell.marketing {
+  md-sidenav-container.sidenav-container {
+    max-width: none;
+  }
+}
+
 div[layout=row]{
     display: flex;
     box-sizing: border-box;
