@@ -9,20 +9,10 @@ import {
   SimpleChange,
   ViewEncapsulation,
   AfterViewChecked,
-  Optional,
-  SkipSelf,
 } from '@angular/core';
-import {Http} from '@angular/http';
-import {DomSanitizer} from '@angular/platform-browser';
-import {MdError} from '../core';
-import {MdIconRegistry, MdIconNameNotFoundError} from './icon-registry';
+import {MdIconRegistry} from './icon-registry';
+import {MdIconNameNotFoundError, MdIconInvalidNameError} from './icon-errors';
 
-/** Exception thrown when an invalid icon name is passed to an md-icon component. */
-export class MdIconInvalidNameError extends MdError {
-  constructor(iconName: string) {
-      super(`Invalid icon name: "${iconName}"`);
-  }
-}
 
 /**
  * Component to display an icon. It can be used in the following ways:
@@ -250,15 +240,3 @@ export class MdIcon implements OnChanges, OnInit, AfterViewChecked {
     }
   }
 }
-
-export function ICON_REGISTRY_PROVIDER_FACTORY(
-    parentRegistry: MdIconRegistry, http: Http, sanitizer: DomSanitizer) {
-  return parentRegistry || new MdIconRegistry(http, sanitizer);
-}
-
-export const ICON_REGISTRY_PROVIDER = {
-  // If there is already an MdIconRegistry available, use that. Otherwise, provide a new one.
-  provide: MdIconRegistry,
-  deps: [[new Optional(), new SkipSelf(), MdIconRegistry], Http, DomSanitizer],
-  useFactory: ICON_REGISTRY_PROVIDER_FACTORY,
-};

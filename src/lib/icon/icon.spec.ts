@@ -1,10 +1,11 @@
 import {inject, async, TestBed} from '@angular/core/testing';
 import {SafeResourceUrl, DomSanitizer} from '@angular/platform-browser';
-import {XHRBackend} from '@angular/http';
+import {HttpModule, XHRBackend} from '@angular/http';
 import {MockBackend} from '@angular/http/testing';
 import {Component} from '@angular/core';
 import {MdIconModule} from './index';
 import {MdIconRegistry} from './icon-registry';
+import {MdIconNoHttpProviderError} from './icon-errors';
 import {getFakeSvgHttpResponse} from './fake-svgs';
 
 
@@ -36,7 +37,7 @@ describe('MdIcon', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdIconModule],
+      imports: [HttpModule, MdIconModule],
       declarations: [
         MdIconColorTestApp,
         MdIconLigatureTestApp,
@@ -391,6 +392,37 @@ describe('MdIcon', () => {
   function trust(iconUrl: string): SafeResourceUrl {
     return sanitizer.bypassSecurityTrustResourceUrl(iconUrl);
   }
+});
+
+
+describe('MdIcon without HttpModule', () => {
+  let mdIconRegistry: MdIconRegistry;
+  let sanitizer: DomSanitizer;
+
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [MdIconModule],
+      declarations: [MdIconFromSvgNameTestApp],
+    });
+
+    TestBed.compileComponents();
+  }));
+
+  beforeEach(inject([MdIconRegistry, DomSanitizer], (mir: MdIconRegistry, ds: DomSanitizer) => {
+    mdIconRegistry = mir;
+    sanitizer = ds;
+  }));
+
+  it('should throw an error when trying to load a remote icon', async() => {
+    expect(() => {
+      mdIconRegistry.addSvgIcon('fido', sanitizer.bypassSecurityTrustResourceUrl('dog.svg'));
+
+      let fixture = TestBed.createComponent(MdIconFromSvgNameTestApp);
+
+      fixture.componentInstance.iconName = 'fido';
+      fixture.detectChanges();
+    }).toThrowError(MdIconNoHttpProviderError);
+  });
 });
 
 

@@ -1,6 +1,4 @@
-import {
-  Response,
-  ResponseOptions} from '@angular/http';
+import {Response, ResponseOptions} from '@angular/http';
 
 /**
  * Fake URLs and associated SVG documents used by tests.

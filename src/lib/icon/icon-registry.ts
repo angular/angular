@@ -1,8 +1,12 @@
-import {Injectable, SecurityContext} from '@angular/core';
+import {Injectable, SecurityContext, Optional, SkipSelf} from '@angular/core';
 import {SafeResourceUrl, DomSanitizer} from '@angular/platform-browser';
 import {Http} from '@angular/http';
-import {MdError} from '../core';
 import {Observable} from 'rxjs/Observable';
+import {
+  MdIconNameNotFoundError,
+  MdIconSvgTagNotFoundError,
+  MdIconNoHttpProviderError,
+} from './icon-errors';
 import 'rxjs/add/observable/forkJoin';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/map';
@@ -15,27 +19,6 @@ import 'rxjs/add/observable/throw';
 
 
 /**
- * Exception thrown when attempting to load an icon with a name that cannot be found.
- * @docs-private
- */
-export class MdIconNameNotFoundError extends MdError {
-  constructor(iconName: string) {
-    super(`Unable to find icon with the name "${iconName}"`);
-  }
-}
-
-/**
- * Exception thrown when attempting to load SVG content that does not contain the expected
- * <svg> tag.
- * @docs-private
- */
-export class MdIconSvgTagNotFoundError extends MdError {
-  constructor() {
-    super('<svg> tag not found');
-  }
-}
-
-/**
  * Configuration for an icon, including the URL and possibly the cached SVG element.
  * @docs-private
  */
@@ -43,9 +26,6 @@ class SvgIconConfig {
   svgElement: SVGElement = null;
   constructor(public url: SafeResourceUrl) { }
 }
-
-/** Returns the cache key to use for an icon namespace and name. */
-const iconKey = (namespace: string, name: string) => namespace + ':' + name;
 
 /**
  * Service to register and display icons used by the <md-icon> component.
@@ -83,7 +63,7 @@ export class MdIconRegistry {
    */
   private _defaultFontSetClass = 'material-icons';
 
-  constructor(private _http: Http, private _sanitizer: DomSanitizer) {}
+  constructor(@Optional() private _http: Http, private _sanitizer: DomSanitizer) {}
 
   /**
    * Registers an icon by URL in the default namespace.
@@ -386,7 +366,11 @@ export class MdIconRegistry {
    * cached, so future calls with the same URL may not cause another HTTP request.
    */
   private _fetchUrl(safeUrl: SafeResourceUrl): Observable<string> {
-    let url = this._sanitizer.sanitize(SecurityContext.RESOURCE_URL, safeUrl);
+    if (!this._http) {
+      throw new MdIconNoHttpProviderError();
+    }
+
+    const url = this._sanitizer.sanitize(SecurityContext.RESOURCE_URL, safeUrl);
 
     // Store in-progress fetches to avoid sending a duplicate request for a URL when there is
     // already a request in progress for that URL. It's necessary to call share() on the
@@ -408,8 +392,24 @@ export class MdIconRegistry {
   }
 }
 
+export function ICON_REGISTRY_PROVIDER_FACTORY(
+    parentRegistry: MdIconRegistry, http: Http, sanitizer: DomSanitizer) {
+  return parentRegistry || new MdIconRegistry(http, sanitizer);
+}
+
+export const ICON_REGISTRY_PROVIDER = {
+  // If there is already an MdIconRegistry available, use that. Otherwise, provide a new one.
+  provide: MdIconRegistry,
+  deps: [[new Optional(), new SkipSelf(), MdIconRegistry], [new Optional(), Http], DomSanitizer],
+  useFactory: ICON_REGISTRY_PROVIDER_FACTORY
+};
 
 /** Clones an SVGElement while preserving type information. */
 function cloneSvg(svg: SVGElement): SVGElement {
   return svg.cloneNode(true) as SVGElement;
+}
+
+/** Returns the cache key to use for an icon namespace and name. */
+function iconKey(namespace: string, name: string) {
+  return namespace + ':' + name;
 }
