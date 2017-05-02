@@ -1,0 +1,9 @@
+{% import "lib/paramList.html" as params -%}
+{% extends 'export-base.template.html' -%}
+
+{% block details %}
+  <code-example language="ts" hideCopy="true">
+  function {$ doc.name $}{$ params.paramList(doc.parameters) $}: {$ doc.returnType or 'any' $};
+  </code-example>
+  {% include "includes/description.html" %}
+{% endblock %}
