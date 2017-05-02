@@ -25,7 +25,7 @@
     "@angular/router": "~4.0.0",
     "@angular/tsc-wrapped": "~4.0.0",
     "@angular/upgrade": "~4.0.0",
-    "angular-in-memory-web-api": "~0.3.1",
+    "angular-in-memory-web-api": "~0.3.2",
     "core-js": "^2.4.1",
     "rxjs": "5.0.1",
     "systemjs": "0.19.39",

@@ -119,7 +119,7 @@ Add the file `in-memory-data.service.ts` in `app` with the following content:
 
 
 This file replaces `mock-heroes.ts`, which is now safe to delete.
-
+Added hero "Zero" to confirm that the data service can handle a hero with `id==0`.
 
 <div class="alert is-helpful">
 
