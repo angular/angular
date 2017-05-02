@@ -883,9 +883,9 @@ export declare interface SelfDecorator {
 export declare function setTestabilityGetter(getter: GetTestability): void;
 
 export declare class SimpleChange {
-    currentValue: any;
-    firstChange: boolean;
-    previousValue: any;
+    readonly currentValue: any;
+    readonly firstChange: boolean;
+    readonly previousValue: any;
     constructor(previousValue: any, currentValue: any, firstChange: boolean);
     isFirstChange(): boolean;
 }

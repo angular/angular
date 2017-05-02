@@ -16,7 +16,9 @@
  * @publicApi
  */
 export class SimpleChange {
-  constructor(public previousValue: any, public currentValue: any, public firstChange: boolean) {}
+  constructor(
+      readonly previousValue: any, readonly currentValue: any, readonly firstChange: boolean) {}
+
   /**
    * Check whether the new value is the first value assigned.
    */
@@ -24,6 +26,7 @@ export class SimpleChange {
     return this.firstChange;
   }
 }
+
 
 /**
  * A hashtable of changes represented by {@link SimpleChange} objects stored

@@ -283,7 +283,7 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
     // `previousValue` and `isFirstChange`.
     const pendingChange = this.inputChanges[property];
     if (pendingChange) {
-      pendingChange.currentValue = currentValue;
+      (pendingChange as {currentValue: any}).currentValue = currentValue;
       return;
     }
 

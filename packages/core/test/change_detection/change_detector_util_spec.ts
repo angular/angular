@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {SimpleChange} from '@angular/core/src/change_detection/change_detection';
 import {devModeEqual} from '@angular/core/src/change_detection/change_detection_util';
 
 {
@@ -51,6 +52,20 @@ import {devModeEqual} from '@angular/core/src/change_detection/change_detection_
 
       it('should return true for other objects', () => {
         expect(devModeEqual({}, {})).toBe(true);
+      });
+    });
+  });
+
+  describe('SimpleChange', () => {
+    describe('isFirstChange', () => {
+      it('should be true if the simple change is a first change', () => {
+        const subject = new SimpleChange('previous value', 'current value', true);
+        expect(subject.isFirstChange()).toBe(true);
+      });
+
+      it('should be false if the simple change is not a first change', () => {
+        const subject = new SimpleChange('previous value', 'current value', false);
+        expect(subject.isFirstChange()).toBe(false);
       });
     });
   });

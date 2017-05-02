@@ -426,7 +426,7 @@ The *onChanges* example demonstrates this by monitoring the `OnChanges()` hook.
 <code-example path="lifecycle-hooks/src/app/on-changes.component.ts" region="ng-on-changes" header="on-changes.component.ts (excerpt)"></code-example>
 
 The `ngOnChanges()` method takes an object that maps each changed property name to a
-[SimpleChange](api/core/SimpleChange) object holding the current and previous property values.
+[SimpleChange](api/core/SimpleChange) immutable object holding the current and previous property values.
 This hook iterates over the changed properties and logs them.
 
 The example component, `OnChangesComponent`, has two input properties: `hero` and `power`.
