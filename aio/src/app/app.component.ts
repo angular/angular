@@ -19,9 +19,13 @@ const sideNavView = 'SideNav';
 })
 export class AppComponent implements OnInit {
 
+  currentDocument: DocumentContents;
+  currentDocVersion: NavigationNode;
   currentNode: CurrentNode;
   currentPath: string;
+  docVersions: NavigationNode[];
   dtOn = false;
+  footerNodes: NavigationNode[];
 
   /**
    * An HTML friendly identifier for the currently displayed page.
@@ -46,9 +50,6 @@ export class AppComponent implements OnInit {
   @HostBinding('class')
   hostClasses = '';
 
-  currentDocument: DocumentContents;
-  footerNodes: NavigationNode[];
-
   isStarting = true;
   isSideBySide = false;
   private isSideNavDoc = false;
@@ -57,9 +58,8 @@ export class AppComponent implements OnInit {
   private sideBySideWidth = 1032;
   sideNavNodes: NavigationNode[];
   topMenuNodes: NavigationNode[];
-
-  currentDocVersion: NavigationNode;
-  docVersions: NavigationNode[];
+  tocMaxHeight: string;
+  private tocMaxHeightOffset = 0;
   versionInfo: VersionInfo;
 
   get homeImageUrl() {
@@ -86,10 +86,11 @@ export class AppComponent implements OnInit {
   constructor(
     private autoScrollService: AutoScrollService,
     private documentService: DocumentService,
+    private hostElement: ElementRef,
     private locationService: LocationService,
     private navigationService: NavigationService,
     private swUpdateNotifications: SwUpdateNotificationsService
-  ) { }
+  ) {  }
 
   ngOnInit() {
     this.onResize(window.innerWidth);
@@ -208,5 +209,20 @@ export class AppComponent implements OnInit {
     const viewClass = `view-${this.currentNode && this.currentNode.view}`;
 
     this.hostClasses = `${pageClass} ${folderClass} ${viewClass}`;
+  }
+
+  // Dynamically change height of table of contents container
+  @HostListener('window:scroll')
+  onScroll() {
+    if (!this.tocMaxHeightOffset) {
+      // Must wait until now for md-toolbar to be measurable.
+      const el = this.hostElement.nativeElement as Element;
+      this.tocMaxHeightOffset =
+          el.querySelector('footer').clientHeight +
+          el.querySelector('md-toolbar.app-toolbar').clientHeight +
+          44; //  margin
+    }
+
+    this.tocMaxHeight = (document.body.scrollHeight - window.pageYOffset - this.tocMaxHeightOffset).toFixed(2);
   }
 }
