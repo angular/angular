@@ -2,8 +2,10 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en" datatype="plaintext" original="ng2.template">
     <body>
-      <trans-unit id="af2ccf4b5dba59616e92cf1531505af02da8f6d2" datatype="html">
-        <source>Hello i18n!</source>
+      <trans-unit id="introductionHeader" datatype="html">
+        <source>
+  Hello i18n!
+</source>
         <target/>
         <note priority="1" from="description">An introduction header for this sample</note>
         <note priority="1" from="meaning">User welcome</note>
@@ -24,12 +26,6 @@ I don&apos;t output any element either
         <source>Angular logo</source>
         <target/>
       </trans-unit>
-      <trans-unit id="2579611bfcccd75bcd41fac90150d27d6ebb30b8" datatype="html">
-        <source>
-<x id="START_TAG_SPAN" ctype="x-span"/><x id="ICU"/><x id="CLOSE_TAG_SPAN" ctype="x-span"/>
-</source>
-        <target/>
-      </trans-unit>
       <trans-unit id="6e22e74e8cbd3095560cfe08993c4fdfa3c50eb0" datatype="html">
         <source/>
         <target/>
@@ -39,6 +35,14 @@ I don&apos;t output any element either
         <target/>
       </trans-unit>
       <trans-unit id="14c7055d67771a3b7b6888d282ac092896be06b6" datatype="html">
+        <source/>
+        <target/>
+      </trans-unit>
+      <trans-unit id="2cf9a08c5b6e3612572a2a36dd46563013848382" datatype="html">
+        <source>Here we have: <x id="ICU"/></source>
+        <target/>
+      </trans-unit>
+      <trans-unit id="db1b921b55301ce3957e382090729562002da036" datatype="html">
         <source/>
         <target/>
       </trans-unit>

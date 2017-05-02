@@ -30,4 +30,8 @@ describe('i18n E2E Tests', () => {
     expect(element.all(by.css('span')).get(1).getText()).toBe('El heroe es mujer');
   });
 
+  it('should display the nested expression', function() {
+    expect(element.all(by.css('span')).get(2).getText()).toBe('Aquí tenemos: 3 mujeres');
+  });
+
 });
