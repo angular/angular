@@ -480,15 +480,9 @@ describe('MdDialog', () => {
   });
 
   describe('focus management', () => {
-
     // When testing focus, all of the elements must be in the DOM.
-    beforeEach(() => {
-      document.body.appendChild(overlayContainerElement);
-    });
-
-    afterEach(() => {
-      document.body.removeChild(overlayContainerElement);
-    });
+    beforeEach(() => document.body.appendChild(overlayContainerElement));
+    afterEach(() => document.body.removeChild(overlayContainerElement));
 
     it('should focus the first tabbable element of the dialog on open', fakeAsync(() => {
       dialog.open(PizzaMsg, {
@@ -515,17 +509,19 @@ describe('MdDialog', () => {
 
       viewContainerFixture.detectChanges();
       flushMicrotasks();
-
       expect(document.activeElement.id)
           .not.toBe('dialog-trigger', 'Expected the focus to change when dialog was opened.');
 
       dialogRef.close();
+      expect(document.activeElement.id).not.toBe('dialog-trigger',
+          'Expcted the focus not to have changed before the animation finishes.');
+
       tick(500);
       viewContainerFixture.detectChanges();
       flushMicrotasks();
 
-      expect(document.activeElement.id)
-          .toBe('dialog-trigger', 'Expected that the trigger was refocused after dialog close');
+      expect(document.activeElement.id).toBe('dialog-trigger',
+          'Expected that the trigger was refocused after the dialog is closed.');
 
       document.body.removeChild(button);
     }));
@@ -552,7 +548,7 @@ describe('MdDialog', () => {
       flushMicrotasks();
 
       expect(document.activeElement.id).toBe('input-to-be-focused',
-          'Expected that the trigger was refocused after dialog close');
+          'Expected that the trigger was refocused after the dialog is closed.');
 
       document.body.removeChild(button);
       document.body.removeChild(input);

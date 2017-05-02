@@ -42,7 +42,7 @@ export class MdDialogRef<T> {
    */
   close(dialogResult?: any): void {
     this._result = dialogResult;
-    this._containerInstance._exit();
+    this._containerInstance._state = 'exit';
     this._overlayRef.detachBackdrop(); // Transition the backdrop in parallel with the dialog.
   }
 

@@ -109,9 +109,7 @@ export class MdDialogContainer extends BasePortalHost {
     return this._portalHost.attachTemplatePortal(portal);
   }
 
-  /**
-   * Moves the focus inside the focus trap.
-   */
+  /** Moves the focus inside the focus trap. */
   private _trapFocus() {
     if (!this._focusTrap) {
       this._focusTrap = this._focusTrapFactory.create(this._elementRef.nativeElement);
@@ -123,37 +121,11 @@ export class MdDialogContainer extends BasePortalHost {
     this._focusTrap.focusFirstTabbableElementWhenReady();
   }
 
-  /**
-   * Saves a reference to the element that was focused before the dialog was opened.
-   */
-  private _savePreviouslyFocusedElement() {
-    if (this._document) {
-      this._elementFocusedBeforeDialogWasOpened = this._document.activeElement as HTMLElement;
-    }
-  }
+  /** Restores focus to the element that was focused before the dialog opened. */
+  private _restoreFocus() {
+    const toFocus = this._elementFocusedBeforeDialogWasOpened;
 
-  /**
-   * Callback, invoked whenever an animation on the host completes.
-   * @docs-private
-   */
-  _onAnimationDone(event: AnimationEvent) {
-    this._onAnimationStateChange.emit(event);
-
-    if (event.toState === 'enter') {
-      this._trapFocus();
-    } else if (event.toState === 'exit') {
-      this._onAnimationStateChange.complete();
-    }
-  }
-
-  /**
-   * Kicks off the leave animation and restores focus to the previously-focused element.
-   * @docs-private
-   */
-  _exit(): void {
     // We need the extra check, because IE can set the `activeElement` to null in some cases.
-    let toFocus = this._elementFocusedBeforeDialogWasOpened;
-
     if (toFocus && 'focus' in toFocus) {
       toFocus.focus();
     }
@@ -161,7 +133,24 @@ export class MdDialogContainer extends BasePortalHost {
     if (this._focusTrap) {
       this._focusTrap.destroy();
     }
+  }
 
-    this._state = 'exit';
+  /** Saves a reference to the element that was focused before the dialog was opened. */
+  private _savePreviouslyFocusedElement() {
+    if (this._document) {
+      this._elementFocusedBeforeDialogWasOpened = this._document.activeElement as HTMLElement;
+    }
+  }
+
+  /** Callback, invoked whenever an animation on the host completes. */
+  _onAnimationDone(event: AnimationEvent) {
+    this._onAnimationStateChange.emit(event);
+
+    if (event.toState === 'enter') {
+      this._trapFocus();
+    } else if (event.toState === 'exit') {
+      this._restoreFocus();
+      this._onAnimationStateChange.complete();
+    }
   }
 }
