@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AnimationMetadata, AnimationPlayer, AnimationTriggerMetadata} from '@angular/animations';
-
-import {AnimationEngine} from '../animation_engine';
 import {TriggerAst} from '../dsl/animation_ast';
 import {buildAnimationAst} from '../dsl/animation_ast_builder';
 import {AnimationTrigger, buildTrigger} from '../dsl/animation_trigger';
@@ -18,7 +16,7 @@ import {parseTimelineCommand} from './shared';
 import {TimelineAnimationEngine} from './timeline_animation_engine';
 import {TransitionAnimationEngine} from './transition_animation_engine';
 
-export class DomAnimationEngine implements AnimationEngine {
+export class AnimationEngine {
   private _transitionEngine: TransitionAnimationEngine;
   private _timelineEngine: TimelineAnimationEngine;
 

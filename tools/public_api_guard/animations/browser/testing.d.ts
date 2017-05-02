@@ -4,6 +4,9 @@ export declare class MockAnimationDriver implements AnimationDriver {
         [key: string]: string | number;
     }[], duration: number, delay: number, easing: string, previousPlayers?: any[]): MockAnimationPlayer;
     computeStyle(element: any, prop: string, defaultValue?: string): string;
+    containsElement(elm1: any, elm2: any): boolean;
+    matchesElement(element: any, selector: string): boolean;
+    query(element: any, selector: string, multi: boolean): any[];
     static log: AnimationPlayer[];
 }
 

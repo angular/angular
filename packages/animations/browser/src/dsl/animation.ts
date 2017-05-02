@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AnimationMetadata, AnimationOptions, ɵStyleData} from '@angular/animations';
+
+import {AnimationDriver} from '../render/animation_driver';
 import {normalizeStyles} from '../util';
+
 import {Ast} from './animation_ast';
 import {buildAnimationAst} from './animation_ast_builder';
 import {buildAnimationTimelines} from './animation_timeline_builder';
@@ -15,7 +18,7 @@ import {ElementInstructionMap} from './element_instruction_map';
 
 export class Animation {
   private _animationAst: Ast;
-  constructor(input: AnimationMetadata|AnimationMetadata[]) {
+  constructor(private _driver: AnimationDriver, input: AnimationMetadata|AnimationMetadata[]) {
     const errors: any[] = [];
     const ast = buildAnimationAst(input, errors);
     if (errors.length) {
@@ -36,7 +39,7 @@ export class Animation {
     const errors: any = [];
     subInstructions = subInstructions || new ElementInstructionMap();
     const result = buildAnimationTimelines(
-        element, this._animationAst, start, dest, options, subInstructions, errors);
+        this._driver, element, this._animationAst, start, dest, options, subInstructions, errors);
     if (errors.length) {
       const errorMessage = `animation building failed:\n${errors.join("\n")}`;
       throw new Error(errorMessage);

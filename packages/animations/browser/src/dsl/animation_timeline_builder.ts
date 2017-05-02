@@ -5,8 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimateTimings, AnimationOptions, AnimationQueryOptions, ɵPRE_STYLE as PRE_STYLE, ɵStyleData} from '@angular/animations';
+import {AUTO_STYLE, AnimateChildOptions, AnimateTimings, AnimationOptions, AnimationQueryOptions, ɵPRE_STYLE as PRE_STYLE, ɵStyleData} from '@angular/animations';
 
+import {AnimationDriver} from '../render/animation_driver';
 import {copyObj, copyStyles, interpolateParams, iteratorToArray, resolveTiming, resolveTimingValue} from '../util';
 
 import {AnimateAst, AnimateChildAst, AnimateRefAst, Ast, AstVisitor, DynamicTimingAst, GroupAst, KeyframesAst, QueryAst, ReferenceAst, SequenceAst, StaggerAst, StateAst, StyleAst, TimingAst, TransitionAst, TriggerAst} from './animation_ast';
@@ -100,137 +101,20 @@ const ONE_FRAME_IN_MILLISECONDS = 1;
  * the `AnimationValidatorVisitor` code.
  */
 export function buildAnimationTimelines(
-    rootElement: any, ast: Ast, startingStyles: ɵStyleData = {}, finalStyles: ɵStyleData = {},
-    options: AnimationOptions, subInstructions?: ElementInstructionMap,
-    errors: any[] = []): AnimationTimelineInstruction[] {
+    driver: AnimationDriver, rootElement: any, ast: Ast, startingStyles: ɵStyleData = {},
+    finalStyles: ɵStyleData = {}, options: AnimationOptions,
+    subInstructions?: ElementInstructionMap, errors: any[] = []): AnimationTimelineInstruction[] {
   return new AnimationTimelineBuilderVisitor().buildKeyframes(
-      rootElement, ast, startingStyles, finalStyles, options, subInstructions, errors);
-}
-
-export declare type StyleAtTime = {
-  time: number; value: string | number;
-};
-
-const DEFAULT_NOOP_PREVIOUS_NODE = <Ast>{};
-export class AnimationTimelineContext {
-  public parentContext: AnimationTimelineContext|null = null;
-  public currentTimeline: TimelineBuilder;
-  public currentAnimateTimings: AnimateTimings|null = null;
-  public previousNode: Ast = DEFAULT_NOOP_PREVIOUS_NODE;
-  public subContextCount = 0;
-  public options: AnimationOptions = {};
-  public currentQueryIndex: number = 0;
-  public currentQueryTotal: number = 0;
-  public currentStaggerTime: number = 0;
-
-  constructor(
-      public element: any, public subInstructions: ElementInstructionMap, public errors: any[],
-      public timelines: TimelineBuilder[], initialTimeline?: TimelineBuilder) {
-    this.currentTimeline = initialTimeline || new TimelineBuilder(element, 0);
-    timelines.push(this.currentTimeline);
-  }
-
-  get params() { return this.options.params; }
-
-  updateOptions(newOptions: AnimationOptions|null, skipIfExists?: boolean) {
-    if (!newOptions) return;
-
-    if (newOptions.duration != null) {
-      this.options.duration = resolveTimingValue(newOptions.duration);
-    }
-
-    if (newOptions.delay != null) {
-      this.options.delay = resolveTimingValue(newOptions.delay);
-    }
-
-    const newParams = newOptions.params;
-    if (newParams) {
-      let params: {[name: string]: any} = this.options && this.options.params !;
-      if (!params) {
-        params = this.options.params = {};
-      }
-
-      Object.keys(params).forEach(name => {
-        const value = params[name];
-        if (!skipIfExists || !newOptions.hasOwnProperty(name)) {
-          params[name] = value;
-        }
-      });
-    }
-  }
-
-  private _copyOptions() {
-    const options: AnimationOptions = {};
-    if (this.options) {
-      const oldParams = this.options.params;
-      if (oldParams) {
-        const params: {[name: string]: any} = options['params'] = {};
-        Object.keys(this.options.params).forEach(name => { params[name] = oldParams[name]; });
-      }
-    }
-    return options;
-  }
-
-  createSubContext(options: AnimationOptions|null = null, element?: any, newTime?: number):
-      AnimationTimelineContext {
-    const target = element || this.element;
-    const context = new AnimationTimelineContext(
-        target, this.subInstructions, this.errors, this.timelines,
-        this.currentTimeline.fork(target, newTime || 0));
-    context.previousNode = this.previousNode;
-    context.currentAnimateTimings = this.currentAnimateTimings;
-
-    context.options = this._copyOptions();
-    context.updateOptions(options);
-
-    context.currentQueryIndex = this.currentQueryIndex;
-    context.currentQueryTotal = this.currentQueryTotal;
-    context.parentContext = this;
-    this.subContextCount++;
-    return context;
-  }
-
-  transformIntoNewTimeline(newTime?: number) {
-    this.previousNode = DEFAULT_NOOP_PREVIOUS_NODE;
-    this.currentTimeline = this.currentTimeline.fork(this.element, newTime);
-    this.timelines.push(this.currentTimeline);
-    return this.currentTimeline;
-  }
-
-  appendInstructionToTimeline(
-      instruction: AnimationTimelineInstruction, duration: number|null,
-      delay: number|null): AnimateTimings {
-    const updatedTimings: AnimateTimings = {
-      duration: duration != null ? duration : instruction.duration,
-      delay: this.currentTimeline.currentTime + (delay != null ? delay : 0) + instruction.delay,
-      easing: ''
-    };
-    const builder = new SubTimelineBuilder(
-        instruction.element, instruction.keyframes, instruction.preStyleProps,
-        instruction.postStyleProps, updatedTimings, instruction.stretchStartingKeyframe);
-    this.timelines.push(builder);
-    return updatedTimings;
-  }
-
-  incrementTime(time: number) {
-    this.currentTimeline.forwardTime(this.currentTimeline.duration + time);
-  }
-
-  delayNextStep(delay: number) {
-    // negative delays are not yet supported
-    if (delay > 0) {
-      this.currentTimeline.delayNextStep(delay);
-    }
-  }
+      driver, rootElement, ast, startingStyles, finalStyles, options, subInstructions, errors);
 }
 
 export class AnimationTimelineBuilderVisitor implements AstVisitor {
   buildKeyframes(
-      rootElement: any, ast: Ast, startingStyles: ɵStyleData, finalStyles: ɵStyleData,
-      options: AnimationOptions, subInstructions?: ElementInstructionMap,
+      driver: AnimationDriver, rootElement: any, ast: Ast, startingStyles: ɵStyleData,
+      finalStyles: ɵStyleData, options: AnimationOptions, subInstructions?: ElementInstructionMap,
       errors: any[] = []): AnimationTimelineInstruction[] {
     subInstructions = subInstructions || new ElementInstructionMap();
-    const context = new AnimationTimelineContext(rootElement, subInstructions, errors, []);
+    const context = new AnimationTimelineContext(driver, rootElement, subInstructions, errors, []);
     context.options = options;
     context.currentTimeline.setStyles([startingStyles], null, context.errors, options);
 
@@ -266,7 +150,8 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
     if (elementInstructions) {
       const innerContext = context.createSubContext(ast.options);
       const startTime = context.currentTimeline.currentTime;
-      const endTime = this._visitSubInstructions(elementInstructions, innerContext);
+      const endTime = this._visitSubInstructions(
+          elementInstructions, innerContext, innerContext.options as AnimateChildOptions);
       if (startTime != endTime) {
         // we do this on the upper context because we created a sub context for
         // the sub child animations
@@ -285,8 +170,8 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
   }
 
   private _visitSubInstructions(
-      instructions: AnimationTimelineInstruction[], context: AnimationTimelineContext): number {
-    const options = context.options;
+      instructions: AnimationTimelineInstruction[], context: AnimationTimelineContext,
+      options: AnimateChildOptions): number {
     const startTime = context.currentTimeline.currentTime;
     let furthestTime = startTime;
 
@@ -464,8 +349,8 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
     }
 
     let furthestTime = startTime;
-    const elms = invokeQuery(
-        context.element, ast.selector, ast.originalSelector, ast.limit, ast.includeSelf,
+    const elms = context.invokeQuery(
+        ast.selector, ast.originalSelector, ast.limit, ast.includeSelf,
         options.optional ? true : false, context.errors);
 
     context.currentQueryTotal = elms.length;
@@ -539,6 +424,146 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
         (tl.currentTime - startingTime) + (tl.startTime - parentContext.currentTimeline.startTime);
   }
 }
+
+export declare type StyleAtTime = {
+  time: number; value: string | number;
+};
+
+const DEFAULT_NOOP_PREVIOUS_NODE = <Ast>{};
+export class AnimationTimelineContext {
+  public parentContext: AnimationTimelineContext|null = null;
+  public currentTimeline: TimelineBuilder;
+  public currentAnimateTimings: AnimateTimings|null = null;
+  public previousNode: Ast = DEFAULT_NOOP_PREVIOUS_NODE;
+  public subContextCount = 0;
+  public options: AnimationOptions = {};
+  public currentQueryIndex: number = 0;
+  public currentQueryTotal: number = 0;
+  public currentStaggerTime: number = 0;
+
+  constructor(
+      private _driver: AnimationDriver, public element: any,
+      public subInstructions: ElementInstructionMap, public errors: any[],
+      public timelines: TimelineBuilder[], initialTimeline?: TimelineBuilder) {
+    this.currentTimeline = initialTimeline || new TimelineBuilder(element, 0);
+    timelines.push(this.currentTimeline);
+  }
+
+  get params() { return this.options.params; }
+
+  updateOptions(options: AnimationOptions|null, skipIfExists?: boolean) {
+    if (!options) return;
+
+    // NOTE: this will get patched up when other animation methods support duration overrides
+    const newOptions = options as any;
+    if (newOptions.duration != null) {
+      (this.options as any).duration = resolveTimingValue(newOptions.duration);
+    }
+
+    if (newOptions.delay != null) {
+      this.options.delay = resolveTimingValue(newOptions.delay);
+    }
+
+    const newParams = newOptions.params;
+    if (newParams) {
+      let params: {[name: string]: any} = this.options && this.options.params !;
+      if (!params) {
+        params = this.options.params = {};
+      }
+
+      Object.keys(params).forEach(name => {
+        const value = params[name];
+        if (!skipIfExists || !newOptions.hasOwnProperty(name)) {
+          params[name] = value;
+        }
+      });
+    }
+  }
+
+  private _copyOptions() {
+    const options: AnimationOptions = {};
+    if (this.options) {
+      const oldParams = this.options.params;
+      if (oldParams) {
+        const params: {[name: string]: any} = options['params'] = {};
+        Object.keys(this.options.params).forEach(name => { params[name] = oldParams[name]; });
+      }
+    }
+    return options;
+  }
+
+  createSubContext(options: AnimationOptions|null = null, element?: any, newTime?: number):
+      AnimationTimelineContext {
+    const target = element || this.element;
+    const context = new AnimationTimelineContext(
+        this._driver, target, this.subInstructions, this.errors, this.timelines,
+        this.currentTimeline.fork(target, newTime || 0));
+    context.previousNode = this.previousNode;
+    context.currentAnimateTimings = this.currentAnimateTimings;
+
+    context.options = this._copyOptions();
+    context.updateOptions(options);
+
+    context.currentQueryIndex = this.currentQueryIndex;
+    context.currentQueryTotal = this.currentQueryTotal;
+    context.parentContext = this;
+    this.subContextCount++;
+    return context;
+  }
+
+  transformIntoNewTimeline(newTime?: number) {
+    this.previousNode = DEFAULT_NOOP_PREVIOUS_NODE;
+    this.currentTimeline = this.currentTimeline.fork(this.element, newTime);
+    this.timelines.push(this.currentTimeline);
+    return this.currentTimeline;
+  }
+
+  appendInstructionToTimeline(
+      instruction: AnimationTimelineInstruction, duration: number|null,
+      delay: number|null): AnimateTimings {
+    const updatedTimings: AnimateTimings = {
+      duration: duration != null ? duration : instruction.duration,
+      delay: this.currentTimeline.currentTime + (delay != null ? delay : 0) + instruction.delay,
+      easing: ''
+    };
+    const builder = new SubTimelineBuilder(
+        instruction.element, instruction.keyframes, instruction.preStyleProps,
+        instruction.postStyleProps, updatedTimings, instruction.stretchStartingKeyframe);
+    this.timelines.push(builder);
+    return updatedTimings;
+  }
+
+  incrementTime(time: number) {
+    this.currentTimeline.forwardTime(this.currentTimeline.duration + time);
+  }
+
+  delayNextStep(delay: number) {
+    // negative delays are not yet supported
+    if (delay > 0) {
+      this.currentTimeline.delayNextStep(delay);
+    }
+  }
+
+  invokeQuery(
+      selector: string, originalSelector: string, limit: number, includeSelf: boolean,
+      optional: boolean, errors: any[]): any[] {
+    let results: any[] = [];
+    if (includeSelf) {
+      results.push(this.element);
+    }
+    if (selector.length > 0) {  // if :self is only used then the selector is empty
+      const multi = limit != 1;
+      results.push(...this._driver.query(this.element, selector, multi));
+    }
+
+    if (!optional && results.length == 0) {
+      errors.push(
+          `\`query("${originalSelector}")\` returned zero elements. (Use \`query("${originalSelector}", { optional: true })\` if you wish to allow this.)`);
+    }
+    return results;
+  }
+}
+
 
 export class TimelineBuilder {
   public duration: number = 0;
@@ -822,35 +847,6 @@ class SubTimelineBuilder extends TimelineBuilder {
         this.element, keyframes, this.preStyleProps, this.postStyleProps, duration, delay, easing,
         true);
   }
-}
-
-function invokeQuery(
-    rootElement: any, selector: string, originalSelector: string, limit: number,
-    includeSelf: boolean, optional: boolean, errors: any[]): any[] {
-  const multi = limit != 1;
-  let results: any[] = [];
-  if (includeSelf) {
-    results.push(rootElement);
-  }
-  if (selector.length > 0) {  // if :self is only used then the selector is empty
-    if (multi) {
-      results.push(...rootElement.querySelectorAll(selector));
-      if (limit > 1) {
-        results = results.slice(0, limit);
-      }
-    } else {
-      const elm = rootElement.querySelector(selector);
-      if (elm) {
-        results.push(elm);
-      }
-    }
-  }
-
-  if (!optional && results.length == 0) {
-    errors.push(
-        `\`query("${originalSelector}")\` returned zero elements. (Use \`query("${originalSelector}", { optional: true })\` if you wish to allow this.)`);
-  }
-  return results;
 }
 
 function roundOffset(offset: number, decimalPoints = 3): number {
