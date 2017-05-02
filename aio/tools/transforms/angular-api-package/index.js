@@ -9,7 +9,7 @@ const Package = require('dgeni').Package;
 
 const basePackage = require('../angular-base-package');
 const typeScriptPackage = require('dgeni-packages/typescript');
-const { API_SOURCE_PATH, requireFolder } = require('../config');
+const { API_SOURCE_PATH, API_TEMPLATES_PATH, requireFolder } = require('../config');
 
 module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
 
@@ -106,6 +106,12 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
       outputPathTemplate: '${moduleDoc.moduleFolder}/${name}.json',
     });
   })
+
+  .config(function(templateFinder) {
+    // Where to find the templates for the API doc rendering
+    templateFinder.templateFolders.unshift(API_TEMPLATES_PATH);
+  })
+
 
   .config(function(convertToJsonProcessor, postProcessHtml, EXPORT_DOC_TYPES) {
     const DOCS_TO_CONVERT = EXPORT_DOC_TYPES.concat([
