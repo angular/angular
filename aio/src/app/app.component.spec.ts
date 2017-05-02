@@ -1,4 +1,4 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA, DebugElement } from '@angular/core';
 import { async, inject, ComponentFixture, TestBed } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { APP_BASE_HREF } from '@angular/common';
@@ -10,20 +10,21 @@ import { of } from 'rxjs/observable/of';
 
 import { AppComponent } from './app.component';
 import { AppModule } from './app.module';
-import { AutoScrollService } from 'app/shared/auto-scroll.service';
+import { TocComponent } from 'app/embedded/toc/toc.component';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
+import { NavigationNode } from 'app/navigation/navigation.service';
+import { SearchService } from 'app/search/search.service';
+import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
+import { SearchResultsComponent } from 'app/search/search-results/search-results.component';
+import { AutoScrollService } from 'app/shared/auto-scroll.service';
 import { GaService } from 'app/shared/ga.service';
 import { LocationService } from 'app/shared/location.service';
 import { Logger } from 'app/shared/logger.service';
+import { SwUpdateNotificationsService } from 'app/sw-updates/sw-update-notifications.service';
 import { MockLocationService } from 'testing/location.service';
 import { MockLogger } from 'testing/logger.service';
 import { MockSearchService } from 'testing/search.service';
 import { MockSwUpdateNotificationsService } from 'testing/sw-update-notifications.service';
-import { NavigationNode } from 'app/navigation/navigation.service';
-import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
-import { SearchResultsComponent } from 'app/search/search-results/search-results.component';
-import { SearchService } from 'app/search/search.service';
-import { SwUpdateNotificationsService } from 'app/sw-updates/sw-update-notifications.service';
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -68,6 +69,15 @@ describe('AppComponent', () => {
       expect(component.isSideBySide).toBe(true);
       component.onResize(500);
       expect(component.isSideBySide).toBe(false);
+    });
+  });
+
+  describe('onScroll', () => {
+    it('should update `tocMaxHeight` accordingly', () => {
+      expect(component.tocMaxHeight).toBeUndefined();
+
+      component.onScroll();
+      expect(component.tocMaxHeight).toBeGreaterThan(0);
     });
   });
 
@@ -431,6 +441,31 @@ describe('AppComponent', () => {
 
       searchBox.nativeElement.click();
       expect(searchResultsComponent.hideResults).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('aio-toc', () => {
+    let tocDebugElement: DebugElement;
+    let tocContainer: DebugElement;
+
+    beforeEach(() => {
+      tocDebugElement = fixture.debugElement.query(By.directive(TocComponent));
+      tocContainer = tocDebugElement.parent;
+    });
+
+
+    it('should have a non-embedded `<aio-toc>` element', () => {
+      expect(tocDebugElement).toBeDefined();
+      expect(tocDebugElement.classes.embedded).toBeFalsy();
+    });
+
+    it('should update the TOC container\'s `maxHeight` based on `tocMaxHeight`', () => {
+      expect(tocContainer.styles['max-height']).toBeNull();
+
+      component.tocMaxHeight = '100';
+      fixture.detectChanges();
+
+      expect(tocContainer.styles['max-height']).toBe('100px');
     });
   });
 

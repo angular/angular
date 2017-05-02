@@ -1,6 +1,7 @@
 import { Component, DebugElement } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By, DOCUMENT } from '@angular/platform-browser';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 import { TocComponent } from './toc.component';
 import { TocItem, TocService } from 'app/shared/toc.service';
@@ -55,15 +56,36 @@ describe('TocComponent', () => {
     });
 
     it('should not display anything when no TocItems', () => {
-      tocService.tocList = [];
+      tocService.tocList.next([]);
       fixture.detectChanges();
       expect(tocComponentDe.children.length).toEqual(0);
+    });
+
+    it('should update when the TocItems are updated', () => {
+      tocService.tocList.next([{}] as TocItem[]);
+      fixture.detectChanges();
+      expect(tocComponentDe.queryAllNodes(By.css('li')).length).toBe(1);
+
+      tocService.tocList.next([{}, {}, {}] as TocItem[]);
+      fixture.detectChanges();
+      expect(tocComponentDe.queryAllNodes(By.css('li')).length).toBe(3);
+    });
+
+    it('should stop listening for TocItems once destroyed', () => {
+      tocService.tocList.next([{}] as TocItem[]);
+      fixture.detectChanges();
+      expect(tocComponentDe.queryAllNodes(By.css('li')).length).toBe(1);
+
+      tocComponent.ngOnDestroy();
+      tocService.tocList.next([{}, {}, {}] as TocItem[]);
+      fixture.detectChanges();
+      expect(tocComponentDe.queryAllNodes(By.css('li')).length).toBe(1);
     });
 
     describe('when four TocItems', () => {
 
       beforeEach(() => {
-        tocService.tocList.length = 4;
+        tocService.tocList.next([{}, {}, {}, {}] as TocItem[]);
         fixture.detectChanges();
         page = setPage();
       });
@@ -92,8 +114,11 @@ describe('TocComponent', () => {
       });
 
       it('should have more than 4 displayed items', () => {
+        let tocList: TocItem[];
+        tocService.tocList.subscribe(v => tocList = v);
+
         expect(page.listItems.length).toBeGreaterThan(4);
-        expect(page.listItems.length).toEqual(tocService.tocList.length);
+        expect(page.listItems.length).toEqual(tocList.length);
       });
 
       it('should be in "closed" (not expanded) state at the start', () => {
@@ -154,7 +179,10 @@ describe('TocComponent', () => {
     });
 
     it('should display all items', () => {
-      expect(page.listItems.length).toEqual(tocService.tocList.length);
+      let tocList: TocItem[];
+      tocService.tocList.subscribe(v => tocList = v);
+
+      expect(page.listItems.length).toEqual(tocList.length);
     });
 
     it('should not have secondary items', () => {
@@ -185,7 +213,7 @@ class HostEmbeddedTocComponent {}
 class HostNotEmbeddedTocComponent {}
 
 class TestTocService {
-  tocList: TocItem[] = getTestTocList();
+  tocList = new BehaviorSubject<TocItem[]>(getTestTocList());
 }
 
 // tslint:disable:quotemark
