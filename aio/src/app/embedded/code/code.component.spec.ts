@@ -179,6 +179,13 @@ describe('CodeComponent', () => {
   });
 
   describe('copy button', () => {
+
+    it('should be hidden if the `hideCopy` input is true', () => {
+      hostComponent.hideCopy = true;
+      fixture.detectChanges();
+      expect(fixture.debugElement.query(By.css('button'))).toBe(null);
+    });
+
     it('should call copier service when clicked', () => {
       const copierService: CopierService = TestBed.get(CopierService);
       const spy = spyOn(copierService, 'copyText');
@@ -224,7 +231,7 @@ describe('CodeComponent', () => {
   selector: 'aio-host-comp',
   template: `
       <aio-code md-no-ink [code]="code" [language]="language"
-      [linenums]="linenums" [path]="path" [region]="region"></aio-code>
+      [linenums]="linenums" [path]="path" [region]="region" [hideCopy]="hideCopy"></aio-code>
   `
 })
 class HostComponent {
@@ -233,6 +240,7 @@ class HostComponent {
   linenums: boolean | number | string;
   path: string;
   region: string;
+  hideCopy: boolean;
 }
 
 class TestLogger {
