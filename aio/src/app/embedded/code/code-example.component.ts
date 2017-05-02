@@ -17,7 +17,7 @@ import { Component, ElementRef, OnInit } from '@angular/core';
   template: `
     <header *ngIf="title">{{title}}</header>
     <aio-code [ngClass]="{'headed-code':title, 'simple-code':!title}" [code]="code"
-    [language]="language" [linenums]="linenums" [path]="path" [region]="region"></aio-code>
+    [language]="language" [linenums]="linenums" [path]="path" [region]="region" [hideCopy]="hideCopy"></aio-code>
   `
 })
 export class CodeExampleComponent implements OnInit {
@@ -28,6 +28,7 @@ export class CodeExampleComponent implements OnInit {
   path: string;
   region: string;
   title: string;
+  hideCopy: boolean;
 
   constructor(private elementRef: ElementRef) {
     const element = this.elementRef.nativeElement;
@@ -37,6 +38,7 @@ export class CodeExampleComponent implements OnInit {
     this.path = element.getAttribute('path') || '';
     this.region = element.getAttribute('region') || '';
     this.title = element.getAttribute('title') || '';
+    this.hideCopy = element.getAttribute('hideCopy') === 'true';
   }
 
   ngOnInit() {

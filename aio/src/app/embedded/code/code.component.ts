@@ -31,7 +31,7 @@ const defaultLineNumsCount = 10; // by default, show linenums over this number
   selector: 'aio-code',
   template: `
     <pre class="prettyprint lang-{{language}}">
-      <button *ngIf="code" class="material-icons copy-button" (click)="doCopy()">content_copy</button>
+      <button *ngIf="!hideCopy" class="material-icons copy-button" (click)="doCopy()">content_copy</button>
       <code class="animated fadeIn" #codeContainer></code>
     </pre>
     `
@@ -71,6 +71,12 @@ export class CodeComponent implements OnChanges {
    */
   @Input()
   region: string;
+
+  /**
+   * set to true if the copy button is not to be shown
+   */
+  @Input()
+  hideCopy: boolean;
 
   /**
    * The element in the template that will display the formatted code
