@@ -54,8 +54,8 @@ export class TimelineAnimationEngine {
     const autoStylesMap = new Map<any, ɵStyleData>();
 
     if (ast) {
-      instructions =
-          buildAnimationTimelines(element, ast, {}, {}, options, EMPTY_INSTRUCTION_MAP, errors);
+      instructions = buildAnimationTimelines(
+          this._driver, element, ast, {}, {}, options, EMPTY_INSTRUCTION_MAP, errors);
       instructions.forEach(inst => {
         const styles = getOrSetAsInMap(autoStylesMap, inst.element, {});
         inst.postStyleProps.forEach(prop => styles[prop] = null);

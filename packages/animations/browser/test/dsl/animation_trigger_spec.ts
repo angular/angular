@@ -10,6 +10,7 @@ import {AnimationOptions, animate, state, style, transition} from '@angular/anim
 import {AnimationTransitionInstruction} from '@angular/animations/browser/src/dsl/animation_transition_instruction';
 import {AnimationTrigger} from '@angular/animations/browser/src/dsl/animation_trigger';
 
+import {MockAnimationDriver} from '../../testing';
 import {makeTrigger} from '../shared';
 
 export function main() {
@@ -221,7 +222,8 @@ function buildTransition(
     params?: AnimationOptions): AnimationTransitionInstruction|null {
   const trans = trigger.matchTransition(fromState, toState) !;
   if (trans) {
-    return trans.build(element, fromState, toState, params) !;
+    const driver = new MockAnimationDriver();
+    return trans.build(driver, element, fromState, toState, params) !;
   }
   return null;
 }
