@@ -32,7 +32,10 @@
 </md-sidenav-container>
 
 
-  <footer>
-    <aio-footer [nodes]="footerNodes" [versionInfo]="versionInfo" ></aio-footer>
-  </footer>
+
+<div *ngIf="isSideBySide" class="toc-container"></div>
+
+<footer>
+  <aio-footer [nodes]="footerNodes" [versionInfo]="versionInfo" ></aio-footer>
+</footer>
 
