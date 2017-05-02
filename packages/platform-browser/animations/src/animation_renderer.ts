@@ -46,7 +46,7 @@ export class AnimationRendererFactory implements RendererFactory2 {
       this.delegate.begin();
     }
   }
-  
+
   end() {
     this._zone.runOutsideAngular(() => this._engine.flush());
     if (this.delegate.end) {

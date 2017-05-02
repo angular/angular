@@ -35,24 +35,11 @@ export class BrowserAnimationBuilder extends AnimationBuilder {
   }
 }
 
-@Injectable()
-export class NoopAnimationBuilder extends BrowserAnimationBuilder {
-  build(animation: AnimationMetadata|AnimationMetadata[]): Animation { return new NoopAnimation(); }
-}
-
 export class BrowserAnimation extends Animation {
   constructor(private _id: string, private _renderer: AnimationRenderer) { super(); }
 
   create(element: any, options?: AnimationOptions): AnimationPlayer {
     return new RendererAnimationPlayer(this._id, element, options || {}, this._renderer);
-  }
-}
-
-export class NoopAnimation extends Animation {
-  constructor() { super(); }
-
-  create(element: any, options?: AnimationOptions): AnimationPlayer {
-    return new NoopAnimationPlayer();
   }
 }
 

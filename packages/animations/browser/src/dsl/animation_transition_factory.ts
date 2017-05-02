@@ -7,6 +7,7 @@
  */
 import {AnimationOptions, ɵStyleData} from '@angular/animations';
 
+import {AnimationDriver} from '../render/animation_driver';
 import {getOrSetAsInMap} from '../render/shared';
 import {iteratorToArray, mergeAnimationOptions} from '../util';
 
@@ -26,7 +27,8 @@ export class AnimationTransitionFactory {
   }
 
   build(
-      element: any, currentState: any, nextState: any, options?: AnimationOptions,
+      driver: AnimationDriver, element: any, currentState: any, nextState: any,
+      options?: AnimationOptions,
       subInstructions?: ElementInstructionMap): AnimationTransitionInstruction|undefined {
     const animationOptions = mergeAnimationOptions(this.ast.options || {}, options || {});
 
@@ -36,7 +38,7 @@ export class AnimationTransitionFactory {
 
     const errors: any[] = [];
     const timelines = buildAnimationTimelines(
-        element, this.ast.animation, currentStateStyles, nextStateStyles, animationOptions,
+        driver, element, this.ast.animation, currentStateStyles, nextStateStyles, animationOptions,
         subInstructions, errors);
 
     if (errors.length) {

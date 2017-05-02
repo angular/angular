@@ -21,9 +21,13 @@ export declare type AnimateTimings = {
  */
 export declare interface AnimationOptions {
   delay?: number|string;
-  duration?: number|string;
   params?: {[name: string]: any};
 }
+
+/**
+ * @experimental Animation support is experimental.
+ */
+export declare interface AnimateChildOptions extends AnimationOptions { duration?: number|string; }
 
 /**
  * @experimental Animation support is experimental.
@@ -635,7 +639,7 @@ export function animation(
 /**
  * @experimental Animation support is experimental.
  */
-export function animateChild(options: AnimationOptions | null = null):
+export function animateChild(options: AnimateChildOptions | null = null):
     AnimationAnimateChildMetadata {
   return {type: AnimationMetadataType.AnimateChild, options};
 }
