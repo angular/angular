@@ -108,10 +108,13 @@ describe('MdMenu', () => {
   });
 
   describe('positions', () => {
+    let fixture: ComponentFixture<PositionedMenu>;
+    let panel: HTMLElement;
 
     beforeEach(() => {
-      const fixture = TestBed.createComponent(PositionedMenu);
+      fixture = TestBed.createComponent(PositionedMenu);
       fixture.detectChanges();
+
       const trigger = fixture.componentInstance.triggerEl.nativeElement;
 
       // Push trigger to the bottom edge of viewport,so it has space to open "above"
@@ -123,18 +126,43 @@ describe('MdMenu', () => {
 
       fixture.componentInstance.trigger.openMenu();
       fixture.detectChanges();
+      panel = overlayContainerElement.querySelector('.mat-menu-panel') as HTMLElement;
     });
 
-    it('should append mat-menu-before if x position is changed', () => {
-      const panel = overlayContainerElement.querySelector('.mat-menu-panel');
+    it('should append mat-menu-before if the x position is changed', () => {
       expect(panel.classList).toContain('mat-menu-before');
       expect(panel.classList).not.toContain('mat-menu-after');
+
+      fixture.componentInstance.xPosition = 'after';
+      fixture.detectChanges();
+
+      expect(panel.classList).toContain('mat-menu-after');
+      expect(panel.classList).not.toContain('mat-menu-before');
     });
 
-    it('should append mat-menu-above if y position is changed', () => {
-      const panel = overlayContainerElement.querySelector('.mat-menu-panel');
+    it('should append mat-menu-above if the y position is changed', () => {
       expect(panel.classList).toContain('mat-menu-above');
       expect(panel.classList).not.toContain('mat-menu-below');
+
+      fixture.componentInstance.yPosition = 'below';
+      fixture.detectChanges();
+
+      expect(panel.classList).toContain('mat-menu-below');
+      expect(panel.classList).not.toContain('mat-menu-above');
+    });
+
+    it('should default to the "below" and "after" positions', () => {
+      fixture.destroy();
+
+      let newFixture = TestBed.createComponent(SimpleMenu);
+
+      newFixture.detectChanges();
+      newFixture.componentInstance.trigger.openMenu();
+      newFixture.detectChanges();
+      panel = overlayContainerElement.querySelector('.mat-menu-panel') as HTMLElement;
+
+      expect(panel.classList).toContain('mat-menu-below');
+      expect(panel.classList).toContain('mat-menu-after');
     });
 
   });
@@ -193,7 +221,7 @@ describe('MdMenu', () => {
           .toBe(Math.round(expectedTop),
               `Expected menu to open in "above" position if "below" position wouldn't fit.`);
 
-      // The x-position of the overlay should be unaffected, as it can already fit horizontally
+      // The xPosition of the overlay should be unaffected, as it can already fit horizontally
       expect(Math.round(overlayRect.left))
           .toBe(Math.round(triggerRect.left),
               `Expected menu x position to be unchanged if it can fit in the viewport.`);
@@ -437,7 +465,7 @@ class SimpleMenu {
 @Component({
   template: `
     <button [mdMenuTriggerFor]="menu" #triggerEl>Toggle menu</button>
-    <md-menu x-position="before" y-position="above" #menu="mdMenu">
+    <md-menu [xPosition]="xPosition" [yPosition]="yPosition" #menu="mdMenu">
       <button md-menu-item> Positioned Content </button>
     </md-menu>
   `
@@ -445,6 +473,8 @@ class SimpleMenu {
 class PositionedMenu {
   @ViewChild(MdMenuTrigger) trigger: MdMenuTrigger;
   @ViewChild('triggerEl') triggerEl: ElementRef;
+  xPosition: MenuPositionX = 'before';
+  yPosition: MenuPositionY = 'above';
 }
 
 interface TestableMenu {
@@ -476,8 +506,8 @@ class OverlapMenu implements TestableMenu {
   exportAs: 'mdCustomMenu'
 })
 class CustomMenuPanel implements MdMenuPanel {
-  positionX: MenuPositionX = 'after';
-  positionY: MenuPositionY = 'below';
+  xPosition: MenuPositionX = 'after';
+  yPosition: MenuPositionY = 'below';
   overlapTrigger: true;
 
   @ViewChild(TemplateRef) templateRef: TemplateRef<any>;

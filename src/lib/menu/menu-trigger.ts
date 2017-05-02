@@ -244,10 +244,10 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
    */
   private _getPosition(): ConnectedPositionStrategy  {
     const [posX, fallbackX]: HorizontalConnectionPos[] =
-      this.menu.positionX === 'before' ? ['end', 'start'] : ['start', 'end'];
+      this.menu.xPosition === 'before' ? ['end', 'start'] : ['start', 'end'];
 
     const [overlayY, fallbackOverlayY]: VerticalConnectionPos[] =
-      this.menu.positionY === 'above' ? ['bottom', 'top'] : ['top', 'bottom'];
+      this.menu.yPosition === 'above' ? ['bottom', 'top'] : ['top', 'bottom'];
 
     let originY = overlayY;
     let fallbackOriginY = fallbackOverlayY;

@@ -2,7 +2,6 @@
 
 import {
   AfterContentInit,
-  Attribute,
   Component,
   ContentChildren,
   EventEmitter,
@@ -37,6 +36,8 @@ import {transformMenu, fadeInItems} from './menu-animations';
 })
 export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
   private _keyManager: FocusKeyManager;
+  private _xPosition: MenuPositionX = 'after';
+  private _yPosition: MenuPositionY = 'below';
 
   /** Subscription to tab events on the menu panel */
   private _tabSubscription: Subscription;
@@ -45,34 +46,38 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
   _classList: any = {};
 
   /** Position of the menu in the X axis. */
-  positionX: MenuPositionX = 'after';
+  @Input()
+  get xPosition() { return this._xPosition; }
+  set xPosition(value: MenuPositionX) {
+    if (value !== 'before' && value !== 'after') {
+      throw new MdMenuInvalidPositionX();
+    }
+    this._xPosition = value;
+    this.setPositionClasses();
+  }
 
   /** Position of the menu in the Y axis. */
-  positionY: MenuPositionY = 'below';
+  @Input()
+  get yPosition() { return this._yPosition; }
+  set yPosition(value: MenuPositionY) {
+    if (value !== 'above' && value !== 'below') {
+      throw new MdMenuInvalidPositionY();
+    }
+    this._yPosition = value;
+    this.setPositionClasses();
+  }
 
   @ViewChild(TemplateRef) templateRef: TemplateRef<any>;
+
+  /** List of the items inside of a menu. */
   @ContentChildren(MdMenuItem) items: QueryList<MdMenuItem>;
+
+  /** Whether the menu should overlap its trigger. */
   @Input() overlapTrigger = true;
-
-  constructor(@Attribute('xPosition') posX: MenuPositionX,
-              @Attribute('yPosition') posY: MenuPositionY,
-              @Attribute('x-position') deprecatedPosX: MenuPositionX,
-              @Attribute('y-position') deprecatedPosY: MenuPositionY) {
-
-    // TODO(kara): Remove kebab-case attributes after next release
-    if (deprecatedPosX) { this._setPositionX(deprecatedPosX); }
-    if (deprecatedPosY) { this._setPositionY(deprecatedPosY); }
-
-    if (posX) { this._setPositionX(posX); }
-    if (posY) { this._setPositionY(posY); }
-    this.setPositionClasses(this.positionX, this.positionY);
-  }
 
   ngAfterContentInit() {
     this._keyManager = new FocusKeyManager(this.items).withWrap();
-    this._tabSubscription = this._keyManager.tabOut.subscribe(() => {
-      this._emitCloseEvent();
-    });
+    this._tabSubscription = this._keyManager.tabOut.subscribe(() => this._emitCloseEvent());
   }
 
   ngOnDestroy() {
@@ -93,7 +98,7 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
       obj[className] = true;
       return obj;
     }, {});
-    this.setPositionClasses(this.positionX, this.positionY);
+    this.setPositionClasses();
   }
 
   /** Event emitted when the menu is closed. */
@@ -115,29 +120,15 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
     this.close.emit();
   }
 
-  private _setPositionX(pos: MenuPositionX): void {
-    if (pos !== 'before' && pos !== 'after') {
-      throw new MdMenuInvalidPositionX();
-    }
-    this.positionX = pos;
-  }
-
-  private _setPositionY(pos: MenuPositionY): void {
-    if (pos !== 'above' && pos !== 'below') {
-      throw new MdMenuInvalidPositionY();
-    }
-    this.positionY = pos;
-  }
-
   /**
    * It's necessary to set position-based classes to ensure the menu panel animation
    * folds out from the correct direction.
    */
-  setPositionClasses(posX: MenuPositionX, posY: MenuPositionY): void {
-    this._classList['mat-menu-before'] = posX == 'before';
-    this._classList['mat-menu-after'] = posX == 'after';
-    this._classList['mat-menu-above'] = posY == 'above';
-    this._classList['mat-menu-below'] = posY == 'below';
+  setPositionClasses(posX = this.xPosition, posY = this.yPosition): void {
+    this._classList['mat-menu-before'] = posX === 'before';
+    this._classList['mat-menu-after'] = posX === 'after';
+    this._classList['mat-menu-above'] = posY === 'above';
+    this._classList['mat-menu-below'] = posY === 'below';
   }
 
 }

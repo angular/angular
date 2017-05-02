@@ -16,27 +16,27 @@ export class MdMenuMissingError extends MdError {
 }
 
 /**
- * Exception thrown when menu's x-position value isn't valid.
+ * Exception thrown when menu's xPosition value isn't valid.
  * In other words, it doesn't match 'before' or 'after'.
  * @docs-private
  */
 export class MdMenuInvalidPositionX extends MdError {
   constructor() {
-    super(`x-position value must be either 'before' or after'.
-      Example: <md-menu x-position="before" #menu="mdMenu"></md-menu>
+    super(`xPosition value must be either 'before' or after'.
+      Example: <md-menu xPosition="before" #menu="mdMenu"></md-menu>
     `);
   }
 }
 
 /**
- * Exception thrown when menu's y-position value isn't valid.
+ * Exception thrown when menu's yPosition value isn't valid.
  * In other words, it doesn't match 'above' or 'below'.
  * @docs-private
  */
 export class MdMenuInvalidPositionY extends MdError {
   constructor() {
-    super(`y-position value must be either 'above' or below'.
-      Example: <md-menu y-position="above" #menu="mdMenu"></md-menu>
+    super(`yPosition value must be either 'above' or below'.
+      Example: <md-menu yPosition="above" #menu="mdMenu"></md-menu>
     `);
   }
 }
