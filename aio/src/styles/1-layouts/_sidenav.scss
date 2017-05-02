@@ -31,16 +31,15 @@ md-sidenav.mat-sidenav.sidenav {
 md-sidenav-container.sidenav-container {
     min-height: 100%;
     height: auto !important;
-    max-width: 1400px;
+    max-width: 82%;
     margin: 0;
     transform: none;
     padding-top: 64px;
-}
 
-// md-sidenav.sidenav.mat-sidenav.mat-sidenav-side.mat-sidenav-opened {
-//   position: fixed;
-//   padding-top: 72px;
-// }
+    @media (max-width: 800px) {
+      max-width: 100%;
+    }
+}
 
 md-sidenav-container div.mat-sidenav-content {
     height: auto;
