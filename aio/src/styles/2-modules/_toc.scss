@@ -1,14 +1,27 @@
+.toc-container {
+    width: 18%;
+    position: fixed;
+    top: 84px;
+    right: 0;
+    bottom: 18px;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    @media (max-width: 800px) {
+      display: none;
+      width: 0;
+    }
+}
+
 aio-toc > div {
   font-size: 13px;
-  border-left: 10px solid #4285f4;
   overflow-y: visible;
   padding: 4px 0 0 10px;
 
-  .toc-heading {
-    font-size: 22px;
+  .toc-heading p {
     font-weight: 500;
-    margin-left: 8px;
-    padding-bottom: 8px;
+    margin: 0 0 0 -11px;
+    padding: 0;
   }
 
   .toc-heading.secondary {
@@ -24,7 +37,6 @@ aio-toc > div {
   button.toc-show-all,
   button.toc-more-items {
     display: inline-block;
-    position: relative;
     background: 0;
     background-color: transparent;
     border: none;
@@ -42,6 +54,8 @@ aio-toc > div {
 
   button.toc-show-all {
     min-width: 34px;
+    position: absolute;
+    top: 0;
   }
 
   button.toc-show-all::after {
@@ -54,6 +68,7 @@ aio-toc > div {
 
   button.toc-more-items {
     top: 10px;
+    position: relative;
   }
 
   button.toc-more-items::after {
@@ -68,22 +83,57 @@ aio-toc > div {
     list-style-type: none;
     margin: 0;
     padding: 0 8px;
+
+    @media (max-width: 800px) {
+      width: auto;
+    }
+  
   }
 
   ul.toc-list li {
+    font-size: 12px;
     line-height: 16px;
-    margin: 0;
+    margin: 6px 0;
+    padding: 0 16px;
+    position: relative;
+    transition: all 0.3 ease-in-out;
+
+    &:before {
+      content: '';
+      border-radius: 50%;
+      left: -3px;
+      top: 10px;
+      background: $lightgray;
+      position: absolute;
+      width: 6px;
+      height: 6px;
+    }
+
+    &:last-child a:before {
+      width: 0;
+    }
 
     a {
-      color: $mediumgray;
-      display:inline-block;
+      font-size: 12px;
+      color: lighten($darkgray, 10);
+      display:table-cell;
       overflow: visible;
 
       &:hover {
         color: $accentblue;
       }
-    }
 
+      &:before {
+        content: '';
+        left: -1px;
+        top: 10px;
+        background: $lightgray;
+        position: absolute;
+        display: block;
+        width: 1px;
+        height: calc(100% + 11px);
+      }
+    }
   }
 
   ul.toc-list li.h3 {
