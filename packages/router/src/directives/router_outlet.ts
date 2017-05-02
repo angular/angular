@@ -35,7 +35,7 @@ import {PRIMARY_OUTLET} from '../shared';
  *
  * @stable
  */
-@Directive({selector: 'router-outlet'})
+@Directive({selector: 'router-outlet', exportAs: 'outlet'})
 export class RouterOutlet implements OnDestroy {
   private activated: ComponentRef<any>;
   private _activatedRoute: ActivatedRoute;
@@ -63,6 +63,13 @@ export class RouterOutlet implements OnDestroy {
     return this.activated.instance;
   }
   get activatedRoute(): ActivatedRoute { return this._activatedRoute; }
+
+  get activatedRouteData() {
+    if (this._activatedRoute) {
+      return this._activatedRoute.snapshot.data;
+    }
+    return {};
+  }
 
   detach(): ComponentRef<any> {
     if (!this.activated) throw new Error('Outlet is not activated');
