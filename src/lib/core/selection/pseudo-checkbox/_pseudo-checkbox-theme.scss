@@ -2,7 +2,7 @@
 
 @mixin _mat-pseudo-checkbox-inner-content-theme($theme, $pallete-name) {
   $pallete: map-get($theme, $pallete-name);
-  $color: mat-color($pallete, 500);
+  $color: mat-color($pallete);
 
   .mat-pseudo-checkbox-checked.mat-#{$pallete-name},
   .mat-pseudo-checkbox-indeterminate.mat-#{$pallete-name},

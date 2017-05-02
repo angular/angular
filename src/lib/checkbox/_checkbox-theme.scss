@@ -39,15 +39,15 @@
 
   .mat-checkbox-indeterminate, .mat-checkbox-checked {
     &.mat-primary .mat-checkbox-background {
-      background-color: mat-color($primary, 500);
+      background-color: mat-color($primary);
     }
 
     &.mat-accent .mat-checkbox-background {
-      background-color: mat-color($accent, 500);
+      background-color: mat-color($accent);
     }
 
     &.mat-warn .mat-checkbox-background {
-      background-color: mat-color($warn, 500);
+      background-color: mat-color($warn);
     }
   }
 

@@ -23,11 +23,11 @@
   }
 
   .mat-tab-label:focus {
-    background-color: mat-color($primary, 100, 0.3);
+    background-color: mat-color($primary, lighter, 0.3);
   }
 
   .mat-ink-bar {
-    background-color: mat-color($primary, 500);
+    background-color: mat-color($primary);
   }
 
   .mat-tab-label, .mat-tab-link {

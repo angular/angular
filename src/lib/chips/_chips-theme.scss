@@ -32,18 +32,18 @@
     color: $selected-foreground;
 
     &.mat-primary {
-      background-color: mat-color($primary, 500);
-      color: mat-contrast($primary, 500);
+      background-color: mat-color($primary);
+      color: mat-color($primary, default-contrast);
     }
 
     &.mat-accent {
-      background-color: mat-color($accent, 500);
-      color: mat-contrast($accent, 500);
+      background-color: mat-color($accent);
+      color: mat-color($accent, default-contrast);
     }
 
     &.mat-warn {
-      background-color: mat-color($warn, 500);
-      color: mat-contrast($warn, 500);
+      background-color: mat-color($warn);
+      color: mat-color($warn, default-contrast);
     }
   }
 }
