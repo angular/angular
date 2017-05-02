@@ -81,7 +81,8 @@ export class RouterPreloader implements OnDestroy {
       private router: Router, moduleLoader: NgModuleFactoryLoader, compiler: Compiler,
       private injector: Injector, private preloadingStrategy: PreloadingStrategy) {
     const onStartLoad = (r: Route) => router.triggerEvent(new RouteConfigLoadStart(r));
-    const onEndLoad = (r: Route) => router.triggerEvent(new RouteConfigLoadEnd(r));
+    const onEndLoad = (r: Route, routes: Routes) =>
+        router.triggerEvent(new RouteConfigLoadEnd(r, routes));
 
     this.loader = new RouterConfigLoader(moduleLoader, compiler, onStartLoad, onEndLoad);
   };

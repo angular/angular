@@ -267,7 +267,8 @@ export class Router {
       private outletMap: RouterOutletMap, private location: Location, injector: Injector,
       loader: NgModuleFactoryLoader, compiler: Compiler, public config: Routes) {
     const onLoadStart = (r: Route) => this.triggerEvent(new RouteConfigLoadStart(r));
-    const onLoadEnd = (r: Route) => this.triggerEvent(new RouteConfigLoadEnd(r));
+    const onLoadEnd = (r: Route, routes: Routes) =>
+        this.triggerEvent(new RouteConfigLoadEnd(r, routes));
 
     this.ngModule = injector.get(NgModuleRef);
 

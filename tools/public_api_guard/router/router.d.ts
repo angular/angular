@@ -218,7 +218,8 @@ export interface Route {
 /** @experimental */
 export declare class RouteConfigLoadEnd {
     route: Route;
-    constructor(route: Route);
+    routes: Routes;
+    constructor(route: Route, routes: Routes);
     toString(): string;
 }
 

@@ -2745,6 +2745,8 @@ describe('Integration', () => {
              expect(events.length).toEqual(2);
              expect(events[0].toString()).toEqual('RouteConfigLoadStart(path: lazy)');
              expect(events[1].toString()).toEqual('RouteConfigLoadEnd(path: lazy)');
+
+             expect((<RouteConfigLoadEnd>events[1]).routes).toBeDefined();
            })));
 
     it('throws an error when forRoot() is used in a lazy context',

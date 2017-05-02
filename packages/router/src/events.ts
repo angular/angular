@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Route} from './config';
+import {Route, Routes} from './config';
 import {RouterStateSnapshot} from './router_state';
 
 /**
@@ -122,7 +122,7 @@ export class RouteConfigLoadStart {
  * @experimental
  */
 export class RouteConfigLoadEnd {
-  constructor(public route: Route) {}
+  constructor(public route: Route, public routes: Routes) {}
 
   toString(): string { return `RouteConfigLoadEnd(path: ${this.route.path})`; }
 }
