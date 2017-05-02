@@ -8,6 +8,7 @@
   <aio-search-box class="search-container" #searchBox></aio-search-box>
   <span class="fill-remaining-space"></span>
 </md-toolbar>
+<aio-search-results #searchResults></aio-search-results>
 
 <a id="top-of-page"></a>
 <md-sidenav-container class="sidenav-container" [class.starting]="isStarting" role="main">
@@ -30,7 +31,6 @@
 
 </md-sidenav-container>
 
-<aio-search-results #searchResults></aio-search-results>
 
   <footer>
     <aio-footer [nodes]="footerNodes" [versionInfo]="versionInfo" ></aio-footer>
