@@ -1,0 +1,9 @@
+{% import "lib/paramList.html" as params -%}
+{% extends 'class.template.html' -%}
+
+{% block additional -%}
+  {% include "includes/selectors.html" %}
+  {% include "includes/outputs.html" %}
+  {% include "includes/inputs.html" %}
+  {% include "includes/export-as.html" %}
+{% endblock %}
