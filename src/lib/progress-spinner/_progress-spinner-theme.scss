@@ -9,15 +9,15 @@
 
   .mat-progress-spinner, .mat-spinner {
     path {
-      stroke: mat-color($primary, 600);
+      stroke: mat-color($primary);
     }
 
     &.mat-accent path {
-      stroke: mat-color($accent, 600);
+      stroke: mat-color($accent);
     }
 
     &.mat-warn path {
-      stroke: mat-color($warn, 600);
+      stroke: mat-color($warn);
     }
   }
 }

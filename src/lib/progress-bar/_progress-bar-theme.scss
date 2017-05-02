@@ -8,40 +8,40 @@
   $warn: map-get($theme, warn);
 
   .mat-progress-bar-background {
-    background: #{_mat-progress-bar-buffer($primary, 100)};
+    background: #{_mat-progress-bar-buffer($primary, lighter)};
   }
 
   .mat-progress-bar-buffer {
-    background-color: mat-color($primary, 100);
+    background-color: mat-color($primary, lighter);
   }
 
   .mat-progress-bar-fill::after {
-    background-color: mat-color($primary, 600);
+    background-color: mat-color($primary);
   }
 
   .mat-progress-bar.mat-accent {
     .mat-progress-bar-background {
-      background: #{_mat-progress-bar-buffer($accent, 100)};
+      background: #{_mat-progress-bar-buffer($accent, lighter)};
     }
 
     .mat-progress-bar-buffer {
-      background-color: mat-color($accent, 100);
+      background-color: mat-color($accent, lighter);
     }
     .mat-progress-bar-fill::after {
-      background-color: mat-color($accent, 600);
+      background-color: mat-color($accent);
     }
   }
 
   .mat-progress-bar.mat-warn {
     .mat-progress-bar-background {
-      background: #{_mat-progress-bar-buffer($warn, 100)};
+      background: #{_mat-progress-bar-buffer($warn, lighter)};
     }
 
     .mat-progress-bar-buffer {
-      background-color: mat-color($warn, 100);
+      background-color: mat-color($warn, lighter);
     }
     .mat-progress-bar-fill::after {
-      background-color: mat-color($warn, 600);
+      background-color: mat-color($warn);
     }
   }
 }
