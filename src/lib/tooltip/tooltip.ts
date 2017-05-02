@@ -8,7 +8,6 @@ import {
   Optional,
   OnDestroy,
   Renderer2,
-  OnInit,
   ChangeDetectorRef,
 } from '@angular/core';
 import {
@@ -26,6 +25,7 @@ import {
   ComponentPortal,
   OverlayConnectionPosition,
   OriginConnectionPosition,
+  RepositionScrollStrategy,
 } from '../core';
 import {MdTooltipInvalidPositionError} from './tooltip-errors';
 import {Observable} from 'rxjs/Observable';
@@ -34,13 +34,12 @@ import {Dir} from '../core/rtl/dir';
 import {Platform} from '../core/platform/index';
 import 'rxjs/add/operator/first';
 import {ScrollDispatcher} from '../core/overlay/scroll/scroll-dispatcher';
-import {Subscription} from 'rxjs/Subscription';
 import {coerceBooleanProperty} from '../core/coercion/boolean-property';
 
 export type TooltipPosition = 'left' | 'right' | 'above' | 'below' | 'before' | 'after';
 
 /** Time in ms to delay before changing the tooltip visibility to hidden */
-export const TOUCHEND_HIDE_DELAY  = 1500;
+export const TOUCHEND_HIDE_DELAY = 1500;
 
 /** Time in ms to throttle repositioning after scroll events. */
 export const SCROLL_THROTTLE_MS = 20;
@@ -59,10 +58,9 @@ export const SCROLL_THROTTLE_MS = 20;
   },
   exportAs: 'mdTooltip',
 })
-export class MdTooltip implements OnInit, OnDestroy {
+export class MdTooltip implements OnDestroy {
   _overlayRef: OverlayRef;
   _tooltipInstance: TooltipComponent;
-  scrollSubscription: Subscription;
 
   private _position: TooltipPosition = 'below';
   private _disabled: boolean = false;
@@ -164,26 +162,12 @@ export class MdTooltip implements OnInit, OnDestroy {
     }
   }
 
-  ngOnInit() {
-    // When a scroll on the page occurs, update the position in case this tooltip needs
-    // to be repositioned.
-    this.scrollSubscription = this._scrollDispatcher.scrolled(SCROLL_THROTTLE_MS, () => {
-      if (this._overlayRef) {
-        this._overlayRef.updatePosition();
-      }
-    });
-  }
-
   /**
    * Dispose the tooltip when destroyed.
    */
   ngOnDestroy() {
     if (this._tooltipInstance) {
       this._disposeTooltip();
-    }
-
-    if (this.scrollSubscription) {
-      this.scrollSubscription.unsubscribe();
     }
   }
 
@@ -249,6 +233,8 @@ export class MdTooltip implements OnInit, OnDestroy {
     });
     let config = new OverlayState();
     config.positionStrategy = strategy;
+    config.scrollStrategy =
+        new RepositionScrollStrategy(this._scrollDispatcher, SCROLL_THROTTLE_MS);
 
     this._overlayRef = this._overlay.create(config);
   }

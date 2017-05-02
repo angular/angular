@@ -13,7 +13,7 @@ import {
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {DOCUMENT} from '@angular/platform-browser';
-import {Overlay, OverlayRef, OverlayState, TemplatePortal} from '../core';
+import {Overlay, OverlayRef, OverlayState, TemplatePortal, RepositionScrollStrategy} from '../core';
 import {MdAutocomplete} from './autocomplete';
 import {PositionStrategy} from '../core/overlay/position/position-strategy';
 import {ConnectedPositionStrategy} from '../core/overlay/position/connected-position-strategy';
@@ -76,9 +76,6 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   /** The subscription to positioning changes in the autocomplete panel. */
   private _panelPositionSubscription: Subscription;
 
-  /** Subscription to global scroll events. */
-  private _scrollSubscription: Subscription;
-
   /** Strategy that is used to position the panel. */
   private _positionStrategy: ConnectedPositionStrategy;
 
@@ -139,12 +136,6 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
       this._subscribeToClosingActions();
     }
 
-    if (!this._scrollSubscription) {
-      this._scrollSubscription = this._scrollDispatcher.scrolled(0, () => {
-        this._overlayRef.updatePosition();
-      });
-    }
-
     this.autocomplete._setVisibility();
     this._floatPlaceholder();
     this._panelOpen = true;
@@ -154,11 +145,6 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   closePanel(): void {
     if (this._overlayRef && this._overlayRef.hasAttached()) {
       this._overlayRef.detach();
-    }
-
-    if (this._scrollSubscription) {
-      this._scrollSubscription.unsubscribe();
-      this._scrollSubscription = null;
     }
 
     this._panelOpen = false;
@@ -374,6 +360,7 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
     overlayState.positionStrategy = this._getOverlayPosition();
     overlayState.width = this._getHostWidth();
     overlayState.direction = this._dir ? this._dir.value : 'ltr';
+    overlayState.scrollStrategy = new RepositionScrollStrategy(this._scrollDispatcher);
     return overlayState;
   }
 

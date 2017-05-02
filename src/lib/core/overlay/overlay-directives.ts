@@ -23,8 +23,11 @@ import {PortalModule} from '../portal/portal-directives';
 import {ConnectedPositionStrategy} from './position/connected-position-strategy';
 import {Dir, LayoutDirection} from '../rtl/dir';
 import {Scrollable} from './scroll/scrollable';
+import {RepositionScrollStrategy} from './scroll/reposition-scroll-strategy';
+import {ScrollStrategy} from './scroll/scroll-strategy';
 import {coerceBooleanProperty} from '../coercion/boolean-property';
 import {ESCAPE} from '../keyboard/keycodes';
+import {ScrollDispatcher} from './scroll/scroll-dispatcher';
 import {Subscription} from 'rxjs/Subscription';
 
 
@@ -119,6 +122,9 @@ export class ConnectedOverlayDirective implements OnDestroy {
   /** The custom class to be set on the backdrop element. */
   @Input() backdropClass: string;
 
+  /** Strategy to be used when handling scroll events while the overlay is open. */
+  @Input() scrollStrategy: ScrollStrategy = new RepositionScrollStrategy(this._scrollDispatcher);
+
   /** Whether or not the overlay should attach a backdrop. */
   @Input()
   get hasBackdrop() {
@@ -156,6 +162,7 @@ export class ConnectedOverlayDirective implements OnDestroy {
   constructor(
       private _overlay: Overlay,
       private _renderer: Renderer2,
+      private _scrollDispatcher: ScrollDispatcher,
       templateRef: TemplateRef<any>,
       viewContainerRef: ViewContainerRef,
       @Optional() private _dir: Dir) {
@@ -213,6 +220,7 @@ export class ConnectedOverlayDirective implements OnDestroy {
 
     this._position = this._createPositionStrategy() as ConnectedPositionStrategy;
     overlayConfig.positionStrategy = this._position;
+    overlayConfig.scrollStrategy = this.scrollStrategy;
 
     return overlayConfig;
   }

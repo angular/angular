@@ -51,6 +51,10 @@ export * from './overlay/position/global-position-strategy';
 export * from './overlay/position/connected-position-strategy';
 export * from './overlay/position/connected-position';
 export {ScrollDispatcher} from './overlay/scroll/scroll-dispatcher';
+export {ScrollStrategy} from './overlay/scroll/scroll-strategy';
+export {RepositionScrollStrategy} from './overlay/scroll/reposition-scroll-strategy';
+export {CloseScrollStrategy} from './overlay/scroll/close-scroll-strategy';
+export {NoopScrollStrategy} from './overlay/scroll/noop-scroll-strategy';
 
 // Gestures
 export {GestureConfig} from './gestures/gesture-config';

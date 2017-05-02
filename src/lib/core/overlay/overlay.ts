@@ -30,7 +30,7 @@ let defaultState = new OverlayState();
  *
  * An overlay *is* a PortalHost, so any kind of Portal can be loaded into one.
  */
- @Injectable()
+@Injectable()
 export class Overlay {
   constructor(private _overlayContainer: OverlayContainer,
               private _componentFactoryResolver: ComponentFactoryResolver,

@@ -29,7 +29,6 @@ import {coerceBooleanProperty} from '../core/coercion/boolean-property';
 import {ConnectedOverlayDirective} from '../core/overlay/overlay-directives';
 import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
 import {SelectionModel} from '../core/selection/selection';
-import {ScrollDispatcher} from '../core/overlay/scroll/scroll-dispatcher';
 import {MdSelectDynamicMultipleError, MdSelectNonArrayValueError} from './select-errors';
 import 'rxjs/add/observable/merge';
 import 'rxjs/add/operator/startWith';
@@ -133,9 +132,6 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
 
   /** Subscription to tab events while overlay is focused. */
   private _tabSubscription: Subscription;
-
-  /** Subscription to global scrolled events while the select is open. */
-  private _scrollSubscription: Subscription;
 
   /** Whether filling out the select is required in the form.  */
   private _required: boolean = false;
@@ -314,8 +310,7 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
 
   constructor(private _element: ElementRef, private _renderer: Renderer2,
               private _viewportRuler: ViewportRuler, private _changeDetectorRef: ChangeDetectorRef,
-              private _scrollDispatcher: ScrollDispatcher, @Optional() private _dir: Dir,
-              @Self() @Optional() public _control: NgControl,
+              @Optional() private _dir: Dir, @Self() @Optional() public _control: NgControl,
               @Attribute('tabindex') tabIndex: string) {
 
     if (this._control) {
@@ -374,9 +369,6 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
     this._calculateOverlayPosition();
     this._placeholderState = this._floatPlaceholderState();
     this._panelOpen = true;
-    this._scrollSubscription = this._scrollDispatcher.scrolled(0, () => {
-      this.overlayDir.overlayRef.updatePosition();
-    });
   }
 
   /** Closes the overlay panel and focuses the host element. */
@@ -386,11 +378,6 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
 
       if (this._selectionModel.isEmpty()) {
         this._placeholderState = '';
-      }
-
-      if (this._scrollSubscription) {
-        this._scrollSubscription.unsubscribe();
-        this._scrollSubscription = null;
       }
 
       this._focusHost();
