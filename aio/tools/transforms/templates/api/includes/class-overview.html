@@ -1,0 +1,17 @@
+{% macro renderMember(member) %}{% if not member.internal -%}
+<a class="code-anchor" href="#{$ member.name $}">{$ member.name $}</a> {$ params.paramList(member.parameters) | indent(4, false) | trim() $}{$ params.returnType(member.returnType) $}
+{%- endif %}{% endmacro -%}
+
+<section class="class-overview">
+  <h2>Overview</h2>
+  <code-example language="ts" hideCopy="true">
+  {$ doc.docType $} {$ doc.name $} {$ doc.heritage $} {
+  {%- if doc.statics.length %}{% for member in doc.statics %}
+    static {$ renderMember(member) $}{% endfor %}{% endif %}
+  {%- if doc.constructorDoc %}
+    {$ renderMember(doc.constructorDoc) $}{% endif %}
+  {%- if doc.members.length %}{% for member in doc.members %}
+    {$ renderMember(member) $}{% endfor %}{% endif %}
+  }
+  </code-example>
+</section>
