@@ -3,10 +3,25 @@ import {
   ElementRef,
   NgModule,
   Output,
+  Input,
   EventEmitter,
   OnDestroy,
-  AfterContentInit
+  AfterContentInit,
+  Injectable,
 } from '@angular/core';
+import {Subject} from 'rxjs/Subject';
+import 'rxjs/add/operator/debounceTime';
+
+/**
+ * Factory that creates a new MutationObserver and allows us to stub it out in unit tests.
+ * @docs-private
+ */
+@Injectable()
+export class MdMutationObserverFactory {
+  create(callback): MutationObserver {
+    return new MutationObserver(callback);
+  }
+}
 
 /**
  * Directive that triggers a callback whenever the content of
@@ -19,12 +34,30 @@ export class ObserveContent implements AfterContentInit, OnDestroy {
   private _observer: MutationObserver;
 
   /** Event emitted for each change in the element's content. */
-  @Output('cdkObserveContent') event = new EventEmitter<void>();
+  @Output('cdkObserveContent') event = new EventEmitter<MutationRecord[]>();
 
-  constructor(private _elementRef: ElementRef) {}
+  /** Used for debouncing the emitted values to the observeContent event. */
+  private _debouncer = new Subject<MutationRecord[]>();
+
+  /** Debounce interval for emitting the changes. */
+  @Input() debounce: number;
+
+  constructor(
+    private _mutationObserverFactory: MdMutationObserverFactory,
+    private _elementRef: ElementRef) { }
 
   ngAfterContentInit() {
-    this._observer = new MutationObserver(mutations => mutations.forEach(() => this.event.emit()));
+    if (this.debounce > 0) {
+      this._debouncer
+        .debounceTime(this.debounce)
+        .subscribe(mutations => this.event.emit(mutations));
+    } else {
+      this._debouncer.subscribe(mutations => this.event.emit(mutations));
+    }
+
+    this._observer = this._mutationObserverFactory.create((mutations: MutationRecord[]) => {
+      this._debouncer.next(mutations);
+    });
 
     this._observer.observe(this._elementRef.nativeElement, {
       characterData: true,
@@ -36,12 +69,16 @@ export class ObserveContent implements AfterContentInit, OnDestroy {
   ngOnDestroy() {
     if (this._observer) {
       this._observer.disconnect();
+      this._debouncer.complete();
+      this._debouncer = this._observer = null;
     }
   }
 }
 
+
 @NgModule({
   exports: [ObserveContent],
-  declarations: [ObserveContent]
+  declarations: [ObserveContent],
+  providers: [MdMutationObserverFactory]
 })
 export class ObserveContentModule {}
