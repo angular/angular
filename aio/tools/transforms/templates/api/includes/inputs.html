@@ -1,5 +1,5 @@
 {% if doc.inputs %}
-<div class="inputs api-section">
+<section class="inputs">
   <h2>Inputs</h2>
   {% for binding, property in doc.inputs %}
   <div class="input">
@@ -7,5 +7,5 @@
     {$ property.memberDoc.description | trimBlankLines | marked $}
   </div>
   {% endfor %}
-</div>
+</section>
 {% endif %}
