@@ -33,7 +33,9 @@
 
 
 
-<div *ngIf="isSideBySide" class="toc-container"></div>
+<div class="toc-container" [style.max-height.px]="tocMaxHeight">
+  <aio-toc></aio-toc>
+</div>
 
 <footer>
   <aio-footer [nodes]="footerNodes" [versionInfo]="versionInfo" ></aio-footer>

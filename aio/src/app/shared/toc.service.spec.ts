@@ -6,6 +6,7 @@ import { TocItem, TocService } from './toc.service';
 describe('TocService', () => {
   let injector: ReflectiveInjector;
   let tocService: TocService;
+  let lastTocList: TocItem[];
 
   // call TocService.genToc
   function callGenToc(html = '', docId = 'fizz/buzz'): HTMLDivElement {
@@ -22,34 +23,66 @@ describe('TocService', () => {
       TocService,
     ]);
     tocService = injector.get(TocService);
+    tocService.tocList.subscribe(tocList => lastTocList = tocList);
   });
 
   it('should be creatable', () => {
     expect(tocService).toBeTruthy();
   });
 
+  describe('tocList', () => {
+    it('should emit the latest value to new subscribers', () => {
+      let value1: TocItem[];
+      let value2: TocItem[];
+
+      tocService.tocList.next([] as TocItem[]);
+      tocService.tocList.subscribe(v => value1 = v);
+      expect(value1).toEqual([]);
+
+      tocService.tocList.next([{}, {}] as TocItem[]);
+      tocService.tocList.subscribe(v => value2 = v);
+      expect(value2).toEqual([{}, {}]);
+    });
+
+    it('should emit the same values to all subscribers', () => {
+      const emittedValues: TocItem[][] = [];
+
+      tocService.tocList.subscribe(v => emittedValues.push(v));
+      tocService.tocList.subscribe(v => emittedValues.push(v));
+      tocService.tocList.next([{ title: 'A' }, { title: 'B' }] as TocItem[]);
+
+      expect(emittedValues).toEqual([
+        [{ title: 'A' }, { title: 'B' }],
+        [{ title: 'A' }, { title: 'B' }]
+      ]);
+    });
+  });
+
   describe('should clear tocList', () => {
-    // Start w/ dummy data from previous usage
-    beforeEach(() => tocService.tocList = [{}, {}] as TocItem[]);
+    beforeEach(() => {
+      // Start w/ dummy data from previous usage
+      tocService.tocList.next([{}, {}] as TocItem[]);
+      expect(lastTocList).not.toEqual([]);
+    });
 
     it('when reset()', () => {
       tocService.reset();
-      expect(tocService.tocList.length).toEqual(0);
+      expect(lastTocList).toEqual([]);
     });
 
     it('when given undefined doc element', () => {
       tocService.genToc(undefined);
-      expect(tocService.tocList.length).toEqual(0);
+      expect(lastTocList).toEqual([]);
     });
 
     it('when given doc element w/ no headings', () => {
       callGenToc('<p>This</p><p>and</p><p>that</p>');
-      expect(tocService.tocList.length).toEqual(0);
+      expect(lastTocList).toEqual([]);
     });
 
     it('when given doc element w/ headings other than h2 & h3', () => {
       callGenToc('<h1>This</h1><h4>and</h4><h5>that</h5>');
-      expect(tocService.tocList.length).toEqual(0);
+      expect(lastTocList).toEqual([]);
     });
 
     it('when given doc element w/ no-toc headings', () => {
@@ -60,14 +93,13 @@ describe('TocService', () => {
         <h2 class="no-Toc">three</h2><p>some three</p>
         <h2 class="noToc">four</h2><p>some four</p>
       `);
-      expect(tocService.tocList.length).toEqual(0);
+      expect(lastTocList).toEqual([]);
     });
   });
 
   describe('when given many headings', () => {
     let docId: string;
     let docEl: HTMLDivElement;
-    let tocList: TocItem[];
     let headings: NodeListOf<HTMLHeadingElement>;
 
     beforeEach(() => {
@@ -104,39 +136,38 @@ describe('TocService', () => {
           <h3 id="h3-6a">H3 6a</h3> <p>h3 toc 8</p>
       `, docId);
 
-      tocList = tocService.tocList;
       headings = docEl.querySelectorAll('h1,h2,h3,h4') as NodeListOf<HTMLHeadingElement>;
     });
 
     it('should have tocList with expect number of TocItems', () => {
       // should ignore h1, h4, and the no-toc h2
-      expect(tocList.length).toEqual(headings.length - 3);
+      expect(lastTocList.length).toEqual(headings.length - 3);
     });
 
     it('should have href with docId and heading\'s id', () => {
-      const tocItem = tocList[0];
+      const tocItem = lastTocList[0];
       expect(tocItem.href).toEqual(`${docId}#heading-one-special-id`);
     });
 
     it('should have level "h2" for an <h2>', () => {
-      const tocItem = tocList[0];
+      const tocItem = lastTocList[0];
       expect(tocItem.level).toEqual('h2');
     });
 
     it('should have level "h3" for an <h3>', () => {
-      const tocItem = tocList[3];
+      const tocItem = lastTocList[3];
       expect(tocItem.level).toEqual('h3');
     });
 
     it('should have title which is heading\'s innerText ', () => {
       const heading = headings[3];
-      const tocItem = tocList[2];
+      const tocItem = lastTocList[2];
       expect(heading.innerText).toEqual(tocItem.title);
     });
 
     it('should have "SafeHtml" content which is heading\'s innerHTML ', () => {
       const heading = headings[3];
-      const content = tocList[2].content;
+      const content = lastTocList[2].content;
       expect((<TestSafeHtml>content).changingThisBreaksApplicationSecurity)
         .toEqual(heading.innerHTML);
     });
@@ -147,20 +178,20 @@ describe('TocService', () => {
     });
 
     it('should have href with docId and calculated heading id', () => {
-      const tocItem = tocList[1];
+      const tocItem = lastTocList[1];
       expect(tocItem.href).toEqual(`${docId}#h2-two`);
     });
 
     it('should ignore HTML in heading when calculating id', () => {
       const id = headings[3].getAttribute('id');
-      const tocItem = tocList[2];
+      const tocItem = lastTocList[2];
       expect(id).toEqual('h2-three', 'heading id');
       expect(tocItem.href).toEqual(`${docId}#h2-three`, 'tocItem href');
     });
 
     it('should avoid repeating an id when calculating', () => {
-      const tocItem4a = tocList[5];
-      const tocItem4b = tocList[6];
+      const tocItem4a = lastTocList[5];
+      const tocItem4b = lastTocList[6];
       expect(tocItem4a.href).toEqual(`${docId}#h2-4-repeat`, 'first');
       expect(tocItem4b.href).toEqual(`${docId}#h2-4-repeat-2`, 'second');
     });
@@ -174,7 +205,7 @@ describe('TocService', () => {
 
     beforeEach(() => {
       docId = 'fizz/buzz/';
-     expectedTocContent = 'Setup to develop <i>locally</i>.';
+      expectedTocContent = 'Setup to develop <i>locally</i>.';
 
       // An almost-actual <h2> ... with extra whitespace
       docEl = callGenToc(`
@@ -186,7 +217,7 @@ describe('TocService', () => {
         </h2>
       `, docId);
 
-      tocItem = tocService.tocList[0];
+      tocItem = lastTocList[0];
     });
 
     it('should have expected href', () => {

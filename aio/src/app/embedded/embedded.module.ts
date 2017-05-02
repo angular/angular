@@ -45,6 +45,9 @@ export class EmbeddedComponents {
     ContributorComponent,
     EmbeddedPlunkerComponent
   ],
+  exports: [
+    TocComponent
+  ],
   providers: [
     ContributorService,
     CopierService,
