@@ -30,8 +30,6 @@ The setup shown in this cookbook is only for Angular version 4 (and up) librarie
 
 </div>
 
-{@a toc}
-
 ## Table of contents
 
 [Library package format](guide/third-party-lib#library-package-format)
@@ -100,53 +98,34 @@ This set of entry points satisfies the following consumers:
   <tr>
     <td> Webpack (es2015) / Closure Compiler </td>
     <td> ESM+ES2015 </td>
-    <td>
-
-        `library-name.js` </td>
+    <td> <code>library-name.js</code> </td>
   <tr>
     <td> Angular CLI / Webpack/ Rollup </td>
     <td> ESM+ES5 </td>
-    <td>
-
-        `library-name.es5.js`
-
-    </td>
+    <td> <code>library-name.es5.js</code> </td>
   </tr>
   <tr>
     <td> Plunker / Fiddle / ES5 / script tag </td>
     <td> UMD </td>
-    <td>
-
-        Requires manual resolution to `bundles/library-name.umd.js`/`bundles/library-name.umd.min.js`
-
+    <td> 
+      Requires manual resolution to 
+      <code>bundles/library-name.umd.js</code>/<code>bundles/library-name.umd.min.js</code>
     </td>
   </tr>
   <tr>
     <td> Node.js </td>
     <td> UMD </td>
-    <td>
-
-        `bundles/library-name.umd.js`
-
-    </td>
+    <td> <code>bundles/library-name.umd.js</code> </td>
   </tr>
   <tr>
     <td> TypeScript </td>
     <td> ESM+*.d.ts </td>
-    <td>
-
-        `library-name.d.ts`
-
-    </td>
+    <td> <code>library-name.d.ts</code> </td>
   </tr>
   <tr>
     <td> AOT compilation </td>
     <td> *.metadata.json </td>
-    <td>
-
-        `library-name.metadata.json`
-
-    </td>
+    <td> <code>library-name.metadata.json</code> </td>
   </tr>
 </table>
 
@@ -154,87 +133,61 @@ A library should have the following file layout when published:
 
 
 <div class='filetree'>
-
-</div>
-
-
-
-<div class='file'>
-  node_modules/library-name
-</div>
-
-
-
-<div class='children'>
-
   <div class='file'>
-    bundles
+    node_modules/library-name
+  </div>
+  <div class='children'>
+    <div class='file'>
+      bundles
+    </div>
     <div class='children'>
-
+      <div class='file'>
+        library-name.umd.js ('main' entry point)
+      </div>
+      <div class='file'>
+        library-name.umd.js.map
+      </div>
+      <div class='file'>
+        library-name.umd.min.js
+      </div>
+      <div class='file'>
+        library-name.umd.min.js.map
+      </div>
     </div>
-
     <div class='file'>
-      library-name.umd.js ('main' entry point)
+      src/*.d.ts
     </div>
-
     <div class='file'>
-      library-name.umd.js.map
+      library-name.d.ts ('typings' entry point)
     </div>
-
     <div class='file'>
-      library-name.umd.min.js
+      library-name.es5.js ('module' entry point)
     </div>
-
     <div class='file'>
-      library-name.umd.min.js.map
+      library-name.es5.js.map
     </div>
-
+    <div class='file'>
+      library-name.js ('es2015' entry point)
+    </div>
+    <div class='file'>
+      library-name.js.map
+    </div>
+    <div class='file'>
+      library-name.metadata.json
+    </div>
+    <div class='file'>
+      index.d.ts
+    </div>
+    <div class='file'>
+      LICENSE
+    </div>
+    <div class='file'>
+      package.json (lists all entry points)
+    </div>
+    <div class='file'>
+      README.md
+    </div>
   </div>
-
-  <div class='file'>
-    src/*.d.ts
-  </div>
-
-  <div class='file'>
-    library-name.d.ts ('typings' entry point)
-  </div>
-
-  <div class='file'>
-    library-name.es5.js ('module' entry point)
-  </div>
-
-  <div class='file'>
-    library-name.es5.js.map
-  </div>
-
-  <div class='file'>
-    library-name.js ('es2015' entry point)
-  </div>
-
-  <div class='file'>
-    library-name.js.map
-  </div>
-
-  <div class='file'>
-    library-name.metadata.json
-  </div>
-
-  <div class='file'>
-    index.d.ts
-  </div>
-
-  <div class='file'>
-    LICENSE
-  </div>
-
-  <div class='file'>
-    package.json (lists all entry points)
-  </div>
-
-  <div class='file'>
-    README.md
-  </div>
-
 </div>
 
 
@@ -325,8 +278,6 @@ Then ...
 1. Run `npm start` to launch the sample application.
 
 
-{@a clone}
-
 
 ### Clone
 
@@ -342,8 +293,6 @@ Perform the _clone-to-launch_ steps with these terminal commands.
 </code-example>
 
 
-
-{@a download}
 
 
 ### Download
@@ -390,9 +339,6 @@ Do this only in the beginning to avoid accidentally deleting your own git setup!
 
 
 
-{@a seed}
-
-
 
 ## What's in the QuickStart Library seed?
 
@@ -406,87 +352,59 @@ Focus on the following TypeScript (`.ts`) files in the **`/src`** folder.
 
 
 <div class='filetree'>
-
   <div class='file'>
     src
   </div>
-
   <div class='children'>
-
     <div class='file'>
       demo
     </div>
-
     <div class='children'>
-
       <div class='file'>
         app
       </div>
-
       <div class='children'>
-
         <div class='file'>
           app.component.ts
         </div>
-
         <div class='file'>
           app.module.ts
         </div>
-
       </div>
-
     </div>
-
     <div class='file'>
       lib
     </div>
-
     <div class='children'>
-
       <div class='file'>
         src
       </div>
-
       <div class='children'>
-
         <div class='file'>
           component
         </div>
-
         <div class='children'>
-
           <div class='file'>
             lib.component.ts
           </div>
-
         </div>
-
         <div class='file'>
           service
         </div>
-
         <div class='children'>
-
           <div class='file'>
             lib.service.ts
           </div>
-
         </div>
-
         <div class='file'>
           module.ts
         </div>
-
       </div>
-
       <div class='file'>
         index.ts
       </div>
-
     </div>
-
   </div>
-
 </div>
 
 
@@ -538,120 +456,67 @@ When you run `npm start`, the demo application is served.
 The following are all in `src/`
 
 
-<style>
-  td, th {vertical-align: top}
-</style>
-
-
-
 <table width="100%">
-
   <col width="20%">
-
   </col>
-
   <col width="80%">
-
   </col>
-
   <tr>
-
     <th>
       File
     </th>
-
     <th>
       Purpose
     </th>
-
   </tr>
-
   <tr>
-
     <td>
-      <ngio-ex>demo/app/app.component.ts</ngio-ex>
+      <code>demo/app/app.component.ts</code>
     </td>
-
     <td>
-
-
       A demo component that renders the library component and a value from the library service.
     </td>
-
   </tr>
-
   <tr>
-
     <td>
       <code>demo/app/app.module.ts</code>
     </td>
-
     <td>
-
-
       A demo `NgModule` that imports the Library `LibModule`.
     </td>
-
   </tr>
-
   <tr>
-
     <td>
-      <ngio-ex>lib/src/component/app.component.ts</ngio-ex>
+      <code>lib/src/component/app.component.ts</code>
     </td>
-
     <td>
-
-
-      A sample library component that renders an `<h2>` tag.
+      A sample library component that renders an <code>h2</code> tag.
     </td>
-
   </tr>
-
   <tr>
-
     <td>
       <code>lib/src/service/lib.service.ts</code>
     </td>
-
     <td>
-
-
       A sample library service that exports a value.
     </td>
-
   </tr>
-
   <tr>
-
     <td>
       <code>lib/src/module.ts</code>
     </td>
-
     <td>
-
-
       The library's main `NgModule`, `LibModule`.
     </td>
-
   </tr>
-
   <tr>
-
     <td>
       <code>lib/index.ts</code>
     </td>
-
     <td>
-
-
       The public API of your library, where you choose what to export to consumers.
-
-
     </td>
-
   </tr>
-
 </table>
 
 
