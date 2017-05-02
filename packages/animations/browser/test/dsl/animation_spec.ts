@@ -12,6 +12,7 @@ import {Animation} from '../../src/dsl/animation';
 import {buildAnimationAst} from '../../src/dsl/animation_ast_builder';
 import {AnimationTimelineInstruction} from '../../src/dsl/animation_timeline_instruction';
 import {ElementInstructionMap} from '../../src/dsl/element_instruction_map';
+import {MockAnimationDriver} from '../../testing';
 
 function createDiv() {
   return document.createElement('div');
@@ -868,8 +869,9 @@ function invokeAnimationSequence(
     element: any, steps: AnimationMetadata | AnimationMetadata[], locals: {[key: string]: any} = {},
     startingStyles: ɵStyleData[] = [], destinationStyles: ɵStyleData[] = [],
     subInstructions?: ElementInstructionMap): AnimationTimelineInstruction[] {
-  return new Animation(steps).buildTimelines(
-      element, startingStyles, destinationStyles, locals, subInstructions);
+  const driver = new MockAnimationDriver();
+  return new Animation(driver, steps)
+      .buildTimelines(element, startingStyles, destinationStyles, locals, subInstructions);
 }
 
 function validateAndThrowAnimationSequence(steps: AnimationMetadata | AnimationMetadata[]) {

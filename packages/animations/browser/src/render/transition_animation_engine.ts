@@ -89,7 +89,7 @@ export class AnimationTransitionNamespace {
   constructor(
       public id: string, public hostElement: any, private _engine: TransitionAnimationEngine) {
     this._hostClassName = 'ng-tns-' + id;
-    hostElement.classList.add(this._hostClassName);
+    addClass(hostElement, this._hostClassName);
   }
 
   listen(element: any, name: string, phase: string, callback: (event: any) => boolean): () => any {
@@ -114,8 +114,8 @@ export class AnimationTransitionNamespace {
 
     const triggersWithStates = getOrSetAsInMap(this._engine.statesByElement, element, {});
     if (!triggersWithStates.hasOwnProperty(name)) {
-      element.classList.add(NG_TRIGGER_CLASSNAME);
-      element.classList.add(NG_TRIGGER_CLASSNAME + '-' + name);
+      addClass(element, NG_TRIGGER_CLASSNAME);
+      addClass(element, NG_TRIGGER_CLASSNAME + '-' + name);
       triggersWithStates[name] = null;
     }
 
@@ -161,8 +161,8 @@ export class AnimationTransitionNamespace {
 
     let triggersWithStates = this._engine.statesByElement.get(element);
     if (!triggersWithStates) {
-      element.classList.add(NG_TRIGGER_CLASSNAME);
-      element.classList.add(NG_TRIGGER_CLASSNAME + '-' + triggerName);
+      addClass(element, NG_TRIGGER_CLASSNAME);
+      addClass(element, NG_TRIGGER_CLASSNAME + '-' + triggerName);
       this._engine.statesByElement.set(element, triggersWithStates = {});
     }
 
@@ -207,11 +207,11 @@ export class AnimationTransitionNamespace {
         {element, triggerName, transition, fromState, toState, player, isFallbackTransition});
 
     if (!isFallbackTransition) {
-      element.classList.add(NG_ANIMATING_CLASSNAME);
+      addClass(element, NG_ANIMATING_CLASSNAME);
     }
 
     player.onDone(() => {
-      element.classList.remove(NG_ANIMATING_CLASSNAME);
+      removeClass(element, NG_ANIMATING_CLASSNAME);
 
       let index = this.players.indexOf(player);
       if (index >= 0) {
@@ -255,8 +255,8 @@ export class AnimationTransitionNamespace {
   }
 
   private _destroyInnerNodes(rootElement: any, context: any, animate: boolean = false) {
-    listToArray(rootElement.querySelectorAll(NG_TRIGGER_SELECTOR)).forEach(elm => {
-      if (animate && elm.classList.contains(this._hostClassName)) {
+    listToArray(this._engine.driver.query(rootElement, NG_TRIGGER_SELECTOR, true)).forEach(elm => {
+      if (animate && containsClass(elm, this._hostClassName)) {
         const innerNs = this._engine.namespacesByHostElement.get(elm);
 
         // special case for a host element with animations on the same element
@@ -274,8 +274,8 @@ export class AnimationTransitionNamespace {
   removeNode(element: any, context: any, doNotRecurse?: boolean): void {
     const engine = this._engine;
 
-    element.classList.add(LEAVE_CLASSNAME);
-    engine.afterFlush(() => element.classList.remove(LEAVE_CLASSNAME));
+    addClass(element, LEAVE_CLASSNAME);
+    engine.afterFlush(() => removeClass(element, LEAVE_CLASSNAME));
 
     if (!doNotRecurse && element.childElementCount) {
       this._destroyInnerNodes(element, context, true);
@@ -380,7 +380,7 @@ export class AnimationTransitionNamespace {
     }
   }
 
-  insertNode(element: any, parent: any): void { element.classList.add(this._hostClassName); }
+  insertNode(element: any, parent: any): void { addClass(element, this._hostClassName); }
 
   drainQueuedTransitions(): QueueInstruction[] {
     const instructions: QueueInstruction[] = [];
@@ -415,13 +415,13 @@ export class AnimationTransitionNamespace {
 
     return instructions.sort((a, b) => {
       // if depCount == 0 them move to front
-      // otherwise if a.contains(b) then move back
+      // otherwise if a contains b then move back
       const d0 = a.transition.ast.depCount;
       const d1 = b.transition.ast.depCount;
       if (d0 == 0 || d1 == 0) {
         return d0 - d1;
       }
-      return a.element.contains(b.element) ? 1 : -1;
+      return this._engine.driver.containsElement(a.element, b.element) ? 1 : -1;
     });
   }
 
@@ -468,7 +468,7 @@ export class TransitionAnimationEngine {
 
   _onRemovalComplete(element: any, context: any) { this.onRemovalComplete(element, context); }
 
-  constructor(private _driver: AnimationDriver, private _normalizer: AnimationStyleNormalizer) {}
+  constructor(public driver: AnimationDriver, private _normalizer: AnimationStyleNormalizer) {}
 
   get queuedPlayers(): TransitionAnimationPlayer[] {
     const players: TransitionAnimationPlayer[] = [];
@@ -508,7 +508,7 @@ export class TransitionAnimationEngine {
       let found = false;
       for (let i = limit; i >= 0; i--) {
         const nextNamespace = this._namespaceList[i];
-        if (nextNamespace.hostElement.contains(hostElement)) {
+        if (this.driver.containsElement(nextNamespace.hostElement, hostElement)) {
           this._namespaceList.splice(i + 1, 0, ns);
           found = true;
           break;
@@ -591,12 +591,12 @@ export class TransitionAnimationEngine {
 
   private _buildInstruction(entry: QueueInstruction, subTimelines: ElementInstructionMap) {
     return entry.transition.build(
-        entry.element, entry.fromState.value, entry.toState.value, entry.toState.options,
-        subTimelines);
+        this.driver, entry.element, entry.fromState.value, entry.toState.value,
+        entry.toState.options, subTimelines);
   }
 
   destroyInnerAnimations(containerElement: any) {
-    listToArray(containerElement.querySelectorAll(NG_TRIGGER_SELECTOR)).forEach(element => {
+    listToArray(this.driver.query(containerElement, NG_TRIGGER_SELECTOR, true)).forEach(element => {
       const players = this.playersByElement.get(element);
       if (players) {
         players.forEach(player => {
@@ -662,14 +662,15 @@ export class TransitionAnimationEngine {
     // the :enter queries match the elements (since the timeline queries
     // are fired during instruction building).
     const allEnterNodes = iteratorToArray(this.newlyInserted.values());
-    const enterNodes: any[] = collectEnterElements(allEnterNodes);
+    const enterNodes: any[] = collectEnterElements(this.driver, allEnterNodes);
+    const bodyNode = getBodyNode();
 
     for (let i = this._namespaceList.length - 1; i >= 0; i--) {
       const ns = this._namespaceList[i];
       ns.drainQueuedTransitions().forEach(entry => {
         const player = entry.player;
         const element = entry.element;
-        if (!document.body.contains(element)) {
+        if (!bodyNode || !this.driver.containsElement(bodyNode, element)) {
           player.destroy();
           return;
         }
@@ -737,18 +738,18 @@ export class TransitionAnimationEngine {
 
     allPreviousPlayersMap.forEach(players => { players.forEach(player => player.destroy()); });
 
-    const leaveNodes: any[] = allPostStyleElements.size ?
-        listToArray(document.body.querySelectorAll(LEAVE_SELECTOR)) :
+    const leaveNodes: any[] = bodyNode && allPostStyleElements.size ?
+        listToArray(this.driver.query(bodyNode, LEAVE_SELECTOR, true)) :
         [];
 
     // PRE STAGE: fill the ! styles
     const preStylesMap = allPreStyleElements.size ?
-        cloakAndComputeStyles(this._driver, enterNodes, allPreStyleElements, PRE_STYLE) :
+        cloakAndComputeStyles(this.driver, enterNodes, allPreStyleElements, PRE_STYLE) :
         new Map<any, ɵStyleData>();
 
     // POST STAGE: fill the * styles
     const postStylesMap =
-        cloakAndComputeStyles(this._driver, leaveNodes, allPostStyleElements, AUTO_STYLE);
+        cloakAndComputeStyles(this.driver, leaveNodes, allPostStyleElements, AUTO_STYLE);
 
     const rootPlayers: TransitionAnimationPlayer[] = [];
     const subPlayers: TransitionAnimationPlayer[] = [];
@@ -766,7 +767,7 @@ export class TransitionAnimationEngine {
         for (let i = 0; i < sortedParentElements.length; i++) {
           const parent = sortedParentElements[i];
           if (parent === element) break;
-          if (parent.contains(element)) {
+          if (this.driver.containsElement(parent, element)) {
             parentHasPriority = parent;
             break;
           }
@@ -845,7 +846,7 @@ export class TransitionAnimationEngine {
       player.play();
     });
 
-    enterNodes.forEach(element => element.classList.remove(ENTER_CLASSNAME));
+    enterNodes.forEach(element => removeClass(element, ENTER_CLASSNAME));
 
     return rootPlayers;
   }
@@ -958,7 +959,7 @@ export class TransitionAnimationEngine {
       const preStyles = preStylesMap.get(element);
       const postStyles = postStylesMap.get(element);
       const keyframes = normalizeKeyframes(
-          this._driver, this._normalizer, element, timelineInstruction.keyframes, preStyles,
+          this.driver, this._normalizer, element, timelineInstruction.keyframes, preStyles,
           postStyles);
       const player = this._buildPlayer(timelineInstruction, keyframes, previousPlayers);
 
@@ -983,11 +984,11 @@ export class TransitionAnimationEngine {
           () => { deleteOrUnsetInMap(this.playersByQueriedElement, player.element, player); });
     });
 
-    allConsumedElements.forEach(element => { element.classList.add(NG_ANIMATING_CLASSNAME); });
+    allConsumedElements.forEach(element => addClass(element, NG_ANIMATING_CLASSNAME));
 
     const player = optimizeGroupPlayer(allNewPlayers);
     player.onDone(() => {
-      allConsumedElements.forEach(element => { element.classList.remove(NG_ANIMATING_CLASSNAME); });
+      allConsumedElements.forEach(element => removeClass(element, NG_ANIMATING_CLASSNAME));
       setStyles(rootElement, instruction.toStyles);
     });
 
@@ -1003,7 +1004,7 @@ export class TransitionAnimationEngine {
       instruction: AnimationTimelineInstruction, keyframes: ɵStyleData[],
       previousPlayers: AnimationPlayer[]): AnimationPlayer {
     if (keyframes.length > 0) {
-      return this._driver.animate(
+      return this.driver.animate(
           instruction.element, keyframes, instruction.duration, instruction.delay,
           instruction.easing, previousPlayers);
     }
@@ -1150,31 +1151,21 @@ function cloakElement(element: any, value?: string) {
   return oldValue;
 }
 
-let elementMatches: (element: any, selector: string) => boolean =
-    (element: any, selector: string) => false;
-if (typeof Element == 'function') {
-  if (Element.prototype.matches) {
-    elementMatches = (element: any, selector: string) => element.matches(selector);
-  } else {
-    const proto = Element.prototype as any;
-    const fn = proto.matchesSelector || proto.mozMatchesSelector || proto.msMatchesSelector ||
-        proto.oMatchesSelector || proto.webkitMatchesSelector;
-    elementMatches = (element: any, selector: string) => fn.apply(element, [selector]);
-  }
-}
-
-function filterNodeClasses(rootElement: any, selector: string): any[] {
+function filterNodeClasses(
+    driver: AnimationDriver, rootElement: any | null, selector: string): any[] {
   const rootElements: any[] = [];
+  if (!rootElement) return rootElements;
+
   let cursor: any = rootElement;
   let nextCursor: any = {};
   do {
-    nextCursor = cursor.querySelector(selector);
+    nextCursor = driver.query(cursor, selector, false)[0];
     if (!nextCursor) {
       cursor = cursor.parentElement;
       if (!cursor) break;
       nextCursor = cursor = cursor.nextElementSibling;
     } else {
-      while (nextCursor && elementMatches(nextCursor, selector)) {
+      while (nextCursor && driver.matchesElement(nextCursor, selector)) {
         rootElements.push(nextCursor);
         nextCursor = nextCursor.nextElementSibling;
         if (nextCursor) {
@@ -1221,10 +1212,50 @@ function listToArray(list: any): any[] {
   return arr;
 }
 
-function collectEnterElements(allEnterNodes: any[]) {
-  allEnterNodes.forEach(element => element.classList.add(POTENTIAL_ENTER_CLASSNAME));
-  const enterNodes = filterNodeClasses(document.body, POTENTIAL_ENTER_SELECTOR);
-  enterNodes.forEach(element => element.classList.add(ENTER_CLASSNAME));
-  allEnterNodes.forEach(element => element.classList.remove(POTENTIAL_ENTER_CLASSNAME));
+function collectEnterElements(driver: AnimationDriver, allEnterNodes: any[]) {
+  allEnterNodes.forEach(element => addClass(element, POTENTIAL_ENTER_CLASSNAME));
+  const enterNodes = filterNodeClasses(driver, getBodyNode(), POTENTIAL_ENTER_SELECTOR);
+  enterNodes.forEach(element => addClass(element, ENTER_CLASSNAME));
+  allEnterNodes.forEach(element => removeClass(element, POTENTIAL_ENTER_CLASSNAME));
   return enterNodes;
+}
+
+const CLASSES_CACHE_KEY = '$$classes';
+function containsClass(element: any, className: string): boolean {
+  if (element.classList) {
+    return element.classList.contains(className);
+  } else {
+    const classes = element[CLASSES_CACHE_KEY];
+    return classes && classes[className];
+  }
+}
+
+function addClass(element: any, className: string) {
+  if (element.classList) {
+    element.classList.add(className);
+  } else {
+    let classes: {[className: string]: boolean} = element[CLASSES_CACHE_KEY];
+    if (!classes) {
+      classes = element[CLASSES_CACHE_KEY] = {};
+    }
+    classes[className] = true;
+  }
+}
+
+function removeClass(element: any, className: string) {
+  if (element.classList) {
+    element.classList.remove(className);
+  } else {
+    let classes: {[className: string]: boolean} = element[CLASSES_CACHE_KEY];
+    if (classes) {
+      delete classes[className];
+    }
+  }
+}
+
+function getBodyNode(): any|null {
+  if (typeof document != 'undefined') {
+    return document.body;
+  }
+  return null;
 }

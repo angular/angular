@@ -2,7 +2,12 @@
 export declare function animate(timings: string | number, styles?: AnimationStyleMetadata | AnimationKeyframesSequenceMetadata | null): AnimationAnimateMetadata;
 
 /** @experimental */
-export declare function animateChild(options?: AnimationOptions | null): AnimationAnimateChildMetadata;
+export declare function animateChild(options?: AnimateChildOptions | null): AnimationAnimateChildMetadata;
+
+/** @experimental */
+export interface AnimateChildOptions extends AnimationOptions {
+    duration?: number | string;
+}
 
 /** @experimental */
 export declare type AnimateTimings = {
@@ -87,7 +92,6 @@ export declare const enum AnimationMetadataType {
 /** @experimental */
 export interface AnimationOptions {
     delay?: number | string;
-    duration?: number | string;
     params?: {
         [name: string]: any;
     };

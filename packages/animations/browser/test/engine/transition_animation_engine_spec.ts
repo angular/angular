@@ -52,7 +52,6 @@ export function main() {
     describe('property setting', () => {
       it('should invoke a transition based on a property change', () => {
         const engine = makeEngine();
-
         const trig = trigger('myTrigger', [
           transition('* => *', [style({height: '0px'}), animate(1000, style({height: '100px'}))])
         ]);

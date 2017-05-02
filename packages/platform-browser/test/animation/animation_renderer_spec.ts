@@ -11,7 +11,6 @@ import {Component, Injectable, NgZone, RendererFactory2, RendererType2, ViewChil
 import {TestBed} from '@angular/core/testing';
 import {BrowserAnimationsModule, ɵAnimationRendererFactory as AnimationRendererFactory} from '@angular/platform-browser/animations';
 import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
-
 import {InjectableAnimationEngine} from '../../animations/src/providers';
 import {el} from '../../testing/src/browser_util';
 
@@ -311,7 +310,7 @@ export function main() {
 }
 
 @Injectable()
-class MockAnimationEngine extends AnimationEngine {
+class MockAnimationEngine extends InjectableAnimationEngine {
   captures: {[method: string]: any[]} = {};
   triggers: AnimationTriggerMetadata[] = [];
 
@@ -330,8 +329,9 @@ class MockAnimationEngine extends AnimationEngine {
     this._capture('onRemove', [element]);
   }
 
-  setProperty(namespaceId: string, element: any, property: string, value: any): void {
+  setProperty(namespaceId: string, element: any, property: string, value: any): boolean {
     this._capture('setProperty', [element, property, value]);
+    return true;
   }
 
   listen(
