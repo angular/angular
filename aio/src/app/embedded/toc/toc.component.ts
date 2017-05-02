@@ -1,4 +1,6 @@
-import { Component,  ElementRef, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
+import { Subject } from 'rxjs/Subject';
+import 'rxjs/add/operator/takeUntil';
 
 import { TocItem, TocService } from 'app/shared/toc.service';
 
@@ -7,13 +9,14 @@ import { TocItem, TocService } from 'app/shared/toc.service';
   templateUrl: 'toc.component.html',
   styles: []
 })
-export class TocComponent implements OnInit {
+export class TocComponent implements OnInit, OnDestroy {
 
   hasSecondary = false;
   hasToc = true;
   isClosed = true;
   isEmbedded = false;
   private primaryMax = 4;
+  private onDestroy = new Subject();
   tocList: TocItem[];
 
   constructor(
@@ -24,16 +27,25 @@ export class TocComponent implements OnInit {
   }
 
   ngOnInit() {
-    const tocList = this.tocList = this.tocService.tocList;
-    const count = tocList.length;
-    this.hasToc = count > 0;
-    if (this.isEmbedded && this.hasToc) {
-      // If TOC is embedded in doc, mark secondary (sometimes hidden) items
-      this.hasSecondary = tocList.length > this.primaryMax;
-      for (let i = this.primaryMax; i < count; i++) {
-        tocList[i].isSecondary = true;
-      }
-    }
+    this.tocService.tocList
+        .takeUntil(this.onDestroy)
+        .subscribe((tocList: TocItem[]) => {
+          const count = tocList.length;
+
+          this.hasToc = count > 0;
+          this.hasSecondary = this.isEmbedded && this.hasToc && (count > this.primaryMax);
+          this.tocList = tocList;
+
+          if (this.hasSecondary) {
+            for (let i = this.primaryMax; i < count; i++) {
+              tocList[i].isSecondary = true;
+            }
+          }
+        });
+  }
+
+  ngOnDestroy() {
+    this.onDestroy.next();
   }
 
   toggle() {

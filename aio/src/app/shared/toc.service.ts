@@ -1,9 +1,6 @@
 import { Inject, Injectable } from '@angular/core';
 import { DOCUMENT, DomSanitizer, SafeHtml } from '@angular/platform-browser';
-
 import { ReplaySubject } from 'rxjs/ReplaySubject';
-
-import { DocumentContents } from 'app/documents/document.service';
 
 export interface TocItem {
   content: SafeHtml;
@@ -15,35 +12,40 @@ export interface TocItem {
 
 @Injectable()
 export class TocService {
-  tocList: TocItem[];
+  tocList = new ReplaySubject<TocItem[]>(1);
 
   constructor(@Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer) { }
 
   genToc(docElement: Element, docId = '') {
-    const tocList = this.tocList = [];
-    if (!docElement) { return; }
+    const tocList = [];
 
-    const headings = docElement.querySelectorAll('h2,h3');
-    const idMap = new Map<string, number>();
+    if (docElement) {
+      const headings = docElement.querySelectorAll('h2,h3');
+      const idMap = new Map<string, number>();
 
-    for (let i = 0; i < headings.length; i++) {
-      const heading = headings[i] as HTMLHeadingElement;
-      // skip if heading class is 'no-toc'
-      if (/(no-toc|notoc)/i.test(heading.className)) { continue; }
+      for (let i = 0; i < headings.length; i++) {
+        const heading = headings[i] as HTMLHeadingElement;
 
-      const id = this.getId(heading, idMap);
-      const toc: TocItem = {
-        content: this.extractHeadingSafeHtml(heading),
-        href: `${docId}#${id}`,
-        level: heading.tagName.toLowerCase(),
-        title: heading.innerText.trim(),
-      };
-      tocList.push(toc);
+        // skip if heading class is 'no-toc'
+        if (/(no-toc|notoc)/i.test(heading.className)) { continue; }
+
+        const id = this.getId(heading, idMap);
+        const toc: TocItem = {
+          content: this.extractHeadingSafeHtml(heading),
+          href: `${docId}#${id}`,
+          level: heading.tagName.toLowerCase(),
+          title: heading.innerText.trim(),
+        };
+
+        tocList.push(toc);
+      }
     }
+
+    this.tocList.next(tocList);
   }
 
   reset() {
-    this.tocList = [];
+    this.tocList.next([]);
   }
 
   // This bad boy exists only to strip off the anchor link attached to a heading

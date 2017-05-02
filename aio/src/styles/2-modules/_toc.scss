@@ -1,9 +1,9 @@
 .toc-container {
     width: 18%;
     position: fixed;
-    top: 84px;
+    top: 96px;
     right: 0;
-    bottom: 18px;
+    bottom: 32px;
     overflow-y: auto;
     overflow-x: hidden;
 
@@ -11,6 +11,20 @@
       display: none;
       width: 0;
     }
+}
+
+aio-toc {
+  &.embedded {
+    @media (min-width: 801px) {
+      display: none;
+    }
+  }
+
+  &:not(.embedded) {
+    @media (max-width: 800px) {
+      display: none;
+    }
+  }
 }
 
 aio-toc > div {
@@ -87,7 +101,7 @@ aio-toc > div {
     @media (max-width: 800px) {
       width: auto;
     }
-  
+
   }
 
   ul.toc-list li {
@@ -141,6 +155,6 @@ aio-toc > div {
   }
 }
 
-aio-toc > div.closed li.secondary {
+aio-toc.embedded > div.closed li.secondary {
     display: none;
 }
