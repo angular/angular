@@ -1,4 +1,11 @@
+@title
+Third Party Library
+
+@intro
+Create a third party library with support for AoT, JiT and Tree Shaking.
+
 @description
+
 
 
 Libraries are the backbone of the Angular ecosystem.
