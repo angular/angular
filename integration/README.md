@@ -32,13 +32,7 @@ Angular's `node_modules` is installed.
 
 ## Running integration tests
 
-The first time you run the tests, you'll need some setup:
-
-```shell
-$ ./integration/build_rxjs_es6.sh
-```
-
-Now you can iterate on the tests by keeping the dist folder up-to-date.
+You can iterate on the tests by keeping the dist folder up-to-date.
 See the `package.json` of the test(s) you're debugging, to see which dist/ folders they install from.
 Then run the right `tsc --watch` command to keep those dist folders up-to-date, for example:
 
