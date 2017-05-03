@@ -15,6 +15,6 @@ import { HEROES } from './hero';
 })
 export class HeroParentComponent {
   heroes = HEROES;
-  master: string = 'Master';
+  master = 'Master';
 }
 // #enddocregion

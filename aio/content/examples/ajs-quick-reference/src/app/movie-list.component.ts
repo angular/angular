@@ -19,7 +19,7 @@ import { MovieService } from './movie.service';
 export class MovieListComponent {
 // #enddocregion class
   favoriteHero: string;
-  showImage: boolean = false;
+  showImage = false;
   movies: IMovie[];
 
 // #docregion di

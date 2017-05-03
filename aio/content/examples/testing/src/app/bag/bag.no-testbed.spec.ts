@@ -3,7 +3,7 @@ import { DependentService, FancyService } from './bag';
 
 ///////// Fakes /////////
 export class FakeFancyService extends FancyService {
-  value: string = 'faked value';
+  value = 'faked value';
 }
 ////////////////////////
 // #docregion FancyService

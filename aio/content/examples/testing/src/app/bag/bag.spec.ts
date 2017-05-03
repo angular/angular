@@ -677,5 +677,5 @@ class FakeGrandchildComponent { }
 
 @Injectable()
 class FakeFancyService extends FancyService {
-  value: string = 'faked value';
+  value = 'faked value';
 }
