@@ -69,6 +69,19 @@ describe('SearchResultsComponent', () => {
     ]);
   });
 
+  it('should special case results that are top level folders', () => {
+    searchResults.next({ query: '', results: [
+      { path: 'tutorial', title: 'Tutorial index', type: '', keywords: '', titleWords: '' },
+      { path: 'tutorial/toh-pt1', title: 'Tutorial - part 1', type: '', keywords: '', titleWords: '' },
+    ]});
+    expect(currentAreas).toEqual([
+      { name: 'tutorial', pages: [
+        { path: 'tutorial/toh-pt1', title: 'Tutorial - part 1', type: '', keywords: '', titleWords: '' },
+        { path: 'tutorial', title: 'Tutorial index', type: '', keywords: '', titleWords: '' },
+      ], priorityPages: [] }
+    ]);
+  });
+
   it('should sort by title within sorted area', () => {
     const results = getTestResults(5);
     searchResults.next({ query: '', results: results });
