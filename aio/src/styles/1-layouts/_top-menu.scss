@@ -6,11 +6,9 @@
 aio-top-menu a.nav-link {
   margin: 0 16px;
   cursor: pointer;
-  
+
   &:focus {
-    background-color: $accentblue;
     outline: none;
-    padding: 21px 16px;
   }
 }
 
@@ -60,6 +58,11 @@ aio-top-menu {
 
       &:hover {
         background-color: $accentblue;
+      }
+
+      &:focus {
+        background-color: $accentblue;
+        outline: none;
       }
     }
   }
