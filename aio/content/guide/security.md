@@ -143,7 +143,7 @@ tag but keeps safe content such as the text content of the `<script>` tag and th
 
 
 <figure class='image-display'>
-  <img src='content/images/guide/security/binding-inner-html.png' alt='A screenshot showing interpolated and bound HTML values'></img>
+  <img src='generated/images/guide/security/binding-inner-html.png' alt='A screenshot showing interpolated and bound HTML values'></img>
 </figure>
 
 
@@ -232,7 +232,7 @@ this, mark the URL value as a trusted URL using the `bypassSecurityTrustUrl` cal
 
 
 <figure class='image-display'>
-  <img src='content/images/guide/security/bypass-security-component.png' alt='A screenshot showing an alert box created from a trusted URL'></img>
+  <img src='generated/images/guide/security/bypass-security-component.png' alt='A screenshot showing an alert box created from a trusted URL'></img>
 </figure>
 
 

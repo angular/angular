@@ -52,12 +52,12 @@ This guide offers a taste of Webpack and explains how to use it with Angular app
   * [Development configuration](guide/webpack#development-configuration)
   * [Production configuration](guide/webpack#production-configuration)
   * [Test configuration](guide/webpack#test-configuration)
-  
+
 * [Trying it out](guide/webpack#try)
 * [Highlights](guide/webpack#highlights)
 * [Conclusion](guide/webpack#conclusion)
 
-You can also <a href="/content/zips/webpack/webpack.zip" target="_blank">download the final result.</a>
+You can also <a href="generated/zips/webpack/webpack.zip" target="_blank">download the final result.</a>
 
 {@a what-is-webpack}
 
@@ -209,8 +209,8 @@ Configure loaders for TypeScript and CSS as follows.
 
 
 
-When Webpack encounters `import` statements like the following, 
-it applies the `test` RegEx patterns. 
+When Webpack encounters `import` statements like the following,
+it applies the `test` RegEx patterns.
 
 
 <div class='code-example'>
@@ -233,7 +233,7 @@ The imported file doesn't match the second pattern so its loader is ignored.
 
 The second `import` matches the second `.css` pattern for which you have *two* loaders chained by the (!) character.
 Webpack applies chained loaders *right to left*. So it applies
-the `css` loader first to flatten CSS `@import` and `url(...)` statements. 
+the `css` loader first to flatten CSS `@import` and `url(...)` statements.
 Then it applies the `style` loader to append the css inside `<style>` elements on the page.
 
 
@@ -490,7 +490,7 @@ Rules tell Webpack which loaders to use for each file, or module:
 * `angular2-template-loader`&mdash;loads angular components' template and styles.
 * `html-loader`&mdash;for component templates.
 * images/fonts&mdash;Images and fonts are bundled as well.
-* CSS&mdash;the first pattern matches application-wide styles; the second handles 
+* CSS&mdash;the first pattern matches application-wide styles; the second handles
 component-scoped styles (the ones specified in a component's `styleUrls` metadata property).
 
 <div class="l-sub-section">
@@ -610,7 +610,7 @@ appropriate `<script>` and `<link>` tags into the `index.html`.
 The CSS styles are buried inside the Javascript bundles by default. The `ExtractTextPlugin` extracts them into
 external `.css` files that the `HtmlWebpackPlugin` inscribes as `<link>` tags into the `index.html`.
 
-Refer to the [Webpack documentation](https://webpack.github.io/docs/) for details on these and 
+Refer to the [Webpack documentation](https://webpack.github.io/docs/) for details on these and
 other configuration options in this file.
 
 Grab the app code at the end of this guide and try:
@@ -785,7 +785,7 @@ Webpack techniques covered in this guide.
 The <code>app.component.html</code> displays this downloadable Angular logo
 <a href="assets/images/logos/angular/angular.png">
 <img src="assets/images/logos/angular/angular.png" height="40px" title="download Angular logo"></a>.
-Create a folder called `images` under the project's `assets` folder, then right-click (Cmd+click on Mac) 
+Create a folder called `images` under the project's `assets` folder, then right-click (Cmd+click on Mac)
 on the image and download it to that folder.
 
 

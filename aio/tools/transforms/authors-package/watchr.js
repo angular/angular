@@ -1,14 +1,12 @@
 /* eslint no-console: "off" */
 const watchr = require('watchr');
-const {resolve, relative} = require('canonical-path');
+const {relative} = require('canonical-path');
 const {generateDocs} = require('./index.js');
-const rootPath = resolve(__dirname, '../../../..');
-const contentsPath = resolve(rootPath, 'aio/content');
-const apiPath = resolve(rootPath, 'packages');
+const { PROJECT_ROOT, CONTENTS_PATH, API_SOURCE_PATH } = require('../config');
 
 function listener(changeType, fullPath) {
   try {
-    const relativePath = relative(rootPath, fullPath);
+    const relativePath = relative(PROJECT_ROOT, fullPath);
     console.log('The file', relativePath, `was ${changeType}d at`, new Date().toUTCString());
     generateDocs(relativePath);
   } catch(err) {
@@ -38,12 +36,12 @@ if (process.argv.indexOf('--watch-only') === -1) {
 p.then(() => {
   console.log('===================================================================');
   console.log('Started watching files in:');
-  console.log(' - ', contentsPath);
-  console.log(' - ', apiPath);
+  console.log(' - ', CONTENTS_PATH);
+  console.log(' - ', API_SOURCE_PATH);
   console.log('Doc gen will run when you change a file in either of these folders.');
   console.log('===================================================================');
 
-  watchr.open(contentsPath, listener, next);
-  watchr.open(apiPath, listener, next);
+  watchr.open(CONTENTS_PATH, listener, next);
+  watchr.open(API_SOURCE_PATH, listener, next);
 
 });

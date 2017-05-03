@@ -3,7 +3,7 @@
 # compiled output
 /dist
 /out-tsc
-/src/content
+/src/generated
 /tmp
 
 # dependencies

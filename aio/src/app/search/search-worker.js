@@ -3,7 +3,7 @@
 /* eslint-env worker */
 /* global importScripts, lunr */
 
-var SEARCH_TERMS_URL = '/content/docs/app/search-data.json';
+var SEARCH_TERMS_URL = '/generated/docs/app/search-data.json';
 
 // NOTE: This needs to be kept in sync with `ngsw-manifest.json`.
 importScripts('https://unpkg.com/lunr@0.7.2/lunr.min.js');
