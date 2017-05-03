@@ -20,6 +20,7 @@ export interface SearchArea {
 export class SearchResultsComponent implements OnInit {
 
   readonly defaultArea = 'other';
+  readonly topLevelFolders = ['guide', 'tutorial'];
 
   notFound = false;
 
@@ -76,6 +77,9 @@ export class SearchResultsComponent implements OnInit {
 
   // Split the search result path and use the top level folder, if there is one, as the area name.
   private computeAreaName(result: SearchResult) {
+    if (this.topLevelFolders.indexOf(result.path) !== -1) {
+      return result.path;
+    }
     const [areaName, rest] = result.path.split('/', 2);
     return rest && areaName;
   }
