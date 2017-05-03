@@ -1028,7 +1028,7 @@ follow them unless you have a good reason to do otherwise.
     <td>
 
 
-      A [routing module](guide/router#routing-module) *provides routing configuration* for another module.
+      A [routing module](guide/router-3) *provides routing configuration* for another module.
 
       A routing module separates routing concerns from its companion module.
 
@@ -1063,8 +1063,7 @@ follow them unless you have a good reason to do otherwise.
 
 
 
-      See also [Do you need a _Routing Module_?](guide/router#why-routing-module) on the
-      [Routing & Navigation](guide/router) page.
+      See also [Do you need a _Routing Module_?](guide/router-3#why-routing-module).
       
 
 </div>

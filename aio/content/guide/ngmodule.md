@@ -953,7 +953,7 @@ The module does _not_ import `HeroModule` or `CrisisModule`.
 They'll be fetched and mounted asynchronously when the user navigates to one of their routes.
 
 The significant change from version 2 is the addition of the *AppRoutingModule* to the module `imports`.
-The `AppRoutingModule` is a [routing module](guide/router#routing-module)
+The `AppRoutingModule` is a [routing module](guide/router-3)
 that handles the app's routing concerns.
 
 ### App routing
@@ -964,7 +964,7 @@ that handles the app's routing concerns.
 
 
 
-The router is the subject of the [Routing & Navigation](guide/router) page, so this section skips many of the details and
+The router is the subject of the [Routing & Navigation](guide/router), so this section skips many of the details and
 concentrates on the intersection of NgModules and routing.
 
 The `app-routing.module.ts` file defines three routes.
@@ -1155,8 +1155,8 @@ a more interesting and useful example. Its file structure is as follows:
 
 
 This is the child routing scenario familiar to readers of the
-[Child routing component](guide/router#child-routing-component) section of the
-[Routing & Navigation](guide/router#child-routing-component) page.
+[Child routing component](guide/router-5#child-routing-component) section of the
+[Routing & Navigation](guide/route-5#child-routing-component) page.
 The `HeroComponent` is the feature's top component and routing host.
 Its template has a `<router-outlet>` that displays either a list of heroes (`HeroList`)
 or an editor of a selected hero (`HeroDetail`).

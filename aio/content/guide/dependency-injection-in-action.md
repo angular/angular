@@ -112,7 +112,7 @@ Do this when you expect the service to be injectable everywhere,
 or you are configuring another application global service _before the application starts_.
 
 Here is an example of the second case, where the component router configuration includes a non-default
-[location strategy](guide/router#location-strategy) by listing its provider
+[location strategy](guide/router-appendix#location-strategy) by listing its provider
 in the `providers` list of the `AppModule`.
 
 

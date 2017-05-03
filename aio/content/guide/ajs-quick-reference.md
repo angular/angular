@@ -443,7 +443,7 @@ The following are some of the key AngularJS built-in directives and their equiva
       </code-example>
 
 
-      For more information on routing, see the [RouterLink binding](guide/router#router-link) 
+      For more information on routing, see the [RouterLink binding](guide/router-2#router-link) 
       section of the [Routing & Navigation](guide/router) page.
 
     </td>
