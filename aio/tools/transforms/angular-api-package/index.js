@@ -23,6 +23,7 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
   .processor(require('./processors/filterMemberDocs'))
   .processor(require('./processors/markBarredODocsAsPrivate'))
   .processor(require('./processors/filterPrivateDocs'))
+  .processor(require('./processors/computeSearchTitle'))
 
   // Where do we get the source files?
   .config(function(readTypeScriptModules, readFilesProcessor, collectExamples) {
