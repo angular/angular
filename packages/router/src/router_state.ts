@@ -51,7 +51,7 @@ export class RouterState extends Tree<ActivatedRoute> {
       /** The current snapshot of the router state */
       public snapshot: RouterStateSnapshot) {
     super(root);
-    setRouterStateSnapshot<RouterState, ActivatedRoute>(this, root);
+    setRouterState(<RouterState>this, root);
   }
 
   toString(): string { return this.snapshot.toString(); }
@@ -343,15 +343,15 @@ export class RouterStateSnapshot extends Tree<ActivatedRouteSnapshot> {
       /** The url from which this snapshot was created */
       public url: string, root: TreeNode<ActivatedRouteSnapshot>) {
     super(root);
-    setRouterStateSnapshot<RouterStateSnapshot, ActivatedRouteSnapshot>(this, root);
+    setRouterState(<RouterStateSnapshot>this, root);
   }
 
   toString(): string { return serializeNode(this._root); }
 }
 
-function setRouterStateSnapshot<U, T extends{_routerState: U}>(state: U, node: TreeNode<T>): void {
+function setRouterState<U, T extends{_routerState: U}>(state: U, node: TreeNode<T>): void {
   node.value._routerState = state;
-  node.children.forEach(c => setRouterStateSnapshot(state, c));
+  node.children.forEach(c => setRouterState(state, c));
 }
 
 function serializeNode(node: TreeNode<ActivatedRouteSnapshot>): string {
@@ -367,21 +367,22 @@ function serializeNode(node: TreeNode<ActivatedRouteSnapshot>): string {
 export function advanceActivatedRoute(route: ActivatedRoute): void {
   if (route.snapshot) {
     const currentSnapshot = route.snapshot;
-    route.snapshot = route._futureSnapshot;
-    if (!shallowEqual(currentSnapshot.queryParams, route._futureSnapshot.queryParams)) {
-      (<any>route.queryParams).next(route._futureSnapshot.queryParams);
+    const nextSnapshot = route._futureSnapshot;
+    route.snapshot = nextSnapshot;
+    if (!shallowEqual(currentSnapshot.queryParams, nextSnapshot.queryParams)) {
+      (<any>route.queryParams).next(nextSnapshot.queryParams);
     }
-    if (currentSnapshot.fragment !== route._futureSnapshot.fragment) {
-      (<any>route.fragment).next(route._futureSnapshot.fragment);
+    if (currentSnapshot.fragment !== nextSnapshot.fragment) {
+      (<any>route.fragment).next(nextSnapshot.fragment);
     }
-    if (!shallowEqual(currentSnapshot.params, route._futureSnapshot.params)) {
-      (<any>route.params).next(route._futureSnapshot.params);
+    if (!shallowEqual(currentSnapshot.params, nextSnapshot.params)) {
+      (<any>route.params).next(nextSnapshot.params);
     }
-    if (!shallowEqualArrays(currentSnapshot.url, route._futureSnapshot.url)) {
-      (<any>route.url).next(route._futureSnapshot.url);
+    if (!shallowEqualArrays(currentSnapshot.url, nextSnapshot.url)) {
+      (<any>route.url).next(nextSnapshot.url);
     }
-    if (!shallowEqual(currentSnapshot.data, route._futureSnapshot.data)) {
-      (<any>route.data).next(route._futureSnapshot.data);
+    if (!shallowEqual(currentSnapshot.data, nextSnapshot.data)) {
+      (<any>route.data).next(nextSnapshot.data);
     }
   } else {
     route.snapshot = route._futureSnapshot;
