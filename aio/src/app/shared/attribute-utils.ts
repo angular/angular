@@ -17,16 +17,19 @@ export function getAttrs(el:  HTMLElement | ElementRef): StringMap {
 }
 
 /**
- * Return the attribute that matches `atty`.
- * @param atty Name of the attribute or a string of candidate attribute names
+ * Return the attribute that matches `attr`.
+ * @param attr Name of the attribute or a string of candidate attribute names
  */
 export function getAttrValue(attrs: StringMap, attr: string | string[] = ''): string {
-  return attrs[typeof attr === 'string' ? attr : attr.find(a => attrs[a] !== undefined)];
+  return attrs[typeof attr === 'string' ?
+    attr.toLowerCase() :
+    attr.find(a => attrs[a.toLowerCase()] !== undefined)
+  ];
 }
 
 /**
  * Return the boolean state of an attribute value (if supplied)
- * @param attyValue The string value of some attribute (or undefined if attribute not present)
+ * @param attrValue The string value of some attribute (or undefined if attribute not present)
  * @param def Default boolean value when attribute is undefined.
  */
 export function boolFromValue(attrValue: string, def: boolean = false) {
