@@ -28,13 +28,16 @@ code-example header {
   margin: -17px;
 }
 
-code-example.is-anti-pattern header {
+code-example.avoid header,
+code-example.avoidFile header {
   border: 2px solid $anti-pattern;
   background: $anti-pattern;
 }
 
-code-example.is-anti-pattern,
-code-tabs.is-anti-pattern md-tab-body {
+code-example.avoid,
+code-example.avoidFile,
+code-tabs.avoid md-tab-body,
+code-tabs.avoidFile md-tab-body {
   border: 0.5px solid $anti-pattern;
 }
 
