@@ -14,7 +14,7 @@ import { DocumentService, DocumentContents,
          FETCHING_ERROR_ID, FILE_NOT_FOUND_ID } from './document.service';
 
 
-const CONTENT_URL_PREFIX = 'content/docs/';
+const CONTENT_URL_PREFIX = 'generated/docs/';
 
 function createResponse(body: any) {
   return new Response(new ResponseOptions({ body: JSON.stringify(body) }));

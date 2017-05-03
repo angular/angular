@@ -27,7 +27,7 @@ You'll learn the details in the pages that follow. For now, focus on the big pic
 
 
 <figure>
-  <img src="content/images/guide/architecture/overview2.png" alt="overview" style="margin-left:-40px;" width="700"></img>
+  <img src="generated/images/guide/architecture/overview2.png" alt="overview" style="margin-left:-40px;" width="700"></img>
 </figure>
 
 
@@ -64,7 +64,7 @@ Learn these building blocks, and you're on your way.
 ## Modules
 
 <figure>
-  <img src="content/images/guide/architecture/module.png" alt="Component" align="left" style="width:240px; margin-left:-40px;margin-right:10px"></img>
+  <img src="generated/images/guide/architecture/module.png" alt="Component" align="left" style="width:240px; margin-left:-40px;margin-right:10px"></img>
 </figure>
 
 
@@ -182,7 +182,7 @@ These are two different and _complementary_ module systems. Use them both to wri
 
 
 <figure>
-  <img src="content/images/guide/architecture/library-module.png" alt="Component" align="left" style="width:240px; margin-left:-40px;margin-right:10px"></img>
+  <img src="generated/images/guide/architecture/library-module.png" alt="Component" align="left" style="width:240px; margin-left:-40px;margin-right:10px"></img>
 </figure>
 
 
@@ -244,7 +244,7 @@ Learn more from the [Angular modules](guide/ngmodule) page.
 
 
 <figure>
-  <img src="content/images/guide/architecture/hero-component.png" alt="Component" align="left" style="width:200px; margin-left:-40px;margin-right:10px"></img>
+  <img src="generated/images/guide/architecture/hero-component.png" alt="Component" align="left" style="width:200px; margin-left:-40px;margin-right:10px"></img>
 </figure>
 
 
@@ -284,7 +284,7 @@ Your app can take action at each moment in this lifecycle through optional [life
 ## Templates
 
 <figure>
-  <img src="content/images/guide/architecture/template.png" alt="Template" align="left" style="width:200px; margin-left:-40px;margin-right:10px"></img>
+  <img src="generated/images/guide/architecture/template.png" alt="Template" align="left" style="width:200px; margin-left:-40px;margin-right:10px"></img>
 </figure>
 
 
@@ -314,7 +314,7 @@ The `HeroDetailComponent` is a **child** of the `HeroListComponent`.
 
 
 <figure>
-  <img src="content/images/guide/architecture/component-tree.png" alt="Metadata" align="left" style="width:300px; margin-left:-40px;margin-right:10px"></img>
+  <img src="generated/images/guide/architecture/component-tree.png" alt="Metadata" align="left" style="width:300px; margin-left:-40px;margin-right:10px"></img>
 </figure>
 
 
@@ -330,7 +330,7 @@ Notice how `<hero-detail>` rests comfortably among native HTML elements. Custom 
 ## Metadata
 
 <figure>
-  <img src="content/images/guide/architecture/metadata.png" alt="Metadata" align="left" style="width:150px; margin-left:-40px;margin-right:10px"></img>
+  <img src="generated/images/guide/architecture/metadata.png" alt="Metadata" align="left" style="width:150px; margin-left:-40px;margin-right:10px"></img>
 </figure>
 
 
@@ -379,7 +379,7 @@ so it can get the list of heroes to display.
 
 
 <figure>
-  <img src="content/images/guide/architecture/template-metadata-component.png" alt="Metadata" align="left" style="height:200px; margin-left:-40px;margin-right:10px"></img>
+  <img src="generated/images/guide/architecture/template-metadata-component.png" alt="Metadata" align="left" style="height:200px; margin-left:-40px;margin-right:10px"></img>
 </figure>
 
 
@@ -406,7 +406,7 @@ into actions and value updates. Writing such push/pull logic by hand is tedious,
 read as any experienced jQuery programmer can attest.
 
 <figure>
-  <img src="content/images/guide/architecture/databinding.png" alt="Data Binding" style="width:220px; float:left; margin-left:-40px;margin-right:20px"></img>
+  <img src="generated/images/guide/architecture/databinding.png" alt="Data Binding" style="width:220px; float:left; margin-left:-40px;margin-right:20px"></img>
 </figure>
 
 
@@ -454,7 +454,7 @@ from the root of the application component tree through all child components.
 
 
 <figure>
-  <img src="content/images/guide/architecture/component-databinding.png" alt="Data Binding" style="float:left; width:300px; margin-left:-40px;margin-right:10px"></img>
+  <img src="generated/images/guide/architecture/component-databinding.png" alt="Data Binding" style="float:left; width:300px; margin-left:-40px;margin-right:10px"></img>
 </figure>
 
 
@@ -463,7 +463,7 @@ Data binding plays an important role in communication
 between a template and its component.<br class="l-clear-both">
 
 <figure>
-  <img src="content/images/guide/architecture/parent-child-binding.png" alt="Parent/Child binding" style="float:left; width:300px; margin-left:-40px;margin-right:10px"></img>
+  <img src="generated/images/guide/architecture/parent-child-binding.png" alt="Parent/Child binding" style="float:left; width:300px; margin-left:-40px;margin-right:10px"></img>
 </figure>
 
 
@@ -478,7 +478,7 @@ Data binding is also important for communication between parent and child compon
 ## Directives
 
 <figure>
-  <img src="content/images/guide/architecture/directive.png" alt="Parent child" style="float:left; width:150px; margin-left:-40px;margin-right:10px"></img>
+  <img src="generated/images/guide/architecture/directive.png" alt="Parent child" style="float:left; width:150px; margin-left:-40px;margin-right:10px"></img>
 </figure>
 
 
@@ -556,7 +556,7 @@ Of course, you can also write your own directives. Components such as
 ## Services
 
 <figure>
-  <img src="content/images/guide/architecture/service.png" alt="Service" style="float:left; margin-left:-40px;margin-right:10px"></img>
+  <img src="generated/images/guide/architecture/service.png" alt="Service" style="float:left; margin-left:-40px;margin-right:10px"></img>
 </figure>
 
 
@@ -624,7 +624,7 @@ application logic into services and make those services available to components 
 ## Dependency injection
 
 <figure>
-  <img src="content/images/guide/architecture/dependency-injection.png" alt="Service" style="float:left; width:200px; margin-left:-40px;margin-right:10px"></img>
+  <img src="generated/images/guide/architecture/dependency-injection.png" alt="Service" style="float:left; width:200px; margin-left:-40px;margin-right:10px"></img>
 </figure>
 
 
@@ -656,7 +656,7 @@ This is *dependency injection*.
 The process of `HeroService` injection looks a bit like this:
 
 <figure>
-  <img src="content/images/guide/architecture/injector-injects.png" alt="Service"></img>
+  <img src="generated/images/guide/architecture/injector-injects.png" alt="Service"></img>
 </figure>
 
 

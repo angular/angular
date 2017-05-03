@@ -135,7 +135,7 @@ The mapping of URL path to the path to fetch the document contents is simply:
 ```ts
   private computePath(url) {
     url = url.startsWith('/') ? url : '/' + url;
-    return 'content/docs' + url + '.json';
+    return 'generated/docs' + url + '.json';
   }
 ```
 

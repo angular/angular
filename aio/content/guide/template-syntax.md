@@ -1069,7 +1069,7 @@ content harmlessly.
 
 
 <figure class='image-display'>
-  <img src='content/images/guide/template-syntax/evil-title.png' alt="evil title made safe" width='500px'></img>
+  <img src='generated/images/guide/template-syntax/evil-title.png' alt="evil title made safe" width='500px'></img>
 </figure>
 
 
@@ -1839,7 +1839,7 @@ Here are all variations in action, including the uppercase version:
 
 
 <figure class='image-display'>
-  <img src='content/images/guide/template-syntax/ng-model-anim.gif' alt="NgModel variations"></img>
+  <img src='generated/images/guide/template-syntax/ng-model-anim.gif' alt="NgModel variations"></img>
 </figure>
 
 
@@ -2134,7 +2134,7 @@ Here is an illustration of the _trackBy_ effect.
 
 
 <figure class='image-display'>
-  <img src='content/images/guide/template-syntax/ng-for-track-by-anim.gif' alt="trackBy"></img>
+  <img src='generated/images/guide/template-syntax/ng-for-track-by-anim.gif' alt="trackBy"></img>
 </figure>
 
 
@@ -2169,7 +2169,7 @@ Angular puts only the *selected* element into the DOM.
 
 
 <figure class='image-display'>
-  <img src='content/images/guide/template-syntax/switch-anim.gif' alt="trackBy"></img>
+  <img src='generated/images/guide/template-syntax/switch-anim.gif' alt="trackBy"></img>
 </figure>
 
 
@@ -2419,7 +2419,7 @@ The terms _input_ and _output_ reflect the perspective of the target directive.
 
 
 <figure class='image-display'>
-  <img src='content/images/guide/template-syntax/input-output.png' alt="Inputs and outputs"></img>
+  <img src='generated/images/guide/template-syntax/input-output.png' alt="Inputs and outputs"></img>
 </figure>
 
 

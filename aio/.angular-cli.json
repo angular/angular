@@ -9,7 +9,7 @@
       "outDir": "dist",
       "assets": [
         "assets",
-        "content",
+        "generated",
         "app/search/search-worker.js",
         "favicon.ico",
         "pwa-manifest.json"

@@ -29,7 +29,7 @@ See the <live-example name="set-document-title"></live-example>.
     </td>
 
     <td>
-      <img src='content/images/plunker/plunker-switch-to-editor-button.png' width="200px" height="70px" alt="pop out the window" align="right"></img>      <br></br>      <img src='content/images/plunker/plunker-separate-window-button.png' width="200px" height="47px" alt="pop out the window" align="right"></img>
+      <img src='generated/images/plunker/plunker-switch-to-editor-button.png' width="200px" height="70px" alt="pop out the window" align="right"></img>      <br></br>      <img src='generated/images/plunker/plunker-separate-window-button.png' width="200px" height="47px" alt="pop out the window" align="right"></img>
     </td>
 
   </tr>
@@ -89,7 +89,7 @@ You can inject the `Title` service into the root `AppComponent` and expose a bin
 Bind that method to three anchor tags and voilà!
 
 <figure class='image-display'>
-  <img src="content/images/guide/set-document-title/set-title-anim.gif" alt="Set title"></img>
+  <img src="generated/images/guide/set-document-title/set-title-anim.gif" alt="Set title"></img>
 </figure>
 
 

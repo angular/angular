@@ -54,7 +54,7 @@ The running application displays three heroes:
 
 
 <figure class='image-display'>
-  <img src="content/images/guide/component-communication/parent-to-child.png" alt="Parent-to-child"></img>
+  <img src="generated/images/guide/component-communication/parent-to-child.png" alt="Parent-to-child"></img>
 </figure>
 
 
@@ -98,7 +98,7 @@ Here's the `NameParentComponent` demonstrating name variations including a name 
 
 
 <figure class='image-display'>
-  <img src="content/images/guide/component-communication/setter.png" alt="Parent-to-child-setter"></img>
+  <img src="generated/images/guide/component-communication/setter.png" alt="Parent-to-child-setter"></img>
 </figure>
 
 
@@ -156,7 +156,7 @@ Here's the output of a button-pushing sequence:
 
 
 <figure class='image-display'>
-  <img src="content/images/guide/component-communication/parent-to-child-on-changes.gif" alt="Parent-to-child-onchanges"></img>
+  <img src="generated/images/guide/component-communication/parent-to-child-on-changes.gif" alt="Parent-to-child-onchanges"></img>
 </figure>
 
 
@@ -210,7 +210,7 @@ and the method processes it:
 
 
 <figure class='image-display'>
-  <img src="content/images/guide/component-communication/child-to-parent.gif" alt="Child-to-parent"></img>
+  <img src="generated/images/guide/component-communication/child-to-parent.gif" alt="Child-to-parent"></img>
 </figure>
 
 
@@ -272,7 +272,7 @@ Here we see the parent and child working together.
 
 
 <figure class='image-display'>
-  <img src="content/images/guide/component-communication/countdown-timer-anim.gif" alt="countdown timer"></img>
+  <img src="generated/images/guide/component-communication/countdown-timer-anim.gif" alt="countdown timer"></img>
 </figure>
 
 
@@ -424,7 +424,7 @@ facilitated by the service:
 
 
 <figure class='image-display'>
-  <img src="content/images/guide/component-communication/bidirectional-service.gif" alt="bidirectional-service"></img>
+  <img src="generated/images/guide/component-communication/bidirectional-service.gif" alt="bidirectional-service"></img>
 </figure>
 
 

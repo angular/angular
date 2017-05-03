@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 
 import { Contributor } from './contributors.model';
+import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
 
 @Component({
   selector: 'aio-contributor',
@@ -57,7 +58,7 @@ import { Contributor } from './contributors.model';
 export class ContributorComponent {
   @Input() person: Contributor;
   noPicture = '_no-one.png';
-  pictureBase = 'content/images/bios/';
+  pictureBase = CONTENT_URL_PREFIX + 'images/bios/';
 
   flipCard(person) {
     person.isFlipped = !person.isFlipped;

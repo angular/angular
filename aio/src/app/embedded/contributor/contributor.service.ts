@@ -7,8 +7,9 @@ import 'rxjs/add/operator/publishLast';
 
 import { Logger } from 'app/shared/logger.service';
 import { Contributor, ContributorGroup } from './contributors.model';
+import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
 
-const contributorsPath = 'content/contributors.json';
+const contributorsPath = CONTENT_URL_PREFIX + 'contributors.json';
 const knownGroups = ['Angular', 'Community'];
 
 @Injectable()

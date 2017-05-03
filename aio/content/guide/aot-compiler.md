@@ -536,7 +536,7 @@ Rollup does the tree shaking as before.
   The general audience instructions for running the AOT build of the Tour of Heroes app are not ready.
 
   The following instructions presuppose that you have downloaded the
-  <a href="/content/zips/toh-pt6/toh-pt6.zip" target="_blank">Tour of Heroes' zip</a>
+  <a href="generated/zips/toh-pt6/toh-pt6.zip" target="_blank">Tour of Heroes' zip</a>
   and run `npm install` on it.
 
 </div>
@@ -602,8 +602,8 @@ showing exactly which application and Angular modules and classes are included i
 
 Here's the map for _Tour of Heroes_.
 
-<a href="content/images/guide/aot-compiler/toh-pt6-bundle.png" title="View larger image">
+<a href="generated/images/guide/aot-compiler/toh-pt6-bundle.png" title="View larger image">
   <figure class='image-display'>
-    <img src="content/images/guide/aot-compiler/toh-pt6-bundle.png" alt="toh-pt6-bundle"></img>
+    <img src="generated/images/guide/aot-compiler/toh-pt6-bundle.png" alt="toh-pt6-bundle"></img>
   </figure>
 </a>

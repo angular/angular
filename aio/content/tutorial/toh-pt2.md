@@ -394,7 +394,7 @@ like this:
 
 
 <figure class='image-display'>
-  <img src='content/images/guide/toh/heroes-list-selected.png' alt="Selected hero"></img>
+  <img src='generated/images/guide/toh/heroes-list-selected.png' alt="Selected hero"></img>
 </figure>
 
 
@@ -435,7 +435,7 @@ After clicking "Magneta", the list should look like this:
 
 
 <figure class='image-display'>
-  <img src='content/images/guide/toh/heroes-list-1.png' alt="Output of heroes list app"></img>
+  <img src='generated/images/guide/toh/heroes-list-1.png' alt="Output of heroes list app"></img>
 </figure>
 
 

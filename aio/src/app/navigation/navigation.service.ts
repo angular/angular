@@ -10,12 +10,13 @@ import 'rxjs/add/operator/publishReplay';
 
 import { Logger } from 'app/shared/logger.service';
 import { LocationService } from 'app/shared/location.service';
+import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
 
 // Import and re-export the Navigation model types
 import { CurrentNode, NavigationNode, NavigationResponse, NavigationViews, VersionInfo } from './navigation.model';
 export { CurrentNode, NavigationNode, NavigationResponse, NavigationViews, VersionInfo } from './navigation.model';
 
-const navigationPath = 'content/navigation.json';
+const navigationPath = CONTENT_URL_PREFIX + 'navigation.json';
 
 @Injectable()
 export class NavigationService {

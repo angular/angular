@@ -214,7 +214,7 @@ Here are two sample components and the `AdComponent` interface for reference:
  The final ad banner looks like this:
 
 <figure class='image-display'>
-  <img src="content/images/guide/dynamic-component-loader/ads.gif" alt="Ads"></img>
+  <img src="generated/images/guide/dynamic-component-loader/ads.gif" alt="Ads"></img>
 </figure>
 
 

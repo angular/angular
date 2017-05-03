@@ -21,7 +21,7 @@
     "deploy-preview": "scripts/deploy-preview.sh",
     "deploy-staging": "scripts/deploy-staging.sh",
     "check-env": "node ../tools/check-environment.js",
-    "predocs": "rimraf src/content",
+    "predocs": "rimraf src/generated/{docs,*.json}",
     "docs": "dgeni ./tools/transforms/angular.io-package",
     "docs-watch": "node tools/transforms/authors-package/watchr.js",
     "docs-lint": "eslint --ignore-path=\"tools/transforms/.eslintignore\" tools/transforms",

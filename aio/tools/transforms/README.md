@@ -16,7 +16,7 @@ The local packages have unit tests that you can execute by running `yarn docs-te
 
 ## What does it generate?
 
-The output from dgeni is written to files in the `src/content` folder.
+The output from dgeni is written to files in the `src/generated` folder.
 
 Notably this includes a JSON file containing the partial HTML for each "page" of the documentation, such as API pages and guides.
 It also includes JSON files that contain metadata about the documentation such as navigation data and

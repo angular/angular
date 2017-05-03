@@ -533,7 +533,7 @@ and the *Heroes* view with its list of heroes.
 
 
 <figure class='image-display'>
-  <img src='content/images/guide/router/hero-list.png' alt="Hero List" width="250"></img>
+  <img src='generated/images/guide/router/hero-list.png' alt="Hero List" width="250"></img>
 </figure>
 
 
@@ -541,7 +541,7 @@ and the *Heroes* view with its list of heroes.
 Select one hero and the app takes you to a hero editing screen.
 
 <figure class='image-display'>
-  <img src='content/images/guide/router/hero-detail.png' alt="Crisis Center Detail" width="250"></img>
+  <img src='generated/images/guide/router/hero-detail.png' alt="Crisis Center Detail" width="250"></img>
 </figure>
 
 
@@ -558,7 +558,7 @@ Now click the *Crisis Center* link for a list of ongoing crises.
 
 
 <figure class='image-display'>
-  <img src='content/images/guide/router/crisis-center-list.png' alt="Crisis Center List" width="250"></img>
+  <img src='generated/images/guide/router/crisis-center-list.png' alt="Crisis Center List" width="250"></img>
 </figure>
 
 
@@ -571,7 +571,7 @@ Notice that the corresponding name in the crisis list does _not_ change.
 
 
 <figure class='image-display'>
-  <img src='content/images/guide/router/crisis-center-detail.png' alt="Crisis Center Detail" width="250"></img>
+  <img src='generated/images/guide/router/crisis-center-detail.png' alt="Crisis Center Detail" width="250"></img>
 </figure>
 
 
@@ -587,7 +587,7 @@ Up pops a dialog box.
 
 
 <figure class='image-display'>
-  <img src='content/images/guide/router/confirm-dialog.png' alt="Confirm Dialog" width="250"></img>
+  <img src='generated/images/guide/router/confirm-dialog.png' alt="Confirm Dialog" width="250"></img>
 </figure>
 
 
@@ -609,7 +609,7 @@ Proceed to the first application milestone.
 Begin with a simple version of the app that navigates between two empty views.
 
 <figure class='image-display'>
-  <img src='content/images/guide/router/router-1-anim.gif' alt="App in action" width="250"></img>
+  <img src='generated/images/guide/router/router-1-anim.gif' alt="App in action" width="250"></img>
 </figure>
 
 
@@ -765,7 +765,7 @@ and a *router outlet* where the router swaps views on and off the page. Here's w
 
 
 <figure class='image-display'>
-  <img src='content/images/guide/router/shell-and-outlet.png' alt="Shell" width="300"></img>
+  <img src='generated/images/guide/router/shell-and-outlet.png' alt="Shell" width="300"></img>
 </figure>
 
 
@@ -1250,7 +1250,7 @@ Here's how the user will experience this version of the app:
 
 
 <figure class='image-display'>
-  <img src='content/images/guide/router/router-2-anim.gif' alt="App in action"></img>
+  <img src='generated/images/guide/router/router-2-anim.gif' alt="App in action"></img>
 </figure>
 
 
@@ -1880,7 +1880,7 @@ it would be nice if the viewed hero was preselected in the list.
 
 
 <figure class='image-display'>
-  <img src='content/images/guide/router/selected-hero.png' alt="Selected hero"></img>
+  <img src='generated/images/guide/router/selected-hero.png' alt="Selected hero"></img>
 </figure>
 
 
@@ -2098,7 +2098,7 @@ Look for it within the repeated `<li>` tag as shown here:
 When the user navigates from the heroes list to the "Magneta" hero and back, "Magneta" appears selected:
 
 <figure class='image-display'>
-  <img src='content/images/guide/router/selected-hero.png' alt="Selected List"></img>
+  <img src='generated/images/guide/router/selected-hero.png' alt="Selected List"></img>
 </figure>
 
 
@@ -2396,7 +2396,7 @@ If your app had many feature areas, the app component trees might look like this
 
 
 <figure class='image-display'>
-  <img src='content/images/guide/router/component-tree.png' alt="Component Tree"></img>
+  <img src='generated/images/guide/router/component-tree.png' alt="Component Tree"></img>
 </figure>
 
 
@@ -2695,7 +2695,7 @@ and two buttons, "Send" and "Cancel".
 
 
 <figure class='image-display'>
-  <img src='content/images/guide/router/contact-popup.png' alt="Contact popup" width="250"></img>
+  <img src='generated/images/guide/router/contact-popup.png' alt="Contact popup" width="250"></img>
 </figure>
 
 

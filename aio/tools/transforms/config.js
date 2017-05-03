@@ -6,7 +6,7 @@ const AIO_PATH = resolve(PROJECT_ROOT, 'aio');
 const TEMPLATES_PATH = resolve(AIO_PATH, 'tools/transforms/templates');
 const API_TEMPLATES_PATH = resolve(TEMPLATES_PATH, 'api');
 const CONTENTS_PATH = resolve(AIO_PATH, 'content');
-const OUTPUT_PATH = resolve(AIO_PATH, 'src/content');
+const OUTPUT_PATH = resolve(AIO_PATH, 'src/generated');
 const DOCS_OUTPUT_PATH = resolve(OUTPUT_PATH, 'docs');
 const API_SOURCE_PATH = resolve(PROJECT_ROOT, 'packages');
 

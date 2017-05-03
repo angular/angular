@@ -218,7 +218,7 @@ Saving and retrieving the data is an exercise for another time.
 The final form looks like this:
 
 <figure class='image-display'>
-  <img src="content/images/guide/dynamic-form/dynamic-form.png" alt="Dynamic-Form"></img>
+  <img src="generated/images/guide/dynamic-form/dynamic-form.png" alt="Dynamic-Form"></img>
 </figure>
 
 

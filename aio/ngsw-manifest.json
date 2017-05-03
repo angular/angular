@@ -12,7 +12,7 @@
   "static.ignore": [
     "\\.js\\.map$",
     "^/assets/images/.*/unused/",
-    "^/content/(?:docs/(?!api/api-list\\.json).*|images|live-examples|zips)/"
+    "^/generated/(?:docs/(?!api/api-list\\.json).*|images|live-examples|zips)/"
   ],
   "routing": {
     "index": "/index.html",

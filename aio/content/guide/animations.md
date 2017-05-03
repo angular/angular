@@ -61,7 +61,7 @@ The examples in this page are available as a <live-example></live-example>.
 ## Quickstart example: Transitioning between two states
 
 <figure>
-  <img src="content/images/guide/animations/animation_basic_click.gif" alt="A simple transition animation" align="right" style="width:220px;margin-left:20px"></img>
+  <img src="generated/images/guide/animations/animation_basic_click.gif" alt="A simple transition animation" align="right" style="width:220px;margin-left:20px"></img>
 </figure>
 
 
@@ -167,7 +167,7 @@ controls the timing of switching between one set of styles and the next:
 
 
 <figure class='image-display'>
-  <img src="content/images/guide/animations/ng_animate_transitions_inactive_active.png" alt="In Angular animations you define states and transitions between states" width="400"></img>
+  <img src="generated/images/guide/animations/ng_animate_transitions_inactive_active.png" alt="In Angular animations you define states and transitions between states" width="400"></img>
 </figure>
 
 
@@ -215,7 +215,7 @@ transitions that apply regardless of which state the animation is in. For exampl
 
 
 <figure class='image-display'>
-  <img src="content/images/guide/animations/ng_animate_transitions_inactive_active_wildcards.png" alt="The wildcard state can be used to match many different transitions at once" width="400"></img>
+  <img src="generated/images/guide/animations/ng_animate_transitions_inactive_active_wildcards.png" alt="The wildcard state can be used to match many different transitions at once" width="400"></img>
 </figure>
 
 
@@ -232,7 +232,7 @@ regardless of what state it was in before it left.
 
 
 <figure class='image-display'>
-  <img src="content/images/guide/animations/ng_animate_transitions_void_in.png" alt="The void state can be used for enter and leave transitions" width="400"></img>
+  <img src="generated/images/guide/animations/ng_animate_transitions_void_in.png" alt="The void state can be used for enter and leave transitions" width="400"></img>
 </figure>
 
 
@@ -242,7 +242,7 @@ The wildcard state `*` also matches `void`.
 ## Example: Entering and leaving
 
 <figure>
-  <img src="content/images/guide/animations/animation_enter_leave.gif" alt="Enter and leave animations" align="right" style="width:250px;"></img>
+  <img src="generated/images/guide/animations/animation_enter_leave.gif" alt="Enter and leave animations" align="right" style="width:250px;"></img>
 </figure>
 
 
@@ -289,7 +289,7 @@ These two common animations have their own aliases:
 ## Example: Entering and leaving from different states
 
 <figure>
-  <img src="content/images/guide/animations/animation_enter_leave_states.gif" alt="Enter and leave animations combined with state animations" align="right" style="width:200px"></img>
+  <img src="generated/images/guide/animations/animation_enter_leave_states.gif" alt="Enter and leave animations combined with state animations" align="right" style="width:200px"></img>
 </figure>
 
 
@@ -308,7 +308,7 @@ This gives you fine-grained control over each transition:
 
 
 <figure class='image-display'>
-  <img src="content/images/guide/animations/ng_animate_transitions_inactive_active_void.png" alt="This example transitions between active, inactive, and void states" width="400"></img>
+  <img src="generated/images/guide/animations/ng_animate_transitions_inactive_active_void.png" alt="This example transitions between active, inactive, and void states" width="400"></img>
 </figure>
 
 
@@ -341,7 +341,7 @@ If you don't provide a unit when specifying dimension, Angular assumes the defau
 ## Automatic property calculation
 
 <figure>
-  <img src="content/images/guide/animations/animation_auto.gif" alt="Animation with automated height calculation" align="right" style="width:220px;margin-left:20px"></img>
+  <img src="generated/images/guide/animations/animation_auto.gif" alt="Animation with automated height calculation" align="right" style="width:220px;margin-left:20px"></img>
 </figure>
 
 
@@ -400,7 +400,7 @@ and the delay (or as the *second* value when there is no delay):
 
 
 <figure>
-  <img src="content/images/guide/animations/animation_timings.gif" alt="Animations with specific timings" align="right" style="width:220px;margin-left:20px"></img>
+  <img src="generated/images/guide/animations/animation_timings.gif" alt="Animations with specific timings" align="right" style="width:220px;margin-left:20px"></img>
 </figure>
 
 
@@ -422,7 +422,7 @@ slight delay of 10 milliseconds as specified in `'0.2s 10 ease-out'`:
 ## Multi-step animations with keyframes
 
 <figure>
-  <img src="content/images/guide/animations/animation_multistep.gif" alt="Animations with some bounce implemented with keyframes" align="right" style="width:220px;margin-left:20px"></img>
+  <img src="generated/images/guide/animations/animation_multistep.gif" alt="Animations with some bounce implemented with keyframes" align="right" style="width:220px;margin-left:20px"></img>
 </figure>
 
 
@@ -456,7 +456,7 @@ offsets receive offsets `0`, `0.5`, and `1`.
 ## Parallel animation groups
 
 <figure>
-  <img src="content/images/guide/animations/animation_groups.gif" alt="Parallel animations with different timings, implemented with groups" align="right" style="width:220px;margin-left:20px"></img>
+  <img src="generated/images/guide/animations/animation_groups.gif" alt="Parallel animations with different timings, implemented with groups" align="right" style="width:220px;margin-left:20px"></img>
 </figure>
 
 
