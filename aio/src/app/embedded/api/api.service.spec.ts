@@ -90,7 +90,7 @@ describe('ApiService', () => {
     it('should connect to the server w/ expected URL', () => {
       service.fetchSections();
       expect(backend.connectionsArray.length).toEqual(1);
-      expect(backend.connectionsArray[0].request.url).toEqual('content/docs/api/api-list.json');
+      expect(backend.connectionsArray[0].request.url).toEqual('generated/docs/api/api-list.json');
     });
 
     it('should refresh the #sections observable w/ new content on second call', () => {

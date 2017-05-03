@@ -544,7 +544,7 @@ class TestHttp {
     if (/navigation\.json/.test(url)) {
       data = this.navJson;
     } else {
-      const match = /content\/docs\/(.+)\.json/.exec(url);
+      const match = /generated\/docs\/(.+)\.json/.exec(url);
       const id = match[1];
       // Make up a title for test purposes
       const title = id.split('/').pop().replace(/^([a-z])/, (_, letter) => letter.toUpperCase());

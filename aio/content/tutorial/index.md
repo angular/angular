@@ -41,7 +41,7 @@ view and the most heroic heroes:
 
 
 <figure class='image-display'>
-  <img src='content/images/guide/toh/heroes-dashboard-1.png' alt="Output of heroes dashboard"></img>
+  <img src='generated/images/guide/toh/heroes-dashboard-1.png' alt="Output of heroes dashboard"></img>
 </figure>
 
 
@@ -54,7 +54,7 @@ where you can change the hero's name.
 
 
 <figure class='image-display'>
-  <img src='content/images/guide/toh/hero-details-1.png' alt="Details of hero in app"></img>
+  <img src='generated/images/guide/toh/hero-details-1.png' alt="Details of hero in app"></img>
 </figure>
 
 
@@ -65,7 +65,7 @@ If you click "Heroes," the app displays the "Heroes" master list view.
 
 
 <figure class='image-display'>
-  <img src='content/images/guide/toh/heroes-list-2.png' alt="Output of heroes list app"></img>
+  <img src='generated/images/guide/toh/heroes-list-2.png' alt="Output of heroes list app"></img>
 </figure>
 
 
@@ -79,7 +79,7 @@ The following diagram captures all of the navigation options.
 
 
 <figure class='image-display'>
-  <img src='content/images/guide/toh/nav-diagram.png' alt="View navigations"></img>
+  <img src='generated/images/guide/toh/nav-diagram.png' alt="View navigations"></img>
 </figure>
 
 
@@ -88,7 +88,7 @@ Here's the app in action:
 
 
 <figure class='image-display'>
-  <img src='content/images/guide/toh/toh-anim.gif' alt="Tour of Heroes in Action"></img>
+  <img src='generated/images/guide/toh/toh-anim.gif' alt="Tour of Heroes in Action"></img>
 </figure>
 
 

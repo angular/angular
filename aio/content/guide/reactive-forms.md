@@ -353,7 +353,7 @@ Now that everything is wired up, the browser should display something like this:
 
 
 <figure class='image-display'>
-  <img src="content/images/guide/reactive-forms/just-formcontrol.png" width="400px" alt="Single FormControl"></img>
+  <img src="generated/images/guide/reactive-forms/just-formcontrol.png" width="400px" alt="Single FormControl"></img>
 </figure>
 
 
@@ -457,7 +457,7 @@ Piping it through the `JsonPipe` renders the model as JSON in the browser:
 
 
 <figure class='image-display'>
-  <img src="content/images/guide/reactive-forms/json-output.png" width="400px" alt="JSON output"></img>
+  <img src="generated/images/guide/reactive-forms/json-output.png" width="400px" alt="JSON output"></img>
 </figure>
 
 
@@ -567,7 +567,7 @@ The browser displays the following:
 
 
 <figure class='image-display'>
-  <img src="content/images/guide/reactive-forms/validators-json-output.png" width="400px" alt="Single FormControl"></img>
+  <img src="generated/images/guide/reactive-forms/validators-json-output.png" width="400px" alt="Single FormControl"></img>
 </figure>
 
 
@@ -696,7 +696,7 @@ with the nested address `FormGroup`:
 
 
 <figure class='image-display'>
-  <img src="content/images/guide/reactive-forms/address-group.png" width="400px" alt="JSON output"></img>
+  <img src="generated/images/guide/reactive-forms/address-group.png" width="400px" alt="JSON output"></img>
 </figure>
 
 
@@ -1052,7 +1052,7 @@ Together they look a bit like this:
 
 
 <figure class='image-display'>
-  <img src="content/images/guide/reactive-forms/hero-list.png" width="420px" alt="HeroListComponent"></img>
+  <img src="generated/images/guide/reactive-forms/hero-list.png" width="420px" alt="HeroListComponent"></img>
 </figure>
 
 
@@ -1265,7 +1265,7 @@ Back in the browser, select the hero named "Magneta".
 
 
 <figure class='image-display'>
-  <img src="content/images/guide/reactive-forms/addresses-array.png" width="400px" alt="JSON output of addresses array"></img>
+  <img src="generated/images/guide/reactive-forms/addresses-array.png" width="400px" alt="JSON output of addresses array"></img>
 </figure>
 
 
@@ -1343,7 +1343,7 @@ After you implement both features in this section, the form will look like this:
 
 
 <figure class='image-display'>
-  <img src="content/images/guide/reactive-forms/save-revert-buttons.png" width="389px" alt="Form with save & revert buttons"></img>
+  <img src="generated/images/guide/reactive-forms/save-revert-buttons.png" width="389px" alt="Form with save & revert buttons"></img>
 </figure>
 
 
