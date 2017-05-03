@@ -2,6 +2,8 @@
 import { Component, ElementRef, HostListener, Input, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { Location } from '@angular/common';
 
+import { boolFromValue, getAttrs, getAttrValue } from 'app/shared/attribute-utils';
+
 const defaultPlnkrImg = 'plunker/placeholder.png';
 const imageBase  = 'content/images/';
 const liveExampleBase = 'content/live-examples/';
@@ -87,7 +89,7 @@ export class LiveExampleComponent implements OnInit {
     private elementRef: ElementRef,
     location: Location ) {
 
-    const attrs = this.attrs = this.getAttrs();
+    const attrs = this.attrs = getAttrs(this.elementRef);
     let exampleDir = attrs.name;
     if (!exampleDir) {
       // take last segment, excluding hash fragment and query params
@@ -98,12 +100,11 @@ export class LiveExampleComponent implements OnInit {
     this.plnkrName = attrs.plnkr ? attrs.plnkr.trim() + '.' : '';
     this.zip = `${zipBase}${exampleDir}/${this.plnkrName}${this.zipName}.zip`;
 
-    const noDownload = this.getAttrValue(['noDownload', 'nodownload']); // noDownload aliases
-    this.enableDownload = !boolFromAtty(noDownload);
+    this.enableDownload = !boolFromValue(getAttrValue(attrs, 'nodownload'));
 
     this.plnkrImg = imageBase + (attrs.img || defaultPlnkrImg);
 
-    if (boolFromAtty(this.getAttrValue(['downloadOnly', 'downloadonly']))) {
+    if (boolFromValue(getAttrValue(attrs, 'downloadonly'))) {
       this.mode = 'downloadOnly';
     }
   }
@@ -116,7 +117,7 @@ export class LiveExampleComponent implements OnInit {
     let plnkrStyle = 'eplnkr'; // embedded style by default
     this.mode = 'default';     // display in another browser tab by default
 
-    this.isEmbedded = boolFromAtty(attrs.embedded);
+    this.isEmbedded = boolFromValue(attrs.embedded);
 
     if (this.isEmbedded) {
       this.mode = 'embedded'; // display embedded in the doc
@@ -126,27 +127,16 @@ export class LiveExampleComponent implements OnInit {
       // If wide enough, choose style based on style attributes
       if (width > this.narrowWidth) {
         // Make flat style with `flat-style` or `embedded-style="false`; support atty aliases
-        const flatStyle = this.getAttrValue(['flat-style', 'flatstyle', 'flatStyle']);
-        const isFlatStyle = boolFromAtty(flatStyle);
+        const flatStyle = getAttrValue(attrs, ['flat-style', 'flatstyle']);
+        const isFlatStyle = boolFromValue(flatStyle);
 
-        const embeddedStyle = this.getAttrValue(['embedded-style', 'embeddedstyle', 'embeddedStyle']);
-        const isEmbeddedStyle = boolFromAtty(embeddedStyle, !isFlatStyle);
+        const embeddedStyle = getAttrValue(attrs, ['embedded-style', 'embeddedstyle']);
+        const isEmbeddedStyle = boolFromValue(embeddedStyle, !isFlatStyle);
         plnkrStyle = isEmbeddedStyle ? 'eplnkr' : 'plnkr';
       }
     }
 
     this.plnkr = `${liveExampleBase}${exampleDir}/${this.plnkrName}${plnkrStyle}.html`;
-  }
-
-  getAttrs(): any {
-    const attrs = this.elementRef.nativeElement.attributes;
-    const attrMap = {};
-    Object.keys(attrs).forEach(key => attrMap[attrs[key].name] = attrs[key].value);
-    return attrMap;
-  }
-
-  getAttrValue(atty: string | string[]) {
-    return this.attrs[typeof atty === 'string' ? atty : atty.find(a => this.attrs[a] !== undefined)];
   }
 
   ngOnInit() {
@@ -166,11 +156,6 @@ export class LiveExampleComponent implements OnInit {
   }
 
   toggleEmbedded () { this.showEmbedded = !this.showEmbedded; }
-}
-
-function boolFromAtty(atty: string , def: boolean = false) {
-  // tslint:disable-next-line:triple-equals
-  return atty == undefined ? def :  atty.trim() !== 'false';
 }
 
 ///// EmbeddedPlunkerComponent ///
