@@ -1,5 +1,6 @@
 /* tslint:disable component-selector */
 import { Component, ElementRef, OnInit } from '@angular/core';
+import { getBoolFromAttribute } from 'app/shared/attribute-utils';
 
 /**
  * An embeddable code block that displays nicely formatted code.
@@ -38,7 +39,7 @@ export class CodeExampleComponent implements OnInit {
     this.path = element.getAttribute('path') || '';
     this.region = element.getAttribute('region') || '';
     this.title = element.getAttribute('title') || '';
-    this.hideCopy = element.getAttribute('hideCopy') === 'true';
+    this.hideCopy = getBoolFromAttribute(element, ['hidecopy', 'hide-copy']);
   }
 
   ngOnInit() {
