@@ -11,7 +11,7 @@ describe('Attribute Utilities', () => {
     testEl = div.querySelector('div');
   });
 
-  describe('#getAttrs', () => {
+  describe('getAttrs', () => {
 
     beforeEach(() => {
       this.expectedMap = {
@@ -34,7 +34,7 @@ describe('Attribute Utilities', () => {
     });
   });
 
-  describe('#getAttrValue', () => {
+  describe('getAttrValue', () => {
     let attrMap: { [index: string]: string };
 
     beforeEach(() => {
@@ -46,7 +46,7 @@ describe('Attribute Utilities', () => {
     });
 
     it('should return empty string value for attribute "A"', () => {
-      expect(getAttrValue(attrMap, 'a')).toBe('');
+      expect(getAttrValue(attrMap, 'A')).toBe('');
     });
 
     it('should return "true" for attribute "b"', () => {
@@ -54,11 +54,10 @@ describe('Attribute Utilities', () => {
     });
 
     it('should return empty string value for attribute "d-E"', () => {
-      expect(getAttrValue(attrMap, 'd-e')).toBe('');
+      expect(getAttrValue(attrMap, 'd-E')).toBe('');
     });
 
     it('should return empty string for attribute ["d-e"]', () => {
-      // because d-e will be found before d
       expect(getAttrValue(attrMap, ['d-e'])).toBe('');
     });
 
@@ -82,48 +81,48 @@ describe('Attribute Utilities', () => {
 
   });
 
-  describe('#boolFromValue', () => {
-    let attrMap: { [index: string]: string };
+  describe('boolFromValue', () => {
 
-    beforeEach(() => {
-      attrMap = getAttrs(testEl);
+    it('should return true for "" as in present but unassigned attr "a"', () => {
+      expect(boolFromValue('')).toBe(true);
     });
 
-    it('should return true for present but unassigned attr "a"', () => {
-      expect(boolFromValue(getAttrValue(attrMap, 'a'))).toBe(true);
+    it('should return false for "false" as in attr "c"', () => {
+      expect(boolFromValue('false')).toBe(false);
+    });
+    it('should return true for "true" as in attr "b"', () => {
+      expect(boolFromValue('true')).toBe(true);
     });
 
-    it('should return true for attr "b" which is "true"', () => {
-      expect(boolFromValue(getAttrValue(attrMap, 'b'))).toBe(true);
+    it('should return true for something other than "false"', () => {
+      expect(boolFromValue('foo')).toBe(true);
     });
 
-    it('should return false for attr "c" which is "false"', () => {
-      expect(boolFromValue(getAttrValue(attrMap, 'c'))).toBe(false);
+    it('should return true for "False" because case-sensitive', () => {
+      expect(boolFromValue('False')).toBe(true);
     });
 
-    it('should return false by default for undefined attr "x"', () => {
-      expect(boolFromValue(getAttrValue(attrMap, 'x'))).toBe(false);
+
+    it('should return false by default as in undefined attr "x"', () => {
+      expect(boolFromValue(undefined)).toBe(false);
     });
 
-    it('should return true for undefined attr "x" when default is true', () => {
-      const value = getAttrValue(attrMap, 'x');
-      expect(boolFromValue(value, true)).toBe(true);
+    it('should return true for undefined value when default is true', () => {
+      expect(boolFromValue(undefined, true)).toBe(true);
     });
 
-    it('should return false for undefined attr "x" when default is false', () => {
-      const value = getAttrValue(attrMap, 'x');
-      expect(boolFromValue(value, false)).toBe(false);
+    it('should return false for undefined value when default is false', () => {
+      expect(boolFromValue(undefined, false)).toBe(false);
     });
 
-    it('should return true for present but unassigned attr "a" even when default is false', () => {
+    it('should return true for "" as in unassigned attr "a" even when default is false', () => {
       // default value is only applied when the attribute is missing
-      const value = getAttrValue(attrMap, 'a');
-      expect(boolFromValue(value, false)).toBe(true);
+      expect(boolFromValue('', false)).toBe(true);
     });
   });
 
   // Combines the three utilities for convenience.
-  describe('#getBoolFromAttribute', () => {
+  describe('getBoolFromAttribute', () => {
     it('should return true for present but unassigned attr "a"', () => {
       expect(getBoolFromAttribute(testEl, 'a')).toBe(true);
     });
