@@ -43,7 +43,7 @@ class Recognizer {
 
       const rootNode = new TreeNode<ActivatedRouteSnapshot>(root, children);
       const routeState = new RouterStateSnapshot(this.url, rootNode);
-      this.inheriteParamsAndData(routeState._root);
+      this.inheritParamsAndData(routeState._root);
       return of (routeState);
 
     } catch (e) {
@@ -52,14 +52,14 @@ class Recognizer {
     }
   }
 
-  inheriteParamsAndData(routeNode: TreeNode<ActivatedRouteSnapshot>): void {
+  inheritParamsAndData(routeNode: TreeNode<ActivatedRouteSnapshot>): void {
     const route = routeNode.value;
 
     const i = inheritedParamsDataResolve(route);
     route.params = Object.freeze(i.params);
     route.data = Object.freeze(i.data);
 
-    routeNode.children.forEach(n => this.inheriteParamsAndData(n));
+    routeNode.children.forEach(n => this.inheritParamsAndData(n));
   }
 
   processSegmentGroup(config: Route[], segmentGroup: UrlSegmentGroup, outlet: string):
