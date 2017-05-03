@@ -115,7 +115,7 @@ module.exports = function generateKeywordsProcessor(log, readFilesProcessor) {
       var searchData =
           filteredDocs.filter(function(page) { return page.searchTerms; }).map(function(page) {
             return Object.assign(
-                {path: page.path, title: page.name || page.title, type: page.docType}, page.searchTerms);
+                {path: page.path, title: page.searchTitle || page.name || page.title, type: page.docType}, page.searchTerms);
           });
 
       docs.push({
