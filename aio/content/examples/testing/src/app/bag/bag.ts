@@ -20,7 +20,7 @@ export class Hero {
 // #docregion FancyService
 @Injectable()
 export class FancyService {
-  protected value: string = 'real value';
+  protected value = 'real value';
 
   getValue() { return this.value; }
   setValue(value: string) { this.value = value; }
