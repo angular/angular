@@ -19,7 +19,7 @@ When you’re done, users will be able to navigate the app like this:
 
 
 <figure class='image-display'>
-  <img src='content/images/guide/toh/nav-diagram.png' alt="View navigations"></img>
+  <img src='generated/images/guide/toh/nav-diagram.png' alt="View navigations"></img>
 </figure>
 
 
@@ -967,7 +967,7 @@ After clicking a hero, users should see something like this below the hero list:
 
 
 <figure class='image-display'>
-  <img src='content/images/guide/toh/mini-hero-detail.png' alt="Mini Hero Detail" height="70"></img>
+  <img src='generated/images/guide/toh/mini-hero-detail.png' alt="Mini Hero Detail" height="70"></img>
 </figure>
 
 
@@ -1221,7 +1221,7 @@ Look at the app now. The dashboard, heroes, and navigation links are styled.
 
 
 <figure class='image-display'>
-  <img src='content/images/guide/toh/heroes-dashboard-1.png' alt="View navigations"></img>
+  <img src='generated/images/guide/toh/heroes-dashboard-1.png' alt="View navigations"></img>
 </figure>
 
 

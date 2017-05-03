@@ -1,13 +1,14 @@
 /* tslint:disable component-selector */
 import { Component, ElementRef, HostListener, Input, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { Location } from '@angular/common';
+import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
 
 import { boolFromValue, getAttrs, getAttrValue } from 'app/shared/attribute-utils';
 
 const defaultPlnkrImg = 'plunker/placeholder.png';
-const imageBase  = 'content/images/';
-const liveExampleBase = 'content/live-examples/';
-const zipBase = 'content/zips/';
+const imageBase  = CONTENT_URL_PREFIX + 'images/';
+const liveExampleBase = CONTENT_URL_PREFIX + 'live-examples/';
+const zipBase = CONTENT_URL_PREFIX + 'zips/';
 
 /**
 * Angular.io Live Example Embedded Component

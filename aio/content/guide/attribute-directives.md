@@ -168,7 +168,7 @@ Now when the app runs, the `myHighlight` directive highlights the paragraph text
 
 
 <figure class='image-display'>
-  <img src="content/images/guide/attribute-directives/first-highlight.png" alt="First Highlight"></img>
+  <img src="generated/images/guide/attribute-directives/first-highlight.png" alt="First Highlight"></img>
 </figure>
 
 
@@ -280,7 +280,7 @@ the mouse hovers over the `p` and disappears as it moves out.
 
 
 <figure class='image-display'>
-  <img src="content/images/guide/attribute-directives/highlight-directive-anim.gif" alt="Second Highlight"></img>
+  <img src="generated/images/guide/attribute-directives/highlight-directive-anim.gif" alt="Second Highlight"></img>
 </figure>
 
 
@@ -438,7 +438,7 @@ Here are the harness and directive in action.
 
 
 <figure class='image-display'>
-  <img src="content/images/guide/attribute-directives/highlight-directive-v2-anim.gif" alt="Highlight v.2"></img>
+  <img src="generated/images/guide/attribute-directives/highlight-directive-v2-anim.gif" alt="Highlight v.2"></img>
 </figure>
 
 
@@ -491,7 +491,7 @@ Here's how the harness should work when you're done coding.
 
 
 <figure class='image-display'>
-  <img src="content/images/guide/attribute-directives/highlight-directive-final-anim.gif" alt="Final Highlight"></img>
+  <img src="generated/images/guide/attribute-directives/highlight-directive-final-anim.gif" alt="Final Highlight"></img>
 </figure>
 
 

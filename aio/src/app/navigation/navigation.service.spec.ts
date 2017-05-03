@@ -40,7 +40,7 @@ describe('NavigationService', () => {
 
     it('should make a single connection to the server', () => {
       expect(backend.connectionsArray.length).toEqual(1);
-      expect(backend.connectionsArray[0].request.url).toEqual('content/navigation.json');
+      expect(backend.connectionsArray[0].request.url).toEqual('generated/navigation.json');
     });
 
     it('should expose the server response', () => {

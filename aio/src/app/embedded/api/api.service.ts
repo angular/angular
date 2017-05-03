@@ -8,6 +8,7 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/takeUntil';
 
 import { Logger } from 'app/shared/logger.service';
+import { DOC_CONTENT_URL_PREFIX } from 'app/documents/document.service';
 
 export interface ApiItem {
   name: string;
@@ -29,7 +30,7 @@ export interface ApiSection {
 @Injectable()
 export class ApiService implements OnDestroy {
 
-  private apiBase = 'content/docs/api/';
+  private apiBase = DOC_CONTENT_URL_PREFIX + 'api/';
   private apiListJsonDefault = 'api-list.json';
   private firstTime = true;
   private onDestroy = new Subject();
