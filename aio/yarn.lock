@@ -1802,9 +1802,9 @@ devtools-timeline-model@1.1.6:
     chrome-devtools-frontend "1.0.401423"
     resolve "1.1.7"
 
-dgeni-packages@^0.18.0:
-  version "0.18.0"
-  resolved "https://registry.yarnpkg.com/dgeni-packages/-/dgeni-packages-0.18.0.tgz#2174407e67c8ba9f1ffbe1274c91f9d75516abde"
+dgeni-packages@^0.19.0:
+  version "0.19.0"
+  resolved "https://registry.yarnpkg.com/dgeni-packages/-/dgeni-packages-0.19.0.tgz#2c119ce57428ec64280f8fabc4ae8b87b681ee01"
   dependencies:
     canonical-path "0.0.2"
     catharsis "^0.8.1"
@@ -1825,7 +1825,7 @@ dgeni-packages@^0.18.0:
     shelljs "^0.7.0"
     spdx-license-list "^2.1.0"
     stringmap "^0.2.2"
-    typescript "^1.7.5"
+    typescript "^2.2.1"
 
 dgeni@^0.4.7:
   version "0.4.7"
@@ -6895,9 +6895,9 @@ typescript@2.2.0, "typescript@>=2.0.0 <2.3.0":
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.2.0.tgz#626f2fc70087d2480f21ebb12c1888288c8614e3"
 
-typescript@^1.7.5:
-  version "1.8.10"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-1.8.10.tgz#b475d6e0dff0bf50f296e5ca6ef9fbb5c7320f1e"
+typescript@^2.2.1:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.3.2.tgz#f0f045e196f69a72f06b25fd3bd39d01c3ce9984"
 
 uglify-js@2.7.x, uglify-js@^2.6, uglify-js@^2.7.5:
   version "2.7.5"
