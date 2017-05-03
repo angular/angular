@@ -2,7 +2,7 @@ const testPackage = require('../../helpers/test-package');
 const processorFactory = require('./computeSearchTitle');
 const Dgeni = require('dgeni');
 
-fdescribe('computeSearchTitle processor', () => {
+describe('computeSearchTitle processor', () => {
 
   it('should be available on the injector', () => {
     const dgeni = new Dgeni([testPackage('angular-api-package')]);
@@ -21,39 +21,34 @@ fdescribe('computeSearchTitle processor', () => {
     expect(processor.$runBefore).toEqual(['generateKeywordsProcessor']);
   });
 
-  it('should compute a search title for class-like docs', () => {
+  it('should compute a search title for API docs', () => {
     const processor = processorFactory();
     const docs = [
       { docType: 'class', name: 'MyClass' },
       { docType: 'interface', name: 'MyInterface' },
-      { docType: 'pipe', name: 'MyPipe', pipeOptions: { name: 'myPipe' } }
+      { docType: 'enum', name: 'MyEnum' },
+      { docType: 'function', name: 'myFunction' },
+      { docType: 'pipe', name: 'MyPipe', pipeOptions: { name: 'myPipe' } },
+      { docType: 'directive', name: 'MyDirective', directiveOptions: {} },
+      { docType: 'decorator', name: 'MyDecorator' },
+      { docType: 'module', name: 'myModule', id: 'some/myModule' },
+      { docType: 'var', name: 'myVar' },
+      { docType: 'let', name: 'myLet' },
+      { docType: 'const', name: 'myConst' },
+      { docType: 'type-alias', name: 'myType' },
     ];
     processor.$process(docs);
-    expect(docs[0].searchTitle).toEqual('class MyClass');
-    expect(docs[0].searchTitle).toEqual('interface MyInterface');
-    expect(docs[0].searchTitle).toEqual('myPipe (pipe)');
+    expect(docs[0].searchTitle).toBeUndefined();
+    expect(docs[1].searchTitle).toBeUndefined();
+    expect(docs[2].searchTitle).toBeUndefined();
+    expect(docs[3].searchTitle).toEqual('myFunction()');
+    expect(docs[4].searchTitle).toBeUndefined();
+    expect(docs[5].searchTitle).toBeUndefined();
+    expect(docs[6].searchTitle).toBeUndefined();
+    expect(docs[7].searchTitle).toEqual('some/myModule package');
+    expect(docs[8].searchTitle).toBeUndefined();
+    expect(docs[9].searchTitle).toBeUndefined();
+    expect(docs[10].searchTitle).toBeUndefined();
+    expect(docs[11].searchTitle).toBeUndefined();
   });
-
-  it('should compute a class search title', () => {
-    const processor = processorFactory();
-    const docs = [
-      { docType: 'class', name: 'MyClass' }
-    ];
-    processor.$process(docs);
-    expect(docs[0].searchTitle).toEqual('class MyClass');
-  });
-
 });
-
-
-
-    // 'decorator',
-    // 'directive',
-    // 'module'
-    // 'function',
-    // 'var',
-    // 'const',
-    // 'let',
-    // 'enum',
-    // 'type-alias',
-    // 'value-module'

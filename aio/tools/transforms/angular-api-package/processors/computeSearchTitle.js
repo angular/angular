@@ -3,7 +3,16 @@ module.exports = function computeSearchTitleProcessor() {
     $runAfter: ['ids-computed'],
     $runBefore: ['generateKeywordsProcessor'],
     $process(docs) {
-
+      docs.forEach(doc => {
+        switch(doc.docType) {
+        case 'function':
+          doc.searchTitle = `${doc.name}()`;
+          break;
+        case 'module':
+          doc.searchTitle = `${doc.id} package`;
+          break;
+        }
+      });
     }
   };
 };
