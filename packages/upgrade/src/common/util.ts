@@ -75,3 +75,10 @@ export function hookupNgModel(ngModel: angular.INgModelController, component: an
     component.registerOnChange(ngModel.$setViewValue.bind(ngModel));
   }
 }
+
+/**
+ * Test two values for strict equality, accounting for the fact that `NaN !== NaN`.
+ */
+export function strictEquals(val1: any, val2: any): boolean {
+  return val1 === val2 || (val1 !== val1 && val2 !== val2);
+}

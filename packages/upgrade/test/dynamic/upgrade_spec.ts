@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, Class, Component, EventEmitter, Input, NO_ERRORS_SCHEMA, NgModule, NgZone, SimpleChange, SimpleChanges, Testability, destroyPlatform, forwardRef} from '@angular/core';
+import {ChangeDetectorRef, Class, Component, EventEmitter, Input, NO_ERRORS_SCHEMA, NgModule, NgZone, OnChanges, SimpleChange, SimpleChanges, Testability, destroyPlatform, forwardRef} from '@angular/core';
 import {async, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -408,6 +408,63 @@ export function main() {
              ref.dispose();
            });
 
+         }));
+
+      it('should initialize inputs in time for `ngOnChanges`', async(() => {
+           const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+
+           @Component({
+             selector: 'ng2',
+             template: `
+               ngOnChangesCount: {{ ngOnChangesCount }} |
+               firstChangesCount: {{ firstChangesCount }} |
+               initialValue: {{ initialValue }}`
+           })
+           class Ng2Component implements OnChanges {
+             ngOnChangesCount = 0;
+             firstChangesCount = 0;
+             initialValue: string;
+             @Input() foo: string;
+
+             ngOnChanges(changes: SimpleChanges) {
+               this.ngOnChangesCount++;
+
+               if (this.ngOnChangesCount === 1) {
+                 this.initialValue = this.foo;
+               }
+
+               if (changes['foo'] && changes['foo'].isFirstChange()) {
+                 this.firstChangesCount++;
+               }
+             }
+           }
+
+           @NgModule({imports: [BrowserModule], declarations: [Ng2Component]})
+           class Ng2Module {
+           }
+
+           const ng1Module = angular.module('ng1', []).directive(
+               'ng2', adapter.downgradeNg2Component(Ng2Component));
+
+           const element = html(`
+             <ng2 [foo]="'foo'"></ng2>
+             <ng2 foo="bar"></ng2>
+             <ng2 [foo]="'baz'" ng-if="true"></ng2>
+             <ng2 foo="qux" ng-if="true"></ng2>
+           `);
+
+           adapter.bootstrap(element, ['ng1']).ready(ref => {
+             const nodes = element.querySelectorAll('ng2');
+             const expectedTextWith = (value: string) =>
+                 `ngOnChangesCount: 1 | firstChangesCount: 1 | initialValue: ${value}`;
+
+             expect(multiTrim(nodes[0].textContent)).toBe(expectedTextWith('foo'));
+             expect(multiTrim(nodes[1].textContent)).toBe(expectedTextWith('bar'));
+             expect(multiTrim(nodes[2].textContent)).toBe(expectedTextWith('baz'));
+             expect(multiTrim(nodes[3].textContent)).toBe(expectedTextWith('qux'));
+
+             ref.dispose();
+           });
          }));
 
       it('should bind to ng-model', async(() => {

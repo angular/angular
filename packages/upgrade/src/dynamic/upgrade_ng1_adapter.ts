@@ -10,7 +10,7 @@ import {Directive, DoCheck, ElementRef, EventEmitter, Inject, OnChanges, OnInit,
 
 import * as angular from '../common/angular1';
 import {$COMPILE, $CONTROLLER, $HTTP_BACKEND, $SCOPE, $TEMPLATE_CACHE} from '../common/constants';
-import {controllerKey} from '../common/util';
+import {controllerKey, strictEquals} from '../common/util';
 
 
 interface IBindingDestination {
@@ -309,8 +309,7 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
     checkProperties.forEach((propName, i) => {
       const value = destinationObj ![propName];
       const last = lastValues[i];
-      if (value !== last &&
-          (value === value || last === last)) {  // ignore NaN values (NaN !== NaN)
+      if (!strictEquals(last, value)) {
         const eventEmitter: EventEmitter<any> = (this as any)[propOuts[i]];
         eventEmitter.emit(lastValues[i] = value);
       }
