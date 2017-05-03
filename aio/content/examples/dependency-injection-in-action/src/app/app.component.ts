@@ -16,7 +16,7 @@ import { UserService }        from './user.service';
 export class AppComponent {
 // #enddocregion import-services
 
-  private userId: number = 1;
+  private userId = 1;
 
   // #docregion ctor
   constructor(logger: LoggerService, public userContext: UserContextService) {

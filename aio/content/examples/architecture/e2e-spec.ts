@@ -1,4 +1,4 @@
-'use strict'; // necessary for es6 output in node 
+'use strict'; // necessary for es6 output in node
 
 import { protractor, browser, element, by, ElementFinder } from 'protractor';
 

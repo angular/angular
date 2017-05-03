@@ -5,7 +5,7 @@ export { HeroService } from '../hero.service';
 import { Hero }        from '../hero';
 import { HeroService } from '../hero.service';
 
-export var HEROES: Hero[] = [
+export const HEROES: Hero[] = [
   new Hero(41, 'Bob'),
   new Hero(42, 'Carol'),
   new Hero(43, 'Ted'),

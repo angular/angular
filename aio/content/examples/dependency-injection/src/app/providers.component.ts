@@ -117,7 +117,7 @@ class OldLogger {
 export class Provider6aComponent {
   log: string;
   constructor(newLogger: NewLogger, oldLogger: OldLogger) {
-    if (newLogger === oldLogger){
+    if (newLogger === oldLogger) {
       throw new Error('expected the two loggers to be different instances');
     }
     oldLogger.log('Hello OldLogger (but we want NewLogger)');
@@ -140,7 +140,7 @@ export class Provider6aComponent {
 export class Provider6bComponent {
   log: string;
   constructor(newLogger: NewLogger, oldLogger: OldLogger) {
-    if (newLogger !== oldLogger){
+    if (newLogger !== oldLogger) {
       throw new Error('expected the two loggers to be the same instance');
     }
     oldLogger.log('Hello from NewLogger (via aliased OldLogger)');

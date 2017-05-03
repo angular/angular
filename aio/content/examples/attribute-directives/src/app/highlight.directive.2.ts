@@ -28,7 +28,7 @@ export class HighlightDirective {
   private highlight(color: string) {
     this.el.nativeElement.style.backgroundColor = color;
   }
-  // #enddocregion mouse-methods, 
+  // #enddocregion mouse-methods,
 
   // #docregion color
   @Input() highlightColor: string;

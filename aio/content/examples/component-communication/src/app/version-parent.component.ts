@@ -11,8 +11,8 @@ import { Component } from '@angular/core';
   `
 })
 export class VersionParentComponent {
-  major: number = 1;
-  minor: number = 23;
+  major = 1;
+  minor = 23;
 
   newMinor() {
     this.minor++;

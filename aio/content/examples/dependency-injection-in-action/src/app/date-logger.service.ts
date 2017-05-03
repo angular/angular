@@ -1,4 +1,4 @@
-/* tslint:disable:one-line:check-open-brace*/
+/* tslint:disable:one-line*/
 // #docregion
 import { Injectable }    from '@angular/core';
 
