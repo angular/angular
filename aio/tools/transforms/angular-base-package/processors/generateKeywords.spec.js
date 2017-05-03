@@ -38,4 +38,15 @@ describe('generateKeywords processor', () => {
       jasmine.objectContaining({ title: 'PublicExport', type: 'class'})
     ]);
   });
+
+  it('should use `doc.searchTitle` as the title if available', () => {
+    const processor = processorFactory(mockLogger, mockReadFilesProcessor);
+    const docs = [
+      { docType: 'class', name: 'PublicExport', searchTitle: 'class PublicExport' },
+    ];
+    processor.$process(docs);
+    expect(docs[docs.length - 1].data).toEqual([
+      jasmine.objectContaining({ title: 'class PublicExport', type: 'class'})
+    ]);
+  });
 });
