@@ -25,6 +25,17 @@ export class AnimationRendererFactory implements RendererFactory2 {
         trigger => this._engine.registerTrigger(trigger, namespaceify(namespaceId, trigger.name)));
     return new AnimationRenderer(delegate, this._engine, this._zone, namespaceId);
   }
+
+  begin() {
+    if (this.delegate.begin) {
+      this.delegate.begin();
+    }
+  }
+  end() {
+    if (this.delegate.end) {
+      this.delegate.end();
+    }
+  }
 }
 
 export class AnimationRenderer implements Renderer2 {
