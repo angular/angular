@@ -93,18 +93,22 @@ $api-symbols: (
   ),
   const: (
     content: 'K',
-    background: $purple-600
+    background: $mediumgray
   ),
   let: (
     content: 'K',
-    background: $purple-600
+    background: $mediumgray
   ),
   var: (
     content: 'K',
-    background: $purple-600
+    background: $mediumgray
   ),
   type-alias: (
     content: 'T',
     background: $light-green-600
+  ),
+  module: (
+    content: 'Pk',
+    background: $purple-600
   )
 );
