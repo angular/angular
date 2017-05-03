@@ -37,16 +37,6 @@ travisFoldStart "tsc a bunch of useless stuff"
 travisFoldEnd "tsc a bunch of useless stuff"
 
 
-# Build integration tests
-if [[ ${CI_MODE:-} == "e2e_2" ]]; then
-  travisFoldStart "build.integration"
-    cd "`dirname $0`/../../integration"
-    ./build_rxjs_es6.sh
-    cd -
-  travisFoldEnd "build.integration"
-fi
-
-
 # Build angular.io
 if [[ ${CI_MODE:-} == "aio" ]]; then
   travisFoldStart "build.aio"
