@@ -11,7 +11,7 @@ import {ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injecto
 import * as angular from './angular1';
 import {PropertyBinding} from './component_info';
 import {$SCOPE} from './constants';
-import {getAttributesAsArray, getComponentName, hookupNgModel} from './util';
+import {getAttributesAsArray, getComponentName, hookupNgModel, strictEquals} from './util';
 
 const INITIAL_VALUE = {
   __UNINITIALIZED__: true
@@ -75,15 +75,27 @@ export class DowngradeComponentAdapter {
         const observeFn = (prop => {
           let prevValue = INITIAL_VALUE;
           return (currValue: any) => {
-            if (prevValue === INITIAL_VALUE) {
+            // Initially, both `$observe()` and `$watch()` will call this function.
+            if (!strictEquals(prevValue, currValue)) {
+              if (prevValue === INITIAL_VALUE) {
+                prevValue = currValue;
+              }
+
+              this.updateInput(prop, prevValue, currValue);
               prevValue = currValue;
             }
-
-            this.updateInput(prop, prevValue, currValue);
-            prevValue = currValue;
           };
         })(input.prop);
         attrs.$observe(input.attr, observeFn);
+
+        // Use `$watch()` (in addition to `$observe()`) in order to initialize the input  in time
+        // for `ngOnChanges()`. This is necessary if we are already in a `$digest`, which means that
+        // `ngOnChanges()` (which is called by a watcher) will run before the `$observe()` callback.
+        let unwatch: any = this.componentScope.$watch(() => {
+          unwatch();
+          unwatch = null;
+          observeFn((attrs as any)[input.attr]);
+        });
 
       } else if (attrs.hasOwnProperty(input.bindAttr)) {
         expr = (attrs as any /** TODO #9100 */)[input.bindAttr];
