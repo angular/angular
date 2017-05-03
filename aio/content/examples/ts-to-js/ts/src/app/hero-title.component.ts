@@ -8,7 +8,7 @@ import { Attribute, Component, Inject, Optional } from '@angular/core';
 })
 // #enddocregion templateUrl
 export class HeroTitleComponent {
-  msg: string = '';
+  msg = '';
   constructor(
     @Inject('titlePrefix') @Optional() private titlePrefix: string,
     @Attribute('title') private title: string
