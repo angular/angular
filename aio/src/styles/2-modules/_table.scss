@@ -8,6 +8,10 @@ table {
     width: 100%;
   }
 
+  &.is-fixed-layout {
+    table-layout: fixed;
+  }
+
   thead {
     vertical-align: middle;
     border-color: inherit;
@@ -83,4 +87,8 @@ table {
 
     }
   }
+}
+
+#cheatsheet table tbody td {
+  overflow: auto;
 }
