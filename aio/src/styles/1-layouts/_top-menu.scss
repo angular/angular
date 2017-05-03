@@ -4,7 +4,8 @@
 }
 
 aio-top-menu a.nav-link {
-  margin: 0 16px;
+  margin: 0;
+  padding: 24px 16px;
   cursor: pointer;
 
   &:focus {
