@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken, ɵisObservable as isObservable, ɵisPromise as isPromise} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import {forkJoin} from 'rxjs/observable/forkJoin';
-import {fromPromise} from 'rxjs/observable/fromPromise';
-import {map} from 'rxjs/operator/map';
-import {AsyncValidatorFn, ValidationErrors, Validator, ValidatorFn} from './directives/validators';
-import {AbstractControl, FormControl} from './model';
+import {InjectionToken} from '@angular/core';
+import {toPromise} from 'rxjs/operator/toPromise';
+
+import {AsyncValidatorFn, Validator, ValidatorFn} from './directives/validators';
+import {StringMapWrapper} from './facade/collection';
+import {isPresent} from './facade/lang';
+import {AbstractControl} from './model';
+import {isPromise} from './private_import_core';
 
 function isEmptyInputValue(value: any): boolean {
   // we don't check for string here so it also works with arrays
@@ -55,9 +56,6 @@ export const NG_VALIDATORS = new InjectionToken<Array<Validator|Function>>('NgVa
 export const NG_ASYNC_VALIDATORS =
     new InjectionToken<Array<Validator|Function>>('NgAsyncValidators');
 
-const EMAIL_REGEXP =
-    /^(?=.{1,254}$)(?=.{1,64}@)[-!#$%&'*+/0-9=?A-Z^_`a-z{|}~]+(\.[-!#$%&'*+/0-9=?A-Z^_`a-z{|}~]+)*@[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?(\.[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*$/;
-
 /**
  * Provides a set of validators used by form controls.
  *
@@ -74,57 +72,24 @@ const EMAIL_REGEXP =
  */
 export class Validators {
   /**
-   * Validator that requires controls to have a value greater than a number.
-   */
-  static min(min: number): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      if (isEmptyInputValue(control.value)) {
-        return null;  // don't validate empty values to allow optional controls
-      }
-      const value = parseFloat(control.value);
-      return isNaN(value) || value < min ? {'min': {'min': min, 'actual': control.value}} : null;
-    };
-  }
-
-  /**
-   * Validator that requires controls to have a value less than a number.
-   */
-  static max(max: number): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      if (isEmptyInputValue(control.value)) {
-        return null;  // don't validate empty values to allow optional controls
-      }
-      const value = parseFloat(control.value);
-      return isNaN(value) || value > max ? {'max': {'max': max, 'actual': control.value}} : null;
-    };
-  }
-
-  /**
    * Validator that requires controls to have a non-empty value.
    */
-  static required(control: AbstractControl): ValidationErrors|null {
+  static required(control: AbstractControl): {[key: string]: boolean} {
     return isEmptyInputValue(control.value) ? {'required': true} : null;
   }
 
   /**
    * Validator that requires control value to be true.
    */
-  static requiredTrue(control: AbstractControl): ValidationErrors|null {
+  static requiredTrue(control: AbstractControl): {[key: string]: boolean} {
     return control.value === true ? null : {'required': true};
-  }
-
-  /**
-   * Validator that performs email validation.
-   */
-  static email(control: AbstractControl): ValidationErrors|null {
-    return EMAIL_REGEXP.test(control.value) ? null : {'email': true};
   }
 
   /**
    * Validator that requires controls to have a value of a minimum length.
    */
   static minLength(minLength: number): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
+    return (control: AbstractControl): {[key: string]: any} => {
       if (isEmptyInputValue(control.value)) {
         return null;  // don't validate empty values to allow optional controls
       }
@@ -139,7 +104,7 @@ export class Validators {
    * Validator that requires controls to have a value of a maximum length.
    */
   static maxLength(maxLength: number): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
+    return (control: AbstractControl): {[key: string]: any} => {
       const length: number = control.value ? control.value.length : 0;
       return length > maxLength ?
           {'maxlength': {'requiredLength': maxLength, 'actualLength': length}} :
@@ -161,7 +126,7 @@ export class Validators {
       regexStr = pattern.toString();
       regex = pattern;
     }
-    return (control: AbstractControl): ValidationErrors | null => {
+    return (control: AbstractControl): {[key: string]: any} => {
       if (isEmptyInputValue(control.value)) {
         return null;  // don't validate empty values to allow optional controls
       }
@@ -174,17 +139,15 @@ export class Validators {
   /**
    * No-op validator.
    */
-  static nullValidator(c: AbstractControl): ValidationErrors|null { return null; }
+  static nullValidator(c: AbstractControl): {[key: string]: boolean} { return null; }
 
   /**
    * Compose multiple validators into a single function that returns the union
    * of the individual error maps.
    */
-  static compose(validators: null): null;
-  static compose(validators: (ValidatorFn|null|undefined)[]): ValidatorFn|null;
-  static compose(validators: (ValidatorFn|null|undefined)[]|null): ValidatorFn|null {
+  static compose(validators: ValidatorFn[]): ValidatorFn {
     if (!validators) return null;
-    const presentValidators: ValidatorFn[] = validators.filter(isPresent) as any;
+    const presentValidators = validators.filter(isPresent);
     if (presentValidators.length == 0) return null;
 
     return function(control: AbstractControl) {
@@ -192,28 +155,20 @@ export class Validators {
     };
   }
 
-  static composeAsync(validators: (AsyncValidatorFn|null)[]): AsyncValidatorFn|null {
+  static composeAsync(validators: AsyncValidatorFn[]): AsyncValidatorFn {
     if (!validators) return null;
-    const presentValidators: AsyncValidatorFn[] = validators.filter(isPresent) as any;
+    const presentValidators = validators.filter(isPresent);
     if (presentValidators.length == 0) return null;
 
     return function(control: AbstractControl) {
-      const observables = _executeAsyncValidators(control, presentValidators).map(toObservable);
-      return map.call(forkJoin(observables), _mergeErrors);
+      const promises = _executeAsyncValidators(control, presentValidators).map(_convertToPromise);
+      return Promise.all(promises).then(_mergeErrors);
     };
   }
 }
 
-function isPresent(o: any): boolean {
-  return o != null;
-}
-
-export function toObservable(r: any): Observable<any> {
-  const obs = isPromise(r) ? fromPromise(r) : r;
-  if (!(isObservable(obs))) {
-    throw new Error(`Expected validator to return Promise or Observable.`);
-  }
-  return obs;
+function _convertToPromise(obj: any): Promise<any> {
+  return isPromise(obj) ? obj : toPromise.call(obj);
 }
 
 function _executeValidators(control: AbstractControl, validators: ValidatorFn[]): any[] {
@@ -224,10 +179,10 @@ function _executeAsyncValidators(control: AbstractControl, validators: AsyncVali
   return validators.map(v => v(control));
 }
 
-function _mergeErrors(arrayOfErrors: ValidationErrors[]): ValidationErrors|null {
+function _mergeErrors(arrayOfErrors: any[]): {[key: string]: any} {
   const res: {[key: string]: any} =
-      arrayOfErrors.reduce((res: ValidationErrors | null, errors: ValidationErrors | null) => {
-        return errors != null ? {...res !, ...errors} : res !;
+      arrayOfErrors.reduce((res: {[key: string]: any}, errors: {[key: string]: any}) => {
+        return isPresent(errors) ? StringMapWrapper.merge(res, errors) : res;
       }, {});
   return Object.keys(res).length === 0 ? null : res;
 }
