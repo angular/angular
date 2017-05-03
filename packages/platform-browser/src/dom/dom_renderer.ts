@@ -94,6 +94,9 @@ export class DomRendererFactory2 implements RendererFactory2 {
       }
     }
   }
+
+  begin() {}
+  end() {}
 }
 
 class DefaultDomRenderer2 implements Renderer2 {

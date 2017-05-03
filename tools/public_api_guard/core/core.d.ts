@@ -846,7 +846,9 @@ export declare abstract class Renderer2 {
 
 /** @experimental */
 export declare abstract class RendererFactory2 {
+    abstract begin?(): void;
     abstract createRenderer(hostElement: any, type: RendererType2 | null): Renderer2;
+    abstract end?(): void;
 }
 
 /** @experimental */

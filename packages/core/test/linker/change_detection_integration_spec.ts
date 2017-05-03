@@ -666,6 +666,22 @@ export function main() {
 
     });
 
+    describe('RendererFactory', () => {
+      it('should call the begin and end methods on the renderer factory when change detection is called',
+         fakeAsync(() => {
+           const ctx = createCompFixture('<div testDirective [a]="42"></div>');
+           const rf = TestBed.get(RendererFactory2);
+           spyOn(rf, 'begin');
+           spyOn(rf, 'end');
+           expect(rf.begin).not.toHaveBeenCalled();
+           expect(rf.end).not.toHaveBeenCalled();
+
+           ctx.detectChanges(false);
+           expect(rf.begin).toHaveBeenCalled();
+           expect(rf.end).toHaveBeenCalled();
+         }));
+    });
+
     describe('change notification', () => {
       describe('updating directives', () => {
         it('should happen without invoking the renderer', fakeAsync(() => {
