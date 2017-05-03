@@ -1,5 +1,5 @@
 /* tslint:disable component-selector */
-import { Component, ElementRef, OnInit } from '@angular/core';
+import { Component, ElementRef, HostBinding, OnInit } from '@angular/core';
 import { getBoolFromAttribute } from 'app/shared/attribute-utils';
 
 /**
@@ -17,12 +17,13 @@ import { getBoolFromAttribute } from 'app/shared/attribute-utils';
   selector: 'code-example',
   template: `
     <header *ngIf="title">{{title}}</header>
-    <aio-code [ngClass]="{'headed-code':title, 'simple-code':!title}" [code]="code"
+    <aio-code [ngClass]="classes" [code]="code"
     [language]="language" [linenums]="linenums" [path]="path" [region]="region" [hideCopy]="hideCopy"></aio-code>
   `
 })
 export class CodeExampleComponent implements OnInit {
 
+  classes: {};
   code: string;
   language: string;
   linenums: boolean | number;
@@ -30,6 +31,9 @@ export class CodeExampleComponent implements OnInit {
   region: string;
   title: string;
   hideCopy: boolean;
+
+  @HostBinding('class.avoidFile')
+  isAvoid = false;
 
   constructor(private elementRef: ElementRef) {
     const element = this.elementRef.nativeElement;
@@ -39,7 +43,14 @@ export class CodeExampleComponent implements OnInit {
     this.path = element.getAttribute('path') || '';
     this.region = element.getAttribute('region') || '';
     this.title = element.getAttribute('title') || '';
-    this.hideCopy = getBoolFromAttribute(element, ['hidecopy', 'hide-copy']);
+
+    this.isAvoid = this.path.indexOf('.avoid.') !== -1;
+    this.hideCopy = this.isAvoid || getBoolFromAttribute(element, ['hidecopy', 'hide-copy']);
+
+    this.classes = {
+      'headed-code': !!this.title,
+      'simple-code': !this.title,
+    };
   }
 
   ngOnInit() {
