@@ -4,13 +4,12 @@ import {inlineMetadataResources} from './inline-resources';
 import {transpileFile} from './ts-compiler';
 import {ScriptTarget, ModuleKind} from 'typescript';
 import {sync as glob} from 'glob';
-import {
-  writeFileSync, copySync, mkdirpSync, readFileSync
-} from 'fs-extra';
+import {writeFileSync, readFileSync} from 'fs-extra';
 import {
   DIST_BUNDLES, DIST_ROOT, SOURCE_ROOT, PROJECT_ROOT, LICENSE_BANNER, MATERIAL_VERSION
 } from '../constants';
 import {addPureAnnotations} from './annotate-pure';
+import {copyFiles} from './copy-files';
 
 // There are no type definitions available for these imports.
 const uglify = require('uglify-js');
@@ -105,14 +104,6 @@ function uglifyFile(inputPath: string, outputPath: string) {
 
   writeFileSync(outputPath, result.code);
   writeFileSync(sourcemapOut, result.map);
-}
-
-function copyFiles(fromPath: string, fileGlob: string, outDir: string) {
-  glob(fileGlob, {cwd: fromPath}).forEach(filePath => {
-    let fileDestPath = join(outDir, filePath);
-    mkdirpSync(dirname(fileDestPath));
-    copySync(join(fromPath, filePath), fileDestPath);
-  });
 }
 
 /** Updates the `package.json` file of the specified package. Replaces the version placeholder. */

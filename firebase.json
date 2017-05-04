@@ -3,7 +3,7 @@
     "source": "tools/screenshot-test/functions"
   },
   "hosting": {
-    "public": "dist",
+    "public": "dist/packages/demo-app",
     "rewrites": [
       {
         "source": "/**/!(*.@(js|ts|html|css|json|svg|png|jpg|jpeg))",
@@ -22,11 +22,7 @@
       }
     ],
     "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**",
-      "tmp",
-      "deploy"
+      "firebase.json"
     ]
   }
 }
