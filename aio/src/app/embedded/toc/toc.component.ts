@@ -1,4 +1,4 @@
-import { Component,  ElementRef, OnInit } from '@angular/core';
+import { Component,  ElementRef, HostBinding, HostListener, OnInit } from '@angular/core';
 
 import { TocItem, TocService } from 'app/shared/toc.service';
 
@@ -15,6 +15,7 @@ export class TocComponent implements OnInit {
   isEmbedded = false;
   private primaryMax = 4;
   tocList: TocItem[];
+  @HostBinding('style.top.px') scrollTop: number;
 
   constructor(
     elementRef: ElementRef,
@@ -38,5 +39,11 @@ export class TocComponent implements OnInit {
 
   toggle() {
     this.isClosed = !this.isClosed;
+  }
+
+  @HostListener('window:scroll')
+  private onScroll() {
+    this.scrollTop = window && window.pageYOffset;
+    console.log(this.scrollTop);
   }
 }

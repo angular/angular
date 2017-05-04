@@ -1,16 +1,17 @@
-.toc-container {
-    width: 18%;
-    position: fixed;
-    top: 84px;
-    right: 0;
-    bottom: 18px;
-    overflow-y: auto;
-    overflow-x: hidden;
+aio-toc {
+  border: 1px solid red;
+  bottom: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 18vw;
 
-    @media (max-width: 800px) {
-      display: none;
-      width: 0;
-    }
+  @media (max-width: 1032px) {
+    position: static;
+    width: auto;
+  }
 }
 
 aio-toc > div {
@@ -36,12 +37,12 @@ aio-toc > div {
 
   button.toc-show-all,
   button.toc-more-items {
-    display: inline-block;
     background: 0;
     background-color: transparent;
     border: none;
     box-shadow: none;
     color: $mediumgray;
+    display: none;
     padding: 0;
 
     &:hover {
@@ -49,6 +50,10 @@ aio-toc > div {
     }
     &:focus {
       outline: none;
+    }
+
+    @media (max-width: 1032px) {
+      display: inline-block;
     }
   }
 
@@ -84,10 +89,10 @@ aio-toc > div {
     margin: 0;
     padding: 0 8px;
 
-    @media (max-width: 800px) {
+    @media (max-width: 1032px) {
       width: auto;
     }
-  
+
   }
 
   ul.toc-list li {
@@ -142,5 +147,7 @@ aio-toc > div {
 }
 
 aio-toc > div.closed li.secondary {
+  @media (max-width: 1032px) {
     display: none;
+  }
 }
