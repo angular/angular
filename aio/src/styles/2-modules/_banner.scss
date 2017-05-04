@@ -1,6 +1,7 @@
 /* BANNER */
 
 .info-banner {
+    margin: 16px 0;
     justify-content: center;
     background: $white;
     border: 1px solid rgba($lightgray, 0.5);
@@ -17,8 +18,8 @@
 
     p, .text-body {
         color: $darkgray;
-        font-size: 18px;
         line-height: 32px;
         margin: 0;
+        text-align: center;
     }
 }
