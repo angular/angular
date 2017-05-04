@@ -9,8 +9,10 @@
     // The container should be the size of the viewport.
     top: 0;
     left: 0;
-    height: 100%;
-    width: 100%;
+
+    // Note: we prefer viewport units, because they aren't being offset by the global scrollbar.
+    height: 100vh;
+    width: 100vw;
   }
 
   // The overlay-container is an invisible element which contains all individual overlays.

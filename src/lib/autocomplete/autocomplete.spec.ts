@@ -18,8 +18,6 @@ import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {Subscription} from 'rxjs/Subscription';
 import {ENTER, DOWN_ARROW, SPACE, UP_ARROW, HOME, END} from '../core/keyboard/keycodes';
 import {MdOption} from '../core/option/option';
-import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
-import {FakeViewportRuler} from '../core/overlay/position/fake-viewport-ruler';
 import {MdAutocomplete} from './autocomplete';
 import {MdInputContainer} from '../input/input-container';
 import {Observable} from 'rxjs/Observable';
@@ -65,10 +63,7 @@ describe('MdAutocomplete', () => {
 
           return {getContainerElement: () => overlayContainerElement};
         }},
-        {provide: Dir, useFactory: () => {
-          return {value: dir};
-        }},
-        {provide: ViewportRuler, useClass: FakeViewportRuler},
+        {provide: Dir, useFactory: () => ({value: dir})},
         {provide: ScrollDispatcher, useFactory: () => {
           return {scrolled: (delay: number, callback: () => any) => {
             return scrolledSubject.asObservable().subscribe(callback);
@@ -933,8 +928,8 @@ describe('MdAutocomplete', () => {
       const panelTop = panel.getBoundingClientRect().top;
 
       // Panel is offset by 6px in styles so that the underline has room to display.
-      expect((inputBottom + 6).toFixed(1))
-          .toEqual(panelTop.toFixed(1), `Expected panel top to match input bottom by default.`);
+      expect(Math.floor(inputBottom + 6))
+          .toEqual(Math.floor(panelTop), `Expected panel top to match input bottom by default.`);
       expect(fixture.componentInstance.trigger.autocomplete.positionY)
           .toEqual('below', `Expected autocomplete positionY to default to below.`);
     });
@@ -956,7 +951,7 @@ describe('MdAutocomplete', () => {
       const panel = overlayContainerElement.querySelector('.mat-autocomplete-panel');
       const panelTop = panel.getBoundingClientRect().top;
 
-      expect((inputBottom + 6).toFixed(1)).toEqual(panelTop.toFixed(1),
+      expect(Math.floor(inputBottom + 6)).toEqual(Math.floor(panelTop),
           'Expected panel top to match input bottom after scrolling.');
 
       document.body.removeChild(spacer);
@@ -975,8 +970,8 @@ describe('MdAutocomplete', () => {
       const panelBottom = panel.getBoundingClientRect().bottom;
 
       // Panel is offset by 24px in styles so that the label has room to display.
-      expect((inputTop - 24).toFixed(1))
-          .toEqual(panelBottom.toFixed(1), `Expected panel to fall back to above position.`);
+      expect(Math.floor(inputTop - 24))
+          .toEqual(Math.floor(panelBottom), `Expected panel to fall back to above position.`);
       expect(fixture.componentInstance.trigger.autocomplete.positionY)
           .toEqual('above', `Expected autocomplete positionY to be "above" if panel won't fit.`);
     });
@@ -998,8 +993,8 @@ describe('MdAutocomplete', () => {
         const panelBottom = panel.getBoundingClientRect().bottom;
 
         // Panel is offset by 24px in styles so that the label has room to display.
-        expect((inputTop - 24).toFixed(1))
-            .toEqual(panelBottom.toFixed(1), `Expected panel to stay aligned after filtering.`);
+        expect(Math.floor(inputTop - 24))
+            .toEqual(Math.floor(panelBottom), `Expected panel to stay aligned after filtering.`);
         expect(fixture.componentInstance.trigger.autocomplete.positionY)
             .toEqual('above', `Expected autocomplete positionY to be "above" if panel won't fit.`);
       });

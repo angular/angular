@@ -1,4 +1,4 @@
-import {TestBed, async, ComponentFixture, fakeAsync, tick} from '@angular/core/testing';
+import {TestBed, async, ComponentFixture, fakeAsync, tick, inject} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {
   Component,
@@ -28,23 +28,11 @@ import {TAB} from '../core/keyboard/keycodes';
 import {ScrollDispatcher} from '../core/overlay/scroll/scroll-dispatcher';
 
 
-class FakeViewportRuler {
-  getViewportRect() {
-    return {
-      left: 0, top: 0, width: 1014, height: 686, bottom: 686, right: 1014
-    };
-  }
-
-  getViewportScrollPosition() {
-    return {top: 0, left: 0};
-  }
-}
-
 describe('MdSelect', () => {
   let overlayContainerElement: HTMLElement;
   let dir: {value: 'ltr'|'rtl'};
   let scrolledSubject = new Subject();
-  let fakeViewportRuler = new FakeViewportRuler();
+  let viewportRuler: ViewportRuler;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -83,10 +71,7 @@ describe('MdSelect', () => {
 
           return {getContainerElement: () => overlayContainerElement};
         }},
-        {provide: ViewportRuler, useValue: fakeViewportRuler},
-        {provide: Dir, useFactory: () => {
-          return dir = { value: 'ltr' };
-        }},
+        {provide: Dir, useFactory: () => dir = { value: 'ltr' }},
         {provide: ScrollDispatcher, useFactory: () => {
           return {scrolled: (delay: number, callback: () => any) => {
             return scrolledSubject.asObservable().subscribe(callback);
@@ -96,6 +81,10 @@ describe('MdSelect', () => {
     });
 
     TestBed.compileComponents();
+  }));
+
+  beforeEach(inject([ViewportRuler], (_ruler: ViewportRuler) => {
+    viewportRuler = _ruler;
   }));
 
   afterEach(() => {
@@ -755,15 +744,17 @@ describe('MdSelect', () => {
 
       // The option text should align with the trigger text. Because each option is 18px
       // larger in height than the trigger, the option needs to be adjusted up 9 pixels.
-      expect(optionTop.toFixed(2))
-          .toEqual((triggerTop - 9).toFixed(2), `Expected trigger to align with option ${index}.`);
+      expect(Math.floor(optionTop))
+          .toEqual(Math.floor(triggerTop - 9), `Expected trigger to align with option ${index}.`);
 
       // For the animation to start at the option's center, its origin must be the distance
       // from the top of the overlay to the option top + half the option height (48/2 = 24).
-      const expectedOrigin = optionTop - overlayTop + 24;
-      expect(fixture.componentInstance.select._transformOrigin)
-          .toContain(`${expectedOrigin}px`,
-              `Expected panel animation to originate in the center of option ${index}.`);
+      const expectedOrigin = Math.floor(optionTop - overlayTop + 24);
+      const rawYOrigin = fixture.componentInstance.select._transformOrigin.split(' ')[1].trim();
+      const origin = Math.floor(parseInt(rawYOrigin));
+
+      expect(origin).toBe(expectedOrigin,
+          `Expected panel animation to originate in the center of option ${index}.`);
     }
 
     describe('ample space to open', () => {
@@ -771,9 +762,9 @@ describe('MdSelect', () => {
       beforeEach(() => {
         // these styles are necessary because we are first testing the overlay's position
         // if there is room for it to open to its full extent in either direction.
-        select.style.marginTop = '300px';
-        select.style.marginLeft = '20px';
-        select.style.marginRight = '20px';
+        select.style.position = 'fixed';
+        select.style.top = '300px';
+        select.style.left = '20px';
       });
 
 
@@ -849,14 +840,14 @@ describe('MdSelect', () => {
     describe('limited space to open vertically', () => {
 
       beforeEach(() => {
-        select.style.marginLeft = '20px';
-        select.style.marginRight = '20px';
+        select.style.position = 'fixed';
+        select.style.left = '20px';
       });
 
       it('should adjust position of centered option if there is little space above', () => {
         // Push the select to a position with not quite enough space on the top to open
         // with the option completely centered (needs 113px at least: 256/2 - 48/2 + 9)
-        select.style.marginTop = '85px';
+        select.style.top = '85px';
 
         // Select an option in the middle of the list
         fixture.componentInstance.control.setValue('chips-4');
@@ -879,7 +870,7 @@ describe('MdSelect', () => {
       it('should adjust position of centered option if there is little space below', () => {
         // Push the select to a position with not quite enough space on the bottom to open
         // with the option completely centered (needs 113px at least: 256/2 - 48/2 + 9)
-        select.style.marginTop = '600px';
+        select.style.bottom = '56px';
 
         // Select an option in the middle of the list
         fixture.componentInstance.control.setValue('chips-4');
@@ -891,10 +882,10 @@ describe('MdSelect', () => {
         const scrollContainer = document.querySelector('.cdk-overlay-pane .mat-select-panel');
 
         // Scroll should adjust by the difference between the bottom space available
-        // (686px - 600px margin - 30px trigger height = 56px - 8px padding = 48px)
+        // (56px from the bottom of the screen - 8px padding = 48px)
         // and the height of the panel below the option (113px).
         // 113px - 48px = 75px difference. Original scrollTop 88px - 75px = 23px
-        expect(scrollContainer.scrollTop)
+        expect(Math.ceil(scrollContainer.scrollTop))
             .toEqual(23, `Expected panel to adjust scroll position to fit in viewport.`);
 
         checkTriggerAlignedWithOption(4);
@@ -902,7 +893,7 @@ describe('MdSelect', () => {
 
       it('should fall back to "above" positioning if scroll adjustment will not help', () => {
         // Push the select to a position with not enough space on the bottom to open
-        select.style.marginTop = '600px';
+        select.style.bottom = '56px';
         fixture.detectChanges();
 
         // Select an option that cannot be scrolled any farther upward
@@ -920,8 +911,8 @@ describe('MdSelect', () => {
         // Expect no scroll to be attempted
         expect(scrollContainer.scrollTop).toEqual(0, `Expected panel not to be scrolled.`);
 
-        expect(overlayBottom.toFixed(2))
-            .toEqual(triggerBottom.toFixed(2),
+        expect(Math.floor(overlayBottom))
+            .toEqual(Math.floor(triggerBottom),
                 `Expected trigger bottom to align with overlay bottom.`);
 
         expect(fixture.componentInstance.select._transformOrigin)
@@ -930,7 +921,7 @@ describe('MdSelect', () => {
 
       it('should fall back to "below" positioning if scroll adjustment will not help', () => {
         // Push the select to a position with not enough space on the top to open
-        select.style.marginTop = '85px';
+        select.style.top = '85px';
 
         // Select an option that cannot be scrolled any farther downward
         fixture.componentInstance.control.setValue('sushi-7');
@@ -947,8 +938,8 @@ describe('MdSelect', () => {
         // Expect scroll to remain at the max scroll position
         expect(scrollContainer.scrollTop).toEqual(128, `Expected panel to be at max scroll.`);
 
-        expect(overlayTop.toFixed(2))
-            .toEqual(triggerTop.toFixed(2), `Expected trigger top to align with overlay top.`);
+        expect(Math.floor(overlayTop))
+            .toEqual(Math.floor(triggerTop), `Expected trigger top to align with overlay top.`);
 
         expect(fixture.componentInstance.select._transformOrigin)
             .toContain(`top`, `Expected panel animation to originate at the top.`);
@@ -994,7 +985,7 @@ describe('MdSelect', () => {
         tick(400);
         fixture.detectChanges();
 
-        const viewportRect = fakeViewportRuler.getViewportRect().right;
+        const viewportRect = viewportRuler.getViewportRect().right;
         const panelRight = document.querySelector('.mat-select-panel')
             .getBoundingClientRect().right;
 
@@ -1009,7 +1000,7 @@ describe('MdSelect', () => {
         tick(400);
         fixture.detectChanges();
 
-        const viewportRect = fakeViewportRuler.getViewportRect().right;
+        const viewportRect = viewportRuler.getViewportRect().right;
         const panelRight = document.querySelector('.mat-select-panel')
             .getBoundingClientRect().right;
 
@@ -1042,6 +1033,7 @@ describe('MdSelect', () => {
     });
 
     describe('when scrolled', () => {
+      const startingWindowHeight = window.innerHeight;
 
       // Need to set the scrollTop two different ways to support
       // both Chrome and Firefox.
@@ -1053,15 +1045,12 @@ describe('MdSelect', () => {
       beforeEach(() => {
         // Make the div above the select very tall, so the page will scroll
         fixture.componentInstance.heightAbove = 2000;
+        fixture.detectChanges();
+        setScrollTop(0);
 
         // Give the select enough horizontal space to open
         select.style.marginLeft = '20px';
         select.style.marginRight = '20px';
-      });
-
-      afterEach(() => {
-        document.body.scrollTop = 0;
-        document.documentElement.scrollTop = 0;
       });
 
       it('should align the first option properly when scrolled', () => {
@@ -1113,11 +1102,22 @@ describe('MdSelect', () => {
 
       it('should fall back to "above" positioning properly when scrolled', () => {
         // Give the select insufficient space to open below the trigger
+        fixture.componentInstance.heightAbove = 0;
         fixture.componentInstance.heightBelow = 100;
+        trigger.style.marginTop = '2000px';
         fixture.detectChanges();
 
         // Scroll the select into view
         setScrollTop(1400);
+
+        // In the iOS simulator (BrowserStack & SauceLabs), adding the content to the
+        // body causes karma's iframe for the test to stretch to fit that content once we attempt to
+        // scroll the page. Setting width / height / maxWidth / maxHeight on the iframe does not
+        // successfully constrain its size. As such, skip assertions in environments where the
+        // window size has changed since the start of the test.
+        if (window.innerHeight > startingWindowHeight) {
+          return;
+        }
 
         trigger.click();
         fixture.detectChanges();
@@ -1126,8 +1126,8 @@ describe('MdSelect', () => {
         const triggerBottom = trigger.getBoundingClientRect().bottom;
         const overlayBottom = overlayPane.getBoundingClientRect().bottom;
 
-        expect(overlayBottom.toFixed(2))
-            .toEqual(triggerBottom.toFixed(2),
+        expect(Math.floor(overlayBottom))
+            .toEqual(Math.floor(triggerBottom),
                 `Expected trigger bottom to align with overlay bottom.`);
       });
 
@@ -1150,16 +1150,17 @@ describe('MdSelect', () => {
         const triggerTop = trigger.getBoundingClientRect().top;
         const overlayTop = overlayPane.getBoundingClientRect().top;
 
-        expect(overlayTop.toFixed(2))
-            .toEqual(triggerTop.toFixed(2), `Expected trigger top to align with overlay top.`);
+        expect(Math.floor(overlayTop))
+            .toEqual(Math.floor(triggerTop), `Expected trigger top to align with overlay top.`);
       });
+
     });
 
     describe('x-axis positioning', () => {
 
       beforeEach(() => {
-        select.style.marginLeft = '30px';
-        select.style.marginRight = '30px';
+        select.style.position = 'fixed';
+        select.style.left = '30px';
       });
 
       it('should align the trigger and the selected option on the x-axis in ltr', fakeAsync(() => {
@@ -1173,7 +1174,7 @@ describe('MdSelect', () => {
 
         // Each option is 32px wider than the trigger, so it must be adjusted 16px
         // to ensure the text overlaps correctly.
-        expect(firstOptionLeft.toFixed(2)).toEqual((triggerLeft - 16).toFixed(2),
+        expect(Math.floor(firstOptionLeft)).toEqual(Math.floor(triggerLeft - 16),
             `Expected trigger to align with the selected option on the x-axis in LTR.`);
       }));
 
@@ -1191,8 +1192,8 @@ describe('MdSelect', () => {
 
         // Each option is 32px wider than the trigger, so it must be adjusted 16px
         // to ensure the text overlaps correctly.
-        expect(firstOptionRight.toFixed(2))
-            .toEqual((triggerRight + 16).toFixed(2),
+        expect(Math.floor(firstOptionRight))
+            .toEqual(Math.floor(triggerRight + 16),
                 `Expected trigger to align with the selected option on the x-axis in RTL.`);
       }));
     });
@@ -1206,8 +1207,8 @@ describe('MdSelect', () => {
         trigger = multiFixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement;
         select = multiFixture.debugElement.query(By.css('md-select')).nativeElement;
 
-        select.style.marginLeft = '60px';
-        select.style.marginRight = '60px';
+        select.style.position = 'fixed';
+        select.style.left = '60px';
       });
 
       it('should adjust for the checkbox in ltr', async(() => {
@@ -1220,8 +1221,8 @@ describe('MdSelect', () => {
               document.querySelector('.cdk-overlay-pane md-option').getBoundingClientRect().left;
 
           // 48px accounts for the checkbox size, margin and the panel's padding.
-          expect(firstOptionLeft.toFixed(2))
-              .toEqual((triggerLeft - 48).toFixed(2),
+          expect(Math.floor(firstOptionLeft))
+              .toEqual(Math.floor(triggerLeft - 48),
                   `Expected trigger label to align along x-axis, accounting for the checkbox.`);
         });
       }));
@@ -1237,8 +1238,8 @@ describe('MdSelect', () => {
             document.querySelector('.cdk-overlay-pane md-option').getBoundingClientRect().right;
 
         // 48px accounts for the checkbox size, margin and the panel's padding.
-        expect(firstOptionRight.toFixed(2))
-            .toEqual((triggerRight + 48).toFixed(2),
+        expect(Math.floor(firstOptionRight))
+            .toEqual(Math.floor(triggerRight + 48),
                 `Expected trigger label to align along x-axis, accounting for the checkbox.`);
       }));
     });

@@ -108,6 +108,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
 
     // Fallback point if none of the fallbacks fit into the viewport.
     let fallbackPoint: OverlayPoint = null;
+    let fallbackPosition: ConnectionPositionPair = null;
 
     // We want to place the overlay in the first of the preferred positions such that the
     // overlay fits on-screen.
@@ -119,7 +120,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
 
       // If the overlay in the calculated position fits on-screen, put it there and we're done.
       if (overlayPoint.fitsInViewport) {
-        this._setElementPosition(element, overlayPoint);
+        this._setElementPosition(element, overlayRect, overlayPoint, pos);
 
         // Save the last connected position in case the position needs to be re-calculated.
         this._lastConnectedPosition = pos;
@@ -132,12 +133,13 @@ export class ConnectedPositionStrategy implements PositionStrategy {
         return Promise.resolve(null);
       } else if (!fallbackPoint || fallbackPoint.visibleArea < overlayPoint.visibleArea) {
         fallbackPoint = overlayPoint;
+        fallbackPosition = pos;
       }
     }
 
     // If none of the preferred positions were in the viewport, take the one
     // with the largest visible area.
-    this._setElementPosition(element, fallbackPoint);
+    this._setElementPosition(element, overlayRect, fallbackPoint, fallbackPosition);
 
     return Promise.resolve(null);
   }
@@ -155,7 +157,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
 
     let originPoint = this._getOriginConnectionPoint(originRect, lastPosition);
     let overlayPoint = this._getOverlayPoint(originPoint, overlayRect, viewportRect, lastPosition);
-    this._setElementPosition(this._pane, overlayPoint);
+    this._setElementPosition(this._pane, overlayRect, overlayPoint, lastPosition);
   }
 
   /**
@@ -346,14 +348,48 @@ export class ConnectedPositionStrategy implements PositionStrategy {
     });
   }
 
-  /**
-   * Physically positions the overlay element to the given coordinate.
-   * @param element
-   * @param overlayPoint
-   */
-  private _setElementPosition(element: HTMLElement, overlayPoint: Point) {
-    element.style.left = overlayPoint.x + 'px';
-    element.style.top = overlayPoint.y + 'px';
+  /** Physically positions the overlay element to the given coordinate. */
+  private _setElementPosition(
+      element: HTMLElement,
+      overlayRect: ClientRect,
+      overlayPoint: Point,
+      pos: ConnectionPositionPair) {
+    const  viewport = this._viewportRuler.getViewportRect();
+
+    // We want to set either `top` or `bottom` based on whether the overlay wants to appear above
+    // or below the origin and the direction in which the element will expand.
+    let verticalStyleProperty = pos.overlayY === 'bottom' ? 'bottom' : 'top';
+
+    // When using `bottom`, we adjust the y position such that it is the distance
+    // from the bottom of the viewport rather than the top.
+    let y = verticalStyleProperty === 'top' ?
+        overlayPoint.y :
+        viewport.height - (overlayPoint.y + overlayRect.height);
+
+    // We want to set either `left` or `right` based on whether the overlay wants to appear "before"
+    // or "after" the origin, which determines the direction in which the element will expand.
+    // For the horizontal axis, the meaning of "before" and "after" change based on whether the
+    // page is in RTL or LTR.
+    let horizontalStyleProperty: string;
+    if (this._dir === 'rtl') {
+      horizontalStyleProperty = pos.overlayX === 'end' ? 'left' : 'right';
+    } else {
+      horizontalStyleProperty = pos.overlayX === 'end' ? 'right' : 'left';
+    }
+
+    // When we're setting `right`, we adjust the x position such that it is the distance
+    // from the right edge of the viewport rather than the left edge.
+    let x = horizontalStyleProperty === 'left' ?
+      overlayPoint.x :
+      viewport.width - (overlayPoint.x + overlayRect.width);
+
+
+    // Reset any existing styles. This is necessary in case the preferred position has
+    // changed since the last `apply`.
+    ['top', 'bottom', 'left', 'right'].forEach(p => element.style[p] = null);
+
+    element.style[verticalStyleProperty] = `${y}px`;
+    element.style[horizontalStyleProperty] = `${x}px`;
   }
 
   /** Returns the bounding positions of the provided element with respect to the viewport. */
