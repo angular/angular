@@ -1373,5 +1373,5 @@ Your app should look like this <live-example></live-example>.
 You have much of the foundation you need to build an app.
 You're still missing a key piece: remote data access.
 
-In the next page,
+In the [next tutorial page](tutorial/toh-pt6 "Http")
 you’ll replace the mock data with data retrieved from a server using http.
