@@ -346,7 +346,7 @@ export function animate(
  * how animations in Angular are used.
  *
  * `group` specifies a list of animation steps that are all run in parallel. Grouped animations are
- * useful when a series of styles must be animated/closed off at different statrting/ending times.
+ * useful when a series of styles must be animated/closed off at different starting/ending times.
  *
  * The `group` function can either be used within a {@link sequence sequence} or a {@link transition
  * transition} and it will only continue to the next instruction once all of the inner animation
