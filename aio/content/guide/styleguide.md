@@ -15,6 +15,7 @@ This style guide presents preferred conventions and, as importantly, explains wh
 
 {@a toc}
 
+<!--
 
 # Contents
 
@@ -29,7 +30,7 @@ This style guide presents preferred conventions and, as importantly, explains wh
   * [Lifecycle hooks](guide/styleguide#lifecycle-hooks)
   * [Appendix](guide/styleguide#appendix)
 
-
+-->
 
 ## Style vocabulary
 

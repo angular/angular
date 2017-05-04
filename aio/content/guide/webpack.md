@@ -25,6 +25,8 @@ This guide offers a taste of Webpack and explains how to use it with Angular app
 
 {@a top}
 
+<!--
+
 
 # Contents
 
@@ -56,6 +58,8 @@ This guide offers a taste of Webpack and explains how to use it with Angular app
 * [Trying it out](guide/webpack#try)
 * [Highlights](guide/webpack#highlights)
 * [Conclusion](guide/webpack#conclusion)
+
+-->
 
 You can also <a href="generated/zips/webpack/webpack.zip" target="_blank">download the final result.</a>
 

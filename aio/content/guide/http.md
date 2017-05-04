@@ -28,6 +28,8 @@ Modern browsers support two HTTP-based APIs:
 
 The Angular HTTP library simplifies application programming with the **XHR** and **JSONP** APIs.
 
+<!--
+
 # Contents
 
 * [Demos](guide/http#demos)
@@ -76,6 +78,8 @@ The Angular HTTP library simplifies application programming with the **XHR** and
 * [Guarding against Cross-Site Request Forgery](guide/http#xsrf)
 * [Override default request headers (and other request options)](guide/http#override-default-request-options)
 * [Appendix: Tour of Heroes _in-memory web api_](guide/http#in-mem-web-api)
+
+-->
 
 A <live-example>live example</live-example> illustrates these topics.
 

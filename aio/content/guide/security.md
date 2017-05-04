@@ -15,7 +15,7 @@ this user?_) and authorization (_What can this user do?_).
 
 For more information about the attacks and mitigations described below, see [OWASP Guide Project](https://www.owasp.org/index.php/Category:OWASP_Guide_Project).
 
-
+<!--
 
 # Contents
 
@@ -26,6 +26,7 @@ For more information about the attacks and mitigations described below, see [OWA
 * [HTTP-Level vulnerabilities](guide/security#http).
 * [Auditing Angular applications](guide/security#code-review).
 
+-->
 
 You can run the <live-example></live-example> in Plunker and download the code from there.
 

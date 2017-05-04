@@ -25,6 +25,7 @@ that provide visibility into these key life moments and the ability to act when 
 A directive has the same set of lifecycle hooks, minus the hooks that are specific to component content and views.
 <br class="l-clear-both">
 
+<!--
 
 ## Contents
 
@@ -54,6 +55,7 @@ A directive has the same set of lifecycle hooks, minus the hooks that are specif
 
 Try the <live-example></live-example>.
 
+-->
 
 {@a hooks-overview}
 

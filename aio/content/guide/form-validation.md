@@ -29,6 +29,7 @@ and the [Reactive Forms](guide/reactive-forms) guides.
 
 {@a toc}
 
+<!--
 
 ## Contents
 
@@ -54,6 +55,7 @@ and the [Reactive Forms](guide/reactive-forms) guides.
 
   * [Testing considerations](guide/form-validation#testing)
 
+-->
 
 {@a live-example}
 

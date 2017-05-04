@@ -13,6 +13,8 @@ This cookbook shows you how to use `ComponentFactoryResolver` to add components 
 
 {@a toc}
 
+<!--
+
 # Contents
 
    * [Dynamic component loading](guide/dynamic-component-loader#dynamic-loading)
@@ -25,6 +27,7 @@ This cookbook shows you how to use `ComponentFactoryResolver` to add components 
    * [A common _AdComponent_ interface](guide/dynamic-component-loader#common-interface)
    * [Final ad banner](guide/dynamic-component-loader#final-ad-banner)
 
+-->
 
 See the <live-example name="dynamic-component-loader"></live-example>
 of the code in this cookbook.

@@ -30,6 +30,8 @@ the QuickStart application itself.
 To set up the QuickStart files with an **ASP.NET 4.x project** in
 Visual Studio 2015, follow these steps:
 
+<!--
+
 
 *  [Prerequisite](guide/visual-studio-2015#prereq1): Install Node.js.
 *  [Prerequisite](guide/visual-studio-2015#prereq2): Install Visual Studio 2015 Update 3.
@@ -41,6 +43,7 @@ Visual Studio 2015, follow these steps:
 *  [Step 4](guide/visual-studio-2015#restore): Restore required packages.
 *  [Step 5](guide/visual-studio-2015#build-and-run): Build and run the app.
 
+-->
 
 <div class="l-sub-section">
 

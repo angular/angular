@@ -15,6 +15,8 @@ the focus is on testing applications written with Angular.
 
 {@a top}
 
+<!--
+
 
 # Contents
 
@@ -127,6 +129,8 @@ the focus is on testing applications written with Angular.
 * [FAQ: Frequently asked questions](guide/testing#faq "Frequently asked questions")
 
 It’s a big agenda. Fortunately, you can learn a little bit at a time and put each lesson to use.
+
+-->
 
 ## Live examples
 

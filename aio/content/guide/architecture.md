@@ -30,7 +30,7 @@ You'll learn the details in the pages that follow. For now, focus on the big pic
   <img src="generated/images/guide/architecture/overview2.png" alt="overview" style="margin-left:-40px;" width="700"></img>
 </figure>
 
-
+<!--
 
 The architecture diagram identifies the eight main building blocks of an Angular application:
 
@@ -44,7 +44,7 @@ The architecture diagram identifies the eight main building blocks of an Angular
 * [Dependency injection](guide/architecture#dependency-injection)
 
 Learn these building blocks, and you're on your way.
-
+-->
 
 <div class="l-sub-section">
 

@@ -11,6 +11,8 @@ Dependency Injection is a powerful pattern for managing code dependencies.
 This cookbook explores many of the features of Dependency Injection (DI) in Angular.
 {@a toc}
 
+<!--
+
 # Contents
 
 * [Application-wide dependencies](guide/dependency-injection-in-action#app-wide-dependencies)
@@ -52,6 +54,7 @@ This cookbook explores many of the features of Dependency Injection (DI) in Angu
 
 * [Break circularities with a forward class reference (*forwardRef*)](guide/dependency-injection-in-action#forwardref)
 
+-->
 
 See the <live-example name="dependency-injection-in-action"></live-example>
 of the code in this cookbook.
