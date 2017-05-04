@@ -5,6 +5,8 @@ aio-toc {
   position: fixed;
   right: 0;
   top: 0;
+  transition: top 0.3s ease-in-out;
+  transition-delay: 0.3s;
   width: 18vw;
 
   @media (max-width: 1032px) {
