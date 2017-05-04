@@ -80,6 +80,10 @@ describe('MdAutocomplete', () => {
     TestBed.compileComponents();
   }));
 
+  afterEach(() => {
+    document.body.removeChild(overlayContainerElement);
+  });
+
   describe('panel toggling', () => {
     let fixture: ComponentFixture<SimpleAutocomplete>;
     let input: HTMLInputElement;

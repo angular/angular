@@ -50,6 +50,10 @@ describe('MdTooltip', () => {
     TestBed.compileComponents();
   }));
 
+  afterEach(() => {
+    document.body.removeChild(overlayContainerElement);
+  });
+
   describe('basic usage', () => {
     let fixture: ComponentFixture<BasicTooltipDemo>;
     let buttonDebugElement: DebugElement;

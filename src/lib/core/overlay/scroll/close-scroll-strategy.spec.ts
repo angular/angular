@@ -43,6 +43,10 @@ describe('CloseScrollStrategy', () => {
     componentPortal = new ComponentPortal(MozarellaMsg);
   }));
 
+  afterEach(() => {
+    overlayRef.dispose();
+  });
+
   it('should detach the overlay as soon as the user scrolls', () => {
     overlayRef.attach(componentPortal);
     spyOn(overlayRef, 'detach');

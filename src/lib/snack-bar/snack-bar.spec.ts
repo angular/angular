@@ -349,6 +349,7 @@ describe('MdSnackBar with parent MdSnackBar', () => {
   let childSnackBar: MdSnackBar;
   let overlayContainerElement: HTMLElement;
   let fixture: ComponentFixture<ComponentThatProvidesMdSnackBar>;
+  let liveAnnouncer: LiveAnnouncer;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -365,8 +366,9 @@ describe('MdSnackBar with parent MdSnackBar', () => {
     TestBed.compileComponents();
   }));
 
-  beforeEach(inject([MdSnackBar], (sb: MdSnackBar) => {
+  beforeEach(inject([MdSnackBar, LiveAnnouncer], (sb: MdSnackBar, la: LiveAnnouncer) => {
     parentSnackBar = sb;
+    liveAnnouncer = la;
 
     fixture = TestBed.createComponent(ComponentThatProvidesMdSnackBar);
     childSnackBar = fixture.componentInstance.snackBar;
@@ -375,6 +377,7 @@ describe('MdSnackBar with parent MdSnackBar', () => {
 
   afterEach(() => {
     overlayContainerElement.innerHTML = '';
+    liveAnnouncer._removeLiveElement();
   });
 
   it('should close snackBars opened by parent when opening from child MdSnackBar', fakeAsync(() => {

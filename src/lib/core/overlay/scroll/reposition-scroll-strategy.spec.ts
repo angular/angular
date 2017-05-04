@@ -43,6 +43,10 @@ describe('RepositionScrollStrategy', () => {
     componentPortal = new ComponentPortal(PastaMsg);
   }));
 
+  afterEach(() => {
+    overlayRef.dispose();
+  });
+
   it('should update the overlay position when the page is scrolled', () => {
     overlayRef.attach(componentPortal);
     spyOn(overlayRef, 'updatePosition');

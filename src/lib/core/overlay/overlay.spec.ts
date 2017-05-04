@@ -393,6 +393,10 @@ describe('OverlayContainer theming', () => {
     overlayContainerElement = overlayContainer.getContainerElement();
   }));
 
+  afterEach(() => {
+    overlayContainerElement.parentNode.removeChild(overlayContainerElement);
+  });
+
   it('should be able to set a theme on the overlay container', () => {
     overlayContainer.themeClass = 'my-theme';
     expect(overlayContainerElement.classList).toContain('my-theme');

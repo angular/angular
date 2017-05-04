@@ -17,6 +17,7 @@ describe('GlobalPositonStrategy', () => {
   });
 
   afterEach(() => {
+    element.parentNode.removeChild(element);
     strategy.dispose();
   });
 
