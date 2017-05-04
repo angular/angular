@@ -927,15 +927,8 @@ Here are the files you added or changed in this page.
 </code-tabs>
 
 
-
-<div class="l-sub-section">
-
-
-
 ## Next step
 
-Return to the [learning path](guide/learning-angular#architecture), where
-you can read more about the concepts and practices found in this tutorial.
-
-</div>
-
+That concludes the "Tour of Heroes" tutorial. 
+You're ready to learn more about Angular development in the fundamentals section,
+starting with the [Architecture](guide/architecture "Architecture") guide.
