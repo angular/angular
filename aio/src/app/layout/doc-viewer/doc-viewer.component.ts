@@ -26,7 +26,7 @@ const initialDocViewerContent = initialDocViewerElement ? initialDocViewerElemen
 })
 export class DocViewerComponent implements DoCheck, OnDestroy {
 
-  private displayedDoc: DisplayedDoc;
+  private embeddedComponents: ComponentRef<any>[] = [];
   private embeddedComponentFactories: Map<string, EmbeddedComponentFactory> = new Map();
   private hostElement: HTMLElement;
 
@@ -67,8 +67,6 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
    */
   private build(doc: DocumentContents) {
 
-    const displayedDoc = this.displayedDoc = new DisplayedDoc(doc);
-
     // security: the doc.content is always authored by the documentation team
     // and is considered to be safe
     this.hostElement.innerHTML = doc.contents || '';
@@ -87,7 +85,7 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
         // security: the source of this innerHTML is always authored by the documentation team
         // and is considered to be safe
         element[contentPropertyName] = element.innerHTML;
-        displayedDoc.addEmbeddedComponent(factory.create(this.injector, [], element));
+        this.embeddedComponents.push(factory.create(this.injector, [], element));
       }
     });
   }
@@ -109,18 +107,13 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
   }
 
   ngDoCheck() {
-    // TODO: make sure this isn't called too often on the same doc
-    if (this.displayedDoc) {
-      this.displayedDoc.detectChanges();
-    }
+    this.embeddedComponents.forEach(comp => comp.changeDetectorRef.detectChanges());
   }
 
   ngOnDestroy() {
-    // destroy components otherwise there will be memory leaks
-    if (this.displayedDoc) {
-      this.displayedDoc.destroy();
-      this.displayedDoc = undefined;
-    }
+    // destroy these components else there will be memory leaks
+    this.embeddedComponents.forEach(comp => comp.destroy());
+    this.embeddedComponents.length = 0;
   }
 
   /**
@@ -129,26 +122,5 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
    */
   private selectorToContentPropertyName(selector: string) {
     return selector.replace(/-(.)/g, (match, $1) => $1.toUpperCase()) + 'Content';
-  }
-}
-
-class DisplayedDoc {
-
-  private embeddedComponents: ComponentRef<any>[] = [];
-
-  constructor(private doc: DocumentContents) {}
-
-  addEmbeddedComponent(component: ComponentRef<any>) {
-    this.embeddedComponents.push(component);
-  }
-
-  detectChanges() {
-    this.embeddedComponents.forEach(comp => comp.changeDetectorRef.detectChanges());
-  }
-
-  destroy() {
-    // destroy components otherwise there will be memory leaks
-    this.embeddedComponents.forEach(comp => comp.destroy());
-    this.embeddedComponents.length = 0;
   }
 }
