@@ -9,8 +9,8 @@
 }
 
 aio-shell.marketing {
-  md-sidenav-container.sidenav-container {
-    max-width: none;
+  md-sidenav-container div.mat-sidenav-content {
+    padding-right: 0;
   }
 }
 

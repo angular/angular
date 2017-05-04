@@ -44,6 +44,5 @@ export class TocComponent implements OnInit {
   @HostListener('window:scroll')
   private onScroll() {
     this.scrollTop = window && window.pageYOffset;
-    console.log(this.scrollTop);
   }
 }
