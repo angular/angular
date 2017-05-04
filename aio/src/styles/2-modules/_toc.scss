@@ -4,12 +4,10 @@ aio-toc {
   overflow-y: auto;
   position: fixed;
   right: 0;
-  top: 0;
-  transition: top 0.3s ease-in-out;
-  transition-delay: 0.3s;
+  top: 64px;
   width: 18vw;
 
-  @media (max-width: 1032px) {
+  @media (max-width: 800px) {
     position: static;
     width: auto;
   }
@@ -53,7 +51,7 @@ aio-toc > div {
       outline: none;
     }
 
-    @media (max-width: 1032px) {
+    @media (max-width: 800px) {
       display: inline-block;
     }
   }
@@ -90,7 +88,7 @@ aio-toc > div {
     margin: 0;
     padding: 0 8px;
 
-    @media (max-width: 1032px) {
+    @media (max-width: 800px) {
       width: auto;
     }
 
@@ -148,7 +146,7 @@ aio-toc > div {
 }
 
 aio-toc > div.closed li.secondary {
-  @media (max-width: 1032px) {
+  @media (max-width: 800px) {
     display: none;
   }
 }

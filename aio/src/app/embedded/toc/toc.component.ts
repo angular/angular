@@ -41,8 +41,8 @@ export class TocComponent implements OnInit {
     this.isClosed = !this.isClosed;
   }
 
-  @HostListener('window:scroll')
-  private onScroll() {
-    this.scrollTop = window && window.pageYOffset;
-  }
+  // @HostListener('window:scroll')
+  // private onScroll() {
+  //   this.scrollTop = window && window.pageYOffset;
+  // }
 }

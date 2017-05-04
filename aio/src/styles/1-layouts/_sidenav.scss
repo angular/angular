@@ -40,9 +40,11 @@ md-sidenav-container.sidenav-container {
 md-sidenav-container div.mat-sidenav-content {
     height: auto;
     padding-right: 18vw;
+    transform: none !important;
 
     @media (max-width: 800px) {
       padding-right: 0;
+      transform: translate3d(0, 0, 0) !important;
     }
 }
 
