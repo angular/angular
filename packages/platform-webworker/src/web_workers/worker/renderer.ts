@@ -81,6 +81,9 @@ export class WebWorkerRendererFactory2 implements RendererFactory2 {
     return renderer;
   }
 
+  begin() {}
+  end() {}
+
   callUI(fnName: string, fnArgs: FnArg[]) {
     const args = new UiArguments(fnName, fnArgs);
     this._messageBroker.runOnService(args, null);

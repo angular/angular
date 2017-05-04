@@ -5,20 +5,16 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationEvent, NoopAnimationPlayer, animate, keyframes, state, style, transition, trigger} from '@angular/animations';
-import {el} from '@angular/platform-browser/testing/src/browser_util';
+import {AnimationEvent, AnimationMetadata, AnimationTriggerMetadata, NoopAnimationPlayer, animate, state, style, transition, trigger} from '@angular/animations';
 
-import {buildAnimationKeyframes} from '../../src/dsl/animation_timeline_visitor';
+import {TriggerAst} from '../../src/dsl/animation_ast';
+import {buildAnimationAst} from '../../src/dsl/animation_ast_builder';
 import {buildTrigger} from '../../src/dsl/animation_trigger';
 import {AnimationStyleNormalizer, NoopAnimationStyleNormalizer} from '../../src/dsl/style_normalization/animation_style_normalizer';
-import {DomAnimationEngine} from '../../src/render/dom_animation_engine';
+import {TransitionAnimationEngine} from '../../src/render/transition_animation_engine';
 import {MockAnimationDriver, MockAnimationPlayer} from '../../testing/src/mock_animation_driver';
 
-function makeTrigger(name: string, steps: any) {
-  const triggerData = trigger(name, steps);
-  const triggerInstance = buildTrigger(triggerData.name, triggerData.definitions);
-  return triggerInstance;
-}
+const DEFAULT_NAMESPACE_ID = 'id';
 
 export function main() {
   const driver = new MockAnimationDriver();
@@ -26,23 +22,30 @@ export function main() {
   // these tests are only mean't to be run within the DOM
   if (typeof Element == 'undefined') return;
 
-  describe('DomAnimationEngine', () => {
+  describe('TransitionAnimationEngine', () => {
     let element: any;
 
     beforeEach(() => {
       MockAnimationDriver.log = [];
-      element = el('<div></div>');
+      element = document.createElement('div');
+      document.body.appendChild(element);
     });
 
+    afterEach(() => { document.body.removeChild(element); });
+
     function makeEngine(normalizer?: AnimationStyleNormalizer) {
-      return new DomAnimationEngine(driver, normalizer || new NoopAnimationStyleNormalizer());
+      const engine =
+          new TransitionAnimationEngine(driver, normalizer || new NoopAnimationStyleNormalizer());
+      engine.createNamespace(DEFAULT_NAMESPACE_ID, element);
+      return engine;
     }
 
     describe('trigger registration', () => {
       it('should ignore and not throw an error if the same trigger is registered twice', () => {
+        // TODO (matsko): ask why this is avoided
         const engine = makeEngine();
-        engine.registerTrigger(trigger('trig', []));
-        expect(() => { engine.registerTrigger(trigger('trig', [])); }).not.toThrow();
+        registerTrigger(element, engine, trigger('trig', []));
+        expect(() => { registerTrigger(element, engine, trigger('trig', [])); }).not.toThrow();
       });
     });
 
@@ -54,53 +57,15 @@ export function main() {
           transition('* => *', [style({height: '0px'}), animate(1000, style({height: '100px'}))])
         ]);
 
-        engine.registerTrigger(trig);
-
-        expect(engine.queuedPlayers.length).toEqual(0);
-        engine.setProperty(element, 'myTrigger', 'value');
-        expect(engine.queuedPlayers.length).toEqual(1);
+        registerTrigger(element, engine, trig);
+        setProperty(element, engine, 'myTrigger', 'value');
+        engine.flush();
+        expect(engine.players.length).toEqual(1);
 
         const player = MockAnimationDriver.log.pop() as MockAnimationPlayer;
         expect(player.keyframes).toEqual([
           {height: '0px', offset: 0}, {height: '100px', offset: 1}
         ]);
-      });
-
-      it('should always invoke an animation even if the property change is not matched', () => {
-        const engine = makeEngine();
-
-        const trig = trigger(
-            'myTrigger',
-            [transition(
-                'yes => no', [style({height: '0px'}), animate(1000, style({height: '100px'}))])]);
-
-        engine.registerTrigger(trig);
-        expect(engine.queuedPlayers.length).toEqual(0);
-
-        engine.setProperty(element, 'myTrigger', 'no');
-        expect(engine.queuedPlayers.length).toEqual(1);
-        expect(engine.queuedPlayers.pop() instanceof NoopAnimationPlayer).toBe(true);
-        engine.flush();
-
-        engine.setProperty(element, 'myTrigger', 'yes');
-        expect(engine.queuedPlayers.length).toEqual(1);
-        expect(engine.queuedPlayers.pop() instanceof NoopAnimationPlayer).toBe(true);
-      });
-
-      it('should not initialize the animation until the engine has been flushed', () => {
-        const engine = makeEngine();
-        engine.registerTrigger(trigger(
-            'trig', [transition('* => something', [animate(1000, style({color: 'gold'}))])]));
-
-        engine.setProperty(element, 'trig', 'something');
-        const player = engine.queuedPlayers.pop() as MockAnimationPlayer;
-
-        let initialized = false;
-        player.onInit(() => initialized = true);
-
-        expect(initialized).toBe(false);
-        engine.flush();
-        expect(initialized).toBe(true);
       });
 
       it('should not queue an animation if the property value has not changed at all', () => {
@@ -110,22 +75,68 @@ export function main() {
           transition('* => *', [style({height: '0px'}), animate(1000, style({height: '100px'}))])
         ]);
 
-        engine.registerTrigger(trig);
-        expect(engine.queuedPlayers.length).toEqual(0);
+        registerTrigger(element, engine, trig);
+        engine.flush();
+        expect(engine.players.length).toEqual(0);
 
-        engine.setProperty(element, 'myTrigger', 'abc');
-        expect(engine.queuedPlayers.length).toEqual(1);
+        setProperty(element, engine, 'myTrigger', 'abc');
+        engine.flush();
+        expect(engine.players.length).toEqual(1);
 
-        engine.setProperty(element, 'myTrigger', 'abc');
-        expect(engine.queuedPlayers.length).toEqual(1);
+        setProperty(element, engine, 'myTrigger', 'abc');
+        engine.flush();
+        expect(engine.players.length).toEqual(1);
       });
 
       it('should throw an error if an animation property without a matching trigger is changed',
          () => {
            const engine = makeEngine();
            expect(() => {
-             engine.setProperty(element, 'myTrigger', 'no');
+             setProperty(element, engine, 'myTrigger', 'no');
            }).toThrowError(/The provided animation trigger "myTrigger" has not been registered!/);
+         });
+    });
+
+    describe('removal operations', () => {
+      it('should cleanup all inner state that\'s tied to an element once removed', () => {
+        const engine = makeEngine();
+
+        const trig = trigger('myTrigger', [
+          transition(':leave', [style({height: '0px'}), animate(1000, style({height: '100px'}))])
+        ]);
+
+        registerTrigger(element, engine, trig);
+        setProperty(element, engine, 'myTrigger', 'value');
+        engine.flush();
+
+        expect(engine.elementContainsData(DEFAULT_NAMESPACE_ID, element)).toBeTruthy();
+
+        engine.removeNode(DEFAULT_NAMESPACE_ID, element, true);
+        engine.flush();
+
+        expect(engine.elementContainsData(DEFAULT_NAMESPACE_ID, element)).toBeTruthy();
+      });
+
+      it('should create and recreate a namespace for a host element with the same component source',
+         () => {
+           const engine = makeEngine();
+
+           const trig =
+               trigger('myTrigger', [transition('* => *', animate(1234, style({color: 'red'})))]);
+
+           registerTrigger(element, engine, trig);
+           setProperty(element, engine, 'myTrigger', 'value');
+           engine.flush();
+           expect((engine.players[0].getRealPlayer() as MockAnimationPlayer).duration)
+               .toEqual(1234);
+
+           engine.destroy(DEFAULT_NAMESPACE_ID, null);
+
+           registerTrigger(element, engine, trig);
+           setProperty(element, engine, 'myTrigger', 'value');
+           engine.flush();
+           expect((engine.players[0].getRealPlayer() as MockAnimationPlayer).duration)
+               .toEqual(1234);
          });
     });
 
@@ -138,9 +149,9 @@ export function main() {
         ]);
 
         let count = 0;
-        engine.registerTrigger(trig);
-        engine.listen(element, 'myTrigger', 'start', () => count++);
-        engine.setProperty(element, 'myTrigger', 'value');
+        registerTrigger(element, engine, trig);
+        listen(element, engine, 'myTrigger', 'start', () => count++);
+        setProperty(element, engine, 'myTrigger', 'value');
         expect(count).toEqual(0);
 
         engine.flush();
@@ -155,33 +166,31 @@ export function main() {
         ]);
 
         let count = 0;
-        engine.registerTrigger(trig);
-        engine.listen(element, 'myTrigger', 'done', () => count++);
-        engine.setProperty(element, 'myTrigger', 'value');
+        registerTrigger(element, engine, trig);
+        listen(element, engine, 'myTrigger', 'done', () => count++);
+        setProperty(element, engine, 'myTrigger', 'value');
         expect(count).toEqual(0);
 
         engine.flush();
         expect(count).toEqual(0);
 
-        const player = engine.activePlayers.pop() !;
-        player.finish();
-
+        engine.players[0].finish();
         expect(count).toEqual(1);
       });
 
       it('should throw an error when an event is listened to that isn\'t supported', () => {
         const engine = makeEngine();
         const trig = trigger('myTrigger', []);
-        engine.registerTrigger(trig);
+        registerTrigger(element, engine, trig);
 
-        expect(() => { engine.listen(element, 'myTrigger', 'explode', () => {}); })
+        expect(() => { listen(element, engine, 'myTrigger', 'explode', () => {}); })
             .toThrowError(
                 /The provided animation trigger event "explode" for the animation trigger "myTrigger" is not supported!/);
       });
 
       it('should throw an error when an event is listened for a trigger that doesn\'t exist', () => {
         const engine = makeEngine();
-        expect(() => { engine.listen(element, 'myTrigger', 'explode', () => {}); })
+        expect(() => { listen(element, engine, 'myTrigger', 'explode', () => {}); })
             .toThrowError(
                 /Unable to listen on the animation trigger event "explode" because the animation trigger "myTrigger" doesn\'t exist!/);
       });
@@ -189,8 +198,8 @@ export function main() {
       it('should throw an error when an undefined event is listened for', () => {
         const engine = makeEngine();
         const trig = trigger('myTrigger', []);
-        engine.registerTrigger(trig);
-        expect(() => { engine.listen(element, 'myTrigger', '', () => {}); })
+        registerTrigger(element, engine, trig);
+        expect(() => { listen(element, engine, 'myTrigger', '', () => {}); })
             .toThrowError(
                 /Unable to listen on the animation trigger "myTrigger" because the provided event is undefined!/);
       });
@@ -203,16 +212,16 @@ export function main() {
                [transition(
                    '* => *', [style({height: '0px'}), animate(1000, style({height: '100px'}))])]);
 
-           engine.registerTrigger(trig);
+           registerTrigger(element, engine, trig);
 
            let count = 0;
-           engine.listen(element, 'myTrigger', 'start', () => count++);
+           listen(element, engine, 'myTrigger', 'start', () => count++);
 
-           engine.setProperty(element, 'myTrigger', '123');
+           setProperty(element, engine, 'myTrigger', '123');
            engine.flush();
            expect(count).toEqual(1);
 
-           engine.setProperty(element, 'myTrigger', '456');
+           setProperty(element, engine, 'myTrigger', '456');
            engine.flush();
            expect(count).toEqual(2);
          });
@@ -224,61 +233,64 @@ export function main() {
                'myTrigger1',
                [transition(
                    '* => 123', [style({height: '0px'}), animate(1000, style({height: '100px'}))])]);
-           engine.registerTrigger(trig1);
+           registerTrigger(element, engine, trig1);
 
            const trig2 = trigger(
                'myTrigger2',
                [transition(
                    '* => 123', [style({width: '0px'}), animate(1000, style({width: '100px'}))])]);
-           engine.registerTrigger(trig2);
+           registerTrigger(element, engine, trig2);
 
            let count = 0;
-           engine.listen(element, 'myTrigger1', 'start', () => count++);
+           listen(element, engine, 'myTrigger1', 'start', () => count++);
 
-           engine.setProperty(element, 'myTrigger1', '123');
+           setProperty(element, engine, 'myTrigger1', '123');
            engine.flush();
            expect(count).toEqual(1);
 
-           engine.setProperty(element, 'myTrigger2', '123');
+           setProperty(element, engine, 'myTrigger2', '123');
            engine.flush();
            expect(count).toEqual(1);
          });
 
-      it('should allow a listener to be deregistered', () => {
+      it('should allow a listener to be deregistered, but only after a flush occurs', () => {
         const engine = makeEngine();
         const trig = trigger(
             'myTrigger',
             [transition(
                 '* => 123', [style({height: '0px'}), animate(1000, style({height: '100px'}))])]);
-        engine.registerTrigger(trig);
+        registerTrigger(element, engine, trig);
 
         let count = 0;
-        const deregisterFn = engine.listen(element, 'myTrigger', 'start', () => count++);
-        engine.setProperty(element, 'myTrigger', '123');
+        const deregisterFn = listen(element, engine, 'myTrigger', 'start', () => count++);
+        setProperty(element, engine, 'myTrigger', '123');
         engine.flush();
         expect(count).toEqual(1);
 
         deregisterFn();
-        engine.setProperty(element, 'myTrigger', '456');
+        engine.flush();
+
+        setProperty(element, engine, 'myTrigger', '456');
         engine.flush();
         expect(count).toEqual(1);
       });
 
       it('should trigger a listener callback with an AnimationEvent argument', () => {
         const engine = makeEngine();
-        engine.registerTrigger(trigger(
-            'myTrigger',
-            [transition(
-                '* => *', [style({height: '0px'}), animate(1234, style({height: '100px'}))])]));
+        registerTrigger(
+            element, engine, trigger('myTrigger', [
+              transition(
+                  '* => *', [style({height: '0px'}), animate(1234, style({height: '100px'}))])
+            ]));
 
         // we do this so that the next transition has a starting value that isnt null
-        engine.setProperty(element, 'myTrigger', '123');
+        setProperty(element, engine, 'myTrigger', '123');
         engine.flush();
 
         let capture: AnimationEvent = null !;
-        engine.listen(element, 'myTrigger', 'start', (e) => capture = e);
-        engine.listen(element, 'myTrigger', 'done', (e) => capture = e);
-        engine.setProperty(element, 'myTrigger', '456');
+        listen(element, engine, 'myTrigger', 'start', e => capture = e);
+        listen(element, engine, 'myTrigger', 'done', e => capture = e);
+        setProperty(element, engine, 'myTrigger', '456');
         engine.flush();
 
         expect(capture).toEqual({
@@ -291,7 +303,7 @@ export function main() {
         });
 
         capture = null !;
-        const player = engine.activePlayers.pop() !;
+        const player = engine.players.pop() !;
         player.finish();
 
         expect(capture).toEqual({
@@ -305,102 +317,46 @@ export function main() {
       });
     });
 
-    describe('instructions', () => {
-      it('should animate a transition instruction', () => {
-        const engine = makeEngine();
-
-        const trig = makeTrigger('something', [
-          state('on', style({height: 100})), state('off', style({height: 0})),
-          transition('on => off', animate(9876))
-        ]);
-
-        const instruction = trig.matchTransition('on', 'off') !;
-
-        expect(MockAnimationDriver.log.length).toEqual(0);
-        engine.animateTransition(element, instruction);
-        expect(MockAnimationDriver.log.length).toEqual(1);
-      });
-
-      it('should animate a timeline instruction', () => {
-        const engine = makeEngine();
-        const timelines =
-            buildAnimationKeyframes([style({height: 100}), animate(1000, style({height: 0}))]);
-        expect(MockAnimationDriver.log.length).toEqual(0);
-        engine.animateTimeline(element, timelines);
-        expect(MockAnimationDriver.log.length).toEqual(1);
-      });
-
-      it('should animate an array of animation instructions', () => {
-        const engine = makeEngine();
-
-        const instructions = buildAnimationKeyframes([
-          style({height: 100}), animate(1000, style({height: 0})),
-          animate(1000, keyframes([style({width: 0}), style({width: 1000})]))
-        ]);
-
-        expect(MockAnimationDriver.log.length).toEqual(0);
-        engine.animateTimeline(element, instructions);
-        expect(MockAnimationDriver.log.length).toBeGreaterThan(0);
-      });
-    });
-
-    describe('removals / insertions', () => {
-      it('should allow text nodes to be removed through the engine', () => {
-        const engine = makeEngine();
-        const node = document.createTextNode('hello');
-        element.appendChild(node);
-
-        let called = false;
-        engine.onRemove(node, () => called = true);
-
-        expect(called).toBeTruthy();
-      });
-
-      it('should allow text nodes to be inserted through the engine', () => {
-        const engine = makeEngine();
-        const node = document.createTextNode('hello');
-
-        let called = false;
-        engine.onInsert(node, () => called = true);
-
-        expect(called).toBeTruthy();
-      });
-    });
-
     describe('transition operations', () => {
       it('should persist the styles on the element as actual styles once the animation is complete',
          () => {
            const engine = makeEngine();
-           const trig = makeTrigger('something', [
+           const trig = trigger('something', [
              state('on', style({height: '100px'})), state('off', style({height: '0px'})),
              transition('on => off', animate(9876))
            ]);
 
-           const instruction = trig.matchTransition('on', 'off') !;
-           const player = engine.animateTransition(element, instruction);
+           registerTrigger(element, engine, trig);
+           setProperty(element, engine, trig.name, 'on');
+           setProperty(element, engine, trig.name, 'off');
+           engine.flush();
 
            expect(element.style.height).not.toEqual('0px');
-           player.finish();
+           engine.players[0].finish();
            expect(element.style.height).toEqual('0px');
          });
 
       it('should remove all existing state styling from an element when a follow-up transition occurs on the same trigger',
          () => {
            const engine = makeEngine();
-           const trig = makeTrigger('something', [
+           const trig = trigger('something', [
              state('a', style({height: '100px'})), state('b', style({height: '500px'})),
              state('c', style({width: '200px'})), transition('* => *', animate(9876))
            ]);
 
-           const instruction1 = trig.matchTransition('a', 'b') !;
-           const player1 = engine.animateTransition(element, instruction1);
+           registerTrigger(element, engine, trig);
+           setProperty(element, engine, trig.name, 'a');
+           setProperty(element, engine, trig.name, 'b');
+           engine.flush();
 
+           const player1 = engine.players[0];
            player1.finish();
            expect(element.style.height).toEqual('500px');
 
-           const instruction2 = trig.matchTransition('b', 'c') !;
-           const player2 = engine.animateTransition(element, instruction2);
+           setProperty(element, engine, trig.name, 'c');
+           engine.flush();
 
+           const player2 = engine.players[0];
            expect(element.style.height).not.toEqual('500px');
            player2.finish();
            expect(element.style.width).toEqual('200px');
@@ -410,26 +366,33 @@ export function main() {
       it('should allow two animation transitions with different triggers to animate in parallel',
          () => {
            const engine = makeEngine();
-           const trig1 = makeTrigger('something1', [
+           const trig1 = trigger('something1', [
              state('a', style({width: '100px'})), state('b', style({width: '200px'})),
              transition('* => *', animate(1000))
            ]);
 
-           const trig2 = makeTrigger('something2', [
+           const trig2 = trigger('something2', [
              state('x', style({height: '500px'})), state('y', style({height: '1000px'})),
              transition('* => *', animate(2000))
            ]);
 
+           registerTrigger(element, engine, trig1);
+           registerTrigger(element, engine, trig2);
+
            let doneCount = 0;
            function doneCallback() { doneCount++; }
 
-           const instruction1 = trig1.matchTransition('a', 'b') !;
-           const instruction2 = trig2.matchTransition('x', 'y') !;
-           const player1 = engine.animateTransition(element, instruction1);
+           setProperty(element, engine, trig1.name, 'a');
+           setProperty(element, engine, trig1.name, 'b');
+           setProperty(element, engine, trig2.name, 'x');
+           setProperty(element, engine, trig2.name, 'y');
+           engine.flush();
+
+           const player1 = engine.players[0] !;
            player1.onDone(doneCallback);
            expect(doneCount).toEqual(0);
 
-           const player2 = engine.animateTransition(element, instruction2);
+           const player2 = engine.players[1] !;
            player2.onDone(doneCallback);
            expect(doneCount).toEqual(0);
 
@@ -446,18 +409,23 @@ export function main() {
       it('should cancel a previously running animation when a follow-up transition kicks off on the same trigger',
          () => {
            const engine = makeEngine();
-           const trig = makeTrigger('something', [
+           const trig = trigger('something', [
              state('x', style({opacity: 0})), state('y', style({opacity: .5})),
              state('z', style({opacity: 1})), transition('* => *', animate(1000))
            ]);
 
-           const instruction1 = trig.matchTransition('x', 'y') !;
-           const instruction2 = trig.matchTransition('y', 'z') !;
+           registerTrigger(element, engine, trig);
+           setProperty(element, engine, trig.name, 'x');
+           setProperty(element, engine, trig.name, 'y');
+           engine.flush();
 
            expect(parseFloat(element.style.opacity)).not.toEqual(.5);
 
-           const player1 = engine.animateTransition(element, instruction1);
-           const player2 = engine.animateTransition(element, instruction2);
+           const player1 = engine.players[0];
+           setProperty(element, engine, trig.name, 'z');
+           engine.flush();
+
+           const player2 = engine.players[0];
 
            expect(parseFloat(element.style.opacity)).toEqual(.5);
 
@@ -471,65 +439,73 @@ export function main() {
       it('should pass in the previously running players into the follow-up transition player when cancelled',
          () => {
            const engine = makeEngine();
-           const trig = makeTrigger('something', [
+           const trig = trigger('something', [
              state('x', style({opacity: 0})), state('y', style({opacity: .5})),
              state('z', style({opacity: 1})), transition('* => *', animate(1000))
            ]);
 
-           const instruction1 = trig.matchTransition('x', 'y') !;
-           const instruction2 = trig.matchTransition('y', 'z') !;
-           const instruction3 = trig.matchTransition('z', 'x') !;
-
-           const player1 = engine.animateTransition(element, instruction1);
+           registerTrigger(element, engine, trig);
+           setProperty(element, engine, trig.name, 'x');
+           setProperty(element, engine, trig.name, 'y');
            engine.flush();
+
+           const player1 = MockAnimationDriver.log.pop() !as MockAnimationPlayer;
            player1.setPosition(0.5);
 
-           const player2 = <MockAnimationPlayer>engine.animateTransition(element, instruction2);
+           setProperty(element, engine, trig.name, 'z');
+           engine.flush();
+
+           const player2 = MockAnimationDriver.log.pop() !as MockAnimationPlayer;
            expect(player2.previousPlayers).toEqual([player1]);
            player2.finish();
 
-           const player3 = <MockAnimationPlayer>engine.animateTransition(element, instruction3);
+           setProperty(element, engine, trig.name, 'x');
+           engine.flush();
+
+           const player3 = MockAnimationDriver.log.pop() !as MockAnimationPlayer;
            expect(player3.previousPlayers).toEqual([]);
          });
 
       it('should cancel all existing players if a removal animation is set to occur', () => {
         const engine = makeEngine();
-        const trig = makeTrigger('something', [
+        const trig = trigger('something', [
           state('m', style({opacity: 0})), state('n', style({opacity: 1})),
           transition('* => *', animate(1000))
         ]);
 
+        registerTrigger(element, engine, trig);
+        setProperty(element, engine, trig.name, 'm');
+        setProperty(element, engine, trig.name, 'n');
+        engine.flush();
+
         let doneCount = 0;
         function doneCallback() { doneCount++; }
 
-        const instruction1 = trig.matchTransition('m', 'n') !;
-        const instructions2 =
-            buildAnimationKeyframes([style({height: 0}), animate(1000, style({height: 100}))]) !;
-        const instruction3 = trig.matchTransition('n', 'void') !;
-
-        const player1 = engine.animateTransition(element, instruction1);
+        const player1 = engine.players[0];
         player1.onDone(doneCallback);
 
-        const player2 = engine.animateTimeline(element, instructions2);
-        player2.onDone(doneCallback);
-
-        engine.flush();
         expect(doneCount).toEqual(0);
 
-        const player3 = engine.animateTransition(element, instruction3);
-        expect(doneCount).toEqual(2);
+        setProperty(element, engine, trig.name, 'void');
+        engine.flush();
+
+        expect(doneCount).toEqual(1);
       });
 
       it('should only persist styles that exist in the final state styles and not the last keyframe',
          () => {
            const engine = makeEngine();
-           const trig = makeTrigger('something', [
+           const trig = trigger('something', [
              state('0', style({width: '0px'})), state('1', style({width: '100px'})),
              transition('* => *', [animate(1000, style({height: '200px'}))])
            ]);
 
-           const instruction = trig.matchTransition('0', '1') !;
-           const player = engine.animateTransition(element, instruction);
+           registerTrigger(element, engine, trig);
+           setProperty(element, engine, trig.name, '0');
+           setProperty(element, engine, trig.name, '1');
+           engine.flush();
+
+           const player = engine.players[0] !;
            expect(element.style.width).not.toEqual('100px');
 
            player.finish();
@@ -540,53 +516,34 @@ export function main() {
       it('should default to using styling from the `*` state if a matching state is not found',
          () => {
            const engine = makeEngine();
-           const trig = makeTrigger('something', [
+           const trig = trigger('something', [
              state('a', style({opacity: 0})), state('*', style({opacity: .5})),
              transition('* => *', animate(1000))
            ]);
 
-           const instruction = trig.matchTransition('a', 'z') !;
-           engine.animateTransition(element, instruction).finish();
+           registerTrigger(element, engine, trig);
+           setProperty(element, engine, trig.name, 'a');
+           setProperty(element, engine, trig.name, 'z');
+           engine.flush();
 
+           engine.players[0].finish();
            expect(parseFloat(element.style.opacity)).toEqual(.5);
          });
 
       it('should treat `void` as `void`', () => {
         const engine = makeEngine();
-        const trig = makeTrigger('something', [
+        const trig = trigger('something', [
           state('a', style({opacity: 0})), state('void', style({opacity: .8})),
           transition('* => *', animate(1000))
         ]);
 
-        const instruction = trig.matchTransition('a', 'void') !;
-        engine.animateTransition(element, instruction).finish();
+        registerTrigger(element, engine, trig);
+        setProperty(element, engine, trig.name, 'a');
+        setProperty(element, engine, trig.name, 'void');
+        engine.flush();
 
+        engine.players[0].finish();
         expect(parseFloat(element.style.opacity)).toEqual(.8);
-      });
-    });
-
-    describe('timeline operations', () => {
-      it('should not destroy timeline-based animations after they have finished', () => {
-        const engine = makeEngine();
-
-        const log: string[] = [];
-        function capture(value: string) {
-          return () => { log.push(value); };
-        }
-
-        const instructions =
-            buildAnimationKeyframes([style({height: 0}), animate(1000, style({height: 500}))]);
-
-        const player = engine.animateTimeline(element, instructions);
-        player.onDone(capture('done'));
-        player.onDestroy(capture('destroy'));
-        expect(log).toEqual([]);
-
-        player.finish();
-        expect(log).toEqual(['done']);
-
-        player.destroy();
-        expect(log).toEqual(['done', 'destroy']);
       });
     });
 
@@ -595,49 +552,38 @@ export function main() {
          () => {
            const engine = makeEngine(new SuffixNormalizer('-normalized'));
 
-           const trig = makeTrigger('something', [
+           const trig = trigger('something', [
              state('on', style({height: 100})), state('off', style({height: 0})),
              transition('on => off', animate(9876))
            ]);
 
-           const instruction = trig.matchTransition('on', 'off') !;
-           const player = <MockAnimationPlayer>engine.animateTransition(element, instruction);
+           registerTrigger(element, engine, trig);
+           setProperty(element, engine, trig.name, 'on');
+           setProperty(element, engine, trig.name, 'off');
+           engine.flush();
 
+           const player = MockAnimationDriver.log.pop() as MockAnimationPlayer;
            expect(player.keyframes).toEqual([
              {'height-normalized': '100-normalized', offset: 0},
              {'height-normalized': '0-normalized', offset: 1}
            ]);
          });
 
-      it('should normalize the style values that are animateTransitioned within an a timeline animation',
-         () => {
-           const engine = makeEngine(new SuffixNormalizer('-normalized'));
-
-           const instructions = buildAnimationKeyframes([
-             style({width: '333px'}),
-             animate(1000, style({width: '999px'})),
-           ]);
-
-           const player = <MockAnimationPlayer>engine.animateTimeline(element, instructions);
-           expect(player.keyframes).toEqual([
-             {'width-normalized': '333px-normalized', offset: 0},
-             {'width-normalized': '999px-normalized', offset: 1}
-           ]);
-         });
-
       it('should throw an error when normalization fails within a transition animation', () => {
         const engine = makeEngine(new ExactCssValueNormalizer({left: '100px'}));
 
-        const trig = makeTrigger('something', [
+        const trig = trigger('something', [
           state('a', style({left: '0px', width: '200px'})),
           state('b', style({left: '100px', width: '100px'})), transition('a => b', animate(9876))
         ]);
 
-        const instruction = trig.matchTransition('a', 'b') !;
+        registerTrigger(element, engine, trig);
+        setProperty(element, engine, trig.name, 'a');
+        setProperty(element, engine, trig.name, 'b');
 
         let errorMessage = '';
         try {
-          engine.animateTransition(element, instruction);
+          engine.flush();
         } catch (e) {
           errorMessage = e.toString();
         }
@@ -652,15 +598,18 @@ export function main() {
       it('should perform insert operations immediately ', () => {
         const engine = makeEngine();
 
-        let container = <any>el('<div></div>');
-        let child1 = <any>el('<div></div>');
-        let child2 = <any>el('<div></div>');
+        const child1 = document.createElement('div');
+        const child2 = document.createElement('div');
+        element.appendChild(child1);
+        element.appendChild(child2);
 
-        engine.onInsert(container, () => container.appendChild(child1));
-        engine.onInsert(container, () => container.appendChild(child2));
+        element.appendChild(child1);
+        engine.insertNode(DEFAULT_NAMESPACE_ID, child1, element, true);
+        element.appendChild(child2);
+        engine.insertNode(DEFAULT_NAMESPACE_ID, child2, element, true);
 
-        expect(container.contains(child1)).toBe(true);
-        expect(container.contains(child2)).toBe(true);
+        expect(element.contains(child1)).toBe(true);
+        expect(element.contains(child2)).toBe(true);
       });
     });
   });
@@ -699,4 +648,28 @@ class ExactCssValueNormalizer extends AnimationStyleNormalizer {
     }
     return expectedValue;
   }
+}
+
+function registerTrigger(
+    element: any, engine: TransitionAnimationEngine, metadata: AnimationTriggerMetadata,
+    id: string = DEFAULT_NAMESPACE_ID) {
+  const errors: any[] = [];
+  const name = metadata.name;
+  const ast = buildAnimationAst(metadata as AnimationMetadata, errors) as TriggerAst;
+  if (errors.length) {
+  }
+  const trigger = buildTrigger(name, ast);
+  engine.register(id, element, name, trigger)
+}
+
+function setProperty(
+    element: any, engine: TransitionAnimationEngine, property: string, value: any,
+    id: string = DEFAULT_NAMESPACE_ID) {
+  engine.trigger(id, element, property, value);
+}
+
+function listen(
+    element: any, engine: TransitionAnimationEngine, eventName: string, phaseName: string,
+    callback: (event: any) => any, id: string = DEFAULT_NAMESPACE_ID) {
+  return engine.listen(id, element, eventName, phaseName, callback);
 }

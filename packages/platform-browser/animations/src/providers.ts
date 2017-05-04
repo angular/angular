@@ -6,14 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationDriver, ɵAnimationEngine as AnimationEngine, ɵAnimationStyleNormalizer as AnimationStyleNormalizer, ɵDomAnimationEngine as DomAnimationEngine, ɵNoopAnimationDriver as NoopAnimationDriver, ɵNoopAnimationEngine as NoopAnimationEngine, ɵWebAnimationsDriver as WebAnimationsDriver, ɵWebAnimationsStyleNormalizer as WebAnimationsStyleNormalizer, ɵsupportsWebAnimations as supportsWebAnimations} from '@angular/animations/browser';
+import {AnimationBuilder} from '@angular/animations';
+import {AnimationDriver, ɵAnimationEngine as AnimationEngine, ɵAnimationStyleNormalizer as AnimationStyleNormalizer, ɵDomAnimationEngine as DomAnimationEngine, ɵNoopAnimationDriver as NoopAnimationDriver, ɵNoopAnimationEngine as NoopAnimationEngine, ɵNoopAnimationStyleNormalizer as NoopAnimationStyleNormalizer, ɵWebAnimationsDriver as WebAnimationsDriver, ɵWebAnimationsStyleNormalizer as WebAnimationsStyleNormalizer, ɵsupportsWebAnimations as supportsWebAnimations} from '@angular/animations/browser';
 import {Injectable, NgZone, Provider, RendererFactory2} from '@angular/core';
 import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
 
+import {BrowserAnimationBuilder, NoopAnimationBuilder} from './animation_builder';
 import {AnimationRendererFactory} from './animation_renderer';
 
 @Injectable()
 export class InjectableAnimationEngine extends DomAnimationEngine {
+  constructor(driver: AnimationDriver, normalizer: AnimationStyleNormalizer) {
+    super(driver, normalizer);
+  }
+}
+
+@Injectable()
+export class InjectableNoopAnimationEngine extends NoopAnimationEngine {
   constructor(driver: AnimationDriver, normalizer: AnimationStyleNormalizer) {
     super(driver, normalizer);
   }
@@ -40,6 +49,7 @@ export function instantiateRendererFactory(
  * include them in the BrowserModule.
  */
 export const BROWSER_ANIMATIONS_PROVIDERS: Provider[] = [
+  {provide: AnimationBuilder, useClass: NoopAnimationBuilder},
   {provide: AnimationDriver, useFactory: instantiateSupportedAnimationDriver},
   {provide: AnimationStyleNormalizer, useFactory: instantiateDefaultStyleNormalizer},
   {provide: AnimationEngine, useClass: InjectableAnimationEngine}, {
@@ -54,7 +64,14 @@ export const BROWSER_ANIMATIONS_PROVIDERS: Provider[] = [
  * include them in the BrowserTestingModule.
  */
 export const BROWSER_NOOP_ANIMATIONS_PROVIDERS: Provider[] = [
-  {provide: AnimationEngine, useClass: NoopAnimationEngine}, {
+  {provide: AnimationBuilder, useClass: BrowserAnimationBuilder},
+  {provide: AnimationDriver, useClass: NoopAnimationDriver},
+  {provide: AnimationStyleNormalizer, useFactory: instantiateDefaultStyleNormalizer}, {
+    provide: AnimationEngine,
+    useClass: NoopAnimationEngine,
+    deps: [AnimationDriver, AnimationStyleNormalizer]
+  },
+  {
     provide: RendererFactory2,
     useFactory: instantiateRendererFactory,
     deps: [DomRendererFactory2, AnimationEngine, NgZone]

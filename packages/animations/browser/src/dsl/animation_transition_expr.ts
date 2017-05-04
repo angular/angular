@@ -57,8 +57,16 @@ function parseAnimationAlias(alias: string, errors: string[]): string {
 
 function makeLambdaFromStates(lhs: string, rhs: string): TransitionMatcherFn {
   return (fromState: any, toState: any): boolean => {
-    const lhsMatch = lhs == ANY_STATE || lhs == fromState;
-    const rhsMatch = rhs == ANY_STATE || rhs == toState;
+    let lhsMatch = lhs == ANY_STATE || lhs == fromState;
+    let rhsMatch = rhs == ANY_STATE || rhs == toState;
+
+    if (!lhsMatch && typeof fromState === 'boolean') {
+      lhsMatch = fromState ? lhs === 'true' : lhs === 'false';
+    }
+    if (!rhsMatch && typeof toState === 'boolean') {
+      rhsMatch = toState ? rhs === 'true' : rhs === 'false';
+    }
+
     return lhsMatch && rhsMatch;
   };
 }
