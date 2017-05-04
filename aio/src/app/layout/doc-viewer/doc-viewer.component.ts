@@ -102,7 +102,7 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
       title = titleEl.innerText.trim();
       if (!/(no-toc|notoc)/i.test(titleEl.className)) {
         this.tocService.genToc(this.hostElement, docId);
-        titleEl.insertAdjacentHTML('afterend', '<aio-toc class="embedded"></aio-toc>');
+        titleEl.insertAdjacentHTML('afterend', '<aio-toc track-top="footer"></aio-toc>');
       }
     }
     this.titleService.setTitle(title ? `Angular - ${title}` : 'Angular');

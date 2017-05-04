@@ -391,8 +391,8 @@ describe('DocViewerComponent', () => {
         expect(getAioToc()).toBeTruthy();
       });
 
-      it('should have <aio-toc> with "embedded" class', () => {
-        expect(getAioToc().classList.contains('embedded')).toEqual(true);
+      it('should have <aio-toc> set up to track `footer`\'s top', () => {
+        expect(getAioToc().getAttribute('track-top')).toBe('footer');
       });
 
       it('should call Toc Service genToc()', () => {

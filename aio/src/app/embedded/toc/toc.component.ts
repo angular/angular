@@ -15,13 +15,18 @@ export class TocComponent implements OnInit {
   isEmbedded = false;
   private primaryMax = 4;
   tocList: TocItem[];
-  @HostBinding('style.top.px') scrollTop: number;
+
+  @HostBinding('style.bottom') bottom: string;
+  private elemTrackedForTop: Element;
+
 
   constructor(
     elementRef: ElementRef,
     private tocService: TocService) {
     const hostElement = elementRef.nativeElement;
     this.isEmbedded = hostElement.className.indexOf('embedded') !== -1;
+
+    this.elemTrackedForTop = document.querySelector(hostElement.getAttribute('track-top'));
   }
 
   ngOnInit() {
@@ -41,8 +46,8 @@ export class TocComponent implements OnInit {
     this.isClosed = !this.isClosed;
   }
 
-  // @HostListener('window:scroll')
-  // private onScroll() {
-  //   this.scrollTop = window && window.pageYOffset;
-  // }
+  @HostListener('window:scroll')
+  private onScroll() {
+    this.bottom = this.elemTrackedForTop && `calc(100vh - ${this.elemTrackedForTop.getBoundingClientRect().top}px)`;
+  }
 }
