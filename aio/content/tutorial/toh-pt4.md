@@ -609,7 +609,7 @@ The Tour of Heroes has become more reusable using shared components and services
 The next goal is to create a dashboard, add menu links that route between the views, and format data in a template.
 As the app evolves, you'll discover how to design it to make it easier to grow and maintain.
 
-Read about the Angular component router and navigation among the views in the [next tutorial](tutorial/toh-pt5) page.
+Read about the Angular component router and navigation among the views in the [next tutorial](tutorial/toh-pt5 "Routing and Navigation") page.
 
 {@a slow}
 
