@@ -17,9 +17,8 @@
   "routing": {
     "index": "/index.html",
     "routes": {
-      "/": {
-        "prefix": true,
-        "onlyWithoutExtension": true
+      "/(?!e?plnkr)[^/.]*$": {
+        "match": "regex"
       }
     }
   }
