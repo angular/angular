@@ -26,7 +26,7 @@ export class MessageBundle {
       private _implicitAttrs: {[k: string]: string[]}, private _locale: string|null = null) {}
 
   updateFromTemplate(html: string, url: string, interpolationConfig: InterpolationConfig):
-      ParseError[]|null {
+      ParseError[] {
     const htmlParserResult = this._htmlParser.parse(html, url, true, interpolationConfig);
 
     if (htmlParserResult.errors.length) {
@@ -41,7 +41,7 @@ export class MessageBundle {
     }
 
     this._messages.push(...i18nParserResult.messages);
-    return null;
+    return [];
   }
 
   // Return the message in the internal format
