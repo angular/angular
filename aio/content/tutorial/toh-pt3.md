@@ -464,4 +464,4 @@ That's not sustainable.
 Data access should be refactored to a separate service
 and shared among the components that need data.
 
-You’ll learn to create services in the [next tutorial](tutorial/toh-pt4) page.
+You’ll learn to create services in the [next tutorial](tutorial/toh-pt4 "Services") page.

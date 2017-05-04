@@ -101,3 +101,5 @@ Each step is motivated with a requirement that you've likely
 met in many applications. Everything has a reason.
 
 Along the way, you'll become familiar with many of the core fundamentals of Angular.
+
+Start now by building a simple [hero editor](tutorial/toh-pt1 "The Hero Editor").

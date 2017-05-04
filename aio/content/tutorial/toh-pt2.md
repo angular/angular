@@ -463,4 +463,4 @@ Your app should look like this <live-example></live-example>.
 ## The road ahead
 You've expanded the Tour of Heroes app, but it's far from complete.
 An app shouldn't be one monolithic component.
-In the [next page](tutorial/toh-pt3), you'll split the app into subcomponents and make them work together.
+In the [next page](tutorial/toh-pt3 "Multiple Components"), you'll split the app into subcomponents and make them work together.
