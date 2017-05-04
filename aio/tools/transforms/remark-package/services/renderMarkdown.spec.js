@@ -49,6 +49,17 @@ describe('remark: renderMarkdown service', () => {
     expect(output).toEqual('<code-example>\n\n  **abc**\n\n  def\n</code-example>\n<code-tabs><code-pane>\n\n  **abc**\n\n  def\n</code-pane></code-tabs>\n');
   });
 
+  it('should handle recursive tags marked as unformatted', () => {
+    const content = '<code-example>\n\n  <code-example>\n\n  **abc**\n\n  def\n\n</code-example>\n\n</code-example>\n\nhij\n\n<code-example>\n\nklm</code-example>';
+    const output = renderMarkdown(content);
+    expect(output).toEqual('<code-example>\n\n  <code-example>\n\n  **abc**\n\n  def\n\n</code-example>\n\n</code-example>\n<p>hij</p>\n<code-example>\n\nklm</code-example>\n');
+  });
+
+  it('should raise an error if a tag marked as unformatted is not closed', () => {
+    const content = '<code-example path="xxx">\n\n  **abc**\n\n  def\n<code-example>\n\n\n\n  **abc**\n\n  def\n</code-example>';
+    expect(() => renderMarkdown(content)).toThrowError('Unmatched plain HTML block tag <code-example path="xxx">');
+  });
+
   it('should not remove spaces after anchor tags', () => {
     var input =
         'A aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa aaaaaaaaa aaaaaaaaaa aaaaaaaaaaa\n' +
