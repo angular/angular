@@ -29,7 +29,6 @@ function main() {
 
   Promise.resolve()
       .then(() => codeGenTest())
-      .then(() => codeGenTest(true))
       .then(() => i18nTest())
       .then(() => lazyRoutesTest())
       .then(() => {
@@ -43,9 +42,8 @@ function main() {
       });
 }
 
-function codeGenTest(forceError = false) {
+function codeGenTest() {
   const basePath = path.join(__dirname, '../ngtools_src');
-  const srcPath = path.join(__dirname, '../src');
   const project = path.join(basePath, 'tsconfig-build.json');
   const readResources: string[] = [];
   const wroteFiles: string[] = [];
@@ -61,9 +59,6 @@ function codeGenTest(forceError = false) {
   config.ngOptions.basePath = basePath;
 
   console.log(`>>> running codegen for ${project}`);
-  if (forceError) {
-    console.log(`>>> asserting that missingTranslation param with error value throws`);
-  }
   return __NGTOOLS_PRIVATE_API_2
       .codeGen({
         basePath,
@@ -72,10 +67,9 @@ function codeGenTest(forceError = false) {
         angularCompilerOptions: config.ngOptions,
 
         // i18n options.
-        i18nFormat: 'xlf',
-        i18nFile: path.join(srcPath, 'messages.fi.xlf'),
-        locale: 'fi',
-        missingTranslation: forceError ? 'error' : 'ignore',
+        i18nFormat: undefined,
+        i18nFile: undefined,
+        locale: undefined,
 
         readResource: (fileName: string) => {
           readResources.push(fileName);
@@ -107,17 +101,10 @@ function codeGenTest(forceError = false) {
 
         console.log(`done, no errors.`);
       })
-      .catch((e: Error) => {
-        if (forceError) {
-          assert(
-              e.message.match(`Missing translation for message`),
-              `Expected error message for missing translations`);
-          console.log(`done, error catched`);
-        } else {
-          console.error(e.stack);
-          console.error('Compilation failed');
-          throw e;
-        }
+      .catch((e: any) => {
+        console.error(e.stack);
+        console.error('Compilation failed');
+        throw e;
       });
 }
 
@@ -178,7 +165,7 @@ function i18nTest() {
 
         console.log(`done, no errors.`);
       })
-      .catch((e: Error) => {
+      .catch((e: any) => {
         console.error(e.stack);
         console.error('Extraction failed');
         throw e;
