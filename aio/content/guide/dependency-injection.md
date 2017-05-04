@@ -16,6 +16,8 @@ It's used so widely that almost everyone just calls it _DI_.
 This page covers what DI is, why it's so useful,
 and [how to use it](guide/dependency-injection#angular-di) in an Angular app.
 
+<!--
+
 # Contents
 
 * [Why dependency injection?](guide/dependency-injection#why-di)
@@ -50,6 +52,8 @@ and [how to use it](guide/dependency-injection#angular-di) in an Angular app.
 * [Optional dependencies](guide/dependency-injection#optional)
 * [Summary](guide/dependency-injection#summary)
 * [Appendix: Working with injectors directly](guide/dependency-injection#explicit-injector)
+
+-->
 
 Run the <live-example></live-example>.
 

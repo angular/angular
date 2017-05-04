@@ -10,7 +10,7 @@ This cookbook describes how to radically improve performance by compiling _ahead
 during a build process.
 
 {@a toc}
-
+<!--
 # Contents
 
 * [Overview](guide/aot-compiler#overview)
@@ -32,6 +32,8 @@ during a build process.
   * [Tree shaking](guide/aot-compiler#shaking)
   * [Running the application](guide/aot-compiler#running-app)
   * [Inspect the Bundle](guide/aot-compiler#inspect-bundle)
+
+-->
 
 {@a overview}
 

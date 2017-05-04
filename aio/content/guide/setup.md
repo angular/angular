@@ -19,6 +19,9 @@ maintained [on github](https://github.com/angular/quickstart "Install the github
 
 
 Make sure you have [node and npm installed](guide/setup#install-prerequisites "What if you don't have node and npm?").
+
+<!--
+
 Then ...
 
 1. Create a project folder (you can call it `quickstart` and rename it later).
@@ -26,6 +29,7 @@ Then ...
 1. Install [npm](guide/setup#install-prerequisites "What if you don't have node and npm?") packages.
 1. Run `npm start` to launch the sample application.
 
+-->
 
 {@a clone}
 

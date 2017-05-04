@@ -19,6 +19,8 @@ Angular has a powerful template engine that lets us easily manipulate the DOM st
 This guide looks at how Angular manipulates the DOM with **structural directives** and
 how you can write your own structural directives to do the same thing.
 
+<!--
+
 ### Table of contents
 
 * [What are structural directives?](guide/structural-directives#definition)
@@ -36,6 +38,7 @@ how you can write your own structural directives to do the same thing.
 * [Group sibling elements with &lt;ng-container&gt;](guide/structural-directives#ng-container)
 * [Write a structural directive](guide/structural-directives#unless)
 
+-->
 
 Try the <live-example></live-example>.
 

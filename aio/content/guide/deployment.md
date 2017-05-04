@@ -12,6 +12,7 @@ This page describes tools and techniques for deploy and optimize your Angular ap
 
 {@a toc}
 
+<!--
 
 ## Table of contents
 
@@ -31,6 +32,7 @@ This page describes tools and techniques for deploy and optimize your Angular ap
   * [Routed apps must fallback to `index.html`](guide/deployment#fallback)
   * [CORS: requesting services from a different server](guide/deployment#cors)
 
+-->
 
 {@a overview}
 
