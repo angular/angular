@@ -32,6 +32,8 @@ business, because the work can be done collaboratively and spread over
 a period of time. The `upgrade` module in Angular has been designed to
 make incremental upgrading seamless.
 
+<!--
+
 1. [Preparation](guide/upgrade#preparation)
 
     1. [Follow the Angular Style Guide](guide/upgrade#follow-the-angular-styleguide)
@@ -65,7 +67,7 @@ make incremental upgrading seamless.
 
 3. [Appendix: Upgrading PhoneCat Tests](guide/upgrade#appendix-upgrading-phonecat-tests)
 
-
+-->
 
 ## Preparation
 

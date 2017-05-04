@@ -27,6 +27,8 @@ The agency is constantly tinkering with the application process.
 You can create the forms on the fly *without changing the application code*.
 {@a toc}
 
+<!--
+
 # Contents
  * [Bootstrap](guide/dynamic-form#bootstrap)
  * [Question model](guide/dynamic-form#object-model)
@@ -34,6 +36,7 @@ You can create the forms on the fly *without changing the application code*.
  * [Questionnaire data](guide/dynamic-form#questionnaire-data)
  * [Dynamic template](guide/dynamic-form#dynamic-template)
 
+-->
 
 See the <live-example name="dynamic-form"></live-example>.
 

@@ -33,6 +33,7 @@ You can navigate imperatively when the user clicks a button, selects from a drop
 or in response to some other stimulus from any source. And the router logs activity
 in the browser's history journal so the back and forward buttons work as well.
 
+<!--
 
 # Contents
 
@@ -133,7 +134,7 @@ in the browser's history journal so the back and forward buttons work as well.
   * [Appendix: *LocationStrategy* and browser URL styles](guide/router#location-strategy)
 
 
-
+-->
 
 
 {@a basics}

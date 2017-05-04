@@ -10,6 +10,7 @@ Attribute directives attach behavior to elements.
 
 An **Attribute** directive changes the appearance or behavior of a DOM element.
 
+<!--
 # Contents
 
 * [Directives overview](guide/attribute-directives#directive-overview)
@@ -18,6 +19,8 @@ An **Attribute** directive changes the appearance or behavior of a DOM element.
 * [Respond to user-initiated events](guide/attribute-directives#respond-to-user)
 * [Pass values into the directive with an _@Input_ data binding](guide/attribute-directives#bindings)
 * [Bind to a second property](guide/attribute-directives#second-property)
+
+-->
 
 Try the <live-example title="Attribute Directive example"></live-example>.
 

@@ -24,7 +24,7 @@ These FAQs assume that you have read the [NgModules](guide/ngmodule) page.
 
 </div>
 
-
+<!--
 
 Declarations
 
@@ -78,7 +78,7 @@ General
 
 <hr/>
 
-
+-->
 
 {@a q-what-to-declare}
 
