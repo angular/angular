@@ -1,4 +1,4 @@
-# Contribute to Angular
+<h1 class="no-toc">Contribute to Angular</h1>
 
 Help us build the framework of the future!
 
