@@ -36,29 +36,34 @@
     }
 }
 
-.api-type-label {
+
+.api-header label {
     border-radius: 4px;
     padding: 4px 16px;
-    background-color: $accentblue;
     display: inline;
-    margin: 0 16px;
-
-    @each $name, $symbol in $api-symbols {
-        &.#{$name} {
-            background: map-get($symbol, background);
-        }
-    }
-
+    font-size: 14px;
+    color: white;
+    margin: 0 8px 0 16px;
+    font-weight: 500;
+    text-transform: uppercase;
+    
     @media screen and (max-width: 600px) {
         display: block;
         margin: 8px 0;
     }
 
-    label {
-        font-size: 14px;
-        color: white;
-        font-weight: 500;
-        text-transform: uppercase;
+    &.api-status-label {
+        background-color: $mediumgray;
     }
 
+    &.api-type-label {
+        background-color: $accentblue;
+
+        @each $name, $symbol in $api-symbols {
+            &.#{$name} {
+                background: map-get($symbol, background);
+            }
+        }
+
+    }
 }
