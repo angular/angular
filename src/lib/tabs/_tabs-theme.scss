@@ -7,7 +7,7 @@
   $warn: map-get($theme, warn);
   $background: map-get($theme, background);
   $foreground: map-get($theme, foreground);
-  $header-border: 1px solid mat-color($background, status-bar);
+  $header-border: 1px solid mat-color($foreground, divider);
 
   .mat-tab-nav-bar,
   .mat-tab-header {
@@ -31,7 +31,7 @@
   }
 
   .mat-tab-label, .mat-tab-link {
-    color: currentColor;
+    color: mat-color($foreground, text);
 
     &.mat-tab-disabled {
       color: mat-color($foreground, disabled-text);
