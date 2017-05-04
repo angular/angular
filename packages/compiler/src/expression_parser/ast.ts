@@ -227,6 +227,29 @@ export interface AstVisitor {
   visitQuote(ast: Quote, context: any): any;
   visitSafeMethodCall(ast: SafeMethodCall, context: any): any;
   visitSafePropertyRead(ast: SafePropertyRead, context: any): any;
+  visit?(ast: AST, context?: any): any;
+}
+
+export class NullAstVisitor {
+  visitBinary(ast: Binary, context: any): any {}
+  visitChain(ast: Chain, context: any): any {}
+  visitConditional(ast: Conditional, context: any): any {}
+  visitFunctionCall(ast: FunctionCall, context: any): any {}
+  visitImplicitReceiver(ast: ImplicitReceiver, context: any): any {}
+  visitInterpolation(ast: Interpolation, context: any): any {}
+  visitKeyedRead(ast: KeyedRead, context: any): any {}
+  visitKeyedWrite(ast: KeyedWrite, context: any): any {}
+  visitLiteralArray(ast: LiteralArray, context: any): any {}
+  visitLiteralMap(ast: LiteralMap, context: any): any {}
+  visitLiteralPrimitive(ast: LiteralPrimitive, context: any): any {}
+  visitMethodCall(ast: MethodCall, context: any): any {}
+  visitPipe(ast: BindingPipe, context: any): any {}
+  visitPrefixNot(ast: PrefixNot, context: any): any {}
+  visitPropertyRead(ast: PropertyRead, context: any): any {}
+  visitPropertyWrite(ast: PropertyWrite, context: any): any {}
+  visitQuote(ast: Quote, context: any): any {}
+  visitSafeMethodCall(ast: SafeMethodCall, context: any): any {}
+  visitSafePropertyRead(ast: SafePropertyRead, context: any): any {}
 }
 
 export class RecursiveAstVisitor implements AstVisitor {
@@ -389,4 +412,65 @@ export class AstTransformer implements AstVisitor {
   visitQuote(ast: Quote, context: any): AST {
     return new Quote(ast.span, ast.prefix, ast.uninterpretedExpression, ast.location);
   }
+}
+
+export function visitAstChildren(ast: AST, visitor: AstVisitor, context?: any) {
+  function visit(ast: AST) {
+    visitor.visit && visitor.visit(ast, context) || ast.visit(visitor, context);
+  }
+
+  function visitAll<T extends AST>(asts: T[]) { asts.forEach(visit); }
+
+  ast.visit({
+    visitBinary(ast) {
+      visit(ast.left);
+      visit(ast.right);
+    },
+    visitChain(ast) { visitAll(ast.expressions); },
+    visitConditional(ast) {
+      visit(ast.condition);
+      visit(ast.trueExp);
+      visit(ast.falseExp);
+    },
+    visitFunctionCall(ast) {
+      if (ast.target) {
+        visit(ast.target);
+      }
+      visitAll(ast.args);
+    },
+    visitImplicitReceiver(ast) {},
+    visitInterpolation(ast) { visitAll(ast.expressions); },
+    visitKeyedRead(ast) {
+      visit(ast.obj);
+      visit(ast.key);
+    },
+    visitKeyedWrite(ast) {
+      visit(ast.obj);
+      visit(ast.key);
+      visit(ast.obj);
+    },
+    visitLiteralArray(ast) { visitAll(ast.expressions); },
+    visitLiteralMap(ast) {},
+    visitLiteralPrimitive(ast) {},
+    visitMethodCall(ast) {
+      visit(ast.receiver);
+      visitAll(ast.args);
+    },
+    visitPipe(ast) {
+      visit(ast.exp);
+      visitAll(ast.args);
+    },
+    visitPrefixNot(ast) { visit(ast.expression); },
+    visitPropertyRead(ast) { visit(ast.receiver); },
+    visitPropertyWrite(ast) {
+      visit(ast.receiver);
+      visit(ast.value);
+    },
+    visitQuote(ast) {},
+    visitSafeMethodCall(ast) {
+      visit(ast.receiver);
+      visitAll(ast.args);
+    },
+    visitSafePropertyRead(ast) { visit(ast.receiver); },
+  });
 }
