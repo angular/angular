@@ -26,6 +26,8 @@ In Angular, the component plays the part of the controller/viewmodel, and the te
 
 {@a toc}
 
+<!--
+
 
 ### Contents
 
@@ -70,7 +72,7 @@ demonstrates all of the syntax and code snippets described in this guide.
 
 <hr/>
 
-
+-->
 
 {@a html}
 

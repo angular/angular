@@ -13,6 +13,7 @@ This guide explains reactive forms as you follow the steps to build a "Hero Deta
 
 {@a toc}
 
+<!--
 
 ## Contents
 
@@ -33,6 +34,8 @@ This guide explains reactive forms as you follow the steps to build a "Hero Deta
 * [Use _FormArray_ to present an array of _FormGroups_](guide/reactive-forms#form-array)
 * [Observe control changes](guide/reactive-forms#observe-control)
 * [Save form data](guide/reactive-forms#save)
+
+-->
 
 Try the <live-example plnkr="final" title="Reactive Forms (final) in Plunker">Reactive Forms live-example</live-example>.
 

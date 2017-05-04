@@ -18,7 +18,7 @@ of creating and maintaining a single root `AppModule` for the entire application
 
 This page covers NgModules in greater depth.
 
-<!-- CF: See my comment in the "Resolve directive conflicts" section below proposing renaming or reorganizing that section. -->
+<!-- CF: See my comment in the "Resolve directive conflicts" section below proposing renaming or reorganizing that section.
 
 * [Angular modularity](guide/ngmodule#angular-modularity "Add structure to the app with NgModule")
 * [The application root module](guide/ngmodule#root-module "The startup module that every app requires")

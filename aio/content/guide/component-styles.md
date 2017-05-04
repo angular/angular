@@ -17,6 +17,8 @@ with components, enabling a more modular design than regular stylesheets.
 
 This page describes how to load and apply these component styles.
 
+<!--
+
 ## Table Of Contents
 
 * [Using component styles](guide/component-styles#using-component-styles)
@@ -25,6 +27,8 @@ This page describes how to load and apply these component styles.
 * [Controlling view encapsulation: native, emulated, and none](guide/component-styles#view-encapsulation)
 * [Appendix 1: Inspecting the CSS generated in emulated view encapsulation](guide/component-styles#inspect-generated-css)
 * [Appendix 2: Loading styles with relative URLs](guide/component-styles#relative-urls)
+
+-->
 
 You can run the <live-example></live-example> in Plunker and download the code from there.
 

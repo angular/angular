@@ -19,6 +19,7 @@ by mapping AngularJS syntax to the equivalent Angular syntax.
 
 **See the Angular syntax in this <live-example name="ajs-quick-reference"></live-example>**.
 
+<!--
 ## Contents
 
 * [Template basics](guide/ajs-quick-reference#template-basics)&mdash;binding and local variables.
@@ -30,7 +31,7 @@ by mapping AngularJS syntax to the equivalent Angular syntax.
 * [Modules/controllers/components](guide/ajs-quick-reference#controllers-components)&mdash;*modules* in Angular are slightly different from *modules* in AngularJS, and *controllers* are *components* in Angular.
 
 * [Style sheets](guide/ajs-quick-reference#style-sheets)&mdash;more options for CSS than in AngularJS.
-
+-->
 
 
 ## Template basics

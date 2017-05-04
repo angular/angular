@@ -21,7 +21,7 @@ The final UI looks like this:
   <img src="generated/images/guide/displaying-data/final.png" alt="Final UI"></img>
 </figure>
 
-
+<!--
 
 # Contents
 
@@ -29,6 +29,7 @@ The final UI looks like this:
 * [Showing an array property with NgFor](guide/displaying-data#ngFor).
 * [Conditional display with NgIf](guide/displaying-data#ngIf).
 
+-->
 
 <div class="l-sub-section">
 

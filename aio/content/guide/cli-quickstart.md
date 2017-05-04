@@ -19,12 +19,16 @@ benefit _every_ Angular project.
 By the end of the chapter, you'll have a basic understanding of development with the CLI
 and a foundation for both these documentation samples and for real world applications.
 
+<!--
+
 You'll pursue these ends in the following high-level steps:
 
 1. [Set up](guide/cli-quickstart#devenv) the development environment.
 2. [Create](guide/cli-quickstart#create-proj) a new project and skeleton application.
 3. [Serve](guide/cli-quickstart#serve) the application.
 4. [Edit](guide/cli-quickstart#first-component) the application.
+
+-->
 
 And you can also <a href="generated/zips/cli-quickstart/cli-quickstart.zip" target="_blank">download the example.</a>
 

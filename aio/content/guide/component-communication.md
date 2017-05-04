@@ -11,6 +11,8 @@ This cookbook contains recipes for common component communication scenarios
 in which two or more components share information.
 {@a toc}
 
+<!--
+
 # Contents
 
 * [Pass data from parent to child with input binding](guide/component-communication#parent-to-child)
@@ -19,7 +21,7 @@ in which two or more components share information.
 * [Parent calls an `@ViewChild()`](guide/component-communication#parent-to-view-child)
 * [Parent and children communicate via a service](guide/component-communication#bidirectional-service)
 
-
+-->
 
 **See the <live-example name="component-communication"></live-example>**.
 
