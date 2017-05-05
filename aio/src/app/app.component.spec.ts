@@ -254,6 +254,24 @@ describe('AppComponent', () => {
     });
   });
 
+  describe('hostClasses', () => {
+    it('should set the css classes of the host container based on the current doc and navigation view', () => {
+      const host = fixture.debugElement;
+
+      locationService.go('guide/pipes');
+      fixture.detectChanges();
+      expect(host.properties['className']).toEqual('page-guide-pipes folder-guide view-SideNav');
+
+      locationService.go('features');
+      fixture.detectChanges();
+      expect(host.properties['className']).toEqual('page-features folder-features view-TopBar');
+
+      locationService.go('');
+      fixture.detectChanges();
+      expect(host.properties['className']).toEqual('page-home folder-home view-');
+    });
+  });
+
   describe('currentDocument', () => {
 
     it('should display a guide page (guide/pipes)', () => {
@@ -272,22 +290,6 @@ describe('AppComponent', () => {
       locationService.go('features');
       fixture.detectChanges();
       expect(docViewer.innerText).toMatch(/Features/i);
-    });
-
-    const marketingClassName = 'marketing';
-
-    it('should not have marketing CSS class on host element for a guide page (guide/pipes)', () => {
-      locationService.go('guide/pipes');
-      fixture.detectChanges();
-      const classes: string[] = fixture.nativeElement.className;
-      expect(classes).not.toContain(marketingClassName);
-    });
-
-    it('should have marketing CSS class on host element for a marketing page', () => {
-      locationService.go('features');
-      fixture.detectChanges();
-      const classes: string[] = fixture.nativeElement.className;
-      expect(classes).toContain(marketingClassName);
     });
 
     it('should update the document title', () => {
