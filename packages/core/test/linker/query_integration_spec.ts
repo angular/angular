@@ -536,6 +536,52 @@ export function main() {
         expect(q.query.length).toBe(0);
       });
 
+      // Note: This tests is just document our current behavior, which we do
+      // for performance reasons.
+      it('should not affected queries for projected templates if views are detached or moved', () => {
+        const template =
+            '<manual-projecting #q><ng-template let-x="x"><div [text]="x"></div></ng-template></manual-projecting>';
+        const view = createTestCmpAndDetectChanges(MyComp0, template);
+        const q = view.debugElement.children[0].references !['q'] as ManualProjecting;
+        expect(q.query.length).toBe(0);
+
+        const view1 = q.vc.createEmbeddedView(q.template, {'x': '1'});
+        const view2 = q.vc.createEmbeddedView(q.template, {'x': '2'});
+        view.detectChanges();
+        expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1', '2']);
+
+        q.vc.detach(1);
+        q.vc.detach(0);
+
+        view.detectChanges();
+        expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1', '2']);
+
+        q.vc.insert(view2);
+        q.vc.insert(view1);
+
+        view.detectChanges();
+        expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1', '2']);
+      });
+
+      it('should remove manually projected templates if their parent view is destroyed', () => {
+        const template = `
+          <manual-projecting #q><ng-template #tpl><div text="1"></div></ng-template></manual-projecting>
+          <div *ngIf="shouldShow">
+            <ng-container [ngTemplateOutlet]="tpl"></ng-container>
+          </div>
+        `;
+        const view = createTestCmp(MyComp0, template);
+        const q = view.debugElement.children[0].references !['q'];
+        view.componentInstance.shouldShow = true;
+        view.detectChanges();
+
+        expect(q.query.length).toBe(1);
+
+        view.componentInstance.shouldShow = false;
+        view.detectChanges();
+        expect(q.query.length).toBe(0);
+      });
+
       it('should not throw if a content template is queried and created in the view during change detection',
          () => {
            @Component(
