@@ -18,24 +18,36 @@ export function attachEmbeddedView(
   }
   view.viewContainerParent = parentView;
   addToArray(embeddedViews, viewIndex !, view);
-  const dvcElementData = declaredViewContainer(view);
-  if (dvcElementData && dvcElementData !== elementData) {
-    let projectedViews = dvcElementData.template._projectedViews;
-    if (!projectedViews) {
-      projectedViews = dvcElementData.template._projectedViews = [];
-    }
-    projectedViews.push(view);
-    if (view.parent) {
-      // Note: we are changing the NodeDef here as we cannot calculate
-      // the fact whether a template is used for projection during compilation.
-      markNodeAsProjectedTemplate(view.parent.def, view.parentNodeDef !);
-    }
-  }
+  attachProjectedView(elementData, view);
 
   Services.dirtyParentQueries(view);
 
   const prevView = viewIndex ! > 0 ? embeddedViews[viewIndex ! - 1] : null;
   renderAttachEmbeddedView(elementData, prevView, view);
+}
+
+function attachProjectedView(vcElementData: ElementData, view: ViewData) {
+  const dvcElementData = declaredViewContainer(view);
+  if (!dvcElementData || dvcElementData === vcElementData ||
+      view.state & ViewState.IsProjectedView) {
+    return;
+  }
+  // Note: For performance reasons, we
+  // - add a view to template._projectedViews only 1x throughout its lifetime,
+  //   and remove it not until the view is destroyed.
+  //   (hard, as when a parent view is attached/detached we would need to attach/detach all
+  //    nested projected views as well, even accross component boundaries).
+  // - don't track the insertion order of views in the projected views array
+  //   (hard, as when the views of the same template are inserted different view containers)
+  view.state |= ViewState.IsProjectedView;
+  let projectedViews = dvcElementData.template._projectedViews;
+  if (!projectedViews) {
+    projectedViews = dvcElementData.template._projectedViews = [];
+  }
+  projectedViews.push(view);
+  // Note: we are changing the NodeDef here as we cannot calculate
+  // the fact whether a template is used for projection during compilation.
+  markNodeAsProjectedTemplate(view.parent !.def, view.parentNodeDef !);
 }
 
 function markNodeAsProjectedTemplate(viewDef: ViewDefinition, nodeDef: NodeDef) {
@@ -63,17 +75,26 @@ export function detachEmbeddedView(elementData: ElementData, viewIndex?: number)
   view.viewContainerParent = null;
   removeFromArray(embeddedViews, viewIndex);
 
-  const dvcElementData = declaredViewContainer(view);
-  if (dvcElementData && dvcElementData !== elementData) {
-    const projectedViews = dvcElementData.template._projectedViews;
-    removeFromArray(projectedViews, projectedViews.indexOf(view));
-  }
-
+  // See attachProjectedView for why we don't update projectedViews here.
   Services.dirtyParentQueries(view);
 
   renderDetachView(view);
 
   return view;
+}
+
+export function detachProjectedView(view: ViewData) {
+  if (!(view.state & ViewState.IsProjectedView)) {
+    return;
+  }
+  const dvcElementData = declaredViewContainer(view);
+  if (dvcElementData) {
+    const projectedViews = dvcElementData.template._projectedViews;
+    if (projectedViews) {
+      removeFromArray(projectedViews, projectedViews.indexOf(view));
+      Services.dirtyParentQueries(view);
+    }
+  }
 }
 
 export function moveEmbeddedView(
