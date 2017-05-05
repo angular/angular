@@ -31,6 +31,7 @@ describe('AppComponent', () => {
 
   let docViewer: HTMLElement;
   let hamburger: HTMLButtonElement;
+  let http: TestHttp;
   let locationService: MockLocationService;
   let sidenav: HTMLElement;
 
@@ -256,6 +257,10 @@ describe('AppComponent', () => {
 
   describe('currentDocument', () => {
 
+    beforeEach(() => {
+      http = TestBed.get(Http);
+    });
+
     it('should display a guide page (guide/pipes)', () => {
       locationService.go('guide/pipes');
       fixture.detectChanges();
@@ -274,6 +279,22 @@ describe('AppComponent', () => {
       expect(docViewer.innerText).toMatch(/Features/i);
     });
 
+    it('should update the document title', () => {
+      const titleService = TestBed.get(Title);
+      spyOn(titleService, 'setTitle');
+      locationService.go('guide/pipes');
+      fixture.detectChanges();
+      expect(titleService.setTitle).toHaveBeenCalledWith('Angular - Pipes');
+    });
+
+    it('should update the document title, with a default value if the document has no title', () => {
+      const titleService = TestBed.get(Title);
+      spyOn(titleService, 'setTitle');
+      locationService.go('no-title');
+      fixture.detectChanges();
+      expect(titleService.setTitle).toHaveBeenCalledWith('Angular');
+    });
+
     const marketingClassName = 'marketing';
 
     it('should not have marketing CSS class on host element for a guide page (guide/pipes)', () => {
@@ -290,21 +311,28 @@ describe('AppComponent', () => {
       expect(classes).toContain(marketingClassName);
     });
 
-    it('should update the document title', () => {
-      const titleService = TestBed.get(Title);
-      spyOn(titleService, 'setTitle');
-      locationService.go('guide/pipes');
-      fixture.detectChanges();
-      expect(titleService.setTitle).toHaveBeenCalledWith('Angular - Pipes');
+    describe('when has <aio-context>', () => {
+
+      it('should have marketing context\'s CSS class on host element', () => {
+        http.contents = '<aio-context class="foo bar"></aio-context>';
+        locationService.go('features');
+        fixture.detectChanges();
+        const classes: string[] = fixture.nativeElement.className;
+        // Has "marketing" class as well as "foo bar"
+        expect(classes).toBe(marketingClassName + ' foo bar');
+      });
+
+      it('should have tutorial context\'s CSS on host element when <aio-context> is late in the doc', () => {
+        const fluff = 'abc'.repeat(100);
+        http.contents = fluff + '<aio-context class="foo bar">ignored stuff</aio-context>' + fluff;
+        locationService.go('tutorial/foo');
+        fixture.detectChanges();
+        const classes: string[] = fixture.nativeElement.className;
+        // No "marketing" class this time because is tutorial page
+        expect(classes).toBe('foo bar');
+      });
     });
 
-    it('should update the document title, with a default value if the document has no title', () => {
-      const titleService = TestBed.get(Title);
-      spyOn(titleService, 'setTitle');
-      locationService.go('no-title');
-      fixture.detectChanges();
-      expect(titleService.setTitle).toHaveBeenCalledWith('Angular');
-    });
   });
 
   describe('autoScrolling with AutoScrollService', () => {
@@ -484,6 +512,8 @@ class TestHttp {
     { title: 'v2', url: 'https://v2.angular.io' }
   ];
 
+  contents: string;
+
   // tslint:disable:quotemark
   navJson = {
     "TopBar": [
@@ -544,12 +574,15 @@ class TestHttp {
     if (/navigation\.json/.test(url)) {
       data = this.navJson;
     } else {
+      let contents = this.contents;
       const match = /generated\/docs\/(.+)\.json/.exec(url);
       const id = match[1];
-      // Make up a title for test purposes
-      const title = id.split('/').pop().replace(/^([a-z])/, (_, letter) => letter.toUpperCase());
-      const h1 = (id === 'no-title') ? '' : `<h1>${title}</h1>`;
-      const contents = `${h1}<h2 id="#somewhere">Some heading</h2>`;
+      if (contents === undefined) {
+        // Make up a title for test purposes
+        const title = id.split('/').pop().replace(/^([a-z])/, (_, letter) => letter.toUpperCase());
+        const h1 = (id === 'no-title') ? '' : `<h1>${title}</h1>`;
+        contents = `${h1}<h2 id="#somewhere">Some heading</h2>`;
+      }
       data = { id, contents };
     }
     return of({ json: () => data });

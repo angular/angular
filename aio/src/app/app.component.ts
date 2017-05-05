@@ -26,9 +26,6 @@ export class AppComponent implements OnInit {
   currentDocument: DocumentContents;
   footerNodes: NavigationNode[];
 
-  @HostBinding('class.marketing')
-  isMarketing = false;
-
   isStarting = true;
   isSideBySide = false;
   private isSideNavDoc = false;
@@ -60,6 +57,9 @@ export class AppComponent implements OnInit {
   @ViewChild(SearchResultsComponent)
   searchResults: SearchResultsComponent;
 
+  @HostBinding('class')
+  shellClasses = '';
+
   @ViewChild(MdSidenav)
   sidenav: MdSidenav;
 
@@ -79,6 +79,7 @@ export class AppComponent implements OnInit {
     this.documentService.currentDocument.subscribe(doc => {
       this.currentDocument = doc;
       this.setPageId(doc.id);
+      this.shellClasses = this.getShellClasses(doc);
     });
 
     this.locationService.currentPath.subscribe(path => {
@@ -98,7 +99,6 @@ export class AppComponent implements OnInit {
       if (this.previousNavView === currentNode.view) { return; }
       this.previousNavView = currentNode.view;
       this.isSideNavDoc = currentNode.view === sideNavView;
-      this.isMarketing = !this.isSideNavDoc;
       this.sideNavToggle(this.isSideNavDoc && this.isSideBySide);
     });
 
@@ -173,5 +173,18 @@ export class AppComponent implements OnInit {
   setPageId(id: string) {
     // Special case the home page
     this.pageId = (id === 'index') ? 'home' : id.replace('/', '-');
+  }
+
+  private getShellClasses(doc: DocumentContents) {
+    let shellClasses = /^(guide|tutorial)\//.test(doc.id) ? '' : 'marketing ';
+
+    const contents = doc.contents || '';
+    // extract the classes from `<aio-context>`
+    const contextMatch = contents.match(/<aio-context.*class="([^"]*)/);
+    if (contextMatch) {
+      shellClasses += contextMatch[1] || '';
+    }
+
+    return shellClasses;
   }
 }
