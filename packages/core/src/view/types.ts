@@ -329,9 +329,10 @@ export const enum ViewState {
   FirstCheck = 1 << 1,
   Attached = 1 << 2,
   ChecksEnabled = 1 << 3,
-  CheckProjectedView = 1 << 4,
-  CheckProjectedViews = 1 << 5,
-  Destroyed = 1 << 6,
+  IsProjectedView = 1 << 4,
+  CheckProjectedView = 1 << 5,
+  CheckProjectedViews = 1 << 6,
+  Destroyed = 1 << 7,
 
   CatDetectChanges = Attached | ChecksEnabled,
   CatInit = BeforeFirstCheck | CatDetectChanges
