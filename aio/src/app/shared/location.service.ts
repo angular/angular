@@ -15,11 +15,12 @@ export class LocationService {
   private urlSubject = new Subject<string>();
   currentUrl = this.urlSubject
     .map(url => this.stripSlashes(url))
-    .do(url => this.gaService.locationChanged(url))
     .publishReplay(1);
 
   currentPath = this.currentUrl
-    .map(url => url.match(/[^?#]*/)[0]); // strip query and hash
+    .map(url => url.match(/[^?#]*/)[0]) // strip query and hash
+    .do(url => this.gaService.locationChanged(url))
+    .publishReplay(1);
 
   constructor(
     private gaService: GaService,
@@ -27,6 +28,7 @@ export class LocationService {
     private platformLocation: PlatformLocation) {
 
     this.currentUrl.connect();
+    this.currentPath.connect();
     this.urlSubject.next(location.path(true));
 
     this.location.subscribe(state => {

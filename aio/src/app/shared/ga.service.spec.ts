@@ -84,7 +84,9 @@ describe('GaService', () => {
         expect(gaSpySendCalls()).toEqual(['/testUrl']);
       });
 
-      it('should send twice with same URL, back-to-back, when the hash changes', () => {
+      it('should send twice with same URL, back-to-back, even when the hash changes', () => {
+        // Therefore it is up to caller NOT to call it when hash changes if this is unwanted.
+        // See LocationService and its specs
         gaService.sendPage('testUrl#one');
         gaService.sendPage('testUrl#two');
         expect(gaSpySendCalls()).toEqual([
