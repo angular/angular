@@ -27,9 +27,7 @@ export class GaService {
   }
 
   sendPage(url: string) {
-    // Won't re-send if the url (including fragment) hasn't changed.
-    // TODO: Perhaps we don't want to track clicks on in-page links.
-    // Could easily report only when the page (base url) changes.
+    // Won't re-send if the url hasn't changed.
     if (url === this.previousUrl) { return; }
     this.previousUrl = url;
     this.ga('set', 'page', '/' + url);
