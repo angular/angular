@@ -355,14 +355,6 @@ describe('AppComponent', () => {
     });
   });
 
-  describe('search worker', () => {
-    it('should initialize the search worker', inject([SearchService], (searchService: SearchService) => {
-      fixture.detectChanges(); // triggers ngOnInit
-      expect(searchService.initWorker).toHaveBeenCalled();
-      expect(searchService.loadIndex).toHaveBeenCalled();
-    }));
-  });
-
   describe('initial rendering', () => {
     beforeEach(async(() => {
       createTestingModule('a/b');
