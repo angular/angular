@@ -8,7 +8,7 @@
   }
 }
 
-aio-shell.marketing {
+aio-shell:not(.view-SideNav) {
   md-sidenav-container.sidenav-container {
     max-width: none;
   }
