@@ -22,12 +22,32 @@ export class AppComponent implements OnInit {
   currentNode: CurrentNode;
   currentPath: string;
   dtOn = false;
+
+  /**
+   * An HTML friendly identifier for the currently displayed page.
+   * This is computed from the `currentDocument.id` by replacing `/` with `-`
+   */
   pageId: string;
+  /**
+   * An HTML friendly identifer for the "folder" of the currently displayed page.
+   * This is computed by taking everything up to the first `/` in the `currentDocument.id`
+   */
+  folderId: string;
+  /**
+   * These CSS classes are computed from the current state of the application
+   * (e.g. what document is being viewed) to allow for fine grain control over
+   * the styling of individual pages.
+   * You will get three classes:
+   *
+   * * `page-...`: computed from the current document id (e.g. news, guide-security, tutorial-toh-pt2)
+   * * `folder-...`: computed from the top level folder for an id (e.g. guide, tutorial, etc)
+   * * `view-...`: computef from the navigation view (e.g. SideNav, TopBar, etc)
+   */
+  @HostBinding('class')
+  hostClasses = '';
+
   currentDocument: DocumentContents;
   footerNodes: NavigationNode[];
-
-  @HostBinding('class.marketing')
-  isMarketing = false;
 
   isStarting = true;
   isSideBySide = false;
@@ -79,6 +99,8 @@ export class AppComponent implements OnInit {
     this.documentService.currentDocument.subscribe(doc => {
       this.currentDocument = doc;
       this.setPageId(doc.id);
+      this.setFolderId(doc.id);
+      this.updateHostClasses();
     });
 
     this.locationService.currentPath.subscribe(path => {
@@ -93,12 +115,12 @@ export class AppComponent implements OnInit {
 
     this.navigationService.currentNode.subscribe(currentNode => {
       this.currentNode = currentNode;
+      this.updateHostClasses();
 
       // Toggle the sidenav if side-by-side and the kind of view changed
       if (this.previousNavView === currentNode.view) { return; }
       this.previousNavView = currentNode.view;
       this.isSideNavDoc = currentNode.view === sideNavView;
-      this.isMarketing = !this.isSideNavDoc;
       this.sideNavToggle(this.isSideNavDoc && this.isSideBySide);
     });
 
@@ -173,5 +195,18 @@ export class AppComponent implements OnInit {
   setPageId(id: string) {
     // Special case the home page
     this.pageId = (id === 'index') ? 'home' : id.replace('/', '-');
+  }
+
+  setFolderId(id: string) {
+    // Special case the home page
+    this.folderId = (id === 'index') ? 'home' : id.split('/', 1)[0];
+  }
+
+  updateHostClasses() {
+    const pageClass = `page-${this.pageId}`;
+    const folderClass = `folder-${this.folderId}`;
+    const viewClass = `view-${this.currentNode && this.currentNode.view}`;
+
+    this.hostClasses = `${pageClass} ${folderClass} ${viewClass}`;
   }
 }
