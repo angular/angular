@@ -17,9 +17,12 @@
   }
 }
 
-.sidenav-container {
+.page-container {
   width: 100%;
   height: 100vh;
+  border: solid green 2px;
+  padding: 10px;
+  position: relative;
 }
 
 .sidenav-content button {
