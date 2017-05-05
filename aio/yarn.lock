@@ -121,9 +121,9 @@
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@angular/router/-/router-4.0.0.tgz#f4a2dc83b44e023db1d6f2c12ca5a37a22c66afc"
 
-"@angular/service-worker@^1.0.0-beta.10":
-  version "1.0.0-beta.10"
-  resolved "https://registry.yarnpkg.com/@angular/service-worker/-/service-worker-1.0.0-beta.10.tgz#273ef15e26b4ff87a1076d601b3087dabc8cc8d2"
+"@angular/service-worker@^1.0.0-beta.11":
+  version "1.0.0-beta.11"
+  resolved "https://registry.yarnpkg.com/@angular/service-worker/-/service-worker-1.0.0-beta.11.tgz#715840b704e3ce36fff84f9b809d754acc4d4d69"
   dependencies:
     base64-js "^1.1.2"
     jshashes "^1.0.5"
