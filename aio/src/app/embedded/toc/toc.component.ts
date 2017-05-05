@@ -1,4 +1,4 @@
-import { Component,  ElementRef, OnInit } from '@angular/core';
+import { Component,  ElementRef, HostBinding, HostListener, OnInit } from '@angular/core';
 
 import { TocItem, TocService } from 'app/shared/toc.service';
 
@@ -16,11 +16,17 @@ export class TocComponent implements OnInit {
   private primaryMax = 4;
   tocList: TocItem[];
 
+  @HostBinding('style.bottom') bottom: string;
+  private elemTrackedForTop: Element;
+
+
   constructor(
     elementRef: ElementRef,
     private tocService: TocService) {
     const hostElement = elementRef.nativeElement;
     this.isEmbedded = hostElement.className.indexOf('embedded') !== -1;
+
+    this.elemTrackedForTop = document.querySelector(hostElement.getAttribute('track-top'));
   }
 
   ngOnInit() {
@@ -38,5 +44,10 @@ export class TocComponent implements OnInit {
 
   toggle() {
     this.isClosed = !this.isClosed;
+  }
+
+  @HostListener('window:scroll')
+  private onScroll() {
+    this.bottom = this.elemTrackedForTop && `calc(100vh - ${this.elemTrackedForTop.getBoundingClientRect().top}px)`;
   }
 }

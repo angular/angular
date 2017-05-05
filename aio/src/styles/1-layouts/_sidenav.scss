@@ -31,18 +31,21 @@ md-sidenav.mat-sidenav.sidenav {
 md-sidenav-container.sidenav-container {
     min-height: 100%;
     height: auto !important;
-    max-width: 82%;
+    max-width: 100%;
     margin: 0;
     transform: none;
     padding-top: 64px;
-
-    @media (max-width: 800px) {
-      max-width: 100%;
-    }
 }
 
 md-sidenav-container div.mat-sidenav-content {
     height: auto;
+    padding-right: 18vw;
+    transform: none !important;
+
+    @media (max-width: 800px) {
+      padding-right: 0;
+      transform: translate3d(0, 0, 0) !important;
+    }
 }
 
 .vertical-menu-item {
