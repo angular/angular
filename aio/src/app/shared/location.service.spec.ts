@@ -517,6 +517,18 @@ describe('LocationService', () => {
       expect(args[0]).toBe('some-new-url');
     });
 
+    it('should call locationChanged with url stripped of hash or query', () => {
+      // Important to keep GA service from sending tracking event when the doc hasn't changed
+      // e.g., when the user navigates within the page via # fragments.
+      service.go('some-new-url#one');
+      service.go('some-new-url#two');
+      service.go('some-new-url/?foo="true"');
+      expect(gaLocationChanged.calls.count()).toBe(4, 'gaService.locationChanged called');
+      const args = gaLocationChanged.calls.allArgs();
+      expect(args[1]).toEqual(args[2], 'same url for hash calls');
+      expect(args[1]).toEqual(args[3], 'same url for query string call');
+    });
+
     it('should call locationChanged when window history changes', () => {
       location.simulatePopState('/next-url');
 
