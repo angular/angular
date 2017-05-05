@@ -9183,9 +9183,9 @@
       "dev": true
     },
     "typescript": {
-      "version": "2.1.5",
-      "from": "typescript@>=2.1.0 <2.2.0",
-      "resolved": "https://registry.npmjs.org/typescript/-/typescript-2.1.5.tgz",
+      "version": "2.2.1",
+      "from": "typescript@2.2.1",
+      "resolved": "https://registry.npmjs.org/typescript/-/typescript-2.2.1.tgz",
       "dev": true
     },
     "ua-parser-js": {
