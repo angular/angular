@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementData, Services, ViewData} from './types';
-import {RenderNodeAction, declaredViewContainer, renderNode, visitRootRenderNodes} from './util';
+import {ElementData, NodeDef, NodeFlags, Services, ViewData, ViewDefinition, ViewState} from './types';
+import {RenderNodeAction, declaredViewContainer, isComponentView, renderNode, visitRootRenderNodes} from './util';
 
 export function attachEmbeddedView(
     parentView: ViewData, elementData: ElementData, viewIndex: number | undefined | null,
@@ -25,12 +25,30 @@ export function attachEmbeddedView(
       projectedViews = dvcElementData.template._projectedViews = [];
     }
     projectedViews.push(view);
+    if (view.parent) {
+      // Note: we are changing the NodeDef here as we cannot calculate
+      // the fact whether a template is used for projection during compilation.
+      markNodeAsProjectedTemplate(view.parent.def, view.parentNodeDef !);
+    }
   }
 
   Services.dirtyParentQueries(view);
 
   const prevView = viewIndex ! > 0 ? embeddedViews[viewIndex ! - 1] : null;
   renderAttachEmbeddedView(elementData, prevView, view);
+}
+
+function markNodeAsProjectedTemplate(viewDef: ViewDefinition, nodeDef: NodeDef) {
+  if (nodeDef.flags & NodeFlags.ProjectedTemplate) {
+    return;
+  }
+  viewDef.nodeFlags |= NodeFlags.ProjectedTemplate;
+  nodeDef.flags |= NodeFlags.ProjectedTemplate;
+  let parentNodeDef = nodeDef.parent;
+  while (parentNodeDef) {
+    parentNodeDef.childFlags |= NodeFlags.ProjectedTemplate;
+    parentNodeDef = parentNodeDef.parent;
+  }
 }
 
 export function detachEmbeddedView(elementData: ElementData, viewIndex?: number): ViewData|null {

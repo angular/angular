@@ -117,6 +117,14 @@ export function markParentViewsForCheck(view: ViewData) {
   }
 }
 
+export function markParentViewsForCheckProjectedViews(view: ViewData, endView: ViewData) {
+  let currView: ViewData|null = view;
+  while (currView && currView !== endView) {
+    currView.state |= ViewState.CheckProjectedViews;
+    currView = currView.viewContainerParent || currView.parent;
+  }
+}
+
 export function dispatchEvent(
     view: ViewData, nodeIndex: number, eventName: string, event: any): boolean {
   const nodeDef = view.def.nodes[nodeIndex];
