@@ -137,7 +137,7 @@ from the main (upstream) repository:
 * Update your master with the latest upstream version:
 
     ```shell
-    git pull --ff upstream master
+    git pull --ff origin master
     ```
 
 ## <a name="rules"></a> Coding Rules
