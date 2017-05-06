@@ -12,7 +12,7 @@ import { TocItem, TocService } from 'app/shared/toc.service';
 export class TocComponent implements OnInit, OnDestroy {
 
   hasSecondary = false;
-  hasToc = true;
+  hasToc = false;
   isClosed = true;
   isEmbedded = false;
   private primaryMax = 4;
