@@ -55,6 +55,10 @@ describe('TocComponent', () => {
       expect(tocComponent.isEmbedded).toEqual(true);
     });
 
+    it('should not display a ToC initially', () => {
+      expect(tocComponent.hasToc).toBe(false);
+    });
+
     it('should not display anything when no TocItems', () => {
       tocService.tocList.next([]);
       fixture.detectChanges();
