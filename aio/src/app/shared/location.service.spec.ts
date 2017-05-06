@@ -296,6 +296,7 @@ describe('LocationService', () => {
       service.go('https://some/far/away/land');
       expect(localUrl).toBeFalsy('should not set local url');
     });
+
   });
 
   describe('search', () => {
@@ -378,117 +379,155 @@ describe('LocationService', () => {
 
     beforeEach(() => {
       anchor = document.createElement('a');
+      spyOn(service, 'go');
     });
 
-    describe('intercepting', () => {
-      it('should intercept clicks on anchors for relative local urls', () => {
+    describe('should try to navigate with go() when anchor clicked for', () => {
+      it('relative local url', () => {
         anchor.href = 'some/local/url';
-        spyOn(service, 'go');
-        const result = service.handleAnchorClick(anchor, 0, false, false);
+        const result = service.handleAnchorClick(anchor);
         expect(service.go).toHaveBeenCalledWith('/some/local/url');
         expect(result).toBe(false);
       });
 
-      it('should intercept clicks on anchors for absolute local urls', () => {
+      it('absolute local url', () => {
         anchor.href = '/some/local/url';
-        spyOn(service, 'go');
-        const result = service.handleAnchorClick(anchor, 0, false, false);
+        const result = service.handleAnchorClick(anchor);
         expect(service.go).toHaveBeenCalledWith('/some/local/url');
         expect(result).toBe(false);
       });
 
-      it('should intercept clicks on anchors for local urls, with query params', () => {
+      it('local url with query params', () => {
         anchor.href = 'some/local/url?query=xxx&other=yyy';
-        spyOn(service, 'go');
-        const result = service.handleAnchorClick(anchor, 0, false, false);
+        const result = service.handleAnchorClick(anchor);
         expect(service.go).toHaveBeenCalledWith('/some/local/url?query=xxx&other=yyy');
         expect(result).toBe(false);
       });
 
-      it('should intercept clicks on anchors for local urls, with hash fragment', () => {
+      it('local url with hash fragment', () => {
         anchor.href = 'some/local/url#somefragment';
-        spyOn(service, 'go');
-        const result = service.handleAnchorClick(anchor, 0, false, false);
+        const result = service.handleAnchorClick(anchor);
         expect(service.go).toHaveBeenCalledWith('/some/local/url#somefragment');
         expect(result).toBe(false);
       });
 
-      it('should intercept clicks on anchors for local urls, with query params and hash fragment', () => {
+      it('local url with query params and hash fragment', () => {
         anchor.href = 'some/local/url?query=xxx&other=yyy#somefragment';
-        spyOn(service, 'go');
-        const result = service.handleAnchorClick(anchor, 0, false, false);
+        const result = service.handleAnchorClick(anchor);
         expect(service.go).toHaveBeenCalledWith('/some/local/url?query=xxx&other=yyy#somefragment');
+        expect(result).toBe(false);
+      });
+
+      it('local url with period in a path segment but no extension', () => {
+        anchor.href = 'tut.or.ial/toh-p2';
+        const result = service.handleAnchorClick(anchor);
+        expect(service.go).toHaveBeenCalled();
         expect(result).toBe(false);
       });
     });
 
-    describe('not intercepting', () => {
-      it('should not intercept clicks on anchors for external urls', () => {
+    describe('should let browser handle anchor click when', () => {
+      it('url is external to the site', () => {
         anchor.href = 'http://other.com/some/local/url?query=xxx&other=yyy#somefragment';
-        spyOn(service, 'go');
-        let result = service.handleAnchorClick(anchor, 0, false, false);
+        let result = service.handleAnchorClick(anchor);
         expect(service.go).not.toHaveBeenCalled();
         expect(result).toBe(true);
 
         anchor.href = 'some/local/url.pdf';
         anchor.protocol = 'ftp';
-        result = service.handleAnchorClick(anchor, 0, false, false);
+        result = service.handleAnchorClick(anchor);
         expect(service.go).not.toHaveBeenCalled();
         expect(result).toBe(true);
       });
 
-      it('should not intercept clicks on anchors if button is not zero', () => {
+      it('mouse button is not zero (middle or right)', () => {
         anchor.href = 'some/local/url';
-        spyOn(service, 'go');
         const result = service.handleAnchorClick(anchor, 1, false, false);
         expect(service.go).not.toHaveBeenCalled();
         expect(result).toBe(true);
       });
 
-      it('should not intercept clicks on anchors if ctrl key is pressed', () => {
+      it('ctrl key is pressed', () => {
         anchor.href = 'some/local/url';
-        spyOn(service, 'go');
         const result = service.handleAnchorClick(anchor, 0, true, false);
         expect(service.go).not.toHaveBeenCalled();
         expect(result).toBe(true);
       });
 
-      it('should not intercept clicks on anchors if meta key is pressed', () => {
+      it('meta key is pressed', () => {
         anchor.href = 'some/local/url';
-        spyOn(service, 'go');
         const result = service.handleAnchorClick(anchor, 0, false, true);
         expect(service.go).not.toHaveBeenCalled();
         expect(result).toBe(true);
       });
 
-      it('should not intercept clicks on links with (non-_self) targets', () => {
+      it('anchor has (non-_self) target', () => {
         anchor.href = 'some/local/url';
-        spyOn(service, 'go');
-
         anchor.target = '_blank';
-        let result = service.handleAnchorClick(anchor, 0, false, false);
+        let result = service.handleAnchorClick(anchor);
         expect(service.go).not.toHaveBeenCalled();
         expect(result).toBe(true);
 
         anchor.target = '_parent';
-        result = service.handleAnchorClick(anchor, 0, false, false);
+        result = service.handleAnchorClick(anchor);
         expect(service.go).not.toHaveBeenCalled();
         expect(result).toBe(true);
 
         anchor.target = '_top';
-        result = service.handleAnchorClick(anchor, 0, false, false);
+        result = service.handleAnchorClick(anchor);
         expect(service.go).not.toHaveBeenCalled();
         expect(result).toBe(true);
 
         anchor.target = 'other-frame';
-        result = service.handleAnchorClick(anchor, 0, false, false);
+        result = service.handleAnchorClick(anchor);
         expect(service.go).not.toHaveBeenCalled();
         expect(result).toBe(true);
 
         anchor.target = '_self';
-        result = service.handleAnchorClick(anchor, 0, false, false);
+        result = service.handleAnchorClick(anchor);
         expect(service.go).toHaveBeenCalledWith('/some/local/url');
         expect(result).toBe(false);
+      });
+
+      it('zip url', () => {
+        anchor.href = 'tutorial/toh-p2.zip';
+        const result = service.handleAnchorClick(anchor);
+        expect(service.go).not.toHaveBeenCalled();
+        expect(result).toBe(true);
+      });
+
+      it('image or media url', () => {
+        anchor.href = 'cat-photo.png';
+        let result = service.handleAnchorClick(anchor);
+        expect(service.go).not.toHaveBeenCalled();
+        expect(result).toBe(true, 'png');
+
+        anchor.href = 'cat-photo.gif';
+        result = service.handleAnchorClick(anchor);
+        expect(service.go).not.toHaveBeenCalled();
+        expect(result).toBe(true, 'gif');
+
+        anchor.href = 'cat-photo.jpg';
+        result = service.handleAnchorClick(anchor);
+        expect(service.go).not.toHaveBeenCalled();
+        expect(result).toBe(true, 'jpg');
+
+        anchor.href = 'dog-bark.mp3';
+        result = service.handleAnchorClick(anchor);
+        expect(service.go).not.toHaveBeenCalled();
+        expect(result).toBe(true, 'mp3');
+
+        anchor.href = 'pet-tricks.mp4';
+        result = service.handleAnchorClick(anchor);
+        expect(service.go).not.toHaveBeenCalled();
+        expect(result).toBe(true, 'mp4');
+      });
+
+      it('url has any extension', () => {
+        anchor.href = 'tutorial/toh-p2.html';
+        const result = service.handleAnchorClick(anchor);
+        expect(service.go).not.toHaveBeenCalled();
+        expect(result).toBe(true);
       });
     });
   });

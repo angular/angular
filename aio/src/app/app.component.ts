@@ -188,8 +188,8 @@ export class AppComponent implements OnInit {
     while (target && !(target instanceof HTMLAnchorElement)) {
       target = target.parentElement;
     }
-    if (target) {
-      return this.locationService.handleAnchorClick(target as HTMLAnchorElement, button, ctrlKey, metaKey);
+    if (target instanceof HTMLAnchorElement) {
+      return this.locationService.handleAnchorClick(target, button, ctrlKey, metaKey);
     }
     return true;
   }

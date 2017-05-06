@@ -87,6 +87,14 @@ export class LocationService {
   }
 
   /**
+   * Handle user's anchor click
+   *
+   * @param anchor {HTMLAnchorElement} - the anchor element clicked
+   * @param button Number of the mouse button held down. 0 means left or none
+   * @param ctrlKey True if control key held down
+   * @param metaKey True if command or window key held down
+   * @return false if service navigated with `go()`; true if browser should handle it.
+   *
    * Since we are using `LocationService` to navigate between docs, without the browser
    * reloading the page, we must intercept clicks on links.
    * If the link is to a document that we will render, then we navigate using `Location.go()`
@@ -99,9 +107,10 @@ export class LocationService {
    * `AppComponent`, whose element contains all the of the application and so captures all
    * link clicks both inside and outside the `DocViewerComponent`.
    */
-  handleAnchorClick(anchor: HTMLAnchorElement, button: number, ctrlKey: boolean, metaKey: boolean) {
 
-    // Check for modifier keys, which indicate the user wants to control navigation
+  handleAnchorClick(anchor: HTMLAnchorElement, button = 0, ctrlKey = false, metaKey = false) {
+
+    // Check for modifier keys and non-left-button, which indicate the user wants to control navigation
     if (button !== 0 || ctrlKey || metaKey) {
       return true;
     }
@@ -114,19 +123,21 @@ export class LocationService {
       return true;
     }
 
-    // don't navigate if external link or zip
-    const { pathname, search, hash } = anchor;
-
     if (anchor.getAttribute('download') != null) {
       return true; // let the download happen
     }
 
+    const { pathname, search, hash } = anchor;
     const relativeUrl = pathname + search + hash;
     this.urlParser.href = relativeUrl;
-    if (anchor.href !== this.urlParser.href) {
+
+    // don't navigate if external link or has extension
+    if ( anchor.href !== this.urlParser.href ||
+         !/\/[^/.]*$/.test(pathname) ) {
       return true;
     }
 
+    // approved for navigation
     this.go(relativeUrl);
     return false;
   }
