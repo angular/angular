@@ -1,11 +1,14 @@
+code-example, code-tabs {
+    clear: both;
+    display: block;
+}
+
 code-example,
 code-tabs md-tab-body {
     background-color: rgba($backgroundgray, 0.2);
     border: 0.5px solid $lightgray;
     border-radius: 5px;
     color: $darkgray;
-    display: block;
-    padding: 8px 16px;
     margin: 16px auto;
 
     code {
@@ -25,7 +28,6 @@ code-example header {
   color: $offwhite;
   font-size: 16px;
   padding: 8px 16px;
-  margin: -17px;
 }
 
 code-example.avoid header,
@@ -55,8 +57,8 @@ code-tabs mat-tab-body-content .fadeIn {
 
 aio-code pre {
     display: flex;
-    padding: 0 48px 0 0;
     min-height: 32px;
+    margin: 16px;
     white-space: pre-wrap;
     align-items: center;
 
@@ -66,6 +68,7 @@ aio-code pre {
 }
 
 code ol {
+  margin: 0;
   font-family: $main-font;
   color: $lightgray;
 
@@ -73,12 +76,6 @@ code ol {
     margin: 0;
     font-family: $code-font;
     font-size: 90%;
-  }
-}
-
-aio-code.headed-code {
-  pre.prettyprint {
-    margin-top: 32px;
   }
 }
 
