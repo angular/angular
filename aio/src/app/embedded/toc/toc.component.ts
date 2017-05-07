@@ -13,17 +13,18 @@ export class TocComponent implements OnInit, OnDestroy {
 
   hasSecondary = false;
   hasToc = false;
+  hostElement: HTMLElement;
   isClosed = true;
   isEmbedded = false;
-  private primaryMax = 4;
   private onDestroy = new Subject();
+  private primaryMax = 4;
   tocList: TocItem[];
 
   constructor(
     elementRef: ElementRef,
     private tocService: TocService) {
-    const hostElement = elementRef.nativeElement;
-    this.isEmbedded = hostElement.className.indexOf('embedded') !== -1;
+    this.hostElement = elementRef.nativeElement;
+    this.isEmbedded = this.hostElement.className.indexOf('embedded') !== -1;
   }
 
   ngOnInit() {
@@ -48,7 +49,13 @@ export class TocComponent implements OnInit, OnDestroy {
     this.onDestroy.next();
   }
 
+  scrollToTop() {
+    this.hostElement.parentElement.scrollIntoView();
+    if (window && window.scrollBy) { window.scrollBy(0, -100); }
+  }
+
   toggle() {
     this.isClosed = !this.isClosed;
+    if (this.isClosed) { this.scrollToTop(); }
   }
 }

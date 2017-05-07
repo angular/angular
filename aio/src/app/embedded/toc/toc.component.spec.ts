@@ -111,10 +111,12 @@ describe('TocComponent', () => {
     });
 
     describe('when many TocItems', () => {
+      let scrollSpy: jasmine.Spy;
 
       beforeEach(() => {
         fixture.detectChanges();
         page = setPage();
+        scrollSpy = spyOn(tocComponent, 'scrollToTop');
       });
 
       it('should have more than 4 displayed items', () => {
@@ -149,7 +151,7 @@ describe('TocComponent', () => {
         expect(aSecondary.classes.secondary).toEqual(true, 'has secondary class');
       });
 
-      describe('after click expando button', () => {
+      describe('after click tocHeading button', () => {
 
         beforeEach(() => {
           page.tocHeadingButton.nativeElement.click();
@@ -163,6 +165,66 @@ describe('TocComponent', () => {
         it('should not have "closed" class', () => {
           expect(tocComponentDe.children[0].classes.closed).toBeFalsy();
         });
+
+        it('should not scroll', () => {
+          expect(scrollSpy).not.toHaveBeenCalled();
+        });
+
+        it('should be "closed" after clicking again', () => {
+          page.tocHeadingButton.nativeElement.click();
+          fixture.detectChanges();
+          expect(tocComponent.isClosed).toEqual(true);
+        });
+
+        it('should scroll after clicking again', () => {
+          page.tocHeadingButton.nativeElement.click();
+          fixture.detectChanges();
+          expect(scrollSpy).toHaveBeenCalled();
+        });
+
+        it('should be "closed" after clicking tocMoreButton', () => {
+          page.tocMoreButton.nativeElement.click();
+          fixture.detectChanges();
+          expect(tocComponent.isClosed).toEqual(true);
+        });
+      });
+
+      describe('after click tocMore button', () => {
+
+        beforeEach(() => {
+          page.tocMoreButton.nativeElement.click();
+          fixture.detectChanges();
+        });
+
+        it('should not be "closed"', () => {
+          expect(tocComponent.isClosed).toEqual(false);
+        });
+
+        it('should not have "closed" class', () => {
+          expect(tocComponentDe.children[0].classes.closed).toBeFalsy();
+        });
+
+        it('should not scroll', () => {
+          expect(scrollSpy).not.toHaveBeenCalled();
+        });
+
+        it('should be "closed" after clicking again', () => {
+          page.tocMoreButton.nativeElement.click();
+          fixture.detectChanges();
+          expect(tocComponent.isClosed).toEqual(true);
+        });
+
+        it('should scroll after clicking again', () => {
+          page.tocMoreButton.nativeElement.click();
+          fixture.detectChanges();
+          expect(scrollSpy).toHaveBeenCalled();
+        });
+
+        it('should be "closed" after clicking tocHeadingButton', () => {
+          page.tocHeadingButton.nativeElement.click();
+          fixture.detectChanges();
+          expect(tocComponent.isClosed).toEqual(true);
+        });
       });
     });
   });
@@ -174,6 +236,8 @@ describe('TocComponent', () => {
       fixture = TestBed.createComponent(HostNotEmbeddedTocComponent);
       tocComponentDe = fixture.debugElement.children[0];
       tocComponent = tocComponentDe.componentInstance;
+      tocService = TestBed.get(TocService);
+
       fixture.detectChanges();
       page = setPage();
     });
@@ -221,7 +285,6 @@ class TestTocService {
 }
 
 // tslint:disable:quotemark
-
 function getTestTocList() {
   return [
     {
