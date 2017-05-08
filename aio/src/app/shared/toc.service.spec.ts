@@ -1,10 +1,13 @@
 import { ReflectiveInjector, SecurityContext } from '@angular/core';
 import { DOCUMENT, DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { Subject } from 'rxjs/Subject';
 
+import { ScrollItem, ScrollSpyInfo, ScrollSpyService } from 'app/shared/scroll-spy.service';
 import { TocItem, TocService } from './toc.service';
 
 describe('TocService', () => {
   let injector: ReflectiveInjector;
+  let scrollSpyService: MockScrollSpyService;
   let tocService: TocService;
   let lastTocList: TocItem[];
 
@@ -20,8 +23,10 @@ describe('TocService', () => {
     injector = ReflectiveInjector.resolveAndCreate([
       { provide: DomSanitizer, useClass: TestDomSanitizer },
       { provide: DOCUMENT, useValue: document },
+      { provide: ScrollSpyService, useClass: MockScrollSpyService },
       TocService,
     ]);
+    scrollSpyService = injector.get(ScrollSpyService);
     tocService = injector.get(TocService);
     tocService.tocList.subscribe(tocList => lastTocList = tocList);
   });
@@ -59,6 +64,89 @@ describe('TocService', () => {
         [expectedValue1, expectedValue2],
         [expectedValue1, expectedValue2]
       ]);
+    });
+  });
+
+  describe('activeItemIndex', () => {
+    it('should emit the active heading index (or null)', () => {
+      const indices: (number | null)[] = [];
+
+      tocService.activeItemIndex.subscribe(i => indices.push(i));
+      callGenToc();
+
+      scrollSpyService.$lastInfo.active.next({index: 42} as ScrollItem);
+      scrollSpyService.$lastInfo.active.next({index: 0} as ScrollItem);
+      scrollSpyService.$lastInfo.active.next(null);
+      scrollSpyService.$lastInfo.active.next({index: 7} as ScrollItem);
+
+      expect(indices).toEqual([null, 42, 0, null, 7]);
+    });
+
+    it('should reset athe active index (and unspy) when calling `reset()`', () => {
+      const indices: (number | null)[] = [];
+
+      tocService.activeItemIndex.subscribe(i => indices.push(i));
+
+      callGenToc();
+      const unspy = scrollSpyService.$lastInfo.unspy;
+      scrollSpyService.$lastInfo.active.next({index: 42} as ScrollItem);
+
+      expect(unspy).not.toHaveBeenCalled();
+      expect(indices).toEqual([null, 42]);
+
+      tocService.reset();
+
+      expect(unspy).toHaveBeenCalled();
+      expect(indices).toEqual([null, 42, null]);
+    });
+
+    it('should reset the active index (and unspy) when a new `tocList` is requested', () => {
+      const indices: (number | null)[] = [];
+
+      tocService.activeItemIndex.subscribe(i => indices.push(i));
+
+      callGenToc();
+      const unspy1 = scrollSpyService.$lastInfo.unspy;
+      scrollSpyService.$lastInfo.active.next({index: 1} as ScrollItem);
+
+      expect(unspy1).not.toHaveBeenCalled();
+      expect(indices).toEqual([null, 1]);
+
+      tocService.genToc();
+
+      expect(unspy1).toHaveBeenCalled();
+      expect(indices).toEqual([null, 1, null]);
+
+      callGenToc();
+      const unspy2 = scrollSpyService.$lastInfo.unspy;
+      scrollSpyService.$lastInfo.active.next({index: 3} as ScrollItem);
+
+      expect(unspy2).not.toHaveBeenCalled();
+      expect(indices).toEqual([null, 1, null, null, 3]);
+
+      callGenToc();
+      scrollSpyService.$lastInfo.active.next({index: 4} as ScrollItem);
+
+      expect(unspy2).toHaveBeenCalled();
+      expect(indices).toEqual([null, 1, null, null, 3, null, 4]);
+    });
+
+    it('should emit the active index for the latest `tocList`', () => {
+      const indices: (number | null)[] = [];
+
+      tocService.activeItemIndex.subscribe(i => indices.push(i));
+
+      callGenToc();
+      const activeSubject1 = scrollSpyService.$lastInfo.active;
+      activeSubject1.next({index: 1} as ScrollItem);
+      activeSubject1.next({index: 2} as ScrollItem);
+
+      callGenToc();
+      const activeSubject2 = scrollSpyService.$lastInfo.active;
+      activeSubject2.next({index: 3} as ScrollItem);
+      activeSubject2.next({index: 4} as ScrollItem);
+
+      expect(indices).toEqual([null, 1, 2, null, 3, 4]);
     });
   });
 
@@ -260,3 +348,18 @@ class TestDomSanitizer {
       } as TestSafeHtml;
     });
 }
+
+class MockScrollSpyService {
+  $lastInfo: {
+    active: Subject<ScrollItem | null>,
+    unspy: jasmine.Spy
+  };
+
+  spyOn(headings: HTMLHeadingElement[]): ScrollSpyInfo {
+    return this.$lastInfo = {
+      active: new Subject<ScrollItem | null>(),
+      unspy: jasmine.createSpy('unspy'),
+    };
+  }
+}
+

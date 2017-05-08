@@ -2,6 +2,9 @@ import { Inject, Injectable } from '@angular/core';
 import { DOCUMENT, DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 
+import { ScrollSpyInfo, ScrollSpyService } from 'app/shared/scroll-spy.service';
+
+
 export interface TocItem {
   content: SafeHtml;
   href: string;
@@ -13,38 +16,39 @@ export interface TocItem {
 @Injectable()
 export class TocService {
   tocList = new ReplaySubject<TocItem[]>(1);
+  activeItemIndex = new ReplaySubject<number | null>(1);
+  private scrollSpyInfo: ScrollSpyInfo | null;
 
-  constructor(@Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer) { }
+  constructor(
+      @Inject(DOCUMENT) private document: any,
+      private domSanitizer: DomSanitizer,
+      private scrollSpyService: ScrollSpyService) { }
 
-  genToc(docElement: Element, docId = '') {
-    const tocList = [];
+  genToc(docElement?: Element, docId = '') {
+    this.resetScrollSpyInfo();
 
-    if (docElement) {
-      const headings = docElement.querySelectorAll('h2,h3');
-      const idMap = new Map<string, number>();
-
-      for (let i = 0; i < headings.length; i++) {
-        const heading = headings[i] as HTMLHeadingElement;
-
-        // skip if heading class is 'no-toc'
-        if (/(no-toc|notoc)/i.test(heading.className)) { continue; }
-
-        const id = this.getId(heading, idMap);
-        const toc: TocItem = {
-          content: this.extractHeadingSafeHtml(heading),
-          href: `${docId}#${id}`,
-          level: heading.tagName.toLowerCase(),
-          title: heading.innerText.trim(),
-        };
-
-        tocList.push(toc);
-      }
+    if (!docElement) {
+      this.tocList.next([]);
+      return;
     }
 
+    const headings = this.findTocHeadings(docElement);
+    const idMap = new Map<string, number>();
+    const tocList = headings.map(heading => ({
+      content: this.extractHeadingSafeHtml(heading),
+      href: `${docId}#${this.getId(heading, idMap)}`,
+      level: heading.tagName.toLowerCase(),
+      title: heading.innerText.trim(),
+    }));
+
     this.tocList.next(tocList);
+
+    this.scrollSpyInfo = this.scrollSpyService.spyOn(headings);
+    this.scrollSpyInfo.active.subscribe(item => this.activeItemIndex.next(item && item.index));
   }
 
   reset() {
+    this.resetScrollSpyInfo();
     this.tocList.next([]);
   }
 
@@ -59,6 +63,22 @@ export class TocService {
     // security: the document element which provides this heading content
     // is always authored by the documentation team and is considered to be safe
     return this.domSanitizer.bypassSecurityTrustHtml(a.innerHTML.trim());
+  }
+
+  private findTocHeadings(docElement: Element): HTMLHeadingElement[] {
+    const headings = docElement.querySelectorAll('h2,h3');
+    const skipNoTocHeadings = (heading: HTMLHeadingElement) => !/(?:no-toc|notoc)/i.test(heading.className);
+
+    return Array.prototype.filter.call(headings, skipNoTocHeadings);
+  }
+
+  private resetScrollSpyInfo() {
+    if (this.scrollSpyInfo) {
+      this.scrollSpyInfo.unspy();
+      this.scrollSpyInfo = null;
+    }
+
+    this.activeItemIndex.next(null);
   }
 
   // Extract the id from the heading; create one if necessary

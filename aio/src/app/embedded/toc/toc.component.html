@@ -14,7 +14,8 @@
   </button>
 
   <ul class="toc-list">
-    <li *ngFor="let toc of tocList" title="{{toc.title}}" class="{{toc.level}}" [class.secondary]="toc.isSecondary">
+    <li #tocItem *ngFor="let toc of tocList; let i = index" title="{{toc.title}}"
+      class="{{toc.level}}" [class.secondary]="toc.isSecondary" [class.active]="i === activeIndex">
       <a [href]="toc.href" [innerHTML]="toc.content"></a>
     </li>
   </ul>
