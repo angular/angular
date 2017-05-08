@@ -118,13 +118,13 @@ describe('AppComponent', () => {
         expect(sidenav.className).toMatch(/sidenav-clos/);
       });
 
-      it('should stay closed when nav to another guide page', () => {
+      it('should stay closed when nav from one guide page to another', () => {
         locationService.go('guide/bags');
         fixture.detectChanges();
         expect(sidenav.className).toMatch(/sidenav-clos/);
       });
 
-      it('should stay closed when nav to api page', () => {
+      it('should stay closed when nav from a guide page to api page', () => {
         locationService.go('api');
         fixture.detectChanges();
         expect(sidenav.className).toMatch(/sidenav-clos/);
@@ -184,16 +184,16 @@ describe('AppComponent', () => {
         expect(sidenav.className).toMatch(/sidenav-clos/);
       });
 
-      it('should stay open when nav to another guide page', () => {
+      it('should close when nav to another guide page', () => {
         locationService.go('guide/bags');
         fixture.detectChanges();
-        expect(sidenav.className).toMatch(/sidenav-open/);
+        expect(sidenav.className).toMatch(/sidenav-clos/);
       });
 
-      it('should stay open when nav to api page', () => {
+      it('should close when nav to api page', () => {
         locationService.go('api');
         fixture.detectChanges();
-        expect(sidenav.className).toMatch(/sidenav-open/);
+        expect(sidenav.className).toMatch(/sidenav-clos/);
       });
 
       it('should close again when nav to market page', () => {
