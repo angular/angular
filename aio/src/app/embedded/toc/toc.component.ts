@@ -2,6 +2,7 @@ import { Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/takeUntil';
 
+import { ScrollService } from 'app/shared/scroll.service';
 import { TocItem, TocService } from 'app/shared/toc.service';
 
 @Component({
@@ -21,6 +22,7 @@ export class TocComponent implements OnInit, OnDestroy {
   tocList: TocItem[];
 
   constructor(
+    private scrollService: ScrollService,
     elementRef: ElementRef,
     private tocService: TocService) {
     this.hostElement = elementRef.nativeElement;
@@ -49,13 +51,8 @@ export class TocComponent implements OnInit, OnDestroy {
     this.onDestroy.next();
   }
 
-  scrollToTop() {
-    this.hostElement.parentElement.scrollIntoView();
-    if (window && window.scrollBy) { window.scrollBy(0, -100); }
-  }
-
   toggle() {
     this.isClosed = !this.isClosed;
-    if (this.isClosed) { this.scrollToTop(); }
+    if (this.isClosed) { this.scrollService.scrollToTop(); }
   }
 }
