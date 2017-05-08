@@ -1,5 +1,7 @@
-import { Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
+import 'rxjs/add/observable/combineLatest';
 import 'rxjs/add/operator/takeUntil';
 
 import { ScrollService } from 'app/shared/scroll.service';
@@ -10,13 +12,15 @@ import { TocItem, TocService } from 'app/shared/toc.service';
   templateUrl: 'toc.component.html',
   styles: []
 })
-export class TocComponent implements OnInit, OnDestroy {
+export class TocComponent implements OnInit, AfterViewInit, OnDestroy {
 
+  activeIndex: number | null = null;
   hasSecondary = false;
   hasToc = false;
   hostElement: HTMLElement;
   isCollapsed = true;
   isEmbedded = false;
+  @ViewChildren('tocItem') private items: QueryList<ElementRef>;
   private onDestroy = new Subject();
   private primaryMax = 4;
   tocList: TocItem[];
@@ -32,7 +36,7 @@ export class TocComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.tocService.tocList
         .takeUntil(this.onDestroy)
-        .subscribe((tocList: TocItem[]) => {
+        .subscribe(tocList => {
           const count = tocList.length;
 
           this.hasToc = count > 0;
@@ -45,6 +49,34 @@ export class TocComponent implements OnInit, OnDestroy {
             }
           }
         });
+  }
+
+  ngAfterViewInit() {
+    if (!this.isEmbedded) {
+      this.tocService.activeItemIndex
+          .takeUntil(this.onDestroy)
+          .subscribe(index => this.activeIndex = index);
+
+      Observable.combineLatest(this.tocService.activeItemIndex, this.items.changes.startWith(this.items))
+          .takeUntil(this.onDestroy)
+          .subscribe(([index, items]) => {
+            if (index === null || index >= items.length) {
+              return;
+            }
+
+            const e = items.toArray()[index].nativeElement;
+            const p = e.offsetParent;
+
+            const eRect = e.getBoundingClientRect();
+            const pRect = p.getBoundingClientRect();
+
+            const isInViewport = (eRect.top >= pRect.top) && (eRect.bottom <= pRect.bottom);
+
+            if (!isInViewport) {
+              p.scrollTop += (eRect.top - pRect.top) - (p.clientHeight / 2);
+            }
+          });
+    }
   }
 
   ngOnDestroy() {
