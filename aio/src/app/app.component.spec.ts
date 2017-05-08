@@ -10,21 +10,21 @@ import { of } from 'rxjs/observable/of';
 
 import { AppComponent } from './app.component';
 import { AppModule } from './app.module';
-import { TocComponent } from 'app/embedded/toc/toc.component';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
-import { NavigationNode } from 'app/navigation/navigation.service';
-import { SearchService } from 'app/search/search.service';
-import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
-import { SearchResultsComponent } from 'app/search/search-results/search-results.component';
-import { AutoScrollService } from 'app/shared/auto-scroll.service';
 import { GaService } from 'app/shared/ga.service';
 import { LocationService } from 'app/shared/location.service';
 import { Logger } from 'app/shared/logger.service';
-import { SwUpdateNotificationsService } from 'app/sw-updates/sw-update-notifications.service';
 import { MockLocationService } from 'testing/location.service';
 import { MockLogger } from 'testing/logger.service';
 import { MockSearchService } from 'testing/search.service';
 import { MockSwUpdateNotificationsService } from 'testing/sw-update-notifications.service';
+import { NavigationNode } from 'app/navigation/navigation.service';
+import { ScrollService } from 'app/shared/scroll.service';
+import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
+import { SearchResultsComponent } from 'app/search/search-results/search-results.component';
+import { SearchService } from 'app/search/search.service';
+import { SwUpdateNotificationsService } from 'app/sw-updates/sw-update-notifications.service';
+import { TocComponent } from 'app/embedded/toc/toc.component';
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -319,12 +319,12 @@ describe('AppComponent', () => {
     });
   });
 
-  describe('autoScrolling with AutoScrollService', () => {
-    let scrollService: AutoScrollService;
+  describe('auto-scrolling', () => {
+    let scrollService: ScrollService;
     let scrollSpy: jasmine.Spy;
 
     beforeEach(() => {
-      scrollService = fixture.debugElement.injector.get(AutoScrollService);
+      scrollService = fixture.debugElement.injector.get(ScrollService);
       scrollSpy = spyOn(scrollService, 'scroll');
     });
 

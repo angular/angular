@@ -16,7 +16,6 @@ import { SwUpdatesModule } from 'app/sw-updates/sw-updates.module';
 
 import { AppComponent } from 'app/app.component';
 import { ApiService } from 'app/embedded/api/api.service';
-import { AutoScrollService } from 'app/shared/auto-scroll.service';
 import { CustomMdIconRegistry, SVG_ICONS } from 'app/shared/custom-md-icon-registry';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { DtComponent } from 'app/layout/doc-viewer/dt.component';
@@ -31,6 +30,7 @@ import { TopMenuComponent } from 'app/layout/top-menu/top-menu.component';
 import { FooterComponent } from 'app/layout/footer/footer.component';
 import { NavMenuComponent } from 'app/layout/nav-menu/nav-menu.component';
 import { NavItemComponent } from 'app/layout/nav-item/nav-item.component';
+import { ScrollService } from 'app/shared/scroll.service';
 import { SearchResultsComponent } from './search/search-results/search-results.component';
 import { SearchBoxComponent } from './search/search-box/search-box.component';
 import { TocService } from 'app/shared/toc.service';
@@ -84,7 +84,6 @@ export const svgIconProviders = [
   ],
   providers: [
     ApiService,
-    AutoScrollService,
     DocumentService,
     GaService,
     Logger,
@@ -93,8 +92,9 @@ export const svgIconProviders = [
     LocationService,
     { provide: MdIconRegistry, useClass: CustomMdIconRegistry },
     NavigationService,
-    SearchService,
     Platform,
+    ScrollService,
+    SearchService,
     svgIconProviders,
     TocService
   ],
