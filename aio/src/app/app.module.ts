@@ -31,6 +31,7 @@ import { FooterComponent } from 'app/layout/footer/footer.component';
 import { NavMenuComponent } from 'app/layout/nav-menu/nav-menu.component';
 import { NavItemComponent } from 'app/layout/nav-item/nav-item.component';
 import { ScrollService } from 'app/shared/scroll.service';
+import { ScrollSpyService } from 'app/shared/scroll-spy.service';
 import { SearchResultsComponent } from './search/search-results/search-results.component';
 import { SearchBoxComponent } from './search/search-box/search-box.component';
 import { TocService } from 'app/shared/toc.service';
@@ -94,6 +95,7 @@ export const svgIconProviders = [
     NavigationService,
     Platform,
     ScrollService,
+    ScrollSpyService,
     SearchService,
     svgIconProviders,
     TocService

@@ -12,6 +12,22 @@ export class ScrollService {
   private _topOffset: number;
   private _topOfPageElement: Element;
 
+  /** Offset from the top of the document to bottom of toolbar + some margin */
+  get topOffset() {
+    if (!this._topOffset) {
+      const toolbar = document.querySelector('md-toolbar.app-toolbar');
+      this._topOffset = (toolbar ? toolbar.clientHeight : 0) + topMargin;
+    }
+    return this._topOffset;
+  }
+
+  private get topOfPageElement() {
+    if (!this._topOfPageElement) {
+      this._topOfPageElement = this.document.getElementById('top-of-page') || this.document.body;
+    }
+    return this._topOfPageElement;
+  }
+
   constructor(
       @Inject(DOCUMENT) private document: any,
       private location: PlatformLocation) { }
@@ -50,21 +66,5 @@ export class ScrollService {
    */
   private getCurrentHash() {
     return this.location.hash.replace(/^#/, '');
-  }
-
-  /** Offset from the top of the document to bottom of toolbar + some margin */
-  private get topOffset() {
-    if (!this._topOffset) {
-      const toolbar = document.querySelector('md-toolbar.app-toolbar');
-      this._topOffset = (toolbar ? toolbar.clientHeight : 0) + topMargin;
-    }
-    return this._topOffset;
-  }
-
-  private get topOfPageElement() {
-    if (!this._topOfPageElement) {
-      this._topOfPageElement = this.document.getElementById('top-of-page') || this.document.body;
-    }
-    return this._topOfPageElement;
   }
 }
