@@ -496,7 +496,7 @@ those callbacks like this:
 
 
 
-The callbacks receive an `AnimationEvent` that contains contains useful properties such as
+The callbacks receive an `AnimationEvent` that contains useful properties such as
 `fromState`, `toState` and `totalTime`.
 
 Those callbacks will fire whether or not an animation is picked up.
