@@ -1862,6 +1862,71 @@ export function main() {
       });
     });
 
+    fdescribe('transclusion', () => {
+      it('should support multizone transclusion', async(() => {
+         // Define `ng1Component`
+         const ng1Component: angular.IComponent = {
+           transclude: { x: 'x', y: 'y' } as any,
+          //  template: 'pre(<div ng-transclude>(original)</div>)post'
+           template: 'pre(<div ng-transclude="x">(original X)</div>(mid {{ 1 + 2 }})<div ng-transclude="y">(original Y)</div><div ng-transclude>(original default)</div>)post'
+          };
+
+         // Define `Ng1ComponentFacade`
+         @Directive({selector: 'ng1'})
+         class Ng1ComponentFacade extends UpgradeComponent {
+           constructor(elementRef: ElementRef, injector: Injector) {
+             super('ng1', elementRef, injector);
+           }
+         }
+
+         let component: any;
+
+         @Component({selector: 'app', template: '<ng1><x><div *ngIf="value">(trans-X)</div></x>(trans-default {{ 1 + 2 }})<y>(trans-Y)</y></ng1>'})
+         class AppComponent {
+           constructor() {
+             component = this;
+           }
+           value = true;
+         }
+
+         // Define `ng1Module`
+         const ng1Module = angular.module('ng1', [])
+                               .component('ng1', ng1Component)
+                               .directive('app', downgradeComponent({component: AppComponent}));
+
+         const element = html(`<app></app>`);
+
+         // Define `Ng2Module`
+         @NgModule({
+           declarations: [Ng1ComponentFacade, AppComponent],
+           entryComponents: [AppComponent],
+           imports: [BrowserModule, UpgradeModule],
+           schemas: [NO_ERRORS_SCHEMA],
+         })
+         class Ng2Module {
+           constructor(private upgrade: UpgradeModule) {}
+           ngDoBootstrap() {
+             this.upgrade.bootstrap(element, [ng1Module.name]);
+           }
+         }
+
+         console.log('bootstrapping');
+         platformBrowserDynamic().bootstrapModule(Ng2Module).then((ref) => {
+          console.log(element);
+          component.value = false;
+          $digest(ref.injector.get(UpgradeModule));
+          console.log(element);
+          component.value = true;
+          $digest(ref.injector.get(UpgradeModule));
+          console.log(element);
+         }).then(() => {
+          expect(element.textContent).toEqual('');
+         }).catch((err) => {
+           console.log(err);
+         });
+      }));
+    });
+
     describe('lifecycle hooks', () => {
       it('should call `$onChanges()` on binding destination (prototype)', fakeAsync(() => {
            const scopeOnChanges = jasmine.createSpy('scopeOnChanges');

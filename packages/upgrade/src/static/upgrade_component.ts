@@ -143,8 +143,9 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
   }
 
   ngOnInit() {
+    console.log('ngOnInit');
+    const attachChildNodes: angular.ILinkFn | undefined = this.prepareTransclusion(this.directive.transclude)
     // Collect contents, insert and compile template
-    const contentChildNodes = this.extractChildNodes(this.element);
     const linkFn = this.compileTemplate(this.directive);
 
     // Instantiate controller
@@ -203,8 +204,6 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
       preLink(this.$componentScope, this.$element, attrs, requiredControllers, transcludeFn);
     }
 
-    const attachChildNodes: angular.ILinkFn = (scope, cloneAttach) =>
-        cloneAttach !(contentChildNodes);
     linkFn(this.$componentScope, null !, {parentBoundTranscludeFn: attachChildNodes});
 
     if (postLink) {
@@ -214,6 +213,73 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     // Hook: $postLink
     if (this.controllerInstance && isFunction(this.controllerInstance.$postLink)) {
       this.controllerInstance.$postLink();
+    }
+  }
+
+  private prepareTransclusion(transclude: any = false): angular.ILinkFn | undefined {
+    let childTranscludeFn: angular.ILinkFn | undefined;
+
+    if (transclude) {
+      const slots = Object.create(null);
+      let $template: angular.IAugmentedJQuery | Node[];
+
+      if (typeof transclude !== 'object') {
+        $template = this.extractChildNodes(this.element);
+      } else {
+        $template = [];
+
+        const slotMap = Object.create(null);
+        const filledSlots = Object.create(null);
+
+        // Parse the element selectors.
+        Object.keys(transclude).forEach(slotName => {
+          let selector = transclude[slotName];
+          const optional = selector.charAt(0) === '?';
+          selector = optional ? selector.substring(1) : selector;
+
+          slotMap[selector] = slotName;
+          slots[slotName] = null; // `null`: Defined but not yet filled.
+          filledSlots[slotName] = optional; // Consider optional slots as filled.
+        });
+
+
+        // Add the matching elements into their slot.
+        Array.prototype.forEach.call(this.$element.contents !(), (node: Element) => {
+          console.log(node);
+          const slotName = slotMap[directiveNormalize(node.nodeName.toLowerCase())];
+          if (slotName) {
+            filledSlots[slotName] = true;
+            slots[slotName] = slots[slotName] || [];
+            slots[slotName].push(node);
+          } else {
+            $template.push(node);
+          }
+        });
+
+        console.log(slots, filledSlots);
+
+        // Check for required slots that were not filled.
+        Object.keys(filledSlots).forEach(slotName => {
+          if (!filledSlots[slotName]) {
+            throw new Error(`Required transclusion slot '${slotName}' on directive: ${this.name}`);
+          }
+        });
+
+        Object.keys(slots)
+          .filter(slotName => slots[slotName])
+          .forEach(slotName => {
+            const slot = slots[slotName];
+            slots[slotName] = (scope: any, cloneAttach: any) => cloneAttach !(angular.element(slot), scope);
+          });
+      }
+
+      this.$element.empty !();
+
+      // default slot transclude fn
+      childTranscludeFn = (scope, cloneAttach) => cloneAttach !(angular.element($template as any));
+      (childTranscludeFn as any).$$slots = slots;
+
+      return childTranscludeFn;
     }
   }
 
@@ -465,7 +531,6 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
   }
 }
 
-
 function getOrCall<T>(property: Function | T): T {
   return isFunction(property) ? property() : property;
 }
@@ -478,3 +543,5 @@ function isFunction(value: any): value is Function {
 function isMap<T>(value: angular.SingleOrListOrMap<T>): value is {[key: string]: T} {
   return value && !Array.isArray(value) && typeof value === 'object';
 }
+
+function directiveNormalize(id: string) { return id; }
