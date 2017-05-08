@@ -116,13 +116,18 @@ export class AppComponent implements OnInit {
 
     this.navigationService.currentNode.subscribe(currentNode => {
       this.currentNode = currentNode;
-      this.updateHostClasses();
 
-      // Toggle the sidenav if side-by-side and the kind of view changed
-      if (this.previousNavView === currentNode.view) { return; }
-      this.previousNavView = currentNode.view;
-      this.isSideNavDoc = currentNode.view === sideNavView;
-      this.sideNavToggle(this.isSideNavDoc && this.isSideBySide);
+      // Preserve current sidenav open state by default
+      let openSideNav = this.sidenav.opened;
+
+      if (this.previousNavView !== currentNode.view) {
+        this.previousNavView = currentNode.view;
+        // View type changed. Is it now a sidenav view (e.g, guide or tutorial)?
+        // Open if changed to a sidenav doc; close if changed to a marketing doc.
+        openSideNav = this.isSideNavDoc = currentNode.view === sideNavView;
+      }
+      // May be open or closed when wide; always closed when narrow
+      this.sideNavToggle(this.isSideBySide ? openSideNav : false);
     });
 
     this.navigationService.navigationViews.subscribe(views => {
