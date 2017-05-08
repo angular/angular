@@ -227,7 +227,7 @@ describe('TocComponent', () => {
     });
   });
 
-  describe('when in side panel (not embedded))', () => {
+  describe('when in side panel (not embedded)', () => {
     let fixture: ComponentFixture<HostNotEmbeddedTocComponent>;
     let scrollToTopSpy: jasmine.Spy;
 
@@ -274,6 +274,161 @@ describe('TocComponent', () => {
       fixture.detectChanges();
       expect(scrollToTopSpy).toHaveBeenCalled();
     });
+
+    describe('#activeIndex', () => {
+      it('should keep track of `TocService`\'s `activeItemIndex`', () => {
+        expect(tocComponent.activeIndex).toBeNull();
+
+        tocService.activeItemIndex.next(42);
+        expect(tocComponent.activeIndex).toBe(42);
+
+        tocService.activeItemIndex.next(null);
+        expect(tocComponent.activeIndex).toBeNull();
+      });
+
+      it('should stop tracking `activeItemIndex` once destroyed', () => {
+        tocService.activeItemIndex.next(42);
+        expect(tocComponent.activeIndex).toBe(42);
+
+        tocComponent.ngOnDestroy();
+
+        tocService.activeItemIndex.next(43);
+        expect(tocComponent.activeIndex).toBe(42);
+
+        tocService.activeItemIndex.next(null);
+        expect(tocComponent.activeIndex).toBe(42);
+      });
+
+      it('should set the `active` class to the active anchor (and only that)', () => {
+        expect(page.listItems.findIndex(By.css('.active'))).toBe(-1);
+
+        tocComponent.activeIndex = 1;
+        fixture.detectChanges();
+        expect(page.listItems.filter(By.css('.active')).length).toBe(1);
+        expect(page.listItems.findIndex(By.css('.active'))).toBe(1);
+
+        tocComponent.activeIndex = null;
+        fixture.detectChanges();
+        expect(page.listItems.filter(By.css('.active')).length).toBe(0);
+        expect(page.listItems.findIndex(By.css('.active'))).toBe(-1);
+
+        tocComponent.activeIndex = 0;
+        fixture.detectChanges();
+        expect(page.listItems.filter(By.css('.active')).length).toBe(1);
+        expect(page.listItems.findIndex(By.css('.active'))).toBe(0);
+
+        tocComponent.activeIndex = 1337;
+        fixture.detectChanges();
+        expect(page.listItems.filter(By.css('.active')).length).toBe(0);
+        expect(page.listItems.findIndex(By.css('.active'))).toBe(-1);
+
+        tocComponent.activeIndex = page.listItems.length - 1;
+        fixture.detectChanges();
+        expect(page.listItems.filter(By.css('.active')).length).toBe(1);
+        expect(page.listItems.findIndex(By.css('.active'))).toBe(page.listItems.length - 1);
+      });
+
+      it('should re-apply the `active` class when the list elements change', () => {
+        const getActiveTextContent = () =>
+            page.listItems.find(By.css('.active')).nativeElement.textContent.trim();
+
+        tocComponent.activeIndex = 1;
+        fixture.detectChanges();
+        expect(getActiveTextContent()).toBe('H2 Two');
+
+        tocComponent.tocList = [{content: 'New 1'}, {content: 'New 2'}] as any as TocItem[];
+        fixture.detectChanges();
+        page = setPage();
+        expect(getActiveTextContent()).toBe('New 2');
+
+        tocComponent.tocList.unshift({content: 'New 0'} as any as TocItem);
+        fixture.detectChanges();
+        page = setPage();
+        expect(getActiveTextContent()).toBe('New 1');
+
+        tocComponent.tocList = [{content: 'Very New 1'}] as any as TocItem[];
+        fixture.detectChanges();
+        page = setPage();
+        expect(page.listItems.findIndex(By.css('.active'))).toBe(-1);
+
+        tocComponent.activeIndex = 0;
+        fixture.detectChanges();
+        expect(getActiveTextContent()).toBe('Very New 1');
+      });
+
+      describe('should scroll the active ToC item into viewport (if not already visible)', () => {
+        let parentScrollTop: number;
+
+        beforeEach(() => {
+          const firstItem = page.listItems[0].nativeElement;
+          const offsetParent = firstItem.offsetParent;
+
+          offsetParent.style.maxHeight = `${offsetParent.clientHeight - firstItem.clientHeight}px`;
+          Object.defineProperty(offsetParent, 'scrollTop', {
+            get: () => parentScrollTop,
+            set: v => parentScrollTop = v
+          });
+
+          parentScrollTop = 0;
+        });
+
+        it('when the `activeIndex` changes', () => {
+          tocService.activeItemIndex.next(0);
+          fixture.detectChanges();
+
+          expect(parentScrollTop).toBe(0);
+
+          tocService.activeItemIndex.next(1);
+          fixture.detectChanges();
+
+          expect(parentScrollTop).toBe(0);
+
+          tocService.activeItemIndex.next(page.listItems.length - 1);
+          fixture.detectChanges();
+
+          expect(parentScrollTop).toBeGreaterThan(0);
+        });
+
+        it('when the `tocList` changes', () => {
+          const tocList = tocComponent.tocList;
+
+          tocComponent.tocList = [];
+          fixture.detectChanges();
+
+          expect(parentScrollTop).toBe(0);
+
+          tocService.activeItemIndex.next(tocList.length - 1);
+          fixture.detectChanges();
+
+          expect(parentScrollTop).toBe(0);
+
+          tocComponent.tocList = tocList;
+          fixture.detectChanges();
+
+          expect(parentScrollTop).toBeGreaterThan(0);
+        });
+
+        it('not after it has been destroyed', () => {
+          const tocList = tocComponent.tocList;
+          tocComponent.ngOnDestroy();
+
+          tocService.activeItemIndex.next(page.listItems.length - 1);
+          fixture.detectChanges();
+
+          expect(parentScrollTop).toBe(0);
+
+          tocComponent.tocList = [];
+          fixture.detectChanges();
+
+          expect(parentScrollTop).toBe(0);
+
+          tocComponent.tocList = tocList;
+          fixture.detectChanges();
+
+          expect(parentScrollTop).toBe(0);
+        });
+      });
+    });
   });
 
 });
@@ -297,6 +452,7 @@ class TestScrollService {
 
 class TestTocService {
   tocList = new BehaviorSubject<TocItem[]>(getTestTocList());
+  activeItemIndex = new BehaviorSubject<number | null>(null);
 }
 
 // tslint:disable:quotemark

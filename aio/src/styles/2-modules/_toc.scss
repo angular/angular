@@ -1,16 +1,16 @@
 .toc-container {
-    width: 18%;
-    position: fixed;
-    top: 96px;
-    right: 0;
-    bottom: 32px;
-    overflow-y: auto;
-    overflow-x: hidden;
+  width: 18%;
+  position: fixed;
+  top: 96px;
+  right: 0;
+  bottom: 32px;
+  overflow-y: auto;
+  overflow-x: hidden;
 
-    @media (max-width: 800px) {
-      display: none;
-      width: 0;
-    }
+  @media (max-width: 800px) {
+    display: none;
+    width: 0;
+  }
 }
 
 aio-toc {
@@ -143,6 +143,12 @@ aio-toc > div {
         color: $accentblue;
       }
     }
+
+    &.active {
+      a {
+        color: $accentblue;
+      }
+    }
   }
 
   ul.toc-list li.h3 {
@@ -151,5 +157,5 @@ aio-toc > div {
 }
 
 aio-toc.embedded > div.collapsed li.secondary {
-    display: none;
+  display: none;
 }
