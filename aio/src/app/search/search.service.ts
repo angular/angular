@@ -30,7 +30,7 @@ export class SearchService {
   private worker: WebWorkerClient;
   private ready: Observable<boolean>;
   private resultsSubject = new Subject<SearchResults>();
-  get searchResults() { return this.resultsSubject.asObservable(); }
+  readonly searchResults = this.resultsSubject.asObservable();
 
   constructor(private zone: NgZone) {}
 

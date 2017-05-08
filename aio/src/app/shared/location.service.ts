@@ -2,9 +2,8 @@ import { Injectable } from '@angular/core';
 import { Location, PlatformLocation } from '@angular/common';
 
 import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
+import { ReplaySubject } from 'rxjs/ReplaySubject';
 import 'rxjs/add/operator/do';
-import 'rxjs/add/operator/publishReplay';
 
 import { GaService } from 'app/shared/ga.service';
 
@@ -12,23 +11,19 @@ import { GaService } from 'app/shared/ga.service';
 export class LocationService {
 
   private readonly urlParser = document.createElement('a');
-  private urlSubject = new Subject<string>();
+  private urlSubject = new ReplaySubject<string>(1);
   currentUrl = this.urlSubject
-    .map(url => this.stripSlashes(url))
-    .publishReplay(1);
+    .map(url => this.stripSlashes(url));
 
   currentPath = this.currentUrl
     .map(url => url.match(/[^?#]*/)[0]) // strip query and hash
-    .do(url => this.gaService.locationChanged(url))
-    .publishReplay(1);
+    .do(url => this.gaService.locationChanged(url));
 
   constructor(
     private gaService: GaService,
     private location: Location,
     private platformLocation: PlatformLocation) {
 
-    this.currentUrl.connect();
-    this.currentPath.connect();
     this.urlSubject.next(location.path(true));
 
     this.location.subscribe(state => {

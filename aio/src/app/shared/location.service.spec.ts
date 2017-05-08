@@ -539,6 +539,8 @@ describe('LocationService', () => {
     beforeEach(() => {
       const gaService = injector.get(GaService);
       gaLocationChanged = gaService.locationChanged;
+      // execute currentPath observable so that gaLocationChanged is called
+      service.currentPath.subscribe();
     });
 
     it('should call locationChanged with initial URL', () => {
