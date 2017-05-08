@@ -3,6 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By, DOCUMENT } from '@angular/platform-browser';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
+import { ScrollService } from 'app/shared/scroll.service';
 import { TocComponent } from './toc.component';
 import { TocItem, TocService } from 'app/shared/toc.service';
 
@@ -31,6 +32,7 @@ describe('TocComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ HostEmbeddedTocComponent, HostNotEmbeddedTocComponent, TocComponent ],
       providers: [
+        { provide: ScrollService, useClass: TestScrollService },
         { provide: TocService, useClass: TestTocService }
       ]
     })
@@ -116,7 +118,7 @@ describe('TocComponent', () => {
       beforeEach(() => {
         fixture.detectChanges();
         page = setPage();
-        scrollSpy = spyOn(tocComponent, 'scrollToTop');
+        scrollSpy = TestBed.get(ScrollService).scrollToTop;
       });
 
       it('should have more than 4 displayed items', () => {
@@ -279,6 +281,10 @@ class HostEmbeddedTocComponent {}
   template: '<aio-toc></aio-toc>'
 })
 class HostNotEmbeddedTocComponent {}
+
+class TestScrollService {
+  scrollToTop = jasmine.createSpy('scrollToTop');
+}
 
 class TestTocService {
   tocList = new BehaviorSubject<TocItem[]>(getTestTocList());
