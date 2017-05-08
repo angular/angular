@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { SearchService } from 'app/search/search.service';
 import { LocationService } from 'app/shared/location.service';
 
@@ -45,5 +45,12 @@ export class SearchBoxComponent implements OnInit {
       return;
     }
     this.searchService.search(query);
+  }
+
+  @HostListener('document:keyup', ['$event'])
+  onKeyUp($event: KeyboardEvent) {
+    if ($event.key === '/') {
+      this.searchBox.nativeElement.focus();
+    }
   }
 }
