@@ -56,6 +56,12 @@ describe('SearchBoxComponent', () => {
       input.triggerEventHandler('keyup', { target: { value: 'some query' }, which: 27 });
       expect(search.search).not.toHaveBeenCalled();
     }));
+
+    it('should grab focus when the / key is pressed', () => {
+      const input = fixture.debugElement.query(By.css('input'));
+      window.document.dispatchEvent(new KeyboardEvent('keyup', { 'key': '/' }));
+      expect(document.activeElement).toBe(input.nativeElement, 'Search box should be active element');
+    });
   });
 
   describe('on focus', () => {
