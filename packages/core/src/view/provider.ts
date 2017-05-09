@@ -105,7 +105,7 @@ export function _def(
     ngContentIndex: -1, childCount, bindings,
     bindingFlags: calcBindingFlags(bindings), outputs,
     element: null,
-    provider: {token, tokenKey: tokenKey(token), value, deps: depDefs},
+    provider: {token, value, deps: depDefs},
     text: null,
     query: null,
     ngContent: null
