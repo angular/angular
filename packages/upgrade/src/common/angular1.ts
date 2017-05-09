@@ -243,22 +243,36 @@ try {
 }
 
 /**
- * Resets the AngularJS library.
+ * @deprecated Use {@link setAngularJSGlobal} instead.
+ */
+export function setAngularLib(ng: any): void {
+  setAngularJSGlobal(ng);
+}
+
+/**
+ * @deprecated Use {@link getAngularJSGlobal} instead.
+ */
+export function getAngularLib(): any {
+  return getAngularJSGlobal();
+}
+
+/**
+ * Resets the AngularJS global.
  *
- * Used when angularjs is loaded lazily, and not available on `window`.
+ * Used when AngularJS is loaded lazily, and not available on `window`.
  *
  * @stable
  */
-export function setAngularLib(ng: any): void {
+export function setAngularJSGlobal(ng: any): void {
   angular = ng;
 }
 
 /**
- * Returns the current version of the AngularJS library.
+ * Returns the current AngularJS global.
  *
  * @stable
  */
-export function getAngularLib(): any {
+export function getAngularJSGlobal(): any {
   return angular;
 }
 
