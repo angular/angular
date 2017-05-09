@@ -10,7 +10,7 @@ checks it when its data-bound properties change, and destroys it before removing
 Angular offers **lifecycle hooks**
 that provide visibility into these key life moments and the ability to act when they occur.
 
-A directive has the same set of lifecycle hooks, minus the hooks that are specific to component content and views.
+A directive has the same set of lifecycle hooks.
 
 {@a hooks-overview}
 
@@ -27,7 +27,7 @@ that Angular calls shortly after creating the component:
 
 <code-example path="lifecycle-hooks/src/app/peek-a-boo.component.ts" region="ngOnInit" title="peek-a-boo.component.ts (excerpt)" linenums="false"></code-example>
 
-No directive or component will implement all of the lifecycle hooks and some of the hooks only make sense for components.
+No directive or component will implement all of the lifecycle hooks.
 Angular only calls a directive/component hook method *if it is defined*.
 
 {@a hooks-purpose-timing}
@@ -88,11 +88,9 @@ calls the lifecycle hook methods in the following sequence at specific moments:
     </td>
     <td>
 
-      Respond after Angular projects external content into the component's view.
+      Respond after Angular projects external content into the component's view / the view that a directive is in.
 
       Called _once_ after the first `ngDoCheck()`.
-
-      _A component-only hook_.
 
     </td>
   </tr>
@@ -102,11 +100,9 @@ calls the lifecycle hook methods in the following sequence at specific moments:
     </td>
     <td>
 
-      Respond after Angular checks the content projected into the component.
+      Respond after Angular checks the content projected into the directive/component.
 
       Called after the `ngAfterContentInit()` and every subsequent `ngDoCheck()`.
-
-      _A component-only hook_.
 
     </td>
   </tr>
@@ -116,11 +112,9 @@ calls the lifecycle hook methods in the following sequence at specific moments:
     </td>
     <td>
 
-      Respond after Angular initializes the component's views and child views.
+      Respond after Angular initializes the component's views and child views / the view that a directive is in.
 
       Called _once_ after the first `ngAfterContentChecked()`.
-
-      _A component-only hook_.
 
     </td>
   </tr>
@@ -130,11 +124,9 @@ calls the lifecycle hook methods in the following sequence at specific moments:
     </td>
     <td>
 
-      Respond after Angular checks the component's views and child views.
+      Respond after Angular checks the component's views and child views / the view that a directive is in.
 
       Called after the `ngAfterViewInit` and every subsequent `ngAfterContentChecked()`.
-
-      _A component-only hook_.
 
     </td>
   </tr>
