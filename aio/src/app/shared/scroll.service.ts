@@ -1,4 +1,4 @@
-import { Injectable, Inject, InjectionToken } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { PlatformLocation } from '@angular/common';
 import { DOCUMENT } from '@angular/platform-browser';
 
