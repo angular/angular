@@ -577,7 +577,7 @@ and reference assets of different types.
 
     <td>
 
-      <code-example hideCopy>
+      <code-example hideCopy class="no-box">
         @Component({ ... })
         export class AppComponent { }
       </code-example>
@@ -596,7 +596,7 @@ and reference assets of different types.
 
     <td>
 
-      <code-example hideCopy>
+      <code-example hideCopy class="no-box">
         @Component({ ... })
         export class HeroesComponent { }
       </code-example>
@@ -615,7 +615,7 @@ and reference assets of different types.
 
     <td>
 
-      <code-example hideCopy>
+      <code-example hideCopy class="no-box">
         @Component({ ... })
         export class HeroListComponent { }
       </code-example>
@@ -634,7 +634,7 @@ and reference assets of different types.
 
     <td>
 
-      <code-example hideCopy>
+      <code-example hideCopy class="no-box">
         @Component({ ... })
         export class HeroDetailComponent { }
       </code-example>
@@ -653,7 +653,7 @@ and reference assets of different types.
 
     <td>
 
-      <code-example hideCopy>
+      <code-example hideCopy class="no-box">
         @Directive({ ... })
         export class ValidationDirective { }
       </code-example>
@@ -672,7 +672,7 @@ and reference assets of different types.
 
     <td>
 
-      <code-example hideCopy>
+      <code-example hideCopy class="no-box">
         @NgModule({ ... })
         export class AppModule
       </code-example>
@@ -691,7 +691,7 @@ and reference assets of different types.
 
     <td>
 
-      <code-example hideCopy>
+      <code-example hideCopy class="no-box">
         @Pipe({ name: 'initCaps' })
         export class InitCapsPipe implements PipeTransform { }
       </code-example>
@@ -710,7 +710,7 @@ and reference assets of different types.
 
     <td>
 
-      <code-example hideCopy>
+      <code-example hideCopy class="no-box">
         @Injectable()
         export class UserProfileService { }
       </code-example>
@@ -827,7 +827,7 @@ As always, strive for consistency.
 
     <td>
 
-      <code-example hideCopy>
+      <code-example hideCopy class="no-box">
         @Injectable()
         export class HeroDataService { }
       </code-example>
@@ -846,7 +846,7 @@ As always, strive for consistency.
 
     <td>
 
-      <code-example hideCopy>
+      <code-example hideCopy class="no-box">
         @Injectable()
         export class CreditService { }
       </code-example>
@@ -865,7 +865,7 @@ As always, strive for consistency.
 
     <td>
 
-      <code-example hideCopy>
+      <code-example hideCopy class="no-box">
         @Injectable()
         export class Logger { }
       </code-example>
@@ -1225,7 +1225,7 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
     <td>
 
-      <code-example hideCopy>
+      <code-example hideCopy class="no-box">
         @Pipe({ name: 'ellipsis' })
         export class EllipsisPipe implements PipeTransform { }
       </code-example>
@@ -1244,7 +1244,7 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
     <td>
 
-      <code-example hideCopy>
+      <code-example hideCopy class="no-box">
         @Pipe({ name: 'initCaps' })
         export class InitCapsPipe implements PipeTransform { }
       </code-example>
@@ -1331,11 +1331,11 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
   <tr>
 
     <th>
-      Symbol Name
+      Test Type
     </th>
 
     <th>
-      File Name
+      File Names
     </th>
 
   </tr>
@@ -1461,11 +1461,11 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
   <tr>
 
     <th>
-      Symbol Name
+      Test Type
     </th>
 
     <th>
-      File Name
+      File Names
     </th>
 
   </tr>
@@ -1626,7 +1626,7 @@ A consistent class and file name convention make these modules easy to spot and 
 
     <td>
 
-      <code-example hideCopy>
+      <code-example hideCopy class="no-box">
         @NgModule({ ... })
         export class AppModule { }
       </code-example>
@@ -1645,7 +1645,7 @@ A consistent class and file name convention make these modules easy to spot and 
 
     <td>
 
-      <code-example hideCopy>
+      <code-example hideCopy class="no-box">
         @NgModule({ ... })
         export class HeroesModule { }
       </code-example>
@@ -1664,7 +1664,7 @@ A consistent class and file name convention make these modules easy to spot and 
 
     <td>
 
-      <code-example hideCopy>
+      <code-example hideCopy class="no-box">
         @NgModule({ ... })
         export class VillainsModule { }
       </code-example>
@@ -1683,7 +1683,7 @@ A consistent class and file name convention make these modules easy to spot and 
 
     <td>
 
-      <code-example hideCopy>
+      <code-example hideCopy class="no-box">
         @NgModule({ ... })
         export class AppRoutingModule { }
       </code-example>
@@ -1702,7 +1702,7 @@ A consistent class and file name convention make these modules easy to spot and 
 
     <td>
 
-      <code-example hideCopy>
+      <code-example hideCopy class="no-box">
         @NgModule({ ... })
         export class HeroesRoutingModule { }
       </code-example>
