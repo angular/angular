@@ -605,7 +605,7 @@ showing exactly which application and Angular modules and classes are included i
 Here's the map for _Tour of Heroes_.
 
 <a href="generated/images/guide/aot-compiler/toh-pt6-bundle.png" title="View larger image">
-  <figure class='image-display'>
-    <img src="generated/images/guide/aot-compiler/toh-pt6-bundle.png" alt="toh-pt6-bundle"></img>
+  <figure>
+    <img src="generated/images/guide/aot-compiler/toh-pt6-bundle.png" alt="toh-pt6-bundle" width="700">
   </figure>
 </a>

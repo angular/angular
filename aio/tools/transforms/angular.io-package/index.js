@@ -42,4 +42,5 @@ module.exports = new Package('angular.io', [gitPackage, apiPackage, contentPacka
         return (existsSync(resolve(SRC_PATH, url)));
       }
     });
+    checkAnchorLinksProcessor.pathVariants = ['', '/', '.html', '/index.html', '#top-of-page'];
   });

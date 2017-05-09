@@ -699,8 +699,8 @@ Run the app again. In the Dashboard, enter some text in the search box.
 If you enter characters that match any existing hero names, you'll see something like this.
 
 
-<figure class='image-display'>
-  <img src='generated/images/guide/toh/toh-hero-search.png' alt="Hero Search Component"></img>
+<figure>
+  <img src='generated/images/guide/toh/toh-hero-search.png' alt="Hero Search Component">
 </figure>
 
 
@@ -929,6 +929,6 @@ Here are the files you added or changed in this page.
 
 ## Next step
 
-That concludes the "Tour of Heroes" tutorial. 
+That concludes the "Tour of Heroes" tutorial.
 You're ready to learn more about Angular development in the fundamentals section,
 starting with the [Architecture](guide/architecture "Architecture") guide.
