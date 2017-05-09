@@ -6,15 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AttrAst, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, CssSelector, DirectiveAst, Element, ElementAst, EmbeddedTemplateAst, ImplicitReceiver, NAMED_ENTITIES, NgContentAst, Node as HtmlAst, ParseSpan, PropertyRead, ReferenceAst, SelectorMatcher, TagContentType, TemplateAst, TemplateAstVisitor, Text, TextAst, VariableAst, getHtmlTagDefinition, splitNsName, templateVisitAll} from '@angular/compiler';
+import {AST, AstPath, AttrAst, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, CssSelector, DirectiveAst, Element, ElementAst, EmbeddedTemplateAst, ImplicitReceiver, NAMED_ENTITIES, NgContentAst, Node as HtmlAst, NullTemplateVisitor, ParseSpan, PropertyRead, ReferenceAst, SelectorMatcher, TagContentType, TemplateAst, TemplateAstVisitor, Text, TextAst, VariableAst, findNode, getHtmlTagDefinition, splitNsName, templateVisitAll} from '@angular/compiler';
+import {DiagnosticTemplateInfo, getExpressionScope} from '@angular/compiler-cli';
 
 import {AstResult, AttrInfo, SelectorInfo, TemplateInfo} from './common';
-import {getExpressionCompletions, getExpressionScope} from './expressions';
+import {getExpressionCompletions} from './expressions';
 import {attributeNames, elementNames, eventNames, propertyNames} from './html_info';
-import {HtmlAstPath} from './html_path';
-import {NullTemplateVisitor, TemplateAstChildVisitor, TemplateAstPath} from './template_path';
 import {BuiltinType, Completion, Completions, Span, Symbol, SymbolDeclaration, SymbolTable, TemplateSource} from './types';
-import {flatten, getSelectors, hasTemplateReference, inSpan, removeSuffix, spanOf, uniqueByName} from './utils';
+import {diagnosticInfoFromTemplateInfo, findTemplateAstAt, flatten, getSelectors, hasTemplateReference, inSpan, removeSuffix, spanOf, uniqueByName} from './utils';
 
 const TEMPLATE_ATTR_PREFIX = '*';
 
@@ -35,7 +34,7 @@ export function getTemplateCompletions(templateInfo: TemplateInfo): Completions|
   // The templateNode starts at the delimiter character so we add 1 to skip it.
   if (templateInfo.position != null) {
     let templatePosition = templateInfo.position - template.span.start;
-    let path = new HtmlAstPath(htmlAst, templatePosition);
+    let path = findNode(htmlAst, templatePosition);
     let mostSpecific = path.tail;
     if (path.empty || !mostSpecific) {
       result = elementCompletions(templateInfo, path);
@@ -98,7 +97,7 @@ export function getTemplateCompletions(templateInfo: TemplateInfo): Completions|
   return result;
 }
 
-function attributeCompletions(info: TemplateInfo, path: HtmlAstPath): Completions|undefined {
+function attributeCompletions(info: TemplateInfo, path: AstPath<HtmlAst>): Completions|undefined {
   let item = path.tail instanceof Element ? path.tail : path.parentOf(path.tail);
   if (item instanceof Element) {
     return attributeCompletionsForElement(info, item.name, item);
@@ -191,18 +190,19 @@ function getAttributeInfosForElement(
 
 function attributeValueCompletions(
     info: TemplateInfo, position: number, attr: Attribute): Completions|undefined {
-  const path = new TemplateAstPath(info.templateAst, position);
+  const path = findTemplateAstAt(info.templateAst, position);
   const mostSpecific = path.tail;
+  const dinfo = diagnosticInfoFromTemplateInfo(info);
   if (mostSpecific) {
     const visitor =
-        new ExpressionVisitor(info, position, attr, () => getExpressionScope(info, path, false));
+        new ExpressionVisitor(info, position, attr, () => getExpressionScope(dinfo, path, false));
     mostSpecific.visit(visitor, null);
     if (!visitor.result || !visitor.result.length) {
       // Try allwoing widening the path
-      const widerPath = new TemplateAstPath(info.templateAst, position, /* allowWidening */ true);
+      const widerPath = findTemplateAstAt(info.templateAst, position, /* allowWidening */ true);
       if (widerPath.tail) {
         const widerVisitor = new ExpressionVisitor(
-            info, position, attr, () => getExpressionScope(info, widerPath, false));
+            info, position, attr, () => getExpressionScope(dinfo, widerPath, false));
         widerPath.tail.visit(widerVisitor, null);
         return widerVisitor.result;
       }
@@ -211,7 +211,7 @@ function attributeValueCompletions(
   }
 }
 
-function elementCompletions(info: TemplateInfo, path: HtmlAstPath): Completions|undefined {
+function elementCompletions(info: TemplateInfo, path: AstPath<HtmlAst>): Completions|undefined {
   let htmlNames = elementNames().filter(name => !(name in hiddenHtmlElements));
 
   // Collect the elements referenced by the selectors
@@ -245,11 +245,12 @@ function entityCompletions(value: string, position: number): Completions|undefin
 
 function interpolationCompletions(info: TemplateInfo, position: number): Completions|undefined {
   // Look for an interpolation in at the position.
-  const templatePath = new TemplateAstPath(info.templateAst, position);
+  const templatePath = findTemplateAstAt(info.templateAst, position);
   const mostSpecific = templatePath.tail;
   if (mostSpecific) {
     let visitor = new ExpressionVisitor(
-        info, position, undefined, () => getExpressionScope(info, templatePath, false));
+        info, position, undefined,
+        () => getExpressionScope(diagnosticInfoFromTemplateInfo(info), templatePath, false));
     mostSpecific.visit(visitor, null);
     return uniqueByName(visitor.result);
   }
@@ -261,7 +262,7 @@ function interpolationCompletions(info: TemplateInfo, position: number): Complet
 // the attributes of an "a" element, not requesting completion in the a text element. This
 // code checks for this case and returns element completions if it is detected or undefined
 // if it is not.
-function voidElementAttributeCompletions(info: TemplateInfo, path: HtmlAstPath): Completions|
+function voidElementAttributeCompletions(info: TemplateInfo, path: AstPath<HtmlAst>): Completions|
     undefined {
   let tail = path.tail;
   if (tail instanceof Text) {
