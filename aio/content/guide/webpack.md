@@ -109,19 +109,12 @@ It opens the `@angular/core` file and follows _its_ network of `import` statemen
 
 Then it **outputs** these files to the `app.js` _bundle file_ designated in configuration:
 
+<code-example name="webpack.config.js (single output)" language="javascript">
+  output: {
+    filename: 'app.js'
+  }
 
-<div class='code-example'>
-
-  <code-example name="webpack.config.js (single output)" language="javascript">
-    output: {
-      filename: 'app.js'
-    }
-
-  </code-example>
-
-</div>
-
-
+</code-example>
 
 This `app.js` output bundle is a single JavaScript file that contains the application source and its dependencies.
 You'll load it later with a `<script>` tag in the `index.html`.
@@ -137,22 +130,17 @@ It's preferable to separate the volatile application app code from comparatively
 Change the configuration so that it has two entry points, `main.ts` and `vendor.ts`:
 
 
-<div class='code-example'>
+<code-example language="javascript">
+  entry: {
+    app: 'src/app.ts',
+    vendor: 'src/vendor.ts'
+  },
 
-  <code-example language="javascript">
-    entry: {
-      app: 'src/app.ts',
-      vendor: 'src/vendor.ts'
-    },
+  output: {
+    filename: '[name].js'
+  }
 
-    output: {
-      filename: '[name].js'
-    }
-
-  </code-example>
-
-</div>
-
+</code-example>
 
 
 Webpack constructs two separate dependency graphs
@@ -193,23 +181,19 @@ Teach it to transform non-JavaScript file into their JavaScript equivalents with
 Configure loaders for TypeScript and CSS as follows.
 
 
-<div class='code-example'>
+<code-example language="javascript">
+  rules: [
+    {
+      test: /\.ts$/,
+      loader: 'awesome-typescript-loader'
+    },
+    {
+      test: /\.css$/,
+      loaders: 'style-loader!css-loader'
+    }
+  ]
 
-  <code-example language="javascript">
-    rules: [
-      {
-        test: /\.ts$/,
-        loader: 'awesome-typescript-loader'
-      },
-      {
-        test: /\.css$/,
-        loaders: 'style-loader!css-loader'
-      }
-    ]
-
-  </code-example>
-
-</div>
+</code-example>
 
 
 
@@ -217,16 +201,12 @@ When Webpack encounters `import` statements like the following,
 it applies the `test` RegEx patterns.
 
 
-<div class='code-example'>
+<code-example language="typescript">
+  import { AppComponent } from './app.component.ts';
 
-  <code-example language="typescript">
-    import { AppComponent } from './app.component.ts';
+  import 'uiframework/dist/uiframework.css';
 
-    import 'uiframework/dist/uiframework.css';
-
-  </code-example>
-
-</div>
+</code-example>
 
 
 
@@ -250,17 +230,12 @@ Then it applies the `style` loader to append the css inside `<style>` elements o
 Webpack has a build pipeline with well-defined phases.
 Tap into that pipeline with plugins such as the `uglify` minification plugin:
 
+<code-example language="javascript">
+  plugins: [
+    new webpack.optimize.UglifyJsPlugin()
+  ]
 
-<div class='code-example'>
-
-  <code-example language="javascript">
-    plugins: [
-      new webpack.optimize.UglifyJsPlugin()
-    ]
-
-  </code-example>
-
-</div>
+</code-example>
 
 
 
@@ -440,16 +415,10 @@ This `entry` object defines the three bundles:
 The app will `import` dozens if not hundreds of JavaScript and TypeScript files.
 You could write `import` statements with explicit extensions like this example:
 
+<code-example language="typescript">
+  import { AppComponent } from './app.component.ts';
 
-<div class='code-example'>
-
-  <code-example language="typescript">
-    import { AppComponent } from './app.component.ts';
-
-  </code-example>
-
-</div>
-
+</code-example>
 
 
 But most `import` statements don't mention the extension at all.

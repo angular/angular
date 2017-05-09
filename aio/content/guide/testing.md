@@ -2860,8 +2860,7 @@ Here's a summary of the stand-alone functions, in order of likely utility:
 
 
       The curious, dedicated reader might enjoy this lengthy blog post,
-      "<a href="https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/"
-    >_Tasks, microtasks, queues and schedules_</a>".
+      ["_Tasks, microtasks, queues and schedules_"](https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/).
 
 </div>
 
