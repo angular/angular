@@ -138,7 +138,7 @@ class MyComp {
    }
    
    filter(name: string): User[] {
-      return this.options.filter(option => new RegExp(`^${name}`, 'gi').test(option)); 
+      return this.options.filter(option => new RegExp(`^${name}`, 'gi').test(option.name)); 
    }
    
    displayFn(user: User): string {
