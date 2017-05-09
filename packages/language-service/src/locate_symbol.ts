@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, Attribute, BoundDirectivePropertyAst, BoundEventAst, ElementAst, TemplateAst, tokenReference} from '@angular/compiler';
+import {AST, Attribute, BoundDirectivePropertyAst, BoundEventAst, ElementAst, TemplateAst, TemplateAstPath, findNode, tokenReference} from '@angular/compiler';
+import {getExpressionScope} from '@angular/compiler-cli';
 
 import {TemplateInfo} from './common';
-import {getExpressionScope, getExpressionSymbol} from './expressions';
-import {HtmlAstPath} from './html_path';
-import {TemplateAstPath} from './template_path';
+import {getExpressionSymbol} from './expressions';
 import {Definition, Location, Span, Symbol, SymbolTable} from './types';
-import {inSpan, offsetSpan, spanOf} from './utils';
+import {diagnosticInfoFromTemplateInfo, findTemplateAstAt, inSpan, offsetSpan, spanOf} from './utils';
 
 export interface SymbolInfo {
   symbol: Symbol;
@@ -23,7 +22,7 @@ export interface SymbolInfo {
 export function locateSymbol(info: TemplateInfo): SymbolInfo|undefined {
   if (!info.position) return undefined;
   const templatePosition = info.position - info.template.span.start;
-  const path = new TemplateAstPath(info.templateAst, templatePosition);
+  const path = findTemplateAstAt(info.templateAst, templatePosition);
   if (path.tail) {
     let symbol: Symbol|undefined = undefined;
     let span: Span|undefined = undefined;
@@ -31,7 +30,8 @@ export function locateSymbol(info: TemplateInfo): SymbolInfo|undefined {
       const attribute = findAttribute(info);
       if (attribute) {
         if (inSpan(templatePosition, spanOf(attribute.valueSpan))) {
-          const scope = getExpressionScope(info, path, inEvent);
+          const dinfo = diagnosticInfoFromTemplateInfo(info);
+          const scope = getExpressionScope(dinfo, path, inEvent);
           if (attribute.valueSpan) {
             const expressionOffset = attribute.valueSpan.start.offset + 1;
             const result = getExpressionSymbol(
@@ -84,7 +84,8 @@ export function locateSymbol(info: TemplateInfo): SymbolInfo|undefined {
           visitBoundText(ast) {
             const expressionPosition = templatePosition - ast.sourceSpan.start.offset;
             if (inSpan(expressionPosition, ast.value.span)) {
-              const scope = getExpressionScope(info, path, /* includeEvent */ false);
+              const dinfo = diagnosticInfoFromTemplateInfo(info);
+              const scope = getExpressionScope(dinfo, path, /* includeEvent */ false);
               const result =
                   getExpressionSymbol(scope, ast.value, expressionPosition, info.template.query);
               if (result) {
@@ -115,7 +116,7 @@ export function locateSymbol(info: TemplateInfo): SymbolInfo|undefined {
 function findAttribute(info: TemplateInfo): Attribute|undefined {
   if (info.position) {
     const templatePosition = info.position - info.template.span.start;
-    const path = new HtmlAstPath(info.htmlAst, templatePosition);
+    const path = findNode(info.htmlAst, templatePosition);
     return path.first(Attribute);
   }
 }
@@ -183,6 +184,8 @@ class OverrideKindSymbol implements Symbol {
   get public(): boolean { return this.sym.public; }
 
   get callable(): boolean { return this.sym.callable; }
+
+  get nullable(): boolean { return this.sym.nullable; }
 
   get definition(): Definition { return this.sym.definition; }
 

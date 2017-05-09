@@ -6,8 +6,25 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/**
+ * A path is an ordered set of elements. Typically a path is to  a
+ * particular offset in a source file. The head of the list is the top
+ * most node. The tail is the node that contains the offset directly.
+ *
+ * For example, the expresion `a + b + c` might have an ast that looks
+ * like:
+ *     +
+ *    / \
+ *   a   +
+ *      / \
+ *     b   c
+ *
+ * The path to the node at offset 9 would be `['+' at 1-10, '+' at 7-10,
+ * 'c' at 9-10]` and the path the node at offset 1 would be
+ * `['+' at 1-10, 'a' at 1-2]`.
+ */
 export class AstPath<T> {
-  constructor(private path: T[]) {}
+  constructor(private path: T[], public position: number = -1) {}
 
   get empty(): boolean { return !this.path || !this.path.length; }
   get head(): T|undefined { return this.path[0]; }

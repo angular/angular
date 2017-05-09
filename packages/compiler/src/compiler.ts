@@ -36,6 +36,7 @@ export * from './aot/static_reflection_capabilities';
 export * from './aot/static_symbol';
 export * from './aot/static_symbol_resolver';
 export * from './aot/summary_resolver';
+export * from './ast_path';
 export * from './summary_resolver';
 export {JitCompiler} from './jit/compiler';
 export * from './jit/compiler_factory';
