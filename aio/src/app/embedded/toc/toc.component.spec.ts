@@ -178,16 +178,10 @@ describe('TocComponent', () => {
           expect(tocComponent.isClosed).toEqual(true);
         });
 
-        it('should scroll after clicking again', () => {
+        it('should not scroll after clicking again', () => {
           page.tocHeadingButton.nativeElement.click();
           fixture.detectChanges();
-          expect(scrollSpy).toHaveBeenCalled();
-        });
-
-        it('should be "closed" after clicking tocMoreButton', () => {
-          page.tocMoreButton.nativeElement.click();
-          fixture.detectChanges();
-          expect(tocComponent.isClosed).toEqual(true);
+          expect(scrollSpy).not.toHaveBeenCalled();
         });
       });
 
@@ -216,16 +210,16 @@ describe('TocComponent', () => {
           expect(tocComponent.isClosed).toEqual(true);
         });
 
+        it('should be "closed" after clicking tocHeadingButton', () => {
+          page.tocMoreButton.nativeElement.click();
+          fixture.detectChanges();
+          expect(tocComponent.isClosed).toEqual(true);
+        });
+
         it('should scroll after clicking again', () => {
           page.tocMoreButton.nativeElement.click();
           fixture.detectChanges();
           expect(scrollSpy).toHaveBeenCalled();
-        });
-
-        it('should be "closed" after clicking tocHeadingButton', () => {
-          page.tocHeadingButton.nativeElement.click();
-          fixture.detectChanges();
-          expect(tocComponent.isClosed).toEqual(true);
         });
       });
     });

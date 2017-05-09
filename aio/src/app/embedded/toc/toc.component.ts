@@ -51,8 +51,8 @@ export class TocComponent implements OnInit, OnDestroy {
     this.onDestroy.next();
   }
 
-  toggle() {
+  toggle(canScroll = true) {
     this.isClosed = !this.isClosed;
-    if (this.isClosed) { this.scrollService.scrollToTop(); }
+    if (canScroll && this.isClosed) { this.scrollService.scrollToTop(); }
   }
 }

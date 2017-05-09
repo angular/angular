@@ -24,7 +24,7 @@
   </md-sidenav>
 
   <section class="sidenav-content" [id]="pageId" role="content">
-    <a id="top-of-page"></a>
+    <div id="top-of-page"></div>
     <aio-doc-viewer [doc]="currentDocument" (docRendered)="onDocRendered()"></aio-doc-viewer>
     <aio-dt [on]="dtOn" [(doc)]="currentDocument"></aio-dt>
   </section>
