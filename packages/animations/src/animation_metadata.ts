@@ -120,7 +120,7 @@ export interface AnimationGroupMetadata extends AnimationMetadata { steps: Anima
 /**
  * `trigger` is an animation-specific function that is designed to be used inside of Angular's
  animation DSL language. If this information is new, please navigate to the {@link
- Component#animations-anchor component animations metadata page} to gain a better understanding of
+ Component#animations component animations metadata page} to gain a better understanding of
  how animations in Angular are used.
  *
  * `trigger` Creates an animation trigger which will a list of {@link state state} and {@link
@@ -128,7 +128,7 @@ export interface AnimationGroupMetadata extends AnimationMetadata { steps: Anima
  changes.
  *
  * Triggers are registered within the component annotation data under the {@link
- Component#animations-anchor animations section}. An animation trigger can be placed on an element
+ Component#animations animations section}. An animation trigger can be placed on an element
  within a template by referencing the name of the trigger followed by the expression value that the
  trigger is bound to (in the form of `[@triggerName]="expression"`.
  *
@@ -175,7 +175,7 @@ export function trigger(name: string, definitions: AnimationMetadata[]): Animati
 /**
  * `animate` is an animation-specific function that is designed to be used inside of Angular's
  * animation DSL language. If this information is new, please navigate to the {@link
- * Component#animations-anchor component animations metadata page} to gain a better understanding of
+ * Component#animations component animations metadata page} to gain a better understanding of
  * how animations in Angular are used.
  *
  * `animate` specifies an animation step that will apply the provided `styles` data for a given
@@ -226,7 +226,7 @@ export function animate(
 /**
  * `group` is an animation-specific function that is designed to be used inside of Angular's
  * animation DSL language. If this information is new, please navigate to the {@link
- * Component#animations-anchor component animations metadata page} to gain a better understanding of
+ * Component#animations component animations metadata page} to gain a better understanding of
  * how animations in Angular are used.
  *
  * `group` specifies a list of animation steps that are all run in parallel. Grouped animations are
@@ -261,7 +261,7 @@ export function group(steps: AnimationMetadata[]): AnimationGroupMetadata {
 /**
  * `sequence` is an animation-specific function that is designed to be used inside of Angular's
  * animation DSL language. If this information is new, please navigate to the {@link
- * Component#animations-anchor component animations metadata page} to gain a better understanding of
+ * Component#animations component animations metadata page} to gain a better understanding of
  * how animations in Angular are used.
  *
  * `sequence` Specifies a list of animation steps that are run one by one. (`sequence` is used by
@@ -299,7 +299,7 @@ export function sequence(steps: AnimationMetadata[]): AnimationSequenceMetadata 
 /**
  * `style` is an animation-specific function that is designed to be used inside of Angular's
  * animation DSL language. If this information is new, please navigate to the {@link
- * Component#animations-anchor component animations metadata page} to gain a better understanding of
+ * Component#animations component animations metadata page} to gain a better understanding of
  * how animations in Angular are used.
  *
  * `style` declares a key/value object containing CSS properties/styles that can then be used for
@@ -347,7 +347,7 @@ export function style(
 /**
  * `state` is an animation-specific function that is designed to be used inside of Angular's
  * animation DSL language. If this information is new, please navigate to the {@link
- * Component#animations-anchor component animations metadata page} to gain a better understanding of
+ * Component#animations component animations metadata page} to gain a better understanding of
  * how animations in Angular are used.
  *
  * `state` declares an animation state within the given trigger. When a state is active within a
@@ -399,7 +399,7 @@ export function state(name: string, styles: AnimationStyleMetadata): AnimationSt
 /**
  * `keyframes` is an animation-specific function that is designed to be used inside of Angular's
  * animation DSL language. If this information is new, please navigate to the {@link
- * Component#animations-anchor component animations metadata page} to gain a better understanding of
+ * Component#animations component animations metadata page} to gain a better understanding of
  * how animations in Angular are used.
  *
  * `keyframes` specifies a collection of {@link style style} entries each optionally characterized
@@ -448,7 +448,7 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
 /**
  * `transition` is an animation-specific function that is designed to be used inside of Angular's
  * animation DSL language. If this information is new, please navigate to the {@link
- * Component#animations-anchor component animations metadata page} to gain a better understanding of
+ * Component#animations component animations metadata page} to gain a better understanding of
  * how animations in Angular are used.
  *
  * `transition` declares the {@link sequence sequence of animation steps} that will be run when the
