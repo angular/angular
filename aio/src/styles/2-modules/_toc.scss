@@ -25,16 +25,18 @@ aio-toc {
       display: none;
     }
   }
+
 }
 
 aio-toc > div {
+  border-left: 4px solid #4285f4;
   font-size: 13px;
   overflow-y: visible;
   padding: 4px 0 0 10px;
 
   .toc-heading p {
     font-weight: 500;
-    margin: 0 0 0 -11px;
+    margin: 0;
     padding: 0;
   }
 
@@ -96,7 +98,7 @@ aio-toc > div {
   ul.toc-list {
     list-style-type: none;
     margin: 0;
-    padding: 0 8px;
+    padding: 0;
 
     @media (max-width: 800px) {
       width: auto;
@@ -108,24 +110,9 @@ aio-toc > div {
     font-size: 12px;
     line-height: 16px;
     margin: 6px 0;
-    padding: 0 16px;
+    padding: 0;
     position: relative;
     transition: all 0.3 ease-in-out;
-
-    &:before {
-      content: '';
-      border-radius: 50%;
-      left: -3px;
-      top: 10px;
-      background: $lightgray;
-      position: absolute;
-      width: 6px;
-      height: 6px;
-    }
-
-    &:last-child a:before {
-      width: 0;
-    }
 
     a {
       font-size: 12px;
@@ -135,17 +122,6 @@ aio-toc > div {
 
       &:hover {
         color: $accentblue;
-      }
-
-      &:before {
-        content: '';
-        left: -1px;
-        top: 10px;
-        background: $lightgray;
-        position: absolute;
-        display: block;
-        width: 1px;
-        height: calc(100% + 11px);
       }
     }
   }
