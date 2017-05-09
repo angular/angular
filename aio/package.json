@@ -13,7 +13,7 @@
     "test": "yarn check-env && ng test",
     "pree2e": "yarn ~~update-webdriver",
     "e2e": "yarn check-env && ng e2e --no-webdriver-update",
-    "setup": "yarn && yarn boilerplate:add && yarn docs &&  yarn generate-plunkers && yarn generate-zips",
+    "setup": "yarn && yarn boilerplate:add && yarn generate-plunkers && yarn generate-zips && yarn docs",
     "pretest-pwa-score-local": "yarn build",
     "test-pwa-score-local": "concurrently --kill-others --success first \"http-server dist -p 4200 --silent\" \"yarn test-pwa-score -- http://localhost:4200 90\"",
     "test-pwa-score": "node scripts/test-pwa-score",
