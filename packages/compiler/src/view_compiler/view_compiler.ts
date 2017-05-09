@@ -96,10 +96,10 @@ interface UpdateExpression {
   value: AST;
 }
 
-const LOG_VAR = o.variable('l');
-const VIEW_VAR = o.variable('v');
-const CHECK_VAR = o.variable('ck');
-const COMP_VAR = o.variable('co');
+const LOG_VAR = o.variable('_l');
+const VIEW_VAR = o.variable('_v');
+const CHECK_VAR = o.variable('_ck');
+const COMP_VAR = o.variable('_co');
 const EVENT_NAME_VAR = o.variable('en');
 const ALLOW_DEFAULT_VAR = o.variable(`ad`);
 
