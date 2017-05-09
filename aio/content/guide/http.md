@@ -181,8 +181,8 @@ The app uses the Angular <code>Http</code> client to communicate via **XMLHttpRe
 
 It works like this:
 
-<figure class='image-display'>
-  <img src='generated/images/guide/http/http-toh.gif' alt="ToH mini app" width="250"></img>
+<figure>
+  <img src='generated/images/guide/http/http-toh.gif' alt="ToH mini app" width="250" height="222">
 </figure>
 
 
@@ -749,8 +749,8 @@ Here is a simple search that shows suggestions from Wikipedia as the user
 types in a text box:
 
 
-<figure class='image-display'>
-  <img src='generated/images/guide/http/wiki-1.gif' alt="Wikipedia search app (v.1)" width="250"></img>
+<figure>
+  <img src='generated/images/guide/http/wiki-1.gif' alt="Wikipedia search app (v.1)" width="250" height="267">
 </figure>
 
 
@@ -868,8 +868,8 @@ Presently, the code calls the server after every keystroke.
 It should only make requests when the user *stops typing*.
 Here's how it will work after refactoring:
 
-<figure class='image-display'>
-  <img src='generated/images/guide/http/wiki-2.gif' alt="Wikipedia search app (v.2)" width="250"></img>
+<figure>
+  <img src='generated/images/guide/http/wiki-2.gif' alt="Wikipedia search app (v.2)" width="250" height="267">
 </figure>
 
 

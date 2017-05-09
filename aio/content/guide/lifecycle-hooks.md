@@ -6,13 +6,7 @@ Angular calls lifecycle hook methods on directives and components as it creates,
 
 @description
 
-
-
-<figure>
-  <img src="generated/images/guide/lifecycle-hooks/hooks-in-sequence.png" alt="Us" align="left" style="width:200px; margin-left:-40px;margin-right:30px"></img>
-</figure>
-
-
+<img src="generated/images/guide/lifecycle-hooks/hooks-in-sequence.png" alt="Us" class="left" width="200" height="283">
 
 A component has a lifecycle managed by Angular.
 
@@ -466,8 +460,8 @@ The peek-a-boo exists to show how Angular calls the hooks in the expected order.
 
 This snapshot reflects the state of the log after the user clicked the *Create...* button and then the *Destroy...* button.
 
-<figure class='image-display'>
-  <img src="generated/images/guide/lifecycle-hooks/peek-a-boo.png" alt="Peek-a-boo"></img>
+<figure>
+  <img src="generated/images/guide/lifecycle-hooks/peek-a-boo.png" alt="Peek-a-boo">
 </figure>
 
 
@@ -550,8 +544,8 @@ Each spy's birth and death marks the birth and death of the attached hero `<div>
 with an entry in the *Hook Log* as seen here:
 
 
-<figure class='image-display'>
-  <img src='generated/images/guide/lifecycle-hooks/spy-directive.gif' alt="Spy Directive"></img>
+<figure>
+  <img src='generated/images/guide/lifecycle-hooks/spy-directive.gif' alt="Spy Directive">
 </figure>
 
 
@@ -673,8 +667,8 @@ The host `OnChangesParentComponent` binds to them like this:
 Here's the sample in action as the user makes changes.
 
 
-<figure class='image-display'>
-  <img src='generated/images/guide/lifecycle-hooks/on-changes-anim.gif' alt="OnChanges"></img>
+<figure>
+  <img src='generated/images/guide/lifecycle-hooks/on-changes-anim.gif' alt="OnChanges">
 </figure>
 
 
@@ -719,8 +713,8 @@ It writes a special message to the log when there are no substantive changes to 
 so you can see how often `DoCheck` is called. The results are illuminating:
 
 
-<figure class='image-display'>
-  <img src='generated/images/guide/lifecycle-hooks/do-check-anim.gif' alt="DoCheck"></img>
+<figure>
+  <img src='generated/images/guide/lifecycle-hooks/do-check-anim.gif' alt="DoCheck">
 </figure>
 
 
@@ -796,8 +790,8 @@ for one turn of the browser's JavaScript cycle and that's just long enough.
 
 Here's *AfterView* in action:
 
-<figure class='image-display'>
-  <img src='generated/images/guide/lifecycle-hooks/after-view-anim.gif' alt="AfterView"></img>
+<figure>
+  <img src='generated/images/guide/lifecycle-hooks/after-view-anim.gif' alt="AfterView">
 </figure>
 
 
@@ -860,8 +854,8 @@ The `<ng-content>` tag is a *placeholder* for the external content.
 It tells Angular where to insert that content.
 In this case, the projected content is the `<my-child>` from the parent.
 
-<figure class='image-display'>
-  <img src='generated/images/guide/lifecycle-hooks/projected-child-view.png' width="230" alt="Projected Content"></img>
+<figure>
+  <img src='generated/images/guide/lifecycle-hooks/projected-child-view.png' alt="Projected Content">
 </figure>
 
 

@@ -761,8 +761,9 @@ nor property binding.
 Interpolation handles the script tags differently than property binding but both approaches render the
 content harmlessly.
 
-<figure class='image-display'>
-  <img src='generated/images/guide/template-syntax/evil-title.png' alt="evil title made safe" width='500px'></img>
+
+<figure>
+  <img src='generated/images/guide/template-syntax/evil-title.png' alt="evil title made safe" width="500" height="40">
 </figure>
 
 <a href="#toc">back to top</a>
@@ -1323,8 +1324,8 @@ The following contrived example forces the input value to uppercase:
 
 Here are all variations in action, including the uppercase version:
 
-<figure class='image-display'>
-  <img src='generated/images/guide/template-syntax/ng-model-anim.gif' alt="NgModel variations"></img>
+<figure>
+  <img src='generated/images/guide/template-syntax/ng-model-anim.gif' alt="NgModel variations">
 </figure>
 
 <a href="#toc">back to top</a>
@@ -1541,8 +1542,8 @@ Here is an illustration of the _trackBy_ effect.
 * With no `trackBy`, both buttons trigger complete DOM element replacement.
 * With `trackBy`, only changing the `id` triggers element replacement.
 
-<figure class='image-display'>
-  <img src='generated/images/guide/template-syntax/ng-for-track-by-anim.gif' alt="trackBy"></img>
+<figure>
+  <img src="generated/images/guide/template-syntax/ng-for-track-by-anim.gif" alt="trackBy">
 </figure>
 
 <a href="#toc">back to top</a>
@@ -1563,8 +1564,8 @@ Angular puts only the *selected* element into the DOM.
 <code-example path="template-syntax/src/app/app.component.html" region="NgSwitch" title="src/app/app.component.html" linenums="false">
 </code-example>
 
-<figure class='image-display'>
-  <img src='generated/images/guide/template-syntax/switch-anim.gif' alt="trackBy"></img>
+<figure>
+  <img src="generated/images/guide/template-syntax/switch-anim.gif alt="trackBy">
 </figure>
 
 `NgSwitch` is the controller directive. Bind it to an expression that returns the *switch value*.
@@ -1753,8 +1754,8 @@ Don't do both!
 
 The terms _input_ and _output_ reflect the perspective of the target directive.
 
-<figure class='image-display'>
-  <img src='generated/images/guide/template-syntax/input-output.png' alt="Inputs and outputs"></img>
+<figure>
+  <img src="generated/images/guide/template-syntax/input-output.png" alt="Inputs and outputs">
 </figure>
 
 `HeroDetailComponent.hero` is an **input** property from the perspective of `HeroDetailComponent`

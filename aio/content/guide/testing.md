@@ -392,8 +392,8 @@ The Angular CLI has different commands to do the same thing. Adjust accordingly.
 
 After a few moments, karma opens a browser and starts writing to the console.
 
-<figure class='image-display'>
-  <img src='generated/images/guide/testing/karma-browser.png' style="width:400px;" alt="Karma browser"></img>
+<figure>
+  <img src='generated/images/guide/testing/karma-browser.png' width="400" height="142" alt="Karma browser">
 </figure>
 
 
@@ -476,8 +476,8 @@ Debug specs in the browser in the same way that you debug an application.
   1. Refresh the browser, and it stops at the breakpoint.
 
 
-<figure class='image-display'>
-  <img src='generated/images/guide/testing/karma-1st-spec-debug.png' style="width:700px;" alt="Karma debugging"></img>
+<figure>
+  <img src='generated/images/guide/testing/karma-1st-spec-debug.png' width="700" height="150" alt="Karma debugging">
 </figure>
 
 
@@ -1919,8 +1919,8 @@ Inspect and download _all_ of the guide's application test code with this <live-
 
 The `HeroDetailComponent` is a simple view with a title, two hero fields, and two buttons.
 
-<figure class='image-display'>
-  <img src='generated/images/guide/testing/hero-detail.component.png' alt="HeroDetailComponent in action"></img>
+<figure>
+  <img src='generated/images/guide/testing/hero-detail.component.png' alt="HeroDetailComponent in action">
 </figure>
 
 
@@ -2510,8 +2510,8 @@ A better solution is to create an artificial test component that demonstrates al
 
 
 
-<figure class='image-display'>
-  <img src='generated/images/guide/testing/highlight-directive-spec.png' width="200px" alt="HighlightDirective spec in action"></img>
+<figure>
+  <img src='generated/images/guide/testing/highlight-directive-spec.png' width="200" height="159" alt="HighlightDirective spec in action">
 </figure>
 
 
