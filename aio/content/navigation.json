@@ -149,7 +149,7 @@
               "tooltip": "Angular calls lifecycle hook methods on directives and components as it creates, changes, and destroys them."
             },
             {
-              "url": "guide/component-communication",
+              "url": "guide/component-interaction",
               "title": "Component Interaction",
               "tooltip": "Share information between different directives and components."
             },
