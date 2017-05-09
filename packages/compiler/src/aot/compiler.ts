@@ -225,9 +225,16 @@ export class AotCompiler {
     const pipes = ngModule.transitiveModule.pipes.map(
         pipe => this._metadataResolver.getPipeSummary(pipe.reference));
 
-    const {template: parsedTemplate, pipes: usedPipes} = this._templateParser.parse(
+    const {template: parsedTemplate, htmlAst, pipes: usedPipes} = this._templateParser.parse(
         compMeta, compMeta.template !.template !, directives, pipes, ngModule.schemas,
         templateSourceUrl(ngModule.type, compMeta, compMeta.template !));
+
+    if (this._host.checkTemplate) {
+      const diagnostics =
+          this._host.checkTemplate(compMeta.type.reference, htmlAst, parsedTemplate, pipes);
+      this._templateParser.reportDiagnostics(diagnostics);
+    }
+
     const stylesExpr = componentStyles ? o.variable(componentStyles.stylesVar) : o.literalArr([]);
     const viewResult =
         this._viewCompiler.compileComponent(compMeta, parsedTemplate, stylesExpr, usedPipes);

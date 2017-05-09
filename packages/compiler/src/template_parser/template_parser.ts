@@ -98,8 +98,8 @@ export class TemplateParseError extends ParseError {
 
 export class TemplateParseResult {
   constructor(
-      public templateAst?: TemplateAst[], public usedPipes?: CompilePipeSummary[],
-      public errors?: ParseError[]) {}
+      public templateAst?: TemplateAst[], public htmlAst?: html.Node[],
+      public usedPipes?: CompilePipeSummary[], public errors?: ParseError[]) {}
 }
 
 @CompilerInjectable()
@@ -112,26 +112,33 @@ export class TemplateParser {
 
   parse(
       component: CompileDirectiveMetadata, template: string, directives: CompileDirectiveSummary[],
-      pipes: CompilePipeSummary[], schemas: SchemaMetadata[],
-      templateUrl: string): {template: TemplateAst[], pipes: CompilePipeSummary[]} {
+      pipes: CompilePipeSummary[], schemas: SchemaMetadata[], templateUrl: string):
+      {template: TemplateAst[], htmlAst: html.Node[], pipes: CompilePipeSummary[]} {
     const result = this.tryParse(component, template, directives, pipes, schemas, templateUrl);
-    const warnings =
-        result.errors !.filter(error => error.level === ParseErrorLevel.WARNING)
-            .filter(warnOnlyOnce(
-                [TEMPLATE_ATTR_DEPRECATION_WARNING, TEMPLATE_ELEMENT_DEPRECATION_WARNING]));
+    this.reportDiagnostics(result.errors);
 
-    const errors = result.errors !.filter(error => error.level === ParseErrorLevel.ERROR);
+    // If reportDiagnostics doesn't throw then templateAst, htmlAst, and usedPipes are all defined.
+    return {template: result.templateAst !, htmlAst: result.htmlAst !, pipes: result.usedPipes !};
+  }
 
-    if (warnings.length > 0) {
-      this._console.warn(`Template parse warnings:\n${warnings.join('\n')}`);
+  reportDiagnostics(diagnostics?: ParseError[]) {
+    if (diagnostics) {
+      const warnings =
+          diagnostics.filter(error => error.level === ParseErrorLevel.WARNING).filter(warnOnlyOnce([
+            TEMPLATE_ATTR_DEPRECATION_WARNING, TEMPLATE_ELEMENT_DEPRECATION_WARNING
+          ]));
+
+      const errors = diagnostics.filter(error => error.level === ParseErrorLevel.ERROR);
+
+      if (warnings.length > 0) {
+        this._console.warn(`Template parse warnings:\n${warnings.join('\n')}`);
+      }
+
+      if (errors.length > 0) {
+        const errorString = errors.join('\n');
+        throw syntaxError(`Template parse errors:\n${errorString}`);
+      }
     }
-
-    if (errors.length > 0) {
-      const errorString = errors.join('\n');
-      throw syntaxError(`Template parse errors:\n${errorString}`);
-    }
-
-    return {template: result.templateAst !, pipes: result.usedPipes !};
   }
 
   tryParse(
@@ -176,7 +183,7 @@ export class TemplateParser {
     this._assertNoReferenceDuplicationOnTemplate(result, errors);
 
     if (errors.length > 0) {
-      return new TemplateParseResult(result, usedPipes, errors);
+      return new TemplateParseResult(result, htmlAstWithErrors.rootNodes, usedPipes, errors);
     }
 
     if (this.transforms) {
@@ -184,7 +191,7 @@ export class TemplateParser {
           (transform: TemplateAstVisitor) => { result = templateVisitAll(transform, result); });
     }
 
-    return new TemplateParseResult(result, usedPipes, errors);
+    return new TemplateParseResult(result, htmlAstWithErrors.rootNodes, usedPipes, errors);
   }
 
   expandHtml(htmlAstWithErrors: ParseTreeResult, forced: boolean = false): ParseTreeResult {

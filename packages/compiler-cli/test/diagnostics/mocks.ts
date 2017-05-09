@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompilerHost, AotSummaryResolver, CompileMetadataResolver, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, I18NHtmlParser, InterpolationConfig, JitSummaryResolver, Lexer, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, Parser, PipeResolver, ResourceLoader, StaticAndDynamicReflectionCapabilities, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, SummaryResolver, TemplateParser, analyzeNgModules, createOfflineCompileUrlResolver, extractProgramSymbols} from '@angular/compiler';
+import {AotCompilerHost, AotSummaryResolver, CompileMetadataResolver, CompilePipeSummary, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, I18NHtmlParser, InterpolationConfig, JitSummaryResolver, Lexer, NgAnalyzedModules, NgModuleResolver, Node, ParseTreeResult, Parser, PipeResolver, ResourceLoader, StaticAndDynamicReflectionCapabilities, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, SummaryResolver, TemplateAst, TemplateParser, analyzeNgModules, createOfflineCompileUrlResolver, extractProgramSymbols} from '@angular/compiler';
 import {ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 import {CompilerHostContext} from 'compiler-cli';
 import * as fs from 'fs';
@@ -220,33 +220,23 @@ function compileTemplate(context: DiagnosticContext, type: StaticSymbol, templat
       const parseResult = parser.tryParseHtml(htmlResult, metadata, directives, pipes, schemas);
       return {
         htmlAst: htmlResult.rootNodes,
-        templateAst: parseResult.templateAst,
-        directive: metadata, directives, pipes,
+        templateAst: parseResult.templateAst, pipes,
         parseErrors: parseResult.errors, expressionParser
       };
     }
   }
 }
 
-export function getDiagnosticTemplateInfo(
-    context: DiagnosticContext, type: StaticSymbol, templateFile: string,
-    template: string): DiagnosticTemplateInfo|undefined {
+export function getDiagnosticInfo(
+    context: DiagnosticContext, type: StaticSymbol, templateFile: string, template: string):
+    {htmlAst: Node[], templateAst: TemplateAst[], pipes: CompilePipeSummary[]}|undefined {
   const compiledTemplate = compileTemplate(context, type, template);
   if (compiledTemplate && compiledTemplate.templateAst) {
-    const members = getClassMembers(context.program, context.checker, type);
-    if (members) {
-      const sourceFile = context.program.getSourceFile(type.filePath);
-      const query = getSymbolQuery(
-          context.program, context.checker, sourceFile,
-          () =>
-              getPipesTable(sourceFile, context.program, context.checker, compiledTemplate.pipes));
-      return {
-        fileName: templateFile,
-        offset: 0, query, members,
-        htmlAst: compiledTemplate.htmlAst,
-        templateAst: compiledTemplate.templateAst
-      };
-    }
+    return {
+      htmlAst: compiledTemplate.htmlAst,
+      templateAst: compiledTemplate.templateAst,
+      pipes: compiledTemplate.pipes
+    };
   }
 }
 

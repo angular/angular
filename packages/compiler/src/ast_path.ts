@@ -35,8 +35,9 @@ export class AstPath<T> {
   }
   childOf(node: T): T|undefined { return this.path[this.path.indexOf(node) + 1]; }
 
-  first<N extends T>(ctor: {new (...args: any[]): N}): N|undefined {
-    for (let i = this.path.length - 1; i >= 0; i--) {
+  first<N extends T>(ctor: {new (...args: any[]): N}, after?: T): N|undefined {
+    const s = after ? this.path.indexOf(after) - 1 : this.path.length - 1;
+    for (let i = s; i >= 0; i--) {
       let item = this.path[i];
       if (item instanceof ctor) return <N>item;
     }

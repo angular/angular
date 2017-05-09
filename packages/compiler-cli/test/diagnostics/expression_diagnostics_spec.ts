@@ -13,7 +13,7 @@ import * as ts from 'typescript';
 import {getExpressionDiagnostics, getTemplateExpressionDiagnostics} from '../../src/diagnostics/expression_diagnostics';
 import {Directory} from '../mocks';
 
-import {DiagnosticContext, MockLanguageServiceHost, getDiagnosticTemplateInfo} from './mocks';
+import {DiagnosticContext, MockLanguageServiceHost, getDiagnosticInfo} from './mocks';
 
 describe('expression diagnostics', () => {
   let registry: ts.DocumentRegistry;
@@ -33,6 +33,7 @@ describe('expression diagnostics', () => {
     const options: AngularCompilerOptions = Object.create(host.getCompilationSettings());
     options.genDir = '/dist';
     options.basePath = '/src';
+    options.expressionDiagnostics = 'error';
     aotHost = new CompilerHost(program, options, host, {verboseInvalidExpression: true});
     context = new DiagnosticContext(service, program, checker, aotHost);
     type = context.getStaticSymbol('app/app.component.ts', 'AppComponent');
@@ -63,11 +64,11 @@ describe('expression diagnostics', () => {
 
 
   function accept(template: string) {
-    const info = getDiagnosticTemplateInfo(context, type, 'app/app.component.html', template);
+    const info = getDiagnosticInfo(context, type, 'app/app.component.html', template);
     if (info) {
-      const diagnostics = getTemplateExpressionDiagnostics(info);
+      const diagnostics = aotHost.checkTemplate(type, info.htmlAst, info.templateAst, info.pipes);
       if (diagnostics && diagnostics.length) {
-        const message = diagnostics.map(d => d.message).join('\n  ');
+        const message = diagnostics.map(d => d.msg).join('\n  ');
         throw new Error(`Unexpected diagnostics: ${message}`);
       }
     } else {
@@ -76,11 +77,11 @@ describe('expression diagnostics', () => {
   }
 
   function reject(template: string, expected: string | RegExp) {
-    const info = getDiagnosticTemplateInfo(context, type, 'app/app.component.html', template);
+    const info = getDiagnosticInfo(context, type, 'app/app.component.html', template);
     if (info) {
-      const diagnostics = getTemplateExpressionDiagnostics(info);
+      const diagnostics = aotHost.checkTemplate(type, info.htmlAst, info.templateAst, info.pipes);
       if (diagnostics && diagnostics.length) {
-        const messages = diagnostics.map(d => d.message).join('\n  ');
+        const messages = diagnostics.map(d => d.msg).join('\n  ');
         expect(messages).toContain(expected);
       } else {
         throw new Error(`Expected an error containing "${expected} in template "${template}"`);
@@ -131,6 +132,26 @@ describe('expression diagnostics', () => {
       </div>
     `,
                                                            'Identifier \'nume\' is not defined'));
+
+  it('should accept a nested *ngFor', () => accept(`
+    <div *ngFor="let row of person_square">
+      <div *ngFor="let person of row">
+        {{person.name.first}} {{person.name.last}}
+      </div>
+    </div>
+  `));
+
+  it('should reject a misspelled reference to a nested *ngFor let',
+     () => reject(
+         `
+    <div *ngFor="let row of person_square">
+      <div *ngFor="let person of row">
+        {{person.nume.first}} {{person.name.last}}
+      </div>
+    </div>
+  `,
+         'Identifier \'nume\' is not defined'));
+
   it('should reject access to potentially undefined field',
      () => reject(`<div>{{maybe_person.name.first}}`, 'The expression might be null'));
   it('should accept a safe accss to an undefined field',
@@ -173,7 +194,6 @@ describe('expression diagnostics', () => {
   it('should reject an uncalled event handler',
      () => reject(
          '<div (click)="click">{{person.name.first}}</div>', 'Unexpected callable expression'));
-
 });
 
 const FILES: Directory = {
@@ -209,6 +229,7 @@ const FILES: Directory = {
         export class AppComponent {
           person: Person;
           people: Person[];
+          person_square: Person[][];
           maybe_person?: Person;
           promised_person: Promise<Person>;
           promised_people: Promise<Person[]>;

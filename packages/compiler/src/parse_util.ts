@@ -96,7 +96,45 @@ export class ParseLocation {
 }
 
 export class ParseSourceFile {
-  constructor(public content: string, public url: string) {}
+  private _lineStarts: number[]|undefined;
+
+  constructor(public readonly content: string, public url: string) {}
+
+  lineColOf(offset: number): {line: number, col: number} {
+    if (offset < 0) offset = 0;
+    if (offset > this.content.length) offset = this.content.length;
+    const lineStarts = this.lineStarts;
+    // TODO: Consider using a binary search
+    let line = 1;
+    for (; lineStarts[line] <= offset; line++)
+      ;
+    line--;
+    if (line < 0) line = lineStarts.length - 1;
+    const col = offset - lineStarts[line];
+    return {line, col};
+  }
+
+  offsetOf(line: number, col: number): number {
+    const lineStarts = this.lineStarts;
+    if (line < 0 || col < 0) return 0;
+    if (line >= lineStarts.length) return this.content.length;
+    return lineStarts[line] + col;
+  }
+
+  private get lineStarts(): number[] {
+    let result = this._lineStarts;
+    if (!result) {
+      this._lineStarts = result = [0];
+      const content = this.content;
+      const len = this.content.length;
+      for (let offset = 0; offset < len; offset++) {
+        const ch = content[offset];
+        if (ch == '\n') result.push(offset + 1);
+      }
+      result.push(len + 1);
+    }
+    return result;
+  }
 }
 
 export class ParseSourceSpan {
