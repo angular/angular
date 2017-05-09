@@ -18,7 +18,7 @@ let downgradeCount = 0;
 /**
  * @whatItDoes
  *
- * *Part of the [upgrade/static](/docs/ts/latest/api/#!?query=upgrade%2Fstatic)
+ * *Part of the [upgrade/static](api?query=upgrade%2Fstatic)
  * library for hybrid upgrade apps that support AoT compilation*
  *
  * Allows an Angular component to be used from AngularJS.

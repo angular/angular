@@ -113,7 +113,7 @@ export abstract class ReflectiveInjector implements Injector {
    *
    * This function is slower than the corresponding `fromResolvedProviders`
    * because it needs to resolve the passed-in providers first.
-   * See {@link Injector#resolve} and {@link Injector#fromResolvedProviders}.
+   * See {@link ReflectiveInjector#resolve} and {@link ReflectiveInjector#fromResolvedProviders}.
    */
   static resolveAndCreate(providers: Provider[], parent?: Injector): ReflectiveInjector {
     const ResolvedReflectiveProviders = ReflectiveInjector.resolve(providers);
@@ -190,7 +190,7 @@ export abstract class ReflectiveInjector implements Injector {
    *
    * This function is slower than the corresponding `createChildFromResolved`
    * because it needs to resolve the passed-in providers first.
-   * See {@link Injector#resolve} and {@link Injector#createChildFromResolved}.
+   * See {@link ReflectiveInjector#resolve} and {@link ReflectiveInjector#createChildFromResolved}.
    */
   abstract resolveAndCreateChild(providers: Provider[]): ReflectiveInjector;
 
