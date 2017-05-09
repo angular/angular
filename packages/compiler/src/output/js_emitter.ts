@@ -62,7 +62,7 @@ class JsEmitterVisitor extends AbstractJsEmitterVisitor {
     if (filePath != this._genFilePath) {
       let prefix = this.importsWithPrefixes.get(filePath);
       if (prefix == null) {
-        prefix = `import${this.importsWithPrefixes.size}`;
+        prefix = `i${this.importsWithPrefixes.size}`;
         this.importsWithPrefixes.set(filePath, prefix);
       }
       ctx.print(ast, `${prefix}.`);

@@ -386,7 +386,7 @@ describe('compiler (unbundled Angular)', () => {
                const mainNgFactory = genFiles.find(gf => gf.srcFileUrl === '/app/main.ts');
                const flags = NodeFlags.TypeDirective | NodeFlags.Component | NodeFlags.OnDestroy;
                expect(mainNgFactory.source)
-                   .toContain(`${flags},(null as any),0,import1.Extends,[import2.AParam]`);
+                   .toContain(`${flags},(null as any),0,i1.Extends,[i2.AParam]`);
              });
        }));
 
@@ -438,7 +438,7 @@ describe('compiler (unbundled Angular)', () => {
                const mainNgFactory = genFiles.find(gf => gf.srcFileUrl === '/app/main.ts');
                const flags = NodeFlags.TypeDirective | NodeFlags.Component | NodeFlags.OnDestroy;
                expect(mainNgFactory.source)
-                   .toContain(`${flags},(null as any),0,import1.Extends,[import2.AParam_2]`);
+                   .toContain(`${flags},(null as any),0,i1.Extends,[i2.AParam_2]`);
              });
        }));
 
