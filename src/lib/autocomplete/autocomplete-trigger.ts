@@ -129,6 +129,7 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
     } else {
       /** Update the panel width, in case the host width has changed */
       this._overlayRef.getState().width = this._getHostWidth();
+      this._overlayRef.updateSize();
     }
 
     if (!this._overlayRef.hasAttached()) {

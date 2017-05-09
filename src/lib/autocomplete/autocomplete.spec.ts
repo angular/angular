@@ -1145,7 +1145,7 @@ describe('MdAutocomplete', () => {
 
     const overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
     // Firefox, edge return a decimal value for width, so we need to parse and round it to verify
-    expect(Math.ceil(parseFloat(overlayPane.style.width))).toEqual(300);
+    expect(Math.ceil(parseFloat(overlayPane.style.width))).toBe(300);
 
     widthFixture.componentInstance.trigger.closePanel();
     widthFixture.detectChanges();
@@ -1157,8 +1157,31 @@ describe('MdAutocomplete', () => {
     widthFixture.detectChanges();
 
     // Firefox, edge return a decimal value for width, so we need to parse and round it to verify
-    expect(Math.ceil(parseFloat(overlayPane.style.width))).toEqual(500);
+    expect(Math.ceil(parseFloat(overlayPane.style.width))).toBe(500);
+  });
 
+  it('should update the width while the panel is open', () => {
+    const widthFixture = TestBed.createComponent(SimpleAutocomplete);
+
+    widthFixture.componentInstance.width = 300;
+    widthFixture.detectChanges();
+
+    widthFixture.componentInstance.trigger.openPanel();
+    widthFixture.detectChanges();
+
+    const overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
+    const input = widthFixture.debugElement.query(By.css('input')).nativeElement;
+
+    expect(Math.ceil(parseFloat(overlayPane.style.width))).toBe(300);
+
+    widthFixture.componentInstance.width = 500;
+    widthFixture.detectChanges();
+
+    input.focus();
+    dispatchFakeEvent(input, 'input');
+    widthFixture.detectChanges();
+
+    expect(Math.ceil(parseFloat(overlayPane.style.width))).toBe(500);
   });
 
   it('should show the panel when the options are initialized later within a component with ' +
