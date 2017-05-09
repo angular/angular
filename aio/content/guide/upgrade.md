@@ -339,8 +339,8 @@ everything work seamlessly:
   use in AngularJS.
 
 
-<figure class='image-display'>
-  <img src="generated/images/guide/upgrade/injectors.png" alt="The two injectors in a hybrid application" width="700"></img>
+<figure>
+  <img src="generated/images/guide/upgrade/injectors.png" alt="The two injectors in a hybrid application" width="700" height="262">
 </figure>
 
 
@@ -384,8 +384,8 @@ ways:
    and Angular content projection together.
 
 
-<figure class='image-display'>
-  <img src="generated/images/guide/upgrade/dom.png" alt="DOM element ownership in a hybrid application" width="500"></img>
+<figure>
+  <img src="generated/images/guide/upgrade/dom.png" alt="DOM element ownership in a hybrid application" width="500" height="294">
 </figure>
 
 
@@ -438,8 +438,8 @@ AngularJS and Angular approaches. Here's what happens:
   detection after every event.
 
 
-<figure class='image-display'>
-  <img src="generated/images/guide/upgrade/change_detection.png" alt="Change detection in a hybrid application" width="600"></img>
+<figure>
+  <img src="generated/images/guide/upgrade/change_detection.png" alt="Change detection in a hybrid application" width="600" height="163">
 </figure>
 
 
@@ -572,9 +572,7 @@ existing AngularJS code works as before _and_ you're ready to run Angular code.
 
 ### Using Angular Components from AngularJS Code
 
-<figure>
-  <img src="generated/images/guide/upgrade/ajs-to-a.png" alt="Using an Angular component from AngularJS code" align="left" style="width:250px; margin-left:-40px;margin-right:10px"></img>
-</figure>
+<img src="generated/images/guide/upgrade/ajs-to-a.png" alt="Using an Angular component from AngularJS code" class="left" width="250" height="44">
 
 
 
@@ -736,10 +734,7 @@ For  example, we can easily make multiple copies of the component using `ng-repe
 
 ### Using AngularJS Component Directives from Angular Code
 
-<figure>
-  <img src="generated/images/guide/upgrade/a-to-ajs.png" alt="Using an AngularJS component from Angular code" align="left" style="width:250px; margin-left:-40px;margin-right:10px"></img>
-</figure>
-
+<img src="generated/images/guide/upgrade/a-to-ajs.png" alt="Using an AngularJS component from Angular code" class="left" width="250" height="44">
 
 
 So, we can write an Angular component and then use it from AngularJS
@@ -939,10 +934,7 @@ and then provide the input and output using Angular template syntax:
 
 ### Projecting AngularJS Content into Angular Components
 
-<figure>
-  <img src="generated/images/guide/upgrade/ajs-to-a-with-projection.png" alt="Projecting AngularJS content into Angular" align="left" style="width:250px; margin-left:-40px;margin-right:10px"></img>
-</figure>
-
+<img src="generated/images/guide/upgrade/ajs-to-a-with-projection.png" alt="Projecting AngularJS content into Angular" class="left" width="250" height="48">
 
 
 When we are using a downgraded Angular component from an AngularJS
@@ -986,11 +978,7 @@ remains in "AngularJS land" and is managed by the AngularJS framework.
 
 ### Transcluding Angular Content into AngularJS Component Directives
 
-<figure>
-  <img src="generated/images/guide/upgrade/a-to-ajs-with-transclusion.png" alt="Projecting Angular content into AngularJS" align="left" style="width:250px; margin-left:-40px;margin-right:10px"></img>
-</figure>
-
-
+<img src="generated/images/guide/upgrade/a-to-ajs-with-transclusion.png" alt="Projecting Angular content into AngularJS" class="left" width="250" height="48">
 
 Just like we can project AngularJS content into Angular components,
 we can *transclude* Angular content into AngularJS components, whenever

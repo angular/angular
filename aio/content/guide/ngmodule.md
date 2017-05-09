@@ -661,6 +661,7 @@ The app file structure looks like this:
 
 
 Try the example:
+
 <live-example embedded plnkr="contact.1b" img="guide/ngmodule/contact-1b-plunker.png"></live-example>
 
 

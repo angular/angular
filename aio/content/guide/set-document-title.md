@@ -15,28 +15,16 @@ This cookbook explains how to do it.
 
 See the <live-example name="set-document-title"></live-example>.
 
+<div class="l-sub-section clearfix">
 
-<table>
+<img src='generated/images/plunker/plunker-switch-to-editor-button.png' width="200" height="70" alt="pop out the window" class="right">
+<img src='generated/images/plunker/plunker-separate-window-button.png' width="200" height="47" alt="pop out the window" class="right">
 
-  <tr>
+To see the browser title bar change in the live example,
+open it again in the Plunker editor by clicking the icon in the upper right,
+then pop out the preview window by clicking the blue 'X' button in the upper right corner.
 
-    <td>
-
-
-      To see the browser title bar change in the live example,
-      open it again in the Plunker editor by clicking the icon in the upper right,
-      then pop out the preview window by clicking the blue 'X' button in the upper right corner.
-    </td>
-
-    <td>
-      <img src='generated/images/plunker/plunker-switch-to-editor-button.png' width="200px" height="70px" alt="pop out the window" align="right"></img>      <br></br>      <img src='generated/images/plunker/plunker-separate-window-button.png' width="200px" height="47px" alt="pop out the window" align="right"></img>
-    </td>
-
-  </tr>
-
-</table>
-
-
+</div>
 
 ## The problem with *&lt;title&gt;*
 
@@ -88,8 +76,8 @@ You can inject the `Title` service into the root `AppComponent` and expose a bin
 
 Bind that method to three anchor tags and voilà!
 
-<figure class='image-display'>
-  <img src="generated/images/guide/set-document-title/set-title-anim.gif" alt="Set title"></img>
+<figure>
+  <img src="generated/images/guide/set-document-title/set-title-anim.gif" alt="Set title">
 </figure>
 
 
