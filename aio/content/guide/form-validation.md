@@ -62,7 +62,7 @@ and the [Reactive Forms](guide/reactive-forms) guides.
 
 **Try the live example to see and download the full cookbook source code.**
 
-<live-example name="form-validation" embedded=true img="cookbooks/form-validation/plunker.png">
+<live-example name="form-validation" embedded=true img="guide/form-validation/plunker.png">
 
 </live-example>
 

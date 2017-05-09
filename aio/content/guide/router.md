@@ -2291,13 +2291,9 @@ After these changes, the folder structure looks like this:
 
   </div>
 
-  <Here>
-    are the relevant files for this version of the sample application.
-  </Here>
-
 </div>
 
-
+Here are the relevant files for this version of the sample application.
 
 <code-tabs>
 
