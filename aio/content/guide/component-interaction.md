@@ -15,15 +15,15 @@ in which two or more components share information.
 
 # Contents
 
-* [Pass data from parent to child with input binding](guide/component-communication#parent-to-child)
-* [Intercept input property changes with a setter](guide/component-communication#parent-to-child-setter)
-* [Intercept input property changes with `ngOnChanges()`](guide/component-communication#parent-to-child-on-changes)
-* [Parent calls an `@ViewChild()`](guide/component-communication#parent-to-view-child)
-* [Parent and children communicate via a service](guide/component-communication#bidirectional-service)
+* [Pass data from parent to child with input binding](guide/component-interaction#parent-to-child)
+* [Intercept input property changes with a setter](guide/component-interaction#parent-to-child-setter)
+* [Intercept input property changes with `ngOnChanges()`](guide/component-interaction#parent-to-child-on-changes)
+* [Parent calls an `@ViewChild()`](guide/component-interaction#parent-to-view-child)
+* [Parent and children communicate via a service](guide/component-interaction#bidirectional-service)
 
 -->
 
-**See the <live-example name="component-communication"></live-example>**.
+**See the <live-example name="component-interaction"></live-example>**.
 
 {@a parent-to-child}
 
@@ -33,7 +33,7 @@ in which two or more components share information.
 typically adorned with [@Input decorations](guide/template-syntax#inputs-outputs).
 
 
-<code-example path="component-communication/src/app/hero-child.component.ts" title="component-communication/src/app/hero-child.component.ts">
+<code-example path="component-interaction/src/app/hero-child.component.ts" title="component-interaction/src/app/hero-child.component.ts">
 
 </code-example>
 
@@ -46,7 +46,7 @@ binding its `master` string property to the child's `master` alias,
 and each iteration's `hero` instance to the child's `hero` property.
 
 
-<code-example path="component-communication/src/app/hero-parent.component.ts" title="component-communication/src/app/hero-parent.component.ts">
+<code-example path="component-interaction/src/app/hero-parent.component.ts" title="component-interaction/src/app/hero-parent.component.ts">
 
 </code-example>
 
@@ -56,23 +56,23 @@ The running application displays three heroes:
 
 
 <figure class='image-display'>
-  <img src="generated/images/guide/component-communication/parent-to-child.png" alt="Parent-to-child"></img>
+  <img src="generated/images/guide/component-interaction/parent-to-child.png" alt="Parent-to-child"></img>
 </figure>
 
 
 
-### Test it
+<h3 class="no-toc">Test it</h3>
 
 E2E test that all children were instantiated and displayed as expected:
 
 
-<code-example path="component-communication/e2e-spec.ts" region="parent-to-child" title="component-communication/e2e-spec.ts">
+<code-example path="component-interaction/e2e-spec.ts" region="parent-to-child" title="component-interaction/e2e-spec.ts">
 
 </code-example>
 
 
 
-[Back to top](guide/component-communication#top)
+[Back to top](guide/component-interaction#top)
 
 {@a parent-to-child-setter}
 
@@ -84,7 +84,7 @@ The setter of the `name` input property in the child `NameChildComponent`
 trims the whitespace from a name and replaces an empty value with default text.
 
 
-<code-example path="component-communication/src/app/name-child.component.ts" title="component-communication/src/app/name-child.component.ts">
+<code-example path="component-interaction/src/app/name-child.component.ts" title="component-interaction/src/app/name-child.component.ts">
 
 </code-example>
 
@@ -93,30 +93,30 @@ trims the whitespace from a name and replaces an empty value with default text.
 Here's the `NameParentComponent` demonstrating name variations including a name with all spaces:
 
 
-<code-example path="component-communication/src/app/name-parent.component.ts" title="component-communication/src/app/name-parent.component.ts">
+<code-example path="component-interaction/src/app/name-parent.component.ts" title="component-interaction/src/app/name-parent.component.ts">
 
 </code-example>
 
 
 
 <figure class='image-display'>
-  <img src="generated/images/guide/component-communication/setter.png" alt="Parent-to-child-setter"></img>
+  <img src="generated/images/guide/component-interaction/setter.png" alt="Parent-to-child-setter"></img>
 </figure>
 
 
 
-### Test it
+<h3 class="no-toc">Test it</h3>
 
 E2E tests of input property setter with empty and non-empty names:
 
 
-<code-example path="component-communication/e2e-spec.ts" region="parent-to-child-setter" title="component-communication/e2e-spec.ts">
+<code-example path="component-interaction/e2e-spec.ts" region="parent-to-child-setter" title="component-interaction/e2e-spec.ts">
 
 </code-example>
 
 
 
-[Back to top](guide/component-communication#top)
+[Back to top](guide/component-interaction#top)
 
 {@a parent-to-child-on-changes}
 
@@ -139,7 +139,7 @@ Learn about `ngOnChanges()` in the [LifeCycle Hooks](guide/lifecycle-hooks) chap
 This `VersionChildComponent` detects changes to the `major` and `minor` input properties and composes a log message reporting these changes:
 
 
-<code-example path="component-communication/src/app/version-child.component.ts" title="component-communication/src/app/version-child.component.ts">
+<code-example path="component-interaction/src/app/version-child.component.ts" title="component-interaction/src/app/version-child.component.ts">
 
 </code-example>
 
@@ -148,7 +148,7 @@ This `VersionChildComponent` detects changes to the `major` and `minor` input pr
 The `VersionParentComponent` supplies the `minor` and `major` values and binds buttons to methods that change them.
 
 
-<code-example path="component-communication/src/app/version-parent.component.ts" title="component-communication/src/app/version-parent.component.ts">
+<code-example path="component-interaction/src/app/version-parent.component.ts" title="component-interaction/src/app/version-parent.component.ts">
 
 </code-example>
 
@@ -158,24 +158,24 @@ Here's the output of a button-pushing sequence:
 
 
 <figure class='image-display'>
-  <img src="generated/images/guide/component-communication/parent-to-child-on-changes.gif" alt="Parent-to-child-onchanges"></img>
+  <img src="generated/images/guide/component-interaction/parent-to-child-on-changes.gif" alt="Parent-to-child-onchanges"></img>
 </figure>
 
 
 
-### Test it
+<h3 class="no-toc">Test it</h3>
 
 Test that ***both*** input properties are set initially and that button clicks trigger
 the expected `ngOnChanges` calls and values:
 
 
-<code-example path="component-communication/e2e-spec.ts" region="parent-to-child-onchanges" title="component-communication/e2e-spec.ts">
+<code-example path="component-interaction/e2e-spec.ts" region="parent-to-child-onchanges" title="component-interaction/e2e-spec.ts">
 
 </code-example>
 
 
 
-[Back to top](guide/component-communication#top)
+[Back to top](guide/component-interaction#top)
 
 {@a child-to-parent}
 
@@ -189,7 +189,7 @@ The child's `EventEmitter` property is an ***output property***,
   as seen in this `VoterComponent`:
 
 
-<code-example path="component-communication/src/app/voter.component.ts" title="component-communication/src/app/voter.component.ts">
+<code-example path="component-interaction/src/app/voter.component.ts" title="component-interaction/src/app/voter.component.ts">
 
 </code-example>
 
@@ -201,7 +201,7 @@ The parent `VoteTakerComponent` binds an event handler called `onVoted()` that r
 payload `$event` and updates a counter.
 
 
-<code-example path="component-communication/src/app/votetaker.component.ts" title="component-communication/src/app/votetaker.component.ts">
+<code-example path="component-interaction/src/app/votetaker.component.ts" title="component-interaction/src/app/votetaker.component.ts">
 
 </code-example>
 
@@ -212,23 +212,23 @@ and the method processes it:
 
 
 <figure class='image-display'>
-  <img src="generated/images/guide/component-communication/child-to-parent.gif" alt="Child-to-parent"></img>
+  <img src="generated/images/guide/component-interaction/child-to-parent.gif" alt="Child-to-parent"></img>
 </figure>
 
 
 
-### Test it
+<h3 class="no-toc">Test it</h3>
 
 Test that clicking the *Agree* and *Disagree* buttons update the appropriate counters:
 
 
-<code-example path="component-communication/e2e-spec.ts" region="child-to-parent" title="component-communication/e2e-spec.ts">
+<code-example path="component-interaction/e2e-spec.ts" region="child-to-parent" title="component-interaction/e2e-spec.ts">
 
 </code-example>
 
 
 
-[Back to top](guide/component-communication#top)
+[Back to top](guide/component-interaction#top)
 
 
 
@@ -245,7 +245,7 @@ The following is a child `CountdownTimerComponent` that repeatedly counts down t
 It has `start` and `stop` methods that control the clock and it displays a
 countdown status message in its own template.
 
-<code-example path="component-communication/src/app/countdown-timer.component.ts" title="component-communication/src/app/countdown-timer.component.ts">
+<code-example path="component-interaction/src/app/countdown-timer.component.ts" title="component-interaction/src/app/countdown-timer.component.ts">
 
 </code-example>
 
@@ -254,7 +254,7 @@ countdown status message in its own template.
 The `CountdownLocalVarParentComponent` that hosts the timer component is as follows:
 
 
-<code-example path="component-communication/src/app/countdown-parent.component.ts" region="lv" title="component-communication/src/app/countdown-parent.component.ts">
+<code-example path="component-interaction/src/app/countdown-parent.component.ts" region="lv" title="component-interaction/src/app/countdown-parent.component.ts">
 
 </code-example>
 
@@ -274,7 +274,7 @@ Here we see the parent and child working together.
 
 
 <figure class='image-display'>
-  <img src="generated/images/guide/component-communication/countdown-timer-anim.gif" alt="countdown timer"></img>
+  <img src="generated/images/guide/component-interaction/countdown-timer-anim.gif" alt="countdown timer"></img>
 </figure>
 
 
@@ -282,20 +282,20 @@ Here we see the parent and child working together.
 {@a countdown-tests}
 
 
-### Test it
+<h3 class="no-toc">Test it</h3>
 
 Test that the seconds displayed in the parent template
 match the seconds displayed in the child's status message.
 Test also that clicking the *Stop* button pauses the countdown timer:
 
 
-<code-example path="component-communication/e2e-spec.ts" region="countdown-timer-tests" title="component-communication/e2e-spec.ts">
+<code-example path="component-interaction/e2e-spec.ts" region="countdown-timer-tests" title="component-interaction/e2e-spec.ts">
 
 </code-example>
 
 
 
-[Back to top](guide/component-communication#top)
+[Back to top](guide/component-interaction#top)
 
 {@a parent-to-view-child}
 
@@ -312,9 +312,9 @@ When the parent component *class* requires that kind of access,
 ***inject*** the child component into the parent as a *ViewChild*.
 
 The following example illustrates this technique with the same
-[Countdown Timer](guide/component-communication#countdown-timer-example) example.
+[Countdown Timer](guide/component-interaction#countdown-timer-example) example.
 Neither its appearance nor its behavior will change.
-The child [CountdownTimerComponent](guide/component-communication#countdown-timer-example) is the same as well.
+The child [CountdownTimerComponent](guide/component-interaction#countdown-timer-example) is the same as well.
 
 <div class="l-sub-section">
 
@@ -329,7 +329,7 @@ is solely for the purpose of demonstration.
 
 Here is the parent, `CountdownViewChildParentComponent`:
 
-<code-example path="component-communication/src/app/countdown-parent.component.ts" region="vc" title="component-communication/src/app/countdown-parent.component.ts">
+<code-example path="component-interaction/src/app/countdown-parent.component.ts" region="vc" title="component-interaction/src/app/countdown-parent.component.ts">
 
 </code-example>
 
@@ -360,10 +360,10 @@ in the same cycle. The app has to *wait one turn* before it can display the seco
 Use `setTimeout()` to wait one tick and then revise the `seconds()` method so
 that it takes future values from the timer component.
 
-### Test it
-Use [the same countdown timer tests](guide/component-communication#countdown-tests) as before.
+<h3 class="no-toc">Test it</h3>
+Use [the same countdown timer tests](guide/component-interaction#countdown-tests) as before.
 
-[Back to top](guide/component-communication#top)
+[Back to top](guide/component-interaction#top)
 
 {@a bidirectional-service}
 
@@ -378,7 +378,7 @@ Components outside this component subtree have no access to the service or their
 This `MissionService` connects the `MissionControlComponent` to multiple `AstronautComponent` children.
 
 
-<code-example path="component-communication/src/app/mission.service.ts" title="component-communication/src/app/mission.service.ts">
+<code-example path="component-interaction/src/app/mission.service.ts" title="component-interaction/src/app/mission.service.ts">
 
 </code-example>
 
@@ -388,7 +388,7 @@ The `MissionControlComponent` both provides the instance of the service that it 
 (through the `providers` metadata array) and injects that instance into itself through its constructor:
 
 
-<code-example path="component-communication/src/app/missioncontrol.component.ts" title="component-communication/src/app/missioncontrol.component.ts">
+<code-example path="component-interaction/src/app/missioncontrol.component.ts" title="component-interaction/src/app/missioncontrol.component.ts">
 
 </code-example>
 
@@ -398,7 +398,7 @@ The `AstronautComponent` also injects the service in its constructor.
 Each `AstronautComponent` is a child of the `MissionControlComponent` and therefore receives its parent's service instance:
 
 
-<code-example path="component-communication/src/app/astronaut.component.ts" title="component-communication/src/app/astronaut.component.ts">
+<code-example path="component-interaction/src/app/astronaut.component.ts" title="component-interaction/src/app/astronaut.component.ts">
 
 </code-example>
 
@@ -426,21 +426,21 @@ facilitated by the service:
 
 
 <figure class='image-display'>
-  <img src="generated/images/guide/component-communication/bidirectional-service.gif" alt="bidirectional-service"></img>
+  <img src="generated/images/guide/component-interaction/bidirectional-service.gif" alt="bidirectional-service"></img>
 </figure>
 
 
 
-### Test it
+<h3 class="no-toc">Test it</h3>
 
 Tests click buttons of both the parent `MissionControlComponent` and the `AstronautComponent` children
 and verify that the history meets expectations:
 
 
-<code-example path="component-communication/e2e-spec.ts" region="bidirectional-service" title="component-communication/e2e-spec.ts">
+<code-example path="component-interaction/e2e-spec.ts" region="bidirectional-service" title="component-interaction/e2e-spec.ts">
 
 </code-example>
 
 
 
-[Back to top](guide/component-communication#top)
+[Back to top](guide/component-interaction#top)
