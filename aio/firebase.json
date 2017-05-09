@@ -13,6 +13,9 @@
       {"type": 301, "source": "/docs/ts/latest/guide/server-communication.html", "destination": "/guide/http"},
       {"type": 301, "source": "/docs/ts/latest/guide/style-guide.html", "destination": "/guide/styleguide"},
 
+      // cookbook/component-communication.html
+      {"type": 301, "source": "/docs/ts/latest/cookbook/component-communication.html", "destination": "/guide/component-interaction"},
+
       // cookbook, cookbook/, cookbook/index.html
       {"type": 301, "source": "/docs/ts/latest/cookbook",            "destination": "/docs"},
       {"type": 301, "source": "/docs/ts/latest/cookbook/",           "destination": "/docs"},
