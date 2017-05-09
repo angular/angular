@@ -194,7 +194,7 @@ with excellent support for Angular apps that use routing.
 ***[typescript](https://www.npmjs.com/package/typescript)***:
 the TypeScript language server, including the *tsc* TypeScript compiler.
 
-***@types/\****: TypeScript definition files.
+***@types/\* ***: TypeScript definition files.
 Learn more about it in the [TypeScript Configuration](guide/typescript-configuration#typings) guide.
 
 
