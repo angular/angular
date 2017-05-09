@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstVisitor, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead, visitAstChildren} from '@angular/compiler';
+import {AST, AstVisitor, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead, visitAstChildren} from '@angular/compiler';
 
 import {BuiltinType, Signature, Span, Symbol, SymbolQuery, SymbolTable} from './symbols';
 
@@ -281,6 +281,11 @@ export class AstType implements AstVisitor {
   visitPrefixNot(ast: PrefixNot) {
     // The type of a prefix ! is always boolean.
     return this.query.getBuiltinType(BuiltinType.Boolean);
+  }
+
+  visitNonNullAssert(ast: NonNullAssert) {
+    const expressionType = this.getType(ast.expression);
+    return this.query.getNonNullableType(expressionType);
   }
 
   visitPropertyRead(ast: PropertyRead) {

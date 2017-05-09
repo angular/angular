@@ -166,6 +166,13 @@ export class PrefixNot extends AST {
   }
 }
 
+export class NonNullAssert extends AST {
+  constructor(span: ParseSpan, public expression: AST) { super(span); }
+  visit(visitor: AstVisitor, context: any = null): any {
+    return visitor.visitNonNullAssert(this, context);
+  }
+}
+
 export class MethodCall extends AST {
   constructor(span: ParseSpan, public receiver: AST, public name: string, public args: any[]) {
     super(span);
@@ -222,6 +229,7 @@ export interface AstVisitor {
   visitMethodCall(ast: MethodCall, context: any): any;
   visitPipe(ast: BindingPipe, context: any): any;
   visitPrefixNot(ast: PrefixNot, context: any): any;
+  visitNonNullAssert(ast: NonNullAssert, context: any): any;
   visitPropertyRead(ast: PropertyRead, context: any): any;
   visitPropertyWrite(ast: PropertyWrite, context: any): any;
   visitQuote(ast: Quote, context: any): any;
@@ -230,7 +238,7 @@ export interface AstVisitor {
   visit?(ast: AST, context?: any): any;
 }
 
-export class NullAstVisitor {
+export class NullAstVisitor implements AstVisitor {
   visitBinary(ast: Binary, context: any): any {}
   visitChain(ast: Chain, context: any): any {}
   visitConditional(ast: Conditional, context: any): any {}
@@ -245,6 +253,7 @@ export class NullAstVisitor {
   visitMethodCall(ast: MethodCall, context: any): any {}
   visitPipe(ast: BindingPipe, context: any): any {}
   visitPrefixNot(ast: PrefixNot, context: any): any {}
+  visitNonNullAssert(ast: NonNullAssert, context: any): any {}
   visitPropertyRead(ast: PropertyRead, context: any): any {}
   visitPropertyWrite(ast: PropertyWrite, context: any): any {}
   visitQuote(ast: Quote, context: any): any {}
@@ -300,6 +309,10 @@ export class RecursiveAstVisitor implements AstVisitor {
     return this.visitAll(ast.args, context);
   }
   visitPrefixNot(ast: PrefixNot, context: any): any {
+    ast.expression.visit(this);
+    return null;
+  }
+  visitNonNullAssert(ast: NonNullAssert, context: any): any {
     ast.expression.visit(this);
     return null;
   }
@@ -377,6 +390,10 @@ export class AstTransformer implements AstVisitor {
 
   visitPrefixNot(ast: PrefixNot, context: any): AST {
     return new PrefixNot(ast.span, ast.expression.visit(this));
+  }
+
+  visitNonNullAssert(ast: NonNullAssert, context: any): AST {
+    return new NonNullAssert(ast.span, ast.expression.visit(this));
   }
 
   visitConditional(ast: Conditional, context: any): AST {
@@ -461,6 +478,7 @@ export function visitAstChildren(ast: AST, visitor: AstVisitor, context?: any) {
       visitAll(ast.args);
     },
     visitPrefixNot(ast) { visit(ast.expression); },
+    visitNonNullAssert(ast) { visit(ast.expression); },
     visitPropertyRead(ast) { visit(ast.receiver); },
     visitPropertyWrite(ast) {
       visit(ast.receiver);
