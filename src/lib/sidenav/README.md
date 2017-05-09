@@ -23,8 +23,8 @@ The sidenav panel.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `align` | `"start"|"end"` | The alignment of this sidenav. In LTR direction, `"start"` will be shown on the left, `"end"` on the right. In RTL, it is reversed. `"start"` is used by default. If there is more than 1 sidenav on either side the container will be considered invalid and none of the sidenavs will be visible or toggleable until the container is valid again. |
-| `mode` | `"over"|"push"|"side"` | The mode or styling of the sidenav, default being `"over"`. With `"over"` the sidenav will appear above the content, and a backdrop will be shown. With `"push"` the sidenav will push the content of the `<md-sidenav-container>` to the side, and show a backdrop over it. `"side"` will resize the content and keep the sidenav opened. Clicking the backdrop will close sidenavs that do not have `mode="side"`. |
+| `align` | `"start"\|"end"` | The alignment of this sidenav. In LTR direction, `"start"` will be shown on the left, `"end"` on the right. In RTL, it is reversed. `"start"` is used by default. If there is more than 1 sidenav on either side the container will be considered invalid and none of the sidenavs will be visible or toggleable until the container is valid again. |
+| `mode` | `"over"\|"push"\|"side"` | The mode or styling of the sidenav, default being `"over"`. With `"over"` the sidenav will appear above the content, and a backdrop will be shown. With `"push"` the sidenav will push the content of the `<md-sidenav-container>` to the side, and show a backdrop over it. `"side"` will resize the content and keep the sidenav opened. Clicking the backdrop will close sidenavs that do not have `mode="side"`. |
 | `opened` | `boolean` | Whether or not the sidenav is opened. Use this binding to open/close the sidenav. |
 
 ### Events
