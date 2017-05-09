@@ -4,7 +4,7 @@
     <div *ngIf="showEmbedded" title="{{title}}">
       <aio-embedded-plunker [src]="plnkr"></aio-embedded-plunker>
     </div>
-    <img *ngIf="!showEmbedded" (click)="toggleEmbedded()" [src]="plnkrImg" width="100%" height="100%" alt="{{title}}">
+    <img *ngIf="!showEmbedded" (click)="toggleEmbedded()" [src]="plnkrImg" alt="{{title}}">
     <p *ngIf="enableDownload">
       You can also <a [href]="zip" download title="Download example">download this example</a>.
     </p>

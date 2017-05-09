@@ -173,8 +173,8 @@ and the framework does the rest.
 Once all the dependencies are in place, the `AppComponent` displays the user information:
 
 
-<figure class='image-display'>
-  <img src="generated/images/guide/dependency-injection-in-action/logged-in-user.png" alt="Logged In User"></img>
+<figure>
+  <img src="generated/images/guide/dependency-injection-in-action/logged-in-user.png" alt="Logged In User">
 </figure>
 
 
@@ -339,8 +339,8 @@ And the template displays this data-bound property.
 Find this example in <live-example name="dependency-injection-in-action">live code</live-example>
 and confirm that the three `HeroBioComponent` instances have their own cached hero data.
 
-<figure class='image-display'>
-  <img src="generated/images/guide/dependency-injection-in-action/hero-bios.png" alt="Bios"></img>
+<figure>
+  <img src="generated/images/guide/dependency-injection-in-action/hero-bios.png" alt="Bios">
 </figure>
 
 
@@ -405,8 +405,8 @@ placing it in the `<ng-content>` slot of the `HeroBioComponent` template:
 
 It looks like this, with the hero's telephone number from `HeroContactComponent` projected above the hero description:
 
-<figure class='image-display'>
-  <img src="generated/images/guide/dependency-injection-in-action/hero-bio-and-content.png" alt="bio and contact"></img>
+<figure>
+  <img src="generated/images/guide/dependency-injection-in-action/hero-bio-and-content.png" alt="bio and contact">
 </figure>
 
 
@@ -442,8 +442,8 @@ Thanks to `@Optional()`, Angular sets the `loggerService` to null and the rest o
 
 Here's the `HeroBiosAndContactsComponent` in action.
 
-<figure class='image-display'>
-  <img src="generated/images/guide/dependency-injection-in-action/hero-bios-and-contacts.png" alt="Bios with contact into"></img>
+<figure>
+  <img src="generated/images/guide/dependency-injection-in-action/hero-bios-and-contacts.png" alt="Bios with contact into">
 </figure>
 
 
@@ -452,8 +452,8 @@ If you comment out the `@Host()` decorator, Angular now walks up the injector an
 until it finds the logger at the `AppComponent` level. The logger logic kicks in and the hero display updates
 with the gratuitous "!!!", indicating that the logger was found.
 
-<figure class='image-display'>
-  <img src="generated/images/guide/dependency-injection-in-action/hero-bio-contact-no-host.png" alt="Without @Host"></img>
+<figure>
+  <img src="generated/images/guide/dependency-injection-in-action/hero-bio-contact-no-host.png" alt="Without @Host">
 </figure>
 
 
@@ -497,8 +497,8 @@ first without a value (yielding the default color) and then with an assigned col
 
 The following image shows the effect of mousing over the `<hero-bios-and-contacts>` tag.
 
-<figure class='image-display'>
-  <img src="generated/images/guide/dependency-injection-in-action/highlight.png" alt="Highlighted bios"></img>
+<figure>
+  <img src="generated/images/guide/dependency-injection-in-action/highlight.png" alt="Highlighted bios">
 </figure>
 
 {@a providers}
@@ -575,8 +575,8 @@ You need other ways to deliver dependency values and that means you need other w
 The `HeroOfTheMonthComponent` example demonstrates many of the alternatives and why you need them.
 It's visually simple: a few properties and the logs produced by a logger.
 
-<figure class='image-display'>
-  <img src="generated/images/guide/dependency-injection-in-action/hero-of-month.png" alt="Hero of the month" width="300px"></img>
+<figure>
+  <img src="generated/images/guide/dependency-injection-in-action/hero-of-month.png" alt="Hero of the month" width="300px">
 </figure>
 
 
@@ -730,8 +730,8 @@ Now put it to use in a simplified version of the `HeroOfTheMonthComponent`.
 
 The `HeroOfTheMonthComponent` constructor's `logger` parameter is typed as `MinimalLogger` so only the `logs` and `logInfo` members are visible in a TypeScript-aware editor:
 
-<figure class='image-display'>
-  <img src="generated/images/guide/dependency-injection-in-action/minimal-logger-intellisense.png" alt="MinimalLogger restricted API"></img>
+<figure>
+  <img src="generated/images/guide/dependency-injection-in-action/minimal-logger-intellisense.png" alt="MinimalLogger restricted API">
 </figure>
 
 
@@ -745,8 +745,8 @@ Behind the scenes, Angular actually sets the `logger` parameter to the full serv
 
 The following image, which displays the logging date, confirms the point:
 
-<figure class='image-display'>
-  <img src="generated/images/guide/dependency-injection-in-action/date-logger-entry.png" alt="DateLoggerService entry" width="300px"></img>
+<figure>
+  <img src="generated/images/guide/dependency-injection-in-action/date-logger-entry.png" alt="DateLoggerService entry" width="300px">
 </figure>
 
 
@@ -943,8 +943,8 @@ In this contrived example, `SortedHeroesComponent` inherits from `HeroesBaseComp
 to display a *sorted* list of heroes.
 
 
-<figure class='image-display'>
-  <img src="generated/images/guide/dependency-injection-in-action/sorted-heroes.png" alt="Sorted Heroes"></img>
+<figure>
+  <img src="generated/images/guide/dependency-injection-in-action/sorted-heroes.png" alt="Sorted Heroes">
 </figure>
 
 
@@ -1156,8 +1156,8 @@ the same way you've done it before:
 
 Here's *Alex* and family in action:
 
-<figure class='image-display'>
-  <img src="generated/images/guide/dependency-injection-in-action/alex.png" alt="Alex in action"></img>
+<figure>
+  <img src="generated/images/guide/dependency-injection-in-action/alex.png" alt="Alex in action">
 </figure>
 
 
@@ -1217,8 +1217,8 @@ which *is* what parent means.
 Here's *Alice*, *Barry* and family in action:
 
 
-<figure class='image-display'>
-  <img src="generated/images/guide/dependency-injection-in-action/alice.png" alt="Alice in action"></img>
+<figure>
+  <img src="generated/images/guide/dependency-injection-in-action/alice.png" alt="Alice in action">
 </figure>
 
 

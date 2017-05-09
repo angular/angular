@@ -54,8 +54,8 @@ The following diagram represents the state of the this guide's three-level compo
 open simultaneously.
 
 
-<figure class='image-display'>
-  <img src="generated/images/guide/dependency-injection/component-hierarchy.png" alt="injector tree" width="600"></img>
+<figure>
+  <img src="generated/images/guide/dependency-injection/component-hierarchy.png" alt="injector tree">
 </figure>
 
 
@@ -148,8 +148,8 @@ Each tax return component has the following characteristics:
 * Has the ability to save the changes to its tax return or cancel them.
 
 
-<figure class='image-display'>
-  <img src="generated/images/guide/dependency-injection/hid-heroes-anim.gif" width="400" alt="Heroes in action"></img>
+<figure>
+  <img src="generated/images/guide/dependency-injection/hid-heroes-anim.gif" alt="Heroes in action">
 </figure>
 
 
@@ -233,8 +233,8 @@ that have special capabilites suitable for whatever is going on in component (B)
 Component (B) is the parent of another component (C) that defines its own, even _more specialized_ provider for `CarService`.
 
 
-<figure class='image-display'>
-  <img src="generated/images/guide/dependency-injection/car-components.png" alt="car components" width="220"></img>
+<figure>
+  <img src="generated/images/guide/dependency-injection/car-components.png" alt="car components">
 </figure>
 
 
@@ -246,8 +246,8 @@ its injector produces an instance of `Car` resolved by injector (C) with an `Eng
 `Tires` resolved by the root injector (A).
 
 
-<figure class='image-display'>
-  <img src="generated/images/guide/dependency-injection/injector-tree.png" alt="car injector tree" width="600"></img>
+<figure>
+  <img src="generated/images/guide/dependency-injection/injector-tree.png" alt="car injector tree">
 </figure>
 
 

@@ -355,8 +355,8 @@ Add the `bootstrap` _CSS stylesheet_ to the head of `index.html`:
 Now that everything is wired up, the browser should display something like this:
 
 
-<figure class='image-display'>
-  <img src="generated/images/guide/reactive-forms/just-formcontrol.png" width="400px" alt="Single FormControl"></img>
+<figure>
+  <img src="generated/images/guide/reactive-forms/just-formcontrol.png" width="400" height="133" alt="Single FormControl">
 </figure>
 
 
@@ -459,8 +459,8 @@ The `heroForm.value` returns the _form model_.
 Piping it through the `JsonPipe` renders the model as JSON in the browser:
 
 
-<figure class='image-display'>
-  <img src="generated/images/guide/reactive-forms/json-output.png" width="400px" alt="JSON output"></img>
+<figure>
+  <img src="generated/images/guide/reactive-forms/json-output.png" width="400" height="176" alt="JSON output">
 </figure>
 
 
@@ -569,8 +569,8 @@ Update the diagnostic message at the bottom of the template to display the form'
 The browser displays the following:
 
 
-<figure class='image-display'>
-  <img src="generated/images/guide/reactive-forms/validators-json-output.png" width="400px" alt="Single FormControl"></img>
+<figure>
+  <img src="generated/images/guide/reactive-forms/validators-json-output.png" width="400" height="223" alt="Single FormControl">
 </figure>
 
 
@@ -698,8 +698,8 @@ After these changes, the JSON output in the browser shows the revised _form mode
 with the nested address `FormGroup`:
 
 
-<figure class='image-display'>
-  <img src="generated/images/guide/reactive-forms/address-group.png" width="400px" alt="JSON output"></img>
+<figure>
+  <img src="generated/images/guide/reactive-forms/address-group.png" width="400" height="55" alt="JSON output">
 </figure>
 
 
@@ -1054,8 +1054,8 @@ The `HeroDetailComponent` is a nested sub-component of the `HeroListComponent` i
 Together they look a bit like this:
 
 
-<figure class='image-display'>
-  <img src="generated/images/guide/reactive-forms/hero-list.png" width="420px" alt="HeroListComponent"></img>
+<figure>
+  <img src="generated/images/guide/reactive-forms/hero-list.png" alt="HeroListComponent">
 </figure>
 
 
@@ -1267,8 +1267,8 @@ Back in the browser, select the hero named "Magneta".
 "Magneta" doesn't have an address, as you can see in the diagnostic JSON at the bottom of the form.
 
 
-<figure class='image-display'>
-  <img src="generated/images/guide/reactive-forms/addresses-array.png" width="400px" alt="JSON output of addresses array"></img>
+<figure>
+  <img src="generated/images/guide/reactive-forms/addresses-array.png" width="400" height="40" alt="JSON output of addresses array">
 </figure>
 
 
@@ -1345,8 +1345,8 @@ In a real app, you'd also be able to revert unsaved changes and resume editing.
 After you implement both features in this section, the form will look like this:
 
 
-<figure class='image-display'>
-  <img src="generated/images/guide/reactive-forms/save-revert-buttons.png" width="389px" alt="Form with save & revert buttons"></img>
+<figure>
+  <img src="generated/images/guide/reactive-forms/save-revert-buttons.png" alt="Form with save & revert buttons">
 </figure>
 
 

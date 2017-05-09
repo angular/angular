@@ -160,8 +160,8 @@ The `ngIf` directive doesn't hide elements with CSS. It adds and removes them ph
 Confirm that fact using browser developer tools to inspect the DOM.
 
 
-<figure class='image-display'>
-  <img src='generated/images/guide/structural-directives/element-not-in-dom.png' alt="ngIf=false element not in DOM"></img>
+<figure>
+  <img src='generated/images/guide/structural-directives/element-not-in-dom.png' alt="ngIf=false element not in DOM">
 </figure>
 
 
@@ -188,8 +188,8 @@ A directive could hide the unwanted paragraph instead by setting its `display` s
 While invisible, the element remains in the DOM.
 
 
-<figure class='image-display'>
-  <img src='generated/images/guide/structural-directives/element-display-in-dom.png' alt="hidden element still in DOM"></img>
+<figure>
+  <img src='generated/images/guide/structural-directives/element-display-in-dom.png' alt="hidden element still in DOM">
 </figure>
 
 
@@ -263,8 +263,8 @@ None of these forms are actually rendered.
 Only the finished product ends up in the DOM.
 
 
-<figure class='image-display'>
-  <img src='generated/images/guide/structural-directives/hero-div-in-dom.png' alt="hero div in DOM"></img>
+<figure>
+  <img src='generated/images/guide/structural-directives/hero-div-in-dom.png' alt="hero div in DOM">
 </figure>
 
 
@@ -500,8 +500,8 @@ That's the fate of the middle "Hip!" in the phrase "Hip! Hip! Hooray!".
 Angular erases the middle "Hip!", leaving the cheer a bit less enthusiastic.
 
 
-<figure class='image-display'>
-  <img src='generated/images/guide/structural-directives/template-rendering.png' width="350" alt="template tag rendering"></img>
+<figure>
+  <img src='generated/images/guide/structural-directives/template-rendering.png' width="350" height="59" alt="template tag rendering">
 </figure>
 
 
@@ -566,8 +566,8 @@ You also have a CSS style rule that happens to apply to a `<span>` within a `<p>
 The constructed paragraph renders strangely.
 
 
-<figure class='image-display'>
-  <img src='generated/images/guide/structural-directives/bad-paragraph.png' alt="spanned paragraph with bad style"></img>
+<figure>
+  <img src='generated/images/guide/structural-directives/bad-paragraph.png' alt="spanned paragraph with bad style">
 </figure>
 
 
@@ -590,8 +590,8 @@ When you try this,
 the drop down is empty.
 
 
-<figure class='image-display'>
-  <img src='generated/images/guide/structural-directives/bad-select.png' alt="spanned options don't work"></img>
+<figure>
+  <img src='generated/images/guide/structural-directives/bad-select.png' alt="spanned options don't work">
 </figure>
 
 
@@ -615,8 +615,8 @@ Here's the conditional paragraph again, this time using `<ng-container>`.
 It renders properly.
 
 
-<figure class='image-display'>
-  <img src='generated/images/guide/structural-directives/good-paragraph.png' alt="ngcontainer paragraph with proper style"></img>
+<figure>
+  <img src='generated/images/guide/structural-directives/good-paragraph.png' alt="ngcontainer paragraph with proper style">
 </figure>
 
 
@@ -633,8 +633,8 @@ Now conditionally exclude a _select_ `<option>` with `<ng-container>`.
 The drop down works properly.
 
 
-<figure class='image-display'>
-  <img src='generated/images/guide/structural-directives/select-ngcontainer-anim.gif' alt="ngcontainer options work properly"></img>
+<figure>
+  <img src='generated/images/guide/structural-directives/select-ngcontainer-anim.gif' alt="ngcontainer options work properly">
 </figure>
 
 
@@ -790,8 +790,8 @@ When the `condition` is falsy, the top (A) paragraph appears and the bottom (B) 
 When the `condition` is truthy, the top (A) paragraph is removed and the bottom (B) paragraph appears.
 
 
-<figure class='image-display'>
-  <img src='generated/images/guide/structural-directives/unless-anim.gif' alt="UnlessDirective in action"></img>
+<figure>
+  <img src='generated/images/guide/structural-directives/unless-anim.gif' alt="UnlessDirective in action">
 </figure>
 
 

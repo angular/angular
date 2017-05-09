@@ -59,8 +59,8 @@ otherwise wrestle with yourself.
 You'll learn to build a template-driven form that looks like this:
 
 
-<figure class='image-display'>
-  <img src="generated/images/guide/forms/hero-form-1.png" width="400px" alt="Clean Form"></img>
+<figure>
+  <img src="generated/images/guide/forms/hero-form-1.png" alt="Clean Form">
 </figure>
 
 
@@ -73,8 +73,8 @@ Two of the three fields on this form are required. Required fields have a green 
 If you delete the hero name, the form displays a validation error in an attention-grabbing style:
 
 
-<figure class='image-display'>
-  <img src="generated/images/guide/forms/hero-form-2.png" width="400px" alt="Invalid, Name Required"></img>
+<figure>
+  <img src="generated/images/guide/forms/hero-form-2.png" alt="Invalid, Name Required">
 </figure>
 
 
@@ -371,8 +371,8 @@ you display its name using the interpolation syntax.
 Running the app right now would be disappointing.
 
 
-<figure class='image-display'>
-  <img src="generated/images/guide/forms/hero-form-3.png" width="400px" alt="Early form with no binding"></img>
+<figure>
+  <img src="generated/images/guide/forms/hero-form-3.png" alt="Early form with no binding">
 </figure>
 
 
@@ -455,8 +455,8 @@ from the interpolated text.
 At some point it might look like this:
 
 
-<figure class='image-display'>
-  <img src="generated/images/guide/forms/ng-model-in-action.png" width="400px" alt="ngModel in action"></img>
+<figure>
+  <img src="generated/images/guide/forms/ng-model-in-action.png" alt="ngModel in action">
 </figure>
 
 
@@ -528,8 +528,8 @@ to match the label to its input control.
 If you run the app now and change every hero model property, the form might display like this:
 
 
-<figure class='image-display'>
-  <img src="generated/images/guide/forms/ng-model-in-action-2.png" width="400px" alt="ngModel in action"></img>
+<figure>
+  <img src="generated/images/guide/forms/ng-model-in-action-2.png" alt="ngModel in action">
 </figure>
 
 
@@ -641,8 +641,8 @@ Follow these steps *precisely*:
 The actions and effects are as follows:
 
 
-<figure class='image-display'>
-  <img src="generated/images/guide/forms/control-state-transitions-anim.gif" alt="Control State Transition"></img>
+<figure>
+  <img src="generated/images/guide/forms/control-state-transitions-anim.gif" alt="Control State Transition">
 </figure>
 
 
@@ -650,8 +650,8 @@ The actions and effects are as follows:
 You should see the following transitions and class names:
 
 
-<figure class='image-display'>
-  <img src="generated/images/guide/forms/ng-control-class-changes.png" width="500px" alt="Control state transitions"></img>
+<figure>
+  <img src="generated/images/guide/forms/ng-control-class-changes.png" alt="Control state transitions">
 </figure>
 
 
@@ -670,8 +670,8 @@ You can mark required fields and invalid data at the same time with a colored ba
 on the left of the input box:
 
 
-<figure class='image-display'>
-  <img src="generated/images/guide/forms/validity-required-indicator.png" width="400px" alt="Invalid Form"></img>
+<figure>
+  <img src="generated/images/guide/forms/validity-required-indicator.png" alt="Invalid Form">
 </figure>
 
 
@@ -704,8 +704,8 @@ Leverage the control's state to reveal a helpful message.
 When the user deletes the name, the form should look like this:
 
 
-<figure class='image-display'>
-  <img src="generated/images/guide/forms/name-required-error.png" width="400px" alt="Name required"></img>
+<figure>
+  <img src="generated/images/guide/forms/name-required-error.png" alt="Name required">
 </figure>
 
 

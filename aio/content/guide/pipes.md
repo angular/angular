@@ -135,8 +135,8 @@ As you click the button, the displayed date alternates between
 "**<samp>Friday, April 15, 1988</samp>**".
 
 
-<figure class='image-display'>
-  <img src='generated/images/guide/pipes/date-format-toggle-anim.gif' alt="Date Format Toggle"></img>
+<figure>
+  <img src='generated/images/guide/pipes/date-format-toggle-anim.gif' alt="Date Format Toggle">
 </figure>
 
 
@@ -221,8 +221,8 @@ Now you need a component to demonstrate the pipe.
 <code-example path="pipes/src/app/power-booster.component.ts" title="src/app/power-booster.component.ts" linenums="false">
 </code-example>
 
-<figure class='image-display'>
-  <img src='generated/images/guide/pipes/power-booster.png' alt="Power Booster"></img>
+<figure>
+  <img src='generated/images/guide/pipes/power-booster.png' alt="Power Booster">
 </figure>
 
 
@@ -266,8 +266,8 @@ your pipe and two-way data binding with `ngModel`.
 
 
 
-<figure class='image-display'>
-  <img src='generated/images/guide/pipes/power-boost-calculator-anim.gif' alt="Power Boost Calculator"></img>
+<figure>
+  <img src='generated/images/guide/pipes/power-boost-calculator-anim.gif' alt="Power Boost Calculator">
 </figure>
 
 
@@ -353,8 +353,8 @@ The Flying Heroes application extends the
 code with checkbox switches and additional displays to help you experience these effects.
 
 
-<figure class='image-display'>
-  <img src='generated/images/guide/pipes/flying-heroes-anim.gif' alt="Flying Heroes"></img>
+<figure>
+  <img src='generated/images/guide/pipes/flying-heroes-anim.gif' alt="Flying Heroes">
 </figure>
 
 
@@ -538,8 +538,8 @@ both requesting the heroes from the `heroes.json` file.
 The component renders as the following:
 
 
-<figure class='image-display'>
-  <img src='generated/images/guide/pipes/hero-list.png' alt="Hero List"></img>
+<figure>
+  <img src='generated/images/guide/pipes/hero-list.png' alt="Hero List">
 </figure>
 
 
