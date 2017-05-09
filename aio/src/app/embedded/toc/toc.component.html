@@ -1,7 +1,7 @@
 <div *ngIf="hasToc" [class.closed]="isClosed">
   <div *ngIf="!hasSecondary" class="toc-heading">Contents</div>
   <div *ngIf="hasSecondary" class="toc-heading secondary"
-      (click)="toggle()"
+      (click)="toggle(false)"
       title="Expand/collapse contents"
       aria-label="Expand/collapse contents">
       <p>Table of Contents<button type="button" class="toc-show-all material-icons" [class.closed]="isClosed"></button></p>
