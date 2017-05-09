@@ -1,5 +1,4 @@
-<h1 class="no-toc">NgModules</h1>
-
+# NgModules
 
 **NgModules** help organize an application into cohesive blocks of functionality.
 <!-- CF: "app" and "application" are used interchangeably throughout this page.
@@ -38,7 +37,7 @@ This page covers NgModules in greater depth.
  CF: This link goes to the top of this page. I would expect it to go to an "NgModule metadata properties"
  section at the end of this page, but that section doesn't exist. -->
 
-### Live examples
+#### Live examples
 This page explains NgModules through a progression of improvements to a sample with a "Tour of Heroes" theme.
 Here's an index to live examples at key moments in the evolution of the sample:
 
@@ -48,7 +47,7 @@ Here's an index to live examples at key moments in the evolution of the sample:
 * <live-example plnkr="pre-shared.3">Just before adding SharedModule</live-example>
 * <live-example>The final version</live-example>
 
-### Frequently asked questions (FAQs)
+#### Frequently asked questions (FAQs)
 
 This page covers NgModule concepts in a tutorial fashion.
 
@@ -108,7 +107,7 @@ Later in this page, you'll read about this process. For now, you'll start with t
 
 
 
-## _AppModule_: the application root module
+## The root _AppModule_
 
 Every Angular app has a *root module* class.
 By convention, the *root module* class is called `AppModule` and it exists in a file named `app.module.ts`.
@@ -156,7 +155,7 @@ You launch the application by bootstrapping the `AppModule` in the `main.ts` fil
 Angular offers a variety of bootstrapping options targeting multiple platforms.
 This page describes two options, both targeting the browser.
 
-### Dynamic bootstrapping with the just-in-time (JIT) compiler
+### Compile just-in-time (JIT)
 In the first, _dynamic_ option, the [Angular compiler](guide/ngmodule-faq#q-angular-compiler "About the Angular Compiler")
 compiles the application in the browser and then launches the app.
 
@@ -172,7 +171,7 @@ The samples in this page demonstrate the dynamic bootstrapping approach.
 <live-example embedded plnkr="minimal.0" img="guide/ngmodule/minimal-plunker.png">Try the live example.</live-example>
 
 
-### Static bootstrapping with the ahead-of-time (AOT) compiler
+### Compile ahead-of-time (AOT)
 
 Consider the static alternative which can produce a much smaller application that
 launches faster, especially on mobile devices and high latency networks.
@@ -244,10 +243,6 @@ Import the `HighlightDirective` class and add it to the module's `declarations` 
 <code-example path="ngmodule/src/app/app.module.1.ts" region="directive" title="src/app/app.module.ts" linenums="false">
 
 </code-example>
-
-
-
-### Add a component
 
 Refactor the title into its own `TitleComponent`.
 The component's template binds to the component's `title` and `subtitle` properties like this:
@@ -388,7 +383,7 @@ You must import those modules before you can use their directives.
 To illustrate this point, you'll extend the sample app with `ContactComponent`,
 a form component that imports form support from the Angular `FormsModule`.
 
-### Add the _ContactComponent_
+<h3 class="no-toc">Add the _ContactComponent_</h3>
 
 [Angular forms](guide/forms) are a great way to manage user data entry.
 
@@ -400,7 +395,7 @@ implemented with Angular forms in the [template-driven form](guide/forms#templat
 
 
 
-### Angular form styles
+<h3 class="no-toc">Angular form styles</h3>
 
 You can write Angular form components in
 template-driven or
@@ -476,7 +471,7 @@ Even if Angular somehow recognized `ngModel`,
 `ContactComponent` wouldn't behave like an Angular form because
 form features such as validation aren't yet available.
 
-### Import the FormsModule
+<h3 class="no-toc">Import the FormsModule</h3>
 
 Add the `FormsModule` to the `AppModule` metadata's `imports` list.
 
@@ -510,7 +505,7 @@ Components, directives, and pipes belong to _one module only_.
 {@a declare-pipe}
 
 
-### Declare the contact component, directive, and pipe
+<h3 class="no-toc">Declare the contact component, directive, and pipe</h3>
 
 The application won't compile until you declare the contact component, directive, and pipe.
 Update the `declarations` in the  `AppModule` accordingly:
@@ -547,7 +542,7 @@ You'll learn more about that issue later in this page, in [Resolve directive con
 
 
 
-### Provide the _ContactService_
+<h3 class="no-toc">Provide the _ContactService_</h3>
 The `ContactComponent` displays contacts retrieved by the `ContactService`,
 which Angular injects into its constructor.
 
@@ -574,7 +569,7 @@ Now you can inject `ContactService` (like `UserService`) into any component in t
 
 
 
-### Application-scoped providers
+<h3 class="no-toc">Application-scoped providers</h3>
   The `ContactService` provider is _application_-scoped because Angular
   registers a module's `providers` with the application's *root injector*.
 
@@ -602,7 +597,7 @@ Now you can inject `ContactService` (like `UserService`) into any component in t
 
 
 
-### Run the app
+<h3 class="no-toc">Run the app</h3>
 Everything is in place to run the application with its contact editor.
 
 The app file structure looks like this:
@@ -1322,7 +1317,7 @@ whether that component is eagerly or lazily loaded.
 
 
 
-### Why bother?
+<h3 class="no-toc">Why bother?</h3>
 This scenario is clearly contrived.
 The app is too small to worry about a single service file and a tiny, one-time component.
 
@@ -1530,12 +1525,12 @@ Angular creates a lazy-loaded module with its own injector, a _child_ of the roo
 Of course it finds the instance imported by the root `AppModule`.
 Now `parentModule` exists and the constructor throws the error.
 
-### Conclusion
+## Conclusion
 
 You made it! You can examine and download the complete source for this final version from the live example.
 <live-example embedded  img="guide/ngmodule/final-plunker.png"></live-example>
 
-### Frequently asked questions
+## Frequently asked questions
 
 Now that you understand NgModules, you may be interested
 in the companion [NgModule FAQs](guide/ngmodule-faq "NgModule FAQs") page

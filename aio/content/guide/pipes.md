@@ -1,12 +1,4 @@
-@title
-Pipes
-
-@intro
-Pipes transform displayed values within a template.
-
-@description
-
-
+# Pipes
 
 Every application starts out with what seems like a simple task: get data, transform them, and show them to users.
 Getting data could be as simple as creating a local variable or as complex as streaming data over a WebSocket.
@@ -25,7 +17,6 @@ In fact, you might like to apply them in your HTML templates as you do styles.
 Introducing Angular pipes, a way to write display-value transformations that you can declare in your HTML.
 
 You can run the <live-example></live-example> in Plunker and download the code from there.
-
 
 
 ## Using pipes
@@ -217,24 +208,18 @@ Your pipe has one such parameter: the `exponent`.
 
 
 
-### The *PipeTransform* interface
+## The *PipeTransform* interface
 
 The `transform` method is essential to a pipe.
 The `PipeTransform` *interface* defines that method and guides both tooling and the compiler.
 Technically, it's optional; Angular looks for and executes the `transform` method regardless.
 
-
 </div>
-
-
 
 Now you need a component to demonstrate the pipe.
 
 <code-example path="pipes/src/app/power-booster.component.ts" title="src/app/power-booster.component.ts" linenums="false">
-
 </code-example>
-
-
 
 <figure class='image-display'>
   <img src='generated/images/guide/pipes/power-booster.png' alt="Power Booster"></img>
@@ -250,12 +235,9 @@ Note the following:
 
 <div class="callout is-helpful">
 
-
-
 <header>
   Remember the declarations array
 </header>
-
 
 
 You must manually register custom pipes.
@@ -302,7 +284,7 @@ Angular strives to lower the cost whenever possible and appropriate.
 
 Angular picks a simpler, faster change detection algorithm when you use a pipe.
 
-### No pipe
+<h3 class="no-toc">No pipe</h3>
 
 In the next example, the component uses the default, aggressive change detection strategy to monitor and update
 its display of every hero in the `heroes` array. Here's the template:
@@ -326,7 +308,7 @@ You can add heroes and Angular updates the display when you do.
 If you click the `reset` button, Angular replaces `heroes` with a new array of the original heroes and updates the display.
 If you added the ability to remove or change a hero, Angular would detect those changes and update the display as well.
 
-### Flying-heroes pipe
+<h3 class="no-toc"><i>FlyingHeroesPipe</i></h3>
 
 Add a `FlyingHeroesPipe` to the `*ngFor` repeater that filters the list of heroes to just those heroes who can fly.
 
@@ -410,7 +392,7 @@ impure like this:
 
 Before doing that, understand the difference between pure and impure, starting with a pure pipe.
 
-### Pure pipes
+<h3 class="no-toc">Pure pipes</h3>
 
 Angular executes a *pure pipe* only when it detects a *pure change* to the input value.
 A pure change is either a change to a primitive input value (`String`, `Number`, `Boolean`, `Symbol`)
@@ -441,7 +423,7 @@ a point that's discussed later in this page.
 
 
 
-### Impure pipes
+<h3 class="no-toc">Impure pipes</h3>
 
 Angular executes an *impure pipe*  during every component change detection cycle.
 An impure pipe is called often, as often as every keystroke or mouse-move.
@@ -453,7 +435,7 @@ An expensive, long-running pipe could destroy the user experience.
 {@a impure-flying-heroes}
 
 
-### An impure *FlyingHeroesPipe*
+<h3 class="no-toc">An impure <i>FlyingHeroesPipe</i></h3>
 
 A flip of the switch turns the `FlyingHeroesPipe` into a `FlyingHeroesImpurePipe`.
 The complete implementation is as follows:
@@ -498,10 +480,8 @@ You can confirm in the <live-example></live-example> that the _flying heroes_
 display updates as you add heroes, even when you mutate the `heroes` array.
 
 
-<h3 id='async-pipe'>
-  The impure   <i>AsyncPipe</i>
-</h3>
-
+{@a async-pipe}
+<h3 class="no-toc">The impure <i>AsyncPipe</i></h3>
 
 
 The Angular `AsyncPipe` is an interesting example of an impure pipe.
@@ -528,7 +508,7 @@ extract the resolved values and expose them for binding,
 and have to unsubscribe when it's destroyed
 (a potent source of memory leaks).
 
-### An impure caching pipe
+<h3 class="no-toc">An impure caching pipe</h3>
 
 Write one more impure pipe, a pipe that makes an HTTP request.
 
@@ -570,7 +550,7 @@ A breakpoint on the pipe's request for data shows the following:
 * Each pipe instance caches its own URL and data.
 * Each pipe instance only calls the server once.
 
-### *JsonPipe*
+<h3 class="no-toc"><i>JsonPipe</i></h3>
 
 In the previous code sample, the second `fetch` pipe binding demonstrates more pipe chaining.
 It displays the same hero data in JSON format by chaining through to the built-in `JsonPipe`.
@@ -598,7 +578,7 @@ inspect an object for future binding.
 {@a pure-pipe-pure-fn}
 
 
-### Pure pipes and pure functions
+<h3 class="no-toc">Pure pipes and pure functions</h3>
 
 A pure pipe uses pure functions.
 Pure functions process inputs and return values without detectable side effects.

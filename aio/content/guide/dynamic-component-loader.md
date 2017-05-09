@@ -1,33 +1,8 @@
-@title
-Dynamic Component Loader
-
-@intro
-Load components dynamically.
-
-@description
-
+# Dynamic Component Loader
 
 Component templates are not always fixed. An application may need to load new components at runtime.
 
 This cookbook shows you how to use `ComponentFactoryResolver` to add components dynamically.
-
-{@a toc}
-
-<!--
-
-# Contents
-
-   * [Dynamic component loading](guide/dynamic-component-loader#dynamic-loading)
-   * [The directive](guide/dynamic-component-loader#directive)
-   * [Loading components](guide/dynamic-component-loader#loading-components)
-
-     * [Resolving Components](guide/dynamic-component-loader#resolving-components)
-     * [Selector References](guide/dynamic-component-loader#selector-references)
-
-   * [A common _AdComponent_ interface](guide/dynamic-component-loader#common-interface)
-   * [Final ad banner](guide/dynamic-component-loader#final-ad-banner)
-
--->
 
 See the <live-example name="dynamic-component-loader"></live-example>
 of the code in this cookbook.
@@ -51,7 +26,7 @@ Angular comes with its own API for loading components dynamically.
 
 {@a directive}
 
-## The directive
+## The anchor directive
 
 Before you can add components you have to define an anchor point
 to tell Angular where to insert components.
@@ -100,7 +75,7 @@ because it doesn't render any additional output.
 {@a resolving-components}
 
 
-### Resolving components
+## Resolving components
 
 Take a closer look at the methods in `ad-banner.component.ts`.
 
@@ -184,7 +159,7 @@ add dynamically loaded components to the `NgModule`'s `entryComponents` array:
 {@a common-interface}
 
 
-### A common _AdComponent_ interface
+## The _AdComponent_ interface
 
 In the ad banner, all components implement a common `AdComponent` interface to
 standardize the API for passing data to the components.
@@ -213,7 +188,7 @@ Here are two sample components and the `AdComponent` interface for reference:
 {@a final-ad-baner}
 
 
-### Final ad banner
+## Final ad banner
  The final ad banner looks like this:
 
 <figure class='image-display'>
