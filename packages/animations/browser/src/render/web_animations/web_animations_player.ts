@@ -36,7 +36,11 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     this.previousStyles = {};
     previousPlayers.forEach(player => {
       let styles = player._captureStyles();
-      Object.keys(styles).forEach(prop => this.previousStyles[prop] = styles[prop]);
+      Object.keys(styles).forEach(prop => {
+        if (styles[prop] !== undefined) {
+          this.previousStyles[prop] = styles[prop];
+        }
+      });
     });
   }
 
