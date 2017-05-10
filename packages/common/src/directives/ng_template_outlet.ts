@@ -26,7 +26,7 @@ import {Directive, EmbeddedViewRef, Input, OnChanges, SimpleChanges, TemplateRef
  *
  * Note: using the key `$implicit` in the context object will set it's value as default.
  *
- * # Example
+ * ## Example
  *
  * {@example common/ngTemplateOutlet/ts/module.ts region='NgTemplateOutlet'}
  *
