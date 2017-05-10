@@ -34,6 +34,6 @@ if [ $httpCode -lt 200 ] || ([ $httpCode -ge 400 ] && [ $httpCode -ne 409 ]); th
 fi
 
 # Run PWA-score tests
-yarn test-pwa-score -- "$DEPLOYED_URL" "$MIN_PWA_SCORE_PREVIEW"
+yarn test-pwa-score -- "$DEPLOYED_URL" "$MIN_PWA_SCORE"
 
 cd -
