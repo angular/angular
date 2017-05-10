@@ -12,7 +12,7 @@ import {ArgumentType, BindingFlags, DebugContext, NodeDef, NodeFlags, OutputType
 import {TestBed} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
-import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, isBrowser, removeNodes} from './helper';
+import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, isBrowser, recordNodeToRemove} from './helper';
 
 export function main() {
   describe(`View Elements`, () => {
@@ -182,7 +182,7 @@ export function main() {
           // won't work in IE.
           result.rootNodes.forEach((node) => {
             document.body.appendChild(node);
-            removeNodes.push(node);
+            recordNodeToRemove(node);
           });
           return result;
         }

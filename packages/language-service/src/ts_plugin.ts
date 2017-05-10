@@ -110,6 +110,13 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
     return (fileName, p1, p2, p3) => tryCall(fileName, () => <T>(m.call(ls, fileName, p1, p2, p3)));
   }
 
+  function tryFilenameFourCall<T, P1, P2, P3, P4>(
+      m: (fileName: string, p1: P1, p2: P2, p3: P3, p4: P4) =>
+          T): (fileName: string, p1: P1, p2: P2, p3: P3, p4: P4) => T {
+    return (fileName, p1, p2, p3, p4) =>
+               tryCall(fileName, () => <T>(m.call(ls, fileName, p1, p2, p3, p4)));
+  }
+
   function typescriptOnly(ls: ts.LanguageService): ts.LanguageService {
     return {
       cleanupSemanticCache: () => ls.cleanupSemanticCache(),
@@ -152,7 +159,7 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
       getFormattingEditsAfterKeystroke: tryFilenameThreeCall(ls.getFormattingEditsAfterKeystroke),
       getDocCommentTemplateAtPosition: tryFilenameOneCall(ls.getDocCommentTemplateAtPosition),
       isValidBraceCompletionAtPosition: tryFilenameTwoCall(ls.isValidBraceCompletionAtPosition),
-      getCodeFixesAtPosition: tryFilenameThreeCall(ls.getCodeFixesAtPosition),
+      getCodeFixesAtPosition: tryFilenameFourCall(ls.getCodeFixesAtPosition),
       getEmitOutput: tryFilenameCall(ls.getEmitOutput),
       getProgram: () => ls.getProgram(),
       dispose: () => ls.dispose()
