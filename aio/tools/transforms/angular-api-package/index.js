@@ -114,10 +114,11 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
   })
 
 
-  .config(function(convertToJsonProcessor, postProcessHtml, EXPORT_DOC_TYPES) {
+  .config(function(convertToJsonProcessor, postProcessHtml, EXPORT_DOC_TYPES, autoLinkCode) {
     const DOCS_TO_CONVERT = EXPORT_DOC_TYPES.concat([
       'decorator', 'directive', 'pipe', 'module'
     ]);
     convertToJsonProcessor.docTypes = convertToJsonProcessor.docTypes.concat(DOCS_TO_CONVERT);
     postProcessHtml.docTypes = convertToJsonProcessor.docTypes.concat(DOCS_TO_CONVERT);
+    autoLinkCode.docTypes = DOCS_TO_CONVERT;
   });

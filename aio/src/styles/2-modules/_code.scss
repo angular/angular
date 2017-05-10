@@ -235,3 +235,8 @@ code-tabs md-tab-group *.mat-ripple-element, code-tabs md-tab-group *.mat-tab-bo
 [role="tabpanel"] {
     transition: none;
 }
+
+.sidenav-content code a {
+  color: inherit;
+  font-size: inherit;
+}
