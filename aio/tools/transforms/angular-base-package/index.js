@@ -127,7 +127,8 @@ module.exports = new Package('angular-base', [
     addImageDimensions.basePath = path.resolve(AIO_PATH, 'src');
     postProcessHtml.plugins = [
       require('./post-processors/autolink-headings'),
-      addImageDimensions
+      addImageDimensions,
+      require('./post-processors/h1-checker'),
     ];
   })
 

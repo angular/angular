@@ -28,19 +28,20 @@ module.exports = function postProcessHtml(log, createDocMessage) {
             .data('settings', { fragment: true });
       this.plugins.forEach(plugin => engine.use(plugin));
 
+      let vFile;
+
       docs
         .filter(doc => this.docTypes.indexOf(doc.docType) !== -1)
         .forEach(doc => {
-          const vFile = engine.processSync(doc.renderedContent);
-          vFile.messages.forEach(m => {
-            const message = createDocMessage(m.message, doc);
-            if (m.fatal) {
-              throw new Error(message);
-            } else {
-              log.warn(message);
-            }
-          });
-          doc.renderedContent = vFile.contents;
+          try {
+            vFile = engine.processSync(doc.renderedContent);
+            doc.renderedContent = vFile.contents;
+            vFile.messages.forEach(m => {
+              log.warn(createDocMessage(m.message, doc));
+            });
+          } catch(e) {
+            throw new Error(createDocMessage(e.message, doc));
+          }
         });
     }
   };
