@@ -59,10 +59,7 @@ if [[ ${TRAVIS:-} ]]; then
       setEnvVar KARMA_JS_BROWSERS `node -e "console.log(require('/home/travis/build/angular/angular/browser-providers.conf').browserstackAliases.CI_OPTIONAL.join(','))"`
       ;;
     aio)
-      # Due to network latency/server performance, the min accepted PWA score
-      # on previews is a little lower than on staging.
-      setEnvVar MIN_PWA_SCORE_PREVIEW 93
-      setEnvVar MIN_PWA_SCORE_STAGING 95
+      setEnvVar MIN_PWA_SCORE 95
       ;;
   esac
 else
