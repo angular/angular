@@ -19,6 +19,6 @@ firebase deploy --message "Commit: $TRAVIS_COMMIT" --non-interactive --token "$F
 # Run PWA-score tests
 # TODO(gkalpak): Figure out why this fails and re-enable.
 sleep 10
-yarn test-pwa-score -- "$DEPLOYED_URL" "$MIN_PWA_SCORE_STAGING" || true
+yarn test-pwa-score -- "$DEPLOYED_URL" "$MIN_PWA_SCORE" || true
 
 cd -
