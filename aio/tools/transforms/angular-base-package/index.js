@@ -37,6 +37,7 @@ module.exports = new Package('angular-base', [
   .factory(require('./services/getImageDimensions'))
 
   .factory(require('./post-processors/add-image-dimensions'))
+  .factory(require('./post-processors/auto-link-code'))
 
   .config(function(checkAnchorLinksProcessor) {
     // This is disabled here to prevent false negatives for the `docs-watch` task.
@@ -123,12 +124,13 @@ module.exports = new Package('angular-base', [
   })
 
 
-  .config(function(postProcessHtml, addImageDimensions) {
+  .config(function(postProcessHtml, addImageDimensions, autoLinkCode) {
     addImageDimensions.basePath = path.resolve(AIO_PATH, 'src');
     postProcessHtml.plugins = [
       require('./post-processors/autolink-headings'),
       addImageDimensions,
       require('./post-processors/h1-checker'),
+      autoLinkCode,
     ];
   })
 
