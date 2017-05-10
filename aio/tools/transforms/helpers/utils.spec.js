@@ -1,4 +1,4 @@
-const { mapObject, parseAttributes } = require('./utils');
+const { mapObject, parseAttributes, renderAttributes } = require('./utils');
 
 describe('utils', () => {
   describe('mapObject', () => {
@@ -71,6 +71,29 @@ describe('utils', () => {
       expect(() => parseAttributes('a="" b="two')).toThrowError(
         'Unterminated quoted attribute value in `a="" b="two`. Starting at 8. Expected a " but got "end of string".'
       );
+    });
+  });
+
+  describe('renderAttributes', () => {
+    it('should convert key-value map to a strong that can be used in HTML', () => {
+      expect(renderAttributes({ foo: 'bar', moo: 'car' })).toEqual(' foo="bar" moo="car"');
+    });
+
+    it('should handle boolean values', () => {
+      expect(renderAttributes({ foo: 'bar', loo: true, moo: false }))
+          .toEqual(' foo="bar" loo');
+    });
+
+    it('should escape double quotes inside the value', () => {
+      expect(renderAttributes({ foo: 'bar "car"' })).toEqual(' foo="bar &quot;car&quot;"');
+    });
+
+    it('should not escape single quotes inside the value', () => {
+      expect(renderAttributes({ foo: 'bar \'car\'' })).toEqual(' foo="bar \'car\'"');
+    });
+
+    it('should handle an empty object', () => {
+      expect(renderAttributes({ })).toEqual('');
     });
   });
 });
