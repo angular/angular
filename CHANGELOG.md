@@ -1,3 +1,45 @@
+<a name="4.2.0-beta.1"></a>
+# [4.2.0-beta.1](https://github.com/angular/angular/compare/4.2.0-beta.0...4.2.0-beta.1) (2017-05-10)
+
+
+### Bug Fixes
+
+* **aio:** constrain header-link styles ([03513e9](https://github.com/angular/angular/commit/03513e9)), closes [#16573](https://github.com/angular/angular/issues/16573)
+* **aio:** do not display a Toc initially ([b9ed97c](https://github.com/angular/angular/commit/b9ed97c)), closes [#16597](https://github.com/angular/angular/issues/16597)
+* **aio:** do not nav to an image url ([2848f04](https://github.com/angular/angular/commit/2848f04)), closes [#16608](https://github.com/angular/angular/issues/16608)
+* **aio:** do not route `eplnkr` URLs to / from ServiceWorker ([b7caa3e](https://github.com/angular/angular/commit/b7caa3e))
+
+
+### Features
+
+* add .ngsummary.ts files to support AOT unit tests ([547c363](https://github.com/angular/angular/commit/547c363))
+* **aio:** add helper CSS classes to the `aio-shell` for fine grained styling ([309ada5](https://github.com/angular/angular/commit/309ada5)), closes [#16549](https://github.com/angular/angular/issues/16549)
+* **aio:** api label styles ([d27588b](https://github.com/angular/angular/commit/d27588b))
+* **aio:** close sidenav in narrow (mobile) mode when select a new document ([#16617](https://github.com/angular/angular/issues/16617)) ([3887d8a](https://github.com/angular/angular/commit/3887d8a)), closes [#16603](https://github.com/angular/angular/issues/16603)
+* **aio:** focus search when `/` is pressed ([#16636](https://github.com/angular/angular/issues/16636)) ([041f57c](https://github.com/angular/angular/commit/041f57c)), closes [#16129](https://github.com/angular/angular/issues/16129)
+* **aio:** scroll back to top when TOC more-items clicked to close ([98d83b2](https://github.com/angular/angular/commit/98d83b2)), closes [#16482](https://github.com/angular/angular/issues/16482)
+* **aio:** scrolling tweaks per 16619 ([#16660](https://github.com/angular/angular/issues/16660)) ([73505e2](https://github.com/angular/angular/commit/73505e2))
+* **aio:** should not send in-page navigations to Google Analytics ([3e33482](https://github.com/angular/angular/commit/3e33482)), closes [#16521](https://github.com/angular/angular/issues/16521)
+* **aio:** TOC float right + service refactor ([799be9c](https://github.com/angular/angular/commit/799be9c))
+
+
+
+<a name="4.1.2"></a>
+## [4.1.2](https://github.com/angular/angular/compare/4.1.1...4.1.2) (2017-05-10)
+
+
+### Bug Fixes
+
+* **compiler:** avoid a `...null` spread in extraction ([#16547](https://github.com/angular/angular/issues/16547)) ([d0e1688](https://github.com/angular/angular/commit/d0e1688))
+* **core:** detach projected views when a parent view is destroyed ([#16592](https://github.com/angular/angular/issues/16592)) ([ee6705a](https://github.com/angular/angular/commit/ee6705a)), closes [#15578](https://github.com/angular/angular/issues/15578)
+* **core:** projected views should be dirty checked when the declaring component is dirty checked. ([#16592](https://github.com/angular/angular/issues/16592)) ([9218812](https://github.com/angular/angular/commit/9218812)), closes [#14321](https://github.com/angular/angular/issues/14321)
+* **http:** flatten metadata for [@angular](https://github.com/angular)/http/testing ([9c70a3c](https://github.com/angular/angular/commit/9c70a3c)), closes [#15521](https://github.com/angular/angular/issues/15521)
+* **http:** honor RequestArgs.search and RequestArgs.params map type ([63066f7](https://github.com/angular/angular/commit/63066f7)), closes [#15761](https://github.com/angular/angular/issues/15761) [#16392](https://github.com/angular/angular/issues/16392)
+* **http:** introduce encodingHint for text() for better ArrayBuffer support ([ec3b6e9](https://github.com/angular/angular/commit/ec3b6e9)), closes [#15932](https://github.com/angular/angular/issues/15932) [#16420](https://github.com/angular/angular/issues/16420)
+* **router:** fix redirect to a URL with a param having multiple values ([#16376](https://github.com/angular/angular/issues/16376)) ([915eae5](https://github.com/angular/angular/commit/915eae5)), closes [#16310](https://github.com/angular/angular/issues/16310)
+
+
+
 <a name="4.2.0-beta.0"></a>
 # [4.2.0-beta.0](https://github.com/angular/angular/compare/4.1.0...4.2.0-beta.0) (2017-05-04)
 
