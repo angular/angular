@@ -143,11 +143,11 @@
 
     p > code, li > code, table code {
       font-family: $code-font;
-      font-size: 90%;
-      color: $blue;
+      font-size: 85%;
+      color: $darkgray;
       letter-spacing: 0;
       line-height: 1;
-      padding: 2px 4px;
+      padding: 2px 6px;
       background-color: $backgroundgray;
       border-radius: 4px;
     }
