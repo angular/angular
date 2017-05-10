@@ -2,7 +2,7 @@
 Third Party Library
 
 @intro
-Create a third party library with support for AoT, JiT and Tree Shaking.
+Create a third party library with support for AOT, JIT and Tree Shaking.
 
 @description
 
@@ -67,7 +67,7 @@ Bundlers, like [Webpack](https://webpack.js.org/) are very popular as well.
 [Typescript](guide/typescriptlang) users need type definitions.
 [Rollup](https://github.com/rollup/rollup) users make use of ECMAScript Modules (ESM)
 for tree-shaking.
-Even though [Ahead-of-time](guide/third-party-lib#appendix-supporting-aot) is preferred, 
+Even though [AOT](guide/third-party-lib#appendix-supporting-aot) is preferred, 
 [Just-in-time](guide/third-party-lib#appendix-supporting-jit) compilation should be supported.
 
 It's daunting to think of all the ways your library might be used and how to accommodate it, 
@@ -79,7 +79,7 @@ The recommended set of entry points is as follows:
 
 - `main` (default): an ES5 [UMD](https://github.com/umdjs/umd) bundle that can be consumed anywhere.
 - `module`: a flat ECMAScript Module (ESM) bundle containing ES5 code.
-- `es2015`: a flat ESM containing ES2015 bundle.
+- `es2015`: a flat ESM bundle containing ES2015 code.
 - `typings`: TypeScript and the AOT compiler will look at this entry for metadata.
 
 In addition, a minimized version of the UMD bundle should also be provided, as well as full
@@ -191,7 +191,7 @@ A library should have the following file layout when published:
 </div>
 
 <div class="l-sub-section">
-  A flat ECMAScript module (FESM) is a bundled ECMAScript module where all imports were followed 
+  A flat ECMAScript module (FESM) is a bundled ECMAScript module where all imports were 
   copied onto the same file file.
   It always contains ES module import/export statements but can have different levels of ES code
   inside.
@@ -253,6 +253,7 @@ You are encouraged to customize this process as you see fit.
 
 Make sure you have at least Node 6.9 and NPM 3.0 installed.
 Then ...
+
 1. Create a project folder (you can call it `quickstart-lib` and rename it later).
 1. [Clone](guide/third-party-lib#clone "Clone it from github") or [download](guide/third-party-lib#download "download it from github") the **QuickStart Library seed** into your project folder.
 1. Install npm packages.
@@ -272,7 +273,7 @@ Perform the _clone-to-launch_ steps with these terminal commands.
 
 
 ### Download
-<a href="https://github.com/angular/quickstart-lib" title="Download the QuickStart Library seed repository">Download the QuickStart Library seed</a>
+[Download the QuickStart Library seed](https://github.com/angular/quickstart-lib/archive/master.zip)
 and unzip it into your project folder. Then perform the remaining steps with these terminal commands.
 
 <code-example language="sh" class="code-shell">
@@ -291,7 +292,8 @@ You don't want that git history though - you'll want to make your own.
 Delete this folder and initialize this one as a new repository:
 
 <code-example language="sh" class="code-shell">
-  rm -rf .git # use rmdir .git on Windows
+  rm -rf .git # Linux or OS/X (bash)
+  rd .git /S/Q # Windows
   git init
 </code-example>
 
@@ -302,7 +304,7 @@ Delete this folder and initialize this one as a new repository:
 
 ## What's in the QuickStart Library seed?
 
-The **QuickStart Library seed** contains a similar structure to the **Quickstart seed*.
+The **QuickStart Library seed** contains a similar structure to the [Quickstart seed](https://github.com/angular/quickstart).
 It's modified to build and test a library instead of an application.
 
 Consequently, there are _many different files_ in the project, 
@@ -428,7 +430,7 @@ The following are all in `src/`
       <code>demo/app/app.module.ts</code>
     </td>
     <td>
-      A demo `NgModule` that imports the Library `LibModule`.
+      A demo <code>NgModule</code> that imports the Library <code>LibModule</code>.
     </td>
   </tr>
   <tr>
@@ -452,7 +454,7 @@ The following are all in `src/`
       <code>lib/src/module.ts</code>
     </td>
     <td>
-      The library's main `NgModule`, `LibModule`.
+      The library's main <code>NgModule</code>, <code>LibModule</code>.
     </td>
   </tr>
   <tr>
@@ -471,9 +473,9 @@ The following are all in `src/`
 You can build the library by running `npm run build`. 
 This will generate a `dist/` directory with all the entry points described above.
 
-All the logic for creating the build can be found in `./build.js`. It consists of roughly 4 steps:
+All the logic for creating the build can be found in `./build.js`. It consists of roughly 5 steps:
 
-- Compile with the Ahead of Time Compiler (AOT compiler or `ngc`) for ES5 and ES2015.
+- Compile with the AOT Compiler (AOT compiler or `ngc`) for ES5 and ES2015.
 - Inline html and css inside the generated JavaScript files.
 - Copy typings, metatada, html and css.
 - Create each bundle using Rollup.
@@ -487,8 +489,8 @@ applications might break due to bugs in libraries.
 
 But the fact that a library is consumed by another application is also what makes it hard to test.
 
-To properly test a library, you need to have an integration test.
-An integration test is to libraries what a end-to-end test is to applications.
+To properly test a library, you need to have an integration tests.
+An integration test is to libraries what an end-to-end test is to applications.
 It tests how an app would install and use your library.
 
 The **QuickStart Library seed** includes a directory called `integration` containing a standalone
@@ -521,7 +523,7 @@ If you haven't already, now is the time to change the name of your library.
 
 Use your editor to search the project for all instances of `angular-quickstart-lib` and change it
 to your intended name (also in `dash-case` format).
-The library name is mentioned on these files: 
+The library name is mentioned on at least these files: 
 
 - `integration/src/app/app.component.ts`
 - `integration/src/app/app.module.ts`
@@ -555,11 +557,11 @@ Since your package is built on the `dist/` folder this is the one you should pub
 Now that you've published a library, you need to maintain it as well. 
 Below are some of the most important points:
 
-- Keep an eye on the issue tracker.
 - Document your library.
-- [Manage your dependencies properly](guide/appendix-dependency-management)
+- Keep an eye on the issue tracker.
+- [Manage your dependencies properly](guide/third-party-lib#appendix-dependency-management)
 - Follow [Semantic Versioning](http://semver.org/)
-- Setup a Continuous Integration solution to test your library (included is a `travis.yml` 
+- Setup a Continuous Integration solution to test your library (included is a `.travis.yml` 
 file for [Travis CI](https://docs.travis-ci.com/user/getting-started/))!
 - Choose an [appropriate license](https://choosealicense.com/).
 
@@ -575,7 +577,7 @@ Otherwise it will not be possible to include the library in an AOT compiled appl
 
 Only code written in TypeScript can be AOT compiled.
  
-Before publishing the library must first be compiled using the Ahead of Time compiler (`ngc`). 
+Before publishing the library must first be compiled using the AOT compiler (`ngc`). 
 `ngc` extends the `tsc` compiler by adding extensions to support AOT compilation in addition to
 regular TypeScript compilation.   
 
@@ -611,7 +613,7 @@ on the JavaScript, Typings and meta data shipped with the library.
 
 Why not ship TypeScript source instead? 
 After all the library will be part of another TypeScript compilation step when the library is
-imported by the consuming application? 
+imported by the consuming application.
 
 Generally it's discouraged to ship TypeScript with third party libraries. 
 It would require the consumer to replicate the complete build environment of the library. 
@@ -645,11 +647,10 @@ There are [three kinds of dependencies](https://docs.npmjs.com/files/package.jso
 - `dependencies`: here go all the other libraries yours depends on when being used.
 A good way to figure out these is to go through your library source code (in `src/lib` **only**)
 and list all the libraries there.
-- `devDependencies`: libraries that you need while developing, testing and building your app
+- `devDependencies`: libraries that you need while developing, testing and building your library
 go here.
 When a user installs your library, these won't be installed. 
 Users don't need to develop, build or test your library, they just need to run it.
-your app.
 - `peerDependencies`: these are similar to `dependencies` since your library expects them to be
 there at runtime.
 The difference is that you don't want to install a new version of these, but instead use
@@ -675,7 +676,7 @@ You can choose what versions you allow by using [ranges](https://docs.npmjs.com/
 A good rule of thumb is to have all `dependencies` specified with a tilde `~`(`~1.2.3`),
 while your `peerDependencies` have a range (`"@angular/core": ">=4.0.0 <5.0.0 || >=4.0.0-beta <5.0.0"`).
 
-Any extra dependency or peer Dependency that you add to `package.json` should also be added
+Any extra dependency or peer dependency that you add to `package.json` should also be added
 to the `globals` and `external` array in the `rollupBaseConfig` variable in `./build.js`.
 
 This ensures your library doesn't package extra libraries inside of it and instead uses the ones
