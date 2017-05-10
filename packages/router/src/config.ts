@@ -29,7 +29,7 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  *   {@link CanActivateChild} for more info.
  * - `canDeactivate` is an array of DI tokens used to look up CanDeactivate handlers. See
  *   {@link CanDeactivate} for more info.
- * - `canLoad` is an array of DI tokens used to look up CanDeactivate handlers. See
+ * - `canLoad` is an array of DI tokens used to look up CanLoad handlers. See
  *   {@link CanLoad} for more info.
  * - `data` is additional data provided to the component via `ActivatedRoute`.
  * - `resolve` is a map of DI tokens used to look up data resolvers. See {@link Resolve} for more
