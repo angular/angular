@@ -92,6 +92,9 @@ module.exports = {
   },
 
   renderAttributes(attrMap) {
-    return Object.keys(attrMap).map(key => (attrMap[key] === true) ? ` ${key}` : ` ${key}="${attrMap[key].replace(/"/g, '&quot;')}"`).join('');
+    return Object.keys(attrMap).map(key =>
+      attrMap[key] === false ? '' :
+      attrMap[key] === true ? ` ${key}` :
+      ` ${key}="${attrMap[key].replace(/"/g, '&quot;')}"`).join('');
   }
 };
