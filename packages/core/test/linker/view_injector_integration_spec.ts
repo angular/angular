@@ -342,6 +342,53 @@ export function main() {
         expect(created).toBe(true);
       });
 
+      describe('injecting lazy providers into an eager provider via Injector.get', () => {
+
+        it('should inject providers that were declared before it', () => {
+          @Component({
+            template: '',
+            providers: [
+              {provide: 'lazy', useFactory: () => 'lazyValue'},
+              {
+                provide: 'eager',
+                useFactory: (i: Injector) => `eagerValue: ${i.get('lazy')}`,
+                deps: [Injector]
+              },
+            ]
+          })
+          class MyComp {
+            // Component is eager, which makes all of its deps eager
+            constructor(@Inject('eager') eager: any) {}
+          }
+
+          const ctx =
+              TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
+          expect(ctx.debugElement.injector.get('eager')).toBe('eagerValue: lazyValue');
+        });
+
+        it('should inject providers that were declared after it', () => {
+          @Component({
+            template: '',
+            providers: [
+              {
+                provide: 'eager',
+                useFactory: (i: Injector) => `eagerValue: ${i.get('lazy')}`,
+                deps: [Injector]
+              },
+              {provide: 'lazy', useFactory: () => 'lazyValue'},
+            ]
+          })
+          class MyComp {
+            // Component is eager, which makes all of its deps eager
+            constructor(@Inject('eager') eager: any) {}
+          }
+
+          const ctx =
+              TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
+          expect(ctx.debugElement.injector.get('eager')).toBe('eagerValue: lazyValue');
+        });
+      });
+
       it('should allow injecting lazy providers via Injector.get from an eager provider that is declared earlier',
          () => {
            @Component({providers: [{provide: 'a', useFactory: () => 'aValue'}], template: ''})

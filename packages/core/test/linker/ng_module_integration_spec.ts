@@ -787,15 +787,46 @@ function declareTests({useJit}: {useJit: boolean}) {
         expect(child.get(Injector)).toBe(child);
       });
 
-      it('should allow to inject lazy providers via Injector.get from an eager provider that is declared earlier',
-         () => {
-           @NgModule({providers: [{provide: 'a', useFactory: () => 'aValue'}]})
-           class SomeModule {
-             public a: string;
-             constructor(injector: Injector) { this.a = injector.get('a'); }
-           }
-           expect(createModule(SomeModule).instance.a).toBe('aValue');
-         });
+      describe('injecting lazy providers into an eager provider via Injector.get', () => {
+
+        it('should inject providers that were declared before it', () => {
+          @NgModule({
+            providers: [
+              {provide: 'lazy', useFactory: () => 'lazyValue'},
+              {
+                provide: 'eager',
+                useFactory: (i: Injector) => `eagerValue: ${i.get('lazy')}`,
+                deps: [Injector]
+              },
+            ]
+          })
+          class MyModule {
+            // NgModule is eager, which makes all of its deps eager
+            constructor(@Inject('eager') eager: any) {}
+          }
+
+          expect(createModule(MyModule).injector.get('eager')).toBe('eagerValue: lazyValue');
+        });
+
+        it('should inject providers that were declared after it', () => {
+          @NgModule({
+            providers: [
+              {
+                provide: 'eager',
+                useFactory: (i: Injector) => `eagerValue: ${i.get('lazy')}`,
+                deps: [Injector]
+              },
+              {provide: 'lazy', useFactory: () => 'lazyValue'},
+            ]
+          })
+          class MyModule {
+            // NgModule is eager, which makes all of its deps eager
+            constructor(@Inject('eager') eager: any) {}
+          }
+
+          expect(createModule(MyModule).injector.get('eager')).toBe('eagerValue: lazyValue');
+        });
+      });
 
       it('should throw when no provider defined', () => {
         const injector = createInjector([]);

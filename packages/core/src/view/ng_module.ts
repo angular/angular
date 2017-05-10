@@ -10,7 +10,7 @@ import {Injector, THROW_IF_NOT_FOUND} from '../di/injector';
 import {NgModuleRef} from '../linker/ng_module_factory';
 
 import {DepDef, DepFlags, NgModuleData, NgModuleDefinition, NgModuleDefinitionFactory, NgModuleProviderDef, NodeFlags} from './types';
-import {tokenKey} from './util';
+import {splitDepsDsl, tokenKey} from './util';
 
 const NOT_CREATED = new Object();
 
@@ -20,17 +20,7 @@ const NgModuleRefTokenKey = tokenKey(NgModuleRef);
 export function moduleProvideDef(
     flags: NodeFlags, token: any, value: any,
     deps: ([DepFlags, any] | any)[]): NgModuleProviderDef {
-  const depDefs: DepDef[] = deps.map(value => {
-    let token: any;
-    let flags: DepFlags;
-    if (Array.isArray(value)) {
-      [flags, token] = value;
-    } else {
-      flags = DepFlags.None;
-      token = value;
-    }
-    return {flags, token, tokenKey: tokenKey(token)};
-  });
+  const depDefs = splitDepsDsl(deps);
   return {
     // will bet set by the module definition
     index: -1,
@@ -97,16 +87,16 @@ function _createProviderInstance(ngModule: NgModuleData, providerDef: NgModulePr
   let injectable: any;
   switch (providerDef.flags & NodeFlags.Types) {
     case NodeFlags.TypeClassProvider:
-      injectable = _createClass(ngModule, providerDef !.value, providerDef !.deps);
+      injectable = _createClass(ngModule, providerDef.value, providerDef.deps);
       break;
     case NodeFlags.TypeFactoryProvider:
-      injectable = _callFactory(ngModule, providerDef !.value, providerDef !.deps);
+      injectable = _callFactory(ngModule, providerDef.value, providerDef.deps);
       break;
     case NodeFlags.TypeUseExistingProvider:
-      injectable = resolveNgModuleDep(ngModule, providerDef !.deps[0]);
+      injectable = resolveNgModuleDep(ngModule, providerDef.deps[0]);
       break;
     case NodeFlags.TypeValueProvider:
-      injectable = providerDef !.value;
+      injectable = providerDef.value;
       break;
   }
   return injectable;

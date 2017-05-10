@@ -12,7 +12,7 @@ import {BindingFlags, DebugContext, NodeDef, NodeFlags, QueryBindingType, QueryV
 import {inject} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
-import {createRootView} from './helper';
+import {createEmbeddedView, createRootView} from './helper';
 
 export function main() {
   describe(`Query Views`, () => {
@@ -155,7 +155,7 @@ export function main() {
           ...contentQueryProviders(),
         ]));
 
-        const childView = Services.createEmbeddedView(view, view.def.nodes[3]);
+        const childView = createEmbeddedView(view, view.def.nodes[3]);
         attachEmbeddedView(view, asElementData(view, 3), 0, childView);
         Services.checkAndUpdateView(view);
 
@@ -183,7 +183,7 @@ export function main() {
           anchorDef(NodeFlags.EmbeddedViews, null !, null !, 0),
         ]));
 
-        const childView = Services.createEmbeddedView(view, view.def.nodes[3]);
+        const childView = createEmbeddedView(view, view.def.nodes[3]);
         // attach at a different place than the one where the template was defined
         attachEmbeddedView(view, asElementData(view, 7), 0, childView);
 
@@ -214,7 +214,7 @@ export function main() {
         const qs: QueryService = asProviderData(view, 1).instance;
         expect(qs.a.length).toBe(0);
 
-        const childView = Services.createEmbeddedView(view, view.def.nodes[3]);
+        const childView = createEmbeddedView(view, view.def.nodes[3]);
         attachEmbeddedView(view, asElementData(view, 3), 0, childView);
         Services.checkAndUpdateView(view);
 
@@ -245,7 +245,7 @@ export function main() {
         expect(comp.a.length).toBe(0);
 
         const compView = asElementData(view, 0).componentView;
-        const childView = Services.createEmbeddedView(compView, compView.def.nodes[1]);
+        const childView = createEmbeddedView(compView, compView.def.nodes[1]);
         attachEmbeddedView(view, asElementData(compView, 1), 0, childView);
         Services.checkAndUpdateView(view);
 
