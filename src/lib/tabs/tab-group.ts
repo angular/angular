@@ -68,6 +68,13 @@ export class MdTabGroup {
   get _dynamicHeightDeprecated(): boolean { return this._dynamicHeight; }
   set _dynamicHeightDeprecated(value: boolean) { this._dynamicHeight = value; }
 
+  /** Whether ripples for the tab-group should be disabled or not. */
+  @Input()
+  get disableRipple(): boolean { return this._disableRipple; }
+  set disableRipple(value) { this._disableRipple = coerceBooleanProperty(value); }
+  private _disableRipple: boolean = false;
+
+
   private _selectedIndex: number = null;
 
   /** The index of the active tab. */

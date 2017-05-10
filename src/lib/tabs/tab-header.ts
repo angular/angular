@@ -14,7 +14,7 @@ import {
   OnDestroy,
   NgZone,
 } from '@angular/core';
-import {RIGHT_ARROW, LEFT_ARROW, ENTER, Dir, LayoutDirection} from '../core';
+import {RIGHT_ARROW, LEFT_ARROW, ENTER, Dir, LayoutDirection, coerceBooleanProperty} from '../core';
 import {MdTabLabelWrapper} from './tab-label-wrapper';
 import {MdInkBar} from './ink-bar';
 import {Subscription} from 'rxjs/Subscription';
@@ -107,6 +107,12 @@ export class MdTabHeader implements AfterContentChecked, AfterContentInit, OnDes
     this._selectedIndex = value;
     this._focusIndex = value;
   }
+
+  /** Whether ripples for the tab-header labels should be disabled or not. */
+  @Input()
+  get disableRipple(): boolean { return this._disableRipple; }
+  set disableRipple(value) { this._disableRipple = coerceBooleanProperty(value); }
+  private _disableRipple: boolean = false;
 
   /** Event emitted when the option is selected. */
   @Output() selectFocusedIndex = new EventEmitter();

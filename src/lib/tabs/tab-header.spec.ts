@@ -13,6 +13,7 @@ import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
 import {dispatchKeyboardEvent} from '../core/testing/dispatch-events';
 import {dispatchFakeEvent} from '../core/testing/dispatch-events';
 import {Subject} from 'rxjs/Subject';
+import {By} from '@angular/platform-browser';
 
 
 describe('MdTabHeader', () => {
@@ -168,6 +169,44 @@ describe('MdTabHeader', () => {
         fixture.detectChanges();
         expect(appComponent.mdTabHeader.scrollDistance).toBe(0);
       });
+
+      it('should show ripples for pagination buttons', () => {
+        appComponent.addTabsForScrolling();
+        fixture.detectChanges();
+
+        expect(appComponent.mdTabHeader._showPaginationControls).toBe(true);
+
+        const buttonAfter = fixture.debugElement.query(By.css('.mat-tab-header-pagination-after'));
+
+        expect(fixture.nativeElement.querySelectorAll('.mat-ripple-element').length)
+          .toBe(0, 'Expected no ripple to show up initially.');
+
+        dispatchFakeEvent(buttonAfter.nativeElement, 'mousedown');
+        dispatchFakeEvent(buttonAfter.nativeElement, 'mouseup');
+
+        expect(fixture.nativeElement.querySelectorAll('.mat-ripple-element').length)
+          .toBe(1, 'Expected one ripple to show up after mousedown');
+      });
+
+      it('should allow disabling ripples for pagination buttons', () => {
+        appComponent.addTabsForScrolling();
+        appComponent.disableRipple = true;
+        fixture.detectChanges();
+
+        expect(appComponent.mdTabHeader._showPaginationControls).toBe(true);
+
+        const buttonAfter = fixture.debugElement.query(By.css('.mat-tab-header-pagination-after'));
+
+        expect(fixture.nativeElement.querySelectorAll('.mat-ripple-element').length)
+          .toBe(0, 'Expected no ripple to show up initially.');
+
+        dispatchFakeEvent(buttonAfter.nativeElement, 'mousedown');
+        dispatchFakeEvent(buttonAfter.nativeElement, 'mouseup');
+
+        expect(fixture.nativeElement.querySelectorAll('.mat-ripple-element').length)
+          .toBe(0, 'Expected no ripple to show up after mousedown');
+      });
+
     });
 
     describe('rtl', () => {
@@ -238,7 +277,7 @@ interface Tab {
 @Component({
   template: `
   <div [dir]="dir">
-    <md-tab-header [selectedIndex]="selectedIndex"
+    <md-tab-header [selectedIndex]="selectedIndex" [disableRipple]="disableRipple"
                (indexFocused)="focusedIndex = $event"
                (selectFocusedIndex)="selectedIndex = $event">
       <div md-tab-label-wrapper style="min-width: 30px; width: 30px"
@@ -257,6 +296,7 @@ interface Tab {
   `]
 })
 class SimpleTabHeaderApp {
+  disableRipple: boolean = false;
   selectedIndex: number = 0;
   focusedIndex: number;
   disabledTabIndex = 1;

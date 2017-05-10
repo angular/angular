@@ -1,4 +1,6 @@
-<md-tab-header [selectedIndex]="selectedIndex" #tabHeader
+<md-tab-header #tabHeader
+               [selectedIndex]="selectedIndex"
+               [disableRipple]="disableRipple"
                (indexFocused)="_focusChanged($event)"
                (selectFocusedIndex)="selectedIndex = $event">
   <div class="mat-tab-label" role="tab" md-tab-label-wrapper md-ripple
@@ -9,6 +11,7 @@
        [attr.aria-selected]="selectedIndex == i"
        [class.mat-tab-label-active]="selectedIndex == i"
        [disabled]="tab.disabled"
+       [mdRippleDisabled]="disableRipple"
        (click)="tabHeader.focusIndex = selectedIndex = i">
 
     <!-- If there is a label template, use it. -->
