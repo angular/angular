@@ -600,12 +600,15 @@ function isSource(fileName: string): boolean {
   return !/\.d\.ts$/.test(fileName) && /\.ts$/.test(fileName);
 }
 
-export function compile(rootDirs: MockData, options: {
-  emit?: boolean,
-  useSummaries?: boolean,
-  preCompile?: (program: ts.Program) => void,
-  postCompile?: (program: ts.Program) => void,
-}& AotCompilerOptions = {}): Promise<{genFiles: GeneratedFile[], outDir: MockDirectory}> {
+export function compile(
+    rootDirs: MockData, options: {
+      emit?: boolean,
+      useSummaries?: boolean,
+      preCompile?: (program: ts.Program) => void,
+      postCompile?: (program: ts.Program) => void,
+    }& AotCompilerOptions = {},
+    tsOptions: ts.CompilerOptions = {}):
+    Promise<{genFiles: GeneratedFile[], outDir: MockDirectory}> {
   // Make sure we always return errors via the promise...
   return Promise.resolve(null).then(() => {
     // when using summaries, always emit so the next step can use the results.
@@ -621,8 +624,9 @@ export function compile(rootDirs: MockData, options: {
       aotHost.hideMetadata();
       aotHost.tsFilesOnly();
     }
+    const tsSettings = {...settings, ...tsOptions};
     const scripts = host.scriptNames.slice(0);
-    const program = ts.createProgram(scripts, settings, host);
+    const program = ts.createProgram(scripts, tsSettings, host);
     if (preCompile) preCompile(program);
     const {compiler, reflector} = createAotCompiler(aotHost, options);
     return compiler.compileAll(program.getSourceFiles().map(sf => sf.fileName)).then(genFiles => {
@@ -630,7 +634,7 @@ export function compile(rootDirs: MockData, options: {
           file => isSource(file.genFileUrl) ? host.addScript(file.genFileUrl, file.source) :
                                               host.override(file.genFileUrl, file.source));
       const scripts = host.scriptNames.slice(0);
-      const newProgram = ts.createProgram(scripts, settings, host);
+      const newProgram = ts.createProgram(scripts, tsSettings, host);
       if (postCompile) postCompile(newProgram);
       if (emit) {
         newProgram.emit();
