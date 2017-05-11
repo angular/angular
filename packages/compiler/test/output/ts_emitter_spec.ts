@@ -80,8 +80,7 @@ export function main() {
 
       it('should create no reexport if the variable is not exported', () => {
         expect(emitStmt(someVar.set(o.importExpr(externalModuleIdentifier)).toDeclStmt())).toEqual([
-          `import * as import0 from 'somePackage/someOtherPath';`,
-          `var someVar:any = import0.someExternalId;`
+          `import * as i0 from 'somePackage/someOtherPath';`, `var someVar:any = i0.someExternalId;`
         ].join('\n'));
       });
 
@@ -90,8 +89,8 @@ export function main() {
                    someVar.set(o.importExpr(externalModuleIdentifier)).toDeclStmt(o.DYNAMIC_TYPE),
                    ['someVar']))
             .toEqual([
-              `import * as import0 from 'somePackage/someOtherPath';`,
-              `export var someVar:any = import0.someExternalId;`
+              `import * as i0 from 'somePackage/someOtherPath';`,
+              `export var someVar:any = i0.someExternalId;`
             ].join('\n'));
       });
 
@@ -103,8 +102,8 @@ export function main() {
                    someVar.set(o.importExpr(externalModuleIdentifierWithMembers)).toDeclStmt(),
                    ['someVar']))
             .toEqual([
-              `import * as import0 from 'somePackage/someOtherPath';`,
-              `export var someVar:any = import0.someExternalId.a;`
+              `import * as i0 from 'somePackage/someOtherPath';`,
+              `export var someVar:any = i0.someExternalId.a;`
             ].join('\n'));
       });
 
@@ -195,7 +194,19 @@ export function main() {
       expect(emitStmt(o.literal(true).toStmt())).toEqual('true;');
       expect(emitStmt(o.literal('someStr').toStmt())).toEqual(`'someStr';`);
       expect(emitStmt(o.literalArr([o.literal(1)]).toStmt())).toEqual(`[1];`);
-      expect(emitStmt(o.literalMap([['someKey', o.literal(1)]]).toStmt())).toEqual(`{someKey: 1};`);
+      expect(emitStmt(o.literalMap([['someKey', o.literal(1)]]).toStmt())).toEqual(`{someKey:1};`);
+    });
+
+    it('should break expressions into multiple lines if they are too long', () => {
+      const values: o.Expression[] = new Array(100);
+      values.fill(o.literal(1));
+      values.splice(50, 0, o.fn([], [new o.ReturnStatement(o.literal(1))]));
+      expect(emitStmt(o.variable('fn').callFn(values).toStmt())).toEqual([
+        'fn(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,',
+        '    1,1,1,1,1,1,1,1,1,1,():void => {', '      return 1;',
+        '    },1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,',
+        '    1,1,1,1,1,1,1,1,1,1,1,1);'
+      ].join('\n'));
     });
 
     it('should apply quotes to each entry within a map produced with literalMap when true', () => {
@@ -215,7 +226,7 @@ export function main() {
     it('should support external identifiers', () => {
       expect(emitStmt(o.importExpr(sameModuleIdentifier).toStmt())).toEqual('someLocalId;');
       expect(emitStmt(o.importExpr(externalModuleIdentifier).toStmt())).toEqual([
-        `import * as import0 from 'somePackage/someOtherPath';`, `import0.someExternalId;`
+        `import * as i0 from 'somePackage/someOtherPath';`, `i0.someExternalId;`
       ].join('\n'));
     });
 
@@ -223,7 +234,7 @@ export function main() {
       spyOn(importResolver, 'getImportAs')
           .and.returnValue(new StaticSymbol('somePackage/importAsModule', 'importAsName', []));
       expect(emitStmt(o.importExpr(externalModuleIdentifier).toStmt())).toEqual([
-        `import * as import0 from 'somePackage/importAsModule';`, `import0.importAsName;`
+        `import * as i0 from 'somePackage/importAsModule';`, `i0.importAsName;`
       ].join('\n'));
     });
 
@@ -423,8 +434,8 @@ export function main() {
       expect(emitStmt(writeVarExpr.toDeclStmt(o.importType(sameModuleIdentifier))))
           .toEqual('var a:someLocalId = (null as any);');
       expect(emitStmt(writeVarExpr.toDeclStmt(o.importType(externalModuleIdentifier)))).toEqual([
-        `import * as import0 from 'somePackage/someOtherPath';`,
-        `var a:import0.someExternalId = (null as any);`
+        `import * as i0 from 'somePackage/someOtherPath';`,
+        `var a:i0.someExternalId = (null as any);`
       ].join('\n'));
     });
 
@@ -433,8 +444,8 @@ export function main() {
           .and.returnValue(new StaticSymbol('somePackage/importAsModule', 'importAsName', []));
       const writeVarExpr = o.variable('a').set(o.NULL_EXPR);
       expect(emitStmt(writeVarExpr.toDeclStmt(o.importType(externalModuleIdentifier)))).toEqual([
-        `import * as import0 from 'somePackage/importAsModule';`,
-        `var a:import0.importAsName = (null as any);`
+        `import * as i0 from 'somePackage/importAsModule';`,
+        `var a:i0.importAsName = (null as any);`
       ].join('\n'));
     });
 
@@ -449,8 +460,8 @@ export function main() {
                           .set(o.NULL_EXPR)
                           .toDeclStmt(o.importType(externalModuleIdentifier, [o.STRING_TYPE]))))
           .toEqual([
-            `import * as import0 from 'somePackage/someOtherPath';`,
-            `var a:import0.someExternalId<string> = (null as any);`
+            `import * as i0 from 'somePackage/someOtherPath';`,
+            `var a:i0.someExternalId<string> = (null as any);`
           ].join('\n'));
     });
 
