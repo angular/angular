@@ -50,9 +50,8 @@ case ${CI_MODE} in
     (
       cd ${TRAVIS_BUILD_DIR}/aio
 
-      if [[ $TRAVIS_PULL_REQUEST != "false" ]]; then
-        # This is a PR: It has already been deployed in `build.sh`.
-      else
+      # Only deploy if this not a PR. PRs are deployed early in `build.sh`.
+      if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then
         # This is upstream master: Deploy to staging
         travisFoldStart "deploy.aio.staging"
           yarn deploy-staging
