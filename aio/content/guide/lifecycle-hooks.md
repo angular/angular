@@ -6,7 +6,7 @@ Angular calls lifecycle hook methods on directives and components as it creates,
 
 @description
 
-<img src="generated/images/guide/lifecycle-hooks/hooks-in-sequence.png" alt="Us" class="left" width="200" height="283">
+<img src="generated/images/guide/lifecycle-hooks/hooks-in-sequence.png" alt="Us" class="left">
 
 A component has a lifecycle managed by Angular.
 

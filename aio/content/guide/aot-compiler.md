@@ -606,6 +606,6 @@ Here's the map for _Tour of Heroes_.
 
 <a href="generated/images/guide/aot-compiler/toh-pt6-bundle.png" title="View larger image">
   <figure>
-    <img src="generated/images/guide/aot-compiler/toh-pt6-bundle.png" alt="toh-pt6-bundle" width="700">
+    <img src="generated/images/guide/aot-compiler/toh-pt6-bundle-700w.png" alt="toh-pt6-bundle">
   </figure>
 </a>

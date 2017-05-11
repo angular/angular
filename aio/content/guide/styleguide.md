@@ -4985,7 +4985,7 @@ Useful tools and tips for Angular.
 **Consider** using [snippets](https://marketplace.visualstudio.com/items?itemName=johnpapa.Angular2) for [Visual Studio Code](https://code.visualstudio.com/) that follow these styles and guidelines.
 
 <a href="https://marketplace.visualstudio.com/items?itemName=johnpapa.Angular2">
-  <img src="https://github.com/johnpapa/vscode-angular2-snippets/raw/master/images/use-extension.gif" width="700" height="429" alt="Use Extension">
+  <img src="generated/images/guide/styleguide/use-extension.gif" alt="Use Extension">
 </a>
 
 **Consider** using [snippets](https://atom.io/packages/angular-2-typescript-snippets) for [Atom](https://atom.io/) that follow these styles and guidelines.

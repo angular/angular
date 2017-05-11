@@ -393,7 +393,7 @@ The Angular CLI has different commands to do the same thing. Adjust accordingly.
 After a few moments, karma opens a browser and starts writing to the console.
 
 <figure>
-  <img src='generated/images/guide/testing/karma-browser.png' width="400" height="142" alt="Karma browser">
+  <img src='generated/images/guide/testing/karma-browser.png' alt="Karma browser">
 </figure>
 
 
@@ -477,7 +477,7 @@ Debug specs in the browser in the same way that you debug an application.
 
 
 <figure>
-  <img src='generated/images/guide/testing/karma-1st-spec-debug.png' width="700" height="150" alt="Karma debugging">
+  <img src='generated/images/guide/testing/karma-1st-spec-debug.png' alt="Karma debugging">
 </figure>
 
 
@@ -2511,7 +2511,7 @@ A better solution is to create an artificial test component that demonstrates al
 
 
 <figure>
-  <img src='generated/images/guide/testing/highlight-directive-spec.png' width="200" height="159" alt="HighlightDirective spec in action">
+  <img src='generated/images/guide/testing/highlight-directive-spec.png' alt="HighlightDirective spec in action">
 </figure>
 
 

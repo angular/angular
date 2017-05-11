@@ -763,7 +763,7 @@ content harmlessly.
 
 
 <figure>
-  <img src='generated/images/guide/template-syntax/evil-title.png' alt="evil title made safe" width="500" height="40">
+  <img src='generated/images/guide/template-syntax/evil-title.png' alt="evil title made safe">
 </figure>
 
 <a href="#top-of-page">back to top</a>

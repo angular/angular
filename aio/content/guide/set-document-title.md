@@ -17,8 +17,8 @@ See the <live-example name="set-document-title"></live-example>.
 
 <div class="l-sub-section clearfix">
 
-<img src='generated/images/plunker/plunker-switch-to-editor-button.png' width="200" height="70" alt="pop out the window" class="right">
-<img src='generated/images/plunker/plunker-separate-window-button.png' width="200" height="47" alt="pop out the window" class="right">
+<img src='generated/images/plunker/plunker-switch-to-editor-button.png'alt="pop out the window" class="right">
+<img src='generated/images/plunker/plunker-separate-window-button.png' alt="pop out the window" class="right">
 
 To see the browser title bar change in the live example,
 open it again in the Plunker editor by clicking the icon in the upper right,
