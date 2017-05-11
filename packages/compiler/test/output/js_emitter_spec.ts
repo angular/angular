@@ -146,6 +146,7 @@ export function main() {
       const lhs = o.variable('lhs');
       const rhs = o.variable('rhs');
       expect(emitStmt(o.not(someVar).toStmt())).toEqual('!someVar;');
+      expect(emitStmt(o.assertNotNull(someVar).toStmt())).toEqual('someVar;');
       expect(
           emitStmt(someVar.conditional(o.variable('trueCase'), o.variable('falseCase')).toStmt()))
           .toEqual('(someVar? trueCase: falseCase);');

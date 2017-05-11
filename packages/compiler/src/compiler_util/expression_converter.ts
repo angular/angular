@@ -348,6 +348,11 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     return convertToStatementIfNeeded(mode, o.not(this._visit(ast.expression, _Mode.Expression)));
   }
 
+  visitNonNullAssert(ast: cdAst.NonNullAssert, mode: _Mode): any {
+    return convertToStatementIfNeeded(
+        mode, o.assertNotNull(this._visit(ast.expression, _Mode.Expression)));
+  }
+
   visitPropertyRead(ast: cdAst.PropertyRead, mode: _Mode): any {
     const leftMostSafe = this.leftMostSafeNode(ast);
     if (leftMostSafe) {
@@ -509,6 +514,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       visitMethodCall(ast: cdAst.MethodCall) { return visit(this, ast.receiver); },
       visitPipe(ast: cdAst.BindingPipe) { return null; },
       visitPrefixNot(ast: cdAst.PrefixNot) { return null; },
+      visitNonNullAssert(ast: cdAst.NonNullAssert) { return null; },
       visitPropertyRead(ast: cdAst.PropertyRead) { return visit(this, ast.receiver); },
       visitPropertyWrite(ast: cdAst.PropertyWrite) { return null; },
       visitQuote(ast: cdAst.Quote) { return null; },
@@ -547,6 +553,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       visitMethodCall(ast: cdAst.MethodCall) { return true; },
       visitPipe(ast: cdAst.BindingPipe) { return true; },
       visitPrefixNot(ast: cdAst.PrefixNot) { return visit(this, ast.expression); },
+      visitNonNullAssert(ast: cdAst.PrefixNot) { return visit(this, ast.expression); },
       visitPropertyRead(ast: cdAst.PropertyRead) { return false; },
       visitPropertyWrite(ast: cdAst.PropertyWrite) { return false; },
       visitQuote(ast: cdAst.Quote) { return false; },
