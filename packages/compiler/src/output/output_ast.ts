@@ -377,6 +377,15 @@ export class NotExpr extends Expression {
   }
 }
 
+export class AssertNotNull extends Expression {
+  constructor(public condition: Expression, sourceSpan?: ParseSourceSpan|null) {
+    super(condition.type, sourceSpan);
+  }
+  visitExpression(visitor: ExpressionVisitor, context: any): any {
+    return visitor.visitAssertNotNullExpr(this, context);
+  }
+}
+
 export class CastExpr extends Expression {
   constructor(public value: Expression, type?: Type|null, sourceSpan?: ParseSourceSpan|null) {
     super(type, sourceSpan);
@@ -503,6 +512,7 @@ export interface ExpressionVisitor {
   visitExternalExpr(ast: ExternalExpr, context: any): any;
   visitConditionalExpr(ast: ConditionalExpr, context: any): any;
   visitNotExpr(ast: NotExpr, context: any): any;
+  visitAssertNotNullExpr(ast: AssertNotNull, context: any): any;
   visitCastExpr(ast: CastExpr, context: any): any;
   visitFunctionExpr(ast: FunctionExpr, context: any): any;
   visitBinaryOperatorExpr(ast: BinaryOperatorExpr, context: any): any;
@@ -768,6 +778,11 @@ export class AstTransformer implements StatementVisitor, ExpressionVisitor {
         new NotExpr(ast.condition.visitExpression(this, context), ast.sourceSpan), context);
   }
 
+  visitAssertNotNullExpr(ast: AssertNotNull, context: any): any {
+    return this.transformExpr(
+        new AssertNotNull(ast.condition.visitExpression(this, context), ast.sourceSpan), context);
+  }
+
   visitCastExpr(ast: CastExpr, context: any): any {
     return this.transformExpr(
         new CastExpr(ast.value.visitExpression(this, context), ast.type, ast.sourceSpan), context);
@@ -945,6 +960,10 @@ export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor 
     return ast;
   }
   visitNotExpr(ast: NotExpr, context: any): any {
+    ast.condition.visitExpression(this, context);
+    return ast;
+  }
+  visitAssertNotNullExpr(ast: AssertNotNull, context: any): any {
     ast.condition.visitExpression(this, context);
     return ast;
   }
@@ -1137,6 +1156,11 @@ export function literalMap(
 
 export function not(expr: Expression, sourceSpan?: ParseSourceSpan | null): NotExpr {
   return new NotExpr(expr, sourceSpan);
+}
+
+export function assertNotNull(
+    expr: Expression, sourceSpan?: ParseSourceSpan | null): AssertNotNull {
+  return new AssertNotNull(expr, sourceSpan);
 }
 
 export function fn(

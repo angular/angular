@@ -112,6 +112,12 @@ export function main() {
         checkAction('!!!true');
       });
 
+      it('should parse postfix ! expression', () => {
+        checkAction('true!');
+        checkAction('a!.b');
+        checkAction('a!!!!.b');
+      });
+
       it('should parse multiplicative expressions',
          () => { checkAction('3*4/2%5', '3 * 4 / 2 % 5'); });
 
