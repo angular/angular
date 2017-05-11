@@ -19,6 +19,12 @@ I'm sorry but we don't understand the problem you are reporting.
 If the problem still exists please open a new issue and provide a plunker reproducing the problem and describing the difference between the expected and current behavior. You can use this plunker template: http://plnkr.co/edit/tpl:AvJOMERrnz94ekVua0u5?p=catalogue
 ```
 
+## Angular: Plunker Needed (v1)
+```
+I'm sorry but reported issues require a plunker reproducing the problem.
+
+If this issue persists, please create a plunker using this template and describe the difference between the expected and current behavior and create a new issue: http://plnkr.co/edit/tpl:AvJOMERrnz94ekVua0u5?p=catalogue
+```
 
 ## Angular: Duplicate (v1)
 ```
@@ -38,6 +44,10 @@ If the problem still persists, please file a new issue and ensure you provide al
 I'm sorry but this issue is not caused by Angular. Please contact the author(s) of project <PROJECT NAME> or file issue on their issue tracker.
 ```
 
+## Angular: Behaving as Expected (v1)
+```
+It appears this behaves as expected. If you still feel there is an issue, please provide further details in a new issue.
+```
 
 ## Angular: Non-reproducible (v1)
 ```
