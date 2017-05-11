@@ -48,6 +48,14 @@ $mat-dense-list-icon-size: 20px;
     position: relative;
   }
 
+  .mat-list-item-ripple {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+  }
+
   &.mat-list-item-avatar .mat-list-item-content {
     height: $avatar-height;
   }
