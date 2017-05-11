@@ -117,7 +117,9 @@ $mat-input-underline-disabled-background-image:
   // display: none, because IE ends up preventing the user from
   // focusing the input altogether.
   @include input-placeholder {
-    color: transparent;
+    // Needs to be !important, because the placeholder will end up inheriting the
+    // input color in IE, if the consumer overrides it with a higher specificity.
+    color: transparent !important;
   }
 }
 
