@@ -10,7 +10,8 @@ import * as chars from '../chars';
 import {CompilerInjectable} from '../injectable';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../ml_parser/interpolation_config';
 import {escapeRegExp} from '../util';
-import {AST, ASTWithSource, AstVisitor, Binary, BindingPipe, Chain, Conditional, EmptyExpr, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, ParseSpan, ParserError, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead, TemplateBinding} from './ast';
+
+import {AST, ASTWithSource, AstVisitor, Binary, BindingPipe, Chain, Conditional, EmptyExpr, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, ParseSpan, ParserError, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead, TemplateBinding} from './ast';
 import {EOF, Lexer, Token, TokenType, isIdentifier, isQuote} from './lexer';
 
 
@@ -523,6 +524,9 @@ export class _ParseAST {
         this.expectCharacter(chars.$RPAREN);
         result = new FunctionCall(this.span(result.span.start), result, args);
 
+      } else if (this.optionalOperator('!')) {
+        result = new NonNullAssert(this.span(result.span.start), result);
+
       } else {
         return result;
       }
@@ -810,6 +814,8 @@ class SimpleExpressionChecker implements AstVisitor {
   visitBinary(ast: Binary, context: any) {}
 
   visitPrefixNot(ast: PrefixNot, context: any) {}
+
+  visitNonNullAssert(ast: NonNullAssert, context: any) {}
 
   visitConditional(ast: Conditional, context: any) {}
 

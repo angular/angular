@@ -129,6 +129,12 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     return null;
   }
 
+  visitAssertNotNullExpr(ast: o.AssertNotNull, ctx: EmitterVisitorContext): any {
+    const result = super.visitAssertNotNullExpr(ast, ctx);
+    ctx.print(ast, '!');
+    return result;
+  }
+
   visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: EmitterVisitorContext): any {
     if (ctx.isExportedVar(stmt.name) && stmt.value instanceof o.ExternalExpr && !stmt.type) {
       // check for a reexport

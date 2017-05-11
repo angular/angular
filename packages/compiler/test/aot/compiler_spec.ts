@@ -14,7 +14,7 @@ import * as ts from 'typescript';
 
 import {extractSourceMap, originalPositionFor} from '../output/source_map_util';
 
-import {EmittingCompilerHost, MockData, MockDirectory, MockMetadataBundlerHost, arrayToMockDir, arrayToMockMap, compile, settings, setup, toMockFileArray} from './test_util';
+import {EmittingCompilerHost, MockData, MockDirectory, MockMetadataBundlerHost, arrayToMockDir, arrayToMockMap, compile, expectNoDiagnostics, settings, setup, toMockFileArray} from './test_util';
 
 describe('compiler (unbundled Angular)', () => {
   let angularFiles = setup();
@@ -214,6 +214,32 @@ describe('compiler (unbundled Angular)', () => {
                `Warning: Can't resolve all parameters for MyService in /app/app.ts: (?). This will become an error in Angular v5.x`);
          });
 
+       }));
+
+    it('should be able to supress a null access', async(() => {
+         const FILES: MockDirectory = {
+           app: {
+             'app.ts': `
+                import {Component, NgModule} from '@angular/core';
+
+                interface Person { name: string; }
+
+                @Component({
+                  selector: 'my-comp',
+                  template: '{{maybe_person!.name}}'
+                })
+                export class MyComp {
+                  maybe_person?: Person;
+                }
+
+                @NgModule({
+                  declarations: [MyComp]
+                })
+                export class MyModule {}
+              `
+           }
+         };
+         compile([FILES, angularFiles], {postCompile: expectNoDiagnostics});
        }));
   });
 

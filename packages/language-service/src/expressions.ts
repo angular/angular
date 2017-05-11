@@ -69,6 +69,7 @@ export function getExpressionCompletions(
       }
     },
     visitPrefixNot(ast) {},
+    visitNonNullAssert(ast) {},
     visitPropertyRead(ast) {
       const receiverType = getType(ast.receiver);
       result = receiverType ? receiverType.members() : scope;
@@ -138,6 +139,7 @@ export function getExpressionSymbol(
       }
     },
     visitPrefixNot(ast) {},
+    visitNonNullAssert(ast) {},
     visitPropertyRead(ast) {
       const receiverType = getType(ast.receiver);
       symbol = receiverType && receiverType.members().get(ast.name);

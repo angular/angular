@@ -135,6 +135,8 @@ describe('expression diagnostics', () => {
      () => reject(`<div>{{maybe_person.name.first}}`, 'The expression might be null'));
   it('should accept a safe accss to an undefined field',
      () => accept(`<div>{{maybe_person?.name.first}}</div>`));
+  it('should accept a type assert to an undefined field',
+     () => accept(`<div>{{maybe_person!.name.first}}</div>`));
   it('should accept a # reference', () => accept(`
           <form #f="ngForm" novalidate>
             <input name="first" ngModel required #first="ngModel">

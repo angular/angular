@@ -344,6 +344,10 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     ast.condition.visitExpression(this, ctx);
     return null;
   }
+  visitAssertNotNullExpr(ast: o.AssertNotNull, ctx: EmitterVisitorContext): any {
+    ast.condition.visitExpression(this, ctx);
+    return null;
+  }
   abstract visitFunctionExpr(ast: o.FunctionExpr, ctx: EmitterVisitorContext): any;
   abstract visitDeclareFunctionStmt(stmt: o.DeclareFunctionStmt, context: any): any;
 

@@ -233,6 +233,9 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
   visitNotExpr(ast: o.NotExpr, ctx: _ExecutionContext): any {
     return !ast.condition.visitExpression(this, ctx);
   }
+  visitAssertNotNullExpr(ast: o.AssertNotNull, ctx: _ExecutionContext): any {
+    return ast.condition.visitExpression(this, ctx);
+  }
   visitCastExpr(ast: o.CastExpr, ctx: _ExecutionContext): any {
     return ast.value.visitExpression(this, ctx);
   }

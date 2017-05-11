@@ -44,6 +44,7 @@ export const settings: ts.CompilerOptions = {
   removeComments: false,
   noImplicitAny: false,
   skipLibCheck: true,
+  strictNullChecks: true,
   lib: ['lib.es2015.d.ts', 'lib.dom.d.ts'],
   types: []
 };
