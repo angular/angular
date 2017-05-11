@@ -576,7 +576,7 @@ The `HeroOfTheMonthComponent` example demonstrates many of the alternatives and 
 It's visually simple: a few properties and the logs produced by a logger.
 
 <figure>
-  <img src="generated/images/guide/dependency-injection-in-action/hero-of-month.png" alt="Hero of the month" width="300px">
+  <img src="generated/images/guide/dependency-injection-in-action/hero-of-month.png" alt="Hero of the month">
 </figure>
 
 
@@ -746,7 +746,7 @@ Behind the scenes, Angular actually sets the `logger` parameter to the full serv
 The following image, which displays the logging date, confirms the point:
 
 <figure>
-  <img src="generated/images/guide/dependency-injection-in-action/date-logger-entry.png" alt="DateLoggerService entry" width="300px">
+  <img src="generated/images/guide/dependency-injection-in-action/date-logger-entry.png" alt="DateLoggerService entry">
 </figure>
 
 
