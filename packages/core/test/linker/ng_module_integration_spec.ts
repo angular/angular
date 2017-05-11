@@ -11,7 +11,7 @@ import {Console} from '@angular/core/src/console';
 import {ComponentFixture, TestBed, inject} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-import {NgModuleInjector} from '../../src/linker/ng_module_factory';
+import {InternalNgModuleRef} from '../../src/linker/ng_module_factory';
 import {clearModulesForTest} from '../../src/linker/ng_module_factory_loader';
 import {stringify} from '../../src/util';
 
@@ -404,9 +404,9 @@ function declareTests({useJit}: {useJit: boolean}) {
         class SomeModule {
         }
 
-        const ngModule = <NgModuleInjector<any>>createModule(SomeModule);
-        expect(ngModule.bootstrapFactories.length).toBe(1);
-        expect(ngModule.bootstrapFactories[0].componentType).toBe(SomeComp);
+        const ngModule = <InternalNgModuleRef<any>>createModule(SomeModule);
+        expect(ngModule._bootstrapComponents.length).toBe(1);
+        expect(ngModule._bootstrapComponents[0]).toBe(SomeComp);
       });
 
     });
@@ -786,6 +786,16 @@ function declareTests({useJit}: {useJit: boolean}) {
 
         expect(child.get(Injector)).toBe(child);
       });
+
+      it('should allow to inject lazy providers via Injector.get from an eager provider that is declared earlier',
+         () => {
+           @NgModule({providers: [{provide: 'a', useFactory: () => 'aValue'}]})
+           class SomeModule {
+             public a: string;
+             constructor(injector: Injector) { this.a = injector.get('a'); }
+           }
+           expect(createModule(SomeModule).instance.a).toBe('aValue');
+         });
 
       it('should throw when no provider defined', () => {
         const injector = createInjector([]);

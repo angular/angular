@@ -17,7 +17,7 @@ import {checkAndUpdateQuery, createQuery} from './query';
 import {createTemplateData, createViewContainerData} from './refs';
 import {checkAndUpdateTextDynamic, checkAndUpdateTextInline, createText} from './text';
 import {ArgumentType, CheckType, ElementData, NodeData, NodeDef, NodeFlags, ProviderData, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewState, ViewUpdateFn, asElementData, asQueryList, asTextData} from './types';
-import {NOOP, checkBindingNoChanges, isComponentView, markParentViewsForCheckProjectedViews, resolveViewDefinition} from './util';
+import {NOOP, checkBindingNoChanges, isComponentView, markParentViewsForCheckProjectedViews, resolveDefinition, tokenKey} from './util';
 import {detachProjectedView} from './view_attach';
 
 export function viewDef(
@@ -102,7 +102,7 @@ export function viewDef(
       const isPrivateService = (node.flags & NodeFlags.PrivateProvider) !== 0;
       const isComponent = (node.flags & NodeFlags.Component) !== 0;
       if (!isPrivateService || isComponent) {
-        currentParent !.element !.publicProviders ![node.provider !.tokenKey] = node;
+        currentParent !.element !.publicProviders ![tokenKey(node.provider !.token)] = node;
       } else {
         if (!currentElementHasPrivateProviders) {
           currentElementHasPrivateProviders = true;
@@ -110,7 +110,7 @@ export function viewDef(
           currentParent !.element !.allProviders =
               Object.create(currentParent !.element !.publicProviders);
         }
-        currentParent !.element !.allProviders ![node.provider !.tokenKey] = node;
+        currentParent !.element !.allProviders ![tokenKey(node.provider !.token)] = node;
       }
       if (isComponent) {
         currentParent !.element !.componentProvider = node;
@@ -240,7 +240,7 @@ function createViewNodes(view: ViewData) {
         const el = createElement(view, renderHost, nodeDef) as any;
         let componentView: ViewData = undefined !;
         if (nodeDef.flags & NodeFlags.ComponentView) {
-          const compViewDef = resolveViewDefinition(nodeDef.element !.componentView !);
+          const compViewDef = resolveDefinition(nodeDef.element !.componentView !);
           const rendererType = nodeDef.element !.componentRendererType;
           let compRenderer: Renderer2;
           if (!rendererType) {

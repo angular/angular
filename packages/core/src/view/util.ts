@@ -12,7 +12,7 @@ import {RendererType2} from '../render/api';
 import {looseIdentical, stringify} from '../util';
 
 import {expressionChangedAfterItHasBeenCheckedError} from './errors';
-import {BindingDef, BindingFlags, ElementData, NodeDef, NodeFlags, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewState, asElementData, asTextData} from './types';
+import {BindingDef, BindingFlags, Definition, DefinitionFactory, ElementData, NodeDef, NodeFlags, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewState, asElementData, asTextData} from './types';
 
 export const NOOP: any = () => {};
 
@@ -220,14 +220,14 @@ export function getParentRenderElement(view: ViewData, renderHost: any, def: Nod
   }
 }
 
-const VIEW_DEFINITION_CACHE = new WeakMap<any, ViewDefinition>();
+const DEFINITION_CACHE = new WeakMap<any, Definition<any>>();
 
-export function resolveViewDefinition(factory: ViewDefinitionFactory): ViewDefinition {
-  let value: ViewDefinition = VIEW_DEFINITION_CACHE.get(factory) !;
+export function resolveDefinition<D extends Definition<any>>(factory: DefinitionFactory<D>): D {
+  let value = DEFINITION_CACHE.get(factory) !as D;
   if (!value) {
     value = factory(() => NOOP);
     value.factory = factory;
-    VIEW_DEFINITION_CACHE.set(factory, value);
+    DEFINITION_CACHE.set(factory, value);
   }
   return value;
 }

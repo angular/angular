@@ -342,6 +342,19 @@ export function main() {
         expect(created).toBe(true);
       });
 
+      it('should allow injecting lazy providers via Injector.get from an eager provider that is declared earlier',
+         () => {
+           @Component({providers: [{provide: 'a', useFactory: () => 'aValue'}], template: ''})
+           class SomeComponent {
+             public a: string;
+             constructor(injector: Injector) { this.a = injector.get('a'); }
+           }
+
+           const comp = TestBed.configureTestingModule({declarations: [SomeComponent]})
+                            .createComponent(SomeComponent);
+           expect(comp.componentInstance.a).toBe('aValue');
+         });
+
       it('should support ngOnDestroy for lazy providers', () => {
         let created = false;
         let destroyed = false;

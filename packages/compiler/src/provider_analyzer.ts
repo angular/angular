@@ -96,7 +96,17 @@ export class ProviderElementContext {
   }
 
   get transformProviders(): ProviderAst[] {
-    return Array.from(this._transformedProviders.values());
+    // Note: Maps keep their insertion order.
+    const lazyProviders: ProviderAst[] = [];
+    const eagerProviders: ProviderAst[] = [];
+    this._transformedProviders.forEach(provider => {
+      if (provider.eager) {
+        eagerProviders.push(provider);
+      } else {
+        lazyProviders.push(provider);
+      }
+    });
+    return lazyProviders.concat(eagerProviders);
   }
 
   get transformedDirectiveAsts(): DirectiveAst[] {
@@ -316,7 +326,17 @@ export class NgModuleProviderAnalyzer {
       const errorString = this._errors.join('\n');
       throw new Error(`Provider parse errors:\n${errorString}`);
     }
-    return Array.from(this._transformedProviders.values());
+    // Note: Maps keep their insertion order.
+    const lazyProviders: ProviderAst[] = [];
+    const eagerProviders: ProviderAst[] = [];
+    this._transformedProviders.forEach(provider => {
+      if (provider.eager) {
+        eagerProviders.push(provider);
+      } else {
+        lazyProviders.push(provider);
+      }
+    });
+    return lazyProviders.concat(eagerProviders);
   }
 
   private _getOrCreateLocalProvider(token: CompileTokenMetadata, eager: boolean): ProviderAst|null {

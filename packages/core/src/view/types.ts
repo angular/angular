@@ -19,8 +19,32 @@ import {Sanitizer, SecurityContext} from '../security';
 // Defs
 // -------------------------------------
 
-export interface ViewDefinition {
-  factory: ViewDefinitionFactory|null;
+/**
+ * Factory for ViewDefinitions/NgModuleDefinitions.
+ * We use a function so we can reexeute it in case an error happens and use the given logger
+ * function to log the error from the definition of the node, which is shown in all browser
+ * logs.
+ */
+export interface DefinitionFactory<D extends Definition<any>> { (logger: NodeLogger): D; }
+
+/**
+ * Function to call console.error at the right source location. This is an indirection
+ * via another function as browser will log the location that actually called
+ * `console.error`.
+ */
+export interface NodeLogger { (): () => void; }
+
+export interface Definition<DF extends DefinitionFactory<any>> { factory: DF|null; }
+
+export interface NgModuleDefinition extends Definition<NgModuleDefinitionFactory> {
+  providers: NgModuleProviderDef[];
+  providersByKey: {[tokenKey: string]: NgModuleProviderDef};
+}
+
+export interface NgModuleDefinitionFactory extends DefinitionFactory<NgModuleDefinition> {}
+;
+
+export interface ViewDefinition extends Definition<ViewDefinitionFactory> {
   flags: ViewFlags;
   updateDirectives: ViewUpdateFn;
   updateRenderer: ViewUpdateFn;
@@ -44,20 +68,8 @@ export interface ViewDefinition {
   nodeMatchedQueries: number;
 }
 
-/**
- * Factory for ViewDefinitions.
- * We use a function so we can reexeute it in case an error happens and use the given logger
- * function to log the error from the definition of the node, which is shown in all browser
- * logs.
- */
-export interface ViewDefinitionFactory { (logger: NodeLogger): ViewDefinition; }
+export interface ViewDefinitionFactory extends DefinitionFactory<ViewDefinition> {}
 
-/**
- * Function to call console.error at the right source location. This is an indirection
- * via another function as browser will log the location that actually called
- * `console.error`.
- */
-export interface NodeLogger { (): () => void; }
 
 export interface ViewUpdateFn { (check: NodeCheckFn, view: ViewData): void; }
 
@@ -245,7 +257,14 @@ export interface ElementHandleEventFn { (view: ViewData, eventName: string, even
 
 export interface ProviderDef {
   token: any;
-  tokenKey: string;
+  value: any;
+  deps: DepDef[];
+}
+
+export interface NgModuleProviderDef {
+  flags: NodeFlags;
+  index: number;
+  token: any;
   value: any;
   deps: DepDef[];
 }
@@ -295,6 +314,14 @@ export interface NgContentDef {
 // -------------------------------------
 // Data
 // -------------------------------------
+
+export interface NgModuleData extends Injector, NgModuleRef<any> {
+  // Note: we are using the prefix _ as NgModuleData is an NgModuleRef and therefore directly
+  // exposed to the user.
+  _def: NgModuleDefinition;
+  _parent: Injector;
+  _providers: any[];
+}
 
 /**
  * View instance data.
@@ -379,13 +406,20 @@ export interface ElementData {
   template: TemplateData;
 }
 
-export interface ViewContainerData extends ViewContainerRef { _embeddedViews: ViewData[]; }
+export interface ViewContainerData extends ViewContainerRef {
+  // Note: we are using the prefix _ as ViewContainerData is a ViewContainerRef and therefore
+  // directly
+  // exposed to the user.
+  _embeddedViews: ViewData[];
+}
 
 export interface TemplateData extends TemplateRef<any> {
   // views that have been created from the template
   // of this element,
   // but inserted into the embeddedViews of another element.
   // By default, this is undefined.
+  // Note: we are using the prefix _ as TemplateData is a TemplateRef and therefore directly
+  // exposed to the user.
   _projectedViews: ViewData[];
 }
 

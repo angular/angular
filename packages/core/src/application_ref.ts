@@ -23,7 +23,7 @@ import {Injectable, InjectionToken, Injector, Provider, ReflectiveInjector} from
 import {CompilerFactory, CompilerOptions} from './linker/compiler';
 import {ComponentFactory, ComponentRef} from './linker/component_factory';
 import {ComponentFactoryBoundToModule, ComponentFactoryResolver} from './linker/component_factory_resolver';
-import {NgModuleFactory, NgModuleInjector, NgModuleRef} from './linker/ng_module_factory';
+import {InternalNgModuleRef, NgModuleFactory, NgModuleRef} from './linker/ng_module_factory';
 import {InternalViewRef, ViewRef} from './linker/view_ref';
 import {WtfScopeFn, wtfCreateScope, wtfLeave} from './profile/profile';
 import {Testability, TestabilityRegistry} from './testability/testability';
@@ -293,7 +293,7 @@ export class PlatformRef_ extends PlatformRef {
     return ngZone.run(() => {
       const ngZoneInjector =
           ReflectiveInjector.resolveAndCreate([{provide: NgZone, useValue: ngZone}], this.injector);
-      const moduleRef = <NgModuleInjector<M>>moduleFactory.create(ngZoneInjector);
+      const moduleRef = <InternalNgModuleRef<M>>moduleFactory.create(ngZoneInjector);
       const exceptionHandler: ErrorHandler = moduleRef.injector.get(ErrorHandler, null);
       if (!exceptionHandler) {
         throw new Error('No ErrorHandler. Is platform module (BrowserModule) included?');
@@ -326,10 +326,10 @@ export class PlatformRef_ extends PlatformRef {
         .then((moduleFactory) => this._bootstrapModuleFactoryWithZone(moduleFactory, ngZone));
   }
 
-  private _moduleDoBootstrap(moduleRef: NgModuleInjector<any>): void {
-    const appRef = moduleRef.injector.get(ApplicationRef);
-    if (moduleRef.bootstrapFactories.length > 0) {
-      moduleRef.bootstrapFactories.forEach(f => appRef.bootstrap(f));
+  private _moduleDoBootstrap(moduleRef: InternalNgModuleRef<any>): void {
+    const appRef = moduleRef.injector.get(ApplicationRef) as ApplicationRef;
+    if (moduleRef._bootstrapComponents.length > 0) {
+      moduleRef._bootstrapComponents.forEach(f => appRef.bootstrap(f));
     } else if (moduleRef.instance.ngDoBootstrap) {
       moduleRef.instance.ngDoBootstrap(appRef);
     } else {

@@ -39,20 +39,22 @@ function constructResolvingPath(keys: any[]): string {
 export interface InjectionError extends Error {
   keys: ReflectiveKey[];
   injectors: ReflectiveInjector[];
-  constructResolvingMessage: (this: InjectionError) => string;
+  constructResolvingMessage: (keys: ReflectiveKey[]) => string;
   addKey(injector: ReflectiveInjector, key: ReflectiveKey): void;
 }
 
 function injectionError(
     injector: ReflectiveInjector, key: ReflectiveKey,
-    constructResolvingMessage: (this: InjectionError) => string,
+    constructResolvingMessage: (keys: ReflectiveKey[]) => string,
     originalError?: Error): InjectionError {
-  const error = (originalError ? wrappedError('', originalError) : Error()) as InjectionError;
+  const keys = [key];
+  const errMsg = constructResolvingMessage(keys);
+  const error =
+      (originalError ? wrappedError(errMsg, originalError) : Error(errMsg)) as InjectionError;
   error.addKey = addKey;
-  error.keys = [key];
+  error.keys = keys;
   error.injectors = [injector];
   error.constructResolvingMessage = constructResolvingMessage;
-  error.message = error.constructResolvingMessage();
   (error as any)[ERROR_ORIGINAL_ERROR] = originalError;
   return error;
 }
@@ -60,7 +62,8 @@ function injectionError(
 function addKey(this: InjectionError, injector: ReflectiveInjector, key: ReflectiveKey): void {
   this.injectors.push(injector);
   this.keys.push(key);
-  this.message = this.constructResolvingMessage();
+  // Note: This updated message won't be reflected in the `.stack` property
+  this.message = this.constructResolvingMessage(this.keys);
 }
 
 /**
@@ -78,9 +81,9 @@ function addKey(this: InjectionError, injector: ReflectiveInjector, key: Reflect
  * ```
  */
 export function noProviderError(injector: ReflectiveInjector, key: ReflectiveKey): InjectionError {
-  return injectionError(injector, key, function(this: InjectionError) {
-    const first = stringify(this.keys[0].token);
-    return `No provider for ${first}!${constructResolvingPath(this.keys)}`;
+  return injectionError(injector, key, function(keys: ReflectiveKey[]) {
+    const first = stringify(keys[0].token);
+    return `No provider for ${first}!${constructResolvingPath(keys)}`;
   });
 }
 
@@ -102,8 +105,8 @@ export function noProviderError(injector: ReflectiveInjector, key: ReflectiveKey
  */
 export function cyclicDependencyError(
     injector: ReflectiveInjector, key: ReflectiveKey): InjectionError {
-  return injectionError(injector, key, function(this: InjectionError) {
-    return `Cannot instantiate cyclic dependency!${constructResolvingPath(this.keys)}`;
+  return injectionError(injector, key, function(keys: ReflectiveKey[]) {
+    return `Cannot instantiate cyclic dependency!${constructResolvingPath(keys)}`;
   });
 }
 
@@ -136,9 +139,9 @@ export function cyclicDependencyError(
 export function instantiationError(
     injector: ReflectiveInjector, originalException: any, originalStack: any,
     key: ReflectiveKey): InjectionError {
-  return injectionError(injector, key, function(this: InjectionError) {
-    const first = stringify(this.keys[0].token);
-    return `${getOriginalError(this).message}: Error during instantiation of ${first}!${constructResolvingPath(this.keys)}.`;
+  return injectionError(injector, key, function(keys: ReflectiveKey[]) {
+    const first = stringify(keys[0].token);
+    return `${originalException.message}: Error during instantiation of ${first}!${constructResolvingPath(keys)}.`;
   }, originalException);
 }
 
