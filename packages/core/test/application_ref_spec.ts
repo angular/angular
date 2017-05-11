@@ -225,11 +225,9 @@ export function main() {
                    [{provide: APP_INITIALIZER, useValue: () => { throw 'Test'; }, multi: true}]))
                .then(() => expect(false).toBe(true), (e) => {
                  expect(e).toBe('Test');
-                 // Note: if the modules throws an error during construction,
-                 // we don't have an injector and therefore no way of
-                 // getting the exception handler. So
-                 // the error is only rethrown but not logged via the exception handler.
-                 expect(mockConsole.res).toEqual([]);
+                 // Error rethrown will be seen by the exception handler since it's after
+                 // construction.
+                 expect(mockConsole.res[0].join('#')).toEqual('ERROR#Test');
                });
          }));
 
@@ -322,11 +320,9 @@ export function main() {
            const moduleFactory = compilerFactory.createCompiler().compileModuleSync(createModule(
                [{provide: APP_INITIALIZER, useValue: () => { throw 'Test'; }, multi: true}]));
            expect(() => defaultPlatform.bootstrapModuleFactory(moduleFactory)).toThrow('Test');
-           // Note: if the modules throws an error during construction,
-           // we don't have an injector and therefore no way of
-           // getting the exception handler. So
-           // the error is only rethrown but not logged via the exception handler.
-           expect(mockConsole.res).toEqual([]);
+           // Error rethrown will be seen by the exception handler since it's after
+           // construction.
+           expect(mockConsole.res[0].join('#')).toEqual('ERROR#Test');
          }));
 
       it('should rethrow promise errors even if the exceptionHandler is not rethrowing',
