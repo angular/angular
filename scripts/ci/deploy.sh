@@ -51,10 +51,7 @@ case ${CI_MODE} in
       cd ${TRAVIS_BUILD_DIR}/aio
 
       if [[ $TRAVIS_PULL_REQUEST != "false" ]]; then
-        # This is a PR: deploy a snapshot for previewing (if preconditions met)
-        travisFoldStart "deploy.aio.pr-preview"
-          yarn deploy-preview
-        travisFoldEnd "deploy.aio.pr-preview"
+        # This is a PR: It has already been deployed in `build.sh`.
       else
         # This is upstream master: Deploy to staging
         travisFoldStart "deploy.aio.staging"
