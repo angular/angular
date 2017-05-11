@@ -14,6 +14,9 @@
     "^/assets/images/.*/unused/",
     "^/generated/(?:docs/(?!api/api-list\\.json).*|images|live-examples|zips)/"
   ],
+  "static.versioned": [
+    "\\.[0-9a-z]{20}\\."
+  ],
   "routing": {
     "index": "/index.html",
     "routes": {

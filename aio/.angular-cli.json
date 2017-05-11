@@ -21,7 +21,7 @@
       "tsconfig": "tsconfig.app.json",
       "testTsconfig": "tsconfig.spec.json",
       "prefix": "aio",
-      "serviceWorker": true,
+      "serviceWorker": false,
       "styles": [
         "styles.scss"
       ],
