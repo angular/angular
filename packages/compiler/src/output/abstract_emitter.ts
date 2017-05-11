@@ -24,6 +24,7 @@ export abstract class OutputEmitter {
 }
 
 class _EmittedLine {
+  partsLength = 0;
   parts: string[] = [];
   srcSpans: (ParseSourceSpan|null)[] = [];
   constructor(public indent: number) {}
@@ -51,9 +52,14 @@ export class EmitterVisitorContext {
 
   lineIsEmpty(): boolean { return this._currentLine.parts.length === 0; }
 
+  lineLength(): number {
+    return this._currentLine.indent * _INDENT_WITH.length + this._currentLine.partsLength;
+  }
+
   print(from: {sourceSpan: ParseSourceSpan | null}|null, part: string, newLine: boolean = false) {
     if (part.length > 0) {
       this._currentLine.parts.push(part);
+      this._currentLine.partsLength += part.length;
       this._currentLine.srcSpans.push(from && from.sourceSpan || null);
     }
     if (newLine) {
@@ -69,12 +75,16 @@ export class EmitterVisitorContext {
 
   incIndent() {
     this._indent++;
-    this._currentLine.indent = this._indent;
+    if (this.lineIsEmpty()) {
+      this._currentLine.indent = this._indent;
+    }
   }
 
   decIndent() {
     this._indent--;
-    this._currentLine.indent = this._indent;
+    if (this.lineIsEmpty()) {
+      this._currentLine.indent = this._indent;
+    }
   }
 
   pushClass(clazz: o.ClassStmt) { this._classes.push(clazz); }
@@ -424,24 +434,18 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     return null;
   }
   visitLiteralArrayExpr(ast: o.LiteralArrayExpr, ctx: EmitterVisitorContext): any {
-    const useNewLine = ast.entries.length > 1;
-    ctx.print(ast, `[`, useNewLine);
-    ctx.incIndent();
-    this.visitAllExpressions(ast.entries, ctx, ',', useNewLine);
-    ctx.decIndent();
-    ctx.print(ast, `]`, useNewLine);
+    ctx.print(ast, `[`);
+    this.visitAllExpressions(ast.entries, ctx, ',');
+    ctx.print(ast, `]`);
     return null;
   }
   visitLiteralMapExpr(ast: o.LiteralMapExpr, ctx: EmitterVisitorContext): any {
-    const useNewLine = ast.entries.length > 1;
-    ctx.print(ast, `{`, useNewLine);
-    ctx.incIndent();
+    ctx.print(ast, `{`);
     this.visitAllObjects(entry => {
-      ctx.print(ast, `${escapeIdentifier(entry.key, this._escapeDollarInStrings, entry.quoted)}: `);
+      ctx.print(ast, `${escapeIdentifier(entry.key, this._escapeDollarInStrings, entry.quoted)}:`);
       entry.value.visitExpression(this, ctx);
-    }, ast.entries, ctx, ',', useNewLine);
-    ctx.decIndent();
-    ctx.print(ast, `}`, useNewLine);
+    }, ast.entries, ctx, ',');
+    ctx.print(ast, `}`);
     return null;
   }
   visitCommaExpr(ast: o.CommaExpr, ctx: EmitterVisitorContext): any {
@@ -450,24 +454,35 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     ctx.print(ast, ')');
     return null;
   }
-  visitAllExpressions(
-      expressions: o.Expression[], ctx: EmitterVisitorContext, separator: string,
-      newLine: boolean = false): void {
-    this.visitAllObjects(
-        expr => expr.visitExpression(this, ctx), expressions, ctx, separator, newLine);
+  visitAllExpressions(expressions: o.Expression[], ctx: EmitterVisitorContext, separator: string):
+      void {
+    this.visitAllObjects(expr => expr.visitExpression(this, ctx), expressions, ctx, separator);
   }
 
   visitAllObjects<T>(
-      handler: (t: T) => void, expressions: T[], ctx: EmitterVisitorContext, separator: string,
-      newLine: boolean = false): void {
+      handler: (t: T) => void, expressions: T[], ctx: EmitterVisitorContext,
+      separator: string): void {
+    let incrementedIndent = false;
     for (let i = 0; i < expressions.length; i++) {
       if (i > 0) {
-        ctx.print(null, separator, newLine);
+        if (ctx.lineLength() > 80) {
+          ctx.print(null, separator, true);
+          if (!incrementedIndent) {
+            // continuation are marked with double indent.
+            ctx.incIndent();
+            ctx.incIndent();
+            incrementedIndent = true;
+          }
+        } else {
+          ctx.print(null, separator, false);
+        }
       }
       handler(expressions[i]);
     }
-    if (newLine) {
-      ctx.println();
+    if (incrementedIndent) {
+      // continuation are marked with double indent.
+      ctx.decIndent();
+      ctx.decIndent();
     }
   }
 
