@@ -80,7 +80,11 @@ $mat-dense-list-icon-size: 20px;
     @include mat-line-wrapper-base();
     padding: 0 $mat-list-side-padding;
 
-    &:first-child {
+    // We only want to override the padding if there isn't
+    // an avatar or icon before the element. Since the ripple
+    // will always be the first child in the container, we
+    // check whether this element is the second child.
+    &:nth-child(2) {
       padding: 0;
     }
   }
