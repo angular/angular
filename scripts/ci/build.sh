@@ -41,7 +41,18 @@ travisFoldEnd "tsc a bunch of useless stuff"
 if [[ ${CI_MODE:-} == "aio" ]]; then
   travisFoldStart "build.aio"
     cd "`dirname $0`/../../aio"
-    yarn run build
+    yarn build
+
+    # If this is a PR for angular/angular@master, deploy a snapshot for previewing early
+    # (if preconditions are met) regardless of the test outcome.
+    if [[ ${TRAVIS_REPO_SLUG} == "angular/angular" ]] &&
+       [[ ${TRAVIS_BRANCH} == "master" ]] &&
+       [[ $TRAVIS_PULL_REQUEST != "false" ]]; then
+      travisFoldStart "deploy.aio.pr-preview"
+        yarn deploy-preview -- --skip-build
+      travisFoldEnd "deploy.aio.pr-preview"
+    fi
+
     cd -
   travisFoldEnd "build.aio"
 fi
