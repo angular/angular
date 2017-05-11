@@ -16,7 +16,7 @@ import {Scrollable} from '../scroll/scrollable';
  * where top and bottom are the y-axis coordinates of the bounding rectangle and left and right are
  * the x-axis coordinates.
  */
-export type ElementBoundingPositions = {
+type ElementBoundingPositions = {
   top: number;
   right: number;
   bottom: number;
