@@ -1,7 +1,7 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {Component, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {ConnectedOverlayDirective, OverlayModule} from './overlay-directives';
+import {ConnectedOverlayDirective, OverlayModule, OverlayOrigin} from './overlay-directives';
 import {OverlayContainer} from './overlay-container';
 import {ConnectedPositionStrategy} from './position/connected-position-strategy';
 import {ConnectedOverlayPositionChange} from './position/connected-position';
@@ -18,7 +18,7 @@ describe('Overlay directives', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [OverlayModule],
-      declarations: [ConnectedOverlayDirectiveTest],
+      declarations: [ConnectedOverlayDirectiveTest, ConnectedOverlayPropertyInitOrder],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
           overlayContainerElement = document.createElement('div');
@@ -110,6 +110,21 @@ describe('Overlay directives', () => {
     expect(overlayContainerElement.textContent.trim()).toBe('',
         'Expected overlay to have been detached.');
   });
+
+  it('should not depend on the order in which the `origin` and `open` are set', async(() => {
+    fixture.destroy();
+
+    const propOrderFixture = TestBed.createComponent(ConnectedOverlayPropertyInitOrder);
+    propOrderFixture.detectChanges();
+
+    const overlayDirective = propOrderFixture.componentInstance.connectedOverlayDirective;
+
+    expect(() => {
+      overlayDirective.open = true;
+      overlayDirective.origin = propOrderFixture.componentInstance.trigger;
+      propOrderFixture.detectChanges();
+    }).not.toThrow();
+  }));
 
   describe('inputs', () => {
 
@@ -310,3 +325,14 @@ class ConnectedOverlayDirectiveTest {
 
   @ViewChild(ConnectedOverlayDirective) connectedOverlayDirective: ConnectedOverlayDirective;
 }
+
+@Component({
+  template: `
+  <button cdk-overlay-origin #trigger="cdkOverlayOrigin">Toggle menu</button>
+  <ng-template cdk-connected-overlay>Menu content</ng-template>`,
+})
+class ConnectedOverlayPropertyInitOrder {
+  @ViewChild(ConnectedOverlayDirective) connectedOverlayDirective: ConnectedOverlayDirective;
+  @ViewChild('trigger') trigger: OverlayOrigin;
+}
+

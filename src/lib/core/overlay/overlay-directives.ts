@@ -10,6 +10,8 @@ import {
     Output,
     ElementRef,
     Renderer2,
+    OnChanges,
+    SimpleChanges,
 } from '@angular/core';
 import {Overlay, OVERLAY_PROVIDERS} from './overlay';
 import {OverlayRef} from './overlay-ref';
@@ -64,10 +66,9 @@ export class OverlayOrigin {
   selector: '[cdk-connected-overlay], [connected-overlay], [cdkConnectedOverlay]',
   exportAs: 'cdkConnectedOverlay'
 })
-export class ConnectedOverlayDirective implements OnDestroy {
+export class ConnectedOverlayDirective implements OnDestroy, OnChanges {
   private _overlayRef: OverlayRef;
   private _templatePortal: TemplatePortal;
-  private _open = false;
   private _hasBackdrop = false;
   private _backdropSubscription: Subscription;
   private _positionSubscription: Subscription;
@@ -126,6 +127,9 @@ export class ConnectedOverlayDirective implements OnDestroy {
   /** Strategy to be used when handling scroll events while the overlay is open. */
   @Input() scrollStrategy: ScrollStrategy = new RepositionScrollStrategy(this._scrollDispatcher);
 
+  /** Whether the overlay is open. */
+  @Input() open: boolean = false;
+
   /** Whether or not the overlay should attach a backdrop. */
   @Input()
   get hasBackdrop() {
@@ -134,16 +138,6 @@ export class ConnectedOverlayDirective implements OnDestroy {
 
   set hasBackdrop(value: any) {
     this._hasBackdrop = coerceBooleanProperty(value);
-  }
-
-  @Input()
-  get open() {
-    return this._open;
-  }
-
-  set open(value: boolean) {
-    value ? this._attachOverlay() : this._detachOverlay();
-    this._open = value;
   }
 
   /** Event emitted when the backdrop is clicked. */
@@ -182,6 +176,12 @@ export class ConnectedOverlayDirective implements OnDestroy {
 
   ngOnDestroy() {
     this._destroyOverlay();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['open']) {
+      this.open ? this._attachOverlay() : this._detachOverlay();
+    }
   }
 
   /** Creates an overlay */
