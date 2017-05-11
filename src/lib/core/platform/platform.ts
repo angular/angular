@@ -15,6 +15,8 @@ const hasV8BreakIterator = typeof(window) !== 'undefined' ?
  */
 @Injectable()
 export class Platform {
+  isBrowser: boolean = typeof document === 'object' && !!document;
+
   /** Layout Engines */
   EDGE = /(edge)/i.test(navigator.userAgent);
   TRIDENT = /(msie|trident)/i.test(navigator.userAgent);

@@ -1,6 +1,7 @@
 import {ViewportRuler, VIEWPORT_RULER_PROVIDER} from './viewport-ruler';
 import {TestBed, inject} from '@angular/core/testing';
-import {SCROLL_DISPATCHER_PROVIDER} from '../scroll/scroll-dispatcher';
+import {ScrollDispatchModule} from '../scroll/index';
+
 
 // For all tests, we assume the browser window is 1024x786 (outerWidth x outerHeight).
 // The karma config has been set to this for local tests, and it is the default size
@@ -22,7 +23,8 @@ describe('ViewportRuler', () => {
   veryLargeElement.style.height = '6000px';
 
   beforeEach(() => TestBed.configureTestingModule({
-    providers: [VIEWPORT_RULER_PROVIDER, SCROLL_DISPATCHER_PROVIDER]
+    imports: [ScrollDispatchModule],
+    providers: [VIEWPORT_RULER_PROVIDER]
   }));
 
   beforeEach(inject([ViewportRuler], (viewportRuler: ViewportRuler) => {

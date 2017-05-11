@@ -37,7 +37,8 @@ const ROLLUP_GLOBALS = {
   'rxjs/add/operator/startWith': 'Rx.Observable.prototype',
   'rxjs/add/operator/switchMap': 'Rx.Observable.prototype',
   'rxjs/add/operator/debounceTime': 'Rx.Observable.prototype',
-  'rxjs/Observable': 'Rx'
+  'rxjs/Observable': 'Rx',
+  'rxjs/Subscription': 'Rx',
 };
 
 export type BundleConfig = {

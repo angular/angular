@@ -9,7 +9,7 @@ import {
   Renderer2,
   ViewEncapsulation
 } from '@angular/core';
-import {coerceBooleanProperty, FocusOriginMonitor} from '../core';
+import {coerceBooleanProperty, FocusOriginMonitor, Platform} from '../core';
 import {mixinDisabled, CanDisable} from '../core/common-behaviors/disabled';
 
 
@@ -22,9 +22,7 @@ import {mixinDisabled, CanDisable} from '../core/common-behaviors/disabled';
  */
 @Directive({
   selector: 'button[md-button], button[mat-button], a[md-button], a[mat-button]',
-  host: {
-    '[class.mat-button]': 'true'
-  }
+  host: {'class': 'mat-button'}
 })
 export class MdButtonCssMatStyler {}
 
@@ -36,9 +34,7 @@ export class MdButtonCssMatStyler {}
   selector:
       'button[md-raised-button], button[mat-raised-button], ' +
       'a[md-raised-button], a[mat-raised-button]',
-  host: {
-    '[class.mat-raised-button]': 'true'
-  }
+  host: {'class': 'mat-raised-button'}
 })
 export class MdRaisedButtonCssMatStyler {}
 
@@ -49,9 +45,7 @@ export class MdRaisedButtonCssMatStyler {}
 @Directive({
   selector:
       'button[md-icon-button], button[mat-icon-button], a[md-icon-button], a[mat-icon-button]',
-  host: {
-    '[class.mat-icon-button]': 'true',
-  }
+  host: {'class': 'mat-icon-button'}
 })
 export class MdIconButtonCssMatStyler {}
 
@@ -61,9 +55,7 @@ export class MdIconButtonCssMatStyler {}
  */
 @Directive({
   selector: 'button[md-fab], button[mat-fab], a[md-fab], a[mat-fab]',
-  host: {
-    '[class.mat-fab]': 'true'
-  }
+  host: {'class': 'mat-fab'}
 })
 export class MdFabCssMatStyler {}
 
@@ -73,9 +65,7 @@ export class MdFabCssMatStyler {}
  */
 @Directive({
   selector: 'button[md-mini-fab], button[mat-mini-fab], a[md-mini-fab], a[mat-mini-fab]',
-  host: {
-    '[class.mat-mini-fab]': 'true'
-  }
+  host: {'class': 'mat-mini-fab'}
 })
 export class MdMiniFabCssMatStyler {}
 
@@ -120,8 +110,11 @@ export class MdButton extends _MdButtonMixinBase implements OnDestroy, CanDisabl
   get disableRipple() { return this._disableRipple; }
   set disableRipple(v) { this._disableRipple = coerceBooleanProperty(v); }
 
-  constructor(private _elementRef: ElementRef, private _renderer: Renderer2,
-              private _focusOriginMonitor: FocusOriginMonitor) {
+  constructor(
+      private _elementRef: ElementRef,
+      private _renderer: Renderer2,
+      private _platform: Platform,
+      private _focusOriginMonitor: FocusOriginMonitor) {
     super();
     this._focusOriginMonitor.monitor(this._elementRef.nativeElement, this._renderer, true);
   }
@@ -169,6 +162,13 @@ export class MdButton extends _MdButtonMixinBase implements OnDestroy, CanDisabl
    * with either an 'md-' or 'mat-' prefix.
    */
   _hasAttributeWithPrefix(...unprefixedAttributeNames: string[]) {
+    // If not on the browser, say that there are none of the attributes present.
+    // Since these only affect how the ripple displays (and ripples only happen on the client),
+    // detecting these attributes isn't necessary when not on the browser.
+    if (!this._platform.isBrowser) {
+      return false;
+    }
+
     return unprefixedAttributeNames.some(suffix => {
       const el = this._getHostElement();
 
@@ -195,8 +195,12 @@ export class MdButton extends _MdButtonMixinBase implements OnDestroy, CanDisabl
   encapsulation: ViewEncapsulation.None
 })
 export class MdAnchor extends MdButton {
-  constructor(elementRef: ElementRef, renderer: Renderer2, focusOriginMonitor: FocusOriginMonitor) {
-    super(elementRef, renderer, focusOriginMonitor);
+  constructor(
+      elementRef: ElementRef,
+      renderer: Renderer2,
+      platform: Platform,
+      focusOriginMonitor: FocusOriginMonitor) {
+    super(elementRef, renderer, platform, focusOriginMonitor);
   }
 
   /** @docs-private */

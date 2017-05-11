@@ -7,7 +7,7 @@ import {Scrollable} from '../scroll/scrollable';
 import {Subscription} from 'rxjs/Subscription';
 import {TestBed, inject} from '@angular/core/testing';
 import Spy = jasmine.Spy;
-import {SCROLL_DISPATCHER_PROVIDER} from '../scroll/scroll-dispatcher';
+import {ScrollDispatchModule} from '../scroll/index';
 
 
 // Default width and height of the overlay and origin panels throughout these tests.
@@ -23,7 +23,8 @@ describe('ConnectedPositionStrategy', () => {
   let viewportRuler: ViewportRuler;
 
   beforeEach(() => TestBed.configureTestingModule({
-    providers: [VIEWPORT_RULER_PROVIDER, SCROLL_DISPATCHER_PROVIDER]
+    imports: [ScrollDispatchModule],
+    providers: [VIEWPORT_RULER_PROVIDER]
   }));
 
   beforeEach(inject([ViewportRuler], (_ruler: ViewportRuler) => {

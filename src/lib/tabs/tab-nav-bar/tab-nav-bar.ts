@@ -14,7 +14,7 @@ import {
 import {MdInkBar} from '../ink-bar';
 import {MdRipple} from '../../core/ripple/index';
 import {ViewportRuler} from '../../core/overlay/position/viewport-ruler';
-import {MD_RIPPLE_GLOBAL_OPTIONS, RippleGlobalOptions, Dir} from '../../core';
+import {MD_RIPPLE_GLOBAL_OPTIONS, RippleGlobalOptions, Dir, Platform} from '../../core';
 import {Observable} from 'rxjs/Observable';
 import {Subscription} from 'rxjs/Subscription';
 import 'rxjs/add/operator/auditTime';
@@ -30,9 +30,7 @@ import 'rxjs/add/observable/merge';
   selector: '[md-tab-nav-bar], [mat-tab-nav-bar]',
   templateUrl: 'tab-nav-bar.html',
   styleUrls: ['tab-nav-bar.css'],
-  host: {
-    '[class.mat-tab-nav-bar]': 'true',
-  },
+  host: {'class': 'mat-tab-nav-bar'},
   encapsulation: ViewEncapsulation.None,
 })
 export class MdTabNavBar implements AfterContentInit, OnDestroy {
@@ -91,9 +89,7 @@ export class MdTabNavBar implements AfterContentInit, OnDestroy {
  */
 @Directive({
   selector: '[md-tab-link], [mat-tab-link]',
-  host: {
-    '[class.mat-tab-link]': 'true',
-  }
+  host: {'class': 'mat-tab-link'}
 })
 export class MdTabLink {
   private _isActive: boolean = false;
@@ -117,13 +113,15 @@ export class MdTabLink {
  */
 @Directive({
   selector: '[md-tab-link], [mat-tab-link]',
-  host: {
-    '[class.mat-tab-link]': 'true',
-  },
+  host: {'class': 'mat-tab-link'},
 })
 export class MdTabLinkRipple extends MdRipple {
-  constructor(elementRef: ElementRef, ngZone: NgZone, ruler: ViewportRuler,
-              @Optional() @Inject(MD_RIPPLE_GLOBAL_OPTIONS) globalOptions: RippleGlobalOptions) {
-    super(elementRef, ngZone, ruler, globalOptions);
+  constructor(
+      elementRef: ElementRef,
+      ngZone: NgZone,
+      ruler: ViewportRuler,
+      platform: Platform,
+      @Optional() @Inject(MD_RIPPLE_GLOBAL_OPTIONS) globalOptions: RippleGlobalOptions) {
+    super(elementRef, ngZone, ruler, platform, globalOptions);
   }
 }

@@ -13,15 +13,18 @@ export class ViewportRuler {
   private _documentRect?: ClientRect;
 
   constructor(scrollDispatcher: ScrollDispatcher) {
-    // Initially cache the document rectangle.
-    this._cacheViewportGeometry();
-
     // Subscribe to scroll and resize events and update the document rectangle on changes.
     scrollDispatcher.scrolled(null, () => this._cacheViewportGeometry());
   }
 
   /** Gets a ClientRect for the viewport's bounds. */
   getViewportRect(documentRect = this._documentRect): ClientRect {
+    // Cache the document bounding rect so that we don't recompute it for multiple calls.
+    if (!documentRect) {
+      this._cacheViewportGeometry();
+      documentRect = this._documentRect;
+    }
+
     // Use the document element's bounding rect rather than the window scroll properties
     // (e.g. pageYOffset, scrollY) due to in issue in Chrome and IE where window scroll
     // properties and client coordinates (boundingClientRect, clientX/Y, etc.) are in different
@@ -51,6 +54,12 @@ export class ViewportRuler {
    * @param documentRect
    */
   getViewportScrollPosition(documentRect = this._documentRect) {
+    // Cache the document bounding rect so that we don't recompute it for multiple calls.
+    if (!documentRect) {
+      this._cacheViewportGeometry();
+      documentRect = this._documentRect;
+    }
+
     // The top-left-corner of the viewport is determined by the scroll position of the document
     // body, normally just (scrollLeft, scrollTop). However, Chrome and Firefox disagree about
     // whether `document.body` or `document.documentElement` is the scrolled element, so reading

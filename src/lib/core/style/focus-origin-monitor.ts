@@ -12,6 +12,7 @@ import {
 } from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
+import {Platform} from '../platform/platform';
 
 
 // This is the value used by AngularJS Material. Through trial and error (on iPhone 6S) they found
@@ -51,7 +52,7 @@ export class FocusOriginMonitor {
   /** Weak map of elements being monitored to their info. */
   private _elementInfo = new WeakMap<Element, MonitoredElementInfo>();
 
-  constructor(private _ngZone: NgZone) {
+  constructor(private _ngZone: NgZone, private _platform: Platform) {
     this._ngZone.runOutsideAngular(() => this._registerDocumentEvents());
   }
 
@@ -63,9 +64,14 @@ export class FocusOriginMonitor {
    * @returns An observable that emits when the focus state of the element changes.
    *     When the element is blurred, null will be emitted.
    */
-  monitor(element: HTMLElement, renderer: Renderer2, checkChildren: boolean):
-    Observable<FocusOrigin> {
-
+  monitor(
+      element: HTMLElement,
+      renderer: Renderer2,
+      checkChildren: boolean): Observable<FocusOrigin> {
+    // Do nothing if we're not on the browser platform.
+    if (!this._platform.isBrowser) {
+      return Observable.of();
+    }
     // Check if we're already monitoring this element.
     if (this._elementInfo.has(element)) {
       let info = this._elementInfo.get(element);
@@ -128,6 +134,11 @@ export class FocusOriginMonitor {
 
   /** Register necessary event listeners on the document and window. */
   private _registerDocumentEvents() {
+    // Do nothing if we're not on the browser platform.
+    if (!this._platform.isBrowser) {
+      return;
+    }
+
     // Note: we listen to events in the capture phase so we can detect them even if the user stops
     // propagation.
 
@@ -306,15 +317,15 @@ export class CdkMonitorFocus implements OnDestroy {
 }
 
 
-export function FOCUS_ORIGIN_MONITOR_PROVIDER_FACTORY(parentDispatcher: FocusOriginMonitor,
-                                                      ngZone: NgZone) {
-  return parentDispatcher || new FocusOriginMonitor(ngZone);
+export function FOCUS_ORIGIN_MONITOR_PROVIDER_FACTORY(
+    parentDispatcher: FocusOriginMonitor, ngZone: NgZone, platform: Platform) {
+  return parentDispatcher || new FocusOriginMonitor(ngZone, platform);
 }
 
 
 export const FOCUS_ORIGIN_MONITOR_PROVIDER = {
   // If there is already a FocusOriginMonitor available, use that. Otherwise, provide a new one.
   provide: FocusOriginMonitor,
-  deps: [[new Optional(), new SkipSelf(), FocusOriginMonitor], NgZone],
+  deps: [[new Optional(), new SkipSelf(), FocusOriginMonitor], NgZone, Platform],
   useFactory: FOCUS_ORIGIN_MONITOR_PROVIDER_FACTORY
 };

@@ -4,12 +4,12 @@ import {MdButtonToggleGroup, MdButtonToggleGroupMultiple, MdButtonToggle} from '
 import {
   UNIQUE_SELECTION_DISPATCHER_PROVIDER,
   MdCommonModule,
-  FocusOriginMonitor,
+  StyleModule,
 } from '../core';
 
 
 @NgModule({
-  imports: [FormsModule, MdCommonModule],
+  imports: [FormsModule, MdCommonModule, StyleModule],
   exports: [
     MdButtonToggleGroup,
     MdButtonToggleGroupMultiple,
@@ -17,7 +17,7 @@ import {
     MdCommonModule,
   ],
   declarations: [MdButtonToggleGroup, MdButtonToggleGroupMultiple, MdButtonToggle],
-  providers: [UNIQUE_SELECTION_DISPATCHER_PROVIDER, FocusOriginMonitor]
+  providers: [UNIQUE_SELECTION_DISPATCHER_PROVIDER]
 })
 export class MdButtonToggleModule {}
 
