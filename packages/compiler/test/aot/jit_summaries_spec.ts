@@ -44,11 +44,11 @@ describe('aot summaries for jit', () => {
        const genFile =
            compileApp(rootDir).genFiles.find(f => f.genFileUrl === '/app/app.module.ngsummary.ts');
 
-       expect(genFile.source).toContain(`import * as import0 from '/app/app.module'`);
+       expect(genFile.source).toContain(`import * as i0 from '/app/app.module'`);
        expect(genFile.source).toContain('export function MyServiceNgSummary()');
        // Note: CompileSummaryKind.Injectable = 3
-       expect(genFile.source).toMatch(/summaryKind: 3,\s*type: \{\s*reference: import0.MyService/);
-       expect(genFile.source).toContain('token: {identifier: {reference: import0.Dep}}');
+       expect(genFile.source).toMatch(/summaryKind:3,\s*type:\{\s*reference:i0.MyService/);
+       expect(genFile.source).toContain('token:{identifier:{reference:i0.Dep}}');
      }));
 
   it('should create @Pipe summaries', fakeAsync(() => {
@@ -72,11 +72,11 @@ describe('aot summaries for jit', () => {
        const genFile =
            compileApp(rootDir).genFiles.find(f => f.genFileUrl === '/app/app.module.ngsummary.ts');
 
-       expect(genFile.source).toContain(`import * as import0 from '/app/app.module'`);
+       expect(genFile.source).toContain(`import * as i0 from '/app/app.module'`);
        expect(genFile.source).toContain('export function MyPipeNgSummary()');
        // Note: CompileSummaryKind.Pipe = 1
-       expect(genFile.source).toMatch(/summaryKind: 0,\s*type: \{\s*reference: import0.MyPipe/);
-       expect(genFile.source).toContain('token: {identifier: {reference: import0.Dep}}');
+       expect(genFile.source).toMatch(/summaryKind:0,\s*type:\{\s*reference:i0.MyPipe/);
+       expect(genFile.source).toContain('token:{identifier:{reference:i0.Dep}}');
      }));
 
   it('should create @Directive summaries', fakeAsync(() => {
@@ -100,12 +100,11 @@ describe('aot summaries for jit', () => {
        const genFile =
            compileApp(rootDir).genFiles.find(f => f.genFileUrl === '/app/app.module.ngsummary.ts');
 
-       expect(genFile.source).toContain(`import * as import0 from '/app/app.module'`);
+       expect(genFile.source).toContain(`import * as i0 from '/app/app.module'`);
        expect(genFile.source).toContain('export function MyDirectiveNgSummary()');
        // Note: CompileSummaryKind.Directive = 1
-       expect(genFile.source)
-           .toMatch(/summaryKind: 1,\s*type: \{\s*reference: import0.MyDirective/);
-       expect(genFile.source).toContain('token: {identifier: {reference: import0.Dep}}');
+       expect(genFile.source).toMatch(/summaryKind:1,\s*type:\{\s*reference:i0.MyDirective/);
+       expect(genFile.source).toContain('token:{identifier:{reference:i0.Dep}}');
      }));
 
   it('should create @NgModule summaries', fakeAsync(() => {
@@ -126,11 +125,11 @@ describe('aot summaries for jit', () => {
        const genFile =
            compileApp(rootDir).genFiles.find(f => f.genFileUrl === '/app/app.module.ngsummary.ts');
 
-       expect(genFile.source).toContain(`import * as import0 from '/app/app.module'`);
+       expect(genFile.source).toContain(`import * as i0 from '/app/app.module'`);
        expect(genFile.source).toContain('export function MyModuleNgSummary()');
        // Note: CompileSummaryKind.NgModule = 2
-       expect(genFile.source).toMatch(/summaryKind: 2,\s*type: \{\s*reference: import0.MyModule/);
-       expect(genFile.source).toContain('token: {identifier: {reference: import0.Dep}}');
+       expect(genFile.source).toMatch(/summaryKind:2,\s*type:\{\s*reference:i0.MyModule/);
+       expect(genFile.source).toContain('token:{identifier:{reference:i0.Dep}}');
      }));
 
   it('should embed useClass provider summaries in @Directive summaries', fakeAsync(() => {
@@ -164,10 +163,10 @@ describe('aot summaries for jit', () => {
        const genFile =
            compileApp(rootDir).genFiles.find(f => f.genFileUrl === '/app/app.module.ngsummary.ts');
 
-       expect(genFile.source).toMatch(/useClass: \{\s*reference: import1.MyService/);
+       expect(genFile.source).toMatch(/useClass:\{\s*reference:i1.MyService/);
        // Note: CompileSummaryKind.Injectable = 3
-       expect(genFile.source).toMatch(/summaryKind: 3,\s*type: \{\s*reference: import1.MyService/);
-       expect(genFile.source).toContain('token: {identifier: {reference: import1.Dep}}');
+       expect(genFile.source).toMatch(/summaryKind:3,\s*type:\{\s*reference:i1.MyService/);
+       expect(genFile.source).toContain('token:{identifier:{reference:i1.Dep}}');
      }));
 
   it('should embed useClass provider summaries into @NgModule summaries', fakeAsync(() => {
@@ -197,10 +196,10 @@ describe('aot summaries for jit', () => {
        const genFile =
            compileApp(rootDir).genFiles.find(f => f.genFileUrl === '/app/app.module.ngsummary.ts');
 
-       expect(genFile.source).toMatch(/useClass: \{\s*reference: import1.MyService/);
+       expect(genFile.source).toMatch(/useClass:\{\s*reference:i1.MyService/);
        // Note: CompileSummaryKind.Injectable = 3
-       expect(genFile.source).toMatch(/summaryKind: 3,\s*type: \{\s*reference: import1.MyService/);
-       expect(genFile.source).toContain('token: {identifier: {reference: import1.Dep}}');
+       expect(genFile.source).toMatch(/summaryKind:3,\s*type:\{\s*reference:i1.MyService/);
+       expect(genFile.source).toContain('token:{identifier:{reference:i1.Dep}}');
      }));
 
   it('should reference declared @Directive and @Pipe summaries in @NgModule summaries',
@@ -327,13 +326,12 @@ describe('aot summaries for jit', () => {
            lib3Gen.find(f => f.genFileUrl === '/lib3/reexport.ngsummary.ts');
 
        // ngsummary.ts files should use the reexported values from direct and deep deps
+       expect(lib3ModuleNgSummary.source).toContain(`import * as i4 from '/lib2/module.ngsummary'`);
        expect(lib3ModuleNgSummary.source)
-           .toContain(`import * as import4 from '/lib2/module.ngsummary'`);
-       expect(lib3ModuleNgSummary.source)
-           .toContain(`import * as import5 from '/lib2/reexport.ngsummary'`);
+           .toContain(`import * as i5 from '/lib2/reexport.ngsummary'`);
        expect(lib3ModuleNgSummary.source)
            .toMatch(
-               /export function Lib3ModuleNgSummary()[^;]*,\s*import4.Lib1Module_1NgSummary,\s*import4.Lib2ModuleNgSummary,\s*import5.ReexportModule_2NgSummary\s*\]\s*;/);
+               /export function Lib3ModuleNgSummary()[^;]*,\s*i4.Lib1Module_1NgSummary,\s*i4.Lib2ModuleNgSummary,\s*i5.ReexportModule_2NgSummary\s*\]\s*;/);
 
        // ngsummaries should add reexports for imported NgModules from a deep dependency
        expect(lib3ModuleNgSummary.source)

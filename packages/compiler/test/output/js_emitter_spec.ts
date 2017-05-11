@@ -115,7 +115,19 @@ export function main() {
       expect(emitStmt(o.literal(true).toStmt())).toEqual('true;');
       expect(emitStmt(o.literal('someStr').toStmt())).toEqual(`'someStr';`);
       expect(emitStmt(o.literalArr([o.literal(1)]).toStmt())).toEqual(`[1];`);
-      expect(emitStmt(o.literalMap([['someKey', o.literal(1)]]).toStmt())).toEqual(`{someKey: 1};`);
+      expect(emitStmt(o.literalMap([['someKey', o.literal(1)]]).toStmt())).toEqual(`{someKey:1};`);
+    });
+
+    it('should break expressions into multiple lines if they are too long', () => {
+      const values: o.Expression[] = new Array(100);
+      values.fill(o.literal(1));
+      values.splice(50, 0, o.fn([], [new o.ReturnStatement(o.literal(1))]));
+      expect(emitStmt(o.variable('fn').callFn(values).toStmt())).toEqual([
+        'fn(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,',
+        '    1,1,1,1,1,1,1,1,1,1,function() {', '      return 1;',
+        '    },1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,',
+        '    1,1,1,1,1,1,1,1,1,1,1,1);'
+      ].join('\n'));
     });
 
     it('should support blank literals', () => {
@@ -126,9 +138,9 @@ export function main() {
     it('should support external identifiers', () => {
       expect(emitStmt(o.importExpr(sameModuleIdentifier).toStmt())).toEqual('someLocalId;');
       expect(emitStmt(o.importExpr(externalModuleIdentifier).toStmt())).toEqual([
-        `var import0 = re` +
+        `var i0 = re` +
             `quire('somePackage/someOtherPath');`,
-        `import0.someExternalId;`
+        `i0.someExternalId;`
       ].join('\n'));
     });
 
@@ -136,9 +148,9 @@ export function main() {
       spyOn(importResolver, 'getImportAs')
           .and.returnValue(new StaticSymbol('somePackage/importAsModule', 'importAsName', []));
       expect(emitStmt(o.importExpr(externalModuleIdentifier).toStmt())).toEqual([
-        `var import0 = re` +
+        `var i0 = re` +
             `quire('somePackage/importAsModule');`,
-        `import0.importAsName;`
+        `i0.importAsName;`
       ].join('\n'));
     });
 
