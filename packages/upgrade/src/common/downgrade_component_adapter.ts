@@ -165,7 +165,7 @@ export class DowngradeComponentAdapter {
             next: assignExpr ?
                 ((setter: any) => (v: any /** TODO #9100 */) => setter(this.scope, v))(setter) :
                 ((getter: any) => (v: any /** TODO #9100 */) =>
-                     getter(this.scope, {$event: v}))(getter)
+                     getter(this.scope, {'$event': v}))(getter)
           });
         } else {
           throw new Error(
