@@ -111,9 +111,13 @@ export class MdSnackBarContainer extends BasePortalHost implements OnDestroy {
     }
 
     if (event.toState === 'visible') {
+      // Note: we shouldn't use `this` inside the zone callback,
+      // because it can cause a memory leak.
+      const onEnter = this.onEnter;
+
       this._ngZone.run(() => {
-        this.onEnter.next();
-        this.onEnter.complete();
+        onEnter.next();
+        onEnter.complete();
       });
     }
   }
@@ -152,9 +156,13 @@ export class MdSnackBarContainer extends BasePortalHost implements OnDestroy {
    * errors where we end up removing an element which is in the middle of an animation.
    */
   private _completeExit() {
+    // Note: we shouldn't use `this` inside the zone callback,
+    // because it can cause a memory leak.
+    const onExit = this.onExit;
+
     this._ngZone.onMicrotaskEmpty.first().subscribe(() => {
-      this.onExit.next();
-      this.onExit.complete();
+      onExit.next();
+      onExit.complete();
     });
   }
 }
