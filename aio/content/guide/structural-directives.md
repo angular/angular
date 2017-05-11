@@ -501,7 +501,7 @@ Angular erases the middle "Hip!", leaving the cheer a bit less enthusiastic.
 
 
 <figure>
-  <img src='generated/images/guide/structural-directives/template-rendering.png' width="350" height="59" alt="template tag rendering">
+  <img src='generated/images/guide/structural-directives/template-rendering.png' alt="template tag rendering">
 </figure>
 
 

@@ -23,7 +23,7 @@ Of course, there is more to it than this.
 You'll learn the details in the pages that follow. For now, focus on the big picture.
 
 <figure>
-  <img src="generated/images/guide/architecture/overview2.png" alt="overview" width="700" height="356">
+  <img src="generated/images/guide/architecture/overview2.png" alt="overview">
 </figure>
 
 <!--
@@ -50,7 +50,8 @@ The code referenced on this page is available as a <live-example></live-example>
 
 ## Modules
 
-<img src="generated/images/guide/architecture/module.png" alt="Component" class="left" width="240" height="183">
+<img src="generated/images/guide/architecture/module.png" alt="Component" class="left">
+
 
 Angular apps are modular and Angular has its own modularity system called _Angular modules_ or _NgModules_.
 
@@ -134,7 +135,7 @@ These are two different and _complementary_ module systems. Use them both to wri
 
 ### Angular libraries
 
-<img src="generated/images/guide/architecture/library-module.png" alt="Component" class="left" width="240" height="181">
+<img src="generated/images/guide/architecture/library-module.png" alt="Component" class="left">
 
 Angular ships as a collection of JavaScript modules. You can think of them as library modules.
 
@@ -171,7 +172,7 @@ Learn more from the [Angular modules](guide/ngmodule) page.
 
 ## Components
 
-<img src="generated/images/guide/architecture/hero-component.png" alt="Component" class="left" width="200" height="115">
+<img src="generated/images/guide/architecture/hero-component.png" alt="Component" class="left">
 
 A _component_ controls a patch of screen called a *view*.
 
@@ -199,7 +200,7 @@ Your app can take action at each moment in this lifecycle through optional [life
 
 ## Templates
 
-<img src="generated/images/guide/architecture/template.png" alt="Template" class="left" width="200">
+<img src="generated/images/guide/architecture/template.png" alt="Template" class="left">
 
 You define a component's view with its companion **template**. A template is a form of HTML
 that tells Angular how to render the component.
@@ -218,7 +219,7 @@ The `HeroDetailComponent` (code not shown) presents facts about a particular her
 hero that the user selects from the list presented by the `HeroListComponent`.
 The `HeroDetailComponent` is a **child** of the `HeroListComponent`.
 
-<img src="generated/images/guide/architecture/component-tree.png" alt="Metadata" class="left" width="300" height="260">
+<img src="generated/images/guide/architecture/component-tree.png" alt="Metadata" class="left">
 
 Notice how `<hero-detail>` rests comfortably among native HTML elements. Custom components mix seamlessly with native HTML in the same layouts.
 
@@ -266,7 +267,7 @@ This is one way to tell Angular that the component's constructor requires a `Her
 so it can get the list of heroes to display.
 
 
-<img src="generated/images/guide/architecture/template-metadata-component.png" alt="Metadata" class="left" width="114" height="200">
+<img src="generated/images/guide/architecture/template-metadata-component.png" alt="Metadata" class="left">
 
 The metadata in the `@Component` tells Angular where to get the major building blocks you specify for the component.
 
@@ -287,7 +288,7 @@ Without a framework, you would be responsible for pushing data values into the H
 into actions and value updates. Writing such push/pull logic by hand is tedious, error-prone, and a nightmare to
 read as any experienced jQuery programmer can attest.
 
-<img src="generated/images/guide/architecture/databinding.png" alt="Data Binding" class="left" width="220" height="204">
+<img src="generated/images/guide/architecture/databinding.png" alt="Data Binding" class="left">
 
 Angular supports **data binding**,
 a mechanism for coordinating parts of a template with parts of a component.
@@ -329,7 +330,7 @@ from the root of the application component tree through all child components.
 Data binding plays an important role in communication between a template and its component.
 
 <figure>
-  <img src="generated/images/guide/architecture/parent-child-binding.png" alt="Parent/Child binding" width="358" height="171">
+  <img src="generated/images/guide/architecture/parent-child-binding.png" alt="Parent/Child binding">
 </figure>
 
 Data binding is also important for communication between parent and child components.
@@ -338,7 +339,7 @@ Data binding is also important for communication between parent and child compon
 
 ## Directives
 
-<img src="generated/images/guide/architecture/directive.png" alt="Parent child" class="left" width="150" height="147">
+<img src="generated/images/guide/architecture/directive.png" alt="Parent child" class="left">
 
 Angular templates are *dynamic*. When Angular renders them, it transforms the DOM
 according to the instructions given by **directives**.
@@ -441,7 +442,7 @@ application logic into services and make those services available to components 
 
 ## Dependency injection
 
-<img src="generated/images/guide/architecture/dependency-injection.png" alt="Service" class="left" width="200" height="89">
+<img src="generated/images/guide/architecture/dependency-injection.png" alt="Service" class="left">
 
 _Dependency injection_ is a way to supply a new instance of a class
 with the fully-formed dependencies it requires. Most dependencies are services.
