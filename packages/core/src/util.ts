@@ -12,22 +12,33 @@ declare var WorkerGlobalScope: any /** TODO #9100 */;
 // We don't want to include the whole node.d.ts this this compilation unit so we'll just fake
 // the global "global" var for now.
 declare var global: any /** TODO #9100 */;
-const __window = typeof window !== 'undefined' && window;
-const __self = typeof self !== 'undefined' && typeof WorkerGlobalScope !== 'undefined' &&
-    self instanceof WorkerGlobalScope && self;
-const __global = typeof global !== 'undefined' && global;
-
-// Check __global first, because in Node tests both __global and __window may be defined and _global
-// should be __global in that case.
-const _global: {[name: string]: any} = __global || __window || __self;
-
 const promise: Promise<any> = Promise.resolve(0);
 /**
  * Attention: whenever providing a new value, be sure to add an
  * entry into the corresponding `....externs.js` file,
  * so that closure won't use that global for its purposes.
  */
+
+const _global = getGlobal();
 export {_global as global};
+export function getGlobal(): any {
+  let _global: any;
+  try {
+    _global = new Function('return this')();
+  } catch (e) {
+    // Content Security Policy with disabled eval
+    const __window = typeof window !== 'undefined' && window;
+    const __self = typeof self !== 'undefined' && typeof WorkerGlobalScope !== 'undefined' &&
+        self instanceof WorkerGlobalScope && self;
+    const __global = typeof global !== 'undefined' && global;
+
+    // Check __global first, because in Node tests both __global and __window may be defined and
+    // _global
+    // should be __global in that case.
+    _global = __global || __window || __self;
+  }
+  return _global;
+}
 
 // When Symbol.iterator doesn't exist, retrieves the key used in es6-shim
 declare const Symbol: any;
