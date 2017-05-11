@@ -21,6 +21,8 @@ import {ParseSourceSpan} from '../parse_util';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ProviderAst, ProviderAstType, QueryMatch, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '../template_parser/template_ast';
 
+import {componentFactoryResolverProviderDef, depDef, lifecycleHookToNodeFlag, providerDef} from './provider_compiler';
+
 const CLASS_ATTR = 'class';
 const STYLE_ATTR = 'style';
 const IMPLICIT_TEMPLATE_VAR = '\$implicit';
@@ -96,10 +98,10 @@ interface UpdateExpression {
   value: AST;
 }
 
-const LOG_VAR = o.variable('l');
-const VIEW_VAR = o.variable('v');
-const CHECK_VAR = o.variable('ck');
-const COMP_VAR = o.variable('co');
+const LOG_VAR = o.variable('_l');
+const VIEW_VAR = o.variable('_v');
+const CHECK_VAR = o.variable('_ck');
+const COMP_VAR = o.variable('_co');
 const EVENT_NAME_VAR = o.variable('en');
 const ALLOW_DEFAULT_VAR = o.variable(`ad`);
 
@@ -409,10 +411,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     const hostBindings:
         {context: o.Expression, inputAst: BoundElementPropertyAst, dirAst: DirectiveAst}[] = [];
     const hostEvents: {context: o.Expression, eventAst: BoundEventAst, dirAst: DirectiveAst}[] = [];
-    const componentFactoryResolverProvider = createComponentFactoryResolver(ast.directives);
-    if (componentFactoryResolverProvider) {
-      this._visitProvider(componentFactoryResolverProvider, ast.queryMatches);
-    }
+    this._visitComponentFactoryResolverProvider(ast.directives);
 
     ast.providers.forEach((providerAst, providerIndex) => {
       let dirAst: DirectiveAst = undefined !;
@@ -585,47 +584,58 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
   }
 
   private _visitProvider(providerAst: ProviderAst, queryMatches: QueryMatch[]): void {
+    this._addProviderNode(this._visitProviderOrDirective(providerAst, queryMatches));
+  }
+
+  private _visitComponentFactoryResolverProvider(directives: DirectiveAst[]) {
+    const componentDirMeta = directives.find(dirAst => dirAst.directive.isComponent);
+    if (componentDirMeta && componentDirMeta.directive.entryComponents.length) {
+      const {providerExpr, depsExpr, flags, tokenExpr} = componentFactoryResolverProviderDef(
+          NodeFlags.PrivateProvider, componentDirMeta.directive.entryComponents);
+      this._addProviderNode({
+        providerExpr,
+        depsExpr,
+        flags,
+        tokenExpr,
+        queryMatchExprs: [],
+        sourceSpan: componentDirMeta.sourceSpan
+      });
+    }
+  }
+
+  private _addProviderNode(data: {
+    flags: NodeFlags,
+    queryMatchExprs: o.Expression[],
+    providerExpr: o.Expression,
+    depsExpr: o.Expression,
+    tokenExpr: o.Expression,
+    sourceSpan: ParseSourceSpan
+  }) {
     const nodeIndex = this.nodes.length;
-    // reserve the space in the nodeDefs array so we can add children
-    this.nodes.push(null !);
-
-    const {flags, queryMatchExprs, providerExpr, depsExpr} =
-        this._visitProviderOrDirective(providerAst, queryMatches);
-
     // providerDef(
     //   flags: NodeFlags, matchedQueries: [string, QueryValueType][], token:any,
     //   value: any, deps: ([DepFlags, any] | any)[]): NodeDef;
-    this.nodes[nodeIndex] = () => ({
-      sourceSpan: providerAst.sourceSpan,
-      nodeFlags: flags,
-      nodeDef: o.importExpr(createIdentifier(Identifiers.providerDef)).callFn([
-        o.literal(flags), queryMatchExprs.length ? o.literalArr(queryMatchExprs) : o.NULL_EXPR,
-        tokenExpr(providerAst.token), providerExpr, depsExpr
-      ])
-    });
+    this.nodes.push(
+        () => ({
+          sourceSpan: data.sourceSpan,
+          nodeFlags: data.flags,
+          nodeDef: o.importExpr(createIdentifier(Identifiers.providerDef)).callFn([
+            o.literal(data.flags),
+            data.queryMatchExprs.length ? o.literalArr(data.queryMatchExprs) : o.NULL_EXPR,
+            data.tokenExpr, data.providerExpr, data.depsExpr
+          ])
+        }));
   }
 
   private _visitProviderOrDirective(providerAst: ProviderAst, queryMatches: QueryMatch[]): {
     flags: NodeFlags,
+    tokenExpr: o.Expression,
+    sourceSpan: ParseSourceSpan,
     queryMatchExprs: o.Expression[],
     providerExpr: o.Expression,
     depsExpr: o.Expression
   } {
     let flags = NodeFlags.None;
-    if (!providerAst.eager) {
-      flags |= NodeFlags.LazyProvider;
-    }
-    if (providerAst.providerType === ProviderAstType.PrivateService) {
-      flags |= NodeFlags.PrivateProvider;
-    }
-    providerAst.lifecycleHooks.forEach((lifecycleHook) => {
-      // for regular providers, we only support ngOnDestroy
-      if (lifecycleHook === LifecycleHooks.OnDestroy ||
-          providerAst.providerType === ProviderAstType.Directive ||
-          providerAst.providerType === ProviderAstType.Component) {
-        flags |= lifecycleHookToNodeFlag(lifecycleHook);
-      }
-    });
     let queryMatchExprs: o.Expression[] = [];
 
     queryMatches.forEach((match) => {
@@ -634,8 +644,15 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
             o.literalArr([o.literal(match.queryId), o.literal(QueryValueType.Provider)]));
       }
     });
-    const {providerExpr, depsExpr, flags: providerType} = providerDef(providerAst);
-    return {flags: flags | providerType, queryMatchExprs, providerExpr, depsExpr};
+    const {providerExpr, depsExpr, flags: providerFlags, tokenExpr} = providerDef(providerAst);
+    return {
+      flags: flags | providerFlags,
+      queryMatchExprs,
+      providerExpr,
+      depsExpr,
+      tokenExpr,
+      sourceSpan: providerAst.sourceSpan
+    };
   }
 
   getLocal(name: string): o.Expression|null {
@@ -885,100 +902,6 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
   visitAttr(ast: AttrAst, context: any): any {}
 }
 
-function providerDef(providerAst: ProviderAst):
-    {providerExpr: o.Expression, flags: NodeFlags, depsExpr: o.Expression} {
-  return providerAst.multiProvider ?
-      multiProviderDef(providerAst.providers) :
-      singleProviderDef(providerAst.providerType, providerAst.providers[0]);
-}
-
-function multiProviderDef(providers: CompileProviderMetadata[]):
-    {providerExpr: o.Expression, flags: NodeFlags, depsExpr: o.Expression} {
-  const allDepDefs: o.Expression[] = [];
-  const allParams: o.FnParam[] = [];
-  const exprs = providers.map((provider, providerIndex) => {
-    let expr: o.Expression;
-    if (provider.useClass) {
-      const depExprs = convertDeps(providerIndex, provider.deps || provider.useClass.diDeps);
-      expr = o.importExpr(provider.useClass).instantiate(depExprs);
-    } else if (provider.useFactory) {
-      const depExprs = convertDeps(providerIndex, provider.deps || provider.useFactory.diDeps);
-      expr = o.importExpr(provider.useFactory).callFn(depExprs);
-    } else if (provider.useExisting) {
-      const depExprs = convertDeps(providerIndex, [{token: provider.useExisting}]);
-      expr = depExprs[0];
-    } else {
-      expr = convertValueToOutputAst(provider.useValue);
-    }
-    return expr;
-  });
-  const providerExpr =
-      o.fn(allParams, [new o.ReturnStatement(o.literalArr(exprs))], o.INFERRED_TYPE);
-  return {providerExpr, flags: NodeFlags.TypeFactoryProvider, depsExpr: o.literalArr(allDepDefs)};
-
-  function convertDeps(providerIndex: number, deps: CompileDiDependencyMetadata[]) {
-    return deps.map((dep, depIndex) => {
-      const paramName = `p${providerIndex}_${depIndex}`;
-      allParams.push(new o.FnParam(paramName, o.DYNAMIC_TYPE));
-      allDepDefs.push(depDef(dep));
-      return o.variable(paramName);
-    });
-  }
-}
-
-function singleProviderDef(providerType: ProviderAstType, providerMeta: CompileProviderMetadata):
-    {providerExpr: o.Expression, flags: NodeFlags, depsExpr: o.Expression} {
-  let providerExpr: o.Expression;
-  let flags: NodeFlags;
-  let deps: CompileDiDependencyMetadata[];
-  if (providerType === ProviderAstType.Directive || providerType === ProviderAstType.Component) {
-    providerExpr = o.importExpr(providerMeta.useClass !);
-    flags = NodeFlags.TypeDirective;
-    deps = providerMeta.deps || providerMeta.useClass !.diDeps;
-  } else {
-    if (providerMeta.useClass) {
-      providerExpr = o.importExpr(providerMeta.useClass);
-      flags = NodeFlags.TypeClassProvider;
-      deps = providerMeta.deps || providerMeta.useClass.diDeps;
-    } else if (providerMeta.useFactory) {
-      providerExpr = o.importExpr(providerMeta.useFactory);
-      flags = NodeFlags.TypeFactoryProvider;
-      deps = providerMeta.deps || providerMeta.useFactory.diDeps;
-    } else if (providerMeta.useExisting) {
-      providerExpr = o.NULL_EXPR;
-      flags = NodeFlags.TypeUseExistingProvider;
-      deps = [{token: providerMeta.useExisting}];
-    } else {
-      providerExpr = convertValueToOutputAst(providerMeta.useValue);
-      flags = NodeFlags.TypeValueProvider;
-      deps = [];
-    }
-  }
-  const depsExpr = o.literalArr(deps.map(dep => depDef(dep)));
-  return {providerExpr, flags, depsExpr};
-}
-
-function tokenExpr(tokenMeta: CompileTokenMetadata): o.Expression {
-  return tokenMeta.identifier ? o.importExpr(tokenMeta.identifier) : o.literal(tokenMeta.value);
-}
-
-function depDef(dep: CompileDiDependencyMetadata): o.Expression {
-  // Note: the following fields have already been normalized out by provider_analyzer:
-  // - isAttribute, isSelf, isHost
-  const expr = dep.isValue ? convertValueToOutputAst(dep.value) : tokenExpr(dep.token !);
-  let flags = DepFlags.None;
-  if (dep.isSkipSelf) {
-    flags |= DepFlags.SkipSelf;
-  }
-  if (dep.isOptional) {
-    flags |= DepFlags.Optional;
-  }
-  if (dep.isValue) {
-    flags |= DepFlags.Value;
-  }
-  return flags === DepFlags.None ? expr : o.literalArr([o.literal(flags), expr]);
-}
-
 function needsAdditionalRootNode(astNodes: TemplateAst[]): boolean {
   const lastAstNode = astNodes[astNodes.length - 1];
   if (lastAstNode instanceof EmbeddedTemplateAst) {
@@ -995,36 +918,6 @@ function needsAdditionalRootNode(astNodes: TemplateAst[]): boolean {
   return lastAstNode instanceof NgContentAst;
 }
 
-function lifecycleHookToNodeFlag(lifecycleHook: LifecycleHooks): NodeFlags {
-  let nodeFlag = NodeFlags.None;
-  switch (lifecycleHook) {
-    case LifecycleHooks.AfterContentChecked:
-      nodeFlag = NodeFlags.AfterContentChecked;
-      break;
-    case LifecycleHooks.AfterContentInit:
-      nodeFlag = NodeFlags.AfterContentInit;
-      break;
-    case LifecycleHooks.AfterViewChecked:
-      nodeFlag = NodeFlags.AfterViewChecked;
-      break;
-    case LifecycleHooks.AfterViewInit:
-      nodeFlag = NodeFlags.AfterViewInit;
-      break;
-    case LifecycleHooks.DoCheck:
-      nodeFlag = NodeFlags.DoCheck;
-      break;
-    case LifecycleHooks.OnChanges:
-      nodeFlag = NodeFlags.OnChanges;
-      break;
-    case LifecycleHooks.OnDestroy:
-      nodeFlag = NodeFlags.OnDestroy;
-      break;
-    case LifecycleHooks.OnInit:
-      nodeFlag = NodeFlags.OnInit;
-      break;
-  }
-  return nodeFlag;
-}
 
 function elementBindingDef(inputAst: BoundElementPropertyAst, dirAst: DirectiveAst): o.Expression {
   switch (inputAst.type) {
@@ -1145,30 +1038,6 @@ function staticViewQueryIds(nodeStaticQueryIds: Map<TemplateAst, StaticAndDynami
   });
   dynamicQueryIds.forEach(queryId => staticQueryIds.delete(queryId));
   return {staticQueryIds, dynamicQueryIds};
-}
-
-function createComponentFactoryResolver(directives: DirectiveAst[]): ProviderAst|null {
-  const componentDirMeta = directives.find(dirAst => dirAst.directive.isComponent);
-  if (componentDirMeta && componentDirMeta.directive.entryComponents.length) {
-    const entryComponentFactories = componentDirMeta.directive.entryComponents.map(
-        (entryComponent) => o.importExpr({reference: entryComponent.componentFactory}));
-
-    const token = createIdentifierToken(Identifiers.ComponentFactoryResolver);
-
-    const classMeta: CompileTypeMetadata = {
-      diDeps: [
-        {isValue: true, value: o.literalArr(entryComponentFactories)},
-        {token: token, isSkipSelf: true, isOptional: true},
-        {token: createIdentifierToken(Identifiers.NgModuleRef)},
-      ],
-      lifecycleHooks: [],
-      reference: resolveIdentifier(Identifiers.CodegenComponentFactoryResolver)
-    };
-    return new ProviderAst(
-        token, false, true, [{token, multi: false, useClass: classMeta}],
-        ProviderAstType.PrivateService, [], componentDirMeta.sourceSpan);
-  }
-  return null;
 }
 
 function elementEventNameAndTarget(

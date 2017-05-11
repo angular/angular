@@ -10,7 +10,7 @@ import {RendererType2} from '../render/api';
 import {SecurityContext} from '../security';
 
 import {BindingDef, BindingFlags, ElementData, ElementHandleEventFn, NodeDef, NodeFlags, OutputDef, OutputType, QueryValueType, ViewData, ViewDefinitionFactory, asElementData} from './types';
-import {NOOP, calcBindingFlags, checkAndUpdateBinding, dispatchEvent, elementEventFullName, getParentRenderElement, resolveRendererType2, resolveViewDefinition, splitMatchedQueriesDsl, splitNamespace} from './util';
+import {NOOP, calcBindingFlags, checkAndUpdateBinding, dispatchEvent, elementEventFullName, getParentRenderElement, resolveDefinition, resolveRendererType2, splitMatchedQueriesDsl, splitNamespace} from './util';
 
 export function anchorDef(
     flags: NodeFlags, matchedQueriesDsl: [string | number, QueryValueType][],
@@ -18,7 +18,7 @@ export function anchorDef(
     templateFactory?: ViewDefinitionFactory): NodeDef {
   flags |= NodeFlags.TypeElement;
   const {matchedQueries, references, matchedQueryIds} = splitMatchedQueriesDsl(matchedQueriesDsl);
-  const template = templateFactory ? resolveViewDefinition(templateFactory) : null;
+  const template = templateFactory ? resolveDefinition(templateFactory) : null;
 
   return {
     // will bet set by the view definition

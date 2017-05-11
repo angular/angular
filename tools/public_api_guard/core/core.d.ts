@@ -612,12 +612,9 @@ export declare type NgIterable<T> = Array<T> | Iterable<T>;
 export declare const NgModule: NgModuleDecorator;
 
 /** @experimental */
-export declare class NgModuleFactory<T> {
-    readonly moduleType: Type<T>;
-    constructor(_injectorClass: {
-        new (parentInjector: Injector): NgModuleInjector<T>;
-    }, _moduleType: Type<T>);
-    create(parentInjector: Injector | null): NgModuleRef<T>;
+export declare abstract class NgModuleFactory<T> {
+    readonly abstract moduleType: Type<T>;
+    abstract create(parentInjector: Injector | null): NgModuleRef<T>;
 }
 
 /** @stable */
