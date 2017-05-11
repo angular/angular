@@ -967,7 +967,7 @@ After clicking a hero, users should see something like this below the hero list:
 
 
 <figure>
-  <img src='generated/images/guide/toh/mini-hero-detail.png' alt="Mini Hero Detail" height="70">
+  <img src='generated/images/guide/toh/mini-hero-detail.png' alt="Mini Hero Detail">
 </figure>
 
 

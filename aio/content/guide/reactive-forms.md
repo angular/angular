@@ -356,7 +356,7 @@ Now that everything is wired up, the browser should display something like this:
 
 
 <figure>
-  <img src="generated/images/guide/reactive-forms/just-formcontrol.png" width="400" height="133" alt="Single FormControl">
+  <img src="generated/images/guide/reactive-forms/just-formcontrol.png" alt="Single FormControl">
 </figure>
 
 
@@ -460,7 +460,7 @@ Piping it through the `JsonPipe` renders the model as JSON in the browser:
 
 
 <figure>
-  <img src="generated/images/guide/reactive-forms/json-output.png" width="400" height="176" alt="JSON output">
+  <img src="generated/images/guide/reactive-forms/json-output.png" alt="JSON output">
 </figure>
 
 
@@ -570,7 +570,7 @@ The browser displays the following:
 
 
 <figure>
-  <img src="generated/images/guide/reactive-forms/validators-json-output.png" width="400" height="223" alt="Single FormControl">
+  <img src="generated/images/guide/reactive-forms/validators-json-output.png" alt="Single FormControl">
 </figure>
 
 
@@ -699,7 +699,7 @@ with the nested address `FormGroup`:
 
 
 <figure>
-  <img src="generated/images/guide/reactive-forms/address-group.png" width="400" height="55" alt="JSON output">
+  <img src="generated/images/guide/reactive-forms/address-group.png" alt="JSON output">
 </figure>
 
 
@@ -1268,7 +1268,7 @@ Back in the browser, select the hero named "Magneta".
 
 
 <figure>
-  <img src="generated/images/guide/reactive-forms/addresses-array.png" width="400" height="40" alt="JSON output of addresses array">
+  <img src="generated/images/guide/reactive-forms/addresses-array.png" alt="JSON output of addresses array">
 </figure>
 
 
