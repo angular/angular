@@ -10,6 +10,7 @@ import {
 import {InteractivityChecker} from './interactivity-checker';
 import {coerceBooleanProperty} from '../coercion/boolean-property';
 
+import 'rxjs/add/operator/first';
 
 /**
  * Class that allows for trapping focus within a DOM element.
