@@ -3,6 +3,7 @@ import {Component} from '@angular/core';
 
 @Component({
   selector: 'list-sections-example',
+  styleUrls: ['./list-sections-example.css'],
   templateUrl: './list-sections-example.html',
 })
 export class ListSectionsExample {
