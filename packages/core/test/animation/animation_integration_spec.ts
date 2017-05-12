@@ -37,6 +37,116 @@ export function main() {
       });
     });
 
+    describe('component fixture integration', () => {
+      describe('whenRenderingDone', () => {
+        it('should wait until the animations are finished until continuing', fakeAsync(() => {
+             @Component({
+               selector: 'cmp',
+               template: `
+              <div [@myAnimation]="exp"></div>
+            `,
+               animations: [trigger(
+                   'myAnimation', [transition('* => on', [animate(1000, style({opacity: 1}))])])]
+             })
+             class Cmp {
+               exp: any = false;
+             }
+
+             TestBed.configureTestingModule({declarations: [Cmp]});
+             const engine = TestBed.get(ɵAnimationEngine);
+             const fixture = TestBed.createComponent(Cmp);
+             const cmp = fixture.componentInstance;
+
+             let isDone = false;
+             fixture.whenRenderingDone().then(() => isDone = true);
+             expect(isDone).toBe(false);
+
+             cmp.exp = 'on';
+             fixture.detectChanges();
+             engine.flush();
+             expect(isDone).toBe(false);
+
+             const players = engine.players;
+             expect(players.length).toEqual(1);
+             players[0].finish();
+             expect(isDone).toBe(false);
+
+             flushMicrotasks();
+             expect(isDone).toBe(true);
+           }));
+
+        it('should wait for a noop animation to finish before continuing', fakeAsync(() => {
+             @Component({
+               selector: 'cmp',
+               template: `
+              <div [@myAnimation]="exp"></div>
+            `,
+               animations: [trigger(
+                   'myAnimation', [transition('* => on', [animate(1000, style({opacity: 1}))])])]
+             })
+             class Cmp {
+               exp: any = false;
+             }
+
+             TestBed.configureTestingModule({
+               providers: [{provide: AnimationDriver, useClass: ɵNoopAnimationDriver}],
+               declarations: [Cmp]
+             });
+
+             const engine = TestBed.get(ɵAnimationEngine);
+             const fixture = TestBed.createComponent(Cmp);
+             const cmp = fixture.componentInstance;
+
+             let isDone = false;
+             fixture.whenRenderingDone().then(() => isDone = true);
+             expect(isDone).toBe(false);
+
+             cmp.exp = 'off';
+             fixture.detectChanges();
+             engine.flush();
+             expect(isDone).toBe(false);
+
+             flushMicrotasks();
+             expect(isDone).toBe(true);
+           }));
+
+        it('should wait for active animations to finish even if they have already started',
+           fakeAsync(() => {
+             @Component({
+               selector: 'cmp',
+               template: `
+                <div [@myAnimation]="exp"></div>
+              `,
+               animations: [trigger(
+                   'myAnimation', [transition('* => on', [animate(1000, style({opacity: 1}))])])]
+             })
+             class Cmp {
+               exp: any = false;
+             }
+
+             TestBed.configureTestingModule({declarations: [Cmp]});
+             const engine = TestBed.get(ɵAnimationEngine);
+             const fixture = TestBed.createComponent(Cmp);
+             const cmp = fixture.componentInstance;
+             cmp.exp = 'on';
+             fixture.detectChanges();
+             engine.flush();
+
+             const players = engine.players;
+             expect(players.length).toEqual(1);
+
+             let isDone = false;
+             fixture.whenRenderingDone().then(() => isDone = true);
+             flushMicrotasks();
+             expect(isDone).toBe(false);
+
+             players[0].finish();
+             flushMicrotasks();
+             expect(isDone).toBe(true);
+           }));
+      });
+    });
+
     describe('animation triggers', () => {
       it('should trigger a state change animation from void => state', () => {
         @Component({
