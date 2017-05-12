@@ -30,11 +30,12 @@ function prepare {
 
 
   if [ -d "$REPO_DIR" ]; then
-    cd $REPO_DIR
-    git fetch --update-shallow origin
-    git checkout master
-    git merge --ff-only origin/master
-    cd -
+    (
+      cd $REPO_DIR
+      git fetch --update-shallow origin
+      git checkout master
+      git merge --ff-only origin/master
+    )
   else
     echo "-- Cloning code.angularjs.org into $REPO_DIR"
     git clone git@github.com:angular/code.angularjs.org.git $REPO_DIR --depth=1
