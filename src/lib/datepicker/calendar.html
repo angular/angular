@@ -1,0 +1,35 @@
+<div class="mat-calendar-header">
+  <div class="mat-calendar-controls">
+    <button md-button class="mat-calendar-period-button" (click)="_currentPeriodClicked()"
+            [attr.aria-label]="_periodButtonLabel">
+      {{_periodButtonText}}
+      <div class="mat-calendar-arrow" [class.mat-calendar-invert]="!_monthView"></div>
+    </button>
+    <div class="mat-calendar-spacer"></div>
+    <button md-icon-button class="mat-calendar-previous-button" [disabled]="!_previousEnabled()"
+            (click)="_previousClicked()" [attr.aria-label]="_prevButtonLabel">
+    </button>
+    <button md-icon-button class="mat-calendar-next-button" [disabled]="!_nextEnabled()"
+            (click)="_nextClicked()" [attr.aria-label]="_nextButtonLabel">
+    </button>
+  </div>
+</div>
+
+<div class="mat-calendar-content" (keydown)="_handleCalendarBodyKeydown($event)"
+     cdkMonitorSubtreeFocus>
+  <md-month-view
+      *ngIf="_monthView"
+      [activeDate]="_activeDate"
+      [selected]="selected"
+      [dateFilter]="_dateFilterForViews"
+      (selectedChange)="_dateSelected($event)">
+  </md-month-view>
+
+  <md-year-view
+      *ngIf="!_monthView"
+      [activeDate]="_activeDate"
+      [selected]="selected"
+      [dateFilter]="_dateFilterForViews"
+      (selectedChange)="_monthSelected($event)">
+  </md-year-view>
+</div>

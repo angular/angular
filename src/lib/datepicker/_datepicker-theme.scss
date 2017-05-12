@@ -1,0 +1,80 @@
+@import '../core/theming/palette';
+@import '../core/theming/theming';
+
+
+@mixin mat-datepicker-theme($theme) {
+  $primary: map-get($theme, primary);
+  $foreground: map-get($theme, foreground);
+  $background: map-get($theme, background);
+
+  $mat-datepicker-selected-today-box-shadow-width: 1px;
+  $mat-datepicker-selected-fade-amount: 0.6;
+  $mat-datepicker-today-fade-amount: 0.2;
+
+  .mat-calendar {
+    background-color: mat-color($background, card);
+  }
+
+  .mat-calendar-arrow {
+    border-top-color: mat-color($foreground, icon);
+  }
+
+  .mat-calendar-next-button,
+  .mat-calendar-previous-button {
+    color: mat-color($foreground, icon);
+  }
+
+  .mat-calendar-table-header {
+    color: mat-color($foreground, hint-text);
+  }
+
+  .mat-calendar-table-header-divider::after {
+    background: mat-color($foreground, divider);
+  }
+
+  .mat-calendar-body-label {
+    color: mat-color($foreground, secondary-text);
+  }
+
+  .mat-calendar-body-cell-content {
+    color: mat-color($foreground, text);
+    border-color: transparent;
+
+    .mat-calendar-body-disabled > &:not(.mat-calendar-body-selected) {
+      color: mat-color($foreground, disabled-text);
+    }
+  }
+
+  :not(.mat-calendar-body-disabled):hover,
+  .cdk-keyboard-focused .mat-calendar-body-active {
+    & > .mat-calendar-body-cell-content:not(.mat-calendar-body-selected) {
+      background-color: mat-color($background, hover);
+    }
+  }
+
+  .mat-calendar-body-selected {
+    background-color: mat-color($primary);
+    color: mat-color($primary, default-contrast);
+  }
+
+  .mat-calendar-body-disabled > .mat-calendar-body-selected {
+    background-color: fade-out(mat-color($primary), $mat-datepicker-selected-fade-amount);
+  }
+
+  .mat-calendar-body-today {
+    &:not(.mat-calendar-body-selected) {
+      // Note: though it's not text, the border is a hint about the fact that this is today's date,
+      // so we use the hint color.
+      border-color: mat-color($foreground, hint-text);
+    }
+
+    &.mat-calendar-body-selected {
+      box-shadow: inset 0 0 0 $mat-datepicker-selected-today-box-shadow-width
+                  mat-color($primary, default-contrast);
+    }
+  }
+
+  .mat-calendar-body-disabled > .mat-calendar-body-today:not(.mat-calendar-body-selected) {
+    border-color: fade-out(mat-color($foreground, hint-text), $mat-datepicker-today-fade-amount);
+  }
+}

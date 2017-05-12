@@ -103,6 +103,8 @@ export {CompatibilityModule, NoConflictStyleCompatibilityMode} from './compatibi
 // Common material module
 export {MdCommonModule} from './common-behaviors/common-module';
 
+// Datetime
+export * from './datetime/index';
 
 @NgModule({
   imports: [

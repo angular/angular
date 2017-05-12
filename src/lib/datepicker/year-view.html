@@ -1,0 +1,16 @@
+<table class="mat-calendar-table">
+  <thead class="mat-calendar-table-header">
+    <tr><th class="mat-calendar-table-header-divider" colspan="7"></th></tr>
+  </thead>
+  <tbody md-calendar-body
+         role="grid"
+         allowDisabledSelection="true"
+         [label]="_yearLabel"
+         [rows]="_months"
+         [todayValue]="_todayMonth"
+         [selectedValue]="_selectedMonth"
+         [labelMinRequiredCells]="2"
+         [activeCell]="_dateAdapter.getMonth(activeDate)"
+         (selectedValueChange)="_monthSelected($event)">
+  </tbody>
+</table>

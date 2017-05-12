@@ -32,9 +32,10 @@ $mat-input-underline-disabled-background-image:
   }
 
   // Allow icons in a prefix/suffix/hint/etc to adapt to the correct size.
-  & .mat-icon {
-    width: auto;
-    height: auto;
+  & .mat-icon,
+  & .mat-datepicker-toggle {
+    width: 1em;
+    height: 1em;
     font-size: 100%;
     vertical-align: top;
   }

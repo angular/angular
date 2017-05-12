@@ -14,6 +14,7 @@ import {
   QueryList,
   Renderer2,
   Self,
+  ViewChild,
   ViewEncapsulation
 } from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
@@ -333,6 +334,8 @@ export class MdInputContainer implements AfterViewInit, AfterContentInit {
     this._floatPlaceholder = value || 'auto';
   }
   private _floatPlaceholder: FloatPlaceholderType = 'auto';
+
+  @ViewChild('underline') underlineRef: ElementRef;
 
   @ContentChild(MdInputDirective) _mdInputChild: MdInputDirective;
 

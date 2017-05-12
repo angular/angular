@@ -1,4 +1,4 @@
-import {NgModule, ApplicationRef} from '@angular/core';
+import {ApplicationRef, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {HttpModule} from '@angular/http';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -6,14 +6,15 @@ import {RouterModule} from '@angular/router';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {DemoApp, Home} from './demo-app/demo-app';
 import {
-  MaterialModule,
-  OverlayContainer,
   FullscreenOverlayContainer,
+  MaterialModule,
+  MdNativeDateModule,
   MdSelectionModule,
+  OverlayContainer
 } from '@angular/material';
 import {DEMO_APP_ROUTES} from './demo-app/routes';
 import {ProgressBarDemo} from './progress-bar/progress-bar-demo';
-import {JazzDialog, ContentElementDialog, DialogDemo, IFrameDialog} from './dialog/dialog-demo';
+import {ContentElementDialog, DialogDemo, IFrameDialog, JazzDialog} from './dialog/dialog-demo';
 import {RippleDemo} from './ripple/ripple-demo';
 import {IconDemo} from './icon/icon-demo';
 import {GesturesDemo} from './gestures/gestures-demo';
@@ -27,22 +28,23 @@ import {ListDemo} from './list/list-demo';
 import {BaselineDemo} from './baseline/baseline-demo';
 import {GridListDemo} from './grid-list/grid-list-demo';
 import {LiveAnnouncerDemo} from './live-announcer/live-announcer-demo';
-import {OverlayDemo, SpagettiPanel, RotiniPanel} from './overlay/overlay-demo';
+import {OverlayDemo, RotiniPanel, SpagettiPanel} from './overlay/overlay-demo';
 import {SlideToggleDemo} from './slide-toggle/slide-toggle-demo';
 import {ToolbarDemo} from './toolbar/toolbar-demo';
 import {ButtonDemo} from './button/button-demo';
-import {MdCheckboxDemoNestedChecklist, CheckboxDemo} from './checkbox/checkbox-demo';
+import {CheckboxDemo, MdCheckboxDemoNestedChecklist} from './checkbox/checkbox-demo';
 import {SelectDemo} from './select/select-demo';
 import {SliderDemo} from './slider/slider-demo';
 import {SidenavDemo} from './sidenav/sidenav-demo';
 import {SnackBarDemo} from './snack-bar/snack-bar-demo';
 import {PortalDemo, ScienceJoke} from './portal/portal-demo';
 import {MenuDemo} from './menu/menu-demo';
-import {TabsDemo, SunnyTabContent, RainyTabContent, FoggyTabContent} from './tabs/tabs-demo';
+import {FoggyTabContent, RainyTabContent, SunnyTabContent, TabsDemo} from './tabs/tabs-demo';
 import {PlatformDemo} from './platform/platform-demo';
 import {AutocompleteDemo} from './autocomplete/autocomplete-demo';
 import {InputDemo} from './input/input-demo';
 import {StyleDemo} from './style/style-demo';
+import {DatepickerDemo} from './datepicker/datepicker-demo';
 
 
 @NgModule({
@@ -54,6 +56,7 @@ import {StyleDemo} from './style/style-demo';
     ReactiveFormsModule,
     RouterModule.forRoot(DEMO_APP_ROUTES),
     MaterialModule,
+    MdNativeDateModule,
     MdSelectionModule,
   ],
   declarations: [
@@ -64,6 +67,7 @@ import {StyleDemo} from './style/style-demo';
     CardDemo,
     ChipsDemo,
     CheckboxDemo,
+    DatepickerDemo,
     DemoApp,
     DialogDemo,
     GesturesDemo,

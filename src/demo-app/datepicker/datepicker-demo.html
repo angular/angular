@@ -1,0 +1,65 @@
+<h2>Options</h2>
+<p>
+  <md-checkbox [(ngModel)]="touch">Use touch UI</md-checkbox>
+  <md-checkbox [(ngModel)]="filterOdd">Filter odd months and dates</md-checkbox>
+  <md-checkbox [(ngModel)]="yearView">Start in year view</md-checkbox>
+</p>
+<p>
+  <md-input-container>
+    <input mdInput [mdDatepicker]="minDatePicker" [(ngModel)]="minDate" placeholder="Min date">
+    <button mdSuffix [mdDatepickerToggle]="minDatePicker"></button>
+  </md-input-container>
+  <md-datepicker #minDatePicker [touchUi]="touch"></md-datepicker>
+  <md-input-container>
+    <input mdInput [mdDatepicker]="maxDatePicker" [(ngModel)]="maxDate" placeholder="Max date">
+    <button mdSuffix [mdDatepickerToggle]="maxDatePicker"></button>
+  </md-input-container>
+  <md-datepicker #maxDatePicker [touchUi]="touch"></md-datepicker>
+</p>
+<p>
+  <md-input-container>
+    <input mdInput [mdDatepicker]="startAtPicker" [(ngModel)]="startAt" placeholder="Start at date">
+    <button mdSuffix [mdDatepickerToggle]="startAtPicker"></button>
+  </md-input-container>
+  <md-datepicker #startAtPicker [touchUi]="touch"></md-datepicker>
+</p>
+
+<h2>Result</h2>
+
+<p>
+  <button [mdDatepickerToggle]="resultPicker"></button>
+  <md-input-container>
+    <input mdInput
+           #resultPickerModel="ngModel"
+           [mdDatepicker]="resultPicker"
+           [(ngModel)]="date"
+           [min]="minDate"
+           [max]="maxDate"
+           [mdDatepickerFilter]="filterOdd ? dateFilter : null"
+           placeholder="Pick a date">
+    <md-error *ngIf="resultPickerModel.hasError('mdDatepickerMin')">Too early!</md-error>
+    <md-error *ngIf="resultPickerModel.hasError('mdDatepickerMax')">Too late!</md-error>
+    <md-error *ngIf="resultPickerModel.hasError('mdDatepickerFilter')">Date unavailable!</md-error>
+  </md-input-container>
+  <md-datepicker
+      #resultPicker
+      [touchUi]="touch"
+      [startAt]="startAt"
+      [startView]="yearView ? 'year' : 'month'">
+  </md-datepicker>
+</p>
+<p>
+  <input [mdDatepicker]="resultPicker2"
+         [(ngModel)]="date"
+         [min]="minDate"
+         [max]="maxDate"
+         [mdDatepickerFilter]="filterOdd ? dateFilter : null"
+         placeholder="Pick a date">
+  <button [mdDatepickerToggle]="resultPicker2"></button>
+  <md-datepicker
+      #resultPicker2
+      [touchUi]="touch"
+      [startAt]="startAt"
+      [startView]="yearView ? 'year' : 'month'">
+  </md-datepicker>
+</p>

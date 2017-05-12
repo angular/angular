@@ -1,0 +1,16 @@
+<table class="mat-calendar-table">
+  <thead class="mat-calendar-table-header">
+    <tr><th *ngFor="let day of _weekdays" [attr.aria-label]="day.long">{{day.narrow}}</th></tr>
+    <tr><th class="mat-calendar-table-header-divider" colspan="7" aria-hidden="true"></th></tr>
+  </thead>
+  <tbody md-calendar-body
+         role="grid"
+         [label]="_monthLabel"
+         [rows]="_weeks"
+         [todayValue]="_todayDate"
+         [selectedValue]="_selectedDate"
+         [labelMinRequiredCells]="3"
+         [activeCell]="_dateAdapter.getDate(activeDate) - 1"
+         (selectedValueChange)="_dateSelected($event)">
+  </tbody>
+</table>

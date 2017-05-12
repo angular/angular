@@ -1,0 +1,10 @@
+<md-calendar cdkTrapFocus
+    [id]="datepicker.id"
+    [startAt]="datepicker.startAt"
+    [startView]="datepicker.startView"
+    [minDate]="datepicker._minDate"
+    [maxDate]="datepicker._maxDate"
+    [dateFilter]="datepicker._dateFilter"
+    [selected]="datepicker._selected"
+    (selectedChange)="datepicker._selectAndClose($event)">
+</md-calendar>
