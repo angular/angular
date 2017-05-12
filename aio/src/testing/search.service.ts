@@ -6,5 +6,4 @@ export class MockSearchService {
   initWorker = jasmine.createSpy('initWorker');
   loadIndex = jasmine.createSpy('loadIndex');
   search = jasmine.createSpy('search');
-  hideResults = jasmine.createSpy('hideResults');
 }
