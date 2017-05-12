@@ -607,6 +607,13 @@ class DebugRendererFactory2 implements RendererFactory2 {
       this.delegate.end();
     }
   }
+
+  whenRenderingDone(): Promise<any> {
+    if (this.delegate.whenRenderingDone) {
+      return this.delegate.whenRenderingDone();
+    }
+    return Promise.resolve(null);
+  }
 }
 
 

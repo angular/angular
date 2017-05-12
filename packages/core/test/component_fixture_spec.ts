@@ -158,25 +158,6 @@ export function main() {
          });
        }));
 
-    it('should signal through whenRenderingDone when the fixture is stable', async(() => {
-         const componentFixture = TestBed.createComponent(AsyncComp);
-
-         componentFixture.detectChanges();
-         expect(componentFixture.nativeElement).toHaveText('1');
-
-         const element = componentFixture.debugElement.children[0];
-         dispatchEvent(element.nativeElement, 'click');
-         expect(componentFixture.nativeElement).toHaveText('1');
-
-         // Component is updated asynchronously. Wait for the fixture to become stable
-         // before checking.
-         componentFixture.whenRenderingDone().then((waited) => {
-           expect(waited).toBe(true);
-           componentFixture.detectChanges();
-           expect(componentFixture.nativeElement).toHaveText('11');
-         });
-       }));
-
     it('should wait for macroTask(setTimeout) while checking for whenStable ' +
            '(autoDetectChanges)',
        async(() => {
