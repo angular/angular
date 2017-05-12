@@ -92,4 +92,6 @@ export class AnimationEngine {
     return (this._transitionEngine.players as AnimationPlayer[])
         .concat(this._timelineEngine.players as AnimationPlayer[]);
   }
+
+  whenRenderingDone(): Promise<any> { return this._transitionEngine.whenRenderingDone(); }
 }

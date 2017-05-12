@@ -130,6 +130,7 @@ export abstract class RendererFactory2 {
   abstract createRenderer(hostElement: any, type: RendererType2|null): Renderer2;
   abstract begin?(): void;
   abstract end?(): void;
+  abstract whenRenderingDone?(): Promise<any>;
 }
 
 /**

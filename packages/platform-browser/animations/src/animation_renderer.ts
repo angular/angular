@@ -53,6 +53,8 @@ export class AnimationRendererFactory implements RendererFactory2 {
       this.delegate.end();
     }
   }
+
+  whenRenderingDone(): Promise<any> { return this._engine.whenRenderingDone(); }
 }
 
 export class AnimationRenderer implements Renderer2 {

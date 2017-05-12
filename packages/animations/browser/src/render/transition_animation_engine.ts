@@ -617,6 +617,16 @@ export class TransitionAnimationEngine {
     });
   }
 
+  whenRenderingDone(): Promise<any> {
+    return new Promise(resolve => {
+      if (this.players.length) {
+        return optimizeGroupPlayer(this.players).onDone(() => resolve());
+      } else {
+        resolve();
+      }
+    });
+  }
+
   flush() {
     let players: AnimationPlayer[] = [];
     if (this.newHostElements.size) {
