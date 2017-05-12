@@ -5,10 +5,11 @@ set -eux -o pipefail
 source "`dirname $0`/_env.sh"
 
 # Build `scripts-js/`
-cd "$SCRIPTS_JS_DIR"
-yarn install
-yarn build
-cd -
+(
+  cd "$SCRIPTS_JS_DIR"
+  yarn install
+  yarn build
+)
 
 # Preverify PR
 AIO_GITHUB_ORGANIZATION="angular" \
