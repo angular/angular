@@ -44,6 +44,15 @@ export function createPackageBuildTasks(packageName: string, requiredPackages: s
     `${packageName}:build:bundles`,
   ));
 
+  task(`${packageName}:build-tests`, sequenceTask(
+    // Build all required tests before building.
+    ...requiredPackages.map(pkgName => `${pkgName}:build-tests`),
+    // Build the ESM output that includes all test files. Also build assets for the package.
+    [`${packageName}:build:esm:tests`, `${packageName}:assets`],
+    // Inline assets into ESM output.
+    `${packageName}:assets:inline`
+  ));
+
   /**
    * Release tasks for the package. Tasks compose the release output for the package.
    */

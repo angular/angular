@@ -11,6 +11,5 @@
   },
   "include": [
     "**/*.spec.ts"
-  ],
-  "files": null
+  ]
 }
