@@ -70,6 +70,7 @@ import {SelectOverviewExample} from './select-overview/select-overview-example';
 import {ChipsOverviewExample} from './chips-overview/chips-overview-example';
 import {ChipsStackedExample} from './chips-stacked/chips-stacked-example';
 import {SelectFormExample} from './select-form/select-form-example';
+import {DatepickerOverviewExample} from './datepicker-overview/datepicker-overview-example';
 
 
 export interface LiveExample {
@@ -99,6 +100,7 @@ export const EXAMPLE_COMPONENTS = {
   'card-overview': {title: 'Basic cards', component: CardOverviewExample},
   'checkbox-configurable': {title: 'Configurable checkbox', component: CheckboxConfigurableExample},
   'checkbox-overview': {title: 'Basic checkboxes', component: CheckboxOverviewExample},
+  'datepicker-overview': {title: 'Basic datepicker', component: DatepickerOverviewExample},
   'dialog-overview': {
     title: 'Basic dialog',
     component: DialogOverviewExample,
@@ -182,6 +184,7 @@ export const EXAMPLE_LIST = [
   ChipsStackedExample,
   CheckboxConfigurableExample,
   CheckboxOverviewExample,
+  DatepickerOverviewExample,
   DialogOverviewExample,
   DialogOverviewExampleDialog,
   DialogResultExample,
