@@ -33,7 +33,8 @@
     "generate-plunkers": "node ./tools/plunker-builder/generatePlunkers",
     "generate-zips": "node ./tools/example-zipper/generateZips",
     "sw-manifest": "ngu-sw-manifest --dist dist --in ngsw-manifest.json --out dist/ngsw-manifest.json",
-    "sw-copy": "cp node_modules/@angular/service-worker/bundles/worker-basic.min.js dist/"
+    "sw-copy": "cp node_modules/@angular/service-worker/bundles/worker-basic.min.js dist/",
+    "postinstall": "PATCH_LOCK=node_modules/@angular/cli/models/webpack-configs/.patched; if [ ! -e $PATCH_LOCK ]; then touch $PATCH_LOCK; patch -p0 -i tools/cli-patches/ngo-loader.patch && patch -p0 -i node_modules/purify/angular-cli.patch; fi"
   },
   "private": true,
   "dependencies": {
@@ -51,7 +52,10 @@
     "@angular/service-worker": "^1.0.0-beta.12",
     "core-js": "^2.4.1",
     "ng-pwa-tools": "^0.0.10",
+    "ngo-loader": "alxhub/ngo",
+    "purify": "igorminar/purify",
     "rxjs": "^5.2.0",
+    "tslib": "^1.7.0",
     "zone.js": "^0.8.4"
   },
   "devDependencies": {
