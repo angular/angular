@@ -18,14 +18,6 @@ source ${thisDir}/_travis-fold.sh
   travisFoldEnd "test.aio.lint"
 
 
-  # Start xvfb for local Chrome used for testing
-  if [[ ${TRAVIS} ]]; then
-    travisFoldStart "test.aio.xvfb-start"
-      sh -e /etc/init.d/xvfb start
-    travisFoldEnd "test.aio.xvfb-start"
-  fi
-
-
   # Run unit tests
   travisFoldStart "test.aio.unit"
     yarn test -- --single-run
