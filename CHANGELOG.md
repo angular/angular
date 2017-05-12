@@ -4,7 +4,8 @@
 ### Breaking Changes
 
 * `MdIconModule` no longer imports `HttpModule`. If your application depended on `Http` being provided through `MdIconModule`, you should now directly import `HttpModule` into your application.
-* The `forRoot` method on all Angular Material modules has been removed. It was previously deprecated and a no-op. Importing the modules directly will have the same effect. 
+* The `forRoot` method on all Angular Material modules has been removed. It was previously deprecated and a no-op. Importing the modules directly will have the same effect.
+* Angular Material now requires TypeScript 2.2, which adds support for mixins. 
 
 ### Highlights
 

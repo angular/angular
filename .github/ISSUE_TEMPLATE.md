@@ -16,7 +16,7 @@ Plunker template: https://goo.gl/DlHd6U
 #### What is the use-case or motivation for changing an existing behavior?
 
 
-#### Which versions of Angular, Material, OS, browsers are affected?
+#### Which versions of Angular, Material, OS, TypeScript, browsers are affected?
 
 
 #### Is there anything else we should know?
