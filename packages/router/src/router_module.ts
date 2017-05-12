@@ -12,7 +12,7 @@ import {ɵgetDOM as getDOM} from '@angular/platform-browser';
 import {Subject} from 'rxjs/Subject';
 import {of } from 'rxjs/observable/of';
 
-import {Route, Routes} from './config';
+import {QueryParamsHandling, QueryParamsHandlingStrategy, Route, Routes} from './config';
 import {RouterLink, RouterLinkWithHref} from './directives/router_link';
 import {RouterLinkActive} from './directives/router_link_active';
 import {RouterOutlet} from './directives/router_outlet';
@@ -267,6 +267,16 @@ export interface ExtraOptions {
    * Configures a preloading strategy. See {@link PreloadAllModules}.
    */
   preloadingStrategy?: any;
+
+  /**
+   * Configures the query params handling strategy.
+   */
+  queryParamsHandling?: QueryParamsHandling;
+
+  /**
+   * Configures the strategy that handles merging of current and target query params
+   */
+  queryParamsHandlingStrategy?: QueryParamsHandlingStrategy;
 }
 
 export function setupRouter(
@@ -287,6 +297,14 @@ export function setupRouter(
 
   if (opts.errorHandler) {
     router.errorHandler = opts.errorHandler;
+  }
+
+  if (opts.queryParamsHandling != null) {
+    router.queryParamsHandling = opts.queryParamsHandling;
+  }
+
+  if (opts.queryParamsHandlingStrategy) {
+    router.queryParamsHandlingStrategy = opts.queryParamsHandlingStrategy;
   }
 
   if (opts.enableTracing) {

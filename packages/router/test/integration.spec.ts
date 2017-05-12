@@ -11,7 +11,7 @@ import {ChangeDetectionStrategy, Component, Injectable, NgModule, NgModuleFactor
 import {ComponentFixture, TestBed, fakeAsync, inject, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, DetachedRouteHandle, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, ParamMap, Params, PreloadAllModules, PreloadingStrategy, Resolve, RouteConfigLoadEnd, RouteConfigLoadStart, RouteReuseStrategy, Router, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '@angular/router';
+import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, DetachedRouteHandle, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationExtras, NavigationStart, PRIMARY_OUTLET, ParamMap, Params, PreloadAllModules, PreloadingStrategy, QueryParamsHandling, ROUTER_CONFIGURATION, Resolve, RouteConfigLoadEnd, RouteConfigLoadStart, RouteReuseStrategy, Router, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '@angular/router';
 import {Observable} from 'rxjs/Observable';
 import {map} from 'rxjs/operator/map';
 
@@ -1145,49 +1145,152 @@ describe('Integration', () => {
          expect(native.getAttribute('href')).toEqual('/home?q=456#1');
        }));
 
-    it('should correctly use the preserve strategy', fakeAsync(() => {
+    describe('QueryParamsHandling', () => {
 
-         @Component({
-           selector: 'someRoot',
-           template:
-               `<router-outlet></router-outlet><a routerLink="/home" [queryParams]="{q: 456}" queryParamsHandling="preserve">Link</a>`
-         })
-         class RootCmpWithLink {
-         }
-         TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
-         const router: Router = TestBed.get(Router);
-         const fixture = createRoot(router, RootCmpWithLink);
+      it('should correctly use the preserve strategy', fakeAsync(() => {
 
-         router.resetConfig([{path: 'home', component: SimpleCmp}]);
+           @Component({
+             selector: 'someRoot',
+             template:
+                 `<router-outlet></router-outlet><a routerLink="/home" [queryParams]="{q: 456}" queryParamsHandling="preserve">Link</a>`
+           })
+           class RootCmpWithLink {
+           }
 
-         const native = fixture.nativeElement.querySelector('a');
+           TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
+           const router: Router = TestBed.get(Router);
+           const fixture = createRoot(router, RootCmpWithLink);
 
-         router.navigateByUrl('/home?a=123');
-         advance(fixture);
-         expect(native.getAttribute('href')).toEqual('/home?a=123');
-       }));
+           router.resetConfig([{path: 'home', component: SimpleCmp}]);
 
-    it('should correctly use the merge strategy', fakeAsync(() => {
+           const native = fixture.nativeElement.querySelector('a');
 
-         @Component({
-           selector: 'someRoot',
-           template:
-               `<router-outlet></router-outlet><a routerLink="/home" [queryParams]="{q: 456}" queryParamsHandling="merge">Link</a>`
-         })
-         class RootCmpWithLink {
-         }
-         TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
-         const router: Router = TestBed.get(Router);
-         const fixture = createRoot(router, RootCmpWithLink);
+           router.navigateByUrl('/home?a=123');
+           advance(fixture);
 
-         router.resetConfig([{path: 'home', component: SimpleCmp}]);
+           expect(native.getAttribute('href')).toEqual('/home?a=123');
+         }));
 
-         const native = fixture.nativeElement.querySelector('a');
+      it('should correctly use the merge strategy', fakeAsync(() => {
 
-         router.navigateByUrl('/home?a=123');
-         advance(fixture);
-         expect(native.getAttribute('href')).toEqual('/home?a=123&q=456');
-       }));
+           @Component({
+             selector: 'someRoot',
+             template:
+                 `<router-outlet></router-outlet><a routerLink="/home" [queryParams]="{q: 456}" queryParamsHandling="merge">Link</a>`
+           })
+           class RootCmpWithLink {
+           }
+
+           TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
+           const router: Router = TestBed.get(Router);
+           const fixture = createRoot(router, RootCmpWithLink);
+
+           router.resetConfig([{path: 'home', component: SimpleCmp}]);
+
+           const native = fixture.nativeElement.querySelector('a');
+
+           router.navigateByUrl('/home?a=123');
+           advance(fixture);
+
+           expect(native.getAttribute('href')).toEqual('/home?a=123&q=456');
+         }));
+
+      describe('global defaults', () => {
+        it('should resolve global default strategy', fakeAsync(() => {
+             @Component({
+               selector: 'someRoot',
+               template:
+                   `<router-outlet></router-outlet><a routerLink="/home" [queryParams]="{q: 456}">Link</a>`
+             })
+             class RootCmpWithLink {
+             }
+
+             TestBed.configureTestingModule({
+               declarations: [RootCmpWithLink],
+               providers:
+                   [{provide: ROUTER_CONFIGURATION, useValue: {queryParamsHandling: 'merge'}}]
+             });
+             const router: Router = TestBed.get(Router);
+             const fixture = createRoot(router, RootCmpWithLink);
+
+             router.resetConfig([{path: 'home', component: SimpleCmp}]);
+
+             const native = fixture.nativeElement.querySelector('a');
+
+             router.navigateByUrl('/home?a=123');
+             advance(fixture);
+
+             expect(router.queryParamsHandling).toBe('merge');
+             expect(native.getAttribute('href')).toEqual('/home?a=123&q=456');
+           }));
+
+        it('should execute a function if provided', fakeAsync(() => {
+             @Component({
+               selector: 'someRoot',
+               template:
+                   `<router-outlet></router-outlet><a routerLink="/home" [queryParams]="{q: 456}">Link</a>`
+             })
+             class RootCmpWithLink {
+             }
+
+             function mergeQueryParams(
+                 currentUrlParams: Params, {queryParams}: NavigationExtras = {}) {
+               return {...currentUrlParams, ...queryParams, ...{z: '789'}};
+             }
+             TestBed.configureTestingModule({
+               declarations: [RootCmpWithLink],
+               providers: [{
+                 provide: ROUTER_CONFIGURATION,
+                 useValue: {queryParamsHandlingStrategy: mergeQueryParams}
+               }]
+             });
+
+             const router: Router = TestBed.get(Router);
+             const fixture = createRoot(router, RootCmpWithLink);
+
+             router.resetConfig([{path: 'home', component: SimpleCmp}]);
+
+             const native = fixture.nativeElement.querySelector('a');
+
+             router.navigateByUrl('/home?a=123');
+             advance(fixture);
+
+             expect(router.queryParamsHandlingStrategy).toBe(mergeQueryParams);
+             expect(native.getAttribute('href')).toEqual('/home?a=123&q=456&z=789');
+           }));
+
+        it('should reset global settings', fakeAsync(() => {
+             @Component({
+               selector: 'someRoot',
+               template:
+                   `<router-outlet></router-outlet><a routerLink="/home" [queryParams]="{q: 456}" queryParamsHandling="replace">Link</a>`
+             })
+             class RootCmpWithLink {
+             }
+
+             TestBed.configureTestingModule({
+               declarations: [RootCmpWithLink],
+               providers:
+                   [{provide: ROUTER_CONFIGURATION, useValue: {queryParamsHandling: 'merge'}}]
+             });
+
+             const router: Router = TestBed.get(Router);
+             const fixture = createRoot(router, RootCmpWithLink);
+
+             router.resetConfig([{path: 'home', component: SimpleCmp}]);
+
+             const native = fixture.nativeElement.querySelector('a');
+
+             router.navigateByUrl('/home?a=123');
+             advance(fixture);
+
+             // Global default is still the function.
+             expect(router.queryParamsHandling).toBe('merge');
+             // Expect the "replace" setting to go back to default behavior
+             expect(native.getAttribute('href')).toEqual('/home?q=456');
+           }));
+      });
+    });
 
     it('should support using links on non-a tags', fakeAsync(inject([Router], (router: Router) => {
          const fixture = createRoot(router, RootCmp);

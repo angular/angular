@@ -22,7 +22,7 @@ import {mergeMap} from 'rxjs/operator/mergeMap';
 import {reduce} from 'rxjs/operator/reduce';
 
 import {applyRedirects} from './apply_redirects';
-import {LoadedRouterConfig, QueryParamsHandling, ResolveData, Route, Routes, RunGuardsAndResolvers, validateConfig} from './config';
+import {LoadedRouterConfig, QueryParamsHandling, QueryParamsHandlingStrategy, ResolveData, Route, Routes, RunGuardsAndResolvers, defaultQueryParamsHandlingStrategy, validateConfig} from './config';
 import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
 import {Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
@@ -122,6 +122,19 @@ export interface NavigationExtras {
   * ```
   */
   queryParamsHandling?: QueryParamsHandling|null;
+
+  /**
+  *  config the strategy to handle the query parameters for the next navigation.
+  *
+  * ```
+  * // from /results?page=1 to /view?page=1&page=2
+  * this.router.navigate(['/view'], {
+  *   queryParams: { page: 2 },
+  *   queryParamsHandlingStrategy: (opts: NavigationExtras) => ({...{opts.currentParams},
+  * ...{opts.targetParams}}) });
+  * ```
+  */
+  queryParamsHandlingStrategy?: QueryParamsHandlingStrategy;
   /**
   * Preserves the fragment for the next navigation
   *
@@ -220,7 +233,12 @@ export class Router {
    */
   errorHandler: ErrorHandler = defaultErrorHandler;
 
-
+  /**
+   * Query params handling strategy.
+   *
+   * See {@link QueryParamsHandling} for more information.
+   */
+  queryParamsHandling?: QueryParamsHandling|null;
 
   /**
    * Indicates if at least one navigation happened.
@@ -244,6 +262,8 @@ export class Router {
 
   routeReuseStrategy: RouteReuseStrategy = new DefaultRouteReuseStrategy();
 
+  queryParamsHandlingStrategy: QueryParamsHandlingStrategy;
+
   /**
    * Creates the router service.
    */
@@ -263,6 +283,7 @@ export class Router {
 
     this.configLoader = new RouterConfigLoader(loader, compiler, onLoadStart, onLoadEnd);
     this.currentRouterState = createEmptyState(this.currentUrlTree, this.rootComponentType);
+    this.queryParamsHandlingStrategy = defaultQueryParamsHandlingStrategy;
     this.processNavigations();
   }
 
@@ -385,30 +406,26 @@ export class Router {
    * router.createUrlTree(['../../team/44/user/22'], {relativeTo: route});
    * ```
    */
-  createUrlTree(
-      commands: any[], {relativeTo, queryParams, fragment, preserveQueryParams, queryParamsHandling,
-                        preserveFragment}: NavigationExtras = {}): UrlTree {
+  createUrlTree(commands: any[], extras: NavigationExtras = {}): UrlTree {
+    let {relativeTo,
+         fragment,
+         preserveQueryParams,
+         queryParamsHandling,
+         queryParamsHandlingStrategy,
+         preserveFragment} = extras;
     if (isDevMode() && preserveQueryParams && <any>console && <any>console.warn) {
       console.warn('preserveQueryParams is deprecated, use queryParamsHandling instead.');
     }
+
     const a = relativeTo || this.routerState.root;
     const f = preserveFragment ? this.currentUrlTree.fragment : fragment;
-    let q: Params|null = null;
-    if (queryParamsHandling) {
-      switch (queryParamsHandling) {
-        case 'merge':
-          q = {...this.currentUrlTree.queryParams, ...queryParams};
-          break;
-        case 'preserve':
-          q = this.currentUrlTree.queryParams;
-          break;
-        default:
-          q = queryParams || null;
-      }
-    } else {
-      q = preserveQueryParams ? this.currentUrlTree.queryParams : queryParams || null;
-    }
-    return createUrlTree(a, this.currentUrlTree, commands, q !, f !);
+    extras.queryParamsHandling =
+        queryParamsHandling != null ? queryParamsHandling : this.queryParamsHandling;
+    let strategy = queryParamsHandlingStrategy != null ? queryParamsHandlingStrategy :
+                                                           this.queryParamsHandlingStrategy;
+
+    return createUrlTree(
+        a, this.currentUrlTree, commands, strategy(this.currentUrlTree.queryParams, extras), f !);
   }
 
   /**
