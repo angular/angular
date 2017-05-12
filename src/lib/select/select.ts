@@ -30,8 +30,10 @@ import {ConnectedOverlayDirective} from '../core/overlay/overlay-directives';
 import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
 import {SelectionModel} from '../core/selection/selection';
 import {MdSelectDynamicMultipleError, MdSelectNonArrayValueError} from './select-errors';
+
 import 'rxjs/add/observable/merge';
 import 'rxjs/add/operator/startWith';
+import 'rxjs/add/operator/filter';
 
 
 /**
