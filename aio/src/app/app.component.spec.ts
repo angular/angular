@@ -504,6 +504,15 @@ describe('AppComponent', () => {
         fixture.detectChanges();
         expect(searchBox.focus).toHaveBeenCalled();
       });
+
+      it('should set focus back to the search box when the search results are displayed and the escape key is pressed', () => {
+        const searchBox: SearchBoxComponent = fixture.debugElement.query(By.directive(SearchBoxComponent)).componentInstance;
+        spyOn(searchBox, 'focus');
+        component.showSearchResults = true;
+        window.document.dispatchEvent(new KeyboardEvent('keyup', { 'key': 'Escape' }));
+        fixture.detectChanges();
+        expect(searchBox.focus).toHaveBeenCalled();
+      });
     });
 
     describe('showing search results', () => {
