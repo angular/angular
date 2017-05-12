@@ -27,17 +27,17 @@ case $preverifyExitCode in
     # Preconditions met: Deploy
     ;;
   1)
+    # An error occurred: Fail the script
+    exit 1
+    ;;
+  2)
     # Preconditions not met: Skip deploy
     echo "Skipping deploy because this PR did not meet the preconditions."
     exit 0
     ;;
-  2)
-    # An error occurred: Fail the script
-    exit 1
-    ;;
   *)
     # Unexpected exit code: Fail the script
-    echo "Unexpected preverification exit code: $preverifyExitCode"
+    echo "Unexpected pre-verification exit code: $preverifyExitCode"
     exit 1
     ;;
 esac
