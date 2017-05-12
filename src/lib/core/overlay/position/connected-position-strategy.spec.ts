@@ -601,6 +601,11 @@ describe('ConnectedPositionStrategy', () => {
       positionBuilder = new OverlayPositionBuilder(viewportRuler);
     });
 
+    afterEach(() => {
+      document.body.removeChild(originElement);
+      document.body.removeChild(overlayContainerElement);
+    });
+
     describe('in ltr', () => {
       it('should use `left` when positioning an element at the start', () => {
         strategy = positionBuilder.connectedTo(
