@@ -15,9 +15,14 @@ export class Home {}
   selector: 'demo-app',
   templateUrl: 'demo-app.html',
   styleUrls: ['demo-app.css'],
+  host: {
+    '[class.unicorn-dark-theme]': 'dark',
+  },
   encapsulation: ViewEncapsulation.None,
 })
 export class DemoApp {
+  dark = false;
+
   navItems = [
     {name: 'Autocomplete', route: 'autocomplete'},
     {name: 'Button', route: 'button'},
