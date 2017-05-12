@@ -53,7 +53,7 @@ import {INJECTOR_KEY} from './constants';
  */
 export function downgradeInjectable(token: any): Function {
   const factory = function(i: Injector) { return i.get(token); };
-  (factory as any).$inject = [INJECTOR_KEY];
+  (factory as any)['$inject'] = [INJECTOR_KEY];
 
   return factory;
 }
