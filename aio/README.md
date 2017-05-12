@@ -31,6 +31,18 @@ Here are the most important tasks you might need to use:
 * `yarn generate-zips` - generate the zip files from the examples. Zip available via the `live-example` tags in the docs.
 
 
+## Using ServiceWorker locally
+
+Since abb36e3cb, running `yarn start -- --prod` will no longer set up the ServiceWorker, which
+would require manually running `yarn sw-manifest` and `yarn sw-copy` (something that is not possible
+with webpack serving the files from memory).
+
+If you want to test ServiceWorker locally, you can use `yarn build` and serve the files in `dist/`
+with `yarn http-server -- dist -p 4200`.
+
+For more details see #16745.
+
+
 ## Guide to authoring
 
 There are two types of content in the documentatation:
@@ -56,7 +68,7 @@ extracting the documentation and generating JSON files that can be consumed by t
 
 Full doc generation can take up to one minute. That's too slow for efficient document creation and editing.
 
-You can make small changes in a smart editor that displays formatted markdown: 
+You can make small changes in a smart editor that displays formatted markdown:
 >In VS Code, _Cmd-K, V_ opens markdown preview in side pane; _Cmd-B_ toggles left sidebar
 
 You also want to see those changes displayed properly in the doc viewer

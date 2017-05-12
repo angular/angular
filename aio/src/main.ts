@@ -9,7 +9,7 @@ if (environment.production) {
 }
 
 platformBrowserDynamic().bootstrapModule(AppModule).then(ref => {
-  if ('serviceWorker' in (navigator as any)) {
+  if (environment.production && 'serviceWorker' in (navigator as any)) {
     const appRef: ApplicationRef = ref.injector.get(ApplicationRef);
     appRef.isStable.first().subscribe(() => {
       (navigator as any).serviceWorker.register('/worker-basic.min.js');
