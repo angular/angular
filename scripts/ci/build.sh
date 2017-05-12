@@ -40,6 +40,7 @@ travisFoldEnd "tsc a bunch of useless stuff"
 # Build angular.io
 if [[ ${CI_MODE:-} == "aio" ]]; then
   travisFoldStart "build.aio"
+  (
     cd "`dirname $0`/../../aio"
     yarn build
 
@@ -52,7 +53,6 @@ if [[ ${CI_MODE:-} == "aio" ]]; then
         yarn deploy-preview -- --skip-build
       travisFoldEnd "deploy.aio.pr-preview"
     fi
-
-    cd -
+  )
   travisFoldEnd "build.aio"
 fi
