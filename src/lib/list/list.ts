@@ -172,4 +172,9 @@ export class MdListItem implements AfterContentInit {
   _handleBlur() {
     this._hasFocus = false;
   }
+
+  /** Retrieves the DOM element of the component host. */
+  _getHostElement(): HTMLElement {
+    return this._element.nativeElement;
+  }
 }

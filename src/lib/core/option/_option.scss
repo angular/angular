@@ -26,6 +26,11 @@
     bottom: 0;
     right: 0;
 
+    // Disable pointer events for the ripple container because the container will overlay the
+    // user content and we don't want to disable mouse events on the user content.
+    // Pointer events can be safely disabled because the ripple trigger element is the host element.
+    pointer-events: none;
+
     // In high contrast mode this completely covers the text.
     @include cdk-high-contrast {
       opacity: 0.5;
