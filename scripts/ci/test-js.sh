@@ -35,13 +35,6 @@ travisFoldStart "test.unit.rebuildHack"
 travisFoldStart "test.unit.rebuildHack"
 
 
-if [[ ${TRAVIS} ]]; then
-  travisFoldStart "test.unit.xvfb-start"
-    sh -e /etc/init.d/xvfb start
-  travisFoldEnd "test.unit.xvfb-start"
-fi
-
-
 travisFoldStart "test.unit.localChrome"
   $(npm bin)/karma start ./karma-js.conf.js --single-run --browsers=${KARMA_JS_BROWSERS}
 travisFoldEnd "test.unit.localChrome"

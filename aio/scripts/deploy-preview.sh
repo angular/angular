@@ -2,6 +2,7 @@
 
 # WARNING: NGBUILDS_IO_KEY should NOT be printed.
 set +x -eu -o pipefail
+exec 3>&1
 
 
 readonly INPUT_DIR=dist/
@@ -9,6 +10,8 @@ readonly OUTPUT_FILE=/tmp/snapshot.tar.gz
 readonly AIO_BUILDS_DOMAIN=ngbuilds.io
 readonly UPLOAD_URL=https://$AIO_BUILDS_DOMAIN/create-build/$TRAVIS_PULL_REQUEST/$TRAVIS_PULL_REQUEST_SHA
 readonly DEPLOYED_URL=https://pr$TRAVIS_PULL_REQUEST-$TRAVIS_PULL_REQUEST_SHA.$AIO_BUILDS_DOMAIN
+readonly PREVERIFY_SCRIPT=aio-builds-setup/scripts/travis-preverify-pr.sh
+
 readonly skipBuild=$([[ "$1" == "--skip-build" ]] && echo "true" || echo "");
 readonly relevantChangedFilesCount=$(git diff --name-only $TRAVIS_COMMIT_RANGE | grep -P "^(?:aio|packages)/(?!.*[._]spec\.[jt]s$)" | wc -l)
 
@@ -21,7 +24,7 @@ if [[ $relevantChangedFilesCount -eq 0 ]]; then
 fi
 
 # Do not deploy unless this PR meets certain preconditions.
-readonly preverifyExitCode=$(./aio-builds-setup/scripts/travis-preverify-pr.sh && echo 0 || echo $?)
+readonly preverifyExitCode=$($PREVERIFY_SCRIPT > /dev/fd/3 && echo 0 || echo $?)
 case $preverifyExitCode in
   0)
     # Preconditions met: Deploy
@@ -49,7 +52,6 @@ fi
 tar --create --gzip --directory "$INPUT_DIR" --file "$OUTPUT_FILE" .
 
 # Deploy to staging
-exec 3>&1
 readonly httpCode=$(
   curl --include --location --request POST --silent --write-out "\nHTTP_CODE: %{http_code}\n" \
        --header "Authorization: Token $NGBUILDS_IO_KEY" --data-binary "@$OUTPUT_FILE" "$UPLOAD_URL" \

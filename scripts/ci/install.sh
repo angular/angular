@@ -65,6 +65,13 @@ if [[ ${CI_MODE} == "js" || ${CI_MODE} == "e2e" || ${CI_MODE} == "e2e_2" || ${CI
   travisFoldStart "install-chromium"
     (
       ${thisDir}/install-chromium.sh
+
+      # Start xvfb for local Chrome used for testing
+      if [[ ${TRAVIS} ]]; then
+        travisFoldStart "install-chromium.xvfb-start"
+          sh -e /etc/init.d/xvfb start
+        travisFoldEnd "install-chromium.xvfb-start"
+      fi
     )
   travisFoldEnd "install-chromium"
 fi
