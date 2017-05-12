@@ -97,7 +97,10 @@ export function wrapIntoObservable<T>(value: T | NgModuleFactory<T>| Promise<T>|
   }
 
   if (isPromise(value)) {
-    return fromPromise(value);
+    // Use `Promise.resolve()` to wrap promise-like instances.
+    // Required ie when a Resolver returns a AngularJS `$q` promise to correctly trigger the
+    // change detection.
+    return fromPromise(Promise.resolve(value));
   }
 
   return of (value);
