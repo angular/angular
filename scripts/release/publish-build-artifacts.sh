@@ -37,6 +37,9 @@ cp -r $buildDir/* $repoDir
 # Create the build commit and push the changes to the repository.
 cd $repoDir
 
+# Update the package.json version to include the current commit SHA.
+sed -i "s/$buildVersion/$buildVersion-$commitSha/g" package.json
+
 # Prepare Git for pushing the artifacts to the repository.
 git config user.name "$commitAuthorName"
 git config user.email "$commitAuthorEmail"
