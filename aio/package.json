@@ -57,7 +57,7 @@
   "devDependencies": {
     "@angular/cli": "^1.0.0",
     "@angular/compiler-cli": "next",
-    "@types/jasmine": "2.5.38",
+    "@types/jasmine": "^2.5.47",
     "@types/node": "~6.0.60",
     "archiver": "^1.3.0",
     "canonical-path": "^0.0.2",
@@ -94,7 +94,6 @@
     "rehype-slug": "^2.0.0",
     "remark": "^7.0.0",
     "remark-html": "^6.0.0",
-    "rho": "https://github.com/petebacondarwin/rho#master",
     "rimraf": "^2.6.1",
     "shelljs": "^0.7.7",
     "tree-kill": "^1.1.0",
