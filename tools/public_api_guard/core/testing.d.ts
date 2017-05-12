@@ -16,6 +16,7 @@ export declare class ComponentFixture<T> {
     destroy(): void;
     detectChanges(checkNoChanges?: boolean): void;
     isStable(): boolean;
+    whenRenderingDone(): Promise<any>;
     whenStable(): Promise<any>;
 }
 
