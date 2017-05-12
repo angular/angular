@@ -268,6 +268,7 @@ export class AppComponent implements OnInit {
       // escape key
       if (this.showSearchResults) {
         this.hideSearchResults();
+        this.focusSearchBox();
       }
     }
   }
