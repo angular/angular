@@ -1,3 +1,13 @@
+<a name="2.0.0-beta.5"></a>
+# [2.0.0-beta.5 taffeta-admiral](https://github.com/angular/material2/compare/2.0.0-beta.4...2.0.0-beta.5) (2017-05-13)
+
+
+### Bug Fixes
+
+* **list, option:** fix ripples blocking mouse events on user content ([#4503](https://github.com/angular/material2/issues/4503)) ([c4b3625](https://github.com/angular/material2/commit/c4b3625)), closes [#4480](https://github.com/angular/material2/issues/4480)
+
+
+
 <a name="2.0.0-beta.4"></a>
 # [2.0.0-beta.4 unobtainium-sunglasses](https://github.com/angular/material2/compare/g3_v2_0...2.0.0-beta.4) (2017-05-12)
 
