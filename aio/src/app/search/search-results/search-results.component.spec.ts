@@ -9,9 +9,7 @@ import { MockSearchService } from 'testing/search.service';
 describe('SearchResultsComponent', () => {
   let component: SearchResultsComponent;
   let fixture: ComponentFixture<SearchResultsComponent>;
-  let searchService: SearchService;
   let searchResults: Subject<SearchResults>;
-  let currentAreas: SearchArea[];
 
   /** Get all text from component element */
   function getText() { return fixture.debugElement.nativeElement.innerText; }
@@ -48,17 +46,15 @@ describe('SearchResultsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(SearchResultsComponent);
     component = fixture.componentInstance;
-    searchService = fixture.debugElement.injector.get(SearchService);
-    searchResults = searchService.searchResults as Subject<SearchResults>;
+    searchResults = TestBed.get(SearchService).searchResults;
     fixture.detectChanges();
-    component.searchAreas.subscribe(areas => currentAreas = areas);
   });
 
   it('should map the search results into groups based on their containing folder', () => {
     const results = getTestResults(3);
 
     searchResults.next({ query: '', results: results});
-    expect(currentAreas).toEqual([
+    expect(component.searchAreas).toEqual([
       { name: 'api', pages: [
         { path: 'api/d', title: 'API D', type: '', keywords: '', titleWords: '' }
       ], priorityPages: [] },
@@ -74,7 +70,7 @@ describe('SearchResultsComponent', () => {
       { path: 'tutorial', title: 'Tutorial index', type: '', keywords: '', titleWords: '' },
       { path: 'tutorial/toh-pt1', title: 'Tutorial - part 1', type: '', keywords: '', titleWords: '' },
     ]});
-    expect(currentAreas).toEqual([
+    expect(component.searchAreas).toEqual([
       { name: 'tutorial', pages: [
         { path: 'tutorial/toh-pt1', title: 'Tutorial - part 1', type: '', keywords: '', titleWords: '' },
         { path: 'tutorial', title: 'Tutorial index', type: '', keywords: '', titleWords: '' },
@@ -86,7 +82,7 @@ describe('SearchResultsComponent', () => {
     const results = getTestResults(5);
     searchResults.next({ query: '', results: results });
 
-    expect(currentAreas).toEqual([
+    expect(component.searchAreas).toEqual([
       { name: 'api', pages: [
         { path: 'api/c', title: 'API C', type: '', keywords: '', titleWords: '' },
         { path: 'api/d', title: 'API D', type: '', keywords: '', titleWords: '' },
@@ -116,7 +112,7 @@ describe('SearchResultsComponent', () => {
     ];
 
     searchResults.next({ query: '', results: results });
-    expect(currentAreas).toEqual(expected);
+    expect(component.searchAreas).toEqual(expected);
   });
 
   it('should put search results with no containing folder into the default area (other)', () => {
@@ -125,7 +121,7 @@ describe('SearchResultsComponent', () => {
     ];
 
     searchResults.next({ query: '', results: results });
-    expect(currentAreas).toEqual([
+    expect(component.searchAreas).toEqual([
       { name: 'other', pages: [
         { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '' }
       ], priorityPages: [] }
@@ -137,73 +133,30 @@ describe('SearchResultsComponent', () => {
       { path: 'news', title: undefined, type: 'marketing', keywords: '', titleWords: '' }
     ];
 
-    searchResults.next({ query: '', results: results });
-    expect(currentAreas).toEqual([]);
+    searchResults.next({ query: 'something', results: results });
+    expect(component.searchAreas).toEqual([]);
   });
 
-  it('should emit an "resultSelected" event when a search result anchor is clicked', () => {
-    let selectedResult: SearchResult;
-    component.resultSelected.subscribe((result: SearchResult) => selectedResult = result);
-    const results = [
-      { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '' }
-    ];
+  it('should emit a "resultSelected" event when a search result anchor is clicked', () => {
+    const searchResult = { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '' };
+    let selected: SearchResult;
+    component.resultSelected.subscribe(result => selected = result);
 
-    searchResults.next({ query: '', results: results });
+    searchResults.next({ query: 'something', results: [searchResult] });
     fixture.detectChanges();
-    const anchor = fixture.debugElement.query(By.css('a'));
+    expect(selected).toBeUndefined();
 
-    anchor.triggerEventHandler('click', {});
-    expect(selectedResult).toEqual({ path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '' });
-  });
-
-  it('should clear the results when a search result is clicked', () => {
-    const results = [
-      { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '' }
-    ];
-
-    searchResults.next({ query: '', results: results });
-    fixture.detectChanges();
     const anchor = fixture.debugElement.query(By.css('a'));
     anchor.triggerEventHandler('click', {});
-
     fixture.detectChanges();
-    expect(fixture.debugElement.queryAll(By.css('a'))).toEqual([]);
-  });
-
-  describe('hideResults', () => {
-    it('should clear the results', () => {
-      const results = [
-        { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '' }
-      ];
-
-      searchResults.next({ query: '', results: results });
-      fixture.detectChanges();
-      component.hideResults();
-      fixture.detectChanges();
-      expect(getText()).toBe('');
-    });
+    expect(selected).toEqual(searchResult);
   });
 
   describe('when no query results', () => {
-
     it('should display "not found" message', () => {
       searchResults.next({ query: 'something', results: [] });
       fixture.detectChanges();
       expect(getText()).toContain('No results');
-    });
-
-    it('should not display "not found" message after hideResults()', () => {
-      searchResults.next({ query: 'something', results: [] });
-      fixture.detectChanges();
-      component.hideResults();
-      fixture.detectChanges();
-      expect(getText()).toBe('');
-    });
-
-    it('should not display "not found" message when query is empty', () => {
-      searchResults.next({ query: '', results: [] });
-      fixture.detectChanges();
-      expect(getText()).toBe('');
     });
   });
 });

@@ -421,27 +421,6 @@ describe('AppComponent', () => {
       imageElement.click();
       expect(location.handleAnchorClick).not.toHaveBeenCalled();
     }));
-
-    it('should intercept clicks not on the search elements and hide the search results', () => {
-      const searchResults: SearchResultsComponent = fixture.debugElement.query(By.directive(SearchResultsComponent)).componentInstance;
-      spyOn(searchResults, 'hideResults');
-      // docViewer is a commonly-clicked, non-search element
-      docViewer.click();
-      expect(searchResults.hideResults).toHaveBeenCalled();
-    });
-
-    it('should not intercept clicks on any of the search elements', () => {
-      const searchResults = fixture.debugElement.query(By.directive(SearchResultsComponent));
-      const searchResultsComponent: SearchResultsComponent = searchResults.componentInstance;
-      const searchBox = fixture.debugElement.query(By.directive(SearchBoxComponent));
-      spyOn(searchResultsComponent, 'hideResults');
-
-      searchResults.nativeElement.click();
-      expect(searchResultsComponent.hideResults).not.toHaveBeenCalled();
-
-      searchBox.nativeElement.click();
-      expect(searchResultsComponent.hideResults).not.toHaveBeenCalled();
-    });
   });
 
   describe('aio-toc', () => {
@@ -456,7 +435,7 @@ describe('AppComponent', () => {
 
     it('should have a non-embedded `<aio-toc>` element', () => {
       expect(tocDebugElement).toBeDefined();
-      expect(tocDebugElement.classes.embedded).toBeFalsy();
+      expect(tocDebugElement.classes['embedded']).toBeFalsy();
     });
 
     it('should update the TOC container\'s `maxHeight` based on `tocMaxHeight`', () => {
@@ -473,6 +452,84 @@ describe('AppComponent', () => {
     it('should have version number', () => {
       const versionEl: HTMLElement = fixture.debugElement.query(By.css('aio-footer')).nativeElement;
       expect(versionEl.innerText).toContain(TestHttp.versionFull);
+    });
+  });
+
+  describe('search', () => {
+    describe('initialization', () => {
+      it('should initialize the search worker', inject([SearchService], (searchService: SearchService) => {
+        fixture.detectChanges(); // triggers ngOnInit
+        expect(searchService.initWorker).toHaveBeenCalled();
+        expect(searchService.loadIndex).toHaveBeenCalled();
+      }));
+    });
+
+    describe('click handling', () => {
+      it('should intercept clicks not on the search elements and hide the search results', () => {
+        component.showSearchResults = true;
+        fixture.detectChanges();
+        // docViewer is a commonly-clicked, non-search element
+        docViewer.click();
+        expect(component.showSearchResults).toBe(false);
+      });
+
+      it('should not intercept clicks on the searchResults', () => {
+        component.showSearchResults = true;
+        fixture.detectChanges();
+
+        const searchResults = fixture.debugElement.query(By.directive(SearchResultsComponent));
+        searchResults.nativeElement.click();
+        fixture.detectChanges();
+
+        expect(component.showSearchResults).toBe(true);
+      });
+
+      it('should not intercept clicks om the searchBox', () => {
+        component.showSearchResults = true;
+        fixture.detectChanges();
+
+        const searchBox = fixture.debugElement.query(By.directive(SearchBoxComponent));
+        searchBox.nativeElement.click();
+        fixture.detectChanges();
+
+        expect(component.showSearchResults).toBe(true);
+      });
+    });
+
+    describe('keyup handling', () => {
+      it('should grab focus when the / key is pressed', () => {
+        const searchBox: SearchBoxComponent = fixture.debugElement.query(By.directive(SearchBoxComponent)).componentInstance;
+        spyOn(searchBox, 'focus');
+        window.document.dispatchEvent(new KeyboardEvent('keyup', { 'key': '/' }));
+        fixture.detectChanges();
+        expect(searchBox.focus).toHaveBeenCalled();
+      });
+    });
+
+    describe('showing search results', () => {
+      it('should not display search results when query is empty', () => {
+        const searchService: MockSearchService = TestBed.get(SearchService);
+        searchService.searchResults.next({ query: '', results: [] });
+        fixture.detectChanges();
+        expect(component.showSearchResults).toBe(false);
+      });
+
+      it('should hide the results when a search result is selected', () => {
+        const searchService: MockSearchService = TestBed.get(SearchService);
+
+        const results = [
+          { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '' }
+        ];
+
+        searchService.searchResults.next({ query: 'something', results: results });
+        component.showSearchResults = true;
+        fixture.detectChanges();
+
+        const searchResultsComponent = fixture.debugElement.query(By.directive(SearchResultsComponent));
+        searchResultsComponent.triggerEventHandler('resultSelected', {});
+        fixture.detectChanges();
+        expect(component.showSearchResults).toBe(false);
+      });
     });
   });
 

@@ -5,10 +5,10 @@
   </button>
   <a class="nav-link home" href="/"><img src="{{ homeImageUrl }}" title="Home" alt="Home"></a>
   <aio-top-menu *ngIf="isSideBySide" [nodes]="topMenuNodes"></aio-top-menu>
-  <aio-search-box class="search-container" #searchBox></aio-search-box>
+  <aio-search-box class="search-container" #searchBox (search)="doSearch($event)"></aio-search-box>
   <span class="fill-remaining-space"></span>
 </md-toolbar>
-<aio-search-results #searchResults></aio-search-results>
+<aio-search-results #searchResults *ngIf="showSearchResults" (resultSelected)="hideSearchResults()"></aio-search-results>
 
 <md-sidenav-container class="sidenav-container" [class.starting]="isStarting" role="main">
 

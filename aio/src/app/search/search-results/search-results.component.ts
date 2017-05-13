@@ -1,5 +1,6 @@
-import { Component, ChangeDetectionStrategy, EventEmitter, HostListener, OnInit, Output } from '@angular/core';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { Component, EventEmitter, HostListener, OnDestroy, OnInit, Output } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
+import { Subscription } from 'rxjs/Subscription';
 
 import { SearchResult, SearchResults, SearchService } from '../search.service';
 
@@ -15,50 +16,41 @@ export interface SearchArea {
 @Component({
   selector: 'aio-search-results',
   templateUrl: './search-results.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SearchResultsComponent implements OnInit {
+export class SearchResultsComponent implements OnInit, OnDestroy {
 
+  private resultsSubscription: Subscription;
   readonly defaultArea = 'other';
   readonly topLevelFolders = ['guide', 'tutorial'];
 
-  notFound = false;
-
+  /**
+   * Emitted when the user selects a search result
+   */
   @Output()
   resultSelected = new EventEmitter<SearchResult>();
 
   /**
    * A mapping of the search results grouped into areas
    */
-  searchAreas = new ReplaySubject<SearchArea[]>(1);
-  hasAreas = this.searchAreas.map(areas => areas.length > 0);
+  searchAreas: SearchArea[] = [];
 
   constructor(private searchService: SearchService) {}
 
   ngOnInit() {
-    this.searchService.searchResults.subscribe(search => this.searchAreas.next(this.processSearchResults(search)));
+    this.resultsSubscription = this.searchService.searchResults
+        .subscribe(search => this.searchAreas = this.processSearchResults(search));
   }
 
-  onResultSelected(result: SearchResult) {
-    this.resultSelected.emit(result);
-    this.hideResults();
+  ngOnDestroy() {
+    this.resultsSubscription.unsubscribe();
   }
 
-  @HostListener('document:keyup', ['$event.which'])
-  onKeyUp(keyCode: number) {
-    if (keyCode === 27) {
-      this.hideResults();
-    }
-  }
-
-  hideResults() {
-    this.searchAreas.next([]);
-    this.notFound = false;
+  onResultSelected(page: SearchResult) {
+    this.resultSelected.emit(page);
   }
 
   // Map the search results into groups by area
   private processSearchResults(search: SearchResults) {
-    this.notFound = search.query.trim() && search.results.length === 0;
     const searchAreaMap = {};
     search.results.forEach(result => {
       if (!result.title) { return; } // bad data; should fix
@@ -72,7 +64,7 @@ export class SearchResultsComponent implements OnInit {
       const priorityPages = pages.length > 10 ? searchAreaMap[name].slice(0, 5) : [];
       pages = pages.sort(compareResults);
       return { name, pages, priorityPages };
-  });
+    });
   }
 
   // Split the search result path and use the top level folder, if there is one, as the area name.
