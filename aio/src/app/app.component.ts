@@ -9,6 +9,8 @@ import { LocationService } from 'app/shared/location.service';
 import { NavMenuComponent } from 'app/layout/nav-menu/nav-menu.component';
 import { ScrollService } from 'app/shared/scroll.service';
 import { SearchResultsComponent } from 'app/search/search-results/search-results.component';
+import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
+import { SearchService } from 'app/search/search.service';
 import { SwUpdateNotificationsService } from 'app/sw-updates/sw-update-notifications.service';
 
 const sideNavView = 'SideNav';
@@ -74,11 +76,14 @@ export class AppComponent implements OnInit {
   @ViewChild(DocViewerComponent, { read: ElementRef })
   docViewer: ElementRef;
 
+  // Search related properties
+  showSearchResults = false;
   @ViewChildren('searchBox, searchResults', { read: ElementRef })
   searchElements: QueryList<ElementRef>;
-
   @ViewChild(SearchResultsComponent)
   searchResults: SearchResultsComponent;
+  @ViewChild(SearchBoxComponent)
+  searchBox: SearchBoxComponent;
 
   @ViewChild(MdSidenav)
   sidenav: MdSidenav;
@@ -89,10 +94,14 @@ export class AppComponent implements OnInit {
     private locationService: LocationService,
     private navigationService: NavigationService,
     private scrollService: ScrollService,
+    private searchService: SearchService,
     private swUpdateNotifications: SwUpdateNotificationsService
   ) {  }
 
   ngOnInit() {
+    this.searchService.initWorker('app/search/search-worker.js');
+    this.searchService.loadIndex();
+
     this.onResize(window.innerWidth);
 
     /* No need to unsubscribe because this root component never dies */
@@ -170,14 +179,12 @@ export class AppComponent implements OnInit {
   @HostListener('click', ['$event.target', '$event.button', '$event.ctrlKey', '$event.metaKey', '$event.altKey'])
   onClick(eventTarget: HTMLElement, button: number, ctrlKey: boolean, metaKey: boolean, altKey: boolean): boolean {
 
-    // Hide the search results if we clicked outside both the search box and the search results
-    if (this.searchResults) {
-      const hits = this.searchElements.filter(element => element.nativeElement.contains(eventTarget));
-      if (hits.length === 0) {
-        this.searchResults.hideResults();
-      }
+    // Hide the search results if we clicked outside both the "search box" and the "search results"
+    if (!this.searchElements.some(element => element.nativeElement.contains(eventTarget))) {
+      this.hideSearchResults();
     }
 
+    // Show developer source view if the footer is clicked while holding the meta and alt keys
     if (eventTarget.tagName === 'FOOTER' && metaKey && altKey) {
       this.dtOn = !this.dtOn;
       return false;
@@ -191,6 +198,8 @@ export class AppComponent implements OnInit {
     if (target instanceof HTMLAnchorElement) {
       return this.locationService.handleAnchorClick(target, button, ctrlKey, metaKey);
     }
+
+    // Allow the click to pass through
     return true;
   }
 
@@ -229,5 +238,37 @@ export class AppComponent implements OnInit {
     }
 
     this.tocMaxHeight = (document.body.scrollHeight - window.pageYOffset - this.tocMaxHeightOffset).toFixed(2);
+  }
+
+
+  // Search related methods and handlers
+
+  hideSearchResults() {
+    this.showSearchResults = false;
+  }
+
+  focusSearchBox() {
+    if (this.searchBox) {
+      this.searchBox.focus();
+    }
+  }
+
+  doSearch(query) {
+    this.searchService.search(query);
+    this.showSearchResults = !!query;
+  }
+
+  @HostListener('document:keyup', ['$event.key', '$event.which'])
+  onKeyUp(key: string, keyCode: number) {
+    // forward slash "/"
+    if (key === '/' || keyCode === 191) {
+      this.focusSearchBox();
+    }
+    if (key === 'Escape' || keyCode === 27 ) {
+      // escape key
+      if (this.showSearchResults) {
+        this.hideSearchResults();
+      }
+    }
   }
 }

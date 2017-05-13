@@ -6,7 +6,7 @@ can be found in the LICENSE file at http://angular.io/license
 
 import { NgZone, Injectable, Type } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
+import { ReplaySubject } from 'rxjs/ReplaySubject';
 import 'rxjs/add/operator/publishLast';
 import 'rxjs/add/operator/concatMap';
 import { WebWorkerClient } from 'app/shared/web-worker';
@@ -29,7 +29,7 @@ export interface SearchResult {
 export class SearchService {
   private worker: WebWorkerClient;
   private ready: Observable<boolean>;
-  private resultsSubject = new Subject<SearchResults>();
+  private resultsSubject = new ReplaySubject<SearchResults>(1);
   readonly searchResults = this.resultsSubject.asObservable();
 
   constructor(private zone: NgZone) {}
