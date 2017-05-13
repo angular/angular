@@ -8,7 +8,7 @@ Style Guide for Angular Authors
 
 
 
-This guide covers design and layout patterns for the documentation seen here.  The patterns should be followed by Authors contributing to Angular documentation.
+This guide covers design and layout patterns for documentation for Angular.  The patterns should be followed by Authors contributing to this documentation.
 
 ## Basic Layout
 
@@ -23,9 +23,11 @@ Main section title should preceeded by ##.  Content can start on the next line.
 
 The content in any sub-section is related to the main section content and _falls within_ the main section. Any sub-section title should preceeded by ###.  Content can start on the next line.
 
+To-do: Cover noTOC in here
+
 ## Code Examples
 
-To-do: Cleanup below & Bring over more examples from marketing/test.html 
+To-do: Cleanup below & bring over more examples from marketing/test.html 
 
 Below are some examples of how you can add/customize code examples in a page.
 
@@ -93,7 +95,7 @@ A tabbed interface is a great way to show different files belonging to a code ba
 
 To-do: Describe code-pane attributes
 
-### CODE-EXAMPLE ATTRIBUTES
+### Code-Example Attributes
 
 * ??name: Name displayed in Tab (required for tabs)
 * path
@@ -124,9 +126,12 @@ A very important alert.
 A very helpful alert.
 </div>
 
-1. .alert.is-critical A very critical alert
-1. .alert.is-important A very important alert
-1. .alert.is-helpful A very helpful alert
+To-do: format below closer to what is seen in old guide
+
+
+* class="alert is-critical" A very critical alert
+* class="alert is-important" A very important alert
+* class="alert is-helpful" A very helpful alert
 
 </div>
 
@@ -168,17 +173,22 @@ Pitchfork hoodie semiotics, roof party pop-up paleo messenger bag cred Carles to
 
 </div>
 
-To-do: format below better
+To-do: format below closer to what is seen in old guide
 
-1. callout is-critical
-1.  header A Critical Title
-1.  Pitchfork hoodie semiotics, roof party pop-up paleo messenger bag cred Carles tousled Truffaut yr. Semiotics viral freegan VHS, Shoreditch disrupt McSweeney's. Intelligentsia kale chips Vice four dollar toast, Schlitz crucifix
-1. callout is-important
-1.  header A Very Important Title
-1.  Pitchfork hoodie semiotics, roof party pop-up paleo messenger bag cred Carles tousled Truffaut yr. Semiotics viral freegan VHS, Shoreditch disrupt McSweeney's. Intelligentsia kale chips Vice four dollar toast, Schlitz crucifix
-1. callout is-helpful
-1. header A Very Helpful Title
-1. Pitchfork hoodie semiotics, roof party pop-up paleo messenger bag cred Carles tousled Truffaut yr. Semiotics viral freegan VHS, Shoreditch disrupt McSweeney's. Intelligentsia kale chips Vice four dollar toast, Schlitz crucifix
+
+* class="callout is-critical"
+    - header A Critical Title
+    - Pitchfork hoodie semiotics, roof party pop-up paleo messenger bag cred Carles tousled Truffaut yr. Semiotics viral freegan VHS, Shoreditch disrupt McSweeney's. Intelligentsia kale chips Vice four dollar toast, Schlitz crucifix
+
+
+* class="callout is-important"
+    - header A Very Important Title
+    - Pitchfork hoodie semiotics, roof party pop-up paleo messenger bag cred Carles tousled Truffaut yr. Semiotics viral freegan VHS, Shoreditch disrupt McSweeney's. Intelligentsia kale chips Vice four dollar toast, Schlitz crucifix
+
+
+* class="callout is-helpful"
+    - header A Very Helpful Title
+    - Pitchfork hoodie semiotics, roof party pop-up paleo messenger bag cred Carles tousled Truffaut yr. Semiotics viral freegan VHS, Shoreditch disrupt McSweeney's. Intelligentsia kale chips Vice four dollar toast, Schlitz crucifix
 
 </div>
 
@@ -220,7 +230,7 @@ Tables can be used to present tabular data as it relates to each other.
     </td>
 
     <td>
-      Router 
+      Routing 
     </td>
 
     <td>
@@ -236,7 +246,7 @@ Tables can be used to present tabular data as it relates to each other.
     </td>
 
     <td>
-      Router 
+      Routing 
     </td>
 
     <td>
@@ -252,7 +262,7 @@ Tables can be used to present tabular data as it relates to each other.
     </td>
 
     <td>
-      Router 
+      Routing 
     </td>
 
     <td>
@@ -264,26 +274,31 @@ Tables can be used to present tabular data as it relates to each other.
 
 </table>
 
-To-do: format below better
+To-do: format below closer to what is seen in old guide
 
-1. table
-1.  tr
-1.    th Framework
-1.    th Task
-1.    th Speed
-1.  tr
-1.    td AngularJS v.1.3
-1.    td Routing
-1.    td fast
+<code-example language="html">
+table
+    tr
+        th Framework
+        th Task
+        th Speed
+    tr
+        td AngularJS
+        td Routing
+        td fast
+</code-example>
 
 </div>
 
-To-do: Describe l sub section divs
-
-
 ## Images
 
-It is best to use HTML to declare images in the docs. Do not use the markdown \!\[\.\.\.\]\(\.\.\.\) shorthand.
+### Image guide
+
+<p>To maintain visual consistency across documentation chapters, please follow the best
+practices for authors outlined in the <a href="/docs/ImageGuide.pdf" target="_blank">Image
+Guide</a>.</p><p>The browser background template used for outlining screenshots is <a href="/resources/images/backgrounds/browser-background-template.png" target="_blank">here</a>.</p>
+
+Please use HTML to declare images in the docs. Do not use the markdown \!\[\.\.\.\]\(\.\.\.\) shorthand.
 
 The HTML to use is an &lt;img src="..." alt="..."&gt; tag. You must supply a src attribute that is relative to the base path; and you should provide an alt attribute describing the image for accessibility. _Note that Image tags do not have a closing tag._
 
@@ -332,10 +347,9 @@ Finally, if you have floating images inside alerts or sub-sections then it is a 
 
 </code-example>
 
-#### Standalone images
+#### Standalone Images
 
-Some images should stand alone from the text. You do this by wrapping the img tag in a figure
-tag. This causes the image to get additional styling, such as a rounded border and shadow. The text will not flow around this image but will stop before the image and start again afterword. For example:
+Some images should stand alone from the text. You do this by wrapping the img tag in a figure tag. This causes the image to get additional styling, such as a rounded border and shadow. The text will not flow around this image but will stop before the image and start again afterword. For example:
 
 <code-example language="html">Some paragraph preceding the image.
 &lt;figure&gt;
