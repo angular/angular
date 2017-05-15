@@ -3,6 +3,7 @@ import { browser, element, by, promise, ElementFinder } from 'protractor';
 const githubRegex = /https:\/\/github.com\/angular\/angular\//;
 
 export class SitePage {
+
   links = element.all(by.css('md-toolbar a'));
   docsMenuLink = element(by.cssContainingText('aio-top-menu a', 'Docs'));
   docViewer = element(by.css('aio-doc-viewer'));
@@ -12,8 +13,14 @@ export class SitePage {
     .filter((a: ElementFinder) => a.getAttribute('href').then(href => githubRegex.test(href)))
     .first();
   gaReady: promise.Promise<any>;
+
+  static setWindowWidth(newWidth: number) {
+    const win = browser.driver.manage().window();
+    return win.getSize().then(oldSize => win.setSize(newWidth, oldSize.height));
+  }
+
   getNavItem(pattern: RegExp) {
-    return element.all(by.css('aio-nav-item a'))
+    return element.all(by.css('aio-nav-item .vertical-menu-item'))
                   .filter(element => element.getText().then(text => pattern.test(text)))
                   .first();
   }
@@ -33,11 +40,6 @@ export class SitePage {
     // `getInnerHtml` was removed from webDriver and this is the workaround.
     // See https://github.com/angular/protractor/blob/master/CHANGELOG.md#breaking-changes
     return browser.executeScript('return arguments[0].innerHTML;', element);
-  }
-
-  setWindowWidth(newWidth: number) {
-    const win = browser.driver.manage().window();
-    return win.getSize().then(oldSize => win.setSize(newWidth, oldSize.height));
   }
 
   /**
