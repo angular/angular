@@ -30,6 +30,7 @@ Here are the most important tasks you might need to use:
 * `yarn generate-plunkers` - generate the plunker files that are used by the `live-example` tags in the docs.
 * `yarn generate-zips` - generate the zip files from the examples. Zip available via the `live-example` tags in the docs.
 
+* `yarn build-ie-polyfills` - generates a js file of polyfills that can be loaded in Internet Explorer.
 
 ## Using ServiceWorker locally
 
