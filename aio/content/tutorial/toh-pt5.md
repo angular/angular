@@ -942,8 +942,6 @@ at the top and details of the selected hero below.
 
 
 
-Delete the `<h1>` at the top.
-
 Delete the last line of the template with the `<hero-detail>` tags.
 
 You'll no longer show the full `HeroDetailComponent` here.
