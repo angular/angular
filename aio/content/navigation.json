@@ -91,12 +91,6 @@
       "children": [
 
         {
-          "url": "guide/fundamentals",
-          "title": "Introduction",
-          "tooltip": "An introduction to the fundamentals of Angular."
-        },
-
-        {
           "url": "guide/animations",
           "title": "Animations",
           "tooltip": "A guide to Angular's animation system."
@@ -266,12 +260,6 @@
       "title": "Techniques",
       "tooltip": "Techniques for putting Angular to work in your environment",
       "children": [
-
-        {
-          "url": "guide/techniques",
-          "title": "Introduction",
-          "tooltip": "An introduction to techniques to use when developing with Angular."
-        },
 
         {
           "url": "guide/security",

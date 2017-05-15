@@ -21,10 +21,10 @@ Angular is a platform that makes it easy to build applications with the web. Ang
       <p class="card-footer"><a href="guide/tutorial">Tutorial</a></p>-->
   </div>
 
-  <a href="guide/fundamentals" class="card" title="Angular Fundamentals">
+  <a href="guide/architecture" class="card" title="Angular Architecture">
       <section>Fundamentals</section>
-      <p>Get additional information on specific topics in the Fundamentals section.</p>
-      <p class="card-footer">Fundamentals</p>
+      <p>Learn Angular application fundamentals, starting with an architecture overview.</p>
+      <p class="card-footer">Architecture</p>
   </a>
 </div>
 
