@@ -112,7 +112,7 @@ describe('DocViewerComponent', () => {
     component.currentDoc = { contents, id };
   }
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [ TestModule ],
       declarations: [
@@ -125,9 +125,8 @@ describe('DocViewerComponent', () => {
         { provide: Title, useClass: TestTitleService },
         { provide: TocService, useClass: TestTocService }
       ]
-    })
-    .compileComponents();
-  }));
+    });
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(TestComponent);
