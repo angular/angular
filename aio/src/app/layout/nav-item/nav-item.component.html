@@ -12,11 +12,11 @@
     <md-icon class="rotating-icon" svgIcon="keyboard_arrow_right"></md-icon>
   </a>
 
-  <a *ngIf="node.url == null" [ngClass]="classes" title="{{node.tooltip}}"
+  <button *ngIf="node.url == null" type="button" [ngClass]="classes" title="{{node.tooltip}}"
     (click)="headerClicked()" class="vertical-menu-item heading">
     {{node.title}}
     <md-icon class="rotating-icon" svgIcon="keyboard_arrow_right"></md-icon>
-  </a>
+  </button>
 
   <div class="heading-children" [ngClass]="classes">
     <aio-nav-item *ngFor="let node of node.children" [level]="level + 1"

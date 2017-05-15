@@ -66,7 +66,10 @@ md-sidenav-container div.mat-sidenav-content {
 
   &:hover {
     background-color: $lightgray;
+  }
 
+  &:focus {
+    color: $darkgray;
   }
 
   //icons _within_ nav
@@ -80,10 +83,24 @@ md-sidenav-container div.mat-sidenav-content {
 
 .vertical-menu-item.selected {
   color: $blue;
+
+  &:focus {
+    color: $blue-900;
+  }
+}
+
+button.vertical-menu-item {
+  border: none;
+  background-color: transparent;
+  padding: 8px 0 8px 20px;
+
+  &:focus {
+    color: $black;
+  }
 }
 
 .heading {
-  color: #444;
+  color: $blue-grey-700;
   cursor: pointer;
   position: relative;
   text-transform: uppercase;
