@@ -1,6 +1,7 @@
 {
   "extends": "../tsconfig-build",
   "compilerOptions": {
+    "strictNullChecks": true,
     "paths": {
       "@angular/core": ["../../dist/packages/core"],
       "@angular/http": ["../../dist/packages/http"],
