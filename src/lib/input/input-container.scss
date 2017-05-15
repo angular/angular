@@ -217,12 +217,17 @@ $mat-input-underline-disabled-background-image:
     z-index: 1;
     top: -1px;
     width: 100%;
-    transform-origin: top;
-    opacity: 0;
-    transition: opacity $swift-ease-out-duration $swift-ease-out-timing-function;
+    transform-origin: 50%;
+    transform: scaleX(0.5);
+    visibility: hidden;
+    transition: background-color $swift-ease-in-duration $swift-ease-in-timing-function;
 
-    .mat-focused & {
-      opacity: 1;
+    .mat-focused &,
+    .mat-input-invalid & {
+      visibility: visible;
+      transform: scaleX(1);
+      transition: transform 150ms linear,
+                  background-color $swift-ease-in-duration $swift-ease-in-timing-function;
     }
   }
 }
