@@ -4,16 +4,23 @@ import {join} from 'path';
 import {task} from 'gulp';
 import {execTask, sequenceTask} from '../util/task_helpers';
 import {DIST_RELEASES} from '../constants';
+import {yellow, green, red, grey} from 'chalk';
 import * as minimist from 'minimist';
 
 /** Parse command-line arguments for release task. */
 const argv = minimist(process.argv.slice(3));
 
-// Path to the release output of material.
-const releasePath = join(DIST_RELEASES, 'material');
+/** Packages that will be published to NPM. */
+const releasePackages = [
+  'cdk',
+  'material',
+];
 
 /** Task that builds all releases that will be published. */
-task(':publish:build-releases', ['material:build-release:clean']);
+task(':publish:build-releases', sequenceTask(
+  'clean',
+  releasePackages.map(packageName => `${packageName}:build-release`)
+));
 
 /** Make sure we're logged in. */
 task(':publish:whoami', execTask('npm', ['whoami'], {
@@ -24,8 +31,9 @@ task(':publish:whoami', execTask('npm', ['whoami'], {
 task(':publish:logout', execTask('npm', ['logout']));
 
 
-function _execNpmPublish(label: string): Promise<{}> {
-  const packageDir = releasePath;
+function _execNpmPublish(label: string, packageName: string): Promise<{}> {
+  const packageDir = join(DIST_RELEASES, packageName);
+
   if (!statSync(packageDir).isDirectory()) {
     return;
   }
@@ -39,12 +47,12 @@ function _execNpmPublish(label: string): Promise<{}> {
   }
 
   process.chdir(packageDir);
-  console.log(`Publishing material...`);
+  console.log(green(`Publishing ${packageName}...`));
 
   const command = 'npm';
   const args = ['publish', '--access', 'public', label ? `--tag` : undefined, label || undefined];
   return new Promise((resolve, reject) => {
-    console.log(`  Executing "${command} ${args.join(' ')}"...`);
+    console.log(grey(`Executing: ${command} ${args.join(' ')}`));
     if (argv['dry']) {
       resolve();
       return;
@@ -62,29 +70,35 @@ function _execNpmPublish(label: string): Promise<{}> {
       if (code == 0) {
         resolve();
       } else {
-        reject(new Error(`Material did not publish, status: ${code}.`));
+        reject(new Error(`Could not publish ${packageName}, status: ${code}.`));
       }
     });
   });
 }
 
-task(':publish', function(done: (err?: any) => void) {
+task(':publish', async () => {
   const label = argv['tag'];
   const currentDir = process.cwd();
 
+  console.log('');
   if (!label) {
-    console.log('You can use a label with --tag=labelName.');
-    console.log('Publishing using the latest tag.');
+    console.log(yellow('You can use a label with --tag=labelName.'));
+    console.log(yellow('Publishing using the latest tag.'));
   } else {
-    console.log(`Publishing using the ${label} tag.`);
+    console.log(yellow(`Publishing using the ${label} tag.`));
   }
-  console.log('\n\n');
+  console.log('');
 
-  // Publish only the material package.
-  return _execNpmPublish(label)
-    .then(() => done())
-    .catch((err: Error) => done(err))
-    .then(() => process.chdir(currentDir));
+  if (releasePackages.length > 1) {
+    console.warn(red('Warning: Multiple packages will be released if proceeding.'));
+  }
+
+  // Iterate over every declared release package and publish it on NPM.
+  for (const packageName of releasePackages) {
+    await _execNpmPublish(label, packageName);
+  }
+
+  process.chdir(currentDir);
 });
 
 task('publish', sequenceTask(
