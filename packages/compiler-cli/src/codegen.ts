@@ -44,8 +44,11 @@ export class CodeGenerator {
           generatedModules.forEach(generatedModule => {
             const sourceFile = this.program.getSourceFile(generatedModule.srcFileUrl);
             const emitPath = this.ngCompilerHost.calculateEmitPath(generatedModule.genFileUrl);
-            const source = GENERATED_META_FILES.test(emitPath) ? generatedModule.source :
-                                                                 generatedModule.source;
+            const fileComment =
+                sourceFile ? sourceFile.getFullText().substring(0, sourceFile.getStart()) : '';
+            const source = GENERATED_META_FILES.test(emitPath) ?
+                generatedModule.source :
+                fileComment + generatedModule.source;
             this.host.writeFile(emitPath, source, false, () => {}, [sourceFile]);
           });
         });
