@@ -20,6 +20,10 @@ const config = require('lighthouse/lighthouse-core/config/default.json');
 // Constants
 const FLAGS = {output: 'json'};
 
+// Work-around traceviewer-js bug.
+global.atob = str => new Buffer(str, 'base64').toString('binary');
+global.btoa = str => new Buffer(str, 'binary').toString('base64');
+
 // Specify the path to Chrome on Travis
 if (process.env.TRAVIS) {
   process.env.LIGHTHOUSE_CHROMIUM_PATH = process.env.CHROME_BIN;
