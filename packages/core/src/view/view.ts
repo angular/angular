@@ -184,11 +184,11 @@ function validateNode(parent: NodeDef | null, node: NodeDef, nodeCount: number) 
   }
 }
 
-export function createEmbeddedView(parent: ViewData, anchorDef: NodeDef, context?: any): ViewData {
+export function createEmbeddedView(
+    parent: ViewData, anchorDef: NodeDef, viewDef: ViewDefinition, context?: any): ViewData {
   // embedded views are seen as siblings to the anchor, so we need
   // to get the parent of the anchor and use it as parentIndex.
-  const view =
-      createView(parent.root, parent.renderer, parent, anchorDef, anchorDef.element !.template !);
+  const view = createView(parent.root, parent.renderer, parent, anchorDef, viewDef);
   initView(view, parent.component, context);
   createViewNodes(view);
   return view;
@@ -199,6 +199,19 @@ export function createRootView(root: RootData, def: ViewDefinition, context?: an
   initView(view, context, context);
   createViewNodes(view);
   return view;
+}
+
+export function createComponentView(
+    parentView: ViewData, nodeDef: NodeDef, viewDef: ViewDefinition, hostElement: any): ViewData {
+  const rendererType = nodeDef.element !.componentRendererType;
+  let compRenderer: Renderer2;
+  if (!rendererType) {
+    compRenderer = parentView.root.renderer;
+  } else {
+    compRenderer = parentView.root.rendererFactory.createRenderer(hostElement, rendererType);
+  }
+  return createView(
+      parentView.root, compRenderer, parentView, nodeDef.element !.componentProvider, viewDef);
 }
 
 function createView(
@@ -241,15 +254,7 @@ function createViewNodes(view: ViewData) {
         let componentView: ViewData = undefined !;
         if (nodeDef.flags & NodeFlags.ComponentView) {
           const compViewDef = resolveDefinition(nodeDef.element !.componentView !);
-          const rendererType = nodeDef.element !.componentRendererType;
-          let compRenderer: Renderer2;
-          if (!rendererType) {
-            compRenderer = view.root.renderer;
-          } else {
-            compRenderer = view.root.rendererFactory.createRenderer(el, rendererType);
-          }
-          componentView = createView(
-              view.root, compRenderer, view, nodeDef.element !.componentProvider, compViewDef);
+          componentView = Services.createComponentView(view, nodeDef, compViewDef, el);
         }
         listenToElementOutputs(view, componentView, nodeDef, el);
         nodeData = <ElementData>{
