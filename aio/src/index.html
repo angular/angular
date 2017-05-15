@@ -23,7 +23,7 @@
   <!-- NOTE: These need to be kept in sync with `ngsw-manifest.json`. -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Droid+Sans+Mono" rel="stylesheet">
-  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"rel="stylesheet">
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
   <!-- -->
 
   <link rel="manifest" href="pwa-manifest.json">
@@ -35,8 +35,17 @@
   </script>
   <script async src='https://www.google-analytics.com/analytics.js'></script>
   <!-- End Google Analytics -->
+
+  <script>
+    if (window.document.documentMode) {
+      var script = document.createElement('script');
+      script.src = 'generated/ie-polyfills.min.js';
+      document.head.appendChild(script);
+    }
+  </script>
 </head>
 <body>
+
   <aio-shell></aio-shell>
 
   <noscript>
