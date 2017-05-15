@@ -14,6 +14,7 @@ import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
 import {Renderer2, RendererFactory2, RendererType2} from '../render/api';
 import {Sanitizer, SecurityContext} from '../security';
+import {Type} from '../type';
 
 // -------------------------------------
 // Defs
@@ -169,8 +170,9 @@ export const enum NodeFlags {
   PrivateProvider = 1 << 13,
   TypeDirective = 1 << 14,
   Component = 1 << 15,
-  CatProvider = TypeValueProvider | TypeClassProvider | TypeFactoryProvider |
-      TypeUseExistingProvider | TypeDirective,
+  CatProviderNoDirective =
+      TypeValueProvider | TypeClassProvider | TypeFactoryProvider | TypeUseExistingProvider,
+  CatProvider = CatProviderNoDirective | TypeDirective,
   OnInit = 1 << 16,
   OnDestroy = 1 << 17,
   DoCheck = 1 << 18,
@@ -495,12 +497,27 @@ export abstract class DebugContext {
 
 export const enum CheckType {CheckAndUpdate, CheckNoChanges}
 
+export interface ProviderOverride {
+  token: any;
+  flags: NodeFlags;
+  value: any;
+  deps: ([DepFlags, any]|any)[];
+}
+
 export interface Services {
   setCurrentNode(view: ViewData, nodeIndex: number): void;
   createRootView(
       injector: Injector, projectableNodes: any[][], rootSelectorOrNode: string|any,
       def: ViewDefinition, ngModule: NgModuleRef<any>, context?: any): ViewData;
-  createEmbeddedView(parent: ViewData, anchorDef: NodeDef, context?: any): ViewData;
+  createEmbeddedView(parent: ViewData, anchorDef: NodeDef, viewDef: ViewDefinition, context?: any):
+      ViewData;
+  createComponentView(
+      parentView: ViewData, nodeDef: NodeDef, viewDef: ViewDefinition, hostElement: any): ViewData;
+  createNgModuleRef(
+      moduleType: Type<any>, parent: Injector, bootstrapComponents: Type<any>[],
+      def: NgModuleDefinition): NgModuleRef<any>;
+  overrideProvider(override: ProviderOverride): void;
+  clearProviderOverrides(): void;
   checkAndUpdateView(view: ViewData): void;
   checkNoChangesView(view: ViewData): void;
   destroyView(view: ViewData): void;
@@ -522,6 +539,10 @@ export const Services: Services = {
   setCurrentNode: undefined !,
   createRootView: undefined !,
   createEmbeddedView: undefined !,
+  createComponentView: undefined !,
+  createNgModuleRef: undefined !,
+  overrideProvider: undefined !,
+  clearProviderOverrides: undefined !,
   checkAndUpdateView: undefined !,
   checkNoChangesView: undefined !,
   destroyView: undefined !,

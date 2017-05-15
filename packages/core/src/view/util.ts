@@ -12,7 +12,7 @@ import {RendererType2} from '../render/api';
 import {looseIdentical, stringify} from '../util';
 
 import {expressionChangedAfterItHasBeenCheckedError} from './errors';
-import {BindingDef, BindingFlags, Definition, DefinitionFactory, ElementData, NodeDef, NodeFlags, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewState, asElementData, asTextData} from './types';
+import {BindingDef, BindingFlags, Definition, DefinitionFactory, DepDef, DepFlags, ElementData, NodeDef, NodeFlags, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewState, asElementData, asTextData} from './types';
 
 export const NOOP: any = () => {};
 
@@ -201,6 +201,20 @@ export function splitMatchedQueriesDsl(
     });
   }
   return {matchedQueries, references, matchedQueryIds};
+}
+
+export function splitDepsDsl(deps: ([DepFlags, any] | any)[]): DepDef[] {
+  return deps.map(value => {
+    let token: any;
+    let flags: DepFlags;
+    if (Array.isArray(value)) {
+      [flags, token] = value;
+    } else {
+      flags = DepFlags.None;
+      token = value;
+    }
+    return {flags, token, tokenKey: tokenKey(token)};
+  });
 }
 
 export function getParentRenderElement(view: ViewData, renderHost: any, def: NodeDef): any {

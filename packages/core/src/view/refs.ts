@@ -12,7 +12,7 @@ import {Injector} from '../di/injector';
 import {ComponentFactory, ComponentRef} from '../linker/component_factory';
 import {ComponentFactoryBoundToModule, ComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {ElementRef} from '../linker/element_ref';
-import {InternalNgModuleRef, NgModuleFactory, NgModuleRef} from '../linker/ng_module_factory';
+import {InternalNgModuleRef, NgModuleRef} from '../linker/ng_module_factory';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
 import {EmbeddedViewRef, InternalViewRef, ViewRef} from '../linker/view_ref';
@@ -22,7 +22,7 @@ import {stringify} from '../util';
 import {VERSION} from '../version';
 
 import {callNgModuleLifecycle, initNgModule, resolveNgModuleDep} from './ng_module';
-import {DepFlags, ElementData, NgModuleData, NgModuleDefinition, NgModuleDefinitionFactory, NodeDef, NodeFlags, Services, TemplateData, ViewContainerData, ViewData, ViewDefinitionFactory, ViewState, asElementData, asProviderData, asTextData} from './types';
+import {DepFlags, ElementData, NgModuleData, NgModuleDefinition, NodeDef, NodeFlags, Services, TemplateData, ViewContainerData, ViewData, ViewDefinitionFactory, ViewState, asElementData, asProviderData, asTextData} from './types';
 import {markParentViewsForCheck, resolveDefinition, rootRenderNodes, splitNamespace, tokenKey, viewParentEl} from './util';
 import {attachEmbeddedView, detachEmbeddedView, moveEmbeddedView, renderDetachView} from './view_attach';
 
@@ -41,14 +41,6 @@ export function createComponentFactory(
 export function getComponentViewDefinitionFactory(componentFactory: ComponentFactory<any>):
     ViewDefinitionFactory {
   return (componentFactory as ComponentFactory_).viewDefFactory;
-}
-
-// Attention: this function is called as top level function.
-// Putting any logic in here will destroy closure tree shaking!
-export function createNgModuleFactory(
-    ngModuleType: Type<any>, bootstrapComponents: Type<any>[],
-    defFactory: NgModuleDefinitionFactory): NgModuleFactory<any> {
-  return new NgModuleFactory_(ngModuleType, bootstrapComponents, defFactory);
 }
 
 class ComponentFactory_ extends ComponentFactory<any> {
@@ -312,7 +304,8 @@ class TemplateRef_ extends TemplateRef<any> implements TemplateData {
   constructor(private _parentView: ViewData, private _def: NodeDef) { super(); }
 
   createEmbeddedView(context: any): EmbeddedViewRef<any> {
-    return new ViewRef_(Services.createEmbeddedView(this._parentView, this._def, context));
+    return new ViewRef_(Services.createEmbeddedView(
+        this._parentView, this._def, this._def.element !.template !, context));
   }
 
   get elementRef(): ElementRef {
@@ -464,22 +457,10 @@ class RendererAdapter implements RendererV1 {
 }
 
 
-class NgModuleFactory_ extends NgModuleFactory<any> {
-  constructor(
-      private _moduleType: Type<any>, private _bootstrapComponents: Type<any>[],
-      private _ngModuleDefFactory: NgModuleDefinitionFactory, ) {
-    // Attention: this ctor is called as top level function.
-    // Putting any logic in here will destroy closure tree shaking!
-    super();
-  }
-
-  get moduleType(): Type<any> { return this._moduleType; }
-
-  create(parentInjector: Injector|null): NgModuleRef<any> {
-    const def = resolveDefinition(this._ngModuleDefFactory);
-    return new NgModuleRef_(
-        this._moduleType, parentInjector || Injector.NULL, this._bootstrapComponents, def);
-  }
+export function createNgModuleRef(
+    moduleType: Type<any>, parent: Injector, bootstrapComponents: Type<any>[],
+    def: NgModuleDefinition): NgModuleRef<any> {
+  return new NgModuleRef_(moduleType, parent, bootstrapComponents, def);
 }
 
 class NgModuleRef_ implements NgModuleData, InternalNgModuleRef<any> {
@@ -488,8 +469,8 @@ class NgModuleRef_ implements NgModuleData, InternalNgModuleRef<any> {
   public _providers: any[];
 
   constructor(
-      private _moduleType: any, public _parent: Injector, public _bootstrapComponents: Type<any>[],
-      public _def: NgModuleDefinition) {
+      private _moduleType: Type<any>, public _parent: Injector,
+      public _bootstrapComponents: Type<any>[], public _def: NgModuleDefinition) {
     initNgModule(this);
   }
 

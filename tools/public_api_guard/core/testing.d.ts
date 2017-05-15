@@ -75,6 +75,13 @@ export declare class TestBed implements Injector {
     overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>): void;
     overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): void;
     overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): void;
+    overrideProvider(token: any, provider: {
+        useFactory: Function;
+        deps: any[];
+    }): void;
+    overrideProvider(token: any, provider: {
+        useValue: any;
+    }): void;
     /** @experimental */ resetTestEnvironment(): void;
     resetTestingModule(): void;
     static compileComponents(): Promise<any>;
@@ -90,6 +97,13 @@ export declare class TestBed implements Injector {
     static overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>): typeof TestBed;
     static overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): typeof TestBed;
     static overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): typeof TestBed;
+    static overrideProvider(token: any, provider: {
+        useFactory: Function;
+        deps: any[];
+    }): void;
+    static overrideProvider(token: any, provider: {
+        useValue: any;
+    }): void;
     static overrideTemplate(component: Type<any>, template: string): typeof TestBed;
     /** @experimental */ static resetTestEnvironment(): void;
     static resetTestingModule(): typeof TestBed;

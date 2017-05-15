@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompilerOptions, Component, Directive, InjectionToken, Injector, ModuleWithComponentFactories, NgModule, NgModuleFactory, NgModuleRef, NgZone, Pipe, PlatformRef, Provider, ReflectiveInjector, SchemaMetadata, Type, ɵERROR_COMPONENT_TYPE, ɵstringify as stringify} from '@angular/core';
+import {CompilerOptions, Component, Directive, InjectionToken, Injector, ModuleWithComponentFactories, NgModule, NgModuleFactory, NgModuleRef, NgZone, Optional, Pipe, PlatformRef, Provider, ReflectiveInjector, SchemaMetadata, SkipSelf, Type, ɵDepFlags as DepFlags, ɵERROR_COMPONENT_TYPE, ɵNodeFlags as NodeFlags, ɵclearProviderOverrides as clearProviderOverrides, ɵoverrideProvider as overrideProvider, ɵstringify as stringify} from '@angular/core';
 
 import {AsyncTestCompleter} from './async_test_completer';
 import {ComponentFixture} from './component_fixture';
@@ -141,6 +141,24 @@ export class TestBed implements Injector {
     return TestBed;
   }
 
+
+  /**
+   * Overwrites all providers for the given token with the given provider definition.
+   */
+  static overrideProvider(token: any, provider: {
+    useFactory: Function,
+    deps: any[],
+  }): void;
+  static overrideProvider(token: any, provider: {useValue: any;}): void;
+  static overrideProvider(token: any, provider: {
+    useFactory?: Function,
+    useValue?: any,
+    deps?: any[],
+  }): typeof TestBed {
+    getTestBed().overrideProvider(token, provider as any);
+    return TestBed;
+  }
+
   static get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND) {
     return getTestBed().get(token, notFoundValue);
   }
@@ -212,6 +230,7 @@ export class TestBed implements Injector {
   }
 
   resetTestingModule() {
+    clearProviderOverrides();
     this._compiler = null !;
     this._moduleOverrides = [];
     this._componentOverrides = [];
@@ -362,6 +381,49 @@ export class TestBed implements Injector {
   overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): void {
     this._assertNotInstantiated('overridePipe', 'override pipe metadata');
     this._pipeOverrides.push([pipe, override]);
+  }
+
+  /**
+   * Overwrites all providers for the given token with the given provider definition.
+   */
+  overrideProvider(token: any, provider: {
+    useFactory: Function,
+    deps: any[],
+  }): void;
+  overrideProvider(token: any, provider: {useValue: any;}): void;
+  overrideProvider(token: any, provider: {
+    useFactory?: Function,
+    useValue?: any,
+    deps?: any[],
+  }): void {
+    let flags: NodeFlags = 0;
+    let value: any;
+    if (provider.useFactory) {
+      flags |= NodeFlags.TypeFactoryProvider;
+      value = provider.useFactory;
+    } else {
+      flags |= NodeFlags.TypeValueProvider;
+      value = provider.useValue;
+    }
+    const deps = (provider.deps || []).map((dep) => {
+      let depFlags: DepFlags = DepFlags.None;
+      let depToken: any;
+      if (Array.isArray(dep)) {
+        dep.forEach((entry: any) => {
+          if (entry instanceof Optional) {
+            depFlags |= DepFlags.Optional;
+          } else if (entry instanceof SkipSelf) {
+            depFlags |= DepFlags.SkipSelf;
+          } else {
+            depToken = entry;
+          }
+        });
+      } else {
+        depToken = dep;
+      }
+      return [depFlags, depToken];
+    });
+    overrideProvider({token, flags, deps, value});
   }
 
   createComponent<T>(component: Type<T>): ComponentFixture<T> {
