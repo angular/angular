@@ -6,50 +6,70 @@
 set -e -o pipefail
 
 # Go to the project root directory
-cd $(dirname $0)/../..
+cd $(dirname ${0})/../..
 
-buildDir="dist/releases/material"
-buildVersion=$(sed -nE 's/^\s*"version": "(.*?)",$/\1/p' package.json)
+# Material packages that need to published.
+PACKAGES=(cdk material)
+REPOSITORIES=(cdk-builds material2-builds)
 
-commitSha=$(git rev-parse --short HEAD)
-commitAuthorName=$(git --no-pager show -s --format='%an' HEAD)
-commitAuthorEmail=$(git --no-pager show -s --format='%ae' HEAD)
-commitMessage=$(git log --oneline -n 1)
+# Function to publish artifacts of a package to Github.
+#   @param ${1} Name of the package
+#   @param ${2} Repository name of the package.
+publishPackage() {
+  packageName=${1}
+  packageRepo=${2}
 
-repoName="material2-builds"
-repoUrl="https://github.com/angular/material2-builds.git"
-repoDir="tmp/$repoName"
+  buildDir="dist/releases/${packageName}"
+  buildVersion=$(sed -nE 's/^\s*"version": "(.*?)",$/\1/p' package.json)
 
-# Create a release of the current repository.
-$(npm bin)/gulp material:build-release:clean
+  commitSha=$(git rev-parse --short HEAD)
+  commitAuthorName=$(git --no-pager show -s --format='%an' HEAD)
+  commitAuthorEmail=$(git --no-pager show -s --format='%ae' HEAD)
+  commitMessage=$(git log --oneline -n 1)
 
-# Prepare cloning the builds repository
-rm -rf $repoDir
-mkdir -p $repoDir
+  repoUrl="https://github.com/angular/${packageRepo}.git"
+  repoDir="tmp/${packageRepo}"
 
-# Clone the repository
-git clone $repoUrl $repoDir
+  # Create a release of the current repository.
+  $(npm bin)/gulp ${packageName}:build-release:clean
 
-# Copy the build files to the repository
-rm -rf $repoDir/*
-cp -r $buildDir/* $repoDir
+  # Prepare cloning the builds repository
+  rm -rf ${repoDir}
+  mkdir -p ${repoDir}
 
-# Create the build commit and push the changes to the repository.
-cd $repoDir
+  # Clone the repository
+  git clone ${repoUrl} ${repoDir}
 
-# Update the package.json version to include the current commit SHA.
-sed -i "s/$buildVersion/$buildVersion-$commitSha/g" package.json
+  # Copy the build files to the repository
+  rm -rf ${repoDir}/*
+  cp -r ${buildDir}/* ${repoDir}
 
-# Prepare Git for pushing the artifacts to the repository.
-git config user.name "$commitAuthorName"
-git config user.email "$commitAuthorEmail"
-git config credential.helper "store --file=.git/credentials"
+  # Create the build commit and push the changes to the repository.
+  cd ${repoDir}
 
-echo "https://${MATERIAL2_BUILDS_TOKEN}:@github.com" > .git/credentials
+  # Update the package.json version to include the current commit SHA.
+  sed -i "s/${buildVersion}/${buildVersion}-${commitSha}/g" package.json
 
-git add -A
-git commit -m "$commitMessage"
-git tag "$buildVersion-$commitSha"
-git push origin master --tags
+  # Prepare Git for pushing the artifacts to the repository.
+  git config user.name "${commitAuthorName}"
+  git config user.email "${commitAuthorEmail}"
+  git config credential.helper "store --file=.git/credentials"
 
-echo "Finished publishing build artifacts"
+  echo "https://${MATERIAL2_BUILDS_TOKEN}:@github.com" > .git/credentials
+
+  git add -A
+  git commit -m "${commitMessage}"
+  git tag "${buildVersion}-${commitSha}"
+  git push origin master --tags
+
+  echo "Published artifacts for ${packageName} package."
+}
+
+for ((i = 0; i < ${#PACKAGES[@]}; i++)); do
+  packageName=${PACKAGES[${i}]}
+  packageRepo=${REPOSITORIES[${i}]}
+
+  # Publish artifacts of the current package. Run publishing in a sub-shell to avoid working
+  # directory changes.
+  (publishPackage ${packageName} ${packageRepo})
+done
