@@ -19,6 +19,7 @@ import {MaterialModule, OverlayContainer, FullscreenOverlayContainer} from '@ang
 import {E2E_APP_ROUTES} from './e2e-app/routes';
 import {SlideToggleE2E} from './slide-toggle/slide-toggle-e2e';
 import {InputE2E} from './input/input-e2e';
+import {BlockScrollStrategyE2E} from './block-scroll-strategy/block-scroll-strategy-e2e';
 
 @NgModule({
   imports: [
@@ -45,7 +46,8 @@ import {InputE2E} from './input/input-e2e';
     SimpleRadioButtons,
     SlideToggleE2E,
     TestDialog,
-    TestDialogFullScreen
+    TestDialogFullScreen,
+    BlockScrollStrategyE2E
   ],
   bootstrap: [E2EApp],
   providers: [

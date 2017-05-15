@@ -5,6 +5,7 @@ export {OverlayRef} from './overlay-ref';
 export {OverlayState} from './overlay-state';
 export {ConnectedOverlayDirective, OverlayOrigin, OverlayModule} from './overlay-directives';
 export {ScrollDispatcher} from './scroll/scroll-dispatcher';
+export {ViewportRuler} from './position/viewport-ruler';
 
 export * from './position/connected-position';
 
@@ -18,3 +19,4 @@ export {ScrollStrategy} from './scroll/scroll-strategy';
 export {RepositionScrollStrategy} from './scroll/reposition-scroll-strategy';
 export {CloseScrollStrategy} from './scroll/close-scroll-strategy';
 export {NoopScrollStrategy} from './scroll/noop-scroll-strategy';
+export {BlockScrollStrategy} from './scroll/block-scroll-strategy';

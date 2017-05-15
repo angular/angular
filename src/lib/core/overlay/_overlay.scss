@@ -67,4 +67,17 @@
   .cdk-overlay-transparent-backdrop {
     background: none;
   }
+
+  // Used when disabling global scrolling.
+  .cdk-global-scrollblock {
+    position: fixed;
+
+    // Necessary for iOS not to expand past the viewport.
+    max-width: 100vw;
+
+    // Note: this will always add a scrollbar to whatever element it is on, which can
+    // potentially result in double scrollbars. It shouldn't be an issue, because we won't
+    // block scrolling on a page that doesn't have a scrollbar in the first place.
+    overflow-y: scroll;
+  }
 }

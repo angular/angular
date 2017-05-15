@@ -20,7 +20,7 @@ export function expectFocusOn(element: FinderResult, expected = true): void {
 }
 
 /**
- * Asserts that an element has a certan location.
+ * Asserts that an element has a certain location.
  */
 export function expectLocation(element: FinderResult, {x, y}: Point): void {
   getElement(element).getLocation().then((location: Point) => {

@@ -6,6 +6,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "inlineSources": true,
+    "lib": ["es2015"],
     "module": "commonjs",
     "moduleResolution": "node",
     "noEmitOnError": true,

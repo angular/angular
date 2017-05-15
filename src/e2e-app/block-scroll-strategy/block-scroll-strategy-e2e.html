@@ -1,0 +1,10 @@
+<p>
+  <button id="enable" (click)="scrollStrategy.enable()">Enable scroll blocking</button>
+  <button id="disable" (click)="scrollStrategy.disable()">Disable scroll blocking</button>
+</p>
+<div class="spacer vertical"></div>
+<!-- this one needs a tabindex so protractor can trigger key presses inside it -->
+<div class="scroller" id="scroller" tabindex="-1">
+  <div class="scroller-spacer"></div>
+</div>
+<div class="spacer horizontal"></div>
