@@ -84,7 +84,7 @@ that the AOT compiler knows to create the `ComponentFactory` for it.
 @NgModule({
   imports: [
     // ...
-    MaterialModule
+    MdDialogModule
   ],
 
   declarations: [
