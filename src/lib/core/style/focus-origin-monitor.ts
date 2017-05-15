@@ -14,6 +14,8 @@ import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {Platform} from '../platform/platform';
 
+import 'rxjs/add/observable/of';
+
 
 // This is the value used by AngularJS Material. Through trial and error (on iPhone 6S) they found
 // that a value of around 650ms seems appropriate.
