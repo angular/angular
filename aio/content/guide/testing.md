@@ -742,7 +742,7 @@ before calling `TestBed.createComponent` to instantiate the _component-under-tes
 
 
 
-Calling `compileComponents` closes the current `TestBed` instance is further configuration.
+Calling `compileComponents` closes the current `TestBed` instance to further configuration.
 You cannot call any more `TestBed` configuration methods, not `configureTestingModule`
 nor any of the `override...` methods. The `TestBed` throws an error if you try.
 
