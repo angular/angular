@@ -9,6 +9,7 @@ import {MdDatepickerIntl} from './datepicker-intl';
   template: '',
   styleUrls: ['datepicker-toggle.css'],
   host: {
+    '[attr.type]': 'type',
     '[class.mat-datepicker-toggle]': 'true',
     '[attr.aria-label]': '_intl.openCalendarLabel',
     '(click)': '_open($event)',
@@ -17,7 +18,11 @@ import {MdDatepickerIntl} from './datepicker-intl';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdDatepickerToggle<D> {
+  /** Datepicker instance that the button will toggle. */
   @Input('mdDatepickerToggle') datepicker: MdDatepicker<D>;
+
+  /** Type of the button. */
+  @Input() type: string = 'button';
 
   @Input('matDatepickerToggle')
   get _datepicker() { return this.datepicker; }

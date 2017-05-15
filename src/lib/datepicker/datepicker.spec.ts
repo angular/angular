@@ -374,7 +374,7 @@ describe('MdDatepicker', () => {
         fixture.detectChanges();
       }));
 
-      it('should open calendar when toggle clicked', async(() => {
+      it('should open calendar when toggle clicked', () => {
         expect(document.querySelector('md-dialog-container')).toBeNull();
 
         let toggle = fixture.debugElement.query(By.css('button'));
@@ -382,7 +382,12 @@ describe('MdDatepicker', () => {
         fixture.detectChanges();
 
         expect(document.querySelector('md-dialog-container')).not.toBeNull();
-      }));
+      });
+
+      it('should set the `button` type on the trigger to prevent form submissions', () => {
+        let toggle = fixture.debugElement.query(By.css('button')).nativeElement;
+        expect(toggle.getAttribute('type')).toBe('button');
+      });
     });
 
     describe('datepicker inside input-container', () => {
