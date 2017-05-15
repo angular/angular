@@ -33,15 +33,14 @@ describe('SearchResultsComponent', () => {
     return take === undefined ? results : results.slice(0, take);
   }
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [ SearchResultsComponent ],
       providers: [
         { provide: SearchService, useFactory: () => new MockSearchService() }
       ]
-    })
-    .compileComponents();
-  }));
+    });
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(SearchResultsComponent);

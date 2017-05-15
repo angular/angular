@@ -10,7 +10,7 @@ describe('ApiListComponent', () => {
   let fixture: ComponentFixture<ApiListComponent>;
   let sections: ApiSection[];
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [ ApiListComponent ],
       providers: [
@@ -18,10 +18,7 @@ describe('ApiListComponent', () => {
         { provide: LocationService, useClass: TestLocationService }
       ]
     });
-    TestBed.compileComponents();
-  }));
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(ApiListComponent);
     component = fixture.componentInstance;
     sections = getApiSections();

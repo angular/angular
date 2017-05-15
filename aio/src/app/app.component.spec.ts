@@ -35,12 +35,9 @@ describe('AppComponent', () => {
   let locationService: MockLocationService;
   let sidenav: HTMLElement;
 
-  beforeEach(async(() => {
-    createTestingModule('a/b');
-    TestBed.compileComponents();
-  }));
-
   beforeEach(() => {
+    createTestingModule('a/b');
+
     fixture = TestBed.createComponent(AppComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -366,15 +363,14 @@ describe('AppComponent', () => {
   });
 
   describe('initial rendering', () => {
-    beforeEach(async(() => {
+    beforeEach(() => {
       createTestingModule('a/b');
       // Remove the DocViewer for this test and hide the missing component message
       TestBed.overrideModule(AppModule, {
         remove: { declarations: [DocViewerComponent] },
         add: { schemas: [NO_ERRORS_SCHEMA] }
       });
-      TestBed.compileComponents();
-    }));
+    });
 
     it('should initially add the starting class until the first document is rendered', () => {
       fixture = TestBed.createComponent(AppComponent);
