@@ -33,5 +33,9 @@
     .mat-radio-ripple .mat-ripple-element, .mat-radio-inner-circle {
       background-color: mat-color($foreground, disabled);
     }
+
+    .mat-radio-label-content {
+      color: mat-color($foreground, disabled);
+    }
   }
 }

@@ -63,6 +63,10 @@
         border-color: $disabled-color;
       }
     }
+
+    .mat-checkbox-label {
+      color: $disabled-color;
+    }
   }
 
   .mat-checkbox:not(.mat-checkbox-disabled) {
