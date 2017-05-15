@@ -36,6 +36,11 @@ $mat-calendar-body-cell-content-size: 100% - $mat-calendar-body-cell-content-mar
   padding: $mat-calendar-body-cell-padding 0;
   text-align: center;
   outline: none;
+  cursor: pointer;
+}
+
+.mat-calendar-body-disabled {
+  cursor: default;
 }
 
 .mat-calendar-body-cell-content {
