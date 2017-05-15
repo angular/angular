@@ -13,7 +13,7 @@
     "test": "yarn check-env && ng test",
     "pree2e": "yarn ~~update-webdriver",
     "e2e": "yarn check-env && ng e2e --no-webdriver-update",
-    "setup": "yarn && yarn boilerplate:add && yarn generate-plunkers && yarn generate-zips && yarn docs",
+    "setup": "yarn && yarn build-ie-polyfills && yarn boilerplate:add && yarn generate-plunkers && yarn generate-zips && yarn docs",
     "pretest-pwa-score-local": "yarn build",
     "test-pwa-score-local": "concurrently --kill-others --success first \"http-server dist -p 4200 --silent\" \"yarn test-pwa-score -- http://localhost:4200 90\"",
     "test-pwa-score": "node scripts/test-pwa-score",
@@ -34,7 +34,8 @@
     "generate-zips": "node ./tools/example-zipper/generateZips",
     "sw-manifest": "ngu-sw-manifest --dist dist --in ngsw-manifest.json --out dist/ngsw-manifest.json",
     "sw-copy": "cp node_modules/@angular/service-worker/bundles/worker-basic.min.js dist/",
-    "postinstall": "PATCH_LOCK=node_modules/@angular/cli/models/webpack-configs/.patched; if [ ! -e $PATCH_LOCK ]; then touch $PATCH_LOCK; patch -p0 -i tools/cli-patches/ngo-loader.patch && patch -p0 -i node_modules/purify/angular-cli.patch; fi"
+    "postinstall": "PATCH_LOCK=node_modules/@angular/cli/models/webpack-configs/.patched; if [ ! -e $PATCH_LOCK ]; then touch $PATCH_LOCK; patch -p0 -i tools/cli-patches/ngo-loader.patch && patch -p0 -i node_modules/purify/angular-cli.patch; fi",
+    "build-ie-polyfills": "webpack -p src/ie-polyfills.js src/generated/ie-polyfills.min.js"
   },
   "private": true,
   "dependencies": {
@@ -50,12 +51,14 @@
     "@angular/platform-server": "next",
     "@angular/router": "next",
     "@angular/service-worker": "^1.0.0-beta.12",
+    "classlist.js": "^1.1.20150312",
     "core-js": "^2.4.1",
     "ng-pwa-tools": "^0.0.10",
     "ngo-loader": "alxhub/ngo",
     "purify": "igorminar/purify",
     "rxjs": "^5.2.0",
     "tslib": "^1.7.0",
+    "web-animations-js": "^2.2.5",
     "zone.js": "^0.8.4"
   },
   "devDependencies": {
@@ -108,6 +111,7 @@
     "unist-util-visit": "^1.1.1",
     "vrsource-tslint-rules": "^4.0.1",
     "watchr": "^3.0.1",
+    "webpack": "^2.5.1",
     "yargs": "^7.0.2"
   }
 }
