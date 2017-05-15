@@ -24,22 +24,33 @@ const HTML = `
 <p i18n="empty element">hello <span></span></p>
 <p i18n="@@baz">{ count, plural, =0 { { sex, select, other {<p>deeply nested</p>}} }}</p>
 <p i18n>{ count, plural, =0 { { sex, select, other {<p>deeply nested</p>}} }}</p>
+<p i18n>multi
+lines</p>
 `;
 
 const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
 <xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0" srcLang="en">
   <file original="ng.template" id="ngi18n">
     <unit id="1933478729560469763">
+      <notes>
+        <note category="location">file.ts:2</note>
+      </notes>
       <segment>
         <source>translatable attribute</source>
       </segment>
     </unit>
     <unit id="7056919470098446707">
+      <notes>
+        <note category="location">file.ts:3</note>
+      </notes>
       <segment>
         <source>translatable element <pc id="0" equivStart="START_BOLD_TEXT" equivEnd="CLOSE_BOLD_TEXT" type="fmt" dispStart="&lt;b&gt;" dispEnd="&lt;/b&gt;">with placeholders</pc> <ph id="1" equiv="INTERPOLATION" disp="{{ interpolation}}"/></source>
       </segment>
     </unit>
     <unit id="2981514368455622387">
+      <notes>
+        <note category="location">file.ts:4</note>
+      </notes>
       <segment>
         <source>{VAR_PLURAL, plural, =0 {<pc id="0" equivStart="START_PARAGRAPH" equivEnd="CLOSE_PARAGRAPH" type="other" dispStart="&lt;p&gt;" dispEnd="&lt;/p&gt;">test</pc>} }</source>
       </segment>
@@ -48,6 +59,7 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
       <notes>
         <note category="description">d</note>
         <note category="meaning">m</note>
+        <note category="location">file.ts:5</note>
       </notes>
       <segment>
         <source>foo</source>
@@ -56,6 +68,7 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
     <unit id="6440235004920703622">
       <notes>
         <note category="description">nested</note>
+        <note category="location">file.ts:6</note>
       </notes>
       <segment>
         <source><pc id="0" equivStart="START_BOLD_TEXT" equivEnd="CLOSE_BOLD_TEXT" type="fmt" dispStart="&lt;b&gt;" dispEnd="&lt;/b&gt;"><pc id="1" equivStart="START_UNDERLINED_TEXT" equivEnd="CLOSE_UNDERLINED_TEXT" type="fmt" dispStart="&lt;u&gt;" dispEnd="&lt;/u&gt;"><ph id="2" equiv="INTERPOLATION" disp="{{interpolation}}"/> Text</pc></pc></source>
@@ -64,6 +77,7 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
     <unit id="8779402634269838862">
       <notes>
         <note category="description">ph names</note>
+        <note category="location">file.ts:7</note>
       </notes>
       <segment>
         <source><ph id="0" equiv="LINE_BREAK" type="fmt" disp="&lt;br/&gt;"/><ph id="1" equiv="TAG_IMG" type="image" disp="&lt;img/&gt;"/><ph id="2" equiv="TAG_IMG_1" type="image" disp="&lt;img/&gt;"/></source>
@@ -72,19 +86,35 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
     <unit id="6536355551500405293">
       <notes>
         <note category="description">empty element</note>
+        <note category="location">file.ts:8</note>
       </notes>
       <segment>
         <source>hello <pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span&gt;" dispEnd="&lt;/span&gt;"></pc></source>
       </segment>
     </unit>
     <unit id="baz">
+      <notes>
+        <note category="location">file.ts:9</note>
+      </notes>
       <segment>
         <source>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<pc id="0" equivStart="START_PARAGRAPH" equivEnd="CLOSE_PARAGRAPH" type="other" dispStart="&lt;p&gt;" dispEnd="&lt;/p&gt;">deeply nested</pc>} } } }</source>
       </segment>
     </unit>
     <unit id="2015957479576096115">
+      <notes>
+        <note category="location">file.ts:10</note>
+      </notes>
       <segment>
         <source>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<pc id="0" equivStart="START_PARAGRAPH" equivEnd="CLOSE_PARAGRAPH" type="other" dispStart="&lt;p&gt;" dispEnd="&lt;/p&gt;">deeply nested</pc>} } } }</source>
+      </segment>
+    </unit>
+    <unit id="2340165783990709777">
+      <notes>
+        <note category="location">file.ts:11,12</note>
+      </notes>
+      <segment>
+        <source>multi
+lines</source>
       </segment>
     </unit>
   </file>
@@ -95,18 +125,27 @@ const LOAD_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
 <xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0" srcLang="en" trgLang="fr">
   <file original="ng.template" id="ngi18n">
     <unit id="1933478729560469763">
+      <notes>
+        <note category="location">file.ts:2</note>
+      </notes>
       <segment>
         <source>translatable attribute</source>
         <target>etubirtta elbatalsnart</target>
       </segment>
     </unit>
     <unit id="7056919470098446707">
+      <notes>
+        <note category="location">file.ts:3</note>
+      </notes>
       <segment>
         <source>translatable element <pc id="0" equivStart="START_BOLD_TEXT" equivEnd="CLOSE_BOLD_TEXT" type="fmt" dispStart="&lt;b&gt;" dispEnd="&lt;/b&gt;">with placeholders</pc> <ph id="1" equiv="INTERPOLATION" disp="{{ interpolation}}"/></source>
         <target><ph id="1" equiv="INTERPOLATION" disp="{{ interpolation}}"/> <pc id="0" equivStart="START_BOLD_TEXT" equivEnd="CLOSE_BOLD_TEXT" type="fmt" dispStart="&lt;b&gt;" dispEnd="&lt;/b&gt;">sredlohecalp htiw</pc> tnemele elbatalsnart</target>
       </segment>
     </unit>
     <unit id="2981514368455622387">
+      <notes>
+        <note category="location">file.ts:4</note>
+      </notes>
       <segment>
         <source>{VAR_PLURAL, plural, =0 {<pc id="0" equivStart="START_PARAGRAPH" equivEnd="CLOSE_PARAGRAPH" type="other" dispStart="&lt;p&gt;" dispEnd="&lt;/p&gt;">test</pc>} }</source>
         <target>{VAR_PLURAL, plural, =0 {<pc id="0" equivStart="START_PARAGRAPH" equivEnd="CLOSE_PARAGRAPH" type="other" dispStart="&lt;p&gt;" dispEnd="&lt;/p&gt;">TEST</pc>} }</target>
@@ -116,6 +155,7 @@ const LOAD_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
       <notes>
         <note category="description">d</note>
         <note category="meaning">m</note>
+        <note category="location">file.ts:5</note>
       </notes>
       <segment>
         <source>foo</source>
@@ -125,6 +165,7 @@ const LOAD_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
     <unit id="6440235004920703622">
       <notes>
         <note category="description">nested</note>
+        <note category="location">file.ts:6</note>
       </notes>
       <segment>
         <source><pc id="0" equivStart="START_BOLD_TEXT" equivEnd="CLOSE_BOLD_TEXT" type="fmt" dispStart="&lt;b&gt;" dispEnd="&lt;/b&gt;"><pc id="1" equivStart="START_UNDERLINED_TEXT" equivEnd="CLOSE_UNDERLINED_TEXT" type="fmt" dispStart="&lt;u&gt;" dispEnd="&lt;/u&gt;"><ph id="2" equiv="INTERPOLATION" disp="{{interpolation}}"/> Text</pc></pc></source>
@@ -134,6 +175,7 @@ const LOAD_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
     <unit id="8779402634269838862">
       <notes>
         <note category="description">ph names</note>
+        <note category="location">file.ts:7</note>
       </notes>
       <segment>
         <source><ph id="0" equiv="LINE_BREAK" type="fmt" disp="&lt;br/&gt;"/><ph id="1" equiv="TAG_IMG" type="image" disp="&lt;img/&gt;"/><ph id="2" equiv="TAG_IMG_1" type="image" disp="&lt;img/&gt;"/></source>
@@ -143,6 +185,7 @@ const LOAD_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
     <unit id="6536355551500405293">
       <notes>
         <note category="description">empty element</note>
+        <note category="location">file.ts:8</note>
       </notes>
       <segment>
         <source>hello <pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span&gt;" dispEnd="&lt;/span&gt;"></pc></source>
@@ -150,15 +193,32 @@ const LOAD_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
       </segment>
     </unit>
     <unit id="baz">
+      <notes>
+        <note category="location">file.ts:9</note>
+      </notes>
       <segment>
         <source>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<pc id="0" equivStart="START_PARAGRAPH" equivEnd="CLOSE_PARAGRAPH" type="other" dispStart="&lt;p&gt;" dispEnd="&lt;/p&gt;">deeply nested</pc>} } } }</source>
         <target>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<pc id="0" equivStart="START_PARAGRAPH" equivEnd="CLOSE_PARAGRAPH" type="other" dispStart="&lt;p&gt;" dispEnd="&lt;/p&gt;">profondément imbriqué</pc>} } } }</target>
       </segment>
     </unit>
     <unit id="2015957479576096115">
+      <notes>
+        <note category="location">file.ts:10</note>
+      </notes>
       <segment>
         <source>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<pc id="0" equivStart="START_PARAGRAPH" equivEnd="CLOSE_PARAGRAPH" type="other" dispStart="&lt;p&gt;" dispEnd="&lt;/p&gt;">deeply nested</pc>} } } }</source>
         <target>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<pc id="0" equivStart="START_PARAGRAPH" equivEnd="CLOSE_PARAGRAPH" type="other" dispStart="&lt;p&gt;" dispEnd="&lt;/p&gt;">profondément imbriqué</pc>} } } }</target>
+      </segment>
+    </unit>
+    <unit id="2340165783990709777">
+      <notes>
+        <note category="location">file.ts:11,12</note>
+      </notes>
+      <segment>
+        <source>multi
+lines</source>
+        <target>multi
+lignes</target>
       </segment>
     </unit>
   </file>
@@ -170,7 +230,7 @@ export function main(): void {
 
   function toXliff(html: string, locale: string | null = null): string {
     const catalog = new MessageBundle(new HtmlParser, [], {}, locale);
-    catalog.updateFromTemplate(html, '', DEFAULT_INTERPOLATION_CONFIG);
+    catalog.updateFromTemplate(html, 'file.ts', DEFAULT_INTERPOLATION_CONFIG);
     return catalog.write(serializer);
   }
 
@@ -208,8 +268,10 @@ export function main(): void {
           '6536355551500405293': '<ph name="START_TAG_SPAN"/><ph name="CLOSE_TAG_SPAN"/> olleh',
           'baz':
               '{VAR_PLURAL, plural, =0 {[{VAR_SELECT, select, other {[<ph name="START_PARAGRAPH"/>, profondément imbriqué, <ph name="CLOSE_PARAGRAPH"/>]}},  ]}}',
-          '2015957479576096115':
-              '{VAR_PLURAL, plural, =0 {[{VAR_SELECT, select, other {[<ph name="START_PARAGRAPH"/>, profondément imbriqué, <ph name="CLOSE_PARAGRAPH"/>]}},  ]}}'
+          '2015957479576096115': '{VAR_PLURAL, plural, =0 {[{VAR_SELECT, select, other {[<ph' +
+              ' name="START_PARAGRAPH"/>, profondément imbriqué, <ph name="CLOSE_PARAGRAPH"/>]}},  ]}}',
+          '2340165783990709777': `multi
+lignes`
         });
       });
 
