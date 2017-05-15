@@ -222,7 +222,7 @@ The following is the list of supported scopes:
 * **upgrade**
 * **tsc-wrapped**
 
-There is currently few exception to the "use package name" rule:
+There are currently a few exceptions to the "use package name" rule:
 
 * **packaging**: used for changes that change the npm package layout in all of our packages, e.g. public path changes, package.json changes done to all packages, d.ts file/format changes, changes to bundles, etc.
 * **changelog**: used for updating the release notes in CHANGELOG.md
