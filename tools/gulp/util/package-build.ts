@@ -1,4 +1,4 @@
-import {join, basename, dirname} from 'path';
+import {join, basename} from 'path';
 import {createRollupBundle} from './rollup-helper';
 import {inlineMetadataResources} from './inline-resources';
 import {transpileFile} from './ts-compiler';

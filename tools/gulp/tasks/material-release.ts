@@ -2,7 +2,7 @@ import {task, src, dest} from 'gulp';
 import {join} from 'path';
 import {writeFileSync} from 'fs';
 import {Bundler} from 'scss-bundle';
-import {execNodeTask, sequenceTask} from '../util/task_helpers';
+import {sequenceTask} from '../util/task_helpers';
 import {composeRelease} from '../util/package-build';
 import {COMPONENTS_DIR, DIST_MATERIAL, DIST_RELEASES} from '../constants';
 
@@ -16,7 +16,7 @@ const themingEntryPointPath = join(COMPONENTS_DIR, 'core', 'theming', '_all-them
 // Output path for the scss theming bundle.
 const themingBundlePath = join(releasePath, '_theming.scss');
 // Matches all pre-built theme css files
-const prebuiltThemeGlob = join(DIST_MATERIAL, '**/theming/prebuilt/*.css');
+const prebuiltThemeGlob = join(DIST_MATERIAL, '**/theming/prebuilt/*.css?(.map)');
 // Matches all SCSS files in the library.
 const allScssGlob = join(COMPONENTS_DIR, '**/*.scss');
 
