@@ -64,13 +64,13 @@
       clear: both;
     }
 
-    h1, h2 {
+    h1 {
       @media screen and (max-width: 600px) {
-        margin: 16px 0;
+        margin: 0;
       }
     }
 
-    h3, h4, h5, h6 {
+    h1:after, h2, h3, h4, h5, h6 {
       @media screen and (max-width: 600px) {
         margin: 8px 0;
       }
