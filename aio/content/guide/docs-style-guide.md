@@ -29,53 +29,97 @@ To-do: Cover noTOC in here
 
 To-do: Cleanup below & bring over more examples from marketing/test.html 
 
-Below are some examples of how you can add/customize code examples in a page.
+Below are a few examples of how you can add/customize code examples in a page.
+
+### Code-Example Attributes
+
+* path: a file in the content/examples folder
+* title: seen in the header
+* region: ??
+* language: specify only for inline examples. Values can be javascript, html, css, typescript, json, any language that you will use in your Angular application.
+* linenums: true, false, for example linenums:4 to speficy that the starting line is 4.  When not specified, line numbers are displayed when 10 more more lines of code  
+* format: nocode, ??
 
 ### Including a code example from the _examples_ folder
 
-One of the design goals for this documentation was that any code samples that appear within the documentation be 'testable'. In practice this means that a set of standalone testable examples exist somewhere in the same repository as the rest of the documentation. These examples will each typically consist of a collection of html, javascript and css files.
+One of the design goals for this documentation was that any code samples that appear within the documentation be 'testable'. In practice this means that a set of standalone testable examples exist somewhere in the same repository as the rest of the documentation. These examples will each typically consist of a collection of Typescript, HTML, Javascript and CSS files.
 
-Clearly there also needs to be some mechanism for including fragments of these files into the Markdown generated html. By convention all of the 'testable' examples within this repository should be created within the content/examples folder.
+Clearly there also needs to be some mechanism for including fragments of these files into the Markdown generated HTML. By convention all of the 'testable' examples within this repository should be created within the content/examples folder.
 
-To include an example from somewhere in the content/examples folder you can use the live-example tag. For example, to include the example seen in TOH Part 6, all you need to do is:
-
-<code-example language="html">
-&lt;live-example name="toh-pt6"&gt;&lt;/live-example&gt; 
-</code-example>
-
-When you are done, the above example will look like this <live-example name="toh-pt6"></live-example>
-
-### Inline code and code examples provided directly i.e. not from an example file.
+#### Example:
 
 <code-example language="html">
-&lt;code-example path="architecture/src/app/mini-app.ts" region="module" title="src/app/app.module.ts" linenums="false"&gt;
-
+&lt;code-example path="toh-pt1/src/index.html" linenums="true" title="src/index.html"&gt;
 &lt;/code-example&gt;
 </code-example>
 
-This will read the architecture/src/app/mini-app.ts file and include the path and filename in the heading. Note that the file will be properly escaped and color coded according to the extension on the file (ts in this case).This displays:
+This will read the content/examples/toh-pt1/src/index.html file and include it with the heading 'src/index.html'. Note that the file will be properly escaped and color coded according to the extension on the file (html in this case).
 
-<code-example path="architecture/src/app/mini-app.ts" region="module" title="src/app/app.module.ts" linenums="false">
+<code-example path="toh-pt1/src/index.html" linenums="true" title="src/index.html"></code-example>
 
-</code-example>
-
+#### Example in a shell
 <code-example language="html">
-  &lt;router-outlet>&lt;/router-outlet>
-  &lt;!-- Routed views go here -->
+&lt;code-example language="sh" class="code-shell"&gt;
+  npm start
+
+&lt;/code-example&gt;&lt;/code-example&gt;
 
 </code-example>
 
-
-### Example in a shell
 <code-example language="sh" class="code-shell">
   npm start
 
 </code-example>
 
-### Example in Code Tabs
+#### Example of no code
+<code-example language="html">
+&lt;code-example format="nocode"&gt;
+  localhost:3000/hero/15
 
-A tabbed interface is a great way to show different files belonging to a code base. The example below demostrates how to display code using a tabbed interface. This example used the source code for a small application that bundles with Webpack techniques.  This will create three tabs, each with its own title and appropriately color coded.
+&lt;/code-example&gt;
+</code-example>
+<code-example format="nocode">
+  localhost:3000/hero/15
 
+</code-example>
+
+
+
+There is Code-tabs and Code-pane that provides the same service but for multiple examples within a tabbed interface.
+
+### Code-tabs Attributes
+
+* linenums: display line numbers in the code in all tabs
+
+### Code-pane Attributes
+
+* path: a file in the content/examples folder
+* title: seen in the header
+* linenums: display line numbers in the code in this tab
+* ??
+
+#### Example:
+
+This example uses the source code for a small application that bundles with Webpack techniques.  This will create three tabs, each with its own title and appropriately color coded.
+
+<code-example language="html">
+&lt;code-tabs linenums="false"&gt;
+  &lt;code-pane title="src/index.html" path="webpack/src/index.html"&gt;
+  &lt;/code-pane&gt;
+
+  &lt;code-pane title="src/tsconfig.json" path="webpack/src/tsconfig.json" linenums="true"&gt;
+  &lt;/code-pane&gt;
+
+  &lt;code-pane title="src/main.ts" path="webpack/src/main.ts" linenums="true"&gt;
+  &lt;/code-pane&gt;
+
+  &lt;code-pane title="src/assets/css/styles.css" path="webpack/src/assets/css/styles.css"&gt;
+  &lt;/code-pane&gt;
+
+&lt;/code-tabs&gt;
+</code-example>
+
+This will create multiple tabs, each with its own title and appropriately color coded.
 
 <code-tabs>
 
@@ -83,6 +127,10 @@ A tabbed interface is a great way to show different files belonging to a code ba
 
   </code-pane>
 
+  <code-pane title="src/tsconfig.json" path="webpack/src/tsconfig.1.json">
+
+  </code-pane>
+  
   <code-pane title="src/main.ts" path="webpack/src/main.ts">
 
   </code-pane>
@@ -93,17 +141,99 @@ A tabbed interface is a great way to show different files belonging to a code ba
 
 </code-tabs>
 
-To-do: Describe code-pane attributes
+### Marking up an example file for use by code-example
 
-### Code-Example Attributes
+At a minimum, marking up an example file simply consists of adding a single comment line to the top of the file containing the string #docregion. Following this a second string that is the 'name' of the region is also allowed but not required??. A file may have any number of #docregion comments with the only requirement being that the names of each region within a single file be unique. This also means that there can only be one blank docregion.
 
-* ??name: Name displayed in Tab (required for tabs)
-* path
-* title
-* region
-* language: javascript, html, etc.
-* escape: html (escapes html, woot!)
-* format: linenums (or linenums:4 specify starting line)
+#### Example of a simple docregion:
+<code-example language="html">
+// #docregion hero-class-1
+export class Hero {
+  id: number;
+  name: string;
+}
+// #enddocregion hero-class-1
+
+&lt;code-example path="toh-pt1/src/app/app.component.ts" linenums="false" title="src/app/app.component.ts (hero-class-1)" region="hero-class-1"&gt;
+
+&lt;/code-example&gt;
+</code-example>
+
+<code-example path="toh-pt1/src/app/app.component.ts" linenums="false" title="src/app/app.component.ts (hero-class-1)" region="hero-class-1">
+
+</code-example>
+
+#### Example of a nested docregion:
+<code-example language="html">
+// #docregion export-AppComponent
+export class AppComponent {
+  title = 'Tour of Heroes';
+  heroes = HEROES;
+  // #docregion selected-hero
+  selectedHero: Hero;
+  // #enddocregion selected-hero
+
+  // #docregion on-select
+  onSelect(hero: Hero): void {
+    this.selectedHero = hero;
+  }
+  // #enddocregion on-select
+}
+// #enddocregion export-AppComponent
+
+&lt;code-example path="toh-pt2/src/app/app.component.ts" linenums="false" title="src/app/app.component.ts (hero-class-1)" region="selected-hero"&gt;
+
+&lt;/code-example&gt;
+</code-example>
+
+<code-example path="toh-pt2/src/app/app.component.ts" linenums="false" title="src/app/app.component.ts (hero-class-1)" region="selected-hero">
+
+</code-example>
+
+HTML files can also contain #docregion comments:
+<code-example language="html">
+&lt;!-- #docregion --&gt;
+...
+&lt;script src="app.js"&gt;&lt;/script&gt;
+...
+</code-example>
+
+as can CSS files:
+<code-example language="html">
+/&#42; #docregion center-global &#42;/
+.center-global {
+  max-width: 1020px;
+  margin: 0 auto;
+}
+</code-example>
+
+
+### Inline code and code examples provided directly i.e. not from an example file.
+
+Code can be included directly inline, that is, not be fetched from some external file.
+
+#### Example
+<code-example language="html">
+code-example(format="linenums" language="javascript").
+  //SOME CODE
+</code-example>
+
+#### Specify starting line number
+<code-example language="html">
+code-example(language="html" format="linenums:4").
+  var title = "This starts on line four";
+</code-example>
+
+
+
+## Live Examples
+
+<code-example language="html">
+&lt;live-example name="toh-pt6"&gt;&lt;/live-example&gt; 
+</code-example>
+
+When you are done, the above example will look like this <live-example name="toh-pt6"></live-example>
+
 
 
 ## Alerts
