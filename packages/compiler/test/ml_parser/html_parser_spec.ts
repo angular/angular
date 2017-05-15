@@ -183,13 +183,13 @@ export function main() {
           ]);
         });
 
-        it('should support explicit mamespace', () => {
+        it('should support explicit namespace', () => {
           expect(humanizeDom(parser.parse('<myns:div></myns:div>', 'TestComp'))).toEqual([
             [html.Element, ':myns:div', 0]
           ]);
         });
 
-        it('should support implicit mamespace', () => {
+        it('should support implicit namespace', () => {
           expect(humanizeDom(parser.parse('<svg></svg>', 'TestComp'))).toEqual([
             [html.Element, ':svg:svg', 0]
           ]);
