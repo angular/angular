@@ -69,5 +69,5 @@ readonly relevantChangedFilesCount=$(git diff --name-only $TRAVIS_COMMIT_RANGE |
   fi
 
   # Run PWA-score tests
-  yarn test-pwa-score -- "$DEPLOYED_URL" "$MIN_PWA_SCORE"
+  yarn test-pwa-score -- "$DEPLOYED_URL" "$MIN_PWA_SCORE" "$PWA_RESULTS_LOG"
 )

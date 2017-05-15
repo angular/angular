@@ -120,6 +120,9 @@ setEnvVar PATH $HOME/.yarn/bin:$PATH
 setEnvVar NODE_PATH ${NODE_PATH:-}:${PROJECT_ROOT}/dist/all:${PROJECT_ROOT}/dist/tools
 setEnvVar LOGS_DIR /tmp/angular-build/logs
 
+# Log file for full PWA testing results
+setEnvVar PWA_RESULTS_LOG $LOGS_DIR/pwa-results.json
+
 # strip leading "/home/travis/build/angular/angular/" or "./" path. Could this be done in one shot?
 CURRENT_SHELL_SOURCE_FILE=${BASH_SOURCE#${PROJECT_ROOT}/}
 export CURRENT_SHELL_SOURCE_FILE=${CURRENT_SHELL_SOURCE_FILE#./}

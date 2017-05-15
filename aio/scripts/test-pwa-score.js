@@ -2,11 +2,10 @@
 
 /**
  * Usage:
- *   node scripts/test-pwa-score [<url> [<min-score>]]
+ *   node scripts/test-pwa-score <url> <min-score> [<log-file>]
  *
- * Defaults:
- *   url: http://localhost:4200
- *   minScore: 90
+ * Fails if the score is below `<min-score>`.
+ * If `<log-file>` is defined, the full results will be logged there.
  *
  * (Ignores HTTPS-related audits, when run for HTTP URL.)
  */
@@ -18,7 +17,7 @@ const Printer = require('lighthouse/lighthouse-cli/printer');
 const config = require('lighthouse/lighthouse-core/config/default.json');
 
 // Constants
-const FLAGS = {output: 'json'};
+const VIEWER_URL = 'https://googlechrome.github.io/lighthouse/viewer/';
 
 // Work-around traceviewer-js bug.
 global.atob = str => new Buffer(str, 'base64').toString('binary');
@@ -34,7 +33,7 @@ _main(process.argv.slice(2));
 
 // Functions - Definitions
 function _main(args) {
-  const {url, minScore} = parseInput(args);
+  const {url, minScore, logFile} = parseInput(args);
   const isOnHttp = /^http:/.test(url);
 
   console.log(`Running PWA audit for '${url}'...`);
@@ -43,8 +42,8 @@ function _main(args) {
     ignoreHttpsAudits(config.aggregations);
   }
 
-  launchChromeAndRunLighthouse(url, FLAGS, config).
-    then(getScore).
+  launchChromeAndRunLighthouse(url, {}, config).
+    then(results => processResults(results, logFile)).
     then(score => evaluateScore(minScore, score)).
     catch(onError);
 }
@@ -57,13 +56,6 @@ function evaluateScore(expectedScore, actualScore) {
   if (actualScore < expectedScore) {
     throw new Error(`PWA score is too low. (${actualScore} < ${expectedScore})`);
   }
-}
-
-function getScore(results) {
-  const scoredAggregations = results.aggregations.filter(a => a.scored);
-  const total = scoredAggregations.reduce((sum, a) => sum + a.total, 0);
-
-  return Math.round((total / scoredAggregations.length) * 100);
 }
 
 function ignoreHttpsAudits(aggregations) {
@@ -99,6 +91,7 @@ function onError(err) {
 function parseInput(args) {
   const url = args[0];
   const minScore = Number(args[1]);
+  const logFile = args[2];
 
   if (!url) {
     onError('Invalid arguments: <URL> not specified.');
@@ -106,5 +99,20 @@ function parseInput(args) {
     onError('Invalid arguments: <MIN_SCORE> not specified or not a number.');
   }
 
-  return {url, minScore};
+  return {url, minScore, logFile};
+}
+
+function processResults(results, logFile) {
+  if (logFile) {
+    console.log(`Saving results in '${logFile}'...`);
+    console.log(`(LightHouse viewer: ${VIEWER_URL})`);
+
+    results.artifacts = undefined;   // Avoid circular dependency errors.
+    Printer.write(results, 'json', logFile);
+  }
+
+  const scoredAggregations = results.aggregations.filter(a => a.scored);
+  const total = scoredAggregations.reduce((sum, a) => sum + a.total, 0);
+
+  return Math.round((total / scoredAggregations.length) * 100);
 }
