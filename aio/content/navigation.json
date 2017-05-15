@@ -367,6 +367,12 @@
           "url": "guide/webpack",
           "title": "Webpack: An Introduction",
           "tooltip": "Create Angular applications with Webpack based tooling."
+        },
+
+        {
+          "url": "guide/universal",
+          "title": "Angular Universal",
+          "tooltip": "How to use Angular Universal."
         }
       ]
     },
