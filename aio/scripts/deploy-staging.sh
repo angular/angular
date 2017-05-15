@@ -20,5 +20,5 @@ DEPLOYED_URL=https://$FIREBASE_PROJECT_ID.firebaseapp.com
   # Run PWA-score tests
   # TODO(gkalpak): Figure out why this fails and re-enable.
   sleep 10
-  yarn test-pwa-score -- "$DEPLOYED_URL" "$MIN_PWA_SCORE" || true
+  yarn test-pwa-score -- "$DEPLOYED_URL" "$MIN_PWA_SCORE" "$PWA_RESULTS_LOG" || true
 )
