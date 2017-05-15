@@ -39,6 +39,9 @@ md-sidenav-container.sidenav-container {
     @media (max-width: 800px) {
       max-width: 100%;
     }
+    @media (max-width: 600px) {
+      padding-top: 56px;
+    }
 }
 
 md-sidenav-container div.mat-sidenav-content {
