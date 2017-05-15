@@ -95,18 +95,10 @@ aio-search-box input {
   background-color: $offwhite;
   padding: 5px 10px;
   margin-left: 8px;
-  width:150px;
+  width: 200px;
   height: 40%;
-   @include bp(big) {
-    transition: width 0.4s ease-in-out;
-    &:focus {
-      width: 50%;
-    }
-  }
+
   @media (max-width: 480px) {
-    transition: width 0.4s ease-in-out;
-    &:focus {
-      width: 50%;
-    }
+    width: 180px;
   }
 }
