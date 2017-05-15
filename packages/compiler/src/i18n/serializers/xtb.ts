@@ -17,6 +17,7 @@ import {digest, toPublicName} from './xmb';
 const _TRANSLATIONS_TAG = 'translationbundle';
 const _TRANSLATION_TAG = 'translation';
 const _PLACEHOLDER_TAG = 'ph';
+const _SOURCE_TAG = 'source';
 
 export class Xtb extends Serializer {
   write(messages: i18n.Message[], locale: string|null): string { throw new Error('Unsupported'); }
@@ -195,7 +196,7 @@ class XmlToI18n implements ml.Visitor {
       }
 
       this._addError(el, `<${_PLACEHOLDER_TAG}> misses the "name" attribute`);
-    } else {
+    } else if (el.name !== _SOURCE_TAG) {
       this._addError(el, `Unexpected tag`);
     }
     return null;
