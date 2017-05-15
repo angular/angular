@@ -49,7 +49,7 @@ The month or year that the calendar opens to is determined by first checking if 
 currently selected, if so it will open to the month or year containing that date. Otherwise it will
 open to the month or year containing today's date. This behavior can be overridden by using the
 `startAt` property of `md-datepicker`. In this case the calendar will open to the month or year
-containing the `startAt` date. 
+containing the `startAt` date.
 
 ```ts
 startDate = new Date(1990, 0, 1);
@@ -66,7 +66,7 @@ There are three properties that add date validation to the datepicker input. The
 disable all dates on the calendar popup before or after the respective values and prevent the user
 from advancing the calendar past the `month` or `year` (depending on current view) containing the
 `min` or `max` date.
- 
+
 The second way to add date validation is using the `mdDatepickerFilter` property of the datepicker
 input. This property accepts a function of `<D> => boolean` (where `<D>` is the date type used by
 the datepicker, see section on
@@ -78,7 +78,7 @@ dates before or after a certain point, will not prevent the user from advancing 
 that point.
 
 ```ts
-myFilter = (d: Date) => d.getFullYear() > 2005 
+myFilter = (d: Date) => d.getFullYear() > 2005
 minDate = new Date(2000, 0, 1);
 maxDate = new Date(2020, 11, 31);
 ```
@@ -111,7 +111,7 @@ The calendar popup can be programmatically controlled using the `open` and `clos
 @Component({...})
 export class MyComponent implements AfterViewInit {
   @ViewChild(MdDatepicker) dp: MdDatepicker<Date>;
-  
+
   ngAfterViewInit() {
     dp.open();
   }
@@ -126,7 +126,7 @@ The easiest way to ensure this is just to import one of the pre-made modules (cu
 `MdNativeDateModule` is the only implementation that ships with material, but there are plans to add
 a module for Moment.js support):
  * `MdNativeDateModule` - support for native JavaScript Date object
- 
+
 These modules include providers for `DateAdapter` and `MD_DATE_FORMATS`
 
 ```ts
