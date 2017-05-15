@@ -3,5 +3,4 @@
      [class.mat-button-ripple-round]="_isRoundButton || _isIconButton"
      [mdRippleCentered]="_isIconButton"
      [mdRippleTrigger]="_getHostElement()"></div>
-<!-- the touchstart handler prevents the overlay from capturing the initial tap on touch devices -->
-<div class="mat-button-focus-overlay" (touchstart)="$event.preventDefault()"></div>
+<div class="mat-button-focus-overlay"></div>

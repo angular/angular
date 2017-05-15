@@ -64,17 +64,19 @@
   left: 0;
   bottom: 0;
   right: 0;
+
+  // Disable pointer events for the ripple container and focus overlay because the container
+  // will overlay the user content and we don't want to disable mouse events on the user content.
+  // Pointer events can be safely disabled because the ripple trigger element is the host element.
+  pointer-events: none;
 }
 
-// Overlay to be used as a tint. Note that the same effect can be achieved by using a pseudo
-// element, however we use a proper DOM element in order to be able to disable the default
-// touch action. This makes the buttons more responsive on touch devices.
+// Element that overlays the button to show focus and hover effects.
 .mat-button-focus-overlay {
   // The button spec calls for focus on raised buttons (and FABs) to be indicated with a
   // black, 12% opacity shade over the normal color (for both light and dark themes).
   background-color: rgba(black, 0.12);
   border-radius: inherit;
-  pointer-events: none;
   opacity: 0;
 
   transition: $mat-button-focus-transition;
