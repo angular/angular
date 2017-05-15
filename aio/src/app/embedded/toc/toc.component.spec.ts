@@ -28,16 +28,15 @@ describe('TocComponent', () => {
     };
   }
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [ HostEmbeddedTocComponent, HostNotEmbeddedTocComponent, TocComponent ],
       providers: [
         { provide: ScrollService, useClass: TestScrollService },
         { provide: TocService, useClass: TestTocService }
       ]
-    })
-    .compileComponents();
-  }));
+    });
+  });
 
   describe('when embedded in doc body', () => {
     let fixture: ComponentFixture<HostEmbeddedTocComponent>;
