@@ -14,7 +14,7 @@
     "tslint": "gulp lint",
     "stylelint": "gulp lint",
     "e2e": "gulp e2e",
-    "deploy": "firebase deploy",
+    "deploy": "gulp deploy:devapp",
     "webdriver-manager": "webdriver-manager",
     "docs": "gulp docs",
     "api": "gulp api-docs"
