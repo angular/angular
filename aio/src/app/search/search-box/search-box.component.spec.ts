@@ -18,15 +18,14 @@ describe('SearchBoxComponent', () => {
   let host: HostComponent;
   let fixture: ComponentFixture<HostComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [ SearchBoxComponent, HostComponent ],
       providers: [
         { provide: LocationService, useFactory: () => new MockLocationService('') }
       ]
-    })
-    .compileComponents();
-  }));
+    });
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(HostComponent);

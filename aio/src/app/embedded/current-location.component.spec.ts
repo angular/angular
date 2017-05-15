@@ -5,9 +5,11 @@ import { CurrentLocationComponent } from './current-location.component';
 
 
 describe('CurrentLocationComponent', () => {
+  let element: HTMLElement;
+  let fixture: ComponentFixture<CurrentLocationComponent>;
   let locationService: MockLocationService;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     locationService = new MockLocationService('initial/url');
 
     TestBed.configureTestingModule({
@@ -16,13 +18,12 @@ describe('CurrentLocationComponent', () => {
         { provide: LocationService, useValue: locationService }
       ]
     });
-    TestBed.compileComponents();
-  }));
+
+    fixture = TestBed.createComponent(CurrentLocationComponent);
+    element = fixture.nativeElement;
+  });
 
   it('should render the current location', () => {
-    const fixture = TestBed.createComponent(CurrentLocationComponent);
-    const element: HTMLElement = fixture.nativeElement;
-
     fixture.detectChanges();
     expect(element.innerText).toEqual('initial/url');
 
