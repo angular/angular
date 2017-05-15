@@ -8,7 +8,6 @@ import {
   InjectionToken,
 } from '@angular/core';
 import {DOCUMENT} from '@angular/platform-browser';
-import {MdError} from '../errors/error';
 
 export const MATERIAL_COMPATIBILITY_MODE = new InjectionToken<boolean>('md-compatibility-mode');
 
@@ -16,16 +15,13 @@ export const MATERIAL_COMPATIBILITY_MODE = new InjectionToken<boolean>('md-compa
 export const MATERIAL_SANITY_CHECKS = new InjectionToken<boolean>('md-sanity-checks');
 
 /**
- * Exception thrown if the consumer has used an invalid Material prefix on a component.
+ * Returns an exception to be thrown if the consumer has used
+ * an invalid Material prefix on a component.
  * @docs-private
  */
-export class MdCompatibilityInvalidPrefixError extends MdError {
-  constructor(prefix: string, nodeName: string) {
-    super(
-      `The "${prefix}-" prefix cannot be used in ng-material v1 compatibility mode. ` +
-      `It was used on an "${nodeName.toLowerCase()}" element.`
-    );
-  }
+export function getMdCompatibilityInvalidPrefixError(prefix: string, nodeName: string) {
+  return new Error(`The "${prefix}-" prefix cannot be used in ng-material v1 compatibility mode. ` +
+                   `It was used on an "${nodeName.toLowerCase()}" element.`);
 }
 
 /** Selector that matches all elements that may have style collisions with AngularJS Material. */
@@ -160,7 +156,7 @@ export class MatPrefixRejector {
     elementRef: ElementRef) {
 
     if (!isCompatibilityMode) {
-      throw new MdCompatibilityInvalidPrefixError('mat', elementRef.nativeElement.nodeName);
+      throw getMdCompatibilityInvalidPrefixError('mat', elementRef.nativeElement.nodeName);
     }
   }
 }
@@ -173,7 +169,7 @@ export class MdPrefixRejector {
     elementRef: ElementRef) {
 
     if (isCompatibilityMode) {
-      throw new MdCompatibilityInvalidPrefixError('md', elementRef.nativeElement.nodeName);
+      throw getMdCompatibilityInvalidPrefixError('md', elementRef.nativeElement.nodeName);
     }
   }
 }

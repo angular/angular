@@ -11,7 +11,6 @@ import {
   AfterViewChecked,
 } from '@angular/core';
 import {MdIconRegistry} from './icon-registry';
-import {MdIconNameNotFoundError, MdIconInvalidNameError} from './icon-errors';
 
 
 /**
@@ -113,12 +112,12 @@ export class MdIcon implements OnChanges, OnInit, AfterViewChecked {
    * The separator for the two fields is ':'. If there is no separator, an empty
    * string is returned for the icon set and the entire value is returned for
    * the icon name. If the argument is falsy, returns an array of two empty strings.
-   * Throws a MdIconInvalidNameError if the name contains two or more ':' separators.
+   * Throws an error if the name contains two or more ':' separators.
    * Examples:
    *   'social:cake' -> ['social', 'cake']
    *   'penguin' -> ['', 'penguin']
    *   null -> ['', '']
-   *   'a:b:c' -> (throws MdIconInvalidNameError)
+   *   'a:b:c' -> (throws Error)
    */
   private _splitIconName(iconName: string): [string, string] {
     if (!iconName) {
@@ -132,7 +131,7 @@ export class MdIcon implements OnChanges, OnInit, AfterViewChecked {
       case 2:
         return <[string, string]>parts;
       default:
-        throw new MdIconInvalidNameError(iconName);
+        throw new Error(`Invalid icon name: "${iconName}"`);
     }
   }
 
@@ -144,7 +143,7 @@ export class MdIcon implements OnChanges, OnInit, AfterViewChecked {
         const [namespace, iconName] = this._splitIconName(this.svgIcon);
         this._mdIconRegistry.getNamedSvgIcon(iconName, namespace).first().subscribe(
             svg => this._setSvgElement(svg),
-            (err: MdIconNameNotFoundError) => console.log(`Error retrieving icon: ${err.message}`));
+            (err: Error) => console.log(`Error retrieving icon: ${err.message}`));
       }
     }
     if (this._usingFontIcon()) {

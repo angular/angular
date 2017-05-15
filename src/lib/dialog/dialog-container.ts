@@ -21,9 +21,16 @@ import {
 import {DOCUMENT} from '@angular/platform-browser';
 import {BasePortalHost, ComponentPortal, PortalHostDirective, TemplatePortal} from '../core';
 import {MdDialogConfig} from './dialog-config';
-import {MdDialogContentAlreadyAttachedError} from './dialog-errors';
 import {FocusTrapFactory, FocusTrap} from '../core/a11y/focus-trap';
 
+/**
+ * Throws an exception for the case when a ComponentPortal is
+ * attached to a DomPortalHost without an origin.
+ * @docs-private
+ */
+export function throwMdDialogContentAlreadyAttachedError() {
+  throw new Error('Attempting to attach dialog content after content is already attached');
+}
 
 /**
  * Internal component that wraps user-provided dialog content.
@@ -89,7 +96,7 @@ export class MdDialogContainer extends BasePortalHost {
    */
   attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T> {
     if (this._portalHost.hasAttached()) {
-      throw new MdDialogContentAlreadyAttachedError();
+      throwMdDialogContentAlreadyAttachedError();
     }
 
     this._savePreviouslyFocusedElement();
@@ -102,7 +109,7 @@ export class MdDialogContainer extends BasePortalHost {
    */
   attachTemplatePortal(portal: TemplatePortal): Map<string, any> {
     if (this._portalHost.hasAttached()) {
-      throw new MdDialogContentAlreadyAttachedError();
+      throwMdDialogContentAlreadyAttachedError();
     }
 
     this._savePreviouslyFocusedElement();

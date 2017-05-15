@@ -17,7 +17,6 @@ import {OverlayRef} from '../core/overlay/overlay-ref';
 import {ComponentPortal} from '../core/portal/portal';
 import {OverlayState} from '../core/overlay/overlay-state';
 import {Dir} from '../core/rtl/dir';
-import {MdError} from '../core/errors/error';
 import {MdDialog} from '../dialog/dialog';
 import {MdDialogRef} from '../dialog/dialog-ref';
 import {PositionStrategy} from '../core/overlay/position/position-strategy';
@@ -192,7 +191,7 @@ export class MdDatepicker<D> implements OnDestroy {
    */
   _registerInput(input: MdDatepickerInput<D>): void {
     if (this._datepickerInput) {
-      throw new MdError('An MdDatepicker can only be associated with a single input.');
+      throw new Error('An MdDatepicker can only be associated with a single input.');
     }
     this._datepickerInput = input;
     this._inputSubscription =
@@ -205,7 +204,7 @@ export class MdDatepicker<D> implements OnDestroy {
       return;
     }
     if (!this._datepickerInput) {
-      throw new MdError('Attempted to open an MdDatepicker with no associated input.');
+      throw new Error('Attempted to open an MdDatepicker with no associated input.');
     }
 
     this.touchUi ? this._openAsDialog() : this._openAsPopup();

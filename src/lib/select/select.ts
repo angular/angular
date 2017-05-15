@@ -29,8 +29,8 @@ import {coerceBooleanProperty} from '../core/coercion/boolean-property';
 import {ConnectedOverlayDirective} from '../core/overlay/overlay-directives';
 import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
 import {SelectionModel} from '../core/selection/selection';
-import {MdSelectDynamicMultipleError, MdSelectNonArrayValueError} from './select-errors';
-
+import {ScrollDispatcher} from '../core/overlay/scroll/scroll-dispatcher';
+import {getMdSelectDynamicMultipleError, getMdSelectNonArrayValueError} from './select-errors';
 import 'rxjs/add/observable/merge';
 import 'rxjs/add/operator/startWith';
 import 'rxjs/add/operator/filter';
@@ -256,7 +256,7 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
   get multiple(): boolean { return this._multiple; }
   set multiple(value: boolean) {
     if (this._selectionModel) {
-      throw new MdSelectDynamicMultipleError();
+      throw getMdSelectDynamicMultipleError();
     }
 
     this._multiple = coerceBooleanProperty(value);
@@ -541,7 +541,7 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
     const isArray = Array.isArray(value);
 
     if (this.multiple && value && !isArray) {
-      throw new MdSelectNonArrayValueError();
+      throw getMdSelectNonArrayValueError();
     }
 
     if (isArray) {

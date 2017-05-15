@@ -22,7 +22,6 @@ import {
   PortalHostDirective,
 } from '../core';
 import {MdSnackBarConfig} from './snack-bar-config';
-import {MdSnackBarContentAlreadyAttached} from './snack-bar-errors';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 
@@ -85,7 +84,7 @@ export class MdSnackBarContainer extends BasePortalHost implements OnDestroy {
   /** Attach a component portal as content to this snack bar container. */
   attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T> {
     if (this._portalHost.hasAttached()) {
-      throw new MdSnackBarContentAlreadyAttached();
+      throw new Error('Attempting to attach snack bar content after content is already attached');
     }
 
     if (this.snackBarConfig.extraClasses) {
@@ -101,7 +100,7 @@ export class MdSnackBarContainer extends BasePortalHost implements OnDestroy {
 
   /** Attach a template portal as content to this snack bar container. */
   attachTemplatePortal(portal: TemplatePortal): Map<string, any> {
-    throw Error('Not yet implemented');
+    throw new Error('Not yet implemented');
   }
 
   /** Handle end of animations, updating the state of the snackbar. */

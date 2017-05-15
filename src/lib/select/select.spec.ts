@@ -13,7 +13,7 @@ import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MdSelectModule} from './index';
 import {OverlayContainer} from '../core/overlay/overlay-container';
 import {MdSelect, MdSelectFloatPlaceholderType} from './select';
-import {MdSelectDynamicMultipleError, MdSelectNonArrayValueError} from './select-errors';
+import {getMdSelectDynamicMultipleError, getMdSelectNonArrayValueError} from './select-errors';
 import {MdOption} from '../core/option/option';
 import {Dir} from '../core/rtl/dir';
 import {DOWN_ARROW, UP_ARROW, ENTER, SPACE} from '../core/keyboard/keycodes';
@@ -1917,13 +1917,13 @@ describe('MdSelect', () => {
     it('should throw an exception when trying to set a non-array value', async(() => {
       expect(() => {
         testInstance.control.setValue('not-an-array');
-      }).toThrowError(wrappedErrorMessage(new MdSelectNonArrayValueError()));
+      }).toThrowError(wrappedErrorMessage(getMdSelectNonArrayValueError()));
     }));
 
     it('should throw an exception when trying to change multiple mode after init', async(() => {
       expect(() => {
         testInstance.select.multiple = false;
-      }).toThrowError(wrappedErrorMessage(new MdSelectDynamicMultipleError()));
+      }).toThrowError(wrappedErrorMessage(getMdSelectDynamicMultipleError()));
     }));
 
     it('should pass the `multiple` value to all of the option instances', async(() => {

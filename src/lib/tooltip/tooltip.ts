@@ -27,7 +27,6 @@ import {
   OriginConnectionPosition,
   RepositionScrollStrategy,
 } from '../core';
-import {MdTooltipInvalidPositionError} from './tooltip-errors';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {Dir} from '../core/rtl/dir';
@@ -43,6 +42,11 @@ export const TOUCHEND_HIDE_DELAY = 1500;
 
 /** Time in ms to throttle repositioning after scroll events. */
 export const SCROLL_THROTTLE_MS = 20;
+
+/** Throws an error if the user supplied an invalid tooltip position. */
+export function throwMdTooltipInvalidPositionError(position: string) {
+  throw new Error(`Tooltip position "${position}" is invalid.`);
+}
 
 /**
  * Directive that attaches a material design tooltip to the host element. Animates the showing and
@@ -265,7 +269,7 @@ export class MdTooltip implements OnDestroy {
       return {originX: 'end', originY: 'center'};
     }
 
-    throw new MdTooltipInvalidPositionError(this.position);
+    throwMdTooltipInvalidPositionError(this.position);
   }
 
   /** Returns the overlay position based on the user's preference */
@@ -291,7 +295,7 @@ export class MdTooltip implements OnDestroy {
       return {overlayX: 'start', overlayY: 'center'};
     }
 
-    throw new MdTooltipInvalidPositionError(this.position);
+    throwMdTooltipInvalidPositionError(this.position);
   }
 
   /** Updates the tooltip message and repositions the overlay according to the new message length */
@@ -431,7 +435,7 @@ export class TooltipComponent {
       case 'right':  this._transformOrigin = 'left'; break;
       case 'above':  this._transformOrigin = 'bottom'; break;
       case 'below':  this._transformOrigin = 'top'; break;
-      default: throw new MdTooltipInvalidPositionError(value);
+      default: throwMdTooltipInvalidPositionError(value);
     }
   }
 

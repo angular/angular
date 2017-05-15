@@ -10,7 +10,7 @@ import {
     ViewContainerRef,
 } from '@angular/core';
 import {MdMenuPanel} from './menu-panel';
-import {MdMenuMissingError} from './menu-errors';
+import {throwMdMenuMissingError} from './menu-errors';
 import {
     isFakeMousedownFromScreenReader,
     Dir,
@@ -191,7 +191,7 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
    */
   private _checkMenu() {
     if (!this.menu) {
-      throw new MdMenuMissingError();
+      throwMdMenuMissingError();
     }
   }
 

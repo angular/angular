@@ -76,9 +76,6 @@ export {MdLineModule, MdLine, MdLineSetter} from './line/line';
 // Style
 export * from './style/index';
 
-// Error
-export {MdError} from './errors/error';
-
 // Misc
 export {ComponentType} from './overlay/generic-component-type';
 

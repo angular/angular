@@ -6,12 +6,12 @@ import {
     Injector
 } from '@angular/core';
 import {
-    NullPortalHostError,
-    PortalAlreadyAttachedError,
-    NoPortalAttachedError,
-    NullPortalError,
-    PortalHostAlreadyDisposedError,
-    UnknownPortalTypeError
+    throwNullPortalHostError,
+    throwPortalAlreadyAttachedError,
+    throwNoPortalAttachedError,
+    throwNullPortalError,
+    throwPortalHostAlreadyDisposedError,
+    throwUnknownPortalTypeError
 } from './portal-errors';
 import {ComponentType} from '../overlay/generic-component-type';
 
@@ -27,11 +27,11 @@ export abstract class Portal<T> {
   /** Attach this portal to a host. */
   attach(host: PortalHost): T {
     if (host == null) {
-      throw new NullPortalHostError();
+      throwNullPortalHostError();
     }
 
     if (host.hasAttached()) {
-      throw new PortalAlreadyAttachedError();
+      throwPortalAlreadyAttachedError();
     }
 
     this._attachedHost = host;
@@ -42,7 +42,7 @@ export abstract class Portal<T> {
   detach(): void {
     let host = this._attachedHost;
     if (host == null) {
-      throw new NoPortalAttachedError();
+      throwNoPortalAttachedError();
     }
 
     this._attachedHost = null;
@@ -168,15 +168,15 @@ export abstract class BasePortalHost implements PortalHost {
 
   attach(portal: Portal<any>): any {
     if (!portal) {
-      throw new NullPortalError();
+      throwNullPortalError();
     }
 
     if (this.hasAttached()) {
-      throw new PortalAlreadyAttachedError();
+      throwPortalAlreadyAttachedError();
     }
 
     if (this._isDisposed) {
-      throw new PortalHostAlreadyDisposedError();
+      throwPortalHostAlreadyDisposedError();
     }
 
     if (portal instanceof ComponentPortal) {
@@ -187,7 +187,7 @@ export abstract class BasePortalHost implements PortalHost {
       return this.attachTemplatePortal(portal);
     }
 
-    throw new UnknownPortalTypeError();
+    throwUnknownPortalTypeError();
   }
 
   abstract attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T>;

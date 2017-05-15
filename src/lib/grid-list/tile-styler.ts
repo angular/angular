@@ -1,6 +1,5 @@
 import {MdGridTile} from './grid-tile';
 import {TileCoordinator} from './tile-coordinator';
-import {MdGridListBadRatioError} from './grid-list-errors';
 
 /**
  * Sets the style properties for an individual tile, given the position calculated by the
@@ -200,7 +199,7 @@ export class RatioTileStyler extends TileStyler {
     let ratioParts = value.split(':');
 
     if (ratioParts.length !== 2) {
-      throw new MdGridListBadRatioError(value);
+      throw new Error(`md-grid-list: invalid ratio given for row-height: "${value}"`);
     }
 
     this.rowHeightRatio = parseFloat(ratioParts[0]) / parseFloat(ratioParts[1]);

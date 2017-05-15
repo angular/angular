@@ -4,9 +4,9 @@ import {HttpModule, XHRBackend} from '@angular/http';
 import {MockBackend} from '@angular/http/testing';
 import {Component} from '@angular/core';
 import {MdIconModule} from './index';
-import {MdIconRegistry} from './icon-registry';
-import {MdIconNoHttpProviderError} from './icon-errors';
+import {MdIconRegistry, getMdIconNoHttpProviderError} from './icon-registry';
 import {getFakeSvgHttpResponse} from './fake-svgs';
+import {wrappedErrorMessage} from '../core/testing/wrapped-error-message';
 
 
 /** Returns the CSS classes assigned to an element as a sorted array. */
@@ -414,6 +414,8 @@ describe('MdIcon without HttpModule', () => {
   }));
 
   it('should throw an error when trying to load a remote icon', async() => {
+    const expectedError = wrappedErrorMessage(getMdIconNoHttpProviderError());
+
     expect(() => {
       mdIconRegistry.addSvgIcon('fido', sanitizer.bypassSecurityTrustResourceUrl('dog.svg'));
 
@@ -421,7 +423,7 @@ describe('MdIcon without HttpModule', () => {
 
       fixture.componentInstance.iconName = 'fido';
       fixture.detectChanges();
-    }).toThrowError(MdIconNoHttpProviderError);
+    }).toThrowError(expectedError);
   });
 });
 

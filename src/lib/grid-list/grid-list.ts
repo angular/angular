@@ -13,7 +13,6 @@ import {
 import {MdGridTile} from './grid-tile';
 import {TileCoordinator} from './tile-coordinator';
 import {TileStyler, FitTileStyler, RatioTileStyler, FixedTileStyler} from './tile-styler';
-import {MdGridListColsError} from './grid-list-errors';
 import {Dir} from '../core';
 import {
   coerceToString,
@@ -97,7 +96,8 @@ export class MdGridList implements OnInit, AfterContentChecked {
   /** Throw a friendly error if cols property is missing */
   private _checkCols() {
     if (!this.cols) {
-      throw new MdGridListColsError();
+      throw new Error(`md-grid-list: must pass in number of columns. ` +
+                      `Example: <md-grid-list cols="3">`);
     }
   }
 

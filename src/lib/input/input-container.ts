@@ -22,10 +22,10 @@ import {coerceBooleanProperty} from '../core';
 import {FormGroupDirective, NgControl, NgForm} from '@angular/forms';
 import {getSupportedInputTypes} from '../core/platform/features';
 import {
-  MdInputContainerDuplicatedHintError,
-  MdInputContainerMissingMdInputError,
-  MdInputContainerPlaceholderConflictError,
-  MdInputContainerUnsupportedTypeError
+  getMdInputContainerDuplicatedHintError,
+  getMdInputContainerMissingMdInputError,
+  getMdInputContainerPlaceholderConflictError,
+  getMdInputContainerUnsupportedTypeError
 } from './input-container-errors';
 
 
@@ -234,7 +234,7 @@ export class MdInputDirective {
   /** Make sure the input is a supported type. */
   private _validateType() {
     if (MD_INPUT_INVALID_TYPES.indexOf(this._type) !== -1) {
-      throw new MdInputContainerUnsupportedTypeError(this._type);
+      throw getMdInputContainerUnsupportedTypeError(this._type);
     }
   }
 
@@ -357,7 +357,7 @@ export class MdInputContainer implements AfterViewInit, AfterContentInit {
 
   ngAfterContentInit() {
     if (!this._mdInputChild) {
-      throw new MdInputContainerMissingMdInputError();
+      throw getMdInputContainerMissingMdInputError();
     }
 
     this._processHints();
@@ -408,7 +408,7 @@ export class MdInputContainer implements AfterViewInit, AfterContentInit {
    */
   private _validatePlaceholders() {
     if (this._mdInputChild.placeholder && this._placeholderChild) {
-      throw new MdInputContainerPlaceholderConflictError();
+      throw getMdInputContainerPlaceholderConflictError();
     }
   }
 
@@ -431,12 +431,12 @@ export class MdInputContainer implements AfterViewInit, AfterContentInit {
       this._hintChildren.forEach((hint: MdHint) => {
         if (hint.align == 'start') {
           if (startHint || this.hintLabel) {
-            throw new MdInputContainerDuplicatedHintError('start');
+            throw getMdInputContainerDuplicatedHintError('start');
           }
           startHint = hint;
         } else if (hint.align == 'end') {
           if (endHint) {
-            throw new MdInputContainerDuplicatedHintError('end');
+            throw getMdInputContainerDuplicatedHintError('end');
           }
           endHint = hint;
         }

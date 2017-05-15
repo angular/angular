@@ -2,11 +2,6 @@ import {Injectable, SecurityContext, Optional, SkipSelf} from '@angular/core';
 import {SafeResourceUrl, DomSanitizer} from '@angular/platform-browser';
 import {Http} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
-import {
-  MdIconNameNotFoundError,
-  MdIconSvgTagNotFoundError,
-  MdIconNoHttpProviderError,
-} from './icon-errors';
 import 'rxjs/add/observable/forkJoin';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/map';
@@ -17,6 +12,26 @@ import 'rxjs/add/operator/finally';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/observable/throw';
 
+
+/**
+ * Returns an exception to be thrown in the case when attempting to
+ * load an icon with a name that cannot be found.
+ * @docs-private
+ */
+export function getMdIconNameNotFoundError(iconName: string): Error {
+  return new Error(`Unable to find icon with the name "${iconName}"`);
+}
+
+
+/**
+ * Returns an exception to be thrown when the consumer attempts to use
+ * `<md-icon>` without including @angular/http.
+ * @docs-private
+ */
+export function getMdIconNoHttpProviderError(): Error {
+  return new Error('Could not find Http provider for use with Angular Material icons. ' +
+                   'Please include the HttpModule from @angular/http in your app imports.');
+}
 
 /**
  * Configuration for an icon, including the URL and possibly the cached SVG element.
@@ -171,7 +186,7 @@ export class MdIconRegistry {
   /**
    * Returns an Observable that produces the icon (as an <svg> DOM element) with the given name
    * and namespace. The icon must have been previously registered with addIcon or addIconSet;
-   * if not, the Observable will throw an MdIconNameNotFoundError.
+   * if not, the Observable will throw an error.
    *
    * @param name Name of the icon to be retrieved.
    * @param namespace Namespace in which to look for the icon.
@@ -187,7 +202,7 @@ export class MdIconRegistry {
     if (iconSetConfigs) {
       return this._getSvgFromIconSetConfigs(name, iconSetConfigs);
     }
-    return Observable.throw(new MdIconNameNotFoundError(key));
+    return Observable.throw(getMdIconNameNotFoundError(key));
   }
 
   /**
@@ -211,7 +226,7 @@ export class MdIconRegistry {
    * if found copies the element to a new <svg> element. If not found, fetches all icon sets
    * that have not been cached, and searches again after all fetches are completed.
    * The returned Observable produces the SVG element if possible, and throws
-   * MdIconNameNotFoundError if no icon with the specified name can be found.
+   * an error if no icon with the specified name can be found.
    */
   private _getSvgFromIconSetConfigs(name: string, iconSetConfigs: SvgIconConfig[]):
       Observable<SVGElement> {
@@ -251,7 +266,7 @@ export class MdIconRegistry {
         .map((ignoredResults: any) => {
           const foundIcon = this._extractIconWithNameFromAnySet(name, iconSetConfigs);
           if (!foundIcon) {
-            throw new MdIconNameNotFoundError(name);
+            throw getMdIconNameNotFoundError(name);
           }
           return foundIcon;
         });
@@ -341,7 +356,7 @@ export class MdIconRegistry {
     div.innerHTML = str;
     const svg = div.querySelector('svg') as SVGElement;
     if (!svg) {
-      throw new MdIconSvgTagNotFoundError();
+      throw new Error('<svg> tag not found');
     }
     return svg;
   }
@@ -367,7 +382,7 @@ export class MdIconRegistry {
    */
   private _fetchUrl(safeUrl: SafeResourceUrl): Observable<string> {
     if (!this._http) {
-      throw new MdIconNoHttpProviderError();
+      throw getMdIconNoHttpProviderError();
     }
 
     const url = this._sanitizer.sanitize(SecurityContext.RESOURCE_URL, safeUrl);

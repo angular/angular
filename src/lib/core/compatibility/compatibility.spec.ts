@@ -5,7 +5,7 @@ import {
   NoConflictStyleCompatibilityMode,
   MAT_ELEMENTS_SELECTOR,
   MD_ELEMENTS_SELECTOR,
-  MdCompatibilityInvalidPrefixError,
+  getMdCompatibilityInvalidPrefixError,
 } from './compatibility';
 import {wrappedErrorMessage} from '../testing/wrapped-error-message';
 
@@ -34,7 +34,7 @@ describe('Style compatibility', () => {
     }));
 
     it('should throw an error when trying to use the "mat-" prefix', () => {
-      const expectedError = new MdCompatibilityInvalidPrefixError('mat', 'mat-checkbox');
+      const expectedError = getMdCompatibilityInvalidPrefixError('mat', 'mat-checkbox');
 
       expect(() => {
         TestBed.createComponent(ComponentWithMatCheckbox);
@@ -57,7 +57,7 @@ describe('Style compatibility', () => {
     });
 
     it('should throw an error when trying to use the "md-" prefix', () => {
-      const expectedError = new MdCompatibilityInvalidPrefixError('md', 'md-checkbox');
+      const expectedError = getMdCompatibilityInvalidPrefixError('md', 'md-checkbox');
 
       expect(() => {
         TestBed.createComponent(ComponentWithMdCheckbox);
@@ -75,7 +75,7 @@ describe('Style compatibility', () => {
     }));
 
     it('should throw an error when using the "md-" prefix', () => {
-      const expectedError = new MdCompatibilityInvalidPrefixError('md', 'md-checkbox');
+      const expectedError = getMdCompatibilityInvalidPrefixError('md', 'md-checkbox');
 
       expect(() => {
         TestBed.createComponent(ComponentWithMdCheckbox);

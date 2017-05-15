@@ -14,17 +14,15 @@ import {
   NgZone,
   OnDestroy,
 } from '@angular/core';
-import {Dir, MdError, coerceBooleanProperty} from '../core';
+import {Dir, coerceBooleanProperty} from '../core';
 import {FocusTrapFactory, FocusTrap} from '../core/a11y/focus-trap';
 import {ESCAPE} from '../core/keyboard/keycodes';
 import 'rxjs/add/operator/first';
 
 
-/** Exception thrown when two MdSidenav are matching the same side. */
-export class MdDuplicatedSidenavError extends MdError {
-  constructor(align: string) {
-    super(`A sidenav was already declared for 'align="${align}"'`);
-  }
+/** Throws an exception when two MdSidenav are matching the same side. */
+export function throwMdDuplicatedSidenavError(align: string) {
+  throw new Error(`A sidenav was already declared for 'align="${align}"'`);
 }
 
 
@@ -421,12 +419,12 @@ export class MdSidenavContainer implements AfterContentInit {
     for (let sidenav of this._sidenavs.toArray()) {
       if (sidenav.align == 'end') {
         if (this._end != null) {
-          throw new MdDuplicatedSidenavError('end');
+          throwMdDuplicatedSidenavError('end');
         }
         this._end = sidenav;
       } else {
         if (this._start != null) {
-          throw new MdDuplicatedSidenavError('start');
+          throwMdDuplicatedSidenavError('start');
         }
         this._start = sidenav;
       }

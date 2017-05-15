@@ -14,7 +14,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {MenuPositionX, MenuPositionY} from './menu-positions';
-import {MdMenuInvalidPositionX, MdMenuInvalidPositionY} from './menu-errors';
+import {throwMdMenuInvalidPositionX, throwMdMenuInvalidPositionY} from './menu-errors';
 import {MdMenuItem} from './menu-item';
 import {FocusKeyManager} from '../core/a11y/focus-key-manager';
 import {MdMenuPanel} from './menu-panel';
@@ -50,7 +50,7 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
   get xPosition() { return this._xPosition; }
   set xPosition(value: MenuPositionX) {
     if (value !== 'before' && value !== 'after') {
-      throw new MdMenuInvalidPositionX();
+      throwMdMenuInvalidPositionX();
     }
     this._xPosition = value;
     this.setPositionClasses();
@@ -61,7 +61,7 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
   get yPosition() { return this._yPosition; }
   set yPosition(value: MenuPositionY) {
     if (value !== 'above' && value !== 'below') {
-      throw new MdMenuInvalidPositionY();
+      throwMdMenuInvalidPositionY();
     }
     this._yPosition = value;
     this.setPositionClasses();
