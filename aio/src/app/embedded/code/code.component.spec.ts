@@ -179,26 +179,45 @@ describe('CodeComponent', () => {
 
   describe('copy button', () => {
 
+    function getButton() {
+      const btnDe = fixture.debugElement.query(By.css('button'));
+      return btnDe ? btnDe.nativeElement : null;
+    }
+
     it('should be hidden if the `hideCopy` input is true', () => {
       hostComponent.hideCopy = true;
       fixture.detectChanges();
-      expect(fixture.debugElement.query(By.css('button'))).toBe(null);
+      expect(getButton()).toBe(null);
+    });
+
+    it('should have title', () => {
+      fixture.detectChanges();
+      expect(getButton().title).toBe('Copy code snippet');
+    });
+
+    it('should have no aria-label by default', () => {
+      fixture.detectChanges();
+      expect(getButton().getAttribute('aria-label')).toBe('');
+    });
+
+    it('should have aria-label explaining what is being copied when title passed in', () => {
+      hostComponent.title = 'a/b/c/foo.ts';
+      fixture.detectChanges();
+      expect(getButton().getAttribute('aria-label')).toContain(hostComponent.title);
     });
 
     it('should call copier service when clicked', () => {
       const copierService: CopierService = TestBed.get(CopierService);
       const spy = spyOn(copierService, 'copyText');
-      const button = fixture.debugElement.query(By.css('button')).nativeElement as HTMLButtonElement;
       expect(spy.calls.count()).toBe(0, 'before click');
-      button.click();
+      getButton().click();
       expect(spy.calls.count()).toBe(1, 'after click');
     });
 
     it('should copy code text when clicked', () => {
       const copierService: CopierService = TestBed.get(CopierService);
       const spy = spyOn(copierService, 'copyText');
-      const button = fixture.debugElement.query(By.css('button')).nativeElement as HTMLButtonElement;
-      button.click();
+      getButton().click();
       expect(spy.calls.argsFor(0)[0]).toEqual(oneLineCode, 'after click');
     });
 
@@ -207,8 +226,7 @@ describe('CodeComponent', () => {
       const copierService: CopierService = TestBed.get(CopierService);
       spyOn(snackBar, 'open');
       spyOn(copierService, 'copyText').and.returnValue(true);
-      const button = fixture.debugElement.query(By.css('button')).nativeElement as HTMLButtonElement;
-      button.click();
+      getButton().click();
       expect(snackBar.open).toHaveBeenCalledWith('Code Copied', '', { duration: 800 });
     });
 
@@ -217,8 +235,7 @@ describe('CodeComponent', () => {
       const copierService: CopierService = TestBed.get(CopierService);
       spyOn(snackBar, 'open');
       spyOn(copierService, 'copyText').and.returnValue(false);
-      const button = fixture.debugElement.query(By.css('button')).nativeElement as HTMLButtonElement;
-      button.click();
+      getButton().click();
       expect(snackBar.open).toHaveBeenCalledWith('Copy failed. Please try again!', '', { duration: 800 });
     });
   });
@@ -230,16 +247,18 @@ describe('CodeComponent', () => {
   selector: 'aio-host-comp',
   template: `
       <aio-code md-no-ink [code]="code" [language]="language"
-      [linenums]="linenums" [path]="path" [region]="region" [hideCopy]="hideCopy"></aio-code>
+      [linenums]="linenums" [path]="path" [region]="region"
+      [hideCopy]="hideCopy" [title]="title"></aio-code>
   `
 })
 class HostComponent {
   code = oneLineCode;
+  hideCopy: boolean;
   language: string;
   linenums: boolean | number | string;
   path: string;
   region: string;
-  hideCopy: boolean;
+  title: string;
 }
 
 class TestLogger {
