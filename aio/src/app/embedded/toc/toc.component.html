@@ -1,11 +1,17 @@
-<div *ngIf="hasToc" [class.closed]="isClosed">
-  <div *ngIf="!hasSecondary" class="toc-heading">Contents</div>
-  <div *ngIf="hasSecondary" class="toc-heading secondary"
-      (click)="toggle(false)"
-      title="Expand/collapse contents"
-      aria-label="Expand/collapse contents">
-      <p>Table of Contents<button type="button" class="toc-show-all material-icons" [class.closed]="isClosed"></button></p>
-  </div>
+<div *ngIf="hasToc" [class.collapsed]="isCollapsed">
+  <button *ngIf="!isEmbedded" type="button" class="toc-heading"
+    (click)="toTop()" title="Top of page">Contents</button>
+
+  <div *ngIf="!hasSecondary && isEmbedded" class="toc-heading embedded">Contents</div>
+
+  <button *ngIf="hasSecondary" type="button" class="toc-heading embedded secondary"
+    (click)="toggle(false)"
+    title="Expand/collapse contents"
+    aria-label="Expand/collapse contents"
+    [attr.aria-pressed]="!isCollapsed">
+    Contents
+    <md-icon class="rotating-icon" svgIcon="keyboard_arrow_right" [class.collapsed]="isCollapsed"></md-icon>
+  </button>
 
   <ul class="toc-list">
     <li *ngFor="let toc of tocList" title="{{toc.title}}" class="{{toc.level}}" [class.secondary]="toc.isSecondary">
@@ -14,8 +20,9 @@
   </ul>
 
   <button type="button" (click)="toggle()" *ngIf="hasSecondary"
-    class="toc-more-items material-icons" [class.closed]="isClosed"
+    class="toc-more-items embedded material-icons" [class.collapsed]="isCollapsed"
     title="Expand/collapse contents"
-    aria-label="Expand/collapse contents">
+    aria-label="Expand/collapse contents"
+    [attr.aria-pressed]="!isCollapsed">
   </button>
 </div>
