@@ -615,7 +615,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
           form.get('food') !.setValue('chicken');
           fixture.detectChanges();
 
-          form.get('food') !.setValue(undefined);
+          form.get('food') !.setValue(undefined as any);
           fixture.detectChanges();
           expect(inputs[0].nativeElement.checked).toEqual(false);
         });
