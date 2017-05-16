@@ -64,7 +64,6 @@ function getScore(results) {
 
 function ignoreHttpsAudits(aggregations) {
   const httpsAudits = [
-    'is-on-https',
     'redirects-http'
   ];
 
