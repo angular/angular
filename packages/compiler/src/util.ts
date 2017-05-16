@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import * as o from './output/output_ast';
+
 export const MODULE_SUFFIX = '';
 
 const CAMEL_CASE_REGEXP = /([A-Z])/g;
@@ -137,4 +139,10 @@ export function utf8Encode(str: string): string {
   }
 
   return encoded;
+}
+
+export interface OutputContext {
+  genFilePath: string;
+  statements: o.Statement[];
+  importExpr(reference: any, typeParams?: o.Type[]|null): o.Expression;
 }

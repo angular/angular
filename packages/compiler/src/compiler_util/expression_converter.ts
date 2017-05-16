@@ -286,10 +286,8 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     args.push(o.literal(ast.strings[ast.strings.length - 1]));
 
     return ast.expressions.length <= 9 ?
-        o.importExpr(createIdentifier(Identifiers.inlineInterpolate)).callFn(args) :
-        o.importExpr(createIdentifier(Identifiers.interpolate)).callFn([
-          args[0], o.literalArr(args.slice(1))
-        ]);
+        o.importExpr(Identifiers.inlineInterpolate).callFn(args) :
+        o.importExpr(Identifiers.interpolate).callFn([args[0], o.literalArr(args.slice(1))]);
   }
 
   visitKeyedRead(ast: cdAst.KeyedRead, mode: _Mode): any {

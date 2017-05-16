@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileIdentifierMetadata, CompileNgModuleMetadata, CompileNgModuleSummary, CompilePipeMetadata, CompileProviderMetadata, CompileSummaryKind, CompileTypeMetadata, CompileTypeSummary, componentFactoryName, createHostComponentMeta, flatten, identifierName, sourceUrl, templateSourceUrl} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileIdentifierMetadata, CompileNgModuleMetadata, CompileNgModuleSummary, CompilePipeMetadata, CompileProviderMetadata, CompileStylesheetMetadata, CompileSummaryKind, CompileTypeMetadata, CompileTypeSummary, componentFactoryName, createHostComponentMeta, flatten, identifierName, sourceUrl, templateSourceUrl} from '../compile_metadata';
 import {CompilerConfig} from '../config';
 import {Identifiers, createIdentifier, createIdentifierToken} from '../identifiers';
 import {CompileMetadataResolver} from '../metadata_resolver';
@@ -16,8 +16,8 @@ import * as o from '../output/output_ast';
 import {CompiledStylesheet, StyleCompiler} from '../style_compiler';
 import {SummaryResolver} from '../summary_resolver';
 import {TemplateParser} from '../template_parser/template_parser';
-import {syntaxError} from '../util';
-import {ViewCompiler} from '../view_compiler/view_compiler';
+import {OutputContext, syntaxError} from '../util';
+import {ViewCompileResult, ViewCompiler} from '../view_compiler/view_compiler';
 
 import {AotCompilerHost} from './compiler_host';
 import {GeneratedFile} from './generated_file';
@@ -60,16 +60,15 @@ export class AotCompiler {
       directives: StaticSymbol[], pipes: StaticSymbol[], ngModules: StaticSymbol[],
       injectables: StaticSymbol[]): GeneratedFile[] {
     const fileSuffix = splitTypescriptSuffix(srcFileUrl, true)[1];
-    const statements: o.Statement[] = [];
-    const exportedVars: string[] = [];
     const generatedFiles: GeneratedFile[] = [];
 
-    generatedFiles.push(...this._createSummary(
-        srcFileUrl, directives, pipes, ngModules, injectables, statements, exportedVars));
+    const outputCtx = this._createOutputContext(ngfactoryFilePath(srcFileUrl, true));
+
+    generatedFiles.push(
+        ...this._createSummary(srcFileUrl, directives, pipes, ngModules, injectables, outputCtx));
 
     // compile all ng modules
-    exportedVars.push(
-        ...ngModules.map((ngModuleType) => this._compileModule(ngModuleType, statements)));
+    ngModules.forEach((ngModuleType) => this._compileModule(outputCtx, ngModuleType));
 
     // compile components
     directives.forEach((dirType) => {
@@ -86,22 +85,20 @@ export class AotCompiler {
       _assertComponent(compMeta);
 
       // compile styles
-      const stylesCompileResults = this._styleCompiler.compileComponent(compMeta);
-      stylesCompileResults.externalStylesheets.forEach((compiledStyleSheet) => {
-        generatedFiles.push(this._codgenStyles(srcFileUrl, compiledStyleSheet, fileSuffix));
+      const componentStylesheet = this._styleCompiler.compileComponent(outputCtx, compMeta);
+      // Note: compMeta is a component and therefore template is non null.
+      compMeta.template !.externalStylesheets.forEach((stylesheetMeta) => {
+        generatedFiles.push(this._codegenStyles(srcFileUrl, compMeta, stylesheetMeta, fileSuffix));
       });
 
       // compile components
       const compViewVars = this._compileComponent(
-          compMeta, ngModule, ngModule.transitiveModule.directives,
-          stylesCompileResults.componentStylesheet, fileSuffix, statements);
-      exportedVars.push(
-          this._compileComponentFactory(compMeta, ngModule, fileSuffix, statements),
-          compViewVars.viewClassVar, compViewVars.compRenderTypeVar);
+          outputCtx, compMeta, ngModule, ngModule.transitiveModule.directives, componentStylesheet,
+          fileSuffix);
+      this._compileComponentFactory(outputCtx, compMeta, ngModule, fileSuffix);
     });
-    if (statements.length > 0) {
-      const srcModule = this._codegenSourceModule(
-          srcFileUrl, ngfactoryFilePath(srcFileUrl, true), statements, exportedVars);
+    if (outputCtx.statements.length > 0) {
+      const srcModule = this._codegenSourceModule(srcFileUrl, outputCtx);
       generatedFiles.unshift(srcModule);
     }
     return generatedFiles;
@@ -109,8 +106,8 @@ export class AotCompiler {
 
   private _createSummary(
       srcFileUrl: string, directives: StaticSymbol[], pipes: StaticSymbol[],
-      ngModules: StaticSymbol[], injectables: StaticSymbol[], targetStatements: o.Statement[],
-      targetExportedVars: string[]): GeneratedFile[] {
+      ngModules: StaticSymbol[], injectables: StaticSymbol[],
+      ngFactoryCtx: OutputContext): GeneratedFile[] {
     const symbolSummaries = this._symbolResolver.getSymbolsOf(srcFileUrl)
                                 .map(symbol => this._symbolResolver.resolveSymbol(symbol));
     const typeData: {
@@ -136,22 +133,23 @@ export class AotCompiler {
                                metadata: this._metadataResolver.getInjectableSummary(ref) !.type
                              }))
         ];
-    const {json, exportAs, forJit} =
-        serializeSummaries(this._summaryResolver, this._symbolResolver, symbolSummaries, typeData);
+    const forJitOutputCtx = this._createOutputContext(summaryForJitFileName(srcFileUrl, true));
+    const forJitTargetFilePath = summaryForJitFileName(srcFileUrl, true);
+    const {json, exportAs} = serializeSummaries(
+        forJitOutputCtx, this._summaryResolver, this._symbolResolver, symbolSummaries, typeData);
     exportAs.forEach((entry) => {
-      targetStatements.push(
-          o.variable(entry.exportAs).set(o.importExpr({reference: entry.symbol})).toDeclStmt());
-      targetExportedVars.push(entry.exportAs);
+      ngFactoryCtx.statements.push(
+          o.variable(entry.exportAs).set(ngFactoryCtx.importExpr(entry.symbol)).toDeclStmt(null, [
+            o.StmtModifier.Exported
+          ]));
     });
     return [
       new GeneratedFile(srcFileUrl, summaryFileName(srcFileUrl), json),
-      this._codegenSourceModule(
-          srcFileUrl, summaryForJitFileName(srcFileUrl, true), forJit.statements,
-          forJit.exportedVars)
+      this._codegenSourceModule(srcFileUrl, forJitOutputCtx)
     ];
   }
 
-  private _compileModule(ngModuleType: StaticSymbol, targetStatements: o.Statement[]): string {
+  private _compileModule(outputCtx: OutputContext, ngModuleType: StaticSymbol): void {
     const ngModule = this._metadataResolver.getNgModuleMetadata(ngModuleType) !;
     const providers: CompileProviderMetadata[] = [];
 
@@ -169,20 +167,17 @@ export class AotCompiler {
       });
     }
 
-    const appCompileResult = this._ngModuleCompiler.compile(ngModule, providers);
-    targetStatements.push(...appCompileResult.statements);
-    return appCompileResult.ngModuleFactoryVar;
+    this._ngModuleCompiler.compile(outputCtx, ngModule, providers);
   }
 
   private _compileComponentFactory(
-      compMeta: CompileDirectiveMetadata, ngModule: CompileNgModuleMetadata, fileSuffix: string,
-      targetStatements: o.Statement[]): string {
+      outputCtx: OutputContext, compMeta: CompileDirectiveMetadata,
+      ngModule: CompileNgModuleMetadata, fileSuffix: string): void {
     const hostType = this._metadataResolver.getHostComponentType(compMeta.type.reference);
     const hostMeta = createHostComponentMeta(
         hostType, compMeta, this._metadataResolver.getHostComponentViewClass(hostType));
     const hostViewFactoryVar =
-        this._compileComponent(
-                hostMeta, ngModule, [compMeta.type], null, fileSuffix, targetStatements)
+        this._compileComponent(outputCtx, hostMeta, ngModule, [compMeta.type], null, fileSuffix)
             .viewClassVar;
     const compFactoryVar = componentFactoryName(compMeta.type.reference);
     const inputsExprs: o.LiteralMapEntry[] = [];
@@ -198,10 +193,10 @@ export class AotCompiler {
       outputsExprs.push(new o.LiteralMapEntry(propName, o.literal(templateName), false));
     }
 
-    targetStatements.push(
+    outputCtx.statements.push(
         o.variable(compFactoryVar)
-            .set(o.importExpr(createIdentifier(Identifiers.createComponentFactory)).callFn([
-              o.literal(compMeta.selector), o.importExpr(compMeta.type),
+            .set(o.importExpr(Identifiers.createComponentFactory).callFn([
+              o.literal(compMeta.selector), outputCtx.importExpr(compMeta.type.reference),
               o.variable(hostViewFactoryVar), new o.LiteralMapExpr(inputsExprs),
               new o.LiteralMapExpr(outputsExprs),
               o.literalArr(
@@ -209,17 +204,16 @@ export class AotCompiler {
             ]))
             .toDeclStmt(
                 o.importType(
-                    createIdentifier(Identifiers.ComponentFactory), [o.importType(compMeta.type) !],
+                    Identifiers.ComponentFactory,
+                    [o.expressionType(outputCtx.importExpr(compMeta.type.reference)) !],
                     [o.TypeModifier.Const]),
-                [o.StmtModifier.Final]));
-    return compFactoryVar;
+                [o.StmtModifier.Final, o.StmtModifier.Exported]));
   }
 
   private _compileComponent(
-      compMeta: CompileDirectiveMetadata, ngModule: CompileNgModuleMetadata,
-      directiveIdentifiers: CompileIdentifierMetadata[], componentStyles: CompiledStylesheet|null,
-      fileSuffix: string,
-      targetStatements: o.Statement[]): {viewClassVar: string, compRenderTypeVar: string} {
+      outputCtx: OutputContext, compMeta: CompileDirectiveMetadata,
+      ngModule: CompileNgModuleMetadata, directiveIdentifiers: CompileIdentifierMetadata[],
+      componentStyles: CompiledStylesheet|null, fileSuffix: string): ViewCompileResult {
     const directives =
         directiveIdentifiers.map(dir => this._metadataResolver.getDirectiveSummary(dir.reference));
     const pipes = ngModule.transitiveModule.pipes.map(
@@ -229,44 +223,70 @@ export class AotCompiler {
         compMeta, compMeta.template !.template !, directives, pipes, ngModule.schemas,
         templateSourceUrl(ngModule.type, compMeta, compMeta.template !));
     const stylesExpr = componentStyles ? o.variable(componentStyles.stylesVar) : o.literalArr([]);
-    const viewResult =
-        this._viewCompiler.compileComponent(compMeta, parsedTemplate, stylesExpr, usedPipes);
+    const viewResult = this._viewCompiler.compileComponent(
+        outputCtx, compMeta, parsedTemplate, stylesExpr, usedPipes);
     if (componentStyles) {
-      targetStatements.push(
-          ..._resolveStyleStatements(this._symbolResolver, componentStyles, fileSuffix));
+      _resolveStyleStatements(
+          this._symbolResolver, componentStyles, this._styleCompiler.needsStyleShim(compMeta),
+          fileSuffix);
     }
-    targetStatements.push(...viewResult.statements);
-    return {viewClassVar: viewResult.viewClassVar, compRenderTypeVar: viewResult.rendererTypeVar};
+    return viewResult;
   }
 
-  private _codgenStyles(
-      fileUrl: string, stylesCompileResult: CompiledStylesheet, fileSuffix: string): GeneratedFile {
-    _resolveStyleStatements(this._symbolResolver, stylesCompileResult, fileSuffix);
-    return this._codegenSourceModule(
-        fileUrl,
-        _stylesModuleUrl(
-            stylesCompileResult.meta.moduleUrl !, stylesCompileResult.isShimmed, fileSuffix),
-        stylesCompileResult.statements, [stylesCompileResult.stylesVar]);
+  private _createOutputContext(genFilePath: string): OutputContext {
+    const importExpr = (symbol: StaticSymbol, typeParams: o.Type[] | null = null) => {
+      if (!(symbol instanceof StaticSymbol)) {
+        throw new Error(`Internal error: unknown identifier ${JSON.stringify(symbol)}`);
+      }
+      const arity = this._symbolResolver.getTypeArity(symbol) || 0;
+      const {filePath, name, members} = this._symbolResolver.getImportAs(symbol) || symbol;
+      const moduleName = this._symbolResolver.fileNameToModuleName(filePath, genFilePath);
+      // If we are in a type expression that refers to a generic type then supply
+      // the required type parameters. If there were not enough type parameters
+      // supplied, supply any as the type. Outside a type expression the reference
+      // should not supply type parameters and be treated as a simple value reference
+      // to the constructor function itself.
+      const suppliedTypeParams = typeParams || [];
+      const missingTypeParamsCount = arity - suppliedTypeParams.length;
+      const allTypeParams =
+          suppliedTypeParams.concat(new Array(missingTypeParamsCount).fill(o.DYNAMIC_TYPE));
+      return members.reduce(
+          (expr, memberName) => expr.prop(memberName),
+          <o.Expression>o.importExpr(
+              new o.ExternalReference(moduleName, name, null), allTypeParams));
+    };
+
+    return {statements: [], genFilePath, importExpr};
   }
 
-  private _codegenSourceModule(
-      srcFileUrl: string, genFileUrl: string, statements: o.Statement[],
-      exportedVars: string[]): GeneratedFile {
+  private _codegenStyles(
+      srcFileUrl: string, compMeta: CompileDirectiveMetadata,
+      stylesheetMetadata: CompileStylesheetMetadata, fileSuffix: string): GeneratedFile {
+    const outputCtx = this._createOutputContext(_stylesModuleUrl(
+        stylesheetMetadata.moduleUrl !, this._styleCompiler.needsStyleShim(compMeta), fileSuffix));
+    const compiledStylesheet =
+        this._styleCompiler.compileStyles(outputCtx, compMeta, stylesheetMetadata);
+    _resolveStyleStatements(
+        this._symbolResolver, compiledStylesheet, this._styleCompiler.needsStyleShim(compMeta),
+        fileSuffix);
+    return this._codegenSourceModule(srcFileUrl, outputCtx);
+  }
+
+  private _codegenSourceModule(srcFileUrl: string, ctx: OutputContext): GeneratedFile {
     return new GeneratedFile(
-        srcFileUrl, genFileUrl,
+        srcFileUrl, ctx.genFilePath,
         this._outputEmitter.emitStatements(
-            sourceUrl(srcFileUrl), genFileUrl, statements, exportedVars, this._genFilePreamble));
+            sourceUrl(srcFileUrl), ctx.genFilePath, ctx.statements, this._genFilePreamble));
   }
 }
 
 function _resolveStyleStatements(
-    reflector: StaticSymbolResolver, compileResult: CompiledStylesheet,
-    fileSuffix: string): o.Statement[] {
+    symbolResolver: StaticSymbolResolver, compileResult: CompiledStylesheet, needsShim: boolean,
+    fileSuffix: string): void {
   compileResult.dependencies.forEach((dep) => {
-    dep.valuePlaceholder.reference = reflector.getStaticSymbol(
-        _stylesModuleUrl(dep.moduleUrl, dep.isShimmed, fileSuffix), dep.name);
+    dep.setValue(symbolResolver.getStaticSymbol(
+        _stylesModuleUrl(dep.moduleUrl, needsShim, fileSuffix), dep.name));
   });
-  return compileResult.statements;
 }
 
 function _stylesModuleUrl(stylesheetUrl: string, shim: boolean, suffix: string): string {

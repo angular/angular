@@ -7,17 +7,19 @@
  */
 
 
-import {ValueTransformer, visitValue} from '../util';
+import {OutputContext, ValueTransformer, visitValue} from '../util';
 
 import * as o from './output_ast';
 
 export const QUOTED_KEYS = '$quoted$';
 
-export function convertValueToOutputAst(value: any, type: o.Type | null = null): o.Expression {
-  return visitValue(value, new _ValueOutputAstTransformer(), type);
+export function convertValueToOutputAst(
+    ctx: OutputContext, value: any, type: o.Type | null = null): o.Expression {
+  return visitValue(value, new _ValueOutputAstTransformer(ctx), type);
 }
 
 class _ValueOutputAstTransformer implements ValueTransformer {
+  constructor(private ctx: OutputContext) {}
   visitArray(arr: any[], type: o.Type): o.Expression {
     return o.literalArr(arr.map(value => visitValue(value, this, null)), type);
   }
@@ -38,7 +40,7 @@ class _ValueOutputAstTransformer implements ValueTransformer {
     if (value instanceof o.Expression) {
       return value;
     } else {
-      return o.importExpr({reference: value});
+      return this.ctx.importExpr(value);
     }
   }
 }
