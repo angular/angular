@@ -8,6 +8,8 @@
 
 import {AotSummaryResolver, AotSummaryResolverHost, CompileSummaryKind, CompileTypeSummary, ResolvedStaticSymbol, StaticSymbol, StaticSymbolCache, StaticSymbolResolver} from '@angular/compiler';
 import {deserializeSummaries, serializeSummaries} from '@angular/compiler/src/aot/summary_serializer';
+import * as o from '@angular/compiler/src/output/output_ast';
+import {OutputContext} from '@angular/compiler/src/util';
 import * as path from 'path';
 
 import {MockStaticSymbolResolverHost, MockSummaryResolver} from './static_symbol_resolver_spec';
@@ -32,7 +34,9 @@ export function main() {
       const mockSummaryResolver = new MockSummaryResolver([]);
       const symbolResolver = new StaticSymbolResolver(
           new MockStaticSymbolResolverHost({}), symbolCache, mockSummaryResolver);
-      return serializeSummaries(mockSummaryResolver, symbolResolver, symbols, []).json;
+      return serializeSummaries(
+                 createMockOutputContext(), mockSummaryResolver, symbolResolver, symbols, [])
+          .json;
     }
 
     it('should load serialized summary files', () => {
@@ -108,4 +112,8 @@ export class MockAotSummaryResolverHost implements AotSummaryResolverHost {
   isSourceFile(filePath: string) { return !filePath.endsWith('.d.ts'); }
 
   loadSummary(filePath: string): string { return this.summaries[filePath]; }
+}
+
+export function createMockOutputContext(): OutputContext {
+  return {statements: [], genFilePath: 'someGenFilePath', importExpr: () => o.NULL_EXPR};
 }

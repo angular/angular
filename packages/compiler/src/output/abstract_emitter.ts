@@ -19,7 +19,7 @@ export const CATCH_STACK_VAR = o.variable('stack', null, null);
 
 export abstract class OutputEmitter {
   abstract emitStatements(
-      srcFilePath: string, genFilePath: string, stmts: o.Statement[], exportedVars: string[],
+      srcFilePath: string, genFilePath: string, stmts: o.Statement[],
       preamble?: string|null): string;
 }
 
@@ -31,20 +31,14 @@ class _EmittedLine {
 }
 
 export class EmitterVisitorContext {
-  static createRoot(exportedVars: string[]): EmitterVisitorContext {
-    return new EmitterVisitorContext(exportedVars, 0);
-  }
+  static createRoot(): EmitterVisitorContext { return new EmitterVisitorContext(0); }
 
   private _lines: _EmittedLine[];
   private _classes: o.ClassStmt[] = [];
 
-  constructor(private _exportedVars: string[], private _indent: number) {
-    this._lines = [new _EmittedLine(_indent)];
-  }
+  constructor(private _indent: number) { this._lines = [new _EmittedLine(_indent)]; }
 
   private get _currentLine(): _EmittedLine { return this._lines[this._lines.length - 1]; }
-
-  isExportedVar(varName: string): boolean { return this._exportedVars.indexOf(varName) !== -1; }
 
   println(from?: {sourceSpan: ParseSourceSpan | null}|null, lastPart: string = ''): void {
     this.print(from || null, lastPart, true);

@@ -7,10 +7,8 @@
  */
 
 import {StaticSymbol} from '@angular/compiler/src/aot/static_symbol';
-import {CompileIdentifierMetadata} from '@angular/compiler/src/compile_metadata';
 import {JavaScriptEmitter} from '@angular/compiler/src/output/js_emitter';
 import * as o from '@angular/compiler/src/output/output_ast';
-import {ImportResolver} from '@angular/compiler/src/output/path_util';
 
 import {stripSourceMapAndNewLine} from './abstract_emitter_spec';
 
@@ -18,20 +16,9 @@ const someGenFilePath = 'somePackage/someGenFile';
 const someSourceFilePath = 'somePackage/someSourceFile';
 const anotherModuleUrl = 'somePackage/someOtherPath';
 
-const sameModuleIdentifier: CompileIdentifierMetadata = {
-  reference: new StaticSymbol(someGenFilePath, 'someLocalId', [])
-};
-const externalModuleIdentifier: CompileIdentifierMetadata = {
-  reference: new StaticSymbol(anotherModuleUrl, 'someExternalId', [])
-};
+const sameModuleIdentifier = new o.ExternalReference(null, 'someLocalId', null);
 
-class SimpleJsImportGenerator implements ImportResolver {
-  fileNameToModuleName(importedUrlStr: string, moduleUrlStr: string): string {
-    return importedUrlStr;
-  }
-  getImportAs(symbol: StaticSymbol): StaticSymbol|null { return null; }
-  getTypeArity(symbol: StaticSymbol): number|null { return null; }
-}
+const externalModuleIdentifier = new o.ExternalReference(anotherModuleUrl, 'someExternalId', null);
 
 export function main() {
   // Note supported features of our OutputAstin JavaScript / ES5:
@@ -39,29 +26,26 @@ export function main() {
   // - declaring fields
 
   describe('JavaScriptEmitter', () => {
-    let importResolver: ImportResolver;
     let emitter: JavaScriptEmitter;
     let someVar: o.ReadVarExpr;
 
     beforeEach(() => {
-      importResolver = new SimpleJsImportGenerator();
-      emitter = new JavaScriptEmitter(importResolver);
+      emitter = new JavaScriptEmitter();
       someVar = o.variable('someVar');
     });
 
-    function emitStmt(
-        stmt: o.Statement, exportedVars: string[] | null = null, preamble?: string): string {
-      const source = emitter.emitStatements(
-          someSourceFilePath, someGenFilePath, [stmt], exportedVars || [], preamble);
+    function emitStmt(stmt: o.Statement, preamble?: string): string {
+      const source = emitter.emitStatements(someSourceFilePath, someGenFilePath, [stmt], preamble);
       return stripSourceMapAndNewLine(source);
     }
 
     it('should declare variables', () => {
       expect(emitStmt(someVar.set(o.literal(1)).toDeclStmt())).toEqual(`var someVar = 1;`);
-      expect(emitStmt(someVar.set(o.literal(1)).toDeclStmt(), ['someVar'])).toEqual([
-        'var someVar = 1;',
-        `Object.defineProperty(exports, 'someVar', { get: function() { return someVar; }});`
-      ].join('\n'));
+      expect(emitStmt(someVar.set(o.literal(1)).toDeclStmt(null, [o.StmtModifier.Exported])))
+          .toEqual([
+            'var someVar = 1;',
+            `Object.defineProperty(exports, 'someVar', { get: function() { return someVar; }});`
+          ].join('\n'));
     });
 
     it('should read and write variables', () => {
@@ -144,16 +128,6 @@ export function main() {
       ].join('\n'));
     });
 
-    it('should support `importAs` for external identifiers', () => {
-      spyOn(importResolver, 'getImportAs')
-          .and.returnValue(new StaticSymbol('somePackage/importAsModule', 'importAsName', []));
-      expect(emitStmt(o.importExpr(externalModuleIdentifier).toStmt())).toEqual([
-        `var i0 = re` +
-            `quire('somePackage/importAsModule');`,
-        `i0.importAsName;`
-      ].join('\n'));
-    });
-
     it('should support operators', () => {
       const lhs = o.variable('lhs');
       const rhs = o.variable('rhs');
@@ -193,10 +167,11 @@ export function main() {
     it('should support function statements', () => {
       expect(emitStmt(new o.DeclareFunctionStmt('someFn', [], [
       ]))).toEqual(['function someFn() {', '}'].join('\n'));
-      expect(emitStmt(new o.DeclareFunctionStmt('someFn', [], []), ['someFn'])).toEqual([
-        'function someFn() {', '}',
-        `Object.defineProperty(exports, 'someFn', { get: function() { return someFn; }});`
-      ].join('\n'));
+      expect(emitStmt(new o.DeclareFunctionStmt('someFn', [], [], null, [o.StmtModifier.Exported])))
+          .toEqual([
+            'function someFn() {', '}',
+            `Object.defineProperty(exports, 'someFn', { get: function() { return someFn; }});`
+          ].join('\n'));
       expect(emitStmt(new o.DeclareFunctionStmt('someFn', [], [
         new o.ReturnStatement(o.literal(1))
       ]))).toEqual(['function someFn() {', '  return 1;', '}'].join('\n'));
@@ -240,7 +215,8 @@ export function main() {
       it('should support declaring classes', () => {
         expect(emitStmt(new o.ClassStmt('SomeClass', null !, [], [], null !, [
         ]))).toEqual(['function SomeClass() {', '}'].join('\n'));
-        expect(emitStmt(new o.ClassStmt('SomeClass', null !, [], [], null !, []), ['SomeClass']))
+        expect(emitStmt(new o.ClassStmt(
+                   'SomeClass', null !, [], [], null !, [], [o.StmtModifier.Exported])))
             .toEqual([
               'function SomeClass() {', '}',
               `Object.defineProperty(exports, 'SomeClass', { get: function() { return SomeClass; }});`
@@ -319,7 +295,7 @@ export function main() {
     });
 
     it('should support a preamble', () => {
-      expect(emitStmt(o.variable('a').toStmt(), [], '/* SomePreamble */')).toBe([
+      expect(emitStmt(o.variable('a').toStmt(), '/* SomePreamble */')).toBe([
         '/* SomePreamble */', 'a;'
       ].join('\n'));
     });

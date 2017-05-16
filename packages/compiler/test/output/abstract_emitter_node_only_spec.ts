@@ -18,7 +18,7 @@ export function main() {
       const fileB = new ParseSourceFile('b0b1b2b3b4b5b6b7b8b9', 'b.js');
       let ctx: EmitterVisitorContext;
 
-      beforeEach(() => { ctx = EmitterVisitorContext.createRoot([]); });
+      beforeEach(() => { ctx = EmitterVisitorContext.createRoot(); });
 
       it('should add source files to the source map', () => {
         ctx.print(createSourceSpan(fileA, 0), 'o0');
