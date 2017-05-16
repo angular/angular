@@ -24,23 +24,48 @@ export const APP_INITIALIZER = new InjectionToken<Array<() => void>>('Applicatio
  */
 @Injectable()
 export class ApplicationInitStatus {
+  private resolve: Function;
+  private reject: Function;
+  private initialized = false;
   private _donePromise: Promise<any>;
   private _done = false;
 
-  constructor(@Inject(APP_INITIALIZER) @Optional() appInits: (() => any)[]) {
+  constructor(@Inject(APP_INITIALIZER) @Optional() private appInits: (() => any)[]) {
+    this._donePromise = new Promise((res, rej) => {
+      this.resolve = res;
+      this.reject = rej;
+    });
+  }
+
+  /** @internal */
+  runInitializers() {
+    if (this.initialized) {
+      return;
+    }
+
     const asyncInitPromises: Promise<any>[] = [];
-    if (appInits) {
-      for (let i = 0; i < appInits.length; i++) {
-        const initResult = appInits[i]();
+
+    const complete =
+        () => {
+          this._done = true;
+          this.resolve();
+        }
+
+    if (this.appInits) {
+      for (let i = 0; i < this.appInits.length; i++) {
+        const initResult = this.appInits[i]();
         if (isPromise(initResult)) {
           asyncInitPromises.push(initResult);
         }
       }
     }
-    this._donePromise = Promise.all(asyncInitPromises).then(() => { this._done = true; });
+
+    Promise.all(asyncInitPromises).then(() => { complete(); }).catch(e => { this.reject(e); });
+
     if (asyncInitPromises.length === 0) {
-      this._done = true;
+      complete();
     }
+    this.initialized = true;
   }
 
   get done(): boolean { return this._done; }
