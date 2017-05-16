@@ -15,7 +15,7 @@ export class TocComponent implements OnInit, OnDestroy {
   hasSecondary = false;
   hasToc = false;
   hostElement: HTMLElement;
-  isClosed = true;
+  isCollapsed = true;
   isEmbedded = false;
   private onDestroy = new Subject();
   private primaryMax = 4;
@@ -52,7 +52,11 @@ export class TocComponent implements OnInit, OnDestroy {
   }
 
   toggle(canScroll = true) {
-    this.isClosed = !this.isClosed;
-    if (canScroll && this.isClosed) { this.scrollService.scrollToTop(); }
+    this.isCollapsed = !this.isCollapsed;
+    if (canScroll && this.isCollapsed) { this.toTop(); }
+  }
+
+  toTop() {
+    this.scrollService.scrollToTop();
   }
 }
