@@ -132,8 +132,10 @@ describe('config', () => {
     it('should throw when pathPatch is invalid', () => {
       expect(() => { validateConfig([{path: 'a', outlet: 'aux', children: []}]); })
           .toThrowError(
-              /Invalid configuration of route 'a': a componentless route cannot have a named outlet set/);
+              /Invalid configuration of route 'a': a named outlet should wether have component or loadChildren/);
 
+      expect(() => validateConfig([{path: 'a', outlet: 'aux', loadChildren: 'value'}]))
+          .not.toThrow();
       expect(() => validateConfig([{path: 'a', outlet: '', children: []}])).not.toThrow();
       expect(() => validateConfig([{path: 'a', outlet: PRIMARY_OUTLET, children: []}]))
           .not.toThrow();

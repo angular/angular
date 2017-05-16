@@ -393,9 +393,10 @@ function validateNode(route: Route, fullPath: string): void {
   if (Array.isArray(route)) {
     throw new Error(`Invalid configuration of route '${fullPath}': Array cannot be specified`);
   }
-  if (!route.component && (route.outlet && route.outlet !== PRIMARY_OUTLET)) {
+  if (!route.component && !route.loadChildren &&
+      (route.outlet && route.outlet !== PRIMARY_OUTLET)) {
     throw new Error(
-        `Invalid configuration of route '${fullPath}': a componentless route cannot have a named outlet set`);
+        `Invalid configuration of route '${fullPath}': a named outlet should wether have component or loadChildren`);
   }
   if (route.redirectTo && route.children) {
     throw new Error(
