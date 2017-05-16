@@ -32,7 +32,6 @@ BUILD_ALL=true
 BUNDLE=true
 VERSION_PREFIX=$(node -p "require('./package.json').version")
 VERSION_SUFFIX="-$(git log --oneline -1 | awk '{print $1}')"
-ROUTER_VERSION_PREFIX=$(node -p "require('./package.json').version.replace(/^2/, '3')")
 REMOVE_BENCHPRESS=false
 BUILD_EXAMPLES=true
 COMPILE_SOURCE=true
@@ -329,8 +328,7 @@ mapSources() {
 }
 
 VERSION="${VERSION_PREFIX}${VERSION_SUFFIX}"
-ROUTER_VERSION="${ROUTER_VERSION_PREFIX}${VERSION_SUFFIX}"
-echo "====== BUILDING: Version ${VERSION} (Router ${ROUTER_VERSION})"
+echo "====== BUILDING: Version ${VERSION}"
 
 N="
 "
@@ -428,12 +426,7 @@ do
   MODULES_DIR=${NPM_DIR}/@angular
   BUNDLES_DIR=${NPM_DIR}/bundles
 
-  if [[ ${PACKAGE} != router ]]; then
-    LICENSE_BANNER=${ROOT_DIR}/license-banner.txt
-  fi
-  if [[ ${PACKAGE} == router ]]; then
-    LICENSE_BANNER=${ROOT_DIR}/router-license-banner.txt
-  fi
+  LICENSE_BANNER=${ROOT_DIR}/license-banner.txt
 
   if [[ ${COMPILE_SOURCE} == true ]]; then
     rm -rf ${OUT_DIR}
@@ -488,8 +481,6 @@ do
       cd ${NPM_DIR}
       echo "======       EXECUTE: perl -p -i -e \"s/0\.0\.0\-PLACEHOLDER/${VERSION}/g\" $""(grep -ril 0\.0\.0\-PLACEHOLDER .)"
       perl -p -i -e "s/0\.0\.0\-PLACEHOLDER/${VERSION}/g" $(grep -ril 0\.0\.0\-PLACEHOLDER .) < /dev/null 2> /dev/null
-      echo "======       EXECUTE: perl -p -i -e \"s/0\.0\.0\-ROUTERPLACEHOLDER/${ROUTER_VERSION}/g\" $""(grep -ril 0\.0\.0\-ROUTERPLACEHOLDER .)"
-      perl -p -i -e "s/0\.0\.0\-ROUTERPLACEHOLDER/${ROUTER_VERSION}/g" $(grep -ril 0\.0\.0\-ROUTERPLACEHOLDER .) < /dev/null 2> /dev/null
     )
   fi
 
