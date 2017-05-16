@@ -42,6 +42,51 @@ export function main() {
   function syncValidator(_: any /** TODO #9100 */): any /** TODO #9100 */ { return null; }
 
   describe('FormControl', () => {
+    it('should work with generics', () => {
+
+      const c1 = new FormControl(undefined);
+      const c2 = new FormControl(null);
+      const c3 = new FormControl();
+      const c4 = new FormControl<string>();
+      c2.setValue(1);
+      c2.setValue('a');
+
+      c4.setValue('a');
+      c4.setValue(null);
+      c4.patchValue('');
+      c4.patchValue(null);
+      c4.value;
+      c4.valueChanges.subscribe(a => a);
+
+      interface MyInterface {
+        name: string;
+      }
+      const g1 = new FormGroup({'name': new FormControl()});
+      const g2 = new FormGroup<MyInterface>({'name': new FormControl()});
+
+      g1.value;
+      g1.setValue({name: 'b'});
+
+      g2.setValue({name: 'a'});
+      g2.patchValue({name: 'a'});
+      g2.getRawValue();
+      g2.valueChanges.subscribe(a => a);
+
+      const a1 = new FormArray([new FormControl()]);
+      const a2 = new FormArray([new FormControl<number>()]);
+
+      a1.push(new FormControl(''));
+      a1.push(new FormControl(2));
+
+      a2.push(new FormControl(2));
+      a2.insert(2, new FormControl(2));
+      a2.at(2);
+      a2.reset([]);
+      a2.value;
+      a2.valueChanges.subscribe(a => a);
+
+    })
+
     it('should default the value to null', () => {
       const c = new FormControl();
       expect(c.value).toBe(null);
