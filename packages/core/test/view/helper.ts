@@ -41,6 +41,11 @@ export function createEmbeddedView(parent: ViewData, anchorDef: NodeDef, context
   return Services.createEmbeddedView(parent, anchorDef, anchorDef.element !.template !, context);
 }
 
-export let removeNodes: Node[];
+let removeNodes: Node[];
+
 beforeEach(() => { removeNodes = []; });
 afterEach(() => { removeNodes.forEach((node) => getDOM().remove(node)); });
+
+export function recordNodeToRemove(node: Node) {
+  removeNodes.push(node);
+}

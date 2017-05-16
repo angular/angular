@@ -669,7 +669,7 @@ class _DuplicateItemRecordList<V> {
   get(trackById: any, afterIndex: number|null): IterableChangeRecord_<V>|null {
     let record: IterableChangeRecord_<V>|null;
     for (record = this._head; record !== null; record = record._nextDup) {
-      if ((afterIndex === null || afterIndex < record.currentIndex) &&
+      if ((afterIndex === null || afterIndex < record.currentIndex !) &&
           looseIdentical(record.trackById, trackById)) {
         return record;
       }
