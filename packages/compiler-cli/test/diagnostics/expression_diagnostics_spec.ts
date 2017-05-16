@@ -175,7 +175,16 @@ describe('expression diagnostics', () => {
   it('should reject an uncalled event handler',
      () => reject(
          '<div (click)="click">{{person.name.first}}</div>', 'Unexpected callable expression'));
-
+  describe('with comparisions between nullable and non-nullable', () => {
+    it('should accept ==', () => accept(`<div>{{e == 1 ? 'a' : 'b'}}</div>`));
+    it('should accept ===', () => accept(`<div>{{e === 1 ? 'a' : 'b'}}</div>`));
+    it('should accept !=', () => accept(`<div>{{e != 1 ? 'a' : 'b'}}</div>`));
+    it('should accept !==', () => accept(`<div>{{e !== 1 ? 'a' : 'b'}}</div>`));
+    it('should accept &&', () => accept(`<div>{{e && 1 ? 'a' : 'b'}}</div>`));
+    it('should accept ||', () => accept(`<div>{{e || 1 ? 'a' : 'b'}}</div>`));
+    it('should reject >',
+       () => reject(`<div>{{e > 1 ? 'a' : 'b'}}</div>`, 'The expression might be null'));
+  });
 });
 
 const FILES: Directory = {
@@ -216,6 +225,7 @@ const FILES: Directory = {
           promised_people: Promise<Person[]>;
           private private_person: Person;
           private private_people: Person[];
+          e?: number;
 
           getPerson(): Person { return this.person; }
           click() {}

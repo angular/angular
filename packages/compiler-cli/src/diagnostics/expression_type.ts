@@ -51,8 +51,29 @@ export class AstType implements AstVisitor {
       return kind;
     }
 
-    const leftType = this.getType(ast.left);
-    const rightType = this.getType(ast.right);
+    const getType = (ast: AST, operation: string): Symbol => {
+      const type = this.getType(ast);
+      if (type.nullable) {
+        switch (operation) {
+          case '&&':
+          case '||':
+          case '==':
+          case '!=':
+          case '===':
+          case '!==':
+            // Nullable allowed.
+            break;
+          default:
+            this.reportError(`The expression might be null`, ast);
+            break;
+        }
+        return this.query.getNonNullableType(type);
+      }
+      return type;
+    };
+
+    const leftType = getType(ast.left, ast.operation);
+    const rightType = getType(ast.right, ast.operation);
     const leftRawKind = this.query.getTypeKind(leftType);
     const rightRawKind = this.query.getTypeKind(rightType);
     const leftKind = normalize(leftRawKind, rightRawKind);
@@ -166,6 +187,9 @@ export class AstType implements AstVisitor {
 
   visitConditional(ast: Conditional) {
     // The type of a conditional is the union of the true and false conditions.
+    if (this.diagnostics) {
+      visitAstChildren(ast, this);
+    }
     return this.query.getTypeUnion(this.getType(ast.trueExp), this.getType(ast.falseExp));
   }
 
