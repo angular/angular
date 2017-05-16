@@ -44,7 +44,7 @@ module.exports = function getLinkInfo(getDocFromAlias, encodeCodeBlock, log) {
 
     } else if (docs.length >= 1) {
       linkInfo.url = docs[0].path;
-      linkInfo.title = title || encodeCodeBlock(docs[0].name, true);
+      linkInfo.title = title || docs[0].title || docs[0].name && encodeCodeBlock(docs[0].name, true);
       linkInfo.type = 'doc';
 
       if (getLinkInfoImpl.relativeLinks && currentDoc && currentDoc.path) {
@@ -70,6 +70,10 @@ module.exports = function getLinkInfo(getDocFromAlias, encodeCodeBlock, log) {
     } else {
       linkInfo.title =
           title || ((url.indexOf('#') === 0) ? url.substring(1) : path.basename(url, '.html'));
+    }
+
+    if (linkInfo.title === undefined) {
+      linkInfo.valid = false;
     }
 
     return linkInfo;
