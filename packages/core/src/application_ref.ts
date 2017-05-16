@@ -302,6 +302,7 @@ export class PlatformRef_ extends PlatformRef {
       ngZone !.onError.subscribe({next: (error: any) => { exceptionHandler.handleError(error); }});
       return _callAndReportToErrorHandler(exceptionHandler, () => {
         const initStatus: ApplicationInitStatus = moduleRef.injector.get(ApplicationInitStatus);
+        initStatus.runInitializers();
         return initStatus.donePromise.then(() => {
           this._moduleDoBootstrap(moduleRef);
           return moduleRef;
