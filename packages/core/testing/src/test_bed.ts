@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompilerOptions, Component, Directive, InjectionToken, Injector, ModuleWithComponentFactories, NgModule, NgModuleFactory, NgModuleRef, NgZone, Optional, Pipe, PlatformRef, Provider, ReflectiveInjector, SchemaMetadata, SkipSelf, Type, ɵDepFlags as DepFlags, ɵERROR_COMPONENT_TYPE, ɵNodeFlags as NodeFlags, ɵclearProviderOverrides as clearProviderOverrides, ɵoverrideProvider as overrideProvider, ɵstringify as stringify} from '@angular/core';
+import {ApplicationInitStatus, CompilerOptions, Component, Directive, InjectionToken, Injector, ModuleWithComponentFactories, NgModule, NgModuleFactory, NgModuleRef, NgZone, Optional, Pipe, PlatformRef, Provider, ReflectiveInjector, SchemaMetadata, SkipSelf, Type, ɵDepFlags as DepFlags, ɵERROR_COMPONENT_TYPE, ɵNodeFlags as NodeFlags, ɵclearProviderOverrides as clearProviderOverrides, ɵoverrideProvider as overrideProvider, ɵstringify as stringify} from '@angular/core';
 
 import {AsyncTestCompleter} from './async_test_completer';
 import {ComponentFixture} from './component_fixture';
@@ -311,6 +311,9 @@ export class TestBed implements Injector {
     const ngZoneInjector = ReflectiveInjector.resolveAndCreate(
         [{provide: NgZone, useValue: ngZone}], this.platform.injector);
     this._moduleRef = this._moduleFactory.create(ngZoneInjector);
+    // ApplicationInitStatus.runInitializers() is marked @internal to core. So casting to any
+    // before accessing it.
+    (this._moduleRef.injector.get(ApplicationInitStatus) as any).runInitializers();
     this._instantiated = true;
   }
 
