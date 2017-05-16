@@ -41,6 +41,7 @@ export class CompWithReferences {
 
 @Component({selector: 'cmp-pipes', template: `<div *ngIf>{{test | somePipe}}</div>`})
 export class CompUsingPipes {
+  test: string;
 }
 
 @Component({

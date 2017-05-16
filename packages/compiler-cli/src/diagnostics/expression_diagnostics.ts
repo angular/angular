@@ -91,10 +91,10 @@ function getDefintionOf(info: DiagnosticTemplateInfo, ast: TemplateAst): Definit
 }
 
 function getVarDeclarations(
-    info: DiagnosticTemplateInfo, path: TemplateAstPath): SymbolDeclaration[] {
+    info: DiagnosticTemplateInfo, path: TemplateAstPath,
+    current?: TemplateAst): SymbolDeclaration[] {
   const result: SymbolDeclaration[] = [];
-
-  let current = path.tail;
+  current = current || path.tail;
   while (current) {
     if (current instanceof EmbeddedTemplateAst) {
       for (const variable of current.variables) {
@@ -115,7 +115,11 @@ function getVarDeclarations(
             if (kind === BuiltinType.Any || kind == BuiltinType.Unbound) {
               // The any type is not very useful here. For special cases, such as ngFor, we can do
               // better.
-              type = refinedVariableType(type, info, current);
+              type = refinedVariableType(type, info, current, path);
+              if (info.query.getTypeKind(type) == BuiltinType.Unbound) {
+                // If we still have an unbound type, convert it to any.
+                type = info.query.getBuiltinType(BuiltinType.Any);
+              }
             }
           }
         }
@@ -135,7 +139,8 @@ function getVarDeclarations(
 }
 
 function refinedVariableType(
-    type: Symbol, info: DiagnosticTemplateInfo, templateElement: EmbeddedTemplateAst): Symbol {
+    type: Symbol, info: DiagnosticTemplateInfo, templateElement: EmbeddedTemplateAst,
+    path: TemplateAstPath): Symbol {
   // Special case the ngFor directive
   const ngForDirective = templateElement.directives.find(d => {
     const name = identifierName(d.directive.type);
@@ -144,7 +149,16 @@ function refinedVariableType(
   if (ngForDirective) {
     const ngForOfBinding = ngForDirective.inputs.find(i => i.directiveName == 'ngForOf');
     if (ngForOfBinding) {
-      const bindingType = new AstType(info.members, info.query, {}).getType(ngForOfBinding.value);
+      let scope = info.members;
+      const parent = path.first(EmbeddedTemplateAst, templateElement);
+      if (parent) {
+        const parentVariables = getVarDeclarations(info, path, parent);
+        if (parentVariables.length) {
+          scope =
+              info.query.mergeSymbolTable([scope, info.query.createSymbolTable(parentVariables)]);
+        }
+      }
+      const bindingType = new AstType(scope, info.query, {}).getType(ngForOfBinding.value);
       if (bindingType) {
         const result = info.query.getElementType(bindingType);
         if (result) {

@@ -81,6 +81,13 @@ interface Options extends ts.CompilerOptions {
 
   // Whether to enable support for <template> and the template attribute (true by default)
   enableLegacyTemplate?: boolean;
+
+  // Binding expression diagnostics
+  // error:   Errors detected in binding expressions trigger an error and the compilation is
+  //          stopped.
+  // warning: Errors detecetd in binding expressions are reported as warnings.
+  // off:     Binding expressions are not examined for errors.
+  expressionDiagnostics?: 'error'|'warning'|'off';
 }
 
 export default Options;

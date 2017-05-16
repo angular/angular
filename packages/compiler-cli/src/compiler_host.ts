@@ -6,11 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompilerHost, StaticSymbol} from '@angular/compiler';
+import {AotCompilerHost, CompilePipeSummary, Node, ParseError, ParseErrorLevel, ParseLocation, ParseSourceSpan, StaticSymbol, TemplateAst} from '@angular/compiler';
 import {AngularCompilerOptions, CollectorOptions, MetadataCollector, ModuleMetadata} from '@angular/tsc-wrapped';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
+
+import {DiagnosticTemplateInfo, getTemplateExpressionDiagnostics} from './diagnostics/expression_diagnostics';
+import {DiagnosticKind} from './diagnostics/expression_type';
+import {Span} from './diagnostics/symbols';
+import {getClassMembers, getPipesTable, getSymbolQuery} from './diagnostics/typescript_symbols';
 
 const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 const DTS = /\.d\.ts$/;
@@ -358,6 +363,43 @@ export class CompilerHost implements AotCompilerHost {
     };
 
     return checkBundleIndex(path.dirname(filePath));
+  }
+
+  checkTemplate(
+      component: StaticSymbol, htmlAst: Node[], templateAst: TemplateAst[],
+      pipes: CompilePipeSummary[]): ParseError[] {
+    if (this.options.expressionDiagnostics && this.options.expressionDiagnostics !== 'off') {
+      const program = this.program;
+      const checker = program.getTypeChecker();
+      const source = program.getSourceFile(component.filePath);
+      const members = getClassMembers(program, checker, component);
+      const file = htmlAst[0] && htmlAst[0].sourceSpan.start.file;
+      if (file && source && members) {
+        const query = getSymbolQuery(
+            program, checker, source, () => getPipesTable(source, program, checker, pipes));
+        const templateInfo:
+            DiagnosticTemplateInfo = {offset: 0, query, members, htmlAst, templateAst};
+        const diagnostics = getTemplateExpressionDiagnostics(templateInfo);
+
+        if (diagnostics && diagnostics.length) {
+          const parseLocationOf = (offset: number) => {
+            const {line, col} = file.lineColOf(offset);
+            return new ParseLocation(file, offset, line, col);
+          };
+          const parseSourceSpanOf = (span: Span) =>
+              new ParseSourceSpan(parseLocationOf(span.start), parseLocationOf(span.end));
+          const levelOf = (kind: DiagnosticKind) =>
+              this.options.expressionDiagnostics === 'warning' || kind == DiagnosticKind.Warning ?
+              ParseErrorLevel.WARNING :
+              ParseErrorLevel.ERROR;
+          return diagnostics.map(
+              diagnostic => new ParseError(
+                  parseSourceSpanOf(diagnostic.span), diagnostic.message,
+                  levelOf(diagnostic.kind)));
+        }
+      }
+    }
+    return [];
   }
 }
 
