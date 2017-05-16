@@ -59,7 +59,6 @@ export * from './ml_parser/html_tags';
 export * from './ml_parser/interpolation_config';
 export * from './ml_parser/tags';
 export {NgModuleCompiler} from './ng_module_compiler';
-export * from './output/path_util';
 export * from './output/ts_emitter';
 export * from './parse_util';
 export * from './schema/dom_element_schema_registry';

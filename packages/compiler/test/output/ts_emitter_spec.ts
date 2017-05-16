@@ -7,9 +7,7 @@
  */
 
 import {StaticSymbol} from '@angular/compiler/src/aot/static_symbol';
-import {CompileIdentifierMetadata} from '@angular/compiler/src/compile_metadata';
 import * as o from '@angular/compiler/src/output/output_ast';
-import {ImportResolver} from '@angular/compiler/src/output/path_util';
 import {TypeScriptEmitter} from '@angular/compiler/src/output/ts_emitter';
 
 import {stripSourceMapAndNewLine} from './abstract_emitter_spec';
@@ -18,21 +16,9 @@ const someGenFilePath = 'somePackage/someGenFile';
 const someSourceFilePath = 'somePackage/someSourceFile';
 const anotherModuleUrl = 'somePackage/someOtherPath';
 
-const sameModuleIdentifier: CompileIdentifierMetadata = {
-  reference: new StaticSymbol(someGenFilePath, 'someLocalId', [])
-};
+const sameModuleIdentifier = new o.ExternalReference(null, 'someLocalId', null);
 
-const externalModuleIdentifier: CompileIdentifierMetadata = {
-  reference: new StaticSymbol(anotherModuleUrl, 'someExternalId', [])
-};
-
-class SimpleJsImportGenerator implements ImportResolver {
-  fileNameToModuleName(importedUrlStr: string, moduleUrlStr: string): string {
-    return importedUrlStr;
-  }
-  getImportAs(symbol: StaticSymbol): StaticSymbol|null { return null; }
-  getTypeArity(symbol: StaticSymbol): number|null { return null; }
-}
+const externalModuleIdentifier = new o.ExternalReference(anotherModuleUrl, 'someExternalId', null);
 
 export function main() {
   // Not supported features of our OutputAst in TS:
@@ -40,22 +26,17 @@ export function main() {
   // - final fields
 
   describe('TypeScriptEmitter', () => {
-    let importResolver: ImportResolver;
     let emitter: TypeScriptEmitter;
     let someVar: o.ReadVarExpr;
 
     beforeEach(() => {
-      importResolver = new SimpleJsImportGenerator();
-      emitter = new TypeScriptEmitter(importResolver);
+      emitter = new TypeScriptEmitter();
       someVar = o.variable('someVar', null, null);
     });
 
-    function emitStmt(
-        stmt: o.Statement | o.Statement[], exportedVars: string[] | null = null,
-        preamble?: string): string {
+    function emitStmt(stmt: o.Statement | o.Statement[], preamble?: string): string {
       const stmts = Array.isArray(stmt) ? stmt : [stmt];
-      const source = emitter.emitStatements(
-          someSourceFilePath, someGenFilePath, stmts, exportedVars || [], preamble);
+      const source = emitter.emitStatements(someSourceFilePath, someGenFilePath, stmts, preamble);
       return stripSourceMapAndNewLine(source);
     }
 
@@ -63,7 +44,7 @@ export function main() {
       expect(emitStmt(someVar.set(o.literal(1)).toDeclStmt())).toEqual(`var someVar:any = 1;`);
       expect(emitStmt(someVar.set(o.literal(1)).toDeclStmt(null, [o.StmtModifier.Final])))
           .toEqual(`const someVar:any = 1;`);
-      expect(emitStmt(someVar.set(o.literal(1)).toDeclStmt(), ['someVar']))
+      expect(emitStmt(someVar.set(o.literal(1)).toDeclStmt(null, [o.StmtModifier.Exported])))
           .toEqual(`export var someVar:any = 1;`);
       expect(emitStmt(someVar.set(o.literal(1)).toDeclStmt(o.INT_TYPE)))
           .toEqual(`var someVar:number = 1;`);
@@ -74,8 +55,9 @@ export function main() {
     describe('declare variables with ExternExpressions as values', () => {
       it('should create no reexport if the identifier is in the same module', () => {
         // identifier is in the same module -> no reexport
-        expect(emitStmt(someVar.set(o.importExpr(sameModuleIdentifier)).toDeclStmt(), ['someVar']))
-            .toEqual('export var someVar:any = someLocalId;');
+        expect(emitStmt(someVar.set(o.importExpr(sameModuleIdentifier)).toDeclStmt(null, [
+          o.StmtModifier.Exported
+        ]))).toEqual('export var someVar:any = someLocalId;');
       });
 
       it('should create no reexport if the variable is not exported', () => {
@@ -85,31 +67,17 @@ export function main() {
       });
 
       it('should create no reexport if the variable is typed', () => {
-        expect(emitStmt(
-                   someVar.set(o.importExpr(externalModuleIdentifier)).toDeclStmt(o.DYNAMIC_TYPE),
-                   ['someVar']))
+        expect(emitStmt(someVar.set(o.importExpr(externalModuleIdentifier))
+                            .toDeclStmt(o.DYNAMIC_TYPE, [o.StmtModifier.Exported])))
             .toEqual([
               `import * as i0 from 'somePackage/someOtherPath';`,
               `export var someVar:any = i0.someExternalId;`
             ].join('\n'));
       });
 
-      it('should create no reexport if the identifier has members', () => {
-        const externalModuleIdentifierWithMembers: CompileIdentifierMetadata = {
-          reference: new StaticSymbol(anotherModuleUrl, 'someExternalId', ['a'])
-        };
-        expect(emitStmt(
-                   someVar.set(o.importExpr(externalModuleIdentifierWithMembers)).toDeclStmt(),
-                   ['someVar']))
-            .toEqual([
-              `import * as i0 from 'somePackage/someOtherPath';`,
-              `export var someVar:any = i0.someExternalId.a;`
-            ].join('\n'));
-      });
-
       it('should create a reexport', () => {
-        expect(
-            emitStmt(someVar.set(o.importExpr(externalModuleIdentifier)).toDeclStmt(), ['someVar']))
+        expect(emitStmt(someVar.set(o.importExpr(externalModuleIdentifier))
+                            .toDeclStmt(null, [o.StmtModifier.Exported])))
             .toEqual([
               `export {someExternalId as someVar} from 'somePackage/someOtherPath';`, ``
             ].join('\n'));
@@ -117,28 +85,17 @@ export function main() {
 
       it('should create multiple reexports from the same file', () => {
         const someVar2 = o.variable('someVar2');
-        const externalModuleIdentifier2: CompileIdentifierMetadata = {
-          reference: new StaticSymbol(anotherModuleUrl, 'someExternalId2', [])
-        };
-        expect(emitStmt(
-                   [
-                     someVar.set(o.importExpr(externalModuleIdentifier)).toDeclStmt(),
-                     someVar2.set(o.importExpr(externalModuleIdentifier2)).toDeclStmt()
-                   ],
-                   ['someVar', 'someVar2']))
+        const externalModuleIdentifier2 =
+            new o.ExternalReference(anotherModuleUrl, 'someExternalId2', null);
+        expect(emitStmt([
+          someVar.set(o.importExpr(externalModuleIdentifier))
+              .toDeclStmt(null, [o.StmtModifier.Exported]),
+          someVar2.set(o.importExpr(externalModuleIdentifier2))
+              .toDeclStmt(null, [o.StmtModifier.Exported])
+        ]))
             .toEqual([
               `export {someExternalId as someVar,someExternalId2 as someVar2} from 'somePackage/someOtherPath';`,
               ``
-            ].join('\n'));
-      });
-
-      it('should use `importAs` for reexports', () => {
-        spyOn(importResolver, 'getImportAs')
-            .and.returnValue(new StaticSymbol('somePackage/importAsModule', 'importAsName', []));
-        expect(
-            emitStmt(someVar.set(o.importExpr(externalModuleIdentifier)).toDeclStmt(), ['someVar']))
-            .toEqual([
-              `export {importAsName as someVar} from 'somePackage/importAsModule';`, ``
             ].join('\n'));
       });
     });
@@ -230,14 +187,6 @@ export function main() {
       ].join('\n'));
     });
 
-    it('should support `importAs` for external identifiers', () => {
-      spyOn(importResolver, 'getImportAs')
-          .and.returnValue(new StaticSymbol('somePackage/importAsModule', 'importAsName', []));
-      expect(emitStmt(o.importExpr(externalModuleIdentifier).toStmt())).toEqual([
-        `import * as i0 from 'somePackage/importAsModule';`, `i0.importAsName;`
-      ].join('\n'));
-    });
-
     it('should support operators', () => {
       const lhs = o.variable('lhs');
       const rhs = o.variable('rhs');
@@ -277,9 +226,8 @@ export function main() {
     it('should support function statements', () => {
       expect(emitStmt(new o.DeclareFunctionStmt('someFn', [], [
       ]))).toEqual(['function someFn():void {', '}'].join('\n'));
-      expect(emitStmt(new o.DeclareFunctionStmt('someFn', [], []), ['someFn'])).toEqual([
-        'export function someFn():void {', '}'
-      ].join('\n'));
+      expect(emitStmt(new o.DeclareFunctionStmt('someFn', [], [], null, [o.StmtModifier.Exported])))
+          .toEqual(['export function someFn():void {', '}'].join('\n'));
       expect(emitStmt(new o.DeclareFunctionStmt(
                  'someFn', [], [new o.ReturnStatement(o.literal(1))], o.INT_TYPE)))
           .toEqual(['function someFn():number {', '  return 1;', '}'].join('\n'));
@@ -324,8 +272,9 @@ export function main() {
       it('should support declaring classes', () => {
         expect(emitStmt(new o.ClassStmt('SomeClass', null !, [], [], null !, [
         ]))).toEqual(['class SomeClass {', '}'].join('\n'));
-        expect(emitStmt(new o.ClassStmt('SomeClass', null !, [], [], null !, []), ['SomeClass']))
-            .toEqual(['export class SomeClass {', '}'].join('\n'));
+        expect(emitStmt(new o.ClassStmt('SomeClass', null !, [], [], null !, [], [
+          o.StmtModifier.Exported
+        ]))).toEqual(['export class SomeClass {', '}'].join('\n'));
         expect(emitStmt(new o.ClassStmt('SomeClass', o.variable('SomeSuperClass'), [], [], null !, [
         ]))).toEqual(['class SomeClass extends SomeSuperClass {', '}'].join('\n'));
       });
@@ -439,16 +388,6 @@ export function main() {
       ].join('\n'));
     });
 
-    it('should support `importAs` for external types', () => {
-      spyOn(importResolver, 'getImportAs')
-          .and.returnValue(new StaticSymbol('somePackage/importAsModule', 'importAsName', []));
-      const writeVarExpr = o.variable('a').set(o.NULL_EXPR);
-      expect(emitStmt(writeVarExpr.toDeclStmt(o.importType(externalModuleIdentifier)))).toEqual([
-        `import * as i0 from 'somePackage/importAsModule';`,
-        `var a:i0.importAsName = (null as any);`
-      ].join('\n'));
-    });
-
     it('should support expression types', () => {
       expect(
           emitStmt(o.variable('a').set(o.NULL_EXPR).toDeclStmt(o.expressionType(o.variable('b')))))
@@ -479,7 +418,7 @@ export function main() {
     });
 
     it('should support a preamble', () => {
-      expect(emitStmt(o.variable('a').toStmt(), [], '/* SomePreamble */')).toBe([
+      expect(emitStmt(o.variable('a').toStmt(), '/* SomePreamble */')).toBe([
         '/* SomePreamble */', 'a;'
       ].join('\n'));
     });
