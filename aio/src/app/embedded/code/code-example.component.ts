@@ -18,7 +18,9 @@ import { getBoolFromAttribute } from 'app/shared/attribute-utils';
   template: `
     <header *ngIf="title">{{title}}</header>
     <aio-code [ngClass]="classes" [code]="code"
-    [language]="language" [linenums]="linenums" [path]="path" [region]="region" [hideCopy]="hideCopy"></aio-code>
+    [language]="language" [linenums]="linenums"
+    [path]="path" [region]="region"
+    [hideCopy]="hideCopy" [title]="title"></aio-code>
   `
 })
 export class CodeExampleComponent implements OnInit {

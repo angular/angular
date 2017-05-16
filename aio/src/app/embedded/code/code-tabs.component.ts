@@ -27,7 +27,8 @@ export interface TabInfo {
         <span class="{{tab.class}}">{{ tab.title }}</span>
       </ng-template>
       <aio-code [code]="tab.code" [language]="tab.language" [linenums]="tab.linenums"
-      [path]="tab.path" [region]="tab.region" class="{{ tab.class }}"></aio-code>
+      [path]="tab.path" [region]="tab.region" [title]="tab.title"
+      class="{{ tab.class }}"></aio-code>
     </md-tab>
   </md-tab-group>
   `

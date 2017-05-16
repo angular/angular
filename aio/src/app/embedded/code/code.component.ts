@@ -31,18 +31,31 @@ const defaultLineNumsCount = 10; // by default, show linenums over this number
   selector: 'aio-code',
   template: `
     <pre class="prettyprint lang-{{language}}">
-      <button *ngIf="!hideCopy" class="material-icons copy-button" (click)="doCopy()">content_copy</button>
+      <button *ngIf="!hideCopy" class="material-icons copy-button"
+        title="Copy code snippet"
+        [attr.aria-label]="ariaLabel"
+        (click)="doCopy()">
+        <span aria-hidden="true">content_copy</span>
+      </button>
       <code class="animated fadeIn" #codeContainer></code>
     </pre>
     `
 })
 export class CodeComponent implements OnChanges {
 
+  ariaLabel = '';
+
   /**
    * The code to be formatted, this should already be HTML encoded
    */
   @Input()
   code: string;
+
+  /**
+   * set to true if the copy button is not to be shown
+   */
+  @Input()
+  hideCopy: boolean;
 
   /**
    * The language of the code to render
@@ -73,10 +86,10 @@ export class CodeComponent implements OnChanges {
   region: string;
 
   /**
-   * set to true if the copy button is not to be shown
+   * title for this snippet (optional)
    */
   @Input()
-  hideCopy: boolean;
+  title: string;
 
   /**
    * The element in the template that will display the formatted code
@@ -91,6 +104,7 @@ export class CodeComponent implements OnChanges {
 
   ngOnChanges() {
     this.code = this.code && leftAlign(this.code);
+    this.ariaLabel = this.title ? `Copy code snippet from ${this.title}` : '';
 
     if (!this.code) {
       const src = this.path ? this.path + (this.region ? '#' + this.region : '') : '';
