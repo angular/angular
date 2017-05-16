@@ -5,5 +5,6 @@ vendor/
 */src/*.js
 **/*.ngfactory.ts
 **/*.ngsummary.json
+**/*.ngsummary.ts
 */yarn*
 */.yarn_local_cache*
