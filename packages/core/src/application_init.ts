@@ -7,9 +7,8 @@
  */
 
 import {isPromise} from '../src/util/lang';
-
 import {Inject, Injectable, InjectionToken, Optional} from './di';
-
+import {stringify} from './util';
 
 /**
  * A function that will be executed when an application is initialized.
@@ -31,7 +30,12 @@ export class ApplicationInitStatus {
     const asyncInitPromises: Promise<any>[] = [];
     if (appInits) {
       for (let i = 0; i < appInits.length; i++) {
-        const initResult = appInits[i]();
+        const appInitFn = appInits[i];
+        if (typeof appInitFn !== 'function') {
+          throw new Error(
+              `APP_INITIALIZER must be a function, but received '${stringify(appInitFn)}'`);
+        }
+        const initResult = appInitFn();
         if (isPromise(initResult)) {
           asyncInitPromises.push(initResult);
         }
