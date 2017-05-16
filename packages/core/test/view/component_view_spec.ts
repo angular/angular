@@ -10,7 +10,7 @@ import {Injector, RenderComponentType, RootRenderer, Sanitizer, SecurityContext,
 import {ArgumentType, BindingFlags, NodeCheckFn, NodeDef, NodeFlags, OutputType, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewState, ViewUpdateFn, anchorDef, asElementData, asProviderData, directiveDef, elementDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
-import {createRootView, isBrowser, removeNodes} from './helper';
+import {createRootView, isBrowser, recordNodeToRemove} from './helper';
 
 export function main() {
   describe(`Component Views`, () => {
@@ -56,7 +56,7 @@ export function main() {
         beforeEach(() => {
           rootNode = document.createElement('root');
           document.body.appendChild(rootNode);
-          removeNodes.push(rootNode);
+          recordNodeToRemove(rootNode);
         });
 
         it('should select root elements based on a selector', () => {

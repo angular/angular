@@ -456,7 +456,7 @@ class _Visitor implements html.Visitor {
         0);
 
     if (significantChildren == 1) {
-      for (let i = this._messages.length - 1; i >= startIndex; i--) {
+      for (let i = this._messages.length - 1; i >= startIndex !; i--) {
         const ast = this._messages[i].nodes;
         if (!(ast.length == 1 && ast[0] instanceof i18n.Text)) {
           this._messages.splice(i, 1);

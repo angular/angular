@@ -334,7 +334,7 @@ export function main() {
         it('should use FormData body and detect content type header to the request', () => {
           const body = new FormData();
           body.append('test1', 'val1');
-          body.append('test2', 123456);
+          body.append('test2', '123456');
           const blob = createBlob(['body { color: red; }'], 'text/css');
           body.append('userfile', blob);
           const base = new BaseRequestOptions();

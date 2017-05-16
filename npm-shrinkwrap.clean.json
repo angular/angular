@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "4.1.0",
+  "version": "4.2.0-beta.0",
   "dependencies": {
     "@types/angularjs": {
       "version": "1.5.13-alpha",
@@ -6279,8 +6279,7 @@
       "dev": true
     },
     "typescript": {
-      "version": "2.1.5",
-      "dev": true
+      "version": "2.3.2"
     },
     "ua-parser-js": {
       "version": "0.7.10",
