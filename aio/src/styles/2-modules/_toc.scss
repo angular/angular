@@ -50,49 +50,68 @@ aio-toc > div {
     }
   }
 
-  button.toc-show-all,
+  button.toc-heading,
   button.toc-more-items {
+    cursor: pointer;
     display: inline-block;
     background: 0;
     background-color: transparent;
     border: none;
     box-shadow: none;
-    color: $mediumgray;
     padding: 0;
+
+    &:focus.embedded {
+      outline: none;
+      background: $lightgray;
+    }
+  }
+
+  button.toc-heading,
+  div.toc-heading {
+    font-size: 115%;
+  }
+
+  button.toc-heading {
+    md-icon.rotating-icon {
+      height: 18px;
+      width: 18px;
+      position: relative;
+      left: -4px;
+      top: 5px;
+    }
+
+    &:hover:not(.embedded) {
+      color: $accentblue;
+    }
+  }
+
+
+  button.toc-more-items {
+    color: $mediumgray;
+    top: 10px;
+    position: relative;
 
     &:hover {
       color: $accentblue;
     }
-    &:focus {
-      outline: none;
-    }
-  }
-
-  button.toc-show-all {
-    min-width: 34px;
-    position: absolute;
-    top: 0;
-  }
-
-  button.toc-show-all::after {
-    content: 'expand_less';
-  }
-
-  button.toc-show-all.closed::after {
-    content: 'expand_more';
-  }
-
-  button.toc-more-items {
-    top: 10px;
-    position: relative;
   }
 
   button.toc-more-items::after {
     content: 'expand_less';
   }
 
-  button.toc-more-items.closed::after {
+  button.toc-more-items.collapsed::after {
     content: 'more_horiz';
+  }
+
+
+  .mat-icon.collapsed {
+    @include rotate(0deg);
+  }
+
+  .mat-icon:not(.collapsed) {
+    @include rotate(90deg);
+    // margin: 4px;
   }
 
   ul.toc-list {
@@ -131,6 +150,6 @@ aio-toc > div {
   }
 }
 
-aio-toc.embedded > div.closed li.secondary {
+aio-toc.embedded > div.collapsed li.secondary {
     display: none;
 }

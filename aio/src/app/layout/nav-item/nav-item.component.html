@@ -13,7 +13,8 @@
   </a>
 
   <button *ngIf="node.url == null" type="button" [ngClass]="classes" title="{{node.tooltip}}"
-    (click)="headerClicked()" class="vertical-menu-item heading">
+    (click)="headerClicked()" class="vertical-menu-item heading"
+    [attr.aria-pressed]="isExpanded">
     {{node.title}}
     <md-icon class="rotating-icon" svgIcon="keyboard_arrow_right"></md-icon>
   </button>
