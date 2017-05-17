@@ -353,6 +353,19 @@ describe('MdTooltip', () => {
         tooltipDirective.show();
       }).toThrowError('Tooltip position "everywhere" is invalid.');
     });
+
+    it('should pass the layout direction to the tooltip', fakeAsync(() => {
+      dir.value = 'rtl';
+
+      tooltipDirective.show();
+      tick(0);
+      fixture.detectChanges();
+
+      const tooltipWrapper = overlayContainerElement.querySelector('.cdk-overlay-pane');
+
+      expect(tooltipWrapper).toBeTruthy('Expected tooltip to be shown.');
+      expect(tooltipWrapper.getAttribute('dir')).toBe('rtl', 'Expected tooltip to be in RTL mode.');
+    }));
   });
 
   describe('scrollable usage', () => {

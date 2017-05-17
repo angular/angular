@@ -235,7 +235,9 @@ export class MdTooltip implements OnDestroy {
         this.hide(0);
       }
     });
+
     let config = new OverlayState();
+    config.direction = this._dir ? this._dir.value : 'ltr';
     config.positionStrategy = strategy;
     config.scrollStrategy =
         new RepositionScrollStrategy(this._scrollDispatcher, SCROLL_THROTTLE_MS);
