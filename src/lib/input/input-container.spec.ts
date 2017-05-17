@@ -65,6 +65,7 @@ describe('MdInputContainer', function () {
         MdInputContainerWithValueBinding,
         MdInputContainerZeroTestController,
         MdTextareaWithBindings,
+        MdInputContainerWithNgIf,
       ],
     });
 
@@ -265,6 +266,18 @@ describe('MdInputContainer', function () {
     expect(() => fixture.detectChanges()).toThrowError(
         wrappedErrorMessage(getMdInputContainerMissingMdInputError()));
   });
+
+  it('validates that mdInput child is present after initialization', async(() => {
+    let fixture = TestBed.createComponent(MdInputContainerWithNgIf);
+
+    expect(() => fixture.detectChanges()).not.toThrowError(
+        wrappedErrorMessage(getMdInputContainerMissingMdInputError()));
+
+    fixture.componentInstance.renderInput = false;
+
+    expect(() => fixture.detectChanges()).toThrowError(
+        wrappedErrorMessage(getMdInputContainerMissingMdInputError()));
+  }));
 
   it('validates the type', () => {
     let fixture = TestBed.createComponent(MdInputContainerInvalidTypeTestController);
@@ -997,3 +1010,14 @@ class MdInputContainerWithFormGroupErrorMessages {
   `
 })
 class MdInputContainerWithPrefixAndSuffix {}
+
+@Component({
+  template: `
+    <md-input-container>
+      <input mdInput *ngIf="renderInput">
+    </md-input-container>
+  `
+})
+class MdInputContainerWithNgIf {
+  renderInput = true;
+}

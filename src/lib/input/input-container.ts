@@ -1,5 +1,6 @@
 import {
   AfterContentInit,
+  AfterContentChecked,
   AfterViewInit,
   ChangeDetectorRef,
   Component,
@@ -286,7 +287,7 @@ export class MdInputDirective {
   },
   encapsulation: ViewEncapsulation.None,
 })
-export class MdInputContainer implements AfterViewInit, AfterContentInit {
+export class MdInputContainer implements AfterViewInit, AfterContentInit, AfterContentChecked {
   /** Alignment of the input container's content. */
   @Input() align: 'start' | 'end' = 'start';
 
@@ -356,16 +357,17 @@ export class MdInputContainer implements AfterViewInit, AfterContentInit {
     @Optional() private _parentFormGroup: FormGroupDirective) { }
 
   ngAfterContentInit() {
-    if (!this._mdInputChild) {
-      throw getMdInputContainerMissingMdInputError();
-    }
-
+    this._validateInputChild();
     this._processHints();
     this._validatePlaceholders();
 
     // Re-validate when things change.
     this._hintChildren.changes.subscribe(() => this._processHints());
     this._mdInputChild._placeholderChange.subscribe(() => this._validatePlaceholders());
+  }
+
+  ngAfterContentChecked() {
+    this._validateInputChild();
   }
 
   ngAfterViewInit() {
@@ -449,22 +451,33 @@ export class MdInputContainer implements AfterViewInit, AfterContentInit {
    * of the currently-specified hints, as well as a generated id for the hint label.
    */
   private _syncAriaDescribedby() {
-    let ids: string[] = [];
-    let startHint = this._hintChildren ?
-        this._hintChildren.find(hint => hint.align === 'start') : null;
-    let endHint = this._hintChildren ?
-        this._hintChildren.find(hint => hint.align === 'end') : null;
+    if (this._mdInputChild) {
+      let ids: string[] = [];
+      let startHint = this._hintChildren ?
+          this._hintChildren.find(hint => hint.align === 'start') : null;
+      let endHint = this._hintChildren ?
+          this._hintChildren.find(hint => hint.align === 'end') : null;
 
-    if (startHint) {
-      ids.push(startHint.id);
-    } else if (this._hintLabel) {
-      ids.push(this._hintLabelId);
+      if (startHint) {
+        ids.push(startHint.id);
+      } else if (this._hintLabel) {
+        ids.push(this._hintLabelId);
+      }
+
+      if (endHint) {
+        ids.push(endHint.id);
+      }
+
+      this._mdInputChild.ariaDescribedby = ids.join(' ');
     }
+  }
 
-    if (endHint) {
-      ids.push(endHint.id);
+  /**
+   * Throws an error if the container's input child was removed.
+   */
+  private _validateInputChild() {
+    if (!this._mdInputChild) {
+      throw getMdInputContainerMissingMdInputError();
     }
-
-    this._mdInputChild.ariaDescribedby = ids.join(' ');
   }
 }
