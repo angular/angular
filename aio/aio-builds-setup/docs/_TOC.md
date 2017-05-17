@@ -23,6 +23,10 @@
 - [Start docker container](vm-setup--start-docker-container.md)
 
 
+## Updating the docker container
+- [Update docker container](vm-setup--update-docker-container.md)
+
+
 ## Miscellaneous
 - [Debug docker container](misc--debug-docker-container.md)
 - [Integrate with CI](misc--integrate-with-ci.md)
