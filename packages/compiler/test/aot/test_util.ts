@@ -399,11 +399,11 @@ export class MockAotCompilerHost implements AotCompilerHost {
     return importedFile.replace(EXT, '');
   }
 
-  loadResource(path: string): Promise<string> {
+  loadResource(path: string): string {
     if (this.tsHost.fileExists(path)) {
-      return Promise.resolve(this.tsHost.readFile(path));
+      return this.tsHost.readFile(path);
     } else {
-      return Promise.reject(new Error(`Resource ${path} not found.`))
+      throw new Error(`Resource ${path} not found.`);
     }
   }
 }
@@ -604,47 +604,43 @@ export function compile(
       preCompile?: (program: ts.Program) => void,
       postCompile?: (program: ts.Program) => void,
     }& AotCompilerOptions = {},
-    tsOptions: ts.CompilerOptions = {}):
-    Promise<{genFiles: GeneratedFile[], outDir: MockDirectory}> {
-  // Make sure we always return errors via the promise...
-  return Promise.resolve(null).then(() => {
-    // when using summaries, always emit so the next step can use the results.
-    const emit = options.emit || options.useSummaries;
-    const preCompile = options.preCompile || expectNoDiagnostics;
-    const postCompile = options.postCompile || expectNoDiagnostics;
-    const rootDirArr = toMockFileArray(rootDirs);
-    const scriptNames = rootDirArr.map(entry => entry.fileName).filter(isSource);
+    tsOptions: ts.CompilerOptions = {}): {genFiles: GeneratedFile[], outDir: MockDirectory} {
+  // when using summaries, always emit so the next step can use the results.
+  const emit = options.emit || options.useSummaries;
+  const preCompile = options.preCompile || expectNoDiagnostics;
+  const postCompile = options.postCompile || expectNoDiagnostics;
+  const rootDirArr = toMockFileArray(rootDirs);
+  const scriptNames = rootDirArr.map(entry => entry.fileName).filter(isSource);
 
-    const host = new MockCompilerHost(scriptNames, arrayToMockDir(rootDirArr));
-    const aotHost = new MockAotCompilerHost(host);
-    if (options.useSummaries) {
-      aotHost.hideMetadata();
-      aotHost.tsFilesOnly();
+  const host = new MockCompilerHost(scriptNames, arrayToMockDir(rootDirArr));
+  const aotHost = new MockAotCompilerHost(host);
+  if (options.useSummaries) {
+    aotHost.hideMetadata();
+    aotHost.tsFilesOnly();
+  }
+  const tsSettings = {...settings, ...tsOptions};
+  const program = ts.createProgram(host.scriptNames.slice(0), tsSettings, host);
+  if (preCompile) preCompile(program);
+  const {compiler, reflector} = createAotCompiler(aotHost, options);
+  const genFiles = compiler.compileAllSync(program.getSourceFiles().map(sf => sf.fileName));
+  genFiles.forEach((file) => {
+    const source = file.source || toTypeScript(file);
+    if (isSource(file.genFileUrl)) {
+      host.addScript(file.genFileUrl, source);
+    } else {
+      host.override(file.genFileUrl, source);
     }
-    const tsSettings = {...settings, ...tsOptions};
-    const scripts = host.scriptNames.slice(0);
-    const program = ts.createProgram(scripts, tsSettings, host);
-    if (preCompile) preCompile(program);
-    const {compiler, reflector} = createAotCompiler(aotHost, options);
-    return compiler.compileAll(program.getSourceFiles().map(sf => sf.fileName)).then(genFiles => {
-      genFiles.forEach((file) => {
-        const source = file.source || toTypeScript(file);
-        isSource(file.genFileUrl) ? host.addScript(file.genFileUrl, source) :
-                                    host.override(file.genFileUrl, source);
-      });
-      const scripts = host.scriptNames.slice(0);
-      const newProgram = ts.createProgram(scripts, tsSettings, host);
-      if (postCompile) postCompile(newProgram);
-      if (emit) {
-        newProgram.emit();
-      }
-      let outDir: MockDirectory = {};
-      if (emit) {
-        outDir = arrayToMockDir(toMockFileArray([
-                                  host.writtenFiles, host.overrides
-                                ]).filter((entry) => !isSource(entry.fileName)));
-      }
-      return {genFiles, outDir};
-    });
   });
+  const newProgram = ts.createProgram(host.scriptNames.slice(0), tsSettings, host);
+  if (postCompile) postCompile(newProgram);
+  if (emit) {
+    newProgram.emit();
+  }
+  let outDir: MockDirectory = {};
+  if (emit) {
+    outDir = arrayToMockDir(toMockFileArray([
+                              host.writtenFiles, host.overrides
+                            ]).filter((entry) => !isSource(entry.fileName)));
+  }
+  return {genFiles, outDir};
 }
