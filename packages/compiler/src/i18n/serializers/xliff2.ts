@@ -8,7 +8,7 @@
 
 import * as ml from '../../ml_parser/ast';
 import {XmlParser} from '../../ml_parser/xml_parser';
-import {decimalDigest} from '../digest';
+import {decimalIgnorePhDigest} from '../digest';
 import * as i18n from '../i18n_ast';
 import {I18nError} from '../parse_util';
 
@@ -107,7 +107,7 @@ export class Xliff2 extends Serializer {
     return {locale: locale !, i18nNodesByMsgId};
   }
 
-  digest(message: i18n.Message): string { return decimalDigest(message); }
+  digest(message: i18n.Message): string { return decimalIgnorePhDigest(message); }
 }
 
 class _WriteVisitor implements i18n.Visitor {

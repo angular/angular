@@ -25,6 +25,21 @@ export function decimalDigest(message: i18n.Message): string {
 }
 
 /**
+ * Digest with a decimal function while ignoring placeholders and ICU expressions
+ * Used by Id generation version 1, replaces sha1Digest & decimalDigest
+ *
+ * @internal
+ */
+export function decimalIgnorePhDigest(message: i18n.Message): string {
+  if (message.id) {
+    return message.id;
+  }
+  const visitor = new SerializerIgnorePhVisitor();
+  const parts = message.nodes.map(a => a.visit(visitor, null));
+  return computeMsgId(parts.join(''), message.meaning);
+}
+
+/**
  * Serialize the i18n ast to something xml-like in order to generate an UID.
  *
  * The visitor is also used in the i18n parser tests
@@ -78,6 +93,16 @@ class _SerializerIgnoreIcuExpVisitor extends _SerializerVisitor {
     // Do not take the expression into account
     return `{${icu.type}, ${strCases.join(', ')}}`;
   }
+}
+
+/**
+ * Serialize the i18n ast to something xml-like in order to generate an UID.
+ * Used by Id generation version 1
+ *
+ * Ignore the PH/ICU expressions so that message IDs stays identical if only the expression changes.
+ */
+class SerializerIgnorePhVisitor extends _SerializerIgnoreIcuExpVisitor {
+  visitPlaceholder(ph: i18n.Placeholder, context: any): any { return `<ph name="${ph.name}"/>`; }
 }
 
 /**

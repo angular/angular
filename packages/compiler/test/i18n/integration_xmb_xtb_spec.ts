@@ -66,9 +66,9 @@ const XTB = `
   <translation id="4593805537723189714">{VAR_PLURAL, plural, =0 {zero} =1 {un} =2 {deux} other {<ph name="START_BOLD_TEXT"/>beaucoup<ph name="CLOSE_BOLD_TEXT"/>}}</translation>
   <translation id="1746565782635215"><ph name="ICU"/></translation>
   <translation id="5868084092545682515">{VAR_SELECT, select, m {homme} f {femme}}</translation>
-  <translation id="4851788426695310455"><ph name="INTERPOLATION"/></translation>
-  <translation id="9013357158046221374">sexe = <ph name="INTERPOLATION"/></translation>
-  <translation id="8324617391167353662"><ph name="CUSTOM_NAME"/></translation>
+  <translation id="149534432019771748"><ph name="INTERPOLATION"/></translation>
+  <translation id="8079133655095026576">sexe = <ph name="INTERPOLATION"/></translation>
+  <translation id="5814148305629875495"><ph name="CUSTOM_NAME"/></translation>
   <translation id="7685649297917455806">dans une section traductible</translation>
   <translation id="2387287228265107305">
     <ph name="START_HEADING_LEVEL1"/>Balises dans les commentaires html<ph name="CLOSE_HEADING_LEVEL1"/>   
@@ -79,12 +79,12 @@ const XTB = `
   <translation id="i18n16">avec un ID explicite</translation>
   <translation id="i18n17">{VAR_PLURAL, plural, =0 {zero} =1 {un} =2 {deux} other {<ph 
   name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>beaucoup<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph>} }</translation>
-  <translation id="4085484936881858615">{VAR_PLURAL, plural, =0 {Pas de réponse} =1 {une réponse} other {<ph name="INTERPOLATION"><ex>INTERPOLATION</ex></ph> réponse} }</translation>
+  <translation id="4145741808362736700">{VAR_PLURAL, plural, =0 {Pas de réponse} =1 {une réponse} other {<ph name="INTERPOLATION"><ex>INTERPOLATION</ex></ph> réponse} }</translation>
   <translation id="4035252431381981115">FOO<ph name="START_LINK"><ex>&lt;a&gt;</ex></ph>BAR<ph name="CLOSE_LINK"><ex>&lt;/a&gt;</ex></ph></translation>
-  <translation id="5339604010413301604"><ph name="MAP_NAME"><ex>MAP_NAME</ex></ph></translation>
+  <translation id="2041147397701197124"><ph name="MAP_NAME"><ex>MAP_NAME</ex></ph></translation>
 </translationbundle>`;
 
-const XMB = ` <msg id="615790887472569365"><source>file.ts:3</source>i18n attribute on tags</msg>
+const XMB = `<msg id="615790887472569365"><source>file.ts:3</source>i18n attribute on tags</msg>
   <msg id="3707494640264351337"><source>file.ts:5</source>nested</msg>
   <msg id="5539162898278769904" meaning="different meaning"><source>file.ts:7</source>nested</msg>
   <msg id="3780349238193953556"><source>file.ts:9</source><source>file.ts:10</source><ph name="START_ITALIC_TEXT"><ex>&lt;i&gt;</ex></ph>with placeholders<ph name="CLOSE_ITALIC_TEXT"><ex>&lt;/i&gt;</ex></ph></msg>
@@ -95,9 +95,9 @@ const XMB = ` <msg id="615790887472569365"><source>file.ts:3</source>i18n attrib
         <ph name="ICU"><ex>ICU</ex></ph>
     </msg>
   <msg id="5868084092545682515"><source>file.ts:22</source><source>file.ts:25</source>{VAR_SELECT, select, m {male} f {female} }</msg>
-  <msg id="4851788426695310455"><source>file.ts:28</source><ph name="INTERPOLATION"><ex>INTERPOLATION</ex></ph></msg>
-  <msg id="9013357158046221374"><source>file.ts:29</source>sex = <ph name="INTERPOLATION"><ex>INTERPOLATION</ex></ph></msg>
-  <msg id="8324617391167353662"><source>file.ts:30</source><ph name="CUSTOM_NAME"><ex>CUSTOM_NAME</ex></ph></msg>
+  <msg id="149534432019771748"><source>file.ts:28</source><ph name="INTERPOLATION"><ex>INTERPOLATION</ex></ph></msg>
+  <msg id="8079133655095026576"><source>file.ts:29</source>sex = <ph name="INTERPOLATION"><ex>INTERPOLATION</ex></ph></msg>
+  <msg id="5814148305629875495"><source>file.ts:30</source><ph name="CUSTOM_NAME"><ex>CUSTOM_NAME</ex></ph></msg>
   <msg id="7685649297917455806"><source>file.ts:35</source><source>file.ts:53</source>in a translatable section</msg>
   <msg id="2387287228265107305"><source>file.ts:33,37</source>
     <ph name="START_HEADING_LEVEL1"><ex>&lt;h1&gt;</ex></ph>Markers in html comments<ph name="CLOSE_HEADING_LEVEL1"><ex>&lt;/h1&gt;</ex></ph>   
@@ -107,6 +107,6 @@ const XMB = ` <msg id="615790887472569365"><source>file.ts:3</source>i18n attrib
   <msg id="1491627405349178954"><source>file.ts:39</source>it <ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>should<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph> work</msg>
   <msg id="i18n16"><source>file.ts:41</source>with an explicit ID</msg>
   <msg id="i18n17"><source>file.ts:42</source>{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>many<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph>} }</msg>
-  <msg id="4085484936881858615" desc="desc"><source>file.ts:45,51</source>{VAR_PLURAL, plural, =0 {Found no results} =1 {Found one result} other {Found <ph name="INTERPOLATION"><ex>INTERPOLATION</ex></ph> results} }</msg>
+  <msg id="4145741808362736700" desc="desc"><source>file.ts:45,51</source>{VAR_PLURAL, plural, =0 {Found no results} =1 {Found one result} other {Found <ph name="INTERPOLATION"><ex>INTERPOLATION</ex></ph> results} }</msg>
   <msg id="4035252431381981115"><source>file.ts:53</source>foo<ph name="START_LINK"><ex>&lt;a&gt;</ex></ph>bar<ph name="CLOSE_LINK"><ex>&lt;/a&gt;</ex></ph></msg>
-  <msg id="5339604010413301604"><source>file.ts:55</source><ph name="MAP_NAME"><ex>MAP_NAME</ex></ph></msg>`;
+  <msg id="2041147397701197124"><source>file.ts:55</source><ph name="MAP_NAME"><ex>MAP_NAME</ex></ph></msg>`;

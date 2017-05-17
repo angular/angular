@@ -56,7 +56,7 @@ export function main() {
 }
 
 const XLIFF_TOMERGE = `
-    <trans-unit id="615790887472569365" datatype="html">
+      <trans-unit id="615790887472569365" datatype="html">
         <source>i18n attribute on tags</source>
         <target>attributs i18n sur les balises</target>
       </trans-unit>
@@ -95,15 +95,15 @@ const XLIFF_TOMERGE = `
         <source>{VAR_SELECT, select, m {male} f {female} }</source>
         <target>{VAR_SELECT, select, m {homme} f {femme} }</target>
       </trans-unit>
-      <trans-unit id="4851788426695310455" datatype="html">
+      <trans-unit id="149534432019771748" datatype="html">
         <source><x id="INTERPOLATION"/></source>
         <target><x id="INTERPOLATION"/></target>
       </trans-unit>
-      <trans-unit id="9013357158046221374" datatype="html">
+      <trans-unit id="8079133655095026576" datatype="html">
         <source>sex = <x id="INTERPOLATION"/></source>
         <target>sexe = <x id="INTERPOLATION"/></target>
       </trans-unit>
-      <trans-unit id="8324617391167353662" datatype="html">
+      <trans-unit id="5814148305629875495" datatype="html">
         <source><x id="CUSTOM_NAME"/></source>
         <target><x id="CUSTOM_NAME"/></target>
       </trans-unit>
@@ -135,7 +135,7 @@ const XLIFF_TOMERGE = `
         <source>{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<x id="START_BOLD_TEXT" ctype="x-b"/>many<x id="CLOSE_BOLD_TEXT" ctype="x-b"/>} }</source>
         <target>{VAR_PLURAL, plural, =0 {zero} =1 {un} =2 {deux} other {<x id="START_BOLD_TEXT" ctype="x-b"/>beaucoup<x id="CLOSE_BOLD_TEXT" ctype="x-b"/>} }</target>
       </trans-unit>
-      <trans-unit id="4085484936881858615" datatype="html">
+      <trans-unit id="4145741808362736700" datatype="html">
         <source>{VAR_PLURAL, plural, =0 {Found no results} =1 {Found one result} other {Found <x id="INTERPOLATION"/> results} }</source>
         <target>{VAR_PLURAL, plural, =0 {Pas de réponse} =1 {une réponse} other {Found <x id="INTERPOLATION"/> réponse} }</target>
         <note priority="1" from="description">desc</note>
@@ -144,13 +144,13 @@ const XLIFF_TOMERGE = `
         <source>foo<x id="START_LINK" ctype="x-a"/>bar<x id="CLOSE_LINK" ctype="x-a"/></source>
         <target>FOO<x id="START_LINK" ctype="x-a"/>BAR<x id="CLOSE_LINK" ctype="x-a"/></target>
       </trans-unit>
-      <trans-unit id="5339604010413301604" datatype="html">
+      <trans-unit id="2041147397701197124" datatype="html">
         <source><x id="MAP NAME"/></source>
         <target><x id="MAP NAME"/></target>
       </trans-unit>`;
 
 const XLIFF_EXTRACTED = `
-    <trans-unit id="615790887472569365" datatype="html">
+      <trans-unit id="615790887472569365" datatype="html">
         <source>i18n attribute on tags</source>
         <target/>
         <context-group purpose="location">
@@ -241,7 +241,7 @@ const XLIFF_EXTRACTED = `
           <context context-type="linenumber">25</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="4851788426695310455" datatype="html">
+      <trans-unit id="149534432019771748" datatype="html">
         <source><x id="INTERPOLATION"/></source>
         <target/>
         <context-group purpose="location">
@@ -249,7 +249,7 @@ const XLIFF_EXTRACTED = `
           <context context-type="linenumber">28</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="9013357158046221374" datatype="html">
+      <trans-unit id="8079133655095026576" datatype="html">
         <source>sex = <x id="INTERPOLATION"/></source>
         <target/>
         <context-group purpose="location">
@@ -257,7 +257,7 @@ const XLIFF_EXTRACTED = `
           <context context-type="linenumber">29</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="8324617391167353662" datatype="html">
+      <trans-unit id="5814148305629875495" datatype="html">
         <source><x id="CUSTOM_NAME"/></source>
         <target/>
         <context-group purpose="location">
@@ -313,7 +313,7 @@ const XLIFF_EXTRACTED = `
           <context context-type="linenumber">42</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="4085484936881858615" datatype="html">
+      <trans-unit id="4145741808362736700" datatype="html">
         <source>{VAR_PLURAL, plural, =0 {Found no results} =1 {Found one result} other {Found <x id="INTERPOLATION"/> results} }</source>
         <target/>
         <context-group purpose="location">
@@ -330,7 +330,7 @@ const XLIFF_EXTRACTED = `
           <context context-type="linenumber">53</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="5339604010413301604" datatype="html">
+      <trans-unit id="2041147397701197124" datatype="html">
         <source><x id="MAP NAME"/></source>
         <target/>
         <context-group purpose="location">

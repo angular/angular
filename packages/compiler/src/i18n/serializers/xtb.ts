@@ -8,11 +8,12 @@
 
 import * as ml from '../../ml_parser/ast';
 import {XmlParser} from '../../ml_parser/xml_parser';
+import {decimalIgnorePhDigest} from '../digest';
 import * as i18n from '../i18n_ast';
 import {I18nError} from '../parse_util';
 
 import {PlaceholderMapper, Serializer, SimplePlaceholderMapper} from './serializer';
-import {digest, toPublicName} from './xmb';
+import {toPublicName} from './xmb';
 
 const _TRANSLATIONS_TAG = 'translationbundle';
 const _TRANSLATION_TAG = 'translation';
@@ -52,7 +53,7 @@ export class Xtb extends Serializer {
     return {locale: locale !, i18nNodesByMsgId};
   }
 
-  digest(message: i18n.Message): string { return digest(message); }
+  digest(message: i18n.Message): string { return decimalIgnorePhDigest(message); }
 
   createNameMapper(message: i18n.Message): PlaceholderMapper {
     return new SimplePlaceholderMapper(message, toPublicName);

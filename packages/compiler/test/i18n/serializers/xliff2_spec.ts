@@ -39,7 +39,7 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
         <source>translatable attribute</source>
       </segment>
     </unit>
-    <unit id="7056919470098446707">
+    <unit id="6538030541320483217">
       <notes>
         <note category="location">file.ts:3</note>
       </notes>
@@ -65,7 +65,7 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
         <source>foo</source>
       </segment>
     </unit>
-    <unit id="6440235004920703622">
+    <unit id="1829233037284499304">
       <notes>
         <note category="description">nested</note>
         <note category="location">file.ts:6</note>

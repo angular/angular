@@ -41,7 +41,7 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
           <context context-type="linenumber">2</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="7056919470098446707" datatype="html">
+      <trans-unit id="6538030541320483217" datatype="html">
         <source>translatable element <x id="START_BOLD_TEXT" ctype="x-b"/>with placeholders<x id="CLOSE_BOLD_TEXT" ctype="x-b"/> <x id="INTERPOLATION"/></source>
         <target/>
         <context-group purpose="location">
@@ -114,7 +114,7 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
           <context context-type="linenumber">11</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="fcfa109b0e152d4c217dbc02530be0bcb8123ad1" datatype="html">
+      <trans-unit id="2340165783990709777" datatype="html">
         <source>multi
 lines</source>
         <target/>
