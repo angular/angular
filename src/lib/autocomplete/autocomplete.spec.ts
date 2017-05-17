@@ -48,7 +48,8 @@ describe('MdAutocomplete', () => {
         AutocompleteWithoutForms,
         NgIfAutocomplete,
         AutocompleteWithNgModel,
-        AutocompleteWithOnPushDelay
+        AutocompleteWithOnPushDelay,
+        AutocompleteWithNativeInput
       ],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
@@ -1065,6 +1066,24 @@ describe('MdAutocomplete', () => {
     }));
   });
 
+  describe('without mdInput', () => {
+    let fixture: ComponentFixture<AutocompleteWithNativeInput>;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(AutocompleteWithNativeInput);
+      fixture.detectChanges();
+    });
+
+    it('should not throw when clicking outside', async(() => {
+      dispatchFakeEvent(fixture.debugElement.query(By.css('input')).nativeElement, 'focus');
+      fixture.detectChanges();
+
+      fixture.whenStable().then(() => {
+        expect(() => dispatchFakeEvent(document, 'click')).not.toThrow();
+      });
+    }));
+  });
+
   describe('misc', () => {
 
     it('should allow basic use without any forms directives', () => {
@@ -1370,6 +1389,33 @@ class AutocompleteWithOnPushDelay implements OnInit {
     setTimeout(() => {
       this.options = ['One'];
     }, 1000);
+  }
+}
+
+@Component({
+  template: `
+    <input placeholder="Choose" [mdAutocomplete]="auto" [formControl]="optionCtrl">
+
+    <md-autocomplete #auto="mdAutocomplete">
+      <md-option *ngFor="let option of filteredOptions | async" [value]="option">
+         {{option}}
+      </md-option>
+    </md-autocomplete>
+  `
+})
+class AutocompleteWithNativeInput {
+  optionCtrl = new FormControl();
+  filteredOptions: Observable<any>;
+  options = ['En', 'To', 'Tre', 'Fire', 'Fem'];
+
+  @ViewChild(MdAutocompleteTrigger) trigger: MdAutocompleteTrigger;
+  @ViewChildren(MdOption) mdOptions: QueryList<MdOption>;
+
+  constructor() {
+    this.filteredOptions = this.optionCtrl.valueChanges.startWith(null).map((val) => {
+      return val ? this.options.filter(option => new RegExp(val, 'gi').test(option))
+                 : this.options.slice();
+    });
   }
 }
 

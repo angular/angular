@@ -186,9 +186,13 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   private get _outsideClickStream(): Observable<any> {
     if (this._document) {
       return Observable.fromEvent(this._document, 'click').filter((event: MouseEvent) => {
-        let clickTarget = event.target as HTMLElement;
+        const clickTarget = event.target as HTMLElement;
+        const inputContainer = this._inputContainer ?
+            this._inputContainer._elementRef.nativeElement : null;
+
         return this._panelOpen &&
-               !this._inputContainer._elementRef.nativeElement.contains(clickTarget) &&
+               clickTarget !== this._element.nativeElement &&
+               (!inputContainer || !inputContainer.contains(clickTarget)) &&
                !this._overlayRef.overlayElement.contains(clickTarget);
       });
     }
