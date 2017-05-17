@@ -17,14 +17,18 @@
   $primary: map-get($theme, primary);
   $accent: map-get($theme, accent);
   $warn: map-get($theme, warn);
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
 
-  $mat-slider-off-color: rgba(black, 0.26);
-  $mat-slider-off-focused-color: rgba(black, 0.38);
-  $mat-slider-disabled-color: rgba(black, 0.26);
-  $mat-slider-labeled-min-value-thumb-color: black;
-  $mat-slider-labeled-min-value-thumb-label-color: rgba(black, 0.26);
-  $mat-slider-focus-ring-color: rgba(mat-color($accent), 0.2);
-  $mat-slider-focus-ring-min-value-color: rgba(black, 0.12);
+  $mat-slider-off-color: mat-color($foreground, slider-off);
+  $mat-slider-off-focused-color: mat-color($foreground, slider-off-active);
+  $mat-slider-disabled-color: mat-color($foreground, slider-off);
+  $mat-slider-labeled-min-value-thumb-color: mat-color($foreground, base);
+  $mat-slider-labeled-min-value-thumb-label-color: mat-color($foreground, slider-off);
+  $mat-slider-focus-ring-color: mat-color($accent, default, 0.2);
+  $mat-slider-focus-ring-min-value-color: mat-color($foreground, base, 0.12);
+  $mat-slider-tick-color: mat-color($foreground, base, 0.7);
+  $mat-slider-tick-size: 2px;
 
   .mat-slider-track-background {
     background-color: $mat-slider-off-color;
@@ -103,5 +107,23 @@
         }
       }
     }
+  }
+
+  .mat-slider-has-ticks .mat-slider-wrapper::after {
+    border-color: $mat-slider-tick-color;
+  }
+
+  .mat-slider-horizontal .mat-slider-ticks {
+    background-image: repeating-linear-gradient(to right, $mat-slider-tick-color,
+        $mat-slider-tick-color $mat-slider-tick-size, transparent 0, transparent);
+    // Firefox doesn't draw the gradient correctly with 'to right'
+    // (see https://bugzilla.mozilla.org/show_bug.cgi?id=1314319).
+    background-image: -moz-repeating-linear-gradient(0.0001deg, $mat-slider-tick-color,
+        $mat-slider-tick-color $mat-slider-tick-size, transparent 0, transparent);
+  }
+
+  .mat-slider-vertical .mat-slider-ticks {
+    background-image: repeating-linear-gradient(to bottom, $mat-slider-tick-color,
+        $mat-slider-tick-color $mat-slider-tick-size, transparent 0, transparent);
   }
 }

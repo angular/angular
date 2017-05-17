@@ -22,7 +22,6 @@ $mat-slider-thumb-arrow-gap: 12px !default;
 
 $mat-slider-thumb-label-size: 28px !default;
 
-$mat-slider-tick-color: rgba(0, 0, 0, 0.6) !default;
 $mat-slider-tick-size: 2px !default;
 
 $mat-slider-focus-ring-size: 30px !default;
@@ -70,6 +69,8 @@ $mat-slider-focus-ring-size: 30px !default;
 }
 
 .mat-slider-ticks {
+  background-repeat: repeat;
+  background-clip: content-box;
   box-sizing: border-box;
   opacity: 0;
   transition: opacity $swift-ease-out-duration $swift-ease-out-timing-function;
@@ -168,7 +169,8 @@ $mat-slider-focus-ring-size: 30px !default;
   .mat-slider-wrapper::after {
     content: '';
     position: absolute;
-    border: 0 solid $mat-slider-tick-color;
+    border-width: 0;
+    border-style: solid;
     opacity: 0;
     transition: opacity $swift-ease-out-duration $swift-ease-out-timing-function;
   }
@@ -298,13 +300,6 @@ $mat-slider-focus-ring-size: 30px !default;
   }
 
   .mat-slider-ticks {
-    background: repeating-linear-gradient(to right, $mat-slider-tick-color,
-        $mat-slider-tick-color $mat-slider-tick-size, transparent 0, transparent) repeat;
-    // Firefox doesn't draw the gradient correctly with 'to right'
-    // (see https://bugzilla.mozilla.org/show_bug.cgi?id=1314319).
-    background: -moz-repeating-linear-gradient(0.0001deg, $mat-slider-tick-color,
-        $mat-slider-tick-color $mat-slider-tick-size, transparent 0, transparent) repeat;
-    background-clip: content-box;
     height: $mat-slider-track-thickness;
     width: 100%;
   }
@@ -386,9 +381,6 @@ $mat-slider-focus-ring-size: 30px !default;
   }
 
   .mat-slider-ticks {
-    background: repeating-linear-gradient(to bottom, $mat-slider-tick-color,
-        $mat-slider-tick-color $mat-slider-tick-size, transparent 0, transparent) repeat;
-    background-clip: content-box;
     width: $mat-slider-track-thickness;
     height: 100%;
   }

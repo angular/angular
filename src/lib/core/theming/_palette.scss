@@ -679,30 +679,34 @@ $mat-dark-theme-background: (
 
 // Foreground palette for light themes.
 $mat-light-theme-foreground: (
-  base:            black,
-  divider:         $black-12-opacity,
-  dividers:        $black-12-opacity,
-  disabled:        rgba(black, 0.38),
-  disabled-button: rgba(black, 0.38),
-  disabled-text:   rgba(black, 0.38),
-  hint-text:       rgba(black, 0.38),
-  secondary-text:  rgba(black, 0.54),
-  icon:            rgba(black, 0.54),
-  icons:           rgba(black, 0.54),
-  text:            rgba(black, 0.87)
+  base:              black,
+  divider:           $black-12-opacity,
+  dividers:          $black-12-opacity,
+  disabled:          rgba(black, 0.38),
+  disabled-button:   rgba(black, 0.38),
+  disabled-text:     rgba(black, 0.38),
+  hint-text:         rgba(black, 0.38),
+  secondary-text:    rgba(black, 0.54),
+  icon:              rgba(black, 0.54),
+  icons:             rgba(black, 0.54),
+  text:              rgba(black, 0.87),
+  slider-off:        rgba(black, 0.26),
+  slider-off-active: rgba(black, 0.38),
 );
 
 // Foreground palette for dark themes.
 $mat-dark-theme-foreground: (
-  base:            white,
-  divider:         $white-12-opacity,
-  dividers:        $white-12-opacity,
-  disabled:        rgba(white, 0.3),
-  disabled-button: rgba(white, 0.3),
-  disabled-text:   rgba(white, 0.3),
-  hint-text:       rgba(white, 0.3),
-  secondary-text:  rgba(white, 0.7),
-  icon:            white,
-  icons:           white,
-  text:            white
+  base:              white,
+  divider:           $white-12-opacity,
+  dividers:          $white-12-opacity,
+  disabled:          rgba(white, 0.3),
+  disabled-button:   rgba(white, 0.3),
+  disabled-text:     rgba(white, 0.3),
+  hint-text:         rgba(white, 0.3),
+  secondary-text:    rgba(white, 0.7),
+  icon:              white,
+  icons:             white,
+  text:              white,
+  slider-off:        rgba(white, 0.3),
+  slider-off-active: rgba(white, 0.3),
 );
