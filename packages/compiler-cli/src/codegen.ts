@@ -38,7 +38,7 @@ export class CodeGenerator {
 
   codegen(): Promise<any> {
     return this.compiler
-        .compileAll(this.program.getSourceFiles().map(
+        .compileAllAsync(this.program.getSourceFiles().map(
             sf => this.ngCompilerHost.getCanonicalFileName(sf.fileName)))
         .then(generatedModules => {
           generatedModules.forEach(generatedModule => {
