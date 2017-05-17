@@ -98,23 +98,23 @@ export interface AnimationOptions {
 }
 
 /** @experimental */
-export declare abstract class AnimationPlayer {
+export interface AnimationPlayer {
     beforeDestroy?: () => any;
     parentPlayer: AnimationPlayer | null;
     readonly totalTime: number;
-    abstract destroy(): void;
-    abstract finish(): void;
-    abstract getPosition(): number;
-    abstract hasStarted(): boolean;
-    abstract init(): void;
-    abstract onDestroy(fn: () => void): void;
-    abstract onDone(fn: () => void): void;
-    abstract onStart(fn: () => void): void;
-    abstract pause(): void;
-    abstract play(): void;
-    abstract reset(): void;
-    abstract restart(): void;
-    abstract setPosition(p: any): void;
+    destroy(): void;
+    finish(): void;
+    getPosition(): number;
+    hasStarted(): boolean;
+    init(): void;
+    onDestroy(fn: () => void): void;
+    onDone(fn: () => void): void;
+    onStart(fn: () => void): void;
+    pause(): void;
+    play(): void;
+    reset(): void;
+    restart(): void;
+    setPosition(p: any): void;
 }
 
 /** @experimental */
