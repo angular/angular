@@ -20,7 +20,7 @@
 
 
 ## Starting the docker container
-- [Create docker image](vm-setup--start-docker-container.md)
+- [Start docker container](vm-setup--start-docker-container.md)
 
 
 ## Miscellaneous
