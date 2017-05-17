@@ -10,6 +10,7 @@ import {MessageBundle} from '@angular/compiler/src/i18n/message_bundle';
 import {Xmb} from '@angular/compiler/src/i18n/serializers/xmb';
 import {HtmlParser} from '@angular/compiler/src/ml_parser/html_parser';
 import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/interpolation_config';
+import {I18nVersion} from '@angular/core';
 
 export function main(): void {
   describe('XMB serializer', () => {
@@ -69,7 +70,7 @@ lines</msg>
 
     it('should throw when trying to load an xmb file', () => {
       expect(() => {
-        const serializer = new Xmb();
+        const serializer = new Xmb(I18nVersion.V0);
         serializer.load(XMB, 'url');
       }).toThrowError(/Unsupported/);
     });
@@ -78,7 +79,7 @@ lines</msg>
 
 function toXmb(html: string, url: string, locale: string | null = null): string {
   const catalog = new MessageBundle(new HtmlParser, [], {}, locale);
-  const serializer = new Xmb();
+  const serializer = new Xmb(I18nVersion.V0);
 
   catalog.updateFromTemplate(html, url, DEFAULT_INTERPOLATION_CONFIG);
 

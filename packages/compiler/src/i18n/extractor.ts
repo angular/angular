@@ -10,7 +10,7 @@
 /**
  * Extract i18n messages from source code
  */
-import {ViewEncapsulation, ɵConsole as Console} from '@angular/core';
+import {I18nVersion, ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 
 import {analyzeAndValidateNgModules, extractProgramSymbols} from '../aot/compiler';
 import {StaticReflector} from '../aot/static_reflector';
@@ -29,7 +29,10 @@ import {ParseError} from '../parse_util';
 import {PipeResolver} from '../pipe_resolver';
 import {DomElementSchemaRegistry} from '../schema/dom_element_schema_registry';
 import {createOfflineCompileUrlResolver} from '../url_resolver';
+
+import {I18NHtmlParser} from './i18n_html_parser';
 import {MessageBundle} from './message_bundle';
+
 
 /**
  * The host of the Extractor disconnects the implementation from TypeScript / other language
@@ -85,7 +88,7 @@ export class Extractor {
 
   static create(host: ExtractorHost, locale: string|null):
       {extractor: Extractor, staticReflector: StaticReflector} {
-    const htmlParser = new HtmlParser();
+    const htmlParser = new I18NHtmlParser(new HtmlParser(), I18nVersion.V0);
 
     const urlResolver = createOfflineCompileUrlResolver();
     const symbolCache = new StaticSymbolCache();

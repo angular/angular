@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {digest, serializeNodes} from '@angular/compiler/src/i18n/digest';
+import {serializeNodes, sha1Digest} from '@angular/compiler/src/i18n/digest';
 import {extractMessages} from '@angular/compiler/src/i18n/extractor_merger';
 import {Message} from '@angular/compiler/src/i18n/i18n_ast';
 import {HtmlParser} from '@angular/compiler/src/ml_parser/html_parser';
@@ -321,7 +321,7 @@ function _humanizePlaceholdersToMessage(
   // clang-format off
   // https://github.com/angular/clang-format/issues/35
   return _extractMessages(html, implicitTags, implicitAttrs).map(
-    msg => Object.keys(msg.placeholderToMessage).map(k => `${k}=${digest(msg.placeholderToMessage[k])}`).join(', '));
+    msg => Object.keys(msg.placeholderToMessage).map(k => `${k}=${sha1Digest(msg.placeholderToMessage[k])}`).join(', '));
   // clang-format on
 }
 

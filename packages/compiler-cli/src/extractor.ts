@@ -14,6 +14,7 @@
 import 'reflect-metadata';
 
 import * as compiler from '@angular/compiler';
+import {I18nVersion} from '@angular/core';
 import * as tsc from '@angular/tsc-wrapped';
 import * as path from 'path';
 import * as ts from 'typescript';
@@ -55,16 +56,16 @@ export class Extractor {
 
     switch (format) {
       case 'xmb':
-        serializer = new compiler.Xmb();
+        serializer = new compiler.Xmb(I18nVersion.V0);
         break;
       case 'xliff2':
       case 'xlf2':
-        serializer = new compiler.Xliff2();
+        serializer = new compiler.Xliff2(I18nVersion.V0);
         break;
       case 'xlf':
       case 'xliff':
       default:
-        serializer = new compiler.Xliff();
+        serializer = new compiler.Xliff(I18nVersion.V0);
     }
     return bundle.write(
         serializer, (sourcePath: string) => this.options.basePath ?

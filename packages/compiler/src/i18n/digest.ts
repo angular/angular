@@ -10,16 +10,46 @@ import {utf8Encode} from '../util';
 
 import * as i18n from './i18n_ast';
 
-export function digest(message: i18n.Message): string {
-  return message.id || sha1(serializeNodes(message.nodes).join('') + `[${message.meaning}]`);
-}
-
+/**
+ * Return a digest of the message composed of decimal digits.
+ *
+ * @internal
+ */
 export function decimalDigest(message: i18n.Message): string {
   if (message.id) {
     return message.id;
   }
 
-  const visitor = new _SerializerIgnoreIcuExpVisitor();
+  const visitor = new SerializerIgnorePhVisitor();
+  const parts = message.nodes.map(a => a.visit(visitor, null));
+  return computeMsgId(parts.join(''), message.meaning);
+}
+
+/**
+ * Return a digest of the message using a sha1 algorithm.
+ *
+ * @internal
+ * @deprecated from v5, use `decimalDigest` instead
+ */
+export function sha1Digest(message: i18n.Message): string {
+  return message.id || sha1(serializeNodes(message.nodes).join('') + `[${message.meaning}]`);
+}
+
+/**
+ * Return a digest of the message composed of decimal digits.
+ *
+ * NOTE: This method is deprecated and should not be used because the digest depends on the content
+ *       of the interpolation placeholders while it should only depends on their names.
+ *
+ * @internal
+ * @deprecated from v5, use `decimalDigest` instead
+ */
+export function decimalDigestDeprecated(message: i18n.Message): string {
+  if (message.id) {
+    return message.id;
+  }
+
+  const visitor = new SerializerIgnoreIcuExpVisitor();
   const parts = message.nodes.map(a => a.visit(visitor, null));
   return computeMsgId(parts.join(''), message.meaning);
 }
@@ -28,10 +58,8 @@ export function decimalDigest(message: i18n.Message): string {
  * Serialize the i18n ast to something xml-like in order to generate an UID.
  *
  * The visitor is also used in the i18n parser tests
- *
- * @internal
  */
-class _SerializerVisitor implements i18n.Visitor {
+class SerializerVisitor implements i18n.Visitor {
   visitText(text: i18n.Text, context: any): any { return text.value; }
 
   visitContainer(container: i18n.Container, context: any): any {
@@ -59,7 +87,7 @@ class _SerializerVisitor implements i18n.Visitor {
   }
 }
 
-const serializerVisitor = new _SerializerVisitor();
+const serializerVisitor = new SerializerVisitor();
 
 export function serializeNodes(nodes: i18n.Node[]): string[] {
   return nodes.map(a => a.visit(serializerVisitor, null));
@@ -69,15 +97,22 @@ export function serializeNodes(nodes: i18n.Node[]): string[] {
  * Serialize the i18n ast to something xml-like in order to generate an UID.
  *
  * Ignore the ICU expressions so that message IDs stays identical if only the expression changes.
- *
- * @internal
  */
-class _SerializerIgnoreIcuExpVisitor extends _SerializerVisitor {
+class SerializerIgnoreIcuExpVisitor extends SerializerVisitor {
   visitIcu(icu: i18n.Icu, context: any): any {
     let strCases = Object.keys(icu.cases).map((k: string) => `${k} {${icu.cases[k].visit(this)}}`);
     // Do not take the expression into account
     return `{${icu.type}, ${strCases.join(', ')}}`;
   }
+}
+
+/**
+ * Serialize the i18n ast to something xml-like in order to generate an UID.
+ *
+ * Ignore the PH/ICU expressions so that message IDs stays identical if only the expression changes.
+ */
+class SerializerIgnorePhVisitor extends SerializerIgnoreIcuExpVisitor {
+  visitPlaceholder(ph: i18n.Placeholder, context: any): any { return `<ph name="${ph.name}"/>`; }
 }
 
 /**

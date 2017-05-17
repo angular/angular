@@ -9,7 +9,7 @@
 import {DEFAULT_INTERPOLATION_CONFIG, HtmlParser} from '@angular/compiler';
 import {MissingTranslationStrategy} from '@angular/core';
 
-import {digest, serializeNodes as serializeI18nNodes} from '../../src/i18n/digest';
+import {serializeNodes as serializeI18nNodes, sha1Digest} from '../../src/i18n/digest';
 import {extractMessages, mergeTranslations} from '../../src/i18n/extractor_merger';
 import * as i18n from '../../src/i18n/i18n_ast';
 import {TranslationBundle} from '../../src/i18n/translation_bundle';
@@ -393,8 +393,8 @@ export function main() {
 
         expect(messages.length).toEqual(1);
         const i18nMsgMap: {[id: string]: i18n.Node[]} = {};
-        i18nMsgMap[digest(messages[0])] = [];
-        const translations = new TranslationBundle(i18nMsgMap, null, digest);
+        i18nMsgMap[sha1Digest(messages[0])] = [];
+        const translations = new TranslationBundle(i18nMsgMap, null, sha1Digest);
 
         const output =
             mergeTranslations(htmlNodes, translations, DEFAULT_INTERPOLATION_CONFIG, [], {});
@@ -455,8 +455,8 @@ export function main() {
 
         expect(messages.length).toEqual(1);
         const i18nMsgMap: {[id: string]: i18n.Node[]} = {};
-        i18nMsgMap[digest(messages[0])] = [];
-        const translations = new TranslationBundle(i18nMsgMap, null, digest);
+        i18nMsgMap[sha1Digest(messages[0])] = [];
+        const translations = new TranslationBundle(i18nMsgMap, null, sha1Digest);
 
         const output =
             mergeTranslations(htmlNodes, translations, DEFAULT_INTERPOLATION_CONFIG, [], {});
@@ -514,12 +514,12 @@ function fakeTranslate(
   const i18nMsgMap: {[id: string]: i18n.Node[]} = {};
 
   messages.forEach(message => {
-    const id = digest(message);
+    const id = sha1Digest(message);
     const text = serializeI18nNodes(message.nodes).join('').replace(/</g, '[');
     i18nMsgMap[id] = [new i18n.Text(`**${text}**`, null !)];
   });
 
-  const translationBundle = new TranslationBundle(i18nMsgMap, null, digest);
+  const translationBundle = new TranslationBundle(i18nMsgMap, null, sha1Digest);
   const output = mergeTranslations(
       htmlNodes, translationBundle, DEFAULT_INTERPOLATION_CONFIG, implicitTags, implicitAttrs);
   expect(output.errors).toEqual([]);
@@ -532,7 +532,7 @@ function fakeNoTranslate(
     implicitAttrs: {[k: string]: string[]} = {}): string {
   const htmlNodes: html.Node[] = parseHtml(content);
   const translationBundle = new TranslationBundle(
-      {}, null, digest, undefined, MissingTranslationStrategy.Ignore, console);
+      {}, null, sha1Digest, undefined, MissingTranslationStrategy.Ignore, console);
   const output = mergeTranslations(
       htmlNodes, translationBundle, DEFAULT_INTERPOLATION_CONFIG, implicitTags, implicitAttrs);
   expect(output.errors).toEqual([]);
