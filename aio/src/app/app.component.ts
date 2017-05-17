@@ -219,11 +219,12 @@ export class AppComponent implements OnInit {
   }
 
   updateHostClasses() {
+    const sideNavOpen = `sidenav-${this.sidenav.opened ? 'open' : 'closed'}`;
     const pageClass = `page-${this.pageId}`;
     const folderClass = `folder-${this.folderId}`;
     const viewClass = `view-${this.currentNode && this.currentNode.view}`;
 
-    this.hostClasses = `${pageClass} ${folderClass} ${viewClass}`;
+    this.hostClasses = `${sideNavOpen} ${pageClass} ${folderClass} ${viewClass}`;
   }
 
   // Dynamically change height of table of contents container
