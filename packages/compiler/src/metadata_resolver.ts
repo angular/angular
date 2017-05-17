@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, ChangeDetectionStrategy, Component, ComponentFactory, Directive, Host, Inject, Injectable, InjectionToken, ModuleWithProviders, Optional, Provider, Query, RendererType2, SchemaMetadata, Self, SkipSelf, Type, resolveForwardRef, ɵConsole as Console, ɵERROR_COMPONENT_TYPE, ɵccf as createComponentFactory, ɵstringify as stringify} from '@angular/core';
+import {Attribute, ChangeDetectionStrategy, Component, ComponentFactory, Directive, Host, Inject, Injectable, InjectionToken, ModuleWithProviders, Optional, Provider, Query, RendererType2, SchemaMetadata, Self, SkipSelf, Type, resolveForwardRef, ɵConsole as Console, ɵERROR_COMPONENT_TYPE, ɵccf as createComponentFactory, ɵisPromise as isPromise, ɵstringify as stringify} from '@angular/core';
 
 import {StaticSymbol, StaticSymbolCache} from './aot/static_symbol';
 import {ngfactoryFilePath} from './aot/util';
@@ -24,7 +24,7 @@ import {PipeResolver} from './pipe_resolver';
 import {ElementSchemaRegistry} from './schema/element_schema_registry';
 import {SummaryResolver} from './summary_resolver';
 import {getUrlScheme} from './url_resolver';
-import {MODULE_SUFFIX, ValueTransformer, noUndefined, syntaxError, visitValue} from './util';
+import {MODULE_SUFFIX, SyncAsync, ValueTransformer, noUndefined, syntaxError, visitValue} from './util';
 
 export type ErrorCollector = (error: any, type?: any) => void;
 export const ERROR_COLLECTOR_TOKEN = new InjectionToken('ErrorCollector');
@@ -170,7 +170,7 @@ export class CompileMetadataResolver {
     return typeSummary && typeSummary.summaryKind === kind ? typeSummary : null;
   }
 
-  loadDirectiveMetadata(ngModuleType: any, directiveType: any, isSync: boolean): Promise<any>|null {
+  loadDirectiveMetadata(ngModuleType: any, directiveType: any, isSync: boolean): SyncAsync<null> {
     if (this._directiveCache.has(directiveType)) {
       return null;
     }
@@ -205,7 +205,7 @@ export class CompileMetadataResolver {
       }
       this._directiveCache.set(directiveType, normalizedDirMeta);
       this._summaryCache.set(directiveType, normalizedDirMeta.toSummary());
-      return normalizedDirMeta;
+      return null;
     };
 
     if (metadata.isComponent) {
@@ -222,16 +222,11 @@ export class CompileMetadataResolver {
         animations: template.animations,
         interpolation: template.interpolation
       });
-      if (templateMeta.syncResult) {
-        createDirectiveMetadata(templateMeta.syncResult);
+      if (isPromise(templateMeta) && isSync) {
+        this._reportError(componentStillLoadingError(directiveType), directiveType);
         return null;
-      } else {
-        if (isSync) {
-          this._reportError(componentStillLoadingError(directiveType), directiveType);
-          return null;
-        }
-        return templateMeta.asyncResult !.then(createDirectiveMetadata);
       }
+      return SyncAsync.then(templateMeta, createDirectiveMetadata);
     } else {
       // directive
       createDirectiveMetadata(null);

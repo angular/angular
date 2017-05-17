@@ -7,18 +7,10 @@
  */
 
 import {fakeAsync} from '@angular/core/testing/src/fake_async';
-import {SyncAsyncResult, escapeRegExp, splitAtColon, utf8Encode} from '../src/util';
+import {SyncAsync, escapeRegExp, splitAtColon, utf8Encode} from '../src/util';
 
 export function main() {
   describe('util', () => {
-    describe('SyncAsyncResult', () => {
-      it('async value should default to Promise.resolve(syncValue)', fakeAsync(() => {
-           const syncValue = {};
-           const sar = new SyncAsyncResult(syncValue);
-           sar.asyncResult !.then((v: any) => expect(v).toBe(syncValue));
-         }));
-    });
-
     describe('splitAtColon', () => {
       it('should split when a single ":" is present', () => {
         expect(splitAtColon('a:b', [])).toEqual(['a', 'b']);

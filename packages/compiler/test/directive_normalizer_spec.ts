@@ -16,7 +16,7 @@ import {ViewEncapsulation} from '@angular/core/src/metadata/view';
 import {TestBed} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
 
-import {SyncAsyncResult, noUndefined} from '../src/util';
+import {noUndefined} from '../src/util';
 
 import {SpyResourceLoader} from './spies';
 
@@ -46,7 +46,7 @@ function normalizeTemplate(normalizer: DirectiveNormalizer, o: {
   });
 }
 
-function normalizeTemplateAsync(normalizer: DirectiveNormalizer, o: {
+function normalizeTemplateOnly(normalizer: DirectiveNormalizer, o: {
   ngModuleType?: any; componentType?: any; moduleUrl?: string; template?: string | null;
   templateUrl?: string | null;
   styles?: string[];
@@ -55,30 +55,7 @@ function normalizeTemplateAsync(normalizer: DirectiveNormalizer, o: {
   encapsulation?: ViewEncapsulation | null;
   animations?: CompileAnimationEntryMetadata[];
 }) {
-  return normalizer.normalizeTemplateAsync({
-    ngModuleType: noUndefined(o.ngModuleType),
-    componentType: noUndefined(o.componentType),
-    moduleUrl: noUndefined(o.moduleUrl),
-    template: noUndefined(o.template),
-    templateUrl: noUndefined(o.templateUrl),
-    styles: noUndefined(o.styles),
-    styleUrls: noUndefined(o.styleUrls),
-    interpolation: noUndefined(o.interpolation),
-    encapsulation: noUndefined(o.encapsulation),
-    animations: noUndefined(o.animations)
-  });
-}
-
-function normalizeTemplateSync(normalizer: DirectiveNormalizer, o: {
-  ngModuleType?: any; componentType?: any; moduleUrl?: string; template?: string | null;
-  templateUrl?: string | null;
-  styles?: string[];
-  styleUrls?: string[];
-  interpolation?: [string, string] | null;
-  encapsulation?: ViewEncapsulation | null;
-  animations?: CompileAnimationEntryMetadata[];
-}): CompileTemplateMetadata {
-  return normalizer.normalizeTemplateSync({
+  return normalizer.normalizeTemplateOnly({
     ngModuleType: noUndefined(o.ngModuleType),
     componentType: noUndefined(o.componentType),
     moduleUrl: noUndefined(o.moduleUrl),
@@ -194,10 +171,10 @@ export function main() {
          }));
     });
 
-    describe('normalizeTemplateSync', () => {
+    describe('normalizeTemplateOnly sync', () => {
       it('should store the template',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           const template = normalizeTemplateSync(normalizer, {
+           const template = <CompileTemplateMetadata>normalizeTemplateOnly(normalizer, {
              ngModuleType: null,
              componentType: SomeComp,
              moduleUrl: SOME_MODULE_URL,
@@ -214,7 +191,7 @@ export function main() {
 
       it('should resolve styles on the annotation against the moduleUrl',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           const template = normalizeTemplateSync(normalizer, {
+           const template = <CompileTemplateMetadata>normalizeTemplateOnly(normalizer, {
              ngModuleType: null,
              componentType: SomeComp,
              moduleUrl: SOME_MODULE_URL,
@@ -229,7 +206,7 @@ export function main() {
 
       it('should resolve styles in the template against the moduleUrl',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           const template = normalizeTemplateSync(normalizer, {
+           const template = <CompileTemplateMetadata>normalizeTemplateOnly(normalizer, {
              ngModuleType: null,
              componentType: SomeComp,
              moduleUrl: SOME_MODULE_URL,
@@ -244,7 +221,7 @@ export function main() {
 
       it('should use ViewEncapsulation.Emulated by default',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           const template = normalizeTemplateSync(normalizer, {
+           const template = <CompileTemplateMetadata>normalizeTemplateOnly(normalizer, {
              ngModuleType: null,
              componentType: SomeComp,
              moduleUrl: SOME_MODULE_URL,
@@ -262,7 +239,7 @@ export function main() {
              [CompilerConfig, DirectiveNormalizer],
              (config: CompilerConfig, normalizer: DirectiveNormalizer) => {
                config.defaultEncapsulation = ViewEncapsulation.None;
-               const template = normalizeTemplateSync(normalizer, {
+               const template = <CompileTemplateMetadata>normalizeTemplateOnly(normalizer, {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
@@ -284,7 +261,7 @@ export function main() {
              (async: AsyncTestCompleter, normalizer: DirectiveNormalizer,
               resourceLoader: MockResourceLoader) => {
                resourceLoader.expect('package:some/module/sometplurl.html', 'a');
-               normalizeTemplateAsync(normalizer, {
+               (<Promise<CompileTemplateMetadata>>normalizeTemplateOnly(normalizer, {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
@@ -293,7 +270,7 @@ export function main() {
                  templateUrl: 'sometplurl.html',
                  styles: [],
                  styleUrls: ['test.css']
-               }).then((template: CompileTemplateMetadata) => {
+               })).then((template) => {
                  expect(template.template).toEqual('a');
                  expect(template.templateUrl).toEqual('package:some/module/sometplurl.html');
                  expect(template.isInline).toBe(false);
@@ -308,7 +285,7 @@ export function main() {
              (async: AsyncTestCompleter, normalizer: DirectiveNormalizer,
               resourceLoader: MockResourceLoader) => {
                resourceLoader.expect('package:some/module/tpl/sometplurl.html', '');
-               normalizeTemplateAsync(normalizer, {
+               (<Promise<CompileTemplateMetadata>>normalizeTemplateOnly(normalizer, {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
@@ -317,7 +294,7 @@ export function main() {
                  templateUrl: 'tpl/sometplurl.html',
                  styles: [],
                  styleUrls: ['test.css']
-               }).then((template: CompileTemplateMetadata) => {
+               })).then((template) => {
                  expect(template.styleUrls).toEqual(['package:some/module/test.css']);
                  async.done();
                });
@@ -331,7 +308,7 @@ export function main() {
               resourceLoader: MockResourceLoader) => {
                resourceLoader.expect(
                    'package:some/module/tpl/sometplurl.html', '<style>@import test.css</style>');
-               normalizeTemplateAsync(normalizer, {
+               (<Promise<CompileTemplateMetadata>>normalizeTemplateOnly(normalizer, {
                  ngModuleType: null,
                  componentType: SomeComp,
                  moduleUrl: SOME_MODULE_URL,
@@ -340,7 +317,7 @@ export function main() {
                  templateUrl: 'tpl/sometplurl.html',
                  styles: [],
                  styleUrls: []
-               }).then((template: CompileTemplateMetadata) => {
+               })).then((template) => {
                  expect(template.styleUrls).toEqual(['package:some/module/tpl/test.css']);
                  async.done();
                });
@@ -362,13 +339,13 @@ export function main() {
              (async: AsyncTestCompleter, normalizer: DirectiveNormalizer,
               resourceLoader: SpyResourceLoader) => {
                programResourceLoaderSpy(resourceLoader, {'package:some/module/test.css': 'a'});
-               normalizer
-                   .normalizeExternalStylesheets(compileTemplateMetadata({
-                     template: '',
-                     templateUrl: '',
-                     styleUrls: ['package:some/module/test.css']
-                   }))
-                   .then((template: CompileTemplateMetadata) => {
+               (<Promise<CompileTemplateMetadata>>normalizer.normalizeExternalStylesheets(
+                    compileTemplateMetadata({
+                      template: '',
+                      templateUrl: '',
+                      styleUrls: ['package:some/module/test.css']
+                    })))
+                   .then((template) => {
                      expect(template.externalStylesheets.length).toBe(1);
                      expect(template.externalStylesheets[0]).toEqual(new CompileStylesheetMetadata({
                        moduleUrl: 'package:some/module/test.css',
@@ -388,13 +365,13 @@ export function main() {
                  'package:some/module/test.css': 'a@import "test2.css"',
                  'package:some/module/test2.css': 'b'
                });
-               normalizer
-                   .normalizeExternalStylesheets(compileTemplateMetadata({
-                     template: '',
-                     templateUrl: '',
-                     styleUrls: ['package:some/module/test.css']
-                   }))
-                   .then((template: CompileTemplateMetadata) => {
+               (<Promise<CompileTemplateMetadata>>normalizer.normalizeExternalStylesheets(
+                    compileTemplateMetadata({
+                      template: '',
+                      templateUrl: '',
+                      styleUrls: ['package:some/module/test.css']
+                    })))
+                   .then((template) => {
                      expect(template.externalStylesheets.length).toBe(2);
                      expect(template.externalStylesheets[0]).toEqual(new CompileStylesheetMetadata({
                        moduleUrl: 'package:some/module/test.css',
@@ -426,8 +403,8 @@ export function main() {
                };
                Promise
                    .all([
-                     normalizeTemplateAsync(normalizer, prenormMeta),
-                     normalizeTemplateAsync(normalizer, prenormMeta)
+                     normalizeTemplateOnly(normalizer, prenormMeta),
+                     normalizeTemplateOnly(normalizer, prenormMeta)
                    ])
                    .then((templates: CompileTemplateMetadata[]) => {
                      expect(templates[0].template).toEqual('a');

@@ -39,7 +39,7 @@ export class AotCompiler {
 
   clearCache() { this._metadataResolver.clearCache(); }
 
-  compileAll(rootFiles: string[]): Promise<GeneratedFile[]> {
+  compileAllAsync(rootFiles: string[]): Promise<GeneratedFile[]> {
     const programSymbols = extractProgramSymbols(this._symbolResolver, rootFiles, this._host);
     const {ngModuleByPipeOrDirective, files, ngModules} =
         analyzeAndValidateNgModules(programSymbols, this._host, this._metadataResolver);
@@ -54,6 +54,20 @@ export class AotCompiler {
                   file.ngModules, file.injectables));
           return flatten(sourceModules);
         });
+  }
+
+  compileAllSync(rootFiles: string[]): GeneratedFile[] {
+    const programSymbols = extractProgramSymbols(this._symbolResolver, rootFiles, this._host);
+    const {ngModuleByPipeOrDirective, files, ngModules} =
+        analyzeAndValidateNgModules(programSymbols, this._host, this._metadataResolver);
+    ngModules.forEach(
+        ngModule => this._metadataResolver.loadNgModuleDirectiveAndPipeMetadata(
+            ngModule.type.reference, true));
+    const sourceModules = files.map(
+        file => this._compileSrcFile(
+            file.srcUrl, ngModuleByPipeOrDirective, file.directives, file.pipes, file.ngModules,
+            file.injectables));
+    return flatten(sourceModules);
   }
 
   private _compileSrcFile(

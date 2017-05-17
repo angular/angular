@@ -17,5 +17,5 @@ export interface AotCompilerHost extends StaticSymbolResolverHost, AotSummaryRes
   /**
    * Loads a resource (e.g. html / css)
    */
-  loadResource(path: string): Promise<string>;
+  loadResource(path: string): Promise<string>|string;
 }

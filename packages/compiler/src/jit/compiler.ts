@@ -19,7 +19,7 @@ import {jitStatements} from '../output/output_jit';
 import {CompiledStylesheet, StyleCompiler} from '../style_compiler';
 import {SummaryResolver} from '../summary_resolver';
 import {TemplateParser} from '../template_parser/template_parser';
-import {OutputContext, SyncAsyncResult} from '../util';
+import {OutputContext, SyncAsync} from '../util';
 import {ViewCompiler} from '../view_compiler/view_compiler';
 
 
@@ -51,20 +51,20 @@ export class JitCompiler implements Compiler {
   get injector(): Injector { return this._injector; }
 
   compileModuleSync<T>(moduleType: Type<T>): NgModuleFactory<T> {
-    return this._compileModuleAndComponents(moduleType, true).syncResult !;
+    return SyncAsync.assertSync(this._compileModuleAndComponents(moduleType, true));
   }
 
   compileModuleAsync<T>(moduleType: Type<T>): Promise<NgModuleFactory<T>> {
-    return this._compileModuleAndComponents(moduleType, false).asyncResult !;
+    return Promise.resolve(this._compileModuleAndComponents(moduleType, false));
   }
 
   compileModuleAndAllComponentsSync<T>(moduleType: Type<T>): ModuleWithComponentFactories<T> {
-    return this._compileModuleAndAllComponents(moduleType, true).syncResult !;
+    return SyncAsync.assertSync(this._compileModuleAndAllComponents(moduleType, true));
   }
 
   compileModuleAndAllComponentsAsync<T>(moduleType: Type<T>):
       Promise<ModuleWithComponentFactories<T>> {
-    return this._compileModuleAndAllComponents(moduleType, false).asyncResult !;
+    return Promise.resolve(this._compileModuleAndAllComponents(moduleType, false));
   }
 
   getNgContentSelectors(component: Type<any>): string[] {
@@ -97,36 +97,24 @@ export class JitCompiler implements Compiler {
   }
 
   private _compileModuleAndComponents<T>(moduleType: Type<T>, isSync: boolean):
-      SyncAsyncResult<NgModuleFactory<T>> {
-    const loadingPromise = this._loadModules(moduleType, isSync);
-    const createResult = () => {
+      SyncAsync<NgModuleFactory<T>> {
+    return SyncAsync.then(this._loadModules(moduleType, isSync), () => {
       this._compileComponents(moduleType, null);
       return this._compileModule(moduleType);
-    };
-    if (isSync) {
-      return new SyncAsyncResult(createResult());
-    } else {
-      return new SyncAsyncResult(null, loadingPromise.then(createResult));
-    }
+    });
   }
 
   private _compileModuleAndAllComponents<T>(moduleType: Type<T>, isSync: boolean):
-      SyncAsyncResult<ModuleWithComponentFactories<T>> {
-    const loadingPromise = this._loadModules(moduleType, isSync);
-    const createResult = () => {
+      SyncAsync<ModuleWithComponentFactories<T>> {
+    return SyncAsync.then(this._loadModules(moduleType, isSync), () => {
       const componentFactories: ComponentFactory<any>[] = [];
       this._compileComponents(moduleType, componentFactories);
       return new ModuleWithComponentFactories(this._compileModule(moduleType), componentFactories);
-    };
-    if (isSync) {
-      return new SyncAsyncResult(createResult());
-    } else {
-      return new SyncAsyncResult(null, loadingPromise.then(createResult));
-    }
+    });
   }
 
-  private _loadModules(mainModule: any, isSync: boolean): Promise<any> {
-    const loadingPromises: Promise<any>[] = [];
+  private _loadModules(mainModule: any, isSync: boolean): SyncAsync<any> {
+    const loading: Promise<any>[] = [];
     const mainNgModule = this._metadataResolver.getNgModuleMetadata(mainModule) !;
     // Note: for runtime compilation, we want to transitively compile all modules,
     // so we also need to load the declared directives / pipes for all nested modules.
@@ -137,13 +125,13 @@ export class JitCompiler implements Compiler {
         const promise =
             this._metadataResolver.loadDirectiveMetadata(moduleMeta.type.reference, ref, isSync);
         if (promise) {
-          loadingPromises.push(promise);
+          loading.push(promise);
         }
       });
       this._filterJitIdentifiers(moduleMeta.declaredPipes)
           .forEach((ref) => this._metadataResolver.getOrLoadPipeMetadata(ref));
     });
-    return Promise.all(loadingPromises);
+    return SyncAsync.all(loading);
   }
 
   private _compileModule<T>(moduleType: Type<T>): NgModuleFactory<T> {
