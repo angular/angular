@@ -1,3 +1,18 @@
+<a name="4.1.3"></a>
+## [4.1.3](https://github.com/angular/angular/compare/4.1.2...4.1.3) (2017-05-17)
+
+
+### Bug Fixes
+
+* add typescript 2.3.2 typings test ([#16738](https://github.com/angular/angular/issues/16738)) ([a5bdbed](https://github.com/angular/angular/commit/a5bdbed)), closes [#16663](https://github.com/angular/angular/issues/16663)
+* **compiler-cli:** import routing module with forRoot ([#16438](https://github.com/angular/angular/issues/16438)) ([b7f8581](https://github.com/angular/angular/commit/b7f8581))
+* **platform-server:** wait for async app initializers to complete before removing server side styles ([#16712](https://github.com/angular/angular/issues/16712)) ([0a82f7d](https://github.com/angular/angular/commit/0a82f7d)), closes [#15716](https://github.com/angular/angular/issues/15716)
+* **router:** Wrap Promise-like instances in native Promises ([#16759](https://github.com/angular/angular/issues/16759)) ([883ca28](https://github.com/angular/angular/commit/883ca28))
+* **upgrade:** Prevent renaming of $inject property ([#16706](https://github.com/angular/angular/issues/16706)) ([afb7540](https://github.com/angular/angular/commit/afb7540))
+* **upgrade:** use quote to prevent ClossureCompiler obfuscating $event. ([#16724](https://github.com/angular/angular/issues/16724)) ([47df3d6](https://github.com/angular/angular/commit/47df3d6))
+
+
+
 <a name="4.1.2"></a>
 ## [4.1.2](https://github.com/angular/angular/compare/4.1.1...4.1.2) (2017-05-10)
 
