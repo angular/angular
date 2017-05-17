@@ -11,6 +11,7 @@ export const $CONTROLLER = '$controller';
 export const $DELEGATE = '$delegate';
 export const $HTTP_BACKEND = '$httpBackend';
 export const $INJECTOR = '$injector';
+export const $INTERVAL = '$interval';
 export const $PARSE = '$parse';
 export const $PROVIDE = '$provide';
 export const $ROOT_SCOPE = '$rootScope';
