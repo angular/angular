@@ -32,6 +32,7 @@ $mat-dialog-max-height: 65vh !default;
   padding: 0 $mat-dialog-padding;
   max-height: $mat-dialog-max-height;
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .mat-dialog-title {
