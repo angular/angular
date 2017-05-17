@@ -67,7 +67,7 @@ describe('MdSnackBar', () => {
    });
 
    it('should open and close a snackbar without a ViewContainerRef', async(() => {
-     let snackBarRef = snackBar.open('Snack time!', 'CHEW');
+     let snackBarRef = snackBar.open('Snack time!', 'Chew');
      viewContainerFixture.detectChanges();
 
      let messageElement = overlayContainerElement.querySelector('snack-bar-container');
@@ -236,7 +236,7 @@ describe('MdSnackBar', () => {
 
   it('should open a new snackbar after dismissing a previous snackbar', async(() => {
     let config = {viewContainerRef: testViewContainerRef};
-    let snackBarRef = snackBar.open(simpleMessage, 'DISMISS', config);
+    let snackBarRef = snackBar.open(simpleMessage, 'Dismiss', config);
     viewContainerFixture.detectChanges();
 
     snackBarRef.dismiss();
@@ -244,7 +244,7 @@ describe('MdSnackBar', () => {
 
     // Wait for the snackbar dismiss animation to finish.
     viewContainerFixture.whenStable().then(() => {
-      snackBarRef = snackBar.open('Second snackbar', 'DISMISS', config);
+      snackBarRef = snackBar.open('Second snackbar', 'Dismiss', config);
       viewContainerFixture.detectChanges();
 
       // Wait for the snackbar open animation to finish.
@@ -290,7 +290,7 @@ describe('MdSnackBar', () => {
      fakeAsync(() => {
        let dismissObservableCompleted = false;
        let actionObservableCompleted = false;
-       let snackBarRef = snackBar.open('Some content', 'dismiss');
+       let snackBarRef = snackBar.open('Some content', 'Dismiss');
        viewContainerFixture.detectChanges();
 
        snackBarRef.afterDismissed().subscribe(null, null, () => {
