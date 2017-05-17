@@ -112,8 +112,8 @@ RUN update-ca-certificates
 
 # Set up nginx (for production and testing)
 RUN sed -i -E "s|^user\s+\S+;|user $AIO_WWW_USER;|" /etc/nginx/nginx.conf
-RUN [[ -d /etc/nginx/conf.d/ ]] && rm /etc/nginx/conf.d/*
-RUN [[ -d /etc/nginx/sites-enabled/ ]] && rm /etc/nginx/sites-enabled/*
+RUN rm -f /etc/nginx/conf.d/*
+RUN rm -f /etc/nginx/sites-enabled/*
 
 COPY nginx/aio-builds.conf /etc/nginx/conf.d/aio-builds-prod.conf
 RUN sed -i "s|{{\$AIO_BUILDS_DIR}}|$AIO_BUILDS_DIR|g" /etc/nginx/conf.d/aio-builds-prod.conf
