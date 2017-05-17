@@ -8,6 +8,7 @@ import {
   ElementRef,
   Optional,
   AfterViewChecked,
+  ViewEncapsulation,
 } from '@angular/core';
 import {
   trigger,
@@ -50,6 +51,7 @@ export type MdTabBodyOriginState = 'left' | 'right';
   selector: 'md-tab-body, mat-tab-body',
   templateUrl: 'tab-body.html',
   styleUrls: ['tab-body.css'],
+  encapsulation: ViewEncapsulation.None,
   host: {
     '[class.mat-tab-body]': 'true',
   },

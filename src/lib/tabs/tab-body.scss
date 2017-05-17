@@ -1,4 +1,8 @@
 .mat-tab-body-content {
   height: 100%;
   overflow: auto;
+
+  .mat-tab-group-dynamic-height & {
+    overflow: hidden;
+  }
 }
