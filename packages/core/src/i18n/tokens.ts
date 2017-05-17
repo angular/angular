@@ -31,3 +31,13 @@ export enum MissingTranslationStrategy {
   Warning,
   Ignore,
 }
+
+/**
+ * @experimental i18n support is experimental.
+ */
+export enum I18nVersion {
+  // default up to angular v4
+  V0,
+  // default from angular v5 - Version1 fixes the algorithm for ID generation
+  V1,
+}

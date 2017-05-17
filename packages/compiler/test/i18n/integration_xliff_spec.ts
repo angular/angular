@@ -12,7 +12,7 @@ import {MessageBundle} from '@angular/compiler/src/i18n/message_bundle';
 import {Xliff} from '@angular/compiler/src/i18n/serializers/xliff';
 import {HtmlParser} from '@angular/compiler/src/ml_parser/html_parser';
 import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/interpolation_config';
-import {DebugElement, TRANSLATIONS, TRANSLATIONS_FORMAT} from '@angular/core';
+import {DebugElement, I18nVersion, TRANSLATIONS, TRANSLATIONS_FORMAT} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -38,7 +38,7 @@ export function main() {
 
     it('should extract from templates', () => {
       const catalog = new MessageBundle(new HtmlParser, [], {});
-      const serializer = new Xliff();
+      const serializer = new Xliff(I18nVersion.V0);
       catalog.updateFromTemplate(HTML, 'file.ts', DEFAULT_INTERPOLATION_CONFIG);
 
       expect(catalog.write(serializer)).toContain(XLIFF_EXTRACTED);

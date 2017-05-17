@@ -7,6 +7,7 @@
  */
 
 import {escapeRegExp} from '@angular/compiler/src/util';
+import {I18nVersion} from '@angular/core';
 
 import {serializeNodes} from '../../../src/i18n/digest';
 import {MessageBundle} from '../../../src/i18n/message_bundle';
@@ -222,7 +223,7 @@ lignes</target>
 `;
 
 export function main(): void {
-  const serializer = new Xliff();
+  const serializer = new Xliff(I18nVersion.V0);
 
   function toXliff(html: string, locale: string | null = null): string {
     const catalog = new MessageBundle(new HtmlParser, [], {}, locale);

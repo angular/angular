@@ -7,6 +7,7 @@
  */
 
 import {CompileMetadataResolver, CompileNgModuleMetadata, CompilePipeSummary, CompilerConfig, DomElementSchemaRegistry, HtmlParser, I18NHtmlParser, Lexer, NgAnalyzedModules, Parser, TemplateParser} from '@angular/compiler';
+import {I18nVersion} from '@angular/core';
 
 import {AstResult, TemplateInfo} from './common';
 import {getTemplateCompletions} from './completions';
@@ -106,7 +107,7 @@ class LanguageServiceImpl implements LanguageService {
       const metadata = resolvedMetadata && resolvedMetadata.metadata;
       if (metadata) {
         const rawHtmlParser = new HtmlParser();
-        const htmlParser = new I18NHtmlParser(rawHtmlParser);
+        const htmlParser = new I18NHtmlParser(rawHtmlParser, I18nVersion.V0);
         const expressionParser = new Parser(new Lexer());
         const config = new CompilerConfig();
         const parser = new TemplateParser(

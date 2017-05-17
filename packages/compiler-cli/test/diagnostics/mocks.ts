@@ -7,7 +7,7 @@
  */
 
 import {AotCompilerHost, AotSummaryResolver, CompileMetadataResolver, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, I18NHtmlParser, InterpolationConfig, JitSummaryResolver, Lexer, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, Parser, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, SummaryResolver, TemplateParser, analyzeNgModules, createOfflineCompileUrlResolver, extractProgramSymbols} from '@angular/compiler';
-import {ViewEncapsulation, ɵConsole as Console} from '@angular/core';
+import {I18nVersion, ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 import {CompilerHostContext} from 'compiler-cli';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -204,7 +204,7 @@ function compileTemplate(context: DiagnosticContext, type: StaticSymbol, templat
   const metadata = resolvedMetadata && resolvedMetadata.metadata;
   if (metadata) {
     const rawHtmlParser = new HtmlParser();
-    const htmlParser = new I18NHtmlParser(rawHtmlParser);
+    const htmlParser = new I18NHtmlParser(rawHtmlParser, I18nVersion.V0);
     const expressionParser = new Parser(new Lexer());
     const config = new CompilerConfig();
     const parser = new TemplateParser(

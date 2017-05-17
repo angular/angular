@@ -6,9 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {I18nVersion} from '@angular/core';
+
 import * as ml from '../../ml_parser/ast';
 import {XmlParser} from '../../ml_parser/xml_parser';
-import {digest} from '../digest';
+import {ParseError} from '../../parse_util';
+import {decimalDigest, sha1Digest} from '../digest';
 import * as i18n from '../i18n_ast';
 import {I18nError} from '../parse_util';
 
@@ -31,6 +34,8 @@ const _CONTEXT_TAG = 'context';
 // http://docs.oasis-open.org/xliff/v1.2/os/xliff-core.html
 // http://docs.oasis-open.org/xliff/v1.2/xliff-profile-html/xliff-profile-html-1.2.html
 export class Xliff extends Serializer {
+  constructor(private version: I18nVersion) { super(); }
+
   write(messages: i18n.Message[], locale: string|null): string {
     const visitor = new _WriteVisitor();
     const transUnits: xml.Node[] = [];
@@ -90,7 +95,7 @@ export class Xliff extends Serializer {
   }
 
   load(content: string, url: string):
-      {locale: string, i18nNodesByMsgId: {[msgId: string]: i18n.Node[]}} {
+      {locale: string | null, i18nNodesByMsgId: {[msgId: string]: i18n.Node[]}} {
     // xliff to xml nodes
     const xliffParser = new XliffParser();
     const {locale, msgIdToHtml, errors} = xliffParser.parse(content, url);
@@ -109,10 +114,15 @@ export class Xliff extends Serializer {
       throw new Error(`xliff parse errors:\n${errors.join('\n')}`);
     }
 
-    return {locale: locale !, i18nNodesByMsgId};
+    return {locale, i18nNodesByMsgId};
   }
 
-  digest(message: i18n.Message): string { return digest(message); }
+  digest(message: i18n.Message): string {
+    if (this.version === I18nVersion.V0) {
+      return sha1Digest(message);
+    }
+    return decimalDigest(message);
+  }
 }
 
 class _WriteVisitor implements i18n.Visitor {
@@ -171,7 +181,8 @@ class XliffParser implements ml.Visitor {
   private _msgIdToHtml: {[msgId: string]: string};
   private _locale: string|null = null;
 
-  parse(xliff: string, url: string) {
+  parse(xliff: string, url: string):
+      {msgIdToHtml: {[id: string]: string}, errors: ParseError[], locale: string|null} {
     this._unitMlString = null;
     this._msgIdToHtml = {};
 
@@ -233,6 +244,8 @@ class XliffParser implements ml.Visitor {
         // TODO(vicb): assert file structure, xliff version
         // For now only recurse on unhandled nodes
         ml.visitAll(this, element.children, null);
+
+        return element;
     }
   }
 

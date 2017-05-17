@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {decimalDigest} from '../digest';
+import {I18nVersion} from '@angular/core';
+
+import {decimalDigest, decimalDigestDeprecated} from '../digest';
 import * as i18n from '../i18n_ast';
 
 import {PlaceholderMapper, Serializer, SimplePlaceholderMapper} from './serializer';
@@ -39,6 +41,8 @@ const _DOCTYPE = `<!ELEMENT messagebundle (msg)*>
 <!ELEMENT ex (#PCDATA)>`;
 
 export class Xmb extends Serializer {
+  constructor(private version: I18nVersion) { super(); }
+
   write(messages: i18n.Message[], locale: string|null): string {
     const exampleVisitor = new ExampleVisitor();
     const visitor = new _Visitor();
@@ -81,12 +85,16 @@ export class Xmb extends Serializer {
   }
 
   load(content: string, url: string):
-      {locale: string, i18nNodesByMsgId: {[msgId: string]: i18n.Node[]}} {
+      {locale: string | null, i18nNodesByMsgId: {[msgId: string]: i18n.Node[]}} {
     throw new Error('Unsupported');
   }
 
-  digest(message: i18n.Message): string { return digest(message); }
-
+  digest(message: i18n.Message): string {
+    if (this.version === I18nVersion.V0) {
+      return decimalDigestDeprecated(message);
+    }
+    return decimalDigest(message);
+  }
 
   createNameMapper(message: i18n.Message): PlaceholderMapper {
     return new SimplePlaceholderMapper(message, toPublicName);
@@ -139,10 +147,6 @@ class _Visitor implements i18n.Visitor {
   serialize(nodes: i18n.Node[]): xml.Node[] {
     return [].concat(...nodes.map(node => node.visit(this)));
   }
-}
-
-export function digest(message: i18n.Message): string {
-  return decimalDigest(message);
 }
 
 // TC requires at least one non-empty example on placeholders

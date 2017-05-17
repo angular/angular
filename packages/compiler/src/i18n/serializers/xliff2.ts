@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {I18nVersion} from '@angular/core';
+
 import * as ml from '../../ml_parser/ast';
 import {XmlParser} from '../../ml_parser/xml_parser';
-import {decimalDigest} from '../digest';
+import {decimalDigest, decimalDigestDeprecated} from '../digest';
 import * as i18n from '../i18n_ast';
 import {I18nError} from '../parse_util';
 
@@ -29,6 +31,8 @@ const _UNIT_TAG = 'unit';
 
 // http://docs.oasis-open.org/xliff/xliff-core/v2.0/os/xliff-core-v2.0-os.html
 export class Xliff2 extends Serializer {
+  constructor(private version: I18nVersion) { super(); }
+
   write(messages: i18n.Message[], locale: string|null): string {
     const visitor = new _WriteVisitor();
     const units: xml.Node[] = [];
@@ -85,7 +89,7 @@ export class Xliff2 extends Serializer {
   }
 
   load(content: string, url: string):
-      {locale: string, i18nNodesByMsgId: {[msgId: string]: i18n.Node[]}} {
+      {locale: string | null, i18nNodesByMsgId: {[msgId: string]: i18n.Node[]}} {
     // xliff to xml nodes
     const xliff2Parser = new Xliff2Parser();
     const {locale, msgIdToHtml, errors} = xliff2Parser.parse(content, url);
@@ -104,10 +108,15 @@ export class Xliff2 extends Serializer {
       throw new Error(`xliff2 parse errors:\n${errors.join('\n')}`);
     }
 
-    return {locale: locale !, i18nNodesByMsgId};
+    return {locale, i18nNodesByMsgId};
   }
 
-  digest(message: i18n.Message): string { return decimalDigest(message); }
+  digest(message: i18n.Message): string {
+    if (this.version === I18nVersion.V0) {
+      return decimalDigestDeprecated(message);
+    }
+    return decimalDigest(message);
+  }
 }
 
 class _WriteVisitor implements i18n.Visitor {
