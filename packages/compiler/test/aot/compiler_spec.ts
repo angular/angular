@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {GeneratedFile} from '@angular/compiler';
+import {GeneratedFile, toTypeScript} from '@angular/compiler';
 import {NodeFlags} from '@angular/core/src/view/index';
 import {async} from '@angular/core/testing';
 import {MetadataBundler, MetadataCollector, ModuleMetadata, privateEntriesToIndex} from '@angular/tsc-wrapped';
@@ -128,7 +128,8 @@ describe('compiler (unbundled Angular)', () => {
            appDir['app.component.ts'] = createComponentSource(templateDecorator(template));
 
            compileApp().then((genFile) => {
-             const sourceMap = extractSourceMap(genFile.source) !;
+             const genSource = toTypeScript(genFile);
+             const sourceMap = extractSourceMap(genSource) !;
              expect(sourceMap.file).toEqual(genFile.genFileUrl);
 
              // the generated file contains code that is not mapped to
@@ -149,8 +150,9 @@ describe('compiler (unbundled Angular)', () => {
            appDir['app.component.ts'] = createComponentSource(templateDecorator(template));
 
            compileApp().then((genFile) => {
-             const sourceMap = extractSourceMap(genFile.source) !;
-             expect(originalPositionFor(sourceMap, findLineAndColumn(genFile.source, `'span'`)))
+             const genSource = toTypeScript(genFile);
+             const sourceMap = extractSourceMap(genSource) !;
+             expect(originalPositionFor(sourceMap, findLineAndColumn(genSource, `'span'`)))
                  .toEqual({line: 2, column: 3, source: ngUrl});
            });
          }));
@@ -161,9 +163,9 @@ describe('compiler (unbundled Angular)', () => {
            appDir['app.component.ts'] = createComponentSource(templateDecorator(template));
 
            compileApp().then((genFile) => {
-             const sourceMap = extractSourceMap(genFile.source) !;
-             expect(
-                 originalPositionFor(sourceMap, findLineAndColumn(genFile.source, `someMethod()`)))
+             const genSource = toTypeScript(genFile);
+             const sourceMap = extractSourceMap(genSource) !;
+             expect(originalPositionFor(sourceMap, findLineAndColumn(genSource, `someMethod()`)))
                  .toEqual({line: 2, column: 9, source: ngUrl});
            });
          }));
@@ -174,9 +176,9 @@ describe('compiler (unbundled Angular)', () => {
            appDir['app.component.ts'] = createComponentSource(templateDecorator(template));
 
            compileApp().then((genFile) => {
-             const sourceMap = extractSourceMap(genFile.source) !;
-             expect(
-                 originalPositionFor(sourceMap, findLineAndColumn(genFile.source, `someMethod()`)))
+             const genSource = toTypeScript(genFile);
+             const sourceMap = extractSourceMap(genSource) !;
+             expect(originalPositionFor(sourceMap, findLineAndColumn(genSource, `someMethod()`)))
                  .toEqual({line: 2, column: 9, source: ngUrl});
            });
          }));
@@ -185,7 +187,8 @@ describe('compiler (unbundled Angular)', () => {
            appDir['app.component.ts'] = createComponentSource(templateDecorator('Hello World!'));
 
            compileApp().then((genFile) => {
-             const sourceMap = extractSourceMap(genFile.source) !;
+             const genSource = toTypeScript(genFile);
+             const sourceMap = extractSourceMap(genSource) !;
              expect(originalPositionFor(sourceMap, {line: 1, column: 0}))
                  .toEqual({line: 1, column: 0, source: ngComponentPath});
            });
@@ -258,10 +261,11 @@ describe('compiler (unbundled Angular)', () => {
          }
        };
        const genFilePreamble = '/* Hello world! */';
-       compile([FILES, angularFiles], {genFilePreamble}).then(({genFiles}) => {
+       compile([FILES, angularFiles]).then(({genFiles}) => {
          const genFile =
              genFiles.find(gf => gf.srcFileUrl === '/app/app.ts' && gf.genFileUrl.endsWith('.ts'));
-         expect(genFile.source.startsWith(genFilePreamble)).toBe(true);
+         const genSource = toTypeScript(genFile, genFilePreamble);
+         expect(genSource.startsWith(genFilePreamble)).toBe(true);
        });
 
      }));
@@ -295,8 +299,9 @@ describe('compiler (unbundled Angular)', () => {
          };
          compile([FILES, angularFiles]).then(({genFiles}) => {
            const genFile = genFiles.find(genFile => genFile.srcFileUrl === '/app/app.ts');
+           const genSource = toTypeScript(genFile);
            const createComponentFactoryCall =
-               /ɵccf\([^)]*\)/m.exec(genFile.source) ![0].replace(/\s*/g, '');
+               /ɵccf\([^)]*\)/m.exec(genSource) ![0].replace(/\s*/g, '');
            // selector
            expect(createComponentFactoryCall).toContain('my-comp');
            // inputs
@@ -328,7 +333,8 @@ describe('compiler (unbundled Angular)', () => {
          compile([FILES, angularFiles]).then(({genFiles}) => {
            const genFile = genFiles.find(
                gf => gf.srcFileUrl === '/app/app.ts' && gf.genFileUrl.endsWith('.ts'));
-           expect(genFile.source).not.toContain('check(');
+           const genSource = toTypeScript(genFile);
+           expect(genSource).not.toContain('check(');
          });
 
        }));
@@ -411,7 +417,7 @@ describe('compiler (unbundled Angular)', () => {
              .then(({genFiles}) => {
                const mainNgFactory = genFiles.find(gf => gf.srcFileUrl === '/app/main.ts');
                const flags = NodeFlags.TypeDirective | NodeFlags.Component | NodeFlags.OnDestroy;
-               expect(mainNgFactory.source)
+               expect(toTypeScript(mainNgFactory))
                    .toContain(`${flags},(null as any),0,i1.Extends,[i2.AParam]`);
              });
        }));
@@ -463,7 +469,7 @@ describe('compiler (unbundled Angular)', () => {
              .then(({genFiles}) => {
                const mainNgFactory = genFiles.find(gf => gf.srcFileUrl === '/app/main.ts');
                const flags = NodeFlags.TypeDirective | NodeFlags.Component | NodeFlags.OnDestroy;
-               expect(mainNgFactory.source)
+               expect(toTypeScript(mainNgFactory))
                    .toContain(`${flags},(null as any),0,i1.Extends,[i2.AParam_2]`);
              });
        }));

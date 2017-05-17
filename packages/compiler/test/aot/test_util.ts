@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompilerHost, AotCompilerOptions, GeneratedFile, createAotCompiler} from '@angular/compiler';
+import {AotCompilerHost, AotCompilerOptions, GeneratedFile, createAotCompiler, toTypeScript} from '@angular/compiler';
 import {ɵReflectionCapabilities as ReflectionCapabilities, ɵreflector as reflector} from '@angular/core';
 import {MetadataBundlerHost, MetadataCollector, ModuleMetadata} from '@angular/tsc-wrapped';
 import * as fs from 'fs';
@@ -630,9 +630,11 @@ export function compile(
     if (preCompile) preCompile(program);
     const {compiler, reflector} = createAotCompiler(aotHost, options);
     return compiler.compileAll(program.getSourceFiles().map(sf => sf.fileName)).then(genFiles => {
-      genFiles.forEach(
-          file => isSource(file.genFileUrl) ? host.addScript(file.genFileUrl, file.source) :
-                                              host.override(file.genFileUrl, file.source));
+      genFiles.forEach((file) => {
+        const source = file.source || toTypeScript(file);
+        isSource(file.genFileUrl) ? host.addScript(file.genFileUrl, source) :
+                                    host.override(file.genFileUrl, source);
+      });
       const scripts = host.scriptNames.slice(0);
       const newProgram = ts.createProgram(scripts, tsSettings, host);
       if (postCompile) postCompile(newProgram);
