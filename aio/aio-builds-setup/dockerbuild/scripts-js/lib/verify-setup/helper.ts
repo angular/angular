@@ -7,7 +7,6 @@ import * as shell from 'shelljs';
 import {getEnvVar} from '../common/utils';
 
 // Constans
-const SERVER_USER = 'www-data';
 const TEST_AIO_BUILDS_DIR = getEnvVar('TEST_AIO_BUILDS_DIR');
 const TEST_AIO_NGINX_HOSTNAME = getEnvVar('TEST_AIO_NGINX_HOSTNAME');
 const TEST_AIO_NGINX_PORT_HTTP = +getEnvVar('TEST_AIO_NGINX_PORT_HTTP');
@@ -15,6 +14,7 @@ const TEST_AIO_NGINX_PORT_HTTPS = +getEnvVar('TEST_AIO_NGINX_PORT_HTTPS');
 const TEST_AIO_UPLOAD_HOSTNAME = getEnvVar('TEST_AIO_UPLOAD_HOSTNAME');
 const TEST_AIO_UPLOAD_MAX_SIZE = +getEnvVar('TEST_AIO_UPLOAD_MAX_SIZE');
 const TEST_AIO_UPLOAD_PORT = +getEnvVar('TEST_AIO_UPLOAD_PORT');
+const WWW_USER = getEnvVar('AIO_WWW_USER');
 
 // Interfaces - Types
 export interface CmdResult { success: boolean; err: Error; stdout: string; stderr: string; }
@@ -31,7 +31,7 @@ class Helper {
   public get nginxHostname() { return TEST_AIO_NGINX_HOSTNAME; }
   public get nginxPortHttp() { return TEST_AIO_NGINX_PORT_HTTP; }
   public get nginxPortHttps() { return TEST_AIO_NGINX_PORT_HTTPS; }
-  public get serverUser() { return SERVER_USER; }
+  public get wwwUser() { return WWW_USER; }
   public get uploadHostname() { return TEST_AIO_UPLOAD_HOSTNAME; }
   public get uploadPort() { return TEST_AIO_UPLOAD_PORT; }
   public get uploadMaxSize() { return TEST_AIO_UPLOAD_MAX_SIZE; }
@@ -46,7 +46,7 @@ class Helper {
   // Constructor
   constructor() {
     shell.mkdir('-p', this.buildsDir);
-    shell.exec(`chown -R ${this.serverUser} ${this.buildsDir}`);
+    shell.exec(`chown -R ${this.wwwUser} ${this.buildsDir}`);
   }
 
   // Methods - Public
@@ -64,7 +64,7 @@ class Helper {
   public createDummyArchive(pr: string, sha: string, archivePath: string): CleanUpFn {
     const inputDir = path.join(this.buildsDir, 'uploaded', pr, sha);
     const cmd1 = `tar --create --gzip --directory "${inputDir}" --file "${archivePath}" .`;
-    const cmd2 = `chown ${this.serverUser} ${archivePath}`;
+    const cmd2 = `chown ${this.wwwUser} ${archivePath}`;
 
     const cleanUpTemp = this.createDummyBuild(`uploaded/${pr}`, sha, true);
     shell.exec(cmd1);
@@ -82,7 +82,7 @@ class Helper {
 
     this.writeFile(idxPath, {content: `PR: ${pr} | SHA: ${sha} | File: /index.html`}, force);
     this.writeFile(barPath, {content: `PR: ${pr} | SHA: ${sha} | File: /foo/bar.js`}, force);
-    shell.exec(`chown -R ${this.serverUser} ${prDir}`);
+    shell.exec(`chown -R ${this.wwwUser} ${prDir}`);
 
     return this.createCleanUpFn(() => shell.rm('-rf', prDir));
   }
@@ -166,7 +166,7 @@ class Helper {
       // Create a file with the specified content.
       fs.writeFileSync(filePath, content || '');
     }
-    shell.exec(`chown ${this.serverUser} ${filePath}`);
+    shell.exec(`chown ${this.wwwUser} ${filePath}`);
 
     return this.createCleanUpFn(() => shell.rm('-rf', cleanUpTarget));
   }
