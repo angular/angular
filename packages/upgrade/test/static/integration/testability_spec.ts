@@ -73,5 +73,42 @@ export function main() {
            expect(ng2Stable).toEqual(true);
          });
        }));
+
+    it('should not wait for $interval', fakeAsync(() => {
+         const ng1Module = angular.module('ng1', []);
+         const element = html('<div></div>');
+
+         bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+
+           const ng2Testability: Testability = upgrade.injector.get(Testability);
+           const $interval: angular.IIntervalService = upgrade.$injector.get('$interval');
+
+           let ng2Stable = false;
+           let intervalDone = false;
+
+           const id = $interval((arg: string) => {
+             // should only be called once
+             expect(intervalDone).toEqual(false);
+
+             intervalDone = true;
+             expect(NgZone.isInAngularZone()).toEqual(true);
+             expect(arg).toEqual('passed argument');
+           }, 200, 0, true, 'passed argument');
+
+           ng2Testability.whenStable(() => { ng2Stable = true; });
+
+           tick(100);
+
+           expect(intervalDone).toEqual(false);
+           expect(ng2Stable).toEqual(true);
+
+           tick(200);
+           expect(intervalDone).toEqual(true);
+           expect($interval.cancel(id)).toEqual(true);
+
+           // Interval should not fire after cancel
+           tick(200);
+         });
+       }));
   });
 }

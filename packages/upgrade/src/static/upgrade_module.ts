@@ -9,7 +9,7 @@
 import {Injector, NgModule, NgZone, Testability, ɵNOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR as NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from '@angular/core';
 
 import * as angular from '../common/angular1';
-import {$$TESTABILITY, $DELEGATE, $INJECTOR, $PROVIDE, INJECTOR_KEY, UPGRADE_MODULE_NAME} from '../common/constants';
+import {$$TESTABILITY, $DELEGATE, $INJECTOR, $INTERVAL, $PROVIDE, INJECTOR_KEY, UPGRADE_MODULE_NAME} from '../common/constants';
 import {controllerKey} from '../common/util';
 
 import {angular1Providers, setTempInjectorRef} from './angular1_providers';
@@ -187,6 +187,33 @@ export class UpgradeModule {
 
                       testabilityDelegate.whenStable = newWhenStable;
                       return testabilityDelegate;
+                    }
+                  ]);
+                }
+
+                if ($injector.has($INTERVAL)) {
+                  $provide.decorator($INTERVAL, [
+                    $DELEGATE,
+                    (intervalDelegate: angular.IIntervalService) => {
+                      // Wrap the $interval service so that setInterval is called outside NgZone,
+                      // but the callback is still invoked within it. This is so that $interval
+                      // won't block stability, which preserves the behavior from AngularJS.
+                      let wrappedInterval =
+                          (fn: Function, delay: number, count?: number, invokeApply?: boolean,
+                           ...pass: any[]) => {
+                            return this.ngZone.runOutsideAngular(() => {
+                              return intervalDelegate((...args: any[]) => {
+                                // Run callback in the next VM turn - $interval calls
+                                // $rootScope.$apply, and running the callback in NgZone will
+                                // cause a '$digest already in progress' error if it's in the
+                                // same vm turn.
+                                setTimeout(() => { this.ngZone.run(() => fn(...args)); });
+                              }, delay, count, invokeApply, ...pass);
+                            });
+                          };
+
+                      (wrappedInterval as any)['cancel'] = intervalDelegate.cancel;
+                      return wrappedInterval;
                     }
                   ]);
                 }
