@@ -7,7 +7,6 @@
  */
 
 import {AotCompiler, AotCompilerHost, AotCompilerOptions, CompileSummaryKind, GeneratedFile, createAotCompiler} from '@angular/compiler';
-import {fakeAsync, tick} from '@angular/core/testing';
 
 import {MockDirectory, compile, setup} from './test_util';
 
@@ -16,19 +15,12 @@ describe('aot summaries for jit', () => {
 
   function compileApp(rootDir: MockDirectory, options: {useSummaries?: boolean} = {}):
       {genFiles: GeneratedFile[], outDir: MockDirectory} {
-    let result: {genFiles: GeneratedFile[], outDir: MockDirectory} = null !;
-    let error: Error|null = null;
-    compile([rootDir, angularFiles], options).then((r) => result = r, (e) => error = e);
-    tick();
-    if (error) {
-      throw error;
-    }
-    return result;
+    return compile([rootDir, angularFiles], options);
   }
 
-  it('should create @Injectable summaries', fakeAsync(() => {
-       const appDir = {
-         'app.module.ts': `
+  it('should create @Injectable summaries', () => {
+    const appDir = {
+      'app.module.ts': `
         import { Injectable } from '@angular/core';
 
         export class Dep {}
@@ -38,22 +30,22 @@ describe('aot summaries for jit', () => {
           constructor(d: Dep) {}
         }
       `
-       };
-       const rootDir = {'app': appDir};
+    };
+    const rootDir = {'app': appDir};
 
-       const genFile =
-           compileApp(rootDir).genFiles.find(f => f.genFileUrl === '/app/app.module.ngsummary.ts');
+    const genFile =
+        compileApp(rootDir).genFiles.find(f => f.genFileUrl === '/app/app.module.ngsummary.ts');
 
-       expect(genFile.source).toContain(`import * as i0 from '/app/app.module'`);
-       expect(genFile.source).toContain('export function MyServiceNgSummary()');
-       // Note: CompileSummaryKind.Injectable = 3
-       expect(genFile.source).toMatch(/summaryKind:3,\s*type:\{\s*reference:i0.MyService/);
-       expect(genFile.source).toContain('token:{identifier:{reference:i0.Dep}}');
-     }));
+    expect(genFile.source).toContain(`import * as i0 from '/app/app.module'`);
+    expect(genFile.source).toContain('export function MyServiceNgSummary()');
+    // Note: CompileSummaryKind.Injectable = 3
+    expect(genFile.source).toMatch(/summaryKind:3,\s*type:\{\s*reference:i0.MyService/);
+    expect(genFile.source).toContain('token:{identifier:{reference:i0.Dep}}');
+  });
 
-  it('should create @Pipe summaries', fakeAsync(() => {
-       const appDir = {
-         'app.module.ts': `
+  it('should create @Pipe summaries', () => {
+    const appDir = {
+      'app.module.ts': `
         import { Pipe, NgModule } from '@angular/core';
 
         export class Dep {}
@@ -66,22 +58,22 @@ describe('aot summaries for jit', () => {
         @NgModule({declarations: [MyPipe]})
         export class MyModule {}
       `
-       };
-       const rootDir = {'app': appDir};
+    };
+    const rootDir = {'app': appDir};
 
-       const genFile =
-           compileApp(rootDir).genFiles.find(f => f.genFileUrl === '/app/app.module.ngsummary.ts');
+    const genFile =
+        compileApp(rootDir).genFiles.find(f => f.genFileUrl === '/app/app.module.ngsummary.ts');
 
-       expect(genFile.source).toContain(`import * as i0 from '/app/app.module'`);
-       expect(genFile.source).toContain('export function MyPipeNgSummary()');
-       // Note: CompileSummaryKind.Pipe = 1
-       expect(genFile.source).toMatch(/summaryKind:0,\s*type:\{\s*reference:i0.MyPipe/);
-       expect(genFile.source).toContain('token:{identifier:{reference:i0.Dep}}');
-     }));
+    expect(genFile.source).toContain(`import * as i0 from '/app/app.module'`);
+    expect(genFile.source).toContain('export function MyPipeNgSummary()');
+    // Note: CompileSummaryKind.Pipe = 1
+    expect(genFile.source).toMatch(/summaryKind:0,\s*type:\{\s*reference:i0.MyPipe/);
+    expect(genFile.source).toContain('token:{identifier:{reference:i0.Dep}}');
+  });
 
-  it('should create @Directive summaries', fakeAsync(() => {
-       const appDir = {
-         'app.module.ts': `
+  it('should create @Directive summaries', () => {
+    const appDir = {
+      'app.module.ts': `
         import { Directive, NgModule } from '@angular/core';
 
         export class Dep {}
@@ -94,22 +86,22 @@ describe('aot summaries for jit', () => {
         @NgModule({declarations: [MyDirective]})
         export class MyModule {}
       `
-       };
-       const rootDir = {'app': appDir};
+    };
+    const rootDir = {'app': appDir};
 
-       const genFile =
-           compileApp(rootDir).genFiles.find(f => f.genFileUrl === '/app/app.module.ngsummary.ts');
+    const genFile =
+        compileApp(rootDir).genFiles.find(f => f.genFileUrl === '/app/app.module.ngsummary.ts');
 
-       expect(genFile.source).toContain(`import * as i0 from '/app/app.module'`);
-       expect(genFile.source).toContain('export function MyDirectiveNgSummary()');
-       // Note: CompileSummaryKind.Directive = 1
-       expect(genFile.source).toMatch(/summaryKind:1,\s*type:\{\s*reference:i0.MyDirective/);
-       expect(genFile.source).toContain('token:{identifier:{reference:i0.Dep}}');
-     }));
+    expect(genFile.source).toContain(`import * as i0 from '/app/app.module'`);
+    expect(genFile.source).toContain('export function MyDirectiveNgSummary()');
+    // Note: CompileSummaryKind.Directive = 1
+    expect(genFile.source).toMatch(/summaryKind:1,\s*type:\{\s*reference:i0.MyDirective/);
+    expect(genFile.source).toContain('token:{identifier:{reference:i0.Dep}}');
+  });
 
-  it('should create @NgModule summaries', fakeAsync(() => {
-       const appDir = {
-         'app.module.ts': `
+  it('should create @NgModule summaries', () => {
+    const appDir = {
+      'app.module.ts': `
         import { NgModule } from '@angular/core';
 
         export class Dep {}
@@ -119,22 +111,22 @@ describe('aot summaries for jit', () => {
           constructor(d: Dep) {}
         }
       `
-       };
-       const rootDir = {'app': appDir};
+    };
+    const rootDir = {'app': appDir};
 
-       const genFile =
-           compileApp(rootDir).genFiles.find(f => f.genFileUrl === '/app/app.module.ngsummary.ts');
+    const genFile =
+        compileApp(rootDir).genFiles.find(f => f.genFileUrl === '/app/app.module.ngsummary.ts');
 
-       expect(genFile.source).toContain(`import * as i0 from '/app/app.module'`);
-       expect(genFile.source).toContain('export function MyModuleNgSummary()');
-       // Note: CompileSummaryKind.NgModule = 2
-       expect(genFile.source).toMatch(/summaryKind:2,\s*type:\{\s*reference:i0.MyModule/);
-       expect(genFile.source).toContain('token:{identifier:{reference:i0.Dep}}');
-     }));
+    expect(genFile.source).toContain(`import * as i0 from '/app/app.module'`);
+    expect(genFile.source).toContain('export function MyModuleNgSummary()');
+    // Note: CompileSummaryKind.NgModule = 2
+    expect(genFile.source).toMatch(/summaryKind:2,\s*type:\{\s*reference:i0.MyModule/);
+    expect(genFile.source).toContain('token:{identifier:{reference:i0.Dep}}');
+  });
 
-  it('should embed useClass provider summaries in @Directive summaries', fakeAsync(() => {
-       const appDir = {
-         'app.service.ts': `
+  it('should embed useClass provider summaries in @Directive summaries', () => {
+    const appDir = {
+      'app.service.ts': `
         import { Injectable } from '@angular/core';
 
         export class Dep {}
@@ -144,7 +136,7 @@ describe('aot summaries for jit', () => {
           constructor(d: Dep) {}
         }
       `,
-         'app.module.ts': `
+      'app.module.ts': `
         import { Directive, NgModule } from '@angular/core';
         import { MyService } from './app.service';
 
@@ -157,21 +149,21 @@ describe('aot summaries for jit', () => {
         @NgModule({declarations: [MyDirective]})
         export class MyModule {}
       `
-       };
-       const rootDir = {'app': appDir};
+    };
+    const rootDir = {'app': appDir};
 
-       const genFile =
-           compileApp(rootDir).genFiles.find(f => f.genFileUrl === '/app/app.module.ngsummary.ts');
+    const genFile =
+        compileApp(rootDir).genFiles.find(f => f.genFileUrl === '/app/app.module.ngsummary.ts');
 
-       expect(genFile.source).toMatch(/useClass:\{\s*reference:i1.MyService/);
-       // Note: CompileSummaryKind.Injectable = 3
-       expect(genFile.source).toMatch(/summaryKind:3,\s*type:\{\s*reference:i1.MyService/);
-       expect(genFile.source).toContain('token:{identifier:{reference:i1.Dep}}');
-     }));
+    expect(genFile.source).toMatch(/useClass:\{\s*reference:i1.MyService/);
+    // Note: CompileSummaryKind.Injectable = 3
+    expect(genFile.source).toMatch(/summaryKind:3,\s*type:\{\s*reference:i1.MyService/);
+    expect(genFile.source).toContain('token:{identifier:{reference:i1.Dep}}');
+  });
 
-  it('should embed useClass provider summaries into @NgModule summaries', fakeAsync(() => {
-       const appDir = {
-         'app.service.ts': `
+  it('should embed useClass provider summaries into @NgModule summaries', () => {
+    const appDir = {
+      'app.service.ts': `
         import { Injectable } from '@angular/core';
 
         export class Dep {}
@@ -181,7 +173,7 @@ describe('aot summaries for jit', () => {
           constructor(d: Dep) {}
         }
       `,
-         'app.module.ts': `
+      'app.module.ts': `
         import { NgModule } from '@angular/core';
         import { MyService } from './app.service';
 
@@ -190,22 +182,21 @@ describe('aot summaries for jit', () => {
         })
         export class MyModule {}
       `
-       };
-       const rootDir = {'app': appDir};
+    };
+    const rootDir = {'app': appDir};
 
-       const genFile =
-           compileApp(rootDir).genFiles.find(f => f.genFileUrl === '/app/app.module.ngsummary.ts');
+    const genFile =
+        compileApp(rootDir).genFiles.find(f => f.genFileUrl === '/app/app.module.ngsummary.ts');
 
-       expect(genFile.source).toMatch(/useClass:\{\s*reference:i1.MyService/);
-       // Note: CompileSummaryKind.Injectable = 3
-       expect(genFile.source).toMatch(/summaryKind:3,\s*type:\{\s*reference:i1.MyService/);
-       expect(genFile.source).toContain('token:{identifier:{reference:i1.Dep}}');
-     }));
+    expect(genFile.source).toMatch(/useClass:\{\s*reference:i1.MyService/);
+    // Note: CompileSummaryKind.Injectable = 3
+    expect(genFile.source).toMatch(/summaryKind:3,\s*type:\{\s*reference:i1.MyService/);
+    expect(genFile.source).toContain('token:{identifier:{reference:i1.Dep}}');
+  });
 
-  it('should reference declared @Directive and @Pipe summaries in @NgModule summaries',
-     fakeAsync(() => {
-       const appDir = {
-         'app.module.ts': `
+  it('should reference declared @Directive and @Pipe summaries in @NgModule summaries', () => {
+    const appDir = {
+      'app.module.ts': `
         import { Directive, Pipe, NgModule } from '@angular/core';
 
         @Directive({selector: '[myDir]'})
@@ -217,20 +208,20 @@ describe('aot summaries for jit', () => {
         @NgModule({declarations: [MyDirective, MyPipe]})
         export class MyModule {}
       `
-       };
-       const rootDir = {'app': appDir};
+    };
+    const rootDir = {'app': appDir};
 
-       const genFile =
-           compileApp(rootDir).genFiles.find(f => f.genFileUrl === '/app/app.module.ngsummary.ts');
+    const genFile =
+        compileApp(rootDir).genFiles.find(f => f.genFileUrl === '/app/app.module.ngsummary.ts');
 
-       expect(genFile.source)
-           .toMatch(
-               /export function MyModuleNgSummary()[^;]*,\s*MyDirectiveNgSummary,\s*MyPipeNgSummary\s*\]\s*;/);
-     }));
+    expect(genFile.source)
+        .toMatch(
+            /export function MyModuleNgSummary()[^;]*,\s*MyDirectiveNgSummary,\s*MyPipeNgSummary\s*\]\s*;/);
+  });
 
-  it('should reference imported @NgModule summaries in @NgModule summaries', fakeAsync(() => {
-       const appDir = {
-         'app.module.ts': `
+  it('should reference imported @NgModule summaries in @NgModule summaries', () => {
+    const appDir = {
+      'app.module.ts': `
         import { NgModule } from '@angular/core';
 
         @NgModule()
@@ -239,20 +230,19 @@ describe('aot summaries for jit', () => {
         @NgModule({imports: [MyImportedModule]})
         export class MyModule {}
       `
-       };
-       const rootDir = {'app': appDir};
+    };
+    const rootDir = {'app': appDir};
 
-       const genFile =
-           compileApp(rootDir).genFiles.find(f => f.genFileUrl === '/app/app.module.ngsummary.ts');
+    const genFile =
+        compileApp(rootDir).genFiles.find(f => f.genFileUrl === '/app/app.module.ngsummary.ts');
 
-       expect(genFile.source)
-           .toMatch(
-               /export function MyModuleNgSummary()[^;]*,\s*MyImportedModuleNgSummary\s*\]\s*;/);
-     }));
+    expect(genFile.source)
+        .toMatch(/export function MyModuleNgSummary()[^;]*,\s*MyImportedModuleNgSummary\s*\]\s*;/);
+  });
 
   it('should create and use reexports for imported NgModules ' +
          'accross compilation units',
-     fakeAsync(() => {
+     () => {
        const lib1In = {
          'lib1': {
            'module.ts': `
@@ -341,5 +331,5 @@ describe('aot summaries for jit', () => {
        expect(lib3ReexportNgSummary.source)
            .toContain(
                `export {ReexportModule_2NgSummary as ReexportModule_3NgSummary} from '/lib2/reexport.ngsummary'`);
-     }));
+     });
 });
