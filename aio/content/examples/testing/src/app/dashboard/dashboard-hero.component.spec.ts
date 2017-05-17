@@ -50,23 +50,23 @@ describe('DashboardHeroComponent when tested directly', () => {
 
   // #docregion click-test
   it('should raise selected event when clicked', () => {
-    let selectedHero: Hero;
-    comp.selected.subscribe((hero: Hero) => selectedHero = hero);
+    comp.selected.subscribe((hero: Hero) => {
+      expect(hero).toBe(expectedHero);
+    });
 
   // #docregion trigger-event-handler
     heroEl.triggerEventHandler('click', null);
   // #enddocregion trigger-event-handler
-    expect(selectedHero).toBe(expectedHero);
   });
   // #enddocregion click-test
 
   // #docregion click-test-2
   it('should raise selected event when clicked', () => {
-    let selectedHero: Hero;
-    comp.selected.subscribe((hero: Hero) => selectedHero = hero);
+    comp.selected.subscribe((hero: Hero) => {
+      expect(hero).toBe(expectedHero);
+    });
 
     click(heroEl);   // triggerEventHandler helper
-    expect(selectedHero).toBe(expectedHero);
   });
   // #enddocregion click-test-2
 });
