@@ -25,6 +25,7 @@ import { SearchResultsComponent } from 'app/search/search-results/search-results
 import { SearchService } from 'app/search/search.service';
 import { SwUpdateNotificationsService } from 'app/sw-updates/sw-update-notifications.service';
 import { TocComponent } from 'app/embedded/toc/toc.component';
+import { MdSidenav } from '@angular/material';
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -262,21 +263,56 @@ describe('AppComponent', () => {
   });
 
   describe('hostClasses', () => {
-    it('should set the css classes of the host container based on the current doc and navigation view', () => {
-      const host = fixture.debugElement;
+    let host: DebugElement;
+    beforeEach(() => {
+      host = fixture.debugElement;
+    });
 
+    it('should set the css classes of the host container based on the current doc and navigation view', () => {
       locationService.go('guide/pipes');
       fixture.detectChanges();
-      expect(host.properties['className']).toEqual('page-guide-pipes folder-guide view-SideNav');
+
+      checkHostClass('page', 'guide-pipes');
+      checkHostClass('folder', 'guide');
+      checkHostClass('view', 'SideNav');
 
       locationService.go('features');
       fixture.detectChanges();
-      expect(host.properties['className']).toEqual('page-features folder-features view-TopBar');
+      checkHostClass('page', 'features');
+      checkHostClass('folder', 'features');
+      checkHostClass('view', 'TopBar');
 
       locationService.go('');
       fixture.detectChanges();
-      expect(host.properties['className']).toEqual('page-home folder-home view-');
+      checkHostClass('page', 'home');
+      checkHostClass('folder', 'home');
+      checkHostClass('view', '');
     });
+
+    it('should set the css class of the host container based on the open/closed state of the side nav', () => {
+      const sideNav = host.query(By.directive(MdSidenav));
+
+      locationService.go('guide/pipes');
+      fixture.detectChanges();
+      checkHostClass('sidenav', 'open');
+
+      sideNav.componentInstance.opened = false;
+      sideNav.triggerEventHandler('close', {});
+      fixture.detectChanges();
+      checkHostClass('sidenav', 'closed');
+
+      sideNav.componentInstance.opened = true;
+      sideNav.triggerEventHandler('open', {});
+      fixture.detectChanges();
+      checkHostClass('sidenav', 'open');
+    });
+
+    function checkHostClass(type, value) {
+      const classes = host.properties['className'];
+      const classArray = classes.split(' ').filter(c => c.indexOf(`${type}-`) === 0);
+      expect(classArray.length).toBeLessThanOrEqual(1, `"${classes}" should have only one class matching ${type}-*`);
+      expect(classArray).toEqual([`${type}-${value}`], `"${classes}" should contain ${type}-${value}`);
+    }
   });
 
   describe('currentDocument', () => {
