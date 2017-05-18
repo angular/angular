@@ -25,12 +25,11 @@ import {applyRedirects} from './apply_redirects';
 import {LoadedRouterConfig, QueryParamsHandling, ResolveData, Route, Routes, RunGuardsAndResolvers, validateConfig} from './config';
 import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
-import {RouterOutlet} from './directives/router_outlet';
 import {Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
 import {recognize} from './recognize';
 import {DetachedRouteHandle, DetachedRouteHandleInternal, RouteReuseStrategy} from './route_reuse_strategy';
 import {RouterConfigLoader} from './router_config_loader';
-import {RouterOutletMap} from './router_outlet_map';
+import {RouterOutletMap, IRouterOutlet} from './router_outlet_map';
 import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot, advanceActivatedRoute, createEmptyState, equalParamsAndUrlSegments, inheritedParamsDataResolve} from './router_state';
 import {PRIMARY_OUTLET, Params, isNavigationCancelingError} from './shared';
 import {DefaultUrlHandlingStrategy, UrlHandlingStrategy} from './url_handling_strategy';
@@ -880,7 +879,7 @@ export class PreActivation {
   }
 
   private deactiveRouteAndItsChildren(
-      route: TreeNode<ActivatedRouteSnapshot>, outlet: RouterOutlet|null): void {
+      route: TreeNode<ActivatedRouteSnapshot>, outlet: IRouterOutlet|null): void {
     const prevChildren = nodeChildrenAsMap(route);
     const r = route.value;
 
@@ -1111,7 +1110,7 @@ class ActivateRoutes {
   }
 
   private placeComponentIntoOutlet(
-      outletMap: RouterOutletMap, future: ActivatedRoute, outlet: RouterOutlet): void {
+      outletMap: RouterOutletMap, future: ActivatedRoute, outlet: IRouterOutlet): void {
     const config = parentLoadedConfig(future.snapshot);
     const cmpFactoryResolver = config ? config.module.componentFactoryResolver : null;
 
@@ -1137,7 +1136,7 @@ class ActivateRoutes {
   private deactiveRouteAndOutlet(route: TreeNode<ActivatedRoute>, parentOutletMap: RouterOutletMap):
       void {
     const prevChildren: {[key: string]: any} = nodeChildrenAsMap(route);
-    let outlet: RouterOutlet|null = null;
+    let outlet: IRouterOutlet|null = null;
 
     // getOutlet throws when cannot find the right outlet,
     // which can happen if an outlet was in an NgIf and was removed
@@ -1198,17 +1197,8 @@ function nodeChildrenAsMap<T extends{outlet: string}>(node: TreeNode<T>| null) {
   return map;
 }
 
-function getOutlet(outletMap: RouterOutletMap, route: ActivatedRoute): RouterOutlet {
-  const outlet = outletMap._outlets[route.outlet];
-  if (!outlet) {
-    const componentName = (<any>route.component).name;
-    if (route.outlet === PRIMARY_OUTLET) {
-      throw new Error(`Cannot find primary outlet to load '${componentName}'`);
-    } else {
-      throw new Error(`Cannot find the outlet ${route.outlet} to load '${componentName}'`);
-    }
-  }
-  return outlet;
+function getOutlet(outletMap: RouterOutletMap, route: ActivatedRoute): IRouterOutlet {
+  return outletMap._getOutlet(route.outlet);
 }
 
 function validateCommands(commands: string[]): void {
