@@ -6,10 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵDepFlags as DepFlags, ɵLifecycleHooks as LifecycleHooks, ɵNodeFlags as NodeFlags} from '@angular/core';
+import {ɵDepFlags as DepFlags, ɵNodeFlags as NodeFlags} from '@angular/core';
 
 import {CompileDiDependencyMetadata, CompileEntryComponentMetadata, CompileProviderMetadata, CompileTokenMetadata} from '../compile_metadata';
-import {Identifiers, createIdentifier, createIdentifierToken, resolveIdentifier} from '../identifiers';
+import {CompileReflector} from '../compile_reflector';
+import {Identifiers, createTokenForExternalReference} from '../identifiers';
+import {LifecycleHooks} from '../lifecycle_reflector';
 import * as o from '../output/output_ast';
 import {convertValueToOutputAst} from '../output/value_util';
 import {ProviderAst, ProviderAstType} from '../template_parser/template_ast';
@@ -172,7 +174,8 @@ export function lifecycleHookToNodeFlag(lifecycleHook: LifecycleHooks): NodeFlag
 }
 
 export function componentFactoryResolverProviderDef(
-    ctx: OutputContext, flags: NodeFlags, entryComponents: CompileEntryComponentMetadata[]): {
+    reflector: CompileReflector, ctx: OutputContext, flags: NodeFlags,
+    entryComponents: CompileEntryComponentMetadata[]): {
   providerExpr: o.Expression,
   flags: NodeFlags,
   depsExpr: o.Expression,
@@ -180,15 +183,15 @@ export function componentFactoryResolverProviderDef(
 } {
   const entryComponentFactories =
       entryComponents.map((entryComponent) => ctx.importExpr(entryComponent.componentFactory));
-  const token = createIdentifierToken(Identifiers.ComponentFactoryResolver);
+  const token = createTokenForExternalReference(reflector, Identifiers.ComponentFactoryResolver);
   const classMeta = {
     diDeps: [
       {isValue: true, value: o.literalArr(entryComponentFactories)},
       {token: token, isSkipSelf: true, isOptional: true},
-      {token: createIdentifierToken(Identifiers.NgModuleRef)},
+      {token: createTokenForExternalReference(reflector, Identifiers.NgModuleRef)},
     ],
     lifecycleHooks: [],
-    reference: resolveIdentifier(Identifiers.CodegenComponentFactoryResolver)
+    reference: reflector.resolveExternalReference(Identifiers.CodegenComponentFactoryResolver)
   };
   const {providerExpr, flags: providerFlags, depsExpr} =
       singleProviderDef(ctx, flags, ProviderAstType.PrivateService, {

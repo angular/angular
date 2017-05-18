@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {DirectiveResolver} from '@angular/compiler';
+import {CompileReflector, DirectiveResolver} from '@angular/compiler';
 import {Compiler, Component, Directive, Injectable, Injector, Provider, Type, resolveForwardRef, ɵViewMetadata as ViewMetadata} from '@angular/core';
 
 
@@ -22,7 +22,7 @@ export class MockDirectiveResolver extends DirectiveResolver {
   private _views = new Map<Type<any>, ViewMetadata>();
   private _inlineTemplates = new Map<Type<any>, string>();
 
-  constructor(private _injector: Injector) { super(); }
+  constructor(private _injector: Injector, reflector: CompileReflector) { super(reflector); }
 
   private get _compiler(): Compiler { return this._injector.get(Compiler); }
 
