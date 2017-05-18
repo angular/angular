@@ -226,12 +226,14 @@ describe('TocComponent', () => {
 
   describe('when in side panel (not embedded))', () => {
     let fixture: ComponentFixture<HostNotEmbeddedTocComponent>;
+    let scrollService: ScrollService;
 
     beforeEach(() => {
       fixture = TestBed.createComponent(HostNotEmbeddedTocComponent);
       tocComponentDe = fixture.debugElement.children[0];
       tocComponent = tocComponentDe.componentInstance;
       tocService = TestBed.get(TocService);
+      scrollService = TestBed.get(ScrollService);
 
       fixture.detectChanges();
       page = setPage();
@@ -239,6 +241,12 @@ describe('TocComponent', () => {
 
     it('should not be in embedded state', () => {
       expect(tocComponent.isEmbedded).toEqual(false);
+    });
+
+    it('should have the header as a link to scroll top', () => {
+      let tocHeading = fixture.debugElement.query(By.css('.toc-heading'));
+      tocHeading.nativeElement.click();
+      expect(scrollService.scrollToTop).toHaveBeenCalled();
     });
 
     it('should display all items', () => {
