@@ -42,7 +42,7 @@ export class Tree<T> {
    * @internal
    */
   siblings(t: T): T[] {
-    const p = findPath(t, this._root);
+    const p = findPath(t, this._root, []);
     if (p.length < 2) return [];
 
     const c = p[p.length - 2].children.map(c => c.value);
@@ -52,32 +52,26 @@ export class Tree<T> {
   /**
    * @internal
    */
-  pathFromRoot(t: T): T[] { return findPath(t, this._root).map(s => s.value); }
+  pathFromRoot(t: T): T[] { return findPath(t, this._root, []).map(s => s.value); }
 }
 
-
-// DFS for the node matching the value
-function findNode<T>(value: T, node: TreeNode<T>): TreeNode<T>|null {
-  if (value === node.value) return node;
-
-  for (const child of node.children) {
-    const node = findNode(value, child);
-    if (node) return node;
+function findNode<T>(expected: T, c: TreeNode<T>): TreeNode<T>|null {
+  if (expected === c.value) return c;
+  for (const cc of c.children) {
+    const r = findNode(expected, cc);
+    if (r) return r;
   }
-
   return null;
 }
 
-// Return the path to the node with the given value using DFS
-function findPath<T>(value: T, node: TreeNode<T>): TreeNode<T>[] {
-  if (value === node.value) return [node];
+function findPath<T>(expected: T, c: TreeNode<T>, collected: TreeNode<T>[]): TreeNode<T>[] {
+  collected.push(c);
+  if (expected === c.value) return collected;
 
-  for (const child of node.children) {
-    const path = findPath(value, child);
-    if (path.length) {
-      path.unshift(node);
-      return path;
-    }
+  for (const cc of c.children) {
+    const cloned = collected.slice(0);
+    const r = findPath(expected, cc, cloned);
+    if (r.length > 0) return r;
   }
 
   return [];
