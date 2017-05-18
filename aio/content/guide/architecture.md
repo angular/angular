@@ -1,10 +1,4 @@
-@title
-Architecture Overview
-
-@intro
-The basic building blocks of Angular applications.
-
-@description
+# Architecture Overview
 
 Angular is a framework for building client applications in HTML and
 either JavaScript or a language like TypeScript that compiles to JavaScript.
@@ -26,25 +20,9 @@ You'll learn the details in the pages that follow. For now, focus on the big pic
   <img src="generated/images/guide/architecture/overview2.png" alt="overview">
 </figure>
 
-<!--
-
-The architecture diagram identifies the eight main building blocks of an Angular application:
-
-* [Modules](guide/architecture#modules)
-* [Components](guide/architecture#components)
-* [Templates](guide/architecture#templates)
-* [Metadata](guide/architecture#metadata)
-* [Data binding](guide/architecture#data-binding)
-* [Directives](guide/architecture#directives)
-* [Services](guide/architecture#services)
-* [Dependency injection](guide/architecture#dependency-injection)
-
-Learn these building blocks, and you're on your way.
--->
-
 <div class="l-sub-section">
 
-The code referenced on this page is available as a <live-example></live-example>.
+  The code referenced on this page is available as a <live-example></live-example>.
 
 </div>
 
@@ -71,11 +49,11 @@ An Angular module, whether a _root_ or _feature_, is a class with an `@NgModule`
 
 <div class="l-sub-section">
 
-Decorators are functions that modify JavaScript classes.
-Angular has many decorators that attach metadata to classes so that it knows
-what those classes mean and how they should work.
-<a href="https://medium.com/google-developers/exploring-es7-decorators-76ecb65fb841#.x5c2ndtx0">
-Learn more</a> about decorators on the web.
+  Decorators are functions that modify JavaScript classes.
+  Angular has many decorators that attach metadata to classes so that it knows
+  what those classes mean and how they should work.
+  <a href="https://medium.com/google-developers/exploring-es7-decorators-76ecb65fb841#.x5c2ndtx0">
+  Learn more</a> about decorators on the web.
 
 </div>
 
@@ -100,7 +78,7 @@ Here's a simple root module:
 
 <div class="l-sub-section">
 
-The `export` of `AppComponent` is just to show how to export; it isn't actually necessary in this example. A root module has no reason to _export_ anything because other components don't need to _import_ the root module.
+  The `export` of `AppComponent` is just to show how to export; it isn't actually necessary in this example. A root module has no reason to _export_ anything because other components don't need to _import_ the root module.
 
 </div>
 
@@ -125,11 +103,8 @@ Other JavaScript modules use *import statements* to access public objects from o
 <code-example path="architecture/src/app/app.module.ts" region="export" linenums="false"></code-example>
 
 <div class="l-sub-section">
-
-<a href="http://exploringjs.com/es6/ch_modules.html">Learn more about the JavaScript module system on the web.</a>
-
+  <a href="http://exploringjs.com/es6/ch_modules.html">Learn more about the JavaScript module system on the web.</a>
 </div>
-
 
 These are two different and _complementary_ module systems. Use them both to write your apps.
 
@@ -164,7 +139,7 @@ Hang in there. The confusion yields to clarity with time and experience.
 
 <div class="l-sub-section">
 
-Learn more from the [Angular modules](guide/ngmodule) page.
+  Learn more from the [Angular modules](guide/ngmodule) page.
 
 </div>
 
@@ -248,7 +223,6 @@ Here's some metadata for `HeroListComponent`:
 Here is the `@Component` decorator, which identifies the class
 immediately below it as a component class.
 
-
 The `@Component` decorator takes a required configuration object with the
 information Angular needs to create and present the component and its view.
 
@@ -261,11 +235,9 @@ Angular inserts an instance of the `HeroListComponent` view between those tags.
 
 * `templateUrl`: module-relative address of this component's HTML template, shown [above](guide/architecture#templates).
 
-
 * `providers`: array of **dependency injection providers** for services that the component requires.
 This is one way to tell Angular that the component's constructor requires a `HeroService`
 so it can get the list of heroes to display.
-
 
 <img src="generated/images/guide/architecture/template-metadata-component.png" alt="Metadata" class="left">
 
@@ -284,6 +256,7 @@ so that Angular knows what to do.
 <hr/>
 
 ## Data binding
+
 Without a framework, you would be responsible for pushing data values into the HTML controls and turning user responses
 into actions and value updates. Writing such push/pull logic by hand is tedious, error-prone, and a nightmare to
 read as any experienced jQuery programmer can attest.
@@ -335,7 +308,7 @@ Data binding plays an important role in communication between a template and its
 
 Data binding is also important for communication between parent and child components.
 
-<hr class="clear"/>
+<hr/>
 
 ## Directives
 
@@ -348,10 +321,10 @@ A directive is a class with a `@Directive` decorator.
 A component is a *directive-with-a-template*;
 a `@Component` decorator is actually a `@Directive` decorator extended with template-oriented features.
 
-<div class="l-sub-section clear">
+<div class="l-sub-section">
 
-While **a component is technically a directive**,
-components are so distinctive and central to Angular applications that this architectural overview  separates components from directives.
+  While **a component is technically a directive**,
+  components are so distinctive and central to Angular applications that this architectural overview separates components from directives.
 
 </div>
 
@@ -386,6 +359,7 @@ or modify aspects of DOM elements and components
 
 Of course, you can also write your own directives. Components such as
 `HeroListComponent` are one kind of custom directive.
+
 <!-- PENDING: link to where to learn more about other kinds! -->
 
 <hr/>
@@ -397,7 +371,8 @@ Of course, you can also write your own directives. Components such as
 _Service_ is a broad category encompassing any value, function, or feature that your application needs.
 
 Almost anything can be a service.
-A service is typically a class with a narrow, well-defined purpose. It should do something specific and do it well.<br class="l-clear-both">
+A service is typically a class with a narrow, well-defined purpose. It should do something specific and do it well.
+<br class="clear">
 
 Examples include:
 
@@ -471,7 +446,6 @@ The process of `HeroService` injection looks a bit like this:
 <figure>
   <img src="generated/images/guide/architecture/injector-injects.png" alt="Service">
 </figure>
-
 
 If the injector doesn't have a `HeroService`, how does it know how to make one?
 
@@ -553,7 +527,6 @@ by implementing the lifecycle hook interfaces.
 
 > [**Router**](guide/router): Navigate from page to page within the client
   application and never leave the browser.
-
 
 > [**Testing**](guide/testing): Run unit tests on your application parts as they interact with the Angular framework
 using the _Angular Testing Platform_.
