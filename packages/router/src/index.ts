@@ -17,7 +17,7 @@ export {DetachedRouteHandle, RouteReuseStrategy} from './route_reuse_strategy';
 export {NavigationExtras, Router} from './router';
 export {ROUTES} from './router_config_loader';
 export {ExtraOptions, ROUTER_CONFIGURATION, ROUTER_INITIALIZER, RouterModule, provideRoutes} from './router_module';
-export {RouterOutletMap} from './router_outlet_map';
+export {ChildrenOutletContexts, OutletContext} from './router_outlet_context';
 export {NoPreloading, PreloadAllModules, PreloadingStrategy, RouterPreloader} from './router_preloader';
 export {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot} from './router_state';
 export {PRIMARY_OUTLET, ParamMap, Params, convertToParamMap} from './shared';
