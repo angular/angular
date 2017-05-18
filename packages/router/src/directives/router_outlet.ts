@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, ComponentFactoryResolver, ComponentRef, Directive, EventEmitter, Injector, OnDestroy, Output, ReflectiveInjector, ResolvedReflectiveProvider, ViewContainerRef} from '@angular/core';
-import {RouterOutletMap} from '../router_outlet_map';
+import {Attribute, ComponentFactoryResolver, ComponentRef, Directive, EventEmitter, Injector, OnDestroy, OnInit, Output, ViewContainerRef} from '@angular/core';
+import {ChildrenOutletContexts} from '../router_outlet_context';
 import {ActivatedRoute} from '../router_state';
 import {PRIMARY_OUTLET} from '../shared';
 
@@ -36,23 +36,39 @@ import {PRIMARY_OUTLET} from '../shared';
  * @stable
  */
 @Directive({selector: 'router-outlet'})
-export class RouterOutlet implements OnDestroy {
+export class RouterOutlet implements OnDestroy, OnInit {
   private activated: ComponentRef<any>|null = null;
   private _activatedRoute: ActivatedRoute|null = null;
-  private _outletName: string;
-  public outletMap: RouterOutletMap;
+  private name: string;
 
   @Output('activate') activateEvents = new EventEmitter<any>();
   @Output('deactivate') deactivateEvents = new EventEmitter<any>();
 
   constructor(
-      private parentOutletMap: RouterOutletMap, private location: ViewContainerRef,
+      private parentContexts: ChildrenOutletContexts, private location: ViewContainerRef,
       private resolver: ComponentFactoryResolver, @Attribute('name') name: string) {
-    this._outletName = name || PRIMARY_OUTLET;
-    parentOutletMap.registerOutlet(this._outletName, this);
+    this.name = name || PRIMARY_OUTLET;
+    parentContexts.onChildOutletCreated(this.name, this);
   }
 
-  ngOnDestroy(): void { this.parentOutletMap.removeOutlet(this._outletName); }
+  ngOnDestroy(): void { this.parentContexts.onChildOutletDestroyed(this.name); }
+
+  ngOnInit(): void {
+    if (!this.activated) {
+      // If the outlet was not instantiated at the time the route got activated we need to populate
+      // the outlet when it is initialized.
+      const context = this.parentContexts.getContext(this.name);
+      if (context && context.route) {
+        if (context.attachRef) {
+          // `attachRef` is populated when there is an existing component to mount
+          this.attach(context.attachRef, context.route);
+        } else {
+          // otherwise the component defined in the configuration is created
+          this.activateWith(context.route, context.resolver || null);
+        }
+      }
+    }
+  }
 
   /** @deprecated since v4 **/
   get locationInjector(): Injector { return this.location.injector; }
@@ -102,65 +118,34 @@ export class RouterOutlet implements OnDestroy {
     }
   }
 
-  /** @deprecated since v4, use {@link #activateWith} */
-  activate(
-      activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver, injector: Injector,
-      providers: ResolvedReflectiveProvider[], outletMap: RouterOutletMap): void {
+  activateWith(activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver|null) {
     if (this.isActivated) {
       throw new Error('Cannot activate an already activated outlet');
     }
-
-    this.outletMap = outletMap;
     this._activatedRoute = activatedRoute;
-
-    const snapshot = activatedRoute._futureSnapshot;
-    const component: any = <any>snapshot._routeConfig !.component;
-    const factory = resolver.resolveComponentFactory(component) !;
-
-    const inj = ReflectiveInjector.fromResolvedProviders(providers, injector);
-
-    this.activated = this.location.createComponent(factory, this.location.length, inj, []);
-    this.activated.changeDetectorRef.detectChanges();
-
-    this.activateEvents.emit(this.activated.instance);
-  }
-
-  activateWith(
-      activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver|null,
-      outletMap: RouterOutletMap) {
-    if (this.isActivated) {
-      throw new Error('Cannot activate an already activated outlet');
-    }
-
-    this.outletMap = outletMap;
-    this._activatedRoute = activatedRoute;
-
     const snapshot = activatedRoute._futureSnapshot;
     const component = <any>snapshot._routeConfig !.component;
-
     resolver = resolver || this.resolver;
     const factory = resolver.resolveComponentFactory(component);
-
-    const injector = new OutletInjector(activatedRoute, outletMap, this.location.injector);
-
+    const childContexts = this.parentContexts.getOrCreateContext(this.name).children;
+    const injector = new OutletInjector(activatedRoute, childContexts, this.location.injector);
     this.activated = this.location.createComponent(factory, this.location.length, injector);
-    this.activated.changeDetectorRef.detectChanges();
-
     this.activateEvents.emit(this.activated.instance);
   }
 }
 
 class OutletInjector implements Injector {
   constructor(
-      private route: ActivatedRoute, private map: RouterOutletMap, private parent: Injector) {}
+      private route: ActivatedRoute, private childContexts: ChildrenOutletContexts,
+      private parent: Injector) {}
 
   get(token: any, notFoundValue?: any): any {
     if (token === ActivatedRoute) {
       return this.route;
     }
 
-    if (token === RouterOutletMap) {
-      return this.map;
+    if (token === ChildrenOutletContexts) {
+      return this.childContexts;
     }
 
     return this.parent.get(token, notFoundValue);
