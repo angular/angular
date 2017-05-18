@@ -64,7 +64,6 @@ function getScore(results) {
 
 function ignoreHttpsAudits(aggregations) {
   const httpsAudits = [
-    'is-on-https',
     'redirects-http'
   ];
 
@@ -83,6 +82,9 @@ function launchChromeAndRunLighthouse(url, flags, config) {
 
   return launcher.run().
     then(() => lighthouse(url, flags, config)).
+    // Avoid race condition by adding a delay before killing Chrome.
+    // (See also https://github.com/paulirish/pwmetrics/issues/63#issuecomment-282721068.)
+    then(results => new Promise(resolve => setTimeout(() => resolve(results), 1000))).
     then(results => launcher.kill().then(() => results)).
     catch(err => launcher.kill().then(() => { throw err; }, () => { throw err; }));
 }

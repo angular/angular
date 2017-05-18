@@ -4086,9 +4086,9 @@ levn@^0.3.0, levn@~0.3.0:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
 
-lighthouse@^1.6.3:
-  version "1.6.3"
-  resolved "https://registry.yarnpkg.com/lighthouse/-/lighthouse-1.6.3.tgz#099ef484d94d844fab7189ef105e1f33464326b6"
+lighthouse@^1.6.5:
+  version "1.6.5"
+  resolved "https://registry.yarnpkg.com/lighthouse/-/lighthouse-1.6.5.tgz#7e06a7025c8be298b6f912dbc2f15def1d4b6531"
   dependencies:
     axe-core "2.1.7"
     chrome-devtools-frontend "1.0.422034"
@@ -4104,6 +4104,7 @@ lighthouse@^1.6.3:
     rimraf "2.2.8"
     semver "5.3.0"
     speedline "1.0.3"
+    update-notifier "^2.1.0"
     whatwg-url "4.0.0"
     ws "1.1.1"
     yargs "3.32.0"
@@ -7129,7 +7130,7 @@ update-notifier@^1.0.1:
     semver-diff "^2.0.0"
     xdg-basedir "^2.0.0"
 
-update-notifier@^2.0.0:
+update-notifier@^2.0.0, update-notifier@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/update-notifier/-/update-notifier-2.1.0.tgz#ec0c1e53536b76647a24b77cb83966d9315123d9"
   dependencies:
