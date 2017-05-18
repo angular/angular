@@ -24,7 +24,10 @@ import { ContainerComponent } from './container.component';
   ]
 })
 export class AppModule {
-  ngDoBootstrap() {}
+  constructor(private upgrade: UpgradeModule) { }
+  ngDoBootstrap() {
+    this.upgrade.bootstrap(document.body, ['heroApp'], { strictDi: true });
+  }
 }
 // #enddocregion hero-detail-upgrade
 
@@ -35,7 +38,4 @@ angular.module('heroApp', [])
     downgradeComponent({component: ContainerComponent}) as angular.IDirectiveFactory
   );
 
-platformBrowserDynamic().bootstrapModule(AppModule).then(platformRef => {
-  const upgrade = platformRef.injector.get(UpgradeModule) as UpgradeModule;
-  upgrade.bootstrap(document.body, ['heroApp'], {strictDi: true});
-});
+platformBrowserDynamic().bootstrapModule(AppModule);

@@ -67,7 +67,10 @@ import { PhoneDetailComponent } from './phone-detail/phone-detail.component';
 })
 export class AppModule {
   // #enddocregion bare
-  ngDoBootstrap() {}
+  constructor(private upgrade: UpgradeModule) { }
+  ngDoBootstrap() {
+    this.upgrade.bootstrap(document.documentElement, ['phonecatApp']);
+  }
   // #docregion bare
 }
 // #enddocregion bare, upgrademodule, httpmodule, phone, phonelist, phonedetail, checkmarkpipe
