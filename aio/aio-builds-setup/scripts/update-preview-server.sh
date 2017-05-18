@@ -3,6 +3,8 @@
 set -eux -o pipefail
 exec 3>&1
 
+echo "[`date`] - Updating the preview server..."
+
 # Input
 readonly HOST_REPO_DIR=$1
 readonly HOST_LOCALCERTS_DIR=$2
@@ -17,8 +19,6 @@ readonly CONTAINER_NAME=aio
 
 # Run
 (
-  echo "[`date`] - Updating the preview server..."
-
   cd "$HOST_REPO_DIR"
 
   readonly lastDeployedCommit=$(git rev-parse HEAD)
@@ -27,17 +27,18 @@ readonly CONTAINER_NAME=aio
   # Pull latest master from origin.
   git pull origin master
 
-  # Do not update the server unless files inside `aio-builds-setup/` have changed.
+  # Do not update the server unless files inside `aio-builds-setup/` have changed
+  # or the last attempt failed (identified by the provisional image still being around).
   readonly relevantChangedFilesCount=$(git diff --name-only $lastDeployedCommit...HEAD | grep -P "^aio/aio-builds-setup/" | wc -l)
-  if [[ $relevantChangedFilesCount -eq 0 ]]; then
+  readonly lastAttemptFailed=$(sudo docker rmi "$PROVISIONAL_IMAGE_NAME" >> /dev/fd/3 && echo "true" || echo "false")
+  if [[ $relevantChangedFilesCount -eq 0 ]] && [[ "$lastAttemptFailed" != "true" ]]; then
     echo "Skipping update because no relevant files have been touched."
     exit 0
   fi
 
   # Create and verify a new docker image.
-  sudo docker rmi "$PROVISIONAL_IMAGE_NAME" || true
   aio/aio-builds-setup/scripts/create-image.sh "$PROVISIONAL_IMAGE_NAME"
-  readonly imageVerified=$(sudo docker run --dns 127.0.0.1 --rm --volume $HOST_SECRETS_DIR:/aio-secrets:ro "$PROVISIONAL_IMAGE_NAME" /bin/bash -c "aio-init && aio-health-check && aio-verify-setup" > /dev/fd/3 && echo "true" || echo "false")
+  readonly imageVerified=$(sudo docker run --dns 127.0.0.1 --rm --volume $HOST_SECRETS_DIR:/aio-secrets:ro "$PROVISIONAL_IMAGE_NAME" /bin/bash -c "aio-init && aio-health-check && aio-verify-setup" >> /dev/fd/3 && echo "true" || echo "false")
 
   if [[ "$imageVerified" != "true" ]]; then
     echo "Failed to verify new docker image. Aborting update!"
