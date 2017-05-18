@@ -8,7 +8,8 @@ export const heroDetail = {
     <div>
       <ng-transclude></ng-transclude>
     </div>
-  `
+  `,
+  transclude: true
 };
 // #enddocregion
 

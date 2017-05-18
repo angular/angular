@@ -11,7 +11,7 @@ export const heroDetail = {
 // #enddocregion hero-detail
 
 // #docregion hero-detail-upgrade
-import { Directive, ElementRef, Injector } from '@angular/core';
+import { Directive, ElementRef, Injector, SimpleChanges } from '@angular/core';
 import { UpgradeComponent } from '@angular/upgrade/static';
 
 @Directive({

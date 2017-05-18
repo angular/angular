@@ -162,22 +162,4 @@ describe('Upgrade Tests', function () {
 
   });
 
-  describe('Dividing routes', function() {
-
-    beforeAll(function () {
-      browser.get('/index-divide-routes.html');
-    });
-
-    it('allows ng1 routes', function () {
-      browser.get('/index-divide-routes.html#/villain');
-      expect(element(by.css('h2')).getText()).toBe('Mr. Nice - No More Mr. Nice Guy');
-    });
-
-    it('allows ng2 routes', function () {
-      browser.get('/index-divide-routes.html#/hero');
-      expect(element(by.css('h2')).getText()).toBe('Windstorm - Specific powers of controlling winds');
-    });
-
-  });
-
 });
