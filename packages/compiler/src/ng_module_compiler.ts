@@ -9,7 +9,8 @@
 import {ɵNodeFlags as NodeFlags} from '@angular/core';
 
 import {CompileNgModuleMetadata, CompileProviderMetadata, identifierName} from './compile_metadata';
-import {Identifiers, createIdentifier} from './identifiers';
+import {CompileReflector} from './compile_reflector';
+import {Identifiers} from './identifiers';
 import {CompilerInjectable} from './injectable';
 import * as o from './output/output_ast';
 import {typeSourceSpan} from './parse_util';
@@ -25,15 +26,18 @@ const LOG_VAR = o.variable('_l');
 
 @CompilerInjectable()
 export class NgModuleCompiler {
+  constructor(private reflector: CompileReflector) {}
   compile(
       ctx: OutputContext, ngModuleMeta: CompileNgModuleMetadata,
       extraProviders: CompileProviderMetadata[]): NgModuleCompileResult {
     const sourceSpan = typeSourceSpan('NgModule', ngModuleMeta.type);
     const entryComponentFactories = ngModuleMeta.transitiveModule.entryComponents;
     const bootstrapComponents = ngModuleMeta.bootstrapComponents;
-    const providerParser = new NgModuleProviderAnalyzer(ngModuleMeta, extraProviders, sourceSpan);
+    const providerParser =
+        new NgModuleProviderAnalyzer(this.reflector, ngModuleMeta, extraProviders, sourceSpan);
     const providerDefs =
-        [componentFactoryResolverProviderDef(ctx, NodeFlags.None, entryComponentFactories)]
+        [componentFactoryResolverProviderDef(
+             this.reflector, ctx, NodeFlags.None, entryComponentFactories)]
             .concat(providerParser.parse().map((provider) => providerDef(ctx, provider)))
             .map(({providerExpr, depsExpr, flags, tokenExpr}) => {
               return o.importExpr(Identifiers.moduleProviderDef).callFn([

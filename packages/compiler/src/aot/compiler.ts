@@ -8,7 +8,7 @@
 
 import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileIdentifierMetadata, CompileNgModuleMetadata, CompileNgModuleSummary, CompilePipeMetadata, CompileProviderMetadata, CompileStylesheetMetadata, CompileSummaryKind, CompileTypeMetadata, CompileTypeSummary, componentFactoryName, createHostComponentMeta, flatten, identifierName, sourceUrl, templateSourceUrl} from '../compile_metadata';
 import {CompilerConfig} from '../config';
-import {Identifiers, createIdentifier, createIdentifierToken} from '../identifiers';
+import {Identifiers, createTokenForExternalReference} from '../identifiers';
 import {CompileMetadataResolver} from '../metadata_resolver';
 import {NgModuleCompiler} from '../ng_module_compiler';
 import {OutputEmitter} from '../output/abstract_emitter';
@@ -21,6 +21,7 @@ import {ViewCompileResult, ViewCompiler} from '../view_compiler/view_compiler';
 
 import {AotCompilerHost} from './compiler_host';
 import {GeneratedFile} from './generated_file';
+import {StaticReflector} from './static_reflector';
 import {StaticSymbol} from './static_symbol';
 import {ResolvedStaticSymbol, StaticSymbolResolver} from './static_symbol_resolver';
 import {serializeSummaries} from './summary_serializer';
@@ -29,9 +30,10 @@ import {ngfactoryFilePath, splitTypescriptSuffix, summaryFileName, summaryForJit
 export class AotCompiler {
   constructor(
       private _config: CompilerConfig, private _host: AotCompilerHost,
-      private _metadataResolver: CompileMetadataResolver, private _templateParser: TemplateParser,
-      private _styleCompiler: StyleCompiler, private _viewCompiler: ViewCompiler,
-      private _ngModuleCompiler: NgModuleCompiler, private _outputEmitter: OutputEmitter,
+      private _reflector: StaticReflector, private _metadataResolver: CompileMetadataResolver,
+      private _templateParser: TemplateParser, private _styleCompiler: StyleCompiler,
+      private _viewCompiler: ViewCompiler, private _ngModuleCompiler: NgModuleCompiler,
+      private _outputEmitter: OutputEmitter,
       private _summaryResolver: SummaryResolver<StaticSymbol>, private _localeId: string|null,
       private _translationFormat: string|null, private _symbolResolver: StaticSymbolResolver) {}
 
@@ -154,14 +156,14 @@ export class AotCompiler {
 
     if (this._localeId) {
       providers.push({
-        token: createIdentifierToken(Identifiers.LOCALE_ID),
+        token: createTokenForExternalReference(this._reflector, Identifiers.LOCALE_ID),
         useValue: this._localeId,
       });
     }
 
     if (this._translationFormat) {
       providers.push({
-        token: createIdentifierToken(Identifiers.TRANSLATIONS_FORMAT),
+        token: createTokenForExternalReference(this._reflector, Identifiers.TRANSLATIONS_FORMAT),
         useValue: this._translationFormat
       });
     }

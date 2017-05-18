@@ -8,7 +8,7 @@
 
 
 import * as cdAst from '../expression_parser/ast';
-import {Identifiers, createIdentifier} from '../identifiers';
+import {Identifiers} from '../identifiers';
 import * as o from '../output/output_ast';
 
 export class EventHandlerVars { static event = o.variable('$event'); }

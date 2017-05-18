@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {JitReflector} from '@angular/compiler';
 import {DirectiveResolver} from '@angular/compiler/src/directive_resolver';
 import {Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, Input, Output, ViewChild, ViewChildren} from '@angular/core/src/metadata';
-import {reflector} from '@angular/core/src/reflection/reflection';
 
 @Directive({selector: 'someDirective'})
 class SomeDirective {
@@ -110,7 +110,7 @@ export function main() {
   describe('DirectiveResolver', () => {
     let resolver: DirectiveResolver;
 
-    beforeEach(() => { resolver = new DirectiveResolver(); });
+    beforeEach(() => { resolver = new DirectiveResolver(new JitReflector()); });
 
     it('should read out the Directive metadata', () => {
       const directiveMetadata = resolver.resolve(SomeDirective);

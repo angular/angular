@@ -6,14 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, ɵArgumentType as ArgumentType, ɵBindingFlags as BindingFlags, ɵDepFlags as DepFlags, ɵLifecycleHooks as LifecycleHooks, ɵNodeFlags as NodeFlags, ɵQueryBindingType as QueryBindingType, ɵQueryValueType as QueryValueType, ɵViewFlags as ViewFlags, ɵelementEventFullName as elementEventFullName} from '@angular/core';
+import {ChangeDetectionStrategy, ɵArgumentType as ArgumentType, ɵBindingFlags as BindingFlags, ɵDepFlags as DepFlags, ɵNodeFlags as NodeFlags, ɵQueryBindingType as QueryBindingType, ɵQueryValueType as QueryValueType, ɵViewFlags as ViewFlags, ɵelementEventFullName as elementEventFullName} from '@angular/core';
 
 import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompilePipeSummary, CompileProviderMetadata, CompileTokenMetadata, CompileTypeMetadata, rendererTypeName, tokenReference, viewClassName} from '../compile_metadata';
+import {CompileReflector} from '../compile_reflector';
 import {BuiltinConverter, EventHandlerVars, LocalResolver, convertActionBinding, convertPropertyBinding, convertPropertyBindingBuiltins} from '../compiler_util/expression_converter';
 import {CompilerConfig} from '../config';
 import {AST, ASTWithSource, Interpolation} from '../expression_parser/ast';
-import {Identifiers, createIdentifier, createIdentifierToken, resolveIdentifier} from '../identifiers';
+import {Identifiers} from '../identifiers';
 import {CompilerInjectable} from '../injectable';
+import {LifecycleHooks} from '../lifecycle_reflector';
 import {isNgContainer} from '../ml_parser/tags';
 import * as o from '../output/output_ast';
 import {convertValueToOutputAst} from '../output/value_util';
@@ -36,7 +38,8 @@ export class ViewCompileResult {
 @CompilerInjectable()
 export class ViewCompiler {
   constructor(
-      private _genConfigNext: CompilerConfig, private _schemaRegistry: ElementSchemaRegistry) {}
+      private _config: CompilerConfig, private _reflector: CompileReflector,
+      private _schemaRegistry: ElementSchemaRegistry) {}
 
   compileComponent(
       outputCtx: OutputContext, component: CompileDirectiveMetadata, template: TemplateAst[],
@@ -70,8 +73,8 @@ export class ViewCompiler {
     const viewBuilderFactory = (parent: ViewBuilder | null): ViewBuilder => {
       const embeddedViewIndex = embeddedViewCount++;
       return new ViewBuilder(
-          outputCtx, parent, component, embeddedViewIndex, usedPipes, staticQueryIds,
-          viewBuilderFactory);
+          this._reflector, outputCtx, parent, component, embeddedViewIndex, usedPipes,
+          staticQueryIds, viewBuilderFactory);
     };
 
     const visitor = viewBuilderFactory(null);
@@ -116,9 +119,9 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
   private children: ViewBuilder[] = [];
 
   constructor(
-      private outputCtx: OutputContext, private parent: ViewBuilder|null,
-      private component: CompileDirectiveMetadata, private embeddedViewIndex: number,
-      private usedPipes: CompilePipeSummary[],
+      private reflector: CompileReflector, private outputCtx: OutputContext,
+      private parent: ViewBuilder|null, private component: CompileDirectiveMetadata,
+      private embeddedViewIndex: number, private usedPipes: CompilePipeSummary[],
       private staticQueryIds: Map<TemplateAst, StaticAndDynamicQueryIds>,
       private viewBuilderFactory: ViewBuilderFactory) {
     // TODO(tbosch): The old view compiler used to use an `any` type
@@ -436,11 +439,16 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     let queryMatchExprs: o.Expression[] = [];
     ast.queryMatches.forEach((match) => {
       let valueType: QueryValueType = undefined !;
-      if (tokenReference(match.value) === resolveIdentifier(Identifiers.ElementRef)) {
+      if (tokenReference(match.value) ===
+          this.reflector.resolveExternalReference(Identifiers.ElementRef)) {
         valueType = QueryValueType.ElementRef;
-      } else if (tokenReference(match.value) === resolveIdentifier(Identifiers.ViewContainerRef)) {
+      } else if (
+          tokenReference(match.value) ===
+          this.reflector.resolveExternalReference(Identifiers.ViewContainerRef)) {
         valueType = QueryValueType.ViewContainerRef;
-      } else if (tokenReference(match.value) === resolveIdentifier(Identifiers.TemplateRef)) {
+      } else if (
+          tokenReference(match.value) ===
+          this.reflector.resolveExternalReference(Identifiers.TemplateRef)) {
         valueType = QueryValueType.TemplateRef;
       }
       if (valueType != null) {
@@ -451,7 +459,9 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
       let valueType: QueryValueType = undefined !;
       if (!ref.value) {
         valueType = QueryValueType.RenderElement;
-      } else if (tokenReference(ref.value) === resolveIdentifier(Identifiers.TemplateRef)) {
+      } else if (
+          tokenReference(ref.value) ===
+          this.reflector.resolveExternalReference(Identifiers.TemplateRef)) {
         valueType = QueryValueType.TemplateRef;
       }
       if (valueType != null) {
@@ -590,7 +600,8 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     const componentDirMeta = directives.find(dirAst => dirAst.directive.isComponent);
     if (componentDirMeta && componentDirMeta.directive.entryComponents.length) {
       const {providerExpr, depsExpr, flags, tokenExpr} = componentFactoryResolverProviderDef(
-          this.outputCtx, NodeFlags.PrivateProvider, componentDirMeta.directive.entryComponents);
+          this.reflector, this.outputCtx, NodeFlags.PrivateProvider,
+          componentDirMeta.directive.entryComponents);
       this._addProviderNode({
         providerExpr,
         depsExpr,
