@@ -26,7 +26,7 @@ export class CodeExampleComponent implements OnInit {
   classes: {};
   code: string;
   language: string;
-  linenums: boolean | number;
+  linenums: string;
   path: string;
   region: string;
   title: string;
@@ -36,7 +36,7 @@ export class CodeExampleComponent implements OnInit {
   isAvoid = false;
 
   constructor(private elementRef: ElementRef) {
-    const element = this.elementRef.nativeElement;
+    const element: HTMLElement = this.elementRef.nativeElement;
 
     this.language = element.getAttribute('language') || '';
     this.linenums = element.getAttribute('linenums');

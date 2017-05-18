@@ -24,7 +24,7 @@ export interface NavigationViews {
  */
 export interface CurrentNode {
   url: string;
-  view: 'SideNav' | 'TopBar' | 'Footer';
+  view: string;
   nodes: NavigationNode[];
 }
 

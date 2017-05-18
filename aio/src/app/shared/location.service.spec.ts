@@ -278,7 +278,7 @@ describe('LocationService', () => {
 
         service.go(testUrl);
         expect(url).toEqual(initialUrl, 'should not have re-navigated locally');
-        expect(goExternalSpy.wasCalled).toBeFalsy('should not have navigated externally');
+        expect(goExternalSpy).not.toHaveBeenCalled();
       };
     }
 

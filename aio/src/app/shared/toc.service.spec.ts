@@ -32,6 +32,8 @@ describe('TocService', () => {
 
   describe('tocList', () => {
     it('should emit the latest value to new subscribers', () => {
+      const expectedValue1 = {} as TocItem;
+      const expectedValue2 = {} as TocItem;
       let value1: TocItem[];
       let value2: TocItem[];
 
@@ -39,21 +41,23 @@ describe('TocService', () => {
       tocService.tocList.subscribe(v => value1 = v);
       expect(value1).toEqual([]);
 
-      tocService.tocList.next([{}, {}] as TocItem[]);
+      tocService.tocList.next([expectedValue1, expectedValue2] as TocItem[]);
       tocService.tocList.subscribe(v => value2 = v);
-      expect(value2).toEqual([{}, {}]);
+      expect(value2).toEqual([expectedValue1, expectedValue2]);
     });
 
     it('should emit the same values to all subscribers', () => {
+      const expectedValue1 = {} as TocItem;
+      const expectedValue2 = {} as TocItem;
       const emittedValues: TocItem[][] = [];
 
       tocService.tocList.subscribe(v => emittedValues.push(v));
       tocService.tocList.subscribe(v => emittedValues.push(v));
-      tocService.tocList.next([{ title: 'A' }, { title: 'B' }] as TocItem[]);
+      tocService.tocList.next([expectedValue1, expectedValue2] as TocItem[]);
 
       expect(emittedValues).toEqual([
-        [{ title: 'A' }, { title: 'B' }],
-        [{ title: 'A' }, { title: 'B' }]
+        [expectedValue1, expectedValue2],
+        [expectedValue1, expectedValue2]
       ]);
     });
   });
