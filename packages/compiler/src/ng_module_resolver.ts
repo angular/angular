@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModule, Type, ɵReflectorReader, ɵreflector, ɵstringify as stringify} from '@angular/core';
+import {NgModule, Type, ɵstringify as stringify} from '@angular/core';
+
+import {CompileReflector} from './compile_reflector';
 import {findLast} from './directive_resolver';
 import {CompilerInjectable} from './injectable';
 
@@ -19,7 +21,7 @@ function _isNgModuleMetadata(obj: any): obj is NgModule {
  */
 @CompilerInjectable()
 export class NgModuleResolver {
-  constructor(private _reflector: ɵReflectorReader = ɵreflector) {}
+  constructor(private _reflector: CompileReflector) {}
 
   isNgModule(type: any) { return this._reflector.annotations(type).some(_isNgModuleMetadata); }
 

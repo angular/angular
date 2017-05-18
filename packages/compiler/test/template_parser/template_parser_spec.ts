@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {CompileQueryMetadata, CompilerConfig, ProxyClass, StaticSymbol} from '@angular/compiler';
+import {CompileQueryMetadata, CompilerConfig, JitReflector, ProxyClass, StaticSymbol} from '@angular/compiler';
 import {CompileAnimationEntryMetadata, CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeMetadata, CompilePipeSummary, CompileProviderMetadata, CompileTemplateMetadata, CompileTokenMetadata, CompileTypeMetadata, tokenReference} from '@angular/compiler/src/compile_metadata';
 import {DomElementSchemaRegistry} from '@angular/compiler/src/schema/dom_element_schema_registry';
 import {ElementSchemaRegistry} from '@angular/compiler/src/schema/element_schema_registry';
@@ -17,7 +17,7 @@ import {Console} from '@angular/core/src/console';
 import {TestBed, inject} from '@angular/core/testing';
 
 import {CompileEntryComponentMetadata, CompileStylesheetMetadata} from '../../src/compile_metadata';
-import {Identifiers, createIdentifierToken, identifierToken} from '../../src/identifiers';
+import {Identifiers, createTokenForExternalReference, createTokenForReference} from '../../src/identifiers';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../src/ml_parser/interpolation_config';
 import {noUndefined} from '../../src/util';
 import {MockSchemaRegistry} from '../../testing';
@@ -1198,7 +1198,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
           expect(humanizeTplAst(parse('<div a #a="dirA"></div>', [dirA]))).toEqual([
             [ElementAst, 'div'],
             [AttrAst, 'a', ''],
-            [ReferenceAst, 'a', identifierToken(dirA.type)],
+            [ReferenceAst, 'a', createTokenForReference(dirA.type.reference)],
             [DirectiveAst, dirA],
           ]);
         });
@@ -1244,7 +1244,7 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
           expect(humanizeTplAst(parse('<div a #a></div>', [dirA]))).toEqual([
             [ElementAst, 'div'],
             [AttrAst, 'a', ''],
-            [ReferenceAst, 'a', identifierToken(dirA.type)],
+            [ReferenceAst, 'a', createTokenForReference(dirA.type.reference)],
             [DirectiveAst, dirA],
           ]);
         });
@@ -1262,6 +1262,10 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
       });
 
       describe('explicit templates', () => {
+        let reflector: JitReflector;
+
+        beforeEach(() => { reflector = new JitReflector(); });
+
         it('should create embedded templates for <ng-template> elements', () => {
           expect(humanizeTplAst(parse('<template></template>', [
           ]))).toEqual([[EmbeddedTemplateAst]]);
@@ -1286,22 +1290,30 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
         it('should support references via #...', () => {
           expect(humanizeTplAst(parse('<template #a>', []))).toEqual([
             [EmbeddedTemplateAst],
-            [ReferenceAst, 'a', createIdentifierToken(Identifiers.TemplateRef)],
+            [
+              ReferenceAst, 'a', createTokenForExternalReference(reflector, Identifiers.TemplateRef)
+            ],
           ]);
           expect(humanizeTplAst(parse('<ng-template #a>', []))).toEqual([
             [EmbeddedTemplateAst],
-            [ReferenceAst, 'a', createIdentifierToken(Identifiers.TemplateRef)],
+            [
+              ReferenceAst, 'a', createTokenForExternalReference(reflector, Identifiers.TemplateRef)
+            ],
           ]);
         });
 
         it('should support references via ref-...', () => {
           expect(humanizeTplAst(parse('<template ref-a>', []))).toEqual([
             [EmbeddedTemplateAst],
-            [ReferenceAst, 'a', createIdentifierToken(Identifiers.TemplateRef)]
+            [
+              ReferenceAst, 'a', createTokenForExternalReference(reflector, Identifiers.TemplateRef)
+            ]
           ]);
           expect(humanizeTplAst(parse('<ng-template ref-a>', []))).toEqual([
             [EmbeddedTemplateAst],
-            [ReferenceAst, 'a', createIdentifierToken(Identifiers.TemplateRef)]
+            [
+              ReferenceAst, 'a', createTokenForExternalReference(reflector, Identifiers.TemplateRef)
+            ]
           ]);
         });
 

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotSummaryResolver, CompileMetadataResolver, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, InterpolationConfig, JitSummaryResolver, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, PipeResolver, ResourceLoader, StaticAndDynamicReflectionCapabilities, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, SummaryResolver, analyzeNgModules, componentModuleUrl, createOfflineCompileUrlResolver, extractProgramSymbols} from '@angular/compiler';
+import {AotSummaryResolver, CompileMetadataResolver, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, InterpolationConfig, JitSummaryResolver, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, SummaryResolver, analyzeNgModules, createOfflineCompileUrlResolver, extractProgramSymbols} from '@angular/compiler';
 import {AngularCompilerOptions, getClassMembersFromDeclaration, getPipesTable, getSymbolQuery} from '@angular/compiler-cli';
 import {ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 import * as fs from 'fs';
@@ -274,11 +274,10 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       const urlResolver = createOfflineCompileUrlResolver();
       for (const module of ngModuleSummary.ngModules) {
         for (const directive of module.declaredDirectives) {
-          const {metadata, annotation} =
-              this.resolver.getNonNormalizedDirectiveMetadata(directive.reference) !;
+          const {metadata} = this.resolver.getNonNormalizedDirectiveMetadata(directive.reference) !;
           if (metadata.isComponent && metadata.template && metadata.template.templateUrl) {
             const templateName = urlResolver.resolve(
-                componentModuleUrl(this.reflector, directive.reference, annotation),
+                this.reflector.componentModuleUrl(directive.reference),
                 metadata.template.templateUrl);
             fileToComponent.set(templateName, directive.reference);
             templateReference.push(templateName);
@@ -422,7 +421,6 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       const ssr = this.staticSymbolResolver;
       result = this._reflector = new StaticReflector(
           this._summaryResolver, ssr, [], [], (e, filePath) => this.collectError(e, filePath !));
-      StaticAndDynamicReflectionCapabilities.install(result);
     }
     return result;
   }

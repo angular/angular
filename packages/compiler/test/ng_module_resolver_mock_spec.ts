@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {JitReflector} from '@angular/compiler';
 import {Injector, NgModule} from '@angular/core';
 import {beforeEach, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
+
 import {MockNgModuleResolver} from '../testing';
 
 export function main() {
@@ -15,7 +17,7 @@ export function main() {
     let ngModuleResolver: MockNgModuleResolver;
 
     beforeEach(inject([Injector], (injector: Injector) => {
-      ngModuleResolver = new MockNgModuleResolver(injector);
+      ngModuleResolver = new MockNgModuleResolver(injector, new JitReflector());
     }));
 
     describe('NgModule overriding', () => {

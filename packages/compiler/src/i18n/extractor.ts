@@ -13,7 +13,6 @@
 import {ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 
 import {analyzeAndValidateNgModules, extractProgramSymbols} from '../aot/compiler';
-import {StaticAndDynamicReflectionCapabilities} from '../aot/static_reflection_capabilities';
 import {StaticReflector} from '../aot/static_reflector';
 import {StaticSymbolCache} from '../aot/static_symbol';
 import {StaticSymbolResolver, StaticSymbolResolverHost} from '../aot/static_symbol_resolver';
@@ -95,7 +94,6 @@ export class Extractor {
     const summaryResolver = new AotSummaryResolver(host, symbolCache);
     const staticSymbolResolver = new StaticSymbolResolver(host, symbolCache, summaryResolver);
     const staticReflector = new StaticReflector(summaryResolver, staticSymbolResolver);
-    StaticAndDynamicReflectionCapabilities.install(staticReflector);
 
     const config =
         new CompilerConfig({defaultEncapsulation: ViewEncapsulation.Emulated, useJit: false});

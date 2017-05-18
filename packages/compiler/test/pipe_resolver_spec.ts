@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {JitReflector} from '@angular/compiler';
 import {PipeResolver} from '@angular/compiler/src/pipe_resolver';
 import {ɵstringify as stringify} from '@angular/core';
 import {Pipe} from '@angular/core/src/metadata';
@@ -20,7 +21,7 @@ export function main() {
   describe('PipeResolver', () => {
     let resolver: PipeResolver;
 
-    beforeEach(() => { resolver = new PipeResolver(); });
+    beforeEach(() => { resolver = new PipeResolver(new JitReflector()); });
 
     it('should read out the metadata from the class', () => {
       const moduleMetadata = resolver.resolve(SomePipe);
