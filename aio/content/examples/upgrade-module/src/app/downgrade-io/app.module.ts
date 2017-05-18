@@ -23,21 +23,17 @@ import { HeroDetailComponent } from './hero-detail.component';
   ]
 })
 export class AppModule {
-  ngDoBootstrap() {}
+  constructor(private upgrade: UpgradeModule) { }
+  ngDoBootstrap() {
+    this.upgrade.bootstrap(document.body, ['heroApp'], { strictDi: true });
+  }
 }
 // #docregion downgradecomponent
 
 angular.module('heroApp', [])
   .controller('MainController', MainController)
-  .directive('heroDetail', downgradeComponent({
-    component: HeroDetailComponent,
-    inputs: ['hero'],
-    outputs: ['deleted']
-  }) as angular.IDirectiveFactory);
+  .directive('heroDetail', downgradeComponent({component: HeroDetailComponent}) as angular.IDirectiveFactory);
 
 // #enddocregion downgradecomponent
 
-platformBrowserDynamic().bootstrapModule(AppModule).then(platformRef => {
-  const upgrade = platformRef.injector.get(UpgradeModule) as UpgradeModule;
-  upgrade.bootstrap(document.body, ['heroApp'], {strictDi: true});
-});
+platformBrowserDynamic().bootstrapModule(AppModule);

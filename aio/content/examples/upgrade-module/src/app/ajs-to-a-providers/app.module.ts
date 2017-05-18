@@ -27,7 +27,10 @@ import { heroesServiceProvider } from './ajs-upgraded-providers';
 // #docregion register
 })
 export class AppModule {
-  ngDoBootstrap() {}
+  constructor(private upgrade: UpgradeModule) { }
+  ngDoBootstrap() {
+    this.upgrade.bootstrap(document.body, ['heroApp'], { strictDi: true });
+  }
 }
 // #enddocregion register
 
@@ -38,7 +41,4 @@ angular.module('heroApp', [])
     downgradeComponent({component: HeroDetailComponent}) as angular.IDirectiveFactory
   );
 
-platformBrowserDynamic().bootstrapModule(AppModule).then(platformRef => {
-  const upgrade = platformRef.injector.get(UpgradeModule) as UpgradeModule;
-  upgrade.bootstrap(document.body, ['heroApp'], {strictDi: true});
-});
+platformBrowserDynamic().bootstrapModule(AppModule);
