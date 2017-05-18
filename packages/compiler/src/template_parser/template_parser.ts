@@ -9,11 +9,12 @@
 import {Inject, InjectionToken, Optional, SchemaMetadata, ɵConsole as Console} from '@angular/core';
 
 import {CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeSummary, CompileTokenMetadata, CompileTypeMetadata, identifierName} from '../compile_metadata';
+import {CompileReflector} from '../compile_reflector';
 import {CompilerConfig} from '../config';
 import {AST, ASTWithSource, EmptyExpr} from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
 import {I18NHtmlParser} from '../i18n/i18n_html_parser';
-import {Identifiers, createIdentifierToken, identifierToken} from '../identifiers';
+import {Identifiers, createTokenForExternalReference, createTokenForReference} from '../identifiers';
 import {CompilerInjectable} from '../injectable';
 import * as html from '../ml_parser/ast';
 import {ParseTreeResult} from '../ml_parser/html_parser';
@@ -105,9 +106,9 @@ export class TemplateParseResult {
 @CompilerInjectable()
 export class TemplateParser {
   constructor(
-      private _config: CompilerConfig, private _exprParser: Parser,
-      private _schemaRegistry: ElementSchemaRegistry, private _htmlParser: I18NHtmlParser,
-      private _console: Console,
+      private _config: CompilerConfig, private _reflector: CompileReflector,
+      private _exprParser: Parser, private _schemaRegistry: ElementSchemaRegistry,
+      private _htmlParser: I18NHtmlParser, private _console: Console,
       @Optional() @Inject(TEMPLATE_TRANSFORMS) public transforms: TemplateAstVisitor[]) {}
 
   parse(
@@ -154,7 +155,7 @@ export class TemplateParser {
     if (htmlAstWithErrors.rootNodes.length > 0) {
       const uniqDirectives = removeSummaryDuplicates(directives);
       const uniqPipes = removeSummaryDuplicates(pipes);
-      const providerViewContext = new ProviderViewContext(component);
+      const providerViewContext = new ProviderViewContext(this._reflector, component);
       let interpolationConfig: InterpolationConfig = undefined !;
       if (component.template && component.template.interpolation) {
         interpolationConfig = {
@@ -165,8 +166,8 @@ export class TemplateParser {
       const bindingParser = new BindingParser(
           this._exprParser, interpolationConfig !, this._schemaRegistry, uniqPipes, errors);
       const parseVisitor = new TemplateParseVisitor(
-          this._config, providerViewContext, uniqDirectives, bindingParser, this._schemaRegistry,
-          schemas, errors);
+          this._reflector, this._config, providerViewContext, uniqDirectives, bindingParser,
+          this._schemaRegistry, schemas, errors);
       result = html.visitAll(parseVisitor, htmlAstWithErrors.rootNodes, EMPTY_ELEMENT_CONTEXT);
       errors.push(...providerViewContext.errors);
       usedPipes.push(...bindingParser.getUsedPipes());
@@ -233,10 +234,10 @@ class TemplateParseVisitor implements html.Visitor {
   contentQueryStartId: number;
 
   constructor(
-      private config: CompilerConfig, public providerViewContext: ProviderViewContext,
-      directives: CompileDirectiveSummary[], private _bindingParser: BindingParser,
-      private _schemaRegistry: ElementSchemaRegistry, private _schemas: SchemaMetadata[],
-      private _targetErrors: TemplateParseError[]) {
+      private reflector: CompileReflector, private config: CompilerConfig,
+      public providerViewContext: ProviderViewContext, directives: CompileDirectiveSummary[],
+      private _bindingParser: BindingParser, private _schemaRegistry: ElementSchemaRegistry,
+      private _schemas: SchemaMetadata[], private _targetErrors: TemplateParseError[]) {
     // Note: queries start with id 1 so we can use the number in a Bloom filter!
     this.contentQueryStartId = providerViewContext.component.viewQueries.length + 1;
     directives.forEach((directive, index) => {
@@ -574,7 +575,8 @@ class TemplateParseVisitor implements html.Visitor {
         if ((elOrDirRef.value.length === 0 && directive.isComponent) ||
             (directive.exportAs == elOrDirRef.value)) {
           targetReferences.push(new ReferenceAst(
-              elOrDirRef.name, identifierToken(directive.type), elOrDirRef.sourceSpan));
+              elOrDirRef.name, createTokenForReference(directive.type.reference),
+              elOrDirRef.sourceSpan));
           matchedReferences.add(elOrDirRef.name);
         }
       });
@@ -595,7 +597,7 @@ class TemplateParseVisitor implements html.Visitor {
       } else if (!component) {
         let refToken: CompileTokenMetadata = null !;
         if (isTemplateElement) {
-          refToken = createIdentifierToken(Identifiers.TemplateRef);
+          refToken = createTokenForExternalReference(this.reflector, Identifiers.TemplateRef);
         }
         targetReferences.push(new ReferenceAst(elOrDirRef.name, refToken, elOrDirRef.sourceSpan));
       }

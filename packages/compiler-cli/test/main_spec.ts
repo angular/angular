@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵReflectionCapabilities, ɵreflector} from '@angular/core';
 import {makeTempDir} from '@angular/tsc-wrapped/test/test_support';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -41,9 +40,6 @@ describe('compiler-cli', () => {
     fs.mkdirSync(nodeModulesPath);
     fs.symlinkSync(path.resolve(__dirname, '..', '..'), path.resolve(nodeModulesPath, '@angular'));
   });
-
-  // Restore reflector since AoT compiler will update it with a new static reflector
-  afterEach(() => { ɵreflector.updateCapabilities(new ɵReflectionCapabilities()); });
 
   it('should compile without errors', (done) => {
     write('test.ts', 'export const A = 1;');

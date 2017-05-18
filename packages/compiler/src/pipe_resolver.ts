@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Pipe, Type, resolveForwardRef, ɵReflectorReader, ɵreflector, ɵstringify as stringify} from '@angular/core';
+import {Pipe, Type, resolveForwardRef, ɵstringify as stringify} from '@angular/core';
+
+import {CompileReflector} from './compile_reflector';
 import {findLast} from './directive_resolver';
 import {CompilerInjectable} from './injectable';
 
@@ -23,7 +25,7 @@ function _isPipeMetadata(type: any): boolean {
  */
 @CompilerInjectable()
 export class PipeResolver {
-  constructor(private _reflector: ɵReflectorReader = ɵreflector) {}
+  constructor(private _reflector: CompileReflector) {}
 
   isPipe(type: Type<any>) {
     const typeMetadata = this._reflector.annotations(resolveForwardRef(type));

@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, ChangeDetectionStrategy, ChangeDetectorRef, ComponentFactory, ComponentFactoryResolver, ComponentRef, ElementRef, Injector, LOCALE_ID, NgModuleFactory, NgModuleRef, QueryList, Renderer, SecurityContext, TRANSLATIONS_FORMAT, TemplateRef, ViewContainerRef, ViewEncapsulation, ɵCodegenComponentFactoryResolver, ɵEMPTY_ARRAY, ɵEMPTY_MAP, ɵand, ɵccf, ɵcmf, ɵcrt, ɵdid, ɵeld, ɵinlineInterpolate, ɵinterpolate, ɵmod, ɵmpd, ɵncd, ɵnov, ɵpad, ɵpid, ɵpod, ɵppd, ɵprd, ɵqud, ɵreflector, ɵregisterModuleFactory, ɵted, ɵunv, ɵvid} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, ChangeDetectionStrategy, ChangeDetectorRef, ComponentFactory, ComponentFactoryResolver, ComponentRef, ElementRef, Injector, LOCALE_ID, NgModuleFactory, NgModuleRef, QueryList, Renderer, SecurityContext, TRANSLATIONS_FORMAT, TemplateRef, ViewContainerRef, ViewEncapsulation, ɵCodegenComponentFactoryResolver, ɵEMPTY_ARRAY, ɵEMPTY_MAP, ɵand, ɵccf, ɵcmf, ɵcrt, ɵdid, ɵeld, ɵinlineInterpolate, ɵinterpolate, ɵmod, ɵmpd, ɵncd, ɵnov, ɵpad, ɵpid, ɵpod, ɵppd, ɵprd, ɵqud, ɵregisterModuleFactory, ɵted, ɵunv, ɵvid} from '@angular/core';
 
 import {CompileIdentifierMetadata, CompileTokenMetadata} from './compile_metadata';
+import {CompileReflector} from './compile_reflector';
 import * as o from './output/output_ast';
 
-const CORE = assetUrl('core');
+const CORE = '@angular/core';
 
 export class Identifiers {
   static ANALYZE_FOR_ENTRY_COMPONENTS: o.ExternalReference = {
@@ -134,33 +135,11 @@ export class Identifiers {
       o.ExternalReference = {name: 'ɵccf', moduleName: CORE, runtime: ɵccf};
 }
 
-export function assetUrl(pkg: string, path: string | null = null, type: string = 'src'): string {
-  if (path == null) {
-    return `@angular/${pkg}`;
-  } else {
-    return `@angular/${pkg}/${type}/${path}`;
-  }
+export function createTokenForReference(reference: any): CompileTokenMetadata {
+  return {identifier: {reference: reference}};
 }
 
-export function resolveIdentifier(identifier: o.ExternalReference) {
-  let name = identifier.name;
-  return ɵreflector.resolveIdentifier(name !, identifier.moduleName !, null, identifier.runtime);
-}
-
-export function createIdentifier(identifier: o.ExternalReference): CompileIdentifierMetadata {
-  return {reference: resolveIdentifier(identifier)};
-}
-
-export function identifierToken(identifier: CompileIdentifierMetadata): CompileTokenMetadata {
-  return {identifier: identifier};
-}
-
-export function createIdentifierToken(identifier: o.ExternalReference): CompileTokenMetadata {
-  return identifierToken(createIdentifier(identifier));
-}
-
-export function createEnumIdentifier(
-    enumType: o.ExternalReference, name: string): CompileIdentifierMetadata {
-  const resolvedEnum = ɵreflector.resolveEnum(resolveIdentifier(enumType), name);
-  return {reference: resolvedEnum};
+export function createTokenForExternalReference(
+    reflector: CompileReflector, reference: o.ExternalReference): CompileTokenMetadata {
+  return createTokenForReference(reflector.resolveExternalReference(reference));
 }

@@ -9,7 +9,7 @@
 import {InjectionToken, MissingTranslationStrategy, ViewEncapsulation, isDevMode} from '@angular/core';
 
 import {CompileIdentifierMetadata} from './compile_metadata';
-import {Identifiers, createIdentifier} from './identifiers';
+import {Identifiers} from './identifiers';
 
 
 export class CompilerConfig {
