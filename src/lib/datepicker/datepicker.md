@@ -118,7 +118,14 @@ export class MyComponent implements AfterViewInit {
 }
 ```
 
-### Choosing a date implementation and date format settings
+### Internationalization
+In order to support internationalization, the datepicker supports customization of the following
+three pieces via injection:
+ 1. The date implementation that the datepicker accepts.
+ 2. The display and parse formats used by the datepicker.
+ 3. The message strings used in the datepicker's UI.
+
+#### Choosing a date implementation and date format settings
 The datepicker was built to be date implementation agnostic. This means that it can be made to work
 with a variety of different date implementations. However it also means that developers need to make
 sure to provide the appropriate pieces for the datepicker to work with their chosen implementation.
@@ -147,6 +154,11 @@ export class MyComponent {
   @ViewChild(MdDatepicker) datepicker: MdDatepicker<Date>;
 }
 ```
+
+*Please note: `MdNativeDateModule` is based off of the functionality available in JavaScript's
+native `Date` object, and is thus not suitable for many locales. One of the biggest shortcomings of
+the native `Date` object is the inability to set the parse format. We highly recommend using a
+custom `DateAdapter` that works with the formatting/parsing library of your choice.*
 
 #### Customizing the date implementation
 The datepicker does all of its interaction with date objects via the `DateAdapter`. Making the
@@ -183,7 +195,7 @@ formats.
 export class MyApp {}
 ```
 
-### Localizing labels and messages
+#### Localizing labels and messages
 The various text strings used by the datepicker are provided through `MdDatepickerIntl`.
 Localization of these messages can be done by providing a subclass with translated values in your
 application root module.
