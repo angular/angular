@@ -54,7 +54,7 @@ describe('ApiService', () => {
 
   describe('#sections', () => {
     it('first subscriber should fetch sections', () => {
-      const data = [{name: 'a'}, {name: 'b'}];
+      const data = [{name: 'a', title: 'A', items: []}, {name: 'b', title: 'B', items: []}];
 
       service.sections.subscribe(sections => {
         expect(sections).toEqual(data);
@@ -64,7 +64,7 @@ describe('ApiService', () => {
     });
 
     it('second subscriber should get previous sections and NOT trigger refetch', () => {
-      const data = [{name: 'a'}, {name: 'b'}];
+      const data = [{name: 'a', title: 'A', items: []}, {name: 'b', title: 'B', items: []}];
       let subscriptions = 0;
 
       service.sections.subscribe(sections => {
@@ -99,7 +99,7 @@ describe('ApiService', () => {
       let connection: MockConnection;
       backend.connections.subscribe(c => connection = c);
 
-      let data = [{name: 'a'}, {name: 'b'}];
+      let data = [{name: 'a', title: 'A', items: []}, {name: 'b', title: 'B', items: []}];
 
       service.sections.subscribe(sections => {
         // called twice during this test
@@ -110,7 +110,7 @@ describe('ApiService', () => {
       connection.mockRespond(createResponse(data));
 
       // refresh/refetch
-      data = [{name: 'c'}];
+      data = [{name: 'c', title: 'C', items: []}];
       service.fetchSections();
       connection.mockRespond(createResponse(data));
 
