@@ -8,7 +8,6 @@
 
 import {ComponentRef} from '@angular/core';
 
-import {OutletContext} from './router_outlet_context';
 import {ActivatedRoute, ActivatedRouteSnapshot} from './router_state';
 import {TreeNode} from './utils/tree';
 
@@ -24,7 +23,6 @@ export type DetachedRouteHandle = {};
 
 /** @internal */
 export type DetachedRouteHandleInternal = {
-  contexts: Map<string, OutletContext>,
   componentRef: ComponentRef<any>,
   route: TreeNode<ActivatedRoute>,
 };
@@ -38,11 +36,7 @@ export abstract class RouteReuseStrategy {
   /** Determines if this route (and its subtree) should be detached to be reused later */
   abstract shouldDetach(route: ActivatedRouteSnapshot): boolean;
 
-  /**
-   * Stores the detached route.
-   *
-   * Storing a `null` value should erase the previously stored value.
-   */
+  /** Stores the detached route */
   abstract store(route: ActivatedRouteSnapshot, handle: DetachedRouteHandle|null): void;
 
   /** Determines if this route (and its subtree) should be reattached */
