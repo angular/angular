@@ -60,7 +60,6 @@ function evaluateScore(expectedScore, actualScore) {
 
 function ignoreHttpsAudits(aggregations) {
   const httpsAudits = [
-    'is-on-https',
     'redirects-http'
   ];
 
