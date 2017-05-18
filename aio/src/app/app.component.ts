@@ -159,8 +159,9 @@ export class AppComponent implements OnInit {
   }
 
   onDocRendered() {
-    // Scroll after the doc-viewer has finished rendering the new doc
-    this.autoScroll();
+    // Scroll 500ms after the doc-viewer has finished rendering the new doc
+    // The delay is to allow time for async layout to complete
+    setTimeout(() => this.autoScroll(), 500);
     this.isStarting = false;
   }
 

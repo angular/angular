@@ -1,5 +1,5 @@
 import { NO_ERRORS_SCHEMA, DebugElement } from '@angular/core';
-import { async, inject, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, inject, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { APP_BASE_HREF } from '@angular/common';
 import { Http } from '@angular/http';
@@ -317,6 +317,7 @@ describe('AppComponent', () => {
   });
 
   describe('auto-scrolling', () => {
+    const scrollDelay = 500;
     let scrollService: ScrollService;
     let scrollSpy: jasmine.Spy;
 
@@ -350,16 +351,20 @@ describe('AppComponent', () => {
       expect(scrollSpy.calls.count()).toBe(2);
     });
 
-    it('should scroll when call onDocRendered directly', () => {
+    it('should scroll after a delay when call onDocRendered directly', fakeAsync(() => {
       component.onDocRendered();
+      expect(scrollSpy).not.toHaveBeenCalled();
+      tick(scrollDelay);
       expect(scrollSpy).toHaveBeenCalled();
-    });
+    }));
 
-    it('should scroll (via onDocRendered) when finish navigating to a new doc', () => {
+    it('should scroll (via onDocRendered) when finish navigating to a new doc', fakeAsync(() => {
       locationService.go('guide/pipes');
       fixture.detectChanges(); // triggers the event that calls onDocRendered
+      expect(scrollSpy).not.toHaveBeenCalled();
+      tick(scrollDelay);
       expect(scrollSpy).toHaveBeenCalled();
-    });
+    }));
   });
 
   describe('initial rendering', () => {
