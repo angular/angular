@@ -1,4 +1,4 @@
-## The boilerplate Karma configuration won't work with Angular 1 tests since
+## The boilerplate Karma configuration won't work with AngularJS tests since
 ## a specific loading configuration is needed for them.
 ## We keep one in karma.conf.ng1.js. This scripts runs the ng1 tests with
 ## that config.

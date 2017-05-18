@@ -121,7 +121,7 @@ export function downgradeComponent(info: {
 
 /**
  * Synchronous promise-like object to wrap parent injectors,
- * to preserve the synchronous nature of Angular 1's $compile.
+ * to preserve the synchronous nature of AngularJS's $compile.
  */
 class ParentInjectorPromise {
   private injector: Injector;
