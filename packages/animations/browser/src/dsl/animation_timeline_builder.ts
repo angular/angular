@@ -454,27 +454,28 @@ export class AnimationTimelineContext {
   updateOptions(options: AnimationOptions|null, skipIfExists?: boolean) {
     if (!options) return;
 
-    // NOTE: this will get patched up when other animation methods support duration overrides
     const newOptions = options as any;
+    let optionsToUpdate = this.options;
+
+    // NOTE: this will get patched up when other animation methods support duration overrides
     if (newOptions.duration != null) {
-      (this.options as any).duration = resolveTimingValue(newOptions.duration);
+      (optionsToUpdate as any).duration = resolveTimingValue(newOptions.duration);
     }
 
     if (newOptions.delay != null) {
-      this.options.delay = resolveTimingValue(newOptions.delay);
+      optionsToUpdate.delay = resolveTimingValue(newOptions.delay);
     }
 
     const newParams = newOptions.params;
     if (newParams) {
-      let params: {[name: string]: any} = this.options && this.options.params !;
-      if (!params) {
-        params = this.options.params = {};
+      let paramsToUpdate: {[name: string]: any} = optionsToUpdate.params !;
+      if (!paramsToUpdate) {
+        paramsToUpdate = this.options.params = {};
       }
 
-      Object.keys(params).forEach(name => {
-        const value = params[name];
-        if (!skipIfExists || !newOptions.hasOwnProperty(name)) {
-          params[name] = value;
+      Object.keys(newParams).forEach(name => {
+        if (!skipIfExists || !paramsToUpdate.hasOwnProperty(name)) {
+          paramsToUpdate[name] = newParams[name];
         }
       });
     }

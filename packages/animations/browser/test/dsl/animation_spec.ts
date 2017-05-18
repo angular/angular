@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimationMetadata, AnimationMetadataType, animate, group, keyframes, query, sequence, style, ɵStyleData} from '@angular/animations';
+import {AUTO_STYLE, AnimationMetadata, AnimationMetadataType, animate, animation, group, keyframes, query, sequence, style, useAnimation, ɵStyleData} from '@angular/animations';
 import {AnimationOptions} from '@angular/core/src/animation/dsl';
 
 import {Animation} from '../../src/dsl/animation';
@@ -304,10 +304,31 @@ export function main() {
       });
 
       describe('subtitutions', () => {
+        it('should allow params to be subtituted even if they are not defaulted in a reusable animation',
+           () => {
+             const myAnimation = animation([
+               style({left: '{{ start }}'}),
+               animate(1000, style({left: '{{ end }}'})),
+             ]);
+
+             const steps = [
+               useAnimation(myAnimation, {params: {start: '0px', end: '100px'}}),
+             ];
+
+             const players = invokeAnimationSequence(rootElement, steps, {});
+             expect(players.length).toEqual(1);
+             const player = players[0];
+
+             expect(player.keyframes).toEqual([
+               {left: '0px', offset: 0},
+               {left: '100px', offset: 1},
+             ]);
+           });
+
         it('should substitute in timing values', () => {
-          function makeAnimation(exp: string, values: {[key: string]: any}) {
+          function makeAnimation(exp: string, options: {[key: string]: any}) {
             const steps = [style({opacity: 0}), animate(exp, style({opacity: 1}))];
-            return invokeAnimationSequence(rootElement, steps, values);
+            return invokeAnimationSequence(rootElement, steps, options);
           }
 
           let players = makeAnimation('{{ duration }}', buildParams({duration: '1234ms'}));
