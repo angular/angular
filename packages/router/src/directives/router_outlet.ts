@@ -37,9 +37,8 @@ import {PRIMARY_OUTLET} from '../shared';
  */
 @Directive({selector: 'router-outlet'})
 export class RouterOutlet implements OnDestroy {
-  private activated: ComponentRef<any>|null = null;
-  private _activatedRoute: ActivatedRoute|null = null;
-  private _outletName: string;
+  private activated: ComponentRef<any>;
+  private _activatedRoute: ActivatedRoute;
   public outletMap: RouterOutletMap;
 
   @Output('activate') activateEvents = new EventEmitter<any>();
@@ -47,12 +46,11 @@ export class RouterOutlet implements OnDestroy {
 
   constructor(
       private parentOutletMap: RouterOutletMap, private location: ViewContainerRef,
-      private resolver: ComponentFactoryResolver, @Attribute('name') name: string) {
-    this._outletName = name || PRIMARY_OUTLET;
-    parentOutletMap.registerOutlet(this._outletName, this);
+      private resolver: ComponentFactoryResolver, @Attribute('name') private name: string) {
+    parentOutletMap.registerOutlet(name ? name : PRIMARY_OUTLET, this);
   }
 
-  ngOnDestroy(): void { this.parentOutletMap.removeOutlet(this._outletName); }
+  ngOnDestroy(): void { this.parentOutletMap.removeOutlet(this.name ? this.name : PRIMARY_OUTLET); }
 
   /** @deprecated since v4 **/
   get locationInjector(): Injector { return this.location.injector; }
@@ -60,32 +58,24 @@ export class RouterOutlet implements OnDestroy {
   get locationFactoryResolver(): ComponentFactoryResolver { return this.resolver; }
 
   get isActivated(): boolean { return !!this.activated; }
-
   get component(): Object {
     if (!this.activated) throw new Error('Outlet is not activated');
     return this.activated.instance;
   }
-
   get activatedRoute(): ActivatedRoute {
     if (!this.activated) throw new Error('Outlet is not activated');
-    return this._activatedRoute as ActivatedRoute;
+    return this._activatedRoute;
   }
 
-  /**
-   * Called when the `RouteReuseStrategy` instructs to detach the subtree
-   */
   detach(): ComponentRef<any> {
     if (!this.activated) throw new Error('Outlet is not activated');
     this.location.detach();
-    const cmp = this.activated;
-    this.activated = null;
-    this._activatedRoute = null;
-    return cmp;
+    const r = this.activated;
+    this.activated = null !;
+    this._activatedRoute = null !;
+    return r;
   }
 
-  /**
-   * Called when the `RouteReuseStrategy` instructs to re-attach a previously detached subtree
-   */
   attach(ref: ComponentRef<any>, activatedRoute: ActivatedRoute) {
     this.activated = ref;
     this._activatedRoute = activatedRoute;
@@ -96,8 +86,8 @@ export class RouterOutlet implements OnDestroy {
     if (this.activated) {
       const c = this.component;
       this.activated.destroy();
-      this.activated = null;
-      this._activatedRoute = null;
+      this.activated = null !;
+      this._activatedRoute = null !;
       this.deactivateEvents.emit(c);
     }
   }
@@ -139,11 +129,11 @@ export class RouterOutlet implements OnDestroy {
     const component = <any>snapshot._routeConfig !.component;
 
     resolver = resolver || this.resolver;
-    const factory = resolver.resolveComponentFactory(component);
+    const factory = resolver.resolveComponentFactory(component) !;
 
     const injector = new OutletInjector(activatedRoute, outletMap, this.location.injector);
 
-    this.activated = this.location.createComponent(factory, this.location.length, injector);
+    this.activated = this.location.createComponent(factory, this.location.length, injector, []);
     this.activated.changeDetectorRef.detectChanges();
 
     this.activateEvents.emit(this.activated.instance);
