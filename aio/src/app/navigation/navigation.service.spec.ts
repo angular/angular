@@ -91,7 +91,7 @@ describe('NavigationService', () => {
     ];
 
     beforeEach(() => {
-      navService.navigationViews.subscribe(views => view = views.sideNav);
+      navService.navigationViews.subscribe(views => view = views['sideNav']);
       backend.connectionsArray[0].mockRespond(createResponse({sideNav}));
     });
 
@@ -191,7 +191,7 @@ describe('NavigationService', () => {
     });
 
     it('should ignore trailing slashes, hashes, and search params on URLs in the navmap', () => {
-      const cnode = {
+      const cnode: CurrentNode = {
         url: 'c',
         view: 'SideNav',
         nodes: [
@@ -216,17 +216,18 @@ describe('NavigationService', () => {
   });
 
   describe('versionInfo', () => {
+    const expectedVersionInfo = { raw: '4.0.0' } as VersionInfo;
     let versionInfo: VersionInfo;
 
     beforeEach(() => {
       navService.versionInfo.subscribe(info => versionInfo = info);
       backend.connectionsArray[0].mockRespond(createResponse({
-        __versionInfo: { raw: '4.0.0' }
+        __versionInfo: expectedVersionInfo
       }));
     });
 
     it('should extract the version info', () => {
-      expect(versionInfo).toEqual({ raw: '4.0.0' });
+      expect(versionInfo).toEqual(expectedVersionInfo);
     });
   });
 
@@ -246,7 +247,7 @@ describe('NavigationService', () => {
         {...v, ...{ tooltip: v.title + '.'}})
       );
 
-      navService.navigationViews.subscribe(views => actualDocVersions = views.docVersions);
+      navService.navigationViews.subscribe(views => actualDocVersions = views['docVersions']);
     });
 
     it('should extract the docVersions', () => {
