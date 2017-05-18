@@ -86,7 +86,7 @@ High level items planned for next few months:
 | bottom-sheet     |                         Not started |           -  |              - |
 | bottom-nav       |                         Not started |           -  |   [#408][0408] |
 | virtual-repeat   |                         Not started |           -  |   [#823][0823] |
-| datepicker       |                         In progress |           -  |   [#675][0675] |
+| datepicker       |                           Available | [README][25] |              - |
 | data-table       |                  Design in-progress |           -  |   [#581][0581] |
 | stepper          |                         Not started |           -  |   [#508][0508] |
 | tree             |                         Not started |           -  |  [#3175][3175] |
@@ -118,6 +118,7 @@ High level items planned for next few months:
 [22]: https://material.angular.io/components/component/dialog
 [23]: https://material.angular.io/components/component/select
 [24]: https://material.angular.io/components/component/autocomplete
+[25]: https://material.angular.io/components/component/datepicker
 
 [0107]: https://github.com/angular/material2/issues/107
 [0119]: https://github.com/angular/material2/issues/119
@@ -134,7 +135,6 @@ High level items planned for next few months:
 [0408]: https://github.com/angular/material2/issues/408
 [0508]: https://github.com/angular/material2/issues/508
 [0823]: https://github.com/angular/material2/issues/823
-[0675]: https://github.com/angular/material2/issues/675
 [0581]: https://github.com/angular/material2/issues/581
 [3175]: https://github.com/angular/material2/issues/3175
 
