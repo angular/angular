@@ -87,7 +87,7 @@ describe('CodeExampleComponent', () => {
 class TestCodeComponent {
   @Input() code = '';
   @Input() language: string;
-  @Input() linenums: boolean | number;
+  @Input() linenums: string;
   @Input() path: string;
   @Input() region: string;
   @Input() hideCopy: boolean;
