@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, Location} from '@angular/common';
-import {Component, Injectable, NgModule, NgModuleFactoryLoader, NgModuleRef} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Injectable, NgModule, NgModuleFactoryLoader, NgModuleRef} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync, inject, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -120,8 +120,10 @@ describe('Integration', () => {
            router.resetConfig([{
              path: 'parent/:id',
              component: Parent,
-             children:
-                 [{path: 'child1', component: Child1}, {path: 'child2', component: Child2}]
+             children: [
+               {path: 'child1', component: Child1},
+               {path: 'child2', component: Child2},
+             ]
            }]);
 
            router.navigateByUrl('/parent/1/child1');
@@ -131,13 +133,18 @@ describe('Integration', () => {
            advance(fixture);
 
            expect(location.path()).toEqual('/parent/2/child2');
-           expect(log).toEqual([{id: '1'}, 'child1 destroy', {id: '2'}, 'child2 constructor']);
+           expect(log).toEqual([
+             {id: '1'},
+             'child1 destroy',
+             {id: '2'},
+             'child2 constructor',
+           ]);
          })));
 
     });
 
     it('should execute navigations serialy',
-       fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+       fakeAsync(inject([Router, Location], (router: Router) => {
          const fixture = createRoot(router, RootCmp);
 
          router.resetConfig([
@@ -173,6 +180,50 @@ describe('Integration', () => {
        })));
   });
 
+  it('Should work inside ChangeDetectionStrategy.OnPush components', fakeAsync(() => {
+       @Component({
+         selector: 'root-cmp',
+         template: `<router-outlet></router-outlet>`,
+         changeDetection: ChangeDetectionStrategy.OnPush,
+       })
+       class OnPushOutlet {
+       }
+
+       @Component({selector: 'need-cd', template: `{{'it works!'}}`})
+       class NeedCdCmp {
+       }
+
+       @NgModule({
+         declarations: [OnPushOutlet, NeedCdCmp],
+         entryComponents: [OnPushOutlet, NeedCdCmp],
+         imports: [RouterModule],
+       })
+       class TestModule {
+       }
+
+       TestBed.configureTestingModule({imports: [TestModule]});
+
+       const router: Router = TestBed.get(Router);
+       const fixture = createRoot(router, RootCmp);
+
+       router.resetConfig([{
+         path: 'on',
+         component: OnPushOutlet,
+         children: [{
+           path: 'push',
+           component: NeedCdCmp,
+         }],
+       }]);
+
+       advance(fixture);
+       router.navigateByUrl('on');
+       advance(fixture);
+       router.navigateByUrl('on/push');
+       advance(fixture);
+
+       expect(fixture.nativeElement).toHaveText('it works!');
+     }));
+
   it('should not error when no url left and no children are matching',
      fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
        const fixture = createRoot(router, RootCmp);
@@ -202,7 +253,7 @@ describe('Integration', () => {
 
        router.resetConfig([{
          path: 'child',
-         component: LinkInNgIf,
+         component: OutletInNgIf,
          children: [{path: 'simple', component: SimpleCmp}]
        }]);
 
@@ -212,10 +263,10 @@ describe('Integration', () => {
        expect(location.path()).toEqual('/child/simple');
      })));
 
-  it('should work when an outlet is in an ngIf (and is removed)', fakeAsync(() => {
+  it('should work when an outlet is added/removed', fakeAsync(() => {
        @Component({
          selector: 'someRoot',
-         template: `<div *ngIf="cond"><router-outlet></router-outlet></div>`
+         template: `[<div *ngIf="cond"><router-outlet></router-outlet></div>]`
        })
        class RootCmpWithLink {
          cond: boolean = true;
@@ -223,26 +274,25 @@ describe('Integration', () => {
        TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
 
        const router: Router = TestBed.get(Router);
-       const location: Location = TestBed.get(Location);
 
        const fixture = createRoot(router, RootCmpWithLink);
 
-       router.resetConfig(
-           [{path: 'simple', component: SimpleCmp}, {path: 'blank', component: BlankCmp}]);
+       router.resetConfig([
+         {path: 'simple', component: SimpleCmp},
+         {path: 'blank', component: BlankCmp},
+       ]);
 
        router.navigateByUrl('/simple');
        advance(fixture);
-       expect(location.path()).toEqual('/simple');
+       expect(fixture.nativeElement).toHaveText('[simple]');
 
-       const instance = fixture.componentInstance;
-       instance.cond = false;
+       fixture.componentInstance.cond = false;
        advance(fixture);
+       expect(fixture.nativeElement).toHaveText('[]');
 
-       let recordedError: any = null;
-       router.navigateByUrl('/blank') !.catch(e => recordedError = e);
+       fixture.componentInstance.cond = true;
        advance(fixture);
-
-       expect(recordedError.message).toEqual('Cannot find primary outlet to load \'BlankCmp\'');
+       expect(fixture.nativeElement).toHaveText('[simple]');
      }));
 
   it('should update location when navigating', fakeAsync(() => {
@@ -3230,15 +3280,17 @@ describe('Integration', () => {
       shouldDetach(route: ActivatedRouteSnapshot): boolean { return false; }
       store(route: ActivatedRouteSnapshot, detachedTree: DetachedRouteHandle): void {}
       shouldAttach(route: ActivatedRouteSnapshot): boolean { return false; }
-      retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle { return null !; }
+      retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle|null { return null; }
       shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean {
         if (future.routeConfig !== curr.routeConfig) {
           return false;
-        } else if (Object.keys(future.params).length !== Object.keys(curr.params).length) {
-          return false;
-        } else {
-          return Object.keys(future.params).every(k => future.params[k] === curr.params[k]);
         }
+
+        if (Object.keys(future.params).length !== Object.keys(curr.params).length) {
+          return false;
+        }
+
+        return Object.keys(future.params).every(k => future.params[k] === curr.params[k]);
       }
     }
 
@@ -3249,8 +3301,12 @@ describe('Integration', () => {
          router.routeReuseStrategy = new AttachDetachReuseStrategy();
 
          router.resetConfig([
-           {path: 'a', component: TeamCmp, children: [{path: 'b', component: SimpleCmp}]},
-           {path: 'c', component: UserCmp}
+           {
+             path: 'a',
+             component: TeamCmp,
+             children: [{path: 'b', component: SimpleCmp}],
+           },
+           {path: 'c', component: UserCmp},
          ]);
 
          router.navigateByUrl('/a/b');
@@ -3459,7 +3515,7 @@ class RelativeLinkInIfCmp {
 
 @Component(
     {selector: 'child', template: '<div *ngIf="alwaysTrue"><router-outlet></router-outlet></div>'})
-class LinkInNgIf {
+class OutletInNgIf {
   alwaysTrue = true;
 }
 
@@ -3538,7 +3594,7 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
     QueryParamsAndFragmentCmp,
     StringLinkButtonCmp,
     WrapperCmp,
-    LinkInNgIf,
+    OutletInNgIf,
     ComponentRecordingRoutePathAndUrl,
     RouteCmp,
     RootCmp,
@@ -3564,7 +3620,7 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
     QueryParamsAndFragmentCmp,
     StringLinkButtonCmp,
     WrapperCmp,
-    LinkInNgIf,
+    OutletInNgIf,
     ComponentRecordingRoutePathAndUrl,
     RouteCmp,
     RootCmp,
@@ -3592,7 +3648,7 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
     QueryParamsAndFragmentCmp,
     StringLinkButtonCmp,
     WrapperCmp,
-    LinkInNgIf,
+    OutletInNgIf,
     ComponentRecordingRoutePathAndUrl,
     RouteCmp,
     RootCmp,

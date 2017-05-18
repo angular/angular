@@ -60,6 +60,16 @@ export interface CanLoad {
 }
 
 /** @stable */
+export declare class ChildrenOutletContexts {
+    getContext(childName: string): OutletContext | null;
+    getOrCreateContext(childName: string): OutletContext;
+    onChildOutletCreated(childName: string, outlet: RouterOutlet): void;
+    onChildOutletDestroyed(childName: string): void;
+    onOutletDeactivated(): Map<string, OutletContext>;
+    onOutletReAttached(contexts: Map<string, OutletContext>): void;
+}
+
+/** @stable */
 export declare function convertToParamMap(params: Params): ParamMap;
 
 /** @stable */
@@ -158,6 +168,15 @@ export declare class NoPreloading implements PreloadingStrategy {
 }
 
 /** @stable */
+export declare class OutletContext {
+    attachRef: ComponentRef<any> | null;
+    children: ChildrenOutletContexts;
+    outlet: RouterOutlet | null;
+    resolver: ComponentFactoryResolver | null;
+    route: ActivatedRoute | null;
+}
+
+/** @stable */
 export interface ParamMap {
     readonly keys: string[];
     get(name: string): string | null;
@@ -239,7 +258,7 @@ export declare class Router {
     readonly routerState: RouterState;
     readonly url: string;
     urlHandlingStrategy: UrlHandlingStrategy;
-    constructor(rootComponentType: Type<any> | null, urlSerializer: UrlSerializer, outletMap: RouterOutletMap, location: Location, injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler, config: Routes);
+    constructor(rootComponentType: Type<any> | null, urlSerializer: UrlSerializer, rootContexts: ChildrenOutletContexts, location: Location, injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler, config: Routes);
     createUrlTree(commands: any[], {relativeTo, queryParams, fragment, preserveQueryParams, queryParamsHandling, preserveFragment}?: NavigationExtras): UrlTree;
     dispose(): void;
     initialNavigation(): void;
@@ -329,7 +348,7 @@ export declare class RouterModule {
 }
 
 /** @stable */
-export declare class RouterOutlet implements OnDestroy {
+export declare class RouterOutlet implements OnDestroy, OnInit {
     activateEvents: EventEmitter<any>;
     readonly activatedRoute: ActivatedRoute;
     readonly component: Object;
@@ -337,20 +356,13 @@ export declare class RouterOutlet implements OnDestroy {
     readonly isActivated: boolean;
     /** @deprecated */ readonly locationFactoryResolver: ComponentFactoryResolver;
     /** @deprecated */ readonly locationInjector: Injector;
-    outletMap: RouterOutletMap;
-    constructor(parentOutletMap: RouterOutletMap, location: ViewContainerRef, resolver: ComponentFactoryResolver, name: string);
-    /** @deprecated */ activate(activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver, injector: Injector, providers: ResolvedReflectiveProvider[], outletMap: RouterOutletMap): void;
-    activateWith(activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver | null, outletMap: RouterOutletMap): void;
+    constructor(parentContexts: ChildrenOutletContexts, location: ViewContainerRef, resolver: ComponentFactoryResolver, name: string, changeDetector: ChangeDetectorRef);
+    activateWith(activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver | null): void;
     attach(ref: ComponentRef<any>, activatedRoute: ActivatedRoute): void;
     deactivate(): void;
     detach(): ComponentRef<any>;
     ngOnDestroy(): void;
-}
-
-/** @stable */
-export declare class RouterOutletMap {
-    registerOutlet(name: string, outlet: RouterOutlet): void;
-    removeOutlet(name: string): void;
+    ngOnInit(): void;
 }
 
 /** @stable */
