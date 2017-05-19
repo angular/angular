@@ -50,7 +50,8 @@ export interface InjectDecorator {
  *
  * @stable
  */
-export interface Inject { token: any; }
+// declare to prevent Closure renaming with tsickle set up to generate externs.
+export declare interface Inject { token: any; }
 
 /**
  * Inject decorator and metadata.
