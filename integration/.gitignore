@@ -7,4 +7,4 @@ vendor/
 **/*.ngsummary.json
 **/*.ngsummary.ts
 */yarn*
-*/.yarn_local_cache*
+**/.yarn_local_cache*
