@@ -1,3 +1,7 @@
+<div *ngIf="isFetching" class="progress-bar-container">
+  <md-progress-bar mode="indeterminate" color="warn"></md-progress-bar>
+</div>
+
 <md-toolbar color="primary" class="app-toolbar">
   <button class="hamburger" md-button
     (click)="sidenav.toggle()" title="Docs menu">
