@@ -23,6 +23,7 @@ describe('BlockScrollStrategy', () => {
   }));
 
   afterEach(() => {
+    strategy.disable();
     document.body.removeChild(forceScrollElement);
     setScrollPosition(0, 0);
   });
@@ -109,6 +110,16 @@ describe('BlockScrollStrategy', () => {
     expect(document.documentElement.classList).not.toContain('cdk-global-scrollblock');
   }));
 
+
+  it('should keep the content width', () => {
+    forceScrollElement.style.width = '100px';
+
+    const previousContentWidth = document.documentElement.getBoundingClientRect().width;
+
+    strategy.enable();
+
+    expect(document.documentElement.getBoundingClientRect().width).toBe(previousContentWidth);
+  });
 
   /**
    * Skips the specified test, if it is being executed on iOS. This is necessary, because
