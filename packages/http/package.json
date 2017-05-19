@@ -8,6 +8,9 @@
   "typings": "./http.d.ts",
   "author": "angular",
   "license": "MIT",
+  "dependencies": {
+    "tslib": "^1.7.1"
+  },
   "peerDependencies": {
     "rxjs": "^5.0.1",
     "@angular/core": "0.0.0-PLACEHOLDER",
