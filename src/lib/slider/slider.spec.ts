@@ -154,6 +154,10 @@ describe('MdSlider', () => {
       // Some browsers use '0' and some use '0px', so leave off the closing paren.
       expect(trackFillElement.style.transform).toContain('translateX(0');
     });
+
+    it('should have aria-orientation horizontal', () => {
+      expect(sliderNativeElement.getAttribute('aria-orientation')).toEqual('horizontal');
+    });
   });
 
   describe('disabled slider', () => {
@@ -1155,6 +1159,10 @@ describe('MdSlider', () => {
       fixture.detectChanges();
 
       expect(trackFillElement.style.transform).toContain('scaleY(0.39)');
+    });
+
+    it('should have aria-orientation vertical', () => {
+      expect(sliderNativeElement.getAttribute('aria-orientation')).toEqual('vertical');
     });
   });
 });

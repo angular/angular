@@ -91,6 +91,7 @@ export const _MdSliderMixinBase = mixinDisabled(MdSliderBase);
     '[attr.aria-valuemax]': 'max',
     '[attr.aria-valuemin]': 'min',
     '[attr.aria-valuenow]': 'value',
+    '[attr.aria-orientation]': 'vertical ? "vertical" : "horizontal"',
     '[class.mat-primary]': 'color == "primary"',
     '[class.mat-accent]': 'color != "primary" && color != "warn"',
     '[class.mat-warn]': 'color == "warn"',
