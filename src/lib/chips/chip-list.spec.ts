@@ -1,10 +1,12 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
 import {Component, DebugElement, QueryList} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {MdChip, MdChipList, MdChipsModule} from './index';
 import {FocusKeyManager} from '../core/a11y/focus-key-manager';
 import {FakeEvent} from '../core/a11y/list-key-manager.spec';
-import {SPACE, LEFT_ARROW, RIGHT_ARROW} from '../core/keyboard/keycodes';
+import {SPACE, LEFT_ARROW, RIGHT_ARROW, TAB} from '../core/keyboard/keycodes';
+import {createKeyboardEvent} from '../core/testing/event-objects';
+
 
 class FakeKeyboardEvent extends FakeEvent {
   constructor(keyCode: number, protected target: HTMLElement) {
@@ -26,9 +28,7 @@ describe('MdChipList', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [MdChipsModule],
-      declarations: [
-        StaticChipList
-      ]
+      declarations: [StaticChipList]
     });
 
     TestBed.compileComponents();
@@ -189,6 +189,17 @@ describe('MdChipList', () => {
         expect(testComponent.chipDeselect).toHaveBeenCalledTimes(1);
         expect(testComponent.chipDeselect).toHaveBeenCalledWith(0);
       });
+
+      it('allow focus to escape when tabbing away', fakeAsync(() => {
+        chipListInstance._keyManager.onKeydown(createKeyboardEvent('keydown', TAB));
+
+        expect(chipListInstance._tabIndex)
+            .toBe(-1, 'Expected tabIndex to be set to -1 temporarily.');
+
+        tick();
+
+        expect(chipListInstance._tabIndex).toBe(0, 'Expected tabIndex to be reset back to 0');
+      }));
     });
 
     describe('when selectable is false', () => {
