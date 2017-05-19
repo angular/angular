@@ -125,7 +125,7 @@ export class MdDialogContainer extends BasePortalHost {
     // If were to attempt to focus immediately, then the content of the dialog would not yet be
     // ready in instances where change detection has to run first. To deal with this, we simply
     // wait for the microtask queue to be empty.
-    this._focusTrap.focusFirstTabbableElementWhenReady();
+    this._focusTrap.focusInitialElementWhenReady();
   }
 
   /** Restores focus to the element that was focused before the dialog opened. */

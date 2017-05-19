@@ -20,7 +20,9 @@
     border-top-color: mat-color($foreground, divider);
   }
 
-  .mat-nav-list .mat-list-item-content {
+  .mat-nav-list .mat-list-item {
+    outline: none;
+
     &:hover, &.mat-list-item-focus {
       background: mat-color($background, 'hover');
     }

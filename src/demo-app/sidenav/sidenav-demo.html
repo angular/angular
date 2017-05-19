@@ -61,3 +61,27 @@
     <button (click)="invert = !invert">Change sides</button>
   </div>
 </md-sidenav-container>
+
+<h2>Sidenav with focus attributes</h2>
+
+<md-sidenav-container class="demo-sidenav-container">
+  <md-sidenav #focusSidenav>
+    <md-nav-list>
+      <a md-list-item routerLink>Link</a>
+      <a md-list-item routerLink cdk-focus-region-start>Focus region start</a>
+      <a md-list-item routerLink>Link</a>
+      <a md-list-item routerLink cdk-focus-initial>Initially focused</a>
+      <a md-list-item routerLink cdk-focus-region-end>Focus region end</a>
+      <a md-list-item routerLink>Link</a>
+    </md-nav-list>
+  </md-sidenav>
+
+  <div class="demo-sidenav-content">
+    <h1>My Content</h1>
+
+    <div>
+      <header>Sidenav</header>
+      <button md-button (click)="focusSidenav.toggle()">Toggle Drawer</button>
+    </div>
+  </div>
+</md-sidenav-container>
