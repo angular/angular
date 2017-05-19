@@ -34,7 +34,7 @@
     "generate-zips": "node ./tools/example-zipper/generateZips",
     "sw-manifest": "ngu-sw-manifest --dist dist --in ngsw-manifest.json --out dist/ngsw-manifest.json",
     "sw-copy": "cp node_modules/@angular/service-worker/bundles/worker-basic.min.js dist/",
-    "postinstall": "PATCH_LOCK=node_modules/@angular/cli/models/webpack-configs/.patched; if [ ! -e $PATCH_LOCK ]; then touch $PATCH_LOCK; patch -p0 -i tools/cli-patches/ngo-loader.patch && patch -p0 -i node_modules/purify/angular-cli.patch; fi",
+    "postinstall": "node --eval \"const fs=require('fs'), sh=require('shelljs'), PATCH_LOCK='node_modules/@angular/cli/models/webpack-configs/.patched'; if (!fs.existsSync(PATCH_LOCK)) { sh.touch(PATCH_LOCK); sh.exec('patch -p0 -i tools/cli-patches/ngo-loader.patch && patch -p0 -i node_modules/purify/angular-cli.patch'); }\"",
     "build-ie-polyfills": "webpack -p src/ie-polyfills.js src/generated/ie-polyfills.min.js"
   },
   "private": true,
