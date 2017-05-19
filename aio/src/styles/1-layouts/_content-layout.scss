@@ -1,3 +1,12 @@
+.progress-bar-container {
+  height: 2px;
+  overflow: hidden;
+  position: fixed;
+  top: 64px;
+  width: 100vw;
+  z-index: 5;
+}
+
 .sidenav-content {
   padding: 1rem 3rem 3rem;
   margin: auto;
@@ -12,9 +21,15 @@
   aio-menu {
     display: none;
   }
+
+  .progress-bar-container {
+    top: 56px;
+  }
+
   .sidenav-content {
     min-height: 450px;
   }
+
 }
 
 .sidenav-container {
