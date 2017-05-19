@@ -433,7 +433,7 @@ describe('ConnectedPositionStrategy', () => {
         let overlayRect = overlayElement.getBoundingClientRect();
 
         expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect.bottom));
-        expect(Math.floor(overlayRect.right)).toBe(Math.floor(originRect.left));
+        expect(Math.round(overlayRect.right)).toBe(Math.round(originRect.left));
       });
 
       it('should position above, right aligned', () => {
@@ -445,8 +445,8 @@ describe('ConnectedPositionStrategy', () => {
         strategy.apply(overlayElement);
 
         let overlayRect = overlayElement.getBoundingClientRect();
-        expect(Math.floor(overlayRect.bottom)).toBe(Math.floor(originRect.top));
-        expect(Math.floor(overlayRect.right)).toBe(Math.floor(originRect.right));
+        expect(Math.round(overlayRect.bottom)).toBe(Math.round(originRect.top));
+        expect(Math.round(overlayRect.right)).toBe(Math.round(originRect.right));
       });
 
       it('should position below, centered', () => {
