@@ -37,6 +37,51 @@ export function main() {
       });
     });
 
+    describe('fakeAsync testing', () => {
+      it('should only require one flushMicrotasks call to kick off animation callbacks',
+         fakeAsync(() => {
+           @Component({
+             selector: 'cmp',
+             template: `
+            <div [@myAnimation]="exp" (@myAnimation.start)="cb('start')" (@myAnimation.done)="cb('done')"></div>
+          `,
+             animations: [trigger(
+                 'myAnimation',
+                 [transition('* => on, * => off', [animate(1000, style({opacity: 1}))])])]
+           })
+           class Cmp {
+             exp: any = false;
+             status: string = '';
+             cb(status: string) { this.status = status; }
+           }
+
+           TestBed.configureTestingModule({declarations: [Cmp]});
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
+           cmp.exp = 'on';
+           fixture.detectChanges();
+           expect(cmp.status).toEqual('');
+
+           flushMicrotasks();
+           expect(cmp.status).toEqual('start');
+
+           let player = MockAnimationDriver.log.pop() !;
+           player.finish();
+           expect(cmp.status).toEqual('done');
+
+           cmp.status = '';
+           cmp.exp = 'off';
+           fixture.detectChanges();
+           expect(cmp.status).toEqual('');
+
+           player = MockAnimationDriver.log.pop() !;
+           player.finish();
+           expect(cmp.status).toEqual('');
+           flushMicrotasks();
+           expect(cmp.status).toEqual('done');
+         }));
+    });
+
     describe('component fixture integration', () => {
       describe('whenRenderingDone', () => {
         it('should wait until the animations are finished until continuing', fakeAsync(() => {

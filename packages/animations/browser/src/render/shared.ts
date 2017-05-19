@@ -80,9 +80,14 @@ export function listenOnPlayer(
 
 export function copyAnimationEvent(
     e: AnimationEvent, phaseName?: string, totalTime?: number): AnimationEvent {
-  return makeAnimationEvent(
+  const event = makeAnimationEvent(
       e.element, e.triggerName, e.fromState, e.toState, phaseName || e.phaseName,
       totalTime == undefined ? e.totalTime : totalTime);
+  const data = (e as any)['_data'];
+  if (data != null) {
+    (event as any)['_data'] = data;
+  }
+  return event;
 }
 
 export function makeAnimationEvent(

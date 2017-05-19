@@ -12,6 +12,8 @@ import {Injectable, NgZone, Renderer2, RendererFactory2, RendererStyleFlags2, Re
 @Injectable()
 export class AnimationRendererFactory implements RendererFactory2 {
   private _currentId: number = 0;
+  private _currentFlushId: number = 1;
+  private _animationCallbacksBuffer: [(e: any) => any, any][] = [];
 
   constructor(
       private delegate: RendererFactory2, private _engine: AnimationEngine, private _zone: NgZone) {
@@ -38,7 +40,7 @@ export class AnimationRendererFactory implements RendererFactory2 {
     animationTriggers.forEach(
         trigger => this._engine.registerTrigger(
             componentId, namespaceId, hostElement, trigger.name, trigger));
-    return new AnimationRenderer(delegate, this._engine, this._zone, namespaceId);
+    return new AnimationRenderer(this, delegate, this._engine, this._zone, namespaceId);
   }
 
   begin() {
@@ -47,8 +49,38 @@ export class AnimationRendererFactory implements RendererFactory2 {
     }
   }
 
+  private _scheduleCountTask() {
+    Zone.current.scheduleMicroTask(
+        'incremenet the animation microtask', () => { this._currentFlushId++; });
+  }
+
+  /* @internal */
+  scheduleListenerCallback(count: number, fn: (e: any) => any, data: any) {
+    if (count >= 0 && count < this._currentFlushId) {
+      this._zone.run(() => fn(data));
+      return;
+    }
+
+    if (this._animationCallbacksBuffer.length == 0) {
+      Promise.resolve(null).then(() => {
+        this._zone.run(() => {
+          this._animationCallbacksBuffer.forEach(tuple => {
+            const [fn, data] = tuple;
+            fn(data);
+          });
+          this._animationCallbacksBuffer = [];
+        });
+      });
+    }
+
+    this._animationCallbacksBuffer.push([fn, data]);
+  }
+
   end() {
-    this._zone.runOutsideAngular(() => this._engine.flush());
+    this._zone.runOutsideAngular(() => {
+      this._scheduleCountTask();
+      this._engine.flush(this._currentFlushId);
+    });
     if (this.delegate.end) {
       this.delegate.end();
     }
@@ -59,11 +91,11 @@ export class AnimationRendererFactory implements RendererFactory2 {
 
 export class AnimationRenderer implements Renderer2 {
   public destroyNode: ((node: any) => any)|null = null;
-  private _animationCallbacksBuffer: [(e: any) => any, any][] = [];
+  public microtaskCount: number = 0;
 
   constructor(
-      public delegate: Renderer2, private _engine: AnimationEngine, private _zone: NgZone,
-      private _namespaceId: string) {
+      private _factory: AnimationRendererFactory, public delegate: Renderer2,
+      private _engine: AnimationEngine, private _zone: NgZone, private _namespaceId: string) {
     this.destroyNode = this.delegate.destroyNode ? (n) => delegate.destroyNode !(n) : null;
   }
 
@@ -145,26 +177,11 @@ export class AnimationRenderer implements Renderer2 {
         [name, phase] = parseTriggerCallbackName(name);
       }
       return this._engine.listen(this._namespaceId, element, name, phase, event => {
-        this._bufferMicrotaskIntoZone(callback, event);
+        const countId = (event as any)['_data'] || -1;
+        this._factory.scheduleListenerCallback(countId, callback, event);
       });
     }
     return this.delegate.listen(target, eventName, callback);
-  }
-
-  private _bufferMicrotaskIntoZone(fn: (e: any) => any, data: any) {
-    if (this._animationCallbacksBuffer.length == 0) {
-      Promise.resolve(null).then(() => {
-        this._zone.run(() => {
-          this._animationCallbacksBuffer.forEach(tuple => {
-            const [fn, data] = tuple;
-            fn(data);
-          });
-          this._animationCallbacksBuffer = [];
-        });
-      })
-    }
-
-    this._animationCallbacksBuffer.push([fn, data]);
   }
 }
 

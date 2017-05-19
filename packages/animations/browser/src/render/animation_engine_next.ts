@@ -86,7 +86,7 @@ export class AnimationEngine {
     return this._transitionEngine.listen(namespaceId, element, eventName, eventPhase, callback);
   }
 
-  flush(): void { this._transitionEngine.flush(); }
+  flush(countId: number = -1): void { this._transitionEngine.flush(countId); }
 
   get players(): AnimationPlayer[] {
     return (this._transitionEngine.players as AnimationPlayer[])
