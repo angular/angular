@@ -382,7 +382,7 @@ export class AnimationTransitionNamespace {
 
   insertNode(element: any, parent: any): void { addClass(element, this._hostClassName); }
 
-  drainQueuedTransitions(): QueueInstruction[] {
+  drainQueuedTransitions(countId: number): QueueInstruction[] {
     const instructions: QueueInstruction[] = [];
     this._queue.forEach(entry => {
       const player = entry.player;
@@ -395,6 +395,7 @@ export class AnimationTransitionNamespace {
           if (listener.name == entry.triggerName) {
             const baseEvent = makeAnimationEvent(
                 element, entry.triggerName, entry.fromState.value, entry.toState.value);
+            (baseEvent as any)['_data'] = countId;
             listenOnPlayer(entry.player, listener.phase, baseEvent, listener.callback);
           }
         });
@@ -627,7 +628,7 @@ export class TransitionAnimationEngine {
     });
   }
 
-  flush() {
+  flush(countId: number = -1) {
     let players: AnimationPlayer[] = [];
     if (this.newHostElements.size) {
       this.newHostElements.forEach((ns, element) => { this._balanceNamespaceList(ns, element); });
@@ -635,7 +636,7 @@ export class TransitionAnimationEngine {
     }
 
     if (this._namespaceList.length && (this.totalQueuedPlayers || this.queuedRemovals.size)) {
-      players = this._flushAnimations();
+      players = this._flushAnimations(countId);
     }
 
     this.totalQueuedPlayers = 0;
@@ -659,7 +660,7 @@ export class TransitionAnimationEngine {
     }
   }
 
-  private _flushAnimations(): TransitionAnimationPlayer[] {
+  private _flushAnimations(countId: number): TransitionAnimationPlayer[] {
     const subTimelines = new ElementInstructionMap();
     const skippedPlayers: TransitionAnimationPlayer[] = [];
     const skippedPlayersMap = new Map<any, AnimationPlayer[]>();
@@ -677,8 +678,9 @@ export class TransitionAnimationEngine {
 
     for (let i = this._namespaceList.length - 1; i >= 0; i--) {
       const ns = this._namespaceList[i];
-      ns.drainQueuedTransitions().forEach(entry => {
+      ns.drainQueuedTransitions(countId).forEach(entry => {
         const player = entry.player;
+
         const element = entry.element;
         if (!bodyNode || !this.driver.containsElement(bodyNode, element)) {
           player.destroy();
@@ -746,7 +748,7 @@ export class TransitionAnimationEngine {
       }
     });
 
-    allPreviousPlayersMap.forEach(players => { players.forEach(player => player.destroy()); });
+    allPreviousPlayersMap.forEach(players => players.forEach(player => player.destroy()));
 
     const leaveNodes: any[] = bodyNode && allPostStyleElements.size ?
         listToArray(this.driver.query(bodyNode, LEAVE_SELECTOR, true)) :
