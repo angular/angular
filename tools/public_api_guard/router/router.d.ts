@@ -351,6 +351,9 @@ export declare class RouterModule {
 export declare class RouterOutlet implements OnDestroy, OnInit {
     activateEvents: EventEmitter<any>;
     readonly activatedRoute: ActivatedRoute;
+    readonly activatedRouteData: {
+        [name: string]: any;
+    };
     readonly component: Object;
     deactivateEvents: EventEmitter<any>;
     readonly isActivated: boolean;
