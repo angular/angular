@@ -63,7 +63,9 @@ Update <code>src/app/app.module.ts</code> with this version, which uses the mock
 
 Rather than require a real API server, this example simulates communication with the remote server by adding the
 <a href="https://github.com/angular/in-memory-web-api" title="In-memory Web API">InMemoryWebApiModule</a>
-to the module `imports`, effectively  replacing the `Http` client's XHR backend service with an in-memory alternative.
+to the module `imports`, effectively  replacing the `Http` client's XHR backend service with an in-memory alternative. You will need to install this module as it is not part of Angular core
+
+You can do this by issuing an NPM install command at the command line.
 
 <code-example path="toh-pt6/src/app/app.module.ts" region="in-mem-web-api"></code-example>
 
