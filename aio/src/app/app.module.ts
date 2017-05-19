@@ -5,8 +5,17 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { Location, LocationStrategy, PathLocationStrategy } from '@angular/common';
 
-import { MdToolbarModule, MdButtonModule, MdIconModule, MdInputModule, MdSidenavModule, MdTabsModule, Platform,
-         MdIconRegistry } from '@angular/material';
+import {
+  MdButtonModule,
+  MdIconModule,
+  MdIconRegistry,
+  MdInputModule,
+  MdProgressBarModule,
+  MdSidenavModule,
+  MdTabsModule,
+  MdToolbarModule,
+  Platform
+} from '@angular/material';
 
 // Temporary fix for MdSidenavModule issue:
 // crashes with "missing first" operator when SideNav.mode is "over"
@@ -67,9 +76,10 @@ export const svgIconProviders = [
     MdButtonModule,
     MdIconModule,
     MdInputModule,
-    MdToolbarModule,
+    MdProgressBarModule,
     MdSidenavModule,
     MdTabsModule,
+    MdToolbarModule,
     SwUpdatesModule
   ],
   declarations: [
