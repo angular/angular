@@ -292,6 +292,7 @@ export function main() {
         setProperty(element, engine, 'myTrigger', '456');
         engine.flush();
 
+        delete (capture as any)['_data'];
         expect(capture).toEqual({
           element,
           triggerName: 'myTrigger',
@@ -305,6 +306,7 @@ export function main() {
         const player = engine.players.pop() !;
         player.finish();
 
+        delete (capture as any)['_data'];
         expect(capture).toEqual({
           element,
           triggerName: 'myTrigger',
