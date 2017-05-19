@@ -382,8 +382,8 @@ export class MdSidenavContainer implements AfterContentInit {
    */
   private _watchSidenavToggle(sidenav: MdSidenav): void {
     if (!sidenav || sidenav.mode === 'side') { return; }
-    sidenav.onOpen.subscribe(() => this._setContainerClass(sidenav, true));
-    sidenav.onClose.subscribe(() => this._setContainerClass(sidenav, false));
+    sidenav.onOpen.subscribe(() => this._setContainerClass(true));
+    sidenav.onClose.subscribe(() => this._setContainerClass(false));
   }
 
   /**
@@ -401,7 +401,7 @@ export class MdSidenavContainer implements AfterContentInit {
   }
 
   /** Toggles the 'mat-sidenav-opened' class on the main 'md-sidenav-container' element. */
-  private _setContainerClass(sidenav: MdSidenav, isAdd: boolean): void {
+  private _setContainerClass(isAdd: boolean): void {
     if (isAdd) {
       this._renderer.addClass(this._element.nativeElement, 'mat-sidenav-opened');
     } else {
