@@ -67,7 +67,7 @@ export function main() {
 
       describe('transform', () => {
         it('should return correct value for numbers', () => {
-          // In old Chrome, default formatiing for USD is different
+          // In old Chrome, default formatting for USD is different
           if (browserDetection.isOldChrome) {
             expect(normalize(pipe.transform(123) !)).toEqual('USD123');
           } else {

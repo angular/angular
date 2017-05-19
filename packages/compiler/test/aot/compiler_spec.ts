@@ -216,7 +216,7 @@ describe('compiler (unbundled Angular)', () => {
 
        }));
 
-    it('should be able to supress a null access', async(() => {
+    it('should be able to suppress a null access', async(() => {
          const FILES: MockDirectory = {
            app: {
              'app.ts': `

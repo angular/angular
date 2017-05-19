@@ -203,7 +203,7 @@ export function main() {
                 /Unable to listen on the animation trigger "myTrigger" because the provided event is undefined!/);
       });
 
-      it('should retain event listeners and call them for sucessive animation state changes',
+      it('should retain event listeners and call them for successive animation state changes',
          () => {
            const engine = makeEngine();
            const trig = trigger(

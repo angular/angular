@@ -142,7 +142,7 @@ describe('plugin', () => {
     it('should reference the component',
        () => { contains('app/parsing-cases.ts', 'test-comp-after-test', 'name'); });
     // TODO: Enable when we have a flag that indicates the project targets the DOM
-    // it('should refernce the element if no component', () => {
+    // it('should reference the element if no component', () => {
     //   contains('app/parsing-cases.ts', 'test-comp-after-div', 'innerText');
     // });
   });

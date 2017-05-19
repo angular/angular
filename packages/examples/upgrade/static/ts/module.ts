@@ -77,7 +77,7 @@ class Ng1HeroComponentWrapper extends UpgradeComponent implements OnInit, OnChan
   }
 
   // For this class to work when compiled with AoT, we must implement these lifecycle hooks
-  // because the AoT compiler will not realise that the super class implements them
+  // because the AoT compiler will not realize that the super class implements them
   ngOnInit() { super.ngOnInit(); }
 
   ngOnChanges(changes: SimpleChanges) { super.ngOnChanges(changes); }

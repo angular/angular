@@ -800,7 +800,7 @@ if the `CommonsChunkPlugin` hadn't detected the overlap and removed them from `a
 
 ## Conclusion
 
-You've learned just enough Webpack to configurate development, test and production builds
+You've learned just enough Webpack to configure development, test and production builds
 for a small Angular application.
 
 _You could always do more_. Search the web for expert advice and expand your Webpack knowledge.

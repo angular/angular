@@ -300,7 +300,7 @@ The _RxJs_ Observable library is an essential Angular dependency published as an
 Luckily, there is a Rollup plugin that modifies _RxJs_
 to use the ES `import` and `export` statements that Rollup requires.
 Rollup then preserves the parts of `RxJS` referenced by the application
-in the final bundle. Using it is straigthforward. Add the following to
+in the final bundle. Using it is straightforward. Add the following to
 the `plugins` array in `rollup-config.js`:
 
 <code-example path="aot-compiler/rollup-config.js" region="commonjs" title="rollup-config.js (CommonJs to ES2015 Plugin)" linenums="false">

@@ -202,7 +202,7 @@ Finally, display an instance of the form in the `AppComponent` shell.
 {@a dynamic-template}
 
 ## Dynamic Template
-Although in this example you're modelling a job application for heroes, there are
+Although in this example you're modeling a job application for heroes, there are
 no references to any specific hero question
 outside the objects returned by `QuestionService`.
 

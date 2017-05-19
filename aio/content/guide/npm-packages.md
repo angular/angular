@@ -219,7 +219,7 @@ Two packages, "A" and "B", could depend on the same third package "C".
 
 What if "A" and "B" depend on different versions of "C" ("C1" and "C2"). The npm package system supports that.
 It installs "C1" in the `node_modules` folder for "A" and "C2" in the `node_modules` folder for "B".
-Now "A" and "B" have their own copies of "C" and they run without interferring with one another.
+Now "A" and "B" have their own copies of "C" and they run without interfering with one another.
 
 But there is a problem. Package "A" may require the presence of "C1" without actually calling upon it directly.
 "A" may only work if *everyone is using "C1"*. It falls down if any part of the application relies on "C2".

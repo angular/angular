@@ -6,7 +6,7 @@ import * as path from 'path';
 import * as shell from 'shelljs';
 import {getEnvVar} from '../common/utils';
 
-// Constans
+// Constants
 const TEST_AIO_BUILDS_DIR = getEnvVar('TEST_AIO_BUILDS_DIR');
 const TEST_AIO_NGINX_HOSTNAME = getEnvVar('TEST_AIO_NGINX_HOSTNAME');
 const TEST_AIO_NGINX_PORT_HTTP = +getEnvVar('TEST_AIO_NGINX_PORT_HTTP');

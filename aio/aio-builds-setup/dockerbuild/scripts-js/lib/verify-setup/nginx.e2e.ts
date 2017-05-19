@@ -246,7 +246,7 @@ describe(`nginx`, () => {
 
     describe(`${host}/*`, () => {
 
-      it('should respond with 404 for unkown URLs (even if the resource exists)', done => {
+      it('should respond with 404 for unknown URLs (even if the resource exists)', done => {
         ['index.html', 'foo.js', 'foo/index.html'].forEach(relFilePath => {
           const absFilePath = path.join(h.buildsDir, relFilePath);
           h.writeFile(absFilePath, {content: `File: /${relFilePath}`});

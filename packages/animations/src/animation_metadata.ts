@@ -530,7 +530,7 @@ export function state(name: string, styles: AnimationStyleMetadata): AnimationSt
  * destination, keyframes can describe how each style entry is applied and at what point within the
  * animation arc (much like CSS Keyframe Animations do).
  *
- * For each `style()` entry an `offset` value can be set. Doing so allows to specifiy at what
+ * For each `style()` entry an `offset` value can be set. Doing so allows to specify at what
  * percentage of the animate time the styles will be applied.
  *
  * ```typescript

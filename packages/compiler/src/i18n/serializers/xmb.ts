@@ -15,7 +15,7 @@ import * as xml from './xml_helper';
 const _MESSAGES_TAG = 'messagebundle';
 const _MESSAGE_TAG = 'msg';
 const _PLACEHOLDER_TAG = 'ph';
-const _EXEMPLE_TAG = 'ex';
+const _EXAMPLE_TAG = 'ex';
 const _SOURCE_TAG = 'source';
 
 const _DOCTYPE = `<!ELEMENT messagebundle (msg)*>
@@ -115,14 +115,14 @@ class _Visitor implements i18n.Visitor {
   }
 
   visitTagPlaceholder(ph: i18n.TagPlaceholder, context?: any): xml.Node[] {
-    const startEx = new xml.Tag(_EXEMPLE_TAG, {}, [new xml.Text(`<${ph.tag}>`)]);
+    const startEx = new xml.Tag(_EXAMPLE_TAG, {}, [new xml.Text(`<${ph.tag}>`)]);
     const startTagPh = new xml.Tag(_PLACEHOLDER_TAG, {name: ph.startName}, [startEx]);
     if (ph.isVoid) {
       // void tags have no children nor closing tags
       return [startTagPh];
     }
 
-    const closeEx = new xml.Tag(_EXEMPLE_TAG, {}, [new xml.Text(`</${ph.tag}>`)]);
+    const closeEx = new xml.Tag(_EXAMPLE_TAG, {}, [new xml.Text(`</${ph.tag}>`)]);
     const closeTagPh = new xml.Tag(_PLACEHOLDER_TAG, {name: ph.closeName}, [closeEx]);
 
     return [startTagPh, ...this.serialize(ph.children), closeTagPh];
@@ -156,7 +156,7 @@ class ExampleVisitor implements xml.IVisitor {
     if (tag.name === _PLACEHOLDER_TAG) {
       if (!tag.children || tag.children.length == 0) {
         const exText = new xml.Text(tag.attrs['name'] || '...');
-        tag.children = [new xml.Tag(_EXEMPLE_TAG, {}, [exText])];
+        tag.children = [new xml.Tag(_EXAMPLE_TAG, {}, [exText])];
       }
     } else if (tag.children) {
       tag.children.forEach(node => node.visit(this));

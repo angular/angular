@@ -71,7 +71,7 @@ describe('CodeComponent', () => {
 
   describe('pretty printing', () => {
     it('should format a one-line code sample', () => {
-      // 'pln' spans are a tell-tale for syntax highlighing
+      // 'pln' spans are a tell-tale for syntax highlighting
       const spans = codeComponentDe.nativeElement.querySelectorAll('span.pln');
       expect(spans.length).toBeGreaterThan(0, 'formatted spans');
     });

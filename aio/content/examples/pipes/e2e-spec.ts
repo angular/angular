@@ -85,7 +85,7 @@ describe('Pipes', function () {
       return resetEle.click();
     })
     .then(function() {
-       expect(flyingHeroesEle.count()).toEqual(2, 'reset should restore orginal flying heroes');
+       expect(flyingHeroesEle.count()).toEqual(2, 'reset should restore original flying heroes');
     });
   });
 
