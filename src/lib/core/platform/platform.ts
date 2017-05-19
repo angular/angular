@@ -14,25 +14,27 @@ export class Platform {
   isBrowser: boolean = typeof document === 'object' && !!document;
 
   /** Layout Engines */
-  EDGE = /(edge)/i.test(navigator.userAgent);
-  TRIDENT = /(msie|trident)/i.test(navigator.userAgent);
+  EDGE = this.isBrowser && /(edge)/i.test(navigator.userAgent);
+  TRIDENT = this.isBrowser && /(msie|trident)/i.test(navigator.userAgent);
 
   // EdgeHTML and Trident mock Blink specific things and need to be excluded from this check.
-  BLINK = !!((window as any).chrome || hasV8BreakIterator) && !!CSS && !this.EDGE && !this.TRIDENT;
+  BLINK = this.isBrowser &&
+      (!!((window as any).chrome || hasV8BreakIterator) && !!CSS && !this.EDGE && !this.TRIDENT);
 
   // Webkit is part of the userAgent in EdgeHTML, Blink and Trident. Therefore we need to
   // ensure that Webkit runs standalone and is not used as another engine's base.
-  WEBKIT = /AppleWebKit/i.test(navigator.userAgent) && !this.BLINK && !this.EDGE && !this.TRIDENT;
+  WEBKIT = this.isBrowser &&
+      /AppleWebKit/i.test(navigator.userAgent) && !this.BLINK && !this.EDGE && !this.TRIDENT;
 
   /** Browsers and Platform Types */
-  IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+  IOS = this.isBrowser && /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
 
   // It's difficult to detect the plain Gecko engine, because most of the browsers identify
   // them self as Gecko-like browsers and modify the userAgent's according to that.
   // Since we only cover one explicit Firefox case, we can simply check for Firefox
   // instead of having an unstable check for Gecko.
-  FIREFOX = /(firefox|minefield)/i.test(navigator.userAgent);
+  FIREFOX = this.isBrowser && /(firefox|minefield)/i.test(navigator.userAgent);
 
   // Trident on mobile adds the android platform to the userAgent to trick detections.
-  ANDROID = /android/i.test(navigator.userAgent) && !this.TRIDENT;
+  ANDROID = this.isBrowser && /android/i.test(navigator.userAgent) && !this.TRIDENT;
 }
