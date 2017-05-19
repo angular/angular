@@ -36,17 +36,18 @@ export class CodeGenerator {
       public host: ts.CompilerHost, private compiler: compiler.AotCompiler,
       private ngCompilerHost: CompilerHost) {}
 
-  codegen(): Promise<any> {
+  codegen(): Promise<string[]> {
     return this.compiler
         .compileAll(this.program.getSourceFiles().map(
             sf => this.ngCompilerHost.getCanonicalFileName(sf.fileName)))
         .then(generatedModules => {
-          generatedModules.forEach(generatedModule => {
+          return generatedModules.map(generatedModule => {
             const sourceFile = this.program.getSourceFile(generatedModule.srcFileUrl);
             const emitPath = this.ngCompilerHost.calculateEmitPath(generatedModule.genFileUrl);
             const source = GENERATED_META_FILES.test(emitPath) ? generatedModule.source :
                                                                  generatedModule.source;
             this.host.writeFile(emitPath, source, false, () => {}, [sourceFile]);
+            return emitPath;
           });
         });
   }
