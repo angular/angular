@@ -326,7 +326,7 @@ The revised `AppComponent` template should look like this:
 ## What changed?
 As [before](tutorial/toh-pt2), whenever a user clicks on a hero name,
 the hero detail appears below the hero list.
-But now the `HeroDetailView` is presenting those details.
+But now the `HeroDetailComponent` is presenting those details.
 
 Refactoring the original `AppComponent` into two components yields benefits, both now and in the future:
 
