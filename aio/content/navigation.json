@@ -484,7 +484,6 @@
   ],
 
   "docVersions": [
-    { "title": "v4.0.0", "url": null },
-    { "title": "v2",     "url": "https://v2.angular.io" }
+    { "title": "v2", "url": "https://v2.angular.io" }
   ]
 }

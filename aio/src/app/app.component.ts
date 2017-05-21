@@ -13,6 +13,8 @@ import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
 import { SearchService } from 'app/search/search.service';
 import { SwUpdateNotificationsService } from 'app/sw-updates/sw-update-notifications.service';
 
+import { combineLatest } from 'rxjs/observable/combineLatest';
+
 const sideNavView = 'SideNav';
 
 @Component({
@@ -139,13 +141,20 @@ export class AppComponent implements OnInit {
       this.sideNavToggle(this.isSideBySide ? openSideNav : false);
     });
 
+    // Compute the version picker list from the current version and the versions in the navigation map
+    combineLatest(
+      this.navigationService.versionInfo.map(versionInfo => ({ title: versionInfo.raw, url: null })),
+      this.navigationService.navigationViews.map(views => views['docVersions']),
+      (currentVersion, otherVersions) => [currentVersion, ...otherVersions])
+      .subscribe(versions => {
+        this.docVersions = versions;
+        this.currentDocVersion = this.docVersions[0];
+      });
+
     this.navigationService.navigationViews.subscribe(views => {
-      this.docVersions  = views['docVersions']  || [];
       this.footerNodes  = views['Footer']  || [];
       this.sideNavNodes = views['SideNav'] || [];
       this.topMenuNodes = views['TopBar']  || [];
-
-      this.currentDocVersion = this.docVersions[0];
     });
 
     this.navigationService.versionInfo.subscribe( vi => this.versionInfo = vi );
