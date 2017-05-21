@@ -210,14 +210,14 @@ describe('AppComponent', () => {
 
     it('should pick first (current) version by default', () => {
       const versionSelector = sidenav.querySelector('select');
-      expect(versionSelector.value).toEqual(TestHttp.docVersions[0].title);
+      expect(versionSelector.value).toEqual(component.versionInfo.raw);
       expect(versionSelector.selectedIndex).toEqual(0);
     });
 
     // Older docs versions have an href
     it('should navigate when change to a version with an href', () => {
       component.onDocVersionChange(1);
-      expect(locationService.go).toHaveBeenCalledWith(TestHttp.docVersions[1].url);
+      expect(locationService.go).toHaveBeenCalledWith(TestHttp.docVersions[0].url);
     });
 
     // The current docs version should not have an href
@@ -612,7 +612,6 @@ class TestHttp {
   static versionFull = '4.0.0-local+sha.73808dd';
 
   static docVersions: NavigationNode[] = [
-    { title: 'v4.0.0' },
     { title: 'v2', url: 'https://v2.angular.io' }
   ];
 
