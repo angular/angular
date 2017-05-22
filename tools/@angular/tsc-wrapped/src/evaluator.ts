@@ -233,6 +233,15 @@ export class Evaluator {
       return !t.options.verboseInvalidExpression && isMetadataError(value);
     }
 
+    const resolveName = (name: string): MetadataValue => {
+      const reference = this.symbols.resolve(name);
+      if (reference === undefined) {
+        // Encode as a global reference. StaticReflector will check the reference.
+        return recordEntry({__symbolic: 'reference', name}, node);
+      }
+      return reference;
+    };
+
     switch (node.kind) {
       case ts.SyntaxKind.ObjectLiteralExpression:
         let obj: {[name: string]: any} = {};
@@ -253,7 +262,7 @@ export class Evaluator {
               }
               const propertyValue = isPropertyAssignment(assignment) ?
                   this.evaluateNode(assignment.initializer) :
-                  {__symbolic: 'reference', name: propertyName};
+                  resolveName(propertyName);
               if (isFoldableError(propertyValue)) {
                 error = propertyValue;
                 return true;  // Stop the forEachChild.
@@ -384,12 +393,7 @@ export class Evaluator {
       case ts.SyntaxKind.Identifier:
         const identifier = <ts.Identifier>node;
         const name = identifier.text;
-        const reference = this.symbols.resolve(name);
-        if (reference === undefined) {
-          // Encode as a global reference. StaticReflector will check the reference.
-          return recordEntry({__symbolic: 'reference', name}, node);
-        }
-        return reference;
+        return resolveName(name);
       case ts.SyntaxKind.TypeReference:
         const typeReferenceNode = <ts.TypeReferenceNode>node;
         const typeNameNode = typeReferenceNode.typeName;
