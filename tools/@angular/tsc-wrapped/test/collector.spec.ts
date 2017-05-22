@@ -721,6 +721,21 @@ describe('Collector', () => {
     });
   });
 
+  describe('regerssion', () => {
+    it('should be able to collect a short-hand property value', () => {
+      const source = ts.createSourceFile(
+          '', `
+        const children = { f1: 1 };
+        export const r = [
+          {path: ':locale', children}
+        ];
+      `,
+          ts.ScriptTarget.Latest, true);
+      const metadata = collector.getMetadata(source);
+      expect(metadata.metadata).toEqual({r: [{path: ':locale', children: {f1: 1}}]});
+    });
+  });
+
   function override(fileName: string, content: string) {
     host.overrideFile(fileName, content);
     host.addFile(fileName);
