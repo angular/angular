@@ -166,7 +166,7 @@ class CalendarBodyWithDisabledCells {
     return cell;
   }));
   allowDisabledSelection = false;
-  selected: Date;
+  selected: number;
 }
 
 
