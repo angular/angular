@@ -1,14 +1,24 @@
-import {Component, ViewEncapsulation, ElementRef} from '@angular/core';
+import {Component, ViewEncapsulation, ElementRef, ChangeDetectionStrategy} from '@angular/core';
 
+const changeDetectionKey = 'mdDemoChangeDetection';
 
 @Component({
   selector: 'home',
   template: `
     <p>Welcome to the development demos for Angular Material!</p>
-    <p>Open the sidenav to select a demo. </p>
+    <p>Open the sidenav to select a demo.</p>
   `
 })
 export class Home {}
+
+@Component({
+  moduleId: module.id,
+  selector: 'demo-app-on-push',
+  template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
+})
+export class DemoAppOnPush {}
 
 @Component({
   moduleId: module.id,
@@ -22,7 +32,7 @@ export class Home {}
 })
 export class DemoApp {
   dark = false;
-
+  changeDetectionStrategy: string;
   navItems = [
     {name: 'Autocomplete', route: 'autocomplete'},
     {name: 'Button', route: 'button'},
@@ -58,7 +68,12 @@ export class DemoApp {
   ];
 
   constructor(private _element: ElementRef) {
-
+    // Some browsers will throw when trying to access localStorage in incognito.
+    try {
+      this.changeDetectionStrategy = window.localStorage.getItem(changeDetectionKey) || 'Default';
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   toggleFullscreen() {
@@ -71,6 +86,17 @@ export class DemoApp {
       elem.mozRequestFullScreen();
     } else if (elem.msRequestFullScreen) {
       elem.msRequestFullScreen();
+    }
+  }
+
+  toggleChangeDetection() {
+    try {
+      this.changeDetectionStrategy = this.changeDetectionStrategy === 'Default' ?
+          'OnPush' : 'Default';
+      window.localStorage.setItem(changeDetectionKey, this.changeDetectionStrategy);
+      window.location.reload();
+    } catch (error) {
+      console.error(error);
     }
   }
 }

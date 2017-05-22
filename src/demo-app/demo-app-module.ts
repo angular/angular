@@ -4,7 +4,7 @@ import {HttpModule} from '@angular/http';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {RouterModule} from '@angular/router';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {DemoApp, Home} from './demo-app/demo-app';
+import {DemoApp, Home, DemoAppOnPush} from './demo-app/demo-app';
 import {
   FullscreenOverlayContainer,
   MaterialModule,
@@ -69,6 +69,7 @@ import {DatepickerDemo} from './datepicker/datepicker-demo';
     CheckboxDemo,
     DatepickerDemo,
     DemoApp,
+    DemoAppOnPush,
     DialogDemo,
     GesturesDemo,
     GridListDemo,

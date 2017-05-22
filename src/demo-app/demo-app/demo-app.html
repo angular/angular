@@ -25,18 +25,29 @@
       </button>
       <div class="demo-toolbar">
         <h1>Angular Material Demos</h1>
-        <button md-button (click)="dark = !dark">{{dark ? 'Light' : 'Dark'}} theme</button>
-        <button md-button (click)="toggleFullscreen()" title="Toggle fullscreen">
-          Fullscreen
-        </button>
-        <button md-button (click)="root.dir = (root.dir == 'rtl' ? 'ltr' : 'rtl')" title="Toggle between RTL and LTR">
-          {{root.dir.toUpperCase()}}
-        </button>
+        <div>
+          <button md-button (click)="dark = !dark">{{dark ? 'Light' : 'Dark'}} theme</button>
+          <button md-button (click)="toggleChangeDetection()" title="Toggle change detection">
+            Change detection: {{changeDetectionStrategy}}
+          </button>
+          <button md-button (click)="toggleFullscreen()" title="Toggle fullscreen">
+            Fullscreen
+          </button>
+          <button md-button (click)="root.dir = (root.dir == 'rtl' ? 'ltr' : 'rtl')" title="Toggle between RTL and LTR">
+            {{root.dir.toUpperCase()}}
+          </button>
+        </div>
       </div>
     </md-toolbar>
 
-    <div #root="$implicit" dir="ltr" class="demo-content">
-      <router-outlet></router-outlet>
+    <div #root="$implicit" dir="ltr" class="demo-content" [ngSwitch]="changeDetectionStrategy">
+      <div *ngSwitchDefault>
+        <router-outlet></router-outlet>
+      </div>
+
+      <demo-app-on-push *ngSwitchCase="'OnPush'">
+        <router-outlet></router-outlet>
+      </demo-app-on-push>
     </div>
   </div>
 </md-sidenav-container>
