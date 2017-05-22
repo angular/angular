@@ -363,7 +363,6 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
   getComputedStyle(element: any): any { return getComputedStyle(element); }
   // TODO(tbosch): move this into a separate environment class once we have it
-  setGlobalVar(path: string, value: any) { setValueOnPath(global, path, value); }
   supportsWebAnimation(): boolean {
     return typeof(<any>Element).prototype['animate'] === 'function';
   }
@@ -418,21 +417,4 @@ export function parseCookieValue(cookieStr: string, name: string): string|null {
     }
   }
   return null;
-}
-
-export function setValueOnPath(global: any, path: string, value: any) {
-  const parts = path.split('.');
-  let obj: any = global;
-  while (parts.length > 1) {
-    const name = parts.shift() !;
-    if (obj.hasOwnProperty(name) && obj[name] != null) {
-      obj = obj[name];
-    } else {
-      obj = obj[name] = {};
-    }
-  }
-  if (obj === undefined || obj === null) {
-    obj = {};
-  }
-  obj[parts.shift() !] = value;
 }
