@@ -33,6 +33,9 @@ export declare function discardPeriodicTasks(): void;
 export declare function fakeAsync(fn: Function): (...args: any[]) => any;
 
 /** @experimental */
+export declare function flush(maxTurns?: number): number;
+
+/** @experimental */
 export declare function flushMicrotasks(): void;
 
 /** @experimental */
