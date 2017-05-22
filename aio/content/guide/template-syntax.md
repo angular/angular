@@ -104,7 +104,7 @@ including:
 Other notable differences from JavaScript syntax include:
 
 * no support for the bitwise operators `|` and `&`
-* new [template expression operators](guide/template-syntax#expression-operators), such as `|` and `?.`
+* new [template expression operators](guide/template-syntax#expression-operators), such as `|`, `?.` and `!`.
 
 {@a expression-context}
 
@@ -1930,6 +1930,27 @@ It works perfectly with long property paths such as `a?.b?.c?.d`.
 <a href="#top-of-page">back to top</a>
 
 <hr/>
+
+{@a non-null-assertion-operator}
+
+### The non-null assertion operator ( <span class="syntax">!</span> )
+
+The Angular **non-null assertion operator (`!`)** is a post-fix operator that asserts that the preceeding property path
+will never be null or undefined.
+
+Unlike the [_safe navigation operator_](guide/template-syntax#safe-navigation-operator "Safe naviation operator (?.)")
+the **non-null assertion operator** does not guard against a null or undefined; rather, it informs the TypeScript type
+checker that there is something it might be unaware of that ensures that this property path is defined. This prevents
+TypeScript from reporting that the path is possibly null or undefined when strict null checking is enabled.
+
+For example, if you use [*ngIf](guide/template-syntax#ngIf) to check if `hero` is defined, you can assert the uses of
+`hero` are defined in the body of the template.
+
+<code-example path="template-syntax/src/app/app.component.html" region="non-null-assertion-1" title="src/app/app.component.html" linenums="false">
+</code-example>
+
+The Angular **non-null assertion operator (`!`)** is like TypeScript's _non-null assertion operator (!)_
+introduced in [TypeScript 2.0](http://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html).
 
 ## Summary
 You've completed this survey of template syntax.
