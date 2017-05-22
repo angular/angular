@@ -101,4 +101,8 @@
     <button md-button>Check<md-icon class="md-24">favorite</md-icon></button>
     <button md-button>Last<md-icon>navigate_before</md-icon></button>
   </section>
+  <section>
+    <button md-raised-button [disabled]="toggleDisable" (click)="toggleDisable = true">Disable</button>
+    <button md-button [disabled]="!toggleDisable" (click)="toggleDisable = false">Disable</button>
+  </section>
 </div>

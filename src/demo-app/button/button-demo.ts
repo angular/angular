@@ -10,4 +10,5 @@ import {Component} from '@angular/core';
 export class ButtonDemo {
   isDisabled: boolean = false;
   clickCounter: number = 0;
+  toggleDisable: boolean = false;
 }
