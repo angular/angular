@@ -1,4 +1,4 @@
-<div *ngIf="hasToc" [class.collapsed]="isCollapsed">
+<div *ngIf="hasToc" class="toc-inner" [class.collapsed]="isCollapsed">
   <button *ngIf="!isEmbedded" type="button" class="toc-heading"
     (click)="toTop()" title="Top of page">Contents</button>
 
