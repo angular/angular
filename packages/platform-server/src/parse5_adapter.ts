@@ -9,7 +9,7 @@
 const parse5 = require('parse5');
 
 import {ɵglobal as global} from '@angular/core';
-import {ɵDomAdapter as DomAdapter, ɵsetRootDomAdapter as setRootDomAdapter, ɵsetValueOnPath as setValueOnPath} from '@angular/platform-browser';
+import {ɵDomAdapter as DomAdapter, ɵsetRootDomAdapter as setRootDomAdapter} from '@angular/platform-browser';
 import {SelectorMatcher, CssSelector} from '@angular/compiler';
 
 let treeAdapter: any;
@@ -611,7 +611,6 @@ export class Parse5DomAdapter extends DomAdapter {
   getComputedStyle(el: any): any { throw 'not implemented'; }
   setData(el: any, name: string, value: string) { this.setAttribute(el, 'data-' + name, value); }
   // TODO(tbosch): move this into a separate environment class once we have it
-  setGlobalVar(path: string, value: any) { setValueOnPath(global, path, value); }
   supportsWebAnimation(): boolean { return false; }
   performanceNow(): number { return Date.now(); }
   getAnimationPrefix(): string { return ''; }

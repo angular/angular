@@ -7,15 +7,15 @@
  */
 
 import * as core from '@angular/core';
-import {getDOM} from '../dom_adapter';
+import {exportNgVar} from '../util';
 
 const CORE_TOKENS = {
   'ApplicationRef': core.ApplicationRef,
   'NgZone': core.NgZone,
 };
 
-const INSPECT_GLOBAL_NAME = 'ng.probe';
-const CORE_TOKENS_GLOBAL_NAME = 'ng.coreTokens';
+const INSPECT_GLOBAL_NAME = 'probe';
+const CORE_TOKENS_GLOBAL_NAME = 'coreTokens';
 
 /**
  * Returns a {@link DebugElement} for the given native DOM element, or
@@ -36,9 +36,8 @@ export class NgProbeToken {
 
 export function _createNgProbe(extraTokens: NgProbeToken[], coreTokens: core.NgProbeToken[]): any {
   const tokens = (extraTokens || []).concat(coreTokens || []);
-  getDOM().setGlobalVar(INSPECT_GLOBAL_NAME, inspectNativeElement);
-  getDOM().setGlobalVar(
-      CORE_TOKENS_GLOBAL_NAME, {...CORE_TOKENS, ..._ngProbeTokensToMap(tokens || [])});
+  exportNgVar(INSPECT_GLOBAL_NAME, inspectNativeElement);
+  exportNgVar(CORE_TOKENS_GLOBAL_NAME, {...CORE_TOKENS, ..._ngProbeTokensToMap(tokens || [])});
   return () => inspectNativeElement;
 }
 
