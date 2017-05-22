@@ -633,6 +633,80 @@ describe('Collector', () => {
     });
   });
 
+  describe('with interpolations', () => {
+    function createSource(text: string): ts.SourceFile {
+      return ts.createSourceFile('', text, ts.ScriptTarget.Latest, true);
+    }
+
+    function e(expr: string, prefix?: string) {
+      const source = createSource(`${prefix || ''} export let value = ${expr};`);
+      const metadata = collector.getMetadata(source);
+      return expect(metadata.metadata['value']);
+    }
+
+    it('should be able to collect a raw interpolated string',
+       () => { e('`simple value`').toBe('simple value'); });
+
+    it('should be able to interpolate a single value',
+       () => { e('`${foo}`', 'const foo = "foo value"').toBe('foo value'); });
+
+    it('should be able to interpolate multiple values', () => {
+      e('`foo:${foo}, bar:${bar}, end`', 'const foo = "foo"; const bar = "bar";')
+          .toBe('foo:foo, bar:bar, end');
+    });
+
+    it('should be able to interpolate with an imported reference', () => {
+      e('`external:${external}`', 'import {external} from "./external";').toEqual({
+        __symbolic: 'binop',
+        operator: '+',
+        left: 'external:',
+        right: {
+          __symbolic: 'reference',
+          module: './external',
+          name: 'external',
+        }
+      });
+    });
+
+    it('should simplify a redundant template', () => {
+      e('`${external}`', 'import {external} from "./external";')
+          .toEqual({__symbolic: 'reference', module: './external', name: 'external'});
+    });
+
+    it('should be able to collect complex template with imported references', () => {
+      e('`foo:${foo}, bar:${bar}, end`', 'import {foo, bar} from "./external";').toEqual({
+        __symbolic: 'binop',
+        operator: '+',
+        left: {
+          __symbolic: 'binop',
+          operator: '+',
+          left: {
+            __symbolic: 'binop',
+            operator: '+',
+            left: {
+              __symbolic: 'binop',
+              operator: '+',
+              left: 'foo:',
+              right: {__symbolic: 'reference', module: './external', name: 'foo'}
+            },
+            right: ', bar:'
+          },
+          right: {__symbolic: 'reference', module: './external', name: 'bar'}
+        },
+        right: ', end'
+      });
+    });
+
+    it('should reject a tagged literal', () => {
+      e('tag`some value`').toEqual({
+        __symbolic: 'error',
+        message: 'Tagged template expressions are not supported in metadata',
+        line: 0,
+        character: 20
+      });
+    });
+  });
+
   describe('in strict mode', () => {
     it('should throw if an error symbol is collecting a reference to a non-exported symbol', () => {
       const source = program.getSourceFile('/local-symbol-ref.ts');
