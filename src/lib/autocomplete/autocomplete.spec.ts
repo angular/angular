@@ -878,6 +878,22 @@ describe('MdAutocomplete', () => {
 
     });
 
+    it('should restore focus to the input when clicking to select a value', async(() => {
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      fixture.whenStable().then(() => {
+        const option = overlayContainerElement.querySelector('md-option') as HTMLElement;
+
+        // Focus the option manually since the synthetic click may not do it.
+        option.focus();
+        option.click();
+        fixture.detectChanges();
+
+        expect(document.activeElement).toBe(input, 'Expected focus to be restored to the input.');
+      });
+    }));
+
   });
 
   describe('Fallback positions', () => {
