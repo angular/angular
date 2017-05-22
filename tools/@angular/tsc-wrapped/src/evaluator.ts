@@ -178,6 +178,9 @@ export class Evaluator {
         case ts.SyntaxKind.NullKeyword:
         case ts.SyntaxKind.TrueKeyword:
         case ts.SyntaxKind.FalseKeyword:
+        case ts.SyntaxKind.TemplateHead:
+        case ts.SyntaxKind.TemplateMiddle:
+        case ts.SyntaxKind.TemplateTail:
           return true;
         case ts.SyntaxKind.ParenthesizedExpression:
           const parenthesizedExpression = <ts.ParenthesizedExpression>node;
@@ -211,6 +214,10 @@ export class Evaluator {
             return true;
           }
           break;
+        case ts.SyntaxKind.TemplateExpression:
+          const templateExpression = <ts.TemplateExpression>node;
+          return templateExpression.templateSpans.every(
+              span => this.isFoldableWorker(span.expression, folding));
       }
     }
     return false;
@@ -436,9 +443,11 @@ export class Evaluator {
         }
         return recordEntry(typeReference, node);
       case ts.SyntaxKind.NoSubstitutionTemplateLiteral:
-        return (<ts.LiteralExpression>node).text;
       case ts.SyntaxKind.StringLiteral:
-        return (<ts.StringLiteral>node).text;
+      case ts.SyntaxKind.TemplateHead:
+      case ts.SyntaxKind.TemplateTail:
+      case ts.SyntaxKind.TemplateMiddle:
+        return (<ts.LiteralLikeNode>node).text;
       case ts.SyntaxKind.NumericLiteral:
         return parseFloat((<ts.LiteralExpression>node).text);
       case ts.SyntaxKind.AnyKeyword:
@@ -575,6 +584,36 @@ export class Evaluator {
       case ts.SyntaxKind.FunctionExpression:
       case ts.SyntaxKind.ArrowFunction:
         return recordEntry(errorSymbol('Function call not supported', node), node);
+      case ts.SyntaxKind.TaggedTemplateExpression:
+        return recordEntry(
+            errorSymbol('Tagged template expressions are not supported in metadata', node), node);
+      case ts.SyntaxKind.TemplateExpression:
+        const templateExpression = <ts.TemplateExpression>node;
+        if (this.isFoldable(node)) {
+          return templateExpression.templateSpans.reduce(
+              (previous, current) => previous + <string>this.evaluateNode(current.expression) +
+                  <string>this.evaluateNode(current.literal),
+              this.evaluateNode(templateExpression.head));
+        } else {
+          return templateExpression.templateSpans.reduce((previous, current) => {
+            const expr = this.evaluateNode(current.expression);
+            const literal = this.evaluateNode(current.literal);
+            if (isFoldableError(expr)) return expr;
+            if (isFoldableError(literal)) return literal;
+            if (typeof previous === 'string' && typeof expr === 'string' &&
+                typeof literal === 'string') {
+              return previous + expr + literal;
+            }
+            let result = expr;
+            if (previous !== '') {
+              result = {__symbolic: 'binop', operator: '+', left: previous, right: expr};
+            }
+            if (literal != '') {
+              result = {__symbolic: 'binop', operator: '+', left: result, right: literal};
+            }
+            return result;
+          }, this.evaluateNode(templateExpression.head));
+        }
     }
     return recordEntry(errorSymbol('Expression form not supported', node), node);
   }
