@@ -43,7 +43,7 @@ export function composeRelease(packageName: string) {
 
 /** Builds the bundles for the specified package. */
 export async function buildPackageBundles(entryFile: string, packageName: string) {
-  let moduleName = `ng.material.${packageName}`;
+  let moduleName = `ng.${packageName}`;
 
   // List of paths to the package bundles.
   let fesm2015File = join(DIST_BUNDLES, `${packageName}.js`);
