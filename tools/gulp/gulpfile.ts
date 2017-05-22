@@ -1,4 +1,4 @@
-import {createPackageBuildTasks} from './util/package-tasks';
+import {createPackageBuildTasks} from './packaging/build-tasks-gulp';
 
 /** Create gulp tasks to build the different packages in the project. */
 createPackageBuildTasks('cdk');

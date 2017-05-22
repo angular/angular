@@ -48,15 +48,15 @@ export type BundleConfig = {
   moduleName: string;
 };
 
-/** Creates a rollup bundles of the Material components.*/
+/** Creates a rollup bundle of a specified JavaScript file.*/
 export function createRollupBundle(config: BundleConfig): Promise<any> {
-  let bundleOptions = {
+  const bundleOptions = {
     context: 'this',
     external: Object.keys(ROLLUP_GLOBALS),
     entry: config.entry
   };
 
-  let writeOptions = {
+  const writeOptions = {
     // Keep the moduleId empty because we don't want to force developers to a specific moduleId.
     moduleId: '',
     moduleName: config.moduleName || 'ng.material',

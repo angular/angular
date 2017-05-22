@@ -3,8 +3,8 @@ import {join} from 'path';
 import {writeFileSync} from 'fs';
 import {Bundler} from 'scss-bundle';
 import {sequenceTask} from '../util/task_helpers';
-import {composeRelease} from '../util/package-build';
 import {COMPONENTS_DIR, DIST_MATERIAL, DIST_RELEASES} from '../constants';
+import {composeRelease} from '../packaging/build-release';
 
 // There are no type definitions available for these imports.
 const gulpRename = require('gulp-rename');

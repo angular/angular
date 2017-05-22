@@ -1,5 +1,7 @@
-import {readFileSync} from 'fs';
+import {readFileSync, writeFileSync} from 'fs';
 import {basename} from 'path';
+import {sync as glob} from 'glob';
+import {join} from 'path';
 
 /**
  * Recurse through a parsed metadata.json file and inline all html and css.
@@ -31,4 +33,25 @@ export function inlineMetadataResources(metadata: any, componentResources: Map<s
       }
     }
   }
+}
+
+
+/** Inlines HTML and CSS resources into `metadata.json` files. */
+export function inlinePackageMetadataFiles(packagePath: string) {
+  // Create a map of fileName -> fullFilePath. This is needed because the templateUrl and
+  // styleUrls for each component use just the filename because, in the source, the component
+  // and the resources live in the same directory.
+  const componentResources = new Map<string, string>();
+
+  glob(join(packagePath, '**/*.+(html|css)')).forEach(resourcePath => {
+    componentResources.set(basename(resourcePath), resourcePath);
+  });
+
+  // Find all metadata files. For each one, parse the JSON content, inline the resources, and
+  // reserialize and rewrite back to the original location.
+  glob(join(packagePath, '**/*.metadata.json')).forEach(path => {
+    const metadata = JSON.parse(readFileSync(path, 'utf-8'));
+    inlineMetadataResources(metadata, componentResources);
+    writeFileSync(path , JSON.stringify(metadata), 'utf-8');
+  });
 }
