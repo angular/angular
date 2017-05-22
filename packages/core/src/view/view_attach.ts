@@ -36,7 +36,7 @@ function attachProjectedView(vcElementData: ElementData, view: ViewData) {
   // - add a view to template._projectedViews only 1x throughout its lifetime,
   //   and remove it not until the view is destroyed.
   //   (hard, as when a parent view is attached/detached we would need to attach/detach all
-  //    nested projected views as well, even accross component boundaries).
+  //    nested projected views as well, even across component boundaries).
   // - don't track the insertion order of views in the projected views array
   //   (hard, as when the views of the same template are inserted different view containers)
   view.state |= ViewState.IsProjectedView;

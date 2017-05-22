@@ -1356,7 +1356,7 @@ Verify that you have the following structure:
 
 
 
-## The road you’ve travelled
+## The road you’ve traveled
 Here's what you achieved in this page:
 
 * You added the Angular router to navigate among different components.

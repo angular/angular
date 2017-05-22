@@ -704,7 +704,7 @@ Note: the 4.0.0-rc.0 release on npm accidentally omitted one bug fix, so we cut 
 * **compiler:** improve error message for unknown elements ([#14373](https://github.com/angular/angular/issues/14373)) ([2c6dab9](https://github.com/angular/angular/commit/2c6dab9))
 * **compiler:** improve error messages in aot compiler ([#14333](https://github.com/angular/angular/issues/14333)) ([a696f4a](https://github.com/angular/angular/commit/a696f4a))
 * **compiler:** improve error msg for unknown properties on ([#14373](https://github.com/angular/angular/issues/14373)) ([e5a144d](https://github.com/angular/angular/commit/e5a144d)), closes [#14070](https://github.com/angular/angular/issues/14070)
-* **core:** Remove ChangeDetectorRef Paramter from KeyValueDifferFactory and IterableDifferFactory ([#14311](https://github.com/angular/angular/issues/14311)) ([45cc444](https://github.com/angular/angular/commit/45cc444))
+* **core:** Remove ChangeDetectorRef Parameter from KeyValueDifferFactory and IterableDifferFactory ([#14311](https://github.com/angular/angular/issues/14311)) ([45cc444](https://github.com/angular/angular/commit/45cc444))
 * **core:** suppress a Closure Compiler warning ([#14484](https://github.com/angular/angular/issues/14484)) ([2f2b65b](https://github.com/angular/angular/commit/2f2b65b))
 * **forms:** getRawValue should correctly work with nested FormGroups/Arrays ([#12964](https://github.com/angular/angular/issues/12964)) ([1ece736](https://github.com/angular/angular/commit/1ece736)), closes [#12963](https://github.com/angular/angular/issues/12963)
 * **http:** REVERT: remove dots from jsonp callback name ([#13219](https://github.com/angular/angular/issues/13219)) ([4676df5](https://github.com/angular/angular/commit/4676df5))
@@ -1308,7 +1308,7 @@ We are adding more tests to our test suite to catch these kinds of problems befo
 * **common:** make sure the plural category exists ([#13169](https://github.com/angular/angular/issues/13169)) ([82c81cd](https://github.com/angular/angular/commit/82c81cd)), closes [#12379](https://github.com/angular/angular/issues/12379)
 * **compiler:** include the summaries of reexported modules / directives / pipes ([#13196](https://github.com/angular/angular/issues/13196)) ([75d1617](https://github.com/angular/angular/commit/75d1617))
 * **compiler:** serialize any `StaticSymbol` correctly, not matter in which context ([5614c4f](https://github.com/angular/angular/commit/5614c4f))
-* **compiler:** short-circut expressions with an index ([#13263](https://github.com/angular/angular/issues/13263)) ([f31c947](https://github.com/angular/angular/commit/f31c947)), closes [#13254](https://github.com/angular/angular/issues/13254)
+* **compiler:** short-circuit expressions with an index ([#13263](https://github.com/angular/angular/issues/13263)) ([f31c947](https://github.com/angular/angular/commit/f31c947)), closes [#13254](https://github.com/angular/angular/issues/13254)
 * **core:** display framework version on bootstrapped component ([#13252](https://github.com/angular/angular/issues/13252)) ([16efb13](https://github.com/angular/angular/commit/16efb13))
 * **facade:** cache original format string ([#12764](https://github.com/angular/angular/issues/12764)) ([a132287](https://github.com/angular/angular/commit/a132287))
 * **http:** set the default Accept header ([#12989](https://github.com/angular/angular/issues/12989)) ([986abbe](https://github.com/angular/angular/commit/986abbe)), closes [#6354](https://github.com/angular/angular/issues/6354)
@@ -1827,7 +1827,7 @@ Note: 2.1.0-beta.0 release also contains all the changes present in the 2.0.1 re
 * **common:** allow float for DatePipe input ([#10687](https://github.com/angular/angular/issues/10687)) ([712c7d5](https://github.com/angular/angular/commit/712c7d5))
 * **common:** remove bidi control chars in DatePipe output ([#10870](https://github.com/angular/angular/issues/10870)) ([9198038](https://github.com/angular/angular/commit/9198038)), closes [#10080](https://github.com/angular/angular/issues/10080)
 * **core:** report errors for missing host-level referenced animations ([#10650](https://github.com/angular/angular/issues/10650)) ([f12d519](https://github.com/angular/angular/commit/f12d519))
-* **core:** assign an overriden name to constructor named constructor ([#11043](https://github.com/angular/angular/issues/11043)) ([bd510cc](https://github.com/angular/angular/commit/bd510cc)), closes [#10545](https://github.com/angular/angular/issues/10545)
+* **core:** assign an overridden name to constructor named constructor ([#11043](https://github.com/angular/angular/issues/11043)) ([bd510cc](https://github.com/angular/angular/commit/bd510cc)), closes [#10545](https://github.com/angular/angular/issues/10545)
 * **core:** don't strip sourceMappingURL in shimmed stylesheets ([#9664](https://github.com/angular/angular/issues/9664)) ([bc6d1c8](https://github.com/angular/angular/commit/bc6d1c8))
 * **core:** FactoryProvider's deps property should be optional ([eb7d8c7](https://github.com/angular/angular/commit/eb7d8c7))
 * **core/testing:** have fakeAsync use Proxy zone. ([#10797](https://github.com/angular/angular/issues/10797)) ([8a5eb08](https://github.com/angular/angular/commit/8a5eb08)), closes [#10503](https://github.com/angular/angular/issues/10503)
@@ -2083,7 +2083,7 @@ prefix using `animate-` must now be preixed using `bind-animate-`.
 * **compiler:** allow to use pipes inside of `*ngIf` ([#10452](https://github.com/angular/angular/issues/10452)) ([8efbcc9](https://github.com/angular/angular/commit/8efbcc9)), closes [#9746](https://github.com/angular/angular/issues/9746)
 * **compiler:** auto declare `entryComponents` recursively ([a32c4ad](https://github.com/angular/angular/commit/a32c4ad)), closes [#10348](https://github.com/angular/angular/issues/10348)
 * **compiler:** Collector collects enum values. ([#9967](https://github.com/angular/angular/issues/9967)) ([e6b2443](https://github.com/angular/angular/commit/e6b2443))
-* **compiler:** Fixed ?. operator to short-circut execution ([#9965](https://github.com/angular/angular/issues/9965)) ([4ec2a30](https://github.com/angular/angular/commit/4ec2a30)), closes [#9965](https://github.com/angular/angular/issues/9965)
+* **compiler:** Fixed ?. operator to short-circuit execution ([#9965](https://github.com/angular/angular/issues/9965)) ([4ec2a30](https://github.com/angular/angular/commit/4ec2a30)), closes [#9965](https://github.com/angular/angular/issues/9965)
 * **compiler:** Generates function expressions as returning any ([#9980](https://github.com/angular/angular/issues/9980)) ([eb5763c](https://github.com/angular/angular/commit/eb5763c))
 * **compiler:** Ignore references to declared modules and unneeded types ([#9776](https://github.com/angular/angular/issues/9776)) ([4ef8689](https://github.com/angular/angular/commit/4ef8689))
 * **compiler:** Missing metadata files should result in  undefined ([#9704](https://github.com/angular/angular/issues/9704)) ([30bec78](https://github.com/angular/angular/commit/30bec78)), closes [#9678](https://github.com/angular/angular/issues/9678)
@@ -2817,7 +2817,7 @@ Parse5Adapter is an implementation detail not a public API
 * **platform-server:** correctly import private DOMTestComponentRenderer ([7afee97](https://github.com/angular/angular/commit/7afee97d1b837cdc808b0a5e5206c306f5700263))
 * **playground:** fix WebWorker single_thread example ([29c77df](https://github.com/angular/angular/commit/29c77df))
 * **query:** set fixed `@ViewChild` / `@ContentChild` right after the view is created ([c3d2459](https://github.com/angular/angular/commit/c3d2459)), closes [#9040](https://github.com/angular/angular/issues/9040)
-* **renderer:** remove unecessary setElementStyles method ([e504d4e](https://github.com/angular/angular/commit/e504d4e)), closes [#9000](https://github.com/angular/angular/issues/9000) [#9009](https://github.com/angular/angular/issues/9009)
+* **renderer:** remove unnecessary setElementStyles method ([e504d4e](https://github.com/angular/angular/commit/e504d4e)), closes [#9000](https://github.com/angular/angular/issues/9000) [#9009](https://github.com/angular/angular/issues/9009)
 * **Renderer:** update signatures to make RenderDebugInfo optional ([b7b5678](https://github.com/angular/angular/commit/b7b5678)), closes [#8466](https://github.com/angular/angular/issues/8466) [#8859](https://github.com/angular/angular/issues/8859)
 * **Request:** Change Request.text's return type to string ([b2e0946](https://github.com/angular/angular/commit/b2e0946)), closes [#8138](https://github.com/angular/angular/issues/8138)
 * **router:** Added pushState fallback for IE 9 browser. ([bab6023](https://github.com/angular/angular/commit/bab6023)), closes [#6506](https://github.com/angular/angular/issues/6506) [#7929](https://github.com/angular/angular/issues/7929)
@@ -3761,7 +3761,7 @@ componentFixture.elementRef;
 
 ### Features
 
-* **core/application_ref:** Allow asyncronous app initializers. ([df3074f](https://github.com/angular/angular/commit/df3074f)), closes [#5929](https://github.com/angular/angular/issues/5929) [#6063](https://github.com/angular/angular/issues/6063)
+* **core/application_ref:** Allow asynchronous app initializers. ([df3074f](https://github.com/angular/angular/commit/df3074f)), closes [#5929](https://github.com/angular/angular/issues/5929) [#6063](https://github.com/angular/angular/issues/6063)
 * **dart/transform:** DirectiveProcessor: do not process generated files ([78bfdf7](https://github.com/angular/angular/commit/78bfdf7)), closes [#6517](https://github.com/angular/angular/issues/6517)
 * **dart/transform:** Promote missing Directive warning to error ([47a3b4d](https://github.com/angular/angular/commit/47a3b4d)), closes [#6519](https://github.com/angular/angular/issues/6519) [#6568](https://github.com/angular/angular/issues/6568)
 * **test:** allow tests to specify the platform and application providers used ([b0cebdb](https://github.com/angular/angular/commit/b0cebdb)), closes [#5351](https://github.com/angular/angular/issues/5351) [#5585](https://github.com/angular/angular/issues/5585) [#5975](https://github.com/angular/angular/issues/5975)
@@ -4872,7 +4872,7 @@ This is not the case any more. To access that binding, remove the constraint.
 * Before:
 @Component({properties: ['one'], events: ['two']})
 * After:
-@Componet({inputs: ['one'], outputs: ['two']})
+@Component({inputs: ['one'], outputs: ['two']})
 
 * Before:
 class A {@Property() one; @Event() two;}
@@ -5623,7 +5623,7 @@ Internal changes / design changes:
 * **XHRImpl:** file:/// and IE9 bugs ([cd735c4](https://github.com/angular/angular/commit/cd735c4))
 * **annotations:** swap DirectiveArgs & ComponentArgs ([dcc4bc2](https://github.com/angular/angular/commit/dcc4bc2))
 * **benchmarks:** add waits for naive scrolling benchmark to ensure loading ([d8929c1](https://github.com/angular/angular/commit/d8929c1)), closes [#1706](https://github.com/angular/angular/issues/1706)
-* **benchpress:** do not throw on unkown frame timestamp event ([ed3af5f](https://github.com/angular/angular/commit/ed3af5f)), closes [#2622](https://github.com/angular/angular/issues/2622)
+* **benchpress:** do not throw on unknown frame timestamp event ([ed3af5f](https://github.com/angular/angular/commit/ed3af5f)), closes [#2622](https://github.com/angular/angular/issues/2622)
 * **change detection:** preserve memoized results from pure functions ([5beaf6d](https://github.com/angular/angular/commit/5beaf6d))
 * **compiler:** make text interpolation more robust ([9d4111d](https://github.com/angular/angular/commit/9d4111d)), closes [#2591](https://github.com/angular/angular/issues/2591)
 * **docs:** Fix docs for Directive.compileChildren ([9700e80](https://github.com/angular/angular/commit/9700e80))
@@ -5636,7 +5636,7 @@ Internal changes / design changes:
 
 ### Features
 
-* **CSSClass:** add support for string and array expresions ([8c993dc](https://github.com/angular/angular/commit/8c993dc)), closes [#2025](https://github.com/angular/angular/issues/2025)
+* **CSSClass:** add support for string and array expressions ([8c993dc](https://github.com/angular/angular/commit/8c993dc)), closes [#2025](https://github.com/angular/angular/issues/2025)
 * **compiler:** detect dangling property bindings ([d7b9345](https://github.com/angular/angular/commit/d7b9345)), closes [#2598](https://github.com/angular/angular/issues/2598)
 * **element_injector:** support multiple injectables with the same token ([c899b0a](https://github.com/angular/angular/commit/c899b0a))
 * **host:** limits host properties to renames ([92ffc46](https://github.com/angular/angular/commit/92ffc46))
@@ -5669,7 +5669,7 @@ Till now it was possible to have a binding to a non-existing property,
 ex.: `<div [foo]="exp">`. From now on this is compilation error - any
 property binding needs to have at least one associated property:
 eaither on an HTML element or on any directive associated with a
-given element (directives' properites need to be declared using the
+given element (directives' properties need to be declared using the
 `properties` field in the `@Directive` / `@Component` annotation).
 
 * - `Compiler.compile` has been removed, the only way to compile

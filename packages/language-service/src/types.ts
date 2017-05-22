@@ -25,7 +25,7 @@ export {
 
 /**
  * The information `LanguageService` needs from the `LanguageServiceHost` to describe the content of
- * a template and the langauge context the template is in.
+ * a template and the language context the template is in.
  *
  * A host interface; see `LanguageSeriviceHost`.
  *
@@ -285,7 +285,7 @@ export interface Diagnostic {
 export type Diagnostics = Diagnostic[];
 
 /**
- * A section of hover text. If the text is code then langauge should be provided.
+ * A section of hover text. If the text is code then language should be provided.
  * Otherwise the text is assumed to be Markdown text that will be sanitized.
  */
 export interface HoverTextSection {
@@ -295,7 +295,7 @@ export interface HoverTextSection {
   readonly text: string;
 
   /**
-   * The langauge of the source if `text` is a souce code fragment.
+   * The language of the source if `text` is a souce code fragment.
    */
   readonly language?: string;
 }
@@ -306,7 +306,7 @@ export interface HoverTextSection {
 export interface Hover {
   /**
    * The hover text to display for the symbol at the hover location. If the text includes
-   * source code, the section will specify which langauge it should be interpreted as.
+   * source code, the section will specify which language it should be interpreted as.
    */
   readonly text: HoverTextSection[];
 
@@ -330,7 +330,7 @@ export interface Hover {
  * beginning of the file reference by `fileName`.
  *
  * This interface and all interfaces and types marked as `LanguageService` types, describe  a
- * particlar implementation of the Angular language service and is not intented to be
+ * particlar implementation of the Angular language service and is not intended to be
  * implemented. Adding members to the interface will not be considered a breaking change as
  * defined by SemVer.
  *

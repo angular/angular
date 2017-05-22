@@ -263,7 +263,7 @@ You can edit the hero's name and see the changes reflected immediately in the `<
 
 
 
-## The road you've travelled
+## The road you've traveled
 
 Take stock of what you've built.
 

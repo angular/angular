@@ -227,7 +227,7 @@ function heroModuleSetup() {
   // #enddocregion route-no-id
 
   // #docregion route-bad-id
-  describe('when navigate to non-existant hero id', () => {
+  describe('when navigate to non-existent hero id', () => {
     beforeEach( async(() => {
       activatedRoute.testParams = { id: 99999 };
       createComponent();

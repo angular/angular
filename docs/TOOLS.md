@@ -45,7 +45,7 @@ computing the changes being slow, or due to the act of applying those changes
 to the UI. For your application to be performant it is important that the
 process of computing changes is very fast. For best results it should be under
 3 milliseconds in order to leave room for the application logic, the UI updates
-and browser's rendering pipeline to fit withing the 16 millisecond frame
+and browser's rendering pipeline to fit within the 16 millisecond frame
 (assuming the 60 FPS target frame rate).
 
 Change detection profiler repeatedly performs change detection without invoking

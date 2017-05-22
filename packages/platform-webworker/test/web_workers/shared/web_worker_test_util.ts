@@ -113,7 +113,7 @@ export class MockMessageBusSink implements MessageBusSink {
 
 /**
  * Mock implementation of the {@link MessageBus} for tests.
- * Runs syncronously, and does not support running within the zone.
+ * Runs synchronously, and does not support running within the zone.
  */
 export class MockMessageBus extends MessageBus {
   constructor(public sink: MockMessageBusSink, public source: MockMessageBusSource) { super(); }

@@ -450,7 +450,7 @@ Here's the complete `app.component.ts` as of now:
 
 
 
-## The road you've travelled
+## The road you've traveled
 
 Here's what you achieved in this page:
 

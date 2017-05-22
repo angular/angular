@@ -216,7 +216,7 @@ export enum BuiltinType {
 }
 
 /**
- * The kinds of defintion.
+ * The kinds of definition.
  *
  * @experimental
  */

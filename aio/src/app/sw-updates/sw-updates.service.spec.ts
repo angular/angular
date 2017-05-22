@@ -39,7 +39,7 @@ describe('SwUpdatesService', () => {
     expect(service).toBeTruthy();
   }));
 
-  it('should immediatelly check for updates when instantiated', run(() => {
+  it('should immediately check for updates when instantiated', run(() => {
     expect(sw.checkForUpdate).toHaveBeenCalled();
   }));
 

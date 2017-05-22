@@ -214,7 +214,7 @@ on custom validation directives.
 
 * The `#name` template variable is gone because the app no longer refers to the Angular control for this element.
 
-* Binding to the new `formErrors.name` property is sufficent to display all name validation error messages.
+* Binding to the new `formErrors.name` property is sufficient to display all name validation error messages.
 
 
 {@a component-class}

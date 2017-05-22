@@ -16,7 +16,7 @@ import {EventEmitter, NgZone} from '@angular/core';
  * given channel to one MessageBusSink are received on the same channel
  * by the corresponding MessageBusSource.
  *
- * @experimental WebWorker support in Angular is currenlty experimental.
+ * @experimental WebWorker support in Angular is currently experimental.
  */
 export abstract class MessageBus implements MessageBusSource, MessageBusSink {
   /**
@@ -51,7 +51,7 @@ export abstract class MessageBus implements MessageBusSource, MessageBusSink {
 }
 
 /**
- * @experimental WebWorker support in Angular is currenlty experimental.
+ * @experimental WebWorker support in Angular is currently experimental.
  */
 export interface MessageBusSource {
   /**
@@ -77,14 +77,14 @@ export interface MessageBusSource {
 }
 
 /**
- * @experimental WebWorker support in Angular is currenlty experimental.
+ * @experimental WebWorker support in Angular is currently experimental.
  */
 export interface MessageBusSink {
   /**
    * Sets up a new channel on the MessageBusSink.
    * MUST be called before calling to on the channel.
    * If runInZone is true the sink will buffer messages and send only once the zone exits.
-   * if runInZone is false the sink will send messages immediatly.
+   * if runInZone is false the sink will send messages immediately.
    */
   initChannel(channel: string, runInZone: boolean): void;
 

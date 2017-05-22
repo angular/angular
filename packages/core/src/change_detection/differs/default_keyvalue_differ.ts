@@ -94,7 +94,7 @@ export class DefaultKeyValueDiffer<K, V> implements KeyValueDiffer<K, V>, KeyVal
 
   /**
    * Check the current state of the map vs the previous.
-   * The algorithm is optimised for when the keys do no change.
+   * The algorithm is optimized for when the keys do no change.
    */
   check(map: Map<any, any>|{[k: string]: any}): boolean {
     this._reset();

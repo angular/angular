@@ -38,7 +38,7 @@ describe('ParamsMap', () => {
     expect(map.get('name')).toEqual(null);
   });
 
-  it('should return `[]` when a mulitple valued element is absent', () => {
+  it('should return `[]` when a multiple valued element is absent', () => {
     const map = convertToParamMap({});
     expect(map.getAll('name')).toEqual([]);
   });

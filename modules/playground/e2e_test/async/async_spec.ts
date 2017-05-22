@@ -49,7 +49,7 @@ describe('async', () => {
     timeout.$('.cancel').click();
     browser.ignoreSynchronization = false;
 
-    // whenStable should be called since the async action is cancelled. The
+    // whenStable should be called since the async action is canceled. The
     // count should still be 0;
     expect(timeout.$('.val').getText()).toEqual('0');
   });

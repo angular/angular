@@ -815,7 +815,7 @@ class SubTimelineBuilder extends TimelineBuilder {
         When the keyframe is stretched then it means that the delay before the animation
         starts is gone. Instead the first keyframe is placed at the start of the animation
         and it is then copied to where it starts when the original delay is over. This basically
-        means nothing animates during that delay, but the styles are still renderered. For this
+        means nothing animates during that delay, but the styles are still rendered. For this
         to work the original offset values that exist in the original keyframes must be "warped"
         so that they can take the new keyframe + delay into account.
 

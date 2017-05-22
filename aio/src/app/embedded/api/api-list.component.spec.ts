@@ -97,7 +97,7 @@ describe('ApiListComponent', () => {
     });
   });
 
-  describe('initial critera from location', () => {
+  describe('initial criteria from location', () => {
     let locationService: TestLocationService;
 
     beforeEach(() => {

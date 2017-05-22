@@ -64,7 +64,7 @@ the focus is on testing applications written with Angular.
 
   * [Spying on the real service](guide/testing#service-spy)
   * [Synchronous tests](guide/testing#sync-tests)
-  * [The _async_ funciton in it](guide/testing#async)
+  * [The _async_ function in it](guide/testing#async)
   * [_whenStable_](guide/testing#when-stable)
   * [The _fakeAsync_ function](guide/testing#fake-async)
   * [The _tick_ function](guide/testing#tick)
