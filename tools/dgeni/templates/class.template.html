@@ -5,9 +5,9 @@
 
 {%- if class.directiveSelectors -%}
 <div class="docs-api-directive-selectors">
-  <span class="docs-api-class-selector-label">selector:</span>
-  {% for s in class.directiveSelectors %}
-    <span class="docs-api-class-selector-name">{$ s $}</span>
+  <span class="docs-api-class-selector-label">Selector:</span>
+  {% for selector in class.directiveSelectors %}
+    <span class="docs-api-class-selector-name">{$ selector $}</span>
   {% endfor %}
 </div>
 {%- endif -%}
