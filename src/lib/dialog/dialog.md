@@ -56,12 +56,23 @@ export class YourDialog {
 ### Dialog content
 Several directives are available to make it easier to structure your dialog content:
 
-| Name                  | Description                                                              |
-|-----------------------|--------------------------------------------------------------------------|
-| `md-dialog-title`     | \[Attr] Dialog title, applied to a heading element (e.g., `<h1>`, `<h2>`)|
-| `<md-dialog-content>` | Primary scrollable content of the dialog                                 |
-| `<md-dialog-actions>` | Container for action buttons at the bottom of the dialog                 |
-| `md-dialog-close`     | \[Attr] Added to a `<button>`, makes the button close the dialog on click|
+| Name                  | Description                                                                                                   |
+|-----------------------|---------------------------------------------------------------------------------------------------------------|
+| `md-dialog-title`     | \[Attr] Dialog title, applied to a heading element (e.g., `<h1>`, `<h2>`)                                     |
+| `<md-dialog-content>` | Primary scrollable content of the dialog                                                                      |
+| `<md-dialog-actions>` | Container for action buttons at the bottom of the dialog                                                      |
+| `md-dialog-close`     | \[Attr] Added to a `<button>`, makes the button close the dialog with an optional result from the bound value.|
+
+For example:
+```html
+<h2 md-dialog-title>Delete all</h2>
+<md-dialog-content>Are you sure?</md-dialog-content>
+<md-dialog-actions>
+  <button md-button md-dialog-close>No</button>
+  <!-- Can optionally provide a result for the closing dialog. -->
+  <button md-button [md-dialog-close]="true">Yes</button>
+</md-dialog-actions>
+```
 
 Once a dialog opens, the dialog will automatically focus the first tabbable element.
 

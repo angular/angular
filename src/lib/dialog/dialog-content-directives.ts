@@ -8,7 +8,7 @@ import {MdDialogRef} from './dialog-ref';
 @Directive({
   selector: 'button[md-dialog-close], button[mat-dialog-close]',
   host: {
-    '(click)': 'dialogRef.close()',
+    '(click)': 'dialogRef.close(dialogResult)',
     '[attr.aria-label]': 'ariaLabel',
     'type': 'button', // Prevents accidental form submits.
   }
@@ -16,6 +16,12 @@ import {MdDialogRef} from './dialog-ref';
 export class MdDialogClose {
   /** Screenreader label for the button. */
   @Input('aria-label') ariaLabel: string = 'Close dialog';
+
+  /** Dialog close input. */
+  @Input('md-dialog-close') dialogResult: any;
+
+  /** Dialog close input for compatibility mode. */
+  @Input('mat-dialog-close') set _matDialogClose(value: any) { this.dialogResult = value; }
 
   constructor(public dialogRef: MdDialogRef<any>) { }
 }

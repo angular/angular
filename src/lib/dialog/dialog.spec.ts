@@ -600,6 +600,18 @@ describe('MdDialog', () => {
       expect(button.getAttribute('type')).toBe('button');
     });
 
+    it('should return the [md-dialog-close] result when clicking on the close button', async(() => {
+      let afterCloseCallback = jasmine.createSpy('afterClose callback');
+      dialogRef.afterClosed().subscribe(afterCloseCallback);
+
+      (overlayContainerElement.querySelector('button.close-with-true') as HTMLElement).click();
+      viewContainerFixture.detectChanges();
+
+      viewContainerFixture.whenStable().then(() => {
+        expect(afterCloseCallback).toHaveBeenCalledWith(true);
+      });
+    }));
+
   });
 });
 
@@ -714,6 +726,7 @@ class PizzaMsg {
     <md-dialog-content>Lorem ipsum dolor sit amet.</md-dialog-content>
     <md-dialog-actions>
       <button md-dialog-close [aria-label]="closeButtonAriaLabel">Close</button>
+      <button class="close-with-true" [md-dialog-close]="true">Close and return true</button>
       <div md-dialog-close>Should not close</div>
     </md-dialog-actions>
   `
