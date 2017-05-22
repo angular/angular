@@ -12,6 +12,9 @@ cd $(dirname ${0})/../..
 PACKAGES=(cdk material)
 REPOSITORIES=(cdk-builds material2-builds)
 
+# Command line arguments.
+COMMAND_ARGS=${*}
+
 # Function to publish artifacts of a package to Github.
 #   @param ${1} Name of the package
 #   @param ${2} Repository name of the package.
@@ -30,8 +33,10 @@ publishPackage() {
   repoUrl="https://github.com/angular/${packageRepo}.git"
   repoDir="tmp/${packageRepo}"
 
-  # Create a release of the current repository.
-  $(npm bin)/gulp ${packageName}:build-release:clean
+  if [[ ! ${COMMAND_ARGS} == *--no-build* ]]; then
+    # Create a release of the current repository.
+    $(npm bin)/gulp ${packageName}:build-release:clean
+  fi
 
   # Prepare cloning the builds repository
   rm -rf ${repoDir}

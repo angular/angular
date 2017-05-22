@@ -11,8 +11,10 @@ repoPath="/tmp/material2-docs-content"
 repoUrl="https://github.com/angular/material2-docs-content"
 examplesSource="./dist/docs/examples"
 
-$(npm bin)/gulp material-examples:build-release:clean
-$(npm bin)/gulp docs
+if [[ ! ${*} == *--no-build* ]]; then
+  $(npm bin)/gulp material-examples:build-release:clean
+  $(npm bin)/gulp docs
+fi
 
 # Get git meta info for commit
 commitSha="$(git rev-parse --short HEAD)"

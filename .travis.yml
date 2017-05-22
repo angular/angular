@@ -57,4 +57,4 @@ after_success:
 cache:
   directories:
     - node_modules
-    - $HOME/.pub-cache
+    - tools/screenshot-test/functions/node_modules
