@@ -23,6 +23,8 @@ import {
 } from '../core/keyboard/keycodes';
 import {MdDatepickerIntl} from './datepicker-intl';
 import {MdNativeDateModule} from '../core/datetime/index';
+import {NoConflictStyleCompatibilityMode} from '../core';
+import {MdButtonModule} from '../button/index';
 
 
 // When constructing a Date, the month is zero-based. This can be confusing, since people are
@@ -35,6 +37,7 @@ describe('MdCalendar', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
+        MdButtonModule,
         MdNativeDateModule,
       ],
       declarations: [
@@ -444,8 +447,6 @@ describe('MdCalendar', () => {
     let fixture: ComponentFixture<CalendarWithMinMax>;
     let testComponent: CalendarWithMinMax;
     let calendarElement: HTMLElement;
-    let prevButton: HTMLButtonElement;
-    let nextButton: HTMLButtonElement;
     let calendarInstance: MdCalendar<Date>;
 
     beforeEach(() => {
@@ -453,9 +454,6 @@ describe('MdCalendar', () => {
 
       let calendarDebugElement = fixture.debugElement.query(By.directive(MdCalendar));
       calendarElement = calendarDebugElement.nativeElement;
-      prevButton =
-          calendarElement.querySelector('.mat-calendar-previous-button') as HTMLButtonElement;
-      nextButton = calendarElement.querySelector('.mat-calendar-next-button') as HTMLButtonElement;
       calendarInstance = calendarDebugElement.componentInstance;
       testComponent = fixture.componentInstance;
     });
@@ -478,6 +476,9 @@ describe('MdCalendar', () => {
       testComponent.startAt = new Date(2016, FEB, 1);
       fixture.detectChanges();
 
+      let prevButton =
+          calendarElement.querySelector('.mat-calendar-previous-button') as HTMLButtonElement;
+
       expect(prevButton.disabled).toBe(false, 'previous button should not be disabled');
       expect(calendarInstance._activeDate).toEqual(new Date(2016, FEB, 1));
 
@@ -496,6 +497,9 @@ describe('MdCalendar', () => {
     it('should not go forward past max date', () => {
       testComponent.startAt = new Date(2017, DEC, 1);
       fixture.detectChanges();
+
+      let nextButton =
+          calendarElement.querySelector('.mat-calendar-next-button') as HTMLButtonElement;
 
       expect(nextButton.disabled).toBe(false, 'next button should not be disabled');
       expect(calendarInstance._activeDate).toEqual(new Date(2017, DEC, 1));
@@ -581,6 +585,37 @@ describe('MdCalendar', () => {
         expect(testComponent.selected).toBeNull();
       });
     });
+  });
+});
+
+describe('MdCalendar in compatibility mode', () => {
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        MdButtonModule,
+        MdNativeDateModule,
+        NoConflictStyleCompatibilityMode,
+      ],
+      declarations: [
+        MdCalendar,
+        MdCalendarBody,
+        MdMonthView,
+        MdYearView,
+
+        // Test components.
+        StandardCalendar,
+      ],
+      providers: [
+        MdDatepickerIntl,
+      ],
+    });
+
+    TestBed.compileComponents();
+  }));
+
+  it('should not throw on creation', () => {
+    let fixture = TestBed.createComponent(StandardCalendar);
+    expect(() => fixture.detectChanges()).not.toThrow();
   });
 });
 
