@@ -10,190 +10,191 @@ Browser support and polyfills guide.
 
 Angular supports most recent browsers. This includes the following specific versions:
 
+<div class="horizontal-container">
+  <table class="horizontal">
 
-<table>
+    <tr>
 
-  <tr>
+      <th>
+        Chrome
+      </th>
 
-    <th>
-      Chrome
-    </th>
+      <th>
+        Firefox
+      </th>
 
-    <th>
-      Firefox
-    </th>
+      <th>
+        Edge
+      </th>
 
-    <th>
-      Edge
-    </th>
+      <th>
+        IE
+      </th>
 
-    <th>
-      IE
-    </th>
+      <th>
+        Safari
+      </th>
 
-    <th>
-      Safari
-    </th>
+      <th>
+        iOS
+      </th>
 
-    <th>
-      iOS
-    </th>
+      <th>
+        Android
+      </th>
 
-    <th>
-      Android
-    </th>
+      <th>
+        IE Mobile
+      </th>
 
-    <th>
-      IE Mobile
-    </th>
+    </tr>
 
-  </tr>
+    <tr>
 
-  <tr>
+      <td>
+        latest
+      </td>
 
-    <td>
-      latest
-    </td>
+      <td>
+        latest
+      </td>
 
-    <td>
-      latest
-    </td>
+      <td>
+        14
+      </td>
 
-    <td>
-      14
-    </td>
+      <td>
+        11
+      </td>
 
-    <td>
-      11
-    </td>
+      <td>
+        10
+      </td>
 
-    <td>
-      10
-    </td>
+      <td>
+        10
+      </td>
 
-    <td>
-      10
-    </td>
+      <td>
+        Marshmallow (6.0)
+      </td>
 
-    <td>
-      Marshmallow (6.0)
-    </td>
+      <td>
+        11
+      </td>
 
-    <td>
-      11
-    </td>
+    </tr>
 
-  </tr>
+    <tr>
 
-  <tr>
+      <td>
 
-    <td>
+      </td>
 
-    </td>
+      <td>
 
-    <td>
+      </td>
 
-    </td>
+      <td>
+        13
+      </td>
 
-    <td>
-      13
-    </td>
+      <td>
+        10
+      </td>
 
-    <td>
-      10
-    </td>
+      <td>
+        9
+      </td>
 
-    <td>
-      9
-    </td>
+      <td>
+        9
+      </td>
 
-    <td>
-      9
-    </td>
+      <td>
+        Lollipop<br>(5.0, 5.1)
+      </td>
 
-    <td>
-      Lollipop<br>(5.0, 5.1)
-    </td>
+      <td>
 
-    <td>
+      </td>
 
-    </td>
+    </tr>
 
-  </tr>
+    <tr>
 
-  <tr>
+      <td>
 
-    <td>
+      </td>
 
-    </td>
+      <td>
 
-    <td>
+      </td>
 
-    </td>
+      <td>
 
-    <td>
+      </td>
 
-    </td>
+      <td>
+        9
+      </td>
 
-    <td>
-      9
-    </td>
+      <td>
+        8
+      </td>
 
-    <td>
-      8
-    </td>
+      <td>
+        8
+      </td>
 
-    <td>
-      8
-    </td>
+      <td>
+        KitKat<br>(4.4)
+      </td>
 
-    <td>
-      KitKat<br>(4.4)
-    </td>
+      <td>
 
-    <td>
+      </td>
 
-    </td>
+    </tr>
 
-  </tr>
+    <tr>
 
-  <tr>
+      <td>
 
-    <td>
+      </td>
 
-    </td>
+      <td>
 
-    <td>
+      </td>
 
-    </td>
+      <td>
 
-    <td>
+      </td>
 
-    </td>
+      <td>
 
-    <td>
+      </td>
 
-    </td>
+      <td>
+        7
+      </td>
 
-    <td>
-      7
-    </td>
+      <td>
+        7
+      </td>
 
-    <td>
-      7
-    </td>
+      <td>
+        Jelly Bean<br>(4.1, 4.2, 4.3)
+      </td>
 
-    <td>
-      Jelly Bean<br>(4.1, 4.2, 4.3)
-    </td>
+      <td>
 
-    <td>
+      </td>
 
-    </td>
+    </tr>
 
-  </tr>
-
-</table>
+  </table>
+</div>
 
 
 

@@ -59,12 +59,11 @@ table {
         display: block;
       }
 
-    tr td:first-child {
-      @media (max-width: 480px) {
-        background-color: $lightgray;
+      tr td:first-child {
+        @media (max-width: 480px) {
+          background-color: $lightgray;
+        }
       }
-    }
-      
     }
 
     th {
@@ -87,6 +86,17 @@ table {
 
     }
   }
+  &.horizontal {
+    tbody {
+      td, th {
+        display: table-cell;
+      }
+    }
+  }
+}
+
+.horizontal-container {
+  overflow-x: scroll;
 }
 
 #cheatsheet table tbody td {
