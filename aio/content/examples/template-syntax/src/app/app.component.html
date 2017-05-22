@@ -803,6 +803,15 @@ The null hero's name is {{nullHero && nullHero.name}}
   <!-- #enddocregion safe-6 -->
 </div>
 
+<div>
+  <!-- #docregion non-null-assertion-1 -->
+  <!--No hero, no text -->
+  <div *ngIf="hero">
+    The hero's name is {{hero!.name}}
+  </div>
+  <!-- #enddocregion non-null-assertion-1 -->
+</div>
+
 <a class="to-toc" href="#toc">top</a>
 
 <!-- TODO: discuss this in the Style binding section -->
