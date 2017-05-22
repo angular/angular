@@ -25,6 +25,8 @@ const HTML = `
 <p i18n="ph names"><br><img><div></div></p>
 <p i18n="@@baz">{ count, plural, =0 { { sex, select, other {<p>deeply nested</p>}} }}</p>
 <p i18n>{ count, plural, =0 { { sex, select, other {<p>deeply nested</p>}} }}</p>
+<p i18n>multi
+lines</p>
 `;
 
 const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
@@ -112,6 +114,15 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
           <context context-type="linenumber">11</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="fcfa109b0e152d4c217dbc02530be0bcb8123ad1" datatype="html">
+        <source>multi
+lines</source>
+        <target/>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+      </trans-unit>
     </body>
   </file>
 </xliff>
@@ -195,6 +206,16 @@ const LOAD_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
         <source>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<x id="START_PARAGRAPH" ctype="x-p"/>deeply nested<x id="CLOSE_PARAGRAPH" ctype="x-p"/>} } } }</source>
         <target>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<x id="START_PARAGRAPH" ctype="x-p"/>profondément imbriqué<x id="CLOSE_PARAGRAPH" ctype="x-p"/>} } } }</target>
       </trans-unit>
+      <trans-unit id="fcfa109b0e152d4c217dbc02530be0bcb8123ad1" datatype="html">
+        <source>multi
+lines</source>
+        <target>multi
+lignes</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+      </trans-unit>
     </body>
   </file>
 </xliff>
@@ -243,7 +264,10 @@ export function main(): void {
           'baz':
               '{VAR_PLURAL, plural, =0 {[{VAR_SELECT, select, other {[<ph name="START_PARAGRAPH"/>, profondément imbriqué, <ph name="CLOSE_PARAGRAPH"/>]}},  ]}}',
           '0e16a673a5a7a135c9f7b957ec2c5c6f6ee6e2c4':
-              '{VAR_PLURAL, plural, =0 {[{VAR_SELECT, select, other {[<ph name="START_PARAGRAPH"/>, profondément imbriqué, <ph name="CLOSE_PARAGRAPH"/>]}},  ]}}'
+              '{VAR_PLURAL, plural, =0 {[{VAR_SELECT, select, other {[<ph' +
+              ' name="START_PARAGRAPH"/>, profondément imbriqué, <ph name="CLOSE_PARAGRAPH"/>]}},  ]}}',
+          'fcfa109b0e152d4c217dbc02530be0bcb8123ad1': `multi
+lignes`
         });
       });
 

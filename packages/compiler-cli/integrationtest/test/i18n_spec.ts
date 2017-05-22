@@ -88,17 +88,25 @@ const EXPECTED_XLIFF2 = `<?xml version="1.0" encoding="UTF-8" ?>
       <notes>
         <note category="description">desc</note>
         <note category="meaning">meaning</note>
+        <note category="location">src/basic.ts:1</note>
       </notes>
       <segment>
         <source>translate me</source>
       </segment>
     </unit>
     <unit id="3492007542396725315">
+      <notes>
+        <note category="location">src/basic.ts:5</note>
+        <note category="location">src/entry_components.ts:1</note>
+      </notes>
       <segment>
         <source>Welcome</source>
       </segment>
     </unit>
     <unit id="126808141597411718">
+      <notes>
+        <note category="location">node_modules/third_party/other_comp.d.ts:1,2</note>
+      </notes>
       <segment>
         <source>other-3rdP-component
 multi-lines</source>
