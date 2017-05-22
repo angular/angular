@@ -53,6 +53,11 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   }
 
   init(): void {
+    this._buildPlayer();
+    this._preparePlayerBeforeStart();
+  }
+
+  private _buildPlayer(): void {
     if (this._initialized) return;
     this._initialized = true;
 
@@ -82,14 +87,16 @@ export class WebAnimationsPlayer implements AnimationPlayer {
 
     this._player = this._triggerWebAnimation(this.element, keyframes, this.options);
     this._finalKeyframe = keyframes.length ? keyframes[keyframes.length - 1] : {};
+    this._player.addEventListener('finish', () => this._onFinish());
+  }
 
+  private _preparePlayerBeforeStart() {
     // this is required so that the player doesn't start to animate right away
     if (this._delay) {
       this._resetDomPlayerState();
     } else {
       this._player.pause();
     }
-    this._player.addEventListener('finish', () => this._onFinish());
   }
 
   /** @internal */
@@ -108,7 +115,7 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   onDestroy(fn: () => void): void { this._onDestroyFns.push(fn); }
 
   play(): void {
-    this.init();
+    this._buildPlayer();
     if (!this.hasStarted()) {
       this._onStartFns.forEach(fn => fn());
       this._onStartFns = [];
