@@ -123,16 +123,18 @@ export function copyStyles(
 
 export function setStyles(element: any, styles: ɵStyleData) {
   if (element['style']) {
-    Object.keys(styles).forEach(prop => element.style[prop] = styles[prop]);
+    Object.keys(styles).forEach(prop => {
+      const camelProp = dashCaseToCamelCase(prop);
+      element.style[camelProp] = styles[prop];
+    });
   }
 }
 
 export function eraseStyles(element: any, styles: ɵStyleData) {
   if (element['style']) {
     Object.keys(styles).forEach(prop => {
-      // IE requires '' instead of null
-      // see https://github.com/angular/angular/issues/7916
-      element.style[prop] = '';
+      const camelProp = dashCaseToCamelCase(prop);
+      element.style[camelProp] = '';
     });
   }
 }
@@ -205,4 +207,9 @@ export function mergeAnimationOptions(
     });
   }
   return destination;
+}
+
+const DASH_CASE_REGEXP = /-+([a-z0-9])/g;
+export function dashCaseToCamelCase(input: string): string {
+  return input.replace(DASH_CASE_REGEXP, (...m: any[]) => m[1].toUpperCase());
 }

@@ -997,9 +997,8 @@ export class TransitionAnimationEngine {
     });
 
     allConsumedElements.forEach(element => addClass(element, NG_ANIMATING_CLASSNAME));
-
     const player = optimizeGroupPlayer(allNewPlayers);
-    player.onDone(() => {
+    player.onDestroy(() => {
       allConsumedElements.forEach(element => removeClass(element, NG_ANIMATING_CLASSNAME));
       setStyles(rootElement, instruction.toStyles);
     });
