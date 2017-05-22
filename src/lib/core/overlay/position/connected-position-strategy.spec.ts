@@ -336,10 +336,12 @@ describe('ConnectedPositionStrategy', () => {
       const subscription = strategy.onPositionChange.subscribe(positionChangeHandler);
 
       strategy.apply(overlayElement);
+
+      const latestCall = positionChangeHandler.calls.mostRecent();
+
       expect(positionChangeHandler).toHaveBeenCalled();
-      expect(positionChangeHandler.calls.mostRecent().args[0])
-          .toEqual(jasmine.any(ConnectedOverlayPositionChange),
-              `Expected strategy to emit an instance of ConnectedOverlayPositionChange.`);
+      expect(latestCall.args[0] instanceof ConnectedOverlayPositionChange)
+          .toBe(true, `Expected strategy to emit an instance of ConnectedOverlayPositionChange.`);
 
       it('should pick the fallback position that shows the largest area of the element', () => {
         positionBuilder = new OverlayPositionBuilder(viewportRuler);

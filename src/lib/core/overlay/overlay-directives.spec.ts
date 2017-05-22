@@ -77,7 +77,7 @@ describe('Overlay directives', () => {
 
     let strategy =
         <ConnectedPositionStrategy> overlayDirective.overlayRef.getState().positionStrategy;
-    expect(strategy).toEqual(jasmine.any(ConnectedPositionStrategy));
+    expect(strategy instanceof ConnectedPositionStrategy).toBe(true);
 
     let positions = strategy.positions;
     expect(positions.length).toBeGreaterThan(0);
@@ -266,9 +266,11 @@ describe('Overlay directives', () => {
       fixture.detectChanges();
 
       expect(fixture.componentInstance.positionChangeHandler).toHaveBeenCalled();
-      expect(fixture.componentInstance.positionChangeHandler.calls.mostRecent().args[0])
-          .toEqual(jasmine.any(ConnectedOverlayPositionChange),
-              `Expected directive to emit an instance of ConnectedOverlayPositionChange.`);
+
+      const latestCall = fixture.componentInstance.positionChangeHandler.calls.mostRecent();
+
+      expect(latestCall.args[0] instanceof ConnectedOverlayPositionChange)
+          .toBe(true, `Expected directive to emit an instance of ConnectedOverlayPositionChange.`);
     });
 
     it('should emit attach and detach appropriately', () => {
@@ -278,9 +280,8 @@ describe('Overlay directives', () => {
       fixture.detectChanges();
 
       expect(fixture.componentInstance.attachHandler).toHaveBeenCalled();
-      expect(fixture.componentInstance.attachResult)
-          .toEqual(jasmine.any(HTMLElement),
-              `Expected pane to be populated with HTML elements when attach was called.`);
+      expect(fixture.componentInstance.attachResult instanceof HTMLElement)
+          .toBe(true, `Expected pane to be populated with HTML elements when attach was called.`);
       expect(fixture.componentInstance.detachHandler).not.toHaveBeenCalled();
 
       fixture.componentInstance.isOpen = false;

@@ -89,9 +89,8 @@ describe('MdSnackBar', () => {
 
     viewContainerFixture.detectChanges();
 
-    expect(snackBarRef.instance)
-      .toEqual(jasmine.any(SimpleSnackBar),
-               'Expected the snack bar content component to be SimpleSnackBar');
+    expect(snackBarRef.instance instanceof SimpleSnackBar)
+      .toBe(true, 'Expected the snack bar content component to be SimpleSnackBar');
     expect(snackBarRef.instance.snackBarRef)
       .toBe(snackBarRef, 'Expected the snack bar reference to be placed in the component instance');
 
@@ -113,9 +112,8 @@ describe('MdSnackBar', () => {
 
     viewContainerFixture.detectChanges();
 
-    expect(snackBarRef.instance)
-      .toEqual(jasmine.any(SimpleSnackBar),
-               'Expected the snack bar content component to be SimpleSnackBar');
+    expect(snackBarRef.instance instanceof SimpleSnackBar)
+      .toBe(true, 'Expected the snack bar content component to be SimpleSnackBar');
     expect(snackBarRef.instance.snackBarRef)
       .toBe(snackBarRef, 'Expected the snack bar reference to be placed in the component instance');
 
@@ -180,9 +178,8 @@ describe('MdSnackBar', () => {
     let config = {viewContainerRef: testViewContainerRef};
     let snackBarRef = snackBar.openFromComponent(BurritosNotification, config);
 
-    expect(snackBarRef.instance)
-      .toEqual(jasmine.any(BurritosNotification),
-               'Expected the snack bar content component to be BurritosNotification');
+    expect(snackBarRef.instance instanceof BurritosNotification)
+      .toBe(true, 'Expected the snack bar content component to be BurritosNotification');
     expect(overlayContainerElement.textContent.trim())
         .toBe('Burritos are on the way.',
               `Expected the overlay text content to be 'Burritos are on the way'`);
