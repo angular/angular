@@ -18,9 +18,11 @@ import {
   MenuPositionY
 } from './index';
 import {OverlayContainer} from '../core/overlay/overlay-container';
-import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
 import {Dir, LayoutDirection} from '../core/rtl/dir';
 import {extendObject} from '../core/util/object-extend';
+import {ESCAPE} from '../core/keyboard/keycodes';
+import {dispatchKeyboardEvent} from '../core/testing/dispatch-events';
+
 
 describe('MdMenu', () => {
   let overlayContainerElement: HTMLElement;
@@ -75,6 +77,18 @@ describe('MdMenu', () => {
 
     const backdrop = <HTMLElement>overlayContainerElement.querySelector('.cdk-overlay-backdrop');
     backdrop.click();
+    fixture.detectChanges();
+
+    expect(overlayContainerElement.textContent).toBe('');
+  });
+
+  it('should close the menu when pressing escape', () => {
+    const fixture = TestBed.createComponent(SimpleMenu);
+    fixture.detectChanges();
+    fixture.componentInstance.trigger.openMenu();
+
+    const panel = overlayContainerElement.querySelector('.mat-menu-panel');
+    dispatchKeyboardEvent(panel, 'keydown', ESCAPE);
     fixture.detectChanges();
 
     expect(overlayContainerElement.textContent).toBe('');

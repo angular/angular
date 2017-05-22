@@ -20,6 +20,8 @@ import {FocusKeyManager} from '../core/a11y/focus-key-manager';
 import {MdMenuPanel} from './menu-panel';
 import {Subscription} from 'rxjs/Subscription';
 import {transformMenu, fadeInItems} from './menu-animations';
+import {ESCAPE} from '../core/keyboard/keycodes';
+
 
 @Component({
   moduleId: module.id,
@@ -75,17 +77,6 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
   /** Whether the menu should overlap its trigger. */
   @Input() overlapTrigger = true;
 
-  ngAfterContentInit() {
-    this._keyManager = new FocusKeyManager(this.items).withWrap();
-    this._tabSubscription = this._keyManager.tabOut.subscribe(() => this._emitCloseEvent());
-  }
-
-  ngOnDestroy() {
-    if (this._tabSubscription) {
-      this._tabSubscription.unsubscribe();
-    }
-  }
-
   /**
    * This method takes classes set on the host md-menu element and applies them on the
    * menu template that displays in the overlay container.  Otherwise, it's difficult
@@ -103,6 +94,28 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
 
   /** Event emitted when the menu is closed. */
   @Output() close = new EventEmitter<void>();
+
+  ngAfterContentInit() {
+    this._keyManager = new FocusKeyManager(this.items).withWrap();
+    this._tabSubscription = this._keyManager.tabOut.subscribe(() => this._emitCloseEvent());
+  }
+
+  ngOnDestroy() {
+    if (this._tabSubscription) {
+      this._tabSubscription.unsubscribe();
+    }
+  }
+
+  /** Handle a keyboard event from the menu, delegating to the appropriate action. */
+  _handleKeydown(event: KeyboardEvent) {
+    switch (event.keyCode) {
+      case ESCAPE:
+        this._emitCloseEvent();
+        return;
+      default:
+        this._keyManager.onKeydown(event);
+    }
+  }
 
   /**
    * Focus the first item in the menu. This method is used by the menu trigger
