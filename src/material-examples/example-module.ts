@@ -1,7 +1,6 @@
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
-import {MaterialModule} from '@angular/material';
 import {AutocompleteOverviewExample} from './autocomplete-overview/autocomplete-overview-example';
 import {ButtonOverviewExample} from './button-overview/button-overview-example';
 import {ButtonTypesExample} from './button-types/button-types-example';
@@ -71,7 +70,13 @@ import {ChipsOverviewExample} from './chips-overview/chips-overview-example';
 import {ChipsStackedExample} from './chips-stacked/chips-stacked-example';
 import {SelectFormExample} from './select-form/select-form-example';
 import {DatepickerOverviewExample} from './datepicker-overview/datepicker-overview-example';
-
+import {
+  MdAutocompleteModule, MdButtonModule, MdButtonToggleModule, MdCardModule, MdCheckboxModule,
+  MdChipsModule, MdDatepickerModule, MdDialogModule, MdGridListModule, MdIconModule, MdInputModule,
+  MdListModule, MdMenuModule, MdProgressBarModule, MdProgressSpinnerModule, MdRadioModule,
+  MdSelectModule, MdSliderModule, MdSlideToggleModule, MdSnackBarModule, MdTabsModule,
+  MdToolbarModule, MdTooltipModule
+} from '@angular/material';
 
 export interface LiveExample {
   title: string;
@@ -169,6 +174,38 @@ export const EXAMPLE_COMPONENTS = {
 };
 
 /**
+ * NgModule that includes all Material modules that are required to serve the examples.
+ */
+@NgModule({
+  exports: [
+    MdAutocompleteModule,
+    MdButtonModule,
+    MdButtonToggleModule,
+    MdCardModule,
+    MdCheckboxModule,
+    MdChipsModule,
+    MdDatepickerModule,
+    MdDialogModule,
+    MdGridListModule,
+    MdIconModule,
+    MdInputModule,
+    MdListModule,
+    MdMenuModule,
+    MdProgressBarModule,
+    MdProgressSpinnerModule,
+    MdRadioModule,
+    MdSelectModule,
+    MdSlideToggleModule,
+    MdSliderModule,
+    MdSnackBarModule,
+    MdTabsModule,
+    MdToolbarModule,
+    MdTooltipModule
+  ]
+})
+export class ExampleMaterialModule {}
+
+/**
  * The list of all example components.
  * We need to put them in both `declarations` and `entryComponents` to make them work.
  */
@@ -230,7 +267,7 @@ export const EXAMPLE_LIST = [
   declarations: EXAMPLE_LIST,
   entryComponents: EXAMPLE_LIST,
   imports: [
-    MaterialModule,
+    ExampleMaterialModule,
     FormsModule,
     ReactiveFormsModule,
     CommonModule,

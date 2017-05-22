@@ -15,17 +15,43 @@ import {ListE2E} from './list/list-e2e';
 import {ProgressBarE2E} from './progress-bar/progress-bar-e2e';
 import {ProgressSpinnerE2E} from './progress-spinner/progress-spinner-e2e';
 import {FullscreenE2E, TestDialog as TestDialogFullScreen} from './fullscreen/fullscreen-e2e';
-import {MaterialModule, OverlayContainer, FullscreenOverlayContainer} from '@angular/material';
 import {E2E_APP_ROUTES} from './e2e-app/routes';
 import {SlideToggleE2E} from './slide-toggle/slide-toggle-e2e';
 import {InputE2E} from './input/input-e2e';
 import {BlockScrollStrategyE2E} from './block-scroll-strategy/block-scroll-strategy-e2e';
+import {
+  OverlayContainer, FullscreenOverlayContainer, MdGridListModule, MdProgressBarModule,
+  MdProgressSpinnerModule, MdTabsModule, MdRadioModule, MdSlideToggleModule, MdMenuModule,
+  MdListModule, MdInputModule, MdIconModule, MdDialogModule, MdCheckboxModule, MdButtonModule
+} from '@angular/material';
+
+/**
+ * NgModule that contains all Material modules that are required to serve the e2e-app.
+ */
+@NgModule({
+  exports: [
+    MdButtonModule,
+    MdCheckboxModule,
+    MdDialogModule,
+    MdGridListModule,
+    MdIconModule,
+    MdInputModule,
+    MdListModule,
+    MdMenuModule,
+    MdSlideToggleModule,
+    MdRadioModule,
+    MdProgressBarModule,
+    MdProgressSpinnerModule,
+    MdTabsModule
+  ]
+})
+export class E2eMaterialModule {}
 
 @NgModule({
   imports: [
     BrowserModule,
     RouterModule.forRoot(E2E_APP_ROUTES),
-    MaterialModule,
+    E2eMaterialModule,
     NoopAnimationsModule,
   ],
   declarations: [
