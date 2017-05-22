@@ -1,7 +1,7 @@
 <h4 class="docs-api-h4 docs-api-class-name">
   <code>{$ class.name $}</code>
 </h4>
-<p class="docs-api-class-description">{$ class.description $}</p>
+<p class="docs-api-class-description">{$ class.description | marked | safe $}</p>
 
 {%- if class.directiveSelectors -%}
 <div class="docs-api-directive-selectors">
