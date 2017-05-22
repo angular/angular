@@ -1,5 +1,5 @@
 import {QueryList} from '@angular/core';
-import {UP_ARROW, DOWN_ARROW, TAB, HOME, END} from '../core';
+import {UP_ARROW, DOWN_ARROW, TAB} from '../core';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 
@@ -56,12 +56,6 @@ export class ListKeyManager<T extends CanDisable> {
         break;
       case UP_ARROW:
         this.setPreviousItemActive();
-        break;
-      case HOME:
-        this.setFirstItemActive();
-        break;
-      case END:
-        this.setLastItemActive();
         break;
       case TAB:
         // Note that we shouldn't prevent the default action on tab.
@@ -174,4 +168,3 @@ export class ListKeyManager<T extends CanDisable> {
   }
 
 }
-

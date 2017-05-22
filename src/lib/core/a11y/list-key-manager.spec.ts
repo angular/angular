@@ -1,9 +1,11 @@
 import {QueryList} from '@angular/core';
 import {fakeAsync, tick} from '@angular/core/testing';
 import {FocusKeyManager} from './focus-key-manager';
-import {DOWN_ARROW, UP_ARROW, TAB, HOME, END} from '../keyboard/keycodes';
+import {DOWN_ARROW, UP_ARROW, TAB} from '../keyboard/keycodes';
 import {ListKeyManager} from './list-key-manager';
 import {ActiveDescendantKeyManager} from './activedescendant-key-manager';
+import {createKeyboardEvent} from '../testing/event-objects';
+
 
 class FakeFocusable {
   disabled = false;
@@ -24,30 +26,24 @@ class FakeQueryList<T> extends QueryList<T> {
   }
 }
 
-export class FakeEvent {
-  defaultPrevented: boolean = false;
-  constructor(public keyCode: number) {}
-  preventDefault() {
-    this.defaultPrevented = true;
-  }
-}
 
 describe('Key managers', () => {
   let itemList: FakeQueryList<any>;
-  let DOWN_ARROW_EVENT: KeyboardEvent;
-  let UP_ARROW_EVENT: KeyboardEvent;
-  let TAB_EVENT: KeyboardEvent;
-  let HOME_EVENT: KeyboardEvent;
-  let END_EVENT: KeyboardEvent;
+  let fakeKeyEvents: {
+    downArrow: KeyboardEvent,
+    upArrow: KeyboardEvent,
+    tab: KeyboardEvent,
+    unsupported: KeyboardEvent
+  };
 
   beforeEach(() => {
     itemList = new FakeQueryList<any>();
-
-    DOWN_ARROW_EVENT = new FakeEvent(DOWN_ARROW) as KeyboardEvent;
-    UP_ARROW_EVENT = new FakeEvent(UP_ARROW) as KeyboardEvent;
-    TAB_EVENT = new FakeEvent(TAB) as KeyboardEvent;
-    HOME_EVENT = new FakeEvent(HOME) as KeyboardEvent;
-    END_EVENT = new FakeEvent(END) as KeyboardEvent;
+    fakeKeyEvents = {
+      downArrow: createKeyboardEvent('keydown', DOWN_ARROW),
+      upArrow: createKeyboardEvent('keydown', UP_ARROW),
+      tab: createKeyboardEvent('keydown', TAB),
+      unsupported: createKeyboardEvent('keydown', 65) // corresponds to the letter "a"
+    };
   });
 
 
@@ -55,12 +51,7 @@ describe('Key managers', () => {
     let keyManager: ListKeyManager<FakeFocusable>;
 
     beforeEach(() => {
-      itemList.items = [
-        new FakeFocusable(),
-        new FakeFocusable(),
-        new FakeFocusable()
-      ];
-
+      itemList.items = [new FakeFocusable(), new FakeFocusable(), new FakeFocusable()];
       keyManager = new ListKeyManager<FakeFocusable>(itemList);
 
       // first item is already focused
@@ -72,7 +63,7 @@ describe('Key managers', () => {
     describe('Key events', () => {
 
       it('should set subsequent items as active when down arrow is pressed', () => {
-        keyManager.onKeydown(DOWN_ARROW_EVENT);
+        keyManager.onKeydown(fakeKeyEvents.downArrow);
 
         expect(keyManager.activeItemIndex)
             .toBe(1, 'Expected active item to be 1 after 1 down arrow event.');
@@ -80,7 +71,7 @@ describe('Key managers', () => {
         expect(keyManager.setActiveItem).toHaveBeenCalledWith(1);
         expect(keyManager.setActiveItem).not.toHaveBeenCalledWith(2);
 
-        keyManager.onKeydown(DOWN_ARROW_EVENT);
+        keyManager.onKeydown(fakeKeyEvents.downArrow);
         expect(keyManager.activeItemIndex)
             .toBe(2, 'Expected active item to be 2 after 2 down arrow events.');
         expect(keyManager.setActiveItem).toHaveBeenCalledWith(2);
@@ -89,7 +80,7 @@ describe('Key managers', () => {
 
       it('should set first item active when down arrow pressed if no active item', () => {
         keyManager.setActiveItem(null);
-        keyManager.onKeydown(DOWN_ARROW_EVENT);
+        keyManager.onKeydown(fakeKeyEvents.downArrow);
 
         expect(keyManager.activeItemIndex)
             .toBe(0, 'Expected active item to be 0 after down key if active item was null.');
@@ -99,14 +90,14 @@ describe('Key managers', () => {
       });
 
       it('should set previous items as active when up arrow is pressed', () => {
-        keyManager.onKeydown(DOWN_ARROW_EVENT);
+        keyManager.onKeydown(fakeKeyEvents.downArrow);
 
         expect(keyManager.activeItemIndex)
             .toBe(1, 'Expected active item to be 1 after 1 down arrow event.');
         expect(keyManager.setActiveItem).not.toHaveBeenCalledWith(0);
         expect(keyManager.setActiveItem).toHaveBeenCalledWith(1);
 
-        keyManager.onKeydown(UP_ARROW_EVENT);
+        keyManager.onKeydown(fakeKeyEvents.upArrow);
         expect(keyManager.activeItemIndex)
             .toBe(0, 'Expected active item to be 0 after 1 down and 1 up arrow event.');
         expect(keyManager.setActiveItem).toHaveBeenCalledWith(0);
@@ -114,7 +105,7 @@ describe('Key managers', () => {
 
       it('should do nothing when up arrow is pressed if no active item and not wrap', () => {
         keyManager.setActiveItem(null);
-        keyManager.onKeydown(UP_ARROW_EVENT);
+        keyManager.onKeydown(fakeKeyEvents.upArrow);
 
         expect(keyManager.activeItemIndex)
             .toBe(null, 'Expected nothing to happen if up arrow occurs and no active item.');
@@ -127,7 +118,7 @@ describe('Key managers', () => {
         itemList.items[1].disabled = true;
 
         // down arrow should skip past disabled item from 0 to 2
-        keyManager.onKeydown(DOWN_ARROW_EVENT);
+        keyManager.onKeydown(fakeKeyEvents.downArrow);
         expect(keyManager.activeItemIndex)
             .toBe(2, 'Expected active item to skip past disabled item on down arrow.');
         expect(keyManager.setActiveItem).not.toHaveBeenCalledWith(0);
@@ -135,7 +126,7 @@ describe('Key managers', () => {
         expect(keyManager.setActiveItem).toHaveBeenCalledWith(2);
 
         // up arrow should skip past disabled item from 2 to 0
-        keyManager.onKeydown(UP_ARROW_EVENT);
+        keyManager.onKeydown(fakeKeyEvents.upArrow);
         expect(keyManager.activeItemIndex)
             .toBe(0, 'Expected active item to skip past disabled item on up arrow.');
         expect(keyManager.setActiveItem).toHaveBeenCalledWith(0);
@@ -147,14 +138,14 @@ describe('Key managers', () => {
         itemList.items[1].disabled = undefined;
         itemList.items[2].disabled = undefined;
 
-        keyManager.onKeydown(DOWN_ARROW_EVENT);
+        keyManager.onKeydown(fakeKeyEvents.downArrow);
         expect(keyManager.activeItemIndex)
             .toBe(1, 'Expected active item to be 1 after 1 down arrow when disabled not set.');
         expect(keyManager.setActiveItem).not.toHaveBeenCalledWith(0);
         expect(keyManager.setActiveItem).toHaveBeenCalledWith(1);
         expect(keyManager.setActiveItem).not.toHaveBeenCalledWith(2);
 
-        keyManager.onKeydown(DOWN_ARROW_EVENT);
+        keyManager.onKeydown(fakeKeyEvents.downArrow);
         expect(keyManager.activeItemIndex)
             .toBe(2, 'Expected active item to be 2 after 2 down arrows when disabled not set.');
         expect(keyManager.setActiveItem).not.toHaveBeenCalledWith(0);
@@ -162,82 +153,76 @@ describe('Key managers', () => {
       });
 
       it('should not move active item past either end of the list', () => {
-        keyManager.onKeydown(DOWN_ARROW_EVENT);
-        keyManager.onKeydown(DOWN_ARROW_EVENT);
+        keyManager.onKeydown(fakeKeyEvents.downArrow);
+        keyManager.onKeydown(fakeKeyEvents.downArrow);
         expect(keyManager.activeItemIndex)
             .toBe(2, `Expected last item of the list to be active.`);
 
         // this down arrow would move active item past the end of the list
-        keyManager.onKeydown(DOWN_ARROW_EVENT);
+        keyManager.onKeydown(fakeKeyEvents.downArrow);
         expect(keyManager.activeItemIndex)
             .toBe(2, `Expected active item to remain at the end of the list.`);
 
-        keyManager.onKeydown(UP_ARROW_EVENT);
-        keyManager.onKeydown(UP_ARROW_EVENT);
+        keyManager.onKeydown(fakeKeyEvents.upArrow);
+        keyManager.onKeydown(fakeKeyEvents.upArrow);
         expect(keyManager.activeItemIndex)
             .toBe(0, `Expected first item of the list to be active.`);
 
         // this up arrow would move active item past the beginning of the list
-        keyManager.onKeydown(UP_ARROW_EVENT);
+        keyManager.onKeydown(fakeKeyEvents.upArrow);
         expect(keyManager.activeItemIndex)
             .toBe(0, `Expected active item to remain at the beginning of the list.`);
       });
 
       it('should not move active item to end when the last item is disabled', () => {
         itemList.items[2].disabled = true;
-        keyManager.onKeydown(DOWN_ARROW_EVENT);
+        keyManager.onKeydown(fakeKeyEvents.downArrow);
         expect(keyManager.activeItemIndex)
             .toBe(1, `Expected second item of the list to be active.`);
 
         // this down arrow would set active item to the last item, which is disabled
-        keyManager.onKeydown(DOWN_ARROW_EVENT);
+        keyManager.onKeydown(fakeKeyEvents.downArrow);
         expect(keyManager.activeItemIndex)
             .toBe(1, `Expected the second item to remain active.`);
         expect(keyManager.setActiveItem).not.toHaveBeenCalledWith(2);
       });
 
-      it('should set the active item to the first item when HOME is pressed', () => {
-        keyManager.onKeydown(DOWN_ARROW_EVENT);
-        keyManager.onKeydown(DOWN_ARROW_EVENT);
-        expect(keyManager.activeItemIndex)
-            .toBe(2, `Expected last item of the list to be active.`);
-
-        keyManager.onKeydown(HOME_EVENT);
-        expect(keyManager.activeItemIndex)
-            .toBe(0, `Expected the HOME key to set the active item to the first item.`);
-      });
-
-      it('should set the active item to the last item when END is pressed', () => {
-        expect(keyManager.activeItemIndex)
-            .toBe(0, `Expected first item of the list to be active.`);
-
-        keyManager.onKeydown(END_EVENT);
-        expect(keyManager.activeItemIndex)
-            .toBe(2, `Expected the END key to set the active item to the last item.`);
-      });
-
       it('should emit tabOut when the tab key is pressed', () => {
         let spy = jasmine.createSpy('tabOut spy');
         keyManager.tabOut.first().subscribe(spy);
-        keyManager.onKeydown(TAB_EVENT);
+        keyManager.onKeydown(fakeKeyEvents.tab);
 
         expect(spy).toHaveBeenCalled();
       });
 
-      it('should prevent the default keyboard action', () => {
-        expect(DOWN_ARROW_EVENT.defaultPrevented).toBe(false);
+      it('should prevent the default keyboard action when pressing the arrow keys', () => {
+        expect(fakeKeyEvents.downArrow.defaultPrevented).toBe(false);
+        keyManager.onKeydown(fakeKeyEvents.downArrow);
+        expect(fakeKeyEvents.downArrow.defaultPrevented).toBe(true);
 
-        keyManager.onKeydown(DOWN_ARROW_EVENT);
-
-        expect(DOWN_ARROW_EVENT.defaultPrevented).toBe(true);
+        expect(fakeKeyEvents.upArrow.defaultPrevented).toBe(false);
+        keyManager.onKeydown(fakeKeyEvents.upArrow);
+        expect(fakeKeyEvents.upArrow.defaultPrevented).toBe(true);
       });
 
       it('should not prevent the default keyboard action when pressing tab', () => {
-        expect(TAB_EVENT.defaultPrevented).toBe(false);
+        expect(fakeKeyEvents.tab.defaultPrevented).toBe(false);
 
-        keyManager.onKeydown(TAB_EVENT);
+        keyManager.onKeydown(fakeKeyEvents.tab);
 
-        expect(TAB_EVENT.defaultPrevented).toBe(false);
+        expect(fakeKeyEvents.tab.defaultPrevented).toBe(false);
+      });
+
+      it('should not do anything for unsupported key presses', () => {
+        keyManager.setActiveItem(1);
+
+        expect(keyManager.activeItemIndex).toBe(1);
+        expect(fakeKeyEvents.unsupported.defaultPrevented).toBe(false);
+
+        keyManager.onKeydown(fakeKeyEvents.unsupported);
+
+        expect(keyManager.activeItemIndex).toBe(1);
+        expect(fakeKeyEvents.unsupported.defaultPrevented).toBe(false);
       });
 
       it('should activate the first item when pressing down on a clean key manager', () => {
@@ -245,7 +230,7 @@ describe('Key managers', () => {
 
         expect(keyManager.activeItemIndex).toBeNull('Expected active index to default to null.');
 
-        keyManager.onKeydown(DOWN_ARROW_EVENT);
+        keyManager.onKeydown(fakeKeyEvents.downArrow);
 
         expect(keyManager.activeItemIndex).toBe(0, 'Expected first item to become active.');
       });
@@ -264,22 +249,22 @@ describe('Key managers', () => {
       });
 
       it('should expose the active item correctly', () => {
-        keyManager.onKeydown(DOWN_ARROW_EVENT);
+        keyManager.onKeydown(fakeKeyEvents.downArrow);
 
         expect(keyManager.activeItemIndex).toBe(1, 'Expected active item to be the second option.');
         expect(keyManager.activeItem)
             .toBe(itemList.items[1], 'Expected the active item to match the second option.');
 
 
-        keyManager.onKeydown(DOWN_ARROW_EVENT);
+        keyManager.onKeydown(fakeKeyEvents.downArrow);
         expect(keyManager.activeItemIndex).toBe(2, 'Expected active item to be the third option.');
         expect(keyManager.activeItem)
             .toBe(itemList.items[2], 'Expected the active item ID to match the third option.');
       });
 
       it('should setFirstItemActive()', () => {
-        keyManager.onKeydown(DOWN_ARROW_EVENT);
-        keyManager.onKeydown(DOWN_ARROW_EVENT);
+        keyManager.onKeydown(fakeKeyEvents.downArrow);
+        keyManager.onKeydown(fakeKeyEvents.downArrow);
         expect(keyManager.activeItemIndex)
             .toBe(2, `Expected last item of the list to be active.`);
 
@@ -333,7 +318,7 @@ describe('Key managers', () => {
       });
 
       it('should setPreviousItemActive()', () => {
-        keyManager.onKeydown(DOWN_ARROW_EVENT);
+        keyManager.onKeydown(fakeKeyEvents.downArrow);
         expect(keyManager.activeItemIndex)
             .toBe(1, `Expected second item of the list to be active.`);
 
@@ -344,8 +329,8 @@ describe('Key managers', () => {
 
       it('should skip disabled items when setPreviousItemActive() is called', () => {
         itemList.items[1].disabled = true;
-        keyManager.onKeydown(DOWN_ARROW_EVENT);
-        keyManager.onKeydown(DOWN_ARROW_EVENT);
+        keyManager.onKeydown(fakeKeyEvents.downArrow);
+        keyManager.onKeydown(fakeKeyEvents.downArrow);
         expect(keyManager.activeItemIndex)
             .toBe(2, `Expected third item of the list to be active.`);
 
@@ -365,31 +350,31 @@ describe('Key managers', () => {
 
       it('should wrap focus when arrow keying past items while in wrap mode', () => {
         keyManager.withWrap();
-        keyManager.onKeydown(DOWN_ARROW_EVENT);
-        keyManager.onKeydown(DOWN_ARROW_EVENT);
+        keyManager.onKeydown(fakeKeyEvents.downArrow);
+        keyManager.onKeydown(fakeKeyEvents.downArrow);
 
         expect(keyManager.activeItemIndex).toBe(2, 'Expected last item to be active.');
 
         // this down arrow moves down past the end of the list
-        keyManager.onKeydown(DOWN_ARROW_EVENT);
+        keyManager.onKeydown(fakeKeyEvents.downArrow);
         expect(keyManager.activeItemIndex).toBe(0, 'Expected active item to wrap to beginning.');
 
         // this up arrow moves up past the beginning of the list
-        keyManager.onKeydown(UP_ARROW_EVENT);
+        keyManager.onKeydown(fakeKeyEvents.upArrow);
         expect(keyManager.activeItemIndex).toBe(2, 'Expected active item to wrap to end.');
       });
 
       it('should set last item active when up arrow is pressed if no active item', () => {
         keyManager.withWrap();
         keyManager.setActiveItem(null);
-        keyManager.onKeydown(UP_ARROW_EVENT);
+        keyManager.onKeydown(fakeKeyEvents.upArrow);
 
         expect(keyManager.activeItemIndex)
             .toBe(2, 'Expected last item to be active on up arrow if no active item.');
         expect(keyManager.setActiveItem).not.toHaveBeenCalledWith(0);
         expect(keyManager.setActiveItem).toHaveBeenCalledWith(2);
 
-        keyManager.onKeydown(DOWN_ARROW_EVENT);
+        keyManager.onKeydown(fakeKeyEvents.downArrow);
         expect(keyManager.activeItemIndex)
             .toBe(0, 'Expected active item to be 0 after wrapping back to beginning.');
         expect(keyManager.setActiveItem).toHaveBeenCalledWith(0);
@@ -403,12 +388,7 @@ describe('Key managers', () => {
     let keyManager: FocusKeyManager;
 
     beforeEach(() => {
-      itemList.items = [
-        new FakeFocusable(),
-        new FakeFocusable(),
-        new FakeFocusable()
-      ];
-
+      itemList.items = [new FakeFocusable(), new FakeFocusable(), new FakeFocusable()];
       keyManager = new FocusKeyManager(itemList);
 
       // first item is already focused
@@ -420,25 +400,25 @@ describe('Key managers', () => {
     });
 
       it('should focus subsequent items when down arrow is pressed', () => {
-        keyManager.onKeydown(DOWN_ARROW_EVENT);
+        keyManager.onKeydown(fakeKeyEvents.downArrow);
 
         expect(itemList.items[0].focus).not.toHaveBeenCalled();
         expect(itemList.items[1].focus).toHaveBeenCalledTimes(1);
         expect(itemList.items[2].focus).not.toHaveBeenCalled();
 
-        keyManager.onKeydown(DOWN_ARROW_EVENT);
+        keyManager.onKeydown(fakeKeyEvents.downArrow);
         expect(itemList.items[0].focus).not.toHaveBeenCalled();
         expect(itemList.items[1].focus).toHaveBeenCalledTimes(1);
         expect(itemList.items[2].focus).toHaveBeenCalledTimes(1);
       });
 
       it('should focus previous items when up arrow is pressed', () => {
-        keyManager.onKeydown(DOWN_ARROW_EVENT);
+        keyManager.onKeydown(fakeKeyEvents.downArrow);
 
         expect(itemList.items[0].focus).not.toHaveBeenCalled();
         expect(itemList.items[1].focus).toHaveBeenCalledTimes(1);
 
-        keyManager.onKeydown(UP_ARROW_EVENT);
+        keyManager.onKeydown(fakeKeyEvents.upArrow);
 
         expect(itemList.items[0].focus).toHaveBeenCalledTimes(1);
         expect(itemList.items[1].focus).toHaveBeenCalledTimes(1);
@@ -460,12 +440,7 @@ describe('Key managers', () => {
     let keyManager: ActiveDescendantKeyManager;
 
     beforeEach(fakeAsync(() => {
-      itemList.items = [
-        new FakeHighlightable(),
-        new FakeHighlightable(),
-        new FakeHighlightable()
-      ];
-
+      itemList.items = [new FakeHighlightable(), new FakeHighlightable(), new FakeHighlightable()];
       keyManager = new ActiveDescendantKeyManager(itemList);
 
       // first item is already focused
@@ -482,13 +457,13 @@ describe('Key managers', () => {
     }));
 
     it('should set subsequent items as active with the DOWN arrow', fakeAsync(() => {
-      keyManager.onKeydown(DOWN_ARROW_EVENT);
+      keyManager.onKeydown(fakeKeyEvents.downArrow);
       tick();
 
       expect(itemList.items[1].setActiveStyles).toHaveBeenCalled();
       expect(itemList.items[2].setActiveStyles).not.toHaveBeenCalled();
 
-      keyManager.onKeydown(DOWN_ARROW_EVENT);
+      keyManager.onKeydown(fakeKeyEvents.downArrow);
       tick();
 
       expect(itemList.items[2].setActiveStyles).toHaveBeenCalled();
@@ -498,22 +473,22 @@ describe('Key managers', () => {
       keyManager.setLastItemActive();
       tick();
 
-      keyManager.onKeydown(UP_ARROW_EVENT);
+      keyManager.onKeydown(fakeKeyEvents.upArrow);
       tick();
       expect(itemList.items[1].setActiveStyles).toHaveBeenCalled();
       expect(itemList.items[0].setActiveStyles).not.toHaveBeenCalled();
 
-      keyManager.onKeydown(UP_ARROW_EVENT);
+      keyManager.onKeydown(fakeKeyEvents.upArrow);
       tick();
       expect(itemList.items[0].setActiveStyles).toHaveBeenCalled();
     }));
 
     it('should set inactive styles on previously active items', fakeAsync(() => {
-      keyManager.onKeydown(DOWN_ARROW_EVENT);
+      keyManager.onKeydown(fakeKeyEvents.downArrow);
       tick();
       expect(itemList.items[0].setInactiveStyles).toHaveBeenCalled();
 
-      keyManager.onKeydown(UP_ARROW_EVENT);
+      keyManager.onKeydown(fakeKeyEvents.upArrow);
       tick();
       expect(itemList.items[1].setInactiveStyles).toHaveBeenCalled();
     }));

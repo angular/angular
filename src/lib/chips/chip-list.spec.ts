@@ -3,18 +3,9 @@ import {Component, DebugElement, QueryList} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {MdChip, MdChipList, MdChipsModule} from './index';
 import {FocusKeyManager} from '../core/a11y/focus-key-manager';
-import {FakeEvent} from '../core/a11y/list-key-manager.spec';
 import {SPACE, LEFT_ARROW, RIGHT_ARROW, TAB} from '../core/keyboard/keycodes';
 import {createKeyboardEvent} from '../core/testing/event-objects';
 
-
-class FakeKeyboardEvent extends FakeEvent {
-  constructor(keyCode: number, protected target: HTMLElement) {
-    super(keyCode);
-
-    this.target = target;
-  }
-}
 
 describe('MdChipList', () => {
   let fixture: ComponentFixture<any>;
@@ -117,7 +108,7 @@ describe('MdChipList', () => {
       let nativeChips = chipListNativeElement.querySelectorAll('md-chip');
       let lastNativeChip = nativeChips[nativeChips.length - 1] as HTMLElement;
 
-      let LEFT_EVENT = new FakeKeyboardEvent(LEFT_ARROW, lastNativeChip) as any;
+      let LEFT_EVENT = createKeyboardEvent('keydown', LEFT_ARROW, lastNativeChip);
       let array = chips.toArray();
       let lastIndex = array.length - 1;
       let lastItem = array[lastIndex];
@@ -138,7 +129,7 @@ describe('MdChipList', () => {
       let nativeChips = chipListNativeElement.querySelectorAll('md-chip');
       let firstNativeChip = nativeChips[0] as HTMLElement;
 
-      let RIGHT_EVENT: KeyboardEvent = new FakeKeyboardEvent(RIGHT_ARROW, firstNativeChip) as any;
+      let RIGHT_EVENT = createKeyboardEvent('keydown', RIGHT_ARROW, firstNativeChip);
       let array = chips.toArray();
       let firstItem = array[0];
 
@@ -164,7 +155,7 @@ describe('MdChipList', () => {
         let nativeChips = chipListNativeElement.querySelectorAll('md-chip');
         let firstNativeChip = nativeChips[0] as HTMLElement;
 
-        let SPACE_EVENT: KeyboardEvent = new FakeKeyboardEvent(SPACE, firstNativeChip) as any;
+        let SPACE_EVENT = createKeyboardEvent('keydown', SPACE, firstNativeChip);
         let firstChip: MdChip = chips.toArray()[0];
 
         spyOn(testComponent, 'chipSelect');
@@ -209,7 +200,7 @@ describe('MdChipList', () => {
       });
 
       it('SPACE ignores selection', () => {
-        let SPACE_EVENT: KeyboardEvent = new FakeEvent(SPACE) as KeyboardEvent;
+        let SPACE_EVENT = createKeyboardEvent('keydown', SPACE);
         let firstChip: MdChip = chips.toArray()[0];
 
         spyOn(testComponent, 'chipSelect');

@@ -16,13 +16,14 @@ import {MdInputModule} from '../input/index';
 import {Dir, LayoutDirection} from '../core/rtl/dir';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {Subscription} from 'rxjs/Subscription';
-import {ENTER, DOWN_ARROW, SPACE, UP_ARROW, HOME, END} from '../core/keyboard/keycodes';
+import {ENTER, DOWN_ARROW, SPACE, UP_ARROW} from '../core/keyboard/keycodes';
 import {MdOption} from '../core/option/option';
 import {MdAutocomplete} from './autocomplete';
 import {MdInputContainer} from '../input/input-container';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {dispatchFakeEvent} from '../core/testing/dispatch-events';
+import {createKeyboardEvent} from '../core/testing/event-objects';
 import {typeInElement} from '../core/testing/type-in-element';
 import {ScrollDispatcher} from '../core/overlay/scroll/scroll-dispatcher';
 
@@ -535,8 +536,8 @@ describe('MdAutocomplete', () => {
       fixture.detectChanges();
 
       input = fixture.debugElement.query(By.css('input')).nativeElement;
-      DOWN_ARROW_EVENT = new MockKeyboardEvent(DOWN_ARROW) as KeyboardEvent;
-      ENTER_EVENT = new MockKeyboardEvent(ENTER) as KeyboardEvent;
+      DOWN_ARROW_EVENT = createKeyboardEvent('keydown', DOWN_ARROW);
+      ENTER_EVENT = createKeyboardEvent('keydown', ENTER);
 
       fixture.componentInstance.trigger.openPanel();
       fixture.detectChanges();
@@ -594,7 +595,7 @@ describe('MdAutocomplete', () => {
       const optionEls =
           overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
 
-      const UP_ARROW_EVENT = new MockKeyboardEvent(UP_ARROW) as KeyboardEvent;
+      const UP_ARROW_EVENT = createKeyboardEvent('keydown', UP_ARROW);
       fixture.componentInstance.trigger._handleKeydown(UP_ARROW_EVENT);
       tick();
       fixture.detectChanges();
@@ -668,7 +669,7 @@ describe('MdAutocomplete', () => {
         typeInElement('New', input);
         fixture.detectChanges();
 
-        const SPACE_EVENT = new MockKeyboardEvent(SPACE) as KeyboardEvent;
+        const SPACE_EVENT = createKeyboardEvent('keydown', SPACE);
         fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
 
         fixture.whenStable().then(() => {
@@ -748,43 +749,13 @@ describe('MdAutocomplete', () => {
       const scrollContainer =
           document.querySelector('.cdk-overlay-pane .mat-autocomplete-panel');
 
-      const UP_ARROW_EVENT = new MockKeyboardEvent(UP_ARROW) as KeyboardEvent;
+      const UP_ARROW_EVENT = createKeyboardEvent('keydown', UP_ARROW);
       fixture.componentInstance.trigger._handleKeydown(UP_ARROW_EVENT);
       tick();
       fixture.detectChanges();
 
       // Expect option bottom minus the panel height (528 - 256 = 272)
       expect(scrollContainer.scrollTop).toEqual(272, `Expected panel to reveal last option.`);
-    }));
-
-    it('should scroll the active option into view when pressing END', fakeAsync(() => {
-      tick();
-      const scrollContainer =
-          document.querySelector('.cdk-overlay-pane .mat-autocomplete-panel');
-
-      const END_EVENT = new MockKeyboardEvent(END) as KeyboardEvent;
-      fixture.componentInstance.trigger._handleKeydown(END_EVENT);
-      tick();
-      fixture.detectChanges();
-
-      // Expect option bottom minus the panel height (528 - 256 = 272)
-      expect(scrollContainer.scrollTop).toEqual(272, 'Expected panel to reveal the last option.');
-    }));
-
-    it('should scroll the active option into view when pressing HOME', fakeAsync(() => {
-      tick();
-      const scrollContainer =
-          document.querySelector('.cdk-overlay-pane .mat-autocomplete-panel');
-
-      scrollContainer.scrollTop = 100;
-      fixture.detectChanges();
-
-      const HOME_EVENT = new MockKeyboardEvent(HOME) as KeyboardEvent;
-      fixture.componentInstance.trigger._handleKeydown(HOME_EVENT);
-      tick();
-      fixture.detectChanges();
-
-      expect(scrollContainer.scrollTop).toEqual(0, 'Expected panel to reveal the first option.');
     }));
 
   });
@@ -832,7 +803,7 @@ describe('MdAutocomplete', () => {
         expect(input.hasAttribute('aria-activedescendant'))
             .toBe(false, 'Expected aria-activedescendant to be absent if no active item.');
 
-        const DOWN_ARROW_EVENT = new MockKeyboardEvent(DOWN_ARROW) as KeyboardEvent;
+        const DOWN_ARROW_EVENT = createKeyboardEvent('keydown', DOWN_ARROW);
         fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
 
         fixture.whenStable().then(() => {
@@ -1140,7 +1111,7 @@ describe('MdAutocomplete', () => {
       tick();
       fixture.detectChanges();
 
-      const DOWN_ARROW_EVENT = new MockKeyboardEvent(DOWN_ARROW) as KeyboardEvent;
+      const DOWN_ARROW_EVENT = createKeyboardEvent('keydown', DOWN_ARROW);
       fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
       tick();
       fixture.detectChanges();
@@ -1417,11 +1388,4 @@ class AutocompleteWithNativeInput {
                  : this.options.slice();
     });
   }
-}
-
-
-/** This is a mock keyboard event to test keyboard events in the autocomplete. */
-class MockKeyboardEvent {
-  constructor(public keyCode: number) {}
-  preventDefault() {}
 }

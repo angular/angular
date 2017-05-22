@@ -17,7 +17,7 @@
   backdropClass="cdk-overlay-transparent-backdrop" [positions]="_positions" [minWidth]="_triggerWidth"
   [offsetY]="_offsetY" (attach)="_onAttached()" (detach)="close()">
   <div class="mat-select-panel" [@transformPanel]="'showing'" (@transformPanel.done)="_onPanelDone()"
-    (keydown)="_keyManager.onKeydown($event)" [style.transformOrigin]="_transformOrigin"
+    (keydown)="_handlePanelKeydown($event)" [style.transformOrigin]="_transformOrigin"
       [class.mat-select-panel-done-animating]="_panelDoneAnimating" [ngClass]="'mat-' + color">
     <div class="mat-select-content" [@fadeInContent]="'showing'" (@fadeInContent.done)="_onFadeInDone()">
       <ng-content></ng-content>

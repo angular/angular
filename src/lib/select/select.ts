@@ -18,7 +18,7 @@ import {
   OnInit,
 } from '@angular/core';
 import {MdOption, MdOptionSelectionChange} from '../core/option/option';
-import {ENTER, SPACE, UP_ARROW, DOWN_ARROW} from '../core/keyboard/keycodes';
+import {ENTER, SPACE, UP_ARROW, DOWN_ARROW, HOME, END} from '../core/keyboard/keycodes';
 import {FocusKeyManager} from '../core/a11y/focus-key-manager';
 import {Dir} from '../core/rtl/dir';
 import {Observable} from 'rxjs/Observable';
@@ -112,7 +112,7 @@ export type MdSelectFloatPlaceholderType = 'always' | 'never' | 'auto';
     '[attr.aria-owns]': '_optionIds',
     '[class.mat-select-disabled]': 'disabled',
     '[class.mat-select]': 'true',
-    '(keydown)': '_handleKeydown($event)',
+    '(keydown)': '_handleClosedKeydown($event)',
     '(blur)': '_onBlur()',
   },
   animations: [
@@ -168,14 +168,14 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
    */
   _triggerWidth: number;
 
+  /** Manages keyboard events for options in the panel. */
+  _keyManager: FocusKeyManager;
+
   /**
    * The width of the selected option's value. Must be set programmatically
    * to ensure its overflow is clipped, as it's absolutely positioned.
    */
   _selectedValueWidth: number;
-
-  /** Manages keyboard events for options in the panel. */
-  _keyManager: FocusKeyManager;
 
   /** View -> model callback called when value changes */
   _onChange = (value: any) => {};
@@ -470,7 +470,7 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
   }
 
   /** Handles the keyboard interactions of a closed select. */
-  _handleKeydown(event: KeyboardEvent): void {
+  _handleClosedKeydown(event: KeyboardEvent): void {
     if (!this.disabled) {
       if (event.keyCode === ENTER || event.keyCode === SPACE) {
         event.preventDefault(); // prevents the page from scrolling down when pressing space
@@ -478,6 +478,17 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
       } else if (event.keyCode === UP_ARROW || event.keyCode === DOWN_ARROW) {
         this._handleArrowKey(event);
       }
+    }
+  }
+
+  /** Handles keypresses inside the panel. */
+  _handlePanelKeydown(event: KeyboardEvent): void {
+    if (event.keyCode === HOME || event.keyCode === END) {
+      event.preventDefault();
+      event.keyCode === HOME ? this._keyManager.setFirstItemActive() :
+                               this._keyManager.setLastItemActive();
+    } else {
+      this._keyManager.onKeydown(event);
     }
   }
 
