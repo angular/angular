@@ -1264,7 +1264,7 @@ export function main() {
            tick();
 
            expect(input.nativeElement.value).toEqual('');
-           expect(control.hasError('email')).toBe(true);
+           expect(control.hasError('email')).toBe(false);
 
            input.nativeElement.value = 'test@gmail.com';
            dispatchEvent(input.nativeElement, 'input');
