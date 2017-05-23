@@ -262,9 +262,9 @@ export function Class(clsDef: ClassDefinition): Type<any> {
  * @suppress {globalThis}
  */
 export function makeDecorator(
-    name: string, props: {[name: string]: any}, parentClass?: any,
+    name: string, props?: (...args: any[]) => any, parentClass?: any,
     chainFn?: (fn: Function) => void): (...args: any[]) => (cls: any) => any {
-  const metaCtor = makeMetadataCtor([props]);
+  const metaCtor = makeMetadataCtor(props);
 
   function DecoratorFactory(objOrType: any): (cls: any) => any {
     if (!(Reflect && Reflect.getOwnMetadata)) {
@@ -301,25 +301,19 @@ export function makeDecorator(
   return DecoratorFactory;
 }
 
-function makeMetadataCtor(props: ([string, any] | {[key: string]: any})[]): any {
+function makeMetadataCtor(props?: (...args: any[]) => any): any {
   return function ctor(...args: any[]) {
-    props.forEach((prop, i) => {
-      const argVal = args[i];
-      if (Array.isArray(prop)) {
-        // plain parameter
-        this[prop[0]] = argVal === undefined ? prop[1] : argVal;
-      } else {
-        for (const propName in prop) {
-          this[propName] =
-              argVal && argVal.hasOwnProperty(propName) ? argVal[propName] : prop[propName];
-        }
+    if (props) {
+      const values = props(...args);
+      for (const propName in values) {
+        this[propName] = values[propName];
       }
-    });
+    }
   };
 }
 
 export function makeParamDecorator(
-    name: string, props: ([string, any] | {[name: string]: any})[], parentClass?: any): any {
+    name: string, props?: (...args: any[]) => any, parentClass?: any): any {
   const metaCtor = makeMetadataCtor(props);
   function ParamDecoratorFactory(...args: any[]): any {
     if (this instanceof ParamDecoratorFactory) {
@@ -356,7 +350,7 @@ export function makeParamDecorator(
 }
 
 export function makePropDecorator(
-    name: string, props: ([string, any] | {[key: string]: any})[], parentClass?: any): any {
+    name: string, props?: (...args: any[]) => any, parentClass?: any): any {
   const metaCtor = makeMetadataCtor(props);
 
   function PropDecoratorFactory(...args: any[]): any {
