@@ -309,36 +309,45 @@ describe('MdSnackBar', () => {
       tick(500);
     }));
 
-    it('should dismiss automatically after a specified timeout', fakeAsync(() => {
-      let dismissObservableCompleted = false;
-      let config = new MdSnackBarConfig();
-      config.duration = 250;
-      let snackBarRef = snackBar.open('content', 'test', config);
-      snackBarRef.afterDismissed().subscribe(() => {
-        dismissObservableCompleted = true;
-      });
-
-      viewContainerFixture.detectChanges();
-      flushMicrotasks();
-      expect(dismissObservableCompleted).toBeFalsy('Expected the snack bar not to be dismissed');
-
-      tick(1000);
-      viewContainerFixture.detectChanges();
-      flushMicrotasks();
-      expect(dismissObservableCompleted).toBeTruthy('Expected the snack bar to be dismissed');
-    }));
-
-    it('should add extra classes to the container', () => {
-      snackBar.open(simpleMessage, simpleActionLabel, {
-        viewContainerRef: testViewContainerRef,
-        extraClasses: ['one', 'two']
-      });
-
-      let containerClasses = overlayContainerElement.querySelector('snack-bar-container').classList;
-
-      expect(containerClasses).toContain('one');
-      expect(containerClasses).toContain('two');
+  it('should dismiss automatically after a specified timeout', fakeAsync(() => {
+    let dismissObservableCompleted = false;
+    let config = new MdSnackBarConfig();
+    config.duration = 250;
+    let snackBarRef = snackBar.open('content', 'test', config);
+    snackBarRef.afterDismissed().subscribe(() => {
+      dismissObservableCompleted = true;
     });
+
+    viewContainerFixture.detectChanges();
+    flushMicrotasks();
+    expect(dismissObservableCompleted).toBeFalsy('Expected the snack bar not to be dismissed');
+
+    tick(1000);
+    viewContainerFixture.detectChanges();
+    flushMicrotasks();
+    expect(dismissObservableCompleted).toBeTruthy('Expected the snack bar to be dismissed');
+  }));
+
+  it('should add extra classes to the container', () => {
+    snackBar.open(simpleMessage, simpleActionLabel, {
+      viewContainerRef: testViewContainerRef,
+      extraClasses: ['one', 'two']
+    });
+
+    let containerClasses = overlayContainerElement.querySelector('snack-bar-container').classList;
+
+    expect(containerClasses).toContain('one');
+    expect(containerClasses).toContain('two');
+  });
+
+  it('should set the layout direction', () => {
+    snackBar.open(simpleMessage, simpleActionLabel, { direction: 'rtl' });
+
+    let pane = overlayContainerElement.querySelector('.cdk-overlay-pane');
+
+    expect(pane.getAttribute('dir')).toBe('rtl', 'Expected the pane to be in RTL mode.');
+  });
+
 });
 
 describe('MdSnackBar with parent MdSnackBar', () => {

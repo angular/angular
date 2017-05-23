@@ -4,7 +4,7 @@
 
 $mat-snack-bar-button-margin: 48px !default;
 
-:host {
+.mat-simple-snackbar {
   display: flex;
   justify-content: space-between;
   color: white;
@@ -27,5 +27,10 @@ $mat-snack-bar-button-margin: 48px !default;
     family: inherit;
     size: inherit;
     weight: 600;
+  }
+
+  [dir='rtl'] & {
+    margin-right: $mat-snack-bar-button-margin;
+    margin-left: 0;
   }
 }

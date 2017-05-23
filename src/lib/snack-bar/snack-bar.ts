@@ -54,7 +54,7 @@ export class MdSnackBar {
    */
   openFromComponent<T>(component: ComponentType<T>, config?: MdSnackBarConfig): MdSnackBarRef<T> {
     config = _applyConfigDefaults(config);
-    let overlayRef = this._createOverlay();
+    let overlayRef = this._createOverlay(config);
     let snackBarContainer = this._attachSnackBarContainer(overlayRef, config);
     let snackBarRef = this._attachSnackbarContent(component, snackBarContainer, overlayRef);
 
@@ -139,12 +139,12 @@ export class MdSnackBar {
 
   /**
    * Creates a new overlay and places it in the correct location.
+   * @param config The user-specified snack bar config.
    */
-  private _createOverlay(): OverlayRef {
+  private _createOverlay(config: MdSnackBarConfig): OverlayRef {
     let state = new OverlayState();
-    state.positionStrategy = this._overlay.position().global()
-        .centerHorizontally()
-        .bottom('0');
+    state.direction = config.direction;
+    state.positionStrategy = this._overlay.position().global().centerHorizontally().bottom('0');
     return this._overlay.create(state);
   }
 }
