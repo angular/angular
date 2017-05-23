@@ -15,7 +15,7 @@ export function openFirebaseDashboardDatabase() {
       client_email: 'firebase-adminsdk-ch1ob@material2-dashboard.iam.gserviceaccount.com',
       // In Travis CI the private key will be incorrect because the line-breaks are escaped.
       // The line-breaks need to persist in the service account private key.
-      private_key: decode(process.env['MATERIAL2_FIREBASE_PRIVATE_KEY'])
+      private_key: decode(process.env['MATERIAL2_DASHBOARD_FIREBASE_KEY'])
     }),
     databaseURL: 'https://material2-dashboard.firebaseio.com'
   });
