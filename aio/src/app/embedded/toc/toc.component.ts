@@ -20,7 +20,6 @@ export class TocComponent implements OnInit, AfterViewInit, OnDestroy {
 
   activeIndex: number | null = null;
   type: TocType = 'None';
-  hostElement: HTMLElement;
   isCollapsed = true;
   isEmbedded = false;
   @ViewChildren('tocItem') private items: QueryList<ElementRef>;
@@ -32,8 +31,7 @@ export class TocComponent implements OnInit, AfterViewInit, OnDestroy {
     private scrollService: ScrollService,
     elementRef: ElementRef,
     private tocService: TocService) {
-    this.hostElement = elementRef.nativeElement;
-    this.isEmbedded = this.hostElement.className.indexOf('embedded') !== -1;
+    this.isEmbedded = elementRef.nativeElement.className.indexOf('embedded') !== -1;
   }
 
   ngOnInit() {
