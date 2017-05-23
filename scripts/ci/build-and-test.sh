@@ -10,6 +10,19 @@ cd $(dirname $0)/../..
 source scripts/ci/sources/mode.sh
 source scripts/ci/sources/tunnel.sh
 
+# Get commit diff
+if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
+  fileDiff=$(git diff --name-only $TRAVIS_COMMIT_RANGE)
+else
+  fileDiff=$(git diff --name-only $TRAVIS_BRANCH...HEAD)
+fi
+
+# Check if tests can be skipped
+if [[ ${fileDiff} =~ ^(.*\.md\s*)*$ ]] && (is_e2e || is_unit); then
+  echo "Skipping e2e and unit tests since only markdown files changed"
+  exit 0
+fi
+
 start_tunnel
 wait_for_tunnel
 
@@ -23,7 +36,7 @@ elif is_payload; then
   $(npm bin)/gulp ci:payload
 elif is_closure_compiler; then
   ./scripts/closure-compiler/build-devapp-bundle.sh
-else
+elif is_unit; then
   $(npm bin)/gulp ci:test
 fi
 
