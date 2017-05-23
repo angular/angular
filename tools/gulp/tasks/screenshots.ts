@@ -25,14 +25,14 @@ const FIREBASE_STORAGE_GOLDENS = 'goldens';
 
 /** Task which upload screenshots generated from e2e test. */
 task('screenshots', () => {
-  let prNumber = process.env['TRAVIS_PULL_REQUEST'];
+  const prNumber = process.env['TRAVIS_PULL_REQUEST'];
 
   if (isTravisMasterBuild()) {
     // Only update goldens for master build
     return uploadScreenshots();
   } else if (prNumber) {
-    let firebaseApp = connectFirebaseScreenshots();
-    let database = firebaseApp.database();
+    const firebaseApp = connectFirebaseScreenshots();
+    const database = firebaseApp.database();
 
     return updateTravis(database, prNumber)
       .then(() => getScreenshotFiles(database))
@@ -40,7 +40,8 @@ task('screenshots', () => {
       .then((results: boolean) => updateResult(database, prNumber, results))
       .then(() => uploadScreenshotsData(database, 'diff', prNumber))
       .then(() => uploadScreenshotsData(database, 'test', prNumber))
-      .then(() => database.goOffline(), () => database.goOffline());
+      .catch((err: any) => console.error(err))
+      .then(() => firebaseApp.delete());
   }
 });
 

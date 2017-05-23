@@ -3,7 +3,7 @@ import {existsSync} from 'fs-extra';
 import {COVERAGE_RESULT_FILE} from '../constants';
 import {spawnSync} from 'child_process';
 import {isTravisMasterBuild} from '../util/travis-ci';
-import {openFirebaseDashboardDatabase} from '../util/firebase';
+import {openFirebaseDashboardApp} from '../util/firebase';
 
 task('coverage:upload', () => {
   if (!existsSync(COVERAGE_RESULT_FILE)) {
@@ -24,11 +24,13 @@ task('coverage:upload', () => {
 
 /** Uploads the coverage results to the firebase database. */
 function uploadResults(results: any): Promise<void> {
-  let latestSha = spawnSync('git', ['rev-parse', 'HEAD']).stdout.toString().trim();
-  let database = openFirebaseDashboardDatabase();
+  const latestSha = spawnSync('git', ['rev-parse', 'HEAD']).stdout.toString().trim();
+  const dashboardApp = openFirebaseDashboardApp();
+  const database = dashboardApp.database();
 
   return database.ref('coverage-reports').child(latestSha).set(results)
-    .then(() => database.goOffline(), () => database.goOffline());
+    .catch((err: any) => console.error(err))
+    .then(() => dashboardApp.delete());
 }
 
 // TODO(devversion): In the future we might have a big database where we can store full summaries.

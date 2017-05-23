@@ -4,7 +4,7 @@ import {statSync} from 'fs';
 import {DIST_ROOT} from '../constants';
 import {spawnSync} from 'child_process';
 import {isTravisMasterBuild} from '../util/travis-ci';
-import {openFirebaseDashboardDatabase} from '../util/firebase';
+import {openFirebaseDashboardApp} from '../util/firebase';
 
 const bundlesDir = join(DIST_ROOT, 'bundles');
 
@@ -47,10 +47,12 @@ function getFilesize(filePath: string) {
 
 /** Publishes the given results to the firebase database. */
 function publishResults(results: any) {
-  let latestSha = spawnSync('git', ['rev-parse', 'HEAD']).stdout.toString().trim();
-  let database = openFirebaseDashboardDatabase();
+  const latestSha = spawnSync('git', ['rev-parse', 'HEAD']).stdout.toString().trim();
+  const dashboardApp = openFirebaseDashboardApp();
+  const database = dashboardApp.database();
 
   // Write the results to the payloads object with the latest Git SHA as key.
   return database.ref('payloads').child(latestSha).set(results)
-    .then(() => database.goOffline(), () => database.goOffline());
+    .catch((err: any) => console.error(err))
+    .then(() => dashboardApp.delete());
 }

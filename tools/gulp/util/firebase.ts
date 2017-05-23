@@ -5,11 +5,11 @@ const cloudStorage = require('@google-cloud/storage');
 // Firebase configuration for the Screenshot project. Use the config from the screenshot functions.
 const screenshotFirebaseConfig = require('../../screenshot-test/functions/config.json');
 
-/** Opens a connection to the firebase realtime database. */
-export function openFirebaseDashboardDatabase() {
+/** Opens a connection to the Firebase dashboard app. */
+export function openFirebaseDashboardApp() {
   // Initialize the Firebase application with firebaseAdmin credentials.
   // Credentials need to be for a Service Account, which can be created in the Firebase console.
-  firebaseAdmin.initializeApp({
+  return firebaseAdmin.initializeApp({
     credential: firebaseAdmin.credential.cert({
       project_id: 'material2-dashboard',
       client_email: 'firebase-adminsdk-ch1ob@material2-dashboard.iam.gserviceaccount.com',
@@ -19,8 +19,6 @@ export function openFirebaseDashboardDatabase() {
     }),
     databaseURL: 'https://material2-dashboard.firebaseio.com'
   });
-
-  return firebaseAdmin.database();
 }
 
 /**
