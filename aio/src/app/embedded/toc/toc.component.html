@@ -1,6 +1,6 @@
 <div *ngIf="hasToc" [class.collapsed]="isCollapsed">
   <button *ngIf="!isEmbedded" type="button" class="toc-heading"
-    (click)="toTop()" title="Top of page">Contents</button>
+    (click)="toTop()" title="Top of page" [innerHTML]="guideName"></button>
 
   <div *ngIf="!hasSecondary && isEmbedded" class="toc-heading embedded">Contents</div>
 
