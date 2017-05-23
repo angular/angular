@@ -139,7 +139,7 @@ API docs.
 
 #### JsDoc comments
 
-All public APIs must have user-facing comments. These are extracted and shown in the documation
+All public APIs must have user-facing comments. These are extracted and shown in the documentation
 on [material.angular.io](https://material.angular.io).
 
 Private and internal APIs should have JsDoc when they are not obvious. Ultimately it is the purview
@@ -213,7 +213,7 @@ activateRipple() {
 
 #### Inheritance
 
-Avoid using inheritence to apply reusable behaviors to multiple components. This limits how many
+Avoid using inheritance to apply reusable behaviors to multiple components. This limits how many
 behaviors can be composed.
 
 ### Angular
