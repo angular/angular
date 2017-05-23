@@ -24,6 +24,7 @@
     "core-js": "^2.4.1",
     "reflect-metadata": "^0.1.3",
     "rxjs": "^5.0.1",
+    "tslib": "^1.7.1",
     "typescript": "^2.3.2",
     "zone.js": "^0.8.10"
   },
@@ -84,6 +85,7 @@
     "rho": "^0.3.0",
     "rollup": "^0.41.6",
     "rollup-plugin-commonjs": "^5.0.5",
+    "rollup-plugin-node-resolve": "^3.0.0",
     "selenium-webdriver": "^2.53.3",
     "semver": "^5.1.0",
     "sorcery": "^0.10.0",
