@@ -40,24 +40,33 @@ case ${CI_MODE} in
     travisFoldEnd "deploy.packages"
     ;;
   aio)
-    # Don't deploy if this build is not for master
-    if [[ ${TRAVIS_BRANCH} != "master" ]]; then
-      echo "Skipping deploy because this build is not for master."
-      exit 0
-    fi
+    # Only deploy if this not a PR. PRs are deployed early in `build.sh`.
+    if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then
 
-    travisFoldStart "deploy.aio"
-    (
-      cd ${TRAVIS_BUILD_DIR}/aio
-
-      # Only deploy if this not a PR. PRs are deployed early in `build.sh`.
-      if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then
-        # This is upstream master: Deploy to staging
-        travisFoldStart "deploy.aio.staging"
-          yarn deploy-staging
-        travisFoldEnd "deploy.aio.staging"
+      # Don't deploy if this build is not for master or the stable branch.
+      if [[ $TRAVIS_BRANCH != "master" ]] && [[ $TRAVIS_BRANCH != $STABLE_BRANCH ]]; then
+        echo "Skipping deploy because this build is not for master or the stable branch ($STABLE_BRANCH)."
+        exit 0
       fi
-    )
-    travisFoldEnd "deploy.aio"
+
+      travisFoldStart "deploy.aio"
+      (
+        cd ${TRAVIS_BUILD_DIR}/aio
+
+        if [[ $TRAVIS_BRANCH == $STABLE_BRANCH ]]; then
+          # This is upstream <stable-branch>: Deploy to production.
+          travisFoldStart "deploy.aio.production"
+            yarn deploy-production
+          travisFoldEnd "deploy.aio.production"
+        else
+          # This is upstream master: Deploy to staging.
+          travisFoldStart "deploy.aio.staging"
+            yarn deploy-staging
+          travisFoldEnd "deploy.aio.staging"
+        fi
+      )
+      travisFoldEnd "deploy.aio"
+
+    fi
     ;;
 esac
