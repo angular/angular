@@ -150,11 +150,6 @@ The following table lists some of the key AngularJS template features with their
 </table>
 
 
-
-[Back to top](guide/ajs-quick-reference#top)
-
-
-
 ## Template directives
 AngularJS provides more than seventy built-in directives for templates.
 Many of them aren't needed in Angular because of its more capable and expressive binding system.
@@ -721,10 +716,6 @@ The following are some of the key AngularJS built-in directives and their equiva
 </table>
 
 
-
-[Back to top](guide/ajs-quick-reference#top)
-
-
 {@a filters-pipes}
 
 
@@ -992,9 +983,6 @@ For more information on pipes, see [Pipes](guide/pipes).
 
 
 
-[Back to top](guide/ajs-quick-reference#top)
-
-
 {@a controllers-components}
 
 
@@ -1215,11 +1203,6 @@ The Angular code is shown using TypeScript.
 
 </table>
 
-
-
-[Back to top](guide/ajs-quick-reference#top)
-
-
 {@a style-sheets}
 
 
@@ -1297,6 +1280,3 @@ also encapsulate a style sheet within a specific component.
 
 </table>
 
-
-
-[Back to top](guide/ajs-quick-reference#top)
