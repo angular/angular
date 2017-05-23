@@ -87,6 +87,20 @@ export function deserializeSummaries(symbolCache: StaticSymbolCache, json: strin
   return deserializer.deserialize(json);
 }
 
+export function createForJitStub(outputCtx: OutputContext, reference: StaticSymbol) {
+  return createSummaryForJitFunction(outputCtx, reference, o.NULL_EXPR);
+}
+
+function createSummaryForJitFunction(
+    outputCtx: OutputContext, reference: StaticSymbol, value: o.Expression) {
+  const fnName = summaryForJitName(reference.name);
+  outputCtx.statements.push(
+      o.fn([], [new o.ReturnStatement(value)], new o.ArrayType(o.DYNAMIC_TYPE)).toDeclStmt(fnName, [
+        o.StmtModifier.Final, o.StmtModifier.Exported
+      ]));
+}
+
+
 class ToJsonSerializer extends ValueTransformer {
   // Note: This only contains symbols without members.
   symbols: StaticSymbol[] = [];
@@ -215,10 +229,9 @@ class ForJitSerializer {
       }
       if (!isLibrary) {
         const fnName = summaryForJitName(summary.type.reference.name);
-        this.outputCtx.statements.push(
-            o.fn([], [new o.ReturnStatement(this.serializeSummaryWithDeps(summary, metadata !))],
-                 new o.ArrayType(o.DYNAMIC_TYPE))
-                .toDeclStmt(fnName, [o.StmtModifier.Final, o.StmtModifier.Exported]));
+        createSummaryForJitFunction(
+            this.outputCtx, summary.type.reference,
+            this.serializeSummaryWithDeps(summary, metadata !));
       }
     });
 

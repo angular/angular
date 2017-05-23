@@ -50,21 +50,13 @@ export class NgModuleCompiler {
         [new o.FnParam(LOG_VAR.name !)], [new o.ReturnStatement(ngModuleDef)], o.INFERRED_TYPE);
 
     const ngModuleFactoryVar = `${identifierName(ngModuleMeta.type)}NgFactory`;
-    const ngModuleFactoryStmt =
-        o.variable(ngModuleFactoryVar)
-            .set(o.importExpr(Identifiers.createModuleFactory).callFn([
-              ctx.importExpr(ngModuleMeta.type.reference),
-              o.literalArr(bootstrapComponents.map(id => ctx.importExpr(id.reference))),
-              ngModuleDefFactory
-            ]))
-            .toDeclStmt(
-                o.importType(
-                    Identifiers.NgModuleFactory,
-                    [o.expressionType(ctx.importExpr(ngModuleMeta.type.reference)) !],
-                    [o.TypeModifier.Const]),
-                [o.StmtModifier.Final, o.StmtModifier.Exported]);
+    this._createNgModuleFactory(
+        ctx, ngModuleMeta.type.reference, o.importExpr(Identifiers.createModuleFactory).callFn([
+          ctx.importExpr(ngModuleMeta.type.reference),
+          o.literalArr(bootstrapComponents.map(id => ctx.importExpr(id.reference))),
+          ngModuleDefFactory
+        ]));
 
-    ctx.statements.push(ngModuleFactoryStmt);
     if (ngModuleMeta.id) {
       const registerFactoryStmt =
           o.importExpr(Identifiers.RegisterModuleFactoryFn)
@@ -74,5 +66,23 @@ export class NgModuleCompiler {
     }
 
     return new NgModuleCompileResult(ngModuleFactoryVar);
+  }
+
+  createStub(ctx: OutputContext, ngModuleReference: any) {
+    this._createNgModuleFactory(ctx, ngModuleReference, o.NULL_EXPR);
+  }
+
+  private _createNgModuleFactory(ctx: OutputContext, reference: any, value: o.Expression) {
+    const ngModuleFactoryVar = `${identifierName({reference: reference})}NgFactory`;
+    const ngModuleFactoryStmt =
+        o.variable(ngModuleFactoryVar)
+            .set(value)
+            .toDeclStmt(
+                o.importType(
+                    Identifiers.NgModuleFactory, [o.expressionType(ctx.importExpr(reference)) !],
+                    [o.TypeModifier.Const]),
+                [o.StmtModifier.Final, o.StmtModifier.Exported]);
+
+    ctx.statements.push(ngModuleFactoryStmt);
   }
 }

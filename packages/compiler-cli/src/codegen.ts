@@ -38,8 +38,9 @@ export class CodeGenerator {
 
   codegen(): Promise<any> {
     return this.compiler
-        .compileAllAsync(this.program.getSourceFiles().map(
+        .analyzeModulesAsync(this.program.getSourceFiles().map(
             sf => this.ngCompilerHost.getCanonicalFileName(sf.fileName)))
+        .then(analyzedModules => this.compiler.emitAllImpls(analyzedModules))
         .then(generatedModules => {
           generatedModules.forEach(generatedModule => {
             const sourceFile = this.program.getSourceFile(generatedModule.srcFileUrl);
