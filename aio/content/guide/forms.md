@@ -214,10 +214,10 @@ There are three changes:
 
 1. You import `FormsModule` and the new `HeroFormComponent`.
 
-1. You add the `FormsModule` to the list of `imports` defined in the `ngModule` decorator. This gives the application
+1. You add the `FormsModule` to the list of `imports` defined in the `@NgModule` decorator. This gives the application
 access to all of the template-driven forms features, including `ngModel`.
 
-1. You add the `HeroFormComponent` to the list of `declarations` defined in the `ngModule` decorator. This makes
+1. You add the `HeroFormComponent` to the list of `declarations` defined in the `@NgModule` decorator. This makes
 the `HeroFormComponent` component visible throughout this module.
 
 

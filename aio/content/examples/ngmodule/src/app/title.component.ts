@@ -12,7 +12,7 @@ import { UserService } from './user.service';
 })
 export class TitleComponent {
   @Input() subtitle = '';
-  title = 'Angular Modules';
+  title = 'NgModules';
 // #enddocregion v1
   user = '';
 

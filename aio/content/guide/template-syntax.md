@@ -1155,7 +1155,7 @@ other HTML elements, attributes, properties, and components.
 They are usually applied to elements as if they were HTML attributes, hence the name.
 
 Many details are covered in the [_Attribute Directives_](guide/attribute-directives) guide.
-Many Angular modules such as the [`RouterModule`](guide/router "Routing and Navigation")
+Many NgMdules such as the [`RouterModule`](guide/router "Routing and Navigation")
 and the [`FormsModule`](guide/forms "Forms") define their own attribute directives.
 This section is an introduction to the most commonly used attribute directives:
 
@@ -1260,7 +1260,7 @@ Two-way data binding with the `NgModel` directive makes that easy. Here's an exa
 #### _FormsModule_ is required to use _ngModel_
 
 Before using the `ngModel` directive in a two-way data binding,
-you must import the `FormsModule` and add it to the Angular module's `imports` list.
+you must import the `FormsModule` and add it to the NgModule's `imports` list.
 Learn more about the `FormsModule` and `ngModel` in the
 [Forms](guide/forms#ngModel) guide.
 
