@@ -1,12 +1,4 @@
-@title
-Anatomy of the Setup Project
-
-@intro
-Inside the local development environment for SystemJS.
-
-@description
-
-
+# Anatomy of the Setup Project
 
 The documentation [setup](guide/setup) procedures install a _lot_ of files.
 Most of them can be safely ignored.

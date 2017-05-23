@@ -1,10 +1,5 @@
-@title
-Component Interaction
+# Component Interaction
 
-@intro
-Share information between different directives and components.
-
-@description
 {@a top}
 
 This cookbook contains recipes for common component communication scenarios
