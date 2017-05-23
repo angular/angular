@@ -578,7 +578,7 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
    */
   private _selectValue(value: any): MdOption {
     let optionsArray = this.options.toArray();
-    let correspondingOption = optionsArray.find(option => option.value === value);
+    let correspondingOption = optionsArray.find(option => option.value && option.value === value);
 
     if (correspondingOption) {
       correspondingOption.select();
@@ -638,13 +638,19 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
   private _onSelect(option: MdOption): void {
     const wasSelected = this._selectionModel.isSelected(option);
 
+    // TODO(crisbeto): handle blank/null options inside multi-select.
     if (this.multiple) {
       this._selectionModel.toggle(option);
       wasSelected ? option.deselect() : option.select();
       this._sortValues();
     } else {
-      this._clearSelection(option);
-      this._selectionModel.select(option);
+      this._clearSelection(option.value == null ? null : option);
+
+      if (option.value == null) {
+        this._propagateChanges(option.value);
+      } else {
+        this._selectionModel.select(option);
+      }
     }
 
     if (wasSelected !== this._selectionModel.isSelected(option)) {
@@ -677,10 +683,14 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
   }
 
   /** Emits change event to set the model value. */
-  private _propagateChanges(): void {
-    let valueToEmit = Array.isArray(this.selected) ?
-      this.selected.map(option => option.value) :
-      this.selected.value;
+  private _propagateChanges(fallbackValue?: any): void {
+    let valueToEmit = null;
+
+    if (Array.isArray(this.selected)) {
+      valueToEmit = this.selected.map(option => option.value);
+    } else {
+      valueToEmit = this.selected ? this.selected.value : fallbackValue;
+    }
 
     this._onChange(valueToEmit);
     this.change.emit(new MdSelectChange(this, valueToEmit));
