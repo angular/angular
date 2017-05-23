@@ -234,15 +234,12 @@ export class MockCompilerHost implements ts.CompilerHost {
     }
     const effectiveName = this.getEffectiveName(fileName);
     if (effectiveName == fileName) {
-      let result = open(fileName, this.data) != null;
-      return result;
-    } else {
-      if (fileName.match(rxjs)) {
-        let result = fs.existsSync(effectiveName);
-        return result;
-      }
-      return false;
+      return open(fileName, this.data) != null;
     }
+    if (fileName.match(rxjs)) {
+      return fs.existsSync(effectiveName);
+    }
+    return false;
   }
 
   readFile(fileName: string): string { return this.getFileContent(fileName) !; }
@@ -303,18 +300,13 @@ export class MockCompilerHost implements ts.CompilerHost {
     if (/^lib.*\.d\.ts$/.test(basename)) {
       let libPath = ts.getDefaultLibFilePath(settings);
       return fs.readFileSync(path.join(path.dirname(libPath), basename), 'utf8');
-    } else {
-      let effectiveName = this.getEffectiveName(fileName);
-      if (effectiveName === fileName) {
-        const result = open(fileName, this.data);
-        return result;
-      } else {
-        if (fileName.match(rxjs)) {
-          if (fs.existsSync(fileName)) {
-            return fs.readFileSync(fileName, 'utf8');
-          }
-        }
-      }
+    }
+    let effectiveName = this.getEffectiveName(fileName);
+    if (effectiveName === fileName) {
+      return open(fileName, this.data);
+    }
+    if (fileName.match(rxjs) && fs.existsSync(fileName)) {
+      return fs.readFileSync(fileName, 'utf8');
     }
   }
 
@@ -422,15 +414,14 @@ export class MockMetadataBundlerHost implements MetadataBundlerHost {
 function find(fileName: string, data: MockFileOrDirectory | undefined): MockFileOrDirectory|
     undefined {
   if (!data) return undefined;
-  let names = fileName.split('/');
+  const names = fileName.split('/');
   if (names.length && !names[0].length) names.shift();
   let current: MockFileOrDirectory|undefined = data;
-  for (let name of names) {
-    if (typeof current === 'string')
+  for (const name of names) {
+    if (typeof current !== 'object') {
       return undefined;
-    else
-      current = (<MockDirectory>current)[name];
-    if (!current) return undefined;
+    }
+    current = current[name];
   }
   return current;
 }
@@ -603,11 +594,12 @@ export function compile(
       useSummaries?: boolean,
       preCompile?: (program: ts.Program) => void,
       postCompile?: (program: ts.Program) => void,
+      stubsOnly?: boolean,
     }& AotCompilerOptions = {},
     tsOptions: ts.CompilerOptions = {}): {genFiles: GeneratedFile[], outDir: MockDirectory} {
   // when using summaries, always emit so the next step can use the results.
   const emit = options.emit || options.useSummaries;
-  const preCompile = options.preCompile || expectNoDiagnostics;
+  const preCompile = options.preCompile || (() => {});
   const postCompile = options.postCompile || expectNoDiagnostics;
   const rootDirArr = toMockFileArray(rootDirs);
   const scriptNames = rootDirArr.map(entry => entry.fileName).filter(isSource);
@@ -620,9 +612,12 @@ export function compile(
   }
   const tsSettings = {...settings, ...tsOptions};
   const program = ts.createProgram(host.scriptNames.slice(0), tsSettings, host);
-  if (preCompile) preCompile(program);
+  preCompile(program);
   const {compiler, reflector} = createAotCompiler(aotHost, options);
-  const genFiles = compiler.compileAllSync(program.getSourceFiles().map(sf => sf.fileName));
+  const analyzedModules =
+      compiler.analyzeModulesSync(program.getSourceFiles().map(sf => sf.fileName));
+  const genFiles = options.stubsOnly ? compiler.emitAllStubs(analyzedModules) :
+                                       compiler.emitAllImpls(analyzedModules);
   genFiles.forEach((file) => {
     const source = file.source || toTypeScript(file);
     if (isSource(file.genFileUrl)) {
@@ -632,7 +627,7 @@ export function compile(
     }
   });
   const newProgram = ts.createProgram(host.scriptNames.slice(0), tsSettings, host);
-  if (postCompile) postCompile(newProgram);
+  postCompile(newProgram);
   if (emit) {
     newProgram.emit();
   }
