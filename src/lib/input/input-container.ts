@@ -70,10 +70,10 @@ export class MdPlaceholder {}
   }
 })
 export class MdHint {
-  // Whether to align the hint label at the start or end of the line.
+  /** Whether to align the hint label at the start or end of the line. */
   @Input() align: 'start' | 'end' = 'start';
 
-  // Unique ID for the hint. Used for the aria-describedby on the input.
+  /** Unique ID for the hint. Used for the aria-describedby on the input. */
   @Input() id: string = `md-input-hint-${nextUniqueId++}`;
 }
 
@@ -187,6 +187,7 @@ export class MdInputDirective {
    */
   @Output() _placeholderChange = new EventEmitter<string>();
 
+  /** Whether the input is empty. */
   get empty() {
     return !this._isNeverEmpty() &&
         (this.value == null || this.value === '') &&
@@ -299,7 +300,7 @@ export class MdInputContainer implements AfterViewInit, AfterContentInit, AfterC
   get dividerColor() { return this.color; }
   set dividerColor(value) { this.color = value; }
 
-  /** Whether we should hide the required marker. */
+  /** Whether the required marker should be hidden. */
   @Input()
   get hideRequiredMarker() { return this._hideRequiredMarker; }
   set hideRequiredMarker(value: any) {
@@ -336,6 +337,7 @@ export class MdInputContainer implements AfterViewInit, AfterContentInit, AfterC
   }
   private _floatPlaceholder: FloatPlaceholderType = 'auto';
 
+  /** Reference to the input's underline element. */
   @ViewChild('underline') underlineRef: ElementRef;
 
   @ContentChild(MdInputDirective) _mdInputChild: MdInputDirective;
