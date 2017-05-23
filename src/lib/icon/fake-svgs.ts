@@ -30,6 +30,14 @@ const FAKE_SVGS = (() => {
       </svg>
   `);
 
+  svgs.set('farm-set-3.svg', `
+      <svg>
+        <symbol id="duck">
+          <path id="quack"></path>
+        </symbol>
+      </svg>
+  `);
+
   svgs.set('arrow-set.svg', `
       <svg>
         <defs>

@@ -10,28 +10,31 @@ import {wrappedErrorMessage} from '../core/testing/wrapped-error-message';
 
 
 /** Returns the CSS classes assigned to an element as a sorted array. */
-const sortedClassNames = (elem: Element) => elem.className.split(' ').sort();
+function sortedClassNames(element: Element): string[] {
+  return element.className.split(' ').sort();
+}
 
 /**
  * Verifies that an element contains a single <svg> child element, and returns that child.
  */
-const verifyAndGetSingleSvgChild = (element: SVGElement): any => {
+function verifyAndGetSingleSvgChild(element: SVGElement): SVGElement {
   expect(element.childNodes.length).toBe(1);
-  const svgChild = <Element>element.childNodes[0];
+  const svgChild = element.childNodes[0] as SVGElement;
   expect(svgChild.tagName.toLowerCase()).toBe('svg');
   return svgChild;
-};
+}
 
 /**
  * Verifies that an element contains a single <path> child element whose "id" attribute has
  * the specified value.
  */
-const verifyPathChildElement = (element: Element, attributeValue: string) => {
+function verifyPathChildElement(element: Element, attributeValue: string): void {
   expect(element.childNodes.length).toBe(1);
-  const pathElement = <Element>element.childNodes[0];
+  const pathElement = element.childNodes[0] as SVGPathElement;
   expect(pathElement.tagName.toLowerCase()).toBe('path');
   expect(pathElement.getAttribute('id')).toBe(attributeValue);
-};
+}
+
 
 describe('MdIcon', () => {
 
@@ -238,6 +241,25 @@ describe('MdIcon', () => {
       verifyPathChildElement(svgChild, 'moo moo');
       expect(mdIconElement.getAttribute('aria-label')).toBe('cow');
       expect(httpRequestUrls.sort()).toEqual(['farm-set-1.svg', 'farm-set-2.svg']);
+    });
+
+    it('should unwrap <symbol> nodes', () => {
+      mdIconRegistry.addSvgIconSetInNamespace('farm', trust('farm-set-3.svg'));
+
+      const fixture = TestBed.createComponent(MdIconFromSvgNameTestApp);
+      const testComponent = fixture.componentInstance;
+      const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
+
+      testComponent.iconName = 'farm:duck';
+      fixture.detectChanges();
+
+      const svgElement = verifyAndGetSingleSvgChild(mdIconElement);
+      const firstChild = svgElement.childNodes[0];
+
+      expect(svgElement.querySelector('symbol')).toBeFalsy();
+      expect(svgElement.childNodes.length).toBe(1);
+      expect(firstChild.nodeName.toLowerCase()).toBe('path');
+      expect((firstChild as HTMLElement).getAttribute('id')).toBe('quack');
     });
 
     it('should not wrap <svg> elements in icon sets in another svg tag', () => {

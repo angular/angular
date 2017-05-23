@@ -327,14 +327,24 @@ export class MdIconRegistry {
    */
   private _extractSvgIconFromSet(iconSet: SVGElement, iconName: string): SVGElement {
     const iconNode = iconSet.querySelector('#' + iconName);
+
     if (!iconNode) {
       return null;
     }
+
     // If the icon node is itself an <svg> node, clone and return it directly. If not, set it as
     // the content of a new <svg> node.
-    if (iconNode.tagName.toLowerCase() == 'svg') {
+    if (iconNode.tagName.toLowerCase() === 'svg') {
       return this._setSvgAttributes(iconNode.cloneNode(true) as SVGElement);
     }
+
+    // If the node is a <symbol>, it won't be rendered so we have to convert it into <svg>. Note
+    // that the same could be achieved by referring to it via <use href="#id">, however the <use>
+    // tag is problematic on Firefox, because it needs to include the current page path.
+    if (iconNode.nodeName.toLowerCase() === 'symbol') {
+      return this._setSvgAttributes(this._toSvgElement(iconNode));
+    }
+
     // createElement('SVG') doesn't work as expected; the DOM ends up with
     // the correct nodes, but the SVG content doesn't render. Instead we
     // have to create an empty SVG node using innerHTML and append its content.
@@ -343,6 +353,7 @@ export class MdIconRegistry {
     const svg = this._svgElementFromString('<svg></svg>');
     // Clone the node so we don't remove it from the parent icon set element.
     svg.appendChild(iconNode.cloneNode(true));
+
     return this._setSvgAttributes(svg);
   }
 
@@ -358,6 +369,21 @@ export class MdIconRegistry {
     if (!svg) {
       throw new Error('<svg> tag not found');
     }
+    return svg;
+  }
+
+  /**
+   * Converts an element into an SVG node by cloning all of its children.
+   */
+  private _toSvgElement(element: Element): SVGElement {
+    let svg = this._svgElementFromString('<svg></svg>');
+
+    for (let i = 0; i < element.childNodes.length; i++) {
+      if (element.childNodes[i].nodeType === Node.ELEMENT_NODE) {
+        svg.appendChild(element.childNodes[i].cloneNode(true));
+      }
+    }
+
     return svg;
   }
 
