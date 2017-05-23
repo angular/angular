@@ -15,10 +15,9 @@ This page contains only planned and past unplanned releases.
 Due to serious regressions or other important reasons we reserve the right to release an unplanned patch or minor release.
 In such case, we'll update this document accordingly.
 
-The dates past March 2017 are just a guidance and might be adjusted slightly if necessary.
+The dates are just a guidance and might be adjusted slightly if necessary.
 
-
-## Tentative Schedule Until March 2017
+## Tentative Schedule Until September 2017
 
 <!--
 The table below is formatted so that it's easy to read and edit in both markdown and rendered html form.
