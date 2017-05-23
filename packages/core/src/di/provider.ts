@@ -7,6 +7,7 @@
  */
 
 import {Type} from '../type';
+import {InjectionToken} from './injection_token';
 
 /**
  * @whatItDoes Configures the {@link Injector} to return an instance of `Type` when `Type' is used
@@ -22,7 +23,7 @@ import {Type} from '../type';
  * @description
  *
  * Create an instance by invoking the `new` operator and supplying additional arguments.
- * This form is a short form of `TypeProvider`;
+ * This form is a short form of `ClassProvider`;
  *
  * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
  *
@@ -52,9 +53,9 @@ export interface TypeProvider extends Type<any> {}
  */
 export interface ValueProvider {
   /**
-   * An injection token. (Typically an instance of `Type` or `InjectionToken`, but can be `any`).
+   * An injection token.
    */
-  provide: any;
+  provide: string|Type<any>|InjectionToken<any>|Function;
 
   /**
    * The value to inject.
@@ -96,9 +97,9 @@ export interface ValueProvider {
  */
 export interface ClassProvider {
   /**
-   * An injection token. (Typically an instance of `Type` or `InjectionToken`, but can be `any`).
+   * An injection token.
    */
-  provide: any;
+  provide: string|Type<any>|InjectionToken<any>|Function;
 
   /**
    * Class to instantiate for the `token`.
@@ -134,9 +135,9 @@ export interface ClassProvider {
  */
 export interface ExistingProvider {
   /**
-   * An injection token. (Typically an instance of `Type` or `InjectionToken`, but can be `any`).
+   * An injection token.
    */
-  provide: any;
+  provide: string|Type<any>|InjectionToken<any>|Function;
 
   /**
    * Existing `token` to return. (equivalent to `injector.get(useExisting)`)
@@ -178,9 +179,9 @@ export interface ExistingProvider {
  */
 export interface FactoryProvider {
   /**
-   * An injection token. (Typically an instance of `Type` or `InjectionToken`, but can be `any`).
+   * An injection token.
    */
-  provide: any;
+  provide: string|Type<any>|InjectionToken<any>|Function;
 
   /**
    * A function to invoke to create a value for this `token`. The function is invoked with
