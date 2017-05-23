@@ -15,7 +15,7 @@
   },
 
   "files": [
-    "src/uni/app.server.ts",
+    "src/uni/app.server.module.ts",
     "src/uni/server-aot.ts"
   ],
 

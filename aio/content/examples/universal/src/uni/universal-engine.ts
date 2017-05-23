@@ -26,7 +26,7 @@ export function ngUniversalEngine(setupOptions: any) {
     }
 
     // render the page via angular platform-server
-    let appModuleFactory = setupOptions.bootstrap[0];
+    let appModuleFactory = setupOptions.bootstrap;
     renderModuleFactory(appModuleFactory, {
       document: templateCache[filePath],
       url: url

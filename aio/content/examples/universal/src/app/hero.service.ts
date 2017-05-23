@@ -2,6 +2,7 @@
 // #docregion , imports
 import { Injectable, Inject, Optional, InjectionToken }    from '@angular/core';
 import { Headers, Http } from '@angular/http';
+import { APP_BASE_HREF } from '@angular/common';
 
 // #docregion rxjs
 import 'rxjs/add/operator/toPromise';
@@ -9,8 +10,6 @@ import 'rxjs/add/operator/toPromise';
 
 import { Hero } from './hero';
 // #enddocregion imports
-
-export const ORIGIN_URL = new InjectionToken<string>('ORIGIN_URL');
 
 @Injectable()
 export class HeroService {
@@ -21,8 +20,7 @@ export class HeroService {
   // #docregion getHeroes
   private heroesUrl = 'api/heroes';  // URL to web api
 
-//  constructor(private http: Http, @Optional() origin: InjectionToken<string>) {
-  constructor(private http: Http, @Optional() @Inject(ORIGIN_URL) origin: InjectionToken<string>) {
+  constructor(private http: Http, @Optional() @Inject(APP_BASE_HREF) origin: InjectionToken<string>) {
     // make heroesUrl absolute if origin is provided
     this.heroesUrl = origin ? origin + this.heroesUrl : this.heroesUrl;
   }

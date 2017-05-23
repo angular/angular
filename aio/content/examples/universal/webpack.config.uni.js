@@ -4,7 +4,7 @@ const webpack = require('webpack');
 module.exports = {
 	devtool: 'source-map',
 	entry: {
-		main: ['./src/uni/app.server.ts', './src/uni/server-aot.ts']
+		main: ['./src/uni/app.server.module.ts', './src/uni/server-aot.ts']
 	},
 	resolve: {
       extensions: ['.ts', '.js']
