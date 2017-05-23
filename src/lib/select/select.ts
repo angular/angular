@@ -555,12 +555,13 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
       throw getMdSelectNonArrayValueError();
     }
 
+    this._clearSelection();
+
     if (isArray) {
-      this._clearSelection();
       value.forEach((currentValue: any) => this._selectValue(currentValue));
       this._sortValues();
-    } else if (!this._selectValue(value)) {
-      this._clearSelection();
+    } else {
+      this._selectValue(value);
     }
 
     this._setValueWidth();
