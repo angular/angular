@@ -18,6 +18,25 @@
     }
   ],
 
+  "TopBarNarrow": [
+    {
+      "url": "features",
+      "title": "Features"
+    },
+    {
+      "url": "resources",
+      "title": "Resources"
+    },
+    {
+      "url": "events",
+      "title": "Events"
+    },
+    {
+      "url": "docs",
+      "title": "Docs:"
+    }
+  ],
+
   "SideNav": [
     {
       "url": "docs",
