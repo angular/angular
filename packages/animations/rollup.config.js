@@ -6,15 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import resolve from 'rollup-plugin-node-resolve';
+
+const globals = {
+  '@angular/core': 'ng.core',
+  'rxjs/Observable': 'Rx',
+  'rxjs/Subject': 'Rx',
+};
+
 export default {
   entry: '../../dist/packages-dist/animations/@angular/animations.es5.js',
   dest: '../../dist/packages-dist/animations/bundles/animations.umd.js',
   format: 'umd',
   exports: 'named',
   moduleName: 'ng.animations',
-  globals: {
-    '@angular/core': 'ng.core',
-    'rxjs/Observable': 'Rx',
-    'rxjs/Subject': 'Rx',
-  }
+  plugins: [resolve()],
+  external: Object.keys(globals),
+  globals: globals
 };

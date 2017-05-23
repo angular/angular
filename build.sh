@@ -123,8 +123,8 @@ downlevelES2015() {
       ts_file="${BASH_REMATCH[1]}${2:-".es5.ts"}"
       cp ${file} ${ts_file}
 
-      echo "======           $TSC ${ts_file} --target es5 --module es2015 --noLib"
-      ($TSC ${ts_file} --target es5 --module es2015 --noLib --sourceMap) > /dev/null 2>&1 || true
+      echo "======           $TSC ${ts_file} --target es5 --module es2015 --noLib --sourceMap --importHelpers"
+      ($TSC ${ts_file} --target es5 --module es2015 --noLib --sourceMap --importHelpers) > /dev/null 2>&1 || true
       mapSources "${BASH_REMATCH[1]}${2:-".es5.js"}"
       rm -f ${ts_file}
     fi
@@ -442,11 +442,7 @@ do
 
       echo "======        Copy ${PACKAGE} typings"
       rsync -a --exclude=*.js --exclude=*.js.map ${OUT_DIR}/ ${NPM_DIR}
-#      echo "$(cat ${LICENSE_BANNER}) ${N} export * from './index'" > ${NPM_DIR}/${PACKAGE}.d.ts
-#      echo "{\"alias\": \"./index.metadata.json\"}" > ${NPM_DIR}/${PACKAGE}.metadata.json
-#      exit 0
       moveTypings ${NPM_DIR} ${PACKAGE}
-#      addNgcPackageJson ${NPM_DIR}/typings
 
       (
         cd  ${SRC_DIR}

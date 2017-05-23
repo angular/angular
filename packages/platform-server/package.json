@@ -16,6 +16,7 @@
     "@angular/platform-browser": "0.0.0-PLACEHOLDER"
   },
   "dependencies": {
+    "tslib": "^1.7.1",
     "parse5": "^3.0.1",
     "xhr2": "^0.1.4"
   },
