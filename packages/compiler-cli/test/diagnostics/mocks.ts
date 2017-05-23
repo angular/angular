@@ -17,7 +17,11 @@ import {DiagnosticTemplateInfo} from '../../src/diagnostics/expression_diagnosti
 import {getClassFromStaticSymbol, getClassMembers, getPipesTable, getSymbolQuery} from '../../src/diagnostics/typescript_symbols';
 import {Directory, MockAotContext} from '../mocks';
 
-const packages = path.join(__dirname, '../../../../../packages');
+function calcRootPath() {
+  const moduleFilename = module.filename.replace(/\\/g, '/');
+  const distIndex = moduleFilename.indexOf('/dist/all');
+  return moduleFilename.substr(0, distIndex);
+}
 
 const realFiles = new Map<string, string>();
 
@@ -40,7 +44,7 @@ export class MockLanguageServiceHost implements ts.LanguageServiceHost, Compiler
       strictNullChecks: true,
       baseUrl: currentDirectory,
       lib: ['lib.es2015.d.ts', 'lib.dom.d.ts'],
-      paths: {'@angular/*': [packages + '/*']}
+      paths: {'@angular/*': [calcRootPath() + '/packages/*']}
     };
     this.context = new MockAotContext(currentDirectory, files)
   }
