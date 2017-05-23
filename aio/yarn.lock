@@ -4663,8 +4663,8 @@ ng-pwa-tools@^0.0.10:
     ts-node "^3.0.2"
 
 ngo-loader@alxhub/ngo:
-  version "0.0.2"
-  resolved "https://codeload.github.com/alxhub/ngo/tar.gz/5dd9616f88419747699f72c4ec132feb72d37931"
+  version "0.0.3"
+  resolved "https://codeload.github.com/alxhub/ngo/tar.gz/7ce7ab42311ed2d2aed2bbc3306ea29b125c43c2"
   dependencies:
     typescript "2.1"
 
