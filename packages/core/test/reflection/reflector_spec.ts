@@ -29,10 +29,11 @@ interface PropDecorator {
 }
 
 /** @Annotation */ const ClassDecorator =
-    <ClassDecoratorFactory>makeDecorator('ClassDecorator', {value: undefined});
+    <ClassDecoratorFactory>makeDecorator('ClassDecorator', (data: any) => data);
 /** @Annotation */ const ParamDecorator =
-    makeParamDecorator('ParamDecorator', [['value', undefined]]);
-/** @Annotation */ const PropDecorator = makePropDecorator('PropDecorator', [['value', undefined]]);
+    makeParamDecorator('ParamDecorator', (value: any) => ({value}));
+/** @Annotation */ const PropDecorator =
+    makePropDecorator('PropDecorator', (value: any) => ({value}));
 
 class AType {
   constructor(public value: any) {}

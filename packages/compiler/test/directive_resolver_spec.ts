@@ -114,9 +114,15 @@ export function main() {
 
     it('should read out the Directive metadata', () => {
       const directiveMetadata = resolver.resolve(SomeDirective);
-      expect(directiveMetadata)
-          .toEqual(new Directive(
-              {selector: 'someDirective', inputs: [], outputs: [], host: {}, queries: {}}));
+      expect(directiveMetadata).toEqual(new Directive({
+        selector: 'someDirective',
+        inputs: [],
+        outputs: [],
+        host: {},
+        queries: {},
+        exportAs: undefined,
+        providers: undefined
+      }));
     });
 
     it('should throw if not matching metadata is found', () => {
@@ -136,11 +142,25 @@ export function main() {
       class ChildWithDecorator extends Parent {
       }
 
-      expect(resolver.resolve(ChildNoDecorator))
-          .toEqual(new Directive({selector: 'p', inputs: [], outputs: [], host: {}, queries: {}}));
+      expect(resolver.resolve(ChildNoDecorator)).toEqual(new Directive({
+        selector: 'p',
+        inputs: [],
+        outputs: [],
+        host: {},
+        queries: {},
+        exportAs: undefined,
+        providers: undefined
+      }));
 
-      expect(resolver.resolve(ChildWithDecorator))
-          .toEqual(new Directive({selector: 'c', inputs: [], outputs: [], host: {}, queries: {}}));
+      expect(resolver.resolve(ChildWithDecorator)).toEqual(new Directive({
+        selector: 'c',
+        inputs: [],
+        outputs: [],
+        host: {},
+        queries: {},
+        exportAs: undefined,
+        providers: undefined
+      }));
     });
 
     describe('inputs', () => {

@@ -399,15 +399,8 @@ export interface Directive {
  * @stable
  * @Annotation
  */
-export const Directive: DirectiveDecorator = <DirectiveDecorator>makeDecorator('Directive', {
-  selector: undefined,
-  inputs: undefined,
-  outputs: undefined,
-  host: undefined,
-  providers: undefined,
-  exportAs: undefined,
-  queries: undefined
-});
+export const Directive: DirectiveDecorator =
+    <DirectiveDecorator>makeDecorator('Directive', (dir: Directive = {}) => dir);
 
 /**
  * Type of the Component decorator / constructor function.
@@ -691,26 +684,7 @@ export interface Component extends Directive {
  * @Annotation
  */
 export const Component: ComponentDecorator = <ComponentDecorator>makeDecorator(
-    'Component', {
-      selector: undefined,
-      inputs: undefined,
-      outputs: undefined,
-      host: undefined,
-      exportAs: undefined,
-      moduleId: undefined,
-      providers: undefined,
-      viewProviders: undefined,
-      changeDetection: ChangeDetectionStrategy.Default,
-      queries: undefined,
-      templateUrl: undefined,
-      template: undefined,
-      styleUrls: undefined,
-      styles: undefined,
-      animations: undefined,
-      encapsulation: undefined,
-      interpolation: undefined,
-      entryComponents: undefined
-    },
+    'Component', (c: Component = {}) => ({changeDetection: ChangeDetectionStrategy.Default, ...c}),
     Directive);
 
 /**
@@ -750,10 +724,8 @@ export interface Pipe {
  * @stable
  * @Annotation
  */
-export const Pipe: PipeDecorator = <PipeDecorator>makeDecorator('Pipe', {
-  name: undefined,
-  pure: true,
-});
+export const Pipe: PipeDecorator =
+    <PipeDecorator>makeDecorator('Pipe', (p: Pipe) => ({pure: true, ...p}));
 
 
 /**
@@ -825,7 +797,7 @@ export interface Input {
  * @Annotation
  */
 export const Input: InputDecorator =
-    makePropDecorator('Input', [['bindingPropertyName', undefined]]);
+    makePropDecorator('Input', (bindingPropertyName?: string) => ({bindingPropertyName}));
 
 /**
  * Type of the Output decorator / constructor function.
@@ -891,7 +863,7 @@ export interface Output { bindingPropertyName?: string; }
  * @Annotation
  */
 export const Output: OutputDecorator =
-    makePropDecorator('Output', [['bindingPropertyName', undefined]]);
+    makePropDecorator('Output', (bindingPropertyName?: string) => ({bindingPropertyName}));
 
 
 /**
@@ -951,7 +923,7 @@ export interface HostBinding { hostPropertyName?: string; }
  * @Annotation
  */
 export const HostBinding: HostBindingDecorator =
-    makePropDecorator('HostBinding', [['hostPropertyName', undefined]]);
+    makePropDecorator('HostBinding', (hostPropertyName?: string) => ({hostPropertyName}));
 
 
 /**
@@ -1013,4 +985,4 @@ export interface HostListener {
  * @Annotation
  */
 export const HostListener: HostListenerDecorator =
-    makePropDecorator('HostListener', [['eventName', undefined], ['args', []]]);
+    makePropDecorator('HostListener', (eventName?: string, args?: string[]) => ({eventName, args}));

@@ -225,7 +225,7 @@ function _extractToken(
 
   if (!Array.isArray(metadata)) {
     if (metadata instanceof Inject) {
-      return _createDependency(metadata['token'], optional, null);
+      return _createDependency(metadata.token, optional, null);
     } else {
       return _createDependency(metadata, optional, null);
     }
@@ -240,7 +240,7 @@ function _extractToken(
       token = paramMetadata;
 
     } else if (paramMetadata instanceof Inject) {
-      token = paramMetadata['token'];
+      token = paramMetadata.token;
 
     } else if (paramMetadata instanceof Optional) {
       optional = true;

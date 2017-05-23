@@ -119,7 +119,7 @@ export interface Attribute { attributeName?: string; }
  * @Annotation
  */
 export const Attribute: AttributeDecorator =
-    makeParamDecorator('Attribute', [['attributeName', undefined]]);
+    makeParamDecorator('Attribute', (attributeName?: string) => ({attributeName}));
 
 /**
  * Type of the Query metadata.
@@ -207,14 +207,8 @@ export type ContentChildren = Query;
 export const ContentChildren: ContentChildrenDecorator =
     <ContentChildrenDecorator>makePropDecorator(
         'ContentChildren',
-        [
-          ['selector', undefined], {
-            first: false,
-            isViewQuery: false,
-            descendants: false,
-            read: undefined,
-          }
-        ],
+        (selector?: any, data: any = {}) =>
+            ({selector, first: false, isViewQuery: false, descendants: false, ...data}),
         Query);
 
 /**
@@ -273,15 +267,8 @@ export type ContentChild = Query;
  * @Annotation
  */
 export const ContentChild: ContentChildDecorator = makePropDecorator(
-    'ContentChild',
-    [
-      ['selector', undefined], {
-        first: true,
-        isViewQuery: false,
-        descendants: true,
-        read: undefined,
-      }
-    ],
+    'ContentChild', (selector?: any, data: any = {}) =>
+                        ({selector, first: true, isViewQuery: false, descendants: true, ...data}),
     Query);
 
 /**
@@ -339,15 +326,8 @@ export type ViewChildren = Query;
  * @Annotation
  */
 export const ViewChildren: ViewChildrenDecorator = makePropDecorator(
-    'ViewChildren',
-    [
-      ['selector', undefined], {
-        first: false,
-        isViewQuery: true,
-        descendants: true,
-        read: undefined,
-      }
-    ],
+    'ViewChildren', (selector?: any, data: any = {}) =>
+                        ({selector, first: false, isViewQuery: true, descendants: true, ...data}),
     Query);
 
 /**
@@ -403,13 +383,6 @@ export type ViewChild = Query;
  * @Annotation
  */
 export const ViewChild: ViewChildDecorator = makePropDecorator(
-    'ViewChild',
-    [
-      ['selector', undefined], {
-        first: true,
-        isViewQuery: true,
-        descendants: true,
-        read: undefined,
-      }
-    ],
+    'ViewChild', (selector: any, data: any) =>
+                     ({selector, first: true, isViewQuery: true, descendants: true, ...data}),
     Query);
