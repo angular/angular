@@ -30,9 +30,6 @@ export function main() {
   describe('isObservable', () => {
     it('should be true for an Observable', () => expect(isObservable(of (true))).toEqual(true));
 
-    it('should be true if the argument is the object with subscribe function',
-       () => expect(isObservable({subscribe: () => {}})).toEqual(true));
-
     it('should be false if the argument is undefined',
        () => expect(isObservable(undefined)).toEqual(false));
 
@@ -43,5 +40,8 @@ export function main() {
 
     it('should be false if the argument is a function',
        () => expect(isObservable(() => {})).toEqual(false));
+
+    it('should be false if the argument is the object with subscribe function',
+       () => expect(isObservable({subscribe: () => {}})).toEqual(false));
   });
 }
