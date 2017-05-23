@@ -18,14 +18,15 @@ import * as tsc from '@angular/tsc-wrapped';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {CompilerHost, CompilerHostContext, ModuleResolutionHostAdapter} from './compiler_host';
-import {PathMappedCompilerHost} from './path_mapped_compiler_host';
+import {CompilerHost} from './compiler_host';
+import {ModuleFilenameResolver} from './transformers/api';
+import {createModuleFilenameResolver} from './transformers/module_filename_resolver';
 
 export class Extractor {
   constructor(
       private options: tsc.AngularCompilerOptions, private ngExtractor: compiler.Extractor,
       public host: ts.CompilerHost, private ngCompilerHost: CompilerHost,
-      private program: ts.Program) {}
+      private program: ts.Program, private resolver: ModuleFilenameResolver) {}
 
   extract(formatName: string, outFile: string|null): Promise<string[]> {
     // Checks the format and returns the extension
@@ -43,8 +44,8 @@ export class Extractor {
   }
 
   extractBundle(): Promise<compiler.MessageBundle> {
-    const files = this.program.getSourceFiles().map(
-        sf => this.ngCompilerHost.getCanonicalFileName(sf.fileName));
+    const files =
+        this.program.getSourceFiles().map(sf => this.resolver.getNgCanonicalFileName(sf.fileName));
 
     return this.ngExtractor.extract(files);
   }
@@ -90,17 +91,15 @@ export class Extractor {
 
   static create(
       options: tsc.AngularCompilerOptions, program: ts.Program, tsCompilerHost: ts.CompilerHost,
-      locale?: string|null, compilerHostContext?: CompilerHostContext,
-      ngCompilerHost?: CompilerHost): Extractor {
+      locale?: string|null, ngCompilerHost?: CompilerHost): Extractor {
+    const resolver = createModuleFilenameResolver(tsCompilerHost, options);
+
     if (!ngCompilerHost) {
-      const usePathMapping = !!options.rootDirs && options.rootDirs.length > 0;
-      const context = compilerHostContext || new ModuleResolutionHostAdapter(tsCompilerHost);
-      ngCompilerHost = usePathMapping ? new PathMappedCompilerHost(program, options, context) :
-                                        new CompilerHost(program, options, context);
+      ngCompilerHost = new CompilerHost(program, options, tsCompilerHost, resolver);
     }
 
     const {extractor: ngExtractor} = compiler.Extractor.create(ngCompilerHost, locale || null);
 
-    return new Extractor(options, ngExtractor, tsCompilerHost, ngCompilerHost, program);
+    return new Extractor(options, ngExtractor, tsCompilerHost, ngCompilerHost, program, resolver);
   }
 }

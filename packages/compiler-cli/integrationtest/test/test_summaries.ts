@@ -15,7 +15,7 @@ import * as path from 'path';
 import * as ts from 'typescript';
 import * as assert from 'assert';
 import {tsc} from '@angular/tsc-wrapped/src/tsc';
-import {AngularCompilerOptions, CodeGenerator, CompilerHostContext, NodeCompilerHostContext} from '@angular/compiler-cli';
+import {AngularCompilerOptions, CodeGenerator, createModuleFilenameResolver, CompilerHost} from '@angular/compiler-cli';
 
 /**
  * Main method.
@@ -29,8 +29,10 @@ function main() {
   const readFiles: string[] = [];
   const writtenFiles: {fileName: string, content: string}[] = [];
 
-  class AssertingHostContext extends NodeCompilerHostContext {
-    readFile(fileName: string): string {
+  function createModuleResolutionHost(host: ts.ModuleResolutionHost): ts.ModuleResolutionHost {
+    const assertingHost = Object.create(host);
+
+    assertingHost.readFile = (fileName: string): string => {
       if (/.*\/node_modules\/.*/.test(fileName) && !/.*ngsummary\.json$/.test(fileName) &&
           !/package\.json$/.test(fileName)) {
         // Only allow to read summaries and package.json files from node_modules
@@ -38,12 +40,10 @@ function main() {
         return null !;
       }
       readFiles.push(path.relative(basePath, fileName));
-      return super.readFile(fileName);
-    }
-    readResource(s: string): Promise<string> {
-      readFiles.push(path.relative(basePath, s));
-      return super.readResource(s);
-    }
+      return host.readFile(fileName);
+    };
+
+    return assertingHost;
   }
 
   const config = tsc.readConfiguration(project, basePath);
@@ -59,7 +59,7 @@ function main() {
           fileName = path.relative(basePath, fileName);
           writtenFiles.push({fileName, content});
         };
-        return new AssertingHostContext();
+        return createModuleResolutionHost(host);
       })
       .then((exitCode: any) => {
         console.log(`>>> codegen done, asserting read files`);
@@ -86,24 +86,23 @@ function main() {
 }
 
 /**
- * Simple adaption of tsc-wrapped main to just run codegen with a CompilerHostContext
+ * Simple adaption of tsc-wrapped main to just run codegen with a ModuleFilenameResolver
  */
 function codegen(
     config: {parsed: ts.ParsedCommandLine, ngOptions: AngularCompilerOptions},
-    hostContextFactory: (host: ts.CompilerHost) => CompilerHostContext) {
+    modResolutionFactory: (host: ts.CompilerHost) => ts.ModuleResolutionHost) {
   const host = ts.createCompilerHost(config.parsed.options, true);
-
-  // HACK: patch the realpath to solve symlink issue here:
-  // https://github.com/Microsoft/TypeScript/issues/9552
-  // todo(misko): remove once facade symlinks are removed
-  host.realpath = (path) => path;
 
   const program = ts.createProgram(config.parsed.fileNames, config.parsed.options, host);
 
-  return CodeGenerator.create(config.ngOptions, {
-                      } as any, program, host, hostContextFactory(host)).codegen();
-}
+  const moduleResolutionHost = modResolutionFactory(host);
+  const ngModuleResolver = createModuleFilenameResolver(host, config.ngOptions);
 
+  const ngCompilerHost =
+      new CompilerHost(program, config.ngOptions, moduleResolutionHost, ngModuleResolver);
+
+  return CodeGenerator.create(config.ngOptions, {} as any, program, host, ngCompilerHost).codegen();
+}
 function assertSomeFileMatch(fileNames: string[], pattern: RegExp) {
   assert(
       fileNames.some(fileName => pattern.test(fileName)),

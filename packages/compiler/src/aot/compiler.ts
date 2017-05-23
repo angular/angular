@@ -81,9 +81,6 @@ export class AotCompiler {
     const fileSuffix = splitTypescriptSuffix(srcFileUrl, true)[1];
     const generatedFiles: GeneratedFile[] = [];
 
-    const jitSummaryStmts: o.Statement[] = [];
-    const ngFactoryStms: o.Statement[] = [];
-
     const ngFactoryOutputCtx = this._createOutputContext(ngfactoryFilePath(srcFileUrl, true));
     const jitSummaryOutputCtx = this._createOutputContext(summaryForJitFileName(srcFileUrl, true));
 

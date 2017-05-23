@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AngularCompilerOptions, AotCompilerHost, CompilerHost, ModuleResolutionHostAdapter} from '@angular/compiler-cli';
+import {AngularCompilerOptions, CompilerHost, ModuleFilenameResolver, createModuleFilenameResolver} from '@angular/compiler-cli';
 import * as ts from 'typescript';
 
 class ReflectorModuleModuleResolutionHost implements ts.ModuleResolutionHost {
@@ -35,17 +35,23 @@ class ReflectorModuleModuleResolutionHost implements ts.ModuleResolutionHost {
 // of the program until it is actually needed.
 export class ReflectorHost extends CompilerHost {
   constructor(
-      private getProgram: () => ts.Program, serviceHost: ts.LanguageServiceHost,
-      options: AngularCompilerOptions) {
+      private getProgram: () => ts.Program, options: AngularCompilerOptions,
+      host: ts.ModuleResolutionHost, resolver: ModuleFilenameResolver) {
     super(
         // The ancestor value for program is overridden below so passing null here is safe.
-        /* program */ null !, options,
-        new ModuleResolutionHostAdapter(new ReflectorModuleModuleResolutionHost(serviceHost)),
-        {verboseInvalidExpression: true});
+        /* program */ null !, options, host, resolver, {verboseInvalidExpression: true});
   }
 
   protected get program() { return this.getProgram(); }
   protected set program(value: ts.Program) {
     // Discard the result set by ancestor constructor
   }
+}
+
+export function createReflectorHost(
+    getProgram: () => ts.Program, serviceHost: ts.LanguageServiceHost,
+    options: AngularCompilerOptions): ReflectorHost {
+  const host = new ReflectorModuleModuleResolutionHost(serviceHost);
+  const resolver = createModuleFilenameResolver(host, options);
+  return new ReflectorHost(getProgram, options, host, resolver);
 }

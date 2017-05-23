@@ -6,14 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompilerHostContext} from '@angular/compiler-cli/src/compiler_host';
 import * as ts from 'typescript';
 
 export type Entry = string | Directory;
 
 export interface Directory { [name: string]: Entry; }
 
-export class MockAotContext implements CompilerHostContext {
+
+// TODO(vicb): merge
+export class MockModuleResolutionHost implements ts.ModuleResolutionHost {
   constructor(public currentDirectory: string, private files: Entry) {}
 
   fileExists(fileName: string): boolean { return typeof this.getEntry(fileName) === 'string'; }
@@ -28,14 +29,6 @@ export class MockAotContext implements CompilerHostContext {
     return undefined !;
   }
 
-  readResource(fileName: string): Promise<string> {
-    const result = this.readFile(fileName);
-    if (result == null) {
-      return Promise.reject(new Error(`Resource not found: ${fileName}`));
-    }
-    return Promise.resolve(result);
-  }
-
   writeFile(fileName: string, data: string): void {
     const parts = fileName.split('/');
     const name = parts.pop() !;
@@ -44,8 +37,6 @@ export class MockAotContext implements CompilerHostContext {
       entry[name] = data;
     }
   }
-
-  assumeFileExists(fileName: string): void { this.writeFile(fileName, ''); }
 
   getEntry(fileName: string|string[]): Entry|undefined {
     let parts = typeof fileName === 'string' ? fileName.split('/') : fileName;
@@ -97,20 +88,20 @@ function normalize(parts: string[]): string[] {
 }
 
 export class MockCompilerHost implements ts.CompilerHost {
-  constructor(private context: MockAotContext) {}
+  constructor(private modResolutionHost: MockModuleResolutionHost) {}
 
-  fileExists(fileName: string): boolean { return this.context.fileExists(fileName); }
+  fileExists(fileName: string): boolean { return this.modResolutionHost.fileExists(fileName); }
 
-  readFile(fileName: string): string { return this.context.readFile(fileName); }
+  readFile(fileName: string): string { return this.modResolutionHost.readFile(fileName); }
 
   directoryExists(directoryName: string): boolean {
-    return this.context.directoryExists(directoryName);
+    return this.modResolutionHost.directoryExists(directoryName);
   }
 
   getSourceFile(
       fileName: string, languageVersion: ts.ScriptTarget,
       onError?: (message: string) => void): ts.SourceFile {
-    const sourceText = this.context.readFile(fileName);
+    const sourceText = this.modResolutionHost.readFile(fileName);
     if (sourceText) {
       return ts.createSourceFile(fileName, sourceText, languageVersion);
     } else {
@@ -122,9 +113,10 @@ export class MockCompilerHost implements ts.CompilerHost {
     return ts.getDefaultLibFileName(options);
   }
 
-  writeFile: ts.WriteFileCallback = (fileName, text) => { this.context.writeFile(fileName, text); };
+  writeFile: ts.WriteFileCallback =
+      (fileName, text) => { this.modResolutionHost.writeFile(fileName, text); };
 
-  getCurrentDirectory(): string { return this.context.currentDirectory; }
+  getCurrentDirectory(): string { return this.modResolutionHost.currentDirectory; }
 
   getCanonicalFileName(fileName: string): string { return fileName; }
 
@@ -132,5 +124,5 @@ export class MockCompilerHost implements ts.CompilerHost {
 
   getNewLine(): string { return '\n'; }
 
-  getDirectories(path: string): string[] { return this.context.getDirectories(path); }
+  getDirectories(path: string): string[] { return this.modResolutionHost.getDirectories(path); }
 }
