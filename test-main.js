@@ -75,7 +75,7 @@ System.import('@angular/core/testing')
           ])
           .then(function(mods) {
             coreTesting.TestBed.initTestEnvironment(
-                [mods[0].BrowserDynamicTestingModule, mods[1].NoopAnimationsModule],
+                [mods[0].BrowserDynamicTestingModule],
                 mods[0].platformBrowserDynamicTesting());
           });
     })
