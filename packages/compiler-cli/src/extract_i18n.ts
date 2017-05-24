@@ -22,8 +22,9 @@ import {Extractor} from './extractor';
 function extract(
     ngOptions: tsc.AngularCompilerOptions, cliOptions: tsc.I18nExtractionCliOptions,
     program: ts.Program, host: ts.CompilerHost): Promise<void> {
-  return Extractor.create(ngOptions, program, host, cliOptions.locale)
-      .extract(cliOptions.i18nFormat !, cliOptions.outFile);
+  const format = cliOptions.i18nFormat || ngOptions.i18nFormat || 'xlf';
+  const outFile = cliOptions.outFile || ngOptions.outFile || null;
+  return Extractor.create(ngOptions, program, host, cliOptions.locale).extract(format, outFile);
 }
 
 // Entry point
