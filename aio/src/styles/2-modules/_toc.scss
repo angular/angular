@@ -6,11 +6,6 @@
   bottom: 32px;
   overflow-y: auto;
   overflow-x: hidden;
-
-  @media (max-width: 800px) {
-    display: none;
-    width: 0;
-  }
 }
 
 aio-toc {
@@ -19,16 +14,9 @@ aio-toc {
       display: none;
     }
   }
-
-  &:not(.embedded) {
-    @media (max-width: 800px) {
-      display: none;
-    }
-  }
-
 }
 
-aio-toc > div {
+.toc-inner {
   border-left: 4px solid #4285f4;
   font-size: 13px;
   overflow-y: visible;
@@ -59,6 +47,7 @@ aio-toc > div {
     border: none;
     box-shadow: none;
     padding: 0;
+    text-align: start;
 
     &:focus.embedded {
       outline: none;
@@ -67,7 +56,8 @@ aio-toc > div {
   }
 
   button.toc-heading,
-  div.toc-heading {
+  div.toc-heading,
+  ul.toc-list li.h1 {
     font-size: 115%;
   }
 
@@ -131,10 +121,10 @@ aio-toc > div {
     margin: 6px 0;
     padding: 0;
     position: relative;
-    transition: all 0.3 ease-in-out;
+    transition: all 0.3s ease-in-out;
 
     a {
-      font-size: 12px;
+      font-size: inherit;
       color: lighten($darkgray, 10);
       display:table-cell;
       overflow: visible;
@@ -154,6 +144,17 @@ aio-toc > div {
   ul.toc-list li.h3 {
     margin-left: 15px;
   }
+
+  ul.toc-list li.h1:after {
+    content: "";
+    display: block;
+    height: 1px;
+    width: 40%;
+    margin: 24px 0px 10px;
+    background: #DBDBDB;
+    clear: both;
+  }
+
 }
 
 aio-toc.embedded > div.collapsed li.secondary {

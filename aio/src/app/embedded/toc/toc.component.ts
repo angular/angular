@@ -1,11 +1,15 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
+import { asap } from 'rxjs/scheduler/asap';
 import 'rxjs/add/observable/combineLatest';
+import 'rxjs/add/operator/subscribeOn';
 import 'rxjs/add/operator/takeUntil';
 
 import { ScrollService } from 'app/shared/scroll.service';
 import { TocItem, TocService } from 'app/shared/toc.service';
+
+type TocType = 'None' | 'Floating' | 'EmbeddedSimple' | 'EmbeddedExpandable';
 
 @Component({
   selector: 'aio-toc',
@@ -15,9 +19,7 @@ import { TocItem, TocService } from 'app/shared/toc.service';
 export class TocComponent implements OnInit, AfterViewInit, OnDestroy {
 
   activeIndex: number | null = null;
-  hasSecondary = false;
-  hasToc = false;
-  hostElement: HTMLElement;
+  type: TocType = 'None';
   isCollapsed = true;
   isEmbedded = false;
   @ViewChildren('tocItem') private items: QueryList<ElementRef>;
@@ -29,37 +31,35 @@ export class TocComponent implements OnInit, AfterViewInit, OnDestroy {
     private scrollService: ScrollService,
     elementRef: ElementRef,
     private tocService: TocService) {
-    this.hostElement = elementRef.nativeElement;
-    this.isEmbedded = this.hostElement.className.indexOf('embedded') !== -1;
+    this.isEmbedded = elementRef.nativeElement.className.indexOf('embedded') !== -1;
   }
 
   ngOnInit() {
     this.tocService.tocList
         .takeUntil(this.onDestroy)
         .subscribe(tocList => {
-          const count = tocList.length;
-
-          this.hasToc = count > 0;
-          this.hasSecondary = this.isEmbedded && this.hasToc && (count > this.primaryMax);
           this.tocList = tocList;
+          const itemCount = count(this.tocList, item => item.level !== 'h1');
 
-          if (this.hasSecondary) {
-            for (let i = this.primaryMax; i < count; i++) {
-              tocList[i].isSecondary = true;
-            }
-          }
+          this.type = (itemCount > 0) ?
+                        this.isEmbedded ?
+                          (itemCount > this.primaryMax) ?
+                            'EmbeddedExpandable' :
+                          'EmbeddedSimple' :
+                        'Floating' :
+                      'None';
         });
   }
 
   ngAfterViewInit() {
     if (!this.isEmbedded) {
-      this.tocService.activeItemIndex
-          .takeUntil(this.onDestroy)
-          .subscribe(index => this.activeIndex = index);
-
-      Observable.combineLatest(this.tocService.activeItemIndex, this.items.changes.startWith(this.items))
+      // We use the `asap` scheduler because updates to `activeItemIndex` are triggered by DOM changes,
+      // which, in turn, are caused by the rendering that happened due to a ChangeDetection.
+      // Without asap, we would be updating the model while still in a ChangeDetection handler, which is disallowed by Angular.
+      Observable.combineLatest(this.tocService.activeItemIndex.subscribeOn(asap), this.items.changes.startWith(this.items))
           .takeUntil(this.onDestroy)
           .subscribe(([index, items]) => {
+            this.activeIndex = index;
             if (index === null || index >= items.length) {
               return;
             }
@@ -91,4 +91,8 @@ export class TocComponent implements OnInit, AfterViewInit, OnDestroy {
   toTop() {
     this.scrollService.scrollToTop();
   }
+}
+
+function count<T>(array: T[], fn: (T) => boolean) {
+  return array.reduce((count, item) => fn(item) ? count + 1 : count, 0);
 }

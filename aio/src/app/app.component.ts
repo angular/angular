@@ -65,8 +65,12 @@ export class AppComponent implements OnInit {
   sideNavNodes: NavigationNode[];
   topMenuNodes: NavigationNode[];
   topMenuNarrowNodes: NavigationNode[];
+
+  showFloatingToc = false;
+  showFloatingTocWidth = 800;
   tocMaxHeight: string;
   private tocMaxHeightOffset = 0;
+
   versionInfo: VersionInfo;
 
   get homeImageUrl() {
@@ -198,6 +202,7 @@ export class AppComponent implements OnInit {
   @HostListener('window:resize', ['$event.target.innerWidth'])
   onResize(width) {
     this.isSideBySide = width > this.sideBySideWidth;
+    this.showFloatingToc = width > this.showFloatingTocWidth;
   }
 
   @HostListener('click', ['$event.target', '$event.button', '$event.ctrlKey', '$event.metaKey', '$event.altKey'])

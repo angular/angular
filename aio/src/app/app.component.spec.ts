@@ -75,6 +75,13 @@ describe('AppComponent', () => {
         component.onResize(500);
         expect(component.isSideBySide).toBe(false);
       });
+
+      it('should update `showFloatingToc` accordingly', () => {
+        component.onResize(801);
+        expect(component.showFloatingToc).toBe(true);
+        component.onResize(800);
+        expect(component.showFloatingToc).toBe(false);
+      });
     });
 
     describe('onScroll', () => {
