@@ -9,6 +9,8 @@ import 'rxjs/add/operator/takeUntil';
 import { ScrollService } from 'app/shared/scroll.service';
 import { TocItem, TocService } from 'app/shared/toc.service';
 
+type TocType = 'None' | 'Floating' | 'EmbeddedSimple' | 'EmbeddedExpandable';
+
 @Component({
   selector: 'aio-toc',
   templateUrl: 'toc.component.html',
@@ -17,8 +19,7 @@ import { TocItem, TocService } from 'app/shared/toc.service';
 export class TocComponent implements OnInit, AfterViewInit, OnDestroy {
 
   activeIndex: number | null = null;
-  hasSecondary = false;
-  hasToc = false;
+  type: TocType = 'None';
   hostElement: HTMLElement;
   isCollapsed = true;
   isEmbedded = false;
@@ -42,14 +43,13 @@ export class TocComponent implements OnInit, AfterViewInit, OnDestroy {
           this.tocList = tocList;
           const itemCount = count(this.tocList, item => item.level !== 'h1');
 
-          this.hasToc = itemCount > 0;
-          this.hasSecondary = this.isEmbedded && this.hasToc && (itemCount > this.primaryMax);
-
-          if (this.hasSecondary) {
-            for (let i = this.primaryMax; i < count; i++) {
-              this.tocList[i].isSecondary = true;
-            }
-          }
+          this.type = (itemCount > 0) ?
+                        this.isEmbedded ?
+                          (itemCount > this.primaryMax) ?
+                            'EmbeddedExpandable' :
+                          'EmbeddedSimple' :
+                        'Floating' :
+                      'None';
         });
   }
 

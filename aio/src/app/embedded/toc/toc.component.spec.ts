@@ -61,7 +61,7 @@ describe('TocComponent', () => {
     });
 
     it('should not display a ToC initially', () => {
-      expect(tocComponent.hasToc).toBe(false);
+      expect(tocComponent.type).toEqual('None');
     });
 
     it('should not display anything when no h2 or h3 TocItems', () => {
@@ -115,7 +115,7 @@ describe('TocComponent', () => {
       });
 
       it('should not have secondary items', () => {
-        expect(tocComponent.hasSecondary).toEqual(false, 'hasSecondary flag');
+        expect(tocComponent.type).toEqual('EmbeddedSimple');
         const aSecond = page.listItems.find(item => item.classes.secondary);
         expect(aSecond).toBeFalsy('should not find a secondary');
       });
@@ -160,7 +160,7 @@ describe('TocComponent', () => {
       });
 
       it('should have secondary items', () => {
-        expect(tocComponent.hasSecondary).toEqual(true, 'hasSecondary flag');
+        expect(tocComponent.type).toEqual('EmbeddedExpandable');
       });
 
       // CSS will hide items with the secondary class when collapsed
@@ -259,6 +259,7 @@ describe('TocComponent', () => {
 
     it('should not be in embedded state', () => {
       expect(tocComponent.isEmbedded).toEqual(false);
+      expect(tocComponent.type).toEqual('Floating');
     });
 
     it('should display all items (including h1s)', () => {
@@ -266,7 +267,7 @@ describe('TocComponent', () => {
     });
 
     it('should not have secondary items', () => {
-      expect(tocComponent.hasSecondary).toEqual(false, 'hasSecondary flag');
+      expect(tocComponent.type).toEqual('Floating');
       const aSecond = page.listItems.find(item => item.classes.secondary);
       expect(aSecond).toBeFalsy('should not find a secondary');
     });
