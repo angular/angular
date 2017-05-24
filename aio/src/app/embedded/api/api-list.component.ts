@@ -102,12 +102,12 @@ export class ApiListComponent implements OnInit, OnDestroy {
 
   onStatusSelectClick(evt) {
     evt.stopPropagation();
-    this.showTypeMenu = false;
+    this.typeMenuVisible(false);
   }
 
   onTypeSelectClick(evt) {
     evt.stopPropagation();
-    this.showStatusMenu = false;
+    this.statusMenuVisible(false);
   }
 
   // Todo: may need to debounce as the original did
@@ -117,23 +117,23 @@ export class ApiListComponent implements OnInit, OnDestroy {
   }
 
   setStatus(status: MenuItem) {
-    this.toggleStatusMenu();
     this.status = status;
+    this.statusMenuVisible(false);
     this.setSearchCriteria({status: status.name});
   }
 
   setType(type: MenuItem) {
-    this.toggleTypeMenu();
     this.type = type;
+    this.typeMenuVisible(false);
     this.setSearchCriteria({type: type.name});
   }
 
-  toggleStatusMenu() {
-    this.showStatusMenu = !this.showStatusMenu;
+  statusMenuVisible(isVisible) {
+    this.showStatusMenu = isVisible;
   }
 
-  toggleTypeMenu() {
-    this.showTypeMenu = !this.showTypeMenu;
+  typeMenuVisible(isVisible) {
+    this.showTypeMenu = isVisible;
   }
 
   //////// Private //////////

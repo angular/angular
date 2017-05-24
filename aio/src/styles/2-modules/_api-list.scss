@@ -31,7 +31,7 @@ aio-api-list {
 aio-api-list > div {
     display: flex;
     margin: 32px auto;
-    
+
     @media (max-width: 600px) {
         flex-direction: column;
         margin: 16px auto;
@@ -148,6 +148,11 @@ $form-select-width: 200px;
     .symbol {
       margin-right: 8px;
     }
+  }
+
+  &:focus {
+    border: 1px solid $blue-400;
+    box-shadow: 0 2px 2px rgba($blue-400, 0.24), 0 0 2px rgba($blue-400, 0.12);
   }
 }
 
