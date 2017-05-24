@@ -38,7 +38,7 @@ This page introduces modules; the [Angular modules](guide/ngmodule) page covers 
 
 <br class="clear">
 
-Every Angular app has at least one Angular module class, [the _root module_](guide/appmodule "AppModule: the root module"),
+Every Angular app has at least one Angular module class, [the _root module_](guide/bootstrapping "AppModule: the root module"),
 conventionally named `AppModule`.
 
 While the _root module_ may be the only module in a small application, most apps have many more
