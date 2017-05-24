@@ -1,7 +1,8 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, DebugElement } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By, DOCUMENT } from '@angular/platform-browser';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { asap } from 'rxjs/scheduler/asap';
 
 import { ScrollService } from 'app/shared/scroll.service';
 import { TocComponent } from './toc.component';
@@ -279,23 +280,23 @@ describe('TocComponent', () => {
       it('should keep track of `TocService`\'s `activeItemIndex`', () => {
         expect(tocComponent.activeIndex).toBeNull();
 
-        tocService.activeItemIndex.next(42);
+        tocService.setActiveIndex(42);
         expect(tocComponent.activeIndex).toBe(42);
 
-        tocService.activeItemIndex.next(null);
+        tocService.setActiveIndex(null);
         expect(tocComponent.activeIndex).toBeNull();
       });
 
       it('should stop tracking `activeItemIndex` once destroyed', () => {
-        tocService.activeItemIndex.next(42);
+        tocService.setActiveIndex(42);
         expect(tocComponent.activeIndex).toBe(42);
 
         tocComponent.ngOnDestroy();
 
-        tocService.activeItemIndex.next(43);
+        tocService.setActiveIndex(43);
         expect(tocComponent.activeIndex).toBe(42);
 
-        tocService.activeItemIndex.next(null);
+        tocService.setActiveIndex(null);
         expect(tocComponent.activeIndex).toBe(42);
       });
 
@@ -373,17 +374,17 @@ describe('TocComponent', () => {
         });
 
         it('when the `activeIndex` changes', () => {
-          tocService.activeItemIndex.next(0);
+          tocService.setActiveIndex(0);
           fixture.detectChanges();
 
           expect(parentScrollTop).toBe(0);
 
-          tocService.activeItemIndex.next(1);
+          tocService.setActiveIndex(1);
           fixture.detectChanges();
 
           expect(parentScrollTop).toBe(0);
 
-          tocService.activeItemIndex.next(page.listItems.length - 1);
+          tocService.setActiveIndex(page.listItems.length - 1);
           fixture.detectChanges();
 
           expect(parentScrollTop).toBeGreaterThan(0);
@@ -397,7 +398,7 @@ describe('TocComponent', () => {
 
           expect(parentScrollTop).toBe(0);
 
-          tocService.activeItemIndex.next(tocList.length - 1);
+          tocService.setActiveIndex(tocList.length - 1);
           fixture.detectChanges();
 
           expect(parentScrollTop).toBe(0);
@@ -412,7 +413,7 @@ describe('TocComponent', () => {
           const tocList = tocComponent.tocList;
           tocComponent.ngOnDestroy();
 
-          tocService.activeItemIndex.next(page.listItems.length - 1);
+          tocService.setActiveIndex(page.listItems.length - 1);
           fixture.detectChanges();
 
           expect(parentScrollTop).toBe(0);
@@ -453,6 +454,12 @@ class TestScrollService {
 class TestTocService {
   tocList = new BehaviorSubject<TocItem[]>(getTestTocList());
   activeItemIndex = new BehaviorSubject<number | null>(null);
+  setActiveIndex(index) {
+    this.activeItemIndex.next(index);
+    if (asap.scheduled) {
+      asap.flush();
+    }
+  }
 }
 
 // tslint:disable:quotemark
