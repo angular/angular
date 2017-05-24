@@ -108,56 +108,21 @@ Some devices don't support JavaScript, or have very slow performance.  For these
 
 ### Startup Performance <a name="startup-performance"></a>
 
-Application startup time is critical for user engagement.  While AOT compilation speeds up application start times, it may not be enough, especially on mobile devices with slow connections.  [53% of mobile site visits are abandoned](https://www.doubleclickbygoogle.com/articles/mobile-speed-matters/) if pages take longer than 3 seconds to load.  Your app needs to load quickly, to engage users before they decide to do something else.
+Application startup time is critical for user engagement.  While [AOT](aot-compiler) compilation speeds up application start times, it may not be enough, especially on mobile devices with slow connections.  [53% of mobile site visits are abandoned](https://www.doubleclickbygoogle.com/articles/mobile-speed-matters/) if pages take longer than 3 seconds to load.  Your app needs to load quickly, to engage users before they decide to do something else.
 
-With Angular Universal, you can generate landing pages for the app that look like the complete app.  The pages are pure HTML, and can display even if JavaScript is disabled.  The pages do not handle browser events, but they _do_ support navigation through the site use [routerLink](../guide/router.html#!#router-link).
+With Angular Universal, you can generate landing pages for the app that look like the complete app.  The pages are pure HTML, and can display even if JavaScript is disabled.  The pages do not handle browser events, but they _do_ support navigation through the site using [routerLink](../guide/router.html#!#router-link).
 
 The recommended scenario is to serve a static version of the landing page, then load your Angular app behind it.  This gives the appearance of near-instant performance, and offers the full interactive experience once the full app is loaded.  Better than a "loading" spinner, it's a real screen that engages the user.
 
 #### Startup Comparison <a name="startup-comparison"></a>
 
-To illustrate the impact of Universal, we have used the [Timeline feature in Chrome DevTools](https://developers.google.com/web/tools/chrome-devtools/evaluate-performance/timeline-tool). Timeline offers many ways to inspect the performance of your app.  Here we have used it to compare the uncached startup performance of the _Tour of Heroes_ app.  Tour of Heroes is a simple demo app without much code or content, so it is smaller than the real apps you will build.  
+If startup time is important for your app, you should measure it.  One way is by using the [Timeline feature in Chrome DevTools](https://developers.google.com/web/tools/chrome-devtools/evaluate-performance/timeline-tool).  Timeline offers many ways to inspect the performance of your app.  If you are testing startup time, you should consider the effect of slow devices and slow network connections.  [CPU Throttling](https://developers.google.com/web/updates/2016/09/devtools-digest#cpu_throttling_for_a_mobile-first_world) and [Network Throttling](https://developers.google.com/web/tools/chrome-devtools/network-performance/reference#throttling) can help you test by simulating other environments.
+
+Below is a very rough comparison of the uncached startup performance of the [_Tour of Heroes_](../tutorial) app.  _Tour of Heroes_ is a simple demo app without much code or content, so it is smaller than the real apps you will build.  The DevTools settings simulated a **5x slower CPU** and **3G network** (750kb/s).
 
 The test was done by measuring the time from browser refresh until the Tour of Heroes Dashboard is fully displayed.  The numbers and bars below represent the time from the initial request until the Dashboard page is visible in the app, so lower numbers are better.
 
-First, a PC browser with a local server, where browser performance and network response are very fast:
-<style scoped>
-    table.perf {
-        width: 100%;
-    }
-    table.perf td {
-        font-weight: bold;
-        text-align: center;
-    }
-</style>
-<table class="perf">
-  <tr>
-    <th></th>
-    <th>Load Time</th>
-    <th>Time Allocation</th>
-  </tr>
-  <tr>
-    <td>JIT</td>
-    <td>1.01s</td>
-    <td><img src="universal-img/toh-jit-local-pie.png" alt="JIT local time allocation"></td>
-  </tr>
-  <tr>
-    <td>AOT</td>
-    <td>0.29s</td>
-    <td><img src="universal-img/toh-aot-local-pie.png" alt="AOT local time allocation"></td>
-  </tr>
-  <tr>
-    <td>Universal</td>
-    <td>0.04s</td>
-    <td><img src="universal-img/toh-uni-local-pie.png" alt="Universal local time allocation"></td>
-  </tr>
-</table>
-
-You can see that the AOT-compiled version loaded faster than the JIT version (288ms versus 1000ms), and that most of the difference was in JavaScript execution.  The universal version was the fastest (40ms), with no JavaScript to execute. 
-
-The difference may not seem significant, since all are sufficiently fast.  But how would the app perform on a slower device with a slower network connection?  [CPU Throttling](https://developers.google.com/web/updates/2016/09/devtools-digest#cpu_throttling_for_a_mobile-first_world) and [Network Throttling](https://developers.google.com/web/tools/chrome-devtools/network-performance/reference#throttling)  can help you find out.
-
-The test was repeated using a simulated 5x slower CPU and simulated 3G network (750kb/s).
+> Note that this is a single test with a single sample app, and does not represent expected results from other environments or applications.
 
 <table class="perf">
   <tr>
@@ -168,17 +133,17 @@ The test was repeated using a simulated 5x slower CPU and simulated 3G network (
   <tr>
     <td>JIT</td>
     <td>37.3s</td>
-    <td><img src="universal-img/toh-jit-throttled-pie.png" alt="JIT 3G time allocation"></td>
+    <td><img src="../images/guide/universal/toh-jit-throttled-pie.png" alt="JIT 3G time allocation"></td>
   </tr>
   <tr>
     <td>AOT</td>
     <td>5.5s</td>
-    <td><img src="universal-img/toh-aot-throttled-pie.png" alt="AOT 3G time allocation"></td>
+    <td><img src="../images/guide/universal/toh-aot-throttled-pie.png" alt="AOT 3G time allocation"></td>
   </tr>
   <tr>
     <td>Universal</td>
     <td>0.4s</td>
-    <td><img src="universal-img/toh-uni-throttled-pie.png" alt="Universal 3G time allocation"></td>
+    <td><img src="../images/guide/universal/toh-uni-throttled-pie.png" alt="Universal 3G time allocation"></td>
   </tr>
 </table>
 
@@ -186,7 +151,9 @@ In this mobile scenario, the JIT app spends almost 30 seconds just waiting for i
 
 The Universal app displays the Dashboard page in just 0.4 seconds, since it displays without waiting for the JavaScript to load.  The app would not be fully functional until its JavaScript bundles have loaded, which would be comparable to the load time for the AOT app, but the user can view the first page immediately.
 
-> If you want your app to be usable on slow networks, AOT is a must.  Universal should be considered if first impressions are important.
+> Note that this is a single test with a single sample app, and does not represent expected results from other environments or applications.
+
+If you want your app to be usable on slow networks, AOT is a must.  Universal should be considered if first impressions are important.
 
 ## The Example <a name="the-example"></a>
 
@@ -615,9 +582,9 @@ It will pull in the Angular libraries used by the app, but it will *not* pull in
 This ensures that the code for both appears in the final bundle.
 
 ```ts
-	entry: {
-		main: ['./src/uni/app.server.ts', './src/uni/server-aot.ts']
-	},
+entry: {
+    main: ['./src/uni/app.server.ts', './src/uni/server-aot.ts']
+},
 ```
 
 The [Webpack Introduction](webpack.html#entries-outputs) describes how to create separate bundles for 
@@ -696,7 +663,7 @@ The first line shows that the server received a request for '/' and passed it to
 
 The remaining lines in the console show static files that were requested and returned by the server.  The .js files are needed for running the browser version of the app.  When the .js files are loaded into the browser, the Universal-rendered page is replaced by the Angular client app.
 
-What about that error?  The error says that the server cannot find a file, `main.js`, that the browser is requesting.  The main.js file does not exist because we haven't built the client version of the app.  Once it is built, the browser will load and run the client version, so test the Universal version first.
+_What about that error?_  The error says that the server cannot find a file, `main.js`, that the browser is requesting.  The main.js file does not exist because we haven't built the client version of the app.  Once it is built, the browser will load and run the client version, so test the Universal version first.
 
 ### App Limitations <a name="app-limitations"></a>
 
