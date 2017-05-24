@@ -37,28 +37,28 @@ describe('TocService', () => {
 
   describe('tocList', () => {
     it('should emit the latest value to new subscribers', () => {
-      const expectedValue1 = {} as TocItem;
-      const expectedValue2 = {} as TocItem;
+      const expectedValue1 = tocItem('Heading A');
+      const expectedValue2 = tocItem('Heading B');
       let value1: TocItem[];
       let value2: TocItem[];
 
-      tocService.tocList.next([] as TocItem[]);
+      tocService.tocList.next([]);
       tocService.tocList.subscribe(v => value1 = v);
       expect(value1).toEqual([]);
 
-      tocService.tocList.next([expectedValue1, expectedValue2] as TocItem[]);
+      tocService.tocList.next([expectedValue1, expectedValue2]);
       tocService.tocList.subscribe(v => value2 = v);
       expect(value2).toEqual([expectedValue1, expectedValue2]);
     });
 
     it('should emit the same values to all subscribers', () => {
-      const expectedValue1 = {} as TocItem;
-      const expectedValue2 = {} as TocItem;
+      const expectedValue1 = tocItem('Heading A');
+      const expectedValue2 = tocItem('Heading B');
       const emittedValues: TocItem[][] = [];
 
       tocService.tocList.subscribe(v => emittedValues.push(v));
       tocService.tocList.subscribe(v => emittedValues.push(v));
-      tocService.tocList.next([expectedValue1, expectedValue2] as TocItem[]);
+      tocService.tocList.next([expectedValue1, expectedValue2]);
 
       expect(emittedValues).toEqual([
         [expectedValue1, expectedValue2],
@@ -153,7 +153,9 @@ describe('TocService', () => {
   describe('should clear tocList', () => {
     beforeEach(() => {
       // Start w/ dummy data from previous usage
-      tocService.tocList.next([{}, {}] as TocItem[]);
+      const expectedValue1 = tocItem('Heading A');
+      const expectedValue2 = tocItem('Heading B');
+      tocService.tocList.next([expectedValue1, expectedValue2]);
       expect(lastTocList).not.toEqual([]);
     });
 
@@ -172,8 +174,8 @@ describe('TocService', () => {
       expect(lastTocList).toEqual([]);
     });
 
-    it('when given doc element w/ headings other than h2 & h3', () => {
-      callGenToc('<h1>This</h1><h4>and</h4><h5>that</h5>');
+    it('when given doc element w/ headings other than h1, h2 & h3', () => {
+      callGenToc('<h4>and</h4><h5>that</h5>');
       expect(lastTocList).toEqual([]);
     });
 
@@ -232,60 +234,60 @@ describe('TocService', () => {
     });
 
     it('should have tocList with expect number of TocItems', () => {
-      // should ignore h1, h4, and the no-toc h2
-      expect(lastTocList.length).toEqual(headings.length - 3);
+      // should ignore h4, and the no-toc h2
+      expect(lastTocList.length).toEqual(headings.length - 2);
     });
 
     it('should have href with docId and heading\'s id', () => {
-      const tocItem = lastTocList[0];
+      const tocItem = lastTocList.find(item => item.title === 'Heading one');
       expect(tocItem.href).toEqual(`${docId}#heading-one-special-id`);
     });
 
     it('should have level "h2" for an <h2>', () => {
-      const tocItem = lastTocList[0];
+      const tocItem = lastTocList.find(item => item.title === 'Heading one');
       expect(tocItem.level).toEqual('h2');
     });
 
     it('should have level "h3" for an <h3>', () => {
-      const tocItem = lastTocList[3];
+      const tocItem = lastTocList.find(item => item.title === 'H3 3a');
       expect(tocItem.level).toEqual('h3');
     });
 
     it('should have title which is heading\'s innerText ', () => {
       const heading = headings[3];
-      const tocItem = lastTocList[2];
+      const tocItem = lastTocList[3];
       expect(heading.innerText).toEqual(tocItem.title);
     });
 
     it('should have "SafeHtml" content which is heading\'s innerHTML ', () => {
       const heading = headings[3];
-      const content = lastTocList[2].content;
+      const content = lastTocList[3].content;
       expect((<TestSafeHtml>content).changingThisBreaksApplicationSecurity)
         .toEqual(heading.innerHTML);
     });
 
     it('should calculate and set id of heading without an id', () => {
+      const tocItem = lastTocList.find(item => item.title === 'H2 Two');
       const id = headings[2].getAttribute('id');
       expect(id).toEqual('h2-two');
     });
 
     it('should have href with docId and calculated heading id', () => {
-      const tocItem = lastTocList[1];
+      const tocItem = lastTocList.find(item => item.title === 'H2 Two');
       expect(tocItem.href).toEqual(`${docId}#h2-two`);
     });
 
     it('should ignore HTML in heading when calculating id', () => {
       const id = headings[3].getAttribute('id');
-      const tocItem = lastTocList[2];
+      const tocItem = lastTocList[3];
       expect(id).toEqual('h2-three', 'heading id');
       expect(tocItem.href).toEqual(`${docId}#h2-three`, 'tocItem href');
     });
 
     it('should avoid repeating an id when calculating', () => {
-      const tocItem4a = lastTocList[5];
-      const tocItem4b = lastTocList[6];
-      expect(tocItem4a.href).toEqual(`${docId}#h2-4-repeat`, 'first');
-      expect(tocItem4b.href).toEqual(`${docId}#h2-4-repeat-2`, 'second');
+      const tocItems = lastTocList.filter(item => item.title === 'H2 4 repeat');
+      expect(tocItems[0].href).toEqual(`${docId}#h2-4-repeat`, 'first');
+      expect(tocItems[1].href).toEqual(`${docId}#h2-4-repeat-2`, 'second');
     });
   });
 
@@ -361,5 +363,9 @@ class MockScrollSpyService {
       unspy: jasmine.createSpy('unspy'),
     };
   }
+}
+
+function tocItem(title: string, level = 'h2', href = '', content = title) {
+  return { title, href, level, content };
 }
 
