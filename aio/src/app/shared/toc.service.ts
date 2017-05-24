@@ -1,7 +1,6 @@
 import { Inject, Injectable } from '@angular/core';
 import { DOCUMENT, DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
-
 import { ScrollSpyInfo, ScrollSpyService } from 'app/shared/scroll-spy.service';
 
 
@@ -66,7 +65,7 @@ export class TocService {
   }
 
   private findTocHeadings(docElement: Element): HTMLHeadingElement[] {
-    const headings = docElement.querySelectorAll('h2,h3');
+    const headings = docElement.querySelectorAll('h1,h2,h3');
     const skipNoTocHeadings = (heading: HTMLHeadingElement) => !/(?:no-toc|notoc)/i.test(heading.className);
 
     return Array.prototype.filter.call(headings, skipNoTocHeadings);
