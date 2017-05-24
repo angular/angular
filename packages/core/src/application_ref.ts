@@ -346,6 +346,13 @@ export class PlatformRef_ extends PlatformRef {
 }
 
 /**
+ * Returns an empty platform with NullInjector.
+ *
+ * @experimental
+ */
+export const platform: PlatformRef = new PlatformRef_(Injector.NULL);
+
+/**
  * A reference to an Angular application running on a page.
  *
  * @stable
