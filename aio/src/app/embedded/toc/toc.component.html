@@ -1,6 +1,4 @@
 <div *ngIf="hasToc" class="toc-inner" [class.collapsed]="isCollapsed">
-  <button *ngIf="!isEmbedded" type="button" class="toc-heading"
-    (click)="toTop()" title="Top of page">Contents</button>
 
   <div *ngIf="!hasSecondary && isEmbedded" class="toc-heading embedded">Contents</div>
 
@@ -14,10 +12,12 @@
   </button>
 
   <ul class="toc-list">
-    <li #tocItem *ngFor="let toc of tocList; let i = index" title="{{toc.title}}"
-      class="{{toc.level}}" [class.secondary]="toc.isSecondary" [class.active]="i === activeIndex">
-      <a [href]="toc.href" [innerHTML]="toc.content"></a>
-    </li>
+    <ng-container *ngFor="let toc of tocList; let i = index">
+      <li #tocItem title="{{toc.title}}" *ngIf="!isEmbedded || toc.level != 'h1'"
+        class="{{toc.level}}" [class.secondary]="toc.isSecondary" [class.active]="i === activeIndex">
+        <a [href]="toc.href" [innerHTML]="toc.content"></a>
+      </li>
+    </ng-container>
   </ul>
 
   <button type="button" (click)="toggle()" *ngIf="hasSecondary"

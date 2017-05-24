@@ -39,15 +39,15 @@ export class TocComponent implements OnInit, AfterViewInit, OnDestroy {
     this.tocService.tocList
         .takeUntil(this.onDestroy)
         .subscribe(tocList => {
-          const count = tocList.length;
-
-          this.hasToc = count > 0;
-          this.hasSecondary = this.isEmbedded && this.hasToc && (count > this.primaryMax);
           this.tocList = tocList;
+          const itemCount = count(this.tocList, item => item.level !== 'h1');
+
+          this.hasToc = itemCount > 0;
+          this.hasSecondary = this.isEmbedded && this.hasToc && (itemCount > this.primaryMax);
 
           if (this.hasSecondary) {
             for (let i = this.primaryMax; i < count; i++) {
-              tocList[i].isSecondary = true;
+              this.tocList[i].isSecondary = true;
             }
           }
         });
@@ -93,4 +93,8 @@ export class TocComponent implements OnInit, AfterViewInit, OnDestroy {
   toTop() {
     this.scrollService.scrollToTop();
   }
+}
+
+function count<T>(array: T[], fn: (T) => boolean) {
+  return array.reduce((count, item) => fn(item) ? count + 1 : count, 0);
 }

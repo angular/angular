@@ -47,6 +47,7 @@ aio-toc {
     border: none;
     box-shadow: none;
     padding: 0;
+    text-align: start;
 
     &:focus.embedded {
       outline: none;
@@ -55,7 +56,8 @@ aio-toc {
   }
 
   button.toc-heading,
-  div.toc-heading {
+  div.toc-heading,
+  ul.toc-list li.h1 {
     font-size: 115%;
   }
 
@@ -122,7 +124,7 @@ aio-toc {
     transition: all 0.3 ease-in-out;
 
     a {
-      font-size: 12px;
+      font-size: inherit;
       color: lighten($darkgray, 10);
       display:table-cell;
       overflow: visible;
@@ -142,6 +144,17 @@ aio-toc {
   ul.toc-list li.h3 {
     margin-left: 15px;
   }
+
+  ul.toc-list li.h1:after {
+    content: "";
+    display: block;
+    height: 1px;
+    width: 40%;
+    margin: 24px 0px 10px;
+    background: #DBDBDB;
+    clear: both;
+  }
+
 }
 
 aio-toc.embedded > div.collapsed li.secondary {
