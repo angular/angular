@@ -23,6 +23,8 @@ describe('getLinkInfo', () => {
     const currentDoc = { };
     const linkInfo = getLinkInfo('browser-support', undefined, currentDoc);
     expect(linkInfo.valid).toBe(false);
+    expect(linkInfo.errorType).toEqual('no-title');
+    expect(linkInfo.error).toEqual('The link is missing a title');
   });
 
   it('should use the target document title if available and no title is specified', () => {
