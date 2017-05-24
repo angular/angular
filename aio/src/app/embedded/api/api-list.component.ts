@@ -6,11 +6,15 @@
 * Can add/remove API entity links based on filter settings.
 */
 
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { DOCUMENT } from '@angular/platform-browser';
 
 import { Observable } from 'rxjs/Observable';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { Subject } from 'rxjs/Subject';
 import { combineLatest } from 'rxjs/observable/combineLatest';
+import { fromEvent } from 'rxjs/observable/fromEvent';
+import 'rxjs/add/operator/takeUntil';
 
 import { LocationService } from 'app/shared/location.service';
 import { ApiItem, ApiSection, ApiService } from './api.service';
@@ -30,13 +34,14 @@ class SearchCriteria {
   selector: 'aio-api-list',
   templateUrl: './api-list.component.html'
 })
-export class ApiListComponent implements OnInit {
+export class ApiListComponent implements OnInit, OnDestroy {
 
   filteredSections: Observable<ApiSection[]>;
 
   showStatusMenu = false;
   showTypeMenu = false;
 
+  private onDestroy = new Subject();
   private criteriaSubject = new ReplaySubject<SearchCriteria>(1);
   private searchCriteria = new SearchCriteria();
 
@@ -69,9 +74,16 @@ export class ApiListComponent implements OnInit {
 
   constructor(
     private apiService: ApiService,
+    @Inject(DOCUMENT) private doc: Document,
     private locationService: LocationService) { }
 
   ngOnInit() {
+    fromEvent(this.doc, 'click')
+        .takeUntil(this.onDestroy)
+        .subscribe(() => {
+          this.showStatusMenu = false;
+          this.showTypeMenu = false;
+        })
 
     this.filteredSections = combineLatest(
       this.apiService.sections,
@@ -82,6 +94,20 @@ export class ApiListComponent implements OnInit {
     );
 
     this.initializeSearchCriteria();
+  }
+
+  ngOnDestroy() {
+    this.onDestroy.next();
+  }
+
+  onStatusSelectClick(evt) {
+    evt.stopPropagation();
+    this.showTypeMenu = false;
+  }
+
+  onTypeSelectClick(evt) {
+    evt.stopPropagation();
+    this.showStatusMenu = false;
   }
 
   // Todo: may need to debounce as the original did

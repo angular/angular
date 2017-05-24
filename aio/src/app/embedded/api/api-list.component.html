@@ -1,6 +1,6 @@
 <div class="l-flex-wrap info-banner api-filter">
 
-  <div class="form-select-menu">
+  <div class="form-select-menu" (click)="onTypeSelectClick($event)">
     <button class="form-select-button has-symbol" (click)="toggleTypeMenu()">
       <strong>Type:</strong><span class="symbol {{type.name}}"></span>{{type.title}}
     </button>
@@ -11,7 +11,7 @@
     </ul>
   </div>
 
-  <div class="form-select-menu">
+  <div class="form-select-menu" (click)="onStatusSelectClick($event)">
     <button class="form-select-button" (click)="toggleStatusMenu()">
       <strong>Status:</strong>{{status.title}}
     </button>
