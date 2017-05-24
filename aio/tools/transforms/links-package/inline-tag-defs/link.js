@@ -26,7 +26,7 @@ module.exports = function linkInlineTagDef(getLinkInfo, createDocMessage, log) {
         var linkInfo = getLinkInfo(uri, title, doc);
 
         if (!linkInfo.valid) {
-          const message = createDocMessage(linkInfo.error, doc);
+          const message = createDocMessage(`Error in {@${tagName} ${tagDescription}} - ${linkInfo.error}`, doc);
           if (this.failOnBadLink) {
             throw new Error(message);
           } else {

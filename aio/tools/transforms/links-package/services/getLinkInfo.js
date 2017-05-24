@@ -74,6 +74,8 @@ module.exports = function getLinkInfo(getDocFromAlias, encodeCodeBlock, log) {
 
     if (linkInfo.title === undefined) {
       linkInfo.valid = false;
+      linkInfo.errorType = 'no-title';
+      linkInfo.error = 'The link is missing a title';
     }
 
     return linkInfo;
