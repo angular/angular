@@ -6,11 +6,6 @@
   bottom: 32px;
   overflow-y: auto;
   overflow-x: hidden;
-
-  @media (max-width: 800px) {
-    display: none;
-    width: 0;
-  }
 }
 
 aio-toc {
@@ -19,13 +14,6 @@ aio-toc {
       display: none;
     }
   }
-
-  &:not(.embedded) {
-    @media (max-width: 800px) {
-      display: none;
-    }
-  }
-
 }
 
 .toc-inner {

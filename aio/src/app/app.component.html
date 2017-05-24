@@ -35,9 +35,7 @@
 
 </md-sidenav-container>
 
-
-
-<div class="toc-container" [style.max-height.px]="tocMaxHeight">
+<div *ngIf="showFloatingToc" class="toc-container" [style.max-height.px]="tocMaxHeight">
   <aio-toc></aio-toc>
 </div>
 
