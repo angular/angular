@@ -1,5 +1,4 @@
-import { Component, EventEmitter, HostListener, OnDestroy, OnInit, Output } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
 
 import { SearchResult, SearchResults, SearchService } from '../search.service';
