@@ -21,6 +21,7 @@
     "example-lint": "tslint -c \"content/examples/tslint.json\" \"content/examples/**/*.ts\" -e \"content/examples/styleguide/**/*.avoid.ts\"",
     "deploy-preview": "scripts/deploy-preview.sh",
     "deploy-staging": "scripts/deploy-staging.sh",
+    "payload-size": "scripts/payload.sh",
     "check-env": "node ../tools/check-environment.js",
     "predocs": "rimraf src/generated/{docs,*.json}",
     "docs": "dgeni ./tools/transforms/angular.io-package",
