@@ -17,6 +17,7 @@ export interface TocItem {
 export class TocService {
   tocList = new ReplaySubject<TocItem[]>(1);
   activeItemIndex = new ReplaySubject<number | null>(1);
+  guideName = new ReplaySubject<SafeHtml>(1);
   private scrollSpyInfo: ScrollSpyInfo | null;
 
   constructor(
@@ -41,6 +42,8 @@ export class TocService {
       title: heading.innerText.trim(),
     }));
 
+    this.guideName.next(this.extractHeadingSafeHtml(this.findGuideName(docElement)));
+
     this.tocList.next(tocList);
 
     this.scrollSpyInfo = this.scrollSpyService.spyOn(headings);
@@ -63,6 +66,10 @@ export class TocService {
     // security: the document element which provides this heading content
     // is always authored by the documentation team and is considered to be safe
     return this.domSanitizer.bypassSecurityTrustHtml(a.innerHTML.trim());
+  }
+
+  private findGuideName(docElement: Element): HTMLHeadingElement {
+    return docElement.querySelector('h1');
   }
 
   private findTocHeadings(docElement: Element): HTMLHeadingElement[] {

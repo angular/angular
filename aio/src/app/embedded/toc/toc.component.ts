@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { SafeHtml } from '@angular/platform-browser';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/observable/combineLatest';
@@ -15,6 +16,7 @@ import { TocItem, TocService } from 'app/shared/toc.service';
 export class TocComponent implements OnInit, AfterViewInit, OnDestroy {
 
   activeIndex: number | null = null;
+  guideName: SafeHtml;
   hasSecondary = false;
   hasToc = false;
   hostElement: HTMLElement;
@@ -34,6 +36,12 @@ export class TocComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.tocService.guideName
+        .takeUntil(this.onDestroy)
+        .subscribe(guideName => {
+          this.guideName = guideName
+        });
+
     this.tocService.tocList
         .takeUntil(this.onDestroy)
         .subscribe(tocList => {
