@@ -26,7 +26,6 @@
         "styles.scss"
       ],
       "scripts": [
-        "../node_modules/tslib/tslib.js"
       ],
       "environmentSource": "environments/environment.ts",
       "environments": {
