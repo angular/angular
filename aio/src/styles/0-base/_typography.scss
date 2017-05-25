@@ -11,7 +11,7 @@
       -moz-osx-font-smoothing: grayscale;
     }
 
-    h1 {
+    h1, title {
       display:inline-block;
       font-size: 24px;
       font-weight: 500;
@@ -28,14 +28,14 @@
       clear: both;
     }
 
-    h2 {
+    h2, section {
       font-size: 22px;
       font-weight: 500;
       margin: 32px 0px 24px;
       clear: both;
     }
 
-    h3 {
+    h3, article {
       font-size: 20px;
       font-weight: 400;
       margin: 24px 0px;
