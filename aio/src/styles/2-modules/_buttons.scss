@@ -104,3 +104,7 @@ a.filter-button {
     color: white;
   }
 }
+
+[md-button], [md-raised-button], [mat-button], [mat-raised-button] {
+  text-transform: uppercase;
+}

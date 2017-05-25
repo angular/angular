@@ -1,16 +1,13 @@
-.progress-bar-container {
-  height: 2px;
-  overflow: hidden;
-  position: fixed;
-  top: 64px;
-  width: 100vw;
-  z-index: 5;
+aio-shell.page-docs {
+  .sidenav-content {
+    // padding: 6rem 3rem 3rem 3rem; // THIS CAUSES THE TOP NAV TOOLBAR TO JUMP BETWEEN DOCS AND OTHER PAGES
+    margin: auto;
+  }
 }
 
 .sidenav-content {
-  padding: 1rem 3rem 3rem;
-  margin: auto;
   min-height: 100vh;
+  padding: 6rem 3rem 1rem;
 }
 
 .fill-remaining-space {
@@ -22,14 +19,9 @@
     display: none;
   }
 
-  .progress-bar-container {
-    top: 56px;
-  }
-
   .sidenav-content {
     min-height: 450px;
   }
-
 }
 
 .sidenav-container {
