@@ -8,6 +8,11 @@
   overflow-x: hidden;
 }
 
+.toc-content {
+  border-left: 1px solid $lightgray;
+  margin-left: 8px;
+}
+
 aio-toc {
   &.embedded {
     @media (min-width: 801px) {
@@ -17,14 +22,23 @@ aio-toc {
 }
 
 .toc-inner {
-  border-left: 4px solid #4285f4;
+
+  &:not(.embedded) {
+    @media (max-width: 800px) {
+      border-left: 4px solid #4285f4;
+      display: none;
+    }
+  }
+}
+
+aio-toc > div {
   font-size: 13px;
   overflow-y: visible;
   padding: 4px 0 0 10px;
 
-  .toc-heading p {
+  .toc-heading {
     font-weight: 500;
-    margin: 0;
+    margin: 0 0 16px 8px;
     padding: 0;
   }
 
@@ -107,7 +121,7 @@ aio-toc {
   ul.toc-list {
     list-style-type: none;
     margin: 0;
-    padding: 0;
+    padding: 0 8px;
 
     @media (max-width: 800px) {
       width: auto;
@@ -119,42 +133,77 @@ aio-toc {
     font-size: 12px;
     line-height: 16px;
     margin: 6px 0;
-    padding: 0;
+    // padding: 0 16px;
     position: relative;
     transition: all 0.3s ease-in-out;
+
+    &.active {
+      a {
+        color: $blue;
+        font-weight: 500;
+      }
+
+      &:before {
+        content: '';
+        border-radius: 50%;
+        left: -16px;
+        top: 10px;
+        background: $blue;
+        position: absolute;
+        width: 6px;
+        height: 6px;
+      }
+    }
+
+    &.h3 {
+      margin-left: 8px;
+    }
+
+    &:last-child a:before {
+      width: 0;
+    }
 
     a {
       font-size: inherit;
       color: lighten($darkgray, 10);
       display:table-cell;
       overflow: visible;
+      font-size: 12px;
+      display: table-cell;
+
 
       &:hover {
         color: $accentblue;
       }
-    }
 
-    &.active {
-      a {
-        color: $accentblue;
+      &.h2 {
+        &:before {
+          content: '';
+          left: -1px;
+          top: 10px;
+          background: red;
+          position: absolute;
+          display: block;
+          width: 1px;
+          height: calc(100% + 11px);
+        }
       }
     }
   }
 
-  ul.toc-list li.h3 {
-    margin-left: 15px;
-  }
+  // ul.toc-list li.h3 {
+  //   margin-left: 15px;
+  // }
 
-  ul.toc-list li.h1:after {
-    content: "";
-    display: block;
-    height: 1px;
-    width: 40%;
-    margin: 24px 0px 10px;
-    background: #DBDBDB;
-    clear: both;
-  }
-
+  // ul.toc-list li.h1:after {
+  //   content: "";
+  //   display: block;
+  //   height: 1px;
+  //   width: 40%;
+  //   margin: 24px 0px 10px;
+  //   background: #DBDBDB;
+  //   clear: both;
+  // }
 }
 
 aio-toc.embedded > div.collapsed li.secondary {

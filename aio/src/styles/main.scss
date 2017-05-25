@@ -12,22 +12,3 @@
 @import './0-base/base-dir';
 @import './1-layouts/layouts-dir';
 @import './2-modules/modules-dir';
-
-// import additional scss
-
-// ********************************************************* //
-
-[md-button], [md-raised-button], [mat-button], [mat-raised-button] {
-  text-transform: uppercase;
-}
-
-.docs-primary-header {
-  padding-left: 20px;
-}
-
-h1.docs-primary-header, h1 .docs-primary-header{
-    font-size: 30px;
-    font-weight: 300;
-    margin: 0;
-    padding: 30px;
-}

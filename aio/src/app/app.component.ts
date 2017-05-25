@@ -61,7 +61,7 @@ export class AppComponent implements OnInit {
   private isSideNavDoc = false;
   private previousNavView: string;
 
-  private sideBySideWidth = 1032;
+  private sideBySideWidth = 992;
   sideNavNodes: NavigationNode[];
   topMenuNodes: NavigationNode[];
   topMenuNarrowNodes: NavigationNode[];

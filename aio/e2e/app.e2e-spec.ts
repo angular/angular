@@ -22,7 +22,7 @@ describe('site App', function() {
 
     // navigate to a different page
     page.getLink('features').click();
-    expect(page.getDocViewerText()).toMatch(/Features/i);
+    expect(page.getDocViewerText()).toMatch(/Progressive web apps/i);
 
     // Show the menu
     page.docsMenuLink.click();

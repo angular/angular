@@ -21,14 +21,3 @@ $ng-io-theme: mat-light-theme($ng-io-primary, $ng-io-accent, $ng-io-warn);
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
 @include angular-material-theme($ng-io-theme);
-
-//TODO: define custom theme, old values from Style guide:
-// @material-header: #455A64;
-// @material-header-darker: #37474F;
-// @material-header-dark: #263238;
-// @material-200: #EEEEEE;
-// @material-700: #616161;
-// @material-800: #424242;
-// @material-900: #212121;
-// @black: #000000;
-// @white: #FFFFFF;

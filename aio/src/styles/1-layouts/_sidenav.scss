@@ -8,6 +8,21 @@
   }
 }
 
+aio-nav-menu {
+  display: block;
+  padding: 16px 0 0;
+  margin: 0 auto;
+  font-size: 13px;
+  ul, a {
+    padding: 0;
+    margin: 0;
+  }
+
+  aio-nav-item div a {
+    padding-left: 16px;
+  }
+}
+
 md-sidenav.mat-sidenav.sidenav {
   position: fixed;
   bottom: 0;
@@ -28,13 +43,9 @@ md-sidenav-container.sidenav-container {
     max-width: 82%;
     margin: 0;
     transform: none;
-    padding-top: 64px;
 
     @media (max-width: 800px) {
       max-width: 100%;
-    }
-    @media (max-width: 600px) {
-      padding-top: 56px;
     }
 }
 
@@ -60,13 +71,11 @@ md-sidenav-container div.mat-sidenav-content {
   width: 100%;
   word-wrap: break-word;
   outline: none;
+  transition: all 0.3s ease-in-out;
 
   &:hover {
-    background-color: $lightgray;
-  }
-
-  &:focus {
-    color: $darkgray;
+    text-shadow: 0 0 5px #ffffff;
+    color: $blue;
   }
 
   //icons _within_ nav
@@ -80,10 +89,6 @@ md-sidenav-container div.mat-sidenav-content {
 
 .vertical-menu-item.selected {
   color: $blue;
-
-  &:focus {
-    color: $blue-900;
-  }
 }
 
 button.vertical-menu-item {
@@ -122,12 +127,6 @@ button.vertical-menu-item {
   transition-timing-function: ease-out;
 }
 
-a.selected.level-1,
-.heading.selected.level-1,
-.heading-children.selected.level-1 {
-  border-left: 3px $blue solid;
-}
-
 .level-1 {
   font-family: $main-font;
   font-size: 14px;
@@ -141,7 +140,7 @@ a.selected.level-1,
   font-size: 14px;
   color: $mediumgray;
   font-weight: 400;
-  padding-left: 20px;
+  padding-left: 24px;
   text-transform: none;
 }
 
@@ -149,6 +148,7 @@ a.selected.level-1,
   font-family: $main-font;
   font-size: 14px;
   color: $mediumgray;
+  padding-left: 8px;
 }
 
 .level-1.expanded .mat-icon, .level-2.expanded .mat-icon {
@@ -168,19 +168,20 @@ a.selected.level-1,
 }
 
 aio-nav-menu.top-menu {
-  aio-nav-item:first-child .vertical-menu-item {
-    padding-top: 48px;
-  }
+  padding: 24px 0 0;
 
   aio-nav-item:last-child div {
-    border-bottom: 2px solid rgba($mediumgray, 0.5);
+    border-bottom: 1px solid rgba($mediumgray, 0.5);
   }
 
+  aio-nav-item:first-child div {
+    border-top: 1px solid rgba($mediumgray, 0.5);
+  }
 }
 
 // Angular Version Selector
 md-sidenav .doc-version {
-  padding: 10px;
+  padding: 8px;
   border-top: 1px solid $lightgray;
 
   select {

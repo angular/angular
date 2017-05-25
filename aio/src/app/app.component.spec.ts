@@ -28,6 +28,9 @@ import { SwUpdateNotificationsService } from 'app/sw-updates/sw-update-notificat
 import { TocComponent } from 'app/embedded/toc/toc.component';
 import { MdSidenav } from '@angular/material';
 
+const sideBySideBreakPoint = 992;
+const hideToCBreakPoint = 800;
+
 describe('AppComponent', () => {
   let component: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
@@ -42,7 +45,7 @@ describe('AppComponent', () => {
     component = fixture.componentInstance;
 
     fixture.detectChanges();
-    component.onResize(1033); // wide by default
+    component.onResize(sideBySideBreakPoint + 1); // wide by default
 
     docViewer = fixture.debugElement.query(By.css('aio-doc-viewer')).nativeElement;
     hamburger = fixture.debugElement.query(By.css('.hamburger')).nativeElement;
@@ -70,16 +73,16 @@ describe('AppComponent', () => {
 
     describe('onResize', () => {
       it('should update `isSideBySide` accordingly', () => {
-        component.onResize(1033);
+        component.onResize(sideBySideBreakPoint + 1);
         expect(component.isSideBySide).toBe(true);
-        component.onResize(500);
+        component.onResize(sideBySideBreakPoint - 1);
         expect(component.isSideBySide).toBe(false);
       });
 
       it('should update `showFloatingToc` accordingly', () => {
-        component.onResize(801);
+        component.onResize(hideToCBreakPoint + 1);
         expect(component.showFloatingToc).toBe(true);
-        component.onResize(800);
+        component.onResize(hideToCBreakPoint - 1);
         expect(component.showFloatingToc).toBe(false);
       });
     });
@@ -96,7 +99,7 @@ describe('AppComponent', () => {
     describe('SideNav when side-by-side (wide)', () => {
 
       beforeEach(() => {
-        component.onResize(1033); // side-by-side
+        component.onResize(sideBySideBreakPoint + 1); // side-by-side
       });
 
       it('should open when nav to a guide page (guide/pipes)', () => {
@@ -155,7 +158,7 @@ describe('AppComponent', () => {
     describe('SideNav when NOT side-by-side (narrow)', () => {
 
       beforeEach(() => {
-        component.onResize(1000); // NOT side-by-side
+        component.onResize(sideBySideBreakPoint - 1); // NOT side-by-side
       });
 
       it('should be closed when nav to a guide page (guide/pipes)', () => {
@@ -219,7 +222,7 @@ describe('AppComponent', () => {
 
     describe('SideNav version selector', () => {
       beforeEach(() => {
-        component.onResize(1033); // side-by-side
+        component.onResize(sideBySideBreakPoint + 1); // side-by-side
       });
 
       it('should pick first (current) version by default', () => {
