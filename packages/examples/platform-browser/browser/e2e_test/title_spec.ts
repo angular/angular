@@ -15,13 +15,12 @@ function waitForElement(selector: string) {
   browser.wait(EC.presenceOf($(selector)), 20000);
 }
 
-describe('Set Document Title', function() {
-  const URL = 'platform-browser/browser/';
+fdescribe('Set Document Title', function() {
+  const URL = '/platform-browser/browser/';
   afterEach(verifyNoBrowserErrors);
 
   it('should set the document title', function() {
     browser.get(URL);
-    waitForElement('browser-title');
 
     let titles = ['Good morning!', 'Good afternoon!', 'Good evening!'];
 
