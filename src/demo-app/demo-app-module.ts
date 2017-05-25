@@ -37,14 +37,40 @@ import {PlatformDemo} from './platform/platform-demo';
 import {AutocompleteDemo} from './autocomplete/autocomplete-demo';
 import {InputDemo} from './input/input-demo';
 import {StyleDemo} from './style/style-demo';
+import {DataTableDemo} from './data-table/data-table-demo';
+import {PeopleDatabase} from './data-table/people-database';
 import {DatepickerDemo} from './datepicker/datepicker-demo';
-import {FullscreenOverlayContainer, OverlayContainer} from '@angular/material';
 import {
-  MdAutocompleteModule, MdButtonModule, MdButtonToggleModule, MdCardModule, MdCheckboxModule,
-  MdChipsModule, MdCoreModule, MdDatepickerModule, MdDialogModule, MdGridListModule, MdIconModule,
-  MdInputModule, MdListModule, MdMenuModule, MdNativeDateModule, MdProgressBarModule, MdRadioModule,
-  MdProgressSpinnerModule, MdRippleModule, MdSelectModule, MdSidenavModule, MdSliderModule,
-  MdSlideToggleModule, MdSnackBarModule, MdTabsModule, MdToolbarModule, MdTooltipModule
+  CdkDataTableModule,
+  FullscreenOverlayContainer,
+  MdAutocompleteModule,
+  MdButtonModule,
+  MdButtonToggleModule,
+  MdCardModule,
+  MdCheckboxModule,
+  MdChipsModule,
+  MdCoreModule,
+  MdDatepickerModule,
+  MdDialogModule,
+  MdGridListModule,
+  MdIconModule,
+  MdInputModule,
+  MdListModule,
+  MdMenuModule,
+  MdNativeDateModule,
+  MdProgressBarModule,
+  MdProgressSpinnerModule,
+  MdRadioModule,
+  MdRippleModule,
+  MdSelectModule,
+  MdSidenavModule,
+  MdSliderModule,
+  MdSlideToggleModule,
+  MdSnackBarModule,
+  MdTabsModule,
+  MdToolbarModule,
+  MdTooltipModule,
+  OverlayContainer
 } from '@angular/material';
 
 /**
@@ -79,6 +105,7 @@ import {
     MdToolbarModule,
     MdTooltipModule,
     MdNativeDateModule,
+    CdkDataTableModule,
   ]
 })
 export class DemoMaterialModule {}
@@ -102,6 +129,7 @@ export class DemoMaterialModule {}
     CardDemo,
     ChipsDemo,
     CheckboxDemo,
+    DataTableDemo,
     DatepickerDemo,
     DemoApp,
     DemoAppOnPush,
@@ -142,7 +170,8 @@ export class DemoMaterialModule {}
     PlatformDemo,
   ],
   providers: [
-    {provide: OverlayContainer, useClass: FullscreenOverlayContainer}
+    {provide: OverlayContainer, useClass: FullscreenOverlayContainer},
+    PeopleDatabase
   ],
   entryComponents: [
     DemoApp,

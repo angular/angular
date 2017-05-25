@@ -1,13 +1,13 @@
 import {NgModule} from '@angular/core';
 
 import {
-  MdRippleModule,
-  RtlModule,
-  ObserveContentModule,
-  PortalModule,
-  OverlayModule,
   A11yModule,
   MdCommonModule,
+  MdRippleModule,
+  ObserveContentModule,
+  OverlayModule,
+  PortalModule,
+  RtlModule
 } from './core/index';
 
 import {MdButtonToggleModule} from './button-toggle/index';
@@ -36,6 +36,7 @@ import {PlatformModule} from './core/platform/index';
 import {MdAutocompleteModule} from './autocomplete/index';
 import {StyleModule} from './core/style/index';
 import {MdDatepickerModule} from './datepicker/index';
+import {CdkDataTableModule} from './core/data-table/index';
 
 const MATERIAL_MODULES = [
   MdAutocompleteModule,
@@ -71,6 +72,7 @@ const MATERIAL_MODULES = [
   PlatformModule,
   MdCommonModule,
   ObserveContentModule,
+  CdkDataTableModule
 ];
 
 /** @deprecated */
