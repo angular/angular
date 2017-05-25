@@ -216,7 +216,7 @@ $candy-app-theme:   mat-light-theme($candy-app-primary, $candy-app-accent);
 
 ### Theming your own components
 For more details about theming your own components,
-see [theming-your-components.md](./theming-your-components.md)
+see [theming-your-components.md](./theming-your-components.md).
 
 ### Future work
 * Once CSS variables (custom properties) are available in all the browsers we support,
