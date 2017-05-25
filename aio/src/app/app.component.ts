@@ -123,7 +123,7 @@ export class AppComponent implements OnInit {
     });
 
     this.locationService.currentPath.subscribe(path => {
-      if (this.currentPath && path === this.currentPath) {
+      if (path === this.currentPath) {
         // scroll only if on same page (most likely a change to the hash)
         this.autoScroll();
       } else {
