@@ -20,7 +20,23 @@ import {DOCUMENT} from '../dom/dom_tokens';
  * (representing the `<title>` tag). Instead, this service can be used to set and get the current
  * title value.
  *
- * @experimental
+ *
+ * The [Title](api/platform-browser/Title) service is a simple class that provides an API
+ * for getting and setting the current HTML document title:
+
+* * `getTitle() : string`&mdash;Gets the title of the current HTML document.
+
+* * `setTitle( newTitle : string )`&mdash;Sets the title of the current HTML document.
+
+ * You can inject the `Title` service into the root `AppComponent` and expose a
+ * bindable `setTitle` method that calls it:
+
+
+ * {@example platform-browser/browser/title.ts region='class'}
+
+ *
+ *
+ *  @experimental
  */
 @Injectable()
 export class Title {
