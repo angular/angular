@@ -401,6 +401,22 @@ describe('AppComponent', () => {
         expect(scrollSpy.calls.count()).toBe(2);
       });
 
+      it('should scroll when nav to the same path', () => {
+        locationService.go('guide/pipes');
+        scrollSpy.calls.reset();
+
+        locationService.go('guide/pipes');
+        expect(scrollSpy).toHaveBeenCalledTimes(1);
+      });
+
+      it('should scroll when e-nav to the empty path', () => {
+        locationService.go('');
+        scrollSpy.calls.reset();
+
+        locationService.go('');
+        expect(scrollSpy).toHaveBeenCalledTimes(1);
+      });
+
       it('should scroll after a delay when call onDocRendered directly', fakeAsync(() => {
         component.onDocRendered();
         expect(scrollSpy).not.toHaveBeenCalled();
@@ -648,6 +664,20 @@ describe('AppComponent', () => {
         tick(SHOW_DELAY);
         fixture.detectChanges();
         expect(getProgressBar()).toBeFalsy();
+      }));
+
+      it('should not be shown when re-navigating to the empty path', fakeAsync(() => {
+        initializeAndCompleteNavigation();
+        locationService.urlSubject.next('');
+        triggerDocRendered();
+
+        locationService.urlSubject.next('');
+
+        tick(SHOW_DELAY);
+        fixture.detectChanges();
+        expect(getProgressBar()).toBeFalsy();
+
+        tick(HIDE_DELAY);   // Fire the remaining timer or `fakeAsync()` complains.
       }));
 
       it('should not be shown if the doc is rendered quickly', fakeAsync(() => {
