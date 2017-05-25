@@ -103,16 +103,19 @@ export function validateAngularCompilerOptions(options: AngularCompilerOptions):
 }
 
 export class Tsc implements CompilerInterface {
-  public ngOptions: AngularCompilerOptions;
-  public parsed: ts.ParsedCommandLine;
-  private basePath: string;
+  private parseConfigHost: ts.ParseConfigHost;
 
-  constructor(private readFile = ts.sys.readFile, private readDirectory = ts.sys.readDirectory) {}
+  constructor(private readFile = ts.sys.readFile, private readDirectory = ts.sys.readDirectory) {
+    this.parseConfigHost = {
+      useCaseSensitiveFileNames: true,
+      fileExists: existsSync,
+      readDirectory: this.readDirectory,
+      readFile: ts.sys.readFile
+    };
+  }
 
   readConfiguration(
       project: string|VinylFile, basePath: string, existingOptions?: ts.CompilerOptions) {
-    this.basePath = basePath;
-
     // Allow a directory containing tsconfig.json as the project value
     // Note, TS@next returns an empty array, while earlier versions throw
     try {
@@ -135,31 +138,21 @@ export class Tsc implements CompilerInterface {
     })();
     check([error]);
 
-    // Do not inline `host` into `parseJsonConfigFileContent` until after
-    // g3 is updated to the latest TypeScript.
-    // The issue is that old typescript only has `readDirectory` while
-    // the newer TypeScript has additional `useCaseSensitiveFileNames` and
-    // `fileExists`. Inlining will trigger an error of extra parameters.
-    const host = {
-      useCaseSensitiveFileNames: true,
-      fileExists: existsSync,
-      readDirectory: this.readDirectory,
-      readFile: ts.sys.readFile
-    };
-    this.parsed = ts.parseJsonConfigFileContent(config, host, basePath, existingOptions);
+    const parsed =
+        ts.parseJsonConfigFileContent(config, this.parseConfigHost, basePath, existingOptions);
 
-    check(this.parsed.errors);
+    check(parsed.errors);
 
     // Default codegen goes to the current directory
     // Parsed options are already converted to absolute paths
-    this.ngOptions = config.angularCompilerOptions || {};
-    this.ngOptions.genDir = path.join(basePath, this.ngOptions.genDir || '.');
-    for (const key of Object.keys(this.parsed.options)) {
-      this.ngOptions[key] = this.parsed.options[key];
+    const ngOptions = config.angularCompilerOptions || {};
+    ngOptions.genDir = path.join(basePath, ngOptions.genDir || '.');
+    for (const key of Object.keys(parsed.options)) {
+      ngOptions[key] = parsed.options[key];
     }
-    check(validateAngularCompilerOptions(this.ngOptions));
+    check(validateAngularCompilerOptions(ngOptions));
 
-    return {parsed: this.parsed, ngOptions: this.ngOptions};
+    return {parsed, ngOptions};
   }
 
   typeCheck(compilerHost: ts.CompilerHost, program: ts.Program): void {
