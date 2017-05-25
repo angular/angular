@@ -20,6 +20,7 @@ jobs:
     - env: "MODE=e2e"
     - env: "MODE=aot"
     - env: "MODE=payload"
+    - env: "MODE=prerender"
     - env: "MODE=closure-compiler"
     - env: "MODE=saucelabs_required"
     - env: "MODE=browserstack_required"

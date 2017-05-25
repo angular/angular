@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "lib": ["es2015", "dom"],
+    "target": "es6",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "dist",
+    "noEmitOnError": true,
+    "noImplicitAny": true,
+    "sourceMap": false,
+    "experimentalDecorators": true,
+    "types": ["node"]
+  },
+  "files": ["prerender.ts"]
+}
