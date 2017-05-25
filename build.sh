@@ -266,7 +266,7 @@ compilePackage() {
     $NGC -p ${1}/tsconfig-build.json
     echo "======           Create ${1}/../${package_name}.d.ts re-export file for Closure"
     echo "$(cat ${LICENSE_BANNER}) ${N} export * from './${package_name}/index'" > ${2}/../${package_name}.d.ts
-    echo "{\"__symbolic\":\"module\",\"version\":3,\"metadata\":{},\"exports\":[{\"from\":\"./${package_name}/index\"}]}" > ${2}/../${package_name}.metadata.json
+    echo "{\"__symbolic\":\"module\",\"version\":3,\"metadata\":{},\"exports\":[{\"from\":\"./${package_name}/index\"}],\"bundleRedirect\":true}" > ${2}/../${package_name}.metadata.json
   fi
 
   for DIR in ${1}/* ; do
