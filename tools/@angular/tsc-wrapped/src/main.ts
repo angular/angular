@@ -11,22 +11,27 @@ import * as path from 'path';
 import * as tsickle from 'tsickle';
 import * as ts from 'typescript';
 
-import {check, tsc} from './tsc';
-
-import NgOptions from './options';
-import {MetadataWriterHost, SyntheticIndexHost} from './compiler_host';
+import {CompilerHostAdapter, MetadataBundler} from './bundler';
 import {CliOptions} from './cli_options';
-import {VinylFile, isVinylFile} from './vinyl_file';
-import {MetadataBundler, CompilerHostAdapter} from './bundler';
+import {MetadataWriterHost, SyntheticIndexHost} from './compiler_host';
 import {privateEntriesToIndex} from './index_writer';
+import NgOptions from './options';
+import {check, tsc} from './tsc';
+import {isVinylFile, VinylFile} from './vinyl_file';
+
 export {UserError} from './tsc';
 
 const DTS = /\.d\.ts$/;
 const JS_EXT = /(\.js|)$/;
+const TS_EXT = /\.ts$/;
 
-export type CodegenExtension =
-    (ngOptions: NgOptions, cliOptions: CliOptions, program: ts.Program, host: ts.CompilerHost) =>
-        Promise<void>;
+export interface CodegenExtension {
+  /**
+   * Returns the generated file names.
+   */
+  (ngOptions: NgOptions, cliOptions: CliOptions, program: ts.Program,
+   host: ts.CompilerHost): Promise<string[]>;
+}
 
 export function main(
     project: string | VinylFile, cliOptions: CliOptions, codegen?: CodegenExtension,
@@ -46,10 +51,18 @@ export function main(
     const basePath = path.resolve(process.cwd(), cliOptions.basePath || projectDir);
 
     // read the configuration options from wherever you store them
-    const {parsed, ngOptions} = tsc.readConfiguration(project, basePath, options);
+    let {parsed, ngOptions} = tsc.readConfiguration(project, basePath, options);
     ngOptions.basePath = basePath;
-    const createProgram = (host: ts.CompilerHost, oldProgram?: ts.Program) =>
-        ts.createProgram(parsed.fileNames, parsed.options, host, oldProgram);
+    let rootFileNames: string[] = parsed.fileNames.slice(0);
+    const createProgram = (host: ts.CompilerHost, oldProgram?: ts.Program) => {
+      return ts.createProgram(rootFileNames.slice(0), parsed.options, host, oldProgram);
+    };
+    const addGeneratedFileName = (genFileName: string) => {
+      if (genFileName.startsWith(basePath) && TS_EXT.exec(genFileName)) {
+        rootFileNames.push(genFileName);
+      }
+    };
+
     const diagnostics = (parsed.options as any).diagnostics;
     if (diagnostics) (ts as any).performance.enable();
 
@@ -83,7 +96,7 @@ export function main(
       const libraryIndex = `./${path.basename(indexModule)}`;
       const content = privateEntriesToIndex(libraryIndex, metadataBundle.privates);
       host = new SyntheticIndexHost(host, {name, content, metadata});
-      parsed.fileNames.push(name);
+      addGeneratedFileName(name);
     }
 
     const tsickleCompilerHostOptions: tsickle.Options = {
@@ -109,12 +122,14 @@ export function main(
     check(errors);
 
     if (ngOptions.skipTemplateCodegen || !codegen) {
-      codegen = () => Promise.resolve(null);
+      codegen = () => Promise.resolve([]);
     }
 
     if (diagnostics) console.time('NG codegen');
-    return codegen(ngOptions, cliOptions, program, host).then(() => {
+    return codegen(ngOptions, cliOptions, program, host).then((genFiles) => {
       if (diagnostics) console.timeEnd('NG codegen');
+      // Add the generated files to the configuration so they will become part of the program.
+      genFiles.forEach(genFileName => addGeneratedFileName(genFileName));
       let definitionsHost: ts.CompilerHost = tsickleCompilerHost;
       if (!ngOptions.skipMetadataEmit) {
         // if tsickle is not not used for emitting, but we do use the MetadataWriterHost,
@@ -123,6 +138,7 @@ export function main(
             ngOptions.annotationsAs === 'decorators' && !ngOptions.annotateForClosureCompiler;
         definitionsHost = new MetadataWriterHost(tsickleCompilerHost, ngOptions, emitJsFiles);
       }
+
       // Create a new program since codegen files were created after making the old program
       let programWithCodegen = createProgram(definitionsHost, program);
       tsc.typeCheck(host, programWithCodegen);

@@ -27,7 +27,7 @@ export class Extractor {
       public host: ts.CompilerHost, private ngCompilerHost: CompilerHost,
       private program: ts.Program) {}
 
-  extract(formatName: string, outFile: string|null): Promise<void> {
+  extract(formatName: string, outFile: string|null): Promise<string[]> {
     // Checks the format and returns the extension
     const ext = this.getExtension(formatName);
 
@@ -38,6 +38,7 @@ export class Extractor {
       const dstFile = outFile || `messages.${ext}`;
       const dstPath = path.join(this.options.genDir, dstFile);
       this.host.writeFile(dstPath, content, false);
+      return [dstPath];
     });
   }
 

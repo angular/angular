@@ -33,6 +33,7 @@ export class CompilerHost implements AotCompilerHost {
   private resolverCache = new Map<string, ModuleMetadata[]>();
   private bundleIndexCache = new Map<string, boolean>();
   private bundleIndexNames = new Set<string>();
+  private bundleRedirectNames = new Set<string>();
   private moduleFileNames = new Map<string, string|null>();
   protected resolveModuleNameHost: CompilerHostContext;
 
@@ -280,7 +281,8 @@ export class CompilerHost implements AotCompilerHost {
       // Check for a bundle index.
       if (this.hasBundleIndex(filePath)) {
         const normalFilePath = path.normalize(filePath);
-        return this.bundleIndexNames.has(normalFilePath);
+        return this.bundleIndexNames.has(normalFilePath) ||
+            this.bundleRedirectNames.has(normalFilePath);
       }
     }
     return true;
@@ -331,7 +333,13 @@ export class CompilerHost implements AotCompilerHost {
                   const metadataFile = typings.replace(DTS, '.metadata.json');
                   if (this.context.fileExists(metadataFile)) {
                     const metadata = JSON.parse(this.context.readFile(metadataFile));
-                    if (metadata.importAs) {
+                    if (metadata.bundleRedirect) {
+                      this.bundleRedirectNames.add(typings);
+                      // Note: don't set result = true,
+                      // as this would mark this folder
+                      // as having a bundleIndex too early without
+                      // filling the bundleIndexNames.
+                    } else if (metadata.importAs) {
                       this.bundleIndexNames.add(typings);
                       result = true;
                     }
