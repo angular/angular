@@ -14,4 +14,9 @@ require('ts-node').register({
   project: path.join(__dirname, 'tsconfig.json')
 });
 
-require('./screenshot-functions');
+const functionExports = require('./screenshot-functions');
+
+// Re-export every firebase function from TypeScript
+Object.keys(functionExports).forEach(fnName => {
+  module.exports[fnName] = functionExports[fnName];
+});
