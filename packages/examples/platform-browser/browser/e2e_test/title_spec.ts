@@ -15,7 +15,7 @@ function waitForElement(selector: string) {
   browser.wait(EC.presenceOf($(selector)), 20000);
 }
 
-fdescribe('Set Document Title', function() {
+describe('Set Document Title', function() {
   const URL = '/platform-browser/browser/';
   afterEach(verifyNoBrowserErrors);
 
