@@ -795,7 +795,6 @@ describe('MdCheckbox', () => {
         [color]="checkboxColor"
         [disableRipple]="disableRipple"
         [value]="checkboxValue"
-        (change)="changeCount = changeCount + 1"
         (click)="onCheckboxClick($event)"
         (change)="onCheckboxChange($event)">
       Simple checkbox
@@ -812,7 +811,6 @@ class SingleCheckbox {
   parentElementClicked: boolean = false;
   parentElementKeyedUp: boolean = false;
   lastKeydownEvent: Event = null;
-  changeCount: number = 0;
   checkboxColor: string = 'primary';
   checkboxValue: string = 'single_checkbox';
 
