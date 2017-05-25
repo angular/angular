@@ -32,6 +32,7 @@ export async function buildPackageBundles(entryFile: string, packageName: string
 
   // Downlevel FESM-2015 file to ES5.
   transpileFile(fesm2015File, fesm2014File, {
+    importHelpers: true,
     target: ScriptTarget.ES5,
     module: ModuleKind.ES2015,
     allowJs: true

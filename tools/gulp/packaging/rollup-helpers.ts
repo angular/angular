@@ -2,8 +2,13 @@ import {LICENSE_BANNER} from '../constants';
 
 // There are no type definitions available for these imports.
 const rollup = require('rollup');
+const rollupNodeResolutionPlugin = require('rollup-plugin-node-resolve');
 
 const ROLLUP_GLOBALS = {
+  // Import tslib rather than having TypeScript output its helpers multiple times.
+  // See https://github.com/Microsoft/tslib
+  'tslib': 'tslib',
+
   // Angular dependencies
   '@angular/animations': 'ng.animations',
   '@angular/core': 'ng.core',
@@ -50,10 +55,10 @@ export type BundleConfig = {
 
 /** Creates a rollup bundle of a specified JavaScript file.*/
 export function createRollupBundle(config: BundleConfig): Promise<any> {
-  const bundleOptions = {
+  const bundleOptions: any = {
     context: 'this',
     external: Object.keys(ROLLUP_GLOBALS),
-    entry: config.entry
+    entry: config.entry,
   };
 
   const writeOptions = {
@@ -66,6 +71,16 @@ export function createRollupBundle(config: BundleConfig): Promise<any> {
     globals: ROLLUP_GLOBALS,
     sourceMap: true
   };
+
+  // When creating a UMD, we want to exclude tslib from the `external` bundle option so that it
+  // is inlined into the bundle.
+  if (config.format === 'umd') {
+    bundleOptions.plugins = [rollupNodeResolutionPlugin()];
+
+    const external = Object.keys(ROLLUP_GLOBALS);
+    external.splice(external.indexOf('tslib'), 1);
+    bundleOptions.external = external;
+  }
 
   return rollup.rollup(bundleOptions).then((bundle: any) => bundle.write(writeOptions));
 }
