@@ -1,7 +1,10 @@
-#!/usr/bin/env bash
-set -ex
+#!/bin/bash
 
-echo "=======  Starting build-and-test.sh  ========================================"
+set -e
+
+echo ""
+echo "Building sources and running tests. Running mode: ${MODE}"
+echo ""
 
 # Go to project dir
 cd $(dirname $0)/../..
