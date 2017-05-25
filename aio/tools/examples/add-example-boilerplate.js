@@ -38,7 +38,6 @@ function add() {
   installNodeModules();
 
   nodeModulesPaths.map((linkPath) => {
-    console.log("symlinking " + linkPath + ' -> ' + realPath)
     fs.ensureSymlinkSync(realPath, linkPath);
   });
 
