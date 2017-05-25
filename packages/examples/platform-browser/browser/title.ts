@@ -5,7 +5,7 @@ import {Component} from '@angular/core';
 import {Title} from '@angular/platform-browser';
 
 @Component({
-  selector: 'my-app',
+  selector: 'example-app',
   template: `<p>
     Select a title to set on the current HTML document:
   </p>
@@ -18,7 +18,7 @@ import {Title} from '@angular/platform-browser';
   `
 })
 // #docregion class
-export class AppComponent {
+export class TitleComponent {
   public constructor(private titleService: Title) {}
 
   public setTitle(newTitle: string) { this.titleService.setTitle(newTitle); }

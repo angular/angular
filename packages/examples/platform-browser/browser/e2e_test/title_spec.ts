@@ -1,12 +1,27 @@
-'use strict';  // necessary for es6 output in node
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
-import {browser, element, by, ElementFinder} from 'protractor';
+import {$, ExpectedConditions, browser, by, element, ElementFinder} from 'protractor';
+import {verifyNoBrowserErrors} from '../../../_common/e2e_util';
+
+function waitForElement(selector: string) {
+  const EC = ExpectedConditions;
+  // Waits for the element with id 'abc' to be present on the dom.
+  browser.wait(EC.presenceOf($(selector)), 20000);
+}
 
 describe('Set Document Title', function() {
-
-  beforeAll(function() { browser.get(''); });
+  const URL = 'platform-browser/browser/';
+  afterEach(verifyNoBrowserErrors);
 
   it('should set the document title', function() {
+    browser.get(URL);
+    waitForElement('browser-title');
 
     let titles = ['Good morning!', 'Good afternoon!', 'Good evening!'];
 
