@@ -15,7 +15,8 @@ echo "Starting to publish the build artifacts and docs content..."
 echo ""
 
 # Build Material, CDK and the docs before publishing artifacts
-$(npm bin)/gulp material:build-release:clean
+$(npm bin)/gulp cdk:build-release:clean
+$(npm bin)/gulp material:build-release
 $(npm bin)/gulp material-examples:build-release
 $(npm bin)/gulp docs
 
