@@ -14,6 +14,19 @@ branches:
   only:
   - master
 
+jobs:
+  include:
+    # Lint runs as a main job. Workaround for https://github.com/travis-ci/travis-ci/issues/7777
+    - env: "MODE=e2e"
+    - env: "MODE=aot"
+    - env: "MODE=payload"
+    - env: "MODE=closure-compiler"
+    - env: "MODE=saucelabs_required"
+    - env: "MODE=browserstack_required"
+    - stage: Deploy
+      script: ./scripts/ci/publish-artifacts.sh
+      env: "MODE=release"
+
 env:
   global:
   - LOGS_DIR=/tmp/angular-material2-build/logs
@@ -22,22 +35,9 @@ env:
   - BROWSER_STACK_ACCESS_KEY=BWCd4SynLzdDcv8xtzsB
   - BROWSER_PROVIDER_READY_FILE=/tmp/angular-material2-build/readyfile
   - BROWSER_PROVIDER_ERROR_FILE=/tmp/angular-material2-build/errorfile
-
   matrix:
-    # Order: a slower build first, so that we don't occupy an idle travis worker waiting for others to complete.
-    - MODE=lint
-    - MODE=aot
-    - MODE=closure-compiler
-    - MODE=payload
-    - MODE=e2e
-    - MODE=saucelabs_required
-    - MODE=browserstack_required
-
-matrix:
-  fast_finish: true
-  allow_failures:
-  - env: "MODE=saucelabs_optional"
-  - env: "MODE=browserstack_optional"
+  # Workaround for https://github.com/travis-ci/travis-ci/issues/7777. Running lint as main job.
+  - MODE=lint
 
 before_install:
   - source ./scripts/ci/env.sh
@@ -50,9 +50,6 @@ before_script:
 
 script:
   - ./scripts/ci/build-and-test.sh
-
-after_success:
-  - ./scripts/ci/after-success.sh
 
 cache:
   directories:

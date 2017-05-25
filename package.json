@@ -111,7 +111,6 @@
     "selenium-webdriver": "^3.4.0",
     "sorcery": "^0.10.0",
     "stylelint": "^7.10.1",
-    "travis-after-modes": "^0.0.7",
     "ts-node": "^3.0.4",
     "tslint": "^5.2.0",
     "typescript": "~2.2.1",
