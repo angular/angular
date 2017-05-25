@@ -12,17 +12,19 @@
   </div>
 
   <input #input class="mat-radio-input cdk-visually-hidden" type="radio"
-          [id]="inputId"
-          [checked]="checked"
-          [disabled]="disabled"
-          [name]="name"
-          [attr.aria-label]="ariaLabel"
-          [attr.aria-labelledby]="ariaLabelledby"
-          (change)="_onInputChange($event)"
-          (click)="_onInputClick($event)">
+         [id]="inputId"
+         [checked]="checked"
+         [disabled]="disabled"
+         [name]="name"
+         [attr.aria-label]="ariaLabel"
+         [attr.aria-labelledby]="ariaLabelledby"
+         (change)="_onInputChange($event)"
+         (click)="_onInputClick($event)">
 
   <!-- The label content for radio control. -->
   <div class="mat-radio-label-content" [class.mat-radio-label-before]="labelPosition == 'before'">
+    <!-- Add an invisible span so JAWS can read the label -->
+    <span style="display:none">&nbsp;</span>
     <ng-content></ng-content>
   </div>
 </label>

@@ -1,4 +1,4 @@
-<label class="mat-checkbox-layout" #label>
+<label [attr.for]="inputId" class="mat-checkbox-layout" #label>
   <div class="mat-checkbox-inner-container"
        [class.mat-checkbox-inner-container-no-side-margin]="!_hasLabel()">
     <input #input
@@ -36,6 +36,8 @@
     </div>
   </div>
   <span class="mat-checkbox-label" #labelWrapper>
+    <!-- Add an invisible span so JAWS can read the label -->
+    <span style="display:none">&nbsp;</span>
     <ng-content></ng-content>
   </span>
 </label>
