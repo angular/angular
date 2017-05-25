@@ -62,6 +62,7 @@ export function main() {
                 [elementDef(NodeFlags.None, null !, null !, 0, 'span', [['name', 'child1']])]))
       ]));
       const viewContainerData = asElementData(parentView, 1);
+      const rf = parentView.root.rendererFactory;
 
       const childView0 = createEmbeddedView(parentView, parentView.def.nodes[1]);
       const childView1 = createEmbeddedView(parentView, parentView.def.nodes[2]);
@@ -75,8 +76,10 @@ export function main() {
       expect(getDOM().getAttribute(rootChildren[1], 'name')).toBe('child0');
       expect(getDOM().getAttribute(rootChildren[2], 'name')).toBe('child1');
 
+      rf.begin !();
       detachEmbeddedView(viewContainerData, 1);
       detachEmbeddedView(viewContainerData, 0);
+      rf.end !();
 
       expect(getDOM().childNodes(rootNodes[0]).length).toBe(2);
     });
