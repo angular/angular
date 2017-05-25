@@ -1,5 +1,7 @@
 import {
   AfterContentInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ContentChildren,
   Directive,
@@ -86,6 +88,12 @@ export class MdRadioGroup extends _MdRadioGroupMixinBase
   /** Whether the `value` has been set to its initial value. */
   private _isInitialized: boolean = false;
 
+  /** Whether the labels should appear after or before the radio-buttons. Defaults to 'after' */
+  private _labelPosition: 'before' | 'after' = 'after';
+
+  /** Whether the radio group is disabled. */
+  private _disabled: boolean = false;
+
   /** The method to be called in order to update ngModel */
   _controlValueAccessorChangeFn: (value: any) => void = (value) => {};
 
@@ -129,8 +137,17 @@ export class MdRadioGroup extends _MdRadioGroupMixinBase
     this.labelPosition = (v == 'start') ? 'after' : 'before';
   }
 
+
   /** Whether the labels should appear after or before the radio-buttons. Defaults to 'after' */
-  @Input() labelPosition: 'before' | 'after' = 'after';
+  @Input()
+  get labelPosition() {
+    return this._labelPosition;
+  }
+
+  set labelPosition(v) {
+    this._labelPosition = (v == 'before') ? 'before' : 'after';
+    this._markRadiosForCheck();
+  }
 
   /** Value of the radio button. */
   @Input()
@@ -158,6 +175,18 @@ export class MdRadioGroup extends _MdRadioGroupMixinBase
     this._selected = selected;
     this.value = selected ? selected.value : null;
     this._checkSelectedRadioButton();
+  }
+
+  /** Whether the radio group is diabled */
+  @Input()
+  get disabled() { return this._disabled; }
+  set disabled(value) {
+    this._disabled = value;
+    this._markRadiosForCheck();
+  }
+
+  constructor(private _changeDetector: ChangeDetectorRef) {
+    super();
   }
 
   /**
@@ -215,12 +244,19 @@ export class MdRadioGroup extends _MdRadioGroupMixinBase
     }
   }
 
+  _markRadiosForCheck() {
+    if (this._radios) {
+      this._radios.forEach(radio => radio._markForCheck());
+    }
+  }
+
   /**
    * Sets the model value. Implemented as part of ControlValueAccessor.
    * @param value
    */
   writeValue(value: any) {
     this.value = value;
+    this._changeDetector.markForCheck();
   }
 
   /**
@@ -247,6 +283,7 @@ export class MdRadioGroup extends _MdRadioGroupMixinBase
    */
   setDisabledState(isDisabled: boolean) {
     this.disabled = isDisabled;
+    this._changeDetector.markForCheck();
   }
 }
 
@@ -264,7 +301,8 @@ export class MdRadioGroup extends _MdRadioGroupMixinBase
     '[class.mat-radio-checked]': 'checked',
     '[class.mat-radio-disabled]': 'disabled',
     '[attr.id]': 'id',
-  }
+  },
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdRadioButton implements OnInit, AfterViewInit, OnDestroy {
 
@@ -307,6 +345,7 @@ export class MdRadioButton implements OnInit, AfterViewInit, OnDestroy {
         // Notify all radio buttons with the same name to un-check.
         this._radioDispatcher.notify(this.id, this.name);
       }
+      this._changeDetector.markForCheck();
     }
   }
 
@@ -328,7 +367,6 @@ export class MdRadioButton implements OnInit, AfterViewInit, OnDestroy {
           this.radioGroup.selected = this;
         }
       }
-
     }
   }
 
@@ -364,7 +402,6 @@ export class MdRadioButton implements OnInit, AfterViewInit, OnDestroy {
   get disabled(): boolean {
     return this._disabled || (this.radioGroup != null && this.radioGroup.disabled);
   }
-
   set disabled(value: boolean) {
     this._disabled = coerceBooleanProperty(value);
   }
@@ -408,6 +445,7 @@ export class MdRadioButton implements OnInit, AfterViewInit, OnDestroy {
   constructor(@Optional() radioGroup: MdRadioGroup,
               private _elementRef: ElementRef,
               private _renderer: Renderer2,
+              private _changeDetector: ChangeDetectorRef,
               private _focusOriginMonitor: FocusOriginMonitor,
               private _radioDispatcher: UniqueSelectionDispatcher) {
     // Assertions. Ideally these should be stripped out by the compiler.
@@ -425,6 +463,17 @@ export class MdRadioButton implements OnInit, AfterViewInit, OnDestroy {
   /** Focuses the radio button. */
   focus(): void {
     this._focusOriginMonitor.focusVia(this._inputElement.nativeElement, this._renderer, 'keyboard');
+  }
+
+  /**
+   * Marks the radio button as needing checking for change detection.
+   * This method is exposed because the parent radio group will directly
+   * update bound properties of the radio button.
+   */
+  _markForCheck() {
+    // When group value changes, the button will not be notified. Use `markForCheck` to explicit
+    // update radio button's status
+    this._changeDetector.markForCheck();
   }
 
   ngOnInit() {
