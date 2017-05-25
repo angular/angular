@@ -20,20 +20,21 @@
 
   "TopBarNarrow": [
     {
-      "url": "features",
-      "title": "Features"
-    },
-    {
-      "url": "resources",
-      "title": "Resources"
-    },
-    {
-      "url": "events",
-      "title": "Events"
-    },
-    {
-      "url": "docs",
-      "title": "Docs:"
+      "title": "About Angular",
+      "children": [
+        {
+          "url": "features",
+          "title": "Features"
+        },
+        {
+          "url": "resources",
+          "title": "Resources"
+        },
+        {
+          "url": "events",
+          "title": "Events"
+        }
+      ]
     }
   ],
 

@@ -8,12 +8,6 @@
   }
 }
 
-// SMALL SCREEN -> TOP NAV SLIDES INTO SIDENAV
-aio-nav-menu.top-menu .vertical-menu-item  {
-  background-color: $lightgray;
-  text-transform: uppercase;
-}
-
 md-sidenav.mat-sidenav.sidenav {
   position: fixed;
   bottom: 0;
@@ -24,7 +18,7 @@ md-sidenav.mat-sidenav.sidenav {
   box-shadow: 6px 0 6px rgba(0,0,0,0.10);
 
   &.collapsed {
-    padding-top: 32px;
+    padding-top: 64px;
   }
 }
 
