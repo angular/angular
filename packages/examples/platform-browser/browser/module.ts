@@ -6,18 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import { NgModule } from '@angular/core';
-import { BrowserModule }  from '@angular/platform-browser';
+import {NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
 
-import { TitleComponent } from './title';
+import {TitleComponent} from './title';
 
-@NgModule({
-  imports: [
-    BrowserModule
-  ],
-  declarations: [
-    TitleComponent
-  ],
-  bootstrap: [ TitleComponent ]
-})
-export class AppModule { }
+@NgModule({imports: [BrowserModule], declarations: [TitleComponent], bootstrap: [TitleComponent]})
+export class AppModule {
+}
