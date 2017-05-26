@@ -1,12 +1,4 @@
-@title
-Structural Directives
-
-@intro
-Angular has a powerful template engine that lets us easily manipulate the DOM structure of our elements.
-
-@description
-
-
+# Structural Directives
 
 <style>
   h4 {font-size: 17px !important; text-transform: none !important;}
@@ -18,27 +10,6 @@ Angular has a powerful template engine that lets us easily manipulate the DOM st
 
 This guide looks at how Angular manipulates the DOM with **structural directives** and
 how you can write your own structural directives to do the same thing.
-
-<!--
-
-### Table of contents
-
-* [What are structural directives?](guide/structural-directives#definition)
-* [*NgIf* case study](guide/structural-directives#ngIf)
-* [The asterisk (*) prefix](guide/structural-directives#asterisk)
-* [Inside *NgFor*](guide/structural-directives#ngFor)
-
-  * [microsyntax](guide/structural-directives#microsyntax)
-  * [template input variables](guide/structural-directives#template-input-variable)
-  * [one structural directive per element](guide/structural-directives#one-per-element)
-
-* [Inside the *NgSwitch* directives](guide/structural-directives#ngSwitch)
-* [Prefer the (*) prefix](guide/structural-directives#prefer-asterisk)
-* [The &lt;ng-template> element](guide/structural-directives#template)
-* [Group sibling elements with &lt;ng-container&gt;](guide/structural-directives#ng-container)
-* [Write a structural directive](guide/structural-directives#unless)
-
--->
 
 Try the <live-example></live-example>.
 

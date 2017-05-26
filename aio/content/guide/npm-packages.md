@@ -1,11 +1,4 @@
-@title
-Npm Packages
-
-@intro
-Recommended npm packages, and how to specify package dependencies.
-
-@description
-
+# Npm Packages
 
 Angular applications and Angular itself depend upon features and functionality provided by a variety of third-party packages.
 These packages are maintained and installed with the Node Package Manager (<a href="https://docs.npmjs.com/">npm</a>).
