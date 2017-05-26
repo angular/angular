@@ -23,6 +23,9 @@ export class InputDemo {
   errorMessageExample1: string;
   errorMessageExample2: string;
   errorMessageExample3: string;
+  dividerColorExample1: string;
+  dividerColorExample2: string;
+  dividerColorExample3: string;
   items: any[] = [
     { value: 10 },
     { value: 20 },

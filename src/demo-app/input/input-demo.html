@@ -140,6 +140,20 @@
     <md-input-container color="warn">
       <textarea mdInput placeholder="Warn Color">example</textarea>
     </md-input-container>
+
+    <h4>With error</h4>
+    <md-input-container color="primary" >
+      <input mdInput placeholder="Default Color" [(ngModel)]="dividerColorExample1" required>
+      <md-error>This field is required</md-error>
+    </md-input-container>
+    <md-input-container color="accent">
+      <input mdInput placeholder="Accent Color" [(ngModel)]="dividerColorExample2" required>
+      <md-error>This field is required</md-error>
+    </md-input-container>
+    <md-input-container color="warn">
+      <input mdInput placeholder="Warn Color" [(ngModel)]="dividerColorExample3" required>
+      <md-error>This field is required</md-error>
+    </md-input-container>
   </md-card-content>
 </md-card>
 
