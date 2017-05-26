@@ -1,7 +1,7 @@
 import {task, watch} from 'gulp';
 import * as path from 'path';
 
-import {SOURCE_ROOT, DIST_E2EAPP, PROJECT_ROOT} from '../constants';
+import {SOURCE_ROOT, DIST_E2EAPP, PROJECT_ROOT} from '../build-config';
 import {
   tsBuildTask, copyTask, buildAppTask, execNodeTask, sequenceTask, serverTask
 } from '../util/task_helpers';

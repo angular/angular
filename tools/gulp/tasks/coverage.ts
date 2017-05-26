@@ -1,6 +1,6 @@
 import {task} from 'gulp';
 import {existsSync} from 'fs-extra';
-import {COVERAGE_RESULT_FILE} from '../constants';
+import {COVERAGE_RESULT_FILE} from '../build-config';
 import {spawnSync} from 'child_process';
 import {isTravisMasterBuild} from '../util/travis-ci';
 import {openFirebaseDashboardApp} from '../util/firebase';

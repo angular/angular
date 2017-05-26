@@ -2,7 +2,7 @@ import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as gulp from 'gulp';
 import * as path from 'path';
-import {PROJECT_ROOT} from '../constants';
+import {PROJECT_ROOT} from '../build-config';
 
 /* Those imports lack typings. */
 const gulpClean = require('gulp-clean');

@@ -1,5 +1,5 @@
 import {join} from 'path';
-import {DIST_BUNDLES, DIST_ROOT, SOURCE_ROOT, PROJECT_ROOT} from '../constants';
+import {DIST_BUNDLES, DIST_ROOT, SOURCE_ROOT, PROJECT_ROOT} from '../build-config';
 import {copyFiles} from '../util/copy-files';
 import {addPureAnnotationsToFile} from './pure-annotations';
 import {updatePackageVersion} from './package-versions';

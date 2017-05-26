@@ -1,6 +1,6 @@
 import {writeFileSync} from 'fs';
 import {join} from 'path';
-import {MATERIAL_VERSION} from '../constants';
+import {MATERIAL_VERSION} from '../build-config';
 
 /** Updates the `package.json` file of the specified package. Replaces the version placeholder. */
 export function updatePackageVersion(packageDir: string) {

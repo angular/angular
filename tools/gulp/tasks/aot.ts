@@ -1,6 +1,6 @@
 import {task} from 'gulp';
 import {copySync} from 'fs-extra';
-import {DIST_DEMOAPP, DIST_RELEASES} from '../constants';
+import {DIST_DEMOAPP, DIST_RELEASES} from '../build-config';
 import {sequenceTask, execNodeTask} from '../util/task_helpers';
 import {join} from 'path';
 

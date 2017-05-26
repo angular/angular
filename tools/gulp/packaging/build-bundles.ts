@@ -1,6 +1,6 @@
 import {join} from 'path';
 import {ScriptTarget, ModuleKind} from 'typescript';
-import {DIST_BUNDLES} from '../constants';
+import {DIST_BUNDLES} from '../build-config';
 import {uglifyJsFile} from './minify-sources';
 import {createRollupBundle} from './rollup-helpers';
 import {remapSourcemap} from './sourcemap-remap';

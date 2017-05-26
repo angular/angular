@@ -3,23 +3,17 @@ import {existsSync, statSync} from 'fs-extra';
 import {join} from 'path';
 import {task} from 'gulp';
 import {execTask, sequenceTask} from '../util/task_helpers';
-import {DIST_RELEASES} from '../constants';
+import {DIST_RELEASES, RELEASE_PACKAGES} from '../build-config';
 import {yellow, green, red, grey} from 'chalk';
 import * as minimist from 'minimist';
 
 /** Parse command-line arguments for release task. */
 const argv = minimist(process.argv.slice(3));
 
-/** Packages that will be published to NPM. */
-const releasePackages = [
-  'cdk',
-  'material',
-];
-
 /** Task that builds all releases that will be published. */
 task(':publish:build-releases', sequenceTask(
   'clean',
-  releasePackages.map(packageName => `${packageName}:build-release`)
+  RELEASE_PACKAGES.map(packageName => `${packageName}:build-release`)
 ));
 
 /** Make sure we're logged in. */
@@ -89,12 +83,12 @@ task(':publish', async () => {
   }
   console.log('');
 
-  if (releasePackages.length > 1) {
+  if (RELEASE_PACKAGES.length > 1) {
     console.warn(red('Warning: Multiple packages will be released if proceeding.'));
   }
 
   // Iterate over every declared release package and publish it on NPM.
-  for (const packageName of releasePackages) {
+  for (const packageName of RELEASE_PACKAGES) {
     await _execNpmPublish(label, packageName);
   }
 

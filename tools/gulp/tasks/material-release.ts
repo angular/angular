@@ -3,7 +3,7 @@ import {join} from 'path';
 import {writeFileSync} from 'fs';
 import {Bundler} from 'scss-bundle';
 import {sequenceTask} from '../util/task_helpers';
-import {COMPONENTS_DIR, DIST_MATERIAL, DIST_RELEASES} from '../constants';
+import {COMPONENTS_DIR, DIST_MATERIAL, DIST_RELEASES} from '../build-config';
 import {composeRelease} from '../packaging/build-release';
 
 // There are no type definitions available for these imports.

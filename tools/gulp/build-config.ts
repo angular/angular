@@ -29,6 +29,12 @@ export const HTML_MINIFIER_OPTIONS = {
   removeAttributeQuotes: false
 };
 
+/** Packages that will be published to NPM by the release task. */
+export const RELEASE_PACKAGES = [
+  'cdk',
+  'material',
+];
+
 export const LICENSE_BANNER = `/**
   * @license Angular Material v${MATERIAL_VERSION}
   * Copyright (c) 2017 Google, Inc. https://material.angular.io/

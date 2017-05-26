@@ -1,6 +1,6 @@
 import {join} from 'path';
 import {task, watch} from 'gulp';
-import {PROJECT_ROOT, SOURCE_ROOT} from '../constants';
+import {PROJECT_ROOT, SOURCE_ROOT} from '../build-config';
 import {sequenceTask} from '../util/task_helpers';
 
 // There are no type definitions available for these imports.

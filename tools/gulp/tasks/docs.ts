@@ -1,7 +1,7 @@
 import {task, src, dest} from 'gulp';
 import {Dgeni} from 'dgeni';
 import * as path from 'path';
-import {DIST_ROOT, HTML_MINIFIER_OPTIONS, SOURCE_ROOT} from '../constants';
+import {DIST_ROOT, HTML_MINIFIER_OPTIONS, SOURCE_ROOT} from '../build-config';
 
 // There are no type definitions available for these imports.
 const markdown = require('gulp-markdown');

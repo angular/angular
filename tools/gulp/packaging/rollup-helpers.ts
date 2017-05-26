@@ -1,4 +1,4 @@
-import {LICENSE_BANNER} from '../constants';
+import {LICENSE_BANNER} from '../build-config';
 
 // There are no type definitions available for these imports.
 const rollup = require('rollup');

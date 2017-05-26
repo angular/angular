@@ -1,5 +1,5 @@
 import {task, watch} from 'gulp';
-import {DIST_ROOT, SOURCE_ROOT, PROJECT_ROOT, DIST_BUNDLES, DIST_MATERIAL} from '../constants';
+import {DIST_ROOT, SOURCE_ROOT, PROJECT_ROOT, DIST_BUNDLES, DIST_MATERIAL} from '../build-config';
 import {
   sassBuildTask, tsBuildTask, copyTask, buildAppTask, sequenceTask, triggerLivereload,
   serverTask

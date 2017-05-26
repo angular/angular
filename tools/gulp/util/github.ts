@@ -1,4 +1,4 @@
-import {MATERIAL_VERSION} from '../constants';
+import {MATERIAL_VERSION} from '../build-config';
 
 const request = require('request');
 

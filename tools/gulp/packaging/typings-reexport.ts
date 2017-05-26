@@ -1,5 +1,5 @@
 import {writeFileSync} from 'fs';
-import {LICENSE_BANNER} from '../constants';
+import {LICENSE_BANNER} from '../build-config';
 import {join} from 'path';
 
 /** Create a typing file that links to the bundled definitions of NGC. */
