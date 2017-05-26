@@ -48,8 +48,11 @@ export class AnimationEngine {
       trigger = buildTrigger(name, ast);
       this._triggerCache[cacheKey] = trigger;
     }
+    this._transitionEngine.registerTrigger(namespaceId, name, trigger);
+  }
 
-    this._transitionEngine.register(namespaceId, hostElement, name, trigger);
+  register(namespaceId: string, hostElement: any) {
+    this._transitionEngine.register(namespaceId, hostElement);
   }
 
   destroy(namespaceId: string, context: any) {
@@ -86,7 +89,7 @@ export class AnimationEngine {
     return this._transitionEngine.listen(namespaceId, element, eventName, eventPhase, callback);
   }
 
-  flush(countId: number = -1): void { this._transitionEngine.flush(countId); }
+  flush(microtaskId: number = -1): void { this._transitionEngine.flush(microtaskId); }
 
   get players(): AnimationPlayer[] {
     return (this._transitionEngine.players as AnimationPlayer[])
