@@ -1084,6 +1084,107 @@ export function main() {
              ]);
            });
          });
+
+      it('should query elements in sub components that do not contain animations using the :enter selector',
+         () => {
+           @Component({
+             selector: 'parent-cmp',
+             template: `
+            <div [@myAnimation]="exp">
+              <child-cmp #child></child-cmp>
+            </div>
+          `,
+             animations: [trigger(
+                 'myAnimation',
+                 [transition(
+                     '* => on',
+                     [query(
+                         ':enter', [style({opacity: 0}), animate(1000, style({opacity: 1}))])])])]
+           })
+           class ParentCmp {
+             public exp: any;
+
+             @ViewChild('child') public child: any;
+           }
+
+           @Component({
+             selector: 'child-cmp',
+             template: `
+            <div *ngFor="let item of items">
+              {{ item }}
+            </div>
+          `
+           })
+           class ChildCmp {
+             public items: any[] = [];
+           }
+
+           TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
+           const fixture = TestBed.createComponent(ParentCmp);
+           const cmp = fixture.componentInstance;
+           fixture.detectChanges();
+
+           cmp.exp = 'on';
+           cmp.child.items = [1, 2, 3];
+           fixture.detectChanges();
+
+           const players = getLog() as any[];
+           expect(players.length).toEqual(3);
+
+           expect(players[0].element.innerText.trim()).toEqual('1');
+           expect(players[1].element.innerText.trim()).toEqual('2');
+           expect(players[2].element.innerText.trim()).toEqual('3');
+         });
+
+      it('should query elements in sub components that do not contain animations using the :leave selector',
+         () => {
+           @Component({
+             selector: 'parent-cmp',
+             template: `
+            <div [@myAnimation]="exp">
+              <child-cmp #child></child-cmp>
+            </div>
+          `,
+             animations: [trigger(
+                 'myAnimation',
+                 [transition(
+                     '* => on', [query(':leave', [animate(1000, style({opacity: 0}))])])])]
+           })
+           class ParentCmp {
+             public exp: any;
+
+             @ViewChild('child') public child: any;
+           }
+
+           @Component({
+             selector: 'child-cmp',
+             template: `
+            <div *ngFor="let item of items">
+              {{ item }}
+            </div>
+          `
+           })
+           class ChildCmp {
+             public items: any[] = [];
+           }
+
+           TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
+           const fixture = TestBed.createComponent(ParentCmp);
+           const cmp = fixture.componentInstance;
+           cmp.child.items = [4, 5, 6];
+           fixture.detectChanges();
+
+           cmp.exp = 'on';
+           cmp.child.items = [];
+           fixture.detectChanges();
+
+           const players = getLog() as any[];
+           expect(players.length).toEqual(3);
+
+           expect(players[0].element.innerText.trim()).toEqual('4');
+           expect(players[1].element.innerText.trim()).toEqual('5');
+           expect(players[2].element.innerText.trim()).toEqual('6');
+         });
     });
 
     describe('sub triggers', () => {

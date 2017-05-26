@@ -13,12 +13,13 @@ import {AnimationTransitionInstruction} from '../dsl/animation_transition_instru
 import {AnimationTrigger} from '../dsl/animation_trigger';
 import {ElementInstructionMap} from '../dsl/element_instruction_map';
 import {AnimationStyleNormalizer} from '../dsl/style_normalization/animation_style_normalizer';
-import {ENTER_CLASSNAME, LEAVE_CLASSNAME, LEAVE_SELECTOR, NG_ANIMATING_CLASSNAME, NG_TRIGGER_CLASSNAME, NG_TRIGGER_SELECTOR, copyObj, eraseStyles, iteratorToArray, setStyles} from '../util';
+import {ENTER_CLASSNAME, LEAVE_CLASSNAME, LEAVE_SELECTOR, NG_ANIMATING_CLASSNAME, NG_TRIGGER_CLASSNAME, NG_TRIGGER_SELECTOR, copyObj, eraseStyles, setStyles} from '../util';
 
 import {AnimationDriver} from './animation_driver';
 import {getOrSetAsInMap, listenOnPlayer, makeAnimationEvent, normalizeKeyframes, optimizeGroupPlayer} from './shared';
 
 const EMPTY_PLAYER_ARRAY: AnimationPlayer[] = [];
+const ANIMATE_EPOCH_ATTR = 'ng-animate-id';
 
 interface TriggerListener {
   name: string;
@@ -255,7 +256,7 @@ export class AnimationTransitionNamespace {
   }
 
   private _destroyInnerNodes(rootElement: any, context: any, animate: boolean = false) {
-    listToArray(this._engine.driver.query(rootElement, NG_TRIGGER_SELECTOR, true)).forEach(elm => {
+    this._engine.driver.query(rootElement, NG_TRIGGER_SELECTOR, true).forEach(elm => {
       if (animate && containsClass(elm, this._hostClassName)) {
         const innerNs = this._engine.namespacesByHostElement.get(elm);
 
@@ -273,9 +274,7 @@ export class AnimationTransitionNamespace {
 
   removeNode(element: any, context: any, doNotRecurse?: boolean): void {
     const engine = this._engine;
-
-    addClass(element, LEAVE_CLASSNAME);
-    engine.afterFlush(() => removeClass(element, LEAVE_CLASSNAME));
+    engine.markElementAsRemoved(element);
 
     if (!doNotRecurse && element.childElementCount) {
       this._destroyInnerNodes(element, context, true);
@@ -382,7 +381,7 @@ export class AnimationTransitionNamespace {
 
   insertNode(element: any, parent: any): void { addClass(element, this._hostClassName); }
 
-  drainQueuedTransitions(countId: number): QueueInstruction[] {
+  drainQueuedTransitions(microtaskId: number): QueueInstruction[] {
     const instructions: QueueInstruction[] = [];
     this._queue.forEach(entry => {
       const player = entry.player;
@@ -395,7 +394,7 @@ export class AnimationTransitionNamespace {
           if (listener.name == entry.triggerName) {
             const baseEvent = makeAnimationEvent(
                 element, entry.triggerName, entry.fromState.value, entry.toState.value);
-            (baseEvent as any)['_data'] = countId;
+            (baseEvent as any)['_data'] = microtaskId;
             listenOnPlayer(entry.player, listener.phase, baseEvent, listener.callback);
           }
         });
@@ -449,13 +448,13 @@ export interface QueuedTransition {
 export class TransitionAnimationEngine {
   public players: TransitionAnimationPlayer[] = [];
   public queuedRemovals = new Map<any, () => any>();
-  public newlyInserted = new Set<any>();
   public newHostElements = new Map<any, AnimationTransitionNamespace>();
   public playersByElement = new Map<any, TransitionAnimationPlayer[]>();
   public playersByQueriedElement = new Map<any, TransitionAnimationPlayer[]>();
   public statesByElement = new Map<any, {[triggerName: string]: StateValue}>();
   public totalAnimations = 0;
   public totalQueuedPlayers = 0;
+  public currentEpochId = 0;
 
   private _namespaceLookup: {[id: string]: AnimationTransitionNamespace} = {};
   private _namespaceList: AnimationTransitionNamespace[] = [];
@@ -498,7 +497,7 @@ export class TransitionAnimationEngine {
       // animation renderer type. If this happens then we can still have
       // access to this item when we query for :enter nodes. If the parent
       // is a renderer then the set data-structure will normalize the entry
-      this.newlyInserted.add(hostElement);
+      this.updateElementEpoch(hostElement);
     }
     return this._namespaceLookup[namespaceId] = ns;
   }
@@ -526,17 +525,24 @@ export class TransitionAnimationEngine {
     return ns;
   }
 
-  register(namespaceId: string, hostElement: any, name: string, trigger: AnimationTrigger) {
+  register(namespaceId: string, hostElement: any) {
     let ns = this._namespaceLookup[namespaceId];
     if (!ns) {
       ns = this.createNamespace(namespaceId, hostElement);
     }
-    if (ns.register(name, trigger)) {
+    return ns;
+  }
+
+  registerTrigger(namespaceId: string, name: string, trigger: AnimationTrigger) {
+    let ns = this._namespaceLookup[namespaceId];
+    if (ns && ns.register(name, trigger)) {
       this.totalAnimations++;
     }
   }
 
   destroy(namespaceId: string, context: any) {
+    if (!namespaceId) return;
+
     const ns = this._fetchNamespace(namespaceId);
 
     this.afterFlush(() => {
@@ -564,20 +570,51 @@ export class TransitionAnimationEngine {
   insertNode(namespaceId: string, element: any, parent: any, insertBefore: boolean): void {
     if (!isElementNode(element)) return;
 
-    this._fetchNamespace(namespaceId).insertNode(element, parent);
+    // special case for when an element is removed and reinserted (move operation)
+    // when this occurs we do not want to use the element for deletion later
+    if (this.queuedRemovals.has(element)) {
+      this.markElementAsRemoved(element, true);
+      this.queuedRemovals.delete(element);
+    }
+
+    // in the event that the namespaceId is blank then the caller
+    // code does not contain any animation code in it, but it is
+    // just being called so that the node is marked as being inserted
+    if (namespaceId) {
+      this._fetchNamespace(namespaceId).insertNode(element, parent);
+    }
 
     // only *directives and host elements are inserted before
     if (insertBefore) {
-      this.newlyInserted.add(element);
+      this.updateElementEpoch(element);
+    }
+  }
+
+  updateElementEpoch(element: any, isRemoval?: boolean) {
+    const epoch = (isRemoval ? -1 : 1) * this.currentEpochId;
+    setAttribute(element, ANIMATE_EPOCH_ATTR, epoch);
+  }
+
+  markElementAsRemoved(element: any, unmark?: boolean) {
+    if (unmark) {
+      removeClass(element, LEAVE_CLASSNAME);
+    } else {
+      addClass(element, LEAVE_CLASSNAME);
+      this.afterFlush(() => removeClass(element, LEAVE_CLASSNAME));
     }
   }
 
   removeNode(namespaceId: string, element: any, context: any, doNotRecurse?: boolean): void {
-    const ns = this._fetchNamespace(namespaceId);
-    if (!isElementNode(element) || !ns) {
-      this._onRemovalComplete(element, context);
+    if (namespaceId) {
+      const ns = this._fetchNamespace(namespaceId);
+      if (!isElementNode(element) || !ns) {
+        this._onRemovalComplete(element, context);
+      } else {
+        ns.removeNode(element, context, doNotRecurse);
+      }
     } else {
-      ns.removeNode(element, context, doNotRecurse);
+      this.markElementAsRemoved(element);
+      this.queuedRemovals.set(element, () => this._onRemovalComplete(element, context));
     }
   }
 
@@ -597,7 +634,7 @@ export class TransitionAnimationEngine {
   }
 
   destroyInnerAnimations(containerElement: any) {
-    listToArray(this.driver.query(containerElement, NG_TRIGGER_SELECTOR, true)).forEach(element => {
+    this.driver.query(containerElement, NG_TRIGGER_SELECTOR, true).forEach(element => {
       const players = this.playersByElement.get(element);
       if (players) {
         players.forEach(player => {
@@ -628,20 +665,21 @@ export class TransitionAnimationEngine {
     });
   }
 
-  flush(countId: number = -1) {
+  flush(microtaskId: number = -1) {
     let players: AnimationPlayer[] = [];
     if (this.newHostElements.size) {
-      this.newHostElements.forEach((ns, element) => { this._balanceNamespaceList(ns, element); });
+      this.newHostElements.forEach((ns, element) => this._balanceNamespaceList(ns, element));
       this.newHostElements.clear();
     }
 
     if (this._namespaceList.length && (this.totalQueuedPlayers || this.queuedRemovals.size)) {
-      players = this._flushAnimations(countId);
+      players = this._flushAnimations(microtaskId);
+    } else {
+      this.queuedRemovals.forEach(fn => fn());
     }
 
     this.totalQueuedPlayers = 0;
     this.queuedRemovals.clear();
-    this.newlyInserted.clear();
     this._flushFns.forEach(fn => fn());
     this._flushFns = [];
 
@@ -658,9 +696,11 @@ export class TransitionAnimationEngine {
         quietFns.forEach(fn => fn());
       }
     }
+
+    this.currentEpochId++;
   }
 
-  private _flushAnimations(countId: number): TransitionAnimationPlayer[] {
+  private _flushAnimations(microtaskId: number): TransitionAnimationPlayer[] {
     const subTimelines = new ElementInstructionMap();
     const skippedPlayers: TransitionAnimationPlayer[] = [];
     const skippedPlayersMap = new Map<any, AnimationPlayer[]>();
@@ -672,13 +712,15 @@ export class TransitionAnimationEngine {
     // this must occur before the instructions are built below such that
     // the :enter queries match the elements (since the timeline queries
     // are fired during instruction building).
-    const allEnterNodes = iteratorToArray(this.newlyInserted.values());
-    const enterNodes: any[] = collectEnterElements(this.driver, allEnterNodes);
     const bodyNode = getBodyNode();
+    const allEnterNodes: any[] =
+        bodyNode ? this.driver.query(bodyNode, makeEpochSelector(this.currentEpochId), true) : [];
+    const enterNodes: any[] =
+        allEnterNodes.length ? collectEnterElements(this.driver, allEnterNodes) : [];
 
     for (let i = this._namespaceList.length - 1; i >= 0; i--) {
       const ns = this._namespaceList[i];
-      ns.drainQueuedTransitions(countId).forEach(entry => {
+      ns.drainQueuedTransitions(microtaskId).forEach(entry => {
         const player = entry.player;
 
         const element = entry.element;
@@ -751,7 +793,7 @@ export class TransitionAnimationEngine {
     allPreviousPlayersMap.forEach(players => players.forEach(player => player.destroy()));
 
     const leaveNodes: any[] = bodyNode && allPostStyleElements.size ?
-        listToArray(this.driver.query(bodyNode, LEAVE_SELECTOR, true)) :
+        this.driver.query(bodyNode, LEAVE_SELECTOR, true) :
         [];
 
     // PRE STAGE: fill the ! styles
@@ -866,7 +908,6 @@ export class TransitionAnimationEngine {
   elementContainsData(namespaceId: string, element: any) {
     let containsData = false;
     if (this.queuedRemovals.has(element)) containsData = true;
-    if (this.newlyInserted.has(element)) containsData = true;
     if (this.playersByElement.has(element)) containsData = true;
     if (this.playersByQueriedElement.has(element)) containsData = true;
     if (this.statesByElement.has(element)) containsData = true;
@@ -1217,12 +1258,6 @@ function cloakAndComputeStyles(
   return valuesMap;
 }
 
-function listToArray(list: any): any[] {
-  const arr: any[] = [];
-  arr.push(...(list as any[]));
-  return arr;
-}
-
 function collectEnterElements(driver: AnimationDriver, allEnterNodes: any[]) {
   allEnterNodes.forEach(element => addClass(element, POTENTIAL_ENTER_CLASSNAME));
   const enterNodes = filterNodeClasses(driver, getBodyNode(), POTENTIAL_ENTER_SELECTOR);
@@ -1264,9 +1299,22 @@ function removeClass(element: any, className: string) {
   }
 }
 
+function setAttribute(element: any, attr: string, value: any) {
+  if (element.setAttribute) {
+    element.setAttribute(attr, value);
+  } else {
+    element[attr] = value;
+  }
+}
+
 function getBodyNode(): any|null {
   if (typeof document != 'undefined') {
     return document.body;
   }
   return null;
+}
+
+function makeEpochSelector(epochId: number, isRemoval?: boolean) {
+  const value = (isRemoval ? -1 : 1) * epochId;
+  return `[${ANIMATE_EPOCH_ATTR}="${value}"]`;
 }
