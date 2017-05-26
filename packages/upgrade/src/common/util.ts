@@ -50,6 +50,10 @@ export function getComponentName(component: Type<any>): string {
   return (component as any).overriddenName || component.name || component.toString().split('\n')[0];
 }
 
+export function isFunction(value: any): value is Function {
+  return typeof value === 'function';
+}
+
 export class Deferred<R> {
   promise: Promise<R>;
   resolve: (value?: R|PromiseLike<R>) => void;
