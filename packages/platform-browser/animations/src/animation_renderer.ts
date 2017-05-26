@@ -12,12 +12,13 @@ import {Injectable, NgZone, Renderer2, RendererFactory2, RendererStyleFlags2, Re
 @Injectable()
 export class AnimationRendererFactory implements RendererFactory2 {
   private _currentId: number = 0;
-  private _currentFlushId: number = 1;
+  private _microtaskId: number = 1;
   private _animationCallbacksBuffer: [(e: any) => any, any][] = [];
+  private _rendererCache = new Map<Renderer2, BaseAnimationRenderer>();
 
   constructor(
-      private delegate: RendererFactory2, private _engine: AnimationEngine, private _zone: NgZone) {
-    _engine.onRemovalComplete = (element: any, delegate: any) => {
+      private delegate: RendererFactory2, private engine: AnimationEngine, private _zone: NgZone) {
+    engine.onRemovalComplete = (element: any, delegate: Renderer2) => {
       // Note: if an component element has a leave animation, and the component
       // a host leave animation, the view engine will call `removeChild` for the parent
       // component renderer as well as for the child component renderer.
@@ -29,18 +30,31 @@ export class AnimationRendererFactory implements RendererFactory2 {
   }
 
   createRenderer(hostElement: any, type: RendererType2): Renderer2 {
-    let delegate = this.delegate.createRenderer(hostElement, type);
-    if (!hostElement || !type || !type.data || !type.data['animation']) return delegate;
+    const EMPTY_NAMESPACE_ID = '';
+
+    // cache the delegates to find out which cached delegate can
+    // be used by which cached renderer
+    const delegate = this.delegate.createRenderer(hostElement, type);
+    if (!hostElement || !type || !type.data || !type.data['animation']) {
+      let renderer: BaseAnimationRenderer|undefined = this._rendererCache.get(delegate);
+      if (!renderer) {
+        renderer = new BaseAnimationRenderer(EMPTY_NAMESPACE_ID, delegate, this.engine);
+        // only cache this result when the base renderer is used
+        this._rendererCache.set(delegate, renderer);
+      }
+      return renderer;
+    }
 
     const componentId = type.id;
     const namespaceId = type.id + '-' + this._currentId;
     this._currentId++;
 
+    this.engine.register(namespaceId, hostElement);
     const animationTriggers = type.data['animation'] as AnimationTriggerMetadata[];
     animationTriggers.forEach(
-        trigger => this._engine.registerTrigger(
+        trigger => this.engine.registerTrigger(
             componentId, namespaceId, hostElement, trigger.name, trigger));
-    return new AnimationRenderer(this, delegate, this._engine, this._zone, namespaceId);
+    return new AnimationRenderer(this, namespaceId, delegate, this.engine);
   }
 
   begin() {
@@ -50,13 +64,12 @@ export class AnimationRendererFactory implements RendererFactory2 {
   }
 
   private _scheduleCountTask() {
-    Zone.current.scheduleMicroTask(
-        'incremenet the animation microtask', () => { this._currentFlushId++; });
+    Zone.current.scheduleMicroTask('incremenet the animation microtask', () => this._microtaskId++);
   }
 
   /* @internal */
   scheduleListenerCallback(count: number, fn: (e: any) => any, data: any) {
-    if (count >= 0 && count < this._currentFlushId) {
+    if (count >= 0 && count < this._microtaskId) {
       this._zone.run(() => fn(data));
       return;
     }
@@ -79,54 +92,64 @@ export class AnimationRendererFactory implements RendererFactory2 {
   end() {
     this._zone.runOutsideAngular(() => {
       this._scheduleCountTask();
-      this._engine.flush(this._currentFlushId);
+      this.engine.flush(this._microtaskId);
     });
     if (this.delegate.end) {
       this.delegate.end();
     }
   }
 
-  whenRenderingDone(): Promise<any> { return this._engine.whenRenderingDone(); }
+  whenRenderingDone(): Promise<any> { return this.engine.whenRenderingDone(); }
 }
 
-export class AnimationRenderer implements Renderer2 {
-  public destroyNode: ((node: any) => any)|null = null;
-  public microtaskCount: number = 0;
-
+export class BaseAnimationRenderer implements Renderer2 {
   constructor(
-      private _factory: AnimationRendererFactory, public delegate: Renderer2,
-      private _engine: AnimationEngine, private _zone: NgZone, private _namespaceId: string) {
+      protected namespaceId: string, public delegate: Renderer2, public engine: AnimationEngine) {
     this.destroyNode = this.delegate.destroyNode ? (n) => delegate.destroyNode !(n) : null;
   }
 
   get data() { return this.delegate.data; }
 
+  destroyNode: ((n: any) => void)|null;
+
   destroy(): void {
-    this._engine.destroy(this._namespaceId, this.delegate);
+    this.engine.destroy(this.namespaceId, this.delegate);
     this.delegate.destroy();
   }
 
-  createElement(name: string, namespace?: string): any {
+  createElement(name: string, namespace?: string|null|undefined) {
     return this.delegate.createElement(name, namespace);
   }
 
-  createComment(value: string): any { return this.delegate.createComment(value); }
+  createComment(value: string) { return this.delegate.createComment(value); }
 
-  createText(value: string): any { return this.delegate.createText(value); }
+  createText(value: string) { return this.delegate.createText(value); }
 
-  selectRootElement(selectorOrNode: string|any): any {
-    return this.delegate.selectRootElement(selectorOrNode);
+  appendChild(parent: any, newChild: any): void {
+    this.delegate.appendChild(parent, newChild);
+    this.engine.onInsert(this.namespaceId, newChild, parent, false);
   }
 
-  parentNode(node: any): any { return this.delegate.parentNode(node); }
+  insertBefore(parent: any, newChild: any, refChild: any): void {
+    this.delegate.insertBefore(parent, newChild, refChild);
+    this.engine.onInsert(this.namespaceId, newChild, parent, true);
+  }
 
-  nextSibling(node: any): any { return this.delegate.nextSibling(node); }
+  removeChild(parent: any, oldChild: any): void {
+    this.engine.onRemove(this.namespaceId, oldChild, this.delegate);
+  }
 
-  setAttribute(el: any, name: string, value: string, namespace?: string): void {
+  selectRootElement(selectorOrNode: any) { return this.delegate.selectRootElement(selectorOrNode); }
+
+  parentNode(node: any) { return this.delegate.parentNode(node); }
+
+  nextSibling(node: any) { return this.delegate.nextSibling(node); }
+
+  setAttribute(el: any, name: string, value: string, namespace?: string|null|undefined): void {
     this.delegate.setAttribute(el, name, value, namespace);
   }
 
-  removeAttribute(el: any, name: string, namespace?: string): void {
+  removeAttribute(el: any, name: string, namespace?: string|null|undefined): void {
     this.delegate.removeAttribute(el, name, namespace);
   }
 
@@ -134,34 +157,37 @@ export class AnimationRenderer implements Renderer2 {
 
   removeClass(el: any, name: string): void { this.delegate.removeClass(el, name); }
 
-  setStyle(el: any, style: string, value: any, flags: RendererStyleFlags2): void {
+  setStyle(el: any, style: string, value: any, flags?: RendererStyleFlags2|undefined): void {
     this.delegate.setStyle(el, style, value, flags);
   }
 
-  removeStyle(el: any, style: string, flags: RendererStyleFlags2): void {
+  removeStyle(el: any, style: string, flags?: RendererStyleFlags2|undefined): void {
     this.delegate.removeStyle(el, style, flags);
+  }
+
+  setProperty(el: any, name: string, value: any): void {
+    this.delegate.setProperty(el, name, value);
   }
 
   setValue(node: any, value: string): void { this.delegate.setValue(node, value); }
 
-  appendChild(parent: any, newChild: any): void {
-    this.delegate.appendChild(parent, newChild);
-    this._engine.onInsert(this._namespaceId, newChild, parent, false);
+  listen(target: any, eventName: string, callback: (event: any) => boolean | void): () => void {
+    return this.delegate.listen(target, eventName, callback);
   }
+}
 
-  insertBefore(parent: any, newChild: any, refChild: any): void {
-    this.delegate.insertBefore(parent, newChild, refChild);
-    this._engine.onInsert(this._namespaceId, newChild, parent, true);
-  }
-
-  removeChild(parent: any, oldChild: any): void {
-    this._engine.onRemove(this._namespaceId, oldChild, this.delegate);
+export class AnimationRenderer extends BaseAnimationRenderer implements Renderer2 {
+  constructor(
+      public factory: AnimationRendererFactory, namespaceId: string, delegate: Renderer2,
+      engine: AnimationEngine) {
+    super(namespaceId, delegate, engine);
+    this.namespaceId = namespaceId;
   }
 
   setProperty(el: any, name: string, value: any): void {
     if (name.charAt(0) == '@') {
       name = name.substr(1);
-      this._engine.setProperty(this._namespaceId, el, name, value);
+      this.engine.setProperty(this.namespaceId, el, name, value);
     } else {
       this.delegate.setProperty(el, name, value);
     }
@@ -176,9 +202,9 @@ export class AnimationRenderer implements Renderer2 {
       if (name.charAt(0) != '@') {  // transition-specific
         [name, phase] = parseTriggerCallbackName(name);
       }
-      return this._engine.listen(this._namespaceId, element, name, phase, event => {
+      return this.engine.listen(this.namespaceId, element, name, phase, event => {
         const countId = (event as any)['_data'] || -1;
-        this._factory.scheduleListenerCallback(countId, callback, event);
+        this.factory.scheduleListenerCallback(countId, callback, event);
       });
     }
     return this.delegate.listen(target, eventName, callback);
