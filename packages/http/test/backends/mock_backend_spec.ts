@@ -71,6 +71,18 @@ export function main() {
          connection.mockError(new Error('nope'));
        }));
 
+    it('should allow responding a xhr response error',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+         const fakeErrorWithStatusResponse: Response =
+             new Response(new ResponseOptions({body: 'error', status: 401}));
+         const connection: MockConnection = backend.createConnection(sampleRequest1);
+         connection.response.subscribe(null !, (error: Response) => {
+           expect(error.status).toBe(401);
+           async.done();
+         });
+         connection.mockXHRError(fakeErrorWithStatusResponse);
+       }));
+
     it('should not throw when there are no unresolved requests',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          const connection: MockConnection = backend.createConnection(sampleRequest1);

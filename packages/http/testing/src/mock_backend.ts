@@ -103,6 +103,27 @@ export class MockConnection implements Connection {
     this.readyState = ReadyState.Done;
     this.response.error(err);
   }
+
+  /**
+   * Emits the provided response object as an error to the {@link Response} {@link EventEmitter}
+   * returned
+   * from {@link Http}.
+   *
+   * ### Example
+   *
+   * ```
+   * var connection;
+   * backend.connections.subscribe(c => connection = c);
+   * http.request('data.json').subscribe(null, (err)=> console.error(err.status));
+   * connection.mockXHRError(new Response(new ResponseOptions({ body: 'error', status: 401 })));
+   * ```
+   *
+   */
+
+  mockXHRError(err: Response) {
+    this.readyState = ReadyState.Done;
+    this.response.error(err);
+  }
 }
 
 /**
