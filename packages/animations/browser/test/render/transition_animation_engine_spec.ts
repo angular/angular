@@ -660,8 +660,7 @@ function registerTrigger(
   if (errors.length) {
   }
   const trigger = buildTrigger(name, ast);
-  engine.register(id, element);
-  engine.registerTrigger(id, name, trigger);
+  engine.register(id, element, name, trigger)
 }
 
 function setProperty(
