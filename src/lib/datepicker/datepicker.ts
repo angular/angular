@@ -10,7 +10,8 @@ import {
   Output,
   ViewChild,
   ViewContainerRef,
-  ViewEncapsulation
+  ViewEncapsulation,
+  NgZone,
 } from '@angular/core';
 import {Overlay} from '../core/overlay/overlay';
 import {OverlayRef} from '../core/overlay/overlay-ref';
@@ -20,18 +21,15 @@ import {Dir} from '../core/rtl/dir';
 import {MdDialog} from '../dialog/dialog';
 import {MdDialogRef} from '../dialog/dialog-ref';
 import {PositionStrategy} from '../core/overlay/position/position-strategy';
-import {
-  OriginConnectionPosition,
-  OverlayConnectionPosition
-} from '../core/overlay/position/connected-position';
+import {RepositionScrollStrategy, ScrollDispatcher} from '../core/overlay/index';
 import {MdDatepickerInput} from './datepicker-input';
-import 'rxjs/add/operator/first';
 import {Subscription} from 'rxjs/Subscription';
 import {MdDialogConfig} from '../dialog/dialog-config';
 import {DateAdapter} from '../core/datetime/index';
 import {createMissingDateImplError} from './datepicker-errors';
 import {ESCAPE} from '../core/keyboard/keycodes';
 import {MdCalendar} from './calendar';
+import 'rxjs/add/operator/first';
 
 
 /** Used to generate a unique ID for each datepicker instance. */
@@ -155,8 +153,11 @@ export class MdDatepicker<D> implements OnDestroy {
 
   private _inputSubscription: Subscription;
 
-  constructor(private _dialog: MdDialog, private _overlay: Overlay,
+  constructor(private _dialog: MdDialog,
+              private _overlay: Overlay,
+              private _ngZone: NgZone,
               private _viewContainerRef: ViewContainerRef,
+              private _scrollDispatcher: ScrollDispatcher,
               @Optional() private _dateAdapter: DateAdapter<D>,
               @Optional() private _dir: Dir) {
     if (!this._dateAdapter) {
@@ -253,6 +254,9 @@ export class MdDatepicker<D> implements OnDestroy {
       let componentRef: ComponentRef<MdDatepickerContent<D>> =
           this._popupRef.attach(this._calendarPortal);
       componentRef.instance.datepicker = this;
+
+      // Update the position once the calendar has rendered.
+      this._ngZone.onStable.first().subscribe(() => this._popupRef.updatePosition());
     }
 
     this._popupRef.backdropClick().first().subscribe(() => this.close());
@@ -265,15 +269,29 @@ export class MdDatepicker<D> implements OnDestroy {
     overlayState.hasBackdrop = true;
     overlayState.backdropClass = 'md-overlay-transparent-backdrop';
     overlayState.direction = this._dir ? this._dir.value : 'ltr';
+    overlayState.scrollStrategy = new RepositionScrollStrategy(this._scrollDispatcher);
 
     this._popupRef = this._overlay.create(overlayState);
   }
 
   /** Create the popup PositionStrategy. */
   private _createPopupPositionStrategy(): PositionStrategy {
-    let origin = {originX: 'start', originY: 'bottom'} as OriginConnectionPosition;
-    let overlay = {overlayX: 'start', overlayY: 'top'} as OverlayConnectionPosition;
-    return this._overlay.position().connectedTo(
-        this._datepickerInput.getPopupConnectionElementRef(), origin, overlay);
+    return this._overlay.position()
+      .connectedTo(this._datepickerInput.getPopupConnectionElementRef(),
+        {originX: 'start', originY: 'bottom'},
+        {overlayX: 'start', overlayY: 'top'}
+      )
+      .withFallbackPosition(
+        { originX: 'start', originY: 'top' },
+        { overlayX: 'start', overlayY: 'bottom' }
+      )
+      .withFallbackPosition(
+        {originX: 'end', originY: 'bottom'},
+        {overlayX: 'end', overlayY: 'top'}
+      )
+      .withFallbackPosition(
+        { originX: 'end', originY: 'top' },
+        { overlayX: 'end', overlayY: 'bottom' }
+      );
   }
 }

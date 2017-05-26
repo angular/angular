@@ -569,6 +569,82 @@ describe('MdDatepicker', () => {
           .toThrowError(/MdDatepicker: No provider found for .*/);
     });
   });
+
+  describe('popup positioning', () => {
+    let fixture: ComponentFixture<StandardDatepicker>;
+    let testComponent: StandardDatepicker;
+    let input: HTMLElement;
+
+    beforeEach(async(() => {
+      TestBed.configureTestingModule({
+        imports: [MdDatepickerModule, MdInputModule, MdNativeDateModule, NoopAnimationsModule],
+        declarations: [StandardDatepicker],
+      }).compileComponents();
+
+      fixture = TestBed.createComponent(StandardDatepicker);
+      fixture.detectChanges();
+      testComponent = fixture.componentInstance;
+      input = fixture.debugElement.query(By.css('input')).nativeElement;
+      input.style.position = 'fixed';
+    }));
+
+    it('should be below and to the right when there is plenty of space', () => {
+      input.style.top = input.style.left = '20px';
+      testComponent.datepicker.open();
+      fixture.detectChanges();
+
+      const overlayRect = document.querySelector('.cdk-overlay-pane').getBoundingClientRect();
+      const inputRect = input.getBoundingClientRect();
+
+      expect(Math.floor(overlayRect.top))
+          .toBe(Math.floor(inputRect.bottom), 'Expected popup to align to input bottom.');
+      expect(Math.floor(overlayRect.left))
+          .toBe(Math.floor(inputRect.left), 'Expected popup to align to input left.');
+    });
+
+    it('should be above and to the right when there is no space below', () => {
+      input.style.bottom = input.style.left = '20px';
+      testComponent.datepicker.open();
+      fixture.detectChanges();
+
+      const overlayRect = document.querySelector('.cdk-overlay-pane').getBoundingClientRect();
+      const inputRect = input.getBoundingClientRect();
+
+      expect(Math.floor(overlayRect.bottom))
+          .toBe(Math.floor(inputRect.top), 'Expected popup to align to input top.');
+      expect(Math.floor(overlayRect.left))
+          .toBe(Math.floor(inputRect.left), 'Expected popup to align to input left.');
+    });
+
+    it('should be below and to the left when there is no space on the right', () => {
+      input.style.top = input.style.right = '20px';
+      testComponent.datepicker.open();
+      fixture.detectChanges();
+
+      const overlayRect = document.querySelector('.cdk-overlay-pane').getBoundingClientRect();
+      const inputRect = input.getBoundingClientRect();
+
+      expect(Math.floor(overlayRect.top))
+          .toBe(Math.floor(inputRect.bottom), 'Expected popup to align to input bottom.');
+      expect(Math.floor(overlayRect.right))
+          .toBe(Math.floor(inputRect.right), 'Expected popup to align to input right.');
+    });
+
+    it('should be above and to the left when there is no space on the bottom', () => {
+      input.style.bottom = input.style.right = '20px';
+      testComponent.datepicker.open();
+      fixture.detectChanges();
+
+      const overlayRect = document.querySelector('.cdk-overlay-pane').getBoundingClientRect();
+      const inputRect = input.getBoundingClientRect();
+
+      expect(Math.floor(overlayRect.bottom))
+          .toBe(Math.floor(inputRect.top), 'Expected popup to align to input top.');
+      expect(Math.floor(overlayRect.right))
+          .toBe(Math.floor(inputRect.right), 'Expected popup to align to input right.');
+    });
+
+  });
 });
 
 
