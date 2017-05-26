@@ -1,12 +1,4 @@
-@title
-Setup for local development
-
-@intro
-Install the Angular QuickStart seed for faster, more efficient development on your machine.
-
-@description
-
-
+# Setup for local development
 
 {@a develop-locally}
 
@@ -20,21 +12,10 @@ maintained [on github](https://github.com/angular/quickstart "Install the github
 
 Make sure you have [node and npm installed](guide/setup#install-prerequisites "What if you don't have node and npm?").
 
-<!--
-
-Then ...
-
-1. Create a project folder (you can call it `quickstart` and rename it later).
-1. [Clone](guide/setup#clone "Clone it from github") or [download](guide/setup#download "download it from github") the **QuickStart seed** into your project folder.
-1. Install [npm](guide/setup#install-prerequisites "What if you don't have node and npm?") packages.
-1. Run `npm start` to launch the sample application.
-
--->
-
 {@a clone}
 
 
-### Clone
+## Clone
 
 Perform the _clone-to-launch_ steps with these terminal commands.
 
@@ -63,7 +44,7 @@ Perform the _clone-to-launch_ steps with these terminal commands.
 {@a download}
 
 
-### Download
+## Download
 <a href="https://github.com/angular/quickstart/archive/master.zip" title="Download the QuickStart seed repository">Download the QuickStart seed</a>
 and unzip it into your project folder. Then perform the remaining steps with these terminal commands.
 

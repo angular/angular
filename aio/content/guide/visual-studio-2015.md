@@ -1,10 +1,5 @@
-@title
-Visual Studio 2015 QuickStart
+# Visual Studio 2015 QuickStart
 
-@intro
-Use Visual Studio 2015 with the QuickStart files.
-
-@description
 {@a top}
 
 Some developers prefer Visual Studio as their Integrated Development Environment (IDE).
@@ -29,21 +24,6 @@ the QuickStart application itself.
 
 To set up the QuickStart files with an **ASP.NET 4.x project** in
 Visual Studio 2015, follow these steps:
-
-<!--
-
-
-*  [Prerequisite](guide/visual-studio-2015#prereq1): Install Node.js.
-*  [Prerequisite](guide/visual-studio-2015#prereq2): Install Visual Studio 2015 Update 3.
-*  [Prerequisite](guide/visual-studio-2015#prereq3): Configure external web tools.
-*  [Prerequisite](guide/visual-studio-2015#prereq4): Install TypeScript 2.2 for Visual Studio 2015.
-*  [Step 1](guide/visual-studio-2015#download): Download the QuickStart files.
-*  [Step 2](guide/visual-studio-2015#create-project): Create the Visual Studio ASP.NET project.
-*  [Step 3](guide/visual-studio-2015#copy): Copy the QuickStart files into the ASP.NET project folder.
-*  [Step 4](guide/visual-studio-2015#restore): Restore required packages.
-*  [Step 5](guide/visual-studio-2015#build-and-run): Build and run the app.
-
--->
 
 <div class="l-sub-section">
 

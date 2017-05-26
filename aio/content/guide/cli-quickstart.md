@@ -1,8 +1,4 @@
-@title
-CLI QuickStart
-
-@description
-
+# CLI QuickStart
 
 Good tools make application development quicker and easier to maintain than
 if you did everything by hand.

@@ -2,18 +2,6 @@
 
 An **Attribute** directive changes the appearance or behavior of a DOM element.
 
-<!--
-# Contents
-
-* [Directives overview](guide/attribute-directives#directive-overview)
-* [Build a simple attribute directive](guide/attribute-directives#write-directive)
-* [Apply the attribute directive to an element in a template](guide/attribute-directives#apply-directive)
-* [Respond to user-initiated events](guide/attribute-directives#respond-to-user)
-* [Pass values into the directive with an _@Input_ data binding](guide/attribute-directives#bindings)
-* [Bind to a second property](guide/attribute-directives#second-property)
-
--->
-
 Try the <live-example title="Attribute Directive example"></live-example>.
 
 {@a directive-overview}
@@ -136,7 +124,7 @@ Now when the app runs, the `myHighlight` directive highlights the paragraph text
 
 <div class="l-sub-section">
 
-### Your directive isn't working?
+<h3 class="no-toc">Your directive isn't working?</h3>
 
 Did you remember to add the directive to the `declarations` attribute of `@NgModule`?
 It is easy to forget!

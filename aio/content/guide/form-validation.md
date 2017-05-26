@@ -1,11 +1,4 @@
-@title
-Form Validation
-
-@intro
-Validate user's form entries.
-
-@description
-
+# Form Validation
 
 {@a top}
 
@@ -28,34 +21,6 @@ and the [Reactive Forms](guide/reactive-forms) guides.
 
 
 {@a toc}
-
-<!--
-
-## Contents
-
-  * [Simple template-driven forms](guide/form-validation#template1)
-  * [Template-driven forms with validation messages in code](guide/form-validation#template2)
-
-    * [Component Class](guide/form-validation#component-class)
-    * [The benefits of messages in code](guide/form-validation#improvement)
-    * [`FormModule` and template-driven forms](guide/form-validation#formmodule)
-
-  * [Reactive forms with validation in code](guide/form-validation#reactive)
-
-    * [Switch to the `ReactiveFormsModule`](guide/form-validation#reactive-forms-module)
-    * [Component template](guide/form-validation#reactive-component-template)
-    * [Component class](guide/form-validation#reactive-component-class)
-
-      * [`FormBuilder` declaration](guide/form-validation#formbuilder)
-      * [Committing hero value changes](guide/form-validation#committing-changes)
-
-  * [Custom validation](guide/form-validation#custom-validation)
-
-    * [Custom validation directive](guide/form-validation#custom-validation-directive)
-
-  * [Testing considerations](guide/form-validation#testing)
-
--->
 
 {@a live-example}
 
