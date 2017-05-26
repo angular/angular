@@ -130,14 +130,14 @@ export class MdDatepickerInput<D> implements AfterContentInit, ControlValueAcces
   /** The form control validator for the min date. */
   private _minValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
     return (!this.min || !control.value ||
-        this._dateAdapter.compareDate(this.min, control.value) < 0) ?
+        this._dateAdapter.compareDate(this.min, control.value) <= 0) ?
         null : {'mdDatepickerMin': {'min': this.min, 'actual': control.value}};
   }
 
   /** The form control validator for the max date. */
   private _maxValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
     return (!this.max || !control.value ||
-        this._dateAdapter.compareDate(this.max, control.value) > 0) ?
+        this._dateAdapter.compareDate(this.max, control.value) >= 0) ?
         null : {'mdDatepickerMax': {'max': this.max, 'actual': control.value}};
   }
 
