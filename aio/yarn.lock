@@ -1866,9 +1866,9 @@ devtools-timeline-model@1.1.6:
     chrome-devtools-frontend "1.0.401423"
     resolve "1.1.7"
 
-dgeni-packages@^0.19.0:
-  version "0.19.0"
-  resolved "https://registry.yarnpkg.com/dgeni-packages/-/dgeni-packages-0.19.0.tgz#2c119ce57428ec64280f8fabc4ae8b87b681ee01"
+dgeni-packages@^0.19.1:
+  version "0.19.1"
+  resolved "https://registry.yarnpkg.com/dgeni-packages/-/dgeni-packages-0.19.1.tgz#7b96545d0a35151c9c2b0a25133de081090c7ca0"
   dependencies:
     canonical-path "0.0.2"
     catharsis "^0.8.1"
@@ -1992,16 +1992,9 @@ domutils@1.1:
   dependencies:
     domelementtype "1"
 
-domutils@1.5.1:
+domutils@1.5.1, domutils@^1.5.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/domutils/-/domutils-1.5.1.tgz#dcd8488a26f563d61079e48c9f7b7e32373682cf"
-  dependencies:
-    dom-serializer "0"
-    domelementtype "1"
-
-domutils@^1.5.1:
-  version "1.6.2"
-  resolved "https://registry.yarnpkg.com/domutils/-/domutils-1.6.2.tgz#1958cc0b4c9426e9ed367fb1c8e854891b0fa3ff"
   dependencies:
     dom-serializer "0"
     domelementtype "1"
