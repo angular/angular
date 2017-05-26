@@ -146,7 +146,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         ci.ctxProp = 'javascript:alert(1)';
         fixture.detectChanges();
         value = isAttribute ? getDOM().getAttribute(e, 'href') : getDOM().getProperty(e, 'href');
-        expect(value).toEqual('unsafe:javascript:alert(1)');
+        expect(value).toEqual('about:invalid#unsafe&url=javascript:alert(1)');
       }
 
       it('should escape unsafe properties', () => {

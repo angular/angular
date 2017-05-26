@@ -17,7 +17,7 @@ describe('Security E2E Tests', () => {
 
   it('escapes untrusted URLs', () => {
     let untrustedUrl = element(By.className('e2e-dangerous-url'));
-    expect(untrustedUrl.getAttribute('href')).toMatch(/^unsafe:javascript/);
+    expect(untrustedUrl.getAttribute('href')).toMatch(/^about:invalid#unsafe&url=javascript/);
   });
 
   it('binds trusted URLs', () => {
