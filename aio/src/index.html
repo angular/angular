@@ -38,7 +38,7 @@
 
   <script>
     window.onerror = function (message, url, lineNo, colNo, error) {
-      let container = document.createElement('div');
+      var container = document.createElement('div');
 
       container.style.color = 'red';
       container.style.position = 'fixed';
@@ -47,7 +47,7 @@
       container.style.top = '3em';
       container.style.left = '1em';
 
-      let msg = document.createElement('pre');
+      var msg = document.createElement('pre');
       msg.innerText = [
         'UA: ' + window.navigator.userAgent,
         'Message: ' + message,
