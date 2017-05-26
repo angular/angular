@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementFinder, ExpectedConditions, browser, by, element} from 'protractor';
+import {ElementFinder, browser, by, element} from 'protractor';
 
 import {verifyNoBrowserErrors} from '../../../_common/e2e_util';
 

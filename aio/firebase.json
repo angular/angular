@@ -20,6 +20,8 @@
       {"type": 301, "source": "/docs/ts/latest/cookbook",            "destination": "/docs"},
       {"type": 301, "source": "/docs/ts/latest/cookbook/",           "destination": "/docs"},
       {"type": 301, "source": "/docs/ts/latest/cookbook/index.html", "destination": "/docs"},
+
+      // cookbook/set-document-title.html -> api/platform-browser/Title
       {"type": 301, "source": "/docs/ts/latest/cookbook/set-document-title.html", "destination": "/api/platform-browser/Title"},
 
       // cookbook/dependency-injection.html
