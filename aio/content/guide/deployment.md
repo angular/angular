@@ -1,38 +1,9 @@
-@title
-Deployment
-
-@intro
-Learn how to deploy your Angular app.
-
-@description
-
+# Deployment
 
 This page describes tools and techniques for deploy and optimize your Angular application.
 
 
 {@a toc}
-
-<!--
-
-## Table of contents
-
-* [Overview](guide/deployment#overview)
-* [Simplest deployment possible](guide/deployment#dev-deploy)
-* [Optimize for production](guide/deployment#optimize)
-  * [Ahead-of-Time (AOT) compilation](guide/deployment#aot)
-  * [Webpack](guide/deployment#webpack)
-  * [Tree shaking with _rollup_](guide/deployment#rollup)
-  * [Pruned libraries](guide/deployment#prune)
-  * [Measure performance first](guide/deployment#measure)
-* [Angular configuration](guide/deployment#angular-configuration)
-  * [The `base` tag](guide/deployment#base-tag)
-  * [Enable production mode](guide/deployment#enable-prod-mode)
-  * [Lazy loading](guide/deployment#lazy-loading)
-* [Server configuration](guide/deployment#server-configuration)
-  * [Routed apps must fallback to `index.html`](guide/deployment#fallback)
-  * [CORS: requesting services from a different server](guide/deployment#cors)
-
--->
 
 {@a overview}
 

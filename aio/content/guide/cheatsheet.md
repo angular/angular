@@ -1,7 +1,4 @@
-@title
-Cheat Sheet
-
-@description
+# Cheat Sheet
 
 <div id="cheatsheet">
 <table class="is-full-width is-fixed-layout">

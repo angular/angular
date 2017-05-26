@@ -1,9 +1,4 @@
-@title
-Angular Glossary
-
-@description
-
-
+# Angular Glossary
 
 Angular has its own vocabulary.
 Most Angular terms are common English words

@@ -1,10 +1,4 @@
-@title
-Dependency Injection
-
-@intro
-Techniques for Dependency Injection.
-
-@description
+# Dependency Injection
 
 
 Dependency Injection is a powerful pattern for managing code dependencies.

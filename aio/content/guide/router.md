@@ -1,11 +1,4 @@
-@title
-Routing & Navigation
-
-@intro
-Discover the basics of screen navigation with the Angular Router.
-
-@description
-
+# Routing & Navigation
 
 The Angular **`Router`** enables navigation from one [view](guide/glossary#view) to the next
 as users perform application tasks.
@@ -32,110 +25,6 @@ the appropriate application view when the user clicks a link.
 You can navigate imperatively when the user clicks a button, selects from a drop box,
 or in response to some other stimulus from any source. And the router logs activity
 in the browser's history journal so the back and forward buttons work as well.
-
-<!--
-
-# Contents
-
-* [The Basics](guide/router#basics)
-
-  * [`<base href>`](guide/router#basics-base-href)
-  * [Router imports](guide/router#basics-router-imports)
-  * [Configuration](guide/router#basics-config)
-  * [Router outlet](guide/router#basics-router-outlet)
-  * [Router links](guide/router#basics-router-links)
-  * [Router state](guide/router#basics-router-state)
-  * [Summary](guide/router#basics-summary)
-
-* [The sample application](guide/router#sample-app-intro)
-
-* [Milestone 1: Getting started with the router](guide/router#getting-started)
-
-  * [Setting the base href](guide/router#base-href)
-  * [Importing from the router library](guide/router#import)
-  * [Define routes](guide/router#route-config)
-  * [The `AppComponent` shell](guide/router#shell)
-  * [RouterOutlet](guide/router#router-outlet)
-  * [`RouterLink binding`](guide/router#router-link)
-  * [`RouterLinkActive` binding](guide/router#router-link-active)
-  * [Wildcard route](guide/router#wildcard)
-  * [The default route to heroes](guide/router#default-route)
-
-* [Milestone 2: Routing module](guide/router#routing-module)
-
-  * [Refactor the routing configuration into a routing module](guide/router#routing-refactor)
-  * [Do you need a Routing Module?](guide/router#why-routing-module)
-
-* [Milestone 3: Heroes feature](guide/router#heroes-feature)
-
-  * [Add heroes functionality](guide/router#heroes-functionality)
-  * [Hero feature routing requirements](guide/router#hero-routing-requirements)
-  * [Hero feature route configuration](guide/router#hero-routing-module)
-  * [Add the routing module to the _HeroesModule_](guide/router#adding-routing-module)
-  * [Remove duplicate hero routes](guide/router#remove-duplicate-hero-routes)
-  * [Import hero module into AppModule](guide/router#merge-hero-routes)
-  * [Module import order matters](guide/router#routing-module-order)
-  * [Route Definition with a parameter](guide/router#route-def-with-parameter)
-  * [Navigate to hero detail imperatively](guide/router#navigate)
-  * [Setting the route parameters in the list view](guide/router#route-parameters)
-  * [ActivatedRoute: the one-stop-shop for route information](guide/router#activated-route)
-  * [Observable params and component reuse](guide/router#reuse)
-  * [Snapshot: the _no-observable_ alternative](guide/router#snapshot)
-  * [Navigating back to the list component](guide/router#nav-to-list)
-  * [Route Parameters: Required or optional?](guide/router#optional-route-parameters)
-  * [Heroes list: optionally selecting a hero](guide/router#optionally-selecting)
-  * [Route parameters in the *ActivatedRoute* service](guide/router#route-parameters-activated-route)
-  * [Adding animations to the routed component](guide/router#route-animation)
-  * [Milestone 3 wrap up](guide/router#milestone-3-wrap-up)
-
-* [Milestone 4: Crisis center feature](guide/router#milestone-4)
-
-  * [A crisis center with child routes](guide/router#crisis-child-routes)
-  * [Child routing component](guide/router#child-routing-component)
-  * [Child route configuration](guide/router#child-route-config)
-  * [Import crisis center module into the _AppModule_ routes](guide/router#import-crisis-module)
-  * [Relative navigation](guide/router#relative-navigation)
-  * [Navigate to crisis detail with a relative URL](guide/router#nav-to-crisis)
-  * [Displaying multiple routes in named outlets](guide/router#named-outlets)
-  * [Secondary routes](guide/router#secondary-routes)
-  * [Add a secondary route](guide/router#add-secondary-route)
-  * [Secondary route navigation: merging routes during navigation](guide/router#secondary-route-navigation)
-  * [Clearing secondary routes](guide/router#clear-secondary-routes)
-
-* [Milestone 5: Route guards](guide/router#guards)
-
-  * [`CanActivate`: requiring authentication](guide/router#can-activate-guard)
-  * [Component-less route: grouping routes without a component](guide/router#component-less-route)
-  * [Guard the admin feature](guide/router#guard-admin-feature)
-  * [Teach *AuthGuard* to authenticate](guide/router#teach-auth)
-  * [Add the login component](guide/router#add-login-component)
-  * [`CanActivateChild`: guarding child routes](guide/router#can-activate-child-guard)
-  * [`CanDeactivate`: handling unsaved changes](guide/router#can-deactivate-guard)
-  * [Cancel and save](guide/router#cancel-save)
-  * [`Resolve`: pre-fetching component data](guide/router#resolve-guard)
-  * [Fetch data before navigating](guide/router#fetch-before-navigating)
-  * [Query parameters and fragments](guide/router#query-parameters)
-
-* [Milestone 6: Asynchronous routing](guide/router#asynchronous-routing)
-
-  * [Lazy loading route configuration](guide/router#lazy-loading-route-config)
-  * [CanLoad Guard: guarding unauthorized loading of feature modules](guide/router#can-load-guard)
-  * [Preloading: background loading of feature areas](guide/router#preloading)
-  * [How preloading works](guide/router#how-preloading)
-  * [Lazy load the crisis center](guide/router#lazy-load-crisis-center)
-  * [_CanLoad_ blocks preload](guide/router#preload-canload)
-  * [Custom Preloading Strategy](guide/router#custom-preloading)
-  * [Inspect the router's configuration](guide/router#inspect-config)
-  * [Wrap up and final app](guide/router#final-app)
-
-* [Appendices](guide/router#appendices)
-
-  * [Appendix: link parameters array](guide/router#link-parameters-array)
-  * [Appendix: *LocationStrategy* and browser URL styles](guide/router#location-strategy)
-
-
--->
-
 
 {@a basics}
 
@@ -3980,7 +3869,7 @@ The appendix material isn't essential. Continued reading is for the curious.
 
 
 
-## Appendix: link parameters array
+### Appendix: link parameters array
 
 A link parameters array holds the following ingredients for router navigation:
 
@@ -4073,7 +3962,7 @@ any legal sequence of route paths, (required) router parameters, and (optional) 
 
 
 
-## Appendix: *LocationStrategy* and browser URL styles
+### Appendix: *LocationStrategy* and browser URL styles
 
 When the router navigates to a new component view, it updates the browser's location and history
 with a URL for that view.
@@ -4131,7 +4020,7 @@ Learn about providers and the bootstrap process in the
 
 
 
-### Which strategy is best?
+#### Which strategy is best?
 
 You must choose a strategy and you need to make the right call early in the project.
 It won't be easy to change later once the application is in production
@@ -4153,7 +4042,7 @@ without hashes (#) in the middle.
 Stick with the default unless you have a compelling reason to
 resort to hash routes.
 
-### HTML5 URLs and the  *&lt;base href>*
+#### HTML5 URLs and the  *&lt;base href>*
 
 While the router uses the
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" title="Browser history push-state">HTML5 pushState</a>
@@ -4185,7 +4074,7 @@ Those developers may still use HTML5 URLs by taking two remedial steps:
 
 {@a hashlocationstrategy}
 
-### *HashLocationStrategy*
+#### *HashLocationStrategy*
 
 You can go old-school with the `HashLocationStrategy` by
 providing the `useHash: true` in an object as the second argument of the `RouterModule.forRoot`

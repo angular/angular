@@ -1,12 +1,4 @@
-@title
-Dependency Injection
-
-@intro
-Angular's dependency injection system creates and delivers dependent services "just-in-time".
-
-@description
-
-
+# Dependency Injection
 
 **Dependency injection** is an important application design pattern.
 Angular has its own dependency injection framework, and
@@ -15,45 +7,6 @@ It's used so widely that almost everyone just calls it _DI_.
 
 This page covers what DI is, why it's so useful,
 and [how to use it](guide/dependency-injection#angular-di) in an Angular app.
-
-<!--
-
-# Contents
-
-* [Why dependency injection?](guide/dependency-injection#why-di)
-* [Angular dependency injection](guide/dependency-injection#angular-dependency-injection)
-
-  * [Configuring the injector](guide/dependency-injection#injector-config)
-  * [Registering providers in an `NgModule`](guide/dependency-injection#register-providers-ngmodule)
-  * [Registering providers in a component](guide/dependency-injection#register-providers-component)
-  * [When to use `NgModule` versus an application component](guide/dependency-injection#ngmodule-vs-comp)
-  * [Preparing the `HeroListComponent` for injection](guide/dependency-injection#prep-for-injection)
-  * [Implicit injector creation](guide/dependency-injection#di-metadata)
-  * [Singleton services](guide/dependency-injection#singleton-services)
-  * [Testing the component](guide/dependency-injection#testing-the-component)
-  * [When the service needs a service](guide/dependency-injection#service-needs-service)
-  * [Why `@Injectable()`?](guide/dependency-injection#injectable)
-
-* [Creating and registering a logger service](guide/dependency-injection#logger-service)
-* [Injector providers](guide/dependency-injection#injector-providers)
-
-  * [The `Provider` class and `provide` object literal](guide/dependency-injection#provide)
-  * [Alternative class providers](guide/dependency-injection#class-provider)
-  * [Class provider with dependencies](guide/dependency-injection#class-provider-dependencies)
-  * [Aliased class providers](guide/dependency-injection#aliased-class-providers)
-  * [Value providers](guide/dependency-injection#value-provider)
-  * [Factory providers](guide/dependency-injection#factory-provider)
-
-* [Dependency injection tokens](guide/dependency-injection#dependency-injection-tokens)
-
-  * [Non-class dependencies](guide/dependency-injection#non-class-dependencies)
-  * [`InjectionToken`](guide/dependency-injection#injection-token)
-
-* [Optional dependencies](guide/dependency-injection#optional)
-* [Summary](guide/dependency-injection#summary)
-* [Appendix: Working with injectors directly](guide/dependency-injection#explicit-injector)
-
--->
 
 Run the <live-example></live-example>.
 

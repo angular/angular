@@ -1,41 +1,10 @@
-@title
-Reactive Forms
-
-@intro
-Create a reactive form using FormBuilder, groups, and arrays.
-
-@description
-
+# Reactive Forms
 
 _Reactive forms_ is an Angular technique for creating forms in a _reactive_ style.
 This guide explains reactive forms as you follow the steps to build a "Hero Detail Editor" form.
 
 
 {@a toc}
-
-<!--
-
-## Contents
-
-* [Introduction to reactive forms](guide/reactive-forms#intro)
-* [Setup](guide/reactive-forms#setup)
-* [Create a data model](guide/reactive-forms#data-model)
-* [Create a _reactive forms_ component](guide/reactive-forms#create-component)
-* [Create its template file](guide/reactive-forms#create-template)
-* [Import the _ReactiveFormsModule_](guide/reactive-forms#import)
-* [Display the _HeroDetailComponent_](guide/reactive-forms#update)
-* [Add a FormGroup](guide/reactive-forms#formgroup)
-* [Taking a look at the form model](guide/reactive-forms#json)
-* [Introduction to _FormBuilder_](guide/reactive-forms#formbuilder)
-* [Validators.required](guide/reactive-forms#validators)
-* [Nested FormGroups](guide/reactive-forms#grouping)
-* [Inspect _FormControl_ properties](guide/reactive-forms#properties)
-* [Set form model data using _setValue_ and _patchValue_](guide/reactive-forms#set-data)
-* [Use _FormArray_ to present an array of _FormGroups_](guide/reactive-forms#form-array)
-* [Observe control changes](guide/reactive-forms#observe-control)
-* [Save form data](guide/reactive-forms#save)
-
--->
 
 Try the <live-example plnkr="final" title="Reactive Forms (final) in Plunker">Reactive Forms live-example</live-example>.
 

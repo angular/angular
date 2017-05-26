@@ -1,12 +1,4 @@
-@title
-Displaying Data
-
-@intro
-Property binding helps show app data in the UI.
-
-@description
-
-
+# Displaying Data
 
 You can display data by binding controls in an HTML template to properties of an Angular component.
 
@@ -20,16 +12,6 @@ The final UI looks like this:
 <figure>
   <img src="generated/images/guide/displaying-data/final.png" alt="Final UI">
 </figure>
-
-<!--
-
-# Contents
-
-* [Showing component properties with interpolation](guide/displaying-data#interpolation).
-* [Showing an array property with NgFor](guide/displaying-data#ngFor).
-* [Conditional display with NgIf](guide/displaying-data#ngIf).
-
--->
 
 <div class="l-sub-section">
 
@@ -282,7 +264,7 @@ That brief syntax does a lot:
 
 
 
-## Using the Hero class
+### Using the Hero class
 
 After importing the `Hero` class, the `AppComponent.heroes` property can return a _typed_ array
 of `Hero` objects:

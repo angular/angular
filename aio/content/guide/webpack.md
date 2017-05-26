@@ -1,11 +1,4 @@
-@title
-Webpack: An Introduction
-
-@intro
-Create Angular applications with a Webpack based tooling.
-
-@description
-
+# Webpack: An Introduction
 
 <style>
   h4 {font-size: 17px !important; text-transform: none !important;}
@@ -781,7 +774,7 @@ Here again are the TypeScript entry-point files that define the `polyfills` and 
 
 {@a highlights}
 
-### Highlights
+<h3 class="no-toc">Highlights</h3>
 
 * There are no `<script>` or `<link>` tags in the `index.html`.
 The `HtmlWebpackPlugin` inserts them dynamically at runtime.

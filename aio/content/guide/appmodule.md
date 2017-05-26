@@ -1,11 +1,4 @@
-@title
-AppModule: the root module
-
-@intro
-Tell Angular how to construct and bootstrap the app in the root "AppModule".
-
-@description
-
+# AppModule: the root module
 
 An Angular module class describes how the application parts fit together.
 Every application has at least one Angular module, the _root_ module 

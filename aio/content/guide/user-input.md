@@ -1,11 +1,4 @@
-@title
-User Input
-
-@intro
-User input triggers DOM events. We listen to those events with event bindings that funnel updated values back into our components and models.
-
-@description
-
+# User Input
 
 User actions such as clicking a link, pushing a button, and entering
 text raise DOM events.

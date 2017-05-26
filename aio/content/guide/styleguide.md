@@ -1,11 +1,4 @@
-@title
-Style Guide
-
-@intro
-Write Angular with style.
-
-@description
-
+# Style Guide
 
 Looking for an opinionated guide to Angular syntax, conventions, and application structure?
 Step right in!
@@ -14,23 +7,6 @@ This style guide presents preferred conventions and, as importantly, explains wh
 
 
 {@a toc}
-
-<!--
-
-# Contents
-
-  * [Single responsibility](guide/styleguide#single-responsibility)
-  * [Naming](guide/styleguide#naming)
-  * [Coding conventions](guide/styleguide#coding-conventions)
-  * [App structure and Angular modules](guide/styleguide#application-structure-and-angular-modules)
-  * [Components](guide/styleguide#components)
-  * [Directives](guide/styleguide#directives)
-  * [Services](guide/styleguide#services)
-  * [Data services](guide/styleguide#data-services)
-  * [Lifecycle hooks](guide/styleguide#lifecycle-hooks)
-  * [Appendix](guide/styleguide#appendix)
-
--->
 
 ## Style vocabulary
 

@@ -1,12 +1,4 @@
-@title
-Hierarchical Dependency Injectors
-
-@intro
-Angular's hierarchical dependency injection system supports nested injectors in parallel with the component tree.
-
-@description
-
-
+# Hierarchical Dependency Injectors
 
 You learned the basics of Angular Dependency injection in the
 [Dependency Injection](guide/dependency-injection) guide.
