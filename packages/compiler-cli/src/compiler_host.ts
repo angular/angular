@@ -31,9 +31,9 @@ export class CompilerHost implements AotCompilerHost {
   protected basePath: string;
   private genDir: string;
   private resolverCache = new Map<string, ModuleMetadata[]>();
-  private bundleIndexCache = new Map<string, boolean>();
-  private bundleIndexNames = new Set<string>();
-  private bundleRedirectNames = new Set<string>();
+  private flatModuleIndexCache = new Map<string, boolean>();
+  private flatModuleIndexNames = new Set<string>();
+  private flatModuleIndexRedirectNames = new Set<string>();
   private moduleFileNames = new Map<string, string|null>();
   protected resolveModuleNameHost: CompilerHostContext;
 
@@ -281,8 +281,8 @@ export class CompilerHost implements AotCompilerHost {
       // Check for a bundle index.
       if (this.hasBundleIndex(filePath)) {
         const normalFilePath = path.normalize(filePath);
-        return this.bundleIndexNames.has(normalFilePath) ||
-            this.bundleRedirectNames.has(normalFilePath);
+        return this.flatModuleIndexNames.has(normalFilePath) ||
+            this.flatModuleIndexRedirectNames.has(normalFilePath);
       }
     }
     return true;
@@ -313,7 +313,7 @@ export class CompilerHost implements AotCompilerHost {
 
   private hasBundleIndex(filePath: string): boolean {
     const checkBundleIndex = (directory: string): boolean => {
-      let result = this.bundleIndexCache.get(directory);
+      let result = this.flatModuleIndexCache.get(directory);
       if (result == null) {
         if (path.basename(directory) == 'node_module') {
           // Don't look outside the node_modules this package is installed in.
@@ -333,14 +333,14 @@ export class CompilerHost implements AotCompilerHost {
                   const metadataFile = typings.replace(DTS, '.metadata.json');
                   if (this.context.fileExists(metadataFile)) {
                     const metadata = JSON.parse(this.context.readFile(metadataFile));
-                    if (metadata.bundleRedirect) {
-                      this.bundleRedirectNames.add(typings);
+                    if (metadata.flatModuleIndexRedirect) {
+                      this.flatModuleIndexRedirectNames.add(typings);
                       // Note: don't set result = true,
                       // as this would mark this folder
                       // as having a bundleIndex too early without
                       // filling the bundleIndexNames.
                     } else if (metadata.importAs) {
-                      this.bundleIndexNames.add(typings);
+                      this.flatModuleIndexNames.add(typings);
                       result = true;
                     }
                   }
@@ -360,7 +360,7 @@ export class CompilerHost implements AotCompilerHost {
             result = false;
           }
         }
-        this.bundleIndexCache.set(directory, result);
+        this.flatModuleIndexCache.set(directory, result);
       }
       return result;
     };
