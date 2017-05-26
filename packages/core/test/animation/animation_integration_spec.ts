@@ -1101,9 +1101,10 @@ export function main() {
         const cmp = fixture.componentInstance;
 
         const someTrigger = trigger('someTrigger', []);
+        const hostElement = fixture.nativeElement;
+        engine.register(DEFAULT_NAMESPACE_ID, hostElement);
         engine.registerTrigger(
-            DEFAULT_COMPONENT_ID, DEFAULT_NAMESPACE_ID, fixture.nativeElement, someTrigger.name,
-            someTrigger);
+            DEFAULT_COMPONENT_ID, DEFAULT_NAMESPACE_ID, hostElement, someTrigger.name, someTrigger);
 
         cmp.exp = 'a';
         fixture.detectChanges();
