@@ -19,7 +19,7 @@ import {PositionStrategy} from '../core/overlay/position/position-strategy';
 import {ConnectedPositionStrategy} from '../core/overlay/position/connected-position-strategy';
 import {Observable} from 'rxjs/Observable';
 import {MdOptionSelectionChange, MdOption} from '../core/option/option';
-import {ENTER, UP_ARROW, DOWN_ARROW} from '../core/keyboard/keycodes';
+import {ENTER, UP_ARROW, DOWN_ARROW, ESCAPE} from '../core/keyboard/keycodes';
 import {Dir} from '../core/rtl/dir';
 import {MdInputContainer} from '../input/input-container';
 import {ScrollDispatcher} from '../core/overlay/scroll/scroll-dispatcher';
@@ -231,7 +231,9 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   }
 
   _handleKeydown(event: KeyboardEvent): void {
-    if (this.activeOption && event.keyCode === ENTER) {
+    if (event.keyCode === ESCAPE && this.panelOpen) {
+      this.closePanel();
+    } else if (this.activeOption && event.keyCode === ENTER) {
       this.activeOption._selectViaInteraction();
       event.preventDefault();
     } else {

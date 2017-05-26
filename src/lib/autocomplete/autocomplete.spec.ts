@@ -16,7 +16,7 @@ import {MdInputModule} from '../input/index';
 import {Dir, LayoutDirection} from '../core/rtl/dir';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {Subscription} from 'rxjs/Subscription';
-import {ENTER, DOWN_ARROW, SPACE, UP_ARROW} from '../core/keyboard/keycodes';
+import {ENTER, DOWN_ARROW, SPACE, UP_ARROW, ESCAPE} from '../core/keyboard/keycodes';
 import {MdOption} from '../core/option/option';
 import {MdAutocomplete} from './autocomplete';
 import {MdInputContainer} from '../input/input-container';
@@ -756,6 +756,23 @@ describe('MdAutocomplete', () => {
 
       // Expect option bottom minus the panel height (528 - 256 = 272)
       expect(scrollContainer.scrollTop).toEqual(272, `Expected panel to reveal last option.`);
+    }));
+
+    it('should close the panel when pressing escape', async(() => {
+      const trigger = fixture.componentInstance.trigger;
+      const escapeEvent = createKeyboardEvent('keydown', ESCAPE);
+
+      input.focus();
+
+      fixture.whenStable().then(() => {
+        expect(document.activeElement).toBe(input, 'Expected input to be focused.');
+        expect(trigger.panelOpen).toBe(true, 'Expected panel to be open.');
+
+        trigger._handleKeydown(escapeEvent);
+
+        expect(document.activeElement).toBe(input, 'Expected input to continue to be focused.');
+        expect(trigger.panelOpen).toBe(false, 'Expected panel to be closed.');
+      });
     }));
 
   });
