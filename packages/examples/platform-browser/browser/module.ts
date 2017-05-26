@@ -7,7 +7,7 @@
  */
 
 import { NgModule } from '@angular/core';
-import { BrowserModule, Title }  from '@angular/platform-browser';
+import { BrowserModule }  from '@angular/platform-browser';
 
 import { TitleComponent } from './title';
 
@@ -17,9 +17,6 @@ import { TitleComponent } from './title';
   ],
   declarations: [
     TitleComponent
-  ],
-  providers: [
-    Title
   ],
   bootstrap: [ TitleComponent ]
 })

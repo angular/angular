@@ -6,14 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {$, ExpectedConditions, browser, by, element, ElementFinder} from 'protractor';
+import {ExpectedConditions, browser, by, element, ElementFinder} from 'protractor';
 import {verifyNoBrowserErrors} from '../../../_common/e2e_util';
-
-function waitForElement(selector: string) {
-  const EC = ExpectedConditions;
-  // Waits for the element with id 'abc' to be present on the dom.
-  browser.wait(EC.presenceOf($(selector)), 20000);
-}
 
 describe('Set Document Title', function() {
   const URL = '/platform-browser/browser/';
@@ -30,7 +24,5 @@ describe('Set Document Title', function() {
       expect(browser.getTitle()).toEqual(titles[i]);
 
     });
-
   });
-
 });
