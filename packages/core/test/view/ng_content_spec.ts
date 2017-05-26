@@ -121,6 +121,7 @@ export function main() {
       ])));
 
       const componentView = asElementData(view, 0).componentView;
+      const rf = componentView.root.rendererFactory;
       const view0 = createEmbeddedView(componentView, componentView.def.nodes[1]);
 
       attachEmbeddedView(view, asElementData(componentView, 1), 0, view0);
@@ -128,7 +129,9 @@ export function main() {
       expect(getDOM().childNodes(getDOM().firstChild(rootNodes[0]))[1])
           .toBe(asTextData(view, 2).renderText);
 
+      rf.begin !();
       detachEmbeddedView(asElementData(componentView, 1), 0);
+      rf.end !();
       expect(getDOM().childNodes(getDOM().firstChild(rootNodes[0])).length).toBe(1);
     });
 
