@@ -692,10 +692,10 @@ export declare abstract class Renderer {
     abstract projectNodes(parentElement: any, nodes: any[]): void;
     abstract selectRootElement(selectorOrNode: string | any, debugInfo?: RenderDebugInfo): any;
     abstract setBindingDebugInfo(renderElement: any, propertyName: string, propertyValue: string): void;
-    abstract setElementAttribute(renderElement: any, attributeName: string, attributeValue: string): void;
+    abstract setElementAttribute(renderElement: any, attributeName: string, attributeValue?: string): void;
     abstract setElementClass(renderElement: any, className: string, isAdd: boolean): void;
     abstract setElementProperty(renderElement: any, propertyName: string, propertyValue: any): void;
-    abstract setElementStyle(renderElement: any, styleName: string, styleValue: string): void;
+    abstract setElementStyle(renderElement: any, styleName: string, styleValue?: string): void;
     abstract setText(renderNode: any, text: string): void;
 }
 
