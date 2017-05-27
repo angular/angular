@@ -37,20 +37,28 @@
   <!-- End Google Analytics -->
 
   <script>
-    /**
-     * Send a blocking request to fetch polyfill. We call this only on non-evergreen browsers.
-     */
-    function polyfillBrowser(polyfillUrl) {
-      var script = document.createElement('script');
-      script.src = polyfillUrl;
-      document.head.appendChild(script);
-    }
     if (window.document.documentMode) {
-      // polyfill IE11
-      polyfillBrowser('generated/ie-polyfills.min.js');
+      // polyfill IE11 in a blocking way
+      var s = document.createElement('script');
+      s.src = 'generated/ie-polyfills.min.js';
+      document.head.appendChild(s);
     } else if (!Object.assign) {
-      // polyfill googlebot
-      polyfillBrowser('https://cdn.polyfill.io/v2/polyfill.min.js?unknown=polyfill');
+      // polyfill other non-evergreen browsers in a blocking way
+      var polyfillUrl = "https://cdn.polyfill.io/v2/polyfill.min.js?features=default,Array.prototype.find&flags=gated&unknown=polyfill";
+
+      // send a blocking XHR to fetch the polyfill
+      // then append it to the document so that its eval-ed synchronously
+      // this is required because the method used for IE is not reliable with other non-evergreen browsers
+      var xhr = new XMLHttpRequest();
+      xhr.addEventListener("load", function() {
+        var s = document.createElement('script');
+        s.type = 'text/javascript';
+        var code = this.responseText;
+        s.appendChild(document.createTextNode(code));
+        document.head.appendChild(s);
+      });
+      xhr.open("GET", polyfillUrl, false);
+      xhr.send();
     }
   </script>
 </head>
