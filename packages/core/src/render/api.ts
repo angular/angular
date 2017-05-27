@@ -73,7 +73,7 @@ export abstract class Renderer {
 
   abstract setElementProperty(renderElement: any, propertyName: string, propertyValue: any): void;
 
-  abstract setElementAttribute(renderElement: any, attributeName: string, attributeValue: string):
+  abstract setElementAttribute(renderElement: any, attributeName: string, attributeValue?: string):
       void;
 
   /**
@@ -84,7 +84,7 @@ export abstract class Renderer {
 
   abstract setElementClass(renderElement: any, className: string, isAdd: boolean): void;
 
-  abstract setElementStyle(renderElement: any, styleName: string, styleValue: string): void;
+  abstract setElementStyle(renderElement: any, styleName: string, styleValue?: string): void;
 
   abstract invokeElementMethod(renderElement: any, methodName: string, args?: any[]): void;
 
