@@ -10,6 +10,7 @@ import {fakeAsync, inject, tick} from '@angular/core/testing';
 import {afterEach, beforeEach, describe, expect, it,} from '@angular/core/testing/src/testing_internal';
 import {EventManager} from '@angular/platform-browser';
 import {HammerGestureConfig, HammerGesturesPlugin,} from '@angular/platform-browser/src/dom/events/hammer_gestures';
+import {el} from '../../../testing/src/browser_util';
 
 {
   describe('HammerGesturesPlugin', () => {
@@ -149,6 +150,23 @@ import {HammerGestureConfig, HammerGesturesPlugin,} from '@angular/platform-brow
                .toHaveBeenCalledWith(
                    `The custom HAMMER_LOADER completed, but Hammer.JS is not present.`);
          }));
+    });
+
+    it('should create an instance of hammer for each element (buildHammer)', () => {
+      const config = new HammerGestureConfig();
+      const element = el('<div></div>');
+      const onceInstance = config.buildHammer(element);
+      let multiInstance = config.buildHammer(element);
+
+      expect(onceInstance).not.toBeUndefined();
+      expect(onceInstance).toEqual(multiInstance);
+
+      multiInstance = config.buildHammer(element);
+      expect(onceInstance).toEqual(multiInstance);
+      multiInstance = config.buildHammer(element);
+      expect(onceInstance).toEqual(multiInstance);
+      multiInstance = config.buildHammer(element);
+      expect(onceInstance).toEqual(multiInstance);
     });
   });
 }
