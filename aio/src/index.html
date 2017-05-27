@@ -37,35 +37,20 @@
   <!-- End Google Analytics -->
 
   <script>
-    window.onerror = function (message, url, lineNo, colNo, error) {
-      var container = document.createElement('div');
-
-      container.style.color = 'red';
-      container.style.position = 'fixed';
-      container.style.background = '#eee';
-      container.style.padding = '2em';
-      container.style.top = '3em';
-      container.style.left = '1em';
-
-      var msg = document.createElement('pre');
-      msg.innerText = [
-        'UA: ' + window.navigator.userAgent,
-        'Message: ' + message,
-        'URL: ' + url,
-        'Line: ' + lineNo,
-        'Column: ' + colNo,
-        'Stack: ' + (error && error.stack)
-      ].join('\n');
-
-      container.appendChild(msg);
-
-      setTimeout(function() {document.body.appendChild(container)}, 0);
-    };
-
-    if (window.document.documentMode) {
+    /**
+     * Send a blocking request to fetch polyfill. We call this only on non-evergreen browsers.
+     */
+    function polyfillBrowser(polyfillUrl) {
       var script = document.createElement('script');
-      script.src = 'generated/ie-polyfills.min.js';
+      script.src = polyfillUrl;
       document.head.appendChild(script);
+    }
+    if (window.document.documentMode) {
+      // polyfill IE11
+      polyfillBrowser('generated/ie-polyfills.min.js');
+    } else if (!Object.assign) {
+      // polyfill googlebot
+      polyfillBrowser('https://cdn.polyfill.io/v2/polyfill.min.js?unknown=polyfill');
     }
   </script>
 </head>
