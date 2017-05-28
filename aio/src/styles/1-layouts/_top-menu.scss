@@ -86,7 +86,7 @@ md-toolbar.mat-toolbar {
   }
 }
 
-aio-shell.sidenav-open {
+aio-shell.page-home.sidenav-open {
   md-toolbar.mat-toolbar md-icon {
     color: $mediumgray;
   }
@@ -108,17 +108,17 @@ aio-search-box input {
   background-color: $offwhite;
   padding: 5px 16px;
   margin-left: 8px;
-  width: 150px;
-  height: 40%;
+  width: 180px;
+  max-width: 240px;
+  height: 50%;
 
    @include bp(big) {
     transition: width 0.4s ease-in-out;
     &:focus {
       width: 50%;
-      max-width: 240px;
     }
   }
   @media (max-width: 480px) {
-    width: 180px;
+    width: 150px;
   }
 }
