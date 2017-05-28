@@ -1,12 +1,4 @@
-@title
-Browser support
-
-@intro
-Browser support and polyfills guide.
-
-@description
-
-
+# Browser support
 
 Angular supports most recent browsers. This includes the following specific versions:
 

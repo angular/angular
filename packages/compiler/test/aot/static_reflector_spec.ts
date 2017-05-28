@@ -570,6 +570,48 @@ describe('StaticReflector', () => {
     expect(annotation.providers).toEqual([]);
   });
 
+  // #15424
+  it('should be able to inject a ctor parameter with a @Inject and a type expression', () => {
+    const data = Object.create(DEFAULT_TEST_DATA);
+    const file = '/tmp/src/invalid-component.ts';
+    data[file] = `
+        import {Injectable, Inject} from '@angular/core';
+
+        @Injectable()
+        export class SomeClass {
+          constructor (@Inject('some-token') a: {a: string, b: string}) {}
+        }
+      `;
+    init(data);
+
+    const someClass = reflector.getStaticSymbol(file, 'SomeClass');
+    const parameters = reflector.parameters(someClass);
+    expect(parameters.toString()).toEqual('@Inject');
+  });
+
+  it('should reject a ctor parameter without a @Inject and a type exprssion', () => {
+    const data = Object.create(DEFAULT_TEST_DATA);
+    const file = '/tmp/src/invalid-component.ts';
+    data[file] = `
+        import {Injectable} from '@angular/core';
+
+        @Injectable()
+        export class SomeClass {
+          constructor (a: {a: string, b: string}) {}
+        }
+      `;
+
+    let error: any = undefined;
+    init(data, [], (err: any, filePath: string) => {
+      expect(error).toBeUndefined();
+      error = err;
+    });
+
+    const someClass = reflector.getStaticSymbol(file, 'SomeClass');
+    expect(reflector.parameters(someClass)).toEqual([[]]);
+    expect(error).toBeUndefined();
+  });
+
   describe('inheritance', () => {
     class ClassDecorator {
       constructor(public value: any) {}

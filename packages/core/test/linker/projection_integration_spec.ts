@@ -130,11 +130,13 @@ export function main() {
                                      .map(de => de.injector.get(ManualViewportDirective));
 
       expect(main.nativeElement).toHaveText('(, B)');
+
       viewportDirectives.forEach(d => d.show());
+      main.detectChanges();
       expect(main.nativeElement).toHaveText('(A1, B)');
 
       viewportDirectives.forEach(d => d.hide());
-
+      main.detectChanges();
       expect(main.nativeElement).toHaveText('(, B)');
     });
 
@@ -200,10 +202,11 @@ export function main() {
       expect(main.nativeElement).toHaveText('(, BC)');
 
       viewportDirective.show();
+      main.detectChanges();
       expect(main.nativeElement).toHaveText('(A, BC)');
 
       viewportDirective.hide();
-
+      main.detectChanges();
       expect(main.nativeElement).toHaveText('(, BC)');
     });
 
@@ -492,7 +495,7 @@ export function main() {
       expect(main.nativeElement).toHaveText('(, D)');
 
       viewViewportDir.show();
-
+      main.detectChanges();
       expect(main.nativeElement).toHaveText('(AC, D)');
 
       const contentViewportDir =
@@ -500,12 +503,13 @@ export function main() {
               ManualViewportDirective);
 
       contentViewportDir.show();
-
+      main.detectChanges();
       expect(main.nativeElement).toHaveText('(ABC, D)');
 
       // hide view viewport, and test that it also hides
       // the content viewport's views
       viewViewportDir.hide();
+      main.detectChanges();
       expect(main.nativeElement).toHaveText('(, D)');
     });
   });

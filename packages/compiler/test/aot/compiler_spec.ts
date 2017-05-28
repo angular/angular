@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {GeneratedFile} from '@angular/compiler';
+import {GeneratedFile, toTypeScript} from '@angular/compiler';
 import {NodeFlags} from '@angular/core/src/view/index';
-import {async} from '@angular/core/testing';
 import {MetadataBundler, MetadataCollector, ModuleMetadata, privateEntriesToIndex} from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
 
@@ -20,11 +19,11 @@ describe('compiler (unbundled Angular)', () => {
   let angularFiles = setup();
 
   describe('Quickstart', () => {
-    it('should compile', async(() => compile([QUICKSTART, angularFiles]).then(({genFiles}) => {
-         expect(genFiles.find(f => /app\.component\.ngfactory\.ts/.test(f.genFileUrl)))
-             .toBeDefined();
-         expect(genFiles.find(f => /app\.module\.ngfactory\.ts/.test(f.genFileUrl))).toBeDefined();
-       })));
+    it('should compile', () => {
+      const {genFiles} = compile([QUICKSTART, angularFiles]);
+      expect(genFiles.find(f => /app\.component\.ngfactory\.ts/.test(f.genFileUrl))).toBeDefined();
+      expect(genFiles.find(f => /app\.module\.ngfactory\.ts/.test(f.genFileUrl))).toBeDefined();
+    });
   });
 
   describe('aot source mapping', () => {
@@ -51,12 +50,10 @@ describe('compiler (unbundled Angular)', () => {
       rootDir = {'app': appDir};
     });
 
-    function compileApp(): Promise<GeneratedFile> {
-      return compile([rootDir, angularFiles])
-          .then(
-              ({genFiles}) => {return genFiles.find(
-                  genFile =>
-                      genFile.srcFileUrl === componentPath && genFile.genFileUrl.endsWith('.ts'))});
+    function compileApp(): GeneratedFile {
+      const {genFiles} = compile([rootDir, angularFiles]);
+      return genFiles.find(
+          genFile => genFile.srcFileUrl === componentPath && genFile.genFileUrl.endsWith('.ts'));
     }
 
     function findLineAndColumn(
@@ -106,99 +103,95 @@ describe('compiler (unbundled Angular)', () => {
 
     function declareTests({ngUrl, templateDecorator}:
                               {ngUrl: string, templateDecorator: (template: string) => string}) {
-      it('should use the right source url in html parse errors', async(() => {
-           appDir['app.component.ts'] =
-               createComponentSource(templateDecorator('<div>\n  </error>'));
+      it('should use the right source url in html parse errors', () => {
+        appDir['app.component.ts'] = createComponentSource(templateDecorator('<div>\n  </error>'));
 
-           expectPromiseToThrow(
-               compileApp(), new RegExp(`Template parse errors[\\s\\S]*${ngUrl}@1:2`));
-         }));
+        expect(() => compileApp())
+            .toThrowError(new RegExp(`Template parse errors[\\s\\S]*${ngUrl}@1:2`));
+      });
 
-      it('should use the right source url in template parse errors', async(() => {
-           appDir['app.component.ts'] = createComponentSource(
-               templateDecorator('<div>\n  <div unknown="{{ctxProp}}"></div>'));
+      it('should use the right source url in template parse errors', () => {
+        appDir['app.component.ts'] =
+            createComponentSource(templateDecorator('<div>\n  <div unknown="{{ctxProp}}"></div>'));
 
-           expectPromiseToThrow(
-               compileApp(), new RegExp(`Template parse errors[\\s\\S]*${ngUrl}@1:7`));
-         }));
+        expect(() => compileApp())
+            .toThrowError(new RegExp(`Template parse errors[\\s\\S]*${ngUrl}@1:7`));
+      });
 
-      it('should create a sourceMap for the template', async(() => {
-           const template = 'Hello World!';
+      it('should create a sourceMap for the template', () => {
+        const template = 'Hello World!';
 
-           appDir['app.component.ts'] = createComponentSource(templateDecorator(template));
+        appDir['app.component.ts'] = createComponentSource(templateDecorator(template));
 
-           compileApp().then((genFile) => {
-             const sourceMap = extractSourceMap(genFile.source) !;
-             expect(sourceMap.file).toEqual(genFile.genFileUrl);
+        const genFile = compileApp();
+        const genSource = toTypeScript(genFile);
+        const sourceMap = extractSourceMap(genSource) !;
+        expect(sourceMap.file).toEqual(genFile.genFileUrl);
 
-             // the generated file contains code that is not mapped to
-             // the template but rather to the original source file (e.g. import statements, ...)
-             const templateIndex = sourceMap.sources.indexOf(ngUrl);
-             expect(sourceMap.sourcesContent[templateIndex]).toEqual(template);
+        // the generated file contains code that is not mapped to
+        // the template but rather to the original source file (e.g. import statements, ...)
+        const templateIndex = sourceMap.sources.indexOf(ngUrl);
+        expect(sourceMap.sourcesContent[templateIndex]).toEqual(template);
 
-             // for the mapping to the original source file we don't store the source code
-             // as we want to keep whatever TypeScript / ... produced for them.
-             const sourceIndex = sourceMap.sources.indexOf(ngComponentPath);
-             expect(sourceMap.sourcesContent[sourceIndex]).toBe(' ');
-           });
-         }));
+        // for the mapping to the original source file we don't store the source code
+        // as we want to keep whatever TypeScript / ... produced for them.
+        const sourceIndex = sourceMap.sources.indexOf(ngComponentPath);
+        expect(sourceMap.sourcesContent[sourceIndex]).toBe(' ');
+      });
 
-      it('should map elements correctly to the source', async(() => {
-           const template = '<div>\n   <span></span></div>';
+      it('should map elements correctly to the source', () => {
+        const template = '<div>\n   <span></span></div>';
 
-           appDir['app.component.ts'] = createComponentSource(templateDecorator(template));
+        appDir['app.component.ts'] = createComponentSource(templateDecorator(template));
 
-           compileApp().then((genFile) => {
-             const sourceMap = extractSourceMap(genFile.source) !;
-             expect(originalPositionFor(sourceMap, findLineAndColumn(genFile.source, `'span'`)))
-                 .toEqual({line: 2, column: 3, source: ngUrl});
-           });
-         }));
+        const genFile = compileApp();
+        const genSource = toTypeScript(genFile);
+        const sourceMap = extractSourceMap(genSource) !;
+        expect(originalPositionFor(sourceMap, findLineAndColumn(genSource, `'span'`)))
+            .toEqual({line: 2, column: 3, source: ngUrl});
+      });
 
-      it('should map bindings correctly to the source', async(() => {
-           const template = `<div>\n   <span [title]="someMethod()"></span></div>`;
+      it('should map bindings correctly to the source', () => {
+        const template = `<div>\n   <span [title]="someMethod()"></span></div>`;
 
-           appDir['app.component.ts'] = createComponentSource(templateDecorator(template));
+        appDir['app.component.ts'] = createComponentSource(templateDecorator(template));
 
-           compileApp().then((genFile) => {
-             const sourceMap = extractSourceMap(genFile.source) !;
-             expect(
-                 originalPositionFor(sourceMap, findLineAndColumn(genFile.source, `someMethod()`)))
-                 .toEqual({line: 2, column: 9, source: ngUrl});
-           });
-         }));
+        const genFile = compileApp();
+        const genSource = toTypeScript(genFile);
+        const sourceMap = extractSourceMap(genSource) !;
+        expect(originalPositionFor(sourceMap, findLineAndColumn(genSource, `someMethod()`)))
+            .toEqual({line: 2, column: 9, source: ngUrl});
+      });
 
-      it('should map events correctly to the source', async(() => {
-           const template = `<div>\n   <span (click)="someMethod()"></span></div>`;
+      it('should map events correctly to the source', () => {
+        const template = `<div>\n   <span (click)="someMethod()"></span></div>`;
 
-           appDir['app.component.ts'] = createComponentSource(templateDecorator(template));
+        appDir['app.component.ts'] = createComponentSource(templateDecorator(template));
 
-           compileApp().then((genFile) => {
-             const sourceMap = extractSourceMap(genFile.source) !;
-             expect(
-                 originalPositionFor(sourceMap, findLineAndColumn(genFile.source, `someMethod()`)))
-                 .toEqual({line: 2, column: 9, source: ngUrl});
-           });
-         }));
+        const genFile = compileApp();
+        const genSource = toTypeScript(genFile);
+        const sourceMap = extractSourceMap(genSource) !;
+        expect(originalPositionFor(sourceMap, findLineAndColumn(genSource, `someMethod()`)))
+            .toEqual({line: 2, column: 9, source: ngUrl});
+      });
 
-      it('should map non template parts to the source file', async(() => {
-           appDir['app.component.ts'] = createComponentSource(templateDecorator('Hello World!'));
+      it('should map non template parts to the source file', () => {
+        appDir['app.component.ts'] = createComponentSource(templateDecorator('Hello World!'));
 
-           compileApp().then((genFile) => {
-             const sourceMap = extractSourceMap(genFile.source) !;
-             expect(originalPositionFor(sourceMap, {line: 1, column: 0}))
-                 .toEqual({line: 1, column: 0, source: ngComponentPath});
-           });
-         }));
+        const genFile = compileApp();
+        const genSource = toTypeScript(genFile);
+        const sourceMap = extractSourceMap(genSource) !;
+        expect(originalPositionFor(sourceMap, {line: 1, column: 0}))
+            .toEqual({line: 1, column: 0, source: ngComponentPath});
+      });
     }
   });
 
   describe('errors', () => {
-    it('should only warn if not all arguments of an @Injectable class can be resolved',
-       async(() => {
-         const FILES: MockDirectory = {
-           app: {
-             'app.ts': `
+    it('should only warn if not all arguments of an @Injectable class can be resolved', () => {
+      const FILES: MockDirectory = {
+        app: {
+          'app.ts': `
                 import {Injectable} from '@angular/core';
 
                 @Injectable()
@@ -206,20 +199,19 @@ describe('compiler (unbundled Angular)', () => {
                   constructor(a: boolean) {}
                 }
               `
-           }
-         };
-         const warnSpy = spyOn(console, 'warn');
-         compile([FILES, angularFiles]).then(() => {
-           expect(warnSpy).toHaveBeenCalledWith(
-               `Warning: Can't resolve all parameters for MyService in /app/app.ts: (?). This will become an error in Angular v5.x`);
-         });
+        }
+      };
+      const warnSpy = spyOn(console, 'warn');
+      compile([FILES, angularFiles]);
+      expect(warnSpy).toHaveBeenCalledWith(
+          `Warning: Can't resolve all parameters for MyService in /app/app.ts: (?). This will become an error in Angular v5.x`);
 
-       }));
+    });
 
-    it('should be able to supress a null access', async(() => {
-         const FILES: MockDirectory = {
-           app: {
-             'app.ts': `
+    it('should be able to supress a null access', () => {
+      const FILES: MockDirectory = {
+        app: {
+          'app.ts': `
                 import {Component, NgModule} from '@angular/core';
 
                 interface Person { name: string; }
@@ -237,16 +229,16 @@ describe('compiler (unbundled Angular)', () => {
                 })
                 export class MyModule {}
               `
-           }
-         };
-         compile([FILES, angularFiles], {postCompile: expectNoDiagnostics});
-       }));
+        }
+      };
+      compile([FILES, angularFiles], {postCompile: expectNoDiagnostics});
+    });
   });
 
-  it('should add the preamble to generated files', async(() => {
-       const FILES: MockDirectory = {
-         app: {
-           'app.ts': `
+  it('should add the preamble to generated files', () => {
+    const FILES: MockDirectory = {
+      app: {
+        'app.ts': `
               import { NgModule, Component } from '@angular/core';
 
               @Component({ template: '' })
@@ -255,23 +247,21 @@ describe('compiler (unbundled Angular)', () => {
               @NgModule({ declarations: [ AppComponent ] })
               export class AppModule { }
             `
-         }
-       };
-       const genFilePreamble = '/* Hello world! */';
-       compile([FILES, angularFiles], {genFilePreamble}).then(({genFiles}) => {
-         const genFile =
-             genFiles.find(gf => gf.srcFileUrl === '/app/app.ts' && gf.genFileUrl.endsWith('.ts'));
-         expect(genFile.source.startsWith(genFilePreamble)).toBe(true);
-       });
-
-     }));
+      }
+    };
+    const genFilePreamble = '/* Hello world! */';
+    const {genFiles} = compile([FILES, angularFiles]);
+    const genFile =
+        genFiles.find(gf => gf.srcFileUrl === '/app/app.ts' && gf.genFileUrl.endsWith('.ts'));
+    const genSource = toTypeScript(genFile, genFilePreamble);
+    expect(genSource.startsWith(genFilePreamble)).toBe(true);
+  });
 
   describe('ComponentFactories', () => {
-    it('should include inputs, outputs and ng-content selectors in the component factory',
-       async(() => {
-         const FILES: MockDirectory = {
-           app: {
-             'app.ts': `
+    it('should include inputs, outputs and ng-content selectors in the component factory', () => {
+      const FILES: MockDirectory = {
+        app: {
+          'app.ts': `
                 import {Component, NgModule, Input, Output} from '@angular/core';
 
                 @Component({
@@ -291,30 +281,28 @@ describe('compiler (unbundled Angular)', () => {
                 })
                 export class MyModule {}
               `
-           }
-         };
-         compile([FILES, angularFiles]).then(({genFiles}) => {
-           const genFile = genFiles.find(genFile => genFile.srcFileUrl === '/app/app.ts');
-           const createComponentFactoryCall =
-               /ɵccf\([^)]*\)/m.exec(genFile.source) ![0].replace(/\s*/g, '');
-           // selector
-           expect(createComponentFactoryCall).toContain('my-comp');
-           // inputs
-           expect(createComponentFactoryCall).toContain(`{aInputProp:'aInputName'}`);
-           // outputs
-           expect(createComponentFactoryCall).toContain(`{aOutputProp:'aOutputName'}`);
-           // ngContentSelectors
-           expect(createComponentFactoryCall).toContain(`['*','child']`);
-         });
-       }));
+        }
+      };
+      const {genFiles} = compile([FILES, angularFiles]);
+      const genFile = genFiles.find(genFile => genFile.srcFileUrl === '/app/app.ts');
+      const genSource = toTypeScript(genFile);
+      const createComponentFactoryCall = /ɵccf\([^)]*\)/m.exec(genSource) ![0].replace(/\s*/g, '');
+      // selector
+      expect(createComponentFactoryCall).toContain('my-comp');
+      // inputs
+      expect(createComponentFactoryCall).toContain(`{aInputProp:'aInputName'}`);
+      // outputs
+      expect(createComponentFactoryCall).toContain(`{aOutputProp:'aOutputName'}`);
+      // ngContentSelectors
+      expect(createComponentFactoryCall).toContain(`['*','child']`);
+    });
   });
 
   describe('generated templates', () => {
-    it('should not call `check` for directives without bindings nor ngDoCheck/ngOnInit',
-       async(() => {
-         const FILES: MockDirectory = {
-           app: {
-             'app.ts': `
+    it('should not call `check` for directives without bindings nor ngDoCheck/ngOnInit', () => {
+      const FILES: MockDirectory = {
+        app: {
+          'app.ts': `
                 import { NgModule, Component } from '@angular/core';
 
                 @Component({ template: '' })
@@ -323,15 +311,15 @@ describe('compiler (unbundled Angular)', () => {
                 @NgModule({ declarations: [ AppComponent ] })
                 export class AppModule { }
               `
-           }
-         };
-         compile([FILES, angularFiles]).then(({genFiles}) => {
-           const genFile = genFiles.find(
-               gf => gf.srcFileUrl === '/app/app.ts' && gf.genFileUrl.endsWith('.ts'));
-           expect(genFile.source).not.toContain('check(');
-         });
+        }
+      };
+      const {genFiles} = compile([FILES, angularFiles]);
+      const genFile =
+          genFiles.find(gf => gf.srcFileUrl === '/app/app.ts' && gf.genFileUrl.endsWith('.ts'));
+      const genSource = toTypeScript(genFile);
+      expect(genSource).not.toContain('check(');
 
-       }));
+    });
   });
 
   describe('inheritance with summaries', () => {
@@ -370,16 +358,15 @@ describe('compiler (unbundled Angular)', () => {
         }
       };
 
-      return compile([libInput, angularFiles], {useSummaries: true})
-          .then(({outDir}) => compile([outDir, appInput, angularFiles], {useSummaries: true}))
-          .then(({genFiles}) => genFiles.find(gf => gf.srcFileUrl === '/app/main.ts'));
+      const {outDir: libOutDir} = compile([libInput, angularFiles], {useSummaries: true});
+      const {genFiles} = compile([libOutDir, appInput, angularFiles], {useSummaries: true});
+      return genFiles.find(gf => gf.srcFileUrl === '/app/main.ts');
     }
 
-    it('should inherit ctor and lifecycle hooks from classes in other compilation units',
-       async(() => {
-         const libInput: MockDirectory = {
-           'lib': {
-             'base.ts': `
+    it('should inherit ctor and lifecycle hooks from classes in other compilation units', () => {
+      const libInput: MockDirectory = {
+        'lib': {
+          'base.ts': `
             export class AParam {}
 
             export class Base {
@@ -387,11 +374,11 @@ describe('compiler (unbundled Angular)', () => {
               ngOnDestroy() {}
             }
           `
-           }
-         };
-         const appInput: MockDirectory = {
-           'app': {
-             'main.ts': `
+        }
+      };
+      const appInput: MockDirectory = {
+        'app': {
+          'main.ts': `
             import {NgModule, Component} from '@angular/core';
             import {Base} from '../lib/base';
 
@@ -403,21 +390,19 @@ describe('compiler (unbundled Angular)', () => {
             })
             export class MyModule {}
           `
-           }
-         };
+        }
+      };
 
-         compile([libInput, angularFiles], {useSummaries: true})
-             .then(({outDir}) => compile([outDir, appInput, angularFiles], {useSummaries: true}))
-             .then(({genFiles}) => {
-               const mainNgFactory = genFiles.find(gf => gf.srcFileUrl === '/app/main.ts');
-               const flags = NodeFlags.TypeDirective | NodeFlags.Component | NodeFlags.OnDestroy;
-               expect(mainNgFactory.source)
-                   .toContain(`${flags},(null as any),0,i1.Extends,[i2.AParam]`);
-             });
-       }));
+      const {outDir: libOutDir} = compile([libInput, angularFiles], {useSummaries: true});
+      const {genFiles} = compile([libOutDir, appInput, angularFiles], {useSummaries: true});
+      const mainNgFactory = genFiles.find(gf => gf.srcFileUrl === '/app/main.ts');
+      const flags = NodeFlags.TypeDirective | NodeFlags.Component | NodeFlags.OnDestroy;
+      expect(toTypeScript(mainNgFactory))
+          .toContain(`${flags},(null as any),0,i1.Extends,[i2.AParam]`);
+    });
 
     it('should inherit ctor and lifecycle hooks from classes in other compilation units over 2 levels',
-       async(() => {
+       () => {
          const lib1Input: MockDirectory = {
            'lib1': {
              'base.ts': `
@@ -457,135 +442,134 @@ describe('compiler (unbundled Angular)', () => {
           `
            }
          };
-         compile([lib1Input, angularFiles], {useSummaries: true})
-             .then(({outDir}) => compile([outDir, lib2Input, angularFiles], {useSummaries: true}))
-             .then(({outDir}) => compile([outDir, appInput, angularFiles], {useSummaries: true}))
-             .then(({genFiles}) => {
-               const mainNgFactory = genFiles.find(gf => gf.srcFileUrl === '/app/main.ts');
-               const flags = NodeFlags.TypeDirective | NodeFlags.Component | NodeFlags.OnDestroy;
-               expect(mainNgFactory.source)
-                   .toContain(`${flags},(null as any),0,i1.Extends,[i2.AParam_2]`);
-             });
-       }));
+         const {outDir: lib1OutDir} = compile([lib1Input, angularFiles], {useSummaries: true});
+         const {outDir: lib2OutDir} =
+             compile([lib1OutDir, lib2Input, angularFiles], {useSummaries: true});
+         const {genFiles} = compile([lib2OutDir, appInput, angularFiles], {useSummaries: true});
+         const mainNgFactory = genFiles.find(gf => gf.srcFileUrl === '/app/main.ts');
+         const flags = NodeFlags.TypeDirective | NodeFlags.Component | NodeFlags.OnDestroy;
+         expect(toTypeScript(mainNgFactory))
+             .toContain(`${flags},(null as any),0,i1.Extends,[i2.AParam_2]`);
+       });
 
     describe('Injectable', () => {
-      it('should allow to inherit', async(() => {
-           compileParentAndChild({
-             parentClassDecorator: '@Injectable()',
-             parentModuleDecorator: '@NgModule({providers: [Base]})',
-             childClassDecorator: '@Injectable()',
-             childModuleDecorator: '@NgModule({providers: [Extends]})',
-           }).then((mainNgFactory) => { expect(mainNgFactory).toBeTruthy(); });
-         }));
+      it('should allow to inherit', () => {
+        const mainNgFactory = compileParentAndChild({
+          parentClassDecorator: '@Injectable()',
+          parentModuleDecorator: '@NgModule({providers: [Base]})',
+          childClassDecorator: '@Injectable()',
+          childModuleDecorator: '@NgModule({providers: [Extends]})',
+        });
+        expect(mainNgFactory).toBeTruthy();
+      });
 
-      it('should error if the child class has no matching decorator', async(() => {
-           compileParentAndChild({
-             parentClassDecorator: '@Injectable()',
-             parentModuleDecorator: '@NgModule({providers: [Base]})',
-             childClassDecorator: '',
-             childModuleDecorator: '@NgModule({providers: [Extends]})',
-           }).then(fail, (e) => {
-             expect(e.message).toContain(
-                 'Class Extends in /app/main.ts extends from a Injectable in another compilation unit without duplicating the decorator. ' +
-                 'Please add a Injectable or Pipe or Directive or Component or NgModule decorator to the class.');
-           });
-         }));
+      it('should error if the child class has no matching decorator', () => {
+        expect(() => compileParentAndChild({
+                 parentClassDecorator: '@Injectable()',
+                 parentModuleDecorator: '@NgModule({providers: [Base]})',
+                 childClassDecorator: '',
+                 childModuleDecorator: '@NgModule({providers: [Extends]})',
+               }))
+            .toThrowError(
+                'Class Extends in /app/main.ts extends from a Injectable in another compilation unit without duplicating the decorator. ' +
+                'Please add a Injectable or Pipe or Directive or Component or NgModule decorator to the class.');
+      });
     });
 
     describe('Component', () => {
-      it('should allow to inherit', async(() => {
-           compileParentAndChild({
-             parentClassDecorator: `@Component({template: ''})`,
-             parentModuleDecorator: '@NgModule({declarations: [Base]})',
-             childClassDecorator: `@Component({template: ''})`,
-             childModuleDecorator: '@NgModule({declarations: [Extends]})',
-           }).then((mainNgFactory) => { expect(mainNgFactory).toBeTruthy(); });
-         }));
+      it('should allow to inherit', () => {
+        const mainNgFactory = compileParentAndChild({
+          parentClassDecorator: `@Component({template: ''})`,
+          parentModuleDecorator: '@NgModule({declarations: [Base]})',
+          childClassDecorator: `@Component({template: ''})`,
+          childModuleDecorator: '@NgModule({declarations: [Extends]})'
+        });
+        expect(mainNgFactory).toBeTruthy();
+      });
 
-      it('should error if the child class has no matching decorator', async(() => {
-           compileParentAndChild({
-             parentClassDecorator: `@Component({template: ''})`,
-             parentModuleDecorator: '@NgModule({declarations: [Base]})',
-             childClassDecorator: '',
-             childModuleDecorator: '@NgModule({declarations: [Extends]})',
-           }).then(fail, (e) => {
-             expect(e.message).toContain(
-                 'Class Extends in /app/main.ts extends from a Directive in another compilation unit without duplicating the decorator. ' +
-                 'Please add a Directive or Component decorator to the class.');
-           });
-         }));
+      it('should error if the child class has no matching decorator', () => {
+        expect(() => compileParentAndChild({
+                 parentClassDecorator: `@Component({template: ''})`,
+                 parentModuleDecorator: '@NgModule({declarations: [Base]})',
+                 childClassDecorator: '',
+                 childModuleDecorator: '@NgModule({declarations: [Extends]})',
+               }))
+            .toThrowError(
+                'Class Extends in /app/main.ts extends from a Directive in another compilation unit without duplicating the decorator. ' +
+                'Please add a Directive or Component decorator to the class.');
+      });
     });
 
     describe('Directive', () => {
-      it('should allow to inherit', async(() => {
-           compileParentAndChild({
-             parentClassDecorator: `@Directive({selector: '[someDir]'})`,
-             parentModuleDecorator: '@NgModule({declarations: [Base]})',
-             childClassDecorator: `@Directive({selector: '[someDir]'})`,
-             childModuleDecorator: '@NgModule({declarations: [Extends]})',
-           }).then((mainNgFactory) => { expect(mainNgFactory).toBeTruthy(); });
-         }));
+      it('should allow to inherit', () => {
+        const mainNgFactory = compileParentAndChild({
+          parentClassDecorator: `@Directive({selector: '[someDir]'})`,
+          parentModuleDecorator: '@NgModule({declarations: [Base]})',
+          childClassDecorator: `@Directive({selector: '[someDir]'})`,
+          childModuleDecorator: '@NgModule({declarations: [Extends]})',
+        });
+        expect(mainNgFactory).toBeTruthy();
+      });
 
-      it('should error if the child class has no matching decorator', async(() => {
-           compileParentAndChild({
-             parentClassDecorator: `@Directive({selector: '[someDir]'})`,
-             parentModuleDecorator: '@NgModule({declarations: [Base]})',
-             childClassDecorator: '',
-             childModuleDecorator: '@NgModule({declarations: [Extends]})',
-           }).then(fail, (e) => {
-             expect(e.message).toContain(
-                 'Class Extends in /app/main.ts extends from a Directive in another compilation unit without duplicating the decorator. ' +
-                 'Please add a Directive or Component decorator to the class.');
-           });
-         }));
+      it('should error if the child class has no matching decorator', () => {
+        expect(() => compileParentAndChild({
+                 parentClassDecorator: `@Directive({selector: '[someDir]'})`,
+                 parentModuleDecorator: '@NgModule({declarations: [Base]})',
+                 childClassDecorator: '',
+                 childModuleDecorator: '@NgModule({declarations: [Extends]})',
+               }))
+            .toThrowError(
+                'Class Extends in /app/main.ts extends from a Directive in another compilation unit without duplicating the decorator. ' +
+                'Please add a Directive or Component decorator to the class.');
+      });
     });
 
     describe('Pipe', () => {
-      it('should allow to inherit', async(() => {
-           compileParentAndChild({
-             parentClassDecorator: `@Pipe({name: 'somePipe'})`,
-             parentModuleDecorator: '@NgModule({declarations: [Base]})',
-             childClassDecorator: `@Pipe({name: 'somePipe'})`,
-             childModuleDecorator: '@NgModule({declarations: [Extends]})',
-           }).then((mainNgFactory) => { expect(mainNgFactory).toBeTruthy(); });
-         }));
+      it('should allow to inherit', () => {
+        const mainNgFactory = compileParentAndChild({
+          parentClassDecorator: `@Pipe({name: 'somePipe'})`,
+          parentModuleDecorator: '@NgModule({declarations: [Base]})',
+          childClassDecorator: `@Pipe({name: 'somePipe'})`,
+          childModuleDecorator: '@NgModule({declarations: [Extends]})',
+        });
+        expect(mainNgFactory).toBeTruthy();
+      });
 
-      it('should error if the child class has no matching decorator', async(() => {
-           compileParentAndChild({
-             parentClassDecorator: `@Pipe({name: 'somePipe'})`,
-             parentModuleDecorator: '@NgModule({declarations: [Base]})',
-             childClassDecorator: '',
-             childModuleDecorator: '@NgModule({declarations: [Extends]})',
-           }).then(fail, (e) => {
-             expect(e.message).toContain(
-                 'Class Extends in /app/main.ts extends from a Pipe in another compilation unit without duplicating the decorator. ' +
-                 'Please add a Pipe decorator to the class.');
-           });
-         }));
+      it('should error if the child class has no matching decorator', () => {
+        expect(() => compileParentAndChild({
+                 parentClassDecorator: `@Pipe({name: 'somePipe'})`,
+                 parentModuleDecorator: '@NgModule({declarations: [Base]})',
+                 childClassDecorator: '',
+                 childModuleDecorator: '@NgModule({declarations: [Extends]})',
+               }))
+            .toThrowError(
+                'Class Extends in /app/main.ts extends from a Pipe in another compilation unit without duplicating the decorator. ' +
+                'Please add a Pipe decorator to the class.');
+      });
     });
 
     describe('NgModule', () => {
-      it('should allow to inherit', async(() => {
-           compileParentAndChild({
-             parentClassDecorator: `@NgModule()`,
-             parentModuleDecorator: '',
-             childClassDecorator: `@NgModule()`,
-             childModuleDecorator: '',
-           }).then((mainNgFactory) => { expect(mainNgFactory).toBeTruthy(); });
-         }));
+      it('should allow to inherit', () => {
+        const mainNgFactory = compileParentAndChild({
+          parentClassDecorator: `@NgModule()`,
+          parentModuleDecorator: '',
+          childClassDecorator: `@NgModule()`,
+          childModuleDecorator: '',
+        });
+        expect(mainNgFactory).toBeTruthy();
+      });
 
-      it('should error if the child class has no matching decorator', async(() => {
-           compileParentAndChild({
-             parentClassDecorator: `@NgModule()`,
-             parentModuleDecorator: '',
-             childClassDecorator: '',
-             childModuleDecorator: '',
-           }).then(fail, (e) => {
-             expect(e.message).toContain(
-                 'Class Extends in /app/main.ts extends from a NgModule in another compilation unit without duplicating the decorator. ' +
-                 'Please add a NgModule decorator to the class.');
-           });
-         }));
+      it('should error if the child class has no matching decorator', () => {
+        expect(() => compileParentAndChild({
+                 parentClassDecorator: `@NgModule()`,
+                 parentModuleDecorator: '',
+                 childClassDecorator: '',
+                 childModuleDecorator: '',
+               }))
+            .toThrowError(
+                'Class Extends in /app/main.ts extends from a NgModule in another compilation unit without duplicating the decorator. ' +
+                'Please add a NgModule decorator to the class.');
+      });
     });
   });
 });
@@ -618,11 +602,11 @@ describe('compiler (bundled Angular)', () => {
   });
 
   describe('Quickstart', () => {
-    it('should compile', async(() => compile([QUICKSTART, angularFiles]).then(({genFiles}) => {
-         expect(genFiles.find(f => /app\.component\.ngfactory\.ts/.test(f.genFileUrl)))
-             .toBeDefined();
-         expect(genFiles.find(f => /app\.module\.ngfactory\.ts/.test(f.genFileUrl))).toBeDefined();
-       })));
+    it('should compile', () => {
+      const {genFiles} = compile([QUICKSTART, angularFiles]);
+      expect(genFiles.find(f => /app\.component\.ngfactory\.ts/.test(f.genFileUrl))).toBeDefined();
+      expect(genFiles.find(f => /app\.module\.ngfactory\.ts/.test(f.genFileUrl))).toBeDefined();
+    });
   });
 
   describe('Bundled library', () => {
@@ -656,7 +640,7 @@ describe('compiler (bundled Angular)', () => {
           ({fileName, content}) => ({fileName: `/node_modules${fileName}`, content})));
     });
 
-    it('should compile', async(() => compile([LIBRARY_USING_APP, libraryFiles, angularFiles])));
+    it('should compile', () => compile([LIBRARY_USING_APP, libraryFiles, angularFiles]));
   });
 });
 
@@ -761,8 +745,3 @@ const LIBRARY_USING_APP: MockDirectory = {
     }
   }
 };
-
-function expectPromiseToThrow(p: Promise<any>, msg: RegExp) {
-  p.then(
-      () => { throw new Error('Expected to throw'); }, (e) => { expect(e.message).toMatch(msg); });
-}

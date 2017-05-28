@@ -1,11 +1,11 @@
-<div *ngIf="hasToc" [class.collapsed]="isCollapsed">
-  <button *ngIf="!isEmbedded" type="button" class="toc-heading"
-    (click)="toTop()" title="Top of page">Contents</button>
+<div *ngIf="type !== 'None'" class="toc-inner" [class.collapsed]="isCollapsed">
 
-  <div *ngIf="!hasSecondary && isEmbedded" class="toc-heading embedded">Contents</div>
+  <div *ngIf="type === 'EmbeddedSimple'" class="toc-heading embedded">
+    Contents
+  </div>
 
-  <button *ngIf="hasSecondary" type="button" class="toc-heading embedded secondary"
-    (click)="toggle(false)"
+  <button *ngIf="type === 'EmbeddedExpandable'" type="button" (click)="toggle(false)"
+    class="toc-heading embedded secondary"
     title="Expand/collapse contents"
     aria-label="Expand/collapse contents"
     [attr.aria-pressed]="!isCollapsed">
@@ -14,13 +14,15 @@
   </button>
 
   <ul class="toc-list">
-    <li #tocItem *ngFor="let toc of tocList; let i = index" title="{{toc.title}}"
-      class="{{toc.level}}" [class.secondary]="toc.isSecondary" [class.active]="i === activeIndex">
-      <a [href]="toc.href" [innerHTML]="toc.content"></a>
-    </li>
+    <ng-container *ngFor="let toc of tocList; let i = index">
+      <li #tocItem title="{{toc.title}}" *ngIf="type === 'Floating' || toc.level !== 'h1'"
+        class="{{toc.level}}" [class.secondary]="type === 'EmbeddedExpandable' && i >= primaryMax" [class.active]="i === activeIndex">
+        <a [href]="toc.href" [innerHTML]="toc.content"></a>
+      </li>
+    </ng-container>
   </ul>
 
-  <button type="button" (click)="toggle()" *ngIf="hasSecondary"
+  <button *ngIf="type === 'EmbeddedExpandable'" type="button" (click)="toggle()"
     class="toc-more-items embedded material-icons" [class.collapsed]="isCollapsed"
     title="Expand/collapse contents"
     aria-label="Expand/collapse contents"

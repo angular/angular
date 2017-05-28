@@ -22,21 +22,6 @@ add it to your page.
 
 </div>
 
-<!--
-# Contents
-
-* [Example: Transitioning between two states](guide/animations#example-transitioning-between-states).
-* [States and transitions](guide/animations#states-and-transitions).
-* [Example: Entering and leaving](guide/animations#example-entering-and-leaving).
-* [Example: Entering and leaving from different states](guide/animations#example-entering-and-leaving-from-different-states).
-* [Animatable properties and units](guide/animations#animatable-properties-and-units).
-* [Automatic property calculation](guide/animations#automatic-property-calculation).
-* [Animation timing](guide/animations#animation-timing).
-* [Multi-step animations with keyframes](guide/animations#multi-step-animations-with-keyframes).
-* [Parallel animation groups](guide/animations#parallel-animation-groups).
-* [Animation callbacks](guide/animations#animation-callbacks).
--->
-
 <div class="l-sub-section">
 
 The examples in this page are available as a <live-example></live-example>.

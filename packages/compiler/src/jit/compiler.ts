@@ -19,7 +19,7 @@ import {jitStatements} from '../output/output_jit';
 import {CompiledStylesheet, StyleCompiler} from '../style_compiler';
 import {SummaryResolver} from '../summary_resolver';
 import {TemplateParser} from '../template_parser/template_parser';
-import {SyncAsyncResult} from '../util';
+import {OutputContext, SyncAsync} from '../util';
 import {ViewCompiler} from '../view_compiler/view_compiler';
 
 
@@ -51,20 +51,20 @@ export class JitCompiler implements Compiler {
   get injector(): Injector { return this._injector; }
 
   compileModuleSync<T>(moduleType: Type<T>): NgModuleFactory<T> {
-    return this._compileModuleAndComponents(moduleType, true).syncResult !;
+    return SyncAsync.assertSync(this._compileModuleAndComponents(moduleType, true));
   }
 
   compileModuleAsync<T>(moduleType: Type<T>): Promise<NgModuleFactory<T>> {
-    return this._compileModuleAndComponents(moduleType, false).asyncResult !;
+    return Promise.resolve(this._compileModuleAndComponents(moduleType, false));
   }
 
   compileModuleAndAllComponentsSync<T>(moduleType: Type<T>): ModuleWithComponentFactories<T> {
-    return this._compileModuleAndAllComponents(moduleType, true).syncResult !;
+    return SyncAsync.assertSync(this._compileModuleAndAllComponents(moduleType, true));
   }
 
   compileModuleAndAllComponentsAsync<T>(moduleType: Type<T>):
       Promise<ModuleWithComponentFactories<T>> {
-    return this._compileModuleAndAllComponents(moduleType, false).asyncResult !;
+    return Promise.resolve(this._compileModuleAndAllComponents(moduleType, false));
   }
 
   getNgContentSelectors(component: Type<any>): string[] {
@@ -97,36 +97,24 @@ export class JitCompiler implements Compiler {
   }
 
   private _compileModuleAndComponents<T>(moduleType: Type<T>, isSync: boolean):
-      SyncAsyncResult<NgModuleFactory<T>> {
-    const loadingPromise = this._loadModules(moduleType, isSync);
-    const createResult = () => {
+      SyncAsync<NgModuleFactory<T>> {
+    return SyncAsync.then(this._loadModules(moduleType, isSync), () => {
       this._compileComponents(moduleType, null);
       return this._compileModule(moduleType);
-    };
-    if (isSync) {
-      return new SyncAsyncResult(createResult());
-    } else {
-      return new SyncAsyncResult(null, loadingPromise.then(createResult));
-    }
+    });
   }
 
   private _compileModuleAndAllComponents<T>(moduleType: Type<T>, isSync: boolean):
-      SyncAsyncResult<ModuleWithComponentFactories<T>> {
-    const loadingPromise = this._loadModules(moduleType, isSync);
-    const createResult = () => {
+      SyncAsync<ModuleWithComponentFactories<T>> {
+    return SyncAsync.then(this._loadModules(moduleType, isSync), () => {
       const componentFactories: ComponentFactory<any>[] = [];
       this._compileComponents(moduleType, componentFactories);
       return new ModuleWithComponentFactories(this._compileModule(moduleType), componentFactories);
-    };
-    if (isSync) {
-      return new SyncAsyncResult(createResult());
-    } else {
-      return new SyncAsyncResult(null, loadingPromise.then(createResult));
-    }
+    });
   }
 
-  private _loadModules(mainModule: any, isSync: boolean): Promise<any> {
-    const loadingPromises: Promise<any>[] = [];
+  private _loadModules(mainModule: any, isSync: boolean): SyncAsync<any> {
+    const loading: Promise<any>[] = [];
     const mainNgModule = this._metadataResolver.getNgModuleMetadata(mainModule) !;
     // Note: for runtime compilation, we want to transitively compile all modules,
     // so we also need to load the declared directives / pipes for all nested modules.
@@ -137,13 +125,13 @@ export class JitCompiler implements Compiler {
         const promise =
             this._metadataResolver.loadDirectiveMetadata(moduleMeta.type.reference, ref, isSync);
         if (promise) {
-          loadingPromises.push(promise);
+          loading.push(promise);
         }
       });
       this._filterJitIdentifiers(moduleMeta.declaredPipes)
           .forEach((ref) => this._metadataResolver.getOrLoadPipeMetadata(ref));
     });
-    return Promise.all(loadingPromises);
+    return SyncAsync.all(loading);
   }
 
   private _compileModule<T>(moduleType: Type<T>): NgModuleFactory<T> {
@@ -153,14 +141,14 @@ export class JitCompiler implements Compiler {
       // Always provide a bound Compiler
       const extraProviders = [this._metadataResolver.getProviderMetadata(new ProviderMeta(
           Compiler, {useFactory: () => new ModuleBoundCompiler(this, moduleMeta.type.reference)}))];
-      const compileResult = this._ngModuleCompiler.compile(moduleMeta, extraProviders);
+      const outputCtx = createOutputContext();
+      const compileResult = this._ngModuleCompiler.compile(outputCtx, moduleMeta, extraProviders);
       if (!this._compilerConfig.useJit) {
         ngModuleFactory =
-            interpretStatements(compileResult.statements, [compileResult.ngModuleFactoryVar])[0];
+            interpretStatements(outputCtx.statements)[compileResult.ngModuleFactoryVar];
       } else {
         ngModuleFactory = jitStatements(
-            ngModuleJitUrl(moduleMeta), compileResult.statements,
-            [compileResult.ngModuleFactoryVar])[0];
+            ngModuleJitUrl(moduleMeta), outputCtx.statements, )[compileResult.ngModuleFactoryVar];
       }
       this._compiledNgModuleCache.set(moduleMeta.type.reference, ngModuleFactory);
     }
@@ -272,11 +260,14 @@ export class JitCompiler implements Compiler {
     }
     const compMeta = template.compMeta;
     const externalStylesheetsByModuleUrl = new Map<string, CompiledStylesheet>();
-    const stylesCompileResult = this._styleCompiler.compileComponent(compMeta);
-    stylesCompileResult.externalStylesheets.forEach(
-        (r) => { externalStylesheetsByModuleUrl.set(r.meta.moduleUrl !, r); });
-    this._resolveStylesCompileResult(
-        stylesCompileResult.componentStylesheet, externalStylesheetsByModuleUrl);
+    const outputContext = createOutputContext();
+    const componentStylesheet = this._styleCompiler.compileComponent(outputContext, compMeta);
+    compMeta.template !.externalStylesheets.forEach((stylesheetMeta) => {
+      const compiledStylesheet =
+          this._styleCompiler.compileStyles(createOutputContext(), compMeta, stylesheetMeta);
+      externalStylesheetsByModuleUrl.set(stylesheetMeta.moduleUrl !, compiledStylesheet);
+    });
+    this._resolveStylesCompileResult(componentStylesheet, externalStylesheetsByModuleUrl);
     const directives =
         template.directives.map(dir => this._metadataResolver.getDirectiveSummary(dir.reference));
     const pipes = template.ngModule.transitiveModule.pipes.map(
@@ -285,22 +276,17 @@ export class JitCompiler implements Compiler {
         compMeta, compMeta.template !.template !, directives, pipes, template.ngModule.schemas,
         templateSourceUrl(template.ngModule.type, template.compMeta, template.compMeta.template !));
     const compileResult = this._viewCompiler.compileComponent(
-        compMeta, parsedTemplate, ir.variable(stylesCompileResult.componentStylesheet.stylesVar),
+        outputContext, compMeta, parsedTemplate, ir.variable(componentStylesheet.stylesVar),
         usedPipes);
-    const statements =
-        stylesCompileResult.componentStylesheet.statements.concat(compileResult.statements);
-    let viewClassAndRendererTypeVars = compMeta.isHost ?
-        [compileResult.viewClassVar] :
-        [compileResult.viewClassVar, compileResult.rendererTypeVar];
-    let viewClass: any;
-    let rendererType: any;
+    let evalResult: any;
     if (!this._compilerConfig.useJit) {
-      [viewClass, rendererType] = interpretStatements(statements, viewClassAndRendererTypeVars);
+      evalResult = interpretStatements(outputContext.statements);
     } else {
-      [viewClass, rendererType] = jitStatements(
-          templateJitUrl(template.ngModule.type, template.compMeta), statements,
-          viewClassAndRendererTypeVars);
+      evalResult = jitStatements(
+          templateJitUrl(template.ngModule.type, template.compMeta), outputContext.statements);
     }
+    const viewClass = evalResult[compileResult.viewClassVar];
+    const rendererType = evalResult[compileResult.rendererTypeVar];
     template.compiled(viewClass, rendererType);
   }
 
@@ -310,7 +296,7 @@ export class JitCompiler implements Compiler {
       const nestedCompileResult = externalStylesheetsByModuleUrl.get(dep.moduleUrl) !;
       const nestedStylesArr = this._resolveAndEvalStylesCompileResult(
           nestedCompileResult, externalStylesheetsByModuleUrl);
-      dep.valuePlaceholder.reference = nestedStylesArr;
+      dep.setValue(nestedStylesArr);
     });
   }
 
@@ -319,11 +305,11 @@ export class JitCompiler implements Compiler {
       externalStylesheetsByModuleUrl: Map<string, CompiledStylesheet>): string[] {
     this._resolveStylesCompileResult(result, externalStylesheetsByModuleUrl);
     if (!this._compilerConfig.useJit) {
-      return interpretStatements(result.statements, [result.stylesVar])[0];
+      return interpretStatements(result.outputCtx.statements)[result.stylesVar];
     } else {
       return jitStatements(
-          sharedStylesheetJitUrl(result.meta, this._sharedStylesheetCount++), result.statements,
-          [result.stylesVar])[0];
+          sharedStylesheetJitUrl(result.meta, this._sharedStylesheetCount++),
+          result.outputCtx.statements)[result.stylesVar];
     }
   }
 }
@@ -403,4 +389,10 @@ function flattenSummaries(fn: () => any[], out: CompileTypeSummary[] = []): Comp
     }
   });
   return out;
+}
+
+function createOutputContext(): OutputContext {
+  const importExpr = (symbol: any) =>
+      ir.importExpr({name: identifierName(symbol), moduleName: null, runtime: symbol});
+  return {statements: [], genFilePath: '', importExpr};
 }

@@ -9,63 +9,80 @@
 import {ɵNodeFlags as NodeFlags} from '@angular/core';
 
 import {CompileNgModuleMetadata, CompileProviderMetadata, identifierName} from './compile_metadata';
-import {Identifiers, createIdentifier} from './identifiers';
+import {CompileReflector} from './compile_reflector';
+import {Identifiers} from './identifiers';
 import {CompilerInjectable} from './injectable';
 import * as o from './output/output_ast';
 import {typeSourceSpan} from './parse_util';
 import {NgModuleProviderAnalyzer} from './provider_analyzer';
+import {OutputContext} from './util';
 import {componentFactoryResolverProviderDef, depDef, providerDef} from './view_compiler/provider_compiler';
 
 export class NgModuleCompileResult {
-  constructor(public statements: o.Statement[], public ngModuleFactoryVar: string) {}
+  constructor(public ngModuleFactoryVar: string) {}
 }
 
 const LOG_VAR = o.variable('_l');
 
 @CompilerInjectable()
 export class NgModuleCompiler {
-  compile(ngModuleMeta: CompileNgModuleMetadata, extraProviders: CompileProviderMetadata[]):
-      NgModuleCompileResult {
+  constructor(private reflector: CompileReflector) {}
+  compile(
+      ctx: OutputContext, ngModuleMeta: CompileNgModuleMetadata,
+      extraProviders: CompileProviderMetadata[]): NgModuleCompileResult {
     const sourceSpan = typeSourceSpan('NgModule', ngModuleMeta.type);
     const entryComponentFactories = ngModuleMeta.transitiveModule.entryComponents;
     const bootstrapComponents = ngModuleMeta.bootstrapComponents;
-    const providerParser = new NgModuleProviderAnalyzer(ngModuleMeta, extraProviders, sourceSpan);
+    const providerParser =
+        new NgModuleProviderAnalyzer(this.reflector, ngModuleMeta, extraProviders, sourceSpan);
     const providerDefs =
-        [componentFactoryResolverProviderDef(NodeFlags.None, entryComponentFactories)]
-            .concat(providerParser.parse().map((provider) => providerDef(provider)))
+        [componentFactoryResolverProviderDef(
+             this.reflector, ctx, NodeFlags.None, entryComponentFactories)]
+            .concat(providerParser.parse().map((provider) => providerDef(ctx, provider)))
             .map(({providerExpr, depsExpr, flags, tokenExpr}) => {
-              return o.importExpr(createIdentifier(Identifiers.moduleProviderDef)).callFn([
+              return o.importExpr(Identifiers.moduleProviderDef).callFn([
                 o.literal(flags), tokenExpr, providerExpr, depsExpr
               ]);
             });
 
-    const ngModuleDef =
-        o.importExpr(createIdentifier(Identifiers.moduleDef)).callFn([o.literalArr(providerDefs)]);
+    const ngModuleDef = o.importExpr(Identifiers.moduleDef).callFn([o.literalArr(providerDefs)]);
     const ngModuleDefFactory = o.fn(
         [new o.FnParam(LOG_VAR.name !)], [new o.ReturnStatement(ngModuleDef)], o.INFERRED_TYPE);
 
     const ngModuleFactoryVar = `${identifierName(ngModuleMeta.type)}NgFactory`;
-    const ngModuleFactoryStmt =
-        o.variable(ngModuleFactoryVar)
-            .set(o.importExpr(createIdentifier(Identifiers.createModuleFactory)).callFn([
-              o.importExpr(ngModuleMeta.type),
-              o.literalArr(bootstrapComponents.map(id => o.importExpr(id))), ngModuleDefFactory
-            ]))
-            .toDeclStmt(
-                o.importType(
-                    createIdentifier(Identifiers.NgModuleFactory),
-                    [o.importType(ngModuleMeta.type) !], [o.TypeModifier.Const]),
-                [o.StmtModifier.Final]);
+    this._createNgModuleFactory(
+        ctx, ngModuleMeta.type.reference, o.importExpr(Identifiers.createModuleFactory).callFn([
+          ctx.importExpr(ngModuleMeta.type.reference),
+          o.literalArr(bootstrapComponents.map(id => ctx.importExpr(id.reference))),
+          ngModuleDefFactory
+        ]));
 
-    const stmts: o.Statement[] = [ngModuleFactoryStmt];
     if (ngModuleMeta.id) {
       const registerFactoryStmt =
-          o.importExpr(createIdentifier(Identifiers.RegisterModuleFactoryFn))
+          o.importExpr(Identifiers.RegisterModuleFactoryFn)
               .callFn([o.literal(ngModuleMeta.id), o.variable(ngModuleFactoryVar)])
               .toStmt();
-      stmts.push(registerFactoryStmt);
+      ctx.statements.push(registerFactoryStmt);
     }
 
-    return new NgModuleCompileResult(stmts, ngModuleFactoryVar);
+    return new NgModuleCompileResult(ngModuleFactoryVar);
+  }
+
+  createStub(ctx: OutputContext, ngModuleReference: any) {
+    this._createNgModuleFactory(ctx, ngModuleReference, o.NULL_EXPR);
+  }
+
+  private _createNgModuleFactory(ctx: OutputContext, reference: any, value: o.Expression) {
+    const ngModuleFactoryVar = `${identifierName({reference: reference})}NgFactory`;
+    const ngModuleFactoryStmt =
+        o.variable(ngModuleFactoryVar)
+            .set(value)
+            .toDeclStmt(
+                o.importType(
+                    Identifiers.NgModuleFactory, [o.expressionType(ctx.importExpr(reference)) !],
+                    [o.TypeModifier.Const]),
+                [o.StmtModifier.Final, o.StmtModifier.Exported]);
+
+    ctx.statements.push(ngModuleFactoryStmt);
   }
 }

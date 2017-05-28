@@ -54,16 +54,23 @@ export class AppComponent implements OnInit {
   @HostBinding('class')
   hostClasses = '';
 
+  isFetching = false;
   isStarting = true;
   isSideBySide = false;
+  private isFetchingTimeout: any;
   private isSideNavDoc = false;
   private previousNavView: string;
 
-  private sideBySideWidth = 1032;
+  private sideBySideWidth = 992;
   sideNavNodes: NavigationNode[];
   topMenuNodes: NavigationNode[];
+  topMenuNarrowNodes: NavigationNode[];
+
+  showFloatingToc = false;
+  showFloatingTocWidth = 800;
   tocMaxHeight: string;
   private tocMaxHeightOffset = 0;
+
   versionInfo: VersionInfo;
 
   get homeImageUrl() {
@@ -116,14 +123,18 @@ export class AppComponent implements OnInit {
     });
 
     this.locationService.currentPath.subscribe(path => {
-        if (this.currentPath && path === this.currentPath) {
-          // scroll only if on same page (most likely a change to the hash)
-          this.autoScroll();
-        } else {
-          // don't scroll; leave that to `onDocRendered`
-          this.currentPath = path;
-        }
-      });
+      if (path === this.currentPath) {
+        // scroll only if on same page (most likely a change to the hash)
+        this.autoScroll();
+      } else {
+        // don't scroll; leave that to `onDocRendered`
+        this.currentPath = path;
+
+        // Start progress bar if doc not rendered within brief time
+        clearTimeout(this.isFetchingTimeout);
+        this.isFetchingTimeout = setTimeout(() => this.isFetching = true, 200);
+      }
+    });
 
     this.navigationService.currentNode.subscribe(currentNode => {
       this.currentNode = currentNode;
@@ -155,6 +166,7 @@ export class AppComponent implements OnInit {
       this.footerNodes  = views['Footer']  || [];
       this.sideNavNodes = views['SideNav'] || [];
       this.topMenuNodes = views['TopBar']  || [];
+      this.topMenuNarrowNodes = views['TopBarNarrow'] || this.topMenuNodes;
     });
 
     this.navigationService.versionInfo.subscribe( vi => this.versionInfo = vi );
@@ -168,10 +180,16 @@ export class AppComponent implements OnInit {
   }
 
   onDocRendered() {
+    // Stop fetching timeout (which, when render is fast, means progress bar never shown)
+    clearTimeout(this.isFetchingTimeout);
+
     // Scroll 500ms after the doc-viewer has finished rendering the new doc
     // The delay is to allow time for async layout to complete
-    setTimeout(() => this.autoScroll(), 500);
-    this.isStarting = false;
+    setTimeout(() => {
+      this.autoScroll();
+      this.isStarting = false;
+      this.isFetching = false;
+    }, 500);
   }
 
   onDocVersionChange(versionIndex: number) {
@@ -184,6 +202,7 @@ export class AppComponent implements OnInit {
   @HostListener('window:resize', ['$event.target.innerWidth'])
   onResize(width) {
     this.isSideBySide = width > this.sideBySideWidth;
+    this.showFloatingToc = width > this.showFloatingTocWidth;
   }
 
   @HostListener('click', ['$event.target', '$event.button', '$event.ctrlKey', '$event.metaKey', '$event.altKey'])

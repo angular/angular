@@ -71,10 +71,6 @@ table {
       border-right: 1px solid $lightgray;
       font-weight: 600;
       max-width: 100px;
-
-      @media (max-width: 480px) {
-        display: none;
-      }
     }
 
     tr:last-child td {
@@ -83,7 +79,6 @@ table {
       @media (max-width: 480px) {
         border-bottom: 1px solid $lightgray;
       }
-
     }
   }
   &.horizontal {

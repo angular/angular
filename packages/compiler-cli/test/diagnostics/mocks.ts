@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompilerHost, AotSummaryResolver, CompileMetadataResolver, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, I18NHtmlParser, InterpolationConfig, JitSummaryResolver, Lexer, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, Parser, PipeResolver, ResourceLoader, StaticAndDynamicReflectionCapabilities, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, SummaryResolver, TemplateParser, analyzeNgModules, createOfflineCompileUrlResolver, extractProgramSymbols} from '@angular/compiler';
+import {AotCompilerHost, AotSummaryResolver, CompileMetadataResolver, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, I18NHtmlParser, InterpolationConfig, JitSummaryResolver, Lexer, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, Parser, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, SummaryResolver, TemplateParser, analyzeNgModules, createOfflineCompileUrlResolver, extractProgramSymbols} from '@angular/compiler';
 import {ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 import {CompilerHostContext} from 'compiler-cli';
 import * as fs from 'fs';
@@ -17,7 +17,11 @@ import {DiagnosticTemplateInfo} from '../../src/diagnostics/expression_diagnosti
 import {getClassFromStaticSymbol, getClassMembers, getPipesTable, getSymbolQuery} from '../../src/diagnostics/typescript_symbols';
 import {Directory, MockAotContext} from '../mocks';
 
-const packages = path.join(__dirname, '../../../../../packages');
+function calcRootPath() {
+  const moduleFilename = module.filename.replace(/\\/g, '/');
+  const distIndex = moduleFilename.indexOf('/dist/all');
+  return moduleFilename.substr(0, distIndex);
+}
 
 const realFiles = new Map<string, string>();
 
@@ -40,7 +44,7 @@ export class MockLanguageServiceHost implements ts.LanguageServiceHost, Compiler
       strictNullChecks: true,
       baseUrl: currentDirectory,
       lib: ['lib.es2015.d.ts', 'lib.dom.d.ts'],
-      paths: {'@angular/*': [packages + '/*']}
+      paths: {'@angular/*': [calcRootPath() + '/packages/*']}
     };
     this.context = new MockAotContext(currentDirectory, files)
   }
@@ -134,7 +138,6 @@ export class DiagnosticContext {
       const ssr = this.staticSymbolResolver;
       const result = this._reflector = new StaticReflector(
           summaryResolver, ssr, [], [], (e, filePath) => this.collectError(e, filePath !));
-      StaticAndDynamicReflectionCapabilities.install(result);
       this._reflector = result;
       return result;
     }
@@ -205,7 +208,8 @@ function compileTemplate(context: DiagnosticContext, type: StaticSymbol, templat
     const expressionParser = new Parser(new Lexer());
     const config = new CompilerConfig();
     const parser = new TemplateParser(
-        config, expressionParser, new DomElementSchemaRegistry(), htmlParser, null !, []);
+        config, context.reflector, expressionParser, new DomElementSchemaRegistry(), htmlParser,
+        null !, []);
     const htmlResult = htmlParser.parse(template, '', true);
     const analyzedModules = context.analyzedModules;
     // let errors: Diagnostic[]|undefined = undefined;

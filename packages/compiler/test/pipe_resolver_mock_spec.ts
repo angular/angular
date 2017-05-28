@@ -6,16 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {JitReflector} from '@angular/compiler';
 import {Injector, Pipe} from '@angular/core';
-import {beforeEach, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
+import {inject} from '@angular/core/testing';
+
 import {MockPipeResolver} from '../testing';
 
 export function main() {
   describe('MockPipeResolver', () => {
     let pipeResolver: MockPipeResolver;
 
-    beforeEach(inject(
-        [Injector], (injector: Injector) => { pipeResolver = new MockPipeResolver(injector); }));
+    beforeEach(inject([Injector], (injector: Injector) => {
+      pipeResolver = new MockPipeResolver(injector, new JitReflector());
+    }));
 
     describe('Pipe overriding', () => {
       it('should fallback to the default PipeResolver when templates are not overridden', () => {

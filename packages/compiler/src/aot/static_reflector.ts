@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, Component, ContentChild, ContentChildren, Directive, Host, HostBinding, HostListener, Inject, Injectable, Input, NgModule, Optional, Output, Pipe, Self, SkipSelf, ViewChild, ViewChildren, animate, group, keyframes, sequence, state, style, transition, trigger, ɵReflectorReader} from '@angular/core';
+import {Attribute, Component, ContentChild, ContentChildren, Directive, Host, HostBinding, HostListener, Inject, Injectable, Input, NgModule, Optional, Output, Pipe, Self, SkipSelf, ViewChild, ViewChildren, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
 
 import {CompileSummaryKind} from '../compile_metadata';
+import {CompileReflector} from '../compile_reflector';
+import * as o from '../output/output_ast';
 import {SummaryResolver} from '../summary_resolver';
 import {syntaxError} from '../util';
 
@@ -31,7 +33,7 @@ function shouldIgnore(value: any): boolean {
  * A static reflector implements enough of the Reflector API that is necessary to compile
  * templates statically.
  */
-export class StaticReflector implements ɵReflectorReader {
+export class StaticReflector implements CompileReflector {
   private annotationCache = new Map<StaticSymbol, any[]>();
   private propertyCache = new Map<StaticSymbol, {[key: string]: any[]}>();
   private parameterCache = new Map<StaticSymbol, any[]>();
@@ -67,24 +69,16 @@ export class StaticReflector implements ɵReflectorReader {
     this.annotationNames.set(Injectable, 'Injectable');
   }
 
-  importUri(typeOrFunc: StaticSymbol): string|null {
-    const staticSymbol = this.findSymbolDeclaration(typeOrFunc);
-    return staticSymbol ? staticSymbol.filePath : null;
-  }
-
-  resourceUri(typeOrFunc: StaticSymbol): string {
+  componentModuleUrl(typeOrFunc: StaticSymbol): string {
     const staticSymbol = this.findSymbolDeclaration(typeOrFunc);
     return this.symbolResolver.getResourcePath(staticSymbol);
   }
 
-  resolveIdentifier(name: string, moduleUrl: string, members: string[]): StaticSymbol {
-    const importSymbol = this.getStaticSymbol(moduleUrl, name);
-    const rootSymbol = this.findDeclaration(moduleUrl, name);
+  resolveExternalReference(ref: o.ExternalReference): StaticSymbol {
+    const importSymbol = this.getStaticSymbol(ref.moduleName !, ref.name !);
+    const rootSymbol = this.findDeclaration(ref.moduleName !, ref.name !);
     if (importSymbol != rootSymbol) {
       this.symbolResolver.recordImportAs(rootSymbol, importSymbol);
-    }
-    if (members && members.length) {
-      return this.getStaticSymbol(rootSymbol.filePath, rootSymbol.name, members);
     }
     return rootSymbol;
   }
@@ -101,12 +95,6 @@ export class StaticReflector implements ɵReflectorReader {
     } else {
       return symbol;
     }
-  }
-
-  resolveEnum(enumIdentifier: any, name: string): any {
-    const staticSymbol: StaticSymbol = enumIdentifier;
-    const members = (staticSymbol.members || []).concat(name);
-    return this.getStaticSymbol(staticSymbol.filePath, staticSymbol.name, members);
   }
 
   public annotations(type: StaticSymbol): any[] {
@@ -194,14 +182,13 @@ export class StaticReflector implements ɵReflectorReader {
         const ctorData = members ? members['__ctor__'] : null;
         if (ctorData) {
           const ctor = (<any[]>ctorData).find(a => a['__symbolic'] == 'constructor');
-          const parameterTypes = <any[]>this.simplify(type, ctor['parameters'] || []);
+          const rawParameterTypes = <any[]>ctor['parameters'] || [];
           const parameterDecorators = <any[]>this.simplify(type, ctor['parameterDecorators'] || []);
           parameters = [];
-          parameterTypes.forEach((paramType, index) => {
+          rawParameterTypes.forEach((rawParamType, index) => {
             const nestedResult: any[] = [];
-            if (paramType) {
-              nestedResult.push(paramType);
-            }
+            const paramType = this.trySimplify(type, rawParamType);
+            if (paramType) nestedResult.push(paramType);
             const decorators = parameterDecorators ? parameterDecorators[index] : null;
             if (decorators) {
               nestedResult.push(...decorators);

@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompilerHost, AotCompilerOptions, GeneratedFile, createAotCompiler} from '@angular/compiler';
-import {ɵReflectionCapabilities as ReflectionCapabilities, ɵreflector as reflector} from '@angular/core';
+import {AotCompilerHost, AotCompilerOptions, GeneratedFile, createAotCompiler, toTypeScript} from '@angular/compiler';
 import {MetadataBundlerHost, MetadataCollector, ModuleMetadata} from '@angular/tsc-wrapped';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -235,15 +234,12 @@ export class MockCompilerHost implements ts.CompilerHost {
     }
     const effectiveName = this.getEffectiveName(fileName);
     if (effectiveName == fileName) {
-      let result = open(fileName, this.data) != null;
-      return result;
-    } else {
-      if (fileName.match(rxjs)) {
-        let result = fs.existsSync(effectiveName);
-        return result;
-      }
-      return false;
+      return open(fileName, this.data) != null;
     }
+    if (fileName.match(rxjs)) {
+      return fs.existsSync(effectiveName);
+    }
+    return false;
   }
 
   readFile(fileName: string): string { return this.getFileContent(fileName) !; }
@@ -304,18 +300,13 @@ export class MockCompilerHost implements ts.CompilerHost {
     if (/^lib.*\.d\.ts$/.test(basename)) {
       let libPath = ts.getDefaultLibFilePath(settings);
       return fs.readFileSync(path.join(path.dirname(libPath), basename), 'utf8');
-    } else {
-      let effectiveName = this.getEffectiveName(fileName);
-      if (effectiveName === fileName) {
-        const result = open(fileName, this.data);
-        return result;
-      } else {
-        if (fileName.match(rxjs)) {
-          if (fs.existsSync(fileName)) {
-            return fs.readFileSync(fileName, 'utf8');
-          }
-        }
-      }
+    }
+    let effectiveName = this.getEffectiveName(fileName);
+    if (effectiveName === fileName) {
+      return open(fileName, this.data);
+    }
+    if (fileName.match(rxjs) && fs.existsSync(fileName)) {
+      return fs.readFileSync(fileName, 'utf8');
     }
   }
 
@@ -400,11 +391,11 @@ export class MockAotCompilerHost implements AotCompilerHost {
     return importedFile.replace(EXT, '');
   }
 
-  loadResource(path: string): Promise<string> {
+  loadResource(path: string): string {
     if (this.tsHost.fileExists(path)) {
-      return Promise.resolve(this.tsHost.readFile(path));
+      return this.tsHost.readFile(path);
     } else {
-      return Promise.reject(new Error(`Resource ${path} not found.`))
+      throw new Error(`Resource ${path} not found.`);
     }
   }
 }
@@ -423,15 +414,14 @@ export class MockMetadataBundlerHost implements MetadataBundlerHost {
 function find(fileName: string, data: MockFileOrDirectory | undefined): MockFileOrDirectory|
     undefined {
   if (!data) return undefined;
-  let names = fileName.split('/');
+  const names = fileName.split('/');
   if (names.length && !names[0].length) names.shift();
   let current: MockFileOrDirectory|undefined = data;
-  for (let name of names) {
-    if (typeof current === 'string')
+  for (const name of names) {
+    if (typeof current !== 'object') {
       return undefined;
-    else
-      current = (<MockDirectory>current)[name];
-    if (!current) return undefined;
+    }
+    current = current[name];
   }
   return current;
 }
@@ -537,8 +527,6 @@ export function setup(options: {compileAngular: boolean} = {
       emittingHost.writtenAngularFiles(angularFiles);
     }
   });
-  // Restore reflector since AoT compiler will update it with a new static reflector
-  afterEach(() => { reflector.updateCapabilities(new ReflectionCapabilities()); });
 
   return angularFiles;
 }
@@ -606,46 +594,48 @@ export function compile(
       useSummaries?: boolean,
       preCompile?: (program: ts.Program) => void,
       postCompile?: (program: ts.Program) => void,
+      stubsOnly?: boolean,
     }& AotCompilerOptions = {},
-    tsOptions: ts.CompilerOptions = {}):
-    Promise<{genFiles: GeneratedFile[], outDir: MockDirectory}> {
-  // Make sure we always return errors via the promise...
-  return Promise.resolve(null).then(() => {
-    // when using summaries, always emit so the next step can use the results.
-    const emit = options.emit || options.useSummaries;
-    const preCompile = options.preCompile || expectNoDiagnostics;
-    const postCompile = options.postCompile || expectNoDiagnostics;
-    const rootDirArr = toMockFileArray(rootDirs);
-    const scriptNames = rootDirArr.map(entry => entry.fileName).filter(isSource);
+    tsOptions: ts.CompilerOptions = {}): {genFiles: GeneratedFile[], outDir: MockDirectory} {
+  // when using summaries, always emit so the next step can use the results.
+  const emit = options.emit || options.useSummaries;
+  const preCompile = options.preCompile || (() => {});
+  const postCompile = options.postCompile || expectNoDiagnostics;
+  const rootDirArr = toMockFileArray(rootDirs);
+  const scriptNames = rootDirArr.map(entry => entry.fileName).filter(isSource);
 
-    const host = new MockCompilerHost(scriptNames, arrayToMockDir(rootDirArr));
-    const aotHost = new MockAotCompilerHost(host);
-    if (options.useSummaries) {
-      aotHost.hideMetadata();
-      aotHost.tsFilesOnly();
+  const host = new MockCompilerHost(scriptNames, arrayToMockDir(rootDirArr));
+  const aotHost = new MockAotCompilerHost(host);
+  if (options.useSummaries) {
+    aotHost.hideMetadata();
+    aotHost.tsFilesOnly();
+  }
+  const tsSettings = {...settings, ...tsOptions};
+  const program = ts.createProgram(host.scriptNames.slice(0), tsSettings, host);
+  preCompile(program);
+  const {compiler, reflector} = createAotCompiler(aotHost, options);
+  const analyzedModules =
+      compiler.analyzeModulesSync(program.getSourceFiles().map(sf => sf.fileName));
+  const genFiles = options.stubsOnly ? compiler.emitAllStubs(analyzedModules) :
+                                       compiler.emitAllImpls(analyzedModules);
+  genFiles.forEach((file) => {
+    const source = file.source || toTypeScript(file);
+    if (isSource(file.genFileUrl)) {
+      host.addScript(file.genFileUrl, source);
+    } else {
+      host.override(file.genFileUrl, source);
     }
-    const tsSettings = {...settings, ...tsOptions};
-    const scripts = host.scriptNames.slice(0);
-    const program = ts.createProgram(scripts, tsSettings, host);
-    if (preCompile) preCompile(program);
-    const {compiler, reflector} = createAotCompiler(aotHost, options);
-    return compiler.compileAll(program.getSourceFiles().map(sf => sf.fileName)).then(genFiles => {
-      genFiles.forEach(
-          file => isSource(file.genFileUrl) ? host.addScript(file.genFileUrl, file.source) :
-                                              host.override(file.genFileUrl, file.source));
-      const scripts = host.scriptNames.slice(0);
-      const newProgram = ts.createProgram(scripts, tsSettings, host);
-      if (postCompile) postCompile(newProgram);
-      if (emit) {
-        newProgram.emit();
-      }
-      let outDir: MockDirectory = {};
-      if (emit) {
-        outDir = arrayToMockDir(toMockFileArray([
-                                  host.writtenFiles, host.overrides
-                                ]).filter((entry) => !isSource(entry.fileName)));
-      }
-      return {genFiles, outDir};
-    });
   });
+  const newProgram = ts.createProgram(host.scriptNames.slice(0), tsSettings, host);
+  postCompile(newProgram);
+  if (emit) {
+    newProgram.emit();
+  }
+  let outDir: MockDirectory = {};
+  if (emit) {
+    outDir = arrayToMockDir(toMockFileArray([
+                              host.writtenFiles, host.overrides
+                            ]).filter((entry) => !isSource(entry.fileName)));
+  }
+  return {genFiles, outDir};
 }

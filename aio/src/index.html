@@ -37,10 +37,20 @@
   <!-- End Google Analytics -->
 
   <script>
-    if (window.document.documentMode) {
+    /**
+     * Send a blocking request to fetch polyfill. We call this only on non-evergreen browsers.
+     */
+    function polyfillBrowser(polyfillUrl) {
       var script = document.createElement('script');
-      script.src = 'generated/ie-polyfills.min.js';
+      script.src = polyfillUrl;
       document.head.appendChild(script);
+    }
+    if (window.document.documentMode) {
+      // polyfill IE11
+      polyfillBrowser('generated/ie-polyfills.min.js');
+    } else if (!Object.assign) {
+      // polyfill googlebot
+      polyfillBrowser('https://cdn.polyfill.io/v2/polyfill.min.js?unknown=polyfill');
     }
   </script>
 </head>

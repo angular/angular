@@ -7,7 +7,6 @@
  */
 
 
-import {CompileIdentifierMetadata} from '../compile_metadata';
 import {ParseSourceSpan} from '../parse_util';
 
 //// Types
@@ -344,8 +343,8 @@ export class LiteralExpr extends Expression {
 
 export class ExternalExpr extends Expression {
   constructor(
-      public value: CompileIdentifierMetadata, type?: Type|null,
-      public typeParams: Type[]|null = null, sourceSpan?: ParseSourceSpan|null) {
+      public value: ExternalReference, type?: Type|null, public typeParams: Type[]|null = null,
+      sourceSpan?: ParseSourceSpan|null) {
     super(type, sourceSpan);
   }
   visitExpression(visitor: ExpressionVisitor, context: any): any {
@@ -353,6 +352,9 @@ export class ExternalExpr extends Expression {
   }
 }
 
+export class ExternalReference {
+  constructor(public moduleName: string|null, public name: string|null, public runtime: any|null) {}
+}
 
 export class ConditionalExpr extends Expression {
   public trueCase: Expression;
@@ -533,7 +535,8 @@ export const TYPED_NULL_EXPR = new LiteralExpr(null, INFERRED_TYPE, null);
 //// Statements
 export enum StmtModifier {
   Final,
-  Private
+  Private,
+  Exported
 }
 
 export abstract class Statement {
@@ -1125,13 +1128,13 @@ export function variable(
 }
 
 export function importExpr(
-    id: CompileIdentifierMetadata, typeParams: Type[] | null = null,
+    id: ExternalReference, typeParams: Type[] | null = null,
     sourceSpan?: ParseSourceSpan | null): ExternalExpr {
   return new ExternalExpr(id, null, typeParams, sourceSpan);
 }
 
 export function importType(
-    id: CompileIdentifierMetadata, typeParams: Type[] | null = null,
+    id: ExternalReference, typeParams: Type[] | null = null,
     typeModifiers: TypeModifier[] | null = null): ExpressionType|null {
   return id != null ? expressionType(importExpr(id, typeParams, null), typeModifiers) : null;
 }

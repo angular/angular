@@ -11,7 +11,6 @@ import {PLATFORM_ID} from './application_tokens';
 import {Console} from './console';
 import {Provider} from './di';
 import {Reflector, reflector} from './reflection/reflection';
-import {ReflectorReader} from './reflection/reflector_reader';
 import {TestabilityRegistry} from './testability/testability';
 
 function _reflector(): Reflector {
@@ -24,7 +23,6 @@ const _CORE_PLATFORM_PROVIDERS: Provider[] = [
   PlatformRef_,
   {provide: PlatformRef, useExisting: PlatformRef_},
   {provide: Reflector, useFactory: _reflector, deps: []},
-  {provide: ReflectorReader, useExisting: Reflector},
   TestabilityRegistry,
   Console,
 ];

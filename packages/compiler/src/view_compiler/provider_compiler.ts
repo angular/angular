@@ -6,15 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵDepFlags as DepFlags, ɵLifecycleHooks as LifecycleHooks, ɵNodeFlags as NodeFlags} from '@angular/core';
+import {ɵDepFlags as DepFlags, ɵNodeFlags as NodeFlags} from '@angular/core';
 
 import {CompileDiDependencyMetadata, CompileEntryComponentMetadata, CompileProviderMetadata, CompileTokenMetadata} from '../compile_metadata';
-import {Identifiers, createIdentifier, createIdentifierToken, resolveIdentifier} from '../identifiers';
+import {CompileReflector} from '../compile_reflector';
+import {Identifiers, createTokenForExternalReference} from '../identifiers';
+import {LifecycleHooks} from '../lifecycle_reflector';
 import * as o from '../output/output_ast';
 import {convertValueToOutputAst} from '../output/value_util';
 import {ProviderAst, ProviderAstType} from '../template_parser/template_ast';
+import {OutputContext} from '../util';
 
-export function providerDef(providerAst: ProviderAst): {
+export function providerDef(ctx: OutputContext, providerAst: ProviderAst): {
   providerExpr: o.Expression,
   flags: NodeFlags,
   depsExpr: o.Expression,
@@ -36,16 +39,17 @@ export function providerDef(providerAst: ProviderAst): {
     }
   });
   const {providerExpr, flags: providerFlags, depsExpr} = providerAst.multiProvider ?
-      multiProviderDef(flags, providerAst.providers) :
-      singleProviderDef(flags, providerAst.providerType, providerAst.providers[0]);
+      multiProviderDef(ctx, flags, providerAst.providers) :
+      singleProviderDef(ctx, flags, providerAst.providerType, providerAst.providers[0]);
   return {
     providerExpr,
     flags: providerFlags, depsExpr,
-    tokenExpr: tokenExpr(providerAst.token),
+    tokenExpr: tokenExpr(ctx, providerAst.token),
   };
 }
 
-function multiProviderDef(flags: NodeFlags, providers: CompileProviderMetadata[]):
+function multiProviderDef(
+    ctx: OutputContext, flags: NodeFlags, providers: CompileProviderMetadata[]):
     {providerExpr: o.Expression, flags: NodeFlags, depsExpr: o.Expression} {
   const allDepDefs: o.Expression[] = [];
   const allParams: o.FnParam[] = [];
@@ -53,15 +57,15 @@ function multiProviderDef(flags: NodeFlags, providers: CompileProviderMetadata[]
     let expr: o.Expression;
     if (provider.useClass) {
       const depExprs = convertDeps(providerIndex, provider.deps || provider.useClass.diDeps);
-      expr = o.importExpr(provider.useClass).instantiate(depExprs);
+      expr = ctx.importExpr(provider.useClass.reference).instantiate(depExprs);
     } else if (provider.useFactory) {
       const depExprs = convertDeps(providerIndex, provider.deps || provider.useFactory.diDeps);
-      expr = o.importExpr(provider.useFactory).callFn(depExprs);
+      expr = ctx.importExpr(provider.useFactory.reference).callFn(depExprs);
     } else if (provider.useExisting) {
       const depExprs = convertDeps(providerIndex, [{token: provider.useExisting}]);
       expr = depExprs[0];
     } else {
-      expr = convertValueToOutputAst(provider.useValue);
+      expr = convertValueToOutputAst(ctx, provider.useValue);
     }
     return expr;
   });
@@ -77,28 +81,29 @@ function multiProviderDef(flags: NodeFlags, providers: CompileProviderMetadata[]
     return deps.map((dep, depIndex) => {
       const paramName = `p${providerIndex}_${depIndex}`;
       allParams.push(new o.FnParam(paramName, o.DYNAMIC_TYPE));
-      allDepDefs.push(depDef(dep));
+      allDepDefs.push(depDef(ctx, dep));
       return o.variable(paramName);
     });
   }
 }
 
 function singleProviderDef(
-    flags: NodeFlags, providerType: ProviderAstType, providerMeta: CompileProviderMetadata):
+    ctx: OutputContext, flags: NodeFlags, providerType: ProviderAstType,
+    providerMeta: CompileProviderMetadata):
     {providerExpr: o.Expression, flags: NodeFlags, depsExpr: o.Expression} {
   let providerExpr: o.Expression;
   let deps: CompileDiDependencyMetadata[];
   if (providerType === ProviderAstType.Directive || providerType === ProviderAstType.Component) {
-    providerExpr = o.importExpr(providerMeta.useClass !);
+    providerExpr = ctx.importExpr(providerMeta.useClass !.reference);
     flags |= NodeFlags.TypeDirective;
     deps = providerMeta.deps || providerMeta.useClass !.diDeps;
   } else {
     if (providerMeta.useClass) {
-      providerExpr = o.importExpr(providerMeta.useClass);
+      providerExpr = ctx.importExpr(providerMeta.useClass.reference);
       flags |= NodeFlags.TypeClassProvider;
       deps = providerMeta.deps || providerMeta.useClass.diDeps;
     } else if (providerMeta.useFactory) {
-      providerExpr = o.importExpr(providerMeta.useFactory);
+      providerExpr = ctx.importExpr(providerMeta.useFactory.reference);
       flags |= NodeFlags.TypeFactoryProvider;
       deps = providerMeta.deps || providerMeta.useFactory.diDeps;
     } else if (providerMeta.useExisting) {
@@ -106,23 +111,24 @@ function singleProviderDef(
       flags |= NodeFlags.TypeUseExistingProvider;
       deps = [{token: providerMeta.useExisting}];
     } else {
-      providerExpr = convertValueToOutputAst(providerMeta.useValue);
+      providerExpr = convertValueToOutputAst(ctx, providerMeta.useValue);
       flags |= NodeFlags.TypeValueProvider;
       deps = [];
     }
   }
-  const depsExpr = o.literalArr(deps.map(dep => depDef(dep)));
+  const depsExpr = o.literalArr(deps.map(dep => depDef(ctx, dep)));
   return {providerExpr, flags, depsExpr};
 }
 
-function tokenExpr(tokenMeta: CompileTokenMetadata): o.Expression {
-  return tokenMeta.identifier ? o.importExpr(tokenMeta.identifier) : o.literal(tokenMeta.value);
+function tokenExpr(ctx: OutputContext, tokenMeta: CompileTokenMetadata): o.Expression {
+  return tokenMeta.identifier ? ctx.importExpr(tokenMeta.identifier.reference) :
+                                o.literal(tokenMeta.value);
 }
 
-export function depDef(dep: CompileDiDependencyMetadata): o.Expression {
+export function depDef(ctx: OutputContext, dep: CompileDiDependencyMetadata): o.Expression {
   // Note: the following fields have already been normalized out by provider_analyzer:
   // - isAttribute, isSelf, isHost
-  const expr = dep.isValue ? convertValueToOutputAst(dep.value) : tokenExpr(dep.token !);
+  const expr = dep.isValue ? convertValueToOutputAst(ctx, dep.value) : tokenExpr(ctx, dep.token !);
   let flags = DepFlags.None;
   if (dep.isSkipSelf) {
     flags |= DepFlags.SkipSelf;
@@ -168,29 +174,30 @@ export function lifecycleHookToNodeFlag(lifecycleHook: LifecycleHooks): NodeFlag
 }
 
 export function componentFactoryResolverProviderDef(
-    flags: NodeFlags, entryComponents: CompileEntryComponentMetadata[]): {
+    reflector: CompileReflector, ctx: OutputContext, flags: NodeFlags,
+    entryComponents: CompileEntryComponentMetadata[]): {
   providerExpr: o.Expression,
   flags: NodeFlags,
   depsExpr: o.Expression,
   tokenExpr: o.Expression
 } {
-  const entryComponentFactories = entryComponents.map(
-      (entryComponent) => o.importExpr({reference: entryComponent.componentFactory}));
-  const token = createIdentifierToken(Identifiers.ComponentFactoryResolver);
+  const entryComponentFactories =
+      entryComponents.map((entryComponent) => ctx.importExpr(entryComponent.componentFactory));
+  const token = createTokenForExternalReference(reflector, Identifiers.ComponentFactoryResolver);
   const classMeta = {
     diDeps: [
       {isValue: true, value: o.literalArr(entryComponentFactories)},
       {token: token, isSkipSelf: true, isOptional: true},
-      {token: createIdentifierToken(Identifiers.NgModuleRef)},
+      {token: createTokenForExternalReference(reflector, Identifiers.NgModuleRef)},
     ],
     lifecycleHooks: [],
-    reference: resolveIdentifier(Identifiers.CodegenComponentFactoryResolver)
+    reference: reflector.resolveExternalReference(Identifiers.CodegenComponentFactoryResolver)
   };
   const {providerExpr, flags: providerFlags, depsExpr} =
-      singleProviderDef(flags, ProviderAstType.PrivateService, {
+      singleProviderDef(ctx, flags, ProviderAstType.PrivateService, {
         token,
         multi: false,
         useClass: classMeta,
       });
-  return {providerExpr, flags: providerFlags, depsExpr, tokenExpr: tokenExpr(token)};
+  return {providerExpr, flags: providerFlags, depsExpr, tokenExpr: tokenExpr(ctx, token)};
 }

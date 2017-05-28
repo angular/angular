@@ -178,6 +178,9 @@ export class Evaluator {
         case ts.SyntaxKind.NullKeyword:
         case ts.SyntaxKind.TrueKeyword:
         case ts.SyntaxKind.FalseKeyword:
+        case ts.SyntaxKind.TemplateHead:
+        case ts.SyntaxKind.TemplateMiddle:
+        case ts.SyntaxKind.TemplateTail:
           return true;
         case ts.SyntaxKind.ParenthesizedExpression:
           const parenthesizedExpression = <ts.ParenthesizedExpression>node;
@@ -211,6 +214,10 @@ export class Evaluator {
             return true;
           }
           break;
+        case ts.SyntaxKind.TemplateExpression:
+          const templateExpression = <ts.TemplateExpression>node;
+          return templateExpression.templateSpans.every(
+              span => this.isFoldableWorker(span.expression, folding));
       }
     }
     return false;
@@ -233,6 +240,15 @@ export class Evaluator {
       return !t.options.verboseInvalidExpression && isMetadataError(value);
     }
 
+    const resolveName = (name: string): MetadataValue => {
+      const reference = this.symbols.resolve(name);
+      if (reference === undefined) {
+        // Encode as a global reference. StaticReflector will check the reference.
+        return recordEntry({__symbolic: 'reference', name}, node);
+      }
+      return reference;
+    };
+
     switch (node.kind) {
       case ts.SyntaxKind.ObjectLiteralExpression:
         let obj: {[name: string]: any} = {};
@@ -253,7 +269,7 @@ export class Evaluator {
               }
               const propertyValue = isPropertyAssignment(assignment) ?
                   this.evaluateNode(assignment.initializer) :
-                  {__symbolic: 'reference', name: propertyName};
+                  resolveName(propertyName);
               if (isFoldableError(propertyValue)) {
                 error = propertyValue;
                 return true;  // Stop the forEachChild.
@@ -384,12 +400,7 @@ export class Evaluator {
       case ts.SyntaxKind.Identifier:
         const identifier = <ts.Identifier>node;
         const name = identifier.text;
-        const reference = this.symbols.resolve(name);
-        if (reference === undefined) {
-          // Encode as a global reference. StaticReflector will check the reference.
-          return recordEntry({__symbolic: 'reference', name}, node);
-        }
-        return reference;
+        return resolveName(name);
       case ts.SyntaxKind.TypeReference:
         const typeReferenceNode = <ts.TypeReferenceNode>node;
         const typeNameNode = typeReferenceNode.typeName;
@@ -431,10 +442,42 @@ export class Evaluator {
           (<MetadataImportedSymbolReferenceExpression>typeReference).arguments = args;
         }
         return recordEntry(typeReference, node);
+      case ts.SyntaxKind.UnionType:
+        const unionType = <ts.UnionTypeNode>node;
+
+        // Remove null and undefined from the list of unions.
+        const references = unionType.types
+                               .filter(
+                                   n => n.kind != ts.SyntaxKind.NullKeyword &&
+                                       n.kind != ts.SyntaxKind.UndefinedKeyword)
+                               .map(n => this.evaluateNode(n));
+
+        // The remmaining reference must be the same. If two have type arguments consider them
+        // different even if the type arguments are the same.
+        let candidate: any = null;
+        for (let i = 0; i < references.length; i++) {
+          const reference = references[i];
+          if (isMetadataSymbolicReferenceExpression(reference)) {
+            if (candidate) {
+              if ((reference as any).name == candidate.name &&
+                  (reference as any).module == candidate.module && !(reference as any).arguments) {
+                candidate = reference;
+              }
+            } else {
+              candidate = reference;
+            }
+          } else {
+            return reference;
+          }
+        }
+        if (candidate) return candidate;
+        break;
       case ts.SyntaxKind.NoSubstitutionTemplateLiteral:
-        return (<ts.LiteralExpression>node).text;
       case ts.SyntaxKind.StringLiteral:
-        return (<ts.StringLiteral>node).text;
+      case ts.SyntaxKind.TemplateHead:
+      case ts.SyntaxKind.TemplateTail:
+      case ts.SyntaxKind.TemplateMiddle:
+        return (<ts.LiteralLikeNode>node).text;
       case ts.SyntaxKind.NumericLiteral:
         return parseFloat((<ts.LiteralExpression>node).text);
       case ts.SyntaxKind.AnyKeyword:
@@ -571,6 +614,36 @@ export class Evaluator {
       case ts.SyntaxKind.FunctionExpression:
       case ts.SyntaxKind.ArrowFunction:
         return recordEntry(errorSymbol('Function call not supported', node), node);
+      case ts.SyntaxKind.TaggedTemplateExpression:
+        return recordEntry(
+            errorSymbol('Tagged template expressions are not supported in metadata', node), node);
+      case ts.SyntaxKind.TemplateExpression:
+        const templateExpression = <ts.TemplateExpression>node;
+        if (this.isFoldable(node)) {
+          return templateExpression.templateSpans.reduce(
+              (previous, current) => previous + <string>this.evaluateNode(current.expression) +
+                  <string>this.evaluateNode(current.literal),
+              this.evaluateNode(templateExpression.head));
+        } else {
+          return templateExpression.templateSpans.reduce((previous, current) => {
+            const expr = this.evaluateNode(current.expression);
+            const literal = this.evaluateNode(current.literal);
+            if (isFoldableError(expr)) return expr;
+            if (isFoldableError(literal)) return literal;
+            if (typeof previous === 'string' && typeof expr === 'string' &&
+                typeof literal === 'string') {
+              return previous + expr + literal;
+            }
+            let result = expr;
+            if (previous !== '') {
+              result = {__symbolic: 'binop', operator: '+', left: previous, right: expr};
+            }
+            if (literal != '') {
+              result = {__symbolic: 'binop', operator: '+', left: result, right: literal};
+            }
+            return result;
+          }, this.evaluateNode(templateExpression.head));
+        }
     }
     return recordEntry(errorSymbol('Expression form not supported', node), node);
   }

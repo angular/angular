@@ -89,7 +89,7 @@ export class NgTools_InternalApi_NG_2 {
    * @internal
    * @private
    */
-  static codeGen(options: NgTools_InternalApi_NG2_CodeGen_Options): Promise<void> {
+  static codeGen(options: NgTools_InternalApi_NG2_CodeGen_Options): Promise<any> {
     const hostContext: CompilerHostContext =
         new CustomLoaderModuleResolutionHostAdapter(options.readResource, options.host);
     const cliOptions: NgcCliOptions = {
@@ -141,7 +141,7 @@ export class NgTools_InternalApi_NG_2 {
    * @internal
    * @private
    */
-  static extractI18n(options: NgTools_InternalApi_NG2_ExtractI18n_Options): Promise<void> {
+  static extractI18n(options: NgTools_InternalApi_NG2_ExtractI18n_Options): Promise<any> {
     const hostContext: CompilerHostContext =
         new CustomLoaderModuleResolutionHostAdapter(options.readResource, options.host);
 

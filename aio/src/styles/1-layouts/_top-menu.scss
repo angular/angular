@@ -1,4 +1,3 @@
-
 .fill-remaining-space {
   flex: 1 1 auto;
 }
@@ -52,13 +51,12 @@ aio-top-menu {
     margin: 0px;
 
     li {
+      padding-bottom: 2px;
       list-style-type: none;
-      line-height: 64px;
-      height: 64px;
       cursor: pointer;
 
       &:hover {
-        background-color: $accentblue;
+        opacity: 0.7;
       }
 
       &:focus {
@@ -69,14 +67,29 @@ aio-top-menu {
   }
 }
 
+aio-shell.page-home md-toolbar.app-toolbar.mat-toolbar {
+  background-color: transparent;
+}
+
 md-toolbar.mat-toolbar {
-  position: fixed;
-  top: 0;
-  right: 0;
+  position: absolute; 
+  perspective: 2000px;
+  top: 0px;
+  right: 0; 
   left: 0;
   z-index: 10;
-  box-shadow: 0 2px 5px 0 rgba(0,0,0,0.30);
   padding: 0 16px 0 0;
+
+  .mat-toolbar-row {
+    @media (max-width: 600px) {
+    }
+  }
+}
+
+aio-shell.sidenav-open {
+  md-toolbar.mat-toolbar md-icon {
+    color: $mediumgray;
+  }
 }
 
 .search-container {
@@ -91,13 +104,20 @@ md-toolbar.mat-toolbar {
 aio-search-box input {
   color: $darkgray;
   border: none;
-  border-radius: 5px;
+  border-radius: 100px;
   background-color: $offwhite;
-  padding: 5px 10px;
+  padding: 5px 16px;
   margin-left: 8px;
-  width: 200px;
+  width: 150px;
   height: 40%;
 
+   @include bp(big) {
+    transition: width 0.4s ease-in-out;
+    &:focus {
+      width: 50%;
+      max-width: 240px;
+    }
+  }
   @media (max-width: 480px) {
     width: 180px;
   }

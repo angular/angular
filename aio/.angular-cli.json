@@ -12,7 +12,8 @@
         "generated",
         "app/search/search-worker.js",
         "favicon.ico",
-        "pwa-manifest.json"
+        "pwa-manifest.json",
+        "google385281288605d160.html"
       ],
       "index": "index.html",
       "main": "main.ts",
@@ -26,7 +27,6 @@
         "styles.scss"
       ],
       "scripts": [
-        "../node_modules/tslib/tslib.js"
       ],
       "environmentSource": "environments/environment.ts",
       "environments": {
