@@ -317,7 +317,7 @@ If you do, this page can help you understand their purpose.
 
 
       Optional extra SystemJS configuration.
-      A way to add SystemJS mappings, such as for appliation _barrels_,
+      A way to add SystemJS mappings, such as for application _barrels_,
       without changing the original `system.config.js`.
     </td>
 
