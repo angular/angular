@@ -944,6 +944,21 @@ A factory provider needs a factory function:
 </code-example>
 
 
+<div class="callout is-critical">
+
+
+
+<header>
+  Always export plain-old functions
+</header>
+
+
+
+Always write `export function someFactory()` and refrain from using arrow functions (_lambdas_).
+The application's build will fail in [Ahead-of-Time (AoT) compilation](guide/aot-compiler).
+
+
+</div>
 
 Although the `HeroService` has no access to the `UserService`, the factory function does.
 
