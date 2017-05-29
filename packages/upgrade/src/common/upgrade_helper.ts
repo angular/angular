@@ -90,12 +90,6 @@ export class UpgradeHelper {
     if (directive.terminal) this.notSupported('terminal');
     if (directive.compile) this.notSupported('compile');
 
-    const link = directive.link;
-    // QUESTION: why not support link.post?
-    if (typeof link == 'object') {
-      if (link.post) this.notSupported('link.post');
-    }
-
     return directive;
   }
 
