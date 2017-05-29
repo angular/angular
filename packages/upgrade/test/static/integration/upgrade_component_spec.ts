@@ -1069,6 +1069,244 @@ export function main() {
          }));
     });
 
+    describe('linking', () => {
+      it('should run the pre-linking after instantiating the controller', async(() => {
+           const log: string[] = [];
+
+           // Define `ng1Directive`
+           const ng1Directive: angular.IDirective = {
+             template: '',
+             link: {pre: () => log.push('ng1-pre')},
+             controller: class {constructor() { log.push('ng1-ctrl'); }}
+           };
+
+           // Define `Ng1ComponentFacade`
+           @Directive({selector: 'ng1'})
+           class Ng1ComponentFacade extends UpgradeComponent {
+             constructor(elementRef: ElementRef, injector: Injector) {
+               super('ng1', elementRef, injector);
+             }
+           }
+
+           // Define `Ng2Component`
+           @Component({selector: 'ng2', template: '<ng1></ng1>'})
+           class Ng2Component {
+           }
+
+           // Define `ng1Module`
+           const ng1Module = angular.module('ng1', [])
+                                 .directive('ng1', () => ng1Directive)
+                                 .directive('ng2', downgradeComponent({component: Ng2Component}));
+
+           // Define `Ng2Module`
+           @NgModule({
+             imports: [BrowserModule, UpgradeModule],
+             declarations: [Ng1ComponentFacade, Ng2Component],
+             entryComponents: [Ng2Component],
+           })
+           class Ng2Module {
+             ngDoBootstrap() {}
+           }
+
+           // Bootstrap
+           const element = html(`<ng2></ng2>`);
+
+           bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+             expect(log).toEqual(['ng1-ctrl', 'ng1-pre']);
+           });
+         }));
+
+      it('should run the pre-linking function before linking', async(() => {
+           const log: string[] = [];
+
+           // Define `ng1Directive`
+           const ng1DirectiveA: angular.IDirective = {
+             template: '<ng1-b></ng1-b>',
+             link: {pre: () => log.push('ng1A-pre')}
+           };
+
+           const ng1DirectiveB: angular.IDirective = {link: () => log.push('ng1B-post')};
+
+           // Define `Ng1ComponentAFacade`
+           @Directive({selector: 'ng1A'})
+           class Ng1ComponentAFacade extends UpgradeComponent {
+             constructor(elementRef: ElementRef, injector: Injector) {
+               super('ng1A', elementRef, injector);
+             }
+           }
+
+           // Define `Ng2Component`
+           @Component({selector: 'ng2', template: '<ng1A></ng1A>'})
+           class Ng2Component {
+           }
+
+           // Define `ng1Module`
+           const ng1Module = angular.module('ng1', [])
+                                 .directive('ng1A', () => ng1DirectiveA)
+                                 .directive('ng1B', () => ng1DirectiveB)
+                                 .directive('ng2', downgradeComponent({component: Ng2Component}));
+
+           // Define `Ng2Module`
+           @NgModule({
+             imports: [BrowserModule, UpgradeModule],
+             declarations: [Ng1ComponentAFacade, Ng2Component],
+             entryComponents: [Ng2Component],
+           })
+           class Ng2Module {
+             ngDoBootstrap() {}
+           }
+
+           // Bootstrap
+           const element = html(`<ng2></ng2>`);
+
+           bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+             expect(log).toEqual(['ng1A-pre', 'ng1B-post']);
+           });
+         }));
+
+      it('should run the post-linking function after linking (link: object)', async(() => {
+           const log: string[] = [];
+
+           // Define `ng1Directive`
+           const ng1DirectiveA: angular.IDirective = {
+             template: '<ng1-b></ng1-b>',
+             link: {post: () => log.push('ng1A-post')}
+           };
+
+           const ng1DirectiveB: angular.IDirective = {link: () => log.push('ng1B-post')};
+
+           // Define `Ng1ComponentAFacade`
+           @Directive({selector: 'ng1A'})
+           class Ng1ComponentAFacade extends UpgradeComponent {
+             constructor(elementRef: ElementRef, injector: Injector) {
+               super('ng1A', elementRef, injector);
+             }
+           }
+
+           // Define `Ng2Component`
+           @Component({selector: 'ng2', template: '<ng1A></ng1A>'})
+           class Ng2Component {
+           }
+
+           // Define `ng1Module`
+           const ng1Module = angular.module('ng1', [])
+                                 .directive('ng1A', () => ng1DirectiveA)
+                                 .directive('ng1B', () => ng1DirectiveB)
+                                 .directive('ng2', downgradeComponent({component: Ng2Component}));
+
+           // Define `Ng2Module`
+           @NgModule({
+             imports: [BrowserModule, UpgradeModule],
+             declarations: [Ng1ComponentAFacade, Ng2Component],
+             entryComponents: [Ng2Component],
+           })
+           class Ng2Module {
+             ngDoBootstrap() {}
+           }
+
+           // Bootstrap
+           const element = html(`<ng2></ng2>`);
+
+           bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+             expect(log).toEqual(['ng1B-post', 'ng1A-post']);
+           });
+         }));
+
+      it('should run the post-linking function after linking (link: function)', async(() => {
+           const log: string[] = [];
+
+           // Define `ng1Directive`
+           const ng1DirectiveA: angular.IDirective = {
+             template: '<ng1-b></ng1-b>',
+             link: () => log.push('ng1A-post')
+           };
+
+           const ng1DirectiveB: angular.IDirective = {link: () => log.push('ng1B-post')};
+
+           // Define `Ng1ComponentAFacade`
+           @Directive({selector: 'ng1A'})
+           class Ng1ComponentAFacade extends UpgradeComponent {
+             constructor(elementRef: ElementRef, injector: Injector) {
+               super('ng1A', elementRef, injector);
+             }
+           }
+
+           // Define `Ng2Component`
+           @Component({selector: 'ng2', template: '<ng1A></ng1A>'})
+           class Ng2Component {
+           }
+
+           // Define `ng1Module`
+           const ng1Module = angular.module('ng1', [])
+                                 .directive('ng1A', () => ng1DirectiveA)
+                                 .directive('ng1B', () => ng1DirectiveB)
+                                 .directive('ng2', downgradeComponent({component: Ng2Component}));
+
+           // Define `Ng2Module`
+           @NgModule({
+             imports: [BrowserModule, UpgradeModule],
+             declarations: [Ng1ComponentAFacade, Ng2Component],
+             entryComponents: [Ng2Component],
+           })
+           class Ng2Module {
+             ngDoBootstrap() {}
+           }
+
+           // Bootstrap
+           const element = html(`<ng2></ng2>`);
+
+           bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+             expect(log).toEqual(['ng1B-post', 'ng1A-post']);
+           });
+         }));
+
+      it('should run the post-linking function before `$postLink`', async(() => {
+           const log: string[] = [];
+
+           // Define `ng1Directive`
+           const ng1Directive: angular.IDirective = {
+             template: '',
+             link: () => log.push('ng1-post'),
+             controller: class {$postLink() { log.push('ng1-$post'); }}
+           };
+
+           // Define `Ng1ComponentFacade`
+           @Directive({selector: 'ng1'})
+           class Ng1ComponentFacade extends UpgradeComponent {
+             constructor(elementRef: ElementRef, injector: Injector) {
+               super('ng1', elementRef, injector);
+             }
+           }
+
+           // Define `Ng2Component`
+           @Component({selector: 'ng2', template: '<ng1></ng1>'})
+           class Ng2Component {
+           }
+
+           // Define `ng1Module`
+           const ng1Module = angular.module('ng1', [])
+                                 .directive('ng1', () => ng1Directive)
+                                 .directive('ng2', downgradeComponent({component: Ng2Component}));
+
+           // Define `Ng2Module`
+           @NgModule({
+             imports: [BrowserModule, UpgradeModule],
+             declarations: [Ng1ComponentFacade, Ng2Component],
+             entryComponents: [Ng2Component],
+           })
+           class Ng2Module {
+             ngDoBootstrap() {}
+           }
+
+           // Bootstrap
+           const element = html(`<ng2></ng2>`);
+
+           bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+             expect(log).toEqual(['ng1-post', 'ng1-$post']);
+           });
+         }));
+    });
+
     describe('controller', () => {
       it('should support `controllerAs`', async(() => {
            // Define `ng1Directive`
