@@ -14,7 +14,7 @@ import {controllerKey, directiveNormalize, isFunction} from './util';
 
 
 // Constants
-export const REQUIRE_PREFIX_RE = /^(\^\^?)?(\?)?(\^\^?)?/;
+const REQUIRE_PREFIX_RE = /^(\^\^?)?(\?)?(\^\^?)?/;
 
 // Interfaces
 export interface IBindingDestination {
@@ -38,18 +38,66 @@ export class UpgradeHelper {
 
   private readonly $compile: angular.ICompileService;
   private readonly $controller: angular.IControllerService;
-  private readonly $templateCache: angular.ITemplateCacheService;
 
-  constructor(private injector: Injector, private name: string, elementRef: ElementRef) {
+  constructor(
+      private injector: Injector, private name: string, elementRef: ElementRef,
+      directive?: angular.IDirective) {
     this.$injector = injector.get($INJECTOR);
     this.$compile = this.$injector.get($COMPILE);
     this.$controller = this.$injector.get($CONTROLLER);
-    this.$templateCache = this.$injector.get($TEMPLATE_CACHE);
 
     this.element = elementRef.nativeElement;
     this.$element = angular.element(this.element);
 
-    this.directive = this.getDirective();
+    this.directive = directive || UpgradeHelper.getDirective(this.$injector, name);
+  }
+
+  static getDirective($injector: angular.IInjectorService, name: string): angular.IDirective {
+    const directives: angular.IDirective[] = $injector.get(name + 'Directive');
+    if (directives.length > 1) {
+      throw new Error(`Only support single directive definition for: ${name}`);
+    }
+
+    const directive = directives[0];
+
+    // AngularJS will transform `link: xyz` to `compile: () => xyz`. So we can only tell there was a
+    // user-defined `compile` if there is no `link`. In other cases, we will just ignore `compile`.
+    if (directive.compile && !directive.link) notSupported(name, 'compile');
+    if (directive.replace) notSupported(name, 'replace');
+    if (directive.terminal) notSupported(name, 'terminal');
+
+    return directive;
+  }
+
+  static getTemplate(
+      $injector: angular.IInjectorService, directive: angular.IDirective,
+      fetchRemoteTemplate = false): string|Promise<string> {
+    if (directive.template !== undefined) {
+      return getOrCall<string>(directive.template);
+    } else if (directive.templateUrl) {
+      const $templateCache = $injector.get($TEMPLATE_CACHE) as angular.ITemplateCacheService;
+      const url = getOrCall<string>(directive.templateUrl);
+      const template = $templateCache.get(url);
+
+      if (template !== undefined) {
+        return template;
+      } else if (!fetchRemoteTemplate) {
+        throw new Error('loading directive templates asynchronously is not supported');
+      }
+
+      return new Promise((resolve, reject) => {
+        const $httpBackend = $injector.get($HTTP_BACKEND) as angular.IHttpBackendService;
+        $httpBackend('GET', url, null, (status: number, response: string) => {
+          if (status === 200) {
+            resolve($templateCache.put(url, response));
+          } else {
+            reject(`GET component template from '${url}' returned '${status}: ${response}'`);
+          }
+        });
+      });
+    } else {
+      throw new Error(`Directive '${directive.name}' is not a component, it is missing template.`);
+    }
   }
 
   buildController(controllerType: angular.IController, $scope: angular.IScope) {
@@ -63,34 +111,12 @@ export class UpgradeHelper {
     return controller;
   }
 
-  compileTemplate(): angular.ILinkFn {
-    if (this.directive.template !== undefined) {
-      return this.compileHtml(this.getOrCall<string>(this.directive.template));
-    } else if (this.directive.templateUrl) {
-      const url = this.getOrCall<string>(this.directive.templateUrl);
-      const html = this.$templateCache.get(url) as string;
-      if (html !== undefined) {
-        return this.compileHtml(html);
-      } else {
-        throw new Error('loading directive templates asynchronously is not supported');
-      }
-    } else {
-      throw new Error(`Directive '${this.name}' is not a component, it is missing template.`);
-    }
-  }
-
-  getDirective(): angular.IDirective {
-    const directives: angular.IDirective[] = this.$injector.get(this.name + 'Directive');
-    if (directives.length > 1) {
-      throw new Error(`Only support single directive definition for: ${this.name}`);
+  compileTemplate(template?: string): angular.ILinkFn {
+    if (template === undefined) {
+      template = UpgradeHelper.getTemplate(this.$injector, this.directive) as string;
     }
 
-    const directive = directives[0];
-    if (directive.replace) this.notSupported('replace');
-    if (directive.terminal) this.notSupported('terminal');
-    if (directive.compile) this.notSupported('compile');
-
-    return directive;
+    return this.compileHtml(template);
   }
 
   prepareTransclusion(): angular.ILinkFn|undefined {
@@ -169,7 +195,56 @@ export class UpgradeHelper {
     return attachChildrenFn;
   }
 
-  resolveRequire(require: angular.DirectiveRequireProperty):
+  resolveAndBindRequiredControllers(controllerInstance: IControllerInstance|null) {
+    const directiveRequire = this.getDirectiveRequire();
+    const requiredControllers = this.resolveRequire(directiveRequire);
+
+    if (controllerInstance && this.directive.bindToController && isMap(directiveRequire)) {
+      const requiredControllersMap = requiredControllers as{[key: string]: IControllerInstance};
+      Object.keys(requiredControllersMap).forEach(key => {
+        controllerInstance[key] = requiredControllersMap[key];
+      });
+    }
+
+    return requiredControllers;
+  }
+
+  private compileHtml(html: string): angular.ILinkFn {
+    this.element.innerHTML = html;
+    return this.$compile(this.element.childNodes);
+  }
+
+  private extractChildNodes(): Node[] {
+    const childNodes: Node[] = [];
+    let childNode: Node|null;
+
+    while (childNode = this.element.firstChild) {
+      this.element.removeChild(childNode);
+      childNodes.push(childNode);
+    }
+
+    return childNodes;
+  }
+
+  private getDirectiveRequire(): angular.DirectiveRequireProperty {
+    const require = this.directive.require || (this.directive.controller && this.directive.name) !;
+
+    if (isMap(require)) {
+      Object.keys(require).forEach(key => {
+        const value = require[key];
+        const match = value.match(REQUIRE_PREFIX_RE) !;
+        const name = value.substring(match[0].length);
+
+        if (!name) {
+          require[key] = match[0] + key;
+        }
+      });
+    }
+
+    return require;
+  }
+
+  private resolveRequire(require: angular.DirectiveRequireProperty, controllerInstance?: any):
       angular.SingleOrListOrMap<IControllerInstance>|null {
     if (!require) {
       return null;
@@ -203,30 +278,17 @@ export class UpgradeHelper {
           `Unrecognized 'require' syntax on upgraded directive '${this.name}': ${require}`);
     }
   }
+}
 
-  private compileHtml(html: string): angular.ILinkFn {
-    this.element.innerHTML = html;
-    return this.$compile(this.element.childNodes);
-  }
+function getOrCall<T>(property: T | Function): T {
+  return isFunction(property) ? property() : property;
+}
 
-  private extractChildNodes(): Node[] {
-    const childNodes: Node[] = [];
-    let childNode: Node|null;
+// NOTE: Only works for `typeof T !== 'object'`.
+function isMap<T>(value: angular.SingleOrListOrMap<T>): value is {[key: string]: T} {
+  return value && !Array.isArray(value) && typeof value === 'object';
+}
 
-    while (childNode = this.element.firstChild) {
-      this.element.removeChild(childNode);
-      childNodes.push(childNode);
-    }
-
-    return childNodes;
-  }
-
-  private getOrCall<T>(property: T|Function): T {
-    return isFunction(property) ? property() : property;
-  }
-
-  private notSupported(feature: string) {
-    throw new Error(
-        `Upgraded directive '${this.name}' contains unsupported feature: '${feature}'.`);
-  }
+function notSupported(name: string, feature: string) {
+  throw new Error(`Upgraded directive '${name}' contains unsupported feature: '${feature}'.`);
 }
