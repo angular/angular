@@ -546,8 +546,8 @@ export class UpgradeAdapter {
       (ng1Injector: angular.IInjectorService, rootScope: angular.IRootScopeService) => {
         UpgradeNg1ComponentAdapterBuilder.resolve(this.ng1ComponentsToBeUpgraded, ng1Injector)
             .then(() => {
-              // At this point we have ng1 injector and we have lifted ng1 components into ng2, we
-              // now can bootstrap ng2.
+              // At this point we have ng1 injector and we have prepared
+              // ng1 components to be upgraded, we now can bootstrap ng2.
               const DynamicNgUpgradeModule =
                   NgModule({
                     providers: [

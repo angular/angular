@@ -9,7 +9,7 @@
 import {DoCheck, ElementRef, EventEmitter, Injector, OnChanges, OnDestroy, OnInit, SimpleChanges, ɵlooseIdentical as looseIdentical} from '@angular/core';
 import * as angular from '../common/angular1';
 import {$SCOPE} from '../common/constants';
-import {IBindingDestination, IControllerInstance, REQUIRE_PREFIX_RE, UpgradeHelper} from '../common/upgrade_helper';
+import {IBindingDestination, IControllerInstance, UpgradeHelper} from '../common/upgrade_helper';
 import {isFunction} from '../common/util';
 
 const NOT_SUPPORTED: any = 'NOT_SUPPORTED';
@@ -144,15 +144,8 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     this.bindOutputs();
 
     // Require other controllers
-    const directiveRequire = this.getDirectiveRequire(this.directive);
-    const requiredControllers = this.helper.resolveRequire(directiveRequire);
-
-    if (this.directive.bindToController && isMap(directiveRequire)) {
-      const requiredControllersMap = requiredControllers as{[key: string]: IControllerInstance};
-      Object.keys(requiredControllersMap).forEach(key => {
-        this.controllerInstance[key] = requiredControllersMap[key];
-      });
-    }
+    const requiredControllers =
+        this.helper.resolveAndBindRequiredControllers(this.controllerInstance);
 
     // Hook: $onChanges
     if (this.pendingChanges) {
@@ -232,24 +225,6 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     this.$componentScope.$destroy();
   }
 
-  private getDirectiveRequire(directive: angular.IDirective): angular.DirectiveRequireProperty {
-    const require = directive.require || (directive.controller && directive.name) !;
-
-    if (isMap(require)) {
-      Object.keys(require).forEach(key => {
-        const value = require[key];
-        const match = value.match(REQUIRE_PREFIX_RE) !;
-        const name = value.substring(match[0].length);
-
-        if (!name) {
-          require[key] = match[0] + key;
-        }
-      });
-    }
-
-    return require;
-  }
-
   private initializeBindings(directive: angular.IDirective) {
     const btcIsObject = typeof directive.bindToController === 'object';
     if (btcIsObject && Object.keys(directive.scope).length) {
@@ -322,9 +297,4 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
       this.bindingDestination.$onChanges(changes);
     }
   }
-}
-
-// NOTE: Only works for `typeof T !== 'object'`.
-function isMap<T>(value: angular.SingleOrListOrMap<T>): value is {[key: string]: T} {
-  return value && !Array.isArray(value) && typeof value === 'object';
 }
