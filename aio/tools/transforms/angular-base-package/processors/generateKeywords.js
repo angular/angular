@@ -22,8 +22,8 @@ module.exports = function generateKeywordsProcessor(log, readFilesProcessor) {
       propertiesToIgnore: {},
       outputFolder: {presence: true}
     },
-    $runAfter: ['paths-computed'],
-    $runBefore: ['rendering-docs'],
+    $runAfter: ['postProcessHtml'],
+    $runBefore: ['writing-files'],
     $process: function(docs) {
 
       // Keywords to ignore
@@ -103,9 +103,10 @@ module.exports = function generateKeywordsProcessor(log, readFilesProcessor) {
           }
         });
 
+        doc.searchTitle = doc.searchTitle || doc.title || doc.vFile && doc.vFile.title || doc.name;
 
         doc.searchTerms = {
-          titleWords: extractTitleWords(doc.title || doc.name),
+          titleWords: extractTitleWords(doc.searchTitle),
           keywords: words.sort().join(' '),
           members: members.sort().join(' ')
         };
@@ -115,16 +116,16 @@ module.exports = function generateKeywordsProcessor(log, readFilesProcessor) {
       var searchData =
           filteredDocs.filter(function(page) { return page.searchTerms; }).map(function(page) {
             return Object.assign(
-                {path: page.path, title: page.searchTitle || page.name || page.title, type: page.docType}, page.searchTerms);
+                {path: page.path, title: page.searchTitle, type: page.docType}, page.searchTerms);
           });
 
       docs.push({
         docType: 'json-doc',
         id: 'search-data-json',
-        template: 'json-doc.template.json',
         path: this.outputFolder + '/search-data.json',
         outputPath: this.outputFolder + '/search-data.json',
-        data: searchData
+        data: searchData,
+        renderedContent: JSON.stringify(searchData)
       });
     }
   };
