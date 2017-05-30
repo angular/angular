@@ -14,8 +14,10 @@ import { LocationService } from 'app/shared/location.service';
 @Component({
   selector: 'aio-search-box',
   template: `<input #searchBox
+    type="search"
     aria-label="search"
     placeholder="Search"
+    (input)="onSearch($event.target.value)"
     (keyup)="onSearch($event.target.value)"
     (focus)="onSearch($event.target.value)"
     (click)="onSearch($event.target.value)">`

@@ -44,6 +44,14 @@ describe('SearchBoxComponent', () => {
     }));
   });
 
+  describe('on input', () => {
+    it('should trigger the search event', () => {
+      const input = fixture.debugElement.query(By.css('input'));
+      input.triggerEventHandler('input', { target: { value: 'some query' } });
+      expect(host.doSearch).toHaveBeenCalledWith('some query');
+    });
+  });
+
   describe('on keyup', () => {
     it('should trigger the search event', () => {
       const input = fixture.debugElement.query(By.css('input'));
