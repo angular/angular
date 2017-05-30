@@ -1,13 +1,14 @@
-import {task, watch} from 'gulp';
+import {task, watch, src, dest} from 'gulp';
 import {join} from 'path';
 import {main as tsc} from '@angular/tsc-wrapped';
-import {SOURCE_ROOT, DIST_ROOT} from '../build-config';
+import {SOURCE_ROOT, DIST_ROOT, HTML_MINIFIER_OPTIONS} from '../build-config';
 import {sequenceTask, sassBuildTask, copyTask, triggerLivereload} from '../util/task_helpers';
 import {composeRelease} from './build-release';
 import {buildPackageBundles} from './build-bundles';
 
 // There are no type definitions available for these imports.
 const inlineResources = require('../../../scripts/release/inline-resources');
+const htmlmin = require('gulp-htmlmin');
 
 /**
  * Creates a set of gulp tasks that can build the specified package.
@@ -25,8 +26,11 @@ export function createPackageBuildTasks(packageName: string, requiredPackages: s
   // Paths to the different output files and directories.
   const esmMainFile = join(packageOut, 'index.js');
 
-  // Glob that matches all assets that should be copied to the package.
-  const assetsGlob = join(packageRoot, '**/*.+(html|scss|css)');
+  // Glob that matches all style files that need to be copied to the package output.
+  const stylesGlob = join(packageRoot, '**/*.+(scss|css)');
+
+  // Glob that matches every HTML file in the current package.
+  const htmlGlob = join(packageRoot, '**/*.html');
 
   /**
    * Main tasks for the package building. Tasks execute the different sub-tasks in the correct
@@ -70,10 +74,16 @@ export function createPackageBuildTasks(packageName: string, requiredPackages: s
   /**
    * Asset tasks. Building SASS files and inlining CSS, HTML files into the ESM output.
    */
-  task(`${packageName}:assets`, [`${packageName}:assets:scss`, `${packageName}:assets:html`]);
+  task(`${packageName}:assets`, [
+    `${packageName}:assets:scss`, `${packageName}:assets:copy-styles`, `${packageName}:assets:html`
+  ]);
 
   task(`${packageName}:assets:scss`, sassBuildTask(packageOut, packageRoot, true));
-  task(`${packageName}:assets:html`, copyTask(assetsGlob, packageOut));
+  task(`${packageName}:assets:copy-styles`, copyTask(stylesGlob, packageOut));
+  task(`${packageName}:assets:html`, () => {
+    return src(htmlGlob).pipe(htmlmin(HTML_MINIFIER_OPTIONS)).pipe(dest(packageOut));
+  });
+
   task(`${packageName}:assets:inline`, () => inlineResources(packageOut));
 
   /**
