@@ -10,7 +10,7 @@ aio-search-results {
     padding: 68px 32px 0;
     color: $offwhite;
     width: auto;
-    max-height: 50%;
+    max-height: 95vh;
     position: fixed;
     top: 0;
     left: 0;
@@ -18,11 +18,10 @@ aio-search-results {
     z-index: 5;
     background-color: $darkgray;
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.3);
+    box-sizing: border-box;
 
     @media (max-width: 480px) {
         display: block;
-        max-height: 70%;
-        box-sizing: border-box;
         .search-area {
             display: block;
             margin: 16px 16px;
