@@ -1,3 +1,5 @@
+<div id="top-of-page"></div>
+
 <div *ngIf="isFetching" class="progress-bar-container">
   <md-progress-bar mode="indeterminate" color="warn"></md-progress-bar>
 </div>
@@ -28,7 +30,6 @@
   </md-sidenav>
 
   <section class="sidenav-content" [id]="pageId" role="content">
-    <div id="top-of-page"></div>
     <aio-doc-viewer [doc]="currentDocument" (docRendered)="onDocRendered()"></aio-doc-viewer>
     <aio-dt [on]="dtOn" [(doc)]="currentDocument"></aio-dt>
   </section>

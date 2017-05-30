@@ -42,6 +42,14 @@ export class SitePage {
     return browser.executeScript('return arguments[0].innerHTML;', element);
   }
 
+  getScrollTop() {
+    return browser.executeScript('return window.pageYOffset');
+  }
+
+  scrollToBottom() {
+    return browser.executeScript('window.scrollTo(0, document.body.scrollHeight)');
+  }
+
   /**
    * Replace the ambient Google Analytics tracker with homebrew spy
    * don't send commands to GA during e2e testing!
