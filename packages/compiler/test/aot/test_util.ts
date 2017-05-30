@@ -584,7 +584,7 @@ export function expectNoDiagnostics(program: ts.Program) {
   expectNoDiagnostics(program.getSemanticDiagnostics());
 }
 
-function isSource(fileName: string): boolean {
+export function isSource(fileName: string): boolean {
   return !/\.d\.ts$/.test(fileName) && /\.ts$/.test(fileName);
 }
 
