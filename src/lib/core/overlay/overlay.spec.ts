@@ -336,6 +336,21 @@ describe('Overlay', () => {
 
   });
 
+  describe('panelClass', () => {
+    let config: OverlayState;
+    config = new OverlayState();
+    config.panelClass = 'custom-panel-class';
+
+    it('should apply a custom overlay pane class', () => {
+      let overlayRef = overlay.create(config);
+      overlayRef.attach(componentPortal);
+      viewContainerFixture.detectChanges();
+
+      let pane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
+      expect(pane.classList).toContain('custom-panel-class');
+    });
+  });
+
   describe('scroll strategy', () => {
     let fakeScrollStrategy: FakeScrollStrategy;
     let config: OverlayState;

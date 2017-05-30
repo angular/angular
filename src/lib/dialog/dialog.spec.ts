@@ -455,6 +455,19 @@ describe('MdDialog', () => {
     });
   });
 
+  describe('panelClass option', () => {
+    it('should have custom panel class', () => {
+      dialog.open(PizzaMsg, {
+        panelClass: 'custom-panel-class',
+        viewContainerRef: testViewContainerRef
+      });
+
+      viewContainerFixture.detectChanges();
+
+      expect(overlayContainerElement.querySelector('.custom-panel-class')).toBeTruthy();
+    });
+  });
+
   describe('backdropClass option', () => {
     it('should have default backdrop class', () => {
       dialog.open(PizzaMsg, {

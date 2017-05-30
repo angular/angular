@@ -121,6 +121,7 @@ export class MdDialog {
    */
   private _getOverlayState(dialogConfig: MdDialogConfig): OverlayState {
     let overlayState = new OverlayState();
+    overlayState.panelClass = dialogConfig.panelClass;
     overlayState.hasBackdrop = dialogConfig.hasBackdrop;
     overlayState.scrollStrategy = new BlockScrollStrategy(this._viewportRuler);
     if (dialogConfig.backdropClass) {
