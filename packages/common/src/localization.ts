@@ -172,42 +172,6 @@ export function getPluralCase(locale: string, nLike: number | string): Plural {
     case 'xog':
       if (n === 1) return Plural.One;
       return Plural.Other;
-    case 'agq':
-    case 'bas':
-    case 'cu':
-    case 'dav':
-    case 'dje':
-    case 'dua':
-    case 'dyo':
-    case 'ebu':
-    case 'ewo':
-    case 'guz':
-    case 'kam':
-    case 'khq':
-    case 'ki':
-    case 'kln':
-    case 'kok':
-    case 'ksf':
-    case 'lrc':
-    case 'lu':
-    case 'luo':
-    case 'luy':
-    case 'mer':
-    case 'mfe':
-    case 'mgh':
-    case 'mua':
-    case 'mzn':
-    case 'nmg':
-    case 'nus':
-    case 'qu':
-    case 'rn':
-    case 'rw':
-    case 'sbp':
-    case 'twq':
-    case 'vai':
-    case 'yav':
-    case 'yue':
-    case 'zgh':
     case 'ak':
     case 'ln':
     case 'mg':
@@ -428,6 +392,9 @@ export function getPluralCase(locale: string, nLike: number | string): Plural {
       if (n === Math.floor(n) && n >= 0 && n <= 1 || n === Math.floor(n) && n >= 11 && n <= 99)
         return Plural.One;
       return Plural.Other;
+    // When there is no specification, the default is always "other"
+    // Spec: http://cldr.unicode.org/index/cldr-spec/plural-rules
+    // > other (required—general plural form — also used if the language only has a single form)
     default:
       return Plural.Other;
   }
