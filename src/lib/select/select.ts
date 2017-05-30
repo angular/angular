@@ -229,6 +229,9 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
   /** All of the defined select options. */
   @ContentChildren(MdOption) options: QueryList<MdOption>;
 
+  /** Classes to be passed to the select panel. Supports the same syntax as `ngClass`. */
+  @Input() panelClass: string|string[]|Set<string>|{[key: string]: any};
+
   /** Placeholder to be shown if no value has been selected. */
   @Input()
   get placeholder() { return this._placeholder; }

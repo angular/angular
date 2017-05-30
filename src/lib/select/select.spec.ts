@@ -260,6 +260,16 @@ describe('MdSelect', () => {
       expect(event.defaultPrevented).toBe(true);
     });
 
+    it('should be able to set extra classes on the panel', () => {
+      trigger.click();
+      fixture.detectChanges();
+
+      const panel = overlayContainerElement.querySelector('.mat-select-panel') as HTMLElement;
+
+      expect(panel.classList).toContain('custom-one');
+      expect(panel.classList).toContain('custom-two');
+    });
+
   });
 
   describe('selection logic', () => {
@@ -2142,7 +2152,8 @@ describe('MdSelect', () => {
   template: `
     <div [style.height.px]="heightAbove"></div>
     <md-select placeholder="Food" [formControl]="control" [required]="isRequired"
-      [tabIndex]="tabIndexOverride" [aria-label]="ariaLabel" [aria-labelledby]="ariaLabelledby">
+      [tabIndex]="tabIndexOverride" [aria-label]="ariaLabel" [aria-labelledby]="ariaLabelledby"
+      [panelClass]="panelClass">
       <md-option *ngFor="let food of foods" [value]="food.value" [disabled]="food.disabled">
         {{ food.viewValue }}
       </md-option>
@@ -2168,6 +2179,7 @@ class BasicSelect {
   tabIndexOverride: number;
   ariaLabel: string;
   ariaLabelledby: string;
+  panelClass = ['custom-one', 'custom-two'];
 
   @ViewChild(MdSelect) select: MdSelect;
   @ViewChildren(MdOption) options: QueryList<MdOption>;
