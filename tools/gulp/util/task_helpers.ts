@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as gulp from 'gulp';
 import * as path from 'path';
 import {PROJECT_ROOT} from '../build-config';
+import {yellow} from 'chalk';
 
 /* Those imports lack typings. */
 const gulpClean = require('gulp-clean');
@@ -177,7 +178,8 @@ export function serverTask(packagePath: string, livereload = true) {
 
 /** Triggers a reload when livereload is enabled and a gulp-connect server is running. */
 export function triggerLivereload() {
-  gulp.src('dist').pipe(gulpConnect.reload());
+  console.log(yellow('Server: Changes were detected and a livereload was triggered.'));
+  return gulp.src('dist').pipe(gulpConnect.reload());
 }
 
 
