@@ -1023,7 +1023,7 @@ a successful upgrade.
 Since you're going to be writing Angular code in TypeScript, it makes sense to
 bring in the TypeScript compiler even before you begin upgrading.
 
-You'll  also start to gradually phase out the Bower package manager in favor
+You'll also start to gradually phase out the Bower package manager in favor
 of NPM, installing all new dependencies using NPM, and eventually removing Bower from the project.
 
 Begin by installing TypeScript to the project.
@@ -1041,11 +1041,21 @@ Jasmine unit test framework.
 </code-example>
 
 You should also configure the TypeScript compiler with a `tsconfig.json` in the project directory
-as described in the [Setup](guide/setup) guide.
+as described in the [TypeScript Configuration](guide/typescript-configuration) guide.
 The `tsconfig.json` file tells the TypeScript compiler how to turn your TypeScript files
 into ES5 code bundled into CommonJS modules.
 
-Now launch the TypeScript compiler from the command line in watch mode.
+Finally, you should add some npm scripts in `package.json` to compile the TypeScript files to
+JavaScript (based on the `tsconfig.json` configuration file):
+
+<code-example format="">
+  "script": {
+    "tsc": "tsc",
+    "tsc:w": "tsc -w",
+    ...
+</code-example>
+
+Now launch the TypeScript compiler from the command line in watch mode:
 
 <code-example format="">
   npm run tsc:w
@@ -1191,6 +1201,10 @@ from the `/app` directory as you've been doing to this point.
 Move the `app/index.html` file to the project root directory. Then change the
 development server root path in `package.json` to also point to the project root
 instead of `app`:
+
+<code-example format="">
+  "start": "http-server ./ -a localhost -p 8000 -c-1",
+</code-example>
 
 Now you're able to serve everything from the project root to the web browser. But you do *not*
 want to have to change all the image and data paths used in the application code to match

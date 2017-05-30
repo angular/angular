@@ -34,6 +34,8 @@ For details about `tsconfig.json`, see the official
 
 The [Setup](guide/setup) guide uses the following `tsconfig.json`:
 
+<code-example path="quickstart/src/tsconfig.1.json" title="tsconfig.json" linenums="false"></code-example>
+
 This file contains options and flags that are essential for Angular applications.
 
 
