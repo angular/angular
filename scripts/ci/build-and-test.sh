@@ -42,7 +42,7 @@ elif is_closure_compiler; then
 elif is_unit; then
   $(npm bin)/gulp ci:test
 elif is_prerender; then
-  ./scripts/ci/prerender.sh
+  $(npm bin)/gulp ci:prerender
 fi
 
 # Upload coverage results if those are present.

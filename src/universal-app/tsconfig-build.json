@@ -1,12 +1,12 @@
-// TypeScript config file that is used to compile the files that prerender the Universal app.
+// TypeScript config file that is used to compile the universal-app.
 {
   "compilerOptions": {
-    "declaration": false,
+    "declaration": true,
     "stripInternal": false,
     "experimentalDecorators": true,
     "module": "commonjs",
     "moduleResolution": "node",
-    "outDir": ".",
+    "outDir": "../../dist/packages/universal-app",
     "rootDir": ".",
     "sourceMap": true,
     "target": "es2015",
@@ -20,6 +20,10 @@
     }
   },
   "files": [
-    "prerender.ts"
-  ]
+    "main.ts"
+  ],
+  "angularCompilerOptions": {
+    "annotateForClosureCompiler": true,
+    "genDir": "../../dist/packages/universal-app"
+  }
 }

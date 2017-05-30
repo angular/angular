@@ -19,3 +19,4 @@ import './tasks/aot';
 import './tasks/payload';
 import './tasks/coverage';
 import './tasks/material-release';
+import './tasks/universal';
