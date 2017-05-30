@@ -27,6 +27,7 @@ import {GridListDynamicExample} from './grid-list-dynamic/grid-list-dynamic-exam
 import {IconOverviewExample} from './icon-overview/icon-overview-example';
 import {ProgressBarOverviewExample} from './progress-bar-overview/progress-bar-overview-example';
 import {SlideToggleOverviewExample} from './slide-toggle-overview/slide-toggle-overview-example';
+import {SlideToggleFormsExample} from './slide-toggle-forms/slide-toggle-forms-example';
 import {InputOverviewExample} from './input-overview/input-overview-example';
 import {MenuOverviewExample} from './menu-overview/menu-overview-example';
 import {CheckboxConfigurableExample} from './checkbox-configurable/checkbox-configurable-example';
@@ -159,6 +160,7 @@ export const EXAMPLE_COMPONENTS = {
     title: 'Configurable slide-toggle',
     component: SlideToggleConfigurableExample
   },
+  'slide-toggle-forms': {title: 'Slide-toggle with forms', component: SlideToggleFormsExample},
   'slide-toggle-overview': {title: 'Basic slide-toggles', component: SlideToggleOverviewExample},
   'snack-bar-component': {
     title: 'Snack-bar with a custom component',
@@ -252,6 +254,7 @@ export const EXAMPLE_LIST = [
   SliderOverviewExample,
   SlideToggleConfigurableExample,
   SlideToggleOverviewExample,
+  SlideToggleFormsExample,
   SnackBarComponentExample,
   PizzaPartyComponent,
   SnackBarOverviewExample,
