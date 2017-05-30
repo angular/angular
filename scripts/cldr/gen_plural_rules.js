@@ -14,6 +14,7 @@ const ruleToLang = {};
 const variants = [];
 const localeToVariant = {};
 const DEFAULT_RULE = `function anonymous(n\n/**/) {\nreturn"other"\n}`;
+const EMPTY_RULE = `function anonymous(n\n/**/) {\n\n}`;
 
 locales.forEach(locale => {
   const rule = normalizeRule(cldr.extractPluralRuleFunction(locale).toString());
@@ -32,16 +33,15 @@ locales.forEach(locale => {
   ruleToLang[rule].push(lang);
 });
 
-var nextVariantCode = 'a'.charCodeAt(0);
+let nextVariantCode = 'a'.charCodeAt(0);
 
 variants.forEach(locale => {
   const rule = normalizeRule(cldr.extractPluralRuleFunction(locale).toString());
-
   if (!rule) {
     return;
   }
 
-  var mapTo = null;
+  let mapTo = null;
 
   if (ruleToLang[rule]) {
     mapTo = ruleToLang[rule][0];
@@ -65,27 +65,25 @@ function generateCode() {
 
   return `
 // This is generated code DO NOT MODIFY
-// see angular2/script/cldr/gen_plural_rules.js
+// see angular/script/cldr/gen_plural_rules.js
 
-enum Plural {
+/** @experimental */
+export enum Plural {
   Zero,
   One,
   Two,
   Few,
   Many,
-  Other
+  Other,
 }
-
-function getPluralCase(locale: string, n: number|string): Plural {
 ` + generateVars() +
     generateRules() + `
 }`;
 }
 
-
 function generateRules() {
   const codeParts = [`
-const lang = locale.split('_')[0].toLowerCase();
+const lang = locale.split('-')[0].toLowerCase();
 
 switch (lang) {`];
 
@@ -95,8 +93,11 @@ switch (lang) {`];
     codeParts.push(`    ${rule}`);
   });
 
-  codeParts.push(`  default:
-   return Plural.Other;
+  codeParts.push(`  // When there is no specification, the default is always other
+  // see http://cldr.unicode.org/index/cldr-spec/plural-rules
+  // "other (required—general plural form — also used if the language only has a single form)"
+  default:
+    return Plural.Other;
 }`);
 
   return codeParts.join('\n');
@@ -104,17 +105,22 @@ switch (lang) {`];
 
 function generateVars(){
   return `
-function getPluralCase(locale: string, nLike: number | string): Plural {
+/**
+ * Returns the plural case based on the locale
+ *
+ * @experimental
+ */
+export function getPluralCase(locale: string, nLike: number | string): Plural {
 // TODO(vicb): lazy compute
 if (typeof nLike === 'string') {
   nLike = parseInt(<string>nLike, 10);
 }
 const n: number = nLike as number;
-const nDecimal = n.toString().replace(/^[^.]*\\.?/, ""); 
+const nDecimal = n.toString().replace(/^[^.]*\\.?/, ''); 
 const i = Math.floor(Math.abs(n));
 const v = nDecimal.length;
 const f = parseInt(nDecimal, 10); 
-const t = parseInt(n.toString().replace(/^[^.]*\\.?|0+$/g,""), 10) || 0;
+const t = parseInt(n.toString().replace(/^[^.]*\\.?|0+$/g,''), 10) || 0;
 `;
 }
 
@@ -126,12 +132,11 @@ function checkMapping() {
   }
 }
 
-
 /**
  * If the language rule do not match an existing language rule, flag it as variant and handle it at the end
  */
 function getVariantLang(locale, rule) {
-  var lang = locale.split('_')[0];
+  let lang = locale.split('_')[0];
 
   if (!langToRule[lang]) {
     langToRule[lang] = rule;
@@ -147,7 +152,7 @@ function getVariantLang(locale, rule) {
 }
 
 function normalizeRule(fn) {
-  if (fn === DEFAULT_RULE) return;
+  if (fn === DEFAULT_RULE || fn === EMPTY_RULE) return;
 
   return fn
     .replace(toRegExp('function anonymous(n\n/**/) {\n'), '')
