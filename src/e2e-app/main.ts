@@ -1,5 +1,4 @@
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {E2eAppModule} from './e2e-app-module';
+import {platformBrowser} from '@angular/platform-browser';
+import {E2eAppModuleNgFactory} from './e2e-app-module.ngfactory';
 
-
-platformBrowserDynamic().bootstrapModule(E2eAppModule);
+platformBrowser().bootstrapModuleFactory(E2eAppModuleNgFactory);

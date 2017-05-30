@@ -38,7 +38,7 @@ export function tsBuildTask(tsConfigPath: string) {
   return execNodeTask('typescript', 'tsc', ['-p', tsConfigPath]);
 }
 
-/** Creates a task that runs the Angular compiler CLI. */
+/** Creates a task that runs the Angular Compiler CLI. */
 export function ngcBuildTask(tsConfigPath: string) {
   return execNodeTask('@angular/compiler-cli', 'ngc', ['-p', tsConfigPath]);
 }

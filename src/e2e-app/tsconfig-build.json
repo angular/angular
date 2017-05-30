@@ -10,21 +10,26 @@
     "moduleResolution": "node",
     "noEmitOnError": true,
     "noImplicitAny": true,
-    "outDir": "../../dist/packages/e2e-app",
+    "rootDir": ".",
+    "outDir": ".",
     "sourceMap": true,
     "target": "es5",
-    "stripInternal": false,
     "typeRoots": [
       "../../node_modules/@types/!(node)"
     ],
     "baseUrl": "",
     "paths": {
-      "@angular/material": ["../../dist/packages/material/public_api"]
+      "@angular/material": ["./material"],
+      "@angular/cdk": ["./cdk"]
     }
   },
+  "files": [
+    "./e2e-app-module.ts",
+    "./e2e-app-types.d.ts",
+    "./main.ts",
+    "./system-config.ts"
+  ],
   "angularCompilerOptions": {
-    "genDir": "../../dist",
-    "skipTemplateCodegen": true,
-    "debug": true
+    "skipMetadataEmit": true
   }
 }

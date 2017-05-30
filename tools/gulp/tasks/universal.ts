@@ -1,5 +1,5 @@
 import {task} from 'gulp';
-import {DIST_RELEASES, DIST_ROOT, SOURCE_ROOT} from '../constants';
+import {DIST_RELEASES, DIST_ROOT, SOURCE_ROOT} from '../build-config';
 import {ngcBuildTask, tsBuildTask, copyTask, sequenceTask, execTask} from '../util/task_helpers';
 import {join} from 'path';
 import {copySync} from 'fs-extra';
