@@ -7,12 +7,6 @@ import { browser, element, by } from 'protractor';
 
 describe('PhoneCat Application', function() {
 
-  beforeAll(function () {
-    // Set protractor to hybrid mode.
-    browser.rootEl = 'body';
-    browser.ng12Hybrid = true;
-  });
-
   it('should redirect `index.html` to `index.html#!/phones', function() {
     browser.get('index.html');
     expect(browser.getLocationAbsUrl()).toBe('/phones');
@@ -70,7 +64,7 @@ describe('PhoneCat Application', function() {
       query.sendKeys('nexus');
 
       element.all(by.css('.phones li a')).first().click();
-      browser.sleep(200); // Not sure why this is needed but it is. The route change works fine.
+      browser.sleep(1000); // Not sure why this is needed but it is. The route change works fine.
       expect(browser.getLocationAbsUrl()).toBe('/phones/nexus-s');
     });
 
