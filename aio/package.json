@@ -107,6 +107,7 @@
     "ts-node": "~2.0.0",
     "tslint": "~4.5.0",
     "typescript": "2.2.0",
+    "unist-util-filter": "^0.2.1",
     "unist-util-source": "^1.0.1",
     "unist-util-visit": "^1.1.1",
     "vrsource-tslint-rules": "^4.0.1",
