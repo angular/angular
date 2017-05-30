@@ -12,17 +12,13 @@ module.exports = function convertToJsonProcessor(log, createDocMessage) {
 
           let title = doc.title;
 
-          // We do allow an empty `title` but resort to `name` if it is not even defined
+          // We do allow an empty `title` but if it is `undefined` we resort to `vFile.title` and then `name`
           if (title === undefined) {
-            title = doc.name;
+            title = (doc.vFile && doc.vFile.title);
           }
 
-          // If there is no title then try to extract it from the first h1 in the renderedContent
           if (title === undefined) {
-            const match = /<h1[^>]*>(.+?)<\/h1>/.exec(contents);
-            if (match) {
-              title = match[1];
-            }
+            title = doc.name;
           }
 
           // If there is still no title then log a warning
