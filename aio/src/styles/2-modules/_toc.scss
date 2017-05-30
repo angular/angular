@@ -8,11 +8,6 @@
   overflow-x: hidden;
 }
 
-.toc-content {
-  border-left: 1px solid $lightgray;
-  margin-left: 8px;
-}
-
 aio-toc {
   &.embedded {
     @media (min-width: 801px) {
@@ -22,19 +17,14 @@ aio-toc {
 }
 
 .toc-inner {
-
-  &:not(.embedded) {
-    @media (max-width: 800px) {
-      border-left: 4px solid #4285f4;
-      display: none;
-    }
-  }
-}
-
-aio-toc > div {
   font-size: 13px;
   overflow-y: visible;
   padding: 4px 0 0 10px;
+
+  .toc-heading,
+  .toc-list .h1 {
+    font-size: 115%;
+  }
 
   .toc-heading {
     font-weight: 500;
@@ -43,7 +33,6 @@ aio-toc > div {
   }
 
   .toc-heading.secondary {
-    padding-bottom: 0;
     position: relative;
     top: -8px;
 
@@ -63,16 +52,10 @@ aio-toc > div {
     padding: 0;
     text-align: start;
 
-    &:focus.embedded {
+    &.embedded:focus {
       outline: none;
       background: $lightgray;
     }
-  }
-
-  button.toc-heading,
-  div.toc-heading,
-  ul.toc-list li.h1 {
-    font-size: 115%;
   }
 
   button.toc-heading {
@@ -88,7 +71,6 @@ aio-toc > div {
       color: $accentblue;
     }
   }
-
 
   button.toc-more-items {
     color: $mediumgray;
@@ -121,7 +103,7 @@ aio-toc > div {
   ul.toc-list {
     list-style-type: none;
     margin: 0;
-    padding: 0 8px;
+    padding: 0 8px 0 0;
 
     @media (max-width: 800px) {
       width: auto;
@@ -130,37 +112,29 @@ aio-toc > div {
   }
 
   ul.toc-list li {
+    box-sizing: border-box;
     font-size: 12px;
     line-height: 16px;
-    margin: 6px 0;
-    // padding: 0 16px;
+    padding: 3px 0 3px 12px;
     position: relative;
     transition: all 0.3s ease-in-out;
 
-    &.active {
-      a {
-        color: $blue;
-        font-weight: 500;
-      }
+    &.h1:after {
+      content: '';
+      display: block;
+      height: 1px;
+      width: 40%;
+      margin: 7px 0 4px 0;
+      background: #DBDBDB;
+      clear: both;
+    }
 
-      &:before {
-        content: '';
-        border-radius: 50%;
-        left: -16px;
-        top: 10px;
-        background: $blue;
-        position: absolute;
-        width: 6px;
-        height: 6px;
-      }
+    &.h1, &.h2, &.h3 {
+      border-left: 1px solid $blue;
     }
 
     &.h3 {
-      margin-left: 8px;
-    }
-
-    &:last-child a:before {
-      width: 0;
+      padding-left: 24px;
     }
 
     a {
@@ -171,39 +145,30 @@ aio-toc > div {
       font-size: 12px;
       display: table-cell;
 
-
       &:hover {
         color: $accentblue;
       }
+    }
 
-      &.h2 {
-        &:before {
-          content: '';
-          left: -1px;
-          top: 10px;
-          background: red;
-          position: absolute;
-          display: block;
-          width: 1px;
-          height: calc(100% + 11px);
-        }
+    &.active {
+      a {
+        color: $blue;
+        font-weight: 500;
+      }
+
+      &:before {
+        content: '';
+        border-radius: 50%;
+        left: -4px;
+        top: 12px;
+        background: $blue;
+        position: absolute;
+        width: 6px;
+        height: 6px;
       }
     }
   }
 
-  // ul.toc-list li.h3 {
-  //   margin-left: 15px;
-  // }
-
-  // ul.toc-list li.h1:after {
-  //   content: "";
-  //   display: block;
-  //   height: 1px;
-  //   width: 40%;
-  //   margin: 24px 0px 10px;
-  //   background: #DBDBDB;
-  //   clear: both;
-  // }
 }
 
 aio-toc.embedded > div.collapsed li.secondary {
