@@ -1,4 +1,4 @@
-Angular Material buttons are native `<button>` or `<a>` elements enhanced with Material Design 
+Angular Material buttons are native `<button>` or `<a>` elements enhanced with Material Design
 styling and ink ripples.
 
 <!-- example(button-overview) -->
@@ -20,6 +20,13 @@ There are five button variants, each applied as an attribute:
 
 
 ### Theming
-Buttons can be colored in terms of the current theme using the `color` property to set the 
+Buttons can be colored in terms of the current theme using the `color` property to set the
 background color to `primary`, `accent`, or `warn`. By default, only FABs are colored; the default
-background color for `md-button` and `md-raised-button` matches the theme's background color. 
+background color for `md-button` and `md-raised-button` matches the theme's background color.
+
+### Capitalization
+According to the Material design spec button text has to be capitalized, however we have opted not
+to capitalize buttons automatically via `text-transform: uppercase`, because it can cause issues in
+certain locales. It is also worth noting that using ALL CAPS in the text itself causes issues for
+screen-readers, which will read the text character-by-character. We leave the decision of how to
+approach this to the consuming app.
