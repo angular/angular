@@ -119,6 +119,16 @@ export function main() {
         expect(l10n.getPluralCategory(24)).toEqual('few');
         expect(l10n.getPluralCategory(25)).toEqual('other');
       });
+
+      it('should return the default value for a locale with no rule', () => {
+        const l10n = new NgLocaleLocalization('zgh');
+
+        expect(l10n.getPluralCategory(0)).toEqual('other');
+        expect(l10n.getPluralCategory(1)).toEqual('other');
+        expect(l10n.getPluralCategory(3)).toEqual('other');
+        expect(l10n.getPluralCategory(5)).toEqual('other');
+        expect(l10n.getPluralCategory(10)).toEqual('other');
+      });
     });
 
     describe('getPluralCategory', () => {
