@@ -26,3 +26,6 @@ while [ ! -f $BROWSER_PROVIDER_READY_FILE ]; do
   printf "."
   sleep .5
 done
+
+echo ""
+echo "Connected to Browserstack"
