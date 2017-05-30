@@ -99,12 +99,8 @@ export function main(
       addGeneratedFileName(name);
     }
 
-    const tsickleCompilerHostOptions: tsickle.Options = {
-      googmodule: false,
-      untyped: true,
-      convertIndexImportShorthand:
-          ngOptions.target === ts.ScriptTarget.ES2015,  // This covers ES6 too
-    };
+    const tsickleCompilerHostOptions:
+        tsickle.Options = {googmodule: false, untyped: true, convertIndexImportShorthand: true};
 
     const tsickleHost: tsickle.TsickleHost = {
       shouldSkipTsickleProcessing: (fileName) => /\.d\.ts$/.test(fileName),
