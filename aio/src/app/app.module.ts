@@ -87,11 +87,11 @@ export const svgIconProviders = [
     DocViewerComponent,
     DtComponent,
     FooterComponent,
-    TopMenuComponent,
     NavMenuComponent,
     NavItemComponent,
     SearchResultsComponent,
     SearchBoxComponent,
+    TopMenuComponent,
   ],
   providers: [
     ApiService,
