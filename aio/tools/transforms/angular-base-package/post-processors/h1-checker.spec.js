@@ -46,4 +46,27 @@ describe('h1Checker postprocessor', () => {
     };
     expect(() => processor.$process([doc])).not.toThrow();
   });
+
+  it('should attach the h1 text to the vFile', () => {
+    const doc = {
+      docType: 'a',
+      renderedContent: '<h1>Heading 1</h1>'
+    };
+    processor.$process([doc]);
+    expect(doc.vFile.title).toEqual('Heading 1');
+  });
+
+  it('should clean aria-hidden anchors from h1 text added to the vFile', () => {
+    const doc = {
+      docType: 'a',
+      renderedContent:
+        '<h1 class="no-toc" id="what-is-angular">' +
+          '<a title="Link to this heading" class="header-link" aria-hidden="true" href="docs#what-is-angular">' +
+            '<i class="material-icons">link</i>' +
+          '</a>What is Angular?' +
+        '</h1>'
+    };
+    processor.$process([doc]);
+    expect(doc.vFile.title).toEqual('What is Angular?');
+  });
 });

@@ -32,7 +32,7 @@ describe('addImageDimensions post-processor', () => {
     processor.$process(docs);
     expect(getImageDimensionsSpy).toHaveBeenCalledWith('base/path', 'a/b.jpg');
     expect(getImageDimensionsSpy).toHaveBeenCalledWith('base/path', 'c/d.png');
-    expect(docs).toEqual([{
+    expect(docs).toEqual([jasmine.objectContaining({
       docType: 'a',
       renderedContent: `
         <p>xxx</p>
@@ -41,7 +41,7 @@ describe('addImageDimensions post-processor', () => {
         <img src="c/d.png" width="30" height="40">
         <p>zzz</p>
       `
-    }]);
+    })]);
   });
 
   it('should log a warning for images with no src attribute', () => {
@@ -51,10 +51,10 @@ describe('addImageDimensions post-processor', () => {
     }];
     processor.$process(docs);
     expect(getImageDimensionsSpy).not.toHaveBeenCalled();
-    expect(docs).toEqual([{
+    expect(docs).toEqual([jasmine.objectContaining({
       docType: 'a',
       renderedContent: '<img attr="value">'
-    }]);
+    })]);
     expect(log.warn).toHaveBeenCalled();
   });
 
@@ -70,10 +70,10 @@ describe('addImageDimensions post-processor', () => {
     }];
     processor.$process(docs);
     expect(getImageDimensionsSpy).toHaveBeenCalled();
-    expect(docs).toEqual([{
+    expect(docs).toEqual([jasmine.objectContaining({
       docType: 'a',
       renderedContent: '<img src="missing">'
-    }]);
+    })]);
     expect(log.warn).toHaveBeenCalled();
   });
 
@@ -88,14 +88,14 @@ describe('addImageDimensions post-processor', () => {
     }];
     processor.$process(docs);
     expect(getImageDimensionsSpy).not.toHaveBeenCalled();
-    expect(docs).toEqual([{
+    expect(docs).toEqual([jasmine.objectContaining({
       docType: 'a',
       renderedContent: `
         <img src="a/b.jpg" width="10">
         <img src="c/d.jpg" height="10">
         <img src="e/f.jpg" width="10" height="10">
       `
-    }]);
+    })]);
   });
 
   function mockGetImageDimensions() {
