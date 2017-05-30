@@ -39,6 +39,7 @@ module.exports = function postProcessHtml(log, createDocMessage) {
             vFile.messages.forEach(m => {
               log.warn(createDocMessage(m.message, doc));
             });
+            doc.vFile = vFile;
           } catch(e) {
             throw new Error(createDocMessage(e.message, doc));
           }
