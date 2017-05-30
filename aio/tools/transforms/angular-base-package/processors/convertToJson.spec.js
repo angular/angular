@@ -50,8 +50,12 @@ describe('convertToJson processor', () => {
     expect(log.warn).not.toHaveBeenCalled();
   });
 
-  it('should get the title from the first `h1` if no title nor name is specified', () => {
-    const docs = [{ docType: 'test-doc', renderedContent: '<div><h1 class="title">Some title</h1><article><h1>Article 1</h1></article></div>' }];
+  it('should get the title from the title extracted from the h1 in the rendered content if no title property is specified', () => {
+    const docs = [{
+      docType: 'test-doc',
+      vFile: { title: 'Some title' },
+      renderedContent: '<div><h1 class="title">Some title</h1><article><h1>Article 1</h1></article></div>'
+    }];
     processor.$process(docs);
     expect(JSON.parse(docs[0].renderedContent).contents).toEqual('<div><h1 class="title">Some title</h1><article><h1>Article 1</h1></article></div>');
     expect(JSON.parse(docs[0].renderedContent).title).toEqual('Some title');
