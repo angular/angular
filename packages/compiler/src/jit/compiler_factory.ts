@@ -148,6 +148,7 @@ function _mergeOptions(optionsArr: CompilerOptions[]): CompilerOptions {
     defaultEncapsulation: _lastDefined(optionsArr.map(options => options.defaultEncapsulation)),
     providers: _mergeArrays(optionsArr.map(options => options.providers !)),
     missingTranslation: _lastDefined(optionsArr.map(options => options.missingTranslation)),
+    enableLegacyTemplate: _lastDefined(optionsArr.map(options => options.enableLegacyTemplate)),
   };
 }
 
