@@ -11,6 +11,6 @@
     "outDir": "../../../dist/screenshot-functions/"
   },
   "files": [
-    "./index.ts"
+    "./screenshot-functions.ts"
   ]
 }
