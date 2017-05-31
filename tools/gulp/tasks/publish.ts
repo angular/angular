@@ -98,6 +98,7 @@ task(':publish', async () => {
 task('publish', sequenceTask(
   ':publish:whoami',
   ':publish:build-releases',
+  'validate-release:check-bundles',
   ':publish',
   ':publish:logout',
 ));

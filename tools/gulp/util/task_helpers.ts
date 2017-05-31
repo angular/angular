@@ -9,7 +9,6 @@ import {yellow} from 'chalk';
 const gulpClean = require('gulp-clean');
 const gulpRunSequence = require('run-sequence');
 const gulpSass = require('gulp-sass');
-const gulpSourcemaps = require('gulp-sourcemaps');
 const gulpConnect = require('gulp-connect');
 const gulpIf = require('gulp-if');
 const gulpCleanCss = require('gulp-clean-css');
@@ -47,10 +46,8 @@ export function ngcBuildTask(tsConfigPath: string) {
 export function sassBuildTask(dest: string, root: string, minify = false) {
   return () => {
     return gulp.src(_globify(root, '**/*.scss'))
-      .pipe(gulpSourcemaps.init({ loadMaps: true }))
       .pipe(gulpSass().on('error', gulpSass.logError))
       .pipe(gulpIf(minify, gulpCleanCss()))
-      .pipe(gulpSourcemaps.write('.'))
       .pipe(gulp.dest(dest));
   };
 }

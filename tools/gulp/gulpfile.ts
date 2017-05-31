@@ -20,3 +20,4 @@ import './tasks/payload';
 import './tasks/coverage';
 import './tasks/material-release';
 import './tasks/universal';
+import './tasks/validate-release';
