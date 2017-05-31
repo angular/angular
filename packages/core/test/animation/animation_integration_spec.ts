@@ -223,7 +223,7 @@ export function main() {
         ]);
       });
 
-      it('should not cancel the previous transition if a follow-up transition is not matched',
+      it('should always cancel the previous transition if a follow-up transition is not matched',
          fakeAsync(() => {
            @Component({
              selector: 'if-cmp',
@@ -290,7 +290,7 @@ export function main() {
            fixture.detectChanges();
            engine.flush();
 
-           expect(engine.players.length).toEqual(1);
+           expect(engine.players.length).toEqual(0);
            expect(getLog().length).toEqual(0);
 
            flushMicrotasks();
@@ -299,7 +299,7 @@ export function main() {
            expect(cmp.startEvent.toState).toEqual('c');
            expect(cmp.startEvent.totalTime).toEqual(0);
 
-           expect(completed).toBe(false);
+           expect(completed).toBe(true);
          }));
 
       it('should only turn a view removal as into `void` state transition', () => {
