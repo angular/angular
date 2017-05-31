@@ -168,9 +168,16 @@ export class Location {
   }
 
   /**
-   * If url has a trailing slash, remove it, otherwise return url as is.
+   * If url has a trailing slash, remove it, otherwise return url as is. This
+   * method looks for the first occurence of either #, ?, or the end of the
+   * line as `/` characters after any of these should not be replaced.
    */
-  public static stripTrailingSlash(url: string): string { return url.replace(/\/$/, ''); }
+  public static stripTrailingSlash(url: string): string {
+    const match = url.match(/#|\?|$/);
+    const pathEndIdx = match && match.index || url.length;
+    const droppedSlashIdx = pathEndIdx - (url[pathEndIdx - 1] === '/' ? 1 : 0);
+    return url.slice(0, droppedSlashIdx) + url.slice(pathEndIdx);
+  }
 }
 
 function _stripBaseHref(baseHref: string, url: string): string {
