@@ -2,11 +2,7 @@
   height: 2px;
   overflow: hidden;
   position: fixed;
-  top: 64px;
+  top: 0;
   width: 100vw;
-  z-index: 5;
-
-  @media (max-width: 600px) {
-      top: 56px;
-  }
+  z-index: 11;
 }
