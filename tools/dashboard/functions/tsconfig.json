@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "lib": ["es2015", "es2016", "dom"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noEmitOnError": true,
+    "noImplicitAny": true,
+    "sourceMap": true,
+    "target": "es5",
+    "baseUrl": "",
+    "outDir": "../../../dist/dashboard-functions/"
+  },
+  "files": [
+    "./functions.ts"
+  ]
+}

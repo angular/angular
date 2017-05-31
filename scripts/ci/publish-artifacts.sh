@@ -22,10 +22,11 @@ $(npm bin)/gulp docs
 
 # Run publishing of artifacts in parallel.
 # This is possible because the output has been built before.
-./scripts/release/publish-build-artifacts.sh --no-build &
-./scripts/release/publish-docs-content.sh --no-build &
+./scripts/deploy/publish-build-artifacts.sh --no-build &
+./scripts/deploy/publish-docs-content.sh --no-build &
 
-# Deploy the screenshot functions for each push build.
-./scripts/release/deploy-screenshot-functions.sh &
+# Deploy the screenshot and dashboard functions for each push build.
+./scripts/deploy/deploy-screenshot-functions.sh &
+./scripts/deploy/deploy-dashboard-functions.sh &
 
 wait
