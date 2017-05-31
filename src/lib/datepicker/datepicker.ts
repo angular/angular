@@ -41,7 +41,7 @@ let datepickerUid = 0;
  * MdCalendar directly as the content so we can control the initial focus. This also gives us a
  * place to put additional features of the popup that are not part of the calendar itself in the
  * future. (e.g. confirmation buttons).
- * @docs-internal
+ * @docs-private
  */
 @Component({
   moduleId: module.id,

@@ -90,9 +90,9 @@ module.exports = function categorizer() {
   }
 };
 
-/** Function that walks through all inherited docs and collects public methods. */
+/** Walks through all inherited docs and collects public methods. */
 function resolveMethods(classDoc) {
-  let methods = classDoc.members.filter(member => member.hasOwnProperty('parameters'));
+  let methods = classDoc.members.filter(isMethod);
 
   if (classDoc.inheritedDoc) {
     methods = methods.concat(resolveMethods(classDoc.inheritedDoc));
@@ -101,9 +101,9 @@ function resolveMethods(classDoc) {
   return methods;
 }
 
-/** Function that walks through all inherited docs and collects public properties. */
+/** Walks through all inherited docs and collects public properties. */
 function resolveProperties(classDoc) {
-  let properties = classDoc.members.filter(member => !member.hasOwnProperty('parameters'));
+  let properties = classDoc.members.filter(isProperty);
 
   if (classDoc.inheritedDoc) {
     properties = properties.concat(resolveProperties(classDoc.inheritedDoc));
@@ -151,6 +151,18 @@ function normalizeMethodParameters(method) {
       jsDocParam.isOptional = isOptional;
     });
   }
+}
+
+function isMethod(doc) {
+  return doc.hasOwnProperty('parameters');
+}
+
+function isGenericTypeParameter(doc) {
+  return doc.classDoc.typeParams && `<${doc.name}>` === doc.classDoc.typeParams;
+}
+
+function isProperty(doc) {
+  return doc.docType === 'member' && !isMethod(doc) && !isGenericTypeParameter(doc);
 }
 
 function isDirective(doc) {
