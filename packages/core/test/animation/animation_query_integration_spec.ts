@@ -984,7 +984,7 @@ export function main() {
         expect(count).toEqual(8);
       });
 
-      it('should not cancel inner queried animations if a trigger state value changes, but isn\'t detected as a valid transition',
+      it('should cancel inner queried animations if a trigger state value changes, but isn\'t detected as a valid transition',
          () => {
            @Component({
              selector: 'ani-cmp',
@@ -1031,7 +1031,7 @@ export function main() {
            fixture.detectChanges();
            engine.flush();
 
-           expect(count).toEqual(0);
+           expect(count).toEqual(5);
          });
 
       it('should allow for queried items to restore their styling back to the original state via animate(time, "*")',
