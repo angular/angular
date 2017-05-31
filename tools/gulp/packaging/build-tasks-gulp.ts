@@ -5,9 +5,9 @@ import {SOURCE_ROOT, DIST_ROOT, HTML_MINIFIER_OPTIONS} from '../build-config';
 import {sequenceTask, sassBuildTask, copyTask, triggerLivereload} from '../util/task_helpers';
 import {composeRelease} from './build-release';
 import {buildPackageBundles} from './build-bundles';
+import {inlineResourcesForDirectory} from './inline-resources';
 
 // There are no type definitions available for these imports.
-const inlineResources = require('../../../scripts/release/inline-resources');
 const htmlmin = require('gulp-htmlmin');
 
 /**
@@ -84,7 +84,7 @@ export function createPackageBuildTasks(packageName: string, requiredPackages: s
     return src(htmlGlob).pipe(htmlmin(HTML_MINIFIER_OPTIONS)).pipe(dest(packageOut));
   });
 
-  task(`${packageName}:assets:inline`, () => inlineResources(packageOut));
+  task(`${packageName}:assets:inline`, () => inlineResourcesForDirectory(packageOut));
 
   /**
    * Watch tasks, that will rebuild the package whenever TS, SCSS, or HTML files change.
