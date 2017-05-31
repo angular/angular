@@ -14,11 +14,12 @@ import {EventEmitter, Injectable, NgZone} from '@angular/core';
  */
 @Injectable()
 export class MockNgZone extends NgZone {
-  private _mockOnStable: EventEmitter<any> = new EventEmitter(false);
+  onStable: EventEmitter<any>;
 
-  constructor() { super({enableLongStackTrace: false}); }
-
-  get onStable() { return this._mockOnStable; }
+  constructor() {
+    super({enableLongStackTrace: false});
+    this.onStable = new EventEmitter(false);
+  }
 
   run(fn: Function): any { return fn(); }
 
