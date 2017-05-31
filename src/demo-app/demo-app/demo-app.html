@@ -21,7 +21,7 @@
   <div>
     <md-toolbar color="primary">
       <button md-icon-button (click)="start.open()">
-        <md-icon class="md-24" >menu</md-icon>
+        <md-icon class="md-24">menu</md-icon>
       </button>
       <div class="demo-toolbar">
         <h1>Angular Material Demos</h1>
@@ -30,9 +30,10 @@
           <button md-button (click)="toggleChangeDetection()" title="Toggle change detection">
             Change detection: {{changeDetectionStrategy}}
           </button>
-          <button md-button (click)="toggleFullscreen()" title="Toggle fullscreen">
-            Fullscreen
+          <button md-icon-button (click)="toggleFullscreen()" title="Toggle fullscreen">
+            <md-icon class="md-24">fullscreen</md-icon>
           </button>
+          <button md-button (click)="dark = !dark">{{dark ? 'Light' : 'Dark'}} theme</button>
           <button md-button (click)="root.dir = (root.dir == 'rtl' ? 'ltr' : 'rtl')" title="Toggle between RTL and LTR">
             {{root.dir.toUpperCase()}}
           </button>

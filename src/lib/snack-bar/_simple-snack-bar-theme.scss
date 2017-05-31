@@ -1,0 +1,21 @@
+@import '../core/typography/typography-utils';
+
+@mixin mat-simple-snack-bar-theme($theme) { }
+
+@mixin mat-simple-snack-bar-typography($config) {
+  .mat-simple-snackbar {
+    font: {
+      family: mat-font-family($config);
+      size: mat-font-size($config, body-1);
+    }
+  }
+
+  .mat-simple-snackbar-action {
+    line-height: 1;
+    font: {
+      family: inherit;
+      size: inherit;
+      weight: mat-font-weight($config, button);
+    }
+  }
+}

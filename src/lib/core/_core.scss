@@ -6,6 +6,7 @@
 @import 'option/option';
 @import 'option/option-theme';
 @import 'selection/pseudo-checkbox/pseudo-checkbox-theme';
+@import 'typography/all-typography';
 
 // Mixin that renders all of the core styles that are not theme-dependent.
 @mixin mat-core() {
@@ -18,6 +19,7 @@
     }
   }
 
+  @include angular-material-typography();
   @include mat-ripple();
   @include mat-option();
   @include cdk-a11y();

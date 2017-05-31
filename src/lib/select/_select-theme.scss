@@ -1,5 +1,6 @@
 @import '../core/theming/palette';
 @import '../core/theming/theming';
+@import '../core/typography/typography-utils';
 
 @mixin _mat-select-inner-content-theme($palette) {
   $color: mat-color($palette);
@@ -56,5 +57,15 @@
   .mat-select:focus:not(.mat-select-disabled).mat-warn,
   .mat-select:not(:focus).ng-invalid.ng-touched:not(.mat-select-disabled) {
     @include _mat-select-inner-content-theme($warn);
+  }
+}
+
+@mixin mat-select-typography($config) {
+  .mat-select {
+    font-family: mat-font-family($config);
+  }
+
+  .mat-select-trigger {
+    font-size: mat-font-size($config, subheading);
   }
 }

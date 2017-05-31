@@ -1,0 +1,55 @@
+@import './typography';
+@import '../../autocomplete/autocomplete-theme';
+@import '../../button/button-theme';
+@import '../../button-toggle/button-toggle-theme';
+@import '../../card/card-theme';
+@import '../../checkbox/checkbox-theme';
+@import '../../chips/chips-theme';
+@import '../../dialog/dialog-theme';
+@import '../../grid-list/grid-list-theme';
+@import '../../icon/icon-theme';
+@import '../../input/input-theme';
+@import '../../list/list-theme';
+@import '../../menu/menu-theme';
+@import '../../progress-bar/progress-bar-theme';
+@import '../../progress-spinner/progress-spinner-theme';
+@import '../../radio/radio-theme';
+@import '../../select/select-theme';
+@import '../../sidenav/sidenav-theme';
+@import '../../slide-toggle/slide-toggle-theme';
+@import '../../slider/slider-theme';
+@import '../../tabs/tabs-theme';
+@import '../../toolbar/toolbar-theme';
+@import '../../tooltip/tooltip-theme';
+@import '../../snack-bar/simple-snack-bar-theme';
+@import '../option/option-theme';
+
+
+// Includes all of the typographic styles.
+@mixin angular-material-typography($config: mat-typography-config()) {
+  @include mat-base-typography($config);
+  @include mat-autocomplete-typography($config);
+  @include mat-button-typography($config);
+  @include mat-button-toggle-typography($config);
+  @include mat-card-typography($config);
+  @include mat-checkbox-typography($config);
+  @include mat-chips-typography($config);
+  @include mat-dialog-typography($config);
+  @include mat-grid-list-typography($config);
+  @include mat-icon-typography($config);
+  @include mat-input-typography($config);
+  @include mat-menu-typography($config);
+  @include mat-progress-bar-typography($config);
+  @include mat-progress-spinner-typography($config);
+  @include mat-radio-typography($config);
+  @include mat-select-typography($config);
+  @include mat-sidenav-typography($config);
+  @include mat-slide-toggle-typography($config);
+  @include mat-slider-typography($config);
+  @include mat-tabs-typography($config);
+  @include mat-toolbar-typography($config);
+  @include mat-tooltip-typography($config);
+  @include mat-list-typography($config);
+  @include mat-option-typography($config);
+  @include mat-simple-snack-bar-typography($config);
+}

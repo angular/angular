@@ -1,7 +1,5 @@
 $mat-chip-vertical-padding: 8px;
 $mat-chip-horizontal-padding: 12px;
-$mat-chip-font-size: 13px;
-$mat-chip-line-height: 16px;
 
 $mat-chips-chip-margin: $mat-chip-horizontal-padding / 4;
 
@@ -16,9 +14,6 @@ $mat-chips-chip-margin: $mat-chip-horizontal-padding / 4;
   display: inline-block;
   padding: $mat-chip-vertical-padding $mat-chip-horizontal-padding $mat-chip-vertical-padding $mat-chip-horizontal-padding;
   border-radius: $mat-chip-horizontal-padding * 2;
-
-  font-size: $mat-chip-font-size;
-  line-height: $mat-chip-line-height;
 
   // Apply a margin to adjacent sibling chips.
   & + & {

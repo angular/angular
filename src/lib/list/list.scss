@@ -7,8 +7,6 @@ $mat-list-avatar-size: 40px;
 
 // Normal list variables
 $mat-list-top-padding: 8px;
-$mat-list-font-size: 16px;
-$mat-list-secondary-font: 14px;
 // height for single-line lists
 $mat-list-base-height: 48px;
 // height for single-line lists with avatars
@@ -20,7 +18,6 @@ $mat-list-icon-size: 24px;
 
 // Dense list variables
 $mat-dense-top-padding: 4px;
-$mat-dense-font-size: 13px;
 $mat-dense-base-height: 40px;
 $mat-dense-avatar-height: 48px;
 $mat-dense-two-line-height: 60px;
@@ -29,7 +26,7 @@ $mat-dense-list-icon-size: 20px;
 
 // This mixin provides all list-item styles, changing font size and height
 // based on whether the list is in dense mode.
-@mixin mat-list-item-base($font-size, $base-height, $avatar-height,
+@mixin mat-list-item-base($base-height, $avatar-height,
   $two-line-height, $three-line-height, $icon-size) {
 
   // Prevents the wrapper `mat-list-item-content` from collapsing due to it
@@ -40,9 +37,7 @@ $mat-dense-list-icon-size: 20px;
     display: flex;
     flex-direction: row;
     align-items: center;
-    font-family: $mat-font-family;
     box-sizing: border-box;
-    font-size: $font-size;
     height: $base-height;
     padding: 0 $mat-list-side-padding;
     position: relative;
@@ -111,18 +106,16 @@ $mat-dense-list-icon-size: 20px;
   }
 }
 
-// This mixin provides all subheader styles, adjusting heights and padding
-// based on whether the list is in dense mode.
-@mixin mat-subheader-base($top-padding, $secondary-size, $base-height) {
+.mat-subheader {
   display: block;
   box-sizing: border-box;
-  height: $base-height;
   padding: $mat-list-side-padding;
   margin: 0;
+}
 
-  font-family: $mat-font-family;
-  font-size: $secondary-size;
-  font-weight: 500;
+// This mixin adjusts the heights and padding based on whether the list is in dense mode.
+@mixin mat-subheader-spacing($top-padding, $base-height) {
+  height: $base-height;
 
   &:first-child {
     margin-top: -$top-padding;
@@ -134,25 +127,17 @@ $mat-dense-list-icon-size: 20px;
   display: block;
 
   .mat-subheader {
-    @include mat-subheader-base(
-      $mat-list-top-padding,
-      $mat-list-secondary-font,
-      $mat-list-base-height
-    );
+    @include mat-subheader-spacing($mat-list-top-padding, $mat-list-base-height);
   }
-
 
   .mat-list-item {
     @include mat-list-item-base(
-      $mat-list-font-size,
       $mat-list-base-height,
       $mat-list-avatar-height,
       $mat-list-two-line-height,
       $mat-list-three-line-height,
       $mat-list-icon-size
     );
-
-    @include mat-line-base($mat-list-secondary-font);
   }
 }
 
@@ -162,24 +147,17 @@ $mat-dense-list-icon-size: 20px;
   display: block;
 
   .mat-subheader {
-    @include mat-subheader-base(
-      $mat-dense-top-padding,
-      $mat-dense-font-size,
-      $mat-dense-base-height
-    );
+    @include mat-subheader-spacing($mat-dense-top-padding, $mat-dense-base-height);
   }
 
   .mat-list-item {
     @include mat-list-item-base(
-      $mat-dense-font-size,
       $mat-dense-base-height,
       $mat-dense-avatar-height,
       $mat-dense-two-line-height,
       $mat-dense-three-line-height,
       $mat-dense-list-icon-size
     );
-
-    @include mat-line-base($mat-dense-font-size);
   }
 }
 

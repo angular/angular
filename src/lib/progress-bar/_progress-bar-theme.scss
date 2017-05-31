@@ -48,6 +48,8 @@
   }
 }
 
+@mixin mat-progress-bar-typography($config) { }
+
 // TODO(josephperrott): Find better way to inline svgs.
 // In buffer mode a repeated SVG object is used as a background.
 // Each of the following defines the SVG object for each of the class defined colors.

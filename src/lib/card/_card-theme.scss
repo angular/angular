@@ -1,5 +1,6 @@
 @import '../core/theming/palette';
 @import '../core/theming/theming';
+@import '../core/typography/typography-utils';
 
 
 @mixin mat-card-theme($theme) {
@@ -13,5 +14,24 @@
 
   .mat-card-subtitle {
     color: mat-color($foreground, secondary-text);
+  }
+}
+
+@mixin mat-card-typography($config) {
+  .mat-card {
+    font-family: mat-font-family($config);
+  }
+
+  .mat-card-title {
+    font: {
+      size: mat-font-size($config, headline);
+      weight: mat-font-weight($config, headline);
+    }
+  }
+
+  .mat-card-subtitle,
+  .mat-card-content,
+  .mat-card-header .mat-card-title {
+    font-size: mat-font-size($config, body-1);
   }
 }

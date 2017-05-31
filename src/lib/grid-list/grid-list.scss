@@ -8,10 +8,6 @@ $mat-grid-list-two-line-height: 68px;
 // side padding for text in tile headers and footers
 $mat-grid-list-text-padding: 16px;
 
-// font styles for text in tile headers and footers
-$mat-grid-list-font-size: 16px;
-$mat-grid-list-secondary-font: 12px;
-
 .mat-grid-list {
   display: block;
   position: relative;
@@ -42,7 +38,6 @@ $mat-grid-list-secondary-font: 12px;
   // Headers & footers
   .mat-grid-tile-header,
   .mat-grid-tile-footer {
-    @include mat-line-base($mat-grid-list-secondary-font);
     @include mat-normalize-text();
 
     display: flex;
@@ -52,7 +47,6 @@ $mat-grid-list-secondary-font: 12px;
     background: rgba(0, 0, 0, 0.38);
     overflow: hidden;
     padding: 0 $mat-grid-list-text-padding;
-    font-size: $mat-grid-list-font-size;
 
     // Positioning
     position: absolute;

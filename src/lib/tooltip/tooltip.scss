@@ -1,13 +1,9 @@
 @import '../core/style/variables';
 @import '../core/a11y/a11y';
 
-
-$mat-tooltip-target-height: 22px;
-$mat-tooltip-max-width: 250px;
-$mat-tooltip-font-size: 10px;
-$mat-tooltip-margin: 14px;
 $mat-tooltip-horizontal-padding: 8px;
-$mat-tooltip-vertical-padding: ($mat-tooltip-target-height - $mat-tooltip-font-size) / 2;
+$mat-tooltip-max-width: 250px;
+$mat-tooltip-margin: 14px;
 
 :host {
   pointer-events: none;
@@ -15,12 +11,11 @@ $mat-tooltip-vertical-padding: ($mat-tooltip-target-height - $mat-tooltip-font-s
 
 .mat-tooltip {
   color: white;
-  padding: $mat-tooltip-vertical-padding $mat-tooltip-horizontal-padding;
   border-radius: 2px;
-  font-family: $mat-font-family;
-  font-size: $mat-tooltip-font-size;
   margin: $mat-tooltip-margin;
   max-width: $mat-tooltip-max-width;
+  padding-left: $mat-tooltip-horizontal-padding;
+  padding-right: $mat-tooltip-horizontal-padding;
 
   @include cdk-high-contrast {
     outline: solid 1px;

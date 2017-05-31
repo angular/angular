@@ -34,6 +34,7 @@ import {InputDemo} from '../input/input-demo';
 import {StyleDemo} from '../style/style-demo';
 import {DatepickerDemo} from '../datepicker/datepicker-demo';
 import {DataTableDemo} from '../data-table/data-table-demo';
+import {TypographyDemo} from '../typography/typography-demo';
 
 export const DEMO_APP_ROUTES: Routes = [
   {path: '', component: Home},
@@ -70,4 +71,5 @@ export const DEMO_APP_ROUTES: Routes = [
   {path: 'snack-bar', component: SnackBarDemo},
   {path: 'platform', component: PlatformDemo},
   {path: 'style', component: StyleDemo},
+  {path: 'typography', component: TypographyDemo}
 ];

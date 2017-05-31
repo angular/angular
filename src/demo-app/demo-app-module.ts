@@ -40,6 +40,7 @@ import {StyleDemo} from './style/style-demo';
 import {DataTableDemo} from './data-table/data-table-demo';
 import {PeopleDatabase} from './data-table/people-database';
 import {DatepickerDemo} from './datepicker/datepicker-demo';
+import {TypographyDemo} from './typography/typography-demo';
 import {
   CdkDataTableModule,
   FullscreenOverlayContainer,
@@ -168,6 +169,7 @@ export class DemoMaterialModule {}
     RainyTabContent,
     FoggyTabContent,
     PlatformDemo,
+    TypographyDemo,
   ],
   providers: [
     {provide: OverlayContainer, useClass: FullscreenOverlayContainer},

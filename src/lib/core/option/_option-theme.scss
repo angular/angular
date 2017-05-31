@@ -1,5 +1,6 @@
 @import '../theming/palette';
 @import '../theming/theming';
+@import '../typography/typography-utils';
 
 @mixin mat-option-theme($theme) {
   $foreground: map-get($theme, foreground);
@@ -39,6 +40,15 @@
 
     &.mat-option-disabled {
       color: mat-color($foreground, hint-text);
+    }
+  }
+}
+
+@mixin mat-option-typography($config) {
+  .mat-option {
+    font: {
+      family: mat-font-family($config);
+      size: mat-font-size($config, subheading);
     }
   }
 }

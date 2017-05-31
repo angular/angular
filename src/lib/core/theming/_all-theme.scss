@@ -23,6 +23,7 @@
 @import '../../tabs/tabs-theme';
 @import '../../toolbar/toolbar-theme';
 @import '../../tooltip/tooltip-theme';
+@import '../../snack-bar/simple-snack-bar-theme';
 
 
 // Create a theme.
@@ -51,4 +52,5 @@
   @include mat-tabs-theme($theme);
   @include mat-toolbar-theme($theme);
   @include mat-tooltip-theme($theme);
+  @include mat-simple-snack-bar-theme($theme);
 }

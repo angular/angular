@@ -1,5 +1,6 @@
 @import '../core/theming/palette';
 @import '../core/theming/theming';
+@import '../core/typography/typography-utils';
 
 @mixin mat-tabs-theme($theme) {
   $primary: map-get($theme, primary);
@@ -36,5 +37,15 @@
     &.mat-tab-disabled {
       color: mat-color($foreground, disabled-text);
     }
+  }
+}
+
+@mixin mat-tabs-typography($config) {
+  .mat-tab-group {
+    font-family: mat-font-family($config);
+  }
+
+  .mat-tab-label, .mat-tab-link {
+    @include mat-typography-level-to-styles($config, button);
   }
 }

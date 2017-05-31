@@ -5,7 +5,6 @@
 :host {
   display: flex;
   flex-direction: column;
-  font-family: $mat-font-family;
 
   &.mat-tab-group-inverted-header {
     flex-direction: column-reverse;

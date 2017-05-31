@@ -1,9 +1,24 @@
 @import '../core/theming/palette';
 @import '../core/theming/theming';
+@import '../core/typography/typography-utils';
 
+// TODO(crisbeto): these doesn't correspond to any typography levels
+// and the width/height appear to be off from the spec.
+$mat-tooltip-target-height: 22px;
+$mat-tooltip-font-size: 10px;
+$mat-tooltip-vertical-padding: ($mat-tooltip-target-height - $mat-tooltip-font-size) / 2;
 
 @mixin mat-tooltip-theme($theme) {
   .mat-tooltip {
     background: mat-color($mat-grey, 700, 0.9);
+  }
+}
+
+@mixin mat-tooltip-typography($config) {
+  .mat-tooltip {
+    font-family: mat-font-family($config);
+    font-size: $mat-tooltip-font-size;
+    padding-top: $mat-tooltip-vertical-padding;
+    padding-bottom: $mat-tooltip-vertical-padding;
   }
 }

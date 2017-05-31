@@ -1,5 +1,6 @@
 @import '../core/theming/palette';
 @import '../core/theming/theming';
+@import '../core/typography/typography-utils';
 
 @mixin _mat-slider-inner-content-theme($palette) {
   .mat-slider-track-fill,
@@ -125,5 +126,14 @@
   .mat-slider-vertical .mat-slider-ticks {
     background-image: repeating-linear-gradient(to bottom, $mat-slider-tick-color,
         $mat-slider-tick-color $mat-slider-tick-size, transparent 0, transparent);
+  }
+}
+
+@mixin mat-slider-typography($config) {
+  .mat-slider-thumb-label-text {
+    font: {
+      size: mat-font-size($config, caption);
+      weight: mat-font-weight($config, body-2);
+    }
   }
 }

@@ -1,4 +1,5 @@
 @import '../core/theming/theming';
+@import '../core/typography/typography-utils';
 
 // Applies a focus style to an md-button element for each of the supported palettes.
 @mixin _mat-button-focus-color($theme) {
@@ -117,4 +118,8 @@
   }
 }
 
-
+@mixin mat-button-typography($config) {
+  .mat-button, .mat-raised-button, .mat-icon-button {
+    @include mat-typography-level-to-styles($config, button);
+  }
+}

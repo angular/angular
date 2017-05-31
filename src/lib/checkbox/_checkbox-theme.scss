@@ -1,4 +1,5 @@
 @import '../core/theming/theming';
+@import '../core/typography/typography-utils';
 
 
 @mixin mat-checkbox-theme($theme) {
@@ -81,5 +82,16 @@
     &.mat-warn .mat-checkbox-ripple .mat-ripple-element {
       background-color: mat-color($warn, 0.26);
     }
+  }
+}
+
+@mixin mat-checkbox-typography($config) {
+  .mat-checkbox {
+    font-family: mat-font-family($config);
+  }
+
+  // TODO(kara): Remove this style when fixing vertical baseline
+  .mat-checkbox-layout .mat-checkbox-label {
+    line-height: mat-line-height($config, body-2);
   }
 }

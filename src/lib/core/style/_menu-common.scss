@@ -9,9 +9,9 @@ $mat-menu-overlay-min-width: 112px !default;   // 56 * 2
 $mat-menu-overlay-max-width: 280px !default;   // 56 * 5
 
 $mat-menu-item-height: 48px !default;
-$mat-menu-font-size: 16px !default;
 $mat-menu-side-padding: 16px !default;
 $mat-menu-icon-margin: 16px !default;
+
 
 @mixin mat-menu-base() {
   @include mat-elevation(8);
@@ -31,8 +31,6 @@ $mat-menu-icon-margin: 16px !default;
   height: $mat-menu-item-height;
   padding: 0 $mat-menu-side-padding;
 
-  font-size: $mat-menu-font-size;
-  font-family: $mat-font-family;
   text-align: left;
   text-decoration: none;   // necessary to reset anchor tags
 

@@ -10,7 +10,7 @@
   $foreground: map-get($theme, foreground);
 
   // We use invert() here to have the darken the background color expected to be used. If the
-  // background is light, we use a dark backdrop. If the background is dark, 
+  // background is light, we use a dark backdrop. If the background is dark,
   // we use a light backdrop.
   $sidenav-backdrop-color: invert(mat-color($background, card, 0.6)) !default;
   $sidenav-background-color: mat-color($background, dialog) !default;
@@ -35,3 +35,5 @@
     background-color: $sidenav-backdrop-color;
   }
 }
+
+@mixin mat-sidenav-typography($config) { }

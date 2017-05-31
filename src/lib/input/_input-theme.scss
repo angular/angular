@@ -1,5 +1,6 @@
 @import '../core/theming/palette';
 @import '../core/theming/theming';
+@import '../core/typography/typography-utils';
 
 
 @mixin mat-input-theme($theme) {
@@ -86,5 +87,24 @@
 
   .mat-input-error {
     color: $input-underline-color-warn;
+  }
+}
+
+@mixin mat-input-typography($config) {
+  .mat-input-container {
+    font-family: mat-font-family($config);
+    line-height: normal;
+
+    .mat-icon {
+      font-size: 100%;
+    }
+  }
+
+  .mat-input-placeholder {
+    font-size: 100%;
+  }
+
+  .mat-input-subscript-wrapper {
+    font-size: 75%;
   }
 }

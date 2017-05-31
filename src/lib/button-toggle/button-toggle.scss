@@ -4,7 +4,7 @@
 @import '../core/style/layout-common';
 
 $mat-button-toggle-padding: 0 16px !default;
-$mat-button-toggle-line-height: 36px !default;
+$mat-button-toggle-height: 36px !default;
 $mat-button-toggle-border-radius: 2px !default;
 
 .mat-button-toggle-group {
@@ -36,7 +36,6 @@ $mat-button-toggle-border-radius: 2px !default;
 
 .mat-button-toggle {
   white-space: nowrap;
-  font-family: $mat-font-family;
   position: relative;
 }
 
@@ -47,7 +46,7 @@ $mat-button-toggle-border-radius: 2px !default;
 .mat-button-toggle-label-content {
   @include user-select(none);
   display: inline-block;
-  line-height: $mat-button-toggle-line-height;
+  line-height: $mat-button-toggle-height;
   padding: $mat-button-toggle-padding;
   cursor: pointer;
 }

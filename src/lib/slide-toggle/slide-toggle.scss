@@ -41,14 +41,6 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
   }
 }
 
-// The content element is responsible for the users content.
-// It will apply the given typography styles and align at the end of the slide-toggle.
-.mat-slide-toggle-content {
-  font-size: $mat-body-font-size-base;
-  font-family: $mat-font-family;
-  font-weight: 500;
-}
-
 // The label element is our root container for the slide-toggle / switch indicator and label text.
 // It has to be a label, to support accessibility for the visual hidden input.
 .mat-slide-toggle-label {

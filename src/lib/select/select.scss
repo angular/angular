@@ -10,12 +10,10 @@ $mat-select-trigger-min-width: 112px !default;
 $mat-select-arrow-size: 5px !default;
 $mat-select-arrow-margin: 4px !default;
 $mat-select-panel-max-height: 256px !default;
-$mat-select-trigger-font-size: 16px !default;
 
 .mat-select {
   display: inline-block;
   outline: none;
-  font-family: $mat-font-family;
 }
 
 .mat-select-trigger {
@@ -26,7 +24,6 @@ $mat-select-trigger-font-size: 16px !default;
   cursor: pointer;
   position: relative;
   box-sizing: border-box;
-  font-size: $mat-select-trigger-font-size;
 
   [aria-disabled='true'] & {
     @include user-select(none);

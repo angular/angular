@@ -1,5 +1,7 @@
 @import '../core/theming/palette';
 @import '../core/theming/theming';
+@import '../core/typography/typography-utils';
+@import '../core/style/list-common';
 
 
 @mixin mat-list-theme($theme) {
@@ -25,6 +27,38 @@
 
     &:hover, &.mat-list-item-focus {
       background: mat-color($background, 'hover');
+    }
+  }
+}
+
+@mixin mat-list-typography($config) {
+  $font-family: mat-font-family($config);
+
+  .mat-list-item {
+    font-family: $font-family;
+  }
+
+  // Default list
+  .mat-list, .mat-nav-list {
+    .mat-list-item {
+      font-size: mat-font-size($config, subheading);
+      @include mat-line-base(mat-font-size($config, body-1));
+    }
+
+    .mat-subheader {
+      @include mat-typography-level-to-styles($config, body-2);
+    }
+  }
+
+  // Dense list
+  .mat-list[dense], .mat-nav-list[dense] {
+    .mat-list-item {
+      font-size: mat-font-size($config, caption);
+      @include mat-line-base(mat-font-size($config, caption));
+    }
+
+    .mat-subheader {
+      font: mat-font-weight($config, body-2) mat-font-size($config, caption) $font-family;
     }
   }
 }

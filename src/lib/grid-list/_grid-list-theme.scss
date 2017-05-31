@@ -1,6 +1,16 @@
 @import '../core/theming/palette';
 @import '../core/theming/theming';
+@import '../core/typography/typography-utils';
+@import '../core/style/list-common';
 
 
 // Include this empty mixin for consistency with the other components.
 @mixin mat-grid-list-theme($theme) { }
+
+@mixin mat-grid-list-typography($config) {
+  .mat-grid-tile-header,
+  .mat-grid-tile-footer {
+    @include mat-line-base(mat-font-size($config, caption));
+    font-size: mat-font-size($config, body-1);
+  }
+}

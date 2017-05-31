@@ -1,5 +1,6 @@
 @import '../core/theming/palette';
 @import '../core/theming/theming';
+@import '../core/typography/typography-utils';
 
 
 @mixin _mat-toolbar-color($palette) {
@@ -29,5 +30,17 @@
     &.mat-warn {
       @include _mat-toolbar-color($warn);
     }
+  }
+}
+
+@mixin mat-toolbar-typography($config) {
+  .mat-toolbar,
+  .mat-toolbar h1,
+  .mat-toolbar h2,
+  .mat-toolbar h3,
+  .mat-toolbar h4,
+  .mat-toolbar h5,
+  .mat-toolbar h6 {
+    @include mat-typography-level-to-styles($config, title);
   }
 }

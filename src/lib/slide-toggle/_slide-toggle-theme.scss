@@ -1,5 +1,6 @@
 @import '../core/theming/palette';
 @import '../core/theming/theming';
+@import '../core/typography/typography-utils';
 
 @mixin _mat-slide-toggle-checked($palette, $thumb-checked-hue) {
   // Do not apply the checked colors if the toggle is disabled, because the specificity would be to high for
@@ -58,7 +59,7 @@
       @include _mat-slide-toggle-checked($primary, $thumb-checked-hue);
       @include _mat-slide-toggle-ripple($accent, $ripple-unchecked-color, $ripple-primary-color);
     }
-  
+
     &.mat-warn {
       @include _mat-slide-toggle-checked($warn, $thumb-checked-hue);
       @include _mat-slide-toggle-ripple($accent, $ripple-unchecked-color, $ripple-warn-color);
@@ -84,5 +85,11 @@
 
   .mat-slide-toggle-bar {
     background-color: $bar-normal-color;
+  }
+}
+
+@mixin mat-slide-toggle-typography($config) {
+  .mat-slide-toggle-content {
+    @include mat-typography-level-to-styles($config, button);
   }
 }

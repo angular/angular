@@ -1,5 +1,6 @@
 @import '../core/theming/palette';
 @import '../core/theming/theming';
+@import '../core/typography/typography-utils';
 
 
 @mixin mat-dialog-theme($theme) {
@@ -7,5 +8,11 @@
 
   .mat-dialog-container {
     background: mat-color($background, dialog);
+  }
+}
+
+@mixin mat-dialog-typography($config) {
+  .mat-dialog-title {
+    @include mat-typography-level-to-styles($config, title);
   }
 }

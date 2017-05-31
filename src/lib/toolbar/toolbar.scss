@@ -4,7 +4,6 @@ $mat-toolbar-height-desktop: 64px !default;
 $mat-toolbar-height-mobile-portrait: 56px !default;
 $mat-toolbar-height-mobile-landscape: 48px !default;
 
-$mat-toolbar-font-size: 20px !default;
 $mat-toolbar-padding: 16px !default;
 
 
@@ -20,16 +19,8 @@ $mat-toolbar-padding: 16px !default;
 .mat-toolbar {
   display: flex;
   box-sizing: border-box;
-
   width: 100%;
-
-  // Font Styling
-  font-size: $mat-toolbar-font-size;
-  font-weight: 500;
-  font-family: $mat-font-family;
-
   padding: 0 $mat-toolbar-padding;
-
   flex-direction: column;
 
   .mat-toolbar-row {
@@ -42,7 +33,7 @@ $mat-toolbar-padding: 16px !default;
     flex-direction: row;
     align-items: center;
 
-    // Per Material specs a toolbar cannot have multiple lines inside of a single row. 
+    // Per Material specs a toolbar cannot have multiple lines inside of a single row.
     // Disable text wrapping inside of the toolbar. Developers are still able to overwrite it.
     white-space: nowrap;
   }

@@ -1,5 +1,6 @@
 @import '../core/theming/palette';
 @import '../core/theming/theming';
+@import '../core/typography/typography-utils';
 
 // Applies a focus style to an md-button-toggle element for each of the supported palettes.
 @mixin _mat-button-toggle-focus-color($theme) {
@@ -34,5 +35,11 @@
     &.mat-button-toggle-checked {
       background-color: mat-color($background, selected-disabled-button);
     }
+  }
+}
+
+@mixin mat-button-toggle-typography($config) {
+  .mat-button-toggle {
+    font-family: mat-font-family($config);
   }
 }

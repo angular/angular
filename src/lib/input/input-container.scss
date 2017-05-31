@@ -21,8 +21,6 @@ $mat-input-underline-disabled-background-image:
 .mat-input-container {
   display: inline-block;
   position: relative;
-  font-family: $mat-font-family;
-  line-height: normal;
 
   // To avoid problems with text-align.
   text-align: left;
@@ -36,7 +34,6 @@ $mat-input-underline-disabled-background-image:
   & .mat-datepicker-toggle {
     width: 1em;
     height: 1em;
-    font-size: 100%;
     vertical-align: top;
   }
 }
@@ -134,7 +131,6 @@ $mat-input-underline-disabled-background-image:
   left: 0;
   top: 0;
 
-  font-size: 100%;
   pointer-events: none;  // We shouldn't catch mouse events (let them through).
   z-index: 1;
   padding-top: 1em;
@@ -238,7 +234,6 @@ $mat-input-underline-disabled-background-image:
   $line-height: 1.2em;
 
   position: absolute;
-  font-size: 75%;
   top: 100%;
   width: 100%;
   margin-top: -$line-height;

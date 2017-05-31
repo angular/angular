@@ -12,7 +12,7 @@
 // Represents a collection of typography levels.
 // Defaults come from https://material.io/guidelines/style/typography.html
 @function mat-typography-config(
-  $font-family: 'Roboto, sans-serif',
+  $font-family: 'Roboto, "Helvetica Neue", sans-serif',
   $display-4:   mat-typography-level(112px, 112px, 300),
   $display-3:   mat-typography-level(56px, 56px, 400),
   $display-2:   mat-typography-level(45px, 48px, 400),
@@ -42,17 +42,30 @@
 }
 
 // Adds the base typography styles, based on a config.
-@mixin mat-typography($config: mat-typography-config(), $selector: '.mat-typography') {
+// TODO(crisbeto): the headers need to handle margins as well.
+@mixin mat-base-typography($config, $selector: '.mat-typography') {
   .mat-h0, .mat-hero-header {
     @include mat-typography-level-to-styles($config, display-4);
+
+    // Note: The spec doesn't mention letter spacing. The value comes from
+    // eyeballing it until it looked exactly like the spec examples.
+    letter-spacing: -0.05em;
   }
 
   .mat-h1, #{$selector} h1 {
     @include mat-typography-level-to-styles($config, display-3);
+
+    // Note: The spec doesn't mention letter spacing. The value comes from
+    // eyeballing it until it looked exactly like the spec examples.
+    letter-spacing: -0.02em;
   }
 
   .mat-h2, #{$selector} h2 {
-    @include mat-typography-level-to-styles($config, display-2);
+    @include mat-typography-level-to-styles($config, display-2)
+
+    // Note: The spec doesn't mention letter spacing. The value comes from
+    // eyeballing it until it looked exactly like the spec examples.;
+    letter-spacing: -0.005em;
   }
 
   .mat-h3, #{$selector} h3 {

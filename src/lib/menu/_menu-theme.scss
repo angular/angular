@@ -1,5 +1,6 @@
 @import '../core/theming/palette';
 @import '../core/theming/theming';
+@import '../core/typography/typography-utils';
 
 
 @mixin mat-menu-theme($theme) {
@@ -25,6 +26,15 @@
 
     &:hover:not([disabled]), &:focus:not([disabled]) {
       background: mat-color($background, 'hover');
+    }
+  }
+}
+
+@mixin mat-menu-typography($config) {
+  .mat-menu-item {
+    font: {
+      family: mat-font-family($config);
+      size: mat-font-size($config, subheading);
     }
   }
 }

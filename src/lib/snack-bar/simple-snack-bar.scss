@@ -9,10 +9,6 @@ $mat-snack-bar-button-margin: 48px !default;
   justify-content: space-between;
   color: white;
   line-height: 20px;
-  font: {
-    size: $mat-body-font-size-base;
-    family: $mat-font-family;
-  }
 }
 
 .mat-simple-snackbar-action {
@@ -20,14 +16,8 @@ $mat-snack-bar-button-margin: 48px !default;
 
   background: none;
   color: inherit;
-  line-height: 1;
   flex-shrink: 0;
   margin-left: $mat-snack-bar-button-margin;
-  font: {
-    family: inherit;
-    size: inherit;
-    weight: 600;
-  }
 
   [dir='rtl'] & {
     margin-right: $mat-snack-bar-button-margin;

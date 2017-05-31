@@ -14,7 +14,6 @@ $mat-card-header-size: 40px !default;
   position: relative;
   padding: $mat-card-default-padding;
   border-radius: $mat-card-border-radius;
-  font-family: $mat-font-family;
 
   &:not([class*='mat-elevation-z']) {
     @include mat-elevation(2);
@@ -35,20 +34,8 @@ $mat-card-header-size: 40px !default;
   margin-bottom: 16px;
 }
 
-.mat-card-title {
+.mat-card-title, .mat-card-subtitle, .mat-card-content {
   @extend %mat-card-section-base;
-  font-size: 24px;
-  font-weight: 400;
-}
-
-.mat-card-subtitle {
-  @extend %mat-card-section-base;
-  font-size: $mat-body-font-size-base;
-}
-
-.mat-card-content {
-  @extend %mat-card-section-base;
-  font-size: $mat-body-font-size-base;
 }
 
 .mat-card-actions {
@@ -104,10 +91,6 @@ $mat-card-header-size: 40px !default;
   width: $mat-card-header-size;
   border-radius: 50%;
   flex-shrink: 0;
-}
-
-.mat-card-header .mat-card-title {
-  font-size: $mat-body-font-size-base;
 }
 
 // TITLE-GROUP STYLES
