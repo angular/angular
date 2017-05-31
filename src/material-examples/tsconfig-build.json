@@ -28,6 +28,7 @@
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": true,
     "flatModuleOutFile": "index.js",
+    "flatModuleId": "@angular/material-examples",
     "skipTemplateCodegen": true
   }
 }

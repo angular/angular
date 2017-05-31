@@ -4,7 +4,7 @@ import {MdDialog, MdDialogRef} from '@angular/material';
 
 @Component({
   selector: 'dialog-result-example',
-  templateUrl: './dialog-result-example.html',
+  templateUrl: 'dialog-result-example.html',
 })
 export class DialogResultExample {
   selectedOption: string;
@@ -22,7 +22,7 @@ export class DialogResultExample {
 
 @Component({
   selector: 'dialog-result-example-dialog',
-  templateUrl: './dialog-result-example-dialog.html',
+  templateUrl: 'dialog-result-example-dialog.html',
 })
 export class DialogResultExampleDialog {
   constructor(public dialogRef: MdDialogRef<DialogResultExampleDialog>) {}

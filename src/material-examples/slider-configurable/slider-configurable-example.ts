@@ -3,8 +3,8 @@ import {Component, ViewEncapsulation} from '@angular/core';
 
 @Component({
   selector: 'slider-configurable-example',
-  templateUrl: './slider-configurable-example.html',
-  styleUrls: ['./slider-configurable-example.css'],
+  templateUrl: 'slider-configurable-example.html',
+  styleUrls: ['slider-configurable-example.css'],
   encapsulation: ViewEncapsulation.None,
 })
 export class SliderConfigurableExample {

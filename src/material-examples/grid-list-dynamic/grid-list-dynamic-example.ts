@@ -3,7 +3,7 @@ import {Component} from '@angular/core';
 
 @Component({
   selector: 'grid-list-dynamic-example',
-  templateUrl: './grid-list-dynamic-example.html',
+  templateUrl: 'grid-list-dynamic-example.html',
 })
 export class GridListDynamicExample {
   tiles = [
