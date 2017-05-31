@@ -109,59 +109,71 @@ aio-toc {
       width: auto;
     }
 
-  }
-
-  ul.toc-list li {
-    box-sizing: border-box;
-    font-size: 12px;
-    line-height: 16px;
-    padding: 3px 0 3px 12px;
-    position: relative;
-    transition: all 0.3s ease-in-out;
-
-    &.h1:after {
-      content: '';
-      display: block;
-      height: 1px;
-      width: 40%;
-      margin: 7px 0 4px 0;
-      background: #DBDBDB;
-      clear: both;
-    }
-
-    &.h1, &.h2, &.h3 {
-      border-left: 1px solid $blue;
-    }
-
-    &.h3 {
-      padding-left: 24px;
-    }
-
-    a {
-      font-size: inherit;
-      color: lighten($darkgray, 10);
-      display:table-cell;
-      overflow: visible;
+    li {
+      box-sizing: border-box;
       font-size: 12px;
-      display: table-cell;
+      line-height: 16px;
+      padding: 3px 0 3px 12px;
+      position: relative;
+      transition: all 0.3s ease-in-out;
 
-      &:hover {
+      &.h1:after {
+        content: '';
+        display: block;
+        height: 1px;
+        width: 40%;
+        margin: 7px 0 4px 0;
+        background: #DBDBDB;
+        clear: both;
+      }
+
+      &.h3 {
+        padding-left: 24px;
+      }
+
+      a {
+        font-size: inherit;
+        color: lighten($darkgray, 10);
+        display:table-cell;
+        overflow: visible;
+        font-size: 12px;
+        display: table-cell;
+      }
+
+      &:hover a {
         color: $accentblue;
       }
+
+      &.active {
+        a {
+          color: $blue;
+          font-weight: 500;
+        }
+
+        &:before {
+          content: '';
+          border-radius: 50%;
+          left: -4px;
+          top: 12px;
+          background: $blue;
+          position: absolute;
+          width: 6px;
+          height: 6px;
+        }
+      }
     }
 
-    &.active {
-      a {
-        color: $blue;
-        font-weight: 500;
+    &:not(.embedded) li {
+      &.h1, &.h2, &.h3 {
+        border-left: 1px solid $lightgray;
       }
 
-      &:before {
+      &:not(.active):hover:before {
         content: '';
         border-radius: 50%;
         left: -4px;
         top: 12px;
-        background: $blue;
+        background: $lightgray;
         position: absolute;
         width: 6px;
         height: 6px;

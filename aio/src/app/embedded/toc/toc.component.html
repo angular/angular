@@ -13,7 +13,7 @@
     <md-icon class="rotating-icon" svgIcon="keyboard_arrow_right" [class.collapsed]="isCollapsed"></md-icon>
   </button>
 
-  <ul class="toc-list">
+  <ul class="toc-list" [class.embedded]="type !== 'Floating'">
     <ng-container *ngFor="let toc of tocList; let i = index">
       <li #tocItem title="{{toc.title}}" *ngIf="type === 'Floating' || toc.level !== 'h1'"
         class="{{toc.level}}" [class.secondary]="type === 'EmbeddedExpandable' && i >= primaryMax" [class.active]="i === activeIndex">
