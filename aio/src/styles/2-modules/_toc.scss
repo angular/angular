@@ -1,16 +1,11 @@
 .toc-container {
-    width: 18%;
-    position: fixed;
-    top: 96px;
-    right: 0;
-    bottom: 32px;
-    overflow-y: auto;
-    overflow-x: hidden;
-
-    @media (max-width: 800px) {
-      display: none;
-      width: 0;
-    }
+  width: 18%;
+  position: fixed;
+  top: 96px;
+  right: 0;
+  bottom: 32px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 aio-toc {
@@ -19,27 +14,25 @@ aio-toc {
       display: none;
     }
   }
-
-  &:not(.embedded) {
-    @media (max-width: 800px) {
-      display: none;
-    }
-  }
 }
 
-aio-toc > div {
+.toc-inner {
   font-size: 13px;
   overflow-y: visible;
   padding: 4px 0 0 10px;
 
-  .toc-heading p {
+  .toc-heading,
+  .toc-list .h1 {
+    font-size: 115%;
+  }
+
+  .toc-heading {
     font-weight: 500;
-    margin: 0 0 0 -11px;
+    margin: 0 0 16px 8px;
     padding: 0;
   }
 
   .toc-heading.secondary {
-    padding-bottom: 0;
     position: relative;
     top: -8px;
 
@@ -48,55 +41,69 @@ aio-toc > div {
     }
   }
 
-  button.toc-show-all,
+  button.toc-heading,
   button.toc-more-items {
+    cursor: pointer;
     display: inline-block;
     background: 0;
     background-color: transparent;
     border: none;
     box-shadow: none;
-    color: $mediumgray;
     padding: 0;
+    text-align: start;
+
+    &.embedded:focus {
+      outline: none;
+      background: $lightgray;
+    }
+  }
+
+  button.toc-heading {
+    md-icon.rotating-icon {
+      height: 18px;
+      width: 18px;
+      position: relative;
+      left: -4px;
+      top: 5px;
+    }
+
+    &:hover:not(.embedded) {
+      color: $accentblue;
+    }
+  }
+
+  button.toc-more-items {
+    color: $mediumgray;
+    top: 10px;
+    position: relative;
 
     &:hover {
       color: $accentblue;
     }
-    &:focus {
-      outline: none;
-    }
-  }
-
-  button.toc-show-all {
-    min-width: 34px;
-    position: absolute;
-    top: 0;
-  }
-
-  button.toc-show-all::after {
-    content: 'expand_less';
-  }
-
-  button.toc-show-all.closed::after {
-    content: 'expand_more';
-  }
-
-  button.toc-more-items {
-    top: 10px;
-    position: relative;
   }
 
   button.toc-more-items::after {
     content: 'expand_less';
   }
 
-  button.toc-more-items.closed::after {
+  button.toc-more-items.collapsed::after {
     content: 'more_horiz';
+  }
+
+
+  .mat-icon.collapsed {
+    @include rotate(0deg);
+  }
+
+  .mat-icon:not(.collapsed) {
+    @include rotate(90deg);
+    // margin: 4px;
   }
 
   ul.toc-list {
     list-style-type: none;
     margin: 0;
-    padding: 0 8px;
+    padding: 0 8px 0 0;
 
     @media (max-width: 800px) {
       width: auto;
@@ -105,56 +112,65 @@ aio-toc > div {
   }
 
   ul.toc-list li {
+    box-sizing: border-box;
     font-size: 12px;
     line-height: 16px;
-    margin: 6px 0;
-    padding: 0 16px;
+    padding: 3px 0 3px 12px;
     position: relative;
-    transition: all 0.3 ease-in-out;
+    transition: all 0.3s ease-in-out;
 
-    &:before {
+    &.h1:after {
       content: '';
-      border-radius: 50%;
-      left: -3px;
-      top: 10px;
-      background: $lightgray;
-      position: absolute;
-      width: 6px;
-      height: 6px;
+      display: block;
+      height: 1px;
+      width: 40%;
+      margin: 7px 0 4px 0;
+      background: #DBDBDB;
+      clear: both;
     }
 
-    &:last-child a:before {
-      width: 0;
+    &.h1, &.h2, &.h3 {
+      border-left: 1px solid $blue;
+    }
+
+    &.h3 {
+      padding-left: 24px;
     }
 
     a {
-      font-size: 12px;
+      font-size: inherit;
       color: lighten($darkgray, 10);
       display:table-cell;
       overflow: visible;
+      font-size: 12px;
+      display: table-cell;
 
       &:hover {
         color: $accentblue;
       }
+    }
+
+    &.active {
+      a {
+        color: $blue;
+        font-weight: 500;
+      }
 
       &:before {
         content: '';
-        left: -1px;
-        top: 10px;
-        background: $lightgray;
+        border-radius: 50%;
+        left: -4px;
+        top: 12px;
+        background: $blue;
         position: absolute;
-        display: block;
-        width: 1px;
-        height: calc(100% + 11px);
+        width: 6px;
+        height: 6px;
       }
     }
   }
 
-  ul.toc-list li.h3 {
-    margin-left: 15px;
-  }
 }
 
-aio-toc.embedded > div.closed li.secondary {
-    display: none;
+aio-toc.embedded > div.collapsed li.secondary {
+  display: none;
 }

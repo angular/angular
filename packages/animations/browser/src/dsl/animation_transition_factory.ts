@@ -5,38 +5,68 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationMetadata, AnimationTransitionMetadata, sequence, ɵStyleData} from '@angular/animations';
+import {AnimationOptions, ɵStyleData} from '@angular/animations';
 
-import {buildAnimationKeyframes} from './animation_timeline_visitor';
+import {AnimationDriver} from '../render/animation_driver';
+import {getOrSetAsInMap} from '../render/shared';
+import {iteratorToArray, mergeAnimationOptions} from '../util';
+
+import {TransitionAst} from './animation_ast';
+import {buildAnimationTimelines} from './animation_timeline_builder';
 import {TransitionMatcherFn} from './animation_transition_expr';
 import {AnimationTransitionInstruction, createTransitionInstruction} from './animation_transition_instruction';
+import {ElementInstructionMap} from './element_instruction_map';
 
 export class AnimationTransitionFactory {
-  private _animationAst: AnimationMetadata;
-
   constructor(
-      private _triggerName: string, ast: AnimationTransitionMetadata,
-      private matchFns: TransitionMatcherFn[],
-      private _stateStyles: {[stateName: string]: ɵStyleData}) {
-    const normalizedAst = Array.isArray(ast.animation) ?
-        sequence(<AnimationMetadata[]>ast.animation) :
-        <AnimationMetadata>ast.animation;
-    this._animationAst = normalizedAst;
+      private _triggerName: string, public ast: TransitionAst,
+      private _stateStyles: {[stateName: string]: ɵStyleData}) {}
+
+  match(currentState: any, nextState: any): boolean {
+    return oneOrMoreTransitionsMatch(this.ast.matchers, currentState, nextState);
   }
 
-  match(currentState: any, nextState: any): AnimationTransitionInstruction|undefined {
-    if (!oneOrMoreTransitionsMatch(this.matchFns, currentState, nextState)) return;
+  build(
+      driver: AnimationDriver, element: any, currentState: any, nextState: any,
+      options?: AnimationOptions,
+      subInstructions?: ElementInstructionMap): AnimationTransitionInstruction|undefined {
+    const animationOptions = mergeAnimationOptions(this.ast.options || {}, options || {});
 
     const backupStateStyles = this._stateStyles['*'] || {};
     const currentStateStyles = this._stateStyles[currentState] || backupStateStyles;
     const nextStateStyles = this._stateStyles[nextState] || backupStateStyles;
 
-    const timelines =
-        buildAnimationKeyframes(this._animationAst, currentStateStyles, nextStateStyles);
+    const errors: any[] = [];
+    const timelines = buildAnimationTimelines(
+        driver, element, this.ast.animation, currentStateStyles, nextStateStyles, animationOptions,
+        subInstructions, errors);
 
+    if (errors.length) {
+      const errorMessage = `animation building failed:\n${errors.join("\n")}`;
+      throw new Error(errorMessage);
+    }
+
+    const preStyleMap = new Map<any, {[prop: string]: boolean}>();
+    const postStyleMap = new Map<any, {[prop: string]: boolean}>();
+    const queriedElements = new Set<any>();
+    timelines.forEach(tl => {
+      const elm = tl.element;
+      const preProps = getOrSetAsInMap(preStyleMap, elm, {});
+      tl.preStyleProps.forEach(prop => preProps[prop] = true);
+
+      const postProps = getOrSetAsInMap(postStyleMap, elm, {});
+      tl.postStyleProps.forEach(prop => postProps[prop] = true);
+
+      if (elm !== element) {
+        queriedElements.add(elm);
+      }
+    });
+
+    const queriedElementsList = iteratorToArray(queriedElements.values());
     return createTransitionInstruction(
-        this._triggerName, currentState, nextState, nextState === 'void', currentStateStyles,
-        nextStateStyles, timelines);
+        element, this._triggerName, currentState, nextState, nextState === 'void',
+        currentStateStyles, nextStateStyles, timelines, queriedElementsList, preStyleMap,
+        postStyleMap);
   }
 }
 

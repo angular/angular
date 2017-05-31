@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {CompileQueryMetadata, CompilerConfig, ProxyClass, StaticSymbol} from '@angular/compiler';
+import {CompileQueryMetadata, CompilerConfig, JitReflector, ProxyClass, StaticSymbol} from '@angular/compiler';
 import {CompileAnimationEntryMetadata, CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeMetadata, CompilePipeSummary, CompileProviderMetadata, CompileTemplateMetadata, CompileTokenMetadata, CompileTypeMetadata, tokenReference} from '@angular/compiler/src/compile_metadata';
 import {DomElementSchemaRegistry} from '@angular/compiler/src/schema/dom_element_schema_registry';
 import {ElementSchemaRegistry} from '@angular/compiler/src/schema/element_schema_registry';
@@ -17,7 +17,7 @@ import {Console} from '@angular/core/src/console';
 import {TestBed, inject} from '@angular/core/testing';
 
 import {CompileEntryComponentMetadata, CompileStylesheetMetadata} from '../../src/compile_metadata';
-import {Identifiers, createIdentifierToken, identifierToken} from '../../src/identifiers';
+import {Identifiers, createTokenForExternalReference, createTokenForReference} from '../../src/identifiers';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../src/ml_parser/interpolation_config';
 import {noUndefined} from '../../src/util';
 import {MockSchemaRegistry} from '../../testing';
@@ -977,8 +977,8 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
           const dirA = createDir('[dirA]', {providers: [provider]});
           const elAst: ElementAst = <ElementAst>parse('<div dirA>', [dirA])[0];
           expect(elAst.providers.length).toBe(2);
-          expect(elAst.providers[1].providerType).toBe(ProviderAstType.PublicService);
-          expect(elAst.providers[1].providers).toEqual([provider]);
+          expect(elAst.providers[0].providerType).toBe(ProviderAstType.PublicService);
+          expect(elAst.providers[0].providers).toEqual([provider]);
         });
 
         it('should use the private providers of a component', () => {
@@ -986,8 +986,8 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
           const comp = createDir('my-comp', {viewProviders: [provider]});
           const elAst: ElementAst = <ElementAst>parse('<my-comp>', [comp])[0];
           expect(elAst.providers.length).toBe(2);
-          expect(elAst.providers[1].providerType).toBe(ProviderAstType.PrivateService);
-          expect(elAst.providers[1].providers).toEqual([provider]);
+          expect(elAst.providers[0].providerType).toBe(ProviderAstType.PrivateService);
+          expect(elAst.providers[0].providers).toEqual([provider]);
         });
 
         it('should support multi providers', () => {
@@ -998,8 +998,8 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
           const dirB = createDir('[dirB]', {providers: [provider2]});
           const elAst: ElementAst = <ElementAst>parse('<div dirA dirB>', [dirA, dirB])[0];
           expect(elAst.providers.length).toBe(4);
-          expect(elAst.providers[2].providers).toEqual([provider0, provider2]);
-          expect(elAst.providers[3].providers).toEqual([provider1]);
+          expect(elAst.providers[0].providers).toEqual([provider0, provider2]);
+          expect(elAst.providers[1].providers).toEqual([provider1]);
         });
 
         it('should overwrite non multi providers', () => {
@@ -1010,8 +1010,8 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
           const dirB = createDir('[dirB]', {providers: [provider3]});
           const elAst: ElementAst = <ElementAst>parse('<div dirA dirB>', [dirA, dirB])[0];
           expect(elAst.providers.length).toBe(4);
-          expect(elAst.providers[2].providers).toEqual([provider3]);
-          expect(elAst.providers[3].providers).toEqual([provider2]);
+          expect(elAst.providers[0].providers).toEqual([provider3]);
+          expect(elAst.providers[1].providers).toEqual([provider2]);
         });
 
         it('should overwrite component providers by directive providers', () => {
@@ -1021,7 +1021,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
           const dirA = createDir('[dirA]', {providers: [dirProvider]});
           const elAst: ElementAst = <ElementAst>parse('<my-comp dirA>', [dirA, comp])[0];
           expect(elAst.providers.length).toBe(3);
-          expect(elAst.providers[2].providers).toEqual([dirProvider]);
+          expect(elAst.providers[0].providers).toEqual([dirProvider]);
         });
 
         it('should overwrite view providers by directive providers', () => {
@@ -1031,7 +1031,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
           const dirA = createDir('[dirA]', {providers: [dirProvider]});
           const elAst: ElementAst = <ElementAst>parse('<my-comp dirA>', [dirA, comp])[0];
           expect(elAst.providers.length).toBe(3);
-          expect(elAst.providers[2].providers).toEqual([dirProvider]);
+          expect(elAst.providers[0].providers).toEqual([dirProvider]);
         });
 
         it('should overwrite directives by providers', () => {
@@ -1053,17 +1053,17 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
                   `Mixing multi and non multi provider is not possible for token service0 ("[ERROR ->]<div dirA dirB>"): TestComp@0:0`);
         });
 
-        it('should sort providers by their DI order', () => {
+        it('should sort providers by their DI order, lazy providers first', () => {
           const provider0 = createProvider('service0', {deps: ['type:[dir2]']});
           const provider1 = createProvider('service1');
           const dir2 = createDir('[dir2]', {deps: ['service1']});
           const comp = createDir('my-comp', {providers: [provider0, provider1]});
           const elAst: ElementAst = <ElementAst>parse('<my-comp dir2>', [comp, dir2])[0];
           expect(elAst.providers.length).toBe(4);
-          expect(elAst.providers[0].providers[0].useClass).toEqual(comp.type);
-          expect(elAst.providers[1].providers).toEqual([provider1]);
-          expect(elAst.providers[2].providers[0].useClass).toEqual(dir2.type);
-          expect(elAst.providers[3].providers).toEqual([provider0]);
+          expect(elAst.providers[1].providers[0].useClass).toEqual(comp.type);
+          expect(elAst.providers[2].providers).toEqual([provider1]);
+          expect(elAst.providers[3].providers[0].useClass).toEqual(dir2.type);
+          expect(elAst.providers[0].providers).toEqual([provider0]);
         });
 
         it('should sort directives by their DI order', () => {
@@ -1086,12 +1086,12 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
           const dirA = createDir('[dirA]', {providers: [provider0, provider1], deps: ['service0']});
           const elAst: ElementAst = <ElementAst>parse('<div dirA>', [dirA])[0];
           expect(elAst.providers.length).toBe(3);
-          expect(elAst.providers[0].providers).toEqual([provider0]);
-          expect(elAst.providers[0].eager).toBe(true);
-          expect(elAst.providers[1].providers[0].useClass).toEqual(dirA.type);
+          expect(elAst.providers[1].providers).toEqual([provider0]);
           expect(elAst.providers[1].eager).toBe(true);
-          expect(elAst.providers[2].providers).toEqual([provider1]);
-          expect(elAst.providers[2].eager).toBe(false);
+          expect(elAst.providers[2].providers[0].useClass).toEqual(dirA.type);
+          expect(elAst.providers[2].eager).toBe(true);
+          expect(elAst.providers[0].providers).toEqual([provider1]);
+          expect(elAst.providers[0].eager).toBe(false);
         });
 
         it('should mark dependencies on parent elements as eager', () => {
@@ -1102,12 +1102,12 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
           const elAst: ElementAst =
               <ElementAst>parse('<div dirA><div dirB></div></div>', [dirA, dirB])[0];
           expect(elAst.providers.length).toBe(3);
-          expect(elAst.providers[0].providers[0].useClass).toEqual(dirA.type);
-          expect(elAst.providers[0].eager).toBe(true);
-          expect(elAst.providers[1].providers).toEqual([provider0]);
+          expect(elAst.providers[1].providers[0].useClass).toEqual(dirA.type);
           expect(elAst.providers[1].eager).toBe(true);
-          expect(elAst.providers[2].providers).toEqual([provider1]);
-          expect(elAst.providers[2].eager).toBe(false);
+          expect(elAst.providers[2].providers).toEqual([provider0]);
+          expect(elAst.providers[2].eager).toBe(true);
+          expect(elAst.providers[0].providers).toEqual([provider1]);
+          expect(elAst.providers[0].eager).toBe(false);
         });
 
         it('should mark queried providers as eager', () => {
@@ -1117,12 +1117,12 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
               createDir('[dirA]', {providers: [provider0, provider1], queries: ['service0']});
           const elAst: ElementAst = <ElementAst>parse('<div dirA></div>', [dirA])[0];
           expect(elAst.providers.length).toBe(3);
-          expect(elAst.providers[0].providers[0].useClass).toEqual(dirA.type);
-          expect(elAst.providers[0].eager).toBe(true);
-          expect(elAst.providers[1].providers).toEqual([provider0]);
+          expect(elAst.providers[1].providers[0].useClass).toEqual(dirA.type);
           expect(elAst.providers[1].eager).toBe(true);
-          expect(elAst.providers[2].providers).toEqual([provider1]);
-          expect(elAst.providers[2].eager).toBe(false);
+          expect(elAst.providers[2].providers).toEqual([provider0]);
+          expect(elAst.providers[2].eager).toBe(true);
+          expect(elAst.providers[0].providers).toEqual([provider1]);
+          expect(elAst.providers[0].eager).toBe(false);
         });
 
         it('should not mark dependencies across embedded views as eager', () => {
@@ -1132,10 +1132,10 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
           const elAst: ElementAst =
               <ElementAst>parse('<div dirA><div *ngIf dirB></div></div>', [dirA, dirB])[0];
           expect(elAst.providers.length).toBe(2);
-          expect(elAst.providers[0].providers[0].useClass).toEqual(dirA.type);
-          expect(elAst.providers[0].eager).toBe(true);
-          expect(elAst.providers[1].providers).toEqual([provider0]);
-          expect(elAst.providers[1].eager).toBe(false);
+          expect(elAst.providers[1].providers[0].useClass).toEqual(dirA.type);
+          expect(elAst.providers[1].eager).toBe(true);
+          expect(elAst.providers[0].providers).toEqual([provider0]);
+          expect(elAst.providers[0].eager).toBe(false);
         });
 
         it('should report missing @Self() deps as errors', () => {
@@ -1198,7 +1198,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
           expect(humanizeTplAst(parse('<div a #a="dirA"></div>', [dirA]))).toEqual([
             [ElementAst, 'div'],
             [AttrAst, 'a', ''],
-            [ReferenceAst, 'a', identifierToken(dirA.type)],
+            [ReferenceAst, 'a', createTokenForReference(dirA.type.reference)],
             [DirectiveAst, dirA],
           ]);
         });
@@ -1244,7 +1244,7 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
           expect(humanizeTplAst(parse('<div a #a></div>', [dirA]))).toEqual([
             [ElementAst, 'div'],
             [AttrAst, 'a', ''],
-            [ReferenceAst, 'a', identifierToken(dirA.type)],
+            [ReferenceAst, 'a', createTokenForReference(dirA.type.reference)],
             [DirectiveAst, dirA],
           ]);
         });
@@ -1262,6 +1262,10 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
       });
 
       describe('explicit templates', () => {
+        let reflector: JitReflector;
+
+        beforeEach(() => { reflector = new JitReflector(); });
+
         it('should create embedded templates for <ng-template> elements', () => {
           expect(humanizeTplAst(parse('<template></template>', [
           ]))).toEqual([[EmbeddedTemplateAst]]);
@@ -1286,22 +1290,30 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
         it('should support references via #...', () => {
           expect(humanizeTplAst(parse('<template #a>', []))).toEqual([
             [EmbeddedTemplateAst],
-            [ReferenceAst, 'a', createIdentifierToken(Identifiers.TemplateRef)],
+            [
+              ReferenceAst, 'a', createTokenForExternalReference(reflector, Identifiers.TemplateRef)
+            ],
           ]);
           expect(humanizeTplAst(parse('<ng-template #a>', []))).toEqual([
             [EmbeddedTemplateAst],
-            [ReferenceAst, 'a', createIdentifierToken(Identifiers.TemplateRef)],
+            [
+              ReferenceAst, 'a', createTokenForExternalReference(reflector, Identifiers.TemplateRef)
+            ],
           ]);
         });
 
         it('should support references via ref-...', () => {
           expect(humanizeTplAst(parse('<template ref-a>', []))).toEqual([
             [EmbeddedTemplateAst],
-            [ReferenceAst, 'a', createIdentifierToken(Identifiers.TemplateRef)]
+            [
+              ReferenceAst, 'a', createTokenForExternalReference(reflector, Identifiers.TemplateRef)
+            ]
           ]);
           expect(humanizeTplAst(parse('<ng-template ref-a>', []))).toEqual([
             [EmbeddedTemplateAst],
-            [ReferenceAst, 'a', createIdentifierToken(Identifiers.TemplateRef)]
+            [
+              ReferenceAst, 'a', createTokenForExternalReference(reflector, Identifiers.TemplateRef)
+            ]
           ]);
         });
 

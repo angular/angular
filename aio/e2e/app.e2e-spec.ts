@@ -5,8 +5,8 @@ describe('site App', function() {
   let page: SitePage;
 
   beforeEach(() => {
+    SitePage.setWindowWidth(1050);   // Make the window wide enough to show the SideNav side-by-side.
     page = new SitePage();
-    page.setWindowWidth(1050);   // Make the window wide enough to show the SideNav side-by-side.
     page.navigateTo();
   });
 
@@ -22,7 +22,7 @@ describe('site App', function() {
 
     // navigate to a different page
     page.getLink('features').click();
-    expect(page.getDocViewerText()).toMatch(/Features/i);
+    expect(page.getDocViewerText()).toMatch(/Progressive web apps/i);
 
     // Show the menu
     page.docsMenuLink.click();

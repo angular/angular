@@ -11,7 +11,7 @@ import {Console} from '@angular/core/src/console';
 import {ComponentFixture, TestBed, inject} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-import {NgModuleInjector} from '../../src/linker/ng_module_factory';
+import {InternalNgModuleRef} from '../../src/linker/ng_module_factory';
 import {clearModulesForTest} from '../../src/linker/ng_module_factory_loader';
 import {stringify} from '../../src/util';
 
@@ -404,9 +404,9 @@ function declareTests({useJit}: {useJit: boolean}) {
         class SomeModule {
         }
 
-        const ngModule = <NgModuleInjector<any>>createModule(SomeModule);
-        expect(ngModule.bootstrapFactories.length).toBe(1);
-        expect(ngModule.bootstrapFactories[0].componentType).toBe(SomeComp);
+        const ngModule = <InternalNgModuleRef<any>>createModule(SomeModule);
+        expect(ngModule._bootstrapComponents.length).toBe(1);
+        expect(ngModule._bootstrapComponents[0]).toBe(SomeComp);
       });
 
     });
@@ -785,6 +785,47 @@ function declareTests({useJit}: {useJit: boolean}) {
         const child = createInjector([], parent);
 
         expect(child.get(Injector)).toBe(child);
+      });
+
+      describe('injecting lazy providers into an eager provider via Injector.get', () => {
+
+        it('should inject providers that were declared before it', () => {
+          @NgModule({
+            providers: [
+              {provide: 'lazy', useFactory: () => 'lazyValue'},
+              {
+                provide: 'eager',
+                useFactory: (i: Injector) => `eagerValue: ${i.get('lazy')}`,
+                deps: [Injector]
+              },
+            ]
+          })
+          class MyModule {
+            // NgModule is eager, which makes all of its deps eager
+            constructor(@Inject('eager') eager: any) {}
+          }
+
+          expect(createModule(MyModule).injector.get('eager')).toBe('eagerValue: lazyValue');
+        });
+
+        it('should inject providers that were declared after it', () => {
+          @NgModule({
+            providers: [
+              {
+                provide: 'eager',
+                useFactory: (i: Injector) => `eagerValue: ${i.get('lazy')}`,
+                deps: [Injector]
+              },
+              {provide: 'lazy', useFactory: () => 'lazyValue'},
+            ]
+          })
+          class MyModule {
+            // NgModule is eager, which makes all of its deps eager
+            constructor(@Inject('eager') eager: any) {}
+          }
+
+          expect(createModule(MyModule).injector.get('eager')).toBe('eagerValue: lazyValue');
+        });
       });
 
       it('should throw when no provider defined', () => {

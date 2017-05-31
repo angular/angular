@@ -12,6 +12,10 @@ body {
     clear: both;
 }
 
+.clear {
+    clear: both;
+}
+
 l-relative {
     position: relative;
 }
@@ -44,4 +48,8 @@ l-relative {
     position: absolute !important;
     top: -9999px !important;
     left: -9999px !important;
+}
+
+.text-uppercase {
+  text-transform: uppercase;
 }

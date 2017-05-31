@@ -1,20 +1,23 @@
+<div *ngIf="isFetching" class="progress-bar-container">
+  <md-progress-bar mode="indeterminate" color="warn"></md-progress-bar>
+</div>
+
 <md-toolbar color="primary" class="app-toolbar">
   <button class="hamburger" md-button
     (click)="sidenav.toggle()" title="Docs menu">
-    <md-icon svgIcon="menu"></md-icon>
+    <md-icon [ngClass]="{'sidenav-open': !isSideBySide }" svgIcon="menu"></md-icon>
   </button>
   <a class="nav-link home" href="/"><img src="{{ homeImageUrl }}" title="Home" alt="Home"></a>
   <aio-top-menu *ngIf="isSideBySide" [nodes]="topMenuNodes"></aio-top-menu>
-  <aio-search-box class="search-container" #searchBox></aio-search-box>
+  <aio-search-box class="search-container" #searchBox (search)="doSearch($event)"></aio-search-box>
   <span class="fill-remaining-space"></span>
 </md-toolbar>
-<aio-search-results #searchResults></aio-search-results>
+<aio-search-results #searchResults *ngIf="showSearchResults" (resultSelected)="hideSearchResults()"></aio-search-results>
 
-<a id="top-of-page"></a>
 <md-sidenav-container class="sidenav-container" [class.starting]="isStarting" role="main">
 
-  <md-sidenav [ngClass]="{'collapsed': !isSideBySide }" #sidenav class="sidenav" [opened]="isOpened" [mode]="mode">
-    <aio-nav-menu *ngIf="!isSideBySide" class="top-menu" [nodes]="topMenuNodes" [currentNode]="currentNode"></aio-nav-menu>
+  <md-sidenav [ngClass]="{'collapsed': !isSideBySide }" #sidenav class="sidenav" [opened]="isOpened" [mode]="mode" (open)="updateHostClasses()" (close)="updateHostClasses()">
+    <aio-nav-menu *ngIf="!isSideBySide" [nodes]="topMenuNarrowNodes" [currentNode]="currentNode"></aio-nav-menu>
     <aio-nav-menu [nodes]="sideNavNodes" [currentNode]="currentNode" ></aio-nav-menu>
 
     <div class="doc-version" title="Angular docs version {{currentDocVersion?.title}}">
@@ -25,15 +28,14 @@
   </md-sidenav>
 
   <section class="sidenav-content" [id]="pageId" role="content">
+    <div id="top-of-page"></div>
     <aio-doc-viewer [doc]="currentDocument" (docRendered)="onDocRendered()"></aio-doc-viewer>
     <aio-dt [on]="dtOn" [(doc)]="currentDocument"></aio-dt>
   </section>
 
 </md-sidenav-container>
 
-
-
-<div class="toc-container" [style.max-height.px]="tocMaxHeight">
+<div *ngIf="showFloatingToc" class="toc-container" [style.max-height.px]="tocMaxHeight">
   <aio-toc></aio-toc>
 </div>
 

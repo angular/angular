@@ -23,7 +23,7 @@
   <!-- NOTE: These need to be kept in sync with `ngsw-manifest.json`. -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Droid+Sans+Mono" rel="stylesheet">
-  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"rel="stylesheet">
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
   <!-- -->
 
   <link rel="manifest" href="pwa-manifest.json">
@@ -35,8 +35,27 @@
   </script>
   <script async src='https://www.google-analytics.com/analytics.js'></script>
   <!-- End Google Analytics -->
+
+  <script>
+    /**
+     * Send a blocking request to fetch polyfill. We call this only on non-evergreen browsers.
+     */
+    function polyfillBrowser(polyfillUrl) {
+      var script = document.createElement('script');
+      script.src = polyfillUrl;
+      document.head.appendChild(script);
+    }
+    if (window.document.documentMode) {
+      // polyfill IE11
+      polyfillBrowser('generated/ie-polyfills.min.js');
+    } else if (!Object.assign) {
+      // polyfill googlebot
+      polyfillBrowser('https://cdn.polyfill.io/v2/polyfill.min.js?unknown=polyfill');
+    }
+  </script>
 </head>
 <body>
+
   <aio-shell></aio-shell>
 
   <noscript>

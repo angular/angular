@@ -92,7 +92,7 @@ export class DowngradeComponentAdapter {
         // for `ngOnChanges()`. This is necessary if we are already in a `$digest`, which means that
         // `ngOnChanges()` (which is called by a watcher) will run before the `$observe()` callback.
         let unwatch: any = this.componentScope.$watch(() => {
-          unwatch();
+          unwatch('');
           unwatch = null;
           observeFn((attrs as any)[input.attr]);
         });
@@ -165,7 +165,7 @@ export class DowngradeComponentAdapter {
             next: assignExpr ?
                 ((setter: any) => (v: any /** TODO #9100 */) => setter(this.scope, v))(setter) :
                 ((getter: any) => (v: any /** TODO #9100 */) =>
-                     getter(this.scope, {$event: v}))(getter)
+                     getter(this.scope, {'$event': v}))(getter)
           });
         } else {
           throw new Error(

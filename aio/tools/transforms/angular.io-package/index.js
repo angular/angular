@@ -9,7 +9,9 @@ const Package = require('dgeni').Package;
 const gitPackage = require('dgeni-packages/git');
 const apiPackage = require('../angular-api-package');
 const contentPackage = require('../angular-content-package');
-const { extname } = require('canonical-path');
+const { extname, resolve } = require('canonical-path');
+const { existsSync } = require('fs');
+const { SRC_PATH } = require('../config');
 
 module.exports = new Package('angular.io', [gitPackage, apiPackage, contentPackage])
 
@@ -23,7 +25,11 @@ module.exports = new Package('angular.io', [gitPackage, apiPackage, contentPacka
     renderDocsProcessor.extraData.versionInfo = versionInfo;
   })
 
-  .config(function(checkAnchorLinksProcessor) {
+  .config(function(checkAnchorLinksProcessor, linkInlineTagDef) {
+
+    // Fail the processing if there is an invalid link
+    linkInlineTagDef.failOnBadLink = true;
+
     checkAnchorLinksProcessor.$enabled = true;
     // since we encode the HTML to JSON we need to ensure that this processor runs before that encoding happens.
     checkAnchorLinksProcessor.$runBefore = ['convertToJsonProcessor'];
@@ -32,4 +38,13 @@ module.exports = new Package('angular.io', [gitPackage, apiPackage, contentPacka
     checkAnchorLinksProcessor.checkDoc = (doc) => doc.path && doc.outputPath && extname(doc.outputPath) === '.json';
     // Since we have a `base[href="/"]` arrangement all links are relative to that and not relative to the source document's path
     checkAnchorLinksProcessor.base = '/';
+    // Ignore links to local assets
+    // (This is not optimal in terms of performance without making changes to dgeni-packages there is no other way.
+    //  That being said do this only add 500ms onto the ~30sec doc-gen run - so not a huge issue)
+    checkAnchorLinksProcessor.ignoredLinks.push({
+      test(url) {
+        return (existsSync(resolve(SRC_PATH, url)));
+      }
+    });
+    checkAnchorLinksProcessor.pathVariants = ['', '/', '.html', '/index.html', '#top-of-page'];
   });

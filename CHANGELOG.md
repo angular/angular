@@ -1,3 +1,100 @@
+<a name="4.2.0-rc.1"></a>
+# [4.2.0-rc.1](https://github.com/angular/angular/compare/4.2.0-rc.0...4.2.0-rc.1) (2017-05-26)
+
+### Bug Fixes
+
+* **animations:** repair flicker issues with WA polyfill ([#16937](https://github.com/angular/angular/issues/16937)) ([e7d9fd8](https://github.com/angular/angular/commit/e7d9fd8)), closes [#16919](https://github.com/angular/angular/issues/16919) [#16918](https://github.com/angular/angular/issues/16918)
+* **animations:** use a lightweight renderer for non-animation components ([#17003](https://github.com/angular/angular/issues/17003)) ([3ab86bd](https://github.com/angular/angular/commit/3ab86bd))
+* **compiler:** compile `.ngfactory.ts` files even if nobody references them. ([#16899](https://github.com/angular/angular/issues/16899)) ([573b861](https://github.com/angular/angular/commit/573b861)), closes [#16741](https://github.com/angular/angular/issues/16741)
+* **compiler:** do not report type errors for arguments with `@Inject` ([#16222](https://github.com/angular/angular/issues/16222)) ([27761b4](https://github.com/angular/angular/commit/27761b4)), closes [#15424](https://github.com/angular/angular/issues/15424)
+* **core:** make decorators closure safe ([#16905](https://github.com/angular/angular/issues/16905)) ([a80ac0a](https://github.com/angular/angular/commit/a80ac0a)), closes [#16889](https://github.com/angular/angular/issues/16889)
+* **tsc-wrapped:** ignore `|null` and `|undefined` when collecting types ([#16222](https://github.com/angular/angular/issues/16222)) ([1651a8f](https://github.com/angular/angular/commit/1651a8f))
+* **tsc-wrapped:** resolve short-hand literal values to locals ([#16873](https://github.com/angular/angular/issues/16873)) ([11c10b2](https://github.com/angular/angular/commit/11c10b2))
+
+
+### Features
+
+* **compiler:** add location note to extracted xliff2 files ([#16791](https://github.com/angular/angular/issues/16791)) ([08dfe91](https://github.com/angular/angular/commit/08dfe91)), closes [#16531](https://github.com/angular/angular/issues/16531)
+* **core:** update zone.js to 0.8.10 and expose the flush method ([#16860](https://github.com/angular/angular/issues/16860)) ([85d4c4b](https://github.com/angular/angular/commit/85d4c4b))
+* **tsc-wrapped:** support template literals in metadata collection ([#16880](https://github.com/angular/angular/issues/16880)) ([6e41add](https://github.com/angular/angular/commit/6e41add))
+
+
+
+<a name="4.2.0-rc.0"></a>
+# [4.2.0-rc.0](https://github.com/angular/angular/compare/4.2.0-beta.0...4.2.0-rc.0) (2017-05-19)
+
+
+### Bug Fixes
+
+* **animations:** make sure reuseable animation subtitutions work without default params ([#16875](https://github.com/angular/angular/issues/16875)) ([7d9f96a](https://github.com/angular/angular/commit/7d9f96a))
+* **animations:** only require one flushMicrotasks call when testing animations ([6cb93c1](https://github.com/angular/angular/commit/6cb93c1))
+* **compiler:** avoid a `...null` spread in extraction ([#16547](https://github.com/angular/angular/issues/16547)) ([e0a8376](https://github.com/angular/angular/commit/e0a8376))
+* **compiler-cli:** allow '==' to compare nullable types ([#16731](https://github.com/angular/angular/issues/16731)) ([d761059](https://github.com/angular/angular/commit/d761059))
+* **core:** detach projected views when a parent view is destroyed ([#16592](https://github.com/angular/angular/issues/16592)) ([f0f6544](https://github.com/angular/angular/commit/f0f6544)), closes [#15578](https://github.com/angular/angular/issues/15578)
+* **core:** projected views should be dirty checked when the declaring component is dirty checked. ([#16592](https://github.com/angular/angular/issues/16592)) ([fcc91d8](https://github.com/angular/angular/commit/fcc91d8)), closes [#14321](https://github.com/angular/angular/issues/14321)
+* **http:** flatten metadata for [@angular](https://github.com/angular)/http/testing ([9da6340](https://github.com/angular/angular/commit/9da6340)), closes [#15521](https://github.com/angular/angular/issues/15521)
+* **http:** honor RequestArgs.search and RequestArgs.params map type ([aef5245](https://github.com/angular/angular/commit/aef5245)), closes [#15761](https://github.com/angular/angular/issues/15761) [#16392](https://github.com/angular/angular/issues/16392)
+* **http:** introduce encodingHint for text() for better ArrayBuffer support ([7ae7a84](https://github.com/angular/angular/commit/7ae7a84)), closes [#15932](https://github.com/angular/angular/issues/15932) [#16420](https://github.com/angular/angular/issues/16420)
+* **router:** fix redirect to a URL with a param having multiple values ([#16376](https://github.com/angular/angular/issues/16376)) ([5d4b36f](https://github.com/angular/angular/commit/5d4b36f)), closes [#16310](https://github.com/angular/angular/issues/16310)
+
+
+### Features
+
+* **animations:** introduce a wave of new animation features ([16c8167](https://github.com/angular/angular/commit/16c8167))
+* **animations:** introduce routeable animation support ([f1a9e3c](https://github.com/angular/angular/commit/f1a9e3c))
+* add .ngsummary.ts files to support AOT unit tests ([547c363](https://github.com/angular/angular/commit/547c363))
+* introduce `TestBed.overrideProvider` ([#16725](https://github.com/angular/angular/issues/16725)) ([39b92f7](https://github.com/angular/angular/commit/39b92f7))
+* **compiler:** support a non-null postfix assert ([#16672](https://github.com/angular/angular/issues/16672)) ([b9521b5](https://github.com/angular/angular/commit/b9521b5))
+* **core:** introduce fixture.whenRenderingDone for testing ([#16732](https://github.com/angular/angular/issues/16732)) ([38c524d](https://github.com/angular/angular/commit/38c524d))
+
+
+### Performance Improvements
+
+* **animations:** reduce size of animations bundle ([712630c](https://github.com/angular/angular/commit/712630c))
+
+
+
+<a name="4.1.3"></a>
+## [4.1.3](https://github.com/angular/angular/compare/4.1.2...4.1.3) (2017-05-17)
+
+
+### Bug Fixes
+
+* add typescript 2.3.2 typings test ([#16738](https://github.com/angular/angular/issues/16738)) ([a5bdbed](https://github.com/angular/angular/commit/a5bdbed)), closes [#16663](https://github.com/angular/angular/issues/16663)
+* **compiler-cli:** import routing module with forRoot ([#16438](https://github.com/angular/angular/issues/16438)) ([b7f8581](https://github.com/angular/angular/commit/b7f8581))
+* **platform-server:** wait for async app initializers to complete before removing server side styles ([#16712](https://github.com/angular/angular/issues/16712)) ([0a82f7d](https://github.com/angular/angular/commit/0a82f7d)), closes [#15716](https://github.com/angular/angular/issues/15716)
+* **router:** Wrap Promise-like instances in native Promises ([#16759](https://github.com/angular/angular/issues/16759)) ([883ca28](https://github.com/angular/angular/commit/883ca28))
+* **upgrade:** Prevent renaming of $inject property ([#16706](https://github.com/angular/angular/issues/16706)) ([afb7540](https://github.com/angular/angular/commit/afb7540))
+* **upgrade:** use quote to prevent ClossureCompiler obfuscating $event. ([#16724](https://github.com/angular/angular/issues/16724)) ([47df3d6](https://github.com/angular/angular/commit/47df3d6))
+
+
+
+<a name="4.2.0-beta.1"></a>
+# [4.2.0-beta.1](https://github.com/angular/angular/compare/4.2.0-beta.0...4.2.0-beta.1) (2017-05-10)
+
+
+### Features
+
+* add .ngsummary.ts files to support AOT unit tests ([547c363](https://github.com/angular/angular/commit/547c363))
+
+
+
+<a name="4.1.2"></a>
+## [4.1.2](https://github.com/angular/angular/compare/4.1.1...4.1.2) (2017-05-10)
+
+
+### Bug Fixes
+
+* **compiler:** avoid a `...null` spread in extraction ([#16547](https://github.com/angular/angular/issues/16547)) ([d0e1688](https://github.com/angular/angular/commit/d0e1688))
+* **core:** detach projected views when a parent view is destroyed ([#16592](https://github.com/angular/angular/issues/16592)) ([ee6705a](https://github.com/angular/angular/commit/ee6705a)), closes [#15578](https://github.com/angular/angular/issues/15578)
+* **core:** projected views should be dirty checked when the declaring component is dirty checked. ([#16592](https://github.com/angular/angular/issues/16592)) ([9218812](https://github.com/angular/angular/commit/9218812)), closes [#14321](https://github.com/angular/angular/issues/14321)
+* **http:** flatten metadata for [@angular](https://github.com/angular)/http/testing ([9c70a3c](https://github.com/angular/angular/commit/9c70a3c)), closes [#15521](https://github.com/angular/angular/issues/15521)
+* **http:** honor RequestArgs.search and RequestArgs.params map type ([63066f7](https://github.com/angular/angular/commit/63066f7)), closes [#15761](https://github.com/angular/angular/issues/15761) [#16392](https://github.com/angular/angular/issues/16392)
+* **http:** introduce encodingHint for text() for better ArrayBuffer support ([ec3b6e9](https://github.com/angular/angular/commit/ec3b6e9)), closes [#15932](https://github.com/angular/angular/issues/15932) [#16420](https://github.com/angular/angular/issues/16420)
+* **router:** fix redirect to a URL with a param having multiple values ([#16376](https://github.com/angular/angular/issues/16376)) ([915eae5](https://github.com/angular/angular/commit/915eae5)), closes [#16310](https://github.com/angular/angular/issues/16310)
+
+
+
 <a name="4.2.0-beta.0"></a>
 # [4.2.0-beta.0](https://github.com/angular/angular/compare/4.1.0...4.2.0-beta.0) (2017-05-04)
 

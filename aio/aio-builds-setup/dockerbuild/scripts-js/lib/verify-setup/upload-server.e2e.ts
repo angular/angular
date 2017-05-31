@@ -159,7 +159,7 @@ describe('upload-server (on HTTP)', () => {
       });
 
 
-      it(`should create files/directories owned by '${h.serverUser}'`, done => {
+      it(`should create files/directories owned by '${h.wwwUser}'`, done => {
         const shaDir = path.join(h.buildsDir, pr, sha9);
         const idxPath = path.join(shaDir, 'index.html');
         const barPath = path.join(shaDir, 'foo', 'bar.js');
@@ -167,7 +167,7 @@ describe('upload-server (on HTTP)', () => {
         uploadPromise.
           then(() => Promise.all([
             h.runCmd(`find ${shaDir}`),
-            h.runCmd(`find ${shaDir} -user ${h.serverUser}`),
+            h.runCmd(`find ${shaDir} -user ${h.wwwUser}`),
           ])).
           then(([{stdout: allFiles}, {stdout: userFiles}]) => {
             expect(userFiles).toBe(allFiles);

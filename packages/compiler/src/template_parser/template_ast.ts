@@ -6,11 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SecurityContext, ɵLifecycleHooks as LifecycleHooks} from '@angular/core';
+import {SecurityContext} from '@angular/core';
 
+import {AstPath} from '../ast_path';
 import {CompileDirectiveSummary, CompileProviderMetadata, CompileTokenMetadata} from '../compile_metadata';
 import {AST} from '../expression_parser/ast';
+import {LifecycleHooks} from '../lifecycle_reflector';
 import {ParseSourceSpan} from '../parse_util';
+
+
 
 /**
  * An Abstract Syntax Tree node representing part of a parsed Angular template.
@@ -269,6 +273,77 @@ export interface TemplateAstVisitor {
 }
 
 /**
+ * A visitor that accepts each node but doesn't do anything. It is intended to be used
+ * as the base class for a visitor that is only interested in a subset of the node types.
+ */
+export class NullTemplateVisitor implements TemplateAstVisitor {
+  visitNgContent(ast: NgContentAst, context: any): void {}
+  visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): void {}
+  visitElement(ast: ElementAst, context: any): void {}
+  visitReference(ast: ReferenceAst, context: any): void {}
+  visitVariable(ast: VariableAst, context: any): void {}
+  visitEvent(ast: BoundEventAst, context: any): void {}
+  visitElementProperty(ast: BoundElementPropertyAst, context: any): void {}
+  visitAttr(ast: AttrAst, context: any): void {}
+  visitBoundText(ast: BoundTextAst, context: any): void {}
+  visitText(ast: TextAst, context: any): void {}
+  visitDirective(ast: DirectiveAst, context: any): void {}
+  visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): void {}
+}
+
+/**
+ * Base class that can be used to build a visitor that visits each node
+ * in an template ast recursively.
+ */
+export class RecursiveTemplateAstVisitor extends NullTemplateVisitor implements TemplateAstVisitor {
+  constructor() { super(); }
+
+  // Nodes with children
+  visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {
+    return this.visitChildren(context, visit => {
+      visit(ast.attrs);
+      visit(ast.references);
+      visit(ast.variables);
+      visit(ast.directives);
+      visit(ast.providers);
+      visit(ast.children);
+    });
+  }
+
+  visitElement(ast: ElementAst, context: any): any {
+    return this.visitChildren(context, visit => {
+      visit(ast.attrs);
+      visit(ast.inputs);
+      visit(ast.outputs);
+      visit(ast.references);
+      visit(ast.directives);
+      visit(ast.providers);
+      visit(ast.children);
+    });
+  }
+
+  visitDirective(ast: DirectiveAst, context: any): any {
+    return this.visitChildren(context, visit => {
+      visit(ast.inputs);
+      visit(ast.hostProperties);
+      visit(ast.hostEvents);
+    });
+  }
+
+  protected visitChildren<T extends TemplateAst>(
+      context: any,
+      cb: (visit: (<V extends TemplateAst>(children: V[]|undefined) => void)) => void) {
+    let results: any[][] = [];
+    let t = this;
+    function visit<T extends TemplateAst>(children: T[] | undefined) {
+      if (children && children.length) results.push(templateVisitAll(t, children, context));
+    }
+    cb(visit);
+    return [].concat.apply([], results);
+  }
+}
+
+/**
  * Visit every node in a list of {@link TemplateAst}s with the given {@link TemplateAstVisitor}.
  */
 export function templateVisitAll(
@@ -285,3 +360,5 @@ export function templateVisitAll(
   });
   return result;
 }
+
+export type TemplateAstPath = AstPath<TemplateAst>;

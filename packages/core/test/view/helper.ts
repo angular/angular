@@ -7,7 +7,7 @@
  */
 
 import {Injector, NgModuleRef, RootRenderer, Sanitizer} from '@angular/core';
-import {ArgumentType, NodeCheckFn, RootData, Services, ViewData, ViewDefinition, initServicesIfNeeded} from '@angular/core/src/view/index';
+import {ArgumentType, NodeCheckFn, NodeDef, RootData, Services, ViewData, ViewDefinition, initServicesIfNeeded} from '@angular/core/src/view/index';
 import {TestBed} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
@@ -37,6 +37,15 @@ export function createRootView(
       TestBed.get(NgModuleRef), context);
 }
 
-export let removeNodes: Node[];
+export function createEmbeddedView(parent: ViewData, anchorDef: NodeDef, context?: any): ViewData {
+  return Services.createEmbeddedView(parent, anchorDef, anchorDef.element !.template !, context);
+}
+
+let removeNodes: Node[];
+
 beforeEach(() => { removeNodes = []; });
 afterEach(() => { removeNodes.forEach((node) => getDOM().remove(node)); });
+
+export function recordNodeToRemove(node: Node) {
+  removeNodes.push(node);
+}

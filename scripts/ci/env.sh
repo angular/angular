@@ -59,10 +59,7 @@ if [[ ${TRAVIS:-} ]]; then
       setEnvVar KARMA_JS_BROWSERS `node -e "console.log(require('/home/travis/build/angular/angular/browser-providers.conf').browserstackAliases.CI_OPTIONAL.join(','))"`
       ;;
     aio)
-      # Due to network latency/server performance, the min accepted PWA score
-      # on previews is a little lower than on staging.
-      setEnvVar MIN_PWA_SCORE_PREVIEW 93
-      setEnvVar MIN_PWA_SCORE_STAGING 95
+      setEnvVar MIN_PWA_SCORE 95
       ;;
   esac
 else
@@ -122,6 +119,9 @@ setEnvVar PATH $HOME/.yarn/bin:$PATH
 # absolute module ids (e.g. @angular/core)
 setEnvVar NODE_PATH ${NODE_PATH:-}:${PROJECT_ROOT}/dist/all:${PROJECT_ROOT}/dist/tools
 setEnvVar LOGS_DIR /tmp/angular-build/logs
+
+# Log file for full PWA testing results
+setEnvVar PWA_RESULTS_LOG $LOGS_DIR/pwa-results.json
 
 # strip leading "/home/travis/build/angular/angular/" or "./" path. Could this be done in one shot?
 CURRENT_SHELL_SOURCE_FILE=${BASH_SOURCE#${PROJECT_ROOT}/}

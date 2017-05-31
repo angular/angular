@@ -72,7 +72,7 @@ import {UrlTree} from '../url_tree';
  *  - 'merge' merge the queryParams into the current queryParams
  *  - 'preserve' prserve the current queryParams
  *  - default / '' use the queryParams only
- *  same options for {@link NavigationExtras.queryParamsHandling}
+ *  same options for {@link NavigationExtras#queryParamsHandling}
  *
  * ```
  * <a [routerLink]="['/user/bob']" [queryParams]="{debug: true}" queryParamsHandling="merge">
@@ -89,7 +89,7 @@ import {UrlTree} from '../url_tree';
  *
  * @ngModule RouterModule
  *
- * See {@link Router.createUrlTree} for more information.
+ * See {@link Router#createUrlTree} for more information.
  *
  * @stable
  */

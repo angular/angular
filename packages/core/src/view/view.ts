@@ -17,7 +17,8 @@ import {checkAndUpdateQuery, createQuery} from './query';
 import {createTemplateData, createViewContainerData} from './refs';
 import {checkAndUpdateTextDynamic, checkAndUpdateTextInline, createText} from './text';
 import {ArgumentType, CheckType, ElementData, NodeData, NodeDef, NodeFlags, ProviderData, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewState, ViewUpdateFn, asElementData, asQueryList, asTextData} from './types';
-import {NOOP, checkBindingNoChanges, isComponentView, resolveViewDefinition} from './util';
+import {NOOP, checkBindingNoChanges, isComponentView, markParentViewsForCheckProjectedViews, resolveDefinition, tokenKey} from './util';
+import {detachProjectedView} from './view_attach';
 
 export function viewDef(
     flags: ViewFlags, nodes: NodeDef[], updateDirectives?: ViewUpdateFn,
@@ -101,7 +102,7 @@ export function viewDef(
       const isPrivateService = (node.flags & NodeFlags.PrivateProvider) !== 0;
       const isComponent = (node.flags & NodeFlags.Component) !== 0;
       if (!isPrivateService || isComponent) {
-        currentParent !.element !.publicProviders ![node.provider !.tokenKey] = node;
+        currentParent !.element !.publicProviders ![tokenKey(node.provider !.token)] = node;
       } else {
         if (!currentElementHasPrivateProviders) {
           currentElementHasPrivateProviders = true;
@@ -109,7 +110,7 @@ export function viewDef(
           currentParent !.element !.allProviders =
               Object.create(currentParent !.element !.publicProviders);
         }
-        currentParent !.element !.allProviders ![node.provider !.tokenKey] = node;
+        currentParent !.element !.allProviders ![tokenKey(node.provider !.token)] = node;
       }
       if (isComponent) {
         currentParent !.element !.componentProvider = node;
@@ -183,11 +184,11 @@ function validateNode(parent: NodeDef | null, node: NodeDef, nodeCount: number) 
   }
 }
 
-export function createEmbeddedView(parent: ViewData, anchorDef: NodeDef, context?: any): ViewData {
+export function createEmbeddedView(
+    parent: ViewData, anchorDef: NodeDef, viewDef: ViewDefinition, context?: any): ViewData {
   // embedded views are seen as siblings to the anchor, so we need
   // to get the parent of the anchor and use it as parentIndex.
-  const view =
-      createView(parent.root, parent.renderer, parent, anchorDef, anchorDef.element !.template !);
+  const view = createView(parent.root, parent.renderer, parent, anchorDef, viewDef);
   initView(view, parent.component, context);
   createViewNodes(view);
   return view;
@@ -198,6 +199,19 @@ export function createRootView(root: RootData, def: ViewDefinition, context?: an
   initView(view, context, context);
   createViewNodes(view);
   return view;
+}
+
+export function createComponentView(
+    parentView: ViewData, nodeDef: NodeDef, viewDef: ViewDefinition, hostElement: any): ViewData {
+  const rendererType = nodeDef.element !.componentRendererType;
+  let compRenderer: Renderer2;
+  if (!rendererType) {
+    compRenderer = parentView.root.renderer;
+  } else {
+    compRenderer = parentView.root.rendererFactory.createRenderer(hostElement, rendererType);
+  }
+  return createView(
+      parentView.root, compRenderer, parentView, nodeDef.element !.componentProvider, viewDef);
 }
 
 function createView(
@@ -239,16 +253,8 @@ function createViewNodes(view: ViewData) {
         const el = createElement(view, renderHost, nodeDef) as any;
         let componentView: ViewData = undefined !;
         if (nodeDef.flags & NodeFlags.ComponentView) {
-          const compViewDef = resolveViewDefinition(nodeDef.element !.componentView !);
-          const rendererType = nodeDef.element !.componentRendererType;
-          let compRenderer: Renderer2;
-          if (!rendererType) {
-            compRenderer = view.root.renderer;
-          } else {
-            compRenderer = view.root.rendererFactory.createRenderer(el, rendererType);
-          }
-          componentView = createView(
-              view.root, compRenderer, view, nodeDef.element !.componentProvider, compViewDef);
+          const compViewDef = resolveDefinition(nodeDef.element !.componentView !);
+          componentView = Services.createComponentView(view, nodeDef, compViewDef, el);
         }
         listenToElementOutputs(view, componentView, nodeDef, el);
         nodeData = <ElementData>{
@@ -314,12 +320,14 @@ function createViewNodes(view: ViewData) {
 }
 
 export function checkNoChangesView(view: ViewData) {
+  markProjectedViewsForCheck(view);
   Services.updateDirectives(view, CheckType.CheckNoChanges);
   execEmbeddedViewsAction(view, ViewAction.CheckNoChanges);
   Services.updateRenderer(view, CheckType.CheckNoChanges);
   execComponentViewsAction(view, ViewAction.CheckNoChanges);
   // Note: We don't check queries for changes as we didn't do this in v2.x.
   // TODO(tbosch): investigate if we can enable the check again in v5.x with a nicer error message.
+  view.state &= ~(ViewState.CheckProjectedViews | ViewState.CheckProjectedView);
 }
 
 export function checkAndUpdateView(view: ViewData) {
@@ -329,6 +337,7 @@ export function checkAndUpdateView(view: ViewData) {
   } else {
     view.state &= ~ViewState.FirstCheck;
   }
+  markProjectedViewsForCheck(view);
   Services.updateDirectives(view, CheckType.CheckAndUpdate);
   execEmbeddedViewsAction(view, ViewAction.CheckAndUpdate);
   execQueriesAction(
@@ -343,7 +352,6 @@ export function checkAndUpdateView(view: ViewData) {
   execComponentViewsAction(view, ViewAction.CheckAndUpdate);
   execQueriesAction(
       view, NodeFlags.TypeViewQuery, NodeFlags.DynamicQuery, CheckType.CheckAndUpdate);
-
   callLifecycleHooksChildrenFirst(
       view, NodeFlags.AfterViewChecked |
           (view.state & ViewState.FirstCheck ? NodeFlags.AfterViewInit : 0));
@@ -351,6 +359,7 @@ export function checkAndUpdateView(view: ViewData) {
   if (view.def.flags & ViewFlags.OnPush) {
     view.state &= ~ViewState.ChecksEnabled;
   }
+  view.state &= ~(ViewState.CheckProjectedViews | ViewState.CheckProjectedView);
 }
 
 export function checkAndUpdateNode(
@@ -360,6 +369,31 @@ export function checkAndUpdateNode(
     return checkAndUpdateNodeInline(view, nodeDef, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
   } else {
     return checkAndUpdateNodeDynamic(view, nodeDef, v0);
+  }
+}
+
+function markProjectedViewsForCheck(view: ViewData) {
+  const def = view.def;
+  if (!(def.nodeFlags & NodeFlags.ProjectedTemplate)) {
+    return;
+  }
+  for (let i = 0; i < def.nodes.length; i++) {
+    const nodeDef = def.nodes[i];
+    if (nodeDef.flags & NodeFlags.ProjectedTemplate) {
+      const projectedViews = asElementData(view, i).template._projectedViews;
+      if (projectedViews) {
+        for (let i = 0; i < projectedViews.length; i++) {
+          const projectedView = projectedViews[i];
+          projectedView.state |= ViewState.CheckProjectedView;
+          markParentViewsForCheckProjectedViews(projectedView, view);
+        }
+      }
+    } else if ((nodeDef.childFlags & NodeFlags.ProjectedTemplate) === 0) {
+      // a parent with leafs
+      // no child is a component,
+      // then skip the children
+      i += nodeDef.childCount;
+    }
   }
 }
 
@@ -474,6 +508,7 @@ export function destroyView(view: ViewData) {
       view.disposables[i]();
     }
   }
+  detachProjectedView(view);
   if (view.renderer.destroyNode) {
     destroyViewNodes(view);
   }
@@ -498,7 +533,9 @@ function destroyViewNodes(view: ViewData) {
 enum ViewAction {
   CreateViewNodes,
   CheckNoChanges,
+  CheckNoChangesProjectedViews,
   CheckAndUpdate,
+  CheckAndUpdateProjectedViews,
   Destroy
 }
 
@@ -547,24 +584,55 @@ function callViewAction(view: ViewData, action: ViewAction) {
   const viewState = view.state;
   switch (action) {
     case ViewAction.CheckNoChanges:
-      if ((viewState & ViewState.CatDetectChanges) === ViewState.CatDetectChanges &&
-          (viewState & ViewState.Destroyed) === 0) {
-        checkNoChangesView(view);
+      if ((viewState & ViewState.Destroyed) === 0) {
+        if ((viewState & ViewState.CatDetectChanges) === ViewState.CatDetectChanges) {
+          checkNoChangesView(view);
+        } else if (viewState & ViewState.CheckProjectedViews) {
+          execProjectedViewsAction(view, ViewAction.CheckNoChangesProjectedViews);
+        }
+      }
+      break;
+    case ViewAction.CheckNoChangesProjectedViews:
+      if ((viewState & ViewState.Destroyed) === 0) {
+        if (viewState & ViewState.CheckProjectedView) {
+          checkNoChangesView(view);
+        } else if (viewState & ViewState.CheckProjectedViews) {
+          execProjectedViewsAction(view, action);
+        }
       }
       break;
     case ViewAction.CheckAndUpdate:
-      if ((viewState & ViewState.CatDetectChanges) === ViewState.CatDetectChanges &&
-          (viewState & ViewState.Destroyed) === 0) {
-        checkAndUpdateView(view);
+      if ((viewState & ViewState.Destroyed) === 0) {
+        if ((viewState & ViewState.CatDetectChanges) === ViewState.CatDetectChanges) {
+          checkAndUpdateView(view);
+        } else if (viewState & ViewState.CheckProjectedViews) {
+          execProjectedViewsAction(view, ViewAction.CheckAndUpdateProjectedViews);
+        }
+      }
+      break;
+    case ViewAction.CheckAndUpdateProjectedViews:
+      if ((viewState & ViewState.Destroyed) === 0) {
+        if (viewState & ViewState.CheckProjectedView) {
+          checkAndUpdateView(view);
+        } else if (viewState & ViewState.CheckProjectedViews) {
+          execProjectedViewsAction(view, action);
+        }
       }
       break;
     case ViewAction.Destroy:
+      // Note: destroyView recurses over all views,
+      // so we don't need to special case projected views here.
       destroyView(view);
       break;
     case ViewAction.CreateViewNodes:
       createViewNodes(view);
       break;
   }
+}
+
+function execProjectedViewsAction(view: ViewData, action: ViewAction) {
+  execEmbeddedViewsAction(view, action);
+  execComponentViewsAction(view, action);
 }
 
 function execQueriesAction(

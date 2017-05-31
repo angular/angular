@@ -9,7 +9,7 @@
 import {Routes} from '../src/config';
 import {createRouterState} from '../src/create_router_state';
 import {recognize} from '../src/recognize';
-import {DefaultRouteReuseStrategy} from '../src/router';
+import {DefaultRouteReuseStrategy} from '../src/route_reuse_strategy';
 import {ActivatedRoute, RouterState, RouterStateSnapshot, advanceActivatedRoute, createEmptyState} from '../src/router_state';
 import {PRIMARY_OUTLET} from '../src/shared';
 import {DefaultUrlSerializer, UrlSegmentGroup, UrlTree} from '../src/url_tree';
@@ -80,7 +80,6 @@ describe('create router state', () => {
     const currP = state.firstChild(state.root) !;
     expect(prevP).toBe(currP);
 
-    const prevC = prevState.children(prevP);
     const currC = state.children(currP);
 
     expect(currP._futureSnapshot.params).toEqual({id: '2', p: '22'});

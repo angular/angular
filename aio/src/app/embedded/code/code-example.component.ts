@@ -18,7 +18,9 @@ import { getBoolFromAttribute } from 'app/shared/attribute-utils';
   template: `
     <header *ngIf="title">{{title}}</header>
     <aio-code [ngClass]="classes" [code]="code"
-    [language]="language" [linenums]="linenums" [path]="path" [region]="region" [hideCopy]="hideCopy"></aio-code>
+    [language]="language" [linenums]="linenums"
+    [path]="path" [region]="region"
+    [hideCopy]="hideCopy" [title]="title"></aio-code>
   `
 })
 export class CodeExampleComponent implements OnInit {
@@ -26,7 +28,7 @@ export class CodeExampleComponent implements OnInit {
   classes: {};
   code: string;
   language: string;
-  linenums: boolean | number;
+  linenums: string;
   path: string;
   region: string;
   title: string;
@@ -36,7 +38,7 @@ export class CodeExampleComponent implements OnInit {
   isAvoid = false;
 
   constructor(private elementRef: ElementRef) {
-    const element = this.elementRef.nativeElement;
+    const element: HTMLElement = this.elementRef.nativeElement;
 
     this.language = element.getAttribute('language') || '';
     this.linenums = element.getAttribute('linenums');

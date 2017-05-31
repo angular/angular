@@ -6,20 +6,25 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, ɵArgumentType as ArgumentType, ɵBindingFlags as BindingFlags, ɵDepFlags as DepFlags, ɵLifecycleHooks as LifecycleHooks, ɵNodeFlags as NodeFlags, ɵQueryBindingType as QueryBindingType, ɵQueryValueType as QueryValueType, ɵViewFlags as ViewFlags, ɵelementEventFullName as elementEventFullName} from '@angular/core';
+import {ChangeDetectionStrategy, ɵArgumentType as ArgumentType, ɵBindingFlags as BindingFlags, ɵDepFlags as DepFlags, ɵNodeFlags as NodeFlags, ɵQueryBindingType as QueryBindingType, ɵQueryValueType as QueryValueType, ɵViewFlags as ViewFlags, ɵelementEventFullName as elementEventFullName} from '@angular/core';
 
 import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompilePipeSummary, CompileProviderMetadata, CompileTokenMetadata, CompileTypeMetadata, rendererTypeName, tokenReference, viewClassName} from '../compile_metadata';
+import {CompileReflector} from '../compile_reflector';
 import {BuiltinConverter, EventHandlerVars, LocalResolver, convertActionBinding, convertPropertyBinding, convertPropertyBindingBuiltins} from '../compiler_util/expression_converter';
 import {CompilerConfig} from '../config';
 import {AST, ASTWithSource, Interpolation} from '../expression_parser/ast';
-import {Identifiers, createIdentifier, createIdentifierToken, resolveIdentifier} from '../identifiers';
+import {Identifiers} from '../identifiers';
 import {CompilerInjectable} from '../injectable';
+import {LifecycleHooks} from '../lifecycle_reflector';
 import {isNgContainer} from '../ml_parser/tags';
 import * as o from '../output/output_ast';
 import {convertValueToOutputAst} from '../output/value_util';
 import {ParseSourceSpan} from '../parse_util';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ProviderAst, ProviderAstType, QueryMatch, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '../template_parser/template_ast';
+import {OutputContext} from '../util';
+
+import {componentFactoryResolverProviderDef, depDef, lifecycleHookToNodeFlag, providerDef} from './provider_compiler';
 
 const CLASS_ATTR = 'class';
 const STYLE_ATTR = 'style';
@@ -27,60 +32,57 @@ const IMPLICIT_TEMPLATE_VAR = '\$implicit';
 const NG_CONTAINER_TAG = 'ng-container';
 
 export class ViewCompileResult {
-  constructor(
-      public statements: o.Statement[], public viewClassVar: string,
-      public rendererTypeVar: string) {}
+  constructor(public viewClassVar: string, public rendererTypeVar: string) {}
 }
 
 @CompilerInjectable()
 export class ViewCompiler {
   constructor(
-      private _genConfigNext: CompilerConfig, private _schemaRegistry: ElementSchemaRegistry) {}
+      private _config: CompilerConfig, private _reflector: CompileReflector,
+      private _schemaRegistry: ElementSchemaRegistry) {}
 
   compileComponent(
-      component: CompileDirectiveMetadata, template: TemplateAst[], styles: o.Expression,
-      usedPipes: CompilePipeSummary[]): ViewCompileResult {
+      outputCtx: OutputContext, component: CompileDirectiveMetadata, template: TemplateAst[],
+      styles: o.Expression, usedPipes: CompilePipeSummary[]): ViewCompileResult {
     let embeddedViewCount = 0;
     const staticQueryIds = findStaticQueryIds(template);
-
-    const statements: o.Statement[] = [];
 
     let renderComponentVarName: string = undefined !;
     if (!component.isHost) {
       const template = component.template !;
       const customRenderData: o.LiteralMapEntry[] = [];
       if (template.animations && template.animations.length) {
-        customRenderData.push(
-            new o.LiteralMapEntry('animation', convertValueToOutputAst(template.animations), true));
+        customRenderData.push(new o.LiteralMapEntry(
+            'animation', convertValueToOutputAst(outputCtx, template.animations), true));
       }
 
       const renderComponentVar = o.variable(rendererTypeName(component.type.reference));
       renderComponentVarName = renderComponentVar.name !;
-      statements.push(
+      outputCtx.statements.push(
           renderComponentVar
-              .set(o.importExpr(createIdentifier(Identifiers.createRendererType2))
-                       .callFn([new o.LiteralMapExpr([
-                         new o.LiteralMapEntry('encapsulation', o.literal(template.encapsulation)),
-                         new o.LiteralMapEntry('styles', styles),
-                         new o.LiteralMapEntry('data', new o.LiteralMapExpr(customRenderData))
-                       ])]))
+              .set(o.importExpr(Identifiers.createRendererType2).callFn([new o.LiteralMapExpr([
+                new o.LiteralMapEntry('encapsulation', o.literal(template.encapsulation)),
+                new o.LiteralMapEntry('styles', styles),
+                new o.LiteralMapEntry('data', new o.LiteralMapExpr(customRenderData))
+              ])]))
               .toDeclStmt(
-                  o.importType(createIdentifier(Identifiers.RendererType2)),
-                  [o.StmtModifier.Final]));
+                  o.importType(Identifiers.RendererType2),
+                  [o.StmtModifier.Final, o.StmtModifier.Exported]));
     }
 
     const viewBuilderFactory = (parent: ViewBuilder | null): ViewBuilder => {
       const embeddedViewIndex = embeddedViewCount++;
       return new ViewBuilder(
-          parent, component, embeddedViewIndex, usedPipes, staticQueryIds, viewBuilderFactory);
+          this._reflector, outputCtx, parent, component, embeddedViewIndex, usedPipes,
+          staticQueryIds, viewBuilderFactory);
     };
 
     const visitor = viewBuilderFactory(null);
     visitor.visitAll([], template);
 
-    statements.push(...visitor.build());
+    outputCtx.statements.push(...visitor.build());
 
-    return new ViewCompileResult(statements, visitor.viewName, renderComponentVarName);
+    return new ViewCompileResult(visitor.viewName, renderComponentVarName);
   }
 }
 
@@ -96,10 +98,10 @@ interface UpdateExpression {
   value: AST;
 }
 
-const LOG_VAR = o.variable('l');
-const VIEW_VAR = o.variable('v');
-const CHECK_VAR = o.variable('ck');
-const COMP_VAR = o.variable('co');
+const LOG_VAR = o.variable('_l');
+const VIEW_VAR = o.variable('_v');
+const CHECK_VAR = o.variable('_ck');
+const COMP_VAR = o.variable('_co');
 const EVENT_NAME_VAR = o.variable('en');
 const ALLOW_DEFAULT_VAR = o.variable(`ad`);
 
@@ -117,6 +119,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
   private children: ViewBuilder[] = [];
 
   constructor(
+      private reflector: CompileReflector, private outputCtx: OutputContext,
       private parent: ViewBuilder|null, private component: CompileDirectiveMetadata,
       private embeddedViewIndex: number, private usedPipes: CompilePipeSummary[],
       private staticQueryIds: Map<TemplateAst, StaticAndDynamicQueryIds>,
@@ -124,8 +127,9 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     // TODO(tbosch): The old view compiler used to use an `any` type
     // for the context in any embedded view. We keep this behaivor for now
     // to be able to introduce the new view compiler without too many errors.
-    this.compType =
-        this.embeddedViewIndex > 0 ? o.DYNAMIC_TYPE : o.importType(this.component.type) !;
+    this.compType = this.embeddedViewIndex > 0 ?
+        o.DYNAMIC_TYPE :
+        o.expressionType(outputCtx.importExpr(this.component.type.reference)) !;
   }
 
   get viewName(): string {
@@ -154,7 +158,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
         this.nodes.push(() => ({
                           sourceSpan: null,
                           nodeFlags: flags,
-                          nodeDef: o.importExpr(createIdentifier(Identifiers.queryDef)).callFn([
+                          nodeDef: o.importExpr(Identifiers.queryDef).callFn([
                             o.literal(flags), o.literal(queryId),
                             new o.LiteralMapExpr(
                                 [new o.LiteralMapEntry(query.propertyName, o.literal(bindingType))])
@@ -168,7 +172,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
       this.nodes.push(() => ({
                         sourceSpan: null,
                         nodeFlags: NodeFlags.TypeElement,
-                        nodeDef: o.importExpr(createIdentifier(Identifiers.anchorDef)).callFn([
+                        nodeDef: o.importExpr(Identifiers.anchorDef).callFn([
                           o.literal(NodeFlags.None), o.NULL_EXPR, o.NULL_EXPR, o.literal(0)
                         ])
                       }));
@@ -191,13 +195,14 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     }
     const viewFactory = new o.DeclareFunctionStmt(
         this.viewName, [new o.FnParam(LOG_VAR.name !)],
-        [new o.ReturnStatement(o.importExpr(createIdentifier(Identifiers.viewDef)).callFn([
+        [new o.ReturnStatement(o.importExpr(Identifiers.viewDef).callFn([
           o.literal(viewFlags),
           o.literalArr(nodeDefExprs),
           updateDirectivesFn,
           updateRendererFn,
         ]))],
-        o.importType(createIdentifier(Identifiers.ViewDefinition)));
+        o.importType(Identifiers.ViewDefinition),
+        this.embeddedViewIndex === 0 ? [o.StmtModifier.Exported] : []);
 
     targetStatements.push(viewFactory);
     return targetStatements;
@@ -227,7 +232,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     this.nodes.push(() => ({
                       sourceSpan: ast.sourceSpan,
                       nodeFlags: NodeFlags.TypeNgContent,
-                      nodeDef: o.importExpr(createIdentifier(Identifiers.ngContentDef)).callFn([
+                      nodeDef: o.importExpr(Identifiers.ngContentDef).callFn([
                         o.literal(ast.ngContentIndex), o.literal(ast.index)
                       ])
                     }));
@@ -238,7 +243,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     this.nodes.push(() => ({
                       sourceSpan: ast.sourceSpan,
                       nodeFlags: NodeFlags.TypeText,
-                      nodeDef: o.importExpr(createIdentifier(Identifiers.textDef)).callFn([
+                      nodeDef: o.importExpr(Identifiers.textDef).callFn([
                         o.literal(ast.ngContentIndex), o.literalArr([o.literal(ast.value)])
                       ])
                     }));
@@ -260,7 +265,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     this.nodes[nodeIndex] = () => ({
       sourceSpan: ast.sourceSpan,
       nodeFlags: NodeFlags.TypeText,
-      nodeDef: o.importExpr(createIdentifier(Identifiers.textDef)).callFn([
+      nodeDef: o.importExpr(Identifiers.textDef).callFn([
         o.literal(ast.ngContentIndex), o.literalArr(inter.strings.map(s => o.literal(s)))
       ]),
       updateRenderer: updateRendererExpressions
@@ -287,7 +292,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     this.nodes[nodeIndex] = () => ({
       sourceSpan: ast.sourceSpan,
       nodeFlags: NodeFlags.TypeElement | flags,
-      nodeDef: o.importExpr(createIdentifier(Identifiers.anchorDef)).callFn([
+      nodeDef: o.importExpr(Identifiers.anchorDef).callFn([
         o.literal(flags),
         queryMatchesExpr,
         o.literal(ast.ngContentIndex),
@@ -341,11 +346,11 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     const childCount = this.nodes.length - nodeIndex - 1;
 
     const compAst = ast.directives.find(dirAst => dirAst.directive.isComponent);
-    let compRendererType = o.NULL_EXPR;
-    let compView = o.NULL_EXPR;
+    let compRendererType = o.NULL_EXPR as o.Expression;
+    let compView = o.NULL_EXPR as o.Expression;
     if (compAst) {
-      compView = o.importExpr({reference: compAst.directive.componentViewType});
-      compRendererType = o.importExpr({reference: compAst.directive.rendererType});
+      compView = this.outputCtx.importExpr(compAst.directive.componentViewType);
+      compRendererType = this.outputCtx.importExpr(compAst.directive.rendererType);
     }
 
     // elementDef(
@@ -359,7 +364,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     this.nodes[nodeIndex] = () => ({
       sourceSpan: ast.sourceSpan,
       nodeFlags: NodeFlags.TypeElement | flags,
-      nodeDef: o.importExpr(createIdentifier(Identifiers.elementDef)).callFn([
+      nodeDef: o.importExpr(Identifiers.elementDef).callFn([
         o.literal(flags),
         queryMatchesExpr,
         o.literal(ast.ngContentIndex),
@@ -409,10 +414,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     const hostBindings:
         {context: o.Expression, inputAst: BoundElementPropertyAst, dirAst: DirectiveAst}[] = [];
     const hostEvents: {context: o.Expression, eventAst: BoundEventAst, dirAst: DirectiveAst}[] = [];
-    const componentFactoryResolverProvider = createComponentFactoryResolver(ast.directives);
-    if (componentFactoryResolverProvider) {
-      this._visitProvider(componentFactoryResolverProvider, ast.queryMatches);
-    }
+    this._visitComponentFactoryResolverProvider(ast.directives);
 
     ast.providers.forEach((providerAst, providerIndex) => {
       let dirAst: DirectiveAst = undefined !;
@@ -437,11 +439,16 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     let queryMatchExprs: o.Expression[] = [];
     ast.queryMatches.forEach((match) => {
       let valueType: QueryValueType = undefined !;
-      if (tokenReference(match.value) === resolveIdentifier(Identifiers.ElementRef)) {
+      if (tokenReference(match.value) ===
+          this.reflector.resolveExternalReference(Identifiers.ElementRef)) {
         valueType = QueryValueType.ElementRef;
-      } else if (tokenReference(match.value) === resolveIdentifier(Identifiers.ViewContainerRef)) {
+      } else if (
+          tokenReference(match.value) ===
+          this.reflector.resolveExternalReference(Identifiers.ViewContainerRef)) {
         valueType = QueryValueType.ViewContainerRef;
-      } else if (tokenReference(match.value) === resolveIdentifier(Identifiers.TemplateRef)) {
+      } else if (
+          tokenReference(match.value) ===
+          this.reflector.resolveExternalReference(Identifiers.TemplateRef)) {
         valueType = QueryValueType.TemplateRef;
       }
       if (valueType != null) {
@@ -452,7 +459,9 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
       let valueType: QueryValueType = undefined !;
       if (!ref.value) {
         valueType = QueryValueType.RenderElement;
-      } else if (tokenReference(ref.value) === resolveIdentifier(Identifiers.TemplateRef)) {
+      } else if (
+          tokenReference(ref.value) ===
+          this.reflector.resolveExternalReference(Identifiers.TemplateRef)) {
         valueType = QueryValueType.TemplateRef;
       }
       if (valueType != null) {
@@ -493,7 +502,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
       this.nodes.push(() => ({
                         sourceSpan: dirAst.sourceSpan,
                         nodeFlags: flags,
-                        nodeDef: o.importExpr(createIdentifier(Identifiers.queryDef)).callFn([
+                        nodeDef: o.importExpr(Identifiers.queryDef).callFn([
                           o.literal(flags), o.literal(queryId),
                           new o.LiteralMapExpr(
                               [new o.LiteralMapEntry(query.propertyName, o.literal(bindingType))])
@@ -549,9 +558,8 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
           }));
     }
 
-    const dirContextExpr = o.importExpr(createIdentifier(Identifiers.nodeValue)).callFn([
-      VIEW_VAR, o.literal(nodeIndex)
-    ]);
+    const dirContextExpr =
+        o.importExpr(Identifiers.nodeValue).callFn([VIEW_VAR, o.literal(nodeIndex)]);
     const hostBindings = dirAst.hostProperties.map((inputAst) => ({
                                                      context: dirContextExpr,
                                                      dirAst,
@@ -571,7 +579,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     this.nodes[nodeIndex] = () => ({
       sourceSpan: dirAst.sourceSpan,
       nodeFlags: NodeFlags.TypeDirective | flags,
-      nodeDef: o.importExpr(createIdentifier(Identifiers.directiveDef)).callFn([
+      nodeDef: o.importExpr(Identifiers.directiveDef).callFn([
         o.literal(flags), queryMatchExprs.length ? o.literalArr(queryMatchExprs) : o.NULL_EXPR,
         o.literal(childCount), providerExpr, depsExpr,
         inputDefs.length ? new o.LiteralMapExpr(inputDefs) : o.NULL_EXPR,
@@ -585,47 +593,59 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
   }
 
   private _visitProvider(providerAst: ProviderAst, queryMatches: QueryMatch[]): void {
+    this._addProviderNode(this._visitProviderOrDirective(providerAst, queryMatches));
+  }
+
+  private _visitComponentFactoryResolverProvider(directives: DirectiveAst[]) {
+    const componentDirMeta = directives.find(dirAst => dirAst.directive.isComponent);
+    if (componentDirMeta && componentDirMeta.directive.entryComponents.length) {
+      const {providerExpr, depsExpr, flags, tokenExpr} = componentFactoryResolverProviderDef(
+          this.reflector, this.outputCtx, NodeFlags.PrivateProvider,
+          componentDirMeta.directive.entryComponents);
+      this._addProviderNode({
+        providerExpr,
+        depsExpr,
+        flags,
+        tokenExpr,
+        queryMatchExprs: [],
+        sourceSpan: componentDirMeta.sourceSpan
+      });
+    }
+  }
+
+  private _addProviderNode(data: {
+    flags: NodeFlags,
+    queryMatchExprs: o.Expression[],
+    providerExpr: o.Expression,
+    depsExpr: o.Expression,
+    tokenExpr: o.Expression,
+    sourceSpan: ParseSourceSpan
+  }) {
     const nodeIndex = this.nodes.length;
-    // reserve the space in the nodeDefs array so we can add children
-    this.nodes.push(null !);
-
-    const {flags, queryMatchExprs, providerExpr, depsExpr} =
-        this._visitProviderOrDirective(providerAst, queryMatches);
-
     // providerDef(
     //   flags: NodeFlags, matchedQueries: [string, QueryValueType][], token:any,
     //   value: any, deps: ([DepFlags, any] | any)[]): NodeDef;
-    this.nodes[nodeIndex] = () => ({
-      sourceSpan: providerAst.sourceSpan,
-      nodeFlags: flags,
-      nodeDef: o.importExpr(createIdentifier(Identifiers.providerDef)).callFn([
-        o.literal(flags), queryMatchExprs.length ? o.literalArr(queryMatchExprs) : o.NULL_EXPR,
-        tokenExpr(providerAst.token), providerExpr, depsExpr
-      ])
-    });
+    this.nodes.push(
+        () => ({
+          sourceSpan: data.sourceSpan,
+          nodeFlags: data.flags,
+          nodeDef: o.importExpr(Identifiers.providerDef).callFn([
+            o.literal(data.flags),
+            data.queryMatchExprs.length ? o.literalArr(data.queryMatchExprs) : o.NULL_EXPR,
+            data.tokenExpr, data.providerExpr, data.depsExpr
+          ])
+        }));
   }
 
   private _visitProviderOrDirective(providerAst: ProviderAst, queryMatches: QueryMatch[]): {
     flags: NodeFlags,
+    tokenExpr: o.Expression,
+    sourceSpan: ParseSourceSpan,
     queryMatchExprs: o.Expression[],
     providerExpr: o.Expression,
     depsExpr: o.Expression
   } {
     let flags = NodeFlags.None;
-    if (!providerAst.eager) {
-      flags |= NodeFlags.LazyProvider;
-    }
-    if (providerAst.providerType === ProviderAstType.PrivateService) {
-      flags |= NodeFlags.PrivateProvider;
-    }
-    providerAst.lifecycleHooks.forEach((lifecycleHook) => {
-      // for regular providers, we only support ngOnDestroy
-      if (lifecycleHook === LifecycleHooks.OnDestroy ||
-          providerAst.providerType === ProviderAstType.Directive ||
-          providerAst.providerType === ProviderAstType.Component) {
-        flags |= lifecycleHookToNodeFlag(lifecycleHook);
-      }
-    });
     let queryMatchExprs: o.Expression[] = [];
 
     queryMatches.forEach((match) => {
@@ -634,8 +654,16 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
             o.literalArr([o.literal(match.queryId), o.literal(QueryValueType.Provider)]));
       }
     });
-    const {providerExpr, depsExpr, flags: providerType} = providerDef(providerAst);
-    return {flags: flags | providerType, queryMatchExprs, providerExpr, depsExpr};
+    const {providerExpr, depsExpr, flags: providerFlags, tokenExpr} =
+        providerDef(this.outputCtx, providerAst);
+    return {
+      flags: flags | providerFlags,
+      queryMatchExprs,
+      providerExpr,
+      depsExpr,
+      tokenExpr,
+      sourceSpan: providerAst.sourceSpan
+    };
   }
 
   getLocal(name: string): o.Expression|null {
@@ -648,9 +676,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
       // check references
       const refNodeIndex = currBuilder.refNodeIndices[name];
       if (refNodeIndex != null) {
-        return o.importExpr(createIdentifier(Identifiers.nodeValue)).callFn([
-          currViewExpr, o.literal(refNodeIndex)
-        ]);
+        return o.importExpr(Identifiers.nodeValue).callFn([currViewExpr, o.literal(refNodeIndex)]);
       }
 
       // check variables
@@ -665,25 +691,23 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
 
   createLiteralArrayConverter(sourceSpan: ParseSourceSpan, argCount: number): BuiltinConverter {
     if (argCount === 0) {
-      const valueExpr = o.importExpr(createIdentifier(Identifiers.EMPTY_ARRAY));
+      const valueExpr = o.importExpr(Identifiers.EMPTY_ARRAY);
       return () => valueExpr;
     }
 
     const nodeIndex = this.nodes.length;
     // pureArrayDef(argCount: number): NodeDef;
-    this.nodes.push(
-        () => ({
-          sourceSpan,
-          nodeFlags: NodeFlags.TypePureArray,
-          nodeDef:
-              o.importExpr(createIdentifier(Identifiers.pureArrayDef)).callFn([o.literal(argCount)])
-        }));
+    this.nodes.push(() => ({
+                      sourceSpan,
+                      nodeFlags: NodeFlags.TypePureArray,
+                      nodeDef: o.importExpr(Identifiers.pureArrayDef).callFn([o.literal(argCount)])
+                    }));
 
     return (args: o.Expression[]) => callCheckStmt(nodeIndex, args);
   }
   createLiteralMapConverter(sourceSpan: ParseSourceSpan, keys: string[]): BuiltinConverter {
     if (keys.length === 0) {
-      const valueExpr = o.importExpr(createIdentifier(Identifiers.EMPTY_MAP));
+      const valueExpr = o.importExpr(Identifiers.EMPTY_MAP);
       return () => valueExpr;
     }
 
@@ -692,8 +716,8 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     this.nodes.push(() => ({
                       sourceSpan,
                       nodeFlags: NodeFlags.TypePureObject,
-                      nodeDef: o.importExpr(createIdentifier(Identifiers.pureObjectDef))
-                                   .callFn([o.literalArr(keys.map(key => o.literal(key)))])
+                      nodeDef: o.importExpr(Identifiers.pureObjectDef).callFn([o.literalArr(
+                          keys.map(key => o.literal(key)))])
                     }));
 
     return (args: o.Expression[]) => callCheckStmt(nodeIndex, args);
@@ -707,8 +731,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
       this.nodes.push(() => ({
                         sourceSpan: expression.sourceSpan,
                         nodeFlags: NodeFlags.TypePurePipe,
-                        nodeDef: o.importExpr(createIdentifier(Identifiers.purePipeDef))
-                                     .callFn([o.literal(argCount)])
+                        nodeDef: o.importExpr(Identifiers.purePipeDef).callFn([o.literal(argCount)])
                       }));
 
       // find underlying pipe in the component view
@@ -720,18 +743,15 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
       }
       const pipeNodeIndex = compBuilder.purePipeNodeIndices[name];
       const pipeValueExpr: o.Expression =
-          o.importExpr(createIdentifier(Identifiers.nodeValue)).callFn([
-            compViewExpr, o.literal(pipeNodeIndex)
-          ]);
+          o.importExpr(Identifiers.nodeValue).callFn([compViewExpr, o.literal(pipeNodeIndex)]);
 
       return (args: o.Expression[]) => callUnwrapValue(
                  expression.nodeIndex, expression.bindingIndex,
                  callCheckStmt(nodeIndex, [pipeValueExpr].concat(args)));
     } else {
       const nodeIndex = this._createPipe(expression.sourceSpan, pipe);
-      const nodeValueExpr = o.importExpr(createIdentifier(Identifiers.nodeValue)).callFn([
-        VIEW_VAR, o.literal(nodeIndex)
-      ]);
+      const nodeValueExpr =
+          o.importExpr(Identifiers.nodeValue).callFn([VIEW_VAR, o.literal(nodeIndex)]);
 
       return (args: o.Expression[]) => callUnwrapValue(
                  expression.nodeIndex, expression.bindingIndex,
@@ -749,16 +769,17 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
       }
     });
 
-    const depExprs = pipe.type.diDeps.map(depDef);
+    const depExprs = pipe.type.diDeps.map((diDep) => depDef(this.outputCtx, diDep));
     // function pipeDef(
     //   flags: NodeFlags, ctor: any, deps: ([DepFlags, any] | any)[]): NodeDef
-    this.nodes.push(() => ({
-                      sourceSpan,
-                      nodeFlags: NodeFlags.TypePipe,
-                      nodeDef: o.importExpr(createIdentifier(Identifiers.pipeDef)).callFn([
-                        o.literal(flags), o.importExpr(pipe.type), o.literalArr(depExprs)
-                      ])
-                    }));
+    this.nodes.push(
+        () => ({
+          sourceSpan,
+          nodeFlags: NodeFlags.TypePipe,
+          nodeDef: o.importExpr(Identifiers.pipeDef).callFn([
+            o.literal(flags), this.outputCtx.importExpr(pipe.type.reference), o.literalArr(depExprs)
+          ])
+        }));
     return nodeIndex;
   }
 
@@ -885,100 +906,6 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
   visitAttr(ast: AttrAst, context: any): any {}
 }
 
-function providerDef(providerAst: ProviderAst):
-    {providerExpr: o.Expression, flags: NodeFlags, depsExpr: o.Expression} {
-  return providerAst.multiProvider ?
-      multiProviderDef(providerAst.providers) :
-      singleProviderDef(providerAst.providerType, providerAst.providers[0]);
-}
-
-function multiProviderDef(providers: CompileProviderMetadata[]):
-    {providerExpr: o.Expression, flags: NodeFlags, depsExpr: o.Expression} {
-  const allDepDefs: o.Expression[] = [];
-  const allParams: o.FnParam[] = [];
-  const exprs = providers.map((provider, providerIndex) => {
-    let expr: o.Expression;
-    if (provider.useClass) {
-      const depExprs = convertDeps(providerIndex, provider.deps || provider.useClass.diDeps);
-      expr = o.importExpr(provider.useClass).instantiate(depExprs);
-    } else if (provider.useFactory) {
-      const depExprs = convertDeps(providerIndex, provider.deps || provider.useFactory.diDeps);
-      expr = o.importExpr(provider.useFactory).callFn(depExprs);
-    } else if (provider.useExisting) {
-      const depExprs = convertDeps(providerIndex, [{token: provider.useExisting}]);
-      expr = depExprs[0];
-    } else {
-      expr = convertValueToOutputAst(provider.useValue);
-    }
-    return expr;
-  });
-  const providerExpr =
-      o.fn(allParams, [new o.ReturnStatement(o.literalArr(exprs))], o.INFERRED_TYPE);
-  return {providerExpr, flags: NodeFlags.TypeFactoryProvider, depsExpr: o.literalArr(allDepDefs)};
-
-  function convertDeps(providerIndex: number, deps: CompileDiDependencyMetadata[]) {
-    return deps.map((dep, depIndex) => {
-      const paramName = `p${providerIndex}_${depIndex}`;
-      allParams.push(new o.FnParam(paramName, o.DYNAMIC_TYPE));
-      allDepDefs.push(depDef(dep));
-      return o.variable(paramName);
-    });
-  }
-}
-
-function singleProviderDef(providerType: ProviderAstType, providerMeta: CompileProviderMetadata):
-    {providerExpr: o.Expression, flags: NodeFlags, depsExpr: o.Expression} {
-  let providerExpr: o.Expression;
-  let flags: NodeFlags;
-  let deps: CompileDiDependencyMetadata[];
-  if (providerType === ProviderAstType.Directive || providerType === ProviderAstType.Component) {
-    providerExpr = o.importExpr(providerMeta.useClass !);
-    flags = NodeFlags.TypeDirective;
-    deps = providerMeta.deps || providerMeta.useClass !.diDeps;
-  } else {
-    if (providerMeta.useClass) {
-      providerExpr = o.importExpr(providerMeta.useClass);
-      flags = NodeFlags.TypeClassProvider;
-      deps = providerMeta.deps || providerMeta.useClass.diDeps;
-    } else if (providerMeta.useFactory) {
-      providerExpr = o.importExpr(providerMeta.useFactory);
-      flags = NodeFlags.TypeFactoryProvider;
-      deps = providerMeta.deps || providerMeta.useFactory.diDeps;
-    } else if (providerMeta.useExisting) {
-      providerExpr = o.NULL_EXPR;
-      flags = NodeFlags.TypeUseExistingProvider;
-      deps = [{token: providerMeta.useExisting}];
-    } else {
-      providerExpr = convertValueToOutputAst(providerMeta.useValue);
-      flags = NodeFlags.TypeValueProvider;
-      deps = [];
-    }
-  }
-  const depsExpr = o.literalArr(deps.map(dep => depDef(dep)));
-  return {providerExpr, flags, depsExpr};
-}
-
-function tokenExpr(tokenMeta: CompileTokenMetadata): o.Expression {
-  return tokenMeta.identifier ? o.importExpr(tokenMeta.identifier) : o.literal(tokenMeta.value);
-}
-
-function depDef(dep: CompileDiDependencyMetadata): o.Expression {
-  // Note: the following fields have already been normalized out by provider_analyzer:
-  // - isAttribute, isSelf, isHost
-  const expr = dep.isValue ? convertValueToOutputAst(dep.value) : tokenExpr(dep.token !);
-  let flags = DepFlags.None;
-  if (dep.isSkipSelf) {
-    flags |= DepFlags.SkipSelf;
-  }
-  if (dep.isOptional) {
-    flags |= DepFlags.Optional;
-  }
-  if (dep.isValue) {
-    flags |= DepFlags.Value;
-  }
-  return flags === DepFlags.None ? expr : o.literalArr([o.literal(flags), expr]);
-}
-
 function needsAdditionalRootNode(astNodes: TemplateAst[]): boolean {
   const lastAstNode = astNodes[astNodes.length - 1];
   if (lastAstNode instanceof EmbeddedTemplateAst) {
@@ -995,36 +922,6 @@ function needsAdditionalRootNode(astNodes: TemplateAst[]): boolean {
   return lastAstNode instanceof NgContentAst;
 }
 
-function lifecycleHookToNodeFlag(lifecycleHook: LifecycleHooks): NodeFlags {
-  let nodeFlag = NodeFlags.None;
-  switch (lifecycleHook) {
-    case LifecycleHooks.AfterContentChecked:
-      nodeFlag = NodeFlags.AfterContentChecked;
-      break;
-    case LifecycleHooks.AfterContentInit:
-      nodeFlag = NodeFlags.AfterContentInit;
-      break;
-    case LifecycleHooks.AfterViewChecked:
-      nodeFlag = NodeFlags.AfterViewChecked;
-      break;
-    case LifecycleHooks.AfterViewInit:
-      nodeFlag = NodeFlags.AfterViewInit;
-      break;
-    case LifecycleHooks.DoCheck:
-      nodeFlag = NodeFlags.DoCheck;
-      break;
-    case LifecycleHooks.OnChanges:
-      nodeFlag = NodeFlags.OnChanges;
-      break;
-    case LifecycleHooks.OnDestroy:
-      nodeFlag = NodeFlags.OnDestroy;
-      break;
-    case LifecycleHooks.OnInit:
-      nodeFlag = NodeFlags.OnInit;
-      break;
-  }
-  return nodeFlag;
-}
 
 function elementBindingDef(inputAst: BoundElementPropertyAst, dirAst: DirectiveAst): o.Expression {
   switch (inputAst.type) {
@@ -1091,7 +988,7 @@ function callCheckStmt(nodeIndex: number, exprs: o.Expression[]): o.Expression {
 }
 
 function callUnwrapValue(nodeIndex: number, bindingIdx: number, expr: o.Expression): o.Expression {
-  return o.importExpr(createIdentifier(Identifiers.unwrapValue)).callFn([
+  return o.importExpr(Identifiers.unwrapValue).callFn([
     VIEW_VAR, o.literal(nodeIndex), o.literal(bindingIdx), expr
   ]);
 }
@@ -1145,30 +1042,6 @@ function staticViewQueryIds(nodeStaticQueryIds: Map<TemplateAst, StaticAndDynami
   });
   dynamicQueryIds.forEach(queryId => staticQueryIds.delete(queryId));
   return {staticQueryIds, dynamicQueryIds};
-}
-
-function createComponentFactoryResolver(directives: DirectiveAst[]): ProviderAst|null {
-  const componentDirMeta = directives.find(dirAst => dirAst.directive.isComponent);
-  if (componentDirMeta && componentDirMeta.directive.entryComponents.length) {
-    const entryComponentFactories = componentDirMeta.directive.entryComponents.map(
-        (entryComponent) => o.importExpr({reference: entryComponent.componentFactory}));
-
-    const token = createIdentifierToken(Identifiers.ComponentFactoryResolver);
-
-    const classMeta: CompileTypeMetadata = {
-      diDeps: [
-        {isValue: true, value: o.literalArr(entryComponentFactories)},
-        {token: token, isSkipSelf: true, isOptional: true},
-        {token: createIdentifierToken(Identifiers.NgModuleRef)},
-      ],
-      lifecycleHooks: [],
-      reference: resolveIdentifier(Identifiers.CodegenComponentFactoryResolver)
-    };
-    return new ProviderAst(
-        token, false, true, [{token, multi: false, useClass: classMeta}],
-        ProviderAstType.PrivateService, [], componentDirMeta.sourceSpan);
-  }
-  return null;
 }
 
 function elementEventNameAndTarget(

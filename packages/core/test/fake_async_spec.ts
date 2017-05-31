@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {discardPeriodicTasks, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
+import {discardPeriodicTasks, fakeAsync, flush, flushMicrotasks, tick} from '@angular/core/testing';
 import {Log, beforeEach, describe, inject, it} from '@angular/core/testing/src/testing_internal';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -261,6 +261,42 @@ export function main() {
                    'microtask; timer; t microtask; periodic timer; pt microtask; periodic timer; pt microtask');
            clearInterval(id);
          }));
+
+      it('should flush tasks', fakeAsync(() => {
+           let ran = false;
+           setTimeout(() => { ran = true; }, 10);
+
+           flush();
+           expect(ran).toEqual(true);
+         }));
+
+      it('should flush multiple tasks', fakeAsync(() => {
+           let ran = false;
+           let ran2 = false;
+           setTimeout(() => { ran = true; }, 10);
+           setTimeout(() => { ran2 = true; }, 30);
+
+           let elapsed = flush();
+
+           expect(ran).toEqual(true);
+           expect(ran2).toEqual(true);
+           expect(elapsed).toEqual(30);
+         }));
+
+      it('should move periodic tasks', fakeAsync(() => {
+           let ran = false;
+           let count = 0;
+           setInterval(() => { count++; }, 10);
+           setTimeout(() => { ran = true; }, 35);
+
+           let elapsed = flush();
+
+           expect(count).toEqual(3);
+           expect(ran).toEqual(true);
+           expect(elapsed).toEqual(35);
+
+           discardPeriodicTasks();
+         }));
     });
 
     describe('outside of the fakeAsync zone', () => {
@@ -273,6 +309,12 @@ export function main() {
       it('calling tick should throw', () => {
         expect(() => {
           tick();
+        }).toThrowError('The code should be running in the fakeAsync zone to call this function');
+      });
+
+      it('calling flush should throw', () => {
+        expect(() => {
+          flush();
         }).toThrowError('The code should be running in the fakeAsync zone to call this function');
       });
 

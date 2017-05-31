@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileMetadataResolver, CompileNgModuleMetadata, CompilerConfig, DomElementSchemaRegistry, HtmlParser, I18NHtmlParser, Lexer, NgAnalyzedModules, Parser, TemplateParser} from '@angular/compiler';
+import {CompileMetadataResolver, CompileNgModuleMetadata, CompilePipeSummary, CompilerConfig, DomElementSchemaRegistry, HtmlParser, I18NHtmlParser, Lexer, NgAnalyzedModules, Parser, TemplateParser} from '@angular/compiler';
 
 import {AstResult, TemplateInfo} from './common';
 import {getTemplateCompletions} from './completions';
@@ -48,12 +48,12 @@ class LanguageServiceImpl implements LanguageService {
     return uniqueBySpan(results);
   }
 
-  getPipesAt(fileName: string, position: number): Pipes {
+  getPipesAt(fileName: string, position: number): CompilePipeSummary[] {
     let templateInfo = this.getTemplateAstAtPosition(fileName, position);
     if (templateInfo) {
-      return templateInfo.pipes.map(
-          pipeInfo => ({name: pipeInfo.name, symbol: pipeInfo.type.reference}));
+      return templateInfo.pipes;
     }
+    return [];
   }
 
   getCompletionsAt(fileName: string, position: number): Completions {
@@ -110,7 +110,8 @@ class LanguageServiceImpl implements LanguageService {
         const expressionParser = new Parser(new Lexer());
         const config = new CompilerConfig();
         const parser = new TemplateParser(
-            config, expressionParser, new DomElementSchemaRegistry(), htmlParser, null !, []);
+            config, this.host.resolver.getReflector(), expressionParser,
+            new DomElementSchemaRegistry(), htmlParser, null !, []);
         const htmlResult = htmlParser.parse(template.source, '', true);
         const analyzedModules = this.host.getAnalyzedModules();
         let errors: Diagnostic[]|undefined = undefined;

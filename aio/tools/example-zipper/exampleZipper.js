@@ -35,10 +35,6 @@ class ExampleZipper {
     let output = fs.createWriteStream(zipFileName);
     let archive = archiver('zip');
 
-    output.on('close', function () {
-      console.log('zip created: ' + zipFileName + ' (' + archive.pointer() + ' total bytes)');
-    });
-
     archive.on('error', function (err) {
       throw err;
     });

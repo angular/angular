@@ -366,4 +366,57 @@ describe('tsc-wrapped', () => {
         })
         .catch(e => done.fail(e));
   });
+
+  it('should expand shorthand imports for ES2015 modules', (done) => {
+    write('tsconfig.json', `{
+      "compilerOptions": {
+        "experimentalDecorators": true,
+        "types": [],
+        "outDir": "built",
+        "declaration": true,
+        "moduleResolution": "node",
+        "target": "es2015",
+        "module": "es2015"
+      },
+      "angularCompilerOptions": {
+        "annotateForClosureCompiler": true
+      },
+      "files": ["test.ts"]
+    }`);
+
+    main(basePath, {basePath})
+        .then(() => {
+          const fileOutput = readOut('js');
+          expect(fileOutput).toContain(`export { A, B } from './dep/index'`);
+          done();
+        })
+        .catch(e => done.fail(e));
+  });
+
+  it('should expand shorthand imports for ES5 CommonJS modules', (done) => {
+    write('tsconfig.json', `{
+      "compilerOptions": {
+        "experimentalDecorators": true,
+        "types": [],
+        "outDir": "built",
+        "declaration": true,
+        "moduleResolution": "node",
+        "target": "es5",
+        "module": "commonjs"
+      },
+      "angularCompilerOptions": {
+        "annotateForClosureCompiler": true
+      },
+      "files": ["test.ts"]
+    }`);
+
+    main(basePath, {basePath})
+        .then(() => {
+          const fileOutput = readOut('js');
+          expect(fileOutput).toContain(`var index_1 = require("./dep/index");`);
+          done();
+        })
+        .catch(e => done.fail(e));
+  });
+
 });

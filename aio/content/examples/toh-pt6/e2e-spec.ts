@@ -5,7 +5,7 @@ import { promise } from 'selenium-webdriver';
 
 const expectedH1 = 'Tour of Heroes';
 const expectedTitle = `Angular ${expectedH1}`;
-const targetHero = { id: 15, name: 'Magneta' };
+const targetHero = { id: 14, name: 'Celeritas' };
 const targetHeroDashboardIndex = 3;
 const nameSuffix = 'X';
 const newHeroName = targetHero.name + nameSuffix;
@@ -136,7 +136,7 @@ describe('Tutorial part 6', () => {
       getPageElts().myHeroesHref.click();
       let page = getPageElts();
       expect(page.myHeroes.isPresent()).toBeTruthy();
-      expect(page.allHeroes.count()).toEqual(10, 'number of heroes');
+      expect(page.allHeroes.count()).toEqual(11, 'number of heroes');
     });
 
     it(`selects and shows ${targetHero.name} as selected in list`, () => {
@@ -176,7 +176,7 @@ describe('Tutorial part 6', () => {
 
       const page = getPageElts();
       expect(page.myHeroes.isPresent()).toBeTruthy();
-      expect(page.allHeroes.count()).toEqual(9, 'number of heroes');
+      expect(page.allHeroes.count()).toEqual(10, 'number of heroes');
       const heroesAfter = await toHeroArray(page.allHeroes);
       const expectedHeroes =  heroesBefore.filter(h => h.name !== newHeroName);
       expect(heroesAfter).toEqual(expectedHeroes);
@@ -206,20 +206,20 @@ describe('Tutorial part 6', () => {
 
     beforeAll(() => browser.get(''));
 
-    it(`searches for 'Ma'`, async () => {
-      getPageElts().searchBox.sendKeys('Ma');
-      browser.sleep(1000);
-      expect(getPageElts().searchResults.count()).toBe(4);
-    });
-
-    it(`continues search with 'g'`, async () => {
-      getPageElts().searchBox.sendKeys('g');
+    it(`searches for 'Ce'`, async () => {
+      getPageElts().searchBox.sendKeys('Ce');
       browser.sleep(1000);
       expect(getPageElts().searchResults.count()).toBe(2);
     });
 
-    it(`continues search with 'n' and gets ${targetHero.name}`, async () => {
-      getPageElts().searchBox.sendKeys('n');
+    it(`continues search with 'l'`, async () => {
+      getPageElts().searchBox.sendKeys('l');
+      browser.sleep(1000);
+      expect(getPageElts().searchResults.count()).toBe(1);
+    });
+
+    it(`continues search with 'e' and gets ${targetHero.name}`, async () => {
+      getPageElts().searchBox.sendKeys('e');
       browser.sleep(1000);
       let page = getPageElts();
       expect(page.searchResults.count()).toBe(1);

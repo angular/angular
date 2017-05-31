@@ -1,39 +1,7 @@
-@title
-Ahead-of-Time Compilation
-
-@intro
-Learn how to use ahead-of-time compilation.
-
-@description
+# Ahead-of-Time Compilation
 
 This cookbook describes how to radically improve performance by compiling _ahead-of-time_ (AOT)
 during a build process.
-
-{@a toc}
-<!--
-# Contents
-
-* [Overview](guide/aot-compiler#overview)
-* [Ahead-of-time (AOT) vs just-in-time (JIT)](guide/aot-compiler#aot-jit)
-* [Why do AOT compilation?](guide/aot-compiler#why-aot)
-* [Compile with AOT](guide/aot-compiler#compile)
-* [Bootstrap](guide/aot-compiler#bootstrap)
-* [Tree shaking](guide/aot-compiler#tree-shaking)
-  * [Rollup](guide/aot-compiler#rollup)
-  * [Rollup Plugins](guide/aot-compiler#rollup-plugins)
-  * [Run Rollup](guide/aot-compiler#run-rollup)
-* [Load the bundle](guide/aot-compiler#load)
-* [Serve the app](guide/aot-compiler#serve)
-* [AOT QuickStart source code](guide/aot-compiler#source-code)
-* [Workflow and convenience script](guide/aot-compiler#workflow)
-  * [Develop JIT along with AOT](guide/aot-compiler#run-jit)
-* [Tour of Heroes](guide/aot-compiler#toh)
-  * [JIT in development, AOT in production](guide/aot-compiler#jit-dev-aot-prod)
-  * [Tree shaking](guide/aot-compiler#shaking)
-  * [Running the application](guide/aot-compiler#running-app)
-  * [Inspect the Bundle](guide/aot-compiler#inspect-bundle)
-
--->
 
 {@a overview}
 
@@ -605,7 +573,7 @@ showing exactly which application and Angular modules and classes are included i
 Here's the map for _Tour of Heroes_.
 
 <a href="generated/images/guide/aot-compiler/toh-pt6-bundle.png" title="View larger image">
-  <figure class='image-display'>
-    <img src="generated/images/guide/aot-compiler/toh-pt6-bundle.png" alt="toh-pt6-bundle"></img>
+  <figure>
+    <img src="generated/images/guide/aot-compiler/toh-pt6-bundle-700w.png" alt="toh-pt6-bundle">
   </figure>
 </a>

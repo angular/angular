@@ -70,12 +70,12 @@ export declare type AnimationStateTransitionMetadata = any;
 
 /** @deprecated */
 export interface AnimationStyleMetadata extends AnimationMetadata {
-    offset?: number;
-    styles: {
+    offset: number | null;
+    styles: '*' | {
         [key: string]: string | number;
-    } | {
+    } | Array<{
         [key: string]: string | number;
-    }[];
+    } | '*'>;
 }
 
 /** @deprecated */
@@ -612,12 +612,9 @@ export declare type NgIterable<T> = Array<T> | Iterable<T>;
 export declare const NgModule: NgModuleDecorator;
 
 /** @experimental */
-export declare class NgModuleFactory<T> {
-    readonly moduleType: Type<T>;
-    constructor(_injectorClass: {
-        new (parentInjector: Injector): NgModuleInjector<T>;
-    }, _moduleType: Type<T>);
-    create(parentInjector: Injector | null): NgModuleRef<T>;
+export declare abstract class NgModuleFactory<T> {
+    readonly abstract moduleType: Type<T>;
+    abstract create(parentInjector: Injector | null): NgModuleRef<T>;
 }
 
 /** @stable */
@@ -849,6 +846,7 @@ export declare abstract class RendererFactory2 {
     abstract begin?(): void;
     abstract createRenderer(hostElement: any, type: RendererType2 | null): Renderer2;
     abstract end?(): void;
+    abstract whenRenderingDone?(): Promise<any>;
 }
 
 /** @experimental */
@@ -1010,7 +1008,7 @@ export interface TrackByFunction<T> {
 }
 
 /** @deprecated */
-export declare function transition(stateChangeExpr: string | ((fromState: string, toState: string) => boolean), steps: AnimationMetadata | AnimationMetadata[]): AnimationTransitionMetadata;
+export declare function transition(stateChangeExpr: string, steps: AnimationMetadata | AnimationMetadata[]): AnimationTransitionMetadata;
 
 /** @experimental */
 export declare const TRANSLATIONS: InjectionToken<string>;

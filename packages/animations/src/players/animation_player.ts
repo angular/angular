@@ -8,24 +8,29 @@
 import {scheduleMicroTask} from '../util';
 
 /**
+ * AnimationPlayer controls an animation sequence that was produced from a programmatic animation.
+ * (see {@link AnimationBuilder AnimationBuilder} for more information on how to create programmatic
+ * animations.)
+ *
  * @experimental Animation support is experimental.
  */
-export abstract class AnimationPlayer {
-  abstract onDone(fn: () => void): void;
-  abstract onStart(fn: () => void): void;
-  abstract onDestroy(fn: () => void): void;
-  abstract init(): void;
-  abstract hasStarted(): boolean;
-  abstract play(): void;
-  abstract pause(): void;
-  abstract restart(): void;
-  abstract finish(): void;
-  abstract destroy(): void;
-  abstract reset(): void;
-  abstract setPosition(p: any /** TODO #9100 */): void;
-  abstract getPosition(): number;
-  get parentPlayer(): AnimationPlayer|null { throw new Error('NOT IMPLEMENTED: Base Class'); }
-  set parentPlayer(player: AnimationPlayer|null) { throw new Error('NOT IMPLEMENTED: Base Class'); }
+export interface AnimationPlayer {
+  onDone(fn: () => void): void;
+  onStart(fn: () => void): void;
+  onDestroy(fn: () => void): void;
+  init(): void;
+  hasStarted(): boolean;
+  play(): void;
+  pause(): void;
+  restart(): void;
+  finish(): void;
+  destroy(): void;
+  reset(): void;
+  setPosition(p: any /** TODO #9100 */): void;
+  getPosition(): number;
+  parentPlayer: AnimationPlayer|null;
+  readonly totalTime: number;
+  beforeDestroy?: () => any;
 }
 
 /**
@@ -39,6 +44,7 @@ export class NoopAnimationPlayer implements AnimationPlayer {
   private _destroyed = false;
   private _finished = false;
   public parentPlayer: AnimationPlayer|null = null;
+  public totalTime = 0;
   constructor() {}
   private _onFinish() {
     if (!this._finished) {
@@ -54,15 +60,20 @@ export class NoopAnimationPlayer implements AnimationPlayer {
   init(): void {}
   play(): void {
     if (!this.hasStarted()) {
-      scheduleMicroTask(() => this._onFinish());
+      this.triggerMicrotask();
       this._onStart();
     }
     this._started = true;
   }
+
+  /* @internal */
+  triggerMicrotask() { scheduleMicroTask(() => this._onFinish()); }
+
   private _onStart() {
     this._onStartFns.forEach(fn => fn());
     this._onStartFns = [];
   }
+
   pause(): void {}
   restart(): void {}
   finish(): void { this._onFinish(); }

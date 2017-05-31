@@ -32,7 +32,6 @@ BUILD_ALL=true
 BUNDLE=true
 VERSION_PREFIX=$(node -p "require('./package.json').version")
 VERSION_SUFFIX="-$(git log --oneline -1 | awk '{print $1}')"
-ROUTER_VERSION_PREFIX=$(node -p "require('./package.json').version.replace(/^2/, '3')")
 REMOVE_BENCHPRESS=false
 BUILD_EXAMPLES=true
 COMPILE_SOURCE=true
@@ -124,8 +123,8 @@ downlevelES2015() {
       ts_file="${BASH_REMATCH[1]}${2:-".es5.ts"}"
       cp ${file} ${ts_file}
 
-      echo "======           $TSC ${ts_file} --target es5 --module es2015 --noLib"
-      ($TSC ${ts_file} --target es5 --module es2015 --noLib --sourceMap) > /dev/null 2>&1 || true
+      echo "======           $TSC ${ts_file} --target es5 --module es2015 --noLib --sourceMap --importHelpers"
+      ($TSC ${ts_file} --target es5 --module es2015 --noLib --sourceMap --importHelpers) > /dev/null 2>&1 || true
       mapSources "${BASH_REMATCH[1]}${2:-".es5.js"}"
       rm -f ${ts_file}
     fi
@@ -267,7 +266,7 @@ compilePackage() {
     $NGC -p ${1}/tsconfig-build.json
     echo "======           Create ${1}/../${package_name}.d.ts re-export file for Closure"
     echo "$(cat ${LICENSE_BANNER}) ${N} export * from './${package_name}/index'" > ${2}/../${package_name}.d.ts
-    echo "{\"__symbolic\":\"module\",\"version\":3,\"metadata\":{},\"exports\":[{\"from\":\"./${package_name}/index\"}]}" > ${2}/../${package_name}.metadata.json
+    echo "{\"__symbolic\":\"module\",\"version\":3,\"metadata\":{},\"exports\":[{\"from\":\"./${package_name}/index\"}],\"flatModuleIndexRedirect\":true}" > ${2}/../${package_name}.metadata.json
   fi
 
   for DIR in ${1}/* ; do
@@ -329,8 +328,7 @@ mapSources() {
 }
 
 VERSION="${VERSION_PREFIX}${VERSION_SUFFIX}"
-ROUTER_VERSION="${ROUTER_VERSION_PREFIX}${VERSION_SUFFIX}"
-echo "====== BUILDING: Version ${VERSION} (Router ${ROUTER_VERSION})"
+echo "====== BUILDING: Version ${VERSION}"
 
 N="
 "
@@ -362,38 +360,40 @@ if [[ ${BUILD_ALL} == true && ${TYPECHECK_ALL} == true ]]; then
   travisFoldStart "copy e2e files" "no-xtrace"
     mkdir -p ./dist/all/
 
-    echo "====== Copying files needed for e2e tests ====="
-    cp -r ./modules/playground ./dist/all/
-    cp -r ./modules/playground/favicon.ico ./dist/
-    #rsync -aP ./modules/playground/* ./dist/all/playground/
-    mkdir ./dist/all/playground/vendor
-    cd ./dist/all/playground/vendor
-    ln -s ../../../../node_modules/core-js/client/core.js .
-    ln -s ../../../../node_modules/zone.js/dist/zone.js .
-    ln -s ../../../../node_modules/zone.js/dist/long-stack-trace-zone.js .
-    ln -s ../../../../node_modules/systemjs/dist/system.src.js .
-    ln -s ../../../../node_modules/base64-js .
-    ln -s ../../../../node_modules/reflect-metadata/Reflect.js .
-    ln -s ../../../../node_modules/rxjs .
-    ln -s ../../../../node_modules/angular/angular.js .
-    ln -s ../../../../node_modules/hammerjs/hammer.js .
-    cd -
+    (
+      echo "====== Copying files needed for e2e tests ====="
+      cp -r ./modules/playground ./dist/all/
+      cp -r ./modules/playground/favicon.ico ./dist/
+      #rsync -aP ./modules/playground/* ./dist/all/playground/
+      mkdir ./dist/all/playground/vendor
+      cd ./dist/all/playground/vendor
+      ln -s ../../../../node_modules/core-js/client/core.js .
+      ln -s ../../../../node_modules/zone.js/dist/zone.js .
+      ln -s ../../../../node_modules/zone.js/dist/long-stack-trace-zone.js .
+      ln -s ../../../../node_modules/systemjs/dist/system.src.js .
+      ln -s ../../../../node_modules/base64-js .
+      ln -s ../../../../node_modules/reflect-metadata/Reflect.js .
+      ln -s ../../../../node_modules/rxjs .
+      ln -s ../../../../node_modules/angular/angular.js .
+      ln -s ../../../../node_modules/hammerjs/hammer.js .
+    )
 
-    echo "====== Copying files needed for benchmarks ====="
-    cp -r ./modules/benchmarks ./dist/all/
-    cp -r ./modules/benchmarks/favicon.ico ./dist/
-    mkdir ./dist/all/benchmarks/vendor
-    cd ./dist/all/benchmarks/vendor
-    ln -s ../../../../node_modules/core-js/client/core.js .
-    ln -s ../../../../node_modules/zone.js/dist/zone.js .
-    ln -s ../../../../node_modules/zone.js/dist/long-stack-trace-zone.js .
-    ln -s ../../../../node_modules/systemjs/dist/system.src.js .
-    ln -s ../../../../node_modules/reflect-metadata/Reflect.js .
-    ln -s ../../../../node_modules/rxjs .
-    ln -s ../../../../node_modules/angular/angular.js .
-    ln -s ../../../../bower_components/polymer .
-    ln -s ../../../../node_modules/incremental-dom/dist/incremental-dom-cjs.js
-    cd -
+    (
+      echo "====== Copying files needed for benchmarks ====="
+      cp -r ./modules/benchmarks ./dist/all/
+      cp -r ./modules/benchmarks/favicon.ico ./dist/
+      mkdir ./dist/all/benchmarks/vendor
+      cd ./dist/all/benchmarks/vendor
+      ln -s ../../../../node_modules/core-js/client/core.js .
+      ln -s ../../../../node_modules/zone.js/dist/zone.js .
+      ln -s ../../../../node_modules/zone.js/dist/long-stack-trace-zone.js .
+      ln -s ../../../../node_modules/systemjs/dist/system.src.js .
+      ln -s ../../../../node_modules/reflect-metadata/Reflect.js .
+      ln -s ../../../../node_modules/rxjs .
+      ln -s ../../../../node_modules/angular/angular.js .
+      ln -s ../../../../bower_components/polymer .
+      ln -s ../../../../node_modules/incremental-dom/dist/incremental-dom-cjs.js
+    )
   travisFoldEnd "copy e2e files"
 
   TSCONFIG="packages/tsconfig.json"
@@ -426,12 +426,7 @@ do
   MODULES_DIR=${NPM_DIR}/@angular
   BUNDLES_DIR=${NPM_DIR}/bundles
 
-  if [[ ${PACKAGE} != router ]]; then
-    LICENSE_BANNER=${ROOT_DIR}/license-banner.txt
-  fi
-  if [[ ${PACKAGE} == router ]]; then
-    LICENSE_BANNER=${ROOT_DIR}/router-license-banner.txt
-  fi
+  LICENSE_BANNER=${ROOT_DIR}/license-banner.txt
 
   if [[ ${COMPILE_SOURCE} == true ]]; then
     rm -rf ${OUT_DIR}
@@ -447,11 +442,7 @@ do
 
       echo "======        Copy ${PACKAGE} typings"
       rsync -a --exclude=*.js --exclude=*.js.map ${OUT_DIR}/ ${NPM_DIR}
-#      echo "$(cat ${LICENSE_BANNER}) ${N} export * from './index'" > ${NPM_DIR}/${PACKAGE}.d.ts
-#      echo "{\"alias\": \"./index.metadata.json\"}" > ${NPM_DIR}/${PACKAGE}.metadata.json
-#      exit 0
       moveTypings ${NPM_DIR} ${PACKAGE}
-#      addNgcPackageJson ${NPM_DIR}/typings
 
       (
         cd  ${SRC_DIR}
@@ -486,8 +477,6 @@ do
       cd ${NPM_DIR}
       echo "======       EXECUTE: perl -p -i -e \"s/0\.0\.0\-PLACEHOLDER/${VERSION}/g\" $""(grep -ril 0\.0\.0\-PLACEHOLDER .)"
       perl -p -i -e "s/0\.0\.0\-PLACEHOLDER/${VERSION}/g" $(grep -ril 0\.0\.0\-PLACEHOLDER .) < /dev/null 2> /dev/null
-      echo "======       EXECUTE: perl -p -i -e \"s/0\.0\.0\-ROUTERPLACEHOLDER/${ROUTER_VERSION}/g\" $""(grep -ril 0\.0\.0\-ROUTERPLACEHOLDER .)"
-      perl -p -i -e "s/0\.0\.0\-ROUTERPLACEHOLDER/${ROUTER_VERSION}/g" $(grep -ril 0\.0\.0\-ROUTERPLACEHOLDER .) < /dev/null 2> /dev/null
     )
   fi
 

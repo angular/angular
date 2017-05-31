@@ -1,11 +1,4 @@
-@title
-Npm Packages
-
-@intro
-Recommended npm packages, and how to specify package dependencies.
-
-@description
-
+# Npm Packages
 
 Angular applications and Angular itself depend upon features and functionality provided by a variety of third-party packages.
 These packages are maintained and installed with the Node Package Manager (<a href="https://docs.npmjs.com/">npm</a>).
@@ -194,7 +187,7 @@ with excellent support for Angular apps that use routing.
 ***[typescript](https://www.npmjs.com/package/typescript)***:
 the TypeScript language server, including the *tsc* TypeScript compiler.
 
-***@types/\****: TypeScript definition files.
+***@types/\* ***: TypeScript definition files.
 Learn more about it in the [TypeScript Configuration](guide/typescript-configuration#typings) guide.
 
 

@@ -1,12 +1,4 @@
-@title
-Security
-
-@intro
-Developing for content security in Angular applications.
-
-@description
-
-
+# Security
 
 This page describes Angular's built-in
 protections against common web-application vulnerabilities and attacks such as cross-site
@@ -14,19 +6,6 @@ scripting attacks. It doesn't cover application-level security, such as authenti
 this user?_) and authorization (_What can this user do?_).
 
 For more information about the attacks and mitigations described below, see [OWASP Guide Project](https://www.owasp.org/index.php/Category:OWASP_Guide_Project).
-
-<!--
-
-# Contents
-
-* [Reporting vulnerabilities](guide/security#report-issues).
-* [Best practices](guide/security#best-practices).
-* [Preventing cross-site scripting (XSS)](guide/security#xss).
-* [Trusting safe values](guide/security#bypass-security-apis).
-* [HTTP-Level vulnerabilities](guide/security#http).
-* [Auditing Angular applications](guide/security#code-review).
-
--->
 
 You can run the <live-example></live-example> in Plunker and download the code from there.
 
@@ -143,8 +122,8 @@ Angular recognizes the value as unsafe and automatically sanitizes it, which rem
 tag but keeps safe content such as the text content of the `<script>` tag and the `<b>` element.
 
 
-<figure class='image-display'>
-  <img src='generated/images/guide/security/binding-inner-html.png' alt='A screenshot showing interpolated and bound HTML values'></img>
+<figure>
+  <img src='generated/images/guide/security/binding-inner-html.png' alt='A screenshot showing interpolated and bound HTML values'>
 </figure>
 
 
@@ -232,8 +211,8 @@ this, mark the URL value as a trusted URL using the `bypassSecurityTrustUrl` cal
 
 
 
-<figure class='image-display'>
-  <img src='generated/images/guide/security/bypass-security-component.png' alt='A screenshot showing an alert box created from a trusted URL'></img>
+<figure>
+  <img src='generated/images/guide/security/bypass-security-component.png' alt='A screenshot showing an alert box created from a trusted URL'>
 </figure>
 
 

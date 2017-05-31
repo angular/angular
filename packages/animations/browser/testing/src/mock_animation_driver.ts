@@ -8,12 +8,28 @@
 import {AUTO_STYLE, AnimationPlayer, NoopAnimationPlayer, ɵStyleData} from '@angular/animations';
 
 import {AnimationDriver} from '../../src/render/animation_driver';
+import {containsElement, invokeQuery, matchesElement} from '../../src/render/shared';
+
 
 /**
  * @experimental Animation support is experimental.
  */
 export class MockAnimationDriver implements AnimationDriver {
   static log: AnimationPlayer[] = [];
+
+  matchesElement(element: any, selector: string): boolean {
+    return matchesElement(element, selector);
+  }
+
+  containsElement(elm1: any, elm2: any): boolean { return containsElement(elm1, elm2); }
+
+  query(element: any, selector: string, multi: boolean): any[] {
+    return invokeQuery(element, selector, multi);
+  }
+
+  computeStyle(element: any, prop: string, defaultValue?: string): string {
+    return defaultValue || '';
+  }
 
   animate(
       element: any, keyframes: {[key: string]: string | number}[], duration: number, delay: number,
@@ -30,8 +46,10 @@ export class MockAnimationDriver implements AnimationDriver {
  */
 export class MockAnimationPlayer extends NoopAnimationPlayer {
   private __finished = false;
+  private __started = false;
   public previousStyles: {[key: string]: string | number} = {};
   private _onInitFns: (() => any)[] = [];
+  public currentSnapshot: ɵStyleData = {};
 
   constructor(
       public element: any, public keyframes: {[key: string]: string | number}[],
@@ -40,10 +58,12 @@ export class MockAnimationPlayer extends NoopAnimationPlayer {
     super();
     previousPlayers.forEach(player => {
       if (player instanceof MockAnimationPlayer) {
-        const styles = player._captureStyles();
-        Object.keys(styles).forEach(prop => { this.previousStyles[prop] = styles[prop]; });
+        const styles = player.currentSnapshot;
+        Object.keys(styles).forEach(prop => this.previousStyles[prop] = styles[prop]);
       }
     });
+
+    this.totalTime = delay + duration;
   }
 
   /* @internal */
@@ -66,7 +86,17 @@ export class MockAnimationPlayer extends NoopAnimationPlayer {
     this.__finished = true;
   }
 
-  private _captureStyles(): {[styleName: string]: string | number} {
+  /* @internal */
+  triggerMicrotask() {}
+
+  play(): void {
+    super.play();
+    this.__started = true;
+  }
+
+  hasStarted() { return this.__started; }
+
+  beforeDestroy() {
     const captures: ɵStyleData = {};
 
     Object.keys(this.previousStyles).forEach(prop => {
@@ -86,6 +116,6 @@ export class MockAnimationPlayer extends NoopAnimationPlayer {
       });
     }
 
-    return captures;
+    this.currentSnapshot = captures;
   }
 }

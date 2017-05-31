@@ -1,10 +1,4 @@
-@title
-Change Log
-
-@intro
-An annotated history of recent documentation improvements.
-
-@description
+# Change Log
 
 
 

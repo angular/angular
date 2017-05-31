@@ -1,12 +1,4 @@
-@title
-NgModule FAQs
-
-@intro
-Answers to frequently asked questions about @NgModule.
-
-@description
-
-
+# NgModule FAQs
 
 NgModules help organize an application into cohesive blocks of functionality.
 
@@ -23,62 +15,6 @@ These FAQs assume that you have read the [NgModules](guide/ngmodule) page.
 
 
 </div>
-
-<!--
-
-Declarations
-
-* [What classes should I add to _declarations_?](guide/ngmodule-faq#q-what-to-declare)
-* [What is a _declarable_?](guide/ngmodule-faq#q-declarable)
-* [What classes should I _not_ add to _declarations_?](guide/ngmodule-faq#q-what-not-to-declare)
-* [Why list the same component in multiple _NgModule_ properties?](guide/ngmodule-faq#q-why-multiple-mentions)
-* [What does "Can't bind to 'x' since it isn't a known property of 'y'" mean?](guide/ngmodule-faq#q-why-cant-bind-to)
-
-Imports
-
-* [What should I import?](guide/ngmodule-faq#q-what-to-import)
-* [Should I import _BrowserModule_ or _CommonModule_?](guide/ngmodule-faq#q-browser-vs-common-module)
-* [What if I import the same module twice?](guide/ngmodule-faq#q-reimport)
-
-Exports
-
-* [What should I export?](guide/ngmodule-faq#q-what-to-export)
-* [What should I *not* export?](guide/ngmodule-faq#q-what-not-to-export)
-* [Can I re-export imported classes and modules?](guide/ngmodule-faq#q-re-export)
-* [What is the _forRoot_ method?](guide/ngmodule-faq#q-for-root)
-
-Service Providers
-
-* [Why is a service provided in a feature module visible everywhere?](guide/ngmodule-faq#q-module-provider-visibility)
-* [Why is a service provided in a _lazy-loaded_ module visible only to that module?](guide/ngmodule-faq#q-lazy-loaded-module-provider-visibility)
-* [What if two modules provide the same service?](guide/ngmodule-faq#q-module-provider-duplicates)
-* [How do I restrict service scope to a module?](guide/ngmodule-faq#q-component-scoped-providers)
-* [Should I add app-wide providers to the root _AppModule_ or the root _AppComponent_?](guide/ngmodule-faq#q-root-component-or-module)
-* [Should I add other providers to a module or a component?](guide/ngmodule-faq#q-component-or-module)
-* [Why is it bad if _SharedModule_ provides a service to a lazy-loaded module?](guide/ngmodule-faq#q-why-bad)
-* [Why does lazy loading create a child injector?](guide/ngmodule-faq#q-why-child-injector)
-* [How can I tell if a module or service was previously loaded?](guide/ngmodule-faq#q-is-it-loaded)
-
-Entry Components
-
-* [What is an _entry component_?](guide/ngmodule-faq#q-entry-component-defined)
-* [What is the difference between a _bootstrap_ component and an _entry component_?](guide/ngmodule-faq#q-bootstrap_vs_entry_component)
-* [When do I add components to _entryComponents_?](guide/ngmodule-faq#q-when-entry-components)
-* [Why does Angular need _entryComponents_?](guide/ngmodule-faq#q-why-entry-components)
-
-General
-
-* [What kinds of modules should I have and how should I use them?](guide/ngmodule-faq#q-module-recommendations)
-* [What's the difference between Angular and JavaScript Modules?](guide/ngmodule-faq#q-ng-vs-js-modules)
-* [How does Angular find components, directives, and pipes in a template?](guide/ngmodule-faq#q-template-reference)
-* [What is a "template reference"?](guide/ngmodule-faq#q-template-reference)
-* [What is the Angular compiler?](guide/ngmodule-faq#q-angular-compiler)
-* [Can you summarize the NgModule API?](guide/ngmodule-faq#q-ngmodule-api)
-
-
-<hr/>
-
--->
 
 {@a q-what-to-declare}
 
@@ -550,7 +486,8 @@ from components outside the `AppComponent` tree. This is a rare use case.
 
 More generally, [prefer registering providers in modules](guide/ngmodule-faq#q-component-or-module) to registering in components.
 
-### Discussion
+<h3 class="no-toc">Discussion</h3>
+
 Angular registers all startup module providers with the application root injector.
 The services created from root injector providers are available to the entire application.
 They are _application-scoped_.

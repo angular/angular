@@ -1,30 +1,35 @@
 import { NO_ERRORS_SCHEMA, DebugElement } from '@angular/core';
-import { async, inject, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, inject, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { APP_BASE_HREF } from '@angular/common';
 import { Http } from '@angular/http';
+import { MdProgressBar } from '@angular/material';
 import { By } from '@angular/platform-browser';
 
-import { BehaviorSubject} from 'rxjs/BehaviorSubject';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { of } from 'rxjs/observable/of';
 
 import { AppComponent } from './app.component';
 import { AppModule } from './app.module';
-import { TocComponent } from 'app/embedded/toc/toc.component';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
-import { NavigationNode } from 'app/navigation/navigation.service';
-import { SearchService } from 'app/search/search.service';
-import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
-import { SearchResultsComponent } from 'app/search/search-results/search-results.component';
-import { AutoScrollService } from 'app/shared/auto-scroll.service';
 import { GaService } from 'app/shared/ga.service';
 import { LocationService } from 'app/shared/location.service';
 import { Logger } from 'app/shared/logger.service';
-import { SwUpdateNotificationsService } from 'app/sw-updates/sw-update-notifications.service';
 import { MockLocationService } from 'testing/location.service';
 import { MockLogger } from 'testing/logger.service';
 import { MockSearchService } from 'testing/search.service';
 import { MockSwUpdateNotificationsService } from 'testing/sw-update-notifications.service';
+import { NavigationNode } from 'app/navigation/navigation.service';
+import { ScrollService } from 'app/shared/scroll.service';
+import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
+import { SearchResultsComponent } from 'app/search/search-results/search-results.component';
+import { SearchService } from 'app/search/search.service';
+import { SwUpdateNotificationsService } from 'app/sw-updates/sw-update-notifications.service';
+import { TocComponent } from 'app/embedded/toc/toc.component';
+import { MdSidenav } from '@angular/material';
+
+const sideBySideBreakPoint = 992;
+const hideToCBreakPoint = 800;
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -35,445 +40,711 @@ describe('AppComponent', () => {
   let locationService: MockLocationService;
   let sidenav: HTMLElement;
 
-  beforeEach(async(() => {
-    createTestingModule('a/b');
-    TestBed.compileComponents();
-  }));
-
-  beforeEach(() => {
+  const initializeTest = () => {
     fixture = TestBed.createComponent(AppComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
 
-    component.onResize(1033); // wide by default
+    fixture.detectChanges();
+    component.onResize(sideBySideBreakPoint + 1); // wide by default
+
     docViewer = fixture.debugElement.query(By.css('aio-doc-viewer')).nativeElement;
     hamburger = fixture.debugElement.query(By.css('.hamburger')).nativeElement;
     locationService = fixture.debugElement.injector.get(LocationService) as any;
     sidenav = fixture.debugElement.query(By.css('md-sidenav')).nativeElement;
-  });
+  };
 
-  it('should create', () => {
-    expect(component).toBeDefined();
-  });
-
-  describe('ServiceWorker update notifications', () => {
-    it('should be enabled', () => {
-      const swUpdateNotifications = TestBed.get(SwUpdateNotificationsService) as SwUpdateNotificationsService;
-      expect(swUpdateNotifications.enable).toHaveBeenCalled();
-    });
-  });
-
-  describe('onResize', () => {
-    it('should update `isSideBySide` accordingly', () => {
-      component.onResize(1033);
-      expect(component.isSideBySide).toBe(true);
-      component.onResize(500);
-      expect(component.isSideBySide).toBe(false);
-    });
-  });
-
-  describe('onScroll', () => {
-    it('should update `tocMaxHeight` accordingly', () => {
-      expect(component.tocMaxHeight).toBeUndefined();
-
-      component.onScroll();
-      expect(component.tocMaxHeight).toBeGreaterThan(0);
-    });
-  });
-
-  describe('SideNav when side-by-side (wide)', () => {
+  describe('with proper DocViewer', () => {
 
     beforeEach(() => {
-      component.onResize(1033); // side-by-side
+      createTestingModule('a/b');
+      initializeTest();
     });
 
-    it('should open when nav to a guide page (guide/pipes)', () => {
-      locationService.go('guide/pipes');
-      fixture.detectChanges();
-      expect(sidenav.className).toMatch(/sidenav-open/);
+    it('should create', () => {
+      expect(component).toBeDefined();
     });
 
-    it('should open when nav to an api page', () => {
-      locationService.go('api/a/b/c/d');
-      fixture.detectChanges();
-      expect(sidenav.className).toMatch(/sidenav-open/);
+    describe('ServiceWorker update notifications', () => {
+      it('should be enabled', () => {
+        const swUpdateNotifications = TestBed.get(SwUpdateNotificationsService) as SwUpdateNotificationsService;
+        expect(swUpdateNotifications.enable).toHaveBeenCalled();
+      });
     });
 
-    it('should be closed when nav to a marketing page (features)', () => {
-      locationService.go('features');
-      fixture.detectChanges();
-      expect(sidenav.className).toMatch(/sidenav-clos/);
+    describe('onResize', () => {
+      it('should update `isSideBySide` accordingly', () => {
+        component.onResize(sideBySideBreakPoint + 1);
+        expect(component.isSideBySide).toBe(true);
+        component.onResize(sideBySideBreakPoint - 1);
+        expect(component.isSideBySide).toBe(false);
+      });
+
+      it('should update `showFloatingToc` accordingly', () => {
+        component.onResize(hideToCBreakPoint + 1);
+        expect(component.showFloatingToc).toBe(true);
+        component.onResize(hideToCBreakPoint - 1);
+        expect(component.showFloatingToc).toBe(false);
+      });
     });
 
-    describe('when manually closed', () => {
+    describe('onScroll', () => {
+      it('should update `tocMaxHeight` accordingly', () => {
+        expect(component.tocMaxHeight).toBeUndefined();
+
+        component.onScroll();
+        expect(component.tocMaxHeight).toBeGreaterThan(0);
+      });
+    });
+
+    describe('SideNav when side-by-side (wide)', () => {
 
       beforeEach(() => {
+        component.onResize(sideBySideBreakPoint + 1); // side-by-side
+      });
+
+      it('should open when nav to a guide page (guide/pipes)', () => {
         locationService.go('guide/pipes');
         fixture.detectChanges();
-        hamburger.click();
-        fixture.detectChanges();
-      });
-
-      it('should be closed', () => {
-        expect(sidenav.className).toMatch(/sidenav-clos/);
-      });
-
-      it('should stay closed when nav to another guide page', () => {
-        locationService.go('guide/bags');
-        fixture.detectChanges();
-        expect(sidenav.className).toMatch(/sidenav-clos/);
-      });
-
-      it('should stay closed when nav to api page', () => {
-        locationService.go('api');
-        fixture.detectChanges();
-        expect(sidenav.className).toMatch(/sidenav-clos/);
-      });
-
-      it('should reopen when nav to market page and back to guide page', () => {
-        locationService.go('features');
-        fixture.detectChanges();
-        locationService.go('guide/bags');
-        fixture.detectChanges();
-        expect(sidenav.className).toMatch(/sidenav-open/);
-      });
-    });
-  });
-
-  describe('SideNav when NOT side-by-side (narrow)', () => {
-
-    beforeEach(() => {
-      component.onResize(1000); // NOT side-by-side
-    });
-
-    it('should be closed when nav to a guide page (guide/pipes)', () => {
-      locationService.go('guide/pipes');
-      fixture.detectChanges();
-      expect(sidenav.className).toMatch(/sidenav-clos/);
-    });
-
-    it('should be closed when nav to an api page', () => {
-      locationService.go('api/a/b/c/d');
-      fixture.detectChanges();
-      expect(sidenav.className).toMatch(/sidenav-clos/);
-    });
-
-    it('should be closed when nav to a marketing page (features)', () => {
-      locationService.go('features');
-      fixture.detectChanges();
-      expect(sidenav.className).toMatch(/sidenav-clos/);
-    });
-
-    describe('when manually opened', () => {
-
-      beforeEach(() => {
-        locationService.go('guide/pipes');
-        fixture.detectChanges();
-        hamburger.click();
-        fixture.detectChanges();
-      });
-
-      it('should be open', () => {
         expect(sidenav.className).toMatch(/sidenav-open/);
       });
 
-      it('should close when click in gray content area overlay', () => {
-        const sidenavBackdrop = fixture.debugElement.query(By.css('.mat-sidenav-backdrop')).nativeElement;
-        sidenavBackdrop.click();
-        fixture.detectChanges();
-        expect(sidenav.className).toMatch(/sidenav-clos/);
-      });
-
-      it('should stay open when nav to another guide page', () => {
-        locationService.go('guide/bags');
+      it('should open when nav to an api page', () => {
+        locationService.go('api/a/b/c/d');
         fixture.detectChanges();
         expect(sidenav.className).toMatch(/sidenav-open/);
       });
 
-      it('should stay open when nav to api page', () => {
-        locationService.go('api');
-        fixture.detectChanges();
-        expect(sidenav.className).toMatch(/sidenav-open/);
-      });
-
-      it('should close again when nav to market page', () => {
+      it('should be closed when nav to a marketing page (features)', () => {
         locationService.go('features');
         fixture.detectChanges();
         expect(sidenav.className).toMatch(/sidenav-clos/);
       });
 
+      describe('when manually closed', () => {
+
+        beforeEach(() => {
+          locationService.go('guide/pipes');
+          fixture.detectChanges();
+          hamburger.click();
+          fixture.detectChanges();
+        });
+
+        it('should be closed', () => {
+          expect(sidenav.className).toMatch(/sidenav-clos/);
+        });
+
+        it('should stay closed when nav from one guide page to another', () => {
+          locationService.go('guide/bags');
+          fixture.detectChanges();
+          expect(sidenav.className).toMatch(/sidenav-clos/);
+        });
+
+        it('should stay closed when nav from a guide page to api page', () => {
+          locationService.go('api');
+          fixture.detectChanges();
+          expect(sidenav.className).toMatch(/sidenav-clos/);
+        });
+
+        it('should reopen when nav to market page and back to guide page', () => {
+          locationService.go('features');
+          fixture.detectChanges();
+          locationService.go('guide/bags');
+          fixture.detectChanges();
+          expect(sidenav.className).toMatch(/sidenav-open/);
+        });
+      });
     });
+
+    describe('SideNav when NOT side-by-side (narrow)', () => {
+
+      beforeEach(() => {
+        component.onResize(sideBySideBreakPoint - 1); // NOT side-by-side
+      });
+
+      it('should be closed when nav to a guide page (guide/pipes)', () => {
+        locationService.go('guide/pipes');
+        fixture.detectChanges();
+        expect(sidenav.className).toMatch(/sidenav-clos/);
+      });
+
+      it('should be closed when nav to an api page', () => {
+        locationService.go('api/a/b/c/d');
+        fixture.detectChanges();
+        expect(sidenav.className).toMatch(/sidenav-clos/);
+      });
+
+      it('should be closed when nav to a marketing page (features)', () => {
+        locationService.go('features');
+        fixture.detectChanges();
+        expect(sidenav.className).toMatch(/sidenav-clos/);
+      });
+
+      describe('when manually opened', () => {
+
+        beforeEach(() => {
+          locationService.go('guide/pipes');
+          fixture.detectChanges();
+          hamburger.click();
+          fixture.detectChanges();
+        });
+
+        it('should be open', () => {
+          expect(sidenav.className).toMatch(/sidenav-open/);
+        });
+
+        it('should close when click in gray content area overlay', () => {
+          const sidenavBackdrop = fixture.debugElement.query(By.css('.mat-sidenav-backdrop')).nativeElement;
+          sidenavBackdrop.click();
+          fixture.detectChanges();
+          expect(sidenav.className).toMatch(/sidenav-clos/);
+        });
+
+        it('should close when nav to another guide page', () => {
+          locationService.go('guide/bags');
+          fixture.detectChanges();
+          expect(sidenav.className).toMatch(/sidenav-clos/);
+        });
+
+        it('should close when nav to api page', () => {
+          locationService.go('api');
+          fixture.detectChanges();
+          expect(sidenav.className).toMatch(/sidenav-clos/);
+        });
+
+        it('should close again when nav to market page', () => {
+          locationService.go('features');
+          fixture.detectChanges();
+          expect(sidenav.className).toMatch(/sidenav-clos/);
+        });
+
+      });
+    });
+
+    describe('SideNav version selector', () => {
+      beforeEach(() => {
+        component.onResize(sideBySideBreakPoint + 1); // side-by-side
+      });
+
+      it('should pick first (current) version by default', () => {
+        const versionSelector = sidenav.querySelector('select');
+        expect(versionSelector.value).toEqual(component.versionInfo.raw);
+        expect(versionSelector.selectedIndex).toEqual(0);
+      });
+
+      // Older docs versions have an href
+      it('should navigate when change to a version with an href', () => {
+        component.onDocVersionChange(1);
+        expect(locationService.go).toHaveBeenCalledWith(TestHttp.docVersions[0].url);
+      });
+
+      // The current docs version should not have an href
+      // This may change when we perfect our docs versioning approach
+      it('should not navigate when change to a version without an href', () => {
+        component.onDocVersionChange(0);
+        expect(locationService.go).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('pageId', () => {
+
+      it('should set the id of the doc viewer container based on the current doc', () => {
+        const container = fixture.debugElement.query(By.css('section.sidenav-content'));
+
+        locationService.go('guide/pipes');
+        fixture.detectChanges();
+        expect(component.pageId).toEqual('guide-pipes');
+        expect(container.properties['id']).toEqual('guide-pipes');
+
+        locationService.go('news');
+        fixture.detectChanges();
+        expect(component.pageId).toEqual('news');
+        expect(container.properties['id']).toEqual('news');
+
+        locationService.go('');
+        fixture.detectChanges();
+        expect(component.pageId).toEqual('home');
+        expect(container.properties['id']).toEqual('home');
+      });
+
+      it('should not be affected by changes to the query', () => {
+        const container = fixture.debugElement.query(By.css('section.sidenav-content'));
+
+        locationService.go('guide/pipes');
+        fixture.detectChanges();
+
+        locationService.go('guide/other?search=http');
+        fixture.detectChanges();
+        expect(component.pageId).toEqual('guide-other');
+        expect(container.properties['id']).toEqual('guide-other');
+      });
+    });
+
+    describe('hostClasses', () => {
+      let host: DebugElement;
+      beforeEach(() => {
+        host = fixture.debugElement;
+      });
+
+      it('should set the css classes of the host container based on the current doc and navigation view', () => {
+        locationService.go('guide/pipes');
+        fixture.detectChanges();
+
+        checkHostClass('page', 'guide-pipes');
+        checkHostClass('folder', 'guide');
+        checkHostClass('view', 'SideNav');
+
+        locationService.go('features');
+        fixture.detectChanges();
+        checkHostClass('page', 'features');
+        checkHostClass('folder', 'features');
+        checkHostClass('view', 'TopBar');
+
+        locationService.go('');
+        fixture.detectChanges();
+        checkHostClass('page', 'home');
+        checkHostClass('folder', 'home');
+        checkHostClass('view', '');
+      });
+
+      it('should set the css class of the host container based on the open/closed state of the side nav', () => {
+        const sideNav = host.query(By.directive(MdSidenav));
+
+        locationService.go('guide/pipes');
+        fixture.detectChanges();
+        checkHostClass('sidenav', 'open');
+
+        sideNav.componentInstance.opened = false;
+        sideNav.triggerEventHandler('close', {});
+        fixture.detectChanges();
+        checkHostClass('sidenav', 'closed');
+
+        sideNav.componentInstance.opened = true;
+        sideNav.triggerEventHandler('open', {});
+        fixture.detectChanges();
+        checkHostClass('sidenav', 'open');
+      });
+
+      function checkHostClass(type, value) {
+        const classes = host.properties['className'];
+        const classArray = classes.split(' ').filter(c => c.indexOf(`${type}-`) === 0);
+        expect(classArray.length).toBeLessThanOrEqual(1, `"${classes}" should have only one class matching ${type}-*`);
+        expect(classArray).toEqual([`${type}-${value}`], `"${classes}" should contain ${type}-${value}`);
+      }
+    });
+
+    describe('currentDocument', () => {
+
+      it('should display a guide page (guide/pipes)', () => {
+        locationService.go('guide/pipes');
+        fixture.detectChanges();
+        expect(docViewer.innerText).toMatch(/Pipes/i);
+      });
+
+      it('should display the api page', () => {
+        locationService.go('api');
+        fixture.detectChanges();
+        expect(docViewer.innerText).toMatch(/API/i);
+      });
+
+      it('should display a marketing page', () => {
+        locationService.go('features');
+        fixture.detectChanges();
+        expect(docViewer.innerText).toMatch(/Features/i);
+      });
+
+      it('should update the document title', () => {
+        const titleService = TestBed.get(Title);
+        spyOn(titleService, 'setTitle');
+        locationService.go('guide/pipes');
+        fixture.detectChanges();
+        expect(titleService.setTitle).toHaveBeenCalledWith('Angular - Pipes');
+      });
+
+      it('should update the document title, with a default value if the document has no title', () => {
+        const titleService = TestBed.get(Title);
+        spyOn(titleService, 'setTitle');
+        locationService.go('no-title');
+        fixture.detectChanges();
+        expect(titleService.setTitle).toHaveBeenCalledWith('Angular');
+      });
+    });
+
+    describe('auto-scrolling', () => {
+      const scrollDelay = 500;
+      let scrollService: ScrollService;
+      let scrollSpy: jasmine.Spy;
+
+      beforeEach(() => {
+        scrollService = fixture.debugElement.injector.get(ScrollService);
+        scrollSpy = spyOn(scrollService, 'scroll');
+      });
+
+      it('should not scroll immediately when the docId (path) changes', () => {
+        locationService.go('guide/pipes');
+        // deliberately not calling `fixture.detectChanges` because don't want `onDocRendered`
+        expect(scrollSpy).not.toHaveBeenCalled();
+      });
+
+      it('should scroll when just the hash changes (# alone)', () => {
+        locationService.go('guide/pipes');
+        locationService.go('guide/pipes#somewhere');
+        expect(scrollSpy).toHaveBeenCalled();
+      });
+
+      it('should scroll when just the hash changes (/#)', () => {
+        locationService.go('guide/pipes');
+        locationService.go('guide/pipes/#somewhere');
+        expect(scrollSpy).toHaveBeenCalled();
+      });
+
+      it('should scroll again when nav to the same hash twice in succession', () => {
+        locationService.go('guide/pipes');
+        locationService.go('guide/pipes#somewhere');
+        locationService.go('guide/pipes#somewhere');
+        expect(scrollSpy.calls.count()).toBe(2);
+      });
+
+      it('should scroll when nav to the same path', () => {
+        locationService.go('guide/pipes');
+        scrollSpy.calls.reset();
+
+        locationService.go('guide/pipes');
+        expect(scrollSpy).toHaveBeenCalledTimes(1);
+      });
+
+      it('should scroll when e-nav to the empty path', () => {
+        locationService.go('');
+        scrollSpy.calls.reset();
+
+        locationService.go('');
+        expect(scrollSpy).toHaveBeenCalledTimes(1);
+      });
+
+      it('should scroll after a delay when call onDocRendered directly', fakeAsync(() => {
+        component.onDocRendered();
+        expect(scrollSpy).not.toHaveBeenCalled();
+        tick(scrollDelay);
+        expect(scrollSpy).toHaveBeenCalled();
+      }));
+
+      it('should scroll (via onDocRendered) when finish navigating to a new doc', fakeAsync(() => {
+        locationService.go('guide/pipes');
+        fixture.detectChanges(); // triggers the event that calls onDocRendered
+        expect(scrollSpy).not.toHaveBeenCalled();
+        tick(scrollDelay);
+        expect(scrollSpy).toHaveBeenCalled();
+      }));
+    });
+
+    describe('click intercepting', () => {
+      it('should intercept clicks on anchors and call `location.handleAnchorClick()`',
+              inject([LocationService], (location: LocationService) => {
+
+        const el = fixture.nativeElement as Element;
+        el.innerHTML = '<a href="some/local/url">click me</a>';
+        const anchorElement = el.getElementsByTagName('a')[0];
+        anchorElement.click();
+        expect(location.handleAnchorClick).toHaveBeenCalledWith(anchorElement, 0, false, false);
+      }));
+
+      it('should intercept clicks on elements deep within an anchor tag',
+              inject([LocationService], (location: LocationService) => {
+
+        const el = fixture.nativeElement as Element;
+        el.innerHTML = '<a href="some/local/url"><div><img></div></a>';
+        const imageElement  = el.getElementsByTagName('img')[0];
+        const anchorElement = el.getElementsByTagName('a')[0];
+        imageElement.click();
+        expect(location.handleAnchorClick).toHaveBeenCalledWith(anchorElement, 0, false, false);
+      }));
+
+      it('should ignore clicks on elements without an anchor ancestor',
+              inject([LocationService], (location: LocationService) => {
+
+        const el = fixture.nativeElement as Element;
+        el.innerHTML = '<div><p><div><img></div></p></div>';
+        const imageElement  = el.getElementsByTagName('img')[0];
+        imageElement.click();
+        expect(location.handleAnchorClick).not.toHaveBeenCalled();
+      }));
+    });
+
+    describe('aio-toc', () => {
+      let tocDebugElement: DebugElement;
+      let tocContainer: DebugElement;
+
+      beforeEach(() => {
+        tocDebugElement = fixture.debugElement.query(By.directive(TocComponent));
+        tocContainer = tocDebugElement.parent;
+      });
+
+
+      it('should have a non-embedded `<aio-toc>` element', () => {
+        expect(tocDebugElement).toBeDefined();
+        expect(tocDebugElement.classes['embedded']).toBeFalsy();
+      });
+
+      it('should update the TOC container\'s `maxHeight` based on `tocMaxHeight`', () => {
+        expect(tocContainer.styles['max-height']).toBeNull();
+
+        component.tocMaxHeight = '100';
+        fixture.detectChanges();
+
+        expect(tocContainer.styles['max-height']).toBe('100px');
+      });
+    });
+
+    describe('footer', () => {
+      it('should have version number', () => {
+        const versionEl: HTMLElement = fixture.debugElement.query(By.css('aio-footer')).nativeElement;
+        expect(versionEl.innerText).toContain(TestHttp.versionFull);
+      });
+    });
+
+    describe('search', () => {
+      describe('initialization', () => {
+        it('should initialize the search worker', inject([SearchService], (searchService: SearchService) => {
+          fixture.detectChanges(); // triggers ngOnInit
+          expect(searchService.initWorker).toHaveBeenCalled();
+          expect(searchService.loadIndex).toHaveBeenCalled();
+        }));
+      });
+
+      describe('click handling', () => {
+        it('should intercept clicks not on the search elements and hide the search results', () => {
+          component.showSearchResults = true;
+          fixture.detectChanges();
+          // docViewer is a commonly-clicked, non-search element
+          docViewer.click();
+          expect(component.showSearchResults).toBe(false);
+        });
+
+        it('should not intercept clicks on the searchResults', () => {
+          component.showSearchResults = true;
+          fixture.detectChanges();
+
+          const searchResults = fixture.debugElement.query(By.directive(SearchResultsComponent));
+          searchResults.nativeElement.click();
+          fixture.detectChanges();
+
+          expect(component.showSearchResults).toBe(true);
+        });
+
+        it('should not intercept clicks om the searchBox', () => {
+          component.showSearchResults = true;
+          fixture.detectChanges();
+
+          const searchBox = fixture.debugElement.query(By.directive(SearchBoxComponent));
+          searchBox.nativeElement.click();
+          fixture.detectChanges();
+
+          expect(component.showSearchResults).toBe(true);
+        });
+      });
+
+      describe('keyup handling', () => {
+        it('should grab focus when the / key is pressed', () => {
+          const searchBox: SearchBoxComponent = fixture.debugElement.query(By.directive(SearchBoxComponent)).componentInstance;
+          spyOn(searchBox, 'focus');
+          window.document.dispatchEvent(new KeyboardEvent('keyup', { 'key': '/' }));
+          fixture.detectChanges();
+          expect(searchBox.focus).toHaveBeenCalled();
+        });
+
+        it('should set focus back to the search box when the search results are displayed and the escape key is pressed', () => {
+          const searchBox: SearchBoxComponent = fixture.debugElement.query(By.directive(SearchBoxComponent)).componentInstance;
+          spyOn(searchBox, 'focus');
+          component.showSearchResults = true;
+          window.document.dispatchEvent(new KeyboardEvent('keyup', { 'key': 'Escape' }));
+          fixture.detectChanges();
+          expect(searchBox.focus).toHaveBeenCalled();
+        });
+      });
+
+      describe('showing search results', () => {
+        it('should not display search results when query is empty', () => {
+          const searchService: MockSearchService = TestBed.get(SearchService);
+          searchService.searchResults.next({ query: '', results: [] });
+          fixture.detectChanges();
+          expect(component.showSearchResults).toBe(false);
+        });
+
+        it('should hide the results when a search result is selected', () => {
+          const searchService: MockSearchService = TestBed.get(SearchService);
+
+          const results = [
+            { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '' }
+          ];
+
+          searchService.searchResults.next({ query: 'something', results: results });
+          component.showSearchResults = true;
+          fixture.detectChanges();
+
+          const searchResultsComponent = fixture.debugElement.query(By.directive(SearchResultsComponent));
+          searchResultsComponent.triggerEventHandler('resultSelected', {});
+          fixture.detectChanges();
+          expect(component.showSearchResults).toBe(false);
+        });
+      });
+    });
+
   });
 
-  describe('SideNav version selector', () => {
+  describe('with mocked DocViewer', () => {
+    const getDocViewer = () => fixture.debugElement.query(By.css('aio-doc-viewer'));
+    const triggerDocRendered = () => getDocViewer().triggerEventHandler('docRendered', {});
+
     beforeEach(() => {
-      component.onResize(1033); // side-by-side
-    });
-
-    it('should pick first (current) version by default', () => {
-      const versionSelector = sidenav.querySelector('select');
-      expect(versionSelector.value).toEqual(TestHttp.docVersions[0].title);
-      expect(versionSelector.selectedIndex).toEqual(0);
-    });
-
-    // Older docs versions have an href
-    it('should navigate when change to a version with an href', () => {
-      component.onDocVersionChange(1);
-      expect(locationService.go).toHaveBeenCalledWith(TestHttp.docVersions[1].url);
-    });
-
-    // The current docs version should not have an href
-    // This may change when we perfect our docs versioning approach
-    it('should not navigate when change to a version without an href', () => {
-      component.onDocVersionChange(0);
-      expect(locationService.go).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('pageId', () => {
-
-    it('should set the id of the doc viewer container based on the current doc', () => {
-      const container = fixture.debugElement.query(By.css('section.sidenav-content'));
-
-      locationService.go('guide/pipes');
-      fixture.detectChanges();
-      expect(component.pageId).toEqual('guide-pipes');
-      expect(container.properties['id']).toEqual('guide-pipes');
-
-      locationService.go('news');
-      fixture.detectChanges();
-      expect(component.pageId).toEqual('news');
-      expect(container.properties['id']).toEqual('news');
-
-      locationService.go('');
-      fixture.detectChanges();
-      expect(component.pageId).toEqual('home');
-      expect(container.properties['id']).toEqual('home');
-    });
-
-    it('should not be affected by changes to the query', () => {
-      const container = fixture.debugElement.query(By.css('section.sidenav-content'));
-
-      locationService.go('guide/pipes');
-      fixture.detectChanges();
-
-      locationService.go('guide/other?search=http');
-      fixture.detectChanges();
-      expect(component.pageId).toEqual('guide-other');
-      expect(container.properties['id']).toEqual('guide-other');
-    });
-  });
-
-  describe('hostClasses', () => {
-    it('should set the css classes of the host container based on the current doc and navigation view', () => {
-      const host = fixture.debugElement;
-
-      locationService.go('guide/pipes');
-      fixture.detectChanges();
-      expect(host.properties['className']).toEqual('page-guide-pipes folder-guide view-SideNav');
-
-      locationService.go('features');
-      fixture.detectChanges();
-      expect(host.properties['className']).toEqual('page-features folder-features view-TopBar');
-
-      locationService.go('');
-      fixture.detectChanges();
-      expect(host.properties['className']).toEqual('page-home folder-home view-');
-    });
-  });
-
-  describe('currentDocument', () => {
-
-    it('should display a guide page (guide/pipes)', () => {
-      locationService.go('guide/pipes');
-      fixture.detectChanges();
-      expect(docViewer.innerText).toMatch(/Pipes/i);
-    });
-
-    it('should display the api page', () => {
-      locationService.go('api');
-      fixture.detectChanges();
-      expect(docViewer.innerText).toMatch(/API/i);
-    });
-
-    it('should display a marketing page', () => {
-      locationService.go('features');
-      fixture.detectChanges();
-      expect(docViewer.innerText).toMatch(/Features/i);
-    });
-
-    it('should update the document title', () => {
-      const titleService = TestBed.get(Title);
-      spyOn(titleService, 'setTitle');
-      locationService.go('guide/pipes');
-      fixture.detectChanges();
-      expect(titleService.setTitle).toHaveBeenCalledWith('Angular - Pipes');
-    });
-
-    it('should update the document title, with a default value if the document has no title', () => {
-      const titleService = TestBed.get(Title);
-      spyOn(titleService, 'setTitle');
-      locationService.go('no-title');
-      fixture.detectChanges();
-      expect(titleService.setTitle).toHaveBeenCalledWith('Angular');
-    });
-  });
-
-  describe('autoScrolling with AutoScrollService', () => {
-    let scrollService: AutoScrollService;
-    let scrollSpy: jasmine.Spy;
-
-    beforeEach(() => {
-      scrollService = fixture.debugElement.injector.get(AutoScrollService);
-      scrollSpy = spyOn(scrollService, 'scroll');
-    });
-
-    it('should not scroll immediately when the docId (path) changes', () => {
-      locationService.go('guide/pipes');
-      // deliberately not calling `fixture.detectChanges` because don't want `onDocRendered`
-      expect(scrollSpy).not.toHaveBeenCalled();
-    });
-
-    it('should scroll when just the hash changes (# alone)', () => {
-      locationService.go('guide/pipes');
-      locationService.go('guide/pipes#somewhere');
-      expect(scrollSpy).toHaveBeenCalled();
-    });
-
-    it('should scroll when just the hash changes (/#)', () => {
-      locationService.go('guide/pipes');
-      locationService.go('guide/pipes/#somewhere');
-      expect(scrollSpy).toHaveBeenCalled();
-    });
-
-    it('should scroll again when nav to the same hash twice in succession', () => {
-      locationService.go('guide/pipes');
-      locationService.go('guide/pipes#somewhere');
-      locationService.go('guide/pipes#somewhere');
-      expect(scrollSpy.calls.count()).toBe(2);
-    });
-
-    it('should scroll when call onDocRendered directly', () => {
-      component.onDocRendered();
-      expect(scrollSpy).toHaveBeenCalled();
-    });
-
-    it('should scroll (via onDocRendered) when finish navigating to a new doc', () => {
-      locationService.go('guide/pipes');
-      fixture.detectChanges(); // triggers the event that calls onDocRendered
-      expect(scrollSpy).toHaveBeenCalled();
-    });
-  });
-
-  describe('initial rendering', () => {
-    beforeEach(async(() => {
       createTestingModule('a/b');
       // Remove the DocViewer for this test and hide the missing component message
       TestBed.overrideModule(AppModule, {
         remove: { declarations: [DocViewerComponent] },
         add: { schemas: [NO_ERRORS_SCHEMA] }
       });
-      TestBed.compileComponents();
-    }));
-
-    it('should initially add the starting class until the first document is rendered', () => {
-      fixture = TestBed.createComponent(AppComponent);
-      fixture.detectChanges();
-
-      expect(fixture.componentInstance.isStarting).toBe(true);
-      expect(fixture.debugElement.query(By.css('md-sidenav-container')).classes['starting']).toBe(true);
-
-      fixture.debugElement.query(By.css('aio-doc-viewer')).triggerEventHandler('docRendered', {});
-      fixture.detectChanges();
-      expect(fixture.componentInstance.isStarting).toBe(false);
-      expect(fixture.debugElement.query(By.css('md-sidenav-container')).classes['starting']).toBe(false);
-    });
-  });
-
-  describe('click intercepting', () => {
-    it('should intercept clicks on anchors and call `location.handleAnchorClick()`',
-            inject([LocationService], (location: LocationService) => {
-
-      const el = fixture.nativeElement as Element;
-      el.innerHTML = '<a href="some/local/url">click me</a>';
-      const anchorElement = el.getElementsByTagName('a')[0];
-      anchorElement.click();
-      expect(location.handleAnchorClick).toHaveBeenCalledWith(anchorElement, 0, false, false);
-    }));
-
-    it('should intercept clicks on elements deep within an anchor tag',
-            inject([LocationService], (location: LocationService) => {
-
-      const el = fixture.nativeElement as Element;
-      el.innerHTML = '<a href="some/local/url"><div><img></div></a>';
-      const imageElement  = el.getElementsByTagName('img')[0];
-      const anchorElement = el.getElementsByTagName('a')[0];
-      imageElement.click();
-      expect(location.handleAnchorClick).toHaveBeenCalledWith(anchorElement, 0, false, false);
-    }));
-
-    it('should ignore clicks on elements without an anchor ancestor',
-            inject([LocationService], (location: LocationService) => {
-
-      const el = fixture.nativeElement as Element;
-      el.innerHTML = '<div><p><div><img></div></p></div>';
-      const imageElement  = el.getElementsByTagName('img')[0];
-      imageElement.click();
-      expect(location.handleAnchorClick).not.toHaveBeenCalled();
-    }));
-
-    it('should intercept clicks not on the search elements and hide the search results', () => {
-      const searchResults: SearchResultsComponent = fixture.debugElement.query(By.directive(SearchResultsComponent)).componentInstance;
-      spyOn(searchResults, 'hideResults');
-      // docViewer is a commonly-clicked, non-search element
-      docViewer.click();
-      expect(searchResults.hideResults).toHaveBeenCalled();
     });
 
-    it('should not intercept clicks on any of the search elements', () => {
-      const searchResults = fixture.debugElement.query(By.directive(SearchResultsComponent));
-      const searchResultsComponent: SearchResultsComponent = searchResults.componentInstance;
-      const searchBox = fixture.debugElement.query(By.directive(SearchBoxComponent));
-      spyOn(searchResultsComponent, 'hideResults');
+    describe('initial rendering', () => {
+      it('should initially add the starting class until the first document is rendered', fakeAsync(() => {
+        const getSidenavContainer = () => fixture.debugElement.query(By.css('md-sidenav-container'));
 
-      searchResults.nativeElement.click();
-      expect(searchResultsComponent.hideResults).not.toHaveBeenCalled();
+        initializeTest();
 
-      searchBox.nativeElement.click();
-      expect(searchResultsComponent.hideResults).not.toHaveBeenCalled();
-    });
-  });
+        expect(component.isStarting).toBe(true);
+        expect(getSidenavContainer().classes['starting']).toBe(true);
 
-  describe('aio-toc', () => {
-    let tocDebugElement: DebugElement;
-    let tocContainer: DebugElement;
+        triggerDocRendered();
+        fixture.detectChanges();
+        expect(component.isStarting).toBe(true);
+        expect(getSidenavContainer().classes['starting']).toBe(true);
 
-    beforeEach(() => {
-      tocDebugElement = fixture.debugElement.query(By.directive(TocComponent));
-      tocContainer = tocDebugElement.parent;
-    });
+        tick(499);
+        fixture.detectChanges();
+        expect(component.isStarting).toBe(true);
+        expect(getSidenavContainer().classes['starting']).toBe(true);
 
-
-    it('should have a non-embedded `<aio-toc>` element', () => {
-      expect(tocDebugElement).toBeDefined();
-      expect(tocDebugElement.classes.embedded).toBeFalsy();
+        tick(2);
+        fixture.detectChanges();
+        expect(component.isStarting).toBe(false);
+        expect(getSidenavContainer().classes['starting']).toBe(false);
+      }));
     });
 
-    it('should update the TOC container\'s `maxHeight` based on `tocMaxHeight`', () => {
-      expect(tocContainer.styles['max-height']).toBeNull();
+    describe('progress bar', () => {
+      const SHOW_DELAY = 200;
+      const HIDE_DELAY = 500;
+      const getProgressBar = () => fixture.debugElement.query(By.directive(MdProgressBar));
+      const initializeAndCompleteNavigation = () => {
+        initializeTest();
+        triggerDocRendered();
+        tick(HIDE_DELAY);
+      };
 
-      component.tocMaxHeight = '100';
-      fixture.detectChanges();
+      it('should initially be hidden', () => {
+        initializeTest();
+        expect(getProgressBar()).toBeFalsy();
+      });
 
-      expect(tocContainer.styles['max-height']).toBe('100px');
+      it('should be shown (after a delay) when the path changes', fakeAsync(() => {
+        initializeAndCompleteNavigation();
+        locationService.urlSubject.next('c/d');
+
+        fixture.detectChanges();
+        expect(getProgressBar()).toBeFalsy();
+
+        tick(SHOW_DELAY - 1);
+        fixture.detectChanges();
+        expect(getProgressBar()).toBeFalsy();
+
+        tick(1);
+        fixture.detectChanges();
+        expect(getProgressBar()).toBeTruthy();
+      }));
+
+      it('should not be shown when the URL changes but the path remains the same', fakeAsync(() => {
+        initializeAndCompleteNavigation();
+        locationService.urlSubject.next('a/b');
+
+        tick(SHOW_DELAY);
+        fixture.detectChanges();
+        expect(getProgressBar()).toBeFalsy();
+      }));
+
+      it('should not be shown when re-navigating to the empty path', fakeAsync(() => {
+        initializeAndCompleteNavigation();
+        locationService.urlSubject.next('');
+        triggerDocRendered();
+
+        locationService.urlSubject.next('');
+
+        tick(SHOW_DELAY);
+        fixture.detectChanges();
+        expect(getProgressBar()).toBeFalsy();
+
+        tick(HIDE_DELAY);   // Fire the remaining timer or `fakeAsync()` complains.
+      }));
+
+      it('should not be shown if the doc is rendered quickly', fakeAsync(() => {
+        initializeAndCompleteNavigation();
+        locationService.urlSubject.next('c/d');
+
+        tick(SHOW_DELAY - 1);
+        triggerDocRendered();
+
+        tick(1);
+        fixture.detectChanges();
+        expect(getProgressBar()).toBeFalsy();
+
+        tick(HIDE_DELAY);   // Fire the remaining timer or `fakeAsync()` complains.
+      }));
+
+      it('should be shown if rendering the doc takes too long', fakeAsync(() => {
+        initializeAndCompleteNavigation();
+        locationService.urlSubject.next('c/d');
+
+        tick(SHOW_DELAY);
+        triggerDocRendered();
+
+        fixture.detectChanges();
+        expect(getProgressBar()).toBeTruthy();
+
+        tick(HIDE_DELAY);   // Fire the remaining timer or `fakeAsync()` complains.
+      }));
+
+      it('should be hidden (after a delay) once the doc is rendered', fakeAsync(() => {
+        initializeAndCompleteNavigation();
+        locationService.urlSubject.next('c/d');
+
+        tick(SHOW_DELAY);
+        triggerDocRendered();
+
+        fixture.detectChanges();
+        expect(getProgressBar()).toBeTruthy();
+
+        tick(HIDE_DELAY - 1);
+        fixture.detectChanges();
+        expect(getProgressBar()).toBeTruthy();
+
+        tick(1);
+        fixture.detectChanges();
+        expect(getProgressBar()).toBeFalsy();
+      }));
+
+      it('should only take the latest request into account', fakeAsync(() => {
+        initializeAndCompleteNavigation();
+        locationService.urlSubject.next('c/d');   // The URL changes.
+        locationService.urlSubject.next('e/f');   // The URL changes again before `onDocRendered()`.
+
+        tick(SHOW_DELAY - 1);   // `onDocRendered()` is triggered (for the last doc),
+        triggerDocRendered();   // before the progress bar is shown.
+
+        tick(1);
+        fixture.detectChanges();
+        expect(getProgressBar()).toBeFalsy();
+
+        tick(HIDE_DELAY);   // Fire the remaining timer or `fakeAsync()` complains.
+      }));
     });
-  });
 
-  describe('footer', () => {
-    it('should have version number', () => {
-      const versionEl: HTMLElement = fixture.debugElement.query(By.css('aio-footer')).nativeElement;
-      expect(versionEl.innerText).toContain(TestHttp.versionFull);
-    });
   });
 
 });
@@ -509,7 +780,6 @@ class TestHttp {
   static versionFull = '4.0.0-local+sha.73808dd';
 
   static docVersions: NavigationNode[] = [
-    { title: 'v4.0.0' },
     { title: 'v2', url: 'https://v2.angular.io' }
   ];
 

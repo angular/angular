@@ -18,8 +18,8 @@ function _main() {
 
   // Exit codes:
   // - 0: The PR author is a member.
-  // - 1: The PR author is not a member.
-  // - 2: An error occurred.
+  // - 1: An error occurred.
+  // - 2: The PR author is not a member.
   buildVerifier.getPrAuthorTeamMembership(pr).
     then(({author, isMember}) => {
       if (isMember) {
@@ -27,10 +27,10 @@ function _main() {
       } else {
         const errorMessage = `User '${author}' is not an active member of any of the following teams: ` +
                              `${allowedTeamSlugs.join(', ')}`;
-        onError(errorMessage, 1);
+        onError(errorMessage, 2);
       }
     }).
-    catch(err => onError(err, 2));
+    catch(err => onError(err, 1));
 }
 
 function onError(err: string, exitCode: number) {

@@ -12,7 +12,7 @@ import {INJECTOR_KEY} from './constants';
 /**
  * @whatItDoes
  *
- * *Part of the [upgrade/static](/docs/ts/latest/api/#!?query=upgrade%2Fstatic)
+ * *Part of the [upgrade/static](api?query=upgrade%2Fstatic)
  * library for hybrid upgrade apps that support AoT compilation*
  *
  * Allow an Angular service to be accessible from AngularJS.
@@ -53,7 +53,7 @@ import {INJECTOR_KEY} from './constants';
  */
 export function downgradeInjectable(token: any): Function {
   const factory = function(i: Injector) { return i.get(token); };
-  (factory as any).$inject = [INJECTOR_KEY];
+  (factory as any)['$inject'] = [INJECTOR_KEY];
 
   return factory;
 }

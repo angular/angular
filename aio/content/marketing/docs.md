@@ -2,15 +2,15 @@
 
 Angular is a platform that makes it easy to build applications with the web. Angular combines declarative templates, dependency injection, end to end tooling, and integrated best practices to solve development challenges. Angular empowers developers to build applications that live on the web, mobile, or the desktop
 
-<div class="card-container clearfix">
-  <a href="generated/live-examples/quickstart/eplnkr.html" target="_blank" class="card"
+<div class="card-container">
+  <a href="generated/live-examples/quickstart/eplnkr.html" target="_blank" class="docs-card"
     title="Experience Angular in a live coding environment">
       <section>Experience Angular</section>
       <p>A quick look at an Angular application.</p>
       <p class="card-footer">Angular in Action</p>
   </a>
 
-  <div class="card">
+  <div class="docs-card">
       <section>Get Going with Angular</section>
       <p>Get going on your own environment with the Quickstart and Tutorial</p>
       <p class="card-footer center" >
@@ -21,10 +21,10 @@ Angular is a platform that makes it easy to build applications with the web. Ang
       <p class="card-footer"><a href="guide/tutorial">Tutorial</a></p>-->
   </div>
 
-  <a href="guide/fundamentals" class="card" title="Angular Fundamentals">
+  <a href="guide/architecture" class="docs-card" title="Angular Architecture">
       <section>Fundamentals</section>
-      <p>Get additional information on specific topics in the Fundamentals section.</p>
-      <p class="card-footer">Fundamentals</p>
+      <p>Learn Angular application fundamentals, starting with an architecture overview.</p>
+      <p class="card-footer">Architecture</p>
   </a>
 </div>
 

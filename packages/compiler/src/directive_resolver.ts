@@ -6,9 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, HostBinding, HostListener, Input, Output, Query, Type, resolveForwardRef, ɵReflectorReader, ɵreflector, ɵstringify as stringify} from '@angular/core';
+import {Component, Directive, HostBinding, HostListener, Input, Output, Query, Type, resolveForwardRef, ɵstringify as stringify} from '@angular/core';
+
+import {CompileReflector} from './compile_reflector';
 import {CompilerInjectable} from './injectable';
 import {splitAtColon} from './util';
+
 
 
 /*
@@ -20,7 +23,7 @@ import {splitAtColon} from './util';
  */
 @CompilerInjectable()
 export class DirectiveResolver {
-  constructor(private _reflector: ɵReflectorReader = ɵreflector) {}
+  constructor(private _reflector: CompileReflector) {}
 
   isDirective(type: Type<any>) {
     const typeMetadata = this._reflector.annotations(resolveForwardRef(type));
