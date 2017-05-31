@@ -16,7 +16,7 @@ branches:
 
 jobs:
   include:
-    # Lint runs as a main job. Workaround for https://github.com/travis-ci/travis-ci/issues/7777
+    - env: "MODE=lint"
     - env: "MODE=e2e"
     - env: "MODE=aot"
     - env: "MODE=payload"
@@ -36,9 +36,6 @@ env:
   - BROWSER_STACK_ACCESS_KEY=BWCd4SynLzdDcv8xtzsB
   - BROWSER_PROVIDER_READY_FILE=/tmp/angular-material2-build/readyfile
   - BROWSER_PROVIDER_ERROR_FILE=/tmp/angular-material2-build/errorfile
-  matrix:
-  # Workaround for https://github.com/travis-ci/travis-ci/issues/7777. Running lint as main job.
-  - MODE=lint
 
 before_install:
   - source ./scripts/ci/env.sh
