@@ -109,7 +109,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     // Do not initialize the search on browsers that lack web worker support
-    if ('worker' in window) {
+    if ('Worker' in window) {
       this.searchService.initWorker('app/search/search-worker.js');
       this.searchService.loadIndex();
     }
