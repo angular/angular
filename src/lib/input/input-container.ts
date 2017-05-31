@@ -112,6 +112,7 @@ export class MdSuffix {}
     '[disabled]': 'disabled',
     '[required]': 'required',
     '[attr.aria-describedby]': 'ariaDescribedby || null',
+    '[attr.aria-invalid]': '_isErrorState()',
     '(blur)': '_onBlur()',
     '(focus)': '_onFocus()',
     '(input)': '_onInput()',
@@ -210,7 +211,9 @@ export class MdInputDirective {
 
   constructor(private _elementRef: ElementRef,
               private _renderer: Renderer2,
-              @Optional() @Self() public _ngControl: NgControl) {
+              @Optional() @Self() public _ngControl: NgControl,
+              @Optional() private _parentForm: NgForm,
+              @Optional() private _parentFormGroup: FormGroupDirective) {
 
     // Force setter to be called in case id was not specified.
     this.id = this.id;
@@ -231,6 +234,17 @@ export class MdInputDirective {
     // value changes and will not disappear.
     // Listening to the input event wouldn't be necessary when the input is using the
     // FormsModule or ReactiveFormsModule, because Angular forms also listens to input events.
+  }
+
+  /** Whether the input is in an error state. */
+  _isErrorState(): boolean {
+    const control = this._ngControl;
+    const isInvalid = control && control.invalid;
+    const isTouched = control && control.touched;
+    const isSubmitted = (this._parentFormGroup && this._parentFormGroup.submitted) ||
+        (this._parentForm && this._parentForm.submitted);
+
+    return !!(isInvalid && (isTouched || isSubmitted));
   }
 
   /** Make sure the input is a supported type. */
@@ -275,7 +289,7 @@ export class MdInputDirective {
     // Remove align attribute to prevent it from interfering with layout.
     '[attr.align]': 'null',
     '[class.mat-input-container]': 'true',
-    '[class.mat-input-invalid]': '_isErrorState()',
+    '[class.mat-input-invalid]': '_mdInputChild._isErrorState()',
     '[class.mat-focused]': '_mdInputChild.focused',
     '[class.ng-untouched]': '_shouldForward("untouched")',
     '[class.ng-touched]': '_shouldForward("touched")',
@@ -354,9 +368,7 @@ export class MdInputContainer implements AfterViewInit, AfterContentInit, AfterC
 
   constructor(
     public _elementRef: ElementRef,
-    private _changeDetectorRef: ChangeDetectorRef,
-    @Optional() private _parentForm: NgForm,
-    @Optional() private _parentFormGroup: FormGroupDirective) { }
+    private _changeDetectorRef: ChangeDetectorRef) { }
 
   ngAfterContentInit() {
     this._validateInputChild();
@@ -390,20 +402,10 @@ export class MdInputContainer implements AfterViewInit, AfterContentInit, AfterC
   /** Focuses the underlying input. */
   _focusInput() { this._mdInputChild.focus(); }
 
-  /** Whether the input container is in an error state. */
-  _isErrorState(): boolean {
-    const control = this._mdInputChild._ngControl;
-    const isInvalid = control && control.invalid;
-    const isTouched = control && control.touched;
-    const isSubmitted = (this._parentFormGroup && this._parentFormGroup.submitted) ||
-        (this._parentForm && this._parentForm.submitted);
-
-    return !!(isInvalid && (isTouched || isSubmitted));
-  }
-
   /** Determines whether to display hints or errors. */
   _getDisplayedMessages(): 'error' | 'hint' {
-    return (this._errorChildren.length > 0 && this._isErrorState()) ? 'error' : 'hint';
+    let input = this._mdInputChild;
+    return (this._errorChildren.length > 0 && input._isErrorState()) ? 'error' : 'hint';
   }
 
   /**
