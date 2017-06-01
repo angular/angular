@@ -6,7 +6,10 @@ import {green, red} from 'chalk';
 import {sequenceTask} from '../util/task_helpers';
 
 /** RegExp that matches Angular component inline styles that contain a sourcemap reference. */
-const inlineStylesSourcemapRegex = /styles: ?\[(?:"|').*sourceMappingURL=.*(?:"|')/;
+const inlineStylesSourcemapRegex = /styles: ?\[["'].*sourceMappingURL=.*["']/;
+
+/** RegExp that matches Angular component metadata properties that refer to external resources. */
+const externalReferencesRegex = /(templateUrl|styleUrls): *["'[]/;
 
 task('validate-release', sequenceTask(':publish:build-releases', 'validate-release:check-bundles'));
 
@@ -36,6 +39,10 @@ function checkPackageBundle(bundlePath: string): string[] {
 
   if (inlineStylesSourcemapRegex.exec(bundleContent) !== null) {
     failures.push('Bundles contain sourcemap references in component styles.');
+  }
+
+  if (externalReferencesRegex.exec(bundleContent) !== null) {
+    failures.push('Bundles are including references to external resources (templates or styles)');
   }
 
   return failures;
