@@ -1,6 +1,7 @@
 import {browser, element, by, Key, ExpectedConditions} from 'protractor';
-import {expectToExist} from '../../util/asserts';
+import {expectToExist} from '../../util/index';
 import {screenshot} from '../../screenshot';
+
 
 describe('slide-toggle', () => {
   const getInput = () => element(by.css('#normal-slide-toggle input'));
@@ -13,7 +14,7 @@ describe('slide-toggle', () => {
     screenshot();
   });
 
-  it('should change the checked state on click', () => {
+  it('should change the checked state on click', async () => {
     let inputEl = getInput();
 
     expect(inputEl.getAttribute('checked')).toBeFalsy('Expect slide-toggle to be unchecked');
@@ -21,12 +22,13 @@ describe('slide-toggle', () => {
     getNormalToggle().click();
 
     expect(inputEl.getAttribute('checked')).toBeTruthy('Expect slide-toggle to be checked');
-    browser.wait(ExpectedConditions.not(
-      ExpectedConditions.presenceOf(element(by.css('div.mat-ripple-element')))))
-      .then(() => screenshot());
+
+    await browser.wait(ExpectedConditions.not(
+      ExpectedConditions.presenceOf(element(by.css('div.mat-ripple-element')))));
+    screenshot();
   });
 
-  it('should change the checked state on click', () => {
+  it('should change the checked state on click', async () => {
     let inputEl = getInput();
 
     expect(inputEl.getAttribute('checked')).toBeFalsy('Expect slide-toggle to be unchecked');
@@ -34,12 +36,12 @@ describe('slide-toggle', () => {
     getNormalToggle().click();
 
     expect(inputEl.getAttribute('checked')).toBeTruthy('Expect slide-toggle to be checked');
-    browser.wait(ExpectedConditions.not(
-      ExpectedConditions.presenceOf(element(by.css('div.mat-ripple-element')))))
-      .then(() => screenshot());
+    await browser.wait(ExpectedConditions.not(
+      ExpectedConditions.presenceOf(element(by.css('div.mat-ripple-element')))));
+    screenshot();
   });
 
-  it('should not change the checked state on click when disabled', () => {
+  it('should not change the checked state on click when disabled', async () => {
     let inputEl = getInput();
 
     expect(inputEl.getAttribute('checked')).toBeFalsy('Expect slide-toggle to be unchecked');
@@ -47,25 +49,25 @@ describe('slide-toggle', () => {
     element(by.css('#disabled-slide-toggle')).click();
 
     expect(inputEl.getAttribute('checked')).toBeFalsy('Expect slide-toggle to be unchecked');
-    browser.wait(ExpectedConditions.not(
-      ExpectedConditions.presenceOf(element(by.css('div.mat-ripple-element')))))
-      .then(() => screenshot());
+    await browser.wait(ExpectedConditions.not(
+      ExpectedConditions.presenceOf(element(by.css('div.mat-ripple-element')))));
+    screenshot();
   });
 
-  it('should move the thumb on state change', () => {
+  it('should move the thumb on state change', async () => {
     let slideToggleEl = getNormalToggle();
     let thumbEl = element(by.css('#normal-slide-toggle .mat-slide-toggle-thumb-container'));
-
-    let previousX = thumbEl.getLocation().then(pos => pos.x);
+    let previousPosition = await thumbEl.getLocation();
 
     slideToggleEl.click();
 
-    let newX = thumbEl.getLocation().then(pos => pos.x);
+    let position = await thumbEl.getLocation();
 
-    expect(previousX).not.toBe(newX);
-    browser.wait(ExpectedConditions.not(
-      ExpectedConditions.presenceOf(element(by.css('div.mat-ripple-element')))))
-      .then(() => screenshot());
+    expect(position.x).not.toBe(previousPosition.x);
+
+    await browser.wait(ExpectedConditions.not(
+      ExpectedConditions.presenceOf(element(by.css('div.mat-ripple-element')))));
+    screenshot();
   });
 
   it('should toggle the slide-toggle on space key', () => {

@@ -1,48 +1,46 @@
 import {browser, by, element, Key, ExpectedConditions} from 'protractor';
 import {screenshot} from '../../screenshot';
 
-describe('checkbox', function () {
 
-  describe('check behavior', function () {
+describe('checkbox', () => {
 
-    beforeEach(function() {
-      browser.get('/checkbox');
-    });
+  describe('check behavior', () => {
+    beforeEach(() => browser.get('/checkbox'));
 
-    it('should be checked when clicked, and be unchecked when clicked again', () => {
+    it('should be checked when clicked, and unchecked when clicked again', async () => {
       let checkboxEl = element(by.id('test-checkbox'));
       let inputEl = element(by.css('input[id=input-test-checkbox]'));
+      let checked: string;
 
       screenshot('start');
       checkboxEl.click();
-      inputEl.getAttribute('checked').then((value: string) => {
-        expect(value).toBeTruthy('Expect checkbox "checked" property to be true');
-        browser.wait(ExpectedConditions.not(
-          ExpectedConditions.presenceOf(element(by.css('div.mat-ripple-element')))))
-          .then(() => screenshot('checked'));
-      });
+
+      expect(inputEl.getAttribute('checked'))
+          .toBeTruthy('Expect checkbox "checked" property to be true');
+
+      await browser.wait(ExpectedConditions.not(
+        ExpectedConditions.presenceOf(element(by.css('div.mat-ripple-element')))));
+      screenshot('checked');
 
       checkboxEl.click();
-      inputEl.getAttribute('checked').then((value: string) => {
-        expect(value).toBeFalsy('Expect checkbox "checked" property to be false');
-        browser.wait(ExpectedConditions.not(
-          ExpectedConditions.presenceOf(element(by.css('div.mat-ripple-element')))))
-          .then(() => screenshot('unchecked'));
-      });
+
+      expect(inputEl.getAttribute('checked'))
+          .toBeFalsy('Expect checkbox "checked" property to be false');
+
+      await browser.wait(ExpectedConditions.not(
+        ExpectedConditions.presenceOf(element(by.css('div.mat-ripple-element')))));
+      screenshot('unchecked');
     });
 
     it('should toggle the checkbox when pressing space', () => {
       let inputEl = element(by.css('input[id=input-test-checkbox]'));
 
-      inputEl.getAttribute('checked').then((value: string) => {
-        expect(value).toBeFalsy('Expect checkbox "checked" property to be false');
-      });
-
+      expect(inputEl.getAttribute('checked'))
+          .toBeFalsy('Expect checkbox "checked" property to be false');
       inputEl.sendKeys(Key.SPACE);
 
-      inputEl.getAttribute('checked').then((value: string) => {
-        expect(value).toBeTruthy('Expect checkbox "checked" property to be true');
-      });
+      expect(inputEl.getAttribute('checked'))
+          .toBeTruthy('Expect checkbox "checked" property to be true');
     });
   });
 });

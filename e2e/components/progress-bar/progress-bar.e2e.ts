@@ -1,5 +1,5 @@
 import {browser} from 'protractor';
-import {expectToExist} from '../../util/asserts';
+import {expectToExist} from '../../util/index';
 
 describe('progress-bar', () => {
   beforeEach(() => browser.get('/progress-bar'));

@@ -1,8 +1,14 @@
 import {Key, protractor} from 'protractor';
 import {MenuPage} from './menu-page';
-import {expectToExist, expectAlignedWith, expectFocusOn, expectLocation} from '../../util/asserts';
-import {pressKeys} from '../../util/actions';
 import {screenshot} from '../../screenshot';
+import {
+  expectToExist,
+  expectAlignedWith,
+  expectFocusOn,
+  expectLocation,
+  pressKeys,
+} from '../../util/index';
+
 
 describe('menu', () => {
   const menuSelector = '.mat-menu-panel';
@@ -65,9 +71,7 @@ describe('menu', () => {
 
   it('should mirror classes on host to menu template in overlay', () => {
     page.trigger().click();
-    page.menu().getAttribute('class').then((classes: string) => {
-      expect(classes).toContain('mat-menu-panel custom');
-    });
+    expect(page.menu().getAttribute('class')).toContain('mat-menu-panel custom');
   });
 
   describe('keyboard events', () => {
@@ -145,45 +149,45 @@ describe('menu', () => {
 
   describe('position - ', () => {
 
-    it('should default menu alignment to "after below" when not set', () => {
+    it('should default menu alignment to "after below" when not set', async () => {
       page.trigger().click();
 
       // menu.x should equal trigger.x, menu.y should equal trigger.y
-      expectAlignedWith(page.menu(), '#trigger');
+      await expectAlignedWith(page.menu(), '#trigger');
     });
 
-    it('should align overlay end to origin end when x-position is "before"', () => {
+    it('should align overlay end to origin end when x-position is "before"', async() => {
       page.beforeTrigger().click();
-      page.beforeTrigger().getLocation().then(trigger => {
 
-        // the menu's right corner must be attached to the trigger's right corner.
-        // menu = 112px wide. trigger = 60px wide.  112 - 60 =  52px of menu to the left of trigger.
-        // trigger.x (left corner) - 52px (menu left of trigger) = expected menu.x (left corner)
-        // menu.y should equal trigger.y because only x position has changed.
-        expectLocation(page.beforeMenu(), {x: trigger.x - 52, y: trigger.y});
-      });
+      const trigger = await page.beforeTrigger().getLocation();
+
+      // the menu's right corner must be attached to the trigger's right corner.
+      // menu = 112px wide. trigger = 60px wide.  112 - 60 =  52px of menu to the left of trigger.
+      // trigger.x (left corner) - 52px (menu left of trigger) = expected menu.x (left corner)
+      // menu.y should equal trigger.y because only x position has changed.
+      expectLocation(page.beforeMenu(), {x: trigger.x - 52, y: trigger.y});
     });
 
-    it('should align overlay bottom to origin bottom when y-position is "above"', () => {
+    it('should align overlay bottom to origin bottom when y-position is "above"', async () => {
       page.aboveTrigger().click();
-      page.aboveTrigger().getLocation().then(trigger => {
 
-        // the menu's bottom corner must be attached to the trigger's bottom corner.
-        // menu.x should equal trigger.x because only y position has changed.
-        // menu = 64px high. trigger = 20px high. 64 - 20 = 44px of menu extending up past trigger.
-        // trigger.y (top corner) - 44px (menu above trigger) = expected menu.y (top corner)
-        expectLocation(page.aboveMenu(), {x: trigger.x, y: trigger.y - 44});
-      });
+      const trigger = await page.aboveTrigger().getLocation();
+
+      // the menu's bottom corner must be attached to the trigger's bottom corner.
+      // menu.x should equal trigger.x because only y position has changed.
+      // menu = 64px high. trigger = 20px high. 64 - 20 = 44px of menu extending up past trigger.
+      // trigger.y (top corner) - 44px (menu above trigger) = expected menu.y (top corner)
+      expectLocation(page.aboveMenu(), {x: trigger.x, y: trigger.y - 44});
     });
 
-    it('should align menu to top left of trigger when "below" and "above"', () => {
+    it('should align menu to top left of trigger when "below" and "above"', async () => {
       page.combinedTrigger().click();
-      page.combinedTrigger().getLocation().then(trigger => {
 
-        // trigger.x (left corner) - 52px (menu left of trigger) = expected menu.x
-        // trigger.y (top corner) - 44px (menu above trigger) = expected menu.y
-        expectLocation(page.combinedMenu(), {x: trigger.x - 52, y: trigger.y - 44});
-      });
+      const trigger = await page.combinedTrigger().getLocation();
+
+      // trigger.x (left corner) - 52px (menu left of trigger) = expected menu.x
+      // trigger.y (top corner) - 44px (menu above trigger) = expected menu.y
+      expectLocation(page.combinedMenu(), {x: trigger.x - 52, y: trigger.y - 44});
     });
 
   });

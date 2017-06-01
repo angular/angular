@@ -21,24 +21,26 @@ describe('input', () => {
       expect(input.getAttribute('value')).toBe('123');
     });
 
-    it('should increment when increment button clicked', () => {
-      let input = element(by.id('number-input'));
+    it('should increment when increment button clicked', async () => {
+      const input = element(by.id('number-input'));
+
       input.click();
-      input.getSize().then((size) => {
-        browser.actions()
-            .mouseMove(input, {x: size.width - 5, y: 5})
-            .click()
-            .perform();
 
-        expect(input.getAttribute('value')).toBe('1');
+      const size = await input.getSize();
 
-        browser.actions()
-            .mouseMove(input, {x: size.width - 5, y: size.height - 5})
-            .click()
-            .perform();
+      browser.actions()
+          .mouseMove(input, {x: size.width - 5, y: 5})
+          .click()
+          .perform();
 
-        expect(input.getAttribute('value')).toBe('0');
-      });
+      expect(input.getAttribute('value')).toBe('1');
+
+      browser.actions()
+          .mouseMove(input, {x: size.width - 5, y: size.height - 5})
+          .click()
+          .perform();
+
+      expect(input.getAttribute('value')).toBe('0');
     });
   });
 });

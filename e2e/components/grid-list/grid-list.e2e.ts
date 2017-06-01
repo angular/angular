@@ -1,5 +1,5 @@
 import {browser} from 'protractor';
-import {expectToExist} from '../../util/asserts';
+import {expectToExist} from '../../util/index';
 import {screenshot} from '../../screenshot';
 
 describe('grid-list', () => {
