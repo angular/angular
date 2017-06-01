@@ -1,3 +1,24 @@
+<a name="4.2.0-rc.2"></a>
+# [4.2.0-rc.2](https://github.com/angular/angular/compare/4.2.0-rc.1...4.2.0-rc.2) (2017-06-01)
+
+### Bug Fixes
+
+* **animations:** always change to desired animation state even if no transition fires ([#17025](https://github.com/angular/angular/issues/17025)) ([665e707](https://github.com/angular/angular/commit/665e707)), closes [#16947](https://github.com/angular/angular/issues/16947)
+* **animations:** do not retain deleted nodes during an non-removal animation ([#17153](https://github.com/angular/angular/issues/17153)) ([068133e](https://github.com/angular/angular/commit/068133e)), closes [#17086](https://github.com/angular/angular/issues/17086)
+* **common:** always use 'other' case for locales with no plural rules ([#16990](https://github.com/angular/angular/issues/16990)) ([535d9da](https://github.com/angular/angular/commit/535d9da))
+* **compiler:** enableLegacyTemplate should not be ignored ([#17051](https://github.com/angular/angular/issues/17051)) ([8ffa483](https://github.com/angular/angular/commit/8ffa483)), closes [#15555](https://github.com/angular/angular/issues/15555)
+* **router:** make remove trailing slash consistent with URL params ([c20f60b](https://github.com/angular/angular/commit/c20f60b)), closes [#16069](https://github.com/angular/angular/issues/16069)
+
+### Features
+
+* **compiler:** emit typescript nodes from an output ast ([#16823](https://github.com/angular/angular/issues/16823)) ([18bf772](https://github.com/angular/angular/commit/18bf772))
+* **compiler-cli:** produce template diagnostics error messages ([#17125](https://github.com/angular/angular/issues/17125)) ([230255f](https://github.com/angular/angular/commit/230255f))
+* **tsc-wrapped:** always convert shorthand imports ([#16898](https://github.com/angular/angular/issues/16898)) ([ea8a43d](https://github.com/angular/angular/commit/ea8a43d))
+
+### Performance Improvements
+
+* **animations:** do not place enterId values on elements for querying purposes ([#17150](https://github.com/angular/angular/issues/17150)) ([ad6a57e](https://github.com/angular/angular/commit/ad6a57e))
+
 <a name="4.2.0-rc.1"></a>
 # [4.2.0-rc.1](https://github.com/angular/angular/compare/4.2.0-rc.0...4.2.0-rc.1) (2017-05-26)
 
