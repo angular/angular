@@ -120,6 +120,10 @@
 
 @mixin mat-button-typography($config) {
   .mat-button, .mat-raised-button, .mat-icon-button {
-    @include mat-typography-level-to-styles($config, button);
+    font: {
+      family: mat-font-family($config);
+      size: mat-font-size($config, button);
+      weight: mat-font-weight($config, button);
+    }
   }
 }

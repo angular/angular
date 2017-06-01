@@ -46,6 +46,10 @@
   }
 
   .mat-tab-label, .mat-tab-link {
-    @include mat-typography-level-to-styles($config, button);
+    font: {
+      family: mat-font-family($config);
+      size: mat-font-size($config, button);
+      weight: mat-font-weight($config, button);
+    }
   }
 }
