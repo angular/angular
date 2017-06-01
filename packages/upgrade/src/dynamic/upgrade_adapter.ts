@@ -572,9 +572,9 @@ export class UpgradeAdapter {
                 constructor() {}
                 ngDoBootstrap() {}
               }
-              (platformRef as any)
-                  ._bootstrapModuleWithZone(
-                      DynamicNgUpgradeModule, this.compilerOptions, this.ngZone)
+              platformRef
+                  .bootstrapModule(
+                      DynamicNgUpgradeModule, [this.compilerOptions !, {ngZone: this.ngZone}])
                   .then((ref: NgModuleRef<any>) => {
                     this.moduleRef = ref;
                     this.ngZone.run(() => {

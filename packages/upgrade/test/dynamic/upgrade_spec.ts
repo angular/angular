@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, Component, EventEmitter, Input, NO_ERRORS_SCHEMA, NgModule, NgZone, OnChanges, SimpleChange, SimpleChanges, Testability, destroyPlatform, forwardRef} from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, Input, NO_ERRORS_SCHEMA, NgModule, NgModuleFactory, NgZone, OnChanges, SimpleChange, SimpleChanges, Testability, destroyPlatform, forwardRef} from '@angular/core';
 import {async, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -56,7 +56,7 @@ export function main() {
              template: `{{ 'ng2(' }}<ng1>{{'transclude'}}</ng1>{{ ')' }}`,
            })
            class Ng2 {
-           };
+           }
 
            @NgModule({
              declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
@@ -80,7 +80,8 @@ export function main() {
 
       it('supports the compilerOptions argument', async(() => {
            const platformRef = platformBrowserDynamic();
-           spyOn(platformRef, '_bootstrapModuleWithZone').and.callThrough();
+           spyOn(platformRef, 'bootstrapModule').and.callThrough();
+           spyOn(platformRef, 'bootstrapModuleFactory').and.callThrough();
 
            const ng1Module = angular.module('ng1', []);
            @Component({selector: 'ng2', template: `{{ 'NG2' }}(<ng-content></ng-content>)`})
@@ -96,13 +97,17 @@ export function main() {
            })
            class Ng2AppModule {
              ngDoBootstrap() {}
-           };
+           }
 
            const adapter: UpgradeAdapter = new UpgradeAdapter(Ng2AppModule, {providers: []});
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
            adapter.bootstrap(element, ['ng1']).ready((ref) => {
-             expect((platformRef as any)._bootstrapModuleWithZone)
-                 .toHaveBeenCalledWith(jasmine.any(Function), {providers: []}, jasmine.any(Object));
+             expect(platformRef.bootstrapModule).toHaveBeenCalledWith(jasmine.any(Function), [
+               {providers: []}, jasmine.any(Object)
+             ]);
+             expect(platformRef.bootstrapModuleFactory)
+                 .toHaveBeenCalledWith(
+                     jasmine.any(NgModuleFactory), {providers: [], ngZone: jasmine.any(NgZone)});
              ref.dispose();
            });
          }));
@@ -395,7 +400,7 @@ export function main() {
              imports: [BrowserModule],
            })
            class Ng2Module {
-           };
+           }
 
            const element = html(`<div>
               <ng2 literal="Text" interpolate="Hello {{name}}"
