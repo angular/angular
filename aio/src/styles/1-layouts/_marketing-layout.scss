@@ -144,6 +144,10 @@ section#intro {
     border-radius: 48px;
     box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    height: 30px;
+    justify-content: center;
 
     &:hover {
       .material-icons {
