@@ -273,3 +273,25 @@ function onLeave(zone: NgZonePrivate) {
   zone._nesting--;
   checkStable(zone);
 }
+
+/**
+ * Provides a noop implementation of `NgZone` which does nothing. This zone requires explicit calls
+ * to framework to perform rendering.
+ *
+ * @stable
+ */
+export class NoNgZone implements NgZone {
+  hasPendingMicrotasks: boolean = false;
+  hasPendingMacrotasks: boolean = false;
+  isStable: boolean;
+  onUnstable: EventEmitter<any> = new EventEmitter();
+  onMicrotaskEmpty: EventEmitter<any> = new EventEmitter();
+  onStable: EventEmitter<any> = new EventEmitter();
+  onError: EventEmitter<any> = new EventEmitter();
+
+  run(fn: () => any): any { return fn(); }
+
+  runGuarded(fn: () => any): any { return fn(); }
+
+  runOutsideAngular(fn: () => any): any { return fn(); }
+}

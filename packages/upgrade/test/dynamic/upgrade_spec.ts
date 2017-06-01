@@ -74,7 +74,7 @@ export function main() {
 
       it('supports the compilerOptions argument', async(() => {
            const platformRef = platformBrowserDynamic();
-           spyOn(platformRef, '_bootstrapModuleWithZone').and.callThrough();
+           spyOn(platformRef, 'bootstrapModule').and.callThrough();
 
            const ng1Module = angular.module('ng1', []);
            const Ng2 = Component({
@@ -94,8 +94,9 @@ export function main() {
            const adapter: UpgradeAdapter = new UpgradeAdapter(Ng2AppModule, {providers: []});
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
            adapter.bootstrap(element, ['ng1']).ready((ref) => {
-             expect((platformRef as any)._bootstrapModuleWithZone)
-                 .toHaveBeenCalledWith(jasmine.any(Function), {providers: []}, jasmine.any(Object));
+             expect((platformRef as any).bootstrapModule)
+                 .toHaveBeenCalledWith(
+                     jasmine.any(Function), [{providers: []}, jasmine.any(Object)]);
              ref.dispose();
            });
          }));
