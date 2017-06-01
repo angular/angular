@@ -19,7 +19,6 @@ import {AnimationDriver} from './animation_driver';
 import {getOrSetAsInMap, listenOnPlayer, makeAnimationEvent, normalizeKeyframes, optimizeGroupPlayer} from './shared';
 
 const EMPTY_PLAYER_ARRAY: AnimationPlayer[] = [];
-const ANIMATE_EPOCH_ATTR = 'ng-animate-id';
 
 interface TriggerListener {
   name: string;
@@ -454,7 +453,6 @@ export class TransitionAnimationEngine {
   public statesByElement = new Map<any, {[triggerName: string]: StateValue}>();
   public totalAnimations = 0;
   public totalQueuedPlayers = 0;
-  public currentEpochId = 0;
 
   private _namespaceLookup: {[id: string]: AnimationTransitionNamespace} = {};
   private _namespaceList: AnimationTransitionNamespace[] = [];
@@ -462,6 +460,7 @@ export class TransitionAnimationEngine {
   private _whenQuietFns: (() => any)[] = [];
 
   public namespacesByHostElement = new Map<any, AnimationTransitionNamespace>();
+  public collectedElements: any[] = [];
 
   // this method is designed to be overridden by the code that uses this engine
   public onRemovalComplete = (element: any, context: any) => {};
@@ -590,10 +589,7 @@ export class TransitionAnimationEngine {
     }
   }
 
-  updateElementEpoch(element: any, isRemoval?: boolean) {
-    const epoch = (isRemoval ? -1 : 1) * this.currentEpochId;
-    setAttribute(element, ANIMATE_EPOCH_ATTR, epoch);
-  }
+  updateElementEpoch(element: any, isRemoval?: boolean) { this.collectedElements.push(element); }
 
   markElementAsRemoved(element: any, unmark?: boolean) {
     if (unmark) {
@@ -679,6 +675,7 @@ export class TransitionAnimationEngine {
     }
 
     this.totalQueuedPlayers = 0;
+    this.collectedElements = [];
     this.queuedRemovals.clear();
     this._flushFns.forEach(fn => fn());
     this._flushFns = [];
@@ -696,8 +693,6 @@ export class TransitionAnimationEngine {
         quietFns.forEach(fn => fn());
       }
     }
-
-    this.currentEpochId++;
   }
 
   private _flushAnimations(microtaskId: number): TransitionAnimationPlayer[] {
@@ -713,8 +708,7 @@ export class TransitionAnimationEngine {
     // the :enter queries match the elements (since the timeline queries
     // are fired during instruction building).
     const bodyNode = getBodyNode();
-    const allEnterNodes: any[] =
-        bodyNode ? this.driver.query(bodyNode, makeEpochSelector(this.currentEpochId), true) : [];
+    const allEnterNodes: any[] = this.collectedElements;
     const enterNodes: any[] =
         allEnterNodes.length ? collectEnterElements(this.driver, allEnterNodes) : [];
 
@@ -1320,9 +1314,4 @@ function getBodyNode(): any|null {
     return document.body;
   }
   return null;
-}
-
-function makeEpochSelector(epochId: number, isRemoval?: boolean) {
-  const value = (isRemoval ? -1 : 1) * epochId;
-  return `[${ANIMATE_EPOCH_ATTR}="${value}"]`;
 }
