@@ -662,6 +662,20 @@ export declare class NgZone {
 export declare const NO_ERRORS_SCHEMA: SchemaMetadata;
 
 /** @stable */
+export declare class NoNgZone implements NgZone {
+    readonly hasPendingMacrotasks: boolean;
+    readonly hasPendingMicrotasks: boolean;
+    readonly isStable: boolean;
+    readonly onError: EventEmitter<any>;
+    readonly onMicrotaskEmpty: EventEmitter<any>;
+    readonly onStable: EventEmitter<any>;
+    readonly onUnstable: EventEmitter<any>;
+    run(fn: () => any): any;
+    runGuarded(fn: () => any): any;
+    runOutsideAngular(fn: () => any): any;
+}
+
+/** @stable */
 export interface OnChanges {
     ngOnChanges(changes: SimpleChanges): void;
 }
@@ -719,8 +733,8 @@ export declare const platformCore: (extraProviders?: Provider[] | undefined) => 
 export declare abstract class PlatformRef {
     readonly abstract destroyed: boolean;
     readonly abstract injector: Injector;
-    /** @stable */ abstract bootstrapModule<M>(moduleType: Type<M>, compilerOptions?: CompilerOptions | CompilerOptions[]): Promise<NgModuleRef<M>>;
-    /** @experimental */ abstract bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>): Promise<NgModuleRef<M>>;
+    /** @stable */ abstract bootstrapModule<M>(moduleType: Type<M>, compilerOptions?: (CompilerOptions & BootstrapOptions) | Array<CompilerOptions & BootstrapOptions>): Promise<NgModuleRef<M>>;
+    /** @experimental */ abstract bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>, options?: BootstrapOptions): Promise<NgModuleRef<M>>;
     abstract destroy(): void;
     abstract onDestroy(callback: () => void): void;
 }

@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgZone} from '@angular/core/src/zone/ng_zone';
+import {EventEmitter, NgZone, NoNgZone} from '@angular/core';
 import {async, fakeAsync, flushMicrotasks} from '@angular/core/testing';
 import {AsyncTestCompleter, Log, beforeEach, describe, expect, inject, it, xit} from '@angular/core/testing/src/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
+
 import {scheduleMicroTask} from '../../src/util';
 
 const needsLongerTimers = browserDetection.isSlow || browserDetection.isEdge;
@@ -166,6 +167,25 @@ export function main() {
              });
            });
          }), testTimeout);
+    });
+  });
+
+  describe('NoNgZone', () => {
+    const ngZone = new NoNgZone();
+
+    it('should run', () => {
+      let works = false;
+      ngZone.run(() => {
+        ngZone.runGuarded(() => { ngZone.runOutsideAngular(() => { works = true; }); });
+      });
+      expect(works).toBe(true);
+    });
+
+    it('should have eventEmitters', () => {
+      expect(ngZone.onError instanceof EventEmitter).toBe(true);
+      expect(ngZone.onStable instanceof EventEmitter).toBe(true);
+      expect(ngZone.onUnstable instanceof EventEmitter).toBe(true);
+      expect(ngZone.onMicrotaskEmpty instanceof EventEmitter).toBe(true);
     });
   });
 }

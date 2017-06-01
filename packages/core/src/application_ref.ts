@@ -28,7 +28,7 @@ import {InternalViewRef, ViewRef} from './linker/view_ref';
 import {WtfScopeFn, wtfCreateScope, wtfLeave} from './profile/profile';
 import {Testability, TestabilityRegistry} from './testability/testability';
 import {Type} from './type';
-import {NgZone} from './zone/ng_zone';
+import {NgZone, NoNgZone} from './zone/ng_zone';
 
 let _devMode: boolean = true;
 let _runModeLocked: boolean = false;
@@ -191,7 +191,8 @@ export abstract class PlatformRef {
    *
    * @experimental APIs related to application bootstrap are currently under review.
    */
-  abstract bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>): Promise<NgModuleRef<M>>;
+  abstract bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>, options?: BootstrapOptions):
+      Promise<NgModuleRef<M>>;
 
   /**
    * Creates an instance of an `@NgModule` for a given platform using the given runtime compiler.
@@ -209,8 +210,8 @@ export abstract class PlatformRef {
    * @stable
    */
   abstract bootstrapModule<M>(
-      moduleType: Type<M>,
-      compilerOptions?: CompilerOptions|CompilerOptions[]): Promise<NgModuleRef<M>>;
+      moduleType: Type<M>, compilerOptions?: (CompilerOptions&BootstrapOptions)|
+      Array<CompilerOptions&BootstrapOptions>): Promise<NgModuleRef<M>>;
 
   /**
    * Register a listener to be called when the platform is disposed.
@@ -251,6 +252,22 @@ function _callAndReportToErrorHandler(errorHandler: ErrorHandler, callback: () =
 }
 
 /**
+ * Provides additional options to the bootstraping process.
+ *
+ * @stable
+ */
+export interface BootstrapOptions {
+  /**
+   * Optionally specify which `NgZone` should be used.
+   *
+   * - Provide your own `NgZone` instance.
+   * - `default` - Use default `NgZone` which requires `Zone.js`.
+   * - `none` - Use `NoNgZone` which does nothing.
+   */
+  ngZone?: NgZone|'default'|'none';
+}
+
+/**
  * workaround https://github.com/angular/tsickle/issues/350
  * @suppress {checkTypes}
  */
@@ -277,17 +294,14 @@ export class PlatformRef_ extends PlatformRef {
     this._destroyed = true;
   }
 
-  bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>): Promise<NgModuleRef<M>> {
-    return this._bootstrapModuleFactoryWithZone(moduleFactory);
-  }
-
-  private _bootstrapModuleFactoryWithZone<M>(moduleFactory: NgModuleFactory<M>, ngZone?: NgZone):
+  bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>, options?: BootstrapOptions):
       Promise<NgModuleRef<M>> {
     // Note: We need to create the NgZone _before_ we instantiate the module,
     // as instantiating the module creates some providers eagerly.
     // So we create a mini parent injector that just contains the new NgZone and
     // pass that as parent to the NgModuleFactory.
-    if (!ngZone) ngZone = new NgZone({enableLongStackTrace: isDevMode()});
+    const ngZoneOption = options && options.ngZone;
+    const ngZone = getNgZone(ngZoneOption);
     // Attention: Don't use ApplicationRef.run here,
     // as we want to be sure that all possible constructor calls are inside `ngZone.run`!
     return ngZone.run(() => {
@@ -311,20 +325,15 @@ export class PlatformRef_ extends PlatformRef {
     });
   }
 
-  bootstrapModule<M>(moduleType: Type<M>, compilerOptions: CompilerOptions|CompilerOptions[] = []):
-      Promise<NgModuleRef<M>> {
-    return this._bootstrapModuleWithZone(moduleType, compilerOptions);
-  }
-
-  private _bootstrapModuleWithZone<M>(
-      moduleType: Type<M>, compilerOptions: CompilerOptions|CompilerOptions[] = [],
-      ngZone?: NgZone): Promise<NgModuleRef<M>> {
+  bootstrapModule<M>(
+      moduleType: Type<M>, compilerOptions: (CompilerOptions&BootstrapOptions)|
+      Array<CompilerOptions&BootstrapOptions> = []): Promise<NgModuleRef<M>> {
     const compilerFactory: CompilerFactory = this.injector.get(CompilerFactory);
-    const compiler = compilerFactory.createCompiler(
-        Array.isArray(compilerOptions) ? compilerOptions : [compilerOptions]);
+    const options = optionsReducer({}, compilerOptions);
+    const compiler = compilerFactory.createCompiler([options]);
 
     return compiler.compileModuleAsync(moduleType)
-        .then((moduleFactory) => this._bootstrapModuleFactoryWithZone(moduleFactory, ngZone));
+        .then((moduleFactory) => this.bootstrapModuleFactory(moduleFactory, options));
   }
 
   private _moduleDoBootstrap(moduleRef: InternalNgModuleRef<any>): void {
@@ -340,6 +349,31 @@ export class PlatformRef_ extends PlatformRef {
     }
     this._modules.push(moduleRef);
   }
+}
+
+function getNgZone(ngZoneOption?: NgZone | 'default' | 'none'): NgZone {
+  let ngZone: NgZone;
+
+  if (ngZoneOption === 'none') {
+    ngZone = new NoNgZone();
+  } else {
+    ngZone = (ngZoneOption === 'default' ? undefined : ngZoneOption) ||
+        new NgZone({enableLongStackTrace: isDevMode()});
+  }
+  return ngZone;
+}
+
+function optionsReducer<T extends Object>(dst: any, objs: T | T[]): T {
+  if (Array.isArray(objs)) {
+    objs.reduce(optionsReducer, dst);
+  } else {
+    for (let key in objs) {
+      if (objs.hasOwnProperty(key)) {
+        dst[key] = objs[key];
+      }
+    }
+  }
+  return dst;
 }
 
 /**
