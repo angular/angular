@@ -12,11 +12,12 @@ export class ScrollService {
   private _topOffset: number;
   private _topOfPageElement: Element;
 
-  /** Offset from the top of the document to bottom of toolbar + some margin */
+  // Offset from the top of the document to bottom of any static elements
+  // at the top (e.g. toolbar) + some margin
   get topOffset() {
     if (!this._topOffset) {
-      const toolbar = document.querySelector('md-toolbar.app-toolbar');
-      this._topOffset = (toolbar ? toolbar.clientHeight : 0) + topMargin;
+      // Since the toolbar is not static, we don't need to account for its height.
+      this._topOffset = topMargin;
     }
     return this._topOffset;
   }
