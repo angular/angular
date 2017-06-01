@@ -872,22 +872,7 @@ export class TransitionAnimationEngine {
       if (players) {
         optimizeGroupPlayer(players).onDone(fn);
       } else {
-        let elementPlayers: AnimationPlayer[]|null = null;
-
-        let parent = element;
-        while (parent = parent.parentNode) {
-          const playersForThisElement = this.playersByElement.get(parent);
-          if (playersForThisElement && playersForThisElement.length) {
-            elementPlayers = playersForThisElement;
-            break;
-          }
-        }
-
-        if (elementPlayers) {
-          optimizeGroupPlayer(elementPlayers).onDone(fn);
-        } else {
-          fn();
-        }
+        fn();
       }
     });
 
