@@ -6,9 +6,10 @@
   "author": "Georgios Kalpakas <kalpakas.g@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "test": "yarn test-preview && yarn test-staging",
+    "test": "yarn test-preview && yarn test-staging && yarn test-google",
     "test-preview": "node test-lighthouse.js https://pr17160-a833b7273f35c48956f961b55f8c699e625657bc.ngbuilds.io/ 90",
-    "test-staging": "node test-lighthouse.js https://aio-staging.firebaseapp.com/ 90"
+    "test-staging": "node test-lighthouse.js https://aio-staging.firebaseapp.com/ 90",
+    "test-google": "node test-lighthouse.js https://google.com/ 90"
   },
   "dependencies": {
     "lighthouse": "1"
