@@ -23,10 +23,10 @@ const VIEWER_URL = 'https://googlechrome.github.io/lighthouse/viewer/';
 // global.atob = str => new Buffer(str, 'base64').toString('binary');
 // global.btoa = str => new Buffer(str, 'binary').toString('base64');
 
-// // Specify the path to Chrome on Travis
-// if (process.env.TRAVIS) {
-//   process.env.LIGHTHOUSE_CHROMIUM_PATH = process.env.CHROME_BIN;
-// }
+// Specify the path to Chrome on Travis
+if (process.env.TRAVIS) {
+  process.env.LIGHTHOUSE_CHROMIUM_PATH = `${__dirname}/.chrome/chromium/chrome-linux/chrome`;
+}
 
 // Run
 _main(process.argv.slice(2));

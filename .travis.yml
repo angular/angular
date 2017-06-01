@@ -7,10 +7,11 @@ node_js: 6
 install:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
-  - wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-  - sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
-  - sudo apt-get update -q
-  - sudo apt-get install -q google-chrome-stable
+  # - wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+  # - sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+  # - sudo apt-get update -q
+  # - sudo apt-get install -q google-chrome-stable
+  - ./install-chromium.sh
 
 before_script:
   - yarn install
