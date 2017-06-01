@@ -41,6 +41,26 @@ describe('site App', function() {
     expect(page.getInnerHtml(codeExample)).toContain('&lt;h1&gt;Tour of Heroes&lt;/h1&gt;');
   });
 
+  describe('scrolling to the top', () => {
+    it('should scroll to the top when navigating to another page', () => {
+      page.navigateTo('guide/docs');
+      page.scrollToBottom();
+      page.getScrollTop().then(scrollTop => expect(scrollTop).toBeGreaterThan(0));
+
+      page.navigateTo('guide/api');
+      page.getScrollTop().then(scrollTop => expect(scrollTop).toBe(0));
+    });
+
+    it('should scroll to the top when navigating to the same page', () => {
+      page.navigateTo('guide/docs');
+      page.scrollToBottom();
+      page.getScrollTop().then(scrollTop => expect(scrollTop).toBeGreaterThan(0));
+
+      page.navigateTo('guide/docs');
+      page.getScrollTop().then(scrollTop => expect(scrollTop).toBe(0));
+    });
+  });
+
   describe('api-docs', () => {
     it('should show a link to github', () => {
       page.navigateTo('api/common/NgClass');

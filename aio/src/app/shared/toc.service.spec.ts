@@ -243,6 +243,11 @@ describe('TocService', () => {
       expect(tocItem.href).toEqual(`${docId}#heading-one-special-id`);
     });
 
+    it('should have level "h1" for an <h1>', () => {
+      const tocItem = lastTocList.find(item => item.title === 'Fun with TOC');
+      expect(tocItem.level).toEqual('h1');
+    });
+
     it('should have level "h2" for an <h2>', () => {
       const tocItem = lastTocList.find(item => item.title === 'Heading one');
       expect(tocItem.level).toEqual('h2');
