@@ -98,7 +98,7 @@ export class NgZone {
   readonly onUnstable: EventEmitter<any> = new EventEmitter(false);
 
   /**
-   * Notifies when there is no more microtasks enqueue in the current VM Turn.
+   * Notifies when there is no more microtasks enqueued in the current VM Turn.
    * This is a hint for Angular to do change detection, which may enqueue more microtasks.
    * For this reason this event can fire multiple times per VM Turn.
    */
@@ -216,7 +216,7 @@ export class NgZone {
   }
 }
 
-function noop(){};
+function noop() {}
 const EMPTY_PAYLOAD = {};
 
 
@@ -307,4 +307,28 @@ function onEnter(zone: NgZonePrivate) {
 function onLeave(zone: NgZonePrivate) {
   zone._nesting--;
   checkStable(zone);
+}
+
+/**
+ * Provides a noop implementation of `NgZone` which does nothing. This zone requires explicit calls
+ * to framework to perform rendering.
+ *
+ * @internal
+ */
+export class NoopNgZone implements NgZone {
+  readonly hasPendingMicrotasks: boolean = false;
+  readonly hasPendingMacrotasks: boolean = false;
+  readonly isStable: boolean = true;
+  readonly onUnstable: EventEmitter<any> = new EventEmitter();
+  readonly onMicrotaskEmpty: EventEmitter<any> = new EventEmitter();
+  readonly onStable: EventEmitter<any> = new EventEmitter();
+  readonly onError: EventEmitter<any> = new EventEmitter();
+
+  run(fn: () => any): any { return fn(); }
+
+  runGuarded(fn: () => any): any { return fn(); }
+
+  runOutsideAngular(fn: () => any): any { return fn(); }
+
+  runTask<T>(fn: () => any): any { return fn(); }
 }
