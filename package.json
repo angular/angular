@@ -1,0 +1,16 @@
+{
+  "name": "test-lighthouse",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/gkalpak/test-lighthouse.git",
+  "author": "Georgios Kalpakas <kalpakas.g@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "test": "yarn test-preview && yarn test-staging",
+    "test-preview": "node test-lighthouse.js https://pr17160-a833b7273f35c48956f961b55f8c699e625657bc.ngbuilds.io/ 90",
+    "test-staging": "node test-lighthouse.js https://aio-staging.firebaseapp.com/ 90"
+  },
+  "dependencies": {
+    "lighthouse": "1"
+  }
+}

@@ -1,0 +1,3 @@
+# test-lighthouse
+
+A test.
