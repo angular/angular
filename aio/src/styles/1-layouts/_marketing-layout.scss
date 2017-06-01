@@ -289,6 +289,10 @@ aio-shell {
       }
     }
 
+    .feature-section img {
+      max-width: 70px;
+    }
+
     @media (max-width: 600px) {
       md-sidenav-container.sidenav-container {
         padding-top: 0;
@@ -326,6 +330,13 @@ aio-shell {
     .text-headline {
       text-align: center;
     }
+  }
+
+  .feature-title {
+    font-size: 16px;
+    font-weight: 500;
+    margin: 8px 0px;
+    clear: both;
   }
 }
 
