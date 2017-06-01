@@ -68,6 +68,7 @@
     "jasmine": "^2.4.1",
     "jasmine-core": "^2.4.1",
     "jpm": "1.0.0",
+    "jshashes": "^1.0.6",
     "karma": "^0.13.20",
     "karma-browserstack-launcher": "^0.1.9",
     "karma-chrome-launcher": "^0.2.0",

@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": true,
+    "stripInternal": false,
+    "experimentalDecorators": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "es2015",
+    "moduleResolution": "node",
+    "outDir": "../../../dist/packages/service-worker/sdk",
+    "rootDir": ".",
+    "sourceMap": true,
+    "inlineSources": true,
+    "target": "es2015",
+    "skipLibCheck": true,
+    "lib": [ "es2015", "dom" ],
+    // don't auto-discover @types/node, it results in a ///<reference in the .d.ts output
+    "types": []
+  },
+  "files": [
+    "public_api.ts",
+    "./src/typings/service-worker.d.ts",
+    "./src/typings/jshashes.d.ts"
+  ],
+  "angularCompilerOptions": {
+    "annotateForClosureCompiler": true,
+    "strictMetadataEmit": true,
+    "flatModuleOutFile": "index.js",
+    "flatModuleId": "@angular/service-worker/sdk"
+  }
+}

@@ -60,6 +60,7 @@ module.exports = function(config) {
       'dist/all/@angular/language-service/**',
       'dist/all/@angular/router/test/**',
       'dist/all/@angular/platform-browser/testing/e2e_util.js',
+      'dist/all/@angular/service-worker/**',
       'dist/all/angular1_router.js',
       'dist/examples/**/e2e_test/**',
     ],

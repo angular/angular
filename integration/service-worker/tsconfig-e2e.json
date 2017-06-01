@@ -1,0 +1,29 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "outDir": "./dist-e2e",
+    "baseUrl": "src",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "target": "es5",
+    "typeRoots": [
+      "./node_modules/",
+      "./node_modules/@types"
+    ],
+    "types": [
+      "jasmine",
+      "node",
+      "protractor"
+    ],
+    "lib": [
+      "es2016",
+      "dom"
+    ]
+  },
+  "files": [
+    "e2e/test/sanity_e2e.ts"
+  ]
+}

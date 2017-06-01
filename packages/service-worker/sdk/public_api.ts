@@ -1,0 +1,13 @@
+export {FetchDelegate, FetchInstruction, Operation, Plugin, PluginFactory, StreamController, VersionWorker} from './src/api';
+export {BootstrapOptions, bootstrapServiceWorker} from './src/bootstrap';
+export {ScopedCache} from './src/cache';
+export {cacheFromNetworkOp, copyExistingCacheOp, copyExistingOrFetchOp, deleteCacheOp, fetchFromCacheInstruction, fetchFromNetworkInstruction, rewriteUrlInstruction} from './src/common';
+export {Driver, DriverState} from './src/driver';
+export {BrowserClock, Clock, NgSwAdapter} from './src/facade/adapter';
+export {NgSwCache, NgSwCacheImpl} from './src/facade/cache';
+export {Callback, NgSwEvents} from './src/facade/events';
+export {NgSwFetch} from './src/facade/fetch';
+export {ConsoleHandler, HttpHandler, LOG, LOGGER, LogEntry, LogHandler, Logger, Logging, Verbosity} from './src/logging';
+export {Manifest, parseManifest} from './src/manifest';
+export {UrlConfig, UrlMatchType, UrlMatcher} from './src/url';
+export {VersionWorkerImpl} from './src/worker';

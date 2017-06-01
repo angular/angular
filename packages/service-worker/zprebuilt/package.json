@@ -1,0 +1,7 @@
+{
+  "name": "@angular/service-worker/zprebuilt",
+  "typings": "../zprebuilt.d.ts",
+  "main": "../bundles/service-worker-zprebuilt.umd.js",
+  "module": "../@angular/service-worker/zprebuilt.es5.js",
+  "es2015": "../@angular/service-worker/zprebuilt.js"
+}

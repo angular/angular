@@ -18,7 +18,10 @@ const entrypoints = [
   'dist/packages-dist/router/router.d.ts', 'dist/packages-dist/animations/animations.d.ts',
   'dist/packages-dist/animations/browser.d.ts',
   'dist/packages-dist/animations/browser/testing.d.ts',
-  'dist/packages-dist/platform-browser/animations.d.ts'
+  'dist/packages-dist/platform-browser/animations.d.ts',
+  'dist/packages-dist/service-worker/service-worker.d.ts',
+  'dist/packages-dist/service-worker/sdk.d.ts',
+  'dist/packages-dist/service-worker/sdk/plugins.d.ts',
 ];
 
 const publicApiDir = 'tools/public_api_guard';
