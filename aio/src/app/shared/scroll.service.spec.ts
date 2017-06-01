@@ -17,7 +17,6 @@ describe('ScrollService', () => {
   class MockDocument {
     body = new MockElement();
     getElementById = jasmine.createSpy('Document getElementById');
-    querySelector = jasmine.createSpy('Document querySelector');
   }
 
   class MockElement {
