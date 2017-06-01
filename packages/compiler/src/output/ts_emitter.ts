@@ -37,9 +37,9 @@ export function debugOutputAstAsTypeScript(ast: o.Statement | o.Expression | o.T
 
 
 export class TypeScriptEmitter implements OutputEmitter {
-  emitStatements(
-      srcFilePath: string, genFilePath: string, stmts: o.Statement[],
-      preamble: string = ''): string {
+  emitStatementsAndContext(
+      srcFilePath: string, genFilePath: string, stmts: o.Statement[], preamble: string = '',
+      emitSourceMaps: boolean = true): {sourceText: string, context: EmitterVisitorContext} {
     const converter = new _TsEmitterVisitor();
 
     const ctx = EmitterVisitorContext.createRoot();
@@ -60,14 +60,21 @@ export class TypeScriptEmitter implements OutputEmitter {
           `ort * as ${prefix} from '${importedModuleName}';`);
     });
 
-    const sm =
-        ctx.toSourceMapGenerator(srcFilePath, genFilePath, preambleLines.length).toJsComment();
+    const sm = emitSourceMaps ?
+        ctx.toSourceMapGenerator(srcFilePath, genFilePath, preambleLines.length).toJsComment() :
+        '';
     const lines = [...preambleLines, ctx.toSource(), sm];
     if (sm) {
       // always add a newline at the end, as some tools have bugs without it.
       lines.push('');
     }
-    return lines.join('\n');
+    ctx.setPreambleLineCount(preambleLines.length);
+    return {sourceText: lines.join('\n'), context: ctx};
+  }
+
+  emitStatements(
+      srcFilePath: string, genFilePath: string, stmts: o.Statement[], preamble: string = '') {
+    return this.emitStatementsAndContext(srcFilePath, genFilePath, stmts, preamble).sourceText;
   }
 }
 
