@@ -16,8 +16,8 @@ import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ServerModule} from '@angular/platform-server';
-
-import {ComponentFixture, ComponentFixtureNoNgZone, TestBed, async, inject, withModule} from '../testing';
+import {NoopNgZone} from '../src/zone/ng_zone';
+import {ComponentFixtureNoNgZone, TestBed, async, inject, withModule} from '../testing';
 
 @Component({selector: 'bootstrap-app', template: 'hello'})
 class SomeComponent {
@@ -286,6 +286,15 @@ export function main() {
       it('should add bootstrapped module into platform modules list', async(() => {
            defaultPlatform.bootstrapModule(createModule({bootstrap: [SomeComponent]}))
                .then(module => expect((<any>defaultPlatform)._modules).toContain(module));
+         }));
+
+      it('should bootstrap with NoopNgZone', async(() => {
+           defaultPlatform
+               .bootstrapModule(createModule({bootstrap: [SomeComponent]}), {ngZone: 'noop'})
+               .then((module) => {
+                 const ngZone = module.injector.get(NgZone);
+                 expect(ngZone instanceof NoopNgZone).toBe(true);
+               });
          }));
     });
 

@@ -28,7 +28,7 @@ import {InternalViewRef, ViewRef} from './linker/view_ref';
 import {WtfScopeFn, wtfCreateScope, wtfLeave} from './profile/profile';
 import {Testability, TestabilityRegistry} from './testability/testability';
 import {Type} from './type';
-import {NgZone} from './zone/ng_zone';
+import {NgZone, NoopNgZone} from './zone/ng_zone';
 
 let _devMode: boolean = true;
 let _runModeLocked: boolean = false;
@@ -159,6 +159,22 @@ export function getPlatform(): PlatformRef|null {
 }
 
 /**
+ * Provides additional options to the bootstraping process.
+ *
+ * @stable
+ */
+export interface BootstrapOptions {
+  /**
+   * Optionally specify which `NgZone` should be used.
+   *
+   * - Provide your own `NgZone` instance.
+   * - `zone.js` - Use default `NgZone` which requires `Zone.js`.
+   * - `noop` - Use `NoopNgZone` which does nothing.
+   */
+  ngZone?: NgZone|'zone.js'|'noop';
+}
+
+/**
  * The Angular platform is the entry point for Angular on a web page. Each page
  * has exactly one platform, and services (such as reflection) which are common
  * to every Angular application running on the page are bound in its scope.
@@ -168,6 +184,7 @@ export function getPlatform(): PlatformRef|null {
  *
  * @stable
  */
+@Injectable()
 export class PlatformRef {
   private _modules: NgModuleRef<any>[] = [];
   private _destroyListeners: Function[] = [];
@@ -199,17 +216,14 @@ export class PlatformRef {
    *
    * @experimental APIs related to application bootstrap are currently under review.
    */
-  bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>): Promise<NgModuleRef<M>> {
-    return this._bootstrapModuleFactoryWithZone(moduleFactory);
-  }
-
-  private _bootstrapModuleFactoryWithZone<M>(moduleFactory: NgModuleFactory<M>, ngZone?: NgZone):
+  bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>, options?: BootstrapOptions):
       Promise<NgModuleRef<M>> {
     // Note: We need to create the NgZone _before_ we instantiate the module,
     // as instantiating the module creates some providers eagerly.
     // So we create a mini parent injector that just contains the new NgZone and
     // pass that as parent to the NgModuleFactory.
-    if (!ngZone) ngZone = new NgZone({enableLongStackTrace: isDevMode()});
+    const ngZoneOption = options ? options.ngZone : undefined;
+    const ngZone = getNgZone(ngZoneOption);
     // Attention: Don't use ApplicationRef.run here,
     // as we want to be sure that all possible constructor calls are inside `ngZone.run`!
     return ngZone.run(() => {
@@ -249,20 +263,15 @@ export class PlatformRef {
    * ```
    * @stable
    */
-  bootstrapModule<M>(moduleType: Type<M>, compilerOptions: CompilerOptions|CompilerOptions[] = []):
-      Promise<NgModuleRef<M>> {
-    return this._bootstrapModuleWithZone(moduleType, compilerOptions);
-  }
-
-  private _bootstrapModuleWithZone<M>(
-      moduleType: Type<M>, compilerOptions: CompilerOptions|CompilerOptions[] = [],
-      ngZone?: NgZone): Promise<NgModuleRef<M>> {
+  bootstrapModule<M>(
+      moduleType: Type<M>, compilerOptions: (CompilerOptions&BootstrapOptions)|
+      Array<CompilerOptions&BootstrapOptions> = []): Promise<NgModuleRef<M>> {
     const compilerFactory: CompilerFactory = this.injector.get(CompilerFactory);
-    const compiler = compilerFactory.createCompiler(
-        Array.isArray(compilerOptions) ? compilerOptions : [compilerOptions]);
+    const options = optionsReducer({}, compilerOptions);
+    const compiler = compilerFactory.createCompiler([options]);
 
     return compiler.compileModuleAsync(moduleType)
-        .then((moduleFactory) => this._bootstrapModuleFactoryWithZone(moduleFactory, ngZone));
+        .then((moduleFactory) => this.bootstrapModuleFactory(moduleFactory, options));
   }
 
   private _moduleDoBootstrap(moduleRef: InternalNgModuleRef<any>): void {
@@ -305,6 +314,18 @@ export class PlatformRef {
   get destroyed() { return this._destroyed; }
 }
 
+function getNgZone(ngZoneOption?: NgZone | 'zone.js' | 'noop'): NgZone {
+  let ngZone: NgZone;
+
+  if (ngZoneOption === 'noop') {
+    ngZone = new NoopNgZone();
+  } else {
+    ngZone = (ngZoneOption === 'zone.js' ? undefined : ngZoneOption) ||
+        new NgZone({enableLongStackTrace: isDevMode()});
+  }
+  return ngZone;
+}
+
 function _callAndReportToErrorHandler(
     errorHandler: ErrorHandler, ngZone: NgZone, callback: () => any): any {
   try {
@@ -323,6 +344,15 @@ function _callAndReportToErrorHandler(
     // rethrow as the exception handler might not do it
     throw e;
   }
+}
+
+function optionsReducer<T extends Object>(dst: any, objs: T | T[]): T {
+  if (Array.isArray(objs)) {
+    dst = objs.reduce(optionsReducer, dst);
+  } else {
+    dst = {...dst, ...(objs as any)};
+  }
+  return dst;
 }
 
 /**
