@@ -1,39 +1,9 @@
-.fill-remaining-space {
-  flex: 1 1 auto;
-}
-
-aio-top-menu a.nav-link {
-  margin: 0;
-  padding: 24px 16px;
-  cursor: pointer;
-
-  &:focus {
-    outline: none;
-  }
-}
-
 .nav-link.home img {
   position: relative;
   margin-top: -21px;
   margin-right: 20px;
   top: 12px;
   height: 40px;
-}
-
-@media (max-width: 700px) {
-  .nav-link {
-    font-size: 80%;
-    margin-right: 8px;
-    margin-left: 0px;
-  }
-}
-
-@media (max-width: 600px) {
-  .nav-link {
-    font-size: 80%;
-    margin-right: 8px;
-    margin-left: 0px;
-  }
 }
 
 aio-top-menu {
@@ -65,60 +35,114 @@ aio-top-menu {
       }
     }
   }
+
+  a.nav-link {
+    margin: 0;
+    padding: 24px 16px;
+    cursor: pointer;
+
+    &:focus {
+      outline: none;
+      background: rgba($white, 0.15);
+      border-radius: 4px;
+      padding: 8px 16px;
+    }
+  }
 }
 
+// HOME PAGE OVERRIDE: TOPNAV TOOLBAR HAMBURGER MENU
 aio-shell.page-home md-toolbar.app-toolbar.mat-toolbar {
   background-color: transparent;
+
+  @media (max-width: 480px) {
+    background-color: $blue;
+  }
 }
 
+// DOCS PAGE / STANDARD: TOPNAV TOOLBAR FIXED
 md-toolbar.mat-toolbar {
-  position: absolute; 
-  perspective: 2000px;
+  position: fixed; 
   top: 0px;
   right: 0; 
   left: 0;
   z-index: 10;
   padding: 0 16px 0 0;
+  box-shadow: 0 2px 5px 0 rgba(0,0,0,0.30);
 
-  .mat-toolbar-row {
-    @media (max-width: 600px) {
+  // FIXED TOPNAV TOOLBAR FOR SMALL MOBILE
+  @media (max-width: 480px) {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+  }
+
+  md-icon {
+    color: $white;
+  }
+}
+
+// MARKETING PAGES OVERRIDE: ABSOLUTE TOPNAV TOOLBAR
+aio-shell.page-home md-toolbar.mat-toolbar,
+aio-shell.page-features md-toolbar.mat-toolbar,
+aio-shell.page-events md-toolbar.mat-toolbar,
+aio-shell.page-resources md-toolbar.mat-toolbar {
+  position: absolute;
+
+  @media (min-width: 992px) {
+    padding-left: 24px;
+    
+    button.hamburger {
+      display: none;
     }
   }
-}
 
-aio-shell.page-home.sidenav-open {
-  md-toolbar.mat-toolbar md-icon {
-    color: $mediumgray;
+  // FIXED TOPNAV TOOLBAR FOR SMALL MOBILE
+  @media (max-width: 480px) {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
   }
 }
 
-.search-container {
+// REMOVE BOX SHADOW ON CERTAIN MARKETING PAGES
+aio-shell.page-home md-toolbar.mat-toolbar,
+aio-shell.page-events md-toolbar.mat-toolbar,
+aio-shell.page-resources md-toolbar.mat-toolbar {
+  box-shadow: none;
+}
+
+
+// SEARCH BOX
+aio-search-box.search-container {
   display: flex;
   justify-content: flex-end;
   align-items: center;
   width: 100%;
   min-width: 150px;
   height: 100%;
-}
 
-aio-search-box input {
-  color: $darkgray;
-  border: none;
-  border-radius: 100px;
-  background-color: $offwhite;
-  padding: 5px 16px;
-  margin-left: 8px;
-  width: 180px;
-  max-width: 240px;
-  height: 50%;
-
-   @include bp(big) {
-    transition: width 0.4s ease-in-out;
-    &:focus {
-      width: 50%;
-    }
-  }
-  @media (max-width: 480px) {
+  input {
+    color: $darkgray;
+    border: none;
+    border-radius: 100px;
+    background-color: $offwhite;
+    padding: 5px 16px;
+    margin-left: 8px;
     width: 150px;
+    height: 40%;
+
+    @include bp(big) {
+      transition: width 0.4s ease-in-out;
+
+      &:focus {
+        width: 50%;
+        max-width: 240px;
+      }
+    }
+    @media (max-width: 480px) {
+      width: 180px;
+    }
   }
 }

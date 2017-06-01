@@ -302,16 +302,6 @@ aio-shell {
         padding-top: 0;
       }
     }
-
-    @media (min-width: 992px) {
-      md-toolbar {
-        padding-left: 24px;
-        
-        button.hamburger {
-          display: none;
-        }
-      }
-    }
   }
 
   .cta-bar .hero-cta {
