@@ -19,6 +19,7 @@ import {AnimationDriver} from './animation_driver';
 import {getOrSetAsInMap, listenOnPlayer, makeAnimationEvent, normalizeKeyframes, optimizeGroupPlayer} from './shared';
 
 const EMPTY_PLAYER_ARRAY: AnimationPlayer[] = [];
+const NOOP_FN = () => {};
 
 interface TriggerListener {
   name: string;
@@ -460,7 +461,7 @@ export class TransitionAnimationEngine {
   private _whenQuietFns: (() => any)[] = [];
 
   public namespacesByHostElement = new Map<any, AnimationTransitionNamespace>();
-  public collectedElements: any[] = [];
+  public collectedEnterElements: any[] = [];
 
   // this method is designed to be overridden by the code that uses this engine
   public onRemovalComplete = (element: any, context: any) => {};
@@ -496,7 +497,7 @@ export class TransitionAnimationEngine {
       // animation renderer type. If this happens then we can still have
       // access to this item when we query for :enter nodes. If the parent
       // is a renderer then the set data-structure will normalize the entry
-      this.updateElementEpoch(hostElement);
+      this.collectEnterElement(hostElement);
     }
     return this._namespaceLookup[namespaceId] = ns;
   }
@@ -572,7 +573,6 @@ export class TransitionAnimationEngine {
     // special case for when an element is removed and reinserted (move operation)
     // when this occurs we do not want to use the element for deletion later
     if (this.queuedRemovals.has(element)) {
-      this.markElementAsRemoved(element, true);
       this.queuedRemovals.delete(element);
     }
 
@@ -585,20 +585,11 @@ export class TransitionAnimationEngine {
 
     // only *directives and host elements are inserted before
     if (insertBefore) {
-      this.updateElementEpoch(element);
+      this.collectEnterElement(element);
     }
   }
 
-  updateElementEpoch(element: any, isRemoval?: boolean) { this.collectedElements.push(element); }
-
-  markElementAsRemoved(element: any, unmark?: boolean) {
-    if (unmark) {
-      removeClass(element, LEAVE_CLASSNAME);
-    } else {
-      addClass(element, LEAVE_CLASSNAME);
-      this.afterFlush(() => removeClass(element, LEAVE_CLASSNAME));
-    }
-  }
+  collectEnterElement(element: any) { this.collectedEnterElements.push(element); }
 
   removeNode(namespaceId: string, element: any, context: any, doNotRecurse?: boolean): void {
     if (namespaceId) {
@@ -609,10 +600,11 @@ export class TransitionAnimationEngine {
         ns.removeNode(element, context, doNotRecurse);
       }
     } else {
-      this.markElementAsRemoved(element);
       this.queuedRemovals.set(element, () => this._onRemovalComplete(element, context));
     }
   }
+
+  markElementAsRemoved(element: any) { this.queuedRemovals.set(element, NOOP_FN); }
 
   listen(
       namespaceId: string, element: any, name: string, phase: string,
@@ -675,7 +667,7 @@ export class TransitionAnimationEngine {
     }
 
     this.totalQueuedPlayers = 0;
-    this.collectedElements = [];
+    this.collectedEnterElements.length = 0;
     this.queuedRemovals.clear();
     this._flushFns.forEach(fn => fn());
     this._flushFns = [];
@@ -708,9 +700,11 @@ export class TransitionAnimationEngine {
     // the :enter queries match the elements (since the timeline queries
     // are fired during instruction building).
     const bodyNode = getBodyNode();
-    const allEnterNodes: any[] = this.collectedElements;
+    const allEnterNodes: any[] = this.collectedEnterElements;
     const enterNodes: any[] =
         allEnterNodes.length ? collectEnterElements(this.driver, allEnterNodes) : [];
+
+    this.queuedRemovals.forEach((fn, element) => addClass(element, LEAVE_CLASSNAME));
 
     for (let i = this._namespaceList.length - 1; i >= 0; i--) {
       const ns = this._namespaceList[i];
