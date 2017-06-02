@@ -89,6 +89,7 @@ Note that all "planned" work is tentative / best estimate and is subject to chan
 | docs site        |                Launched & iterating | [Docs][26]   |              - |
 | typography       |                Started, coming soon |           -  |   [#205][0205] |
 | data-table       |                         In-progress |           -  |   [#581][0581] |
+| expansion-panel  |                         In-progress |           -  |  [#4191][4191] |
 | tree             |                  Design in-progress |           -  |  [#3175][3175] |
 | virtual-repeat   |        Not started, planned Q3 2017 |           -  |   [#823][0823] |
 | stepper          |           Not started, planned 2017 |           -  |   [#508][0508] |
@@ -143,6 +144,7 @@ Note that all "planned" work is tentative / best estimate and is subject to chan
 [0823]: https://github.com/angular/material2/issues/823
 [0581]: https://github.com/angular/material2/issues/581
 [3175]: https://github.com/angular/material2/issues/3175
+[4191]: https://github.com/angular/material2/pull/4191
 
 [getting-started]: https://github.com/angular/material2/blob/master/guides/getting-started.md
 [theming]: https://github.com/angular/material2/blob/master/guides/theming.md
