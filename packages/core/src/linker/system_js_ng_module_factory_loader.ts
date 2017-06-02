@@ -16,6 +16,7 @@ import {NgModuleFactoryLoader} from './ng_module_factory_loader';
 const _SEPARATOR = '#';
 
 const FACTORY_CLASS_SUFFIX = 'NgFactory';
+declare var System: any;
 
 /**
  * Configuration for SystemJsNgModuleLoader.

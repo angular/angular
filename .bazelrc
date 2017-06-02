@@ -1,0 +1,6 @@
+# Disable sandboxing because it's too slow.
+# https://github.com/bazelbuild/bazel/issues/2424
+build --spawn_strategy=standalone
+
+# Performance: avoid stat'ing input files
+build --watchfs
