@@ -61,12 +61,15 @@ export interface ExecTaskOptions {
   silentStdout?: boolean;
   // If an error happens, this will replace the standard error.
   errMessage?: string;
+  // Environment variables being passed to the child process.
+  env?: any;
 }
 
 /** Create a task that executes a binary as if from the command line. */
 export function execTask(binPath: string, args: string[], options: ExecTaskOptions = {}) {
   return (done: (err?: string) => void) => {
-    const childProcess = child_process.spawn(binPath, args);
+    const env = Object.assign({}, process.env, options.env);
+    const childProcess = child_process.spawn(binPath, args, {env});
 
     if (!options.silentStdout && !options.silent) {
       childProcess.stdout.on('data', (data: string) => process.stdout.write(data));

@@ -111,6 +111,7 @@
     "sorcery": "^0.10.0",
     "stylelint": "^7.10.1",
     "ts-node": "^3.0.4",
+    "tsconfig-paths": "^2.2.0",
     "tslint": "^5.2.0",
     "typescript": "~2.2.1",
     "uglify-js": "^2.8.14",
