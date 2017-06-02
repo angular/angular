@@ -233,7 +233,7 @@ Such [entry components](guide/ngmodule-faq#q-entry-component-defined) can never 
 While there's no harm in exporting them, there's also no benefit.
 * Pure service modules that don't have public (exported) declarations.
 For example, there's no point in re-exporting `HttpModule` because it doesn't export anything.
-It's only purpose is to add http service providers to the application as a whole.
+Its only purpose is to add http service providers to the application as a whole.
 
 
 <hr/>
@@ -273,7 +273,7 @@ A module can export a combination of its own declarations, selected imported cla
 Don't bother re-exporting pure service modules.
 Pure service modules don't export [declarable](guide/ngmodule-faq#q-declarable) classes that another module could use.
 For example, there's no point in re-exporting `HttpModule` because it doesn't export anything.
-It's only purpose is to add http service providers to the application as a whole.
+Its only purpose is to add http service providers to the application as a whole.
 
 
 </div>
