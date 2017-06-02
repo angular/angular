@@ -16,7 +16,9 @@ The latest release of Angular Material can be installed from npm
 
 `npm install --save @angular/material`
 
-Playing with the latest changes from [master](https://github.com/angular/material2/tree/master) is also possible
+A snapshot build with the latest changes from
+[master](https://github.com/angular/material2/tree/master) is also available. Note that this
+snapshot build should not be considered stable and may break between releases.
 
 `npm install --save https://github.com/angular/material2-builds.git`
 
@@ -38,18 +40,22 @@ and which pieces are blocked) and make a comment.
 Also see our [`Good for community contribution`](https://github.com/angular/material2/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+for+community+contribution%22)
 label.
 
-High level items planned for next few months:
+High level stuff planned for Q2 2017 (April - June):
+- Datepicker
+- Initial version of data-table
+- Design for tree component
+- Typography extension to theming API
+- Moving much of @angular/material's "core" to @angular/cdk
+- Accessibility fix-it
+- Scrolling strategies for overlays
+- Nested menus
+- Live theme swapping for material.angular.io
+- Search for material.angular.io
+- Support for prerendering with @angular/platform-server
 
-- Initial version of datepicker
-- Initial version of data table
-- Initial version of tree
-- Select improvements (multi-select, etc)
-- Screenshot test improvements
-- Docs site improvements
-- A11y audit
-- Various bug fixes
 
-#### Feature status:
+#### Feature status
+Note that all "planned" work is tentative / best estimate and is subject to changing priorities.
 
 | Feature          | Status                              | Docs         | Issue          |
 |------------------|-------------------------------------|--------------|----------------|
@@ -76,23 +82,22 @@ High level items planned for next few months:
 | snackbar / toast |                           Available | [README][21] |   [#115][0115] |
 | select           |                           Available | [README][23] |   [#118][0118] |
 | textarea         |                           Available | [README][5]  |              - |
-| autocomplete     |  Initial version, features evolving | [README][24] |   [#117][0117] |
-| chips            |  Initial version, features evolving |           -  |   [#120][0120] |
-| theming          |   Available, need guidance overlays | [Guide][20]  |              - |
-| docs site        |   UX design and tooling in progress |           -  |              - |
-| typography       |                         Not started |           -  |   [#205][0205] |
-| fab speed-dial   |                         Not started |           -  |   [#860][0860] |
-| fab toolbar      |                         Not started |           -  |              - |
-| bottom-sheet     |                         Not started |           -  |              - |
-| bottom-nav       |                         Not started |           -  |   [#408][0408] |
-| virtual-repeat   |                         Not started |           -  |   [#823][0823] |
+| autocomplete     |                           Available | [README][24] |   [#117][0117] |
 | datepicker       |                           Available | [README][25] |              - |
-| data-table       |                  Design in-progress |           -  |   [#581][0581] |
-| stepper          |                         Not started |           -  |   [#508][0508] |
-| tree             |                         Not started |           -  |  [#3175][3175] |
+| chips            |  Initial version, features evolving |           -  |   [#120][0120] |
+| theming          |                           Available | [Guide][20]  |              - |
+| docs site        |                Launched & iterating | [Docs][26]   |              - |
+| typography       |                Started, coming soon |           -  |   [#205][0205] |
+| data-table       |                         In-progress |           -  |   [#581][0581] |
+| tree             |                  Design in-progress |           -  |  [#3175][3175] |
+| virtual-repeat   |        Not started, planned Q3 2017 |           -  |   [#823][0823] |
+| stepper          |           Not started, planned 2017 |           -  |   [#508][0508] |
 | layout           |   See [angular/flex-layout][lay_rp] | [Wiki][0]    |              - |
+| fab speed-dial   |            Not started, not planned |           -  |   [#860][0860] |
+| fab toolbar      |            Not started, not planned |           -  |              - |
+| bottom-sheet     |            Not started, not planned |           -  |              - |
+| bottom-nav       |            Not started, not planned |           -  |   [#408][0408] |
 
- [lay_rp]:  https://github.com/angular/flex-layout
  [0]: https://github.com/angular/flex-layout/wiki
  [1]: https://material.angular.io/components/component/button
  [2]: https://material.angular.io/components/component/card
@@ -119,6 +124,7 @@ High level items planned for next few months:
 [23]: https://material.angular.io/components/component/select
 [24]: https://material.angular.io/components/component/autocomplete
 [25]: https://material.angular.io/components/component/datepicker
+[26]: https://material.angular.io
 
 [0107]: https://github.com/angular/material2/issues/107
 [0119]: https://github.com/angular/material2/issues/119
@@ -140,6 +146,7 @@ High level items planned for next few months:
 
 [getting-started]: https://github.com/angular/material2/blob/master/guides/getting-started.md
 [theming]: https://github.com/angular/material2/blob/master/guides/theming.md
+[lay_rp]:  https://github.com/angular/flex-layout
 
 
 "Available" means that the components or feature is published and available for use, but may still
