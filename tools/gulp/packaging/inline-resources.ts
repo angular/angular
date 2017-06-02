@@ -40,7 +40,7 @@ function inlineStyles(fileContent: string, filePath: string) {
       .map(url => join(dirname(filePath), url))
       .map(path => loadResourceFile(path));
 
-    return `styles: ["${styleContents.join(',')}"]`;
+    return `styles: ["${styleContents.join(' ')}"]`;
   });
 }
 
