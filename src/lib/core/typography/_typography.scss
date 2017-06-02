@@ -23,7 +23,9 @@
   $body-2:      mat-typography-level(14px, 24px, 500),
   $body-1:      mat-typography-level(14px, 20px, 400),
   $caption:     mat-typography-level(12px, 12px, 400),
-  $button:      mat-typography-level(14px, 14px, 500)
+  $button:      mat-typography-level(14px, 14px, 500),
+  // Line-height must be unit-less fraction of the font-size.
+  $input:       mat-typography-level(inherit, 1.125, 400)
 ) {
   @return (
     font-family: $font-family,
@@ -37,7 +39,8 @@
     body-2:      $body-2,
     body-1:      $body-1,
     caption:     $caption,
-    button:      $button
+    button:      $button,
+    input:       $input,
   );
 }
 
@@ -61,7 +64,7 @@
   }
 
   .mat-h2, #{$selector} h2 {
-    @include mat-typography-level-to-styles($config, display-2)
+    @include mat-typography-level-to-styles($config, display-2);
 
     // Note: The spec doesn't mention letter spacing. The value comes from
     // eyeballing it until it looked exactly like the spec examples.;

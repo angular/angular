@@ -8,7 +8,7 @@
 
       <table style="width: 100%" cellspacing="0"><tr>
         <td>
-          <md-input-container style="width: 100%">
+          <md-input-container style="width: 100%" floatPlaceholder="never">
             <input mdInput placeholder="First name">
           </md-input-container>
         </td>
@@ -112,6 +112,13 @@
       <input mdInput placeholder="amount">
       <md-icon mdPrefix>attach_money</md-icon>
       <md-icon mdSuffix>mode_edit</md-icon>
+    </md-input-container>
+
+    <h4>Icon buttons</h4>
+    <md-input-container>
+      <input mdInput placeholder="amount">
+      <button md-icon-button mdPrefix><md-icon>attach_money</md-icon></button>
+      <button md-icon-button mdSuffix><md-icon>mode_edit</md-icon></button>
     </md-input-container>
   </md-card-content>
 </md-card>

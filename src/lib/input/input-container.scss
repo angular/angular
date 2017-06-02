@@ -3,20 +3,11 @@
 @import '../core/style/form-common';
 
 
-$mat-input-floating-placeholder-scale-factor: 0.75 !default;
-$mat-input-wrapper-spacing: 1em !default;
-$mat-input-hint-min-space: 10px !default;
+// Min amount of space between start and end hint.
+$mat-input-hint-min-space: 1em !default;
+// The height of the underline.
+$mat-input-underline-height: 1px !default;
 
-// Gradient for showing the dashed line when the input is disabled.
-$mat-input-underline-disabled-background-image:
-    linear-gradient(to right, rgba(0, 0, 0, 0.26) 0%, rgba(0, 0, 0, 0.26) 33%, transparent 0%);
-
-// Applies a floating placeholder above the input itself.
-@mixin mat-input-placeholder-floating {
-  display: block;
-  transform: translate3d(0, -1.35em, 0) scale($mat-input-floating-placeholder-scale-factor);
-  width: 100% / $mat-input-floating-placeholder-scale-factor;
-}
 
 .mat-input-container {
   display: inline-block;
@@ -28,42 +19,53 @@ $mat-input-underline-disabled-background-image:
   [dir='rtl'] & {
     text-align: right;
   }
-
-  // Allow icons in a prefix/suffix/hint/etc to adapt to the correct size.
-  & .mat-icon,
-  & .mat-datepicker-toggle {
-    width: 1em;
-    height: 1em;
-    vertical-align: top;
-  }
 }
 
 // Global wrapper. We need to apply margin to the element for spacing, but
 // cannot apply it to the host element directly.
 .mat-input-wrapper {
-  margin: $mat-input-wrapper-spacing 0;
-  // Account for the underline which has 4px of margin + 2px of border.
-  padding-bottom: 6px;
+  position: relative;
 }
 
-// We use a table layout to baseline align the prefix and suffix classes.
-// The underline is outside of it so it can cover all of the elements under
-// this table.
-// Flex does not respect the baseline. What we really want is akin to a table
-// as want an inline-block where elements don't wrap.
-.mat-input-table {
-  display: inline-table;
-  flex-flow: column;
-  vertical-align: bottom;
+// We use a flex layout to baseline align the prefix and suffix elements.
+// The underline is outside of it so it can cover all of the elements under this flex container.
+.mat-input-flex {
+  display: inline-flex;
+  align-items: baseline;
   width: 100%;
+}
 
-  & > * {
-    display: table-cell;
+.mat-input-prefix,
+.mat-input-suffix {
+  white-space: nowrap;
+  flex: none;
+
+  // Allow icons in a prefix or suffix to adapt to the correct size.
+  .mat-icon,
+  .mat-datepicker-toggle {
+    width: 1em;
+    height: 1em;
+    vertical-align: text-bottom;
+  }
+
+  // Allow icon buttons in a prefix or suffix to adapt to the correct size.
+  .mat-icon-button {
+    font: inherit;
+    vertical-align: baseline;
+
+    .mat-icon {
+      font-size: inherit;
+      width: 1em;
+      height: 1em;
+      vertical-align: baseline;
+    }
   }
 }
 
 .mat-input-infix {
+  display: block;
   position: relative;
+  flex: auto;
 }
 
 // The Input element proper.
@@ -106,9 +108,17 @@ $mat-input-underline-disabled-background-image:
   // Once the autofill is committed, a change event happen and the regular md-input-container
   // classes take over to fulfill this behaviour.
   // Assumes the autofill is non-empty.
-  &:-webkit-autofill + .mat-input-placeholder-wrapper .mat-float {
-    @include mat-input-placeholder-floating;
-    transition: none;
+  &:-webkit-autofill + .mat-input-placeholder-wrapper {
+    // The input is still technically empty at this point, so we need to hide non-floating
+    // placeholders to prevent overlapping with the autofilled value.
+    .mat-input-placeholder {
+      display: none;
+    }
+
+    .mat-float {
+      display: block;
+      transition: none;
+    }
   }
 
   // Note that we can't use something like visibility: hidden or
@@ -121,6 +131,18 @@ $mat-input-underline-disabled-background-image:
   }
 }
 
+// Used to hide the placeholder overflow on IE, since IE doesn't take transform into account when
+// determining overflow.
+.mat-input-placeholder-wrapper {
+  position: absolute;
+  left: 0;
+  box-sizing: content-box;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;  // We shouldn't catch mouse events (let them through).
+}
+
 // The placeholder label. This is invisible unless it is. The logic to show it is
 // basically `empty || (float && (!empty || focused))`. Float is dependent on the
 // `floatingPlaceholder` input.
@@ -129,37 +151,36 @@ $mat-input-underline-disabled-background-image:
   // infix <div>.
   position: absolute;
   left: 0;
-  top: 0;
 
+  font: inherit;
   pointer-events: none;  // We shouldn't catch mouse events (let them through).
-  z-index: 1;
-  padding-top: 1em;
 
   // Put ellipsis text overflow.
   width: 100%;
-  display: none;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
 
-  transform: translate3d(0, 0, 0);
-  transform-origin: bottom left;
+  // The perspective helps smooth out animations on Chrome and Firefox but isn't needed on IE.
+  transform: perspective(100px);
+  -ms-transform: none;
+
+  transform-origin: 0 0;
   transition: transform $swift-ease-out-duration $swift-ease-out-timing-function,
               color $swift-ease-out-duration $swift-ease-out-timing-function,
               width $swift-ease-out-duration $swift-ease-out-timing-function;
 
-  &.mat-empty {
-    display: block;
-    cursor: text;
-  }
+  // Hide the placeholder initially, and only show it when it's floating or the input is empty.
+  display: none;
 
-  // Show the placeholder above the input when it's not empty, or focused.
-  &.mat-float:not(.mat-empty), .mat-focused &.mat-float {
-    @include mat-input-placeholder-floating;
+  &.mat-empty,
+  &.mat-float:not(.mat-empty),
+  .mat-focused &.mat-float {
+    display: block;
   }
 
   [dir='rtl'] & {
-    transform-origin: bottom right;
+    transform-origin: 100% 0;
     left: auto;
     right: 0;
   }
@@ -171,47 +192,23 @@ $mat-input-underline-disabled-background-image:
   transition: none;
 }
 
-// Used to hide the placeholder overflow on IE, since IE doesn't take transform into account when
-// determining overflow.
-.mat-input-placeholder-wrapper {
-  position: absolute;
-  left: 0;
-  top: -1em;
-  width: 100%;
-  padding-top: 1em;
-  overflow: hidden;
-  pointer-events: none;  // We shouldn't catch mouse events (let them through).
-  transform: translate3d(0, 0, 0); // Prevents the label from shifting after the animation is done.
-
-  // Keeps the element height since the placeholder text is `position: absolute`.
-  &::after {
-    content: '';
-    display: inline-table;
-  }
-}
-
-
 // The underline is what's shown under the input, its prefix and its suffix.
 // The ripple is the blue animation coming on top of it.
 .mat-input-underline {
   position: absolute;
-  height: 1px;
+  height: $mat-input-underline-height;
   width: 100%;
-  margin-top: 4px;
-  border-top-width: 1px;
-  border-top-style: solid;
 
   &.mat-disabled {
     @include mat-control-disabled-underline();
-    border-top: 0;
     background-position: 0;
+    background-color: transparent;
   }
 
   .mat-input-ripple {
     position: absolute;
-    height: 2px;
-    z-index: 1;
-    top: -1px;
+    height: $mat-input-underline-height * 2;
+    top: 0;
     width: 100%;
     transform-origin: 50%;
     transform: scaleX(0.5);
@@ -223,7 +220,7 @@ $mat-input-underline-disabled-background-image:
       visibility: visible;
       transform: scaleX(1);
       transition: transform 150ms linear,
-                  background-color $swift-ease-in-duration $swift-ease-in-timing-function;
+      background-color $swift-ease-in-duration $swift-ease-in-timing-function;
     }
   }
 }
@@ -231,14 +228,21 @@ $mat-input-underline-disabled-background-image:
 // Wrapper for the hints and error messages. Provides positioning and text size.
 // Note that we're using `top` in order to allow for stacked children to flow downwards.
 .mat-input-subscript-wrapper {
-  $line-height: 1.2em;
-
   position: absolute;
-  top: 100%;
   width: 100%;
-  margin-top: -$line-height;
-  line-height: $line-height;
   overflow: hidden; // prevents multi-line errors from overlapping the input
+}
+
+// Scale down icons in the placeholder and hint to be the same size as the text.
+.mat-input-subscript-wrapper,
+.mat-input-placeholder-wrapper {
+  .mat-icon,
+  .mat-datepicker-toggle {
+    width: 1em;
+    height: 1em;
+    font-size: inherit;
+    vertical-align: baseline;
+  }
 }
 
 // Clears the floats on the hints. This is necessary for the hint animation to work.
@@ -246,6 +250,7 @@ $mat-input-underline-disabled-background-image:
   display: flex;
 }
 
+// Spacer used to make sure start and end hints have enough space between them.
 .mat-input-hint-spacer {
   flex: 1 0 $mat-input-hint-min-space;
 }
@@ -253,10 +258,4 @@ $mat-input-underline-disabled-background-image:
 // Single error message displayed beneath the input.
 .mat-input-error {
   display: block;
-}
-
-.mat-input-prefix, .mat-input-suffix {
-  // Prevents the prefix and suffix from stretching together with the container.
-  width: 0.1px;
-  white-space: nowrap;
 }
