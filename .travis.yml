@@ -39,6 +39,7 @@ env:
 
 before_install:
   - source ./scripts/ci/env.sh
+  - npm i -g npm@^5.0.1
 
 install:
   - npm install
@@ -51,5 +52,4 @@ script:
 
 cache:
   directories:
-    - node_modules
-    - tools/screenshot-test/functions/node_modules
+    - $HOME/.npm
