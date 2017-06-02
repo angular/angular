@@ -1,6 +1,7 @@
 .DS_STORE
 
 /dist/
+bazel-*
 node_modules
 bower_components
 

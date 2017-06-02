@@ -6,6 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+// Import zero symbols from zone.js. This causes the zone ambient type to be
+// added to the type-checker, without emitting any runtime module load statement
+import {} from 'zone.js';
+
 // TODO(jteplitz602): Load WorkerGlobalScope from lib.webworker.d.ts file #3492
 declare var WorkerGlobalScope: any /** TODO #9100 */;
 // CommonJS / Node have global context exposed as "global" variable.
