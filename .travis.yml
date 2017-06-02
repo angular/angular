@@ -24,9 +24,9 @@ branches:
 cache:
   yarn: true
   directories:
-     - ./node_modules
-     - ./.chrome/chromium
-     - ./aio/node_modules
+    #  - ./node_modules
+    #  - ./.chrome/chromium
+    #  - ./aio/node_modules
 
 env:
   global:
@@ -69,6 +69,7 @@ script:
   - ./scripts/ci/test.sh
   # deploy is part of 'script' and not 'after_success' so that we fail the build if the deployment fails
   - ./scripts/ci/deploy.sh
+  - (cd aio && yarn test-pwa-score -- https://aio-staging.firebaseapp.com/ 95)
   - ./scripts/ci/angular.sh
   # all the scripts under this line will not quickly abort in case ${TRAVIS_TEST_RESULT} is 1 (job failure)
   - ./scripts/ci/cleanup.sh
