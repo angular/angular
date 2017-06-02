@@ -97,15 +97,15 @@ groups:
       - vicb
       - IgorMinar #fallback
 
-  compiler/animations:
+  animations:
     conditions:
       files:
-        - "packages/compiler/src/animation/*"
+        - "packages/animation/*"
+        - "packages/platform-browser/animations/*"
     users:
       - matsko #primary
-      - tbosch
-      - IgorMinar #fallback
       - mhevery #fallback
+      - IgorMinar #fallback
 
   compiler/i18n:
     conditions:
