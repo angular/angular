@@ -1,0 +1,20 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/ng
+    docker:
+      - image: alexeagle/ngcontainer
+    steps:
+      - checkout
+      - restore_cache:
+          key: angular-{{ .Branch }}-{{ checksum "npm-shrinkwrap.json" }}
+      - run: npm install
+      - run: npm run postinstall
+      - run: ./node_modules/.bin/gulp lint
+      # Build twice, workaround for
+      # https://github.com/bazelbuild/bazel/issues/3114
+      - run: bazel build ... || bazel build ...
+      - save_cache:
+          key: angular-{{ .Branch }}-{{ checksum "npm-shrinkwrap.json" }}
+          paths:
+            - "node_modules"
