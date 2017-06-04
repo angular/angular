@@ -13,8 +13,8 @@ import { LocationService } from 'app/shared/location.service';
 import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
 
 // Import and re-export the Navigation model types
-import { CurrentNode, NavigationNode, NavigationResponse, NavigationViews, VersionInfo } from './navigation.model';
-export { CurrentNode, NavigationNode, NavigationResponse, NavigationViews, VersionInfo } from './navigation.model';
+import { CurrentNodes, NavigationNode, NavigationResponse, NavigationViews, VersionInfo } from './navigation.model';
+export { CurrentNodes, CurrentNode, NavigationNode, NavigationResponse, NavigationViews, VersionInfo } from './navigation.model';
 
 const navigationPath = CONTENT_URL_PREFIX + 'navigation.json';
 
@@ -35,13 +35,13 @@ export class NavigationService {
    * node (if any) that matches the current URL location
    * including its navigation view and its ancestor nodes in that view
    */
-  currentNode: Observable<CurrentNode>;
+  currentNodes: Observable<CurrentNodes>;
 
   constructor(private http: Http, private location: LocationService, private logger: Logger) {
     const navigationInfo = this.fetchNavigationInfo();
     this.navigationViews = this.getNavigationViews(navigationInfo);
 
-    this.currentNode = this.getCurrentNode(this.navigationViews);
+    this.currentNodes = this.getCurrentNodes(this.navigationViews);
     // The version information is packaged inside the navigation response to save us an extra request.
     this.versionInfo = this.getVersionInfo(navigationInfo);
   }
@@ -88,23 +88,23 @@ export class NavigationService {
   }
 
   /**
-   * Get an observable of the current node (the one that matches the current URL)
+   * Get an observable of the current nodes (the ones that match the current URL)
    * We use `publishReplay(1)` because otherwise subscribers will have to wait until the next
    * URL change before they receive an emission.
    * See above for discussion of using `connect`.
    */
-  private getCurrentNode(navigationViews: Observable<NavigationViews>): Observable<CurrentNode> {
-    const currentNode = combineLatest(
+  private getCurrentNodes(navigationViews: Observable<NavigationViews>): Observable<CurrentNodes> {
+    const currentNodes = combineLatest(
       navigationViews.map(views => this.computeUrlToNavNodesMap(views)),
       this.location.currentPath,
 
       (navMap, url) => {
         const urlKey = url.startsWith('api/') ? 'api' : url;
-        return navMap[urlKey] || { view: '', url: urlKey, nodes: [] };
+        return navMap[urlKey] || { '' : { view: '', url: urlKey, nodes: [] }};
       })
       .publishReplay(1);
-    currentNode.connect();
-    return currentNode;
+    currentNodes.connect();
+    return currentNodes;
   }
 
   /**
@@ -114,7 +114,7 @@ export class NavigationService {
    * @param navigation - A collection of navigation nodes that are to be mapped
    */
   private computeUrlToNavNodesMap(navigation: NavigationViews) {
-    const navMap = new Map<string, CurrentNode>();
+    const navMap = new Map<string, CurrentNodes>();
     Object.keys(navigation)
       .forEach(view => navigation[view]
         .forEach(node => this.walkNodes(view, navMap, node)));
@@ -138,7 +138,7 @@ export class NavigationService {
    * patching them and computing their ancestor nodes
    */
   private walkNodes(
-    view: string, navMap: Map<string, CurrentNode>,
+    view: string, navMap: Map<string, CurrentNodes>,
     node: NavigationNode, ancestors: NavigationNode[] = []) {
       const nodes = [node, ...ancestors];
       const url = node.url;
@@ -147,7 +147,9 @@ export class NavigationService {
       // only map to this node if it has a url
       if (url) {
         // Strip off trailing slashes from nodes in the navMap - they are not relevant to matching
-        navMap[url.replace(/\/$/, '')] = { url, view, nodes };
+        const cleanedUrl = url.replace(/\/$/, '');
+        const navMapItem = navMap[cleanedUrl] = navMap[cleanedUrl] || {};
+        navMapItem[view] = { url, view, nodes };
       }
 
       if (node.children) {
