@@ -41,7 +41,7 @@ export interface ExtractorHost extends StaticSymbolResolverHost, AotSummaryResol
   /**
    * Loads a resource (e.g. html / css)
    */
-  loadResource(path: string): Promise<string>;
+  loadResource(path: string): Promise<string>|string;
 }
 
 export class Extractor {

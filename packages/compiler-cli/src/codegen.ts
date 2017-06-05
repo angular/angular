@@ -40,17 +40,24 @@ export class CodeGenerator {
     return this.compiler
         .analyzeModulesAsync(this.program.getSourceFiles().map(
             sf => this.ngCompilerHost.getCanonicalFileName(sf.fileName)))
-        .then(analyzedModules => this.compiler.emitAllImpls(analyzedModules))
-        .then(generatedModules => {
-          return generatedModules.map(generatedModule => {
-            const sourceFile = this.program.getSourceFile(generatedModule.srcFileUrl);
-            const emitPath = this.ngCompilerHost.calculateEmitPath(generatedModule.genFileUrl);
-            const source =
-                generatedModule.source || compiler.toTypeScript(generatedModule, PREAMBLE);
-            this.host.writeFile(emitPath, source, false, () => {}, [sourceFile]);
-            return emitPath;
-          });
-        });
+        .then(analyzedModules => this.emit(analyzedModules));
+  }
+
+  codegenSync(): string[] {
+    const analyzed = this.compiler.analyzeModulesSync(this.program.getSourceFiles().map(
+        sf => this.ngCompilerHost.getCanonicalFileName(sf.fileName)));
+    return this.emit(analyzed);
+  }
+
+  private emit(analyzedModules: compiler.NgAnalyzedModules) {
+    const generatedModules = this.compiler.emitAllImpls(analyzedModules);
+    return generatedModules.map(generatedModule => {
+      const sourceFile = this.program.getSourceFile(generatedModule.srcFileUrl);
+      const emitPath = this.ngCompilerHost.calculateEmitPath(generatedModule.genFileUrl);
+      const source = generatedModule.source || compiler.toTypeScript(generatedModule, PREAMBLE);
+      this.host.writeFile(emitPath, source, false, () => {}, [sourceFile]);
+      return emitPath;
+    });
   }
 
   static create(
