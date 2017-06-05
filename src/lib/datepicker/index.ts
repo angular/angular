@@ -1,15 +1,14 @@
 import {NgModule} from '@angular/core';
 import {MdMonthView} from './month-view';
 import {CommonModule} from '@angular/common';
+import {StyleModule, OverlayModule, A11yModule} from '../core';
 import {MdCalendarBody} from './calendar-body';
 import {MdYearView} from './year-view';
-import {OverlayModule} from '../core/overlay/overlay-directives';
 import {MdDatepicker, MdDatepickerContent} from './datepicker';
 import {MdDatepickerInput} from './datepicker-input';
 import {MdDialogModule} from '../dialog/index';
 import {MdCalendar} from './calendar';
 import {MdDatepickerToggle} from './datepicker-toggle';
-import {StyleModule} from '../core/style/index';
 import {MdButtonModule} from '../button/index';
 import {MdDatepickerIntl} from './datepicker-intl';
 
@@ -31,6 +30,7 @@ export * from './year-view';
     MdDialogModule,
     OverlayModule,
     StyleModule,
+    A11yModule,
   ],
   exports: [
     MdDatepicker,
