@@ -258,7 +258,9 @@ export class CompilerHost implements AotCompilerHost {
     return v3Metadata;
   }
 
-  loadResource(filePath: string): Promise<string> { return this.context.readResource(filePath); }
+  loadResource(filePath: string): Promise<string>|string {
+    return this.context.readResource(filePath);
+  }
 
   loadSummary(filePath: string): string|null {
     if (this.context.fileExists(filePath)) {
