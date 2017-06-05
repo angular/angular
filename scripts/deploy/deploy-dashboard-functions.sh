@@ -13,7 +13,7 @@ cd ${dashboardFolder}
 # before it can collect all functions and deploy them.
 (cd functions; npm install)
 
-if [ -z ${MATERIAL2_DASHBOARD_ACCESS_TOKEN} ]; then
+if [ -z ${MATERIAL2_BOARD_FIREBASE_DEPLOY_KEY} ]; then
   echo "Error: No access token for firebase specified." \
        "Please set the environment variable 'MATERIAL2_DASHBOARD_ACCESS_TOKEN'."
   exit 1
@@ -21,4 +21,4 @@ fi
 
 # Deploy the dashboard functions to Firebase. For now only the functions will be deployed.
 $(npm bin)/firebase deploy \
-  --only functions --token ${MATERIAL2_DASHBOARD_ACCESS_TOKEN} --project material2-dashboard
+  --only functions --token ${MATERIAL2_BOARD_FIREBASE_DEPLOY_KEY} --project material2-board
