@@ -15,7 +15,7 @@ const htmlmin = require('gulp-htmlmin');
  * @param packageName Name of the package. Needs to be similar to the directory name in `src/`.
  * @param requiredPackages Required packages that will be built before building the current package.
  */
-export function createPackageBuildTasks(packageName: string, requiredPackages: string[] = [], ) {
+export function createPackageBuildTasks(packageName: string, requiredPackages: string[] = []) {
   // To avoid refactoring of the project the package material will map to the source path `lib/`.
   const packageRoot = join(SOURCE_ROOT, packageName === 'material' ? 'lib' : packageName);
   const packageOut = join(DIST_ROOT, 'packages', packageName);
