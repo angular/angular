@@ -42,6 +42,7 @@ const ROLLUP_GLOBALS = {
   'rxjs/add/operator/share': 'Rx.Observable.prototype',
   'rxjs/add/operator/startWith': 'Rx.Observable.prototype',
   'rxjs/add/operator/switchMap': 'Rx.Observable.prototype',
+  'rxjs/add/operator/takeUntil': 'Rx.Observable.prototype',
   'rxjs/add/operator/toPromise': 'Rx.Observable.prototype',
   'rxjs/BehaviorSubject': 'Rx',
   'rxjs/Observable': 'Rx',
