@@ -1,29 +1,46 @@
+import {NgModule, Component} from '@angular/core';
 import {inject, TestBed, async} from '@angular/core/testing';
-import {ComponentPortal, OverlayModule, BlockScrollStrategy, Platform} from '../../core';
-import {ViewportRuler} from '../position/viewport-ruler';
+import {
+  ComponentPortal,
+  OverlayModule,
+  PortalModule,
+  Platform,
+  ViewportRuler,
+  OverlayState,
+  Overlay,
+  OverlayRef,
+} from '../../core';
 
 
 describe('BlockScrollStrategy', () => {
   let platform = new Platform();
-  let strategy: BlockScrollStrategy;
   let viewport: ViewportRuler;
+  let overlayRef: OverlayRef;
+  let componentPortal: ComponentPortal<FocacciaMsg>;
   let forceScrollElement: HTMLElement;
 
   beforeEach(async(() => {
-    TestBed.configureTestingModule({imports: [OverlayModule]}).compileComponents();
+    TestBed.configureTestingModule({
+      imports: [OverlayModule, PortalModule, OverlayTestModule]
+    }).compileComponents();
   }));
 
-  beforeEach(inject([ViewportRuler], (viewportRuler: ViewportRuler) => {
-    strategy = new BlockScrollStrategy(viewportRuler);
-    viewport = viewportRuler;
-    forceScrollElement = document.createElement('div');
-    document.body.appendChild(forceScrollElement);
-    forceScrollElement.style.width = '100px';
-    forceScrollElement.style.height = '3000px';
-  }));
+  beforeEach(inject([Overlay, ViewportRuler], (overlay: Overlay, viewportRuler: ViewportRuler) => {
+      let overlayState = new OverlayState();
+
+      overlayState.scrollStrategy = overlay.scrollStrategies.block();
+      overlayRef = overlay.create(overlayState);
+      componentPortal = new ComponentPortal(FocacciaMsg);
+
+      viewport = viewportRuler;
+      forceScrollElement = document.createElement('div');
+      document.body.appendChild(forceScrollElement);
+      forceScrollElement.style.width = '100px';
+      forceScrollElement.style.height = '3000px';
+    }));
 
   afterEach(() => {
-    strategy.disable();
+    overlayRef.dispose();
     document.body.removeChild(forceScrollElement);
     setScrollPosition(0, 0);
   });
@@ -33,7 +50,7 @@ describe('BlockScrollStrategy', () => {
     expect(viewport.getViewportScrollPosition().top)
         .toBe(100, 'Expected viewport to be scrollable initially.');
 
-    strategy.enable();
+    overlayRef.attach(componentPortal);
     expect(document.documentElement.style.top)
         .toBe('-100px', 'Expected <html> element to be offset by the previous scroll amount.');
 
@@ -41,7 +58,7 @@ describe('BlockScrollStrategy', () => {
     expect(viewport.getViewportScrollPosition().top)
         .toBe(100, 'Expected the viewport not to scroll.');
 
-    strategy.disable();
+    overlayRef.detach();
     expect(viewport.getViewportScrollPosition().top)
         .toBe(100, 'Expected old scroll position to have bee restored after disabling.');
 
@@ -59,7 +76,7 @@ describe('BlockScrollStrategy', () => {
     expect(viewport.getViewportScrollPosition().left)
         .toBe(100, 'Expected viewport to be scrollable initially.');
 
-    strategy.enable();
+    overlayRef.attach(componentPortal);
     expect(document.documentElement.style.left)
         .toBe('-100px', 'Expected <html> element to be offset by the previous scroll amount.');
 
@@ -67,7 +84,7 @@ describe('BlockScrollStrategy', () => {
     expect(viewport.getViewportScrollPosition().left)
         .toBe(100, 'Expected the viewport not to scroll.');
 
-    strategy.disable();
+    overlayRef.detach();
     expect(viewport.getViewportScrollPosition().left)
         .toBe(100, 'Expected old scroll position to have bee restored after disabling.');
 
@@ -80,10 +97,10 @@ describe('BlockScrollStrategy', () => {
   it('should toggle the `cdk-global-scrollblock` class', skipIOS(() => {
     expect(document.documentElement.classList).not.toContain('cdk-global-scrollblock');
 
-    strategy.enable();
+    overlayRef.attach(componentPortal);
     expect(document.documentElement.classList).toContain('cdk-global-scrollblock');
 
-    strategy.disable();
+    overlayRef.detach();
     expect(document.documentElement.classList).not.toContain('cdk-global-scrollblock');
   }));
 
@@ -93,12 +110,12 @@ describe('BlockScrollStrategy', () => {
     root.style.top = '13px';
     root.style.left = '37px';
 
-    strategy.enable();
+    overlayRef.attach(componentPortal);
 
     expect(root.style.top).not.toBe('13px');
     expect(root.style.left).not.toBe('37px');
 
-    strategy.disable();
+    overlayRef.detach();
 
     expect(root.style.top).toBe('13px');
     expect(root.style.left).toBe('37px');
@@ -106,7 +123,7 @@ describe('BlockScrollStrategy', () => {
 
   it(`should't do anything if the page isn't scrollable`, skipIOS(() => {
     forceScrollElement.style.display = 'none';
-    strategy.enable();
+    overlayRef.attach(componentPortal);
     expect(document.documentElement.classList).not.toContain('cdk-global-scrollblock');
   }));
 
@@ -116,7 +133,7 @@ describe('BlockScrollStrategy', () => {
 
     const previousContentWidth = document.documentElement.getBoundingClientRect().width;
 
-    strategy.enable();
+    overlayRef.attach(componentPortal);
 
     expect(document.documentElement.getBoundingClientRect().width).toBe(previousContentWidth);
   });
@@ -151,3 +168,17 @@ describe('BlockScrollStrategy', () => {
   }
 
 });
+
+
+/** Simple component that we can attach to the overlay. */
+@Component({template: '<p>Focaccia</p>'})
+class FocacciaMsg { }
+
+
+/** Test module to hold the component. */
+@NgModule({
+  imports: [OverlayModule, PortalModule],
+  declarations: [FocacciaMsg],
+  entryComponents: [FocacciaMsg],
+})
+class OverlayTestModule { }

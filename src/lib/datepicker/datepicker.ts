@@ -21,7 +21,6 @@ import {Dir} from '../core/rtl/dir';
 import {MdDialog} from '../dialog/dialog';
 import {MdDialogRef} from '../dialog/dialog-ref';
 import {PositionStrategy} from '../core/overlay/position/position-strategy';
-import {RepositionScrollStrategy, ScrollDispatcher} from '../core/overlay/index';
 import {MdDatepickerInput} from './datepicker-input';
 import {Subscription} from 'rxjs/Subscription';
 import {MdDialogConfig} from '../dialog/dialog-config';
@@ -157,7 +156,6 @@ export class MdDatepicker<D> implements OnDestroy {
               private _overlay: Overlay,
               private _ngZone: NgZone,
               private _viewContainerRef: ViewContainerRef,
-              private _scrollDispatcher: ScrollDispatcher,
               @Optional() private _dateAdapter: DateAdapter<D>,
               @Optional() private _dir: Dir) {
     if (!this._dateAdapter) {
@@ -269,7 +267,7 @@ export class MdDatepicker<D> implements OnDestroy {
     overlayState.hasBackdrop = true;
     overlayState.backdropClass = 'md-overlay-transparent-backdrop';
     overlayState.direction = this._dir ? this._dir.value : 'ltr';
-    overlayState.scrollStrategy = new RepositionScrollStrategy(this._scrollDispatcher);
+    overlayState.scrollStrategy = this._overlay.scrollStrategies.reposition();
 
     this._popupRef = this._overlay.create(overlayState);
   }

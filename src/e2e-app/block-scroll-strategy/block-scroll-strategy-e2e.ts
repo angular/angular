@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {BlockScrollStrategy, ViewportRuler} from '@angular/material';
+import {Overlay, ScrollStrategy} from '@angular/material';
 
 @Component({
   moduleId: module.id,
@@ -8,6 +8,6 @@ import {BlockScrollStrategy, ViewportRuler} from '@angular/material';
   styleUrls: ['block-scroll-strategy-e2e.css'],
 })
 export class BlockScrollStrategyE2E {
-  constructor(private _viewportRuler: ViewportRuler) { }
-  scrollStrategy = new BlockScrollStrategy(this._viewportRuler);
+  constructor(private _overlay: Overlay) { }
+  scrollStrategy: ScrollStrategy = this._overlay.scrollStrategies.block();
 }

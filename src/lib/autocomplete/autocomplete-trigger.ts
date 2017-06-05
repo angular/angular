@@ -13,7 +13,7 @@ import {
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {DOCUMENT} from '@angular/platform-browser';
-import {Overlay, OverlayRef, OverlayState, TemplatePortal, RepositionScrollStrategy} from '../core';
+import {Overlay, OverlayRef, OverlayState, TemplatePortal} from '../core';
 import {MdAutocomplete} from './autocomplete';
 import {PositionStrategy} from '../core/overlay/position/position-strategy';
 import {ConnectedPositionStrategy} from '../core/overlay/position/connected-position-strategy';
@@ -22,7 +22,6 @@ import {MdOptionSelectionChange, MdOption} from '../core/option/option';
 import {ENTER, UP_ARROW, DOWN_ARROW, ESCAPE} from '../core/keyboard/keycodes';
 import {Dir} from '../core/rtl/dir';
 import {MdInputContainer} from '../input/input-container';
-import {ScrollDispatcher} from '../core/overlay/scroll/scroll-dispatcher';
 import {Subscription} from 'rxjs/Subscription';
 import 'rxjs/add/observable/merge';
 import 'rxjs/add/observable/fromEvent';
@@ -113,7 +112,6 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   constructor(private _element: ElementRef, private _overlay: Overlay,
               private _viewContainerRef: ViewContainerRef,
               private _changeDetectorRef: ChangeDetectorRef,
-              private _scrollDispatcher: ScrollDispatcher,
               @Optional() private _dir: Dir, private _zone: NgZone,
               @Optional() @Host() private _inputContainer: MdInputContainer,
               @Optional() @Inject(DOCUMENT) private _document: any) {}
@@ -381,7 +379,7 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
     overlayState.positionStrategy = this._getOverlayPosition();
     overlayState.width = this._getHostWidth();
     overlayState.direction = this._dir ? this._dir.value : 'ltr';
-    overlayState.scrollStrategy = new RepositionScrollStrategy(this._scrollDispatcher);
+    overlayState.scrollStrategy = this._overlay.scrollStrategies.reposition();
     return overlayState;
   }
 

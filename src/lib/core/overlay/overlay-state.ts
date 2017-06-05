@@ -1,7 +1,6 @@
 import {PositionStrategy} from './position/position-strategy';
 import {LayoutDirection} from '../rtl/dir';
 import {ScrollStrategy} from './scroll/scroll-strategy';
-import {NoopScrollStrategy} from './scroll/noop-scroll-strategy';
 
 
 /**
@@ -13,7 +12,7 @@ export class OverlayState {
   positionStrategy: PositionStrategy;
 
   /** Strategy to be used when handling scroll events while the overlay is open. */
-  scrollStrategy: ScrollStrategy = new NoopScrollStrategy();
+  scrollStrategy: ScrollStrategy;
 
   /** Custom class to add to the overlay pane. */
   panelClass: string = '';

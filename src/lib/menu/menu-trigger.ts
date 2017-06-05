@@ -22,8 +22,6 @@ import {
     ConnectedPositionStrategy,
     HorizontalConnectionPos,
     VerticalConnectionPos,
-    RepositionScrollStrategy,
-    ScrollDispatcher,
 } from '../core';
 import {Subscription} from 'rxjs/Subscription';
 import {MenuPositionX, MenuPositionY} from './menu-positions';
@@ -80,8 +78,7 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
   @Output() onMenuClose = new EventEmitter<void>();
 
   constructor(private _overlay: Overlay, private _element: ElementRef,
-              private _viewContainerRef: ViewContainerRef, @Optional() private _dir: Dir,
-              private _scrollDispatcher: ScrollDispatcher) { }
+              private _viewContainerRef: ViewContainerRef, @Optional() private _dir: Dir) { }
 
   ngAfterViewInit() {
     this._checkMenu();
@@ -219,7 +216,7 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
     overlayState.hasBackdrop = true;
     overlayState.backdropClass = 'cdk-overlay-transparent-backdrop';
     overlayState.direction = this.dir;
-    overlayState.scrollStrategy = new RepositionScrollStrategy(this._scrollDispatcher);
+    overlayState.scrollStrategy = this._overlay.scrollStrategies.reposition();
     return overlayState;
   }
 

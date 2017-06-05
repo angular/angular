@@ -25,7 +25,6 @@ import {
   ComponentPortal,
   OverlayConnectionPosition,
   OriginConnectionPosition,
-  RepositionScrollStrategy,
 } from '../core';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
@@ -237,10 +236,12 @@ export class MdTooltip implements OnDestroy {
     });
 
     let config = new OverlayState();
+
     config.direction = this._dir ? this._dir.value : 'ltr';
     config.positionStrategy = strategy;
-    config.scrollStrategy =
-        new RepositionScrollStrategy(this._scrollDispatcher, SCROLL_THROTTLE_MS);
+    config.scrollStrategy = this._overlay.scrollStrategies.reposition({
+      scrollThrottle: SCROLL_THROTTLE_MS
+    });
 
     this._overlayRef = this._overlay.create(config);
   }

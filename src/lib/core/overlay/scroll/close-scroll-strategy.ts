@@ -1,4 +1,4 @@
-import {ScrollStrategy} from './scroll-strategy';
+import {ScrollStrategy, getMdScrollStrategyAlreadyAttachedError} from './scroll-strategy';
 import {OverlayRef} from '../overlay-ref';
 import {Subscription} from 'rxjs/Subscription';
 import {ScrollDispatcher} from './scroll-dispatcher';
@@ -14,6 +14,10 @@ export class CloseScrollStrategy implements ScrollStrategy {
   constructor(private _scrollDispatcher: ScrollDispatcher) { }
 
   attach(overlayRef: OverlayRef) {
+    if (this._overlayRef) {
+      throw getMdScrollStrategyAlreadyAttachedError();
+    }
+
     this._overlayRef = overlayRef;
   }
 

@@ -9,3 +9,10 @@ export interface ScrollStrategy {
   disable: () => void;
   attach: (overlayRef: OverlayRef) => void;
 }
+
+/**
+ * Returns an error to be thrown when attempting to attach an already-attached scroll strategy.
+ */
+export function getMdScrollStrategyAlreadyAttachedError(): Error {
+  return Error(`Scroll strategy has already been attached.`);
+}
