@@ -1,6 +1,7 @@
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
@@ -121,7 +122,8 @@ export class MdSlideToggle extends _MdSlideToggleMixinBase
 
   constructor(private _elementRef: ElementRef,
               private _renderer: Renderer2,
-              private _focusOriginMonitor: FocusOriginMonitor) {
+              private _focusOriginMonitor: FocusOriginMonitor,
+              private _changeDetectorRef: ChangeDetectorRef) {
     super();
   }
 
@@ -190,6 +192,7 @@ export class MdSlideToggle extends _MdSlideToggleMixinBase
   /** Implemented as a part of ControlValueAccessor. */
   setDisabledState(isDisabled: boolean): void {
     this.disabled = isDisabled;
+    this._changeDetectorRef.markForCheck();
   }
 
   /** Focuses the slide-toggle. */

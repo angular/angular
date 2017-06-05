@@ -618,6 +618,7 @@ describe('MdSlideToggle', () => {
 
     let testComponent: SlideToggleWithFormControl;
     let slideToggle: MdSlideToggle;
+    let inputElement: HTMLInputElement;
 
     beforeEach(() => {
       fixture = TestBed.createComponent(SlideToggleWithFormControl);
@@ -625,20 +626,24 @@ describe('MdSlideToggle', () => {
 
       testComponent = fixture.debugElement.componentInstance;
       slideToggle = fixture.debugElement.query(By.directive(MdSlideToggle)).componentInstance;
+      inputElement = fixture.debugElement.query(By.css('input')).nativeElement;
     });
 
     it('should toggle the disabled state', () => {
       expect(slideToggle.disabled).toBe(false);
+      expect(inputElement.disabled).toBe(false);
 
       testComponent.formControl.disable();
       fixture.detectChanges();
 
       expect(slideToggle.disabled).toBe(true);
+      expect(inputElement.disabled).toBe(true);
 
       testComponent.formControl.enable();
       fixture.detectChanges();
 
       expect(slideToggle.disabled).toBe(false);
+      expect(inputElement.disabled).toBe(false);
     });
   });
 });
