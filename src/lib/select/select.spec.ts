@@ -56,7 +56,8 @@ describe('MdSelect', () => {
         BasicSelectInitiallyHidden,
         BasicSelectNoPlaceholder,
         BasicSelectWithTheming,
-        ResetValuesSelect
+        ResetValuesSelect,
+        FalsyValueSelect
       ],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
@@ -629,6 +630,22 @@ describe('MdSelect', () => {
       fixture.detectChanges();
       expect(getComputedStyle(placeholder, '::after').getPropertyValue('content'))
         .toContain('*', `Expected placeholder to have an asterisk, as control was required.`);
+    });
+
+    it('should be able to programmatically select a falsy option', () => {
+      fixture.destroy();
+
+      const falsyFixture = TestBed.createComponent(FalsyValueSelect);
+
+      falsyFixture.detectChanges();
+      falsyFixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement.click();
+      falsyFixture.componentInstance.control.setValue(0);
+      falsyFixture.detectChanges();
+
+      expect(falsyFixture.componentInstance.options.first.selected)
+        .toBe(true, 'Expected first option to be selected');
+      expect(overlayContainerElement.querySelectorAll('md-option')[0].classList)
+        .toContain('mat-selected', 'Expected first option to be selected');
     });
 
   });
@@ -2515,4 +2532,21 @@ class ResetValuesSelect {
   control = new FormControl();
 
   @ViewChild(MdSelect) select: MdSelect;
+}
+
+
+@Component({
+  template: `
+    <md-select [formControl]="control">
+      <md-option *ngFor="let food of foods" [value]="food.value">{{ food.viewValue }}</md-option>
+    </md-select>
+  `
+})
+class FalsyValueSelect {
+  foods: any[] = [
+    { value: 0, viewValue: 'Steak' },
+    { value: 1, viewValue: 'Pizza' },
+  ];
+  control = new FormControl();
+  @ViewChildren(MdOption) options: QueryList<MdOption>;
 }
