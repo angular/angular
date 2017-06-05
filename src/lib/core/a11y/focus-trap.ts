@@ -81,24 +81,28 @@ export class FocusTrap {
     });
   }
 
+  /**
+   * Waits for the zone to stabilize, then either focuses the first element that the
+   * user specified, or the first tabbable element..
+   */
   focusInitialElementWhenReady() {
-    this._ngZone.onMicrotaskEmpty.first().subscribe(() => this.focusInitialElement());
+    this._executeOnStable(() => this.focusInitialElement());
   }
 
   /**
-   * Waits for microtask queue to empty, then focuses
+   * Waits for the zone to stabilize, then focuses
    * the first tabbable element within the focus trap region.
    */
   focusFirstTabbableElementWhenReady() {
-    this._ngZone.onMicrotaskEmpty.first().subscribe(() => this.focusFirstTabbableElement());
+    this._executeOnStable(() => this.focusFirstTabbableElement());
   }
 
   /**
-   * Waits for microtask queue to empty, then focuses
+   * Waits for the zone to stabilize, then focuses
    * the last tabbable element within the focus trap region.
    */
   focusLastTabbableElementWhenReady() {
-    this._ngZone.onMicrotaskEmpty.first().subscribe(() => this.focusLastTabbableElement());
+    this._executeOnStable(() => this.focusLastTabbableElement());
   }
 
   /**
@@ -107,18 +111,16 @@ export class FocusTrap {
    * @returns The boundary element.
    */
   private _getRegionBoundary(bound: 'start' | 'end'): HTMLElement | null {
-    let markers = [
-      ...Array.prototype.slice.call(this._element.querySelectorAll(`[cdk-focus-region-${bound}]`)),
-      // Deprecated version of selector, for temporary backwards comparability:
-      ...Array.prototype.slice.call(this._element.querySelectorAll(`[cdk-focus-${bound}]`)),
-    ];
+    // Contains the deprecated version of selector, for temporary backwards comparability.
+    let markers = this._element.querySelectorAll(`[cdk-focus-region-${bound}], ` +
+                                                 `[cdk-focus-${bound}]`) as NodeListOf<HTMLElement>;
 
-    markers.forEach((el: HTMLElement) => {
-      if (el.hasAttribute(`cdk-focus-${bound}`)) {
+    for (let i = 0; i < markers.length; i++) {
+      if (markers[i].hasAttribute(`cdk-focus-${bound}`)) {
         console.warn(`Found use of deprecated attribute 'cdk-focus-${bound}',` +
-                     ` use 'cdk-focus-region-${bound}' instead.`, el);
+                     ` use 'cdk-focus-region-${bound}' instead.`, markers[i]);
       }
-    });
+    }
 
     if (bound == 'start') {
       return markers.length ? markers[0] : this._getFirstTabbableElement(this._element);
@@ -205,6 +207,15 @@ export class FocusTrap {
     anchor.classList.add('cdk-visually-hidden');
     anchor.classList.add('cdk-focus-trap-anchor');
     return anchor;
+  }
+
+  /** Executes a function when the zone is stable. */
+  private _executeOnStable(fn: () => any): void {
+    if (this._ngZone.isStable) {
+      fn();
+    } else {
+      this._ngZone.onStable.first().subscribe(fn);
+    }
   }
 }
 

@@ -73,7 +73,11 @@ export class DialogDemo {
   selector: 'demo-jazz-dialog',
   template: `
   <p>It's Jazz!</p>
-  <p><label>How much? <input #howMuch></label></p>
+
+  <md-input-container>
+    <input mdInput placeholder="How much?" #howMuch>
+  </md-input-container>
+
   <p> {{ data.message }} </p>
   <button type="button" (click)="dialogRef.close(howMuch.value)">Close dialog</button>
   <button (click)="togglePosition()">Change dimensions</button>`
