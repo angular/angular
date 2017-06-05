@@ -33,9 +33,9 @@ module.exports = function categorizer() {
    * - Identifies directives, services or NgModules and marks them them in class-doc.
    */
   function decorateClassDoc(classDoc) {
-    // Resolve all methods and properties from the classDoc. Includes inherited docs.
-    classDoc.methods = resolveMethods(classDoc);
-    classDoc.properties = resolveProperties(classDoc);
+    // Resolve all methods and properties from the classDoc.
+    classDoc.methods = classDoc.members.filter(isMethod).filter(filterDuplicateMembers);
+    classDoc.properties = classDoc.members.filter(isProperty).filter(filterDuplicateMembers);
 
     // Call decorate hooks that can modify the method and property docs.
     classDoc.methods.forEach(doc => decorateMethodDoc(doc));
@@ -64,7 +64,7 @@ module.exports = function categorizer() {
     decoratePublicDoc(methodDoc);
 
     // Mark methods with a `void` return type so we can omit show the return type in the docs.
-    methodDoc.showReturns = methodDoc.returnType && methodDoc.returnType != 'void';
+    methodDoc.showReturns = methodDoc.returnType && methodDoc.returnType !== 'void';
   }
 
   /**
@@ -90,28 +90,10 @@ module.exports = function categorizer() {
   }
 };
 
-/** Walks through all inherited docs and collects public methods. */
-function resolveMethods(classDoc) {
-  let methods = classDoc.members.filter(isMethod);
-
-  if (classDoc.inheritedDoc) {
-    methods = methods.concat(resolveMethods(classDoc.inheritedDoc));
-  }
-
-  return methods;
+/** Filters any duplicate classDoc members from an array */
+function filterDuplicateMembers(item, _index, array) {
+  return array.filter((memberDoc, i) => memberDoc.name === item.name)[0] === item;
 }
-
-/** Walks through all inherited docs and collects public properties. */
-function resolveProperties(classDoc) {
-  let properties = classDoc.members.filter(isProperty);
-
-  if (classDoc.inheritedDoc) {
-    properties = properties.concat(resolveProperties(classDoc.inheritedDoc));
-  }
-
-  return properties;
-}
-
 
 /**
  * The `parameters` property are the parameters extracted from TypeScript and are strings
