@@ -103,6 +103,27 @@ describe('MdTextareaAutosize', () => {
     expect(fixture.componentInstance.autosize.resizeToFitContent).toBeTruthy();
   });
 
+  it('should initially set the rows of a textarea to one', () => {
+    expect(textarea.rows)
+      .toBe(1, 'Expected the directive to initially set the rows property to one.');
+
+    fixture.componentInstance.minRows = 1;
+    fixture.detectChanges();
+
+    expect(textarea.rows)
+      .toBe(1, 'Expected the textarea to have the rows property set to one.');
+
+    const previousMinHeight = parseInt(textarea.style.minHeight);
+
+    fixture.componentInstance.minRows = 2;
+    fixture.detectChanges();
+
+    expect(textarea.rows).toBe(1, 'Expected the rows property to be set to one. ' +
+      'The amount of rows will be specified using CSS.');
+
+    expect(parseInt(textarea.style.minHeight))
+      .toBeGreaterThan(previousMinHeight, 'Expected the textarea to grow to two rows.');
+  });
 
   it('should properly resize to content on init', () => {
     // Manually create the test component in this test, because in this test the first change

@@ -10,6 +10,9 @@ import {Directive, ElementRef, Input, AfterViewInit} from '@angular/core';
   exportAs: 'mdTextareaAutosize',
   host: {
     '(input)': 'resizeToFitContent()',
+    // Textarea elements that have the directive applied should have a single row by default.
+    // Browsers normally show two rows by default and therefore this limits the minRows binding.
+    'rows': '1',
   },
 })
 export class MdTextareaAutosize implements AfterViewInit {
@@ -116,7 +119,8 @@ export class MdTextareaAutosize implements AfterViewInit {
 
   /** Resize the textarea to fit its content. */
   resizeToFitContent() {
-    let textarea = this._elementRef.nativeElement as HTMLTextAreaElement;
+    const textarea = this._elementRef.nativeElement as HTMLTextAreaElement;
+
     // Reset the textarea height to auto in order to shrink back to its default size.
     textarea.style.height = 'auto';
 
