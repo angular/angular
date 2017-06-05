@@ -14,7 +14,11 @@ import {
 import {coerceBooleanProperty, MdLine, MdLineSetter} from '../core';
 
 @Directive({
-  selector: 'md-divider, mat-divider'
+  selector: 'md-divider, mat-divider',
+  host: {
+    'role': 'separator',
+    'aria-orientation': 'horizontal'
+  }
 })
 export class MdListDivider {}
 
@@ -22,7 +26,8 @@ export class MdListDivider {}
   moduleId: module.id,
   selector: 'md-list, mat-list, md-nav-list, mat-nav-list',
   host: {
-    'role': 'list'},
+    'role': 'list'
+  },
   template: '<ng-content></ng-content>',
   styleUrls: ['list.css'],
   encapsulation: ViewEncapsulation.None
