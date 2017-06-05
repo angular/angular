@@ -143,6 +143,11 @@ $mat-input-underline-height: 1px !default;
   pointer-events: none;  // We shouldn't catch mouse events (let them through).
 }
 
+// Prevents IE from always adding a scrollbar by default.
+textarea.mat-input-element {
+  overflow: auto;
+}
+
 // The placeholder label. This is invisible unless it is. The logic to show it is
 // basically `empty || (float && (!empty || focused))`. Float is dependent on the
 // `floatingPlaceholder` input.
