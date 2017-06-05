@@ -43,6 +43,7 @@ $mat-dialog-max-height: 65vh !default;
 .mat-dialog-actions {
   padding: $mat-dialog-padding / 2 0;
   display: flex;
+  flex-wrap: wrap;
 
   &:last-child {
     // If the actions are the last element in a dialog, we need to pull them down
