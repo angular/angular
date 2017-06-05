@@ -45,6 +45,7 @@ dist/
 # aot
 **/*.ngfactory.ts
 **/*.ngsummary.json
+**/*.ngsummary.ts
 **/*.shim.ngstyle.ts
 **/*.metadata.json
 !aot/bs-config.json
