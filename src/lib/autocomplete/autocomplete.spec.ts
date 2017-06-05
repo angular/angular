@@ -10,15 +10,19 @@ import {
 } from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {MdAutocompleteModule, MdAutocompleteTrigger} from './index';
+import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {
+  MdAutocompleteModule,
+  MdAutocompleteTrigger,
+  MdAutocomplete,
+  getMdAutocompleteMissingPanelError,
+} from './index';
 import {OverlayContainer} from '../core/overlay/overlay-container';
 import {MdInputModule} from '../input/index';
 import {Dir, LayoutDirection} from '../core/rtl/dir';
-import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {Subscription} from 'rxjs/Subscription';
 import {ENTER, DOWN_ARROW, SPACE, UP_ARROW, ESCAPE} from '../core/keyboard/keycodes';
 import {MdOption} from '../core/option/option';
-import {MdAutocomplete} from './autocomplete';
 import {MdInputContainer} from '../input/input-container';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
@@ -26,8 +30,8 @@ import {dispatchFakeEvent} from '../core/testing/dispatch-events';
 import {createKeyboardEvent} from '../core/testing/event-objects';
 import {typeInElement} from '../core/testing/type-in-element';
 import {ScrollDispatcher} from '../core/overlay/scroll/scroll-dispatcher';
-
 import 'rxjs/add/operator/map';
+
 
 describe('MdAutocomplete', () => {
   let overlayContainerElement: HTMLElement;
@@ -50,7 +54,8 @@ describe('MdAutocomplete', () => {
         NgIfAutocomplete,
         AutocompleteWithNgModel,
         AutocompleteWithOnPushDelay,
-        AutocompleteWithNativeInput
+        AutocompleteWithNativeInput,
+        AutocompleteWithoutPanel
       ],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
@@ -1156,6 +1161,15 @@ describe('MdAutocomplete', () => {
       expect(fixture.componentInstance.mdOptions.length).toBe(2);
     }));
 
+    it('should throw if the user attempts to open the panel too early', async(() => {
+      const fixture = TestBed.createComponent(AutocompleteWithoutPanel);
+      fixture.detectChanges();
+
+      expect(() => {
+        fixture.componentInstance.trigger.openPanel();
+      }).toThrow(getMdAutocompleteMissingPanelError());
+    }));
+
   });
 
   it('should have correct width when opened', () => {
@@ -1421,4 +1435,12 @@ class AutocompleteWithNativeInput {
                  : this.options.slice();
     });
   }
+}
+
+
+@Component({
+  template: `<input placeholder="Choose" [mdAutocomplete]="auto">`
+})
+class AutocompleteWithoutPanel {
+  @ViewChild(MdAutocompleteTrigger) trigger: MdAutocompleteTrigger;
 }

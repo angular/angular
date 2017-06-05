@@ -51,6 +51,15 @@ export const MD_AUTOCOMPLETE_VALUE_ACCESSOR: any = {
   multi: true
 };
 
+/**
+ * Creates an error to be thrown when attempting to use an autocomplete trigger without a panel.
+ */
+export function getMdAutocompleteMissingPanelError(): Error {
+  return new Error('Attempting to open an undefined instance of `md-autocomplete`. ' +
+                   'Make sure that the id passed to the `mdAutocomplete` is correct and that ' +
+                   'you\'re attempting to open it after the ngAfterContentInit hook.');
+}
+
 @Directive({
   selector: 'input[mdAutocomplete], input[matAutocomplete]',
   host: {
@@ -124,6 +133,10 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
 
   /** Opens the autocomplete suggestion panel. */
   openPanel(): void {
+    if (!this.autocomplete) {
+      throw getMdAutocompleteMissingPanelError();
+    }
+
     if (!this._overlayRef) {
       this._createOverlay();
     } else {
@@ -177,7 +190,7 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
 
   /** The currently active option, coerced to MdOption type. */
   get activeOption(): MdOption {
-    if (this.autocomplete._keyManager) {
+    if (this.autocomplete && this.autocomplete._keyManager) {
       return this.autocomplete._keyManager.activeItem as MdOption;
     }
   }
