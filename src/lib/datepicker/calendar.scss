@@ -6,10 +6,8 @@ $mat-calendar-controls-vertical-padding: 5%;
 $mat-calendar-controls-start-padding: calc(100% / 14 - 22px);
 // Same as above, but on other side for arrows.
 $mat-calendar-controls-end-padding: calc(100% / 14 - 22px);
-$mat-calendar-period-font-size: 14px;
 $mat-calendar-arrow-size: 5px !default;
 $mat-calendar-arrow-disabled-opacity: 0.5 !default;
-$mat-calendar-weekday-table-font-size: 11px !default;
 
 // Values chosen to approximate https://material.io/icons/#ic_navigate_before and
 // https://material.io/icons/#ic_navigate_next as closely as possible.
@@ -43,9 +41,6 @@ $mat-calendar-next-icon-transform: translateX(-2px) rotate(45deg);
 }
 
 .mat-calendar-period-button {
-  font: inherit;
-  font-size: $mat-calendar-period-font-size;
-  font-weight: bold;
   min-width: 0;
 }
 
@@ -108,8 +103,6 @@ $mat-calendar-next-icon-transform: translateX(-2px) rotate(45deg);
 
 .mat-calendar-table-header th {
   text-align: center;
-  font-size: $mat-calendar-weekday-table-font-size;
-  font-weight: normal;
   padding: 0 0 $mat-calendar-padding 0;
 }
 

@@ -5,6 +5,7 @@
 @import '../../card/card-theme';
 @import '../../checkbox/checkbox-theme';
 @import '../../chips/chips-theme';
+@import '../../datepicker/datepicker-theme';
 @import '../../dialog/dialog-theme';
 @import '../../grid-list/grid-list-theme';
 @import '../../icon/icon-theme';
@@ -34,6 +35,7 @@
   @include mat-card-typography($config);
   @include mat-checkbox-typography($config);
   @include mat-chips-typography($config);
+  @include mat-datepicker-typography($config);
   @include mat-dialog-typography($config);
   @include mat-grid-list-typography($config);
   @include mat-icon-typography($config);

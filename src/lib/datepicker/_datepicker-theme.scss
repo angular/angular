@@ -1,5 +1,10 @@
 @import '../core/theming/palette';
 @import '../core/theming/theming';
+@import '../core/typography/typography-utils';
+
+
+$mat-calendar-body-font-size: 13px !default;
+$mat-calendar-weekday-table-font-size: 11px !default;
 
 
 @mixin mat-datepicker-theme($theme) {
@@ -76,5 +81,30 @@
 
   .mat-calendar-body-disabled > .mat-calendar-body-today:not(.mat-calendar-body-selected) {
     border-color: fade-out(mat-color($foreground, hint-text), $mat-datepicker-today-fade-amount);
+  }
+}
+
+@mixin mat-datepicker-typography($config) {
+  .mat-calendar {
+    font-family: mat-font-family($config);
+  }
+
+  .mat-calendar-body {
+    font-size: $mat-calendar-body-font-size;
+  }
+
+  .mat-calendar-body-label,
+  .mat-calendar-period-button {
+    font: {
+      size: mat-font-size($config, button);
+      weight: mat-font-weight($config, button);
+    }
+  }
+
+  .mat-calendar-table-header th {
+    font: {
+      size: $mat-calendar-weekday-table-font-size;
+      weight: mat-font-weight($config, body-1);
+    }
   }
 }
