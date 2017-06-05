@@ -63,6 +63,10 @@ $mat-calendar-next-icon-transform: translateX(-2px) rotate(45deg);
   &.mat-calendar-invert {
     transform: rotate(180deg);
   }
+
+  [dir='rtl'] & {
+    margin: 0 $mat-calendar-arrow-size 0 0;
+  }
 }
 
 .mat-calendar-previous-button,
@@ -79,6 +83,10 @@ $mat-calendar-next-icon-transform: translateX(-2px) rotate(45deg);
     margin: $mat-calendar-prev-next-icon-margin;
     border: 0 solid currentColor;
     border-top-width: $mat-calendar-prev-next-icon-border-width;
+  }
+
+  [dir='rtl'] & {
+    transform: rotate(180deg);
   }
 }
 
