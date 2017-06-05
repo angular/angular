@@ -25,10 +25,11 @@ module.exports = (config) => {
       {pattern: 'node_modules/zone.js/dist/async-test.js', included: true, watched: false},
       {pattern: 'node_modules/zone.js/dist/fake-async-test.js', included: true, watched: false},
       {pattern: 'node_modules/hammerjs/hammer.min.js', included: true, watched: false},
+      {pattern: 'node_modules/hammerjs/hammer.min.js.map', included: false, watched: false},
 
       // Include all Angular dependencies
       {pattern: 'node_modules/@angular/**/*', included: false, watched: false},
-      {pattern: 'node_modules/rxjs/**/*.js', included: false, watched: false},
+      {pattern: 'node_modules/rxjs/**/*', included: false, watched: false},
 
       {pattern: 'test/karma-test-shim.js', included: true, watched: false},
 
@@ -47,10 +48,6 @@ module.exports = (config) => {
     },
 
     reporters: ['dots'],
-
-    port: 9876,
-    colors: true,
-    logLevel: config.LOG_INFO,
     autoWatch: false,
 
     coverageReporter: {
