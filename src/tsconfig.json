@@ -16,5 +16,10 @@
       "@angular/material": ["./lib/public_api.ts"],
       "@angular/cdk": ["./cdk/public_api.ts"]
     }
-  }
+  },
+  "exclude": [
+    // Exclude files that depend on Node APIs because those depend on the Node types and therefore
+    // cause ambiguous imports. For example `setTimeout()` will return a Timer instead of a number.
+    "universal-app/prerender.ts"
+  ]
 }
