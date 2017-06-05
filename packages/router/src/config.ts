@@ -34,7 +34,7 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  * - `data` is additional data provided to the component via `ActivatedRoute`.
  * - `resolve` is a map of DI tokens used to look up data resolvers. See {@link Resolve} for more
  *   info.
- * - `runGuardsAndResolvers` defines when guards and resovlers will be run. By default they run only
+ * - `runGuardsAndResolvers` defines when guards and resolvers will be run. By default they run only
  *    when the matrix parameters of the route change. When set to `paramsOrQueryParamsChange` they
  *    will also run when query params change. And when set to `always`, they will run every time.
  * - `children` is an array of child route definitions.
