@@ -27,12 +27,10 @@ export class MdDialogRef<T> {
   constructor(private _overlayRef: OverlayRef, public _containerInstance: MdDialogContainer) {
     _containerInstance._onAnimationStateChange
       .filter((event: AnimationEvent) => event.toState === 'exit')
-      .subscribe(() => {
-        this._overlayRef.dispose();
-        this.componentInstance = null;
-      }, null, () => {
+      .subscribe(() => this._overlayRef.dispose(), null, () => {
         this._afterClosed.next(this._result);
         this._afterClosed.complete();
+        this.componentInstance = null;
       });
   }
 

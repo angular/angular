@@ -367,6 +367,18 @@ describe('MdDialog', () => {
     });
   }));
 
+  it('should have the componentInstance available in the afterClosed callback', fakeAsync(() => {
+    let dialogRef = dialog.open(PizzaMsg);
+
+    dialogRef.afterClosed().subscribe(() => {
+      expect(dialogRef.componentInstance).toBeTruthy('Expected component instance to be defined.');
+    });
+
+    dialogRef.close();
+    tick(500);
+    viewContainerFixture.detectChanges();
+  }));
+
   describe('passing in data', () => {
     it('should be able to pass in data', () => {
       let config = {
