@@ -8,14 +8,14 @@
 
 import {AotCompilerHost, AotSummaryResolver, CompileMetadataResolver, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, I18NHtmlParser, InterpolationConfig, JitSummaryResolver, Lexer, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, Parser, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, SummaryResolver, TemplateParser, analyzeNgModules, createOfflineCompileUrlResolver, extractProgramSymbols} from '@angular/compiler';
 import {ViewEncapsulation, ɵConsole as Console} from '@angular/core';
-import {CompilerHostContext} from 'compiler-cli';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
 import {DiagnosticTemplateInfo} from '../../src/diagnostics/expression_diagnostics';
-import {getClassFromStaticSymbol, getClassMembers, getPipesTable, getSymbolQuery} from '../../src/diagnostics/typescript_symbols';
-import {Directory, MockAotContext} from '../mocks';
+import {getClassMembers, getPipesTable, getSymbolQuery} from '../../src/diagnostics/typescript_symbols';
+import {Directory} from '../mocks';
+import {MockModuleResolutionHost} from '../mocks';
 
 function calcRootPath() {
   const moduleFilename = module.filename.replace(/\\/g, '/');
@@ -25,10 +25,10 @@ function calcRootPath() {
 
 const realFiles = new Map<string, string>();
 
-export class MockLanguageServiceHost implements ts.LanguageServiceHost, CompilerHostContext {
+export class MockLanguageServiceHost implements ts.LanguageServiceHost {
   private options: ts.CompilerOptions;
-  private context: MockAotContext;
   private assumedExist = new Set<string>();
+  private modResolver: MockModuleResolutionHost;
 
   constructor(private scripts: string[], files: Directory, currentDirectory: string = '/') {
     this.options = {
@@ -46,7 +46,7 @@ export class MockLanguageServiceHost implements ts.LanguageServiceHost, Compiler
       lib: ['lib.es2015.d.ts', 'lib.dom.d.ts'],
       paths: {'@angular/*': [calcRootPath() + '/packages/*']}
     };
-    this.context = new MockAotContext(currentDirectory, files)
+    this.modResolver = new MockModuleResolutionHost(currentDirectory, files);
   }
 
   getCompilationSettings(): ts.CompilerOptions { return this.options; }
@@ -62,15 +62,11 @@ export class MockLanguageServiceHost implements ts.LanguageServiceHost, Compiler
     }
   }
 
-  getCurrentDirectory(): string { return this.context.currentDirectory; }
+  getCurrentDirectory(): string { return this.modResolver.currentDirectory; }
 
   getDefaultLibFileName(options: ts.CompilerOptions): string { return 'lib.d.ts'; }
 
   readFile(fileName: string): string { return this.internalReadFile(fileName) as string; }
-
-  readResource(fileName: string): Promise<string> { return Promise.resolve(''); }
-
-  assumeFileExists(fileName: string): void { this.assumedExist.add(fileName); }
 
   fileExists(fileName: string): boolean {
     return this.assumedExist.has(fileName) || this.internalReadFile(fileName) != null;
@@ -83,10 +79,10 @@ export class MockLanguageServiceHost implements ts.LanguageServiceHost, Compiler
       fileName = path.join(libPath, basename);
     }
     if (fileName.startsWith('app/')) {
-      fileName = path.join(this.context.currentDirectory, fileName);
+      fileName = path.join(this.modResolver.currentDirectory, fileName);
     }
-    if (this.context.fileExists(fileName)) {
-      return this.context.readFile(fileName);
+    if (this.modResolver.fileExists(fileName)) {
+      return this.modResolver.readFile(fileName);
     }
     if (realFiles.has(fileName)) {
       return realFiles.get(fileName);

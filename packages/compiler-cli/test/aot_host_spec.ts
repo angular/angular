@@ -10,18 +10,20 @@ import {ModuleMetadata} from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
 
 import {CompilerHost} from '../src/compiler_host';
+import {createModuleFilenameResolver} from '../src/transformers/module_filename_resolver';
 
-import {Directory, Entry, MockAotContext, MockCompilerHost} from './mocks';
+import {Directory, Entry, MockCompilerHost, MockModuleResolutionHost} from './mocks';
 
 describe('CompilerHost', () => {
-  let context: MockAotContext;
+  let modResolutionHost: MockModuleResolutionHost;
   let program: ts.Program;
   let hostNestedGenDir: CompilerHost;
   let hostSiblingGenDir: CompilerHost;
 
   beforeEach(() => {
-    context = new MockAotContext('/tmp/src', clone(FILES));
-    const host = new MockCompilerHost(context);
+    modResolutionHost = new MockModuleResolutionHost('/tmp/src', clone(FILES));
+
+    const host = new MockCompilerHost(modResolutionHost);
     program = ts.createProgram(
         ['main.ts'], {
           module: ts.ModuleKind.CommonJS,
@@ -32,26 +34,30 @@ describe('CompilerHost', () => {
     if (errors && errors.length) {
       throw new Error('Expected no errors');
     }
-    hostNestedGenDir = new CompilerHost(
-        program, {
-          genDir: '/tmp/project/src/gen/',
-          basePath: '/tmp/project/src',
-          skipMetadataEmit: false,
-          strictMetadataEmit: false,
-          skipTemplateCodegen: false,
-          trace: false
-        },
-        context);
-    hostSiblingGenDir = new CompilerHost(
-        program, {
-          genDir: '/tmp/project/gen',
-          basePath: '/tmp/project/src/',
-          skipMetadataEmit: false,
-          strictMetadataEmit: false,
-          skipTemplateCodegen: false,
-          trace: false
-        },
-        context);
+
+    const optNested = {
+      genDir: '/tmp/project/src/gen/',
+      basePath: '/tmp/project/src',
+      skipMetadataEmit: false,
+      strictMetadataEmit: false,
+      skipTemplateCodegen: false,
+      trace: false,
+    };
+    const resolverNested = createModuleFilenameResolver(host, optNested);
+
+    hostNestedGenDir = new CompilerHost(program, optNested, host, resolverNested);
+
+    const optSibling = {
+      genDir: '/tmp/project/gen',
+      basePath: '/tmp/project/src/',
+      skipMetadataEmit: false,
+      strictMetadataEmit: false,
+      skipTemplateCodegen: false,
+      trace: false,
+    };
+    const resolverSibling = createModuleFilenameResolver(host, optSibling);
+
+    hostSiblingGenDir = new CompilerHost(program, optSibling, host, resolverSibling);
   });
 
   describe('nestedGenDir', () => {

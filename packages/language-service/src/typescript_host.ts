@@ -14,9 +14,10 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import {createLanguageService} from './language_service';
-import {ReflectorHost} from './reflector_host';
+import {ReflectorHost, createReflectorHost} from './reflector_host';
 import {BuiltinType, Declaration, DeclarationError, DeclarationKind, Declarations, Definition, LanguageService, LanguageServiceHost, PipeInfo, Pipes, Signature, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable, TemplateSource, TemplateSources} from './types';
 import {isTypescriptVersion} from './utils';
+
 
 
 /**
@@ -378,7 +379,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
         options.baseUrl = compilerOptions.baseUrl;
       }
       result = this._reflectorHost =
-          new ReflectorHost(() => this.tsService.getProgram(), this.host, options);
+          createReflectorHost(() => this.tsService.getProgram(), this.host, options);
     }
     return result;
   }

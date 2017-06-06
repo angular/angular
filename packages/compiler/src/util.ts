@@ -96,14 +96,13 @@ export const SyncAsync = {
   all: <T>(syncAsyncValues: SyncAsync<T>[]): SyncAsync<T[]> => {
     return syncAsyncValues.some(isPromise) ? Promise.all(syncAsyncValues) : syncAsyncValues as T[];
   }
-}
+};
 
-export function syntaxError(msg: string):
-    Error {
-      const error = Error(msg);
-      (error as any)[ERROR_SYNTAX_ERROR] = true;
-      return error;
-    }
+export function syntaxError(msg: string): Error {
+  const error = Error(msg);
+  (error as any)[ERROR_SYNTAX_ERROR] = true;
+  return error;
+}
 
 const ERROR_SYNTAX_ERROR = 'ngSyntaxError';
 
