@@ -22,9 +22,7 @@
     <aio-nav-menu [nodes]="sideNavNodes" [currentNode]="currentNodes?.SideNav" ></aio-nav-menu>
 
     <div class="doc-version" title="Angular docs version {{currentDocVersion?.title}}">
-      <select (change)="onDocVersionChange($event.target.selectedIndex)">
-        <option *ngFor="let version of docVersions" [value]="version.title">{{version.title}}</option>
-      </select>
+      <aio-select (change)="onDocVersionChange($event.index)" [options]="docVersions" [selected]="docVersions && docVersions[0]"></aio-select>
     </div>
   </md-sidenav>
 

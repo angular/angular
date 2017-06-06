@@ -31,13 +31,13 @@ aio-api-list {
 aio-api-list > div {
     display: flex;
     margin: 32px auto;
-    
+
     @media (max-width: 600px) {
         flex-direction: column;
         margin: 16px auto;
     }
 
-    > div {
+    .form-select-menu, .form-search {
         margin: 8px;
     }
 }
@@ -115,82 +115,6 @@ $tablet-breakpoint: 800px;
   }
 }
 
-/* SELECT MENU */
-
-$form-select-width: 200px;
-
-.form-select-menu {
-  position: relative;
-}
-
-.form-select-button {
-  background: $white;
-  box-shadow: 0 2px 2px rgba($black, 0.24), 0 0 2px rgba($black, 0.12);
-  box-sizing: border-box;
-  border: 1px solid $white;
-  color: $blue-grey-600;
-  font-size: 12px;
-  font-weight: 400;
-  height: 32px;
-  line-height: 32px;
-  outline: none;
-  padding: 0 16px;
-  text-align: left;
-  width: $form-select-width - 16px;
-
-  strong {
-    font-weight: 600;
-    margin-right: 8px;
-    text-transform: uppercase;
-  }
-
-  &.has-symbol {
-    .symbol {
-      margin-right: 8px;
-    }
-  }
-}
-
-.form-select-dropdown {
-  background: $white;
-  box-shadow: 0 16px 16px rgba($black, 0.24), 0 0 16px rgba($black, 0.12);
-  border-radius: 4px;
-  left: -8px;
-  list-style-type: none;
-  margin: 0;
-  padding: 8px 0;
-  position: absolute;
-  top: -8px;
-  width: 200px;
-  z-index: $layer-2;
-
-  li {
-    cursor: pointer;
-    font-size: 14px;
-    line-height: 32px;
-    margin: 0;
-    padding: 0 16px 0 40px;
-    position: relative;
-    transition: all .2s;
-
-    &:hover {
-      background: $blue-grey-50;
-      color: $blue-500;
-    }
-
-    &.selected {
-      background-color: $blue-grey-100;
-    }
-
-    .symbol {
-      left: 16px;
-      position: absolute;
-      top: 8px;
-      z-index: $layer-5;
-    }
-  }
-}
-
 /* API SYMBOLS */
 
 /* SYMBOL CLASS */
@@ -224,8 +148,12 @@ $form-select-width: 200px;
 /* API FILTER MENU */
 
 .api-filter {
-  .form-select-menu {
-    float: left;
+  aio-select {
+    width: 200px;
+
+    .symbol {
+      margin-right: 8px;
+    }
   }
 
   .form-search {
