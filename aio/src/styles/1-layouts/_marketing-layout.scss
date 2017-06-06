@@ -263,7 +263,7 @@ button.hero-cta {
 }
 
 aio-shell {
-  &.page-resources, &.page-events, &.page-contribute {
+  &.page-resources, &.page-events, &.page-features, &.page-presskit, &.page-contribute {
     section {
       padding: 0rem 0rem 3rem;
     }
@@ -455,4 +455,7 @@ header.bckground-sky.l-relative {
       display: none;
     }
   }
+}
+.page-features .marketing-banner {
+  margin-bottom: 20px;
 }
