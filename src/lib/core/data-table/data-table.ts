@@ -101,8 +101,12 @@ export class CdkTable<T> implements CollectionViewer {
 
   constructor(private readonly _differs: IterableDiffers,
               private readonly _changeDetectorRef: ChangeDetectorRef) {
-    console.warn('The data table is still in active development ' +
+    // Show the stability warning of the data-table only if it doesn't run inside of jasmine.
+    // This is just temporary and should reduce warnings when running the tests.
+    if (!(typeof window !== 'undefined' && window['jasmine'])) {
+      console.warn('The data table is still in active development ' +
         'and should be considered unstable.');
+    }
 
     // TODO(andrewseguin): Add trackby function input.
     // Find and construct an iterable differ that can be used to find the diff in an array.
