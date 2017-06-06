@@ -1,0 +1,1 @@
+{"__symbolic":"module","metadata":{"ReplacePipe":{"__symbolic":"class","decorators":[{"__symbolic":"call","expression":{"__symbolic":"reference","name":"Pipe","module":"angular2/core"},"arguments":[{"name":"replace"}]},{"__symbolic":"call","expression":{"__symbolic":"reference","name":"Injectable","module":"angular2/core"}}]}}}

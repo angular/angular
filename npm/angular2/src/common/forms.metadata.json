@@ -1,0 +1,1 @@
+{"__symbolic":"module","metadata":{"FORM_PROVIDERS":[{"__symbolic":"reference","name":"FormBuilder","module":"./forms/form_builder"},{"__symbolic":"reference","name":"RadioControlRegistry","module":"./forms/directives/radio_control_value_accessor"}],"FORM_BINDINGS":{"__symbolic":"reference","name":"FORM_PROVIDERS"}}}

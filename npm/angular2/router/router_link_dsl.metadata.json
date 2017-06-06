@@ -1,0 +1,1 @@
+{"__symbolic":"module","metadata":{"ROUTER_LINK_DSL_PROVIDER":{"provide":{"__symbolic":"reference","name":"TEMPLATE_TRANSFORMS","module":"angular2/compiler"},"useClass":{"__symbolic":"reference","name":"RouterLinkTransform","module":"angular2/src/router/directives/router_link_transform"},"multi":true}}}

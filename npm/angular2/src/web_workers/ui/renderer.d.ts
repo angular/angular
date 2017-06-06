@@ -1,0 +1,35 @@
+import { MessageBus } from 'angular2/src/web_workers/shared/message_bus';
+import { Serializer } from 'angular2/src/web_workers/shared/serializer';
+import { RootRenderer } from 'angular2/src/core/render/api';
+import { RenderStore } from 'angular2/src/web_workers/shared/render_store';
+import { ServiceMessageBrokerFactory } from 'angular2/src/web_workers/shared/service_message_broker';
+export declare class MessageBasedRenderer {
+    private _brokerFactory;
+    private _bus;
+    private _serializer;
+    private _renderStore;
+    private _rootRenderer;
+    private _eventDispatcher;
+    constructor(_brokerFactory: ServiceMessageBrokerFactory, _bus: MessageBus, _serializer: Serializer, _renderStore: RenderStore, _rootRenderer: RootRenderer);
+    start(): void;
+    private _renderComponent(renderComponentType, rendererId);
+    private _selectRootElement(renderer, selector, elId);
+    private _createElement(renderer, parentElement, name, elId);
+    private _createViewRoot(renderer, hostElement, elId);
+    private _createTemplateAnchor(renderer, parentElement, elId);
+    private _createText(renderer, parentElement, value, elId);
+    private _projectNodes(renderer, parentElement, nodes);
+    private _attachViewAfter(renderer, node, viewRootNodes);
+    private _detachView(renderer, viewRootNodes);
+    private _destroyView(renderer, hostElement, viewAllNodes);
+    private _setElementProperty(renderer, renderElement, propertyName, propertyValue);
+    private _setElementAttribute(renderer, renderElement, attributeName, attributeValue);
+    private _setBindingDebugInfo(renderer, renderElement, propertyName, propertyValue);
+    private _setElementClass(renderer, renderElement, className, isAdd);
+    private _setElementStyle(renderer, renderElement, styleName, styleValue);
+    private _invokeElementMethod(renderer, renderElement, methodName, args);
+    private _setText(renderer, renderNode, text);
+    private _listen(renderer, renderElement, eventName, unlistenId);
+    private _listenGlobal(renderer, eventTarget, eventName, unlistenId);
+    private _listenDone(renderer, unlistenCallback);
+}
