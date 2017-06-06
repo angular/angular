@@ -1,7 +1,7 @@
 language: node_js
 sudo: false
 node_js:
-  - '6.9.5'
+  - '0.9.5'
 
 addons:
 #  firefox: "38.0"
