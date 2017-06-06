@@ -19,7 +19,8 @@ IF YOU DON'T FILL OUT THE FOLLOWING INFORMATION WE MIGHT CLOSE YOUR ISSUE WITHOU
 <!--
 If the current behavior is a bug or you can illustrate your feature request better with an example, 
 please provide the *STEPS TO REPRODUCE* and if possible a *MINIMAL DEMO* of the problem via
-https://plnkr.co or similar (you can use this template as a starting point: http://plnkr.co/edit/tpl:AvJOMERrnz94ekVua0u5).
+https://plnkr.co or similar (you can use this template as a starting point: http://plnkr.co/edit/tpl:AvJOMERrnz94ekVua0u5 for 2.x or
+http://plnkr.co/edit/lU32vBJY9KYXZUTW7GQQ?p=preview for 4.x).
 -->
 
 **What is the motivation / use case for changing the behavior?**
