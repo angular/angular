@@ -307,6 +307,7 @@
    * @param path – route configuration path
    * @returns {string|name} – a normalized (camelCase) directive name
    */
+  var routeNameId = 0; // to ensure to collisions
   function routeObjToRouteName(route, path) {
     var name = route.controllerAs;
 
@@ -324,7 +325,7 @@
     }
 
     if (name) {
-      name = name + 'AutoCmp';
+      name = name + (routeNameId++) + 'AutoCmp';
     }
 
     return name;
