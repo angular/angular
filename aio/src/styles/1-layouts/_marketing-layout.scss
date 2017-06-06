@@ -263,7 +263,7 @@ button.hero-cta {
 }
 
 aio-shell {
-  &.page-resources, &.page-events {
+  &.page-resources, &.page-events, &.page-contribute {
     section {
       padding: 0rem 0rem 3rem;
     }
@@ -275,7 +275,7 @@ aio-shell {
     }
   }
 
-  &.page-home, &.page-resources, &.page-events {
+  &.page-home, &.page-resources, &.page-events, &.page-contribute {
     article {
       padding: 32px;
 
