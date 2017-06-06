@@ -45,6 +45,8 @@ import { SearchResultsComponent } from './search/search-results/search-results.c
 import { SearchBoxComponent } from './search/search-box/search-box.component';
 import { TocService } from 'app/shared/toc.service';
 
+import { SharedModule } from 'app/shared/shared.module';
+
 // These are the hardcoded inline svg sources to be used by the `<md-icon>` component
 export const svgIconProviders = [
   {
@@ -80,7 +82,8 @@ export const svgIconProviders = [
     MdSidenavModule,
     MdTabsModule,
     MdToolbarModule,
-    SwUpdatesModule
+    SwUpdatesModule,
+    SharedModule
   ],
   declarations: [
     AppComponent,

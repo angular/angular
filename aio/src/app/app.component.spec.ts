@@ -24,6 +24,7 @@ import { ScrollService } from 'app/shared/scroll.service';
 import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
 import { SearchResultsComponent } from 'app/search/search-results/search-results.component';
 import { SearchService } from 'app/search/search.service';
+import { SelectComponent, Option } from 'app/shared/select/select.component';
 import { SwUpdateNotificationsService } from 'app/sw-updates/sw-update-notifications.service';
 import { TocComponent } from 'app/embedded/toc/toc.component';
 import { MdSidenav } from '@angular/material';
@@ -221,26 +222,28 @@ describe('AppComponent', () => {
     });
 
     describe('SideNav version selector', () => {
+      let selectElement: DebugElement;
+      let selectComponent: SelectComponent;
       beforeEach(() => {
         component.onResize(sideBySideBreakPoint + 1); // side-by-side
+        selectElement = fixture.debugElement.query(By.directive(SelectComponent));
+        selectComponent = selectElement.componentInstance;
       });
 
       it('should pick first (current) version by default', () => {
-        const versionSelector = sidenav.querySelector('select');
-        expect(versionSelector.value).toEqual(component.versionInfo.raw);
-        expect(versionSelector.selectedIndex).toEqual(0);
+        expect(selectComponent.selected.title).toEqual(component.versionInfo.raw);
       });
 
       // Older docs versions have an href
       it('should navigate when change to a version with an href', () => {
-        component.onDocVersionChange(1);
+        selectElement.triggerEventHandler('change', { option: component.docVersions[1] as Option, index: 1});
         expect(locationService.go).toHaveBeenCalledWith(TestHttp.docVersions[0].url);
       });
 
       // The current docs version should not have an href
       // This may change when we perfect our docs versioning approach
       it('should not navigate when change to a version without an href', () => {
-        component.onDocVersionChange(0);
+        selectElement.triggerEventHandler('change', { option: component.docVersions[0] as Option, index: 0});
         expect(locationService.go).not.toHaveBeenCalled();
       });
     });
