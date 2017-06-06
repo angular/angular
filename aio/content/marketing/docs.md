@@ -12,10 +12,9 @@ Angular is a platform that makes it easy to build applications with the web. Ang
 
   <div class="docs-card">
       <section>Get Going with Angular</section>
-      <p>Get going on your own environment with the Quickstart and Tutorial</p>
-      <p class="card-footer center" >
-        <a href="guide/quickstart" title="Angular Quickstart">Quickstart</a> &nbsp;
-        <a href="tutorial" title="Angular Tutorial">Tutorial</a>
+      <p>Get going on your own environment with the Quickstart.</p>
+      <p class="card-footer" >
+        <a href="guide/quickstart" title="Angular Quickstart">Quickstart</a>
       </p>
       <!--<p class="card-footer"><a href="guide/quickstart">Quickstart</a></p>
       <p class="card-footer"><a href="guide/tutorial">Tutorial</a></p>-->
