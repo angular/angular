@@ -2,7 +2,7 @@ import { Component, ElementRef, HostBinding, HostListener, OnInit,
          QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { MdSidenav } from '@angular/material';
 
-import { CurrentNode, NavigationService, NavigationViews, NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
+import { CurrentNodes, NavigationService, NavigationViews, NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
 import { DocumentService, DocumentContents } from 'app/documents/document.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { LocationService } from 'app/shared/location.service';
@@ -25,7 +25,7 @@ export class AppComponent implements OnInit {
 
   currentDocument: DocumentContents;
   currentDocVersion: NavigationNode;
-  currentNode: CurrentNode;
+  currentNodes: CurrentNodes;
   currentPath: string;
   docVersions: NavigationNode[];
   dtOn = false;
@@ -59,7 +59,6 @@ export class AppComponent implements OnInit {
   isSideBySide = false;
   private isFetchingTimeout: any;
   private isSideNavDoc = false;
-  private previousNavView: string;
 
   private sideBySideWidth = 992;
   sideNavNodes: NavigationNode[];
@@ -139,17 +138,17 @@ export class AppComponent implements OnInit {
       }
     });
 
-    this.navigationService.currentNode.subscribe(currentNode => {
-      this.currentNode = currentNode;
+    this.navigationService.currentNodes.subscribe(currentNodes => {
+      this.currentNodes = currentNodes;
 
       // Preserve current sidenav open state by default
       let openSideNav = this.sidenav.opened;
+      const isSideNavDoc = !!currentNodes[sideNavView];
 
-      if (this.previousNavView !== currentNode.view) {
-        this.previousNavView = currentNode.view;
+      if (this.isSideNavDoc !== isSideNavDoc) {
         // View type changed. Is it now a sidenav view (e.g, guide or tutorial)?
         // Open if changed to a sidenav doc; close if changed to a marketing doc.
-        openSideNav = this.isSideNavDoc = currentNode.view === sideNavView;
+        openSideNav = this.isSideNavDoc = isSideNavDoc;
       }
       // May be open or closed when wide; always closed when narrow
       this.sideNavToggle(this.isSideBySide ? openSideNav : false);
@@ -253,9 +252,9 @@ export class AppComponent implements OnInit {
     const sideNavOpen = `sidenav-${this.sidenav.opened ? 'open' : 'closed'}`;
     const pageClass = `page-${this.pageId}`;
     const folderClass = `folder-${this.folderId}`;
-    const viewClass = `view-${this.currentNode && this.currentNode.view}`;
+    const viewClasses = Object.keys(this.currentNodes || {}).map(view => `view-${view}`).join(' ');
 
-    this.hostClasses = `${sideNavOpen} ${pageClass} ${folderClass} ${viewClass}`;
+    this.hostClasses = `${sideNavOpen} ${pageClass} ${folderClass} ${viewClasses}`;
   }
 
   // Dynamically change height of table of contents container

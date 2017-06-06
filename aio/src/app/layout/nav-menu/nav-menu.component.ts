@@ -4,7 +4,7 @@ import { CurrentNode, NavigationNode } from 'app/navigation/navigation.service';
 @Component({
   selector: 'aio-nav-menu',
   template: `
-  <aio-nav-item *ngFor="let node of filteredNodes" [node]="node" [selectedNodes]="currentNode.nodes">
+  <aio-nav-item *ngFor="let node of filteredNodes" [node]="node" [selectedNodes]="currentNode?.nodes">
   </aio-nav-item>`
 })
 export class NavMenuComponent {
