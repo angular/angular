@@ -1,0 +1,16 @@
+<link rel="import" href="packages/polymer/polymer.html">
+
+<polymer-element name="binary-tree" attributes="data">
+  <template>
+    <span> {{data.value}}
+      <template if="{{data.left != null}}">
+       <span><binary-tree data='{{data.left}}'></binary-tree></span>
+      </template>
+      <template if="{{data.right != null}}">
+       <span><binary-tree data='{{data.right}}'></binary-tree></span>
+      </template>
+    </span>
+  </template>
+  <script type="application/dart" src="binary-tree.dart"></script>
+</polymer-element>
+
