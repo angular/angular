@@ -2,7 +2,11 @@
 
 readonly TOKEN=$ANGULAR_PAYLOAD_FIREBASE_TOKEN
 readonly PROJECT_NAME="angular-payload-size"
+readonly INPUT_DIR=dist/
 readonly OUTPUT_FILE=/tmp/snapshot.tar.gz
+
+yarn build
+tar --create --gzip --directory "$INPUT_DIR" --file "$OUTPUT_FILE" .
 
 failed=false
 payloadData=""
@@ -12,8 +16,7 @@ for filename in dist/*.js.map; do
   payloadData="$payloadData\"uncompressed/$label\": $size, "
 
   # The size limit of each package is saved in /limit/$filename
-  expect=$(firebase database:get --project $PROJECT_NAME --token "$TOKEN" /limit/$label)
-  ls -la dist/
+  expect=$(firebase database:get --project $PROJECT_NAME /limit/$label)
 
   gzip -7 -k -f $filename
   size7=$(stat -c%s "$filename.gz")
