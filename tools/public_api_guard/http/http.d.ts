@@ -144,7 +144,7 @@ export declare class RequestOptions {
     /** @deprecated */ search: URLSearchParams;
     url: string | null;
     withCredentials: boolean | null;
-    constructor({method, headers, body, url, search, params, withCredentials, responseType}?: RequestOptionsArgs);
+    constructor(opts?: RequestOptionsArgs);
     merge(options?: RequestOptionsArgs): RequestOptions;
 }
 
@@ -192,7 +192,7 @@ export declare class ResponseOptions {
     headers: Headers | null;
     status: number | null;
     url: string | null;
-    constructor({body, status, headers, statusText, type, url}?: ResponseOptionsArgs);
+    constructor(opts?: ResponseOptionsArgs);
     merge(options?: ResponseOptionsArgs): ResponseOptions;
 }
 
