@@ -25,15 +25,17 @@ aio-nav-menu {
 
 md-sidenav.mat-sidenav.sidenav {
   position: fixed;
+  top: 64px;
   bottom: 0;
   left: 0;
-  padding: 80px 0px 0px;
+  padding: 0;
   min-width: 260px;
   background-color: $offwhite;
   box-shadow: 6px 0 6px rgba(0,0,0,0.10);
+  height: calc(100vh - 64px);
 
   &.collapsed {
-    padding-top: 64px;
+    top: 56px;
   }
 }
 
