@@ -31,7 +31,7 @@ aio-api-list {
 aio-api-list > div {
     display: flex;
     margin: 32px auto;
-    
+
     @media (max-width: 600px) {
         flex-direction: column;
         margin: 16px auto;
@@ -355,11 +355,6 @@ p {
 .code-anchor {
   cursor: pointer;
   text-decoration: none;
-
-  // Override highlight.js
-  .kwd {
-    color: #1E88E5 !important;
-  }
 
   &:hover {
     text-decoration: underline;
