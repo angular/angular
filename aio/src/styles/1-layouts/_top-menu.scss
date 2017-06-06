@@ -61,48 +61,35 @@ aio-shell.page-home md-toolbar.app-toolbar.mat-toolbar {
 
 // DOCS PAGE / STANDARD: TOPNAV TOOLBAR FIXED
 md-toolbar.mat-toolbar {
-  position: fixed; 
-  top: 0px;
-  right: 0; 
+  position: fixed;
+  top: 0;
+  right: 0;
   left: 0;
   z-index: 10;
   padding: 0 16px 0 0;
   box-shadow: 0 2px 5px 0 rgba(0,0,0,0.30);
-
-  // FIXED TOPNAV TOOLBAR FOR SMALL MOBILE
-  @media (max-width: 480px) {
-    position: fixed;
-    top: 0;
-    right: 0;
-    left: 0;
-  }
 
   md-icon {
     color: $white;
   }
 }
 
-// MARKETING PAGES OVERRIDE: ABSOLUTE TOPNAV TOOLBAR
+// MARKETING PAGES OVERRIDE: TOPNAV TOOLBAR AND HAMBURGER
 aio-shell.page-home md-toolbar.mat-toolbar,
 aio-shell.page-features md-toolbar.mat-toolbar,
 aio-shell.page-events md-toolbar.mat-toolbar,
 aio-shell.page-resources md-toolbar.mat-toolbar {
-  position: absolute;
+  // FIXED TOPNAV TOOLBAR FOR SMALL MOBILE
+  @media (min-width: 481px) {
+    position: absolute;
+  }
 
   @media (min-width: 992px) {
     padding-left: 24px;
-    
+
     button.hamburger {
       display: none;
     }
-  }
-
-  // FIXED TOPNAV TOOLBAR FOR SMALL MOBILE
-  @media (max-width: 480px) {
-    position: fixed;
-    top: 0;
-    right: 0;
-    left: 0;
   }
 }
 
@@ -130,19 +117,19 @@ aio-search-box.search-container {
     background-color: $offwhite;
     padding: 5px 16px;
     margin-left: 8px;
-    width: 150px;
-    height: 40%;
+    width: 180px;
+    max-width: 240px;
+    height: 50%;
 
     @include bp(big) {
       transition: width 0.4s ease-in-out;
 
       &:focus {
         width: 50%;
-        max-width: 240px;
       }
     }
     @media (max-width: 480px) {
-      width: 180px;
+      width: 150px;
     }
   }
 }
