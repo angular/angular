@@ -18,7 +18,11 @@ export function main() {
     const initialTitle = getDOM().getTitle(doc);
     const titleService = new Title(doc);
 
-    afterEach(() => { getDOM().setTitle(doc, initialTitle); });
+    afterEach(() => {
+      getDOM().setTitle(doc, initialTitle);
+      titleService.prefix = '';
+      titleService.suffix = '';
+    });
 
     it('should allow reading initial title',
        () => { expect(titleService.getTitle()).toEqual(initialTitle); });
@@ -27,6 +31,14 @@ export function main() {
       titleService.setTitle('test title');
       expect(getDOM().getTitle(doc)).toEqual('test title');
       expect(titleService.getTitle()).toEqual('test title');
+    });
+
+    it('should set a title with prefix- and suffixes on the injected document', () => {
+      titleService.prefix = 'Prefix-';
+      titleService.suffix = '-Suffix';
+      titleService.setTitle('test title');
+      expect(getDOM().getTitle(doc)).toEqual('Prefix-test title-Suffix');
+      expect(titleService.getTitle()).toEqual('Prefix-test title-Suffix');
     });
 
     it('should reset title to empty string if title not provided', () => {

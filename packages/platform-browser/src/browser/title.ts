@@ -26,6 +26,18 @@ import {DOCUMENT} from '../dom/dom_tokens';
 export class Title {
   constructor(@Inject(DOCUMENT) private _doc: any) {}
   /**
+   * Text before the title
+   * @type {string}
+   * @memberOf Title
+   */
+  suffix: string = '';
+  /**
+   * Text after the title
+   * @type {string}
+   * @memberOf Title
+   */
+  prefix: string = '';
+  /**
    * Get the title of the current HTML document.
    * @returns {string}
    */
@@ -35,5 +47,7 @@ export class Title {
    * Set the title of the current HTML document.
    * @param newTitle
    */
-  setTitle(newTitle: string) { getDOM().setTitle(this._doc, newTitle); }
+  setTitle(newTitle: string) {
+    getDOM().setTitle(this._doc, newTitle ? this.prefix + newTitle + this.suffix : '');
+  }
 }
