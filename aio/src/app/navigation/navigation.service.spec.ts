@@ -1,7 +1,7 @@
 import { ReflectiveInjector } from '@angular/core';
 import { Http, ConnectionBackend, RequestOptions, BaseRequestOptions, Response, ResponseOptions } from '@angular/http';
 import { MockBackend } from '@angular/http/testing';
-import { CurrentNode, NavigationService, NavigationViews, NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
+import { CurrentNodes, NavigationService, NavigationViews, NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
 import { LocationService } from 'app/shared/location.service';
 import { MockLocationService } from 'testing/location.service';
 import { Logger } from 'app/shared/logger.service';
@@ -113,7 +113,7 @@ describe('NavigationService', () => {
   });
 
   describe('currentNode', () => {
-    let currentNode: CurrentNode;
+    let currentNodes: CurrentNodes;
     let locationService: MockLocationService;
 
     const topBarNodes: NavigationNode[] = [
@@ -138,80 +138,92 @@ describe('NavigationService', () => {
 
     beforeEach(() => {
       locationService = injector.get(LocationService);
-      navService.currentNode.subscribe(selected => currentNode = selected);
+      navService.currentNodes.subscribe(selected => currentNodes = selected);
       backend.connectionsArray[0].mockRespond(createResponse(navJson));
     });
 
     it('should list the side navigation node that matches the current location, and all its ancestors', () => {
       locationService.go('b');
-      expect(currentNode).toEqual({
-        url: 'b',
-        view: 'SideNav',
-        nodes: [
-          sideNavNodes[0].children[0],
-          sideNavNodes[0]
-        ]
+      expect(currentNodes).toEqual({
+        SideNav: {
+          url: 'b',
+          view: 'SideNav',
+          nodes: [
+            sideNavNodes[0].children[0],
+            sideNavNodes[0]
+          ]
+        }
       });
 
       locationService.go('d');
-      expect(currentNode).toEqual({
-        url: 'd',
-        view: 'SideNav',
-        nodes: [
-          sideNavNodes[0].children[0].children[1],
-          sideNavNodes[0].children[0],
-          sideNavNodes[0]
-        ]
+      expect(currentNodes).toEqual({
+        SideNav: {
+          url: 'd',
+          view: 'SideNav',
+          nodes: [
+            sideNavNodes[0].children[0].children[1],
+            sideNavNodes[0].children[0],
+            sideNavNodes[0]
+          ]
+        }
       });
 
       locationService.go('f');
-      expect(currentNode).toEqual({
-        url: 'f',
-        view: 'SideNav',
-        nodes: [ sideNavNodes[1] ]
+      expect(currentNodes).toEqual({
+        SideNav: {
+          url: 'f',
+          view: 'SideNav',
+          nodes: [ sideNavNodes[1] ]
+        }
       });
     });
 
     it('should be a TopBar selected node if the current location is a top menu node', () => {
       locationService.go('features');
-      expect(currentNode).toEqual({
-        url: 'features',
-        view: 'TopBar',
-        nodes: [ topBarNodes[0] ]
+      expect(currentNodes).toEqual({
+        TopBar: {
+          url: 'features',
+          view: 'TopBar',
+          nodes: [ topBarNodes[0] ]
+        }
       });
     });
 
-    it('should be a plain object if no side navigation node matches the current location', () => {
+    it('should be a plain object if no navigation node matches the current location', () => {
       locationService.go('g?search=moo#anchor-1');
-      expect(currentNode).toEqual({
-        url: 'g',
-        view: '',
-        nodes: []
+      expect(currentNodes).toEqual({
+        '': {
+          url: 'g',
+          view: '',
+          nodes: []
+        }
       });
     });
 
     it('should ignore trailing slashes, hashes, and search params on URLs in the navmap', () => {
-      const cnode: CurrentNode = {
-        url: 'c',
-        view: 'SideNav',
-        nodes: [
-          sideNavNodes[0].children[0].children[0],
-          sideNavNodes[0].children[0],
-          sideNavNodes[0]
-        ]
+      const cnode: CurrentNodes = {
+        SideNav: {
+          url: 'c',
+          view: 'SideNav',
+          nodes: [
+            sideNavNodes[0].children[0].children[0],
+            sideNavNodes[0].children[0],
+            sideNavNodes[0]
+          ]
+        }
       };
 
       locationService.go('c');
-      expect(currentNode).toEqual(cnode, 'location: c');
+      expect(currentNodes).toEqual(cnode, 'location: c');
 
       locationService.go('c#foo');
-      expect(currentNode).toEqual(cnode, 'location: c#foo');
+      expect(currentNodes).toEqual(cnode, 'location: c#foo');
 
       locationService.go('c?foo=1');
-      expect(currentNode).toEqual(cnode, 'location: c?foo=1');
+      expect(currentNodes).toEqual(cnode, 'location: c?foo=1');
 
       locationService.go('c#foo?bar=1&baz=2');
-      expect(currentNode).toEqual(cnode, 'location: c#foo?bar=1&baz=2');
+      expect(currentNodes).toEqual(cnode, 'location: c#foo?bar=1&baz=2');
     });
   });
 
