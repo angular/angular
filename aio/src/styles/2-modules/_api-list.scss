@@ -285,11 +285,6 @@ p {
   cursor: pointer;
   text-decoration: none;
 
-  // Override highlight.js
-  .kwd {
-    color: #1E88E5 !important;
-  }
-
   &:hover {
     text-decoration: underline;
   }
