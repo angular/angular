@@ -21,6 +21,8 @@ import {BrowserXhr} from './browser_xhr';
 
 const XSSI_PREFIX = /^\)\]\}',?\n/;
 
+const IS_ABSOLUTE = /^(?:[a-z]+:)?\/\//i;
+
 /**
  * Creates connections using `XMLHttpRequest`. Given a fully-qualified
  * request, an `XHRConnection` will immediately create an `XMLHttpRequest` object and send the
@@ -195,6 +197,10 @@ export class CookieXSRFStrategy implements XSRFStrategy {
       private _cookieName: string = 'XSRF-TOKEN', private _headerName: string = 'X-XSRF-TOKEN') {}
 
   configureRequest(req: Request): void {
+    // Skip absolute URLs.
+    if (IS_ABSOLUTE.test(req.url)) {
+      return;
+    }
     const xsrfToken = getDOM().getCookie(this._cookieName);
     if (xsrfToken) {
       req.headers.set(this._headerName, xsrfToken);
