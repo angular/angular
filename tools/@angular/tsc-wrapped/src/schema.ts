@@ -81,7 +81,7 @@ export function isMethodMetadata(value: any): value is MethodMetadata {
 
 export interface ConstructorMetadata extends MethodMetadata {
   __symbolic: 'constructor';
-  parameters?: (MetadataSymbolicExpression|MetadataError|null)[];
+  parameters?: (MetadataSymbolicExpression|MetadataError /*|null*/)[];
 }
 export function isConstructorMetadata(value: any): value is ConstructorMetadata {
   return value && value.__symbolic === 'constructor';
