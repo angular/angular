@@ -1,0 +1,4 @@
+#!/bin/sh
+
+FILE=$1
+echo "Closes #$PR" >>$FILE

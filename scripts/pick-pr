@@ -1,0 +1,24 @@
+#!/bin/sh
+
+# Usage: pick-pr <pr-number>
+#
+# Takes a PR and cherry-picks it into the current branch.
+
+set -e
+
+PR=$1
+echo "Fetching PR $1 from GitHub"
+
+git fetch git@github.com:angular/angular.git master
+MASTER_SHA=$(git rev-list -n 1 FETCH_HEAD)
+git fetch git@github.com:angular/angular.git pull/$PR/head
+echo
+
+for sha in $(git rev-list --reverse FETCH_HEAD ^$MASTER_SHA); do
+	echo "Cherrypicking $(git log --oneline -n 1 $sha)"
+	git cherry-pick $sha;
+done
+
+export PR
+export GIT_EDITOR=$(dirname $0)/pick-pr-editor
+git commit --amend
