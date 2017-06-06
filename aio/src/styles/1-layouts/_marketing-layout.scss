@@ -269,7 +269,7 @@ aio-shell {
     }
   }
 
-  &.page-home {
+  &.page-home, &.page-features {
     section {
       padding: 0;
     }
@@ -311,7 +311,7 @@ aio-shell {
 
 .text-headline {
   font-size: 20px;
-  margin-top: 10px;
+  margin: 16px 0;
   text-transform: uppercase;
   color: $blue;
   font-weight: 500;
