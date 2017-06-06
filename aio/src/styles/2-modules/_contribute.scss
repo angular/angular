@@ -1,0 +1,14 @@
+.contribute-container {
+  h2 {
+    margin: 0;
+  }
+
+  .l-sub-section {
+    width: 90%;
+    margin-bottom: 20px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
