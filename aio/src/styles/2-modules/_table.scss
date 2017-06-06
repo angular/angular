@@ -55,12 +55,15 @@ table {
     td {
       letter-spacing: 0.30px;
 
-    tr td:first-child {
       @media (max-width: 480px) {
-        background-color: $lightgray;
+        display: block;
       }
-    }
-      
+
+      tr td:first-child {
+        @media (max-width: 480px) {
+          background-color: $lightgray;
+        }
+      }
     }
 
     th {
@@ -78,6 +81,17 @@ table {
       }
     }
   }
+  &.horizontal {
+    tbody {
+      td, th {
+        display: table-cell;
+      }
+    }
+  }
+}
+
+.horizontal-container {
+  overflow-x: scroll;
 }
 
 #cheatsheet table tbody td {
