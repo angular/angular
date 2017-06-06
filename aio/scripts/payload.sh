@@ -2,11 +2,7 @@
 
 readonly TOKEN=$ANGULAR_PAYLOAD_FIREBASE_TOKEN
 readonly PROJECT_NAME="angular-payload-size"
-readonly INPUT_DIR=dist/
 readonly OUTPUT_FILE=/tmp/snapshot.tar.gz
-
-yarn build
-tar --create --gzip --directory "$INPUT_DIR" --file "$OUTPUT_FILE" .
 
 failed=false
 payloadData=""
