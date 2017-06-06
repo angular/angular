@@ -57,7 +57,7 @@ section#intro {
 
     button {
       margin: 0;
-      display: inline-block;
+      height: 60px;
     }
   }
 
@@ -146,16 +146,10 @@ section#intro {
     cursor: pointer;
     display: flex;
     align-items: center;
-    height: 30px;
+    height: 40px;
     justify-content: center;
 
     &:hover {
-      .material-icons {
-        display: inline-block;
-        color: $white;
-        opacity: 0.7;
-      }
-
       a {
         color: $white;
         opacity: 0.7;
@@ -247,7 +241,8 @@ section#intro {
 
 button.hero-cta {
   border-radius: 48px;
-  display: block;
+  display: flex;
+  height: 40px;
   box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
   cursor: pointer;
 
@@ -280,7 +275,7 @@ aio-shell {
       padding: 32px;
 
       @media (max-width: 800px) {
-        padding: auto;
+        padding: 24px;
       }
     }
   }
