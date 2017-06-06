@@ -300,6 +300,7 @@ describe('ScrollSpyService', () => {
   });
 
   describe('window resize events', () => {
+    const RESIZE_EVENT_DELAY = 300;
     let onResizeSpy: jasmine.Spy;
 
     beforeEach(() => {
@@ -317,7 +318,7 @@ describe('ScrollSpyService', () => {
       window.dispatchEvent(new Event('resize'));
       expect(onResizeSpy).not.toHaveBeenCalled();
 
-      tick(300);
+      tick(RESIZE_EVENT_DELAY);
       expect(onResizeSpy).toHaveBeenCalled();
     }));
 
@@ -327,58 +328,59 @@ describe('ScrollSpyService', () => {
       onResizeSpy.calls.reset();
 
       window.dispatchEvent(new Event('resize'));
-      tick(300);
+      tick(RESIZE_EVENT_DELAY);
       expect(onResizeSpy).toHaveBeenCalled();
 
       info1.unspy();
       onResizeSpy.calls.reset();
 
       window.dispatchEvent(new Event('resize'));
-      tick(300);
+      tick(RESIZE_EVENT_DELAY);
       expect(onResizeSpy).toHaveBeenCalled();
 
       info2.unspy();
       onResizeSpy.calls.reset();
 
       window.dispatchEvent(new Event('resize'));
-      tick(300);
+      tick(RESIZE_EVENT_DELAY);
       expect(onResizeSpy).not.toHaveBeenCalled();
     }));
 
-    it('should only fire every 300ms', fakeAsync(() => {
+    it(`should only fire every ${RESIZE_EVENT_DELAY}ms`, fakeAsync(() => {
       scrollSpyService.spyOn([]);
       onResizeSpy.calls.reset();
 
       window.dispatchEvent(new Event('resize'));
-      tick(100);
+      tick(RESIZE_EVENT_DELAY - 2);
       expect(onResizeSpy).not.toHaveBeenCalled();
 
       window.dispatchEvent(new Event('resize'));
-      tick(100);
+      tick(1);
       expect(onResizeSpy).not.toHaveBeenCalled();
 
       window.dispatchEvent(new Event('resize'));
-      tick(100);
+      tick(1);
       expect(onResizeSpy).toHaveBeenCalledTimes(1);
 
       onResizeSpy.calls.reset();
-      tick(150);
+      tick(RESIZE_EVENT_DELAY / 2);
 
       window.dispatchEvent(new Event('resize'));
-      tick(100);
+      tick(RESIZE_EVENT_DELAY - 2);
       expect(onResizeSpy).not.toHaveBeenCalled();
 
       window.dispatchEvent(new Event('resize'));
-      tick(100);
+      tick(1);
       expect(onResizeSpy).not.toHaveBeenCalled();
 
       window.dispatchEvent(new Event('resize'));
-      tick(100);
+      tick(1);
       expect(onResizeSpy).toHaveBeenCalledTimes(1);
     }));
   });
 
   describe('window scroll events', () => {
+    const SCROLL_EVENT_DELAY = 10;
     let onScrollSpy: jasmine.Spy;
 
     beforeEach(() => {
@@ -395,7 +397,7 @@ describe('ScrollSpyService', () => {
       window.dispatchEvent(new Event('scroll'));
       expect(onScrollSpy).not.toHaveBeenCalled();
 
-      tick(300);
+      tick(SCROLL_EVENT_DELAY);
       expect(onScrollSpy).toHaveBeenCalled();
     }));
 
@@ -404,52 +406,52 @@ describe('ScrollSpyService', () => {
       const info2 = scrollSpyService.spyOn([]);
 
       window.dispatchEvent(new Event('scroll'));
-      tick(300);
+      tick(SCROLL_EVENT_DELAY);
       expect(onScrollSpy).toHaveBeenCalled();
 
       info1.unspy();
       onScrollSpy.calls.reset();
 
       window.dispatchEvent(new Event('scroll'));
-      tick(300);
+      tick(SCROLL_EVENT_DELAY);
       expect(onScrollSpy).toHaveBeenCalled();
 
       info2.unspy();
       onScrollSpy.calls.reset();
 
       window.dispatchEvent(new Event('scroll'));
-      tick(300);
+      tick(SCROLL_EVENT_DELAY);
       expect(onScrollSpy).not.toHaveBeenCalled();
     }));
 
-    it('should only fire every 300ms', fakeAsync(() => {
+    it(`should only fire every ${SCROLL_EVENT_DELAY}ms`, fakeAsync(() => {
       scrollSpyService.spyOn([]);
 
       window.dispatchEvent(new Event('scroll'));
-      tick(100);
+      tick(SCROLL_EVENT_DELAY - 2);
       expect(onScrollSpy).not.toHaveBeenCalled();
 
       window.dispatchEvent(new Event('scroll'));
-      tick(100);
+      tick(1);
       expect(onScrollSpy).not.toHaveBeenCalled();
 
       window.dispatchEvent(new Event('scroll'));
-      tick(100);
+      tick(1);
       expect(onScrollSpy).toHaveBeenCalledTimes(1);
 
       onScrollSpy.calls.reset();
-      tick(150);
+      tick(SCROLL_EVENT_DELAY / 2);
 
       window.dispatchEvent(new Event('scroll'));
-      tick(100);
+      tick(SCROLL_EVENT_DELAY - 2);
       expect(onScrollSpy).not.toHaveBeenCalled();
 
       window.dispatchEvent(new Event('scroll'));
-      tick(100);
+      tick(1);
       expect(onScrollSpy).not.toHaveBeenCalled();
 
       window.dispatchEvent(new Event('scroll'));
-      tick(100);
+      tick(1);
       expect(onScrollSpy).toHaveBeenCalledTimes(1);
     }));
   });
