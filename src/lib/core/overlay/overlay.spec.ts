@@ -147,6 +147,24 @@ describe('Overlay', () => {
     expect(spy).toHaveBeenCalled();
   });
 
+  it('should emit the attachment event after everything is added to the DOM', () => {
+    let state = new OverlayState();
+
+    state.hasBackdrop = true;
+
+    let overlayRef = overlay.create(state);
+
+    overlayRef.attachments().subscribe(() => {
+      expect(overlayContainerElement.querySelector('pizza'))
+          .toBeTruthy('Expected the overlay to have been attached.');
+
+      expect(overlayContainerElement.querySelector('.cdk-overlay-backdrop'))
+          .toBeTruthy('Expected the backdrop to have been attached.');
+    });
+
+    overlayRef.attach(componentPortal);
+  });
+
   it('should emit when an overlay is detached', () => {
     let overlayRef = overlay.create();
     let spy = jasmine.createSpy('detachments spy');
@@ -156,6 +174,18 @@ describe('Overlay', () => {
     overlayRef.detach();
 
     expect(spy).toHaveBeenCalled();
+  });
+
+  it('should emit the detachment event after the overlay is removed from the DOM', () => {
+    let overlayRef = overlay.create();
+
+    overlayRef.detachments().subscribe(() => {
+      expect(overlayContainerElement.querySelector('pizza'))
+          .toBeFalsy('Expected the overlay to have been detached.');
+    });
+
+    overlayRef.attach(componentPortal);
+    overlayRef.detach();
   });
 
   it('should emit and complete the observables when an overlay is disposed', () => {
@@ -173,6 +203,19 @@ describe('Overlay', () => {
     expect(disposeSpy).toHaveBeenCalled();
     expect(attachCompleteSpy).toHaveBeenCalled();
     expect(detachCompleteSpy).toHaveBeenCalled();
+  });
+
+  it('should complete the attachment observable before the detachment one', () => {
+    let overlayRef = overlay.create();
+    let callbackOrder = [];
+
+    overlayRef.attachments().subscribe(null, null, () => callbackOrder.push('attach'));
+    overlayRef.detachments().subscribe(null, null, () => callbackOrder.push('detach'));
+
+    overlayRef.attach(componentPortal);
+    overlayRef.dispose();
+
+    expect(callbackOrder).toEqual(['attach', 'detach']);
   });
 
   describe('positioning', () => {
@@ -421,7 +464,10 @@ describe('OverlayContainer theming', () => {
 });
 
 /** Simple component for testing ComponentPortal. */
-@Component({template: '<p>Pizza</p>'})
+@Component({
+  selector: 'pizza',
+  template: '<p>Pizza</p>'
+})
 class PizzaMsg { }
 
 
