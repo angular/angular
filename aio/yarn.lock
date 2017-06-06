@@ -4660,8 +4660,8 @@ ng-pwa-tools@^0.0.10:
     ts-node "^3.0.2"
 
 ngo-loader@alxhub/ngo:
-  version "0.0.5"
-  resolved "https://codeload.github.com/alxhub/ngo/tar.gz/2c0d731289bbbfeef558f3aaee0596f1a7d229ab"
+  version "0.0.6"
+  resolved "https://codeload.github.com/alxhub/ngo/tar.gz/4b589d8ffb2b6278c387fc492bf17fd42227508f"
   dependencies:
     typescript "2.1"
 
@@ -5607,8 +5607,8 @@ punycode@^1.2.4, punycode@^1.3.2, punycode@^1.4.1:
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-1.4.1.tgz#c0d5a63b2718800ad8e1eb0fa5269c84dd41845e"
 
 purify@igorminar/purify:
-  version "0.0.19"
-  resolved "https://codeload.github.com/igorminar/purify/tar.gz/cdf9c2959ffae1f02ed93e5031afe5a79e9d4d4c"
+  version "0.0.23"
+  resolved "https://codeload.github.com/igorminar/purify/tar.gz/98a5c8f39e3dc2954bf87062b5d91c5e4576a26e"
   dependencies:
     tslib "^1.7.1"
 
