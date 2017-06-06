@@ -29,8 +29,8 @@ export function extractStyleUrls(
     resolver: UrlResolver, baseUrl: string, cssText: string): StyleWithImports {
   const foundUrls: string[] = [];
 
-  const modifiedCssText =
-      cssText.replace(CSS_COMMENT_REGEXP, '').replace(CSS_IMPORT_REGEXP, (...m: string[]) => {
+  const modifiedCssText = cssText.replace(CSS_COMMENT_WITH_NO_SOURCE_MAP_REGEXP, '')
+                              .replace(CSS_IMPORT_REGEXP, (...m: string[]) => {
         const url = m[1] || m[2];
         if (!isStyleUrlResolvable(url)) {
           // Do not attempt to resolve non-package absolute URLs with URI scheme
@@ -43,5 +43,5 @@ export function extractStyleUrls(
 }
 
 const CSS_IMPORT_REGEXP = /@import\s+(?:url\()?\s*(?:(?:['"]([^'"]*))|([^;\)\s]*))[^;]*;?/g;
-const CSS_COMMENT_REGEXP = /\/\*.+?\*\//g;
+const CSS_COMMENT_WITH_NO_SOURCE_MAP_REGEXP = /\/\*[^#].*?\*\//g;
 const URL_WITH_SCHEMA_REGEXP = /^([^:/?#]+):/;
