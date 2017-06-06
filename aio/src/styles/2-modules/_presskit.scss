@@ -1,4 +1,6 @@
 .presskit-container {
+  padding: 0 32px 32px 32px;
+
   h2 {
     color: #37474F;
   }
@@ -69,6 +71,14 @@
         height: 128px;
         margin-bottom: $unit * 2;
       }
+    }
+  }
+
+  .presskit-row:first-child {
+    margin-top: 0;
+
+    @media(max-width: 599px) {
+      margin-top: 48px;
     }
   }
 }
