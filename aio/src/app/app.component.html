@@ -18,9 +18,10 @@
 
 <md-sidenav-container class="sidenav-container" [class.starting]="isStarting" role="main">
 
-  <md-sidenav [ngClass]="{'collapsed': !isSideBySide }" #sidenav class="sidenav" [opened]="isOpened" [mode]="mode" (open)="updateHostClasses()" (close)="updateHostClasses()">
+  <md-sidenav #sidenav class="sidenav" [class.collapsed]="!isSideBySide" [style.padding-top.px]="staticTopOffset"
+    [opened]="isOpened" [mode]="mode" (open)="updateHostClasses()" (close)="updateHostClasses()">
     <aio-nav-menu *ngIf="!isSideBySide" [nodes]="topMenuNarrowNodes" [currentNode]="currentNode"></aio-nav-menu>
-    <aio-nav-menu [nodes]="sideNavNodes" [currentNode]="currentNode" ></aio-nav-menu>
+    <aio-nav-menu [nodes]="sideNavNodes" [currentNode]="currentNode"></aio-nav-menu>
 
     <div class="doc-version" title="Angular docs version {{currentDocVersion?.title}}">
       <select (change)="onDocVersionChange($event.target.selectedIndex)">
@@ -36,7 +37,9 @@
 
 </md-sidenav-container>
 
-<div *ngIf="showFloatingToc" class="toc-container" [style.max-height.px]="tocMaxHeight">
+<div *ngIf="showFloatingToc" class="toc-container"
+  [style.top.px]="staticTopOffset + 32"
+  [style.max-height.px]="tocMaxHeight - 64">
   <aio-toc></aio-toc>
 </div>
 

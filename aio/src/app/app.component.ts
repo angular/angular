@@ -68,7 +68,9 @@ export class AppComponent implements OnInit {
 
   showFloatingToc = false;
   showFloatingTocWidth = 800;
-  tocMaxHeight: string;
+  private staticMaxTopOffset = 0;
+  staticTopOffset: number;
+  tocMaxHeight: number;
   private tocMaxHeightOffset = 0;
 
   versionInfo: VersionInfo;
@@ -264,13 +266,12 @@ export class AppComponent implements OnInit {
     if (!this.tocMaxHeightOffset) {
       // Must wait until now for md-toolbar to be measurable.
       const el = this.hostElement.nativeElement as Element;
-      this.tocMaxHeightOffset =
-          el.querySelector('footer').clientHeight +
-          el.querySelector('md-toolbar.app-toolbar').clientHeight +
-          44; //  margin
+      this.staticMaxTopOffset = el.querySelector('md-toolbar.app-toolbar').clientHeight;
+      this.tocMaxHeightOffset = el.querySelector('footer').clientHeight;
     }
 
-    this.tocMaxHeight = (document.body.scrollHeight - window.pageYOffset - this.tocMaxHeightOffset).toFixed(2);
+    this.staticTopOffset = Math.max(0, this.staticMaxTopOffset - window.pageYOffset);
+    this.tocMaxHeight = document.body.scrollHeight - window.pageYOffset - this.staticTopOffset - this.tocMaxHeightOffset;
   }
 
 
