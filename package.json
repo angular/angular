@@ -7,6 +7,10 @@
   "homepage": "https://github.com/angular/angular",
   "bugs": "https://github.com/angular/angular/issues",
   "license": "MIT",
+  "keywords": [
+    "angular",
+    "angularjs"
+  ],
   "engines": {
     "node": ">=6.9.5 <7.0.0",
     "npm": ">=3.10.7 <4.0.0",
@@ -16,6 +20,7 @@
     "type": "git",
     "url": "https://github.com/angular/angular.git"
   },
+  
   "scripts": {
     "postinstall": "node tools/npm/copy-npm-shrinkwrap && webdriver-manager update",
     "check-env": "gulp check-env"
