@@ -3519,6 +3519,8 @@ Rename NgZone API
 - `NgZone.onTurnDone` => `NgZone.onMicrotaskEmpty`
 - `NgZone.onEventDone` => `NgZone.onStable`
 
+Removed from Core
+- `@View` annotation #7495
 
 <a name="2.0.0-beta.9"></a>
 # 2.0.0-beta.9 (2016-03-09)
