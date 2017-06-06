@@ -27,7 +27,7 @@ export const NUMBER_VALUE_ACCESSOR: any = {
  */
 @Directive({
   selector:
-      'input[type=number][formControlName],input[type=number][formControl],input[type=number][ngModel]',
+      'input[type=number][formControlName],input[type=number][formControl],input[type=number][ngModel],[role=number][formControlName],[role=number][formControl],[role=number][ngModel]',
   host: {
     '(change)': 'onChange($event.target.value)',
     '(input)': 'onChange($event.target.value)',

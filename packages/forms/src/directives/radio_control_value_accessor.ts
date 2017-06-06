@@ -85,7 +85,7 @@ export class RadioControlRegistry {
  */
 @Directive({
   selector:
-      'input[type=radio][formControlName],input[type=radio][formControl],input[type=radio][ngModel]',
+      'input[type=radio][formControlName],input[type=radio][formControl],input[type=radio][ngModel],[role=radio][formControlName],[role=radio][formControl],[role=radio][ngModel]',
   host: {'(change)': 'onChange()', '(blur)': 'onTouched()'},
   providers: [RADIO_VALUE_ACCESSOR]
 })
