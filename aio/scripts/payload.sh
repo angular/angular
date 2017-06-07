@@ -14,12 +14,12 @@ for filename in dist/*.bundle.js; do
   payloadData="$payloadData\"uncompressed/$label\": $size, "
 
 
-  gzip -7 --keep -f $filename
-  size7=$(stat -c%s "$filename.gz")
+  gzip -7 $filename -c >> "${filename}7.gz"
+  size7=$(stat -c%s "${filename}7.gz")
   payloadData="$payloadData\"gzip7/$label\": $size7, "
 
-  gzip -9 --keep -f $filename
-  size9=$(stat -c%s "$filename.gz")
+  gzip -9 $filename -c >> "${filename}9.gz"
+  size9=$(stat -c%s "${filename}9.gz")
   payloadData="$payloadData\"gzip9/$label\": $size9, "
 
   if [[ $size -gt ${limitUncompressed[$label]} ]]; then
