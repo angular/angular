@@ -1,22 +1,24 @@
 <div class="l-flex-wrap info-banner api-filter">
 
-  <div class="form-select-menu">
-    <button class="form-select-button has-symbol" (click)="toggleTypeMenu()">
+  <div class="form-select-menu" (click)="onTypeSelectClick($event)" (keydown.esc)="typeMenuVisible(false)">
+    <button class="form-select-button has-symbol" (click)="typeMenuVisible(true)">
       <strong>Type:</strong><span class="symbol {{type.name}}"></span>{{type.title}}
     </button>
     <ul class="form-select-dropdown" *ngIf="showTypeMenu">
-      <li *ngFor="let t of types" (click)="setType(t)" [class.selected]="t === type">
+      <li *ngFor="let t of types" [class.selected]="t === type" role="button" tabindex="0"
+         (click)="setType(t)" (keydown.enter)="setType(t)" (keydown.space)="setType(t); $event.preventDefault()">
         <span class="symbol {{t.name}}"></span>{{t.title}}
       </li>
     </ul>
   </div>
 
-  <div class="form-select-menu">
-    <button class="form-select-button" (click)="toggleStatusMenu()">
+  <div class="form-select-menu" (click)="onStatusSelectClick($event)" (keydown.esc)="statusMenuVisible(false)">
+    <button class="form-select-button" (click)="statusMenuVisible(true)">
       <strong>Status:</strong>{{status.title}}
     </button>
     <ul class="form-select-dropdown" *ngIf="showStatusMenu">
-      <li *ngFor="let s of statuses" (click)="setStatus(s)" [class.selected]="s === status">
+      <li *ngFor="let s of statuses" [class.selected]="s === status" role="button" tabindex="0"
+         (click)="setStatus(s)" (keydown.enter)="setStatus(s)" (keydown.space)="setStatus(s); $event.preventDefault()">
         {{s.title}}
       </li>
     </ul>
