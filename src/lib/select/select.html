@@ -13,12 +13,28 @@
   <span class="mat-select-underline"></span>
 </div>
 
-<ng-template cdk-connected-overlay [origin]="origin" [open]="panelOpen" hasBackdrop (backdropClick)="close()"
-  backdropClass="cdk-overlay-transparent-backdrop" [positions]="_positions" [minWidth]="_triggerWidth"
-  [offsetY]="_offsetY" (attach)="_onAttached()" (detach)="close()">
-  <div class="mat-select-panel {{ 'mat-' + color }}" [ngClass]="panelClass" [@transformPanel]="'showing'"
-    (@transformPanel.done)="_onPanelDone()" (keydown)="_handlePanelKeydown($event)"
-      [style.transformOrigin]="_transformOrigin" [class.mat-select-panel-done-animating]="_panelDoneAnimating">
+<ng-template
+  cdk-connected-overlay
+  hasBackdrop
+  backdropClass="cdk-overlay-transparent-backdrop"
+  [origin]="origin"
+  [open]="panelOpen"
+  [positions]="_positions"
+  [minWidth]="_triggerWidth"
+  [offsetY]="_offsetY"
+  (backdropClick)="close()"
+  (attach)="_onAttached()"
+  (detach)="close()">
+
+  <div
+    class="mat-select-panel {{ 'mat-' + color }}"
+    [ngClass]="panelClass"
+    [@transformPanel]="multiple ? 'showing-multiple' : 'showing'"
+    (@transformPanel.done)="_onPanelDone()"
+    (keydown)="_handlePanelKeydown($event)"
+    [style.transformOrigin]="_transformOrigin"
+    [class.mat-select-panel-done-animating]="_panelDoneAnimating">
+
     <div class="mat-select-content" [@fadeInContent]="'showing'" (@fadeInContent.done)="_onFadeInDone()">
       <ng-content></ng-content>
     </div>

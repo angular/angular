@@ -840,16 +840,18 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
     const overlayRect = this.overlayDir.overlayRef.overlayElement.getBoundingClientRect();
     const viewportRect = this._viewportRuler.getViewportRect();
     const isRtl = this._isRtl();
+    const paddingWidth = this.multiple ? SELECT_MULTIPLE_PANEL_PADDING_X + SELECT_PANEL_PADDING_X :
+                                         SELECT_PANEL_PADDING_X * 2;
+
     let offsetX = this.multiple ? SELECT_MULTIPLE_PANEL_PADDING_X : SELECT_PANEL_PADDING_X;
 
     if (!isRtl) {
       offsetX *= -1;
     }
 
-    const leftOverflow = 0 - (overlayRect.left + offsetX
-        - (isRtl ? SELECT_PANEL_PADDING_X * 2 : 0));
+    const leftOverflow = 0 - (overlayRect.left + offsetX - (isRtl ? paddingWidth : 0));
     const rightOverflow = overlayRect.right + offsetX - viewportRect.width
-        + (isRtl ? 0 : SELECT_PANEL_PADDING_X * 2);
+                          + (isRtl ? 0 : paddingWidth);
 
     if (leftOverflow > 0) {
       offsetX += leftOverflow + SELECT_PANEL_VIEWPORT_PADDING;
