@@ -3,11 +3,15 @@ import {
   Component,
   Directive,
   ElementRef,
+  forwardRef,
   HostBinding,
   Input,
   OnDestroy,
+  Optional,
   Renderer2,
-  ViewEncapsulation
+  Self,
+  ViewEncapsulation,
+  Inject
 } from '@angular/core';
 import {coerceBooleanProperty, FocusOriginMonitor, Platform} from '../core';
 import {mixinDisabled, CanDisable} from '../core/common-behaviors/disabled';
@@ -15,6 +19,9 @@ import {CanColor, mixinColor} from '../core/common-behaviors/color';
 
 
 // TODO(kara): Convert attribute selectors to classes when attr maps become available
+
+/** Default color palette for round buttons (md-fab and md-mini-fab) */
+const DEFAULT_ROUND_BUTTON_COLOR = 'accent';
 
 
 /**
@@ -58,17 +65,30 @@ export class MdIconButtonCssMatStyler {}
   selector: 'button[md-fab], button[mat-fab], a[md-fab], a[mat-fab]',
   host: {'class': 'mat-fab'}
 })
-export class MdFabCssMatStyler {}
+export class MdFab {
+  constructor(@Self() @Optional() @Inject(forwardRef(() => MdButton)) button: MdButton,
+              @Self() @Optional() @Inject(forwardRef(() => MdAnchor)) anchor: MdAnchor) {
+    // Set the default color palette for the md-fab components.
+    (button || anchor).color = DEFAULT_ROUND_BUTTON_COLOR;
+  }
+}
 
 /**
- * Directive whose purpose is to add the mat- CSS styling to this selector.
+ * Directive that targets mini-fab buttons and anchors. It's used to apply the `mat-` class
+ * to all mini-fab buttons and also is responsible for setting the default color palette.
  * @docs-private
  */
 @Directive({
   selector: 'button[md-mini-fab], button[mat-mini-fab], a[md-mini-fab], a[mat-mini-fab]',
   host: {'class': 'mat-mini-fab'}
 })
-export class MdMiniFabCssMatStyler {}
+export class MdMiniFab {
+  constructor(@Self() @Optional() @Inject(forwardRef(() => MdButton)) button: MdButton,
+              @Self() @Optional() @Inject(forwardRef(() => MdAnchor)) anchor: MdAnchor) {
+    // Set the default color palette for the md-mini-fab components.
+    (button || anchor).color = DEFAULT_ROUND_BUTTON_COLOR;
+  }
+}
 
 
 // Boilerplate for applying mixins to MdButton.

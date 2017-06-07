@@ -4,10 +4,10 @@ import {MdCommonModule, MdRippleModule, StyleModule} from '../core';
 import {
   MdAnchor,
   MdButton,
+  MdMiniFab,
   MdButtonCssMatStyler,
-  MdFabCssMatStyler,
+  MdFab,
   MdIconButtonCssMatStyler,
-  MdMiniFabCssMatStyler,
   MdRaisedButtonCssMatStyler
 } from './button';
 
@@ -25,21 +25,21 @@ export * from './button';
   exports: [
     MdButton,
     MdAnchor,
+    MdMiniFab,
+    MdFab,
     MdCommonModule,
     MdButtonCssMatStyler,
     MdRaisedButtonCssMatStyler,
     MdIconButtonCssMatStyler,
-    MdFabCssMatStyler,
-    MdMiniFabCssMatStyler,
   ],
   declarations: [
     MdButton,
     MdAnchor,
+    MdMiniFab,
+    MdFab,
     MdButtonCssMatStyler,
     MdRaisedButtonCssMatStyler,
     MdIconButtonCssMatStyler,
-    MdFabCssMatStyler,
-    MdMiniFabCssMatStyler,
   ],
 })
 export class MdButtonModule {}

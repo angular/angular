@@ -104,18 +104,6 @@
   .mat-icon-button {
     @include _mat-button-ripple-color($theme, default);
   }
-
-  // TODO(devversion): The color class accent should be just set from TS code. No need for this.
-  .mat-fab, .mat-mini-fab {
-    background-color: mat-color($accent);
-    color: mat-color($accent, default-contrast);
-
-    // Button fab elements are using the accent palette by default. The color classes won't
-    // be set on the element. To have a proper ripple color for those, we set the ripple color.
-    .mat-ripple-element {
-      background-color: mat-color($accent, default-contrast, 0.2);
-    }
-  }
 }
 
 @mixin mat-button-typography($config) {
