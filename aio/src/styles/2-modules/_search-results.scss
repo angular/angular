@@ -55,7 +55,7 @@ aio-search-results {
         font-size: 14px;
         color: $lightgray;
         text-decoration: none;
-        font-weight: 300;
+        font-weight: normal;
         &:hover {
             color: $white;
         }
@@ -68,11 +68,11 @@ aio-search-results {
         }
     }
 
-    .more-items {
-      content: 'more_horiz';
-      font-size: 20px;
-      color: $mediumgray;
-      padding: 0;
+    .priority-pages {
+        padding: 0.5rem 0;
+        a {
+            font-weight: bold;
+        }
     }
 
     @include bp(tiny) {
