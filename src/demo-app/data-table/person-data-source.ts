@@ -10,7 +10,7 @@ export class PersonDataSource extends DataSource<any> {
   }
 
   connect(collectionViewer: CollectionViewer): Observable<UserData[]> {
-    return collectionViewer.viewChanged.map((view: {start: number, end: number}) => {
+    return collectionViewer.viewChange.map((view: {start: number, end: number}) => {
       // Set the rendered rows length to the virtual page size. Fill in the data provided
       // from the index start until the end index or pagination size, whichever is smaller.
       this._renderedData.length = this._peopleDatabase.data.length;

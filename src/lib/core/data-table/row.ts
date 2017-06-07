@@ -2,35 +2,83 @@ import {
   ChangeDetectionStrategy,
   Component,
   Directive,
-  Input,
+  IterableDiffer,
+  IterableDiffers,
+  SimpleChanges,
   TemplateRef,
   ViewContainerRef
 } from '@angular/core';
 import {CdkCellDef} from './cell';
+import {Subject} from 'rxjs/Subject';
+
+/**
+ * Base class for the CdkHeaderRowDef and CdkRowDef that handles checking their columns inputs
+ * for changes and notifying the table.
+ */
+export abstract class BaseRowDef {
+  /** The columns to be displayed on this row. */
+  columns: string[];
+
+  /** Event stream that emits when changes are made to the columns. */
+  columnsChange: Subject<void> = new Subject<void>();
+
+  /** Differ used to check if any changes were made to the columns. */
+  protected _columnsDiffer: IterableDiffer<any>;
+
+  private viewInitialized = false;
+
+  constructor(public template: TemplateRef<any>,
+              protected _differs: IterableDiffers) { }
+
+  ngAfterViewInit() {
+    this.viewInitialized = true;
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    // Create a new columns differ if one does not yet exist. Initialize it based on initial value
+    // of the columns property.
+    if (!this._columnsDiffer) {
+      this._columnsDiffer = this._differs.find(changes['columns'].currentValue).create();
+    }
+  }
+
+  ngDoCheck(): void {
+    if (!this.viewInitialized || !this._columnsDiffer || !this.columns) { return; }
+
+    // Notify the table if there are any changes to the columns.
+    const changes = this._columnsDiffer.diff(this.columns);
+    if (changes) { this.columnsChange.next(); }
+  }
+}
 
 /**
  * Header row definition for the CDK data-table.
  * Captures the header row's template and other header properties such as the columns to display.
  */
-@Directive({selector: '[cdkHeaderRowDef]'})
-export class CdkHeaderRowDef {
-  @Input('cdkHeaderRowDef') columns: string[];
-
-  constructor(public template: TemplateRef<any>) { }
+@Directive({
+  selector: '[cdkHeaderRowDef]',
+  inputs: ['columns: cdkHeaderRowDef'],
+})
+export class CdkHeaderRowDef extends BaseRowDef {
+  constructor(template: TemplateRef<any>, _differs: IterableDiffers) {
+    super(template, _differs);
+  }
 }
 
 /**
  * Data row definition for the CDK data-table.
  * Captures the header row's template and other row properties such as the columns to display.
  */
-@Directive({selector: '[cdkRowDef]'})
-export class CdkRowDef {
-  @Input('cdkRowDefColumns') columns: string[];
-
+@Directive({
+  selector: '[cdkRowDef]',
+  inputs: ['columns: cdkRowDefColumns'],
+})
+export class CdkRowDef extends BaseRowDef {
   // TODO(andrewseguin): Add an input for providing a switch function to determine
   //   if this template should be used.
-
-  constructor(public template: TemplateRef<any>) { }
+  constructor(template: TemplateRef<any>, _differs: IterableDiffers) {
+    super(template, _differs);
+  }
 }
 
 /**

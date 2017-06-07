@@ -1,0 +1,15 @@
+:host {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 64px;
+  padding: 0 16px;
+}
+
+.title {
+  font-size: 20px;
+}
+
+.actions {
+  color: rgba(0, 0, 0, 0.54);
+}

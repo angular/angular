@@ -3,6 +3,7 @@
   display: flex;
   flex-direction: column;
   max-height: 800px;
+  background: white;
 
   // Table fills in the remaining area with a scroll
   .cdk-table {
@@ -17,7 +18,6 @@
  */
 .cdk-table {
   display: block;
-  background: white;
 }
 
 .cdk-row, .cdk-header-row {

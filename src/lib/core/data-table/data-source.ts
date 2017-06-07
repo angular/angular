@@ -1,7 +1,7 @@
 import {Observable} from 'rxjs/Observable';
 
 export interface CollectionViewer {
-  viewChanged: Observable<{start: number, end: number}>;
+  viewChange: Observable<{start: number, end: number}>;
 }
 
 export abstract class DataSource<T> {

@@ -15,13 +15,14 @@ import {
   ViewContainerRef,
   ViewEncapsulation
 } from '@angular/core';
+import {CollectionViewer, DataSource} from './data-source';
+import {BaseRowDef, CdkCellOutlet, CdkHeaderRowDef, CdkRowDef} from './row';
+import {CdkCellDef, CdkColumnDef, CdkHeaderCellDef} from './cell';
+import {Observable} from 'rxjs/Observable';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import 'rxjs/add/operator/let';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/observable/combineLatest';
-import {CollectionViewer, DataSource} from './data-source';
-import {CdkCellOutlet, CdkHeaderRowDef, CdkRowDef} from './row';
-import {CdkCellDef, CdkColumnDef, CdkHeaderCellDef} from './cell';
 
 /**
  * Provides a handle for the table to grab the view container's ng-container to insert data rows.
@@ -66,13 +67,16 @@ export class CdkTable<T> implements CollectionViewer {
   @Input() dataSource: DataSource<T>;
 
   // TODO(andrewseguin): Remove max value as the end index
-  // and instead calculate the view on init and scroll.
+  //   and instead calculate the view on init and scroll.
   /**
    * Stream containing the latest information on what rows are being displayed on screen.
    * Can be used by the data source to as a heuristic of what data should be provided.
    */
-  viewChanged =
+  viewChange =
       new BehaviorSubject<{start: number, end: number}>({start: 0, end: Number.MAX_VALUE});
+
+  /** Stream that emits when a row def has a change to its array of columns to render. */
+  _columnsChange = new Observable<void>();
 
   /**
    * Map of all the user's defined columns identified by name.
@@ -115,12 +119,12 @@ export class CdkTable<T> implements CollectionViewer {
 
   ngOnDestroy() {
     // TODO(andrewseguin): Disconnect from the data source so
-    // that it can unsubscribe from its streams.
+    //   that it can unsubscribe from its streams.
   }
 
   ngOnInit() {
     // TODO(andrewseguin): Setup a listener for scroll events
-    //   and emit the calculated view to this.viewChanged
+    //   and emit the calculated view to this.viewChange
   }
 
   ngAfterContentInit() {
@@ -128,17 +132,32 @@ export class CdkTable<T> implements CollectionViewer {
     this._columnDefinitions.forEach(columnDef => {
       this._columnDefinitionsByName.set(columnDef.name, columnDef);
     });
+
+    // Get and merge the streams for column changes made to the row defs
+    const rowDefs = [...this._rowDefinitions.toArray(), this._headerDefinition];
+    const columnChangeStreams =
+        rowDefs.map((rowDef: BaseRowDef) => rowDef.columnsChange);
+    this._columnsChange = Observable.merge(...columnChangeStreams);
   }
 
   ngAfterViewInit() {
-    // TODO(andrewseguin): Re-render the header when the header's columns change.
     this.renderHeaderRow();
 
-    // TODO(andrewseguin): Re-render rows when their list of columns change.
+    // Re-render the header row if the columns changed.
+    this._columnsChange.subscribe(() => {
+      this._headerRowPlaceholder.viewContainer.clear();
+      this.renderHeaderRow();
+
+      // Reset the data to an empty array so that renderRowChanges will re-render all new rows.
+      this._rowPlaceholder.viewContainer.clear();
+      this._dataDiffer.diff([]);
+    });
+
     // TODO(andrewseguin): If the data source is not
     //   present after view init, connect it when it is defined.
     // TODO(andrewseguin): Unsubscribe from this on destroy.
-    this.dataSource.connect(this).subscribe((rowsData: NgIterable<T>) => {
+    const streams = [this.dataSource.connect(this), this._columnsChange];
+    Observable.combineLatest(streams).subscribe(([rowsData]) => {
       this.renderRowChanges(rowsData);
     });
   }
@@ -150,8 +169,8 @@ export class CdkTable<T> implements CollectionViewer {
     const cells = this.getHeaderCellTemplatesForRow(this._headerDefinition);
 
     // TODO(andrewseguin): add some code to enforce that exactly
-    // one CdkCellOutlet was instantiated as a result
-    // of `createEmbeddedView`.
+    //   one CdkCellOutlet was instantiated as a result
+    //   of `createEmbeddedView`.
     this._headerRowPlaceholder.viewContainer
         .createEmbeddedView(this._headerDefinition.template, {cells});
     CdkCellOutlet.mostRecentCellOutlet.cells = cells;
@@ -206,6 +225,7 @@ export class CdkTable<T> implements CollectionViewer {
    */
   getHeaderCellTemplatesForRow(headerDef: CdkHeaderRowDef): CdkHeaderCellDef[] {
     return headerDef.columns.map(columnId => {
+      // TODO(andrewseguin): Throw an error if there is no column with this columnId
       return this._columnDefinitionsByName.get(columnId).headerCell;
     });
   }
@@ -216,6 +236,7 @@ export class CdkTable<T> implements CollectionViewer {
    */
   getCellTemplatesForRow(rowDef: CdkRowDef): CdkCellDef[] {
     return rowDef.columns.map(columnId => {
+      // TODO(andrewseguin): Throw an error if there is no column with this columnId
       return this._columnDefinitionsByName.get(columnId).cell;
     });
   }

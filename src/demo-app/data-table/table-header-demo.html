@@ -1,0 +1,19 @@
+<div class="title">
+  Users
+</div>
+
+<div class="actions">
+  <button md-icon-button [mdMenuTriggerFor]="menu">
+    <md-icon>more_vert</md-icon>
+  </button>
+  <md-menu #menu="mdMenu">
+    <button md-menu-item (click)="shiftColumns.next()">
+      <md-icon>subdirectory_arrow_left</md-icon>
+      Shift Columns Left
+    </button>
+    <button md-menu-item (click)="toggleColorColumn.next()">
+      <md-icon>color_lens</md-icon>
+      Toggle Color Column
+    </button>
+  </md-menu>
+</div>
