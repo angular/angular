@@ -8524,9 +8524,9 @@
       }
     },
     "zone.js": {
-      "version": "0.8.10",
-      "from": "zone.js@0.8.10",
-      "resolved": "http://registry.npmjs.org/zone.js/-/zone.js-0.8.10.tgz"
+      "version": "0.8.12",
+      "from": "zone.js@0.8.12",
+      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.8.12.tgz"
     }
   }
 }
