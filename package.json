@@ -26,7 +26,7 @@
     "rxjs": "^5.0.1",
     "tslib": "^1.7.1",
     "typescript": "^2.3.2",
-    "zone.js": "^0.8.10"
+    "zone.js": "^0.8.12"
   },
   "optionalDependencies": {
     "fsevents": "^1.0.14"
