@@ -60,8 +60,10 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
     });
     const keys = Object.keys(searchAreaMap).sort((l, r) => l > r ? 1 : -1);
     return keys.map(name => {
-      let pages = searchAreaMap[name];
-      const priorityPages = pages.length > 10 ? searchAreaMap[name].slice(0, 5) : [];
+      let pages: SearchResult[] = searchAreaMap[name];
+
+      // Extract the top 5 most relevant results as priorityPages
+      const priorityPages = pages.splice(0, 5);
       pages = pages.sort(compareResults);
       return { name, pages, priorityPages };
     });
