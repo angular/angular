@@ -199,7 +199,7 @@ export class MdSlideToggle extends _MdSlideToggleMixinBase
 
   /** Focuses the slide-toggle. */
   focus() {
-    this._focusOriginMonitor.focusVia(this._inputElement.nativeElement, this._renderer, 'keyboard');
+    this._focusOriginMonitor.focusVia(this._inputElement.nativeElement, 'keyboard');
   }
 
   /** Whether the slide-toggle is checked. */

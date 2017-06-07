@@ -126,10 +126,9 @@ export class FocusOriginMonitor {
   /**
    * Focuses the element via the specified focus origin.
    * @param element The element to focus.
-   * @param renderer The renderer to use to invoke the focus method on the element.
    * @param origin The focus origin.
    */
-  focusVia(element: HTMLElement, renderer: Renderer2, origin: FocusOrigin): void {
+  focusVia(element: HTMLElement, origin: FocusOrigin): void {
     this._setOriginForCurrentEventQueue(origin);
     element.focus();
   }

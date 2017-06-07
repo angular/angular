@@ -1,10 +1,10 @@
 <button #b class="demo-focusable" cdkMonitorElementFocus>focus me!</button>
 <button (click)="b.focus()">focus programmatically</button>
 
-<button (click)="fom.focusVia(b, renderer, 'mouse')">focusVia: mouse</button>
-<button (click)="fom.focusVia(b, renderer, 'touch')">focusVia: touch</button>
-<button (click)="fom.focusVia(b, renderer, 'keyboard')">focusVia: keyboard</button>
-<button (click)="fom.focusVia(b, renderer, 'program')">focusVia: program</button>
+<button (click)="fom.focusVia(b, 'mouse')">focusVia: mouse</button>
+<button (click)="fom.focusVia(b, 'touch')">focusVia: touch</button>
+<button (click)="fom.focusVia(b, 'keyboard')">focusVia: keyboard</button>
+<button (click)="fom.focusVia(b, 'program')">focusVia: program</button>
 
 <div>Active classes: {{b.classList}}</div>
 

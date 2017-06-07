@@ -372,7 +372,7 @@ export class MdCheckbox extends _MdCheckboxMixinBase
 
   /** Focuses the checkbox. */
   focus(): void {
-    this._focusOriginMonitor.focusVia(this._inputElement.nativeElement, this._renderer, 'keyboard');
+    this._focusOriginMonitor.focusVia(this._inputElement.nativeElement, 'keyboard');
   }
 
   _onInteractionEvent(event: Event) {

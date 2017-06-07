@@ -131,7 +131,7 @@ describe('FocusOriginMonitor', () => {
   }));
 
   it('focusVia keyboard should simulate keyboard focus', async(() => {
-    focusOriginMonitor.focusVia(buttonElement, buttonRenderer, 'keyboard');
+    focusOriginMonitor.focusVia(buttonElement, 'keyboard');
     fixture.detectChanges();
 
     setTimeout(() => {
@@ -148,7 +148,7 @@ describe('FocusOriginMonitor', () => {
   }));
 
   it('focusVia mouse should simulate mouse focus', async(() => {
-    focusOriginMonitor.focusVia(buttonElement, buttonRenderer, 'mouse');
+    focusOriginMonitor.focusVia(buttonElement, 'mouse');
     fixture.detectChanges();
 
     setTimeout(() => {
@@ -165,7 +165,7 @@ describe('FocusOriginMonitor', () => {
   }));
 
   it('focusVia mouse should simulate mouse focus', async(() => {
-    focusOriginMonitor.focusVia(buttonElement, buttonRenderer, 'touch');
+    focusOriginMonitor.focusVia(buttonElement, 'touch');
     fixture.detectChanges();
 
     setTimeout(() => {
@@ -182,7 +182,7 @@ describe('FocusOriginMonitor', () => {
   }));
 
   it('focusVia program should simulate programmatic focus', async(() => {
-    focusOriginMonitor.focusVia(buttonElement, buttonRenderer, 'program');
+    focusOriginMonitor.focusVia(buttonElement, 'program');
     fixture.detectChanges();
 
     setTimeout(() => {
