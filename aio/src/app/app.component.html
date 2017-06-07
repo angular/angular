@@ -15,7 +15,7 @@
 </md-toolbar>
 <aio-search-results #searchResults *ngIf="showSearchResults" (resultSelected)="hideSearchResults()"></aio-search-results>
 
-<md-sidenav-container class="sidenav-container" [class.starting]="isStarting" role="main">
+<md-sidenav-container class="sidenav-container" [class.starting]="isStarting" [class.has-floating-toc]="hasFloatingToc" role="main">
 
   <md-sidenav [ngClass]="{'collapsed': !isSideBySide }" #sidenav class="sidenav" [opened]="isOpened" [mode]="mode" (open)="updateHostClasses()" (close)="updateHostClasses()">
     <aio-nav-menu *ngIf="!isSideBySide" [nodes]="topMenuNarrowNodes" [currentNode]="currentNodes?.TopBarNarrow"></aio-nav-menu>
@@ -33,7 +33,7 @@
 
 </md-sidenav-container>
 
-<div *ngIf="showFloatingToc" class="toc-container" [style.max-height.px]="tocMaxHeight" (mousewheel)="restrainScrolling($event)">
+<div *ngIf="hasFloatingToc" class="toc-container" [style.max-height.px]="tocMaxHeight" (mousewheel)="restrainScrolling($event)">
   <aio-toc></aio-toc>
 </div>
 
