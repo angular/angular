@@ -1,0 +1,32 @@
+@import '../core/theming/palette';
+@import '../core/theming/theming';
+
+@mixin mat-expansion-panel-theme($theme) {
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+
+  .mat-expansion-panel {
+    background: mat-color($background, card);
+    color: mat-color($foreground, base);
+  }
+
+  .mat-action-row {
+    border-top-color: mat-color($foreground, divider);
+  }
+
+  .mat-expansion-panel-header:focus, 
+  .mat-expansion-panel-header:hover {
+    background: mat-color($background, hover);
+  }
+  .mat-expansion-panel-header-title {
+    color: mat-color($foreground, text);
+  }
+
+  .mat-expansion-panel-header-description {
+    color: mat-color($foreground, secondary-text);
+  }
+
+  .mat-expansion-indicator::after {
+    color: mat-color($foreground, secondary-text);
+  }
+}

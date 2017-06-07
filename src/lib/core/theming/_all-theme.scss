@@ -8,6 +8,7 @@
 @import '../../chips/chips-theme';
 @import '../../datepicker/datepicker-theme';
 @import '../../dialog/dialog-theme';
+@import '../../expansion/expansion-theme';
 @import '../../grid-list/grid-list-theme';
 @import '../../icon/icon-theme';
 @import '../../input/input-theme';
@@ -37,6 +38,7 @@
   @include mat-chips-theme($theme);
   @include mat-datepicker-theme($theme);
   @include mat-dialog-theme($theme);
+  @include mat-expansion-panel-theme($theme);
   @include mat-grid-list-theme($theme);
   @include mat-icon-theme($theme);
   @include mat-input-theme($theme);

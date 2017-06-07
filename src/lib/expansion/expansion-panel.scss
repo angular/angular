@@ -1,0 +1,33 @@
+@import '../core/style/variables';
+@import '../core/style/elevation';
+
+.mat-expansion-panel {
+  @include mat-elevation-transition;
+  box-sizing: content-box;
+  display: block;
+
+  &:not([class*='mat-elevation-z']) {
+    @include mat-elevation(2);
+  }
+}
+
+.mat-expansion-panel-content {
+  overflow: hidden;
+}
+
+.mat-expansion-panel-body {
+  padding: 0 24px 16px;
+}
+
+.mat-action-row {
+  border-top-style: solid;
+  border-top-width: 1px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  padding: 16px 8px 16px 24px;
+
+  button.mat-button {
+    margin-left: 8px;
+  }
+}

@@ -1,0 +1,61 @@
+$mat-expansion-panel-header-height: 48px;
+$mat-expansion-panel-header-height-expanded: 64px;
+
+.mat-expansion-panel-header {
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  height: $mat-expansion-panel-header-height;
+  line-height: $mat-expansion-panel-header-height;
+  padding: 0 24px;
+
+  &.mat-expanded {
+    height: $mat-expansion-panel-header-height-expanded;
+    line-height: $mat-expansion-panel-header-height-expanded;
+  }
+
+  &:focus, 
+  &:hover {
+    outline: none;
+  }
+
+  &.mat-expanded:focus,
+  &.mat-expanded:hover, {
+    background: inherit;
+  }
+}
+
+.mat-content {
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  overflow: hidden;
+}
+
+.mat-expansion-panel-header-title {
+  display: flex;
+  flex-grow: 1;
+  font-size: 15px;
+  margin-right: 16px;
+}
+
+.mat-expansion-panel-header-description {
+  display: flex;
+  flex-grow: 2;
+  font-size: 15px;
+  margin-right: 16px;
+}
+
+/** 
+ * Creates the expansion indicator arrow. Done using ::after rather than having
+ * additional nodes in the template.
+ */
+.mat-expansion-indicator::after {
+  border-style: solid;
+  border-width: 0 2px 2px 0;
+  content: '';
+  display: inline-block;
+  padding: 3px;
+  transform: rotate(45deg);
+  vertical-align: middle;
+}

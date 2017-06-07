@@ -24,6 +24,10 @@ const ROLLUP_GLOBALS = {
   '@angular/cdk': 'ng.cdk',
 
   // Rxjs dependencies
+  'rxjs/BehaviorSubject': 'Rx',
+  'rxjs/Observable': 'Rx',
+  'rxjs/Subject': 'Rx',
+  'rxjs/Subscription': 'Rx',
   'rxjs/add/observable/combineLatest': 'Rx.Observable',
   'rxjs/add/observable/forkJoin': 'Rx.Observable',
   'rxjs/add/observable/fromEvent': 'Rx.Observable',
@@ -44,11 +48,6 @@ const ROLLUP_GLOBALS = {
   'rxjs/add/operator/switchMap': 'Rx.Observable.prototype',
   'rxjs/add/operator/takeUntil': 'Rx.Observable.prototype',
   'rxjs/add/operator/toPromise': 'Rx.Observable.prototype',
-  'rxjs/BehaviorSubject': 'Rx',
-  'rxjs/Observable': 'Rx',
-  'rxjs/Subject': 'Rx',
-  'rxjs/Subscription': 'Rx',
-
 };
 
 export type BundleConfig = {

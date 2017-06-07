@@ -16,6 +16,7 @@ export * from './checkbox/index';
 export * from './core/data-table/index';
 export * from './datepicker/index';
 export * from './dialog/index';
+export * from './expansion/index';
 export * from './grid-list/index';
 export * from './icon/index';
 export * from './input/index';

@@ -1,0 +1,52 @@
+<h1>Single Expansion Panel</h1>
+<md-expansion-panel class="md-expansion-demo-width" #myPanel>
+  <md-expansion-panel-header>
+    <mat-panel-description>This is a panel description.</mat-panel-description>
+    <mat-panel-title>Panel Title</mat-panel-title>
+  </md-expansion-panel-header>
+    This is the content text that makes sense here.
+  <md-action-row>
+    <button md-button (click)="myPanel.expanded = false">CANCEL</button>
+    <button md-button>SAVE</button>
+  </md-action-row>
+</md-expansion-panel>
+<br>
+<h1>Accordion</h1>
+<div>
+  <p>Accordion Options</p>
+  <div>
+    <md-slide-toggle [(ngModel)]="multi">Allow Multi Expansion</md-slide-toggle>
+    <md-slide-toggle [(ngModel)]="hideToggle">Hide Indicators</md-slide-toggle>
+    <md-slide-toggle [(ngModel)]="showPanel3">Show Panel 3</md-slide-toggle>
+  </div>
+  <p>Accordion Style</p>
+  <md-radio-group [(ngModel)]="displayMode">
+    <md-radio-button value="default">Default</md-radio-button>
+    <md-radio-button value="flat">Flat</md-radio-button>
+  </md-radio-group>
+  <p>Accordion Panel(s)</p>
+  <div>
+    <md-checkbox [(ngModel)]="panel1.expanded">Panel 1</md-checkbox>
+    <md-checkbox [(ngModel)]="panel2.expanded">Panel 2</md-checkbox>
+  </div>
+</div>
+<br>
+<md-accordion [displayMode]="displayMode" [multi]="multi"
+              class="md-expansion-demo-width">
+  <md-expansion-panel #panel1  [hideToggle]="hideToggle">
+    <md-expansion-panel-header>Section 1</md-expansion-panel-header>
+    <p>This is the content text that makes sense here.</p>
+  </md-expansion-panel>
+  <md-expansion-panel #panel2 [hideToggle]="hideToggle">
+    <md-expansion-panel-header>Section 2</md-expansion-panel-header>
+    <p>This is the content text that makes sense here.</p>
+  </md-expansion-panel>
+  <md-expansion-panel #panel3 *ngIf="showPanel3" [hideToggle]="hideToggle">
+    <md-expansion-panel-header>Section 3</md-expansion-panel-header>
+    <md-checkbox #showButtons>Reveal Buttons Below</md-checkbox>
+    <md-action-row *ngIf="showButtons.checked">
+      <button md-button (click)="panel2.expanded = true">OPEN SECTION 2</button>
+      <button md-button (click)="panel3.expanded = false">CLOSE</button>
+    </md-action-row>
+  </md-expansion-panel>
+</md-accordion>
