@@ -12,7 +12,6 @@ import {COMMON_DEPRECATED_DIRECTIVES, COMMON_DIRECTIVES} from './directives/inde
 import {NgLocaleLocalization, NgLocalization} from './localization';
 import {COMMON_PIPES} from './pipes/index';
 
-
 // Note: This does not contain the location providers,
 // as they need some platform specific implementations to work.
 /**
