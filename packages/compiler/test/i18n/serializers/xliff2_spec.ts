@@ -29,7 +29,7 @@ const HTML = `
 lines</p>
 `;
 
-const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
+const WRITE_XLIFF_V0 = `<?xml version="1.0" encoding="UTF-8" ?>
 <xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0" srcLang="en">
   <file original="ng.template" id="ngi18n">
     <unit id="1933478729560469763">
@@ -67,6 +67,99 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
       </segment>
     </unit>
     <unit id="6440235004920703622">
+      <notes>
+        <note category="description">nested</note>
+        <note category="location">file.ts:6</note>
+      </notes>
+      <segment>
+        <source><pc id="0" equivStart="START_BOLD_TEXT" equivEnd="CLOSE_BOLD_TEXT" type="fmt" dispStart="&lt;b&gt;" dispEnd="&lt;/b&gt;"><pc id="1" equivStart="START_UNDERLINED_TEXT" equivEnd="CLOSE_UNDERLINED_TEXT" type="fmt" dispStart="&lt;u&gt;" dispEnd="&lt;/u&gt;"><ph id="2" equiv="INTERPOLATION" disp="{{interpolation}}"/> Text</pc></pc></source>
+      </segment>
+    </unit>
+    <unit id="8779402634269838862">
+      <notes>
+        <note category="description">ph names</note>
+        <note category="location">file.ts:7</note>
+      </notes>
+      <segment>
+        <source><ph id="0" equiv="LINE_BREAK" type="fmt" disp="&lt;br/&gt;"/><ph id="1" equiv="TAG_IMG" type="image" disp="&lt;img/&gt;"/><ph id="2" equiv="TAG_IMG_1" type="image" disp="&lt;img/&gt;"/></source>
+      </segment>
+    </unit>
+    <unit id="6536355551500405293">
+      <notes>
+        <note category="description">empty element</note>
+        <note category="location">file.ts:8</note>
+      </notes>
+      <segment>
+        <source>hello <pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&lt;span&gt;" dispEnd="&lt;/span&gt;"></pc></source>
+      </segment>
+    </unit>
+    <unit id="baz">
+      <notes>
+        <note category="location">file.ts:9</note>
+      </notes>
+      <segment>
+        <source>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<pc id="0" equivStart="START_PARAGRAPH" equivEnd="CLOSE_PARAGRAPH" type="other" dispStart="&lt;p&gt;" dispEnd="&lt;/p&gt;">deeply nested</pc>} } } }</source>
+      </segment>
+    </unit>
+    <unit id="2015957479576096115">
+      <notes>
+        <note category="location">file.ts:10</note>
+      </notes>
+      <segment>
+        <source>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<pc id="0" equivStart="START_PARAGRAPH" equivEnd="CLOSE_PARAGRAPH" type="other" dispStart="&lt;p&gt;" dispEnd="&lt;/p&gt;">deeply nested</pc>} } } }</source>
+      </segment>
+    </unit>
+    <unit id="2340165783990709777">
+      <notes>
+        <note category="location">file.ts:11,12</note>
+      </notes>
+      <segment>
+        <source>multi
+lines</source>
+      </segment>
+    </unit>
+  </file>
+</xliff>
+`;
+
+const WRITE_XLIFF_V1 = `<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0" srcLang="en">
+  <file original="ng.template" id="ngi18n">
+    <unit id="1933478729560469763">
+      <notes>
+        <note category="location">file.ts:2</note>
+      </notes>
+      <segment>
+        <source>translatable attribute</source>
+      </segment>
+    </unit>
+    <unit id="6538030541320483217">
+      <notes>
+        <note category="location">file.ts:3</note>
+      </notes>
+      <segment>
+        <source>translatable element <pc id="0" equivStart="START_BOLD_TEXT" equivEnd="CLOSE_BOLD_TEXT" type="fmt" dispStart="&lt;b&gt;" dispEnd="&lt;/b&gt;">with placeholders</pc> <ph id="1" equiv="INTERPOLATION" disp="{{ interpolation}}"/></source>
+      </segment>
+    </unit>
+    <unit id="2981514368455622387">
+      <notes>
+        <note category="location">file.ts:4</note>
+      </notes>
+      <segment>
+        <source>{VAR_PLURAL, plural, =0 {<pc id="0" equivStart="START_PARAGRAPH" equivEnd="CLOSE_PARAGRAPH" type="other" dispStart="&lt;p&gt;" dispEnd="&lt;/p&gt;">test</pc>} }</source>
+      </segment>
+    </unit>
+    <unit id="i">
+      <notes>
+        <note category="description">d</note>
+        <note category="meaning">m</note>
+        <note category="location">file.ts:5</note>
+      </notes>
+      <segment>
+        <source>foo</source>
+      </segment>
+    </unit>
+    <unit id="1829233037284499304">
       <notes>
         <note category="description">nested</note>
         <note category="location">file.ts:6</note>
@@ -227,35 +320,40 @@ lignes</target>
 `;
 
 export function main(): void {
-  const serializer = new Xliff2(I18nVersion.V0);
-
-  function toXliff(html: string, locale: string | null = null): string {
+  function toXliff(version: I18nVersion, html: string, locale: string | null = null): string {
+    const serializer = new Xliff2(version);
     const catalog = new MessageBundle(new HtmlParser, [], {}, locale);
     catalog.updateFromTemplate(html, 'file.ts', DEFAULT_INTERPOLATION_CONFIG);
     return catalog.write(serializer);
   }
 
-  function loadAsMap(xliff: string): {[id: string]: string} {
-    const {i18nNodesByMsgId} = serializer.load(xliff, 'url');
-
+  function load(xliff: string): {msgMap: {[id: string]: string}, locale: string | null} {
+    const serializer = new Xliff2(I18nVersion.V0);
+    const {i18nNodesByMsgId, locale} = serializer.load(xliff, 'url');
     const msgMap: {[id: string]: string} = {};
     Object.keys(i18nNodesByMsgId)
         .forEach(id => msgMap[id] = serializeNodes(i18nNodesByMsgId[id]).join(''));
 
-    return msgMap;
+    return {msgMap, locale};
   }
 
   describe('XLIFF 2.0 serializer', () => {
     describe('write', () => {
-      it('should write a valid xliff 2.0 file',
-         () => { expect(toXliff(HTML)).toEqual(WRITE_XLIFF); });
-      it('should write a valid xliff 2.0 file with a source language',
-         () => { expect(toXliff(HTML, 'fr')).toContain('srcLang="fr"'); });
+      it('should write a valid I18nVersion.V0 xliff 2.0 file',
+         () => { expect(toXliff(I18nVersion.V0, HTML)).toEqual(WRITE_XLIFF_V0); });
+
+      it('should write a valid I18nVersion.V1 xliff 2.0 file',
+         () => { expect(toXliff(I18nVersion.V1, HTML)).toEqual(WRITE_XLIFF_V1); });
+
+      it('should write a valid xliff 2.0 file with a source language', () => {
+        expect(toXliff(I18nVersion.V0, HTML, 'fr')).toContain('srcLang="fr"');
+        expect(toXliff(I18nVersion.V1, HTML, 'fr')).toContain('srcLang="fr"');
+      });
     });
 
     describe('load', () => {
       it('should load XLIFF files', () => {
-        expect(loadAsMap(LOAD_XLIFF)).toEqual({
+        expect(load(LOAD_XLIFF).msgMap).toEqual({
           '1933478729560469763': 'etubirtta elbatalsnart',
           '7056919470098446707':
               '<ph name="INTERPOLATION"/> <ph name="START_BOLD_TEXT"/>sredlohecalp htiw<ph name="CLOSE_BOLD_TEXT"/> tnemele elbatalsnart',
@@ -277,7 +375,7 @@ lignes`
       });
 
       it('should return the target locale',
-         () => { expect(serializer.load(LOAD_XLIFF, 'url').locale).toEqual('fr'); });
+         () => { expect(load(LOAD_XLIFF).locale).toEqual('fr'); });
     });
 
     describe('structure errors', () => {
@@ -295,7 +393,7 @@ lignes`
 </xliff>`;
 
         expect(() => {
-          loadAsMap(XLIFF);
+          load(XLIFF);
         }).toThrowError(/The XLIFF file version 1.2 is not compatible with XLIFF 2.0 serializer/);
       });
 
@@ -311,9 +409,7 @@ lignes`
   </file>
 </xliff>`;
 
-        expect(() => {
-          loadAsMap(XLIFF);
-        }).toThrowError(/Message missingtarget misses a translation/);
+        expect(() => { load(XLIFF); }).toThrowError(/Message missingtarget misses a translation/);
       });
 
 
@@ -330,7 +426,7 @@ lignes`
   </file>
 </xliff>`;
 
-        expect(() => { loadAsMap(XLIFF); }).toThrowError(/<unit> misses the "id" attribute/);
+        expect(() => { load(XLIFF); }).toThrowError(/<unit> misses the "id" attribute/);
       });
 
       it('should throw on duplicate unit id', () => {
@@ -352,9 +448,7 @@ lignes`
   </file>
 </xliff>`;
 
-        expect(() => {
-          loadAsMap(XLIFF);
-        }).toThrowError(/Duplicated translations for msg deadbeef/);
+        expect(() => { load(XLIFF); }).toThrowError(/Duplicated translations for msg deadbeef/);
       });
     });
 
@@ -372,7 +466,7 @@ lignes`
   </file>
 </xliff>`;
 
-        expect(() => { loadAsMap(XLIFF); })
+        expect(() => { load(XLIFF); })
             .toThrowError(new RegExp(
                 escapeRegExp(`[ERROR ->]<b>msg should contain only ph and pc tags</b>`)));
       });
@@ -391,7 +485,7 @@ lignes`
 </xliff>`;
 
         expect(() => {
-          loadAsMap(XLIFF);
+          load(XLIFF);
         }).toThrowError(new RegExp(escapeRegExp(`<ph> misses the "equiv" attribute`)));
       });
     });

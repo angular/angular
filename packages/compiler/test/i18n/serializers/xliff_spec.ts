@@ -30,7 +30,7 @@ const HTML = `
 lines</p>
 `;
 
-const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
+const WRITE_XLIFF_V0 = `<?xml version="1.0" encoding="UTF-8" ?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en" datatype="plaintext" original="ng2.template">
     <body>
@@ -116,6 +116,105 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
         </context-group>
       </trans-unit>
       <trans-unit id="fcfa109b0e152d4c217dbc02530be0bcb8123ad1" datatype="html">
+        <source>multi
+lines</source>
+        <target/>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
+`;
+
+const WRITE_XLIFF_V1 = `<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="1933478729560469763" datatype="html">
+        <source>translatable attribute</source>
+        <target/>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">2</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6538030541320483217" datatype="html">
+        <source>translatable element <x id="START_BOLD_TEXT" ctype="x-b"/>with placeholders<x id="CLOSE_BOLD_TEXT" ctype="x-b"/> <x id="INTERPOLATION"/></source>
+        <target/>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2981514368455622387" datatype="html">
+        <source>{VAR_PLURAL, plural, =0 {<x id="START_PARAGRAPH" ctype="x-p"/>test<x id="CLOSE_PARAGRAPH" ctype="x-p"/>} }</source>
+        <target/>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">4</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7999024498831672133" datatype="html">
+        <source>foo</source>
+        <target/>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">6</context>
+        </context-group>
+        <note priority="1" from="description">d</note>
+        <note priority="1" from="meaning">m</note>
+      </trans-unit>
+      <trans-unit id="i" datatype="html">
+        <source>foo</source>
+        <target/>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">7</context>
+        </context-group>
+        <note priority="1" from="description">d</note>
+        <note priority="1" from="meaning">m</note>
+      </trans-unit>
+      <trans-unit id="bar" datatype="html">
+        <source>foo</source>
+        <target/>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">8</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2412327041904226122" datatype="html">
+        <source><x id="LINE_BREAK" ctype="lb"/><x id="TAG_IMG" ctype="image"/><x id="START_TAG_DIV" ctype="x-div"/><x id="CLOSE_TAG_DIV" ctype="x-div"/></source>
+        <target/>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
+        <note priority="1" from="description">ph names</note>
+      </trans-unit>
+      <trans-unit id="baz" datatype="html">
+        <source>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<x id="START_PARAGRAPH" ctype="x-p"/>deeply nested<x id="CLOSE_PARAGRAPH" ctype="x-p"/>} } } }</source>
+        <target/>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2015957479576096115" datatype="html">
+        <source>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<x id="START_PARAGRAPH" ctype="x-p"/>deeply nested<x id="CLOSE_PARAGRAPH" ctype="x-p"/>} } } }</source>
+        <target/>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2340165783990709777" datatype="html">
         <source>multi
 lines</source>
         <target/>
@@ -223,34 +322,41 @@ lignes</target>
 `;
 
 export function main(): void {
-  const serializer = new Xliff(I18nVersion.V0);
-
-  function toXliff(html: string, locale: string | null = null): string {
+  function toXliff(version: I18nVersion, html: string, locale?: string): string {
+    const serializer = new Xliff(version);
     const catalog = new MessageBundle(new HtmlParser, [], {}, locale);
     catalog.updateFromTemplate(html, 'file.ts', DEFAULT_INTERPOLATION_CONFIG);
     return catalog.write(serializer);
   }
 
-  function loadAsMap(xliff: string): {[id: string]: string} {
-    const {i18nNodesByMsgId} = serializer.load(xliff, 'url');
+  function load(xliff: string): {msgMap: {[id: string]: string}, locale: string | null} {
+    const serializer = new Xliff(I18nVersion.V0);
+    const {i18nNodesByMsgId, locale} = serializer.load(xliff, 'url');
 
     const msgMap: {[id: string]: string} = {};
     Object.keys(i18nNodesByMsgId)
         .forEach(id => msgMap[id] = serializeNodes(i18nNodesByMsgId[id]).join(''));
 
-    return msgMap;
+    return {msgMap, locale};
   }
 
   describe('XLIFF serializer', () => {
     describe('write', () => {
-      it('should write a valid xliff file', () => { expect(toXliff(HTML)).toEqual(WRITE_XLIFF); });
-      it('should write a valid xliff file with a source language',
-         () => { expect(toXliff(HTML, 'fr')).toContain('file source-language="fr"'); });
+      it('should write a valid I18nVersion.V0 xliff file',
+         () => { expect(toXliff(I18nVersion.V0, HTML)).toEqual(WRITE_XLIFF_V0); });
+
+      it('should write a valid I18nVersion.V1 xliff file',
+         () => { expect(toXliff(I18nVersion.V1, HTML)).toEqual(WRITE_XLIFF_V1); });
+
+      it('should write a valid xliff file with a source language', () => {
+        expect(toXliff(I18nVersion.V0, HTML, 'fr')).toContain('file source-language="fr"');
+        expect(toXliff(I18nVersion.V1, HTML, 'fr')).toContain('file source-language="fr"');
+      });
     });
 
     describe('load', () => {
       it('should load XLIFF files', () => {
-        expect(loadAsMap(LOAD_XLIFF)).toEqual({
+        expect(load(LOAD_XLIFF).msgMap).toEqual({
           '983775b9a51ce14b036be72d4cfd65d68d64e231': 'etubirtta elbatalsnart',
           'ec1d033f2436133c14ab038286c4f5df4697484a':
               '<ph name="INTERPOLATION"/> footnemele elbatalsnart <ph name="START_BOLD_TEXT"/>sredlohecalp htiw<ph name="CLOSE_BOLD_TEXT"/>',
@@ -273,8 +379,7 @@ lignes`
       });
 
       it('should return the target locale',
-         () => { expect(serializer.load(LOAD_XLIFF, 'url').locale).toEqual('fr'); });
-
+         () => { expect(load(LOAD_XLIFF).locale).toEqual('fr'); });
 
       describe('structure errors', () => {
         it('should throw when a trans-unit has no translation', () => {
@@ -289,9 +394,7 @@ lignes`
   </file>
 </xliff>`;
 
-          expect(() => {
-            loadAsMap(XLIFF);
-          }).toThrowError(/Message missingtarget misses a translation/);
+          expect(() => { load(XLIFF); }).toThrowError(/Message missingtarget misses a translation/);
         });
 
 
@@ -308,9 +411,7 @@ lignes`
   </file>
 </xliff>`;
 
-          expect(() => {
-            loadAsMap(XLIFF);
-          }).toThrowError(/<trans-unit> misses the "id" attribute/);
+          expect(() => { load(XLIFF); }).toThrowError(/<trans-unit> misses the "id" attribute/);
         });
 
         it('should throw on duplicate trans-unit id', () => {
@@ -330,9 +431,7 @@ lignes`
   </file>
 </xliff>`;
 
-          expect(() => {
-            loadAsMap(XLIFF);
-          }).toThrowError(/Duplicated translations for msg deadbeef/);
+          expect(() => { load(XLIFF); }).toThrowError(/Duplicated translations for msg deadbeef/);
         });
       });
 
@@ -350,7 +449,7 @@ lignes`
   </file>
 </xliff>`;
 
-          expect(() => { loadAsMap(XLIFF); })
+          expect(() => { load(XLIFF); })
               .toThrowError(
                   new RegExp(escapeRegExp(`[ERROR ->]<b>msg should contain only ph tags</b>`)));
         });
@@ -369,7 +468,7 @@ lignes`
 </xliff>`;
 
           expect(() => {
-            loadAsMap(XLIFF);
+            load(XLIFF);
           }).toThrowError(new RegExp(escapeRegExp(`<x> misses the "id" attribute`)));
         });
 

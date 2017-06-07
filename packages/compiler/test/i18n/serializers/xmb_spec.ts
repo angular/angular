@@ -26,7 +26,7 @@ export function main(): void {
 <p i18n>multi
 lines</p>`;
 
-    const XMB = `<?xml version="1.0" encoding="UTF-8" ?>
+    const XMB_DTD = `<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE messagebundle [
 <!ELEMENT messagebundle (msg)*>
 <!ATTLIST messagebundle class CDATA #IMPLIED>
@@ -48,7 +48,9 @@ lines</p>`;
 
 <!ELEMENT ex (#PCDATA)>
 ]>
-<messagebundle>
+`;
+
+    const XMB_V0 = XMB_DTD + `<messagebundle>
   <msg id="7056919470098446707"><source>file.ts:3</source>translatable element <ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>with placeholders<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph> <ph name="INTERPOLATION"><ex>INTERPOLATION</ex></ph></msg>
   <msg id="2981514368455622387"><source>file.ts:4</source>{VAR_PLURAL, plural, =0 {<ph name="START_PARAGRAPH"><ex>&lt;p&gt;</ex></ph>test<ph name="CLOSE_PARAGRAPH"><ex>&lt;/p&gt;</ex></ph>} }</msg>
   <msg id="7999024498831672133" desc="d" meaning="m"><source>file.ts:5</source>foo</msg>
@@ -61,24 +63,42 @@ lines</msg>
 </messagebundle>
 `;
 
-    it('should write a valid xmb file', () => {
-      expect(toXmb(HTML, 'file.ts')).toEqual(XMB);
+    const XMB_V1 = XMB_DTD + `<messagebundle>
+  <msg id="6538030541320483217"><source>file.ts:3</source>translatable element <ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>with placeholders<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph> <ph name="INTERPOLATION"><ex>INTERPOLATION</ex></ph></msg>
+  <msg id="2981514368455622387"><source>file.ts:4</source>{VAR_PLURAL, plural, =0 {<ph name="START_PARAGRAPH"><ex>&lt;p&gt;</ex></ph>test<ph name="CLOSE_PARAGRAPH"><ex>&lt;/p&gt;</ex></ph>} }</msg>
+  <msg id="7999024498831672133" desc="d" meaning="m"><source>file.ts:5</source>foo</msg>
+  <msg id="i" desc="d" meaning="m"><source>file.ts:6</source>foo</msg>
+  <msg id="bar"><source>file.ts:7</source>foo</msg>
+  <msg id="baz"><source>file.ts:8</source>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<ph name="START_PARAGRAPH"><ex>&lt;p&gt;</ex></ph>deeply nested<ph name="CLOSE_PARAGRAPH"><ex>&lt;/p&gt;</ex></ph>} } } }</msg>
+  <msg id="2015957479576096115"><source>file.ts:9</source>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<ph name="START_PARAGRAPH"><ex>&lt;p&gt;</ex></ph>deeply nested<ph name="CLOSE_PARAGRAPH"><ex>&lt;/p&gt;</ex></ph>} } } }</msg>
+  <msg id="2340165783990709777"><source>file.ts:10,11</source>multi
+lines</msg>
+</messagebundle>
+`;
+
+    it('should support I18nVersion.V0',
+       () => { expect(toXmb(I18nVersion.V0, HTML, 'file.ts')).toEqual(XMB_V0); });
+
+    it('should support I18nVersion.V1',
+       () => { expect(toXmb(I18nVersion.V1, HTML, 'file.ts')).toEqual(XMB_V1); });
+
+    it('should not depend generate locale dependent content', () => {
       // the locale is not specified in the xmb file
-      expect(toXmb(HTML, 'file.ts', 'fr')).toEqual(XMB);
+      expect(toXmb(I18nVersion.V0, HTML, 'file.ts', 'fr')).toEqual(XMB_V0);
     });
 
     it('should throw when trying to load an xmb file', () => {
       expect(() => {
         const serializer = new Xmb(I18nVersion.V0);
-        serializer.load(XMB, 'url');
+        serializer.load(XMB_V0, 'url');
       }).toThrowError(/Unsupported/);
     });
   });
 }
 
-function toXmb(html: string, url: string, locale: string | null = null): string {
-  const catalog = new MessageBundle(new HtmlParser, [], {}, locale);
-  const serializer = new Xmb(I18nVersion.V0);
+function toXmb(version: I18nVersion, html: string, url: string, locale?: string): string {
+  const catalog = new MessageBundle(new HtmlParser, [], {}, locale || null);
+  const serializer = new Xmb(version);
 
   catalog.updateFromTemplate(html, url, DEFAULT_INTERPOLATION_CONFIG);
 
