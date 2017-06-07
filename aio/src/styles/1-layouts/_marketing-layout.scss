@@ -440,6 +440,9 @@ header.bckground-sky.l-relative {
     font-size: 24px;
     font-weight: 300;
     color: white;
+    margin: 0;
+    -webkit-margin-before: 0;
+    -webkit-margin-after: 0;
 
     @media (max-width: 600px) {
       font-size: 18px;
