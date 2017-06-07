@@ -1,5 +1,5 @@
 import {fakeAsync, async, tick, ComponentFixture, TestBed} from '@angular/core/testing';
-import {Component, ViewChild} from '@angular/core';
+import {Component, ElementRef, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {MdSidenav, MdSidenavModule, MdSidenavToggleResult, MdSidenavContainer} from './index';
 import {A11yModule} from '../core/a11y/index';
@@ -310,19 +310,20 @@ describe('MdSidenav', () => {
       expect(testComponent.closeCount).toBe(0);
     }));
 
-    it('should restore focus to the trigger element on close', fakeAsync(() => {
+    it('should restore focus on close if focus is inside sidenav', fakeAsync(() => {
       let fixture = TestBed.createComponent(BasicTestApp);
       let sidenav: MdSidenav = fixture.debugElement
         .query(By.directive(MdSidenav)).componentInstance;
-      let trigger = document.createElement('button');
+      let openButton = fixture.componentInstance.openButton.nativeElement;
+      let sidenavButton = fixture.componentInstance.sidenavButton.nativeElement;
 
-      document.body.appendChild(trigger);
-      trigger.focus();
+      openButton.focus();
       sidenav.open();
 
       fixture.detectChanges();
       endSidenavTransition(fixture);
       tick();
+      sidenavButton.focus();
 
       sidenav.close();
 
@@ -331,9 +332,32 @@ describe('MdSidenav', () => {
       tick();
 
       expect(document.activeElement)
-          .toBe(trigger, 'Expected focus to be restored to the trigger on close.');
+          .toBe(openButton, 'Expected focus to be restored to the open button on close.');
+    }));
 
-      trigger.parentNode.removeChild(trigger);
+    it('should not restore focus on close if focus is outside sidenav', fakeAsync(() => {
+      let fixture = TestBed.createComponent(BasicTestApp);
+      let sidenav: MdSidenav = fixture.debugElement
+          .query(By.directive(MdSidenav)).componentInstance;
+      let openButton = fixture.componentInstance.openButton.nativeElement;
+      let closeButton = fixture.componentInstance.closeButton.nativeElement;
+
+      openButton.focus();
+      sidenav.open();
+
+      fixture.detectChanges();
+      endSidenavTransition(fixture);
+      tick();
+      closeButton.focus();
+
+      sidenav.close();
+
+      fixture.detectChanges();
+      endSidenavTransition(fixture);
+      tick();
+
+      expect(document.activeElement)
+          .toBe(closeButton, 'Expected focus not to be restored to the open button on close.');
     }));
   });
 
@@ -508,10 +532,10 @@ class SidenavContainerTwoSidenavTestApp {
                   (open)="open()"
                   (close-start)="closeStart()"
                   (close)="close()">
-        Content.
+        <button #sidenavButton>Content.</button>
       </md-sidenav>
-      <button (click)="sidenav.open()" class="open"></button>
-      <button (click)="sidenav.close()" class="close"></button>
+      <button (click)="sidenav.open()" class="open" #openButton></button>
+      <button (click)="sidenav.close()" class="close" #closeButton></button>
     </md-sidenav-container>`,
 })
 class BasicTestApp {
@@ -520,6 +544,10 @@ class BasicTestApp {
   closeStartCount: number = 0;
   closeCount: number = 0;
   backdropClickedCount: number = 0;
+
+  @ViewChild('sidenavButton') sidenavButton: ElementRef;
+  @ViewChild('openButton') openButton: ElementRef;
+  @ViewChild('closeButton') closeButton: ElementRef;
 
   openStart() {
     this.openStartCount++;
