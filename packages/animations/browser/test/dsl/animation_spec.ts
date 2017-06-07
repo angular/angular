@@ -358,6 +358,56 @@ export function main() {
           ]);
         });
 
+        it('should substitute in values that are defined as parameters for inner areas of a sequence',
+           () => {
+             const steps = sequence(
+                 [
+                   sequence(
+                       [
+                         sequence(
+                             [
+                               style({height: '{{ x0 }}px'}),
+                               animate(1000, style({height: '{{ x2 }}px'})),
+                             ],
+                             buildParams({x2: '{{ x1 }}3'})),
+                       ],
+                       buildParams({x1: '{{ x0 }}2'})),
+                 ],
+                 buildParams({x0: '1'}));
+
+             const players = invokeAnimationSequence(rootElement, steps);
+             expect(players.length).toEqual(1);
+             const [player] = players;
+             expect(player.keyframes).toEqual([
+               {offset: 0, height: '1px'}, {offset: 1, height: '123px'}
+             ]);
+           });
+
+        it('should substitute in values that are defined as parameters for reusable animations',
+           () => {
+             const anim = animation([
+               style({height: '{{ start }}'}),
+               animate(1000, style({height: '{{ end }}'})),
+             ]);
+
+             const steps = sequence(
+                 [
+                   sequence(
+                       [
+                         useAnimation(anim, buildParams({start: '{{ a }}', end: '{{ b }}'})),
+                       ],
+                       buildParams({a: '100px', b: '200px'})),
+                 ],
+                 buildParams({a: '0px'}));
+
+             const players = invokeAnimationSequence(rootElement, steps);
+             expect(players.length).toEqual(1);
+             const [player] = players;
+             expect(player.keyframes).toEqual([
+               {offset: 0, height: '100px'}, {offset: 1, height: '200px'}
+             ]);
+           });
+
         it('should throw an error when an input variable is not provided when invoked and is not a default value',
            () => {
              expect(() => {invokeAnimationSequence(rootElement, [style({color: '{{ color }}'})])})
