@@ -34,6 +34,8 @@ import {getMdSelectDynamicMultipleError, getMdSelectNonArrayValueError} from './
 import 'rxjs/add/observable/merge';
 import 'rxjs/add/operator/startWith';
 import 'rxjs/add/operator/filter';
+import {CanColor, mixinColor} from '../core/common-behaviors/color';
+import {CanDisable} from '../core/common-behaviors/disabled';
 
 
 /**
@@ -95,11 +97,19 @@ export class MdSelectChange {
 /** Allowed values for the floatPlaceholder option. */
 export type MdSelectFloatPlaceholderType = 'always' | 'never' | 'auto';
 
+// Boilerplate for applying mixins to MdSelect.
+export class MdSelectBase {
+  constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
+}
+export const _MdSelectMixinBase = mixinColor(MdSelectBase, 'primary');
+
+
 @Component({
   moduleId: module.id,
   selector: 'md-select, mat-select',
   templateUrl: 'select.html',
   styleUrls: ['select.css'],
+  inputs: ['color'],
   encapsulation: ViewEncapsulation.None,
   host: {
     'role': 'listbox',
@@ -122,7 +132,8 @@ export type MdSelectFloatPlaceholderType = 'always' | 'never' | 'auto';
   ],
   exportAs: 'mdSelect',
 })
-export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlValueAccessor {
+export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, OnDestroy, OnInit,
+    ControlValueAccessor, CanColor {
   /** Whether or not the overlay panel is open. */
   private _panelOpen = false;
 
@@ -158,9 +169,6 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
 
   /** Tab index for the element. */
   private _tabIndex: number;
-
-  /** Theme color for the component. */
-  private _color: string;
 
   /**
    * The width of the trigger. Must be saved to set the min width of the overlay panel
@@ -288,17 +296,6 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
   /** Input that can be used to specify the `aria-labelledby` attribute. */
   @Input('aria-labelledby') ariaLabelledby: string = '';
 
-  /** Theme color for the component. */
-  @Input()
-  get color(): string { return this._color; }
-  set color(value: string) {
-    if (value && value !== this._color) {
-      this._renderer.removeClass(this._element.nativeElement, `mat-${this._color}`);
-      this._renderer.addClass(this._element.nativeElement, `mat-${value}`);
-      this._color = value;
-    }
-  }
-
   /** Combined stream of all of the child options' change events. */
   get optionSelectionChanges(): Observable<MdOptionSelectionChange> {
     return Observable.merge(...this.options.map(option => option.onSelectionChange));
@@ -313,10 +310,14 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
   /** Event emitted when the selected value has been changed by the user. */
   @Output() change: EventEmitter<MdSelectChange> = new EventEmitter<MdSelectChange>();
 
-  constructor(private _element: ElementRef, private _renderer: Renderer2,
-              private _viewportRuler: ViewportRuler, private _changeDetectorRef: ChangeDetectorRef,
-              @Optional() private _dir: Dir, @Self() @Optional() public _control: NgControl,
+  constructor(private _viewportRuler: ViewportRuler,
+              private _changeDetectorRef: ChangeDetectorRef,
+              renderer: Renderer2,
+              elementRef: ElementRef,
+              @Optional() private _dir: Dir,
+              @Self() @Optional() public _control: NgControl,
               @Attribute('tabindex') tabIndex: string) {
+    super(renderer, elementRef);
 
     if (this._control) {
       this._control.valueAccessor = this;
@@ -327,7 +328,6 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
 
   ngOnInit() {
     this._selectionModel = new SelectionModel<MdOption>(this.multiple, null, false);
-    this.color = this.color || 'primary';
   }
 
   ngAfterContentInit() {
@@ -742,7 +742,7 @@ export class MdSelect implements AfterContentInit, OnDestroy, OnInit, ControlVal
 
   /** Focuses the host element when the panel closes. */
   private _focusHost(): void {
-    this._element.nativeElement.focus();
+    this._elementRef.nativeElement.focus();
   }
 
   /** Gets the index of the provided option in the option list. */

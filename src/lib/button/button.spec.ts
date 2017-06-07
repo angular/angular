@@ -38,6 +38,12 @@ describe('MdButton', () => {
     fixture.detectChanges();
     expect(buttonDebugElement.nativeElement.classList.contains('mat-accent')).toBe(true);
     expect(aDebugElement.nativeElement.classList.contains('mat-accent')).toBe(true);
+
+    testComponent.buttonColor = null;
+    fixture.detectChanges();
+
+    expect(buttonDebugElement.nativeElement.classList).not.toContain('mat-accent');
+    expect(aDebugElement.nativeElement.classList).not.toContain('mat-accent');
   });
 
   it('should should not clear previous defined classes', () => {
@@ -59,7 +65,6 @@ describe('MdButton', () => {
     expect(buttonDebugElement.nativeElement.classList.contains('mat-primary')).toBe(false);
     expect(buttonDebugElement.nativeElement.classList.contains('mat-accent')).toBe(true);
     expect(buttonDebugElement.nativeElement.classList.contains('custom-class')).toBe(true);
-
   });
 
   // Regular button tests

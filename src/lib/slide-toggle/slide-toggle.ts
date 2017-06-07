@@ -24,6 +24,7 @@ import {
 } from '../core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {mixinDisabled, CanDisable} from '../core/common-behaviors/disabled';
+import {CanColor, mixinColor} from '../core/common-behaviors/color';
 
 
 export const MD_SLIDE_TOGGLE_VALUE_ACCESSOR: any = {
@@ -44,8 +45,10 @@ let nextId = 0;
 
 
 // Boilerplate for applying mixins to MdSlideToggle.
-export class MdSlideToggleBase { }
-export const _MdSlideToggleMixinBase = mixinDisabled(MdSlideToggleBase);
+export class MdSlideToggleBase {
+  constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
+}
+export const _MdSlideToggleMixinBase = mixinColor(mixinDisabled(MdSlideToggleBase), 'accent');
 
 /** Represents a slidable "switch" toggle that can be moved between on and off. */
 @Component({
@@ -60,19 +63,18 @@ export const _MdSlideToggleMixinBase = mixinDisabled(MdSlideToggleBase);
   templateUrl: 'slide-toggle.html',
   styleUrls: ['slide-toggle.css'],
   providers: [MD_SLIDE_TOGGLE_VALUE_ACCESSOR],
-  inputs: ['disabled'],
+  inputs: ['disabled', 'color'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MdSlideToggle extends _MdSlideToggleMixinBase
-    implements OnDestroy, AfterContentInit, ControlValueAccessor, CanDisable {
+    implements OnDestroy, AfterContentInit, ControlValueAccessor, CanDisable, CanColor {
   private onChange = (_: any) => {};
   private onTouched = () => {};
 
   // A unique id for the slide-toggle. By default the id is auto-generated.
   private _uniqueId = `md-slide-toggle-${++nextId}`;
   private _checked: boolean = false;
-  private _color: string;
   private _slideRenderer: SlideToggleRenderer = null;
   private _required: boolean = false;
   private _disableRipple: boolean = false;
@@ -120,11 +122,11 @@ export class MdSlideToggle extends _MdSlideToggleMixinBase
   /** Reference to the ripple directive on the thumb container. */
   @ViewChild(MdRipple) _ripple: MdRipple;
 
-  constructor(private _elementRef: ElementRef,
-              private _renderer: Renderer2,
+  constructor(elementRef: ElementRef,
+              renderer: Renderer2,
               private _focusOriginMonitor: FocusOriginMonitor,
               private _changeDetectorRef: ChangeDetectorRef) {
-    super();
+    super(renderer, elementRef);
   }
 
   ngAfterContentInit() {
@@ -210,13 +212,6 @@ export class MdSlideToggle extends _MdSlideToggleMixinBase
     }
   }
 
-  /** The color of the slide-toggle. Can be primary, accent, or warn. */
-  @Input()
-  get color(): string { return this._color; }
-  set color(value: string) {
-    this._updateColor(value);
-  }
-
   /** Toggles the checked state of the slide-toggle. */
   toggle() {
     this.checked = !this.checked;
@@ -234,22 +229,6 @@ export class MdSlideToggle extends _MdSlideToggleMixinBase
       if (this._focusRipple) {
         this._focusRipple.fadeOut();
         this._focusRipple = null;
-      }
-    }
-  }
-
-  private _updateColor(newColor: string) {
-    this._setElementColor(this._color, false);
-    this._setElementColor(newColor, true);
-    this._color = newColor;
-  }
-
-  private _setElementColor(color: string, isAdd: boolean) {
-    if (color != null && color != '') {
-      if (isAdd) {
-        this._renderer.addClass(this._elementRef.nativeElement, `mat-${color}`);
-      } else {
-        this._renderer.removeClass(this._elementRef.nativeElement, `mat-${color}`);
       }
     }
   }

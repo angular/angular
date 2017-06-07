@@ -11,6 +11,14 @@ import {
   AfterViewChecked,
 } from '@angular/core';
 import {MdIconRegistry} from './icon-registry';
+import {CanColor, mixinColor} from '../core/common-behaviors/color';
+
+
+// Boilerplate for applying mixins to MdIcon.
+export class MdIconBase {
+  constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
+}
+export const _MdIconMixinBase = mixinColor(MdIconBase);
 
 
 /**
@@ -51,6 +59,7 @@ import {MdIconRegistry} from './icon-registry';
   template: '<ng-content></ng-content>',
   selector: 'md-icon, mat-icon',
   styleUrls: ['icon.css'],
+  inputs: ['color'],
   host: {
     'role': 'img',
     '[class.mat-icon]': 'true',
@@ -58,8 +67,8 @@ import {MdIconRegistry} from './icon-registry';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MdIcon implements OnChanges, OnInit, AfterViewChecked {
-  private _color: string;
+export class MdIcon extends _MdIconMixinBase implements OnChanges, OnInit, AfterViewChecked,
+    CanColor {
 
   /** Name of the icon in the SVG icon set. */
   @Input() svgIcon: string;
@@ -76,34 +85,14 @@ export class MdIcon implements OnChanges, OnInit, AfterViewChecked {
   /** Screenreader label for the icon. */
   @Input('aria-label') hostAriaLabel: string = '';
 
-  /** Color of the icon. */
-  @Input()
-  get color(): string { return this._color; }
-  set color(value: string) { this._updateColor(value); }
-
   private _previousFontSetClass: string;
   private _previousFontIconClass: string;
   private _previousAriaLabel: string;
 
-  constructor(
-      private _elementRef: ElementRef,
-      private _renderer: Renderer2,
-      private _mdIconRegistry: MdIconRegistry) { }
-
-  _updateColor(newColor: string) {
-    this._setElementColor(this._color, false);
-    this._setElementColor(newColor, true);
-    this._color = newColor;
-  }
-
-  _setElementColor(color: string, isAdd: boolean) {
-    if (color != null && color != '') {
-      if (isAdd) {
-        this._renderer.addClass(this._elementRef.nativeElement, `mat-${color}`);
-      } else {
-        this._renderer.removeClass(this._elementRef.nativeElement, `mat-${color}`);
-      }
-    }
+  constructor(private _mdIconRegistry: MdIconRegistry,
+              renderer: Renderer2,
+              elementRef: ElementRef) {
+    super(renderer, elementRef);
   }
 
   /**

@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import {coerceBooleanProperty, FocusOriginMonitor, Platform} from '../core';
 import {mixinDisabled, CanDisable} from '../core/common-behaviors/disabled';
+import {CanColor, mixinColor} from '../core/common-behaviors/color';
 
 
 // TODO(kara): Convert attribute selectors to classes when attr maps become available
@@ -71,8 +72,10 @@ export class MdMiniFabCssMatStyler {}
 
 
 // Boilerplate for applying mixins to MdButton.
-export class MdButtonBase { }
-export const _MdButtonMixinBase = mixinDisabled(MdButtonBase);
+export class MdButtonBase {
+  constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
+}
+export const _MdButtonMixinBase = mixinColor(mixinDisabled(MdButtonBase));
 
 
 /**
@@ -89,13 +92,11 @@ export const _MdButtonMixinBase = mixinDisabled(MdButtonBase);
   },
   templateUrl: 'button.html',
   styleUrls: ['button.css'],
-  inputs: ['disabled'],
+  inputs: ['disabled', 'color'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MdButton extends _MdButtonMixinBase implements OnDestroy, CanDisable {
-  private _color: string;
-
+export class MdButton extends _MdButtonMixinBase implements OnDestroy, CanDisable, CanColor {
   /** Whether the button is round. */
   _isRoundButton: boolean = this._hasAttributeWithPrefix('fab', 'mini-fab');
 
@@ -110,38 +111,16 @@ export class MdButton extends _MdButtonMixinBase implements OnDestroy, CanDisabl
   get disableRipple() { return this._disableRipple; }
   set disableRipple(v) { this._disableRipple = coerceBooleanProperty(v); }
 
-  constructor(
-      private _elementRef: ElementRef,
-      private _renderer: Renderer2,
-      private _platform: Platform,
-      private _focusOriginMonitor: FocusOriginMonitor) {
-    super();
+  constructor(renderer: Renderer2,
+              elementRef: ElementRef,
+              private _platform: Platform,
+              private _focusOriginMonitor: FocusOriginMonitor) {
+    super(renderer, elementRef);
     this._focusOriginMonitor.monitor(this._elementRef.nativeElement, this._renderer, true);
   }
 
   ngOnDestroy() {
     this._focusOriginMonitor.stopMonitoring(this._elementRef.nativeElement);
-  }
-
-  /** The color of the button. Can be `primary`, `accent`, or `warn`. */
-  @Input()
-  get color(): string { return this._color; }
-  set color(value: string) { this._updateColor(value); }
-
-  _updateColor(newColor: string) {
-    this._setElementColor(this._color, false);
-    this._setElementColor(newColor, true);
-    this._color = newColor;
-  }
-
-  _setElementColor(color: string, isAdd: boolean) {
-    if (color != null && color != '') {
-      if (isAdd) {
-        this._renderer.addClass(this._getHostElement(), `mat-${color}`);
-      } else {
-        this._renderer.removeClass(this._getHostElement(), `mat-${color}`);
-      }
-    }
   }
 
   /** Focuses the button. */
@@ -189,18 +168,18 @@ export class MdButton extends _MdButtonMixinBase implements OnDestroy, CanDisabl
     '[attr.aria-disabled]': '_isAriaDisabled',
     '(click)': '_haltDisabledEvents($event)',
   },
-  inputs: ['disabled'],
+  inputs: ['disabled', 'color'],
   templateUrl: 'button.html',
   styleUrls: ['button.css'],
   encapsulation: ViewEncapsulation.None
 })
 export class MdAnchor extends MdButton {
   constructor(
-      elementRef: ElementRef,
-      renderer: Renderer2,
       platform: Platform,
-      focusOriginMonitor: FocusOriginMonitor) {
-    super(elementRef, renderer, platform, focusOriginMonitor);
+      focusOriginMonitor: FocusOriginMonitor,
+      elementRef: ElementRef,
+      renderer: Renderer2) {
+    super(renderer, elementRef, platform, focusOriginMonitor);
   }
 
   /** @docs-private */

@@ -1,8 +1,5 @@
 import {coerceBooleanProperty} from '../coercion/boolean-property';
-
-
-/** @docs-private */
-export type Constructor<T> = new(...args: any[]) => T;
+import {Constructor} from './constructor';
 
 /** @docs-private */
 export interface CanDisable {

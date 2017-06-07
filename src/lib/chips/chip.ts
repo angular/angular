@@ -11,10 +11,18 @@ import {
 
 import {Focusable} from '../core/a11y/focus-key-manager';
 import {coerceBooleanProperty} from '../core/coercion/boolean-property';
+import {CanColor, mixinColor} from '../core/common-behaviors/color';
 
 export interface MdChipEvent {
   chip: MdChip;
 }
+
+// Boilerplate for applying mixins to MdChip.
+export class MdChipBase {
+  constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
+}
+export const _MdChipMixinBase = mixinColor(MdChipBase, 'primary');
+
 
 /**
  * Material design styled Chip component. Used inside the MdChipList component.
@@ -23,6 +31,7 @@ export interface MdChipEvent {
   selector: `md-basic-chip, [md-basic-chip], md-chip, [md-chip],
              mat-basic-chip, [mat-basic-chip], mat-chip, [mat-chip]`,
   template: `<ng-content></ng-content>`,
+  inputs: ['color'],
   host: {
     '[class.mat-chip]': 'true',
     'tabindex': '-1',
@@ -35,16 +44,13 @@ export interface MdChipEvent {
     '(click)': '_handleClick($event)'
   }
 })
-export class MdChip implements Focusable, OnInit, OnDestroy {
+export class MdChip extends _MdChipMixinBase implements Focusable, OnInit, OnDestroy, CanColor {
 
   /** Whether or not the chip is disabled. Disabled chips cannot be focused. */
   protected _disabled: boolean = null;
 
   /** Whether or not the chip is selected. */
   protected _selected: boolean = false;
-
-  /** The palette color of selected chips. */
-  protected _color: string = 'primary';
 
   /** Emitted when the chip is focused. */
   onFocus = new EventEmitter<MdChipEvent>();
@@ -58,11 +64,12 @@ export class MdChip implements Focusable, OnInit, OnDestroy {
   /** Emitted when the chip is destroyed. */
   @Output() destroy = new EventEmitter<MdChipEvent>();
 
-  constructor(protected _renderer: Renderer2, protected _elementRef: ElementRef) { }
+  constructor(renderer: Renderer2, elementRef: ElementRef) {
+    super(renderer, elementRef);
+  }
 
   ngOnInit(): void {
     this._addDefaultCSSClass();
-    this._updateColor(this._color);
   }
 
   ngOnDestroy(): void {
@@ -108,15 +115,6 @@ export class MdChip implements Focusable, OnInit, OnDestroy {
     return this.selected;
   }
 
-  /** The color of the chip. Can be `primary`, `accent`, or `warn`. */
-  @Input() get color(): string {
-    return this._color;
-  }
-
-  set color(value: string) {
-    this._updateColor(value);
-  }
-
   /** Allows for programmatic focusing of the chip. */
   focus(): void {
     this._elementRef.nativeElement.focus();
@@ -145,24 +143,6 @@ export class MdChip implements Focusable, OnInit, OnDestroy {
     if (el.nodeName.toLowerCase() == 'mat-basic-chip' || el.hasAttribute('mat-basic-chip') ||
         el.nodeName.toLowerCase() == 'md-basic-chip' || el.hasAttribute('md-basic-chip')) {
       this._renderer.addClass(el, 'mat-basic-chip');
-    }
-  }
-
-  /** Updates the private _color variable and the native element. */
-  private _updateColor(newColor: string) {
-    this._setElementColor(this._color, false);
-    this._setElementColor(newColor, true);
-    this._color = newColor;
-  }
-
-  /** Sets the mat-color on the native element. */
-  private _setElementColor(color: string, isAdd: boolean) {
-    if (color != null && color != '') {
-      if (isAdd) {
-        this._renderer.addClass(this._elementRef.nativeElement, `mat-${color}`);
-      } else {
-        this._renderer.removeClass(this._elementRef.nativeElement, `mat-${color}`);
-      }
     }
   }
 }

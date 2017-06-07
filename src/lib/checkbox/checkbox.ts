@@ -17,6 +17,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {coerceBooleanProperty} from '../core/coercion/boolean-property';
 import {FocusOrigin, FocusOriginMonitor, MdRipple, RippleRef} from '../core';
 import {mixinDisabled, CanDisable} from '../core/common-behaviors/disabled';
+import {CanColor, mixinColor} from '../core/common-behaviors/color';
 
 
 /** Monotonically increasing integer used to auto-generate unique ids for checkbox components. */
@@ -57,8 +58,10 @@ export class MdCheckboxChange {
 }
 
 // Boilerplate for applying mixins to MdCheckbox.
-export class MdCheckboxBase { }
-export const _MdCheckboxMixinBase = mixinDisabled(MdCheckboxBase);
+export class MdCheckboxBase {
+  constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
+}
+export const _MdCheckboxMixinBase = mixinColor(mixinDisabled(MdCheckboxBase), 'accent');
 
 
 /**
@@ -82,12 +85,12 @@ export const _MdCheckboxMixinBase = mixinDisabled(MdCheckboxBase);
     '[class.mat-checkbox-label-before]': 'labelPosition == "before"',
   },
   providers: [MD_CHECKBOX_CONTROL_VALUE_ACCESSOR],
-  inputs: ['disabled'],
+  inputs: ['disabled', 'color'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MdCheckbox extends _MdCheckboxMixinBase
-    implements ControlValueAccessor, AfterViewInit, OnDestroy, CanDisable {
+    implements ControlValueAccessor, AfterViewInit, OnDestroy, CanColor, CanDisable {
   /**
    * Attached to the aria-label attribute of the host element. In most cases, arial-labelledby will
    * take precedence so this may be omitted.
@@ -183,19 +186,16 @@ export class MdCheckbox extends _MdCheckboxMixinBase
 
   private _indeterminate: boolean = false;
 
-  private _color: string;
-
   private _controlValueAccessorChangeFn: (value: any) => void = (value) => {};
 
   /** Reference to the focused state ripple. */
   private _focusRipple: RippleRef;
 
-  constructor(private _renderer: Renderer2,
-              private _elementRef: ElementRef,
+  constructor(renderer: Renderer2,
+              elementRef: ElementRef,
               private _changeDetectorRef: ChangeDetectorRef,
               private _focusOriginMonitor: FocusOriginMonitor) {
-    super();
-    this.color = 'accent';
+    super(renderer, elementRef);
   }
 
   ngAfterViewInit() {
@@ -244,27 +244,6 @@ export class MdCheckbox extends _MdCheckboxMixinBase
           this.checked ? TransitionCheckState.Checked : TransitionCheckState.Unchecked);
       }
       this.indeterminateChange.emit(this._indeterminate);
-    }
-  }
-
-  /** The color of the button. Can be `primary`, `accent`, or `warn`. */
-  @Input()
-  get color(): string { return this._color; }
-  set color(value: string) { this._updateColor(value); }
-
-  _updateColor(newColor: string) {
-    this._setElementColor(this._color, false);
-    this._setElementColor(newColor, true);
-    this._color = newColor;
-  }
-
-  _setElementColor(color: string, isAdd: boolean) {
-    if (color != null && color != '') {
-      if (isAdd) {
-        this._renderer.addClass(this._elementRef.nativeElement, `mat-${color}`);
-      } else {
-        this._renderer.removeClass(this._elementRef.nativeElement, `mat-${color}`);
-      }
     }
   }
 
