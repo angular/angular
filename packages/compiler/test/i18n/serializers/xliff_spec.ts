@@ -7,6 +7,7 @@
  */
 
 import {escapeRegExp} from '@angular/compiler/src/util';
+import {I18nVersion} from '@angular/core';
 
 import {serializeNodes} from '../../../src/i18n/digest';
 import {MessageBundle} from '../../../src/i18n/message_bundle';
@@ -33,7 +34,7 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en" datatype="plaintext" original="ng2.template">
     <body>
-      <trans-unit id="1933478729560469763" datatype="html">
+      <trans-unit id="983775b9a51ce14b036be72d4cfd65d68d64e231" datatype="html">
         <source>translatable attribute</source>
         <target/>
         <context-group purpose="location">
@@ -41,7 +42,7 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
           <context context-type="linenumber">2</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="6538030541320483217" datatype="html">
+      <trans-unit id="ec1d033f2436133c14ab038286c4f5df4697484a" datatype="html">
         <source>translatable element <x id="START_BOLD_TEXT" ctype="x-b"/>with placeholders<x id="CLOSE_BOLD_TEXT" ctype="x-b"/> <x id="INTERPOLATION"/></source>
         <target/>
         <context-group purpose="location">
@@ -49,7 +50,7 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
           <context context-type="linenumber">3</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="2981514368455622387" datatype="html">
+      <trans-unit id="e2ccf3d131b15f54aa1fcf1314b1ca77c14bfcc2" datatype="html">
         <source>{VAR_PLURAL, plural, =0 {<x id="START_PARAGRAPH" ctype="x-p"/>test<x id="CLOSE_PARAGRAPH" ctype="x-p"/>} }</source>
         <target/>
         <context-group purpose="location">
@@ -57,7 +58,7 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
           <context context-type="linenumber">4</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="7999024498831672133" datatype="html">
+      <trans-unit id="db3e0a6a5a96481f60aec61d98c3eecddef5ac23" datatype="html">
         <source>foo</source>
         <target/>
         <context-group purpose="location">
@@ -89,7 +90,7 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
           <context context-type="linenumber">8</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="2412327041904226122" datatype="html">
+      <trans-unit id="d7fa2d59aaedcaa5309f13028c59af8c85b8c49d" datatype="html">
         <source><x id="LINE_BREAK" ctype="lb"/><x id="TAG_IMG" ctype="image"/><x id="START_TAG_DIV" ctype="x-div"/><x id="CLOSE_TAG_DIV" ctype="x-div"/></source>
         <target/>
         <context-group purpose="location">
@@ -106,7 +107,7 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
           <context context-type="linenumber">10</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="2015957479576096115" datatype="html">
+      <trans-unit id="0e16a673a5a7a135c9f7b957ec2c5c6f6ee6e2c4" datatype="html">
         <source>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<x id="START_PARAGRAPH" ctype="x-p"/>deeply nested<x id="CLOSE_PARAGRAPH" ctype="x-p"/>} } } }</source>
         <target/>
         <context-group purpose="location">
@@ -114,7 +115,7 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
           <context context-type="linenumber">11</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="2340165783990709777" datatype="html">
+      <trans-unit id="fcfa109b0e152d4c217dbc02530be0bcb8123ad1" datatype="html">
         <source>multi
 lines</source>
         <target/>
@@ -222,7 +223,7 @@ lignes</target>
 `;
 
 export function main(): void {
-  const serializer = new Xliff();
+  const serializer = new Xliff(I18nVersion.Version0);
 
   function toXliff(html: string, locale: string | null = null): string {
     const catalog = new MessageBundle(new HtmlParser, [], {}, locale);

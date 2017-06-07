@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "4.2.0-beta.1",
+  "version": "4.2.0-rc.2",
   "dependencies": {
     "@types/angularjs": {
       "version": "1.5.13-alpha"
@@ -11,8 +11,14 @@
     "@types/fs-extra": {
       "version": "0.0.22-alpha"
     },
+    "@types/glob": {
+      "version": "5.0.30"
+    },
     "@types/hammerjs": {
       "version": "2.0.33"
+    },
+    "@types/inquirer": {
+      "version": "0.0.34"
     },
     "@types/jasmine": {
       "version": "2.2.22-alpha"
@@ -20,17 +26,62 @@
     "@types/jquery": {
       "version": "1.10.21-alpha"
     },
+    "@types/minimatch": {
+      "version": "2.0.29"
+    },
     "@types/node": {
       "version": "4.0.22-alpha"
     },
     "@types/q": {
       "version": "0.0.32"
     },
+    "@types/rx": {
+      "version": "4.1.1"
+    },
+    "@types/rx-core": {
+      "version": "4.0.3"
+    },
+    "@types/rx-core-binding": {
+      "version": "4.0.3"
+    },
+    "@types/rx-lite": {
+      "version": "4.0.4"
+    },
+    "@types/rx-lite-aggregates": {
+      "version": "4.0.2"
+    },
+    "@types/rx-lite-async": {
+      "version": "4.0.1"
+    },
+    "@types/rx-lite-backpressure": {
+      "version": "4.0.2"
+    },
+    "@types/rx-lite-coincidence": {
+      "version": "4.0.2"
+    },
+    "@types/rx-lite-experimental": {
+      "version": "4.0.1"
+    },
+    "@types/rx-lite-joinpatterns": {
+      "version": "4.0.1"
+    },
+    "@types/rx-lite-testing": {
+      "version": "4.0.1"
+    },
+    "@types/rx-lite-time": {
+      "version": "4.0.2"
+    },
+    "@types/rx-lite-virtualtime": {
+      "version": "4.0.2"
+    },
     "@types/selenium-webdriver": {
       "version": "2.53.35"
     },
     "@types/systemjs": {
       "version": "0.19.32"
+    },
+    "@types/through": {
+      "version": "0.0.28"
     },
     "abbrev": {
       "version": "1.0.9"

@@ -6,23 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {computeMsgId, decimalIgnorePhDigest, digest, sha1} from '../../src/i18n/digest';
+import {DEFAULT_INTERPOLATION_CONFIG, HtmlParser} from '@angular/compiler';
+
+import {computeMsgId, decimalDigest, decimalIgnorePhDigest, sha1, sha1Digest} from '../../src/i18n/digest';
 import {extractMessages} from '../../src/i18n/extractor_merger';
-import {Message} from '../../src/i18n/i18n_ast';
-import {HtmlParser} from '../../src/ml_parser/html_parser';
-import {DEFAULT_INTERPOLATION_CONFIG} from '../../src/ml_parser/interpolation_config';
+import * as i18n from '../../src/i18n/i18n_ast';
 
 export function main(): void {
   describe('digest', () => {
     describe('digest', () => {
-      function extractFirstMsg(html: string): Message {
-        const htmlParser = new HtmlParser();
-        const parseResult = htmlParser.parse(html, 'digest spec', true);
-        return extractMessages(parseResult.rootNodes, DEFAULT_INTERPOLATION_CONFIG, [], {})
-            .messages[0];
-      }
-      it('must return the ID if it\'s explicit', () => {
-        expect(digest({
+      it(`must return the ID if it's explicit`, () => {
+        expect(sha1Digest({
           id: 'i',
           nodes: [],
           placeholders: {},
@@ -32,6 +26,15 @@ export function main(): void {
           sources: [],
         })).toEqual('i');
       });
+    });
+
+    describe('decimalIgnorePhDigest', () => {
+      function extractFirstMsg(html: string): i18n.Message {
+        const htmlParser = new HtmlParser();
+        const parseResult = htmlParser.parse(html, 'digest spec', true);
+        return extractMessages(parseResult.rootNodes, DEFAULT_INTERPOLATION_CONFIG, [], {})
+            .messages[0];
+      }
 
       it('should returns the same id even if the placeholder/icu expression is different', () => {
         const HTML1 =
@@ -41,12 +44,22 @@ export function main(): void {
         const HTML3 =
             `<div i18n>some element {{placeholder2}} and {count2, plural, =0 {zero} =1 {one} =2 {two} other {<b>many</b>}}</div>`;
 
-        const sourceId = decimalIgnorePhDigest(extractFirstMsg(HTML1));
+        const id = decimalIgnorePhDigest(extractFirstMsg(HTML1));
 
-        expect(decimalIgnorePhDigest(extractFirstMsg(HTML2))).toEqual(sourceId);
-        expect(decimalIgnorePhDigest(extractFirstMsg(HTML3))).toEqual(sourceId);
+        expect(decimalIgnorePhDigest(extractFirstMsg(HTML2))).toEqual(id);
+        expect(decimalIgnorePhDigest(extractFirstMsg(HTML3))).toEqual(id);
       });
 
+      it('should generate different ids from other digest functions', () => {
+        const HTML =
+            `<div i18n>some element {{placeholder}} and {count, plural, =0 {zero} =1 {one} =2 {two} other {<b>many</b>}}</div>`;
+
+        expect(sha1Digest(extractFirstMsg(HTML))).not.toEqual(decimalDigest(extractFirstMsg(HTML)));
+        expect(decimalIgnorePhDigest(extractFirstMsg(HTML)))
+            .not.toEqual(decimalDigest(extractFirstMsg(HTML)));
+        expect(sha1Digest(extractFirstMsg(HTML)))
+            .not.toEqual(decimalIgnorePhDigest(extractFirstMsg(HTML)));
+      });
     });
 
     describe('sha1', () => {

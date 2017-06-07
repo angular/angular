@@ -10,7 +10,7 @@
 /**
  * Extract i18n messages from source code
  */
-import {ViewEncapsulation, ɵConsole as Console} from '@angular/core';
+import {I18nVersion, ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 
 import {analyzeAndValidateNgModules, extractProgramSymbols} from '../aot/compiler';
 import {StaticReflector} from '../aot/static_reflector';
@@ -85,9 +85,10 @@ export class Extractor {
         });
   }
 
-  static create(host: ExtractorHost, locale: string|null):
+  static create(host: ExtractorHost, locale: string|null, version: I18nVersion):
       {extractor: Extractor, staticReflector: StaticReflector} {
-    const htmlParser = new I18NHtmlParser(new HtmlParser());
+    const htmlParser =
+        new I18NHtmlParser(new HtmlParser(), undefined, undefined, undefined, undefined, version);
 
     const urlResolver = createOfflineCompileUrlResolver();
     const symbolCache = new StaticSymbolCache();

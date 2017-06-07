@@ -10,6 +10,7 @@ import {MessageBundle} from '@angular/compiler/src/i18n/message_bundle';
 import {Xmb} from '@angular/compiler/src/i18n/serializers/xmb';
 import {HtmlParser} from '@angular/compiler/src/ml_parser/html_parser';
 import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/interpolation_config';
+import {I18nVersion} from '@angular/core';
 
 export function main(): void {
   describe('XMB serializer', () => {
@@ -48,7 +49,7 @@ lines</p>`;
 <!ELEMENT ex (#PCDATA)>
 ]>
 <messagebundle>
-  <msg id="6538030541320483217"><source>file.ts:3</source>translatable element <ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>with placeholders<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph> <ph name="INTERPOLATION"><ex>INTERPOLATION</ex></ph></msg>
+  <msg id="7056919470098446707"><source>file.ts:3</source>translatable element <ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>with placeholders<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph> <ph name="INTERPOLATION"><ex>INTERPOLATION</ex></ph></msg>
   <msg id="2981514368455622387"><source>file.ts:4</source>{VAR_PLURAL, plural, =0 {<ph name="START_PARAGRAPH"><ex>&lt;p&gt;</ex></ph>test<ph name="CLOSE_PARAGRAPH"><ex>&lt;/p&gt;</ex></ph>} }</msg>
   <msg id="7999024498831672133" desc="d" meaning="m"><source>file.ts:5</source>foo</msg>
   <msg id="i" desc="d" meaning="m"><source>file.ts:6</source>foo</msg>
@@ -68,7 +69,7 @@ lines</msg>
 
     it('should throw when trying to load an xmb file', () => {
       expect(() => {
-        const serializer = new Xmb();
+        const serializer = new Xmb(I18nVersion.Version0);
         serializer.load(XMB, 'url');
       }).toThrowError(/Unsupported/);
     });
@@ -77,7 +78,7 @@ lines</msg>
 
 function toXmb(html: string, url: string, locale: string | null = null): string {
   const catalog = new MessageBundle(new HtmlParser, [], {}, locale);
-  const serializer = new Xmb();
+  const serializer = new Xmb(I18nVersion.Version0);
 
   catalog.updateFromTemplate(html, url, DEFAULT_INTERPOLATION_CONFIG);
 

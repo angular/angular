@@ -55,11 +55,17 @@ cp -v package.json $TMP
   # Copy the html files from source to the emitted output
   cp flat_module/src/*.html node_modules/flat_module/src
 
+  # Test compilation with translations file
   ./node_modules/.bin/ngc -p tsconfig-build.json --i18nFile=src/messages.fi.xlf --locale=fi --i18nFormat=xlf
 
+  # Test extraction
   ./node_modules/.bin/ng-xi18n -p tsconfig-xi18n.json --i18nFormat=xlf --locale=fr
   ./node_modules/.bin/ng-xi18n -p tsconfig-xi18n.json --i18nFormat=xlf2 --outFile=messages.xliff2.xlf
   ./node_modules/.bin/ng-xi18n -p tsconfig-xi18n.json --i18nFormat=xmb --outFile=custom_file.xmb
+
+  # Test migration
+  ./node_modules/.bin/ng-migrate-i18n -p tsconfig-xi18n.json --i18nFormat=xlf --files=src/messages_v0.fr.xlf --outFile=messages_v1.fr.xlf --resolve=auto
+  ./node_modules/.bin/ng-migrate-i18n -p tsconfig-xi18n.json --i18nFormat=xlf --files=src/messages_v0.fr.xlf --mapping=true
 
   # Removed until #15219 is fixed
   # node test/test_summaries.js

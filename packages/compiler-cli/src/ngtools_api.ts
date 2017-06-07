@@ -17,13 +17,14 @@ import {AotCompilerHost, AotSummaryResolver, StaticReflector, StaticSymbolCache,
 import {AngularCompilerOptions, NgcCliOptions} from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
 
-import {CodeGenerator} from './codegen';
+import {CodeGenerator, normalizeI18nFormat, normalizeI18nVersion, normalizeMapping, normalizeResolve, resolveFiles} from './codegen';
 import {CompilerHost, CompilerHostContext, ModuleResolutionHostAdapter} from './compiler_host';
 import {Extractor} from './extractor';
+import {Migrator} from './migrator';
 import {listLazyRoutesOfModule} from './ngtools_impl';
 import {PathMappedCompilerHost} from './path_mapped_compiler_host';
 
-export interface NgTools_InternalApi_NG2_CodeGen_Options {
+export interface NgTools_InternalApi_NG2_Common_Options {
   basePath: string;
   compilerOptions: ts.CompilerOptions;
   program: ts.Program;
@@ -31,15 +32,18 @@ export interface NgTools_InternalApi_NG2_CodeGen_Options {
 
   angularCompilerOptions: AngularCompilerOptions;
 
-  // i18n options.
-  i18nFormat?: string;
-  i18nFile?: string;
-  locale?: string;
-  missingTranslation?: string;
-
   readResource: (fileName: string) => Promise<string>;
 
-  // Every new property under this line should be optional.
+  // i18n options.
+  i18nFormat?: string;
+  i18nVersion?: string;
+}
+
+export interface NgTools_InternalApi_NG2_CodeGen_Options extends
+    NgTools_InternalApi_NG2_Common_Options {
+  locale?: string;
+  i18nFile?: string;
+  missingTranslation?: string;
 }
 
 export interface NgTools_InternalApi_NG2_ListLazyRoutes_Options {
@@ -47,23 +51,21 @@ export interface NgTools_InternalApi_NG2_ListLazyRoutes_Options {
   host: ts.CompilerHost;
   angularCompilerOptions: AngularCompilerOptions;
   entryModule: string;
-
-  // Every new property under this line should be optional.
 }
 
 export interface NgTools_InternalApi_NG_2_LazyRouteMap { [route: string]: string; }
 
-export interface NgTools_InternalApi_NG2_ExtractI18n_Options {
-  basePath: string;
-  compilerOptions: ts.CompilerOptions;
-  program: ts.Program;
-  host: ts.CompilerHost;
-  angularCompilerOptions: AngularCompilerOptions;
-  i18nFormat?: string;
-  readResource: (fileName: string) => Promise<string>;
-  // Every new property under this line should be optional.
+export interface NgTools_InternalApi_NG2_ExtractI18n_Options extends
+    NgTools_InternalApi_NG2_Common_Options {
   locale?: string;
   outFile?: string;
+}
+
+export interface NgTools_InternalApi_NG2_MigrateI18n_Options extends
+    NgTools_InternalApi_NG2_Common_Options {
+  files: string;
+  mapping?: boolean;
+  resolve?: string;
 }
 
 /**
@@ -93,10 +95,11 @@ export class NgTools_InternalApi_NG_2 {
     const hostContext: CompilerHostContext =
         new CustomLoaderModuleResolutionHostAdapter(options.readResource, options.host);
     const cliOptions: NgcCliOptions = {
-      i18nFormat: options.i18nFormat !,
-      i18nFile: options.i18nFile !,
-      locale: options.locale !,
-      missingTranslation: options.missingTranslation !,
+      i18nFormat: options.i18nFormat || null,
+      i18nFile: options.i18nFile || null,
+      locale: options.locale || null,
+      i18nVersion: options.i18nVersion || null,
+      missingTranslation: options.missingTranslation || null,
       basePath: options.basePath
     };
 
@@ -146,10 +149,28 @@ export class NgTools_InternalApi_NG_2 {
         new CustomLoaderModuleResolutionHostAdapter(options.readResource, options.host);
 
     // Create the i18n extractor.
-    const locale = options.locale || null;
     const extractor = Extractor.create(
-        options.angularCompilerOptions, options.program, options.host, locale, hostContext);
+        options.angularCompilerOptions, options.program, options.host, options.locale || null,
+        hostContext, undefined, normalizeI18nVersion(options.i18nVersion));
 
-    return extractor.extract(options.i18nFormat !, options.outFile || null);
+    return extractor.extract(normalizeI18nFormat(options.i18nFormat), options.outFile || null);
+  }
+
+  /**
+   * @internal
+   * @private
+   */
+  static migrateI18n(options: NgTools_InternalApi_NG2_MigrateI18n_Options): Promise<any> {
+    const hostContext: CompilerHostContext =
+        new CustomLoaderModuleResolutionHostAdapter(options.readResource, options.host);
+
+    // Create the i18n migrator.
+    return Migrator
+        .create(
+            options.angularCompilerOptions, options.program, options.host,
+            resolveFiles(options.files), hostContext)
+        .migrate(
+            normalizeI18nFormat(options.i18nFormat), normalizeI18nVersion(options.i18nVersion),
+            normalizeMapping(options.mapping), normalizeResolve(options.resolve));
   }
 }

@@ -26,6 +26,23 @@ export const TRANSLATIONS_FORMAT = new InjectionToken<string>('TranslationsForma
 /**
  * @experimental i18n support is experimental.
  */
+export const I18N_VERSION = new InjectionToken<I18nVersion>('I18nVersion');
+
+/**
+ * @experimental i18n support is experimental.
+ */
+export enum I18nVersion {
+  // up to angular v4
+  Version0 = 0,
+  // version from v5.0:
+  // - all serializers now use the same digest function
+  // - ph and ICU expressions are ignored by digest to generate the id
+  Version1 = 1
+}
+
+/**
+ * @experimental i18n support is experimental.
+ */
 export enum MissingTranslationStrategy {
   Error,
   Warning,

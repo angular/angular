@@ -11,7 +11,7 @@ import * as html from '../ml_parser/ast';
 import {HtmlParser} from '../ml_parser/html_parser';
 import * as i18n from './i18n_ast';
 import {I18nError} from './parse_util';
-import {PlaceholderMapper, Serializer} from './serializers/serializer';
+import {Serializer} from './serializers/serializer';
 
 /**
  * A container for translated messages
@@ -21,12 +21,11 @@ export class TranslationBundle {
 
   constructor(
       private _i18nNodesByMsgId: {[msgId: string]: i18n.Node[]} = {}, locale: string|null,
-      public digest: (m: i18n.Message) => string,
-      public mapperFactory?: (m: i18n.Message) => PlaceholderMapper,
+      public serializer: Serializer,
       missingTranslationStrategy: MissingTranslationStrategy = MissingTranslationStrategy.Warning,
       console?: Console) {
     this._i18nToHtml = new I18nToHtmlVisitor(
-        _i18nNodesByMsgId, locale, digest, mapperFactory !, missingTranslationStrategy, console);
+        _i18nNodesByMsgId, locale, serializer, missingTranslationStrategy, console);
   }
 
   // Creates a `TranslationBundle` by parsing the given `content` with the `serializer`.
@@ -35,10 +34,8 @@ export class TranslationBundle {
       missingTranslationStrategy: MissingTranslationStrategy,
       console?: Console): TranslationBundle {
     const {locale, i18nNodesByMsgId} = serializer.load(content, url);
-    const digestFn = (m: i18n.Message) => serializer.digest(m);
-    const mapperFactory = (m: i18n.Message) => serializer.createNameMapper(m) !;
     return new TranslationBundle(
-        i18nNodesByMsgId, locale, digestFn, mapperFactory, missingTranslationStrategy, console);
+        i18nNodesByMsgId, locale, serializer, missingTranslationStrategy, console);
   }
 
   // Returns the translation as HTML nodes from the given source message.
@@ -52,7 +49,9 @@ export class TranslationBundle {
     return html.nodes;
   }
 
-  has(srcMsg: i18n.Message): boolean { return this.digest(srcMsg) in this._i18nNodesByMsgId; }
+  has(srcMsg: i18n.Message): boolean {
+    return this.serializer.digest(srcMsg) in this._i18nNodesByMsgId;
+  }
 }
 
 class I18nToHtmlVisitor implements i18n.Visitor {
@@ -63,8 +62,7 @@ class I18nToHtmlVisitor implements i18n.Visitor {
 
   constructor(
       private _i18nNodesByMsgId: {[msgId: string]: i18n.Node[]} = {}, private _locale: string|null,
-      private _digest: (m: i18n.Message) => string,
-      private _mapperFactory: (m: i18n.Message) => PlaceholderMapper,
+      private _serializer: Serializer,
       private _missingTranslationStrategy: MissingTranslationStrategy, private _console?: Console) {
   }
 
@@ -145,8 +143,9 @@ class I18nToHtmlVisitor implements i18n.Visitor {
    * - ICU nodes are converted to ICU expressions.
    */
   private _convertToText(srcMsg: i18n.Message): string {
-    const id = this._digest(srcMsg);
-    const mapper = this._mapperFactory ? this._mapperFactory(srcMsg) : null;
+    const id = this._serializer.digest(srcMsg);
+    const mapper =
+        this._serializer.createNameMapper ? this._serializer.createNameMapper(srcMsg) : null;
     let nodes: i18n.Node[];
 
     this._contextStack.push({msg: this._srcMsg, mapper: this._mapper});

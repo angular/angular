@@ -39,8 +39,6 @@ import {AotSummaryResolver} from './summary_resolver';
  */
 export function createAotCompiler(compilerHost: AotCompilerHost, options: AotCompilerOptions):
     {compiler: AotCompiler, reflector: StaticReflector} {
-  let translations: string = options.translations || '';
-
   const urlResolver = createOfflineCompileUrlResolver();
   const symbolCache = new StaticSymbolCache();
   const summaryResolver = new AotSummaryResolver(compilerHost, symbolCache);
@@ -48,7 +46,8 @@ export function createAotCompiler(compilerHost: AotCompilerHost, options: AotCom
   const staticReflector = new StaticReflector(summaryResolver, symbolResolver);
   const console = new Console();
   const htmlParser = new I18NHtmlParser(
-      new HtmlParser(), translations, options.i18nFormat, options.missingTranslation, console);
+      new HtmlParser(), options.translations, options.i18nFormat, options.missingTranslation,
+      console, options.i18nVersion);
   const config = new CompilerConfig({
     defaultEncapsulation: ViewEncapsulation.Emulated,
     useJit: false,

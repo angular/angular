@@ -10,18 +10,36 @@ import {utf8Encode} from '../util';
 
 import * as i18n from './i18n_ast';
 
-export function digest(message: i18n.Message): string {
-  return message.id || sha1(serializeNodes(message.nodes).join('') + `[${message.meaning}]`);
+/**
+ * Digest with a sha1 function
+ * Used by Id generation version 0 for xlf
+ *
+ * @internal
+ * @deprecated from v5 (PR #15621), use decimalIgnorePhDigest instead
+ */
+export function sha1Digest(message: i18n.Message): string {
+  if (message.id) {
+    return message.id;
+  }
+
+  return sha1(serializeNodes(message.nodes).join('') + `[${message.meaning}]`);
 }
 
+/**
+ * Digest with a decimal function while ignoring placeholders
+ * Used by Id generation version 0 for xmb/xtb/xlf2
+ *
+ * @internal
+ * @deprecated from v5 (PR #15621), use decimalIgnorePhDigest instead
+ */
 export function decimalDigest(message: i18n.Message): string {
   if (message.id) {
     return message.id;
   }
 
-  const visitor = new _SerializerIgnoreIcuExpVisitor();
-  const parts = message.nodes.map(a => a.visit(visitor, null));
-  return computeMsgId(parts.join(''), message.meaning);
+  return computeMsgId(
+      serializeNodes(message.nodes, new _SerializerIgnoreIcuExpVisitor()).join(''),
+      message.meaning);
 }
 
 /**
@@ -34,17 +52,15 @@ export function decimalIgnorePhDigest(message: i18n.Message): string {
   if (message.id) {
     return message.id;
   }
-  const visitor = new SerializerIgnorePhVisitor();
-  const parts = message.nodes.map(a => a.visit(visitor, null));
-  return computeMsgId(parts.join(''), message.meaning);
+
+  return computeMsgId(
+      serializeNodes(message.nodes, new SerializerIgnorePhVisitor()).join(''), message.meaning);
 }
 
 /**
  * Serialize the i18n ast to something xml-like in order to generate an UID.
  *
  * The visitor is also used in the i18n parser tests
- *
- * @internal
  */
 class _SerializerVisitor implements i18n.Visitor {
   visitText(text: i18n.Text, context: any): any { return text.value; }
@@ -74,18 +90,14 @@ class _SerializerVisitor implements i18n.Visitor {
   }
 }
 
-const serializerVisitor = new _SerializerVisitor();
-
-export function serializeNodes(nodes: i18n.Node[]): string[] {
-  return nodes.map(a => a.visit(serializerVisitor, null));
+export function serializeNodes(nodes: i18n.Node[], visitor?: i18n.Visitor): string[] {
+  return nodes.map(a => a.visit(visitor || new _SerializerVisitor(), null));
 }
 
 /**
  * Serialize the i18n ast to something xml-like in order to generate an UID.
  *
  * Ignore the ICU expressions so that message IDs stays identical if only the expression changes.
- *
- * @internal
  */
 class _SerializerIgnoreIcuExpVisitor extends _SerializerVisitor {
   visitIcu(icu: i18n.Icu, context: any): any {

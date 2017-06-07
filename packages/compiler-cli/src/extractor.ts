@@ -7,13 +7,11 @@
  */
 
 
-/**
- * Extract i18n messages from source code
- */
 // Must be imported first, because Angular decorators throw on load.
 import 'reflect-metadata';
 
 import * as compiler from '@angular/compiler';
+import {I18nVersion} from '@angular/core';
 import * as tsc from '@angular/tsc-wrapped';
 import * as path from 'path';
 import * as ts from 'typescript';
@@ -21,6 +19,10 @@ import * as ts from 'typescript';
 import {CompilerHost, CompilerHostContext, ModuleResolutionHostAdapter} from './compiler_host';
 import {PathMappedCompilerHost} from './path_mapped_compiler_host';
 
+
+/**
+ * Extract i18n messages from source code
+ */
 export class Extractor {
   constructor(
       private options: tsc.AngularCompilerOptions, private ngExtractor: compiler.Extractor,
@@ -31,10 +33,9 @@ export class Extractor {
     // Checks the format and returns the extension
     const ext = this.getExtension(formatName);
 
-    const promiseBundle = this.extractBundle();
-
-    return promiseBundle.then(bundle => {
-      const content = this.serialize(bundle, formatName);
+    return this.extractBundle().then((bundle: compiler.MessageBundle) => {
+      const serializer = compiler.createSerializer(formatName);
+      const content = this.serialize(bundle, serializer);
       const dstFile = outFile || `messages.${ext}`;
       const dstPath = path.join(this.options.genDir, dstFile);
       this.host.writeFile(dstPath, content, false);
@@ -49,23 +50,7 @@ export class Extractor {
     return this.ngExtractor.extract(files);
   }
 
-  serialize(bundle: compiler.MessageBundle, formatName: string): string {
-    const format = formatName.toLowerCase();
-    let serializer: compiler.Serializer;
-
-    switch (format) {
-      case 'xmb':
-        serializer = new compiler.Xmb();
-        break;
-      case 'xliff2':
-      case 'xlf2':
-        serializer = new compiler.Xliff2();
-        break;
-      case 'xlf':
-      case 'xliff':
-      default:
-        serializer = new compiler.Xliff();
-    }
+  serialize(bundle: compiler.MessageBundle, serializer: compiler.Serializer): string {
     return bundle.write(
         serializer,
         (sourcePath: string) => sourcePath.replace(path.join(this.options.basePath, '/'), ''));
@@ -90,8 +75,8 @@ export class Extractor {
 
   static create(
       options: tsc.AngularCompilerOptions, program: ts.Program, tsCompilerHost: ts.CompilerHost,
-      locale?: string|null, compilerHostContext?: CompilerHostContext,
-      ngCompilerHost?: CompilerHost): Extractor {
+      locale: string|null = null, compilerHostContext?: CompilerHostContext,
+      ngCompilerHost?: CompilerHost, version: I18nVersion = I18nVersion.Version0): Extractor {
     if (!ngCompilerHost) {
       const usePathMapping = !!options.rootDirs && options.rootDirs.length > 0;
       const context = compilerHostContext || new ModuleResolutionHostAdapter(tsCompilerHost);
@@ -99,7 +84,7 @@ export class Extractor {
                                         new CompilerHost(program, options, context);
     }
 
-    const {extractor: ngExtractor} = compiler.Extractor.create(ngCompilerHost, locale || null);
+    const {extractor: ngExtractor} = compiler.Extractor.create(ngCompilerHost, locale, version);
 
     return new Extractor(options, ngExtractor, tsCompilerHost, ngCompilerHost, program);
   }

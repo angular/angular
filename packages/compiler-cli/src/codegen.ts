@@ -11,9 +11,10 @@
  * Intended to be used in a build step.
  */
 import * as compiler from '@angular/compiler';
-import {MissingTranslationStrategy} from '@angular/core';
+import {I18nVersion, MissingTranslationStrategy} from '@angular/core';
 import {AngularCompilerOptions, NgcCliOptions} from '@angular/tsc-wrapped';
 import {readFileSync} from 'fs';
+import * as glob from 'glob';
 import * as ts from 'typescript';
 
 import {CompilerHost, CompilerHostContext, ModuleResolutionHostAdapter} from './compiler_host';
@@ -70,37 +71,95 @@ export class CodeGenerator {
       ngCompilerHost = usePathMapping ? new PathMappedCompilerHost(program, options, context) :
                                         new CompilerHost(program, options, context);
     }
-    let transContent: string = '';
-    if (cliOptions.i18nFile) {
-      if (!cliOptions.locale) {
-        throw new Error(
-            `The translation file (${cliOptions.i18nFile}) locale must be provided. Use the --locale option.`);
-      }
-      transContent = readFileSync(cliOptions.i18nFile, 'utf8');
-    }
-    let missingTranslation = MissingTranslationStrategy.Warning;
-    if (cliOptions.missingTranslation) {
-      switch (cliOptions.missingTranslation) {
-        case 'error':
-          missingTranslation = MissingTranslationStrategy.Error;
-          break;
-        case 'warning':
-          missingTranslation = MissingTranslationStrategy.Warning;
-          break;
-        case 'ignore':
-          missingTranslation = MissingTranslationStrategy.Ignore;
-          break;
-        default:
-          throw new Error(
-              `Unknown option for missingTranslation (${cliOptions.missingTranslation}). Use either error, warning or ignore.`);
-      }
-    }
+
     const {compiler: aotCompiler} = compiler.createAotCompiler(ngCompilerHost, {
-      translations: transContent,
-      i18nFormat: cliOptions.i18nFormat,
-      locale: cliOptions.locale, missingTranslation,
+      translations: getTranslations(cliOptions.i18nFile),
+      missingTranslation: normalizeMissingTranslationStrategy(cliOptions.missingTranslation),
+      i18nFormat: normalizeI18nFormat(cliOptions.i18nFormat),
+      locale: cliOptions.locale,
+      i18nVersion: normalizeI18nVersion(cliOptions.i18nVersion),
       enableLegacyTemplate: options.enableLegacyTemplate !== false,
     });
+
     return new CodeGenerator(options, program, tsCompilerHost, aotCompiler, ngCompilerHost);
   }
+}
+
+/**
+ * @internal
+ */
+export function getTranslations(i18nFile: string | null): string {
+  if (i18nFile) {
+    return readFileSync(i18nFile, 'utf8');
+  }
+  return '';
+}
+
+/**
+ * @internal
+ */
+export function normalizeI18nFormat(i18nFormat?: string | null): string {
+  return i18nFormat || 'xlf';
+}
+
+/**
+ * @internal
+ */
+export function normalizeMapping(mapping?: string | boolean | null): boolean {
+  return typeof mapping !== 'undefined' && mapping !== 'false' && mapping !== null;
+}
+
+/**
+ * @internal
+ */
+export function normalizeResolve(resolve?: string | null): string {
+  return resolve === 'auto' ? 'auto' : 'manual';
+}
+
+/**
+ * @internal
+ */
+export function normalizeMissingTranslationStrategy(missingTranslation?: string | null):
+    MissingTranslationStrategy {
+  if (missingTranslation) {
+    switch (missingTranslation) {
+      case 'error':
+        return MissingTranslationStrategy.Error;
+      case 'warning':
+        return MissingTranslationStrategy.Warning;
+      case 'ignore':
+        return MissingTranslationStrategy.Ignore;
+      default:
+        throw new Error(
+            `Unknown option for missingTranslation (${missingTranslation}). Use either error, warning or ignore.`);
+    }
+  }
+  return MissingTranslationStrategy.Warning;
+}
+
+/**
+ * @internal
+ */
+export function normalizeI18nVersion(i18nVersion?: string | null): I18nVersion {
+  if (i18nVersion) {
+    switch (i18nVersion) {
+      case '0':
+        return I18nVersion.Version0;
+      case '1':
+        return I18nVersion.Version1;
+      default:
+        throw new Error(`Unknown option for i18nVersion (${i18nVersion}). Use either 0 or 1.`);
+    }
+  }
+  return I18nVersion.Version0;
+}
+
+/**
+ * @internal
+ */
+export function resolveFiles(files?: string | null): string[] {
+  if (!files) {
+    throw new Error(`The translations files must be provided. Use the --files option.`);
+  }
+  return glob.sync(files);
 }

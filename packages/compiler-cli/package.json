@@ -6,10 +6,15 @@
   "typings": "index.d.ts",
   "bin": {
     "ngc": "./src/main.js",
-    "ng-xi18n": "./src/extract_i18n.js"
+    "ng-xi18n": "./src/extract_i18n.js",
+    "ng-migrate-i18n": "./src/migrate_i18n.js"
   },
   "dependencies": {
     "@angular/tsc-wrapped": "4.2.0-rc.2",
+    "@types/glob": "^5.0.30",
+    "@types/inquirer": "0.0.34",
+    "glob": "^4.0.6",
+    "inquirer": "^3.0.6",
     "reflect-metadata": "^0.1.2",
     "minimist": "^1.2.0"
   },

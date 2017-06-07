@@ -51,8 +51,6 @@ enum _VisitorMode {
  * This Visitor is used:
  * 1. to extract all the translatable strings from an html AST (see `extract()`),
  * 2. to replace the translatable strings with the actual translations (see `merge()`)
- *
- * @internal
  */
 class _Visitor implements html.Visitor {
   private _depth: number;
@@ -340,7 +338,8 @@ class _Visitor implements html.Visitor {
       }
 
       this._reportError(
-          el, `Translation unavailable for message id="${this._translations.digest(message)}"`);
+          el,
+          `Translation unavailable for message id="${this._translations.serializer.digest(message)}"`);
     }
 
     return [];
@@ -380,12 +379,12 @@ class _Visitor implements html.Visitor {
           } else {
             this._reportError(
                 el,
-                `Unexpected translation for attribute "${attr.name}" (id="${id || this._translations.digest(message)}")`);
+                `Unexpected translation for attribute "${attr.name}" (id="${id || this._translations.serializer.digest(message)}")`);
           }
         } else {
           this._reportError(
               el,
-              `Translation unavailable for attribute "${attr.name}" (id="${id || this._translations.digest(message)}")`);
+              `Translation unavailable for attribute "${attr.name}" (id="${id || this._translations.serializer.digest(message)}")`);
         }
       } else {
         translatedAttributes.push(attr);

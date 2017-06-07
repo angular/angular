@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {I18nVersion} from '@angular/core';
+
 import * as ml from '../../ml_parser/ast';
 import {XmlParser} from '../../ml_parser/xml_parser';
-import {decimalIgnorePhDigest} from '../digest';
+import {decimalDigest, decimalIgnorePhDigest} from '../digest';
 import * as i18n from '../i18n_ast';
 import {I18nError} from '../parse_util';
 
@@ -20,10 +22,12 @@ const _TRANSLATION_TAG = 'translation';
 const _PLACEHOLDER_TAG = 'ph';
 
 export class Xtb extends Serializer {
+  constructor(public version: I18nVersion) { super(); }
+
   write(messages: i18n.Message[], locale: string|null): string { throw new Error('Unsupported'); }
 
   load(content: string, url: string):
-      {locale: string, i18nNodesByMsgId: {[msgId: string]: i18n.Node[]}} {
+      {locale: string | null, i18nNodesByMsgId: {[msgId: string]: i18n.Node[]}} {
     // xtb to xml nodes
     const xtbParser = new XtbParser();
     const {locale, msgIdToHtml, errors} = xtbParser.parse(content, url);
@@ -50,10 +54,15 @@ export class Xtb extends Serializer {
       throw new Error(`xtb parse errors:\n${errors.join('\n')}`);
     }
 
-    return {locale: locale !, i18nNodesByMsgId};
+    return {locale, i18nNodesByMsgId};
   }
 
-  digest(message: i18n.Message): string { return decimalIgnorePhDigest(message); }
+  digest(message: i18n.Message): string {
+    if (this.version === I18nVersion.Version0) {
+      return decimalDigest(message);
+    }
+    return decimalIgnorePhDigest(message);
+  }
 
   createNameMapper(message: i18n.Message): PlaceholderMapper {
     return new SimplePlaceholderMapper(message, toPublicName);

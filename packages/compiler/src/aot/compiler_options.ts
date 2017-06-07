@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MissingTranslationStrategy} from '@angular/core';
+import {I18nVersion, MissingTranslationStrategy} from '@angular/core';
 
 export interface AotCompilerOptions {
-  locale?: string;
+  locale?: string|null;
   i18nFormat?: string;
   translations?: string;
   missingTranslation?: MissingTranslationStrategy;
+  i18nVersion?: I18nVersion;
   enableLegacyTemplate?: boolean;
 }
