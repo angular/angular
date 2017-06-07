@@ -60,7 +60,8 @@ export function getMdAutocompleteMissingPanelError(): Error {
 }
 
 @Directive({
-  selector: 'input[mdAutocomplete], input[matAutocomplete]',
+  selector: 'input[mdAutocomplete], input[matAutocomplete],' +
+  'textarea[mdAutocomplete], textarea[matAutocomplete]',
   host: {
     'role': 'combobox',
     'autocomplete': 'off',
