@@ -49,7 +49,7 @@ let datepickerUid = 0;
   styleUrls: ['datepicker-content.css'],
   host: {
     'class': 'mat-datepicker-content',
-    '[class.mat-datepicker-content-touch]': 'datepicker.touchUi',
+    '[class.mat-datepicker-content-touch]': 'datepicker?.touchUi',
     '(keydown)': '_handleKeydown($event)',
   },
   encapsulation: ViewEncapsulation.None,

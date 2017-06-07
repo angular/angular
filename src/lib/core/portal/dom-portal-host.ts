@@ -29,21 +29,17 @@ export class DomPortalHost extends BasePortalHost {
    */
   attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T> {
     let componentFactory = this._componentFactoryResolver.resolveComponentFactory(portal.component);
-    let componentRef: ComponentRef<T>;
+    let componentRef = componentFactory.create(portal.injector || this._defaultInjector);
+    componentRef.hostView.detectChanges();
 
     // If the portal specifies a ViewContainerRef, we will use that as the attachment point
     // for the component (in terms of Angular's component tree, not rendering).
     // When the ViewContainerRef is missing, we use the factory to create the component directly
     // and then manually attach the view to the application.
     if (portal.viewContainerRef) {
-      componentRef = portal.viewContainerRef.createComponent(
-          componentFactory,
-          portal.viewContainerRef.length,
-          portal.injector || portal.viewContainerRef.parentInjector);
-
+      portal.viewContainerRef.insert(componentRef.hostView);
       this.setDisposeFn(() => componentRef.destroy());
     } else {
-      componentRef = componentFactory.create(portal.injector || this._defaultInjector);
       this._appRef.attachView(componentRef.hostView);
       this.setDisposeFn(() => {
         this._appRef.detachView(componentRef.hostView);
