@@ -53,6 +53,7 @@ aio-top-menu {
 // HOME PAGE OVERRIDE: TOPNAV TOOLBAR HAMBURGER MENU
 aio-shell.page-home md-toolbar.app-toolbar.mat-toolbar {
   background-color: transparent;
+  transition: background-color .2s linear .3s;
 
   @media (max-width: 480px) {
     background-color: $blue;
