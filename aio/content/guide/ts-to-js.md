@@ -66,7 +66,7 @@ Anything you can import from `@angular` is a nested member of this `ng` object:
 <code-tabs>
   <code-pane title="TypeScript" path="ts-to-js/ts/src/app/app.module.ts" region="ng2import">
   </code-pane>
-  <code-pane title="ES6 JavaScript with decorators" path="ts-to-js/js-es6-decorators/src/app/app.module.es6" region="ng2import">
+  <code-pane title="ES6 + Decorators" path="ts-to-js/js-es6-decorators/src/app/app.module.es6" region="ng2import">
   </code-pane>
   <code-pane title="ES6 JavaScript" path="ts-to-js/js-es6/src/app/app.module.es6" region="ng2import">
   </code-pane>
@@ -104,7 +104,7 @@ Here is a `HeroComponent` as it might be defined and "exported" in each of the f
 <code-tabs>
   <code-pane title="TypeScript" path="ts-to-js/ts/src/app/hero.component.ts" region="appexport">
   </code-pane>
-  <code-pane title="ES6 JavaScript with decorators" path="ts-to-js/js-es6-decorators/src/app/hero.component.es6" region="appexport">
+  <code-pane title="ES6 + Decorators" path="ts-to-js/js-es6-decorators/src/app/hero.component.es6" region="appexport">
   </code-pane>
   <code-pane title="ES6 JavaScript" path="ts-to-js/js-es6/src/app/hero.component.es6" region="appexport">
   </code-pane>
@@ -121,7 +121,7 @@ In _ES5_ you use the shared namespace object to access "exported" entities from 
 <code-tabs>
   <code-pane title="TypeScript" path="ts-to-js/ts/src/app/app.module.ts" region="appimport">
   </code-pane>
-  <code-pane title="ES6 JavaScript with decorators" path="ts-to-js/js-es6-decorators/src/app/app.module.es6" region="appimport">
+  <code-pane title="ES6 + Decorators" path="ts-to-js/js-es6-decorators/src/app/app.module.es6" region="appimport">
   </code-pane>
   <code-pane title="ES6 JavaScript" path="ts-to-js/js-es6/src/app/app.module.es6" region="appimport">
   </code-pane>
@@ -167,7 +167,7 @@ Use the constructor function pattern instead, adding methods to the prototype.
 <code-tabs>
   <code-pane title="TypeScript" path="ts-to-js/ts/src/app/hero.component.ts" region="class">
   </code-pane>
-  <code-pane title="ES6 JavaScript with decorators" path="ts-to-js/js-es6-decorators/src/app/hero.component.es6" region="class">
+  <code-pane title="ES6 + Decorators" path="ts-to-js/js-es6-decorators/src/app/hero.component.es6" region="class">
   </code-pane>
   <code-pane title="ES6 JavaScript" path="ts-to-js/js-es6/src/app/hero.component.es6" region="class">
   </code-pane>
@@ -193,7 +193,7 @@ See these variations side-by-side:
 <code-tabs>
   <code-pane title="TypeScript" path="ts-to-js/ts/src/app/hero.component.ts" region="metadata">
   </code-pane>
-  <code-pane title="ES6 JavaScript with decorators" path="ts-to-js/js-es6-decorators/src/app/hero.component.es6" region="metadata">
+  <code-pane title="ES6 + Decorators" path="ts-to-js/js-es6-decorators/src/app/hero.component.es6" region="metadata">
   </code-pane>
   <code-pane title="ES6 JavaScript" path="ts-to-js/js-es6/src/app/hero.component.es6" region="metadata">
   </code-pane>
@@ -213,7 +213,7 @@ The component, `HeroTitleComponent` in this case, then references the template f
 <code-tabs>
   <code-pane title="TypeScript" path="ts-to-js/ts/src/app/hero-title.component.ts" region="templateUrl">
   </code-pane>
-  <code-pane title="ES6 JavaScript with decorators" path="ts-to-js/js-es6-decorators/src/app/hero-title.component.es6" region="templateUrl">
+  <code-pane title="ES6 + Decorators" path="ts-to-js/js-es6-decorators/src/app/hero-title.component.es6" region="templateUrl">
   </code-pane>
   <code-pane title="ES6 JavaScript" path="ts-to-js/js-es6/src/app/hero-title.component.es6" region="templateUrl">
   </code-pane>
@@ -322,7 +322,7 @@ Just implement the methods and ignore interfaces when translating code samples f
 <code-tabs>
   <code-pane title="TypeScript" path="ts-to-js/ts/src/app/hero-lifecycle.component.ts">
   </code-pane>
-  <code-pane title="ES6 JavaScript with decorators" path="ts-to-js/js-es6-decorators/src/app/hero-lifecycle.component.es6">
+  <code-pane title="ES6 + Decorators" path="ts-to-js/js-es6-decorators/src/app/hero-lifecycle.component.es6">
   </code-pane>
   <code-pane title="ES6 JavaScript" path="ts-to-js/js-es6/src/app/hero-lifecycle.component.es6">
   </code-pane>
@@ -354,7 +354,7 @@ combined in the metadata `inputs` and `outputs` _arrays_.
 <code-tabs>
   <code-pane title="TypeScript" path="ts-to-js/ts/src/app/confirm.component.ts">
   </code-pane>
-  <code-pane title="ES6 JavaScript with decorators" path="ts-to-js/js-es6-decorators/src/app/confirm.component.es6">
+  <code-pane title="ES6 + Decorators" path="ts-to-js/js-es6-decorators/src/app/confirm.component.es6">
   </code-pane>
   <code-pane title="ES6 JavaScript" path="ts-to-js/js-es6/src/app/confirm.component.es6">
   </code-pane>
@@ -412,7 +412,7 @@ This format should be familiar to AngularJS developers.
 <code-tabs>
   <code-pane title="TypeScript" path="ts-to-js/ts/src/app/hero-di.component.ts">
   </code-pane>
-  <code-pane title="ES6 JavaScript with decorators" path="ts-to-js/js-es6-decorators/src/app/hero-di.component.es6">
+  <code-pane title="ES6 + Decorators" path="ts-to-js/js-es6-decorators/src/app/hero-di.component.es6">
   </code-pane>
   <code-pane title="ES6 JavaScript" path="ts-to-js/js-es6/src/app/hero-di.component.es6">
   </code-pane>
@@ -430,8 +430,8 @@ In _TypeScript_ and _ES6-with-decorators_, you precede the class constructor par
 by calling the `@Inject()` decorator with the injection token.
 In the following example, the token is the string `'heroName'`.
 
-The other JavaScript dialects add a `parameters` array to the class contructor function.
-Each item constains a new instance of `Inject`:
+The other JavaScript dialects add a `parameters` array to the class constructor function.
+Each item constrains a new instance of `Inject`:
 
 * _Plain ES6_&mdash;each item is a new instance of `Inject(token)` in a sub-array.
 * _ES5_&mdash;simply list the string tokens.
@@ -442,7 +442,7 @@ array as before. Create a new instance of `ng.core.Inject(token)` for each param
 <code-tabs>
   <code-pane title="TypeScript" path="ts-to-js/ts/src/app/hero-di-inject.component.ts">
   </code-pane>
-  <code-pane title="ES6 JavaScript with decorators" path="ts-to-js/js-es6-decorators/src/app/hero-di-inject.component.es6">
+  <code-pane title="ES6 + Decorators" path="ts-to-js/js-es6-decorators/src/app/hero-di-inject.component.es6">
   </code-pane>
   <code-pane title="ES6 JavaScript" path="ts-to-js/js-es6/src/app/hero-di-inject.component.es6">
   </code-pane>
@@ -475,7 +475,7 @@ array as before. Use a nested array to define a parameter's complete injection s
 <code-tabs>
   <code-pane title="TypeScript" path="ts-to-js/ts/src/app/hero-title.component.ts">
   </code-pane>
-  <code-pane title="ES6 JavaScript with decorators" path="ts-to-js/js-es6-decorators/src/app/hero-title.component.es6">
+  <code-pane title="ES6 + Decorators" path="ts-to-js/js-es6-decorators/src/app/hero-title.component.es6">
   </code-pane>
   <code-pane title="ES6 JavaScript" path="ts-to-js/js-es6/src/app/hero-title.component.es6">
   </code-pane>
@@ -522,7 +522,7 @@ The  `host` value is an object whose properties are host property and listener b
 <code-tabs>
   <code-pane title="TypeScript" path="ts-to-js/ts/src/app/hero-host.component.ts">
   </code-pane>
-  <code-pane title="ES6 JavaScript with decorators" path="ts-to-js/js-es6-decorators/src/app/hero-host.component.es6">
+  <code-pane title="ES6 + Decorators" path="ts-to-js/js-es6-decorators/src/app/hero-host.component.es6">
   </code-pane>
   <code-pane title="ES6 JavaScript" path="ts-to-js/js-es6/src/app/hero-host.component.es6">
   </code-pane>
@@ -545,7 +545,7 @@ These particular _TypeScript_ and _ES6_ code snippets happen to be identical.
 <code-tabs>
   <code-pane title="TypeScript" path="ts-to-js/ts/src/app/hero-host-meta.component.ts">
   </code-pane>
-  <code-pane title="ES6 JavaScript with decorators" path="ts-to-js/js-es6-decorators/src/app/hero-host-meta.component.es6">
+  <code-pane title="ES6 + Decorators" path="ts-to-js/js-es6-decorators/src/app/hero-host-meta.component.es6">
   </code-pane>
 </code-tabs>
 
@@ -578,7 +578,7 @@ The `queries` property value is a hash map.
 <code-tabs>
   <code-pane title="TypeScript" path="ts-to-js/ts/src/app/hero-queries.component.ts" region="view">
   </code-pane>
-  <code-pane title="ES6 JavaScript with decorators" path="ts-to-js/js-es6-decorators/src/app/hero-queries.component.es6" region="view">
+  <code-pane title="ES6 + Decorators" path="ts-to-js/js-es6-decorators/src/app/hero-queries.component.es6" region="view">
   </code-pane>
   <code-pane title="ES6 JavaScript" path="ts-to-js/js-es6/src/app/hero-queries.component.es6" region="view">
   </code-pane>
@@ -597,7 +597,7 @@ They can be added in the same way as [`@ViewChild`](api/core/ViewChild) and
 <code-tabs>
   <code-pane title="TypeScript" path="ts-to-js/ts/src/app/hero-queries.component.ts" region="content">
   </code-pane>
-  <code-pane title="ES6 JavaScript with decorators" path="ts-to-js/js-es6-decorators/src/app/hero-queries.component.es6" region="content">
+  <code-pane title="ES6 + Decorators" path="ts-to-js/js-es6-decorators/src/app/hero-queries.component.es6" region="content">
   </code-pane>
   <code-pane title="ES6 JavaScript" path="ts-to-js/js-es6/src/app/hero-queries.component.es6" region="content">
   </code-pane>
