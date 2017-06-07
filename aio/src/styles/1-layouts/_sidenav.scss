@@ -42,12 +42,12 @@ md-sidenav.mat-sidenav.sidenav {
 md-sidenav-container.sidenav-container {
     min-height: 100%;
     height: auto !important;
-    max-width: 82%;
+    max-width: 100%;
     margin: 0;
     transform: none;
 
-    @media (max-width: 800px) {
-      max-width: 100%;
+    &.has-floating-toc {
+      max-width: 82%;
     }
 }
 

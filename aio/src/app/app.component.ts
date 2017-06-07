@@ -12,7 +12,9 @@ import { SearchResultsComponent } from 'app/search/search-results/search-results
 import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
 import { SearchService } from 'app/search/search.service';
 import { SwUpdateNotificationsService } from 'app/sw-updates/sw-update-notifications.service';
+import { TocService } from 'app/shared/toc.service';
 
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { combineLatest } from 'rxjs/observable/combineLatest';
 
 const sideNavView = 'SideNav';
@@ -65,8 +67,9 @@ export class AppComponent implements OnInit {
   topMenuNodes: NavigationNode[];
   topMenuNarrowNodes: NavigationNode[];
 
-  showFloatingToc = false;
-  showFloatingTocWidth = 800;
+  hasFloatingToc = true;
+  private showFloatingToc = new BehaviorSubject(false);
+  private showFloatingTocWidth = 800;
   tocMaxHeight: string;
   private tocMaxHeightOffset = 0;
 
@@ -103,8 +106,9 @@ export class AppComponent implements OnInit {
     private navigationService: NavigationService,
     private scrollService: ScrollService,
     private searchService: SearchService,
-    private swUpdateNotifications: SwUpdateNotificationsService
-  ) {  }
+    private swUpdateNotifications: SwUpdateNotificationsService,
+    private tocService: TocService
+  ) { }
 
   ngOnInit() {
     // Do not initialize the search on browsers that lack web worker support
@@ -174,6 +178,10 @@ export class AppComponent implements OnInit {
     this.navigationService.versionInfo.subscribe( vi => this.versionInfo = vi );
 
     this.swUpdateNotifications.enable();
+
+    const hasNonEmptyToc = this.tocService.tocList.map(tocList => tocList.length > 0);
+    combineLatest(hasNonEmptyToc, this.showFloatingToc)
+        .subscribe(([hasToc, showFloatingToc]) => this.hasFloatingToc = hasToc && showFloatingToc);
   }
 
   // Scroll to the anchor in the hash fragment or top of doc.
@@ -207,7 +215,7 @@ export class AppComponent implements OnInit {
   @HostListener('window:resize', ['$event.target.innerWidth'])
   onResize(width) {
     this.isSideBySide = width > this.sideBySideWidth;
-    this.showFloatingToc = width > this.showFloatingTocWidth;
+    this.showFloatingToc.next(width > this.showFloatingTocWidth);
   }
 
   @HostListener('click', ['$event.target', '$event.button', '$event.ctrlKey', '$event.metaKey', '$event.altKey'])
