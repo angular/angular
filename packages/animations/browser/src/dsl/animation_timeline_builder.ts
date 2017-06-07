@@ -199,34 +199,35 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
 
   visitSequence(ast: SequenceAst, context: AnimationTimelineContext) {
     const subContextCount = context.subContextCount;
+    let ctx = context;
     const options = ast.options;
 
     if (options && (options.params || options.delay)) {
-      context.createSubContext(options);
-      context.transformIntoNewTimeline();
+      ctx = context.createSubContext(options);
+      ctx.transformIntoNewTimeline();
 
       if (options.delay != null) {
-        if (context.previousNode instanceof StyleAst) {
-          context.currentTimeline.snapshotCurrentStyles();
-          context.previousNode = DEFAULT_NOOP_PREVIOUS_NODE;
+        if (ctx.previousNode instanceof StyleAst) {
+          ctx.currentTimeline.snapshotCurrentStyles();
+          ctx.previousNode = DEFAULT_NOOP_PREVIOUS_NODE;
         }
 
         const delay = resolveTimingValue(options.delay);
-        context.delayNextStep(delay);
+        ctx.delayNextStep(delay);
       }
     }
 
     if (ast.steps.length) {
-      ast.steps.forEach(s => s.visit(this, context));
+      ast.steps.forEach(s => s.visit(this, ctx));
 
       // this is here just incase the inner steps only contain or end with a style() call
-      context.currentTimeline.applyStylesToKeyframe();
+      ctx.currentTimeline.applyStylesToKeyframe();
 
       // this means that some animation function within the sequence
       // ended up creating a sub timeline (which means the current
       // timeline cannot overlap with the contents of the sequence)
-      if (context.subContextCount > subContextCount) {
-        context.transformIntoNewTimeline();
+      if (ctx.subContextCount > subContextCount) {
+        ctx.transformIntoNewTimeline();
       }
     }
 
@@ -475,7 +476,7 @@ export class AnimationTimelineContext {
 
       Object.keys(newParams).forEach(name => {
         if (!skipIfExists || !paramsToUpdate.hasOwnProperty(name)) {
-          paramsToUpdate[name] = newParams[name];
+          paramsToUpdate[name] = interpolateParams(newParams[name], paramsToUpdate, this.errors);
         }
       });
     }
