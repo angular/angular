@@ -127,6 +127,7 @@ export class MdDialog {
     overlayState.panelClass = dialogConfig.panelClass;
     overlayState.hasBackdrop = dialogConfig.hasBackdrop;
     overlayState.scrollStrategy = this._overlay.scrollStrategies.block();
+    overlayState.direction = dialogConfig.direction;
     if (dialogConfig.backdropClass) {
       overlayState.backdropClass = dialogConfig.backdropClass;
     }

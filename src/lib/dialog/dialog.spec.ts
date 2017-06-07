@@ -312,6 +312,16 @@ describe('MdDialog', () => {
     expect(overlayPane.style.width).toBe('200px');
   });
 
+  it('should allow setting the layout direction', () => {
+    let dialogRef = dialog.open(PizzaMsg, { direction: 'rtl' });
+
+    viewContainerFixture.detectChanges();
+
+    let overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane');
+
+    expect(overlayPane.getAttribute('dir')).toBe('rtl');
+  });
+
   it('should close all of the dialogs', async(() => {
     dialog.open(PizzaMsg);
     dialog.open(PizzaMsg);
