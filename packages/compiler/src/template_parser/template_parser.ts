@@ -739,35 +739,37 @@ class TemplateParseVisitor implements html.Visitor {
           !this._schemaRegistry.hasProperty(elementName, boundProp.name, this._schemas)) {
         let errorMsg = this._boundPropMainErrorMessage(elementName, boundProp);
         errorMsg += this._boundPropExtendedErrorMessage(elementName, boundProp);
-        
+
         this._reportError(errorMsg, boundProp.sourceSpan);
       }
       return !isEmptyExpression(boundProp.value);
     });
   }
 
-  private _boundPropMainErrorMessage(elementName: string, boundProp: BoundElementPropertyAst): string {
+  private _boundPropMainErrorMessage(elementName: string, boundProp: BoundElementPropertyAst):
+      string {
     let ngForRgxp = /ngfor/i;
     let letRgxp = /\blet/i;
     let sourceSpan = boundProp.sourceSpan.toString();
-    if( sourceSpan.match(ngForRgxp) && !sourceSpan.match(letRgxp) ) {
+    if (sourceSpan.match(ngForRgxp) && !sourceSpan.match(letRgxp)) {
       return `Can't bind to *ngFor since it's missing the let keyword.\n'${sourceSpan}'`
     } else {
       return `Can't bind to '${boundProp.name}' since it isn't a known property of '${elementName}'.`;
     }
   }
 
-  private _boundPropExtendedErrorMessage(elementName: string, boundProp: BoundElementPropertyAst): string {
+  private _boundPropExtendedErrorMessage(elementName: string, boundProp: BoundElementPropertyAst):
+      string {
     if (elementName.startsWith('ng-')) {
-        return `\n1. If '${boundProp.name}' is an Angular directive, then add 'CommonModule' to the '@NgModule.imports' of this component.` +
-            `\n2. To allow any property add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
-      } else if (elementName.indexOf('-') > -1) {
-        return `\n1. If '${elementName}' is an Angular component and it has '${boundProp.name}' input, then verify that it is part of this module.` +
-            `\n2. If '${elementName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.` +
-            `\n3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
-      } else {
-        return '';
-      }
+      return `\n1. If '${boundProp.name}' is an Angular directive, then add 'CommonModule' to the '@NgModule.imports' of this component.` +
+          `\n2. To allow any property add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
+    } else if (elementName.indexOf('-') > -1) {
+      return `\n1. If '${elementName}' is an Angular component and it has '${boundProp.name}' input, then verify that it is part of this module.` +
+          `\n2. If '${elementName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.` +
+          `\n3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
+    } else {
+      return '';
+    }
   }
 
   private _reportError(
