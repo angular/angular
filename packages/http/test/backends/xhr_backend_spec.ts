@@ -9,6 +9,8 @@
 import {Injectable} from '@angular/core';
 import {AsyncTestCompleter, SpyObject, afterEach, beforeEach, beforeEachProviders, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
 import {ɵgetDOM as getDOM} from '@angular/platform-browser';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+
 import {BrowserXhr} from '../../src/backends/browser_xhr';
 import {CookieXSRFStrategy, XHRBackend, XHRConnection} from '../../src/backends/xhr_backend';
 import {BaseRequestOptions, RequestOptions} from '../../src/base_request_options';
@@ -757,6 +759,54 @@ Connection: keep-alive`;
            });
 
            existingXHRs[0].setStatusCode(204);
+           existingXHRs[0].dispatchEvent('load');
+         }));
+
+      it('should create a valid connection with null stream observable',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           const base = new BaseRequestOptions();
+           const connection = new XHRConnection(
+               new Request(base.merge(new RequestOptions({chunks$: null}))), new MockBrowserXHR());
+           connection.response.subscribe((res: Response) => {
+             expect(res.json()).toBe(null);
+             expect(connection.request.chunks$).toBeFalsy();
+             async.done();
+           });
+
+           existingXHRs[0].setStatusCode(204);
+           existingXHRs[0].dispatchEvent('load');
+         }));
+
+      it('should create a connection with a observable passed as parameter in the request',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           const base = new BaseRequestOptions();
+           let chunkObs = new BehaviorSubject<string>('');
+           const connection = new XHRConnection(
+               new Request(base.merge(new RequestOptions({chunks$: chunkObs}))),
+               new MockBrowserXHR());
+           connection.response.subscribe((res: Response) => {
+             expect(res.json()).toBe(null);
+             expect(connection.request.chunks$).toBeTruthy();
+             expect(connection.request.chunks$).toEqual(chunkObs);
+             async.done();
+           });
+
+           existingXHRs[0].setStatusCode(204);
+           existingXHRs[0].dispatchEvent('load');
+         }));
+
+      it('should complete a request', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           sampleRequest.chunks$ = null;
+           const connection = new XHRConnection(
+               sampleRequest, new MockBrowserXHR(),
+               new ResponseOptions({type: ResponseType.Error}));
+           connection.response.subscribe(
+               (res: Response) => {
+                 expect(res.type).toBe(ResponseType.Error);
+                 expect(connection.request.chunks$).toBeFalsy();
+               },
+               null !, () => { async.done(); });
+           existingXHRs[0].setStatusCode(200);
            existingXHRs[0].dispatchEvent('load');
          }));
     });
