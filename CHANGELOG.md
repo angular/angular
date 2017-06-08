@@ -1,3 +1,28 @@
+<a name="4.2.0"></a>
+# [4.2.0](https://github.com/angular/angular/compare/4.2.0-rc.2...4.2.0) salubrious-stratagem (2017-06-08)
+
+
+### Bug Fixes
+
+* **animations:** ensure web-animations understands a numeric CSS perspective value ([819514a](https://github.com/angular/angular/commit/819514a)), closes [#14007](https://github.com/angular/angular/issues/14007)
+* **animations:** evaluate substitutions on option param values ([e9886d7](https://github.com/angular/angular/commit/e9886d7))
+* **forms:** fix min and max validator behavior on non-numbers ([a222c3e](https://github.com/angular/angular/commit/a222c3e))
+* **router:** opening links in new window ([4c32cb9](https://github.com/angular/angular/commit/4c32cb9))
+* **upgrade:** call setInterval outside the Angular zone ([269bbe0](https://github.com/angular/angular/commit/269bbe0))
+
+
+### Features
+
+* **compiler-cli:** introduce synchronous codegen API ([b00b80a](https://github.com/angular/angular/commit/b00b80a))
+
+
+### Performance Improvements
+
+* **animations:** do not create a closure each time a node is removed ([fe6b39d](https://github.com/angular/angular/commit/fe6b39d))
+* **animations:** only apply `:leave` flags if animations are set to run ([b55adee](https://github.com/angular/angular/commit/b55adee))
+
+
+
 <a name="4.2.0-rc.2"></a>
 # [4.2.0-rc.2](https://github.com/angular/angular/compare/4.2.0-rc.1...4.2.0-rc.2) (2017-06-01)
 
