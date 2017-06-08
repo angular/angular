@@ -148,30 +148,43 @@ aio-toc {
         a {
           color: $blue;
           font-weight: 500;
-        }
 
-        &:before {
-          content: '';
-          border-radius: 50%;
-          left: -4px;
-          top: 12px;
-          background: $blue;
-          position: absolute;
-          width: 6px;
-          height: 6px;
+          &:before {
+            content: '';
+            border-radius: 50%;
+            left: -3px;
+            top: 12px;
+            background: $blue;
+            position: absolute;
+            width: 6px;
+            height: 6px;
+          }
         }
       }
     }
 
     &:not(.embedded) li {
-      &.h1, &.h2, &.h3 {
+      &:before {
         border-left: 1px solid $lightgray;
+        bottom: 0;
+        content: '';
+        left: 0;
+        position: absolute;
+        top: 0;
       }
 
-      &:not(.active):hover:before {
+      &:first-child:before {
+        top: 13px;
+      }
+
+      &:last-child:before {
+        bottom: calc(100% - 14px);
+      }
+
+      &:not(.active):hover a:before {
         content: '';
         border-radius: 50%;
-        left: -4px;
+        left: -3px;
         top: 12px;
         background: $lightgray;
         position: absolute;
