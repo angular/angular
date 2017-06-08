@@ -7,6 +7,7 @@
  */
 
 import {I18NHtmlParser} from '@angular/compiler/src/i18n/i18n_html_parser';
+import {Serializer} from '@angular/compiler/src/i18n/serializers/serializer';
 import {TranslationBundle} from '@angular/compiler/src/i18n/translation_bundle';
 import {HtmlParser} from '@angular/compiler/src/ml_parser/html_parser';
 import {ParseTreeResult} from '@angular/compiler/src/ml_parser/parser';
@@ -31,7 +32,8 @@ export function main() {
 
     // https://github.com/angular/angular/issues/14322
     it('should parse the translations only once', () => {
-      const transBundle = new TranslationBundle({}, null, () => 'id');
+      const serializer = { digest: (_) => 'id' } as Serializer;
+      const transBundle = new TranslationBundle({}, null, serializer);
       spyOn(TranslationBundle, 'load').and.returnValue(transBundle);
       const htmlParser = new HtmlParser();
       const i18nHtmlParser = new I18NHtmlParser(htmlParser, 'translations');

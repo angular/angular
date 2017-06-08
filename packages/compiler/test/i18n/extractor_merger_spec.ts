@@ -6,13 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DEFAULT_INTERPOLATION_CONFIG, HtmlParser} from '@angular/compiler';
+import {I18nVersion} from '@angular/core';
 
-import {digest, serializeNodes as serializeI18nNodes} from '../../src/i18n/digest';
+import {decimalIgnorePhDigest, serializeNodes as serializeI18nNodes, sha1Digest} from '../../src/i18n/digest';
 import {extractMessages, mergeTranslations} from '../../src/i18n/extractor_merger';
 import * as i18n from '../../src/i18n/i18n_ast';
+import {Serializer} from '../../src/i18n/serializers/serializer';
 import {TranslationBundle} from '../../src/i18n/translation_bundle';
 import * as html from '../../src/ml_parser/ast';
+import {HtmlParser} from '../../src/ml_parser/html_parser';
+import {DEFAULT_INTERPOLATION_CONFIG} from '../../src/ml_parser/interpolation_config';
 import {serializeNodes as serializeHtmlNodes} from '../ml_parser/ast_serializer_spec';
 
 export function main() {
@@ -377,11 +380,14 @@ export function main() {
       it('should merge elements', () => {
         const HTML = `<p i18n="m|d">foo</p>`;
         expect(fakeTranslate(HTML)).toEqual('<p>**foo**</p>');
+        expect(fakeTranslate(HTML, I18nVersion.Version1)).toEqual('<p>**foo**</p>');
       });
 
       it('should merge nested elements', () => {
         const HTML = `<div>before<p i18n="m|d">foo</p><!-- comment --></div>`;
         expect(fakeTranslate(HTML)).toEqual('<div>before<p>**foo**</p></div>');
+        expect(fakeTranslate(HTML, I18nVersion.Version1))
+            .toEqual('<div>before<p>**foo**</p></div>');
       });
 
       it('should merge empty messages', () => {
@@ -392,8 +398,9 @@ export function main() {
 
         expect(messages.length).toEqual(1);
         const i18nMsgMap: {[id: string]: i18n.Node[]} = {};
-        i18nMsgMap[digest(messages[0])] = [];
-        const translations = new TranslationBundle(i18nMsgMap, null, digest);
+        i18nMsgMap[sha1Digest(messages[0])] = [];
+        const serializer = { digest: sha1Digest } as Serializer;
+        const translations = new TranslationBundle(i18nMsgMap, null, serializer);
 
         const output =
             mergeTranslations(htmlNodes, translations, DEFAULT_INTERPOLATION_CONFIG, [], {});
@@ -411,12 +418,22 @@ export function main() {
                 'before**[ph tag name="START_PARAGRAPH">foo[/ph name="CLOSE_PARAGRAPH">[ph tag' +
                 ' name="START_TAG_SPAN">[ph tag name="START_ITALIC_TEXT">bar[/ph' +
                 ' name="CLOSE_ITALIC_TEXT">[/ph name="CLOSE_TAG_SPAN">**after');
+        expect(fakeTranslate(HTML, I18nVersion.Version1))
+            .toEqual(
+                'before**[ph tag name="START_PARAGRAPH">foo[/ph name="CLOSE_PARAGRAPH">[ph tag' +
+                ' name="START_TAG_SPAN">[ph tag name="START_ITALIC_TEXT">bar[/ph' +
+                ' name="CLOSE_ITALIC_TEXT">[/ph name="CLOSE_TAG_SPAN">**after');
       });
 
       it('should merge nested blocks', () => {
         const HTML =
             `<div>before<!-- i18n --><p>foo</p><span><i>bar</i></span><!-- /i18n -->after</div>`;
         expect(fakeTranslate(HTML))
+            .toEqual(
+                '<div>before**[ph tag name="START_PARAGRAPH">foo[/ph name="CLOSE_PARAGRAPH">[ph' +
+                ' tag name="START_TAG_SPAN">[ph tag name="START_ITALIC_TEXT">bar[/ph' +
+                ' name="CLOSE_ITALIC_TEXT">[/ph name="CLOSE_TAG_SPAN">**after</div>');
+        expect(fakeTranslate(HTML, I18nVersion.Version1))
             .toEqual(
                 '<div>before**[ph tag name="START_PARAGRAPH">foo[/ph name="CLOSE_PARAGRAPH">[ph' +
                 ' tag name="START_TAG_SPAN">[ph tag name="START_ITALIC_TEXT">bar[/ph' +
@@ -428,22 +445,27 @@ export function main() {
       it('should merge attributes', () => {
         const HTML = `<p i18n-title="m|d" title="foo"></p>`;
         expect(fakeTranslate(HTML)).toEqual('<p title="**foo**"></p>');
+        expect(fakeTranslate(HTML, I18nVersion.Version1)).toEqual('<p title="**foo**"></p>');
       });
 
       it('should merge attributes with ids', () => {
         const HTML = `<p i18n-title="@@id" title="foo"></p>`;
         expect(fakeTranslate(HTML)).toEqual('<p title="**foo**"></p>');
+        expect(fakeTranslate(HTML, I18nVersion.Version1)).toEqual('<p title="**foo**"></p>');
       });
 
       it('should merge nested attributes', () => {
         const HTML = `<div>{count, plural, =0 {<p i18n-title title="foo"></p>}}</div>`;
         expect(fakeTranslate(HTML))
             .toEqual('<div>{count, plural, =0 {<p title="**foo**"></p>}}</div>');
+        expect(fakeTranslate(HTML, I18nVersion.Version1))
+            .toEqual('<div>{count, plural, =0 {<p title="**foo**"></p>}}</div>');
       });
 
       it('should merge attributes without values', () => {
         const HTML = `<p i18n-title="m|d" title=""></p>`;
         expect(fakeTranslate(HTML)).toEqual('<p title=""></p>');
+        expect(fakeTranslate(HTML, I18nVersion.Version1)).toEqual('<p title=""></p>');
       });
 
       it('should merge empty attributes', () => {
@@ -454,8 +476,9 @@ export function main() {
 
         expect(messages.length).toEqual(1);
         const i18nMsgMap: {[id: string]: i18n.Node[]} = {};
-        i18nMsgMap[digest(messages[0])] = [];
-        const translations = new TranslationBundle(i18nMsgMap, null, digest);
+        i18nMsgMap[sha1Digest(messages[0])] = [];
+        const serializer = { digest: sha1Digest } as Serializer;
+        const translations = new TranslationBundle(i18nMsgMap, null, serializer);
 
         const output =
             mergeTranslations(htmlNodes, translations, DEFAULT_INTERPOLATION_CONFIG, [], {});
@@ -477,9 +500,9 @@ function parseHtml(html: string): html.Node[] {
   return parseResult.rootNodes;
 }
 
-function fakeTranslate(
-    content: string, implicitTags: string[] = [],
-    implicitAttrs: {[k: string]: string[]} = {}): string {
+function fakeTranslate(content: string, version?: I18nVersion): string {
+  const implicitTags: string[] = [];
+  const implicitAttrs: {[k: string]: string[]} = {};
   const htmlNodes: html.Node[] = parseHtml(content);
   const messages: i18n.Message[] =
       extractMessages(htmlNodes, DEFAULT_INTERPOLATION_CONFIG, implicitTags, implicitAttrs)
@@ -487,13 +510,25 @@ function fakeTranslate(
 
   const i18nMsgMap: {[id: string]: i18n.Node[]} = {};
 
+  let digest: (msg: i18n.Message) => string;
+  switch (version) {
+    case I18nVersion.Version0:
+    default:
+      digest = sha1Digest;
+      break;
+    case I18nVersion.Version1:
+      digest = decimalIgnorePhDigest;
+      break;
+  }
+
   messages.forEach(message => {
     const id = digest(message);
     const text = serializeI18nNodes(message.nodes).join('').replace(/</g, '[');
     i18nMsgMap[id] = [new i18n.Text(`**${text}**`, null !)];
   });
 
-  const translations = new TranslationBundle(i18nMsgMap, null, digest);
+  const serializer = { digest: (_) => digest(_) } as Serializer;
+  const translations = new TranslationBundle(i18nMsgMap, null, serializer);
 
   const output = mergeTranslations(
       htmlNodes, translations, DEFAULT_INTERPOLATION_CONFIG, implicitTags, implicitAttrs);

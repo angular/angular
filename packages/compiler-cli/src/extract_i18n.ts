@@ -8,9 +8,6 @@
  */
 
 
-/**
- * Extract i18n messages from source code
- */
 // Must be imported first, because Angular decorators throw on load.
 import 'reflect-metadata';
 
@@ -18,12 +15,19 @@ import * as tsc from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
 
 import {Extractor} from './extractor';
+import {normalizeI18nFormat, normalizeI18nVersion} from './codegen';
 
+/**
+ * Extract i18n messages from source code
+ */
 function extract(
     ngOptions: tsc.AngularCompilerOptions, cliOptions: tsc.I18nExtractionCliOptions,
     program: ts.Program, host: ts.CompilerHost) {
-  return Extractor.create(ngOptions, program, host, cliOptions.locale)
-      .extract(cliOptions.i18nFormat !, cliOptions.outFile);
+  return Extractor
+      .create(
+          ngOptions, program, host, cliOptions.locale, undefined, undefined,
+          normalizeI18nVersion(cliOptions.i18nVersion))
+      .extract(normalizeI18nFormat(cliOptions.i18nFormat), cliOptions.outFile);
 }
 
 // Entry point

@@ -461,6 +461,15 @@ export interface HostDecorator {
 /** @stable */
 export declare const HostListener: HostListenerDecorator;
 
+/** @experimental */
+export declare const I18N_VERSION: InjectionToken<I18nVersion>;
+
+/** @experimental */
+export declare enum I18nVersion {
+    Version0 = 0,
+    Version1 = 1,
+}
+
 /** @stable */
 export declare const Inject: InjectDecorator;
 

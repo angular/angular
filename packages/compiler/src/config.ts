@@ -21,7 +21,7 @@ export class CompilerConfig {
   public missingTranslation: MissingTranslationStrategy|null;
 
   constructor(
-      {defaultEncapsulation = ViewEncapsulation.Emulated, useJit = true, missingTranslation,
+      {defaultEncapsulation = ViewEncapsulation.Emulated, useJit = true, missingTranslation = null,
        enableLegacyTemplate}: {
         defaultEncapsulation?: ViewEncapsulation,
         useJit?: boolean,

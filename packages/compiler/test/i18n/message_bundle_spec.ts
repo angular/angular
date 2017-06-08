@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {I18nVersion} from '@angular/core';
+
 import {serializeNodes} from '../../src/i18n/digest';
 import * as i18n from '../../src/i18n/i18n_ast';
 import {MessageBundle} from '../../src/i18n/message_bundle';
@@ -42,6 +44,8 @@ export function main(): void {
 }
 
 class _TestSerializer extends Serializer {
+  constructor(public version: I18nVersion) { super(); }
+
   write(messages: i18n.Message[]): string {
     return messages.map(msg => `${serializeNodes(msg.nodes)} (${msg.meaning}|${msg.description})`)
         .join('//');
@@ -56,5 +60,5 @@ class _TestSerializer extends Serializer {
 }
 
 function humanizeMessages(catalog: MessageBundle): string[] {
-  return catalog.write(new _TestSerializer()).split('//');
+  return catalog.write(new _TestSerializer(I18nVersion.Version1)).split('//');
 }

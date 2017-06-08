@@ -9,6 +9,7 @@ export {AotCompilerHost, AotCompilerHost as StaticReflectorHost, StaticReflector
 export {CodeGenerator} from './src/codegen';
 export {CompilerHost, CompilerHostContext, ModuleResolutionHostAdapter, NodeCompilerHostContext} from './src/compiler_host';
 export {Extractor} from './src/extractor';
+export {Migrator} from './src/migrator';
 export * from '@angular/tsc-wrapped';
 export {VERSION} from './src/version';
 
