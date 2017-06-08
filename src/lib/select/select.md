@@ -62,6 +62,22 @@ It's possible to turn off the placeholder's floating animation using the `floatP
 </md-select>
 ```
 
+Global default placeholder options can be specified by setting the `MD_PLACEHOLDER_GLOBAL_OPTIONS` provider. This setting will apply to all components that support the floating placeholder.
+
+```ts
+@NgModule({
+  providers: [
+    {provide: MD_PLACEHOLDER_GLOBAL_OPTIONS, useValue: { float: 'always' }}
+  ]
+})
+```
+
+Here are the available global options:
+
+| Name            | Type    | Values              | Description                               |
+| --------------- | ------- | ------------------- | ----------------------------------------- |
+| float           | string  | auto, always, never | The default placeholder float behavior.   |
+
 #### Keyboard interaction:
 - <kbd>DOWN_ARROW</kbd>: Focus next option
 - <kbd>UP_ARROW</kbd>: Focus previous option

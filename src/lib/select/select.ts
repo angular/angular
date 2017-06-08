@@ -16,6 +16,7 @@ import {
   ChangeDetectorRef,
   Attribute,
   OnInit,
+  Inject
 } from '@angular/core';
 import {MdOption, MdOptionSelectionChange} from '../core/option/option';
 import {ENTER, SPACE, UP_ARROW, DOWN_ARROW, HOME, END} from '../core/keyboard/keycodes';
@@ -36,7 +37,11 @@ import 'rxjs/add/operator/startWith';
 import 'rxjs/add/operator/filter';
 import {CanColor, mixinColor} from '../core/common-behaviors/color';
 import {CanDisable} from '../core/common-behaviors/disabled';
-
+import {
+  FloatPlaceholderType,
+  PlaceholderOptions,
+  MD_PLACEHOLDER_GLOBAL_OPTIONS}
+from '../core/placeholder/placeholder-options';
 
 /**
  * The following style constants are necessary to save here in order
@@ -94,15 +99,11 @@ export class MdSelectChange {
   constructor(public source: MdSelect, public value: any) { }
 }
 
-/** Allowed values for the floatPlaceholder option. */
-export type MdSelectFloatPlaceholderType = 'always' | 'never' | 'auto';
-
 // Boilerplate for applying mixins to MdSelect.
 export class MdSelectBase {
   constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
 }
 export const _MdSelectMixinBase = mixinColor(MdSelectBase, 'primary');
-
 
 @Component({
   moduleId: module.id,
@@ -169,6 +170,9 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
 
   /** Tab index for the element. */
   private _tabIndex: number;
+
+  /** Deals with configuring placeholder options */
+  private _placeholderOptions: PlaceholderOptions;
 
   /**
    * The width of the trigger. Must be saved to set the min width of the overlay panel
@@ -275,11 +279,11 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
 
   /** Whether to float the placeholder text. */
   @Input()
-  get floatPlaceholder(): MdSelectFloatPlaceholderType { return this._floatPlaceholder; }
-  set floatPlaceholder(value: MdSelectFloatPlaceholderType) {
-    this._floatPlaceholder = value || 'auto';
+  get floatPlaceholder(): FloatPlaceholderType { return this._floatPlaceholder; }
+  set floatPlaceholder(value: FloatPlaceholderType) {
+    this._floatPlaceholder = value || this._placeholderOptions.float || 'auto';
   }
-  private _floatPlaceholder: MdSelectFloatPlaceholderType = 'auto';
+  private _floatPlaceholder: FloatPlaceholderType;
 
   /** Tab index for the select element. */
   @Input()
@@ -310,13 +314,15 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
   /** Event emitted when the selected value has been changed by the user. */
   @Output() change: EventEmitter<MdSelectChange> = new EventEmitter<MdSelectChange>();
 
-  constructor(private _viewportRuler: ViewportRuler,
-              private _changeDetectorRef: ChangeDetectorRef,
-              renderer: Renderer2,
-              elementRef: ElementRef,
-              @Optional() private _dir: Dir,
-              @Self() @Optional() public _control: NgControl,
-              @Attribute('tabindex') tabIndex: string) {
+  constructor(
+    private _viewportRuler: ViewportRuler,
+    private _changeDetectorRef: ChangeDetectorRef,
+    renderer: Renderer2,
+    elementRef: ElementRef,
+    @Optional() private _dir: Dir,
+    @Self() @Optional() public _control: NgControl,
+    @Attribute('tabindex') tabIndex: string,
+    @Optional() @Inject(MD_PLACEHOLDER_GLOBAL_OPTIONS) placeholderOptions: PlaceholderOptions) {
     super(renderer, elementRef);
 
     if (this._control) {
@@ -324,6 +330,9 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
     }
 
     this._tabIndex = parseInt(tabIndex) || 0;
+
+    this._placeholderOptions = placeholderOptions ? placeholderOptions : {};
+    this.floatPlaceholder = this._placeholderOptions.float || 'auto';
   }
 
   ngOnInit() {

@@ -60,6 +60,22 @@ A placeholder for the input can be specified in one of two ways: either using th
 attribute on the `input` or `textarea`, or using an `md-placeholder` element in the
 `md-input-container`. Using both will raise an error.
 
+Global default placeholder options can be specified by setting the `MD_PLACEHOLDER_GLOBAL_OPTIONS` provider. This setting will apply to all components that support the floating placeholder.
+
+```ts
+@NgModule({
+  providers: [
+    {provide: MD_PLACEHOLDER_GLOBAL_OPTIONS, useValue: { float: 'always' }}
+  ]
+})
+```
+
+Here are the available global options:
+
+| Name            | Type    | Values              | Description                               |
+| --------------- | ------- | ------------------- | ----------------------------------------- |
+| float           | string  | auto, always, never | The default placeholder float behavior.   |
+
 ### Prefix and Suffix
 
 HTML can be included before, and after the input tag, as prefix or suffix. It will be underlined as

@@ -103,6 +103,13 @@ export {MdCommonModule} from './common-behaviors/common-module';
 // Datetime
 export * from './datetime/index';
 
+// Placeholder
+export {
+  FloatPlaceholderType,
+  PlaceholderOptions,
+  MD_PLACEHOLDER_GLOBAL_OPTIONS
+} from './placeholder/placeholder-options';
+
 @NgModule({
   imports: [
     MdLineModule,

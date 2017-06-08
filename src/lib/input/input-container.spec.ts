@@ -22,6 +22,7 @@ import {
   getMdInputContainerMissingMdInputError,
   getMdInputContainerPlaceholderConflictError
 } from './input-container-errors';
+import {MD_PLACEHOLDER_GLOBAL_OPTIONS} from '../core/placeholder/placeholder-options';
 
 
 describe('MdInputContainer', function () {
@@ -80,6 +81,29 @@ describe('MdInputContainer', function () {
         .componentInstance as MdInputContainer;
     expect(inputContainer.floatPlaceholder).toBe('auto',
         'Expected MdInputContainer to set floatingLabel to auto by default.');
+  });
+
+  it('should default to global floating placeholder type', () => {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      imports: [
+        FormsModule,
+        MdInputModule,
+        NoopAnimationsModule
+      ],
+      declarations: [
+        MdInputContainerBaseTestController
+      ],
+      providers: [{ provide: MD_PLACEHOLDER_GLOBAL_OPTIONS, useValue: { float: 'always' } }]
+    });
+
+    let fixture = TestBed.createComponent(MdInputContainerBaseTestController);
+    fixture.detectChanges();
+
+    let inputContainer = fixture.debugElement.query(By.directive(MdInputContainer))
+        .componentInstance as MdInputContainer;
+    expect(inputContainer.floatPlaceholder).toBe('always',
+        'Expected MdInputContainer to set floatingLabel to always from global option.');
   });
 
   it('should not be treated as empty if type is date',

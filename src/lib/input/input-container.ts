@@ -16,7 +16,8 @@ import {
   Renderer2,
   Self,
   ViewChild,
-  ViewEncapsulation
+  ViewEncapsulation,
+  Inject
 } from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {coerceBooleanProperty} from '../core';
@@ -28,7 +29,11 @@ import {
   getMdInputContainerPlaceholderConflictError,
   getMdInputContainerUnsupportedTypeError
 } from './input-container-errors';
-
+import {
+  FloatPlaceholderType,
+  PlaceholderOptions,
+  MD_PLACEHOLDER_GLOBAL_OPTIONS
+} from '../core/placeholder/placeholder-options';
 
 // Invalid input type. Using one of these will throw an MdInputContainerUnsupportedTypeError.
 const MD_INPUT_INVALID_TYPES = [
@@ -43,9 +48,6 @@ const MD_INPUT_INVALID_TYPES = [
   'reset',
   'submit'
 ];
-
-/** Type for the available floatPlaceholder values. */
-export type FloatPlaceholderType = 'always' | 'never' | 'auto';
 
 let nextUniqueId = 0;
 
@@ -302,7 +304,10 @@ export class MdInputDirective {
   },
   encapsulation: ViewEncapsulation.None,
 })
+
 export class MdInputContainer implements AfterViewInit, AfterContentInit, AfterContentChecked {
+  private _placeholderOptions: PlaceholderOptions;
+
   /** Alignment of the input container's content. */
   @Input() align: 'start' | 'end' = 'start';
 
@@ -347,9 +352,9 @@ export class MdInputContainer implements AfterViewInit, AfterContentInit, AfterC
   @Input()
   get floatPlaceholder() { return this._floatPlaceholder; }
   set floatPlaceholder(value: FloatPlaceholderType) {
-    this._floatPlaceholder = value || 'auto';
+    this._floatPlaceholder = value || this._placeholderOptions.float || 'auto';
   }
-  private _floatPlaceholder: FloatPlaceholderType = 'auto';
+  private _floatPlaceholder: FloatPlaceholderType;
 
   /** Reference to the input's underline element. */
   @ViewChild('underline') underlineRef: ElementRef;
@@ -368,7 +373,13 @@ export class MdInputContainer implements AfterViewInit, AfterContentInit, AfterC
 
   constructor(
     public _elementRef: ElementRef,
-    private _changeDetectorRef: ChangeDetectorRef) { }
+    private _changeDetectorRef: ChangeDetectorRef,
+    @Optional() private _parentForm: NgForm,
+    @Optional() private _parentFormGroup: FormGroupDirective,
+    @Optional() @Inject(MD_PLACEHOLDER_GLOBAL_OPTIONS) placeholderOptions: PlaceholderOptions) {
+      this._placeholderOptions = placeholderOptions ? placeholderOptions : {};
+      this.floatPlaceholder = this._placeholderOptions.float || 'auto';
+    }
 
   ngAfterContentInit() {
     this._validateInputChild();

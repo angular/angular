@@ -12,7 +12,7 @@ import {
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MdSelectModule} from './index';
 import {OverlayContainer} from '../core/overlay/overlay-container';
-import {MdSelect, MdSelectFloatPlaceholderType} from './select';
+import {MdSelect} from './select';
 import {getMdSelectDynamicMultipleError, getMdSelectNonArrayValueError} from './select-errors';
 import {MdOption} from '../core/option/option';
 import {Dir} from '../core/rtl/dir';
@@ -25,6 +25,10 @@ import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
 import {dispatchFakeEvent, dispatchKeyboardEvent} from '../core/testing/dispatch-events';
 import {wrappedErrorMessage} from '../core/testing/wrapped-error-message';
 import {ScrollDispatcher} from '../core/overlay/scroll/scroll-dispatcher';
+import {
+  FloatPlaceholderType,
+  MD_PLACEHOLDER_GLOBAL_OPTIONS
+} from '../core/placeholder/placeholder-options';
 
 
 describe('MdSelect', () => {
@@ -1798,6 +1802,30 @@ describe('MdSelect', () => {
 
       expect(fixture.componentInstance.select._getPlaceholderAnimationState()).toBe('floating-ltr');
     });
+
+    it ('should default to global floating placeholder type', () => {
+      fixture.destroy();
+
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        imports: [
+          MdSelectModule,
+          ReactiveFormsModule,
+          FormsModule,
+          NoopAnimationsModule
+        ],
+        declarations: [
+          FloatPlaceholderSelect
+        ],
+        providers: [{ provide: MD_PLACEHOLDER_GLOBAL_OPTIONS, useValue: { float: 'always' } }]
+      });
+
+      fixture = TestBed.createComponent(FloatPlaceholderSelect);
+      fixture.componentInstance.floatPlaceholder = null;
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.select.floatPlaceholder).toBe('always');
+    });
   });
 
   describe('with OnPush change detection', () => {
@@ -2419,7 +2447,7 @@ class BasicSelectOnPushPreselected {
     `,
 })
 class FloatPlaceholderSelect {
-  floatPlaceholder: MdSelectFloatPlaceholderType = 'auto';
+  floatPlaceholder: FloatPlaceholderType = 'auto';
   control = new FormControl();
   foods: any[] = [
     { value: 'steak-0', viewValue: 'Steak' },
