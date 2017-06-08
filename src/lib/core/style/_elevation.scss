@@ -120,11 +120,6 @@ $_ambient-elevation-map: (
 );
 
 
-// The css property used for elevation. In most cases this should not be changed. It is exposed
-// as a variable for abstraction / easy use when needing to reference the property directly, for
-// example in a will-change rule.
-$mat-elevation-property: box-shadow !default;
-
 // The default duration value for elevation transitions.
 $mat-elevation-transition-duration: 280ms !default;
 
@@ -141,9 +136,9 @@ $mat-elevation-transition-timing-function: $mat-fast-out-slow-in-timing-function
     @error '$zValue must be between 0 and 24';
   }
 
-  #{$mat-elevation-property}: #{map-get($_umbra-elevation-map, $zValue)},
-                             #{map-get($_penumbra-elevation-map, $zValue)},
-                             #{map-get($_ambient-elevation-map, $zValue)};
+  box-shadow: #{map-get($_umbra-elevation-map, $zValue)},
+              #{map-get($_penumbra-elevation-map, $zValue)},
+              #{map-get($_ambient-elevation-map, $zValue)};
 }
 
 // Returns a string that can be used as the value for a transition property for elevation.
@@ -152,12 +147,11 @@ $mat-elevation-transition-timing-function: $mat-fast-out-slow-in-timing-function
 //
 // .foo {
 //   transition: mat-elevation-transition-property-value(), opacity 100ms ease;
-//   will-change: $mat-elevation-property, opacity;
 // }
 @function mat-elevation-transition-property-value(
     $duration: $mat-elevation-transition-duration,
     $easing: $mat-elevation-transition-timing-function) {
-  @return #{$mat-elevation-property} #{$duration} #{$easing};
+  @return box-shadow #{$duration} #{$easing};
 }
 
 // Applies the correct css rules needed to have an element transition between elevations.
@@ -170,5 +164,4 @@ $mat-elevation-transition-timing-function: $mat-fast-out-slow-in-timing-function
     $duration: $mat-elevation-transition-duration,
     $easing: $mat-elevation-transition-timing-function) {
   transition: mat-elevation-transition-property-value($duration, $easing);
-  will-change: $mat-elevation-property;
 }
