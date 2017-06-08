@@ -1,0 +1,10 @@
+name: analyzer_plugin
+environment:
+  sdk: '>=1.4.0 <2.0.0'
+dependencies:
+  analyzer: '>=0.24.5 <0.25.0'
+  angular2:
+    path: ../../../../../dist/dart/angular2
+  typed_mock: any
+dev_dependencies:
+  unittest: any
