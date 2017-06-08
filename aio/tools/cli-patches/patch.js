@@ -7,5 +7,6 @@ if (!fs.existsSync(PATCH_LOCK)) {
   sh.touch(PATCH_LOCK);
   sh.exec(`patch -p0 -i tools/cli-patches/ngo-loader.patch &&
            patch -p0 -i node_modules/purify/angular-cli.patch &&
+           patch -p0 -i tools/cli-patches/scope-hoisting.patch &&
            patch -p0 -i tools/cli-patches/uglify-config.patch`);
 }
