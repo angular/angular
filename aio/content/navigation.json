@@ -15,6 +15,10 @@
     {
       "url": "events",
       "title": "Events"
+    },
+    {
+      "url": "https://blog.angularjs.org/",
+      "title": "Blog"
     }
   ],
 
@@ -33,6 +37,10 @@
         {
           "url": "events",
           "title": "Events"
+        },
+        {
+          "url": "https://blog.angularjs.org/",
+          "title": "Blog"
         }
       ]
     }
@@ -434,6 +442,11 @@
           "url": "presskit",
           "title": "Press Kit",
           "tooltip": "Press contacts, logos, and branding."
+        },
+        {
+          "url": "https://blog.angularjs.org/",
+          "title": "Blog",
+          "tooltip": "Angular Blog"
         }
       ]
     },
