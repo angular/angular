@@ -19,25 +19,13 @@ unexpected definitions.
 
 ## Ahead-of-time (AOT) compilation
 
-<div class="l-sub-section">
-
-
-
 You can compile Angular applications at build time.
 By compiling your application using the compiler-cli, `ngc`, you can bootstrap directly
 to a module factory, meaning you don't need to include the Angular compiler in your JavaScript bundle.
 Ahead-of-time compiled applications also benefit from decreased load time and increased performance.
 
 
-</div>
-
-
-
 ## Angular module
-
-<div class="l-sub-section">
-
-
 
 Helps you organize an application into cohesive blocks of functionality.
 An Angular module identifies the components, directives, and pipes that the application uses along with the list of external Angular modules that the application needs, such as `FormsModule`.
@@ -48,21 +36,9 @@ called `AppModule` and resides in a file named `app.module.ts`.
 For details and examples, see the [Angular Modules (NgModule)](guide/ngmodule) page.
 
 
-</div>
-
-
-
 ## Annotation
 
-<div class="l-sub-section">
-
-
-
 In practice, a synonym for [Decoration](guide/glossary#decorator).
-
-
-</div>
-
 
 
 {@a attribute-directive}
@@ -73,10 +49,6 @@ In practice, a synonym for [Decoration](guide/glossary#decorator).
 
 ## Attribute directives
 
-<div class="l-sub-section">
-
-
-
 A category of [directive](guide/glossary#directive) that can listen to and modify the behavior of
 other HTML elements, attributes, properties, and components. They are usually represented
 as HTML attributes, hence the name.
@@ -86,17 +58,9 @@ For example, you can use the `ngClass` directive to add and remove CSS class nam
 Learn about them in the [_Attribute Directives_](guide/attribute-directives) guide.
 
 
-</div>
-
-
-
 {@a B}
 
 ## Barrel
-
-<div class="l-sub-section">
-
-
 
 A way to *roll up exports* from several ES2015 modules into a single convenient ES2015 module.
 The barrel itself is an ES2015 module file that re-exports *selected* exports of other ES2015 modules.
@@ -157,16 +121,7 @@ You can often achieve the same result using [Angular modules](guide/glossary#ang
 </div>
 
 
-
-</div>
-
-
-
 ## Binding
-
-<div class="l-sub-section">
-
-
 
 Usually refers to [data binding](guide/glossary#data-binding) and the act of
 binding an HTML object property to a data object property.
@@ -175,15 +130,7 @@ Sometimes refers to a [dependency-injection](guide/glossary#dependency-injection
 between a "token"&mdash;also referred to as a "key"&mdash;and a dependency [provider](guide/glossary#provider).
 
 
-</div>
-
-
-
 ## Bootstrap
-
-<div class="l-sub-section">
-
-
 
 You launch an Angular application by "bootstrapping" it using the application root Angular module (`AppModule`).
 Bootstrapping identifies an application's top level "root" [component](guide/glossary#component),
@@ -193,16 +140,9 @@ For more information, see the [Setup](guide/setup) page.
 You can bootstrap multiple apps in the same `index.html`, each app with its own top-level root.
 
 
-</div>
-
-
 {@a C}
 
 ## camelCase
-
-<div class="l-sub-section">
-
-
 
 The practice of writing compound words or phrases such that each word or abbreviation begins with a capital letter
 _except the first letter, which is lowercase_.
@@ -213,18 +153,10 @@ camelCase is also known as *lower camel case* to distinguish it from *upper came
 In Angular documentation, "camelCase" always means *lower camel case*.
 
 
-</div>
-
-
-
 {@a component}
 
 
 ## Component
-
-<div class="l-sub-section">
-
-
 
 An Angular class responsible for exposing data to a [view](guide/glossary#view) and handling most of the view’s display and user-interaction logic.
 
@@ -240,16 +172,9 @@ Those familiar with "MVC" and "MVVM" patterns will recognize
 the component in the role of "controller" or "view model".
 
 
-</div>
-
-
 {@a D}
 
 ## dash-case
-
-<div class="l-sub-section">
-
-
 
 The practice of writing compound words or phrases such that each word is separated by a dash or hyphen (`-`).
 This form is also known as kebab-case.
@@ -259,15 +184,7 @@ the root of filenames (such as `hero-list.component.ts`) are often
 spelled in dash-case.
 
 
-</div>
-
-
-
 ## Data binding
-
-<div class="l-sub-section">
-
-
 
 Applications display data values to a user and respond to user
 actions (such as clicks, touches, and keystrokes).
@@ -292,10 +209,6 @@ operations and supporting declaration syntax.
  * [Two-way data binding with ngModel](guide/template-syntax#ngModel).
 
 
-</div>
-
-
-
 {@a decorator}
 
 
@@ -303,10 +216,6 @@ operations and supporting declaration syntax.
 
 
 ## Decorator | decoration
-
-<div class="l-sub-section">
-
-
 
 A *function* that adds metadata to a class, its members (properties, methods) and function arguments.
 
@@ -340,16 +249,7 @@ Always include parentheses `()` when applying a decorator.
 </div>
 
 
-
-</div>
-
-
-
 ## Dependency injection
-
-<div class="l-sub-section">
-
-
 
 A design pattern and mechanism
 for creating and delivering parts of an application to other
@@ -401,10 +301,6 @@ You can register your own providers.
 Read more in the [Dependency Injection](guide/dependency-injection) page.
 
 
-</div>
-
-
-
 {@a directive}
 
 
@@ -412,10 +308,6 @@ Read more in the [Dependency Injection](guide/dependency-injection) page.
 
 
 ## Directive
-
-<div class="l-sub-section">
-
-
 
 An Angular class responsible for creating, reshaping, and interacting with HTML elements
 in the browser DOM. The directive is Angular's most fundamental feature.
@@ -447,16 +339,9 @@ shaping or reshaping HTML layout, typically by adding, removing, or manipulating
 elements and their children.
 
 
-</div>
-
-
 {@a E}
 
 ## ECMAScript
-
-<div class="l-sub-section">
-
-
 
 The [official JavaScript language specification](https://en.wikipedia.org/wiki/ECMAScript).
 
@@ -473,45 +358,19 @@ to ES5 JavaScript.
 Angular developers can write in ES5 directly.
 
 
-</div>
-
-
-
 ## ES2015
 
-<div class="l-sub-section">
-
-
-
 Short hand for [ECMAScript](guide/glossary#ecmascript) 2015.
-
-</div>
-
 
 
 ## ES5
 
-<div class="l-sub-section">
-
-
-
 Short hand for [ECMAScript](guide/glossary#ecmascript) 5, the version of JavaScript run by most modern browsers.
-
-</div>
-
 
 
 ## ES6
 
-<div class="l-sub-section">
-
-
-
 Short hand for [ECMAScript](guide/glossary#ecmascript) 2015.
-
-
-</div>
-
 
 
 {@a F}
@@ -526,24 +385,12 @@ Short hand for [ECMAScript](guide/glossary#ecmascript) 2015.
 
 ## Injector
 
-<div class="l-sub-section">
-
-
-
 An object in the Angular [dependency-injection system](guide/glossary#dependency-injection)
 that can find a named dependency in its cache or create a dependency
 with a registered [provider](guide/glossary#provider).
 
 
-</div>
-
-
-
 ## Input
-
-<div class="l-sub-section">
-
-
 
 A directive property that can be the *target* of a
 [property binding](guide/template-syntax#property-binding) (explained in detail in the [Template Syntax](guide/template-syntax) page).
@@ -553,15 +400,7 @@ in the template expression to the right of the equal sign.
 See the [Input and output properties](guide/template-syntax#inputs-outputs) section of the [Template Syntax](guide/template-syntax) page.
 
 
-</div>
-
-
-
 ## Interpolation
-
-<div class="l-sub-section">
-
-
 
 A form of [property data binding](guide/glossary#data-binding) in which a
 [template expression](guide/glossary#template-expression) between double-curly braces
@@ -581,9 +420,6 @@ Read more about [interpolation](guide/template-syntax#interpolation) in the
 [Template Syntax](guide/template-syntax) page.
 
 
-</div>
-
-
 {@a J}
 
 {@a jit}
@@ -591,39 +427,21 @@ Read more about [interpolation](guide/template-syntax#interpolation) in the
 
 ## Just-in-time (JIT) compilation
 
-<div class="l-sub-section">
-
-
-
 A bootstrapping method of compiling components and modules in the browser
 and launching the application dynamically. Just-in-time mode is a good choice during development.
 Consider using the [ahead-of-time](guide/glossary#aot) mode for production apps.
-
-
-</div>
 
 
 {@a K}
 
 ## kebab-case
 
-<div class="l-sub-section">
-
-
-
 See [dash-case](guide/glossary#dash-case).
-
-
-</div>
 
 
 {@a L}
 
 ## Lifecycle hooks
-
-<div class="l-sub-section">
-
-
 
 [Directives](guide/glossary#directive) and [components](guide/glossary#component) have a lifecycle
 managed by Angular as it creates, updates, and destroys them.
@@ -648,19 +466,11 @@ Angular calls these hook methods in the following order:
 Read more in the [Lifecycle Hooks](guide/lifecycle-hooks) page.
 
 
-</div>
-
-
 {@a M}
 
 ## Module
 
-<div class="l-sub-section">
-
-
-
 <div class="alert is-important">
-
 
 
 Angular has the following types of modules:
@@ -699,19 +509,11 @@ class belongs to a feature module named `date_pipe` in the file `date_pipe.ts`.
 You rarely access Angular feature modules directly. You usually import them from an Angular [scoped package](guide/glossary#scoped-package) such as `@angular/core`.
 
 
-</div>
-
-
-
 {@a N}
 
 {@a O}
 
 ## Observable
-
-<div class="l-sub-section">
-
-
 
 An array whose items arrive asynchronously over time.
 Observables help you manage asynchronous data, such as data coming from a backend service.
@@ -721,13 +523,7 @@ To use observables, Angular uses a third-party library called Reactive Extension
 Observables are a proposed feature for ES2016, the next version of JavaScript.
 
 
-</div>
-
 ## Output
-
-<div class="l-sub-section">
-
-
 
 A directive property that can be the *target* of event binding
 (read more in the [event binding](guide/template-syntax#event-binding)
@@ -738,16 +534,9 @@ in the template expression to the right of the equal sign.
 See the [Input and output properties](guide/template-syntax#inputs-outputs) section of the [Template Syntax](guide/template-syntax) page.
 
 
-</div>
-
-
 {@a P}
 
 ## PascalCase
-
-<div class="l-sub-section">
-
-
 
 The practice of writing individual words, compound words, or phrases such that each word or abbreviation begins with a capital letter.
 Class names are typically spelled in PascalCase. For example, `Person` and `HeroDetailComponent`.
@@ -756,15 +545,7 @@ This form is also known as *upper camel case* to distinguish it from *lower came
 In this documentation, "PascalCase" means *upper camel case* and  "camelCase" means *lower camel case*.
 
 
-</div>
-
-
-
 ## Pipe
-
-<div class="l-sub-section">
-
-
 
 An Angular pipe is a function that transforms input values to output values for
 display in a [view](guide/glossary#view).
@@ -783,23 +564,11 @@ You can also write your own custom pipes.
 Read more in the page on [pipes](guide/pipes).
 
 
-</div>
-
-
-
 ## Provider
-
-<div class="l-sub-section">
-
-
 
 A _provider_ creates a new instance of a dependency for the
 [dependency injection](guide/glossary#dependency-injection) system.
 It relates a lookup token to code&mdash;sometimes called a "recipe"&mdash;that can create a dependency value.
-
-
-</div>
-
 
 
 {@a Q}
@@ -807,10 +576,6 @@ It relates a lookup token to code&mdash;sometimes called a "recipe"&mdash;that c
 {@a R}
 
 ## Reactive forms
-
-<div class="l-sub-section">
-
-
 
 A technique for building Angular forms through code in a component.
 The alternative technique is [template-driven forms](guide/glossary#template-driven-forms).
@@ -825,15 +590,7 @@ When building reactive forms:
 Reactive forms are powerful, flexible, and a good choice for more complex data-entry form scenarios, such as dynamic generation of form controls.
 
 
-</div>
-
-
-
 ## Router
-
-<div class="l-sub-section">
-
-
 
 Most applications consist of many screens or [views](guide/glossary#view).
 The user navigates among them by clicking links and buttons,
@@ -855,46 +612,23 @@ directives that users can click to navigate.
 For more information, see the [Routing & Navigation](guide/router) page.
 
 
-</div>
-
-
-
 ## Router module
-
-<div class="l-sub-section">
-
-
 
 A separate [Angular module](guide/glossary#angular-module) that provides the necessary service providers and directives for navigating through application views.
 
 For more information, see the [Routing & Navigation](guide/router) page.
 
 
-</div>
-
-
-
 ## Routing component
-
-<div class="l-sub-section">
-
-
 
 An Angular [component](guide/glossary#component) with a `RouterOutlet` that displays views based on router navigations.
 
 For more information, see the [Routing & Navigation](guide/router) page.
 
 
-</div>
-
-
 {@a S}
 
 ## Scoped package
-
-<div class="l-sub-section">
-
-
 
 A way to group related *npm* packages.
 Read more at the [npm-scope](https://docs.npmjs.com/misc/scope) page.
@@ -912,16 +646,7 @@ is that the scoped package name begins with the Angular *scope name*, `@angular`
 </code-example>
 
 
-
-</div>
-
-
-
 ## Service
-
-<div class="l-sub-section">
-
-
 
 For data or logic that is not associated
 with a specific view or that you want to share across components, build services.
@@ -938,25 +663,13 @@ Applications often require services such as a data service or a logging service.
 For more information, see the [Services](tutorial/toh-pt4) page of the [Tour of Heroes](tutorial) tutorial.
 
 
-</div>
-
-
-
 {@a snake-case}
 
 
 ## snake_case
 
-<div class="l-sub-section">
-
-
-
 The practice of writing compound words or phrases such that an
 underscore (`_`) separates one word from the next. This form is also known as *underscore case*.
-
-
-</div>
-
 
 
 {@a structural-directive}
@@ -967,10 +680,6 @@ underscore (`_`) separates one word from the next. This form is also known as *u
 
 ## Structural directives
 
-<div class="l-sub-section">
-
-
-
 A category of [directive](guide/glossary#directive) that can
 shape or reshape HTML layout, typically by adding and removing elements in the DOM.
 The `ngIf` "conditional element" directive and the `ngFor` "repeater" directive are well-known examples.
@@ -978,31 +687,16 @@ The `ngIf` "conditional element" directive and the `ngFor` "repeater" directive 
 Read more in the [Structural Directives](guide/structural-directives) page.
 
 
-</div>
-
-
 {@a T}
 
 ## Template
-
-<div class="l-sub-section">
-
-
 
 A chunk of HTML that Angular uses to render a [view](guide/glossary#view) with
 the support and guidance of an Angular [directive](guide/glossary#directive),
 most notably a [component](guide/glossary#component).
 
 
-</div>
-
-
-
 ## Template-driven forms
-
-<div class="l-sub-section">
-
-
 
 A technique for building Angular forms using HTML forms and input elements in the view.
 The alternate technique is [Reactive Forms](guide/glossary#reactive-forms).
@@ -1020,15 +714,7 @@ Read about how to build template-driven forms
 in the [Forms](guide/forms) page.
 
 
-</div>
-
-
-
 ## Template expression
-
-<div class="l-sub-section">
-
-
 
 A TypeScript-like syntax that Angular evaluates within
 a [data binding](guide/glossary#data-binding).
@@ -1038,29 +724,13 @@ in the [Template expressions](guide/template-syntax#template-expressions) sectio
 of the [Template Syntax](guide/template-syntax) page.
 
 
-</div>
-
-
-
 ## Transpile
-
-<div class="l-sub-section">
-
-
 
 The process of transforming code written in one form of JavaScript
 (such as TypeScript) into another form of JavaScript  (such as [ES5](guide/glossary#es5)).
 
 
-</div>
-
-
-
 ## TypeScript
-
-<div class="l-sub-section">
-
-
 
 A version of JavaScript that supports most [ECMAScript 2015](guide/glossary#es2015)
 language features such as [decorators](guide/glossary#decorator).
@@ -1076,19 +746,11 @@ you can use other JavaScript dialects such as [ES5](guide/glossary#es5).
 Read more about TypeScript at [typescriptlang.org](http://www.typescriptlang.org/).
 
 
-</div>
-
-
-
 {@a U}
 
 {@a V}
 
 ## View
-
-<div class="l-sub-section">
-
-
 
 A portion of the screen that displays information and responds
 to user actions such as clicks, mouse moves, and keystrokes.
@@ -1103,10 +765,6 @@ dynamically as the user navigates through the application, typically
 under the control of a [router](guide/glossary#router).
 
 
-</div>
-
-
-
 {@a W}
 
 
@@ -1119,10 +777,6 @@ under the control of a [router](guide/glossary#router).
 {@a Z}
 
 ## Zone
-
-<div class="l-sub-section">
-
-
 
 A mechanism for encapsulating and intercepting
 a JavaScript application's asynchronous activity.
@@ -1142,6 +796,3 @@ the information it displays via [data bindings](guide/glossary#data-binding).
 
 Learn more about zones in this
 [Brian Ford video](https://www.youtube.com/watch?v=3IqtmUscE_U).
-
-</div>
-
