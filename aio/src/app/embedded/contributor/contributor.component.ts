@@ -13,16 +13,16 @@ import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
 
             <div *ngIf="person.picture" class="contributor-image" [style.background-image]="'url('+pictureBase+person.picture+')'">
                 <div class="contributor-info">
-                    <button>
-                        <a *ngIf="person.bio" aria-label="View Bio">View Bio</a>
+                    <button *ngIf="person.bio" >
+                        <a aria-label="View Bio">View Bio</a>
                     </button>
-                    <button class="icon">
-                        <a *ngIf="person.twitter" href="https://twitter.com/{{person.twitter}}" target="_blank">
+                    <button *ngIf="person.twitter" class="icon">
+                        <a href="https://twitter.com/{{person.twitter}}" target="_blank">
                             <span class="fa fa-twitter fa-2x"></span>
                         </a>
                     </button>
-                    <button class="icon">
-                        <a *ngIf="person.website" href="{{person.website}}" target="_blank">
+                    <button *ngIf="person.website" class="icon">
+                        <a href="{{person.website}}" target="_blank">
                             <span class="fa fa-link fa-2x"></span>
                         </a>
                     </button>
@@ -31,16 +31,16 @@ import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
 
             <div *ngIf="!person.picture" class="contributor-image" [style.background-image]="'url('+pictureBase+noPicture+')'">
                 <div class="contributor-info">
-                    <button>
-                        <a *ngIf="person.bio" aria-label="View Bio">View Bio</a>
+                    <button *ngIf="person.bio">
+                        <a aria-label="View Bio">View Bio</a>
                     </button>
-                    <button class="icon">
-                        <a *ngIf="person.twitter" href="https://twitter.com/{{person.twitter}}" target="_blank">
+                    <button *ngIf="person.twitter" class="icon">
+                        <a href="https://twitter.com/{{person.twitter}}" target="_blank">
                             <span class="fa fa-twitter fa-2x"></span>
                         </a>
                     </button>
-                    <button class="icon">
-                        <a *ngIf="person.website" href="{{person.website}}" target="_blank">
+                    <button *ngIf="person.website" class="icon">
+                        <a href="{{person.website}}" target="_blank">
                             <span class="fa fa-link fa-2x"></span>
                         </a>
                     </button>
