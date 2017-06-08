@@ -8,7 +8,10 @@
 
 import {NgModuleFactory, NgModuleRef, Type} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
-import {PRIMARY_OUTLET} from './shared';
+
+import {NavigationExtras} from './router';
+import {ActivatedRouteSnapshot} from './router_state';
+import {PRIMARY_OUTLET, Params} from './shared';
 import {UrlSegment, UrlSegmentGroup} from './url_tree';
 
 /**
@@ -327,7 +330,60 @@ export type LoadChildren = string | LoadChildrenCallback;
  * See {@link RouterLink} for more details.
  * @stable
  */
-export type QueryParamsHandling = 'merge' | 'preserve' | '';
+export type QueryParamsHandling = 'merge' | 'preserve' | 'replace' | '';
+
+/**
+ * @whatItDoes Handles the merging of query params.
+ *
+ * @description
+ *
+ * A custom QueryParamsHandlingStrategy can be provided when the default behavior for
+ * merge, preserve, or replace do not cover your particular use case.
+ *
+ * For instance, the following strategy removes all params that start with "x-":
+ *
+ * ```
+ * import {NgModule} from '@angular/core';
+ * import {Params, NavigationExtras, ROUTER_CONFIGURATION} from '@angular/router';
+ *
+ * export function handleQueryParams(currParams: Params, {queryParams = {}}: NavigationExtras = {}) {
+ *  let parsedParams = {};
+ *  for (let param in queryParams) {
+ *    if(param.indexOf('x-') !== 0) parsedParams[key] = queryParams[key];
+ *  }
+ *  return parsedParams;
+ * }
+ *
+ * @NgModule({
+ *  providers: [
+ *    {provide: ROUTER_CONFIGURATION, useValue: {queryParamsHandlingStrategy: handleQueryParams}}
+ *  ]
+ * })
+ * export class AppRouteModule {}
+ * ```
+ *
+ * @experimental
+ */
+export type QueryParamsHandlingStrategy = (currentParams: Params, opts: NavigationExtras) =>
+    Params;
+
+export function defaultQueryParamsHandlingStrategy(
+    currentParams: Params,
+    {queryParams, preserveQueryParams, queryParamsHandling}: NavigationExtras = {}): Params {
+  if (queryParamsHandling) {
+    switch (queryParamsHandling) {
+      case 'merge':
+        return {...currentParams, ...queryParams};
+      case 'preserve':
+        return currentParams;
+      case 'replace':
+      default:
+        return queryParams || {};
+    }
+  } else {
+    return preserveQueryParams ? currentParams : queryParams || {};
+  }
+}
 
 /**
  * @whatItDoes The type of `runGuardsAndResolvers`.

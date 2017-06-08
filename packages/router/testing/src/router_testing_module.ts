@@ -9,7 +9,7 @@
 import {Location, LocationStrategy} from '@angular/common';
 import {MockLocationStrategy, SpyLocation} from '@angular/common/testing';
 import {Compiler, Injectable, Injector, ModuleWithProviders, NgModule, NgModuleFactory, NgModuleFactoryLoader, Optional} from '@angular/core';
-import {ChildrenOutletContexts, NoPreloading, PreloadingStrategy, ROUTES, Route, Router, RouterModule, Routes, UrlHandlingStrategy, UrlSerializer, provideRoutes, ɵROUTER_PROVIDERS as ROUTER_PROVIDERS, ɵflatten as flatten} from '@angular/router';
+import {ChildrenOutletContexts, ExtraOptions, NoPreloading, PreloadingStrategy, ROUTER_CONFIGURATION, ROUTES, Route, Router, RouterModule, Routes, UrlHandlingStrategy, UrlSerializer, provideRoutes, ɵROUTER_PROVIDERS as ROUTER_PROVIDERS, ɵflatten as flatten} from '@angular/router';
 
 
 
@@ -84,11 +84,17 @@ export class SpyNgModuleFactoryLoader implements NgModuleFactoryLoader {
 export function setupTestingRouter(
     urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location,
     loader: NgModuleFactoryLoader, compiler: Compiler, injector: Injector, routes: Route[][],
-    urlHandlingStrategy?: UrlHandlingStrategy) {
+    urlHandlingStrategy?: UrlHandlingStrategy, opts?: ExtraOptions) {
   const router = new Router(
       null !, urlSerializer, contexts, location, injector, loader, compiler, flatten(routes));
   if (urlHandlingStrategy) {
     router.urlHandlingStrategy = urlHandlingStrategy;
+  }
+  if (opts && opts.queryParamsHandling) {
+    router.queryParamsHandling = opts.queryParamsHandling;
+  }
+  if (opts && opts.queryParamsHandlingStrategy) {
+    router.queryParamsHandlingStrategy = opts.queryParamsHandlingStrategy;
   }
   return router;
 }
@@ -128,7 +134,7 @@ export function setupTestingRouter(
       useFactory: setupTestingRouter,
       deps: [
         UrlSerializer, ChildrenOutletContexts, Location, NgModuleFactoryLoader, Compiler, Injector,
-        ROUTES, [UrlHandlingStrategy, new Optional()]
+        ROUTES, [UrlHandlingStrategy, new Optional()], [ROUTER_CONFIGURATION, new Optional()]
       ]
     },
     {provide: PreloadingStrategy, useExisting: NoPreloading}, provideRoutes([])

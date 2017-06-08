@@ -95,6 +95,8 @@ export interface ExtraOptions {
     errorHandler?: ErrorHandler;
     initialNavigation?: InitialNavigation;
     preloadingStrategy?: any;
+    queryParamsHandling?: QueryParamsHandling;
+    queryParamsHandlingStrategy?: QueryParamsHandlingStrategy;
     useHash?: boolean;
 }
 
@@ -147,6 +149,7 @@ export interface NavigationExtras {
     /** @deprecated */ preserveQueryParams?: boolean;
     queryParams?: Params | null;
     queryParamsHandling?: QueryParamsHandling | null;
+    queryParamsHandlingStrategy?: QueryParamsHandlingStrategy;
     relativeTo?: ActivatedRoute | null;
     replaceUrl?: boolean;
     skipLocationChange?: boolean;
@@ -206,6 +209,12 @@ export declare const PRIMARY_OUTLET = "primary";
 export declare function provideRoutes(routes: Routes): any;
 
 /** @stable */
+export declare type QueryParamsHandling = 'merge' | 'preserve' | 'replace' | '';
+
+/** @experimental */
+export declare type QueryParamsHandlingStrategy = (currentParams: Params, opts: NavigationExtras) => Params;
+
+/** @stable */
 export interface Resolve<T> {
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<T> | Promise<T> | T;
 }
@@ -254,12 +263,14 @@ export declare class Router {
     errorHandler: ErrorHandler;
     readonly events: Observable<Event>;
     navigated: boolean;
+    queryParamsHandling?: QueryParamsHandling | null;
+    queryParamsHandlingStrategy: QueryParamsHandlingStrategy;
     routeReuseStrategy: RouteReuseStrategy;
     readonly routerState: RouterState;
     readonly url: string;
     urlHandlingStrategy: UrlHandlingStrategy;
     constructor(rootComponentType: Type<any> | null, urlSerializer: UrlSerializer, rootContexts: ChildrenOutletContexts, location: Location, injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler, config: Routes);
-    createUrlTree(commands: any[], {relativeTo, queryParams, fragment, preserveQueryParams, queryParamsHandling, preserveFragment}?: NavigationExtras): UrlTree;
+    createUrlTree(commands: any[], extras?: NavigationExtras): UrlTree;
     dispose(): void;
     initialNavigation(): void;
     isActive(url: string | UrlTree, exact: boolean): boolean;
