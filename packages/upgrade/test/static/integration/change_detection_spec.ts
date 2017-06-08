@@ -11,7 +11,7 @@ import {async} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import * as angular from '@angular/upgrade/src/common/angular1';
-import {UpgradeComponent, UpgradeModule, downgradeComponent} from '@angular/upgrade/static';
+import {UpgradeComponent, UpgradeModule, downgradeComponent, downgradeInjectable} from '@angular/upgrade/static';
 
 import {bootstrap, html} from '../test_helpers';
 
@@ -102,8 +102,7 @@ export function main() {
 
              this.zone.onMicrotaskEmpty.subscribe(
                  () => { expect(element.textContent).toEqual('5'); });
-
-             Promise.resolve().then(() => this.valueFromPromise = changes['value'].currentValue);
+             Promise.resolve().then(() => {this.valueFromPromise = changes['value'].currentValue});
            }
          }
 
@@ -127,35 +126,65 @@ export function main() {
          });
        }));
 
-    // This test demonstrates https://github.com/angular/angular/issues/6385
-    // which was invalidly fixed by https://github.com/angular/angular/pull/6386
-    // it('should not trigger $digest from an async operation in a watcher', async(() => {
-    //      @Component({selector: 'my-app', template: ''})
-    //      class AppComponent {
-    //      }
+    it('should not trigger $digest from an async operation in a watcher', async(() => {
+         @Component({selector: 'my-app', template: ''})
+         class AppComponent {
+         }
 
-    //      @NgModule({declarations: [AppComponent], imports: [BrowserModule]})
-    //      class Ng2Module {
-    //      }
+         @NgModule({
+           declarations: [AppComponent],
+           entryComponents: [AppComponent],
+           imports: [BrowserModule, UpgradeModule]
+         })
+         class Ng2Module {
+           ngDoBootstrap() {}
+         }
 
-    //      const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
-    //      const ng1Module = angular.module('ng1', []).directive(
-    //          'myApp', adapter.downgradeNg2Component(AppComponent));
+         const ng1Module = angular.module('ng1', []).directive(
+             'myApp', downgradeComponent({component: AppComponent}));
 
-    //      const element = html('<my-app></my-app>');
+         const element = html('<my-app></my-app>');
 
-    //      adapter.bootstrap(element, ['ng1']).ready((ref) => {
-    //        let doTimeout = false;
-    //        let timeoutId: number;
-    //        ref.ng1RootScope.$watch(() => {
-    //          if (doTimeout && !timeoutId) {
-    //            timeoutId = window.setTimeout(function() {
-    //              timeoutId = null;
-    //            }, 10);
-    //          }
-    //        });
-    //        doTimeout = true;
-    //      });
-    //    }));
+         bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+           let doTimeout = false;
+           let timeoutId: number;
+           let rootScope = upgrade.$injector.get('$rootScope');
+           rootScope.$watch(() => {
+             if (doTimeout && !timeoutId) {
+               timeoutId = window.setTimeout(function() { timeoutId = null; }, 10);
+             }
+           });
+           doTimeout = true;
+         });
+       }));
+
+    it('should run async tasks from downgraded services in the angular zone', async(() => {
+         class Ng2Service {
+           doAsyncThing() {
+             window.setTimeout(() => { expect(NgZone.isInAngularZone()).toBe(true); }, 10)
+           }
+         }
+
+         @NgModule({
+           imports: [BrowserModule, UpgradeModule],
+           providers: [
+             {provide: Ng2Service, useClass: Ng2Service},
+           ]
+         })
+         class Ng2Module {
+           ngDoBootstrap() {}
+         }
+
+         // create the ng1 module that will import an ng2 service
+         const ng1Module =
+             angular.module('ng1Module', []).factory('ng2Service', downgradeInjectable(Ng2Service));
+
+         bootstrap(platformBrowserDynamic(), Ng2Module, html('<div>'), ng1Module)
+             .then((upgrade) => {
+               const ng2Service = upgrade.$injector.get('ng2Service');
+               const rootScope = upgrade.$injector.get('$rootScope');
+               rootScope.$watch(() => { ng2Service.doAsyncThing(); });
+             });
+       }));
   });
 }
