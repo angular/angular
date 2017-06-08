@@ -57,10 +57,10 @@ export function main() {
 
 const XTB = `
 <translationbundle>
-  <translation id="615790887472569365">attributs i18n sur les balises</translation>
+  <translation id="615790887472569365"><source>file.ts:3</source>attributs i18n sur les balises</translation>
   <translation id="3707494640264351337">imbriqué</translation>
-  <translation id="5539162898278769904">imbriqué</translation>
-  <translation id="3780349238193953556"><ph name="START_ITALIC_TEXT"/>avec des espaces réservés<ph name="CLOSE_ITALIC_TEXT"/></translation>
+  <translation id="5539162898278769904"><source>file.ts:7</source>imbriqué</translation>
+  <translation id="3780349238193953556"><source>file.ts:9</source><source>file.ts:10</source><ph name="START_ITALIC_TEXT"/>avec des espaces réservés<ph name="CLOSE_ITALIC_TEXT"/></translation>
   <translation id="5525133077318024839">sur des balises non traductibles</translation>
   <translation id="8670732454866344690">sur des balises traductibles</translation>
   <translation id="4593805537723189714">{VAR_PLURAL, plural, =0 {zero} =1 {un} =2 {deux} other {<ph name="START_BOLD_TEXT"/>beaucoup<ph name="CLOSE_BOLD_TEXT"/>}}</translation>

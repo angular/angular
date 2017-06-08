@@ -73,6 +73,15 @@ export function main(): void {
         });
       });
 
+      it('should load XTB files with source elements', () => {
+        const XTB = `<?xml version="1.0" encoding="UTF-8"?>
+<translationbundle>
+  <translation id="8841459487341224498"><source>file.ts:1</source>rab</translation>
+</translationbundle>`;
+
+        expect(loadAsMap(XTB)).toEqual({'8841459487341224498': 'rab'});
+      });
+
       it('should replace ICU placeholders with their translations', () => {
         const XTB = `<?xml version="1.0" encoding="UTF-8" ?>
 <translationbundle>
