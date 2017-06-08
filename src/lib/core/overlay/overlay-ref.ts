@@ -100,6 +100,7 @@ export class OverlayRef implements PortalHost {
     this.detachBackdrop();
     this._portalHost.dispose();
     this._attachments.complete();
+    this._backdropClick.complete();
     this._detachments.next();
     this._detachments.complete();
   }

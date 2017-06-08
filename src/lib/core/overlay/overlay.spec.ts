@@ -327,6 +327,21 @@ describe('Overlay', () => {
       expect(backdropClickHandler).toHaveBeenCalled();
     });
 
+    it('should complete the backdrop click stream once the overlay is destroyed', () => {
+      let overlayRef = overlay.create(config);
+
+      overlayRef.attach(componentPortal);
+      viewContainerFixture.detectChanges();
+
+      let backdrop = overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
+      let completeHandler = jasmine.createSpy('backdrop complete handler');
+
+      overlayRef.backdropClick().subscribe(null, null, completeHandler);
+      overlayRef.dispose();
+
+      expect(completeHandler).toHaveBeenCalled();
+    });
+
     it('should apply the default overlay backdrop class', () => {
       let overlayRef = overlay.create(config);
       overlayRef.attach(componentPortal);

@@ -57,7 +57,7 @@ export function throwMdDialogContentAlreadyAttachedError() {
   ],
   host: {
     '[class.mat-dialog-container]': 'true',
-    '[attr.role]': 'dialogConfig?.role',
+    '[attr.role]': 'config?.role',
     '[@slideDialog]': '_state',
     '(@slideDialog.done)': '_onAnimationDone($event)',
   },
@@ -76,7 +76,7 @@ export class MdDialogContainer extends BasePortalHost {
   private _document: Document;
 
   /** The dialog configuration. */
-  dialogConfig: MdDialogConfig;
+  config: MdDialogConfig;
 
   /** State of the dialog animation. */
   _state: 'void' | 'enter' | 'exit' = 'enter';

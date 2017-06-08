@@ -451,6 +451,28 @@ describe('MdDialog', () => {
 
       expect(overlayContainerElement.querySelector('md-dialog-container')).toBeTruthy();
     });
+
+    it('should allow for the disableClose option to be updated while open', async(() => {
+      let dialogRef = dialog.open(PizzaMsg, {
+        disableClose: true,
+        viewContainerRef: testViewContainerRef
+      });
+
+      viewContainerFixture.detectChanges();
+
+      let backdrop = overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
+      backdrop.click();
+
+      expect(overlayContainerElement.querySelector('md-dialog-container')).toBeTruthy();
+
+      dialogRef.disableClose = false;
+      backdrop.click();
+
+      viewContainerFixture.detectChanges();
+      viewContainerFixture.whenStable().then(() => {
+        expect(overlayContainerElement.querySelector('md-dialog-container')).toBeFalsy();
+      });
+    }));
   });
 
   describe('hasBackdrop option', () => {
