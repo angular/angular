@@ -69,7 +69,7 @@ code-tabs mat-tab-body-content .fadeIn {
 aio-code pre {
     display: flex;
     min-height: 32px;
-    margin: 16px;
+    margin: 16px 32px;
     white-space: pre-wrap;
     align-items: center;
 
@@ -101,8 +101,8 @@ code ol {
 .copy-button {
   display: inline-block;
   position: absolute;
-  top: 6px;
-  right: 8px;
+  top: -8px;
+  right: -32px;
 
   color: $blue-grey-200;
   background-color: transparent;
@@ -110,11 +110,6 @@ code ol {
   cursor: pointer;
   &:hover {
     color: $mediumgray;
-  }
-
-  @media (max-width: 480px) {
-    top: 0;
-    right: 0;
   }
 }
 
