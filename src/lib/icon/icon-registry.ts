@@ -245,7 +245,7 @@ export class MdIconRegistry {
         .filter(iconSetConfig => !iconSetConfig.svgElement)
         .map(iconSetConfig =>
             this._loadSvgIconSetFromConfig(iconSetConfig)
-                .catch((err: any, caught: Observable<SVGElement>): Observable<SVGElement> => {
+                .catch((err: any): Observable<SVGElement> => {
                   let url =
                       this._sanitizer.sanitize(SecurityContext.RESOURCE_URL, iconSetConfig.url);
 
@@ -263,7 +263,7 @@ export class MdIconRegistry {
     // Fetch all the icon set URLs. When the requests complete, every IconSet should have a
     // cached SVG element (unless the request failed), and we can check again for the icon.
     return Observable.forkJoin(iconSetFetchRequests)
-        .map((ignoredResults: any) => {
+        .map(() => {
           const foundIcon = this._extractIconWithNameFromAnySet(name, iconSetConfigs);
           if (!foundIcon) {
             throw getMdIconNameNotFoundError(name);

@@ -79,7 +79,7 @@ describe('MdSelect', () => {
         }},
         {provide: Dir, useFactory: () => dir = { value: 'ltr' }},
         {provide: ScrollDispatcher, useFactory: () => {
-          return {scrolled: (delay: number, callback: () => any) => {
+          return {scrolled: (_delay: number, callback: () => any) => {
             return scrolledSubject.asObservable().subscribe(callback);
           }};
         }}
@@ -2505,9 +2505,9 @@ class SelectInitWithoutOptions {
 class CustomSelectAccessor implements ControlValueAccessor {
   @ViewChild(MdSelect) select: MdSelect;
 
-  writeValue(val: any): void {}
-  registerOnChange(fn: (val: any) => void): void {}
-  registerOnTouched(fn: Function): void {}
+  writeValue: (value?: any) => void = () => {};
+  registerOnChange: (changeFn?: (value: any) => void) => void = () => {};
+  registerOnTouched: (touchedFn?: () => void) => void = () => {};
 }
 
 @Component({

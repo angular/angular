@@ -6,7 +6,7 @@ import {TileCoordinator} from './tile-coordinator';
  * Tile Coordinator.
  * @docs-private
  */
-export class TileStyler {
+export abstract class TileStyler {
   _gutterSize: string;
   _rows: number = 0;
   _rowspan: number = 0;
@@ -122,11 +122,12 @@ export class TileStyler {
    * This method will be implemented by each type of TileStyler.
    * @docs-private
    */
-  setRowStyles(tile: MdGridTile, rowIndex: number, percentWidth: number, gutterWidth: number) {}
+  abstract setRowStyles(tile: MdGridTile, rowIndex: number, percentWidth: number,
+                        gutterWidth: number);
 
   /**
    * Calculates the computed height and returns the correct style property to set.
-   * This method will be implemented by each type of TileStyler.
+   * This method can be implemented by each type of TileStyler.
    * @docs-private
    */
   getComputedHeight(): [string, string] { return null; }
@@ -147,8 +148,7 @@ export class FixedTileStyler extends TileStyler {
     this.fixedRowHeight = normalizeUnits(this.fixedRowHeight);
   }
 
-  setRowStyles(tile: MdGridTile, rowIndex: number, percentWidth: number,
-               gutterWidth: number): void {
+  setRowStyles(tile: MdGridTile, rowIndex: number): void {
     tile._setStyle('top', this.getTilePosition(this.fixedRowHeight, rowIndex));
     tile._setStyle('height', calc(this.getTileSize(this.fixedRowHeight, tile.rowspan)));
   }
@@ -215,8 +215,7 @@ export class RatioTileStyler extends TileStyler {
  */
 export class FitTileStyler extends TileStyler {
 
-  setRowStyles(tile: MdGridTile, rowIndex: number, percentWidth: number,
-               gutterWidth: number): void {
+  setRowStyles(tile: MdGridTile, rowIndex: number): void {
     // Percent of the available vertical space that one row takes up.
     let percentHeightPerTile = 100 / this._rowspan;
 
@@ -229,6 +228,7 @@ export class FitTileStyler extends TileStyler {
     tile._setStyle('top', this.getTilePosition(baseTileHeight, rowIndex));
     tile._setStyle('height', calc(this.getTileSize(baseTileHeight, tile.rowspan)));
   }
+
 }
 
 

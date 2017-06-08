@@ -685,10 +685,8 @@ class SlideToggleTestApp {
   lastEvent: MdSlideToggleChange;
   labelPosition: string;
 
-  onSlideClick(event: Event) {}
-  onSlideChange(event: MdSlideToggleChange) {
-    this.lastEvent = event;
-  }
+  onSlideClick: (event?: Event) => void = () => {};
+  onSlideChange = (event: MdSlideToggleChange) => this.lastEvent = event;
 }
 
 

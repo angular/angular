@@ -193,7 +193,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
   _selectedValueWidth: number;
 
   /** View -> model callback called when value changes */
-  _onChange = (value: any) => {};
+  _onChange: (value: any) => void = () => {};
 
   /** View -> model callback called when select has been touched */
   _onTouched = () => {};

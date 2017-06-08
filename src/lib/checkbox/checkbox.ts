@@ -178,7 +178,7 @@ export class MdCheckbox extends _MdCheckboxMixinBase
 
   private _indeterminate: boolean = false;
 
-  private _controlValueAccessorChangeFn: (value: any) => void = (value) => {};
+  private _controlValueAccessorChangeFn: (value: any) => void = () => {};
 
   /** Reference to the focused state ripple. */
   private _focusRipple: RippleRef;

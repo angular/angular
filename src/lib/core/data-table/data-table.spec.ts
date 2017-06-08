@@ -275,7 +275,7 @@ function getHeaderCells(tableElement: Element): Element[] {
 }
 
 const tableCustomMatchers: jasmine.CustomMatcherFactories = {
-  toMatchTableContent: function(util, customEqualityTesters) {
+  toMatchTableContent: () => {
     return {
       compare: function (tableElement: Element, expectedTableContent: any[]) {
         const missedExpectations = [];

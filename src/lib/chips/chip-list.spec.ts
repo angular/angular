@@ -236,11 +236,8 @@ describe('MdChipList', () => {
 class StaticChipList {
   name: string = 'Test';
   selectable: boolean = true;
-  remove: Number;
+  remove: number;
 
-  chipSelect(index: Number) {
-  }
-
-  chipDeselect(index: Number) {
-  }
+  chipSelect: (index?: number) => void = () => {};
+  chipDeselect: (index?: number) => void = () => {};
 }

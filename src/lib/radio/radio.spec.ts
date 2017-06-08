@@ -143,7 +143,7 @@ describe('MdRadio', () => {
       expect(radioInstances[0].checked).toBe(false);
 
       let spies = radioInstances
-        .map((value, index) => jasmine.createSpy(`onChangeSpy ${index}`));
+        .map((radio, index) => jasmine.createSpy(`onChangeSpy ${index} for ${radio.name}`));
 
       spies.forEach((spy, index) => radioInstances[index].change.subscribe(spy));
 

@@ -851,8 +851,8 @@ class SingleCheckbox {
   checkboxColor: string = 'primary';
   checkboxValue: string = 'single_checkbox';
 
-  onCheckboxClick(event: Event) {}
-  onCheckboxChange(event: MdCheckboxChange) {}
+  onCheckboxClick: (event?: Event) => void = () => {};
+  onCheckboxChange: (event?: MdCheckboxChange) => void = () => {};
 }
 
 /** Simple component for testing an MdCheckbox with ngModel. */

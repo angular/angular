@@ -31,7 +31,11 @@ const DEFAULT_DAY_OF_WEEK_NAMES = {
 
 /** Creates an array and fills it with values. */
 function range<T>(length: number, valueFunction: (index: number) => T): T[] {
-  return Array.apply(null, Array(length)).map((v: undefined, i: number) => valueFunction(i));
+  const valuesArray = Array(length);
+  for (let i = 0; i < length; i++) {
+    valuesArray[i] = valueFunction(i);
+  }
+  return valuesArray;
 }
 
 
@@ -123,7 +127,7 @@ export class NativeDateAdapter extends DateAdapter<Date> {
     return new Date();
   }
 
-  parse(value: any, parseFormat: Object): Date | null {
+  parse(value: any): Date | null {
     // We have no way using the native JS Date to set the parse format or locale, so we ignore these
     // parameters.
     let timestamp = typeof value == 'number' ? value : Date.parse(value);

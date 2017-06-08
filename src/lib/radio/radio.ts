@@ -95,7 +95,7 @@ export class MdRadioGroup extends _MdRadioGroupMixinBase
   private _disabled: boolean = false;
 
   /** The method to be called in order to update ngModel */
-  _controlValueAccessorChangeFn: (value: any) => void = (value) => {};
+  _controlValueAccessorChangeFn: (value: any) => void = () => {};
 
   /**
    * onTouch function registered via registerOnTouch (ControlValueAccessor).

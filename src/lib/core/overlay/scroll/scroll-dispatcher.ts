@@ -105,7 +105,7 @@ export class ScrollDispatcher {
   getScrollContainers(elementRef: ElementRef): Scrollable[] {
     const scrollingContainers: Scrollable[] = [];
 
-    this.scrollableReferences.forEach((subscription: Subscription, scrollable: Scrollable) => {
+    this.scrollableReferences.forEach((_subscription: Subscription, scrollable: Scrollable) => {
       if (this.scrollableContainsElement(scrollable, elementRef)) {
         scrollingContainers.push(scrollable);
       }

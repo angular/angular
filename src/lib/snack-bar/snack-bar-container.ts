@@ -99,7 +99,7 @@ export class MdSnackBarContainer extends BasePortalHost implements OnDestroy {
   }
 
   /** Attach a template portal as content to this snack bar container. */
-  attachTemplatePortal(portal: TemplatePortal): Map<string, any> {
+  attachTemplatePortal(): Map<string, any> {
     throw new Error('Not yet implemented');
   }
 

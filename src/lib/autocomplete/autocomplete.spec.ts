@@ -72,7 +72,7 @@ describe('MdAutocomplete', () => {
         }},
         {provide: Dir, useFactory: () => ({value: dir})},
         {provide: ScrollDispatcher, useFactory: () => {
-          return {scrolled: (delay: number, callback: () => any) => {
+          return {scrolled: (_delay: number, callback: () => any) => {
             return scrolledSubject.asObservable().subscribe(callback);
           }};
         }}

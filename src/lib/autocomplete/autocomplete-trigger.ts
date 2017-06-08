@@ -92,7 +92,7 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   private _manuallyFloatingPlaceholder = false;
 
   /** View -> model callback called when value changes */
-  _onChange = (value: any) => {};
+  _onChange: (value: any) => void = () => {};
 
   /** View -> model callback called when autocomplete has been touched */
   _onTouched = () => {};

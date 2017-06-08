@@ -8,7 +8,6 @@ import {
   OverlayState,
   OverlayRef,
   OverlayModule,
-  ScrollStrategy,
   ScrollDispatcher,
 } from '../../core';
 
@@ -23,7 +22,7 @@ describe('CloseScrollStrategy', () => {
       imports: [OverlayModule, PortalModule, OverlayTestModule],
       providers: [
         {provide: ScrollDispatcher, useFactory: () => {
-          return {scrolled: (delay: number, callback: () => any) => {
+          return {scrolled: (_delay: number, callback: () => any) => {
             return scrolledSubject.asObservable().subscribe(callback);
           }};
         }}

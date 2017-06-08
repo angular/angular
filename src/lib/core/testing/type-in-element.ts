@@ -6,7 +6,7 @@ import {dispatchFakeEvent} from './dispatch-events';
  * @param value Value to be set on the input.
  * @param element Element onto which to set the value.
  */
-export function typeInElement(value: string, element: HTMLInputElement, autoFocus = true) {
+export function typeInElement(value: string, element: HTMLInputElement) {
   element.focus();
   element.value = value;
   dispatchFakeEvent(element, 'input');

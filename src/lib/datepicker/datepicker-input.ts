@@ -121,7 +121,7 @@ export class MdDatepickerInput<D> implements AfterContentInit, ControlValueAcces
 
   _onTouched = () => {};
 
-  private _cvaOnChange = (value: any) => {};
+  private _cvaOnChange: (value: any) => void = () => {};
 
   private _validatorOnChange = () => {};
 

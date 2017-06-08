@@ -2,8 +2,7 @@
  * Collection of useful custom jasmine matchers for tests.
  */
 export const customMatchers: jasmine.CustomMatcherFactories = {
-  toBeRole: function(util: jasmine.MatchersUtil,
-                     customEqualityTesters: jasmine.CustomEqualityTester[]) {
+  toBeRole: () => {
     return {
       compare: function (element: Element, expectedRole: string) {
         const result: jasmine.CustomMatcherResult = {pass: false};

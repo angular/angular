@@ -135,17 +135,10 @@ class SingleChip {
   selected: boolean = false;
   shouldShow: boolean = true;
 
-  chipFocus(event: MdChipEvent) {
-  }
-
-  chipDestroy(event: MdChipEvent) {
-  }
-
-  chipSelect(event: MdChipEvent) {
-  }
-
-  chipDeselect(event: MdChipEvent) {
-  }
+  chipFocus: (event?: MdChipEvent) => void = () => {};
+  chipDestroy: (event?: MdChipEvent) => void = () => {};
+  chipSelect: (event?: MdChipEvent) => void = () => {};
+  chipDeselect: (event?: MdChipEvent) => void = () => {};
 }
 
 @Component({
