@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 import {PeopleDatabase} from './people-database';
 import {PersonDataSource} from './person-data-source';
 
-type UserProperties = 'userId' | 'userName' | 'progress' | 'color';
+export type UserProperties = 'userId' | 'userName' | 'progress' | 'color';
 
 @Component({
   moduleId: module.id,
