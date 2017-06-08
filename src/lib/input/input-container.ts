@@ -259,7 +259,9 @@ export class MdInputDirective {
   private _isNeverEmpty() { return this._neverEmptyInputTypes.indexOf(this._type) !== -1; }
 
   private _isBadInput() {
-    return (this._elementRef.nativeElement as HTMLInputElement).validity.badInput;
+    // The `validity` property won't be present on platform-server.
+    let validity = (this._elementRef.nativeElement as HTMLInputElement).validity;
+    return validity && validity.badInput;
   }
 
   /** Determines if the component host is a textarea. If not recognizable it returns false. */

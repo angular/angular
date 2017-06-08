@@ -47,14 +47,14 @@ describe('MdChipList', () => {
       manager = chipListInstance._keyManager;
     });
 
-    it('focuses the first chip on focus', () => {
+    it('should focus the first chip on focus', () => {
       chipListInstance.focus();
       fixture.detectChanges();
 
       expect(manager.activeItemIndex).toBe(0);
     });
 
-    it('watches for chip focus', () => {
+    it('should watch for chip focus', () => {
       let array = chips.toArray();
       let lastIndex = array.length - 1;
       let lastItem = array[lastIndex];
@@ -81,13 +81,13 @@ describe('MdChipList', () => {
         expect(manager.activeItemIndex).toEqual(2);
       });
 
-      it('focuses the previous item', () => {
+      it('should focus the previous item', () => {
         let array = chips.toArray();
         let lastIndex = array.length - 1;
         let lastItem = array[lastIndex];
 
-        // Focus the last item
-        lastItem.focus();
+        // Focus the last item by fake updating the _hasFocus state for unit tests.
+        lastItem._hasFocus = true;
 
         // Destroy the last item
         testComponent.remove = lastIndex;

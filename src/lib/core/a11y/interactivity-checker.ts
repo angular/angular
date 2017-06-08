@@ -48,6 +48,10 @@ export class InteractivityChecker {
    * @returns Whether the element is tabbable.
    */
   isTabbable(element: HTMLElement): boolean {
+    // Nothing is tabbable on the the server 😎
+    if (!this._platform.isBrowser) {
+      return false;
+    }
 
     let frameElement = getWindow(element).frameElement as HTMLElement;
 

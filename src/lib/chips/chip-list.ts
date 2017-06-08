@@ -195,7 +195,7 @@ export class MdChipList implements AfterContentInit, OnDestroy {
     chip.destroy.subscribe(() => {
       let chipIndex: number = this.chips.toArray().indexOf(chip);
 
-      if (this._isValidIndex(chipIndex)) {
+      if (this._isValidIndex(chipIndex) && chip._hasFocus) {
         // Check whether the chip is the last item
         if (chipIndex < this.chips.length - 1) {
           this._keyManager.setActiveItem(chipIndex);

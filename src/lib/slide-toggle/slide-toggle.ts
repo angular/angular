@@ -20,7 +20,8 @@ import {
   FocusOriginMonitor,
   HammerInput,
   MdRipple,
-  RippleRef
+  RippleRef,
+  Platform,
 } from '../core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {mixinDisabled, CanDisable} from '../core/common-behaviors/disabled';
@@ -55,7 +56,7 @@ export const _MdSlideToggleMixinBase = mixinColor(mixinDisabled(MdSlideToggleBas
   moduleId: module.id,
   selector: 'md-slide-toggle, mat-slide-toggle',
   host: {
-    '[class.mat-slide-toggle]': 'true',
+    'class': 'mat-slide-toggle',
     '[class.mat-checked]': 'checked',
     '[class.mat-disabled]': 'disabled',
     '[class.mat-slide-toggle-label-before]': 'labelPosition == "before"',
@@ -124,13 +125,14 @@ export class MdSlideToggle extends _MdSlideToggleMixinBase
 
   constructor(elementRef: ElementRef,
               renderer: Renderer2,
+              private _platform: Platform,
               private _focusOriginMonitor: FocusOriginMonitor,
               private _changeDetectorRef: ChangeDetectorRef) {
     super(renderer, elementRef);
   }
 
   ngAfterContentInit() {
-    this._slideRenderer = new SlideToggleRenderer(this._elementRef);
+    this._slideRenderer = new SlideToggleRenderer(this._elementRef, this._platform);
 
     this._focusOriginMonitor
       .monitor(this._inputElement.nativeElement, this._renderer, false)
@@ -294,9 +296,13 @@ class SlideToggleRenderer {
   /** Whether the thumb is currently being dragged. */
   dragging: boolean = false;
 
-  constructor(private _elementRef: ElementRef) {
-    this._thumbEl = _elementRef.nativeElement.querySelector('.mat-slide-toggle-thumb-container');
-    this._thumbBarEl = _elementRef.nativeElement.querySelector('.mat-slide-toggle-bar');
+  constructor(private _elementRef: ElementRef, platform: Platform) {
+    // We only need to interact with these elements when we're on the browser, so only grab
+    // the reference in that case.
+    if (platform.isBrowser) {
+      this._thumbEl = _elementRef.nativeElement.querySelector('.mat-slide-toggle-thumb-container');
+      this._thumbBarEl = _elementRef.nativeElement.querySelector('.mat-slide-toggle-bar');
+    }
   }
 
   /** Initializes the drag of the slide-toggle. */

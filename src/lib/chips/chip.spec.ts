@@ -29,7 +29,7 @@ describe('Chips', () => {
 
       chipDebugElement = fixture.debugElement.query(By.directive(MdChip));
       chipNativeElement = chipDebugElement.nativeElement;
-      chipInstance = chipDebugElement.componentInstance;
+      chipInstance = chipDebugElement.injector.get(MdChip);
 
       document.body.appendChild(chipNativeElement);
     });
@@ -56,7 +56,7 @@ describe('Chips', () => {
         chipDebugElement = fixture.debugElement.query(By.directive(MdChip));
         chipListNativeElement = fixture.debugElement.query(By.directive(MdChipList)).nativeElement;
         chipNativeElement = chipDebugElement.nativeElement;
-        chipInstance = chipDebugElement.componentInstance;
+        chipInstance = chipDebugElement.injector.get(MdChip);
         testComponent = fixture.debugElement.componentInstance;
 
         document.body.appendChild(chipNativeElement);

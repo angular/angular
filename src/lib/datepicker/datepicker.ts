@@ -234,7 +234,7 @@ export class MdDatepicker<D> implements OnDestroy {
     config.viewContainerRef = this._viewContainerRef;
 
     this._dialogRef = this._dialog.open(MdDatepickerContent, config);
-    this._dialogRef.afterClosed().first().subscribe(() => this.close());
+    this._dialogRef.afterClosed().subscribe(() => this.close());
     this._dialogRef.componentInstance.datepicker = this;
   }
 
@@ -257,7 +257,7 @@ export class MdDatepicker<D> implements OnDestroy {
       this._ngZone.onStable.first().subscribe(() => this._popupRef.updatePosition());
     }
 
-    this._popupRef.backdropClick().first().subscribe(() => this.close());
+    this._popupRef.backdropClick().subscribe(() => this.close());
   }
 
   /** Create the popup. */

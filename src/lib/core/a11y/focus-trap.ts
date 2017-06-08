@@ -8,9 +8,11 @@ import {
   Injectable,
 } from '@angular/core';
 import {InteractivityChecker} from './interactivity-checker';
+import {Platform} from '../platform/platform';
 import {coerceBooleanProperty} from '../coercion/boolean-property';
 
 import 'rxjs/add/operator/first';
+
 
 /**
  * Class that allows for trapping focus within a DOM element.
@@ -37,6 +39,7 @@ export class FocusTrap {
 
   constructor(
     private _element: HTMLElement,
+    private _platform: Platform,
     private _checker: InteractivityChecker,
     private _ngZone: NgZone,
     deferAnchors = false) {
@@ -64,6 +67,11 @@ export class FocusTrap {
    * in the constructor, but can be deferred for cases like directives with `*ngIf`.
    */
   attachAnchors(): void {
+    // If we're not on the browser, there can be no focus to trap.
+    if (!this._platform.isBrowser) {
+      return;
+    }
+
     if (!this._startAnchor) {
       this._startAnchor = this._createAnchor();
     }
@@ -223,10 +231,13 @@ export class FocusTrap {
 /** Factory that allows easy instantiation of focus traps. */
 @Injectable()
 export class FocusTrapFactory {
-  constructor(private _checker: InteractivityChecker, private _ngZone: NgZone) { }
+  constructor(
+      private _checker: InteractivityChecker,
+      private _platform: Platform,
+      private _ngZone: NgZone) { }
 
   create(element: HTMLElement, deferAnchors = false): FocusTrap {
-    return new FocusTrap(element, this._checker, this._ngZone, deferAnchors);
+    return new FocusTrap(element, this._platform, this._checker, this._ngZone, deferAnchors);
   }
 }
 

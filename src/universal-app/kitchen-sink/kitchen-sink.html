@@ -1,6 +1,13 @@
 <h1>Kitchen sink app</h1>
 
-<h2>Buttons</h2>
+<h2>Autocomplete</h2>
+<md-autocomplete>
+  <md-option>Grace Hopper</md-option>
+  <md-option>Anita Borg</md-option>
+  <md-option>Ada Lovelace</md-option>
+</md-autocomplete>
+
+<h2>Button</h2>
 
 <button md-button>go</button>
 <button md-icon-button>go</button>
@@ -13,3 +20,195 @@
 <a md-raised-button href="https://google.com">Google</a>
 <a md-fab href="https://google.com">Google</a>
 <a md-mini-fab href="https://google.com">Google</a>
+
+<!-- Button toggle doesn't work due to https://github.com/angular/angular/issues/17050 -->
+<!--<h2>Button toggle</h2>-->
+
+<!--<h3>Single selection</h3>-->
+<!--<md-button-toggle-group>-->
+  <!--<md-button-toggle>Ketchup</md-button-toggle>-->
+  <!--<md-button-toggle>Mustard</md-button-toggle>-->
+  <!--<md-button-toggle>Mayo</md-button-toggle>-->
+<!--</md-button-toggle-group>-->
+
+<!--<h3>Multi selection</h3>-->
+<!--<md-button-toggle-group multiple>-->
+  <!--<md-button-toggle>Ketchup</md-button-toggle>-->
+  <!--<md-button-toggle>Mustard</md-button-toggle>-->
+  <!--<md-button-toggle>Mayo</md-button-toggle>-->
+<!--</md-button-toggle-group>-->
+
+<h3>Standalone</h3>
+<md-button-toggle>Hyperspinner enabled</md-button-toggle>
+
+<h3>Card</h3>
+
+<md-card>
+  Simple card
+</md-card>
+
+<md-card>
+  <md-card-title>Complicated card</md-card-title>
+  <md-card-subtitle>Subtitle</md-card-subtitle>
+  <md-card-content>
+    <p>This is some stuff</p>
+    <p>And more stuff</p>
+  </md-card-content>
+  <md-card-actions>
+    <button md-button>LIKE</button>
+    <button md-button>SHARE</button>
+  </md-card-actions>
+  <md-card-footer>
+    Hurray
+  </md-card-footer>
+</md-card>
+
+<!-- Checkbox doesn't work due to https://github.com/angular/angular/issues/17050 -->
+<!--<h2>Checkbox</h2>-->
+
+<!--<md-checkbox>With a label</md-checkbox>-->
+<!--<md-checkbox></md-checkbox>Without a label-->
+
+<h2>Chips</h2>
+
+<md-chip-list>
+  <md-chip>Barbeque Cheddar</md-chip>
+  <md-chip>Sea Salt and Vinegar</md-chip>
+  <md-chip>Manta Ray</md-chip>
+</md-chip-list>
+
+<md-chip-list>
+  <md-basic-chip>Tomato</md-basic-chip>
+  <md-basic-chip>Scallion</md-basic-chip>
+  <md-basic-chip>Cilantro</md-basic-chip>
+</md-chip-list>
+
+<h2>Datepicker</h2>
+
+<md-input-container>
+  <input mdInput [mdDatepicker]="birthday" placeholder="Birthday">
+  <button mdSuffix [mdDatepickerToggle]="birthday"></button>
+  <md-datepicker #birthday></md-datepicker>
+</md-input-container>
+
+<h2>Grid list</h2>
+
+<md-grid-list cols="4">
+  <md-grid-tile>Fry</md-grid-tile>
+  <md-grid-tile>Leela</md-grid-tile>
+  <md-grid-tile>Amy</md-grid-tile>
+  <md-grid-tile>Bender</md-grid-tile>
+</md-grid-list>
+
+<h2>Icon</h2>
+<md-icon>ligature</md-icon>
+
+<h2>Input</h2>
+
+<md-input-container>
+  <input mdInput placeholder="amount">
+  <span mdPrefix>$&nbsp;</span>
+  <span mdSuffix>.00</span>
+  <md-hint>Dolla dolla bills</md-hint>
+  <md-error>Recession</md-error>
+</md-input-container>
+
+<h2>List</h2>
+
+<md-list>
+  <md-list-item>Robot</md-list-item>
+  <md-list-item>Android</md-list-item>
+  <md-list-item>Cyborg</md-list-item>
+</md-list>
+
+<md-nav-list>
+  <a md-list-item href="https://google.com">Search</a>
+  <a md-list-item href="https://google.com">Find</a>
+  <a md-list-item href="https://google.com">Seek</a>
+</md-nav-list>
+
+
+<h2>Menu</h2>
+
+<button md-button [mdMenuTriggerFor]="menu">Open</button>
+<md-menu #menu="mdMenu">
+  <button md-menu-item>Mercy</button>
+  <button md-menu-item>Lucio</button>
+  <button md-menu-item disabled>Sombra</button>
+</md-menu>
+
+<h2>Progress bar</h2>
+
+<md-progress-bar value="25"></md-progress-bar>
+<md-progress-bar mode="buffer" value="25" bufferValue="60"></md-progress-bar>
+<md-progress-bar mode="indeterminate"></md-progress-bar>
+<md-progress-bar mode="query"></md-progress-bar>
+
+
+<h2>Radio buttons</h2>
+
+<h3>Radio group</h3>
+<md-radio-group>
+  <md-radio-button>Charmander</md-radio-button>
+  <md-radio-button>Squirtle</md-radio-button>
+  <md-radio-button>Bulbasaur</md-radio-button>
+</md-radio-group>
+
+<h3>Standalone radios</h3>
+<md-radio-button name="onions">White</md-radio-button>
+<md-radio-button name="onions">Yellow</md-radio-button>
+<md-radio-button name="onions">Green</md-radio-button>
+<md-radio-button name="onions" disabled>Red</md-radio-button>
+
+<h2>Select</h2>
+<md-select>
+  <md-option>Glass</md-option>
+  <md-option>Ceramic</md-option>
+  <md-option>Steel</md-option>
+</md-select>
+
+<h2>Sidenav</h2>
+<md-sidenav-container>
+  <md-sidenav>On the side</md-sidenav>
+  Main content
+</md-sidenav-container>
+
+<h2>Slide-toggle</h2>
+<md-slide-toggle>With a label</md-slide-toggle>
+<md-slide-toggle></md-slide-toggle>Without a label
+
+<h2>Slider</h2>
+<md-slider></md-slider>
+<md-slider value="50"></md-slider>
+<md-slider tickInterval="1" min="1" max="10" value="5" thumbLabel></md-slider>
+
+<h2>Tabs</h2>
+
+<!-- Tabs don't work because `_updateTabScrollPosition` tries to set the transform on start-up -->
+<!--<md-tab-group>-->
+  <!--<md-tab label="Overview">-->
+    <!--The overview-->
+  <!--</md-tab>-->
+  <!--<md-tab>-->
+    <!--<ng-template md-tab-label>-->
+      <!--API docs-->
+    <!--</ng-template>-->
+    <!--The API docs-->
+  <!--</md-tab>-->
+<!--</md-tab-group>-->
+
+<nav md-tab-nav-bar>
+ <a md-tab-link href="https://google.com">Google</a>
+ <a md-tab-link href="https://google.com" active>Also Google</a>
+</nav>
+
+<h2>Toolbar</h2>
+<md-toolbar>Basic toolbar</md-toolbar>
+<md-toolbar>
+  <md-toolbar-row>Multi row</md-toolbar-row>
+  <md-toolbar-row>Toolbar</md-toolbar-row>
+</md-toolbar>
+
+<h2>Tooltip</h2>
+
+<button mdTooltip="Action!">Go</button>
