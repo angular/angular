@@ -3,12 +3,12 @@
   "version": "0.0.1",
   "main": "index.js",
   "dependencies": {
-    "@types/jsonwebtoken": "^7.2.0",
+    "@types/jsonwebtoken": "^7.2.1",
     "firebase-admin": "~4.2.1",
     "firebase-functions": "^0.5.7",
     "jsonwebtoken": "^7.4.1",
     "request": "^2.81.0",
-    "ts-node": "^3.0.4",
-    "typescript": "^2.3.3"
+    "ts-node": "^3.0.6",
+    "typescript": "^2.3.4"
   }
 }
