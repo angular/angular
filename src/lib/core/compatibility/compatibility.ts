@@ -1,18 +1,6 @@
-import {
-  NgModule,
-  Directive,
-  Inject,
-  Optional,
-  isDevMode,
-  ElementRef,
-  InjectionToken,
-} from '@angular/core';
-import {DOCUMENT} from '@angular/platform-browser';
+import {NgModule, Directive, Inject, Optional, ElementRef, InjectionToken} from '@angular/core';
 
 export const MATERIAL_COMPATIBILITY_MODE = new InjectionToken<boolean>('md-compatibility-mode');
-
-/** Injection token that configures whether the Material sanity checks are enabled. */
-export const MATERIAL_SANITY_CHECKS = new InjectionToken<boolean>('md-sanity-checks');
 
 /**
  * Returns an exception to be thrown if the consumer has used
@@ -183,54 +171,8 @@ export class MdPrefixRejector {
 @NgModule({
   declarations: [MatPrefixRejector, MdPrefixRejector],
   exports: [MatPrefixRejector, MdPrefixRejector],
-  providers: [{
-    provide: MATERIAL_SANITY_CHECKS, useValue: true,
-  }],
 })
-export class CompatibilityModule {
-  /** Whether we've done the global sanity checks (e.g. a theme is loaded, there is a doctype). */
-  private _hasDoneGlobalChecks = false;
-
-  constructor(
-    @Optional() @Inject(DOCUMENT) private _document: any,
-    @Optional() @Inject(MATERIAL_SANITY_CHECKS) _sanityChecksEnabled: boolean) {
-
-    if (_sanityChecksEnabled && !this._hasDoneGlobalChecks && _document && isDevMode()) {
-      // Delay running the check to allow more time for the user's styles to load.
-      this._checkDoctype();
-      this._checkTheme();
-      this._hasDoneGlobalChecks = true;
-    }
-  }
-
-  private _checkDoctype(): void {
-    if (!this._document.doctype) {
-      console.warn(
-        'Current document does not have a doctype. This may cause ' +
-        'some Angular Material components not to behave as expected.'
-      );
-    }
-  }
-
-  private _checkTheme(): void {
-    if (typeof getComputedStyle === 'function') {
-      const testElement = this._document.createElement('div');
-
-      testElement.classList.add('mat-theme-loaded-marker');
-      this._document.body.appendChild(testElement);
-
-      if (getComputedStyle(testElement).display !== 'none') {
-        console.warn(
-          'Could not find Angular Material core theme. Most Material ' +
-          'components may not work as expected. For more info refer ' +
-          'to the theming guide: https://material.angular.io/guide/theming'
-        );
-      }
-
-      this._document.body.removeChild(testElement);
-    }
-  }
-}
+export class CompatibilityModule {}
 
 
 /**
