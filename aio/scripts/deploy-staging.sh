@@ -4,6 +4,8 @@
 set +x -eu -o pipefail
 
 
+readonly INPUT_DIR=dist/
+readonly OUTPUT_FILE=/tmp/snapshot.tar.gz
 FIREBASE_PROJECT_ID=aio-staging
 DEPLOYED_URL=https://$FIREBASE_PROJECT_ID.firebaseapp.com
 
@@ -12,6 +14,8 @@ DEPLOYED_URL=https://$FIREBASE_PROJECT_ID.firebaseapp.com
 
   # Build the app
   yarn build
+  tar --create --gzip --directory "$INPUT_DIR" --file "$OUTPUT_FILE" .
+  yarn payload-size
 
   # Deploy to staging
   firebase use "$FIREBASE_PROJECT_ID" --token "$FIREBASE_TOKEN"
