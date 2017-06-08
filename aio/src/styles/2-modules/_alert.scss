@@ -3,6 +3,9 @@
     margin: 24px 0px;
     font-size: 14px;
     color: $darkgray;
+    width: 100%;
+    box-sizing: border-box;
+
     &.is-critical {
         border-left: 10px solid $brightred;
         background-color: rgba($brightred, 0.05);
