@@ -118,6 +118,22 @@ describe('MdMenu', () => {
     expect(overlayPane.getAttribute('dir')).toEqual('rtl');
   });
 
+  it('should transfer any custom classes from the host to the overlay', () => {
+    const fixture = TestBed.createComponent(SimpleMenu);
+
+    fixture.detectChanges();
+    fixture.componentInstance.trigger.openMenu();
+
+    const menuEl = fixture.debugElement.query(By.css('md-menu')).nativeElement;
+    const panel = overlayContainerElement.querySelector('.mat-menu-panel');
+
+    expect(menuEl.classList).not.toContain('custom-one');
+    expect(menuEl.classList).not.toContain('custom-two');
+
+    expect(panel.classList).toContain('custom-one');
+    expect(panel.classList).toContain('custom-two');
+  });
+
   describe('positions', () => {
     let fixture: ComponentFixture<PositionedMenu>;
     let panel: HTMLElement;
@@ -462,7 +478,7 @@ describe('MdMenu', () => {
 @Component({
   template: `
     <button [mdMenuTriggerFor]="menu" #triggerEl>Toggle menu</button>
-    <md-menu #menu="mdMenu" (close)="closeCallback()">
+    <md-menu class="custom-one custom-two" #menu="mdMenu" (close)="closeCallback()">
       <button md-menu-item> Item </button>
       <button md-menu-item disabled> Disabled </button>
     </md-menu>

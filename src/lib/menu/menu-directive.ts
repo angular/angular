@@ -12,6 +12,7 @@ import {
   TemplateRef,
   ViewChild,
   ViewEncapsulation,
+  ElementRef,
 } from '@angular/core';
 import {MenuPositionX, MenuPositionY} from './menu-positions';
 import {throwMdMenuInvalidPositionX, throwMdMenuInvalidPositionY} from './menu-errors';
@@ -85,15 +86,21 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
    */
   @Input('class')
   set classList(classes: string) {
-    this._classList = classes.split(' ').reduce((obj: any, className: string) => {
-      obj[className] = true;
-      return obj;
-    }, {});
-    this.setPositionClasses();
+    if (classes && classes.length) {
+      this._classList = classes.split(' ').reduce((obj: any, className: string) => {
+        obj[className] = true;
+        return obj;
+      }, {});
+
+      this._elementRef.nativeElement.className = '';
+      this.setPositionClasses();
+    }
   }
 
   /** Event emitted when the menu is closed. */
   @Output() close = new EventEmitter<void>();
+
+  constructor(private _elementRef: ElementRef) { }
 
   ngAfterContentInit() {
     this._keyManager = new FocusKeyManager(this.items).withWrap();
