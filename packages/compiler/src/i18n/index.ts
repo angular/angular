@@ -7,7 +7,7 @@
  */
 
 export {Extractor, ExtractorHost} from './extractor';
-export {I18NHtmlParser} from './i18n_html_parser';
+export {I18NHtmlParser, createSerializer} from './i18n_html_parser';
 export {MessageBundle} from './message_bundle';
 export {Serializer} from './serializers/serializer';
 export {Xliff} from './serializers/xliff';
