@@ -185,6 +185,9 @@ export class AppComponent implements OnInit {
     // Stop fetching timeout (which, when render is fast, means progress bar never shown)
     clearTimeout(this.isFetchingTimeout);
 
+    // Put page in a clean visual state
+    this.scrollService.scrollToTop();
+
     // Scroll 500ms after the doc-viewer has finished rendering the new doc
     // The delay is to allow time for async layout to complete
     setTimeout(() => {
