@@ -1,8 +1,7 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {MdSelect} from './select';
-import {MdOptionModule} from '../core/option/option';
-import {MdCommonModule, OverlayModule} from '../core';
+import {MdCommonModule, OverlayModule, MdOptionModule} from '../core';
 
 
 @NgModule({

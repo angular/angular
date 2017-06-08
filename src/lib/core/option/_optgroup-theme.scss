@@ -1,0 +1,14 @@
+@import '../theming/palette';
+@import '../theming/theming';
+
+@mixin mat-optgroup-theme($theme) {
+  $foreground: map-get($theme, foreground);
+
+  .mat-optgroup-label {
+    color: mat-color($foreground, secondary-text);
+  }
+
+  .mat-optgroup-disabled .mat-optgroup-label {
+    color: mat-color($foreground, hint-text);
+  }
+}

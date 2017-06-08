@@ -17,6 +17,15 @@
       @include user-select(none);
       cursor: default;
     }
+
+    .mat-optgroup &:not(.mat-option-multiple) {
+      padding-left: $mat-menu-side-padding * 2;
+
+      [dir='rtl'] & {
+        padding-left: $mat-menu-side-padding;
+        padding-right: $mat-menu-side-padding * 2;
+      }
+    }
   }
 
   .mat-option-ripple {
@@ -31,7 +40,7 @@
     // Pointer events can be safely disabled because the ripple trigger element is the host element.
     pointer-events: none;
 
-    // In high contrast mode this completely covers the text.
+    // Prevents the ripple from completely covering the option in high contrast mode.
     @include cdk-high-contrast {
       opacity: 0.5;
     }

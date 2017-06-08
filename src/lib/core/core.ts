@@ -2,7 +2,7 @@ import {NgModule} from '@angular/core';
 import {MdLineModule} from './line/line';
 import {RtlModule} from './rtl/dir';
 import {ObserveContentModule} from './observe-content/observe-content';
-import {MdOptionModule} from './option/option';
+import {MdOptionModule} from './option/index';
 import {PortalModule} from './portal/portal-directives';
 import {OverlayModule} from './overlay/overlay-directives';
 import {A11yModule} from './a11y/index';
@@ -16,7 +16,7 @@ export {Dir, LayoutDirection, RtlModule} from './rtl/dir';
 // Mutation Observer
 export {ObserveContentModule, ObserveContent} from './observe-content/observe-content';
 
-export {MdOptionModule, MdOption, MdOptionSelectionChange} from './option/option';
+export * from './option/index';
 
 // Portals
 export {

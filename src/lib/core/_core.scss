@@ -5,6 +5,8 @@
 @import 'ripple/ripple';
 @import 'option/option';
 @import 'option/option-theme';
+@import 'option/optgroup';
+@import 'option/optgroup-theme';
 @import 'selection/pseudo-checkbox/pseudo-checkbox-theme';
 @import 'typography/all-typography';
 
@@ -22,6 +24,7 @@
   @include angular-material-typography();
   @include mat-ripple();
   @include mat-option();
+  @include mat-optgroup();
   @include cdk-a11y();
   @include cdk-overlay();
 }
@@ -30,6 +33,7 @@
 @mixin mat-core-theme($theme) {
   @include mat-ripple-theme($theme);
   @include mat-option-theme($theme);
+  @include mat-optgroup-theme($theme);
   @include mat-pseudo-checkbox-theme($theme);
 
   // Wrapper element that provides the theme background when the

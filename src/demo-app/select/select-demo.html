@@ -1,5 +1,7 @@
-<div style="height: 1000px">This div is for testing scrolled selects.</div>
+Space above cards: <input type="number" [formControl]="topHeightCtrl">
 <button md-button (click)="showSelect=!showSelect">SHOW SELECT</button>
+<div [style.height.px]="topHeightCtrl.value"></div>
+
 <div class="demo-select">
   <md-card>
     <md-card-subtitle>ngModel</md-card-subtitle>
@@ -60,6 +62,21 @@
       <button md-button (click)="pokemonRequired=!pokemonRequired">TOGGLE REQUIRED</button>
       <button md-button (click)="pokemonDisabled=!pokemonDisabled">TOGGLE DISABLED</button>
       <button md-button (click)="pokemonControl.reset()">RESET</button>
+    </md-card-content>
+  </md-card>
+
+  <md-card>
+    <md-card-subtitle>Option groups</md-card-subtitle>
+
+    <md-card-content>
+      <md-select placeholder="Pokemon" [(ngModel)]="currentPokemonFromGroup">
+        <md-optgroup *ngFor="let group of pokemonGroups" [label]="group.name"
+          [disabled]="group.disabled">
+          <md-option *ngFor="let creature of group.pokemon" [value]="creature.value">
+            {{ creature.viewValue }}
+          </md-option>
+        </md-optgroup>
+      </md-select>
     </md-card-content>
   </md-card>
 

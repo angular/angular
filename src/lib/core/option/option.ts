@@ -9,12 +9,10 @@ import {
   Inject,
   Optional,
 } from '@angular/core';
-import {CommonModule} from '@angular/common';
 import {ENTER, SPACE} from '../keyboard/keycodes';
 import {coerceBooleanProperty} from '../coercion/boolean-property';
-import {MdRippleModule} from '../ripple/index';
-import {MdSelectionModule} from '../selection/index';
 import {MATERIAL_COMPATIBILITY_MODE} from '../../core/compatibility/compatibility';
+import {MdOptgroup} from './optgroup';
 
 /**
  * Option IDs need to be unique across components, so this counter exists outside of
@@ -74,7 +72,7 @@ export class MdOption {
 
   /** Whether the option is disabled. */
   @Input()
-  get disabled() { return this._disabled; }
+  get disabled() { return (this.group && this.group.disabled) || this._disabled; }
   set disabled(value: any) { this._disabled = coerceBooleanProperty(value); }
 
   /** Event emitted when the option is selected or deselected. */
@@ -82,6 +80,7 @@ export class MdOption {
 
   constructor(
     private _element: ElementRef,
+    @Optional() public readonly group: MdOptgroup,
     @Optional() @Inject(MATERIAL_COMPATIBILITY_MODE) public _isCompatibilityMode: boolean) {}
 
   /**
@@ -172,10 +171,3 @@ export class MdOption {
   }
 
 }
-
-@NgModule({
-  imports: [MdRippleModule, CommonModule, MdSelectionModule],
-  exports: [MdOption],
-  declarations: [MdOption]
-})
-export class MdOptionModule {}
