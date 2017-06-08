@@ -810,7 +810,6 @@ class SingleCheckbox {
   disableRipple: boolean = false;
   parentElementClicked: boolean = false;
   parentElementKeyedUp: boolean = false;
-  lastKeydownEvent: Event = null;
   checkboxColor: string = 'primary';
   checkboxValue: string = 'single_checkbox';
 
