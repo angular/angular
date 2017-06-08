@@ -127,7 +127,7 @@ export class Parser {
     for (let i = 0; i < split.expressions.length; ++i) {
       const expressionText = split.expressions[i];
       const sourceToLex = this._stripComments(expressionText);
-      const tokens = this._lexer.tokenize(this._stripComments(split.expressions[i]));
+      const tokens = this._lexer.tokenize(sourceToLex);
       const ast = new _ParseAST(
                       input, location, tokens, sourceToLex.length, false, this.errors,
                       split.offsets[i] + (expressionText.length - sourceToLex.length))
