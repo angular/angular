@@ -86,10 +86,8 @@ aio-shell.page-resources md-toolbar.mat-toolbar {
   }
 
   @media (min-width: 992px) {
-    padding-left: 24px;
-
     button.hamburger {
-      display: none;
+      margin: 0 24px 0 -88px;
     }
   }
 }

@@ -5,7 +5,7 @@
 </div>
 
 <md-toolbar color="primary" class="app-toolbar">
-  <button class="hamburger" md-button
+  <button class="hamburger" [class.starting]="isStarting" md-button
     (click)="sidenav.toggle()" title="Docs menu">
     <md-icon [ngClass]="{'sidenav-open': !isSideBySide }" svgIcon="menu"></md-icon>
   </button>
