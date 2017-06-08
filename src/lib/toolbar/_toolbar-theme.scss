@@ -42,5 +42,6 @@
   .mat-toolbar h5,
   .mat-toolbar h6 {
     @include mat-typography-level-to-styles($config, title);
+    margin: 0;
   }
 }

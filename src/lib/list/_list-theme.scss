@@ -41,7 +41,7 @@
   // Default list
   .mat-list, .mat-nav-list {
     .mat-list-item {
-      font-size: mat-font-size($config, subheading);
+      font-size: mat-font-size($config, subheading-2);
       @include mat-line-base(mat-font-size($config, body-1));
     }
 
