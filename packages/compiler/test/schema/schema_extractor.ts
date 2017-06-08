@@ -28,6 +28,7 @@ const ALL_HTML_TAGS =
 // Elements missing from Chrome (HtmlUnknownElement), to be manually added
 const MISSING_FROM_CHROME: {[el: string]: string[]} = {
   'data^[HTMLElement]': ['value'],
+  'keygen^[HTMLElement]': ['!autofocus', 'challenge', '!disabled', 'form', 'keytype', 'name'],
   // TODO(vicb): Figure out why Chrome and WhatWG do not agree on the props
   // 'menu^[HTMLElement]': ['type', 'label'],
   'menuitem^[HTMLElement]':
