@@ -29,6 +29,12 @@ const _SOURCE_TAG = 'source';
 const _TARGET_TAG = 'target';
 const _UNIT_TAG = 'unit';
 
+/** @internal */
+export function getXliff2MsgTextById(content: string, url: string): {[id: string]: string} {
+  const {msgIdToXml, errors} = new Xliff2Parser().parse(content, url);
+  return errors.length ? {} : msgIdToXml;
+}
+
 // http://docs.oasis-open.org/xliff/xliff-core/v2.0/os/xliff-core-v2.0-os.html
 export class Xliff2 extends Serializer {
   constructor(private version: I18nVersion) { super(); }
@@ -90,16 +96,16 @@ export class Xliff2 extends Serializer {
 
   load(content: string, url: string):
       {locale: string | null, i18nNodesByMsgId: {[msgId: string]: i18n.Node[]}} {
-    // xliff to xml nodes
+    // xliff to xml text
     const xliff2Parser = new Xliff2Parser();
-    const {locale, msgIdToHtml, errors} = xliff2Parser.parse(content, url);
+    const {locale, msgIdToXml, errors} = xliff2Parser.parse(content, url);
 
     // xml nodes to i18n nodes
     const i18nNodesByMsgId: {[msgId: string]: i18n.Node[]} = {};
     const converter = new XmlToI18n();
 
-    Object.keys(msgIdToHtml).forEach(msgId => {
-      const {i18nNodes, errors: e} = converter.convert(msgIdToHtml[msgId], url);
+    Object.keys(msgIdToXml).forEach(msgId => {
+      const {i18nNodes, errors: e} = converter.convert(msgIdToXml[msgId], url);
       errors.push(...e);
       i18nNodesByMsgId[msgId] = i18nNodes;
     });
@@ -191,16 +197,16 @@ class _WriteVisitor implements i18n.Visitor {
   }
 }
 
-// Extract messages as xml nodes from the xliff file
+// Extract messages as xml text from the xliff file
 class Xliff2Parser implements ml.Visitor {
   private _unitMlString: string|null;
   private _errors: I18nError[];
-  private _msgIdToHtml: {[msgId: string]: string};
+  private _msgIdToXml: {[msgId: string]: string};
   private _locale: string|null = null;
 
   parse(xliff: string, url: string) {
     this._unitMlString = null;
-    this._msgIdToHtml = {};
+    this._msgIdToXml = {};
 
     const xml = new XmlParser().parse(xliff, url, false);
 
@@ -208,7 +214,7 @@ class Xliff2Parser implements ml.Visitor {
     ml.visitAll(this, xml.rootNodes, null);
 
     return {
-      msgIdToHtml: this._msgIdToHtml,
+      msgIdToXml: this._msgIdToXml,
       errors: this._errors,
       locale: this._locale,
     };
@@ -223,12 +229,12 @@ class Xliff2Parser implements ml.Visitor {
           this._addError(element, `<${_UNIT_TAG}> misses the "id" attribute`);
         } else {
           const id = idAttr.value;
-          if (this._msgIdToHtml.hasOwnProperty(id)) {
+          if (this._msgIdToXml.hasOwnProperty(id)) {
             this._addError(element, `Duplicated translations for msg ${id}`);
           } else {
             ml.visitAll(this, element.children, null);
             if (typeof this._unitMlString === 'string') {
-              this._msgIdToHtml[id] = this._unitMlString;
+              this._msgIdToXml[id] = this._unitMlString;
             } else {
               this._addError(element, `Message ${id} misses a translation`);
             }
@@ -286,7 +292,7 @@ class Xliff2Parser implements ml.Visitor {
   }
 }
 
-// Convert ml nodes (xliff syntax) to i18n nodes
+// Convert xliff2 (xml text) to i18n nodes
 class XmlToI18n implements ml.Visitor {
   private _errors: I18nError[];
 
