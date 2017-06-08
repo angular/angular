@@ -52,6 +52,9 @@ dist/
 !aot/index.html
 !rollup-config.js
 
+# i18n
+!i18n/src/systemjs-text-plugin.js
+
 # testing
 !testing/src/browser-test-shim.js
 !testing/karma*.js
