@@ -15,8 +15,8 @@ Some fonts are designed to show icons by using
 "home" as a home image. To use a ligature icon, put its text in the content of the `md-icon`
 component.
 
-By default the
-[Material icons font](http://google.github.io/material-design-icons/#icon-font-for-the-web) is used.
+By default, `<md-icon>` expects the
+[Material icons font](http://google.github.io/material-design-icons/#icon-font-for-the-web).
 (You will still need to include the HTML to load the font and its CSS, as described in the link).
 You can specify a different font by setting the `fontSet` input to either the CSS class to apply to
 use the desired font, or to an alias previously registered with
@@ -80,9 +80,34 @@ match the current theme's colors using the `color` attribute. This can be change
 
 ### Accessibility
 
-If an `aria-label` attribute is set on the `md-icon` element, its value will be used as-is. If not,
-the md-icon component will attempt to set the aria-label value from one of these sources:
-* The `alt` attribute
-* The `fontIcon` input
-* The name of the icon from the `svgIcon` input (not including any namespace)
-* The text content of the component (for ligature icons)
+Similar to an `<img>` element, an icon alone does not convey any useful information for a
+screen-reader user. The user of `<md-icon>` must provide additional information pertaining to how
+the icon is used. Based on the use-cases described below, `md-icon` is marked as
+`aria-hidden="true"` by default, but this can be overriden by adding `aria-hidden="false"` to the
+element.
+
+In thinking about accessibility, it is useful to place icon use into one of three categories:
+1. **Decorative**: the icon conveys no real semantic meaning and is purely cosmetic.
+2. **Interactive**: a user will click or otherwise interact with the icon to perform some action.
+3. **Indicator**: the icon is not interactive, but it conveys some information, such as a status.
+
+#### Decorative icons
+When the icon is puely cosmetic and conveys no real semantic meaning, the `<md-icon>` element
+should be marked with `aria-hidden="true"`.
+
+#### Interactive icons
+Icons alone are not interactive elements for screen-reader users; when the user would interact with
+some icon on the page, a more appropriate  element should "own" the interaction:
+* The `<md-icon>` element should be a child of a `<button>` or `<a>` element.
+* The `<md-icon>` element should be marked with `aria-hidden="true"`.
+* The parent `<button>` or `<a>` should either have a meaningful label provided either through
+direct text content, `aria-label`, or `aria-labelledby`.
+
+#### Indicator icons
+When the presence of an icon communicates some information to the user, that information must also
+be made available to screen-readers. The most straightforward way to do this is to
+1. Mark the `<md-icon>` as `aria-hidden="true"`
+2. Add a `<span>` as an adjacent sibling to the `<md-icon>` element with text that conveys the same
+information as the icon.
+3. Add the `cdk-visually-hidden` class to the `<span>`. This will make the message invisible
+on-screen but still available to screen-reader users.

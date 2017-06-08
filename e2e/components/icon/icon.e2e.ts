@@ -11,11 +11,6 @@ describe('icon', () => {
       testIcon = element(by.id('test-icon'));
     });
 
-    it('should have the correct aria-label when used', () => {
-      expect(testIcon.getAttribute('aria-label')).toBe('favorite');
-      screenshot();
-    });
-
     it('should have the correct class when used', async () => {
       const attr = await testIcon.getAttribute('class');
 

@@ -42,11 +42,11 @@ describe('MdIcon', () => {
     TestBed.configureTestingModule({
       imports: [HttpModule, MdIconModule],
       declarations: [
-        MdIconColorTestApp,
-        MdIconLigatureTestApp,
-        MdIconLigatureWithAriaBindingTestApp,
-        MdIconCustomFontCssTestApp,
-        MdIconFromSvgNameTestApp,
+        IconWithColor,
+        IconWithLigature,
+        IconWithCustomFontCss,
+        IconFromSvgName,
+        IconWithAriaHiddenFalse,
       ],
       providers: [
         MockBackend,
@@ -76,7 +76,7 @@ describe('MdIcon', () => {
   }));
 
   it('should apply class based on color attribute', () => {
-    let fixture = TestBed.createComponent(MdIconColorTestApp);
+    let fixture = TestBed.createComponent(IconWithColor);
 
     const testComponent = fixture.componentInstance;
     const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
@@ -86,9 +86,23 @@ describe('MdIcon', () => {
     expect(sortedClassNames(mdIconElement)).toEqual(['mat-icon', 'mat-primary', 'material-icons']);
   });
 
+  it('should mark md-icon as aria-hidden by default', () => {
+    const fixture = TestBed.createComponent(IconWithLigature);
+    const iconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
+    expect(iconElement.getAttribute('aria-hidden'))
+        .toBe('true', 'Expected the md-icon element has aria-hidden="true" by default');
+  });
+
+  it('should not override a user-provided aria-hidden attribute', () => {
+    const fixture = TestBed.createComponent(IconWithAriaHiddenFalse);
+    const iconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
+    expect(iconElement.getAttribute('aria-hidden'))
+        .toBe('false', 'Expected the md-icon element has the user-provided aria-hidden value');
+  });
+
   describe('Ligature icons', () => {
     it('should add material-icons class by default', () => {
-      let fixture = TestBed.createComponent(MdIconLigatureTestApp);
+      let fixture = TestBed.createComponent(IconWithLigature);
 
       const testComponent = fixture.componentInstance;
       const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
@@ -100,7 +114,7 @@ describe('MdIcon', () => {
     it('should use alternate icon font if set', () => {
       mdIconRegistry.setDefaultFontSetClass('myfont');
 
-      let fixture = TestBed.createComponent(MdIconLigatureTestApp);
+      let fixture = TestBed.createComponent(IconWithLigature);
 
       const testComponent = fixture.componentInstance;
       const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
@@ -115,7 +129,7 @@ describe('MdIcon', () => {
       mdIconRegistry.addSvgIcon('fluffy', trust('cat.svg'));
       mdIconRegistry.addSvgIcon('fido', trust('dog.svg'));
 
-      let fixture = TestBed.createComponent(MdIconFromSvgNameTestApp);
+      let fixture = TestBed.createComponent(IconFromSvgName);
       const testComponent = fixture.componentInstance;
       const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
       let svgElement: SVGElement;
@@ -124,15 +138,12 @@ describe('MdIcon', () => {
       fixture.detectChanges();
       svgElement = verifyAndGetSingleSvgChild(mdIconElement);
       verifyPathChildElement(svgElement, 'woof');
-      // The aria label should be taken from the icon name.
-      expect(mdIconElement.getAttribute('aria-label')).toBe('fido');
 
       // Change the icon, and the SVG element should be replaced.
       testComponent.iconName = 'fluffy';
       fixture.detectChanges();
       svgElement = verifyAndGetSingleSvgChild(mdIconElement);
       verifyPathChildElement(svgElement, 'meow');
-      expect(mdIconElement.getAttribute('aria-label')).toBe('fluffy');
 
       expect(httpRequestUrls).toEqual(['dog.svg', 'cat.svg']);
       // Using an icon from a previously loaded URL should not cause another HTTP request.
@@ -147,7 +158,7 @@ describe('MdIcon', () => {
       mdIconRegistry.addSvgIcon('fluffy', 'farm-set-1.svg');
 
       expect(() => {
-        let fixture = TestBed.createComponent(MdIconFromSvgNameTestApp);
+        let fixture = TestBed.createComponent(IconFromSvgName);
         fixture.componentInstance.iconName = 'fluffy';
         fixture.detectChanges();
       }).toThrowError(/unsafe value used in a resource URL context/);
@@ -157,7 +168,7 @@ describe('MdIcon', () => {
       mdIconRegistry.addSvgIconSetInNamespace('farm', 'farm-set-1.svg');
 
       expect(() => {
-        let fixture = TestBed.createComponent(MdIconFromSvgNameTestApp);
+        let fixture = TestBed.createComponent(IconFromSvgName);
         fixture.componentInstance.iconName = 'farm:pig';
         fixture.detectChanges();
       }).toThrowError(/unsafe value used in a resource URL context/);
@@ -166,7 +177,7 @@ describe('MdIcon', () => {
     it('should extract icon from SVG icon set', () => {
       mdIconRegistry.addSvgIconSetInNamespace('farm', trust('farm-set-1.svg'));
 
-      let fixture = TestBed.createComponent(MdIconFromSvgNameTestApp);
+      let fixture = TestBed.createComponent(IconFromSvgName);
 
       const testComponent = fixture.componentInstance;
       const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
@@ -184,8 +195,6 @@ describe('MdIcon', () => {
       expect(svgChild.tagName.toLowerCase()).toBe('g');
       expect(svgChild.getAttribute('id')).toBe('pig');
       verifyPathChildElement(svgChild, 'oink');
-      // The aria label should be taken from the icon name (without the icon set portion).
-      expect(mdIconElement.getAttribute('aria-label')).toBe('pig');
 
       // Change the icon, and the SVG element should be replaced.
       testComponent.iconName = 'farm:cow';
@@ -196,7 +205,6 @@ describe('MdIcon', () => {
       expect(svgChild.tagName.toLowerCase()).toBe('g');
       expect(svgChild.getAttribute('id')).toBe('cow');
       verifyPathChildElement(svgChild, 'moo');
-      expect(mdIconElement.getAttribute('aria-label')).toBe('cow');
     });
 
     it('should allow multiple icon sets in a namespace', () => {
@@ -204,7 +212,7 @@ describe('MdIcon', () => {
       mdIconRegistry.addSvgIconSetInNamespace('farm', trust('farm-set-2.svg'));
       mdIconRegistry.addSvgIconSetInNamespace('arrows', trust('arrow-set.svg'));
 
-      let fixture = TestBed.createComponent(MdIconFromSvgNameTestApp);
+      let fixture = TestBed.createComponent(IconFromSvgName);
 
       const testComponent = fixture.componentInstance;
       const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
@@ -221,8 +229,6 @@ describe('MdIcon', () => {
       expect(svgChild.getAttribute('id')).toBe('pig');
       expect(svgChild.childNodes.length).toBe(1);
       verifyPathChildElement(svgChild, 'oink');
-      // The aria label should be taken from the icon name (without the namespace).
-      expect(mdIconElement.getAttribute('aria-label')).toBe('pig');
 
       // Both icon sets registered in the 'farm' namespace should have been fetched.
       expect(httpRequestUrls.sort()).toEqual(['farm-set-1.svg', 'farm-set-2.svg']);
@@ -239,14 +245,13 @@ describe('MdIcon', () => {
       expect(svgChild.getAttribute('id')).toBe('cow');
       expect(svgChild.childNodes.length).toBe(1);
       verifyPathChildElement(svgChild, 'moo moo');
-      expect(mdIconElement.getAttribute('aria-label')).toBe('cow');
       expect(httpRequestUrls.sort()).toEqual(['farm-set-1.svg', 'farm-set-2.svg']);
     });
 
     it('should unwrap <symbol> nodes', () => {
       mdIconRegistry.addSvgIconSetInNamespace('farm', trust('farm-set-3.svg'));
 
-      const fixture = TestBed.createComponent(MdIconFromSvgNameTestApp);
+      const fixture = TestBed.createComponent(IconFromSvgName);
       const testComponent = fixture.componentInstance;
       const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
 
@@ -265,7 +270,7 @@ describe('MdIcon', () => {
     it('should not wrap <svg> elements in icon sets in another svg tag', () => {
       mdIconRegistry.addSvgIconSet(trust('arrow-set.svg'));
 
-      let fixture = TestBed.createComponent(MdIconFromSvgNameTestApp);
+      let fixture = TestBed.createComponent(IconFromSvgName);
 
       const testComponent = fixture.componentInstance;
       const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
@@ -277,13 +282,12 @@ describe('MdIcon', () => {
       // directly and not wrapped in an outer <svg> tag like the <g> elements in other sets.
       svgElement = verifyAndGetSingleSvgChild(mdIconElement);
       verifyPathChildElement(svgElement, 'left');
-      expect(mdIconElement.getAttribute('aria-label')).toBe('left-arrow');
     });
 
     it('should return unmodified copies of icons from icon sets', () => {
       mdIconRegistry.addSvgIconSet(trust('arrow-set.svg'));
 
-      let fixture = TestBed.createComponent(MdIconFromSvgNameTestApp);
+      let fixture = TestBed.createComponent(IconFromSvgName);
 
       const testComponent = fixture.componentInstance;
       const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
@@ -316,7 +320,7 @@ describe('MdIcon', () => {
       mdIconRegistry.registerFontClassAlias('f1', 'font1');
       mdIconRegistry.registerFontClassAlias('f2');
 
-      let fixture = TestBed.createComponent(MdIconCustomFontCssTestApp);
+      let fixture = TestBed.createComponent(IconWithCustomFontCss);
 
       const testComponent = fixture.componentInstance;
       const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
@@ -324,89 +328,16 @@ describe('MdIcon', () => {
       testComponent.fontIcon = 'house';
       fixture.detectChanges();
       expect(sortedClassNames(mdIconElement)).toEqual(['font1', 'house', 'mat-icon']);
-      expect(mdIconElement.getAttribute('aria-label')).toBe('house');
 
       testComponent.fontSet = 'f2';
       testComponent.fontIcon = 'igloo';
       fixture.detectChanges();
       expect(sortedClassNames(mdIconElement)).toEqual(['f2', 'igloo', 'mat-icon']);
-      expect(mdIconElement.getAttribute('aria-label')).toBe('igloo');
 
       testComponent.fontSet = 'f3';
       testComponent.fontIcon = 'tent';
       fixture.detectChanges();
       expect(sortedClassNames(mdIconElement)).toEqual(['f3', 'mat-icon', 'tent']);
-      expect(mdIconElement.getAttribute('aria-label')).toBe('tent');
-    });
-  });
-
-  describe('aria label', () => {
-    it('should set aria label from text content if not specified', () => {
-      let fixture = TestBed.createComponent(MdIconLigatureTestApp);
-
-      const testComponent = fixture.componentInstance;
-      const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
-      testComponent.iconName = 'home';
-
-      fixture.detectChanges();
-      expect(mdIconElement.getAttribute('aria-label')).toBe('home');
-
-      testComponent.iconName = 'hand';
-      fixture.detectChanges();
-      expect(mdIconElement.getAttribute('aria-label')).toBe('hand');
-    });
-
-    it('should not set aria label unless it actually changed', () => {
-      let fixture = TestBed.createComponent(MdIconLigatureTestApp);
-
-      const testComponent = fixture.componentInstance;
-      const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
-      testComponent.iconName = 'home';
-
-      fixture.detectChanges();
-      expect(mdIconElement.getAttribute('aria-label')).toBe('home');
-
-      mdIconElement.removeAttribute('aria-label');
-      fixture.detectChanges();
-      expect(mdIconElement.getAttribute('aria-label')).toBeFalsy();
-    });
-
-    it('should use alt tag if aria label is not specified', () => {
-      let fixture = TestBed.createComponent(MdIconLigatureWithAriaBindingTestApp);
-
-      const testComponent = fixture.componentInstance;
-      const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
-      testComponent.iconName = 'home';
-      testComponent.altText = 'castle';
-      fixture.detectChanges();
-      expect(mdIconElement.getAttribute('aria-label')).toBe('castle');
-
-      testComponent.ariaLabel = 'house';
-      fixture.detectChanges();
-      expect(mdIconElement.getAttribute('aria-label')).toBe('house');
-    });
-
-    it('should use provided aria label rather than icon name', () => {
-      let fixture = TestBed.createComponent(MdIconLigatureWithAriaBindingTestApp);
-
-      const testComponent = fixture.componentInstance;
-      const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
-      testComponent.iconName = 'home';
-      testComponent.ariaLabel = 'house';
-      fixture.detectChanges();
-      expect(mdIconElement.getAttribute('aria-label')).toBe('house');
-    });
-
-    it('should use provided aria label rather than font icon', () => {
-      let fixture = TestBed.createComponent(MdIconCustomFontCssTestApp);
-
-      const testComponent = fixture.componentInstance;
-      const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
-      testComponent.fontSet = 'f1';
-      testComponent.fontIcon = 'house';
-      testComponent.ariaLabel = 'home';
-      fixture.detectChanges();
-      expect(mdIconElement.getAttribute('aria-label')).toBe('home');
     });
   });
 
@@ -424,7 +355,7 @@ describe('MdIcon without HttpModule', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [MdIconModule],
-      declarations: [MdIconFromSvgNameTestApp],
+      declarations: [IconFromSvgName],
     });
 
     TestBed.compileComponents();
@@ -441,7 +372,7 @@ describe('MdIcon without HttpModule', () => {
     expect(() => {
       mdIconRegistry.addSvgIcon('fido', sanitizer.bypassSecurityTrustResourceUrl('dog.svg'));
 
-      let fixture = TestBed.createComponent(MdIconFromSvgNameTestApp);
+      let fixture = TestBed.createComponent(IconFromSvgName);
 
       fixture.componentInstance.iconName = 'fido';
       fixture.detectChanges();
@@ -450,38 +381,27 @@ describe('MdIcon without HttpModule', () => {
 });
 
 
-/** Test components that contain an MdIcon. */
 @Component({template: `<md-icon>{{iconName}}</md-icon>`})
-class MdIconLigatureTestApp {
-  ariaLabel: string = null;
+class IconWithLigature {
   iconName = '';
 }
 
 @Component({template: `<md-icon [color]="iconColor">{{iconName}}</md-icon>`})
-class MdIconColorTestApp {
-  ariaLabel: string = null;
+class IconWithColor {
   iconName = '';
   iconColor = 'primary';
 }
 
-@Component({template: `<md-icon [aria-label]="ariaLabel" [alt]="altText">{{iconName}}</md-icon>`})
-class MdIconLigatureWithAriaBindingTestApp {
-  altText: string = '';
-  ariaLabel: string = null;
-  iconName = '';
-}
-
-@Component({
-  template: `<md-icon [fontSet]="fontSet" [fontIcon]="fontIcon" [aria-label]="ariaLabel"></md-icon>`
-})
-class MdIconCustomFontCssTestApp {
-  ariaLabel: string = null;
+@Component({template: `<md-icon [fontSet]="fontSet" [fontIcon]="fontIcon"></md-icon>`})
+class IconWithCustomFontCss {
   fontSet = '';
   fontIcon = '';
 }
 
-@Component({template: `<md-icon [svgIcon]="iconName" [aria-label]="ariaLabel"></md-icon>`})
-class MdIconFromSvgNameTestApp {
-  ariaLabel: string = null;
+@Component({template: `<md-icon [svgIcon]="iconName"></md-icon>`})
+class IconFromSvgName {
   iconName = '';
 }
+
+@Component({template: '<md-icon aria-hidden="false">face</md-icon>'})
+class IconWithAriaHiddenFalse { }
