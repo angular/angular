@@ -8,69 +8,6 @@
   dependencies:
     tslib "^1.7.1"
 
-"@angular/cli@^1.1.0-rc.0":
-  version "1.1.0-rc.0"
-  resolved "https://registry.yarnpkg.com/@angular/cli/-/cli-1.1.0-rc.0.tgz#126232fc9f5b3e1b170c0c04e27d2171a0497853"
-  dependencies:
-    "@ngtools/json-schema" "1.1.0-beta.0"
-    "@ngtools/webpack" "1.3.1"
-    autoprefixer "^6.5.3"
-    chalk "^1.1.3"
-    common-tags "^1.3.1"
-    css-loader "^0.28.1"
-    cssnano "^3.10.0"
-    debug "^2.1.3"
-    denodeify "^1.2.1"
-    diff "^3.1.0"
-    ember-cli-normalize-entity-name "^1.0.0"
-    ember-cli-string-utils "^1.0.0"
-    exports-loader "^0.6.3"
-    extract-text-webpack-plugin "^2.1.0"
-    file-loader "^0.10.0"
-    fs-extra "^2.0.0"
-    get-caller-file "^1.0.0"
-    glob "^7.0.3"
-    html-webpack-plugin "^2.19.0"
-    inflection "^1.7.0"
-    inquirer "^3.0.0"
-    isbinaryfile "^3.0.0"
-    istanbul-instrumenter-loader "^2.0.0"
-    json-loader "^0.5.4"
-    less "^2.7.2"
-    less-loader "^4.0.2"
-    lodash "^4.11.1"
-    minimatch "^3.0.3"
-    node-modules-path "^1.0.0"
-    nopt "^4.0.1"
-    opn "4.0.2"
-    portfinder "~1.0.12"
-    postcss-loader "^1.3.3"
-    postcss-url "^5.1.2"
-    raw-loader "^0.5.1"
-    resolve "^1.1.7"
-    rimraf "^2.5.3"
-    rsvp "^3.0.17"
-    rxjs "^5.0.1"
-    sass-loader "^6.0.3"
-    script-loader "^0.7.0"
-    semver "^5.1.0"
-    silent-error "^1.0.0"
-    source-map-loader "^0.2.0"
-    style-loader "^0.13.1"
-    stylus "^0.54.5"
-    stylus-loader "^3.0.1"
-    temp "0.8.3"
-    typescript ">=2.0.0 <2.4.0"
-    url-loader "^0.5.7"
-    walk-sync "^0.3.1"
-    webpack "~2.4.0"
-    webpack-dev-middleware "^1.10.2"
-    webpack-dev-server "~2.4.5"
-    webpack-merge "^2.4.0"
-    zone.js "^0.8.4"
-  optionalDependencies:
-    node-sass "^4.3.0"
-
 "@angular/cli@angular/cli-builds#webpack-next":
   version "1.2.0-beta.0-7c33dd4"
   resolved "https://codeload.github.com/angular/cli-builds/tar.gz/b4bb5968c04c92fd816c434044e28bbfc60b296c"
@@ -220,19 +157,6 @@
 "@ngtools/json-schema@1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@ngtools/json-schema/-/json-schema-1.1.0.tgz#c3a0c544d62392acc2813a42c8a0dc6f58f86922"
-
-"@ngtools/json-schema@1.1.0-beta.0":
-  version "1.1.0-beta.0"
-  resolved "https://registry.yarnpkg.com/@ngtools/json-schema/-/json-schema-1.1.0-beta.0.tgz#6e1e91f26fc46bd5afc8671501560c94e5fc7c4d"
-
-"@ngtools/webpack@1.3.1":
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-1.3.1.tgz#12149b6b9cb3bf858f4b2ae9650456e17674d2eb"
-  dependencies:
-    enhanced-resolve "^3.1.0"
-    loader-utils "^1.0.2"
-    magic-string "^0.19.0"
-    source-map "^0.5.6"
 
 "@ngtools/webpack@https://github.com/angular/ngtools-webpack-builds.git#7c33dd4":
   version "1.4.0-7c33dd4"
@@ -5721,8 +5645,8 @@ punycode@^1.2.4, punycode@^1.3.2, punycode@^1.4.1:
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-1.4.1.tgz#c0d5a63b2718800ad8e1eb0fa5269c84dd41845e"
 
 purify@igorminar/purify:
-  version "0.0.23"
-  resolved "https://codeload.github.com/igorminar/purify/tar.gz/98a5c8f39e3dc2954bf87062b5d91c5e4576a26e"
+  version "0.0.24"
+  resolved "https://codeload.github.com/igorminar/purify/tar.gz/988238c80a8bb9005b52867189cd1a51dbd7a43c"
   dependencies:
     tslib "^1.7.1"
 
@@ -7272,18 +7196,18 @@ typescript@2.3.2, "typescript@>=2.0.0 <2.4.0", typescript@^2.2.1:
   version "2.3.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.3.2.tgz#f0f045e196f69a72f06b25fd3bd39d01c3ce9984"
 
-uglify-js@^2.6, uglify-js@^2.8.5, uglify-js@~2.8.22:
-  version "2.8.23"
-  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-2.8.23.tgz#8230dd9783371232d62a7821e2cf9a817270a8a0"
+uglify-js@^2.6, uglify-js@^2.8.27, uglify-js@~2.8.22:
+  version "2.8.28"
+  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-2.8.28.tgz#e335032df9bb20dcb918f164589d5af47f38834a"
   dependencies:
     source-map "~0.5.1"
     yargs "~3.10.0"
   optionalDependencies:
     uglify-to-browserify "~1.0.0"
 
-uglify-js@^2.8.27:
-  version "2.8.28"
-  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-2.8.28.tgz#e335032df9bb20dcb918f164589d5af47f38834a"
+uglify-js@^2.8.5:
+  version "2.8.23"
+  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-2.8.23.tgz#8230dd9783371232d62a7821e2cf9a817270a8a0"
   dependencies:
     source-map "~0.5.1"
     yargs "~3.10.0"
@@ -7814,32 +7738,6 @@ webpack@3.0.0-rc.1:
 webpack@^2.5.1:
   version "2.5.1"
   resolved "https://registry.yarnpkg.com/webpack/-/webpack-2.5.1.tgz#61742f0cf8af555b87460a9cd8bba2f1e3ee2fce"
-  dependencies:
-    acorn "^5.0.0"
-    acorn-dynamic-import "^2.0.0"
-    ajv "^4.7.0"
-    ajv-keywords "^1.1.1"
-    async "^2.1.2"
-    enhanced-resolve "^3.0.0"
-    interpret "^1.0.0"
-    json-loader "^0.5.4"
-    json5 "^0.5.1"
-    loader-runner "^2.3.0"
-    loader-utils "^0.2.16"
-    memory-fs "~0.4.1"
-    mkdirp "~0.5.0"
-    node-libs-browser "^2.0.0"
-    source-map "^0.5.3"
-    supports-color "^3.1.0"
-    tapable "~0.2.5"
-    uglify-js "^2.8.5"
-    watchpack "^1.3.1"
-    webpack-sources "^0.2.3"
-    yargs "^6.0.0"
-
-webpack@~2.4.0:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/webpack/-/webpack-2.4.1.tgz#15a91dbe34966d8a4b99c7d656efd92a2e5a6f6a"
   dependencies:
     acorn "^5.0.0"
     acorn-dynamic-import "^2.0.0"
