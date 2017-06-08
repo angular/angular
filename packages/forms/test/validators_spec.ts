@@ -49,12 +49,15 @@ export function main() {
       it('should not error on undefined',
          () => { expect(Validators.min(2)(new FormControl(undefined))).toBeNull(); });
 
-      it('should error on non numbers', () => {
-        expect(Validators.min(2)(new FormControl('a'))).toEqual({'min': {'min': 2, 'actual': 'a'}});
+      it('should return null if NaN after parsing',
+         () => { expect(Validators.min(2)(new FormControl('a'))).toBeNull(); });
+
+      it('should return a validation error on small values', () => {
+        expect(Validators.min(2)(new FormControl(1))).toEqual({'min': {'min': 2, 'actual': 1}});
       });
 
-      it('should error on small values', () => {
-        expect(Validators.min(2)(new FormControl(1))).toEqual({'min': {'min': 2, 'actual': 1}});
+      it('should return a validation error on small values converted from strings', () => {
+        expect(Validators.min(2)(new FormControl('1'))).toEqual({'min': {'min': 2, 'actual': '1'}});
       });
 
       it('should not error on big values',
@@ -65,6 +68,18 @@ export function main() {
 
       it('should not error on equal values when value is string',
          () => { expect(Validators.min(2)(new FormControl('2'))).toBeNull(); });
+
+      it('should validate as expected when min value is a string', () => {
+        expect(Validators.min('2' as any)(new FormControl(1))).toEqual({
+          'min': {'min': '2', 'actual': 1}
+        });
+      });
+
+      it('should return null if min value is undefined',
+         () => { expect(Validators.min(undefined as any)(new FormControl(3))).toBeNull(); });
+
+      it('should return null if min value is null',
+         () => { expect(Validators.min(null as any)(new FormControl(3))).toBeNull(); });
     });
 
     describe('max', () => {
@@ -77,14 +92,15 @@ export function main() {
       it('should not error on undefined',
          () => { expect(Validators.max(2)(new FormControl(undefined))).toBeNull(); });
 
-      it('should error on non numbers', () => {
-        expect(Validators.max(2)(new FormControl('aaa'))).toEqual({
-          'max': {'max': 2, 'actual': 'aaa'}
-        });
+      it('should return null if NaN after parsing',
+         () => { expect(Validators.max(2)(new FormControl('aaa'))).toBeNull(); });
+
+      it('should return a validation error on big values', () => {
+        expect(Validators.max(2)(new FormControl(3))).toEqual({'max': {'max': 2, 'actual': 3}});
       });
 
-      it('should error on big values', () => {
-        expect(Validators.max(2)(new FormControl(3))).toEqual({'max': {'max': 2, 'actual': 3}});
+      it('should return a validation error on big values converted from strings', () => {
+        expect(Validators.max(2)(new FormControl('3'))).toEqual({'max': {'max': 2, 'actual': '3'}});
       });
 
       it('should not error on small values',
@@ -95,6 +111,18 @@ export function main() {
 
       it('should not error on equal values when value is string',
          () => { expect(Validators.max(2)(new FormControl('2'))).toBeNull(); });
+
+      it('should validate as expected when max value is a string', () => {
+        expect(Validators.max('2' as any)(new FormControl(3))).toEqual({
+          'max': {'max': '2', 'actual': 3}
+        });
+      });
+
+      it('should return null if max value is undefined',
+         () => { expect(Validators.max(undefined as any)(new FormControl(3))).toBeNull(); });
+
+      it('should return null if max value is null',
+         () => { expect(Validators.max(null as any)(new FormControl(3))).toBeNull(); });
     });
 
 

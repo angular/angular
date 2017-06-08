@@ -64,11 +64,13 @@ export class Validators {
    */
   static min(min: number): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
-      if (isEmptyInputValue(control.value)) {
+      if (isEmptyInputValue(control.value) || isEmptyInputValue(min)) {
         return null;  // don't validate empty values to allow optional controls
       }
       const value = parseFloat(control.value);
-      return isNaN(value) || value < min ? {'min': {'min': min, 'actual': control.value}} : null;
+      // Controls with NaN values after parsing should be treated as not having a
+      // minimum, per the HTML forms spec: https://www.w3.org/TR/html5/forms.html#attr-input-min
+      return !isNaN(value) && value < min ? {'min': {'min': min, 'actual': control.value}} : null;
     };
   }
 
@@ -77,11 +79,13 @@ export class Validators {
    */
   static max(max: number): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
-      if (isEmptyInputValue(control.value)) {
+      if (isEmptyInputValue(control.value) || isEmptyInputValue(max)) {
         return null;  // don't validate empty values to allow optional controls
       }
       const value = parseFloat(control.value);
-      return isNaN(value) || value > max ? {'max': {'max': max, 'actual': control.value}} : null;
+      // Controls with NaN values after parsing should be treated as not having a
+      // maximum, per the HTML forms spec: https://www.w3.org/TR/html5/forms.html#attr-input-max
+      return !isNaN(value) && value > max ? {'max': {'max': max, 'actual': control.value}} : null;
     };
   }
 
