@@ -14,16 +14,19 @@ export class I18nExtractionCliOptions extends CliOptions {
   i18nFormat: string|null;
   locale: string|null;
   outFile: string|null;
+  i18nVersion: string|null;
 
-  constructor({i18nFormat = null, locale = null, outFile = null}: {
+  constructor({i18nFormat = null, locale = null, outFile = null, i18nVersion = null}: {
     i18nFormat?: string,
     locale?: string,
     outFile?: string,
+    i18nVersion?: string,
   }) {
     super({});
     this.i18nFormat = i18nFormat;
     this.locale = locale;
     this.outFile = outFile;
+    this.i18nVersion = i18nVersion;
   }
 }
 

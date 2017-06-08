@@ -14,6 +14,7 @@
  */
 
 import {AotCompilerHost, AotSummaryResolver, StaticReflector, StaticSymbolCache, StaticSymbolResolver} from '@angular/compiler';
+import {I18nVersion} from '@angular/core';
 import {AngularCompilerOptions, NgcCliOptions} from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
 
@@ -153,7 +154,8 @@ export class NgTools_InternalApi_NG_2 {
     // Create the i18n extractor.
     const locale = options.locale || null;
     const extractor = Extractor.create(
-        options.angularCompilerOptions, options.program, options.host, locale, hostContext);
+        I18nVersion.V0, options.angularCompilerOptions, options.program, options.host, locale,
+        hostContext);
 
     return extractor.extract(options.i18nFormat !, options.outFile || null);
   }

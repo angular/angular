@@ -86,9 +86,9 @@ export class Extractor {
         });
   }
 
-  static create(host: ExtractorHost, locale: string|null):
+  static create(version: I18nVersion, host: ExtractorHost, locale: string|null):
       {extractor: Extractor, staticReflector: StaticReflector} {
-    const htmlParser = new I18NHtmlParser(new HtmlParser(), I18nVersion.V0);
+    const htmlParser = new I18NHtmlParser(new HtmlParser(), version);
 
     const urlResolver = createOfflineCompileUrlResolver();
     const symbolCache = new StaticSymbolCache();
