@@ -1,16 +1,19 @@
 import {
+  Attribute,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ContentChild,
   ContentChildren,
   Directive,
+  ElementRef,
   Input,
   IterableChangeRecord,
   IterableDiffer,
   IterableDiffers,
   NgIterable,
   QueryList,
+  Renderer2,
   ViewChild,
   ViewContainerRef,
   ViewEncapsulation
@@ -54,7 +57,6 @@ export class HeaderRowPlaceholder {
   `,
   host: {
     'class': 'cdk-table',
-    'role': 'grid' // TODO(andrewseguin): Allow the user to choose either grid or treegrid
   },
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -104,12 +106,19 @@ export class CdkTable<T> implements CollectionViewer {
   @ContentChildren(CdkRowDef) _rowDefinitions: QueryList<CdkRowDef>;
 
   constructor(private readonly _differs: IterableDiffers,
-              private readonly _changeDetectorRef: ChangeDetectorRef) {
+              private readonly _changeDetectorRef: ChangeDetectorRef,
+              elementRef: ElementRef,
+              renderer: Renderer2,
+              @Attribute('role') role: string) {
     // Show the stability warning of the data-table only if it doesn't run inside of jasmine.
     // This is just temporary and should reduce warnings when running the tests.
     if (!(typeof window !== 'undefined' && window['jasmine'])) {
       console.warn('The data table is still in active development ' +
-        'and should be considered unstable.');
+          'and should be considered unstable.');
+    }
+
+    if (!role) {
+      renderer.setAttribute(elementRef.nativeElement, 'role', 'grid');
     }
 
     // TODO(andrewseguin): Add trackby function input.
