@@ -18,7 +18,9 @@ These FAQs assume that you have read the [NgModules](guide/ngmodule) page.
 
 {@a q-what-to-declare}
 
+## How do I reuse Angular Modules in other projects?
 
+Currently there is no official way to package Angular Modules for resuse. Follow [this issue](https://github.com/angular/angular-cli/issues/6510) for updates.
 
 ## What classes should I add to _declarations_?
 
