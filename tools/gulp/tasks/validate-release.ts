@@ -1,9 +1,13 @@
 import {task} from 'gulp';
-import {DIST_RELEASES, RELEASE_PACKAGES} from '../build-config';
 import {readFileSync} from 'fs';
 import {join} from 'path';
 import {green, red} from 'chalk';
 import {sequenceTask} from '../util/task_helpers';
+import {releasePackages} from './publish';
+import {buildConfig} from '../packaging/build-config';
+
+/** Path to the directory where all releases are created. */
+const releasesDir = join(buildConfig.outputDir, 'releases');
 
 /** RegExp that matches Angular component inline styles that contain a sourcemap reference. */
 const inlineStylesSourcemapRegex = /styles: ?\[["'].*sourceMappingURL=.*["']/;
@@ -15,10 +19,10 @@ task('validate-release', sequenceTask(':publish:build-releases', 'validate-relea
 
 /** Task that checks the release bundles for any common mistakes before releasing to the public. */
 task('validate-release:check-bundles', () => {
-  const bundleFailures = RELEASE_PACKAGES
-    .map(packageName => join(DIST_RELEASES, packageName, '@angular', `${packageName}.js`))
+  const bundleFailures = releasePackages
+    .map(packageName => join(releasesDir, packageName, '@angular', `${packageName}.js`))
     .map(packageBundle => checkPackageBundle(packageBundle))
-    .map((failures, index) => ({failures, packageName: RELEASE_PACKAGES[index]}));
+    .map((failures, index) => ({failures, packageName: releasePackages[index]}));
 
   bundleFailures.forEach(({failures, packageName}) => {
     failures.forEach(failure => console.error(red(`Failure (${packageName}): ${failure}`)));

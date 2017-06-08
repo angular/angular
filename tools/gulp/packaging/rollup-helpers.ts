@@ -1,4 +1,4 @@
-import {LICENSE_BANNER} from '../build-config';
+import {buildConfig} from './build-config';
 
 // There are no type definitions available for these imports.
 const rollup = require('rollup');
@@ -69,7 +69,7 @@ export function createRollupBundle(config: BundleConfig): Promise<any> {
     // Keep the moduleId empty because we don't want to force developers to a specific moduleId.
     moduleId: '',
     moduleName: config.moduleName || 'ng.material',
-    banner: LICENSE_BANNER,
+    banner: buildConfig.licenseBanner,
     format: config.format,
     dest: config.dest,
     globals: ROLLUP_GLOBALS,

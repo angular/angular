@@ -1,6 +1,6 @@
 import {createPackageBuildTasks} from './packaging/build-tasks-gulp';
 
-/** Create gulp tasks to build the different packages in the project. */
+// Create gulp tasks to build the different packages in the project.
 createPackageBuildTasks('cdk');
 createPackageBuildTasks('material', ['cdk']);
 createPackageBuildTasks('material-examples', ['material']);

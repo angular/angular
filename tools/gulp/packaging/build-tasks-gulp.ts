@@ -1,7 +1,7 @@
 import {task, watch, src, dest} from 'gulp';
 import {join} from 'path';
 import {main as tsc} from '@angular/tsc-wrapped';
-import {SOURCE_ROOT, DIST_ROOT, HTML_MINIFIER_OPTIONS} from '../build-config';
+import {buildConfig} from './build-config';
 import {sequenceTask, sassBuildTask, copyTask, triggerLivereload} from '../util/task_helpers';
 import {composeRelease} from './build-release';
 import {buildPackageBundles} from './build-bundles';
@@ -10,6 +10,15 @@ import {inlineResourcesForDirectory} from './inline-resources';
 // There are no type definitions available for these imports.
 const htmlmin = require('gulp-htmlmin');
 
+const {packagesDir, outputDir} = buildConfig;
+
+const htmlMinifierOptions = {
+  collapseWhitespace: true,
+  removeComments: true,
+  caseSensitive: true,
+  removeAttributeQuotes: false
+};
+
 /**
  * Creates a set of gulp tasks that can build the specified package.
  * @param packageName Name of the package. Needs to be similar to the directory name in `src/`.
@@ -17,8 +26,8 @@ const htmlmin = require('gulp-htmlmin');
  */
 export function createPackageBuildTasks(packageName: string, requiredPackages: string[] = []) {
   // To avoid refactoring of the project the package material will map to the source path `lib/`.
-  const packageRoot = join(SOURCE_ROOT, packageName === 'material' ? 'lib' : packageName);
-  const packageOut = join(DIST_ROOT, 'packages', packageName);
+  const packageRoot = join(packagesDir, packageName === 'material' ? 'lib' : packageName);
+  const packageOut = join(outputDir, 'packages', packageName);
 
   const tsconfigBuild = join(packageRoot, 'tsconfig-build.json');
   const tsconfigTests = join(packageRoot, 'tsconfig-tests.json');
@@ -81,7 +90,7 @@ export function createPackageBuildTasks(packageName: string, requiredPackages: s
   task(`${packageName}:assets:scss`, sassBuildTask(packageOut, packageRoot, true));
   task(`${packageName}:assets:copy-styles`, copyTask(stylesGlob, packageOut));
   task(`${packageName}:assets:html`, () => {
-    return src(htmlGlob).pipe(htmlmin(HTML_MINIFIER_OPTIONS)).pipe(dest(packageOut));
+    return src(htmlGlob).pipe(htmlmin(htmlMinifierOptions)).pipe(dest(packageOut));
   });
 
   task(`${packageName}:assets:inline`, () => inlineResourcesForDirectory(packageOut));

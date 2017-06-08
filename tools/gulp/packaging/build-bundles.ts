@@ -1,24 +1,27 @@
 import {join} from 'path';
 import {ScriptTarget, ModuleKind} from 'typescript';
-import {DIST_BUNDLES} from '../build-config';
 import {uglifyJsFile} from './minify-sources';
 import {createRollupBundle} from './rollup-helpers';
 import {remapSourcemap} from './sourcemap-remap';
 import {transpileFile} from './typescript-transpile';
+import {buildConfig} from './build-config';
 
 // There are no type definitions available for these imports.
 const uglify = require('uglify-js');
 const sorcery = require('sorcery');
+
+/** Directory where all bundles will be created in. */
+const bundlesDir = join(buildConfig.outputDir, 'bundles');
 
 /** Builds the bundles for the specified package. */
 export async function buildPackageBundles(entryFile: string, packageName: string) {
   const moduleName = `ng.${packageName}`;
 
   // List of paths to the package bundles.
-  const fesm2015File = join(DIST_BUNDLES, `${packageName}.js`);
-  const fesm2014File = join(DIST_BUNDLES, `${packageName}.es5.js`);
-  const umdFile = join(DIST_BUNDLES, `${packageName}.umd.js`);
-  const umdMinFile = join(DIST_BUNDLES, `${packageName}.umd.min.js`);
+  const fesm2015File = join(bundlesDir, `${packageName}.js`);
+  const fesm2014File = join(bundlesDir, `${packageName}.es5.js`);
+  const umdFile = join(bundlesDir, `${packageName}.umd.js`);
+  const umdMinFile = join(bundlesDir, `${packageName}.umd.min.js`);
 
   // Build FESM-2015 bundle file.
   await createRollupBundle({

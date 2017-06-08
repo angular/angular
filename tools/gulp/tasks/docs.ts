@@ -1,7 +1,7 @@
 import {task, src, dest} from 'gulp';
 import {Dgeni} from 'dgeni';
 import * as path from 'path';
-import {DIST_ROOT, HTML_MINIFIER_OPTIONS, SOURCE_ROOT} from '../build-config';
+import {buildConfig} from '../packaging/build-config';
 
 // There are no type definitions available for these imports.
 const markdown = require('gulp-markdown');
@@ -13,7 +13,9 @@ const htmlmin = require('gulp-htmlmin');
 const hljs = require('highlight.js');
 const dom  = require('gulp-dom');
 
-const DIST_DOCS = path.join(DIST_ROOT, 'docs');
+const {outputDir, packagesDir} = buildConfig;
+
+const DIST_DOCS = path.join(outputDir, 'docs');
 
 // Our docs contain comments of the form `<!-- example(...) -->` which serve as placeholders where
 // example code should be inserted. We replace these comments with divs that have a
@@ -47,6 +49,14 @@ const MARKDOWN_TAGS_TO_CLASS_ALIAS = [
   'pre',
   'code',
 ];
+
+// Options for the html-minifier that minifies the generated HTML files.
+const htmlMinifierOptions = {
+  collapseWhitespace: true,
+  removeComments: true,
+  caseSensitive: true,
+  removeAttributeQuotes: false
+};
 
 /** Generate all docs content. */
 task('docs', [
@@ -105,13 +115,13 @@ task('api-docs', () => {
 /** Generates minified html api docs. */
 task('minified-api-docs', ['api-docs'], () => {
   return src('dist/docs/api/*.html')
-    .pipe(htmlmin(HTML_MINIFIER_OPTIONS))
+    .pipe(htmlmin(htmlMinifierOptions))
     .pipe(dest('dist/docs/api/'));
 });
 
 /** Copies example sources to be used as plunker assets for the docs site. */
 task('plunker-example-assets', () => {
-  src(path.join(SOURCE_ROOT, 'material-examples', '**/*'))
+  src(path.join(packagesDir, 'material-examples', '**/*'))
       .pipe(dest(path.join(DIST_DOCS, 'plunker', 'examples')));
 });
 
