@@ -1,6 +1,6 @@
 <label [attr.for]="inputId" class="mat-checkbox-layout" #label>
   <div class="mat-checkbox-inner-container"
-       [class.mat-checkbox-inner-container-no-side-margin]="!_hasLabel()">
+       [class.mat-checkbox-inner-container-no-side-margin]="!checkboxLabel.textContent.trim()">
     <input #input
            class="mat-checkbox-input cdk-visually-hidden" type="checkbox"
            [id]="inputId"
@@ -35,7 +35,7 @@
       <div class="mat-checkbox-mixedmark"></div>
     </div>
   </div>
-  <span class="mat-checkbox-label" #labelWrapper>
+  <span class="mat-checkbox-label" #checkboxLabel (cdkObserveContent)="_onLabelTextChange()">
     <!-- Add an invisible span so JAWS can read the label -->
     <span style="display:none">&nbsp;</span>
     <ng-content></ng-content>

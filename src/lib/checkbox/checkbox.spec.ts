@@ -765,19 +765,57 @@ describe('MdCheckbox', () => {
   });
 
   describe('without label', () => {
-    let checkboxDebugElement: DebugElement;
-    let checkboxNativeElement: HTMLElement;
+    let testComponent: CheckboxWithoutLabel;
+    let checkboxElement: HTMLElement;
+    let checkboxInnerContainer: HTMLElement;
 
-    it('should add a css class to inner-container to remove side margin', () => {
+    beforeEach(() => {
       fixture = TestBed.createComponent(CheckboxWithoutLabel);
-      fixture.detectChanges();
-      checkboxDebugElement = fixture.debugElement.query(By.directive(MdCheckbox));
-      checkboxNativeElement = checkboxDebugElement.nativeElement;
 
-      let checkboxInnerContainerWithoutMarginCount = checkboxNativeElement
-          .querySelectorAll('.mat-checkbox-inner-container-no-side-margin').length;
-      expect(checkboxInnerContainerWithoutMarginCount).toBe(1);
+      const checkboxDebugEl = fixture.debugElement.query(By.directive(MdCheckbox));
+
+      testComponent = fixture.componentInstance;
+      checkboxElement = checkboxDebugEl.nativeElement;
+      checkboxInnerContainer = checkboxDebugEl
+        .query(By.css('.mat-checkbox-inner-container')).nativeElement;
     });
+
+    it('should remove margin for checkbox without a label', () => {
+      fixture.detectChanges();
+
+      expect(checkboxInnerContainer.classList)
+        .toContain('mat-checkbox-inner-container-no-side-margin');
+    });
+
+    it('should not remove margin if initial label is set through binding', async(() => {
+      testComponent.label = 'Some content';
+      fixture.detectChanges();
+
+      expect(checkboxInnerContainer.classList)
+        .not.toContain('mat-checkbox-inner-container-no-side-margin');
+    }));
+
+    it('should re-add margin if label is added asynchronously', async(() => {
+      fixture.detectChanges();
+
+      expect(checkboxInnerContainer.classList)
+        .toContain('mat-checkbox-inner-container-no-side-margin');
+
+      testComponent.label = 'Some content';
+      fixture.detectChanges();
+
+      // Wait for the MutationObserver to detect the content change and for the cdkObserveContent
+      // to emit the change event to the checkbox.
+      setTimeout(() => {
+        // The MutationObserver from the cdkObserveContent directive detected the content change
+        // and notified the checkbox component. The checkbox then marks the component as dirty
+        // by calling `markForCheck()`. This needs to be reflected by the component template then.
+        fixture.detectChanges();
+
+        expect(checkboxInnerContainer.classList)
+          .not.toContain('mat-checkbox-inner-container-no-side-margin');
+      }, 1);
+    }));
   });
 });
 
@@ -888,6 +926,8 @@ class CheckboxWithFormControl {
 
 /** Test component without label */
 @Component({
-  template: `<md-checkbox></md-checkbox>`
+  template: `<md-checkbox>{{ label }}</md-checkbox>`
 })
-class CheckboxWithoutLabel {}
+class CheckboxWithoutLabel {
+  label: string;
+}
