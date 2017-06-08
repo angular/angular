@@ -27,9 +27,7 @@ describe('site App', function() {
     // Show the menu
     page.docsMenuLink.click();
 
-    // Open the tutorial header
-    page.getNavItem(/tutorial/i).click();
-
+    // Tutorial folder should still be expanded because this test runs in wide mode
     // Navigate to the tutorial introduction via a link in the sidenav
     page.getNavItem(/introduction/i).click();
     expect(page.getDocViewerText()).toMatch(/Tutorial: Tour of Heroes/i);
