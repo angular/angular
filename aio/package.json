@@ -50,7 +50,7 @@
     "@angular/platform-browser-dynamic": "4.2.0",
     "@angular/platform-server": "4.2.0",
     "@angular/router": "4.2.0",
-    "@angular/service-worker": "^1.0.0-beta.12",
+    "@angular/service-worker": "^1.0.0-beta.15",
     "classlist.js": "^1.1.20150312",
     "core-js": "^2.4.1",
     "ng-pwa-tools": "^0.0.10",
