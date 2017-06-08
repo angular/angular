@@ -275,6 +275,25 @@ export class AppComponent implements OnInit {
     this.tocMaxHeight = (document.body.scrollHeight - window.pageYOffset - this.tocMaxHeightOffset).toFixed(2);
   }
 
+  // Restrain scrolling inside an element, when the cursor is over it
+  restrainScrolling(evt: WheelEvent) {
+    const elem = evt.currentTarget as Element;
+    const scrollTop = elem.scrollTop;
+
+    if (evt.deltaY < 0) {
+      // Trying to scroll up: Prevent scrolling if already at the top.
+      if (scrollTop < 1) {
+        evt.preventDefault();
+      }
+    } else {
+      // Trying to scroll down: Prevent scrolling if already at the bottom.
+      const maxScrollTop = elem.scrollHeight - elem.clientHeight;
+      if (maxScrollTop - scrollTop < 1) {
+        evt.preventDefault();
+      }
+    }
+  }
+
 
   // Search related methods and handlers
 

@@ -472,6 +472,53 @@ describe('AppComponent', () => {
       }));
     });
 
+    describe('restrainScrolling()', () => {
+      const preventedScrolling = (currentTarget: object, deltaY: number) => {
+        const evt = {
+          deltaY,
+          currentTarget,
+          defaultPrevented: false,
+          preventDefault() { this.defaultPrevented = true; }
+        } as any as WheelEvent;
+
+        component.restrainScrolling(evt);
+
+        return evt.defaultPrevented;
+      };
+
+      it('should prevent scrolling up if already at the top', () => {
+        const elem = {scrollTop: 0};
+
+        expect(preventedScrolling(elem, -100)).toBe(true);
+        expect(preventedScrolling(elem, +100)).toBe(false);
+        expect(preventedScrolling(elem, -10)).toBe(true);
+      });
+
+      it('should prevent scrolling down if already at the bottom', () => {
+        const elem = {scrollTop: 100, scrollHeight: 150, clientHeight: 50};
+
+        expect(preventedScrolling(elem, +10)).toBe(true);
+        expect(preventedScrolling(elem, -10)).toBe(false);
+        expect(preventedScrolling(elem, +5)).toBe(true);
+
+        elem.clientHeight -= 10;
+        expect(preventedScrolling(elem, +5)).toBe(false);
+
+        elem.scrollHeight -= 20;
+        expect(preventedScrolling(elem, +5)).toBe(true);
+
+        elem.scrollTop -= 30;
+        expect(preventedScrolling(elem, +5)).toBe(false);
+      });
+
+      it('should not prevent scrolling if neither at the top nor at the bottom', () => {
+        const elem = {scrollTop: 50, scrollHeight: 150, clientHeight: 50};
+
+        expect(preventedScrolling(elem, +100)).toBe(false);
+        expect(preventedScrolling(elem, -100)).toBe(false);
+      });
+    });
+
     describe('aio-toc', () => {
       let tocDebugElement: DebugElement;
       let tocContainer: DebugElement;
@@ -494,6 +541,16 @@ describe('AppComponent', () => {
         fixture.detectChanges();
 
         expect(tocContainer.styles['max-height']).toBe('100px');
+      });
+
+      it('should restrain scrolling inside the ToC container', () => {
+        const restrainScrolling = spyOn(component, 'restrainScrolling');
+        const evt = {};
+
+        expect(restrainScrolling).not.toHaveBeenCalled();
+
+        tocContainer.triggerEventHandler('mousewheel', evt);
+        expect(restrainScrolling).toHaveBeenCalledWith(evt);
       });
     });
 
