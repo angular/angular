@@ -1,5 +1,0 @@
-dist
-!karma.webpack.conf.js
-!webpack.config.js
-!config/*
-!public/css/styles.css
