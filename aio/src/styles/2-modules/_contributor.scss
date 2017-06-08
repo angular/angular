@@ -59,8 +59,8 @@ aio-contributor {
 
   .contributor-info {
     background: rgba($darkgray, 0.5);
-    height: 200px;
-    width: 200px;
+    height: 168px;
+    width: 168px;
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -94,7 +94,7 @@ aio-contributor {
       }
 
       &:hover {
-        color: $blue;
+        color: $lightgray;
       }
     }
   }
@@ -111,6 +111,10 @@ aio-contributor {
       border-radius: 4px;
       transform-style:preserve-3d;
       transition:transform ease 500ms;
+
+      h3 {
+        margin: 8px 0;
+      }
 
       .card-front, .card-back {
         width: 100%;
@@ -159,8 +163,8 @@ aio-contributor {
     justify-content: center;
     border-radius: 50%;
     align-items: center;
-    height: 200px;
-    width: 200px;
+    height: 168px;
+    width: 168px;
     background-size: cover;
     background-position: center;
     margin: 8px auto;
