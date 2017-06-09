@@ -23,8 +23,7 @@ import {NgModuleResolver} from './ng_module_resolver';
 import {PipeResolver} from './pipe_resolver';
 import {ElementSchemaRegistry} from './schema/element_schema_registry';
 import {SummaryResolver} from './summary_resolver';
-import {getUrlScheme} from './url_resolver';
-import {MODULE_SUFFIX, SyncAsync, ValueTransformer, noUndefined, syntaxError, visitValue} from './util';
+import {SyncAsync, ValueTransformer, noUndefined, syntaxError, visitValue} from './util';
 
 export type ErrorCollector = (error: any, type?: any) => void;
 export const ERROR_COLLECTOR_TOKEN = new InjectionToken('ErrorCollector');

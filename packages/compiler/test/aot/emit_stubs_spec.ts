@@ -14,8 +14,9 @@ describe('aot stubs', () => {
   it('should create empty .ngfactory and .ngsummary files for every source file', () => {
     const appDir = {'app.ts': `export const x = 1;`};
     const rootDir = {'app': appDir};
-    const {genFiles} =
-        compile([rootDir, angularFiles], {postCompile: expectNoDiagnostics, stubsOnly: true});
+    const {genFiles} = compile(
+        [rootDir, angularFiles],
+        {postCompile: expectNoDiagnostics, stubsOnly: true, enableSummariesForJit: true});
     expect(genFiles.find((f) => f.genFileUrl === '/app/app.ngfactory.ts')).toBeTruthy();
     expect(genFiles.find((f) => f.genFileUrl === '/app/app.ngsummary.ts')).toBeTruthy();
   });
@@ -64,6 +65,8 @@ describe('aot stubs', () => {
       `
     };
     const rootDir = {'app': appDir};
-    compile([rootDir, angularFiles], {postCompile: expectNoDiagnostics, stubsOnly: true});
+    compile(
+        [rootDir, angularFiles],
+        {postCompile: expectNoDiagnostics, stubsOnly: true, enableSummariesForJit: true});
   });
 });

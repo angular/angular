@@ -128,10 +128,6 @@ export function hostViewClassName(compType: any): string {
   return `HostView_${identifierName({reference: compType})}`;
 }
 
-export function dirWrapperClassName(dirType: any) {
-  return `Wrapper_${identifierName({reference: dirType})}`;
-}
-
 export function componentFactoryName(compType: any): string {
   return `${identifierName({reference: compType})}NgFactory`;
 }

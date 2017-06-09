@@ -100,7 +100,6 @@ function createSummaryForJitFunction(
       ]));
 }
 
-
 class ToJsonSerializer extends ValueTransformer {
   // Note: This only contains symbols without members.
   symbols: StaticSymbol[] = [];

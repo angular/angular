@@ -9,6 +9,7 @@
 import {ɵisPromise as isPromise} from '@angular/core';
 
 import * as o from './output/output_ast';
+import {ParseError} from './parse_util';
 
 export const MODULE_SUFFIX = '';
 
@@ -96,19 +97,24 @@ export const SyncAsync = {
   all: <T>(syncAsyncValues: SyncAsync<T>[]): SyncAsync<T[]> => {
     return syncAsyncValues.some(isPromise) ? Promise.all(syncAsyncValues) : syncAsyncValues as T[];
   }
+};
+
+export function syntaxError(msg: string, parseErrors?: ParseError[]): Error {
+  const error = Error(msg);
+  (error as any)[ERROR_SYNTAX_ERROR] = true;
+  if (parseErrors) (error as any)[ERROR_PARSE_ERRORS] = parseErrors;
+  return error;
 }
 
-export function syntaxError(msg: string):
-    Error {
-      const error = Error(msg);
-      (error as any)[ERROR_SYNTAX_ERROR] = true;
-      return error;
-    }
-
 const ERROR_SYNTAX_ERROR = 'ngSyntaxError';
+const ERROR_PARSE_ERRORS = 'ngParseErrors';
 
 export function isSyntaxError(error: Error): boolean {
   return (error as any)[ERROR_SYNTAX_ERROR];
+}
+
+export function getParseErrors(error: Error): ParseError[] {
+  return (error as any)[ERROR_PARSE_ERRORS] || [];
 }
 
 export function escapeRegExp(s: string): string {

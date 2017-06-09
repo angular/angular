@@ -33,6 +33,38 @@ export interface CodegenExtension {
    host: ts.CompilerHost): Promise<string[]>;
 }
 
+export function createBundleIndexHost(
+    ngOptions: NgOptions, rootFiles: string[],
+    host: ts.CompilerHost): {host: ts.CompilerHost, indexName?: string, errors?: ts.Diagnostic[]} {
+  const files = rootFiles.filter(f => !DTS.test(f));
+  if (files.length != 1) {
+    return {
+      host,
+      errors: [{
+        file: null,
+        start: null,
+        length: null,
+        messageText:
+            'Angular compiler option "flatModuleIndex" requires one and only one .ts file in the "files" field.',
+        category: ts.DiagnosticCategory.Error,
+        code: 0
+      }]
+    };
+  }
+  const file = files[0];
+  const indexModule = file.replace(/\.ts$/, '');
+  const bundler =
+      new MetadataBundler(indexModule, ngOptions.flatModuleId, new CompilerHostAdapter(host));
+  const metadataBundle = bundler.getMetadataBundle();
+  const metadata = JSON.stringify(metadataBundle.metadata);
+  const name =
+      path.join(path.dirname(indexModule), ngOptions.flatModuleOutFile.replace(JS_EXT, '.ts'));
+  const libraryIndex = `./${path.basename(indexModule)}`;
+  const content = privateEntriesToIndex(libraryIndex, metadataBundle.privates);
+  host = new SyntheticIndexHost(host, {name, content, metadata});
+  return {host, indexName: name};
+}
+
 export function main(
     project: string | VinylFile, cliOptions: CliOptions, codegen?: CodegenExtension,
     options?: ts.CompilerOptions): Promise<any> {
@@ -71,32 +103,11 @@ export function main(
     // If the compilation is a flat module index then produce the flat module index
     // metadata and the synthetic flat module index.
     if (ngOptions.flatModuleOutFile && !ngOptions.skipMetadataEmit) {
-      const files = parsed.fileNames.filter(f => !DTS.test(f));
-      if (files.length != 1) {
-        check([{
-          file: null,
-          start: null,
-          length: null,
-          messageText:
-              'Angular compiler option "flatModuleIndex" requires one and only one .ts file in the "files" field.',
-          category: ts.DiagnosticCategory.Error,
-          code: 0
-        }]);
-      }
-      const file = files[0];
-      const indexModule = file.replace(/\.ts$/, '');
-      const bundler =
-          new MetadataBundler(indexModule, ngOptions.flatModuleId, new CompilerHostAdapter(host));
-      if (diagnostics) console.time('NG flat module index');
-      const metadataBundle = bundler.getMetadataBundle();
-      if (diagnostics) console.timeEnd('NG flat module index');
-      const metadata = JSON.stringify(metadataBundle.metadata);
-      const name =
-          path.join(path.dirname(indexModule), ngOptions.flatModuleOutFile.replace(JS_EXT, '.ts'));
-      const libraryIndex = `./${path.basename(indexModule)}`;
-      const content = privateEntriesToIndex(libraryIndex, metadataBundle.privates);
-      host = new SyntheticIndexHost(host, {name, content, metadata});
-      addGeneratedFileName(name);
+      const {host: bundleHost, indexName, errors} =
+          createBundleIndexHost(ngOptions, rootFileNames, host);
+      if (errors) check(errors);
+      if (indexName) addGeneratedFileName(indexName);
+      host = bundleHost;
     }
 
     const tsickleCompilerHostOptions:

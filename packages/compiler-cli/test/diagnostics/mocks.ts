@@ -46,7 +46,7 @@ export class MockLanguageServiceHost implements ts.LanguageServiceHost, Compiler
       lib: ['lib.es2015.d.ts', 'lib.dom.d.ts'],
       paths: {'@angular/*': [calcRootPath() + '/packages/*']}
     };
-    this.context = new MockAotContext(currentDirectory, files)
+    this.context = new MockAotContext(currentDirectory, files);
   }
 
   getCompilationSettings(): ts.CompilerOptions { return this.options; }
