@@ -54,7 +54,7 @@
       'rxjs':                      'npm:rxjs@5.0.1',
       'angular-in-memory-web-api': 'npm:angular-in-memory-web-api/bundles/in-memory-web-api.umd.js',
       'ts':                        'npm:plugin-typescript@5.2.7/lib/plugin.js',
-      'typescript':                'npm:typescript@2.2.1/lib/typescript.js',
+      'typescript':                'npm:typescript@2.3.2/lib/typescript.js',
 
     },
     // packages tells the System loader how to load when no filename and/or no extension
