@@ -100,6 +100,7 @@ export class CodeGenerator {
       i18nFormat: cliOptions.i18nFormat,
       locale: cliOptions.locale, missingTranslation,
       enableLegacyTemplate: options.enableLegacyTemplate !== false,
+      enableSummariesForJit: options.enableSummariesForJit !== false,
     });
     return new CodeGenerator(options, program, tsCompilerHost, aotCompiler, ngCompilerHost);
   }
