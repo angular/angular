@@ -12,7 +12,7 @@ making some of them public so external components can use them.
 And there are many more options covered here.
 
 Before reading this page, read the
-[The Root Module](guide/appmodule) page, which introduces NgModules and the essentials
+[The Root Module](guide/bootstrapping) page, which introduces NgModules and the essentials
 of creating and maintaining a single root `AppModule` for the entire application.
 
 This page covers NgModules in greater depth.
