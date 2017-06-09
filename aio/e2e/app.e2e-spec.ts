@@ -59,14 +59,6 @@ describe('site App', function() {
     });
   });
 
-  describe('api-docs', () => {
-    it('should show a link to github', () => {
-      page.navigateTo('api/common/NgClass');
-      expect(page.ghLink.getAttribute('href'))
-          .toMatch(/https:\/\/github.com\/angular\/angular\/tree\/.+\/packages\/common\/src\/directives\/ng_class\.ts/);
-    });
-  });
-
   describe('tutorial docs', () => {
     it('should not render a paragraph element inside the h1 element', () => {
       page.navigateTo('tutorial/toh-pt1');

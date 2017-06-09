@@ -1,9 +1,9 @@
 .api-info-bar {
     max-width: 800px;
-    text-align: center;
+    text-align: left;
 
     span {
-        margin: 0 16px;
+        margin: 0 16px 0 0;
 
         @media screen and (max-width: 600px) {
             display: block;
