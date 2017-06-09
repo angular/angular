@@ -1,3 +1,15 @@
+<a name="4.2.1"></a>
+## [4.2.1](https://github.com/angular/angular/compare/4.2.0-rc.2...4.2.1) (2017-06-09)
+
+
+### Bug Fixes
+
+
+* **compiler:** don’t write summaries for jit by default ([d3a5f1a](https://github.com/angular/angular/commit/d3a5f1a))
+* **http:** move destructuring inside {Request,Response}Options ctor ([c2d31fb](https://github.com/angular/angular/commit/c2d31fb)), closes [#16663](https://github.com/angular/angular/issues/16663)
+
+
+
 <a name="4.2.0"></a>
 # [4.2.0](https://github.com/angular/angular/compare/4.2.0-rc.2...4.2.0) salubrious-stratagem (2017-06-08)
 
