@@ -1,6 +1,6 @@
 import {task, src, dest} from 'gulp';
 import {join} from 'path';
-import {writeFileSync} from 'fs';
+import {writeFileSync, mkdirpSync} from 'fs-extra';
 import {Bundler} from 'scss-bundle';
 import {sequenceTask} from '../util/task_helpers';
 import {composeRelease} from '../packaging/build-release';
@@ -14,6 +14,9 @@ const {packagesDir, outputDir} = buildConfig;
 /** Path to the directory where all releases are created. */
 const releasesDir = join(outputDir, 'releases');
 
+/** Path to the output of the Material package. */
+const materialOutputPath = join(outputDir, 'packages', 'material');
+
 // Path to the sources of the Material package.
 const materialPath = join(packagesDir, 'lib');
 // Path to the release output of material.
@@ -23,7 +26,7 @@ const themingEntryPointPath = join(materialPath, 'core', 'theming', '_all-theme.
 // Output path for the scss theming bundle.
 const themingBundlePath = join(releasePath, '_theming.scss');
 // Matches all pre-built theme css files
-const prebuiltThemeGlob = join(materialPath, '**/theming/prebuilt/*.css?(.map)');
+const prebuiltThemeGlob = join(materialOutputPath, '**/theming/prebuilt/*.css?(.map)');
 // Matches all SCSS files in the library.
 const allScssGlob = join(materialPath, '**/*.scss');
 
@@ -54,7 +57,10 @@ task('material:bundle-theming-scss', () => {
   // Instantiates the SCSS bundler and bundles all imports of the specified entry point SCSS file.
   // A glob of all SCSS files in the library will be passed to the bundler. The bundler takes an
   // array of globs, which will match SCSS files that will be only included once in the bundle.
-  new Bundler().Bundle(themingEntryPointPath, [allScssGlob]).then(result => {
+  return new Bundler().Bundle(themingEntryPointPath, [allScssGlob]).then(result => {
+    // The release directory is not created yet because the composing of the release happens when
+    // this task finishes.
+    mkdirpSync(releasePath);
     writeFileSync(themingBundlePath, result.bundledContent);
   });
 });
