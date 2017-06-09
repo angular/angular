@@ -178,7 +178,7 @@ export declare type ClassDefinition = {
 export interface ClassProvider {
     multi?: boolean;
     provide: any;
-    useClass: Type<any>;
+    useClass: Type<any> | ForwardRefFn<any>;
 }
 
 /** @deprecated */
@@ -421,11 +421,12 @@ export interface FactoryProvider {
 }
 
 /** @experimental */
-export declare function forwardRef(forwardRefFn: ForwardRefFn): Type<any>;
+export declare function forwardRef<T>(typeFactory: () => T): ForwardRefFn<T>;
 
 /** @experimental */
-export interface ForwardRefFn {
-    (): any;
+export interface ForwardRefFn<T> {
+    __forward_ref__: Function;
+    (): T;
 }
 
 /** @experimental */
@@ -731,7 +732,7 @@ export interface Predicate<T> {
 }
 
 /** @stable */
-export declare type Provider = TypeProvider | ValueProvider | ClassProvider | ExistingProvider | FactoryProvider | any[];
+export declare type Provider = TypeProvider | ValueProvider | ClassProvider | ExistingProvider | FactoryProvider | ForwardRefFn<any> | any[];
 
 /** @stable */
 export declare abstract class Query {
@@ -882,7 +883,7 @@ export interface ResolvedReflectiveProvider {
 }
 
 /** @experimental */
-export declare function resolveForwardRef(type: any): any;
+export declare function resolveForwardRef<T>(type: T | ForwardRefFn<T>): T;
 
 /** @deprecated */
 export declare abstract class RootRenderer {

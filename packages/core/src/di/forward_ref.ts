@@ -12,14 +12,15 @@ import {stringify} from '../util';
 
 
 /**
- * An interface that a function passed into {@link forwardRef} has to implement.
+ * An interface that a function passed into {@link resolveForwardRef} has to implement.
  *
- * ### Example
- *
- * {@example core/di/ts/forward_ref/forward_ref_spec.ts region='forward_ref_fn'}
  * @experimental
  */
-export interface ForwardRefFn { (): any; }
+export interface ForwardRefFn<T> {
+  (): T;
+  __forward_ref__: Function;
+}
+
 
 /**
  * Allows to refer to references which are not yet defined.
@@ -33,10 +34,11 @@ export interface ForwardRefFn { (): any; }
  * {@example core/di/ts/forward_ref/forward_ref_spec.ts region='forward_ref'}
  * @experimental
  */
-export function forwardRef(forwardRefFn: ForwardRefFn): Type<any> {
-  (<any>forwardRefFn).__forward_ref__ = forwardRef;
-  (<any>forwardRefFn).toString = function() { return stringify(this()); };
-  return (<Type<any>><any>forwardRefFn);
+export function forwardRef<T>(typeFactory: () => T): ForwardRefFn<T> {
+  const forwardRefFn = <ForwardRefFn<T>>typeFactory;
+  forwardRefFn.__forward_ref__ = forwardRef;
+  forwardRefFn.toString = function() { return stringify(this()); };
+  return forwardRefFn;
 }
 
 /**
@@ -51,11 +53,10 @@ export function forwardRef(forwardRefFn: ForwardRefFn): Type<any> {
  * See: {@link forwardRef}
  * @experimental
  */
-export function resolveForwardRef(type: any): any {
-  if (typeof type === 'function' && type.hasOwnProperty('__forward_ref__') &&
-      type.__forward_ref__ === forwardRef) {
-    return (<ForwardRefFn>type)();
-  } else {
-    return type;
-  }
+export function resolveForwardRef<T>(type: T | ForwardRefFn<T>): T {
+  return _isForwardRefFn(type) ? type() : type;
+}
+
+function _isForwardRefFn<T>(t: any): t is ForwardRefFn<T> {
+  return typeof t === 'function' && t.__forward_ref__ === forwardRef;
 }
