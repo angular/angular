@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompiler, AotCompilerHost, AotCompilerOptions, CompileSummaryKind, GeneratedFile, createAotCompiler, toTypeScript} from '@angular/compiler';
+import {AotCompiler, AotCompilerHost, AotCompilerOptions, CompileSummaryKind, GeneratedFile, toTypeScript} from '@angular/compiler';
 
 import {MockDirectory, compile, setup} from './test_util';
 
@@ -15,7 +15,7 @@ describe('aot summaries for jit', () => {
 
   function compileApp(rootDir: MockDirectory, options: {useSummaries?: boolean} = {}):
       {genFiles: GeneratedFile[], outDir: MockDirectory} {
-    return compile([rootDir, angularFiles], options);
+    return compile([rootDir, angularFiles], {...options, enableSummariesForJit: true});
   }
 
   it('should create @Injectable summaries', () => {

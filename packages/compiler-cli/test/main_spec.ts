@@ -261,5 +261,52 @@ describe('compiler-cli', () => {
           })
           .catch(e => done.fail(e));
     });
+
+    it('should not produce ngsummary files by default', (done) => {
+      writeConfig(`{
+          "extends": "./tsconfig-base.json",
+          "files": ["mymodule.ts"]
+        }`);
+      write('mymodule.ts', `
+        import {NgModule} from '@angular/core';
+
+        @NgModule()
+        export class MyModule {}
+      `);
+
+      main({p: basePath})
+          .then((exitCode) => {
+            expect(exitCode).toEqual(0);
+            expect(fs.existsSync(path.resolve(outDir, 'mymodule.ngsummary.js'))).toBe(false);
+
+            done();
+          })
+          .catch(e => done.fail(e));
+    });
+
+    it('should produce ngsummary files if configured', (done) => {
+      writeConfig(`{
+          "extends": "./tsconfig-base.json",
+          "files": ["mymodule.ts"],
+          "angularCompilerOptions": {
+            "enableSummariesForJit": true
+          }
+        }`);
+      write('mymodule.ts', `
+        import {NgModule} from '@angular/core';
+
+        @NgModule()
+        export class MyModule {}
+      `);
+
+      main({p: basePath})
+          .then((exitCode) => {
+            expect(exitCode).toEqual(0);
+            expect(fs.existsSync(path.resolve(outDir, 'mymodule.ngsummary.js'))).toBe(true);
+
+            done();
+          })
+          .catch(e => done.fail(e));
+    });
   });
 });

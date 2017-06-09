@@ -35,7 +35,8 @@ export class AotCompiler {
       private _viewCompiler: ViewCompiler, private _ngModuleCompiler: NgModuleCompiler,
       private _outputEmitter: OutputEmitter,
       private _summaryResolver: SummaryResolver<StaticSymbol>, private _localeId: string|null,
-      private _translationFormat: string|null, private _symbolResolver: StaticSymbolResolver) {}
+      private _translationFormat: string|null, private _enableSummariesForJit: boolean|null,
+      private _symbolResolver: StaticSymbolResolver) {}
 
   clearCache() { this._metadataResolver.clearCache(); }
 
@@ -204,10 +205,12 @@ export class AotCompiler {
             o.StmtModifier.Exported
           ]));
     });
-    return [
-      new GeneratedFile(srcFileUrl, summaryFileName(srcFileUrl), json),
-      this._codegenSourceModule(srcFileUrl, forJitOutputCtx)
-    ];
+    const summaryJson = new GeneratedFile(srcFileUrl, summaryFileName(srcFileUrl), json);
+    if (this._enableSummariesForJit) {
+      return [summaryJson, this._codegenSourceModule(srcFileUrl, forJitOutputCtx)];
+    };
+
+    return [summaryJson];
   }
 
   private _compileModule(outputCtx: OutputContext, ngModuleType: StaticSymbol): void {

@@ -25,7 +25,7 @@ function compile(
   return ngChecker.getDiagnostics();
 }
 
-fdescribe('ng type checker', () => {
+describe('ng type checker', () => {
   let angularFiles = setup();
 
   function accept(...files: MockDirectory[]) {

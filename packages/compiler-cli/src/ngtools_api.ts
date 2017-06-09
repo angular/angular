@@ -99,10 +99,15 @@ export class NgTools_InternalApi_NG_2 {
       missingTranslation: options.missingTranslation !,
       basePath: options.basePath
     };
+    const ngOptions = options.angularCompilerOptions;
+    if (ngOptions.enableSummariesForJit === undefined) {
+      // default to false
+      ngOptions.enableSummariesForJit = false;
+    }
 
     // Create the Code Generator.
-    const codeGenerator = CodeGenerator.create(
-        options.angularCompilerOptions, cliOptions, options.program, options.host, hostContext);
+    const codeGenerator =
+        CodeGenerator.create(ngOptions, cliOptions, options.program, options.host, hostContext);
 
     return codeGenerator.codegen();
   }

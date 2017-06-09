@@ -20,6 +20,10 @@ import {CodeGenerator} from './codegen';
 function codegen(
     ngOptions: tsc.AngularCompilerOptions, cliOptions: tsc.NgcCliOptions, program: ts.Program,
     host: ts.CompilerHost) {
+  if (ngOptions.enableSummariesForJit === undefined) {
+    // default to false
+    ngOptions.enableSummariesForJit = false;
+  }
   return CodeGenerator.create(ngOptions, cliOptions, program, host).codegen();
 }
 
