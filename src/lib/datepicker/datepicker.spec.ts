@@ -8,7 +8,7 @@ import {By} from '@angular/platform-browser';
 import {dispatchFakeEvent, dispatchMouseEvent} from '../core/testing/dispatch-events';
 import {MdInputModule} from '../input/index';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {MdNativeDateModule} from '../core/datetime/index';
+import {MdNativeDateModule, DateAdapter, NativeDateAdapter} from '../core/datetime/index';
 
 
 // When constructing a Date, the month is zero-based. This can be confusing, since people are
@@ -28,6 +28,13 @@ describe('MdDatepicker', () => {
           MdNativeDateModule,
           NoopAnimationsModule,
           ReactiveFormsModule,
+        ],
+        providers: [
+          {provide: DateAdapter, useFactory: () => {
+            let adapter = new NativeDateAdapter();
+            adapter.setLocale('en-US');
+            return adapter;
+          }}
         ],
         declarations: [
           DatepickerWithFilterAndValidation,

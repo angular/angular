@@ -3,7 +3,7 @@ import {Component} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {MdMonthView} from './month-view';
 import {MdCalendarBody} from './calendar-body';
-import {MdNativeDateModule} from '../core/datetime/index';
+import {MdNativeDateModule, DateAdapter, NativeDateAdapter} from '../core/datetime/index';
 
 
 // When constructing a Date, the month is zero-based. This can be confusing, since people are
@@ -17,6 +17,13 @@ describe('MdMonthView', () => {
     TestBed.configureTestingModule({
       imports: [
         MdNativeDateModule,
+      ],
+      providers: [
+        {provide: DateAdapter, useFactory: () => {
+          let adapter = new NativeDateAdapter();
+          adapter.setLocale('en-US');
+          return adapter;
+        }}
       ],
       declarations: [
         MdCalendarBody,
