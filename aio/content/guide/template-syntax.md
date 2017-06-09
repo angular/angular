@@ -12,6 +12,13 @@ component class instance (the *component*) and its user-facing template.
 You may be familiar with the component/template duality from your experience with model-view-controller (MVC) or model-view-viewmodel (MVVM).
 In Angular, the component plays the part of the controller/viewmodel, and the template represents the view.
 
+This page is a comprehensive technical reference to the Angular template language. 
+It explains basic principles of the template language and describes most of the syntax that you'll encounter elsewhere in the documentation. 
+
+Many code snippets illustrate the points and concepts, all of them available
+in the <live-example title="Template Syntax Live Code"></live-example>.
+
+
 {@a html}
 ## HTML in templates
 
@@ -1927,6 +1934,7 @@ The display is blank, but the app keeps rolling without errors.
 </code-example>
 
 It works perfectly with long property paths such as `a?.b?.c?.d`.
+
 <a href="#top-of-page">back to top</a>
 
 <hr/>
@@ -1961,6 +1969,10 @@ Rather it tells the TypeScript type checker to suspend strict null checks for a 
 
 You'll need this template operator when you turn on strict null checks. It's optional otherwise.
 
+
+<a href="#top-of-page">back to top</a>
+
+<hr/>
 
 ## Summary
 You've completed this survey of template syntax.
