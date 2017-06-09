@@ -740,18 +740,20 @@ export class TransitionAnimationEngine {
     // the :enter queries match the elements (since the timeline queries
     // are fired during instruction building).
     const bodyNode = getBodyNode();
-    const allEnterNodes: any[] = this.collectedEnterElements;
-    const enterNodes: any[] =
-        allEnterNodes.length ? collectEnterElements(this.driver, allEnterNodes) : [];
+    const allEnterNodes: any[] = this.collectedEnterElements.length ?
+        collectEnterElements(this.driver, this.collectedEnterElements) :
+        [];
 
-    const leaveNodes: any[] = [];
+    const allLeaveNodes: any[] = [];
+    const leaveNodesWithoutAnimations: any[] = [];
     for (let i = 0; i < this.collectedLeaveElements.length; i++) {
       const element = this.collectedLeaveElements[i];
-      if (isElementNode(element)) {
-        const details = element[REMOVAL_FLAG] as ElementAnimationState;
-        if (details && details.setForRemoval) {
-          addClass(element, LEAVE_CLASSNAME);
-          leaveNodes.push(element);
+      const details = element[REMOVAL_FLAG] as ElementAnimationState;
+      if (details && details.setForRemoval) {
+        addClass(element, LEAVE_CLASSNAME);
+        allLeaveNodes.push(element);
+        if (!details.hasAnimation) {
+          leaveNodesWithoutAnimations.push(element);
         }
       }
     }
@@ -817,6 +819,16 @@ export class TransitionAnimationEngine {
       });
     }
 
+    // these can only be detected here since we have a map of all the elements
+    // that have animations attached to them...
+    const enterNodesWithoutAnimations: any[] = [];
+    for (let i = 0; i < allEnterNodes.length; i++) {
+      const element = allEnterNodes[i];
+      if (!subTimelines.has(element)) {
+        enterNodesWithoutAnimations.push(element);
+      }
+    }
+
     const allPreviousPlayersMap = new Map<any, TransitionAnimationPlayer[]>();
     let sortedParentElements: any[] = [];
     queuedInstructions.forEach(entry => {
@@ -840,12 +852,13 @@ export class TransitionAnimationEngine {
 
     // PRE STAGE: fill the ! styles
     const preStylesMap = allPreStyleElements.size ?
-        cloakAndComputeStyles(this.driver, enterNodes, allPreStyleElements, PRE_STYLE) :
+        cloakAndComputeStyles(
+            this.driver, enterNodesWithoutAnimations, allPreStyleElements, PRE_STYLE) :
         new Map<any, ɵStyleData>();
 
     // POST STAGE: fill the * styles
-    const postStylesMap =
-        cloakAndComputeStyles(this.driver, leaveNodes, allPostStyleElements, AUTO_STYLE);
+    const postStylesMap = cloakAndComputeStyles(
+        this.driver, leaveNodesWithoutAnimations, allPostStyleElements, AUTO_STYLE);
 
     const rootPlayers: TransitionAnimationPlayer[] = [];
     const subPlayers: TransitionAnimationPlayer[] = [];
@@ -907,8 +920,8 @@ export class TransitionAnimationEngine {
     // run through all of the queued removals and see if they
     // were picked up by a query. If not then perform the removal
     // operation right away unless a parent animation is ongoing.
-    for (let i = 0; i < leaveNodes.length; i++) {
-      const element = leaveNodes[i];
+    for (let i = 0; i < allLeaveNodes.length; i++) {
+      const element = allLeaveNodes[i];
       const players = queriedElements.get(element);
       if (players) {
         removeNodesAfterAnimationDone(this, element, players);
@@ -931,7 +944,7 @@ export class TransitionAnimationEngine {
       player.play();
     });
 
-    enterNodes.forEach(element => removeClass(element, ENTER_CLASSNAME));
+    allEnterNodes.forEach(element => removeClass(element, ENTER_CLASSNAME));
 
     return rootPlayers;
   }
