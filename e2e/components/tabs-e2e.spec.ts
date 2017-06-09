@@ -7,8 +7,8 @@ import {
   Key,
   ExpectedConditions
 } from 'protractor';
-import {pressKeys} from '../../util/index';
-import {screenshot} from '../../screenshot';
+import {pressKeys} from '../util/index';
+import {screenshot} from '../screenshot';
 
 
 describe('tabs', () => {

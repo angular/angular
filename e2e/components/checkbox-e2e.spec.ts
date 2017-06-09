@@ -1,5 +1,5 @@
 import {browser, by, element, Key, ExpectedConditions} from 'protractor';
-import {screenshot} from '../../screenshot';
+import {screenshot} from '../screenshot';
 
 
 describe('checkbox', () => {

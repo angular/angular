@@ -1,9 +1,9 @@
 import {browser} from 'protractor';
 
-describe('hello, protractor', function () {
-  describe('index', function () {
+describe('hello, protractor', () => {
+  describe('index', () => {
     browser.get('/');
-    it('should have a title', function () {
+    it('should have a title', () => {
       expect(browser.getTitle()).toBe('Angular Material');
     });
   });

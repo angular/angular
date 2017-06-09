@@ -1,13 +1,12 @@
-import {Key, protractor} from 'protractor';
-import {MenuPage} from './menu-page';
-import {screenshot} from '../../screenshot';
+import {Key, protractor, browser, by, element, ElementFinder} from 'protractor';
+import {screenshot} from '../screenshot';
 import {
   expectToExist,
   expectAlignedWith,
   expectFocusOn,
   expectLocation,
   pressKeys,
-} from '../../util/index';
+} from '../util/index';
 
 
 describe('menu', () => {
@@ -192,3 +191,22 @@ describe('menu', () => {
 
   });
 });
+
+
+export class MenuPage {
+  constructor() { browser.get('/menu'); }
+  menu = () => element(by.css('.mat-menu-panel'));
+  start = () => element(by.id('start'));
+  trigger = () => element(by.id('trigger'));
+  triggerTwo = () => element(by.id('trigger-two'));
+  backdrop = () => element(by.css('.cdk-overlay-backdrop'));
+  items = (index: number) => element.all(by.css('[md-menu-item]')).get(index);
+  textArea = () => element(by.id('text'));
+  beforeTrigger = () => element(by.id('before-t'));
+  aboveTrigger = () => element(by.id('above-t'));
+  combinedTrigger = () => element(by.id('combined-t'));
+  beforeMenu = () => element(by.css('.mat-menu-panel.before'));
+  aboveMenu = () => element(by.css('.mat-menu-panel.above'));
+  combinedMenu = () => element(by.css('.mat-menu-panel.combined'));
+  getResultText = () => this.textArea().getText();
+}

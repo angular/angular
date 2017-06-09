@@ -5,7 +5,7 @@ import {
   pressKeys,
   clickElementAtPoint,
   waitForElement,
-} from '../../util/index';
+} from '../util/index';
 
 
 describe('dialog', () => {

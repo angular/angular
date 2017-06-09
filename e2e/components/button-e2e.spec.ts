@@ -1,5 +1,5 @@
 import {browser, by, element, ExpectedConditions} from 'protractor';
-import {screenshot} from '../../screenshot';
+import {screenshot} from '../screenshot';
 
 
 describe('button', () => {

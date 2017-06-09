@@ -1,6 +1,6 @@
 import {browser, Key, element, by} from 'protractor';
-import {screenshot} from '../../screenshot';
-import {getScrollPosition} from '../../util/index';
+import {screenshot} from '../screenshot';
+import {getScrollPosition} from '../util/index';
 
 
 describe('scroll blocking', () => {

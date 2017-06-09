@@ -1,6 +1,6 @@
 import {browser, element, by, Key, ExpectedConditions} from 'protractor';
-import {expectToExist} from '../../util/index';
-import {screenshot} from '../../screenshot';
+import {expectToExist} from '../util/index';
+import {screenshot} from '../screenshot';
 
 
 describe('slide-toggle', () => {
