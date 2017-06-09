@@ -43,6 +43,7 @@
     "@angular/platform-browser-dynamic": "^4.0.0",
     "@angular/platform-server": "^4.0.0",
     "@angular/router": "^4.0.0",
+    "@angular/tsc-wrapped": "^4.0.0",
     "@google-cloud/storage": "^1.1.1",
     "@types/chalk": "^0.4.31",
     "@types/fs-extra": "^3.0.1",
