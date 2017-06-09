@@ -26,7 +26,7 @@ cache:
   directories:
      - ./node_modules
      - ./.chrome/chromium
-     - ./aio/node_modules
+    #  - ./aio/node_modules
 
 env:
   global:
