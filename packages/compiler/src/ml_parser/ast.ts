@@ -83,8 +83,6 @@ export function visitAll(visitor: Visitor, nodes: Node[], context: any = null): 
 }
 
 export class RecursiveVisitor implements Visitor {
-  constructor() {}
-
   visitElement(ast: Element, context: any): any {
     this.visitChildren(context, visit => {
       visit(ast.attrs);
@@ -142,7 +140,7 @@ export function findNode(nodes: Node[], position: number): HtmlAstPath {
         return true;
       }
     }
-  }
+  };
 
   visitAll(visitor, nodes);
 
