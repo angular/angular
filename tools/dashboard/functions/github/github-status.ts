@@ -4,7 +4,7 @@ const request = require('request');
 const {version, name} = require('../package.json');
 
 /** API token for the Github repository. Required to set the github status on commits and PRs. */
-const repoToken = config().repoToken;
+const repoToken = config().secret.github;
 
 /** Data that must be specified to set a Github PR status. */
 export type GithubStatusData = {
