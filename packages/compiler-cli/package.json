@@ -6,7 +6,8 @@
   "typings": "index.d.ts",
   "bin": {
     "ngc": "./src/main.js",
-    "ng-xi18n": "./src/extract_i18n.js"
+    "ng-xi18n": "./src/extract_i18n.js",
+    "ng-migrate-i18n-0to1": "./src/migrate_i18n_0to1.js"
   },
   "dependencies": {
     "@angular/tsc-wrapped": "4.3.0",

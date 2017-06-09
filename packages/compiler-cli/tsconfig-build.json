@@ -34,6 +34,7 @@
     "src/main.ts",
     "src/ngc.ts",
     "src/extract_i18n.ts",
+    "src/migrate_i18n_0to1.ts",
     "../../node_modules/@types/node/index.d.ts",
     "../../node_modules/@types/jasmine/index.d.ts",
     "../../node_modules/zone.js/dist/zone.js.d.ts"
