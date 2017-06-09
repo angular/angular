@@ -16,8 +16,6 @@ Angular is a platform that makes it easy to build applications with the web. Ang
       <p class="card-footer" >
         <a href="guide/quickstart" title="Angular Quickstart">Quickstart</a>
       </p>
-      <!--<p class="card-footer"><a href="guide/quickstart">Quickstart</a></p>
-      <p class="card-footer"><a href="guide/tutorial">Tutorial</a></p>-->
   </div>
 
   <a href="guide/architecture" class="docs-card" title="Angular Architecture">

@@ -55,21 +55,10 @@
     },
 
     {
+      "url": "guide/quickstart",
       "title": "Getting Started",
-      "tooltip": "A gentle introduction to Angular.",
-      "children": [
-        {
-          "url": "guide/quickstart",
-          "title": "Basic Quickstart",
-          "tooltip": "A quick look at an Angular app without tooling."
-        },
-
-        {
-          "url": "guide/cli-quickstart",
-          "title": "CLI Quickstart",
-          "tooltip": "A quick look at an Angular app built with the Angular CLI."
-        }
-    ]},
+      "tooltip": "A gentle introduction to Angular."
+    },
 
     {
       "title": "Tutorial",
@@ -117,43 +106,14 @@
       "title": "Fundamentals",
       "tooltip": "The fundamentals of Angular",
       "children": [
-
-        {
-          "url": "guide/animations",
-          "title": "Animations",
-          "tooltip": "A guide to Angular's animation system."
-        },
-
-        {
-          "title": "Angular Modules",
-          "tooltip": "Learn how directives modify the layout and behavior of elements.",
-          "children": [
-            {
-              "url": "guide/appmodule",
-              "title": "The Root AppModule",
-              "tooltip": "Tell Angular how to construct and bootstrap the app in the root \"AppModule\"."
-            },
-            {
-              "url": "guide/ngmodule",
-              "title": "NgModule",
-              "tooltip": "Define application modules with @NgModule."
-            },
-            {
-              "url": "guide/ngmodule-faq",
-              "title": "Angular Module FAQs",
-              "tooltip": "Answers to frequently asked questions about @NgModule."
-            }
-        ]},
-
         {
           "url": "guide/architecture",
           "title": "Architecture",
           "tooltip": "The basic building blocks of Angular applications."
         },
-
         {
-          "title": "Components",
-          "tooltip": "Components present information to users and collect their input.",
+          "title": "Template & Data Binding",
+          "tooltip": "Template & Data Binding",
           "children": [
             {
               "url": "guide/displaying-data",
@@ -176,22 +136,85 @@
               "tooltip": "Share information between different directives and components."
             },
             {
-              "url": "guide/component-styles",
-              "title": "Component Styles",
-              "tooltip": "Learn how to apply CSS styles to components."
-            },
-            {
               "url": "guide/dynamic-component-loader",
               "title": "Dynamic Components",
               "tooltip": "Load components dynamically."
             },
             {
+              "url": "guide/attribute-directives",
+              "title": "Attribute Directives",
+              "tooltip": "Attribute directives attach behavior to elements."
+            },
+            {
+              "url": "guide/structural-directives",
+              "title": "Structural Directives",
+              "tooltip": "Structural directives manipulate the layout of the page."
+            },
+            {
               "url": "guide/pipes",
               "title": "Pipes",
               "tooltip": "Pipes transform displayed values within a template."
+            },
+            {
+              "url": "guide/animations",
+              "title": "Animations",
+              "tooltip": "A guide to Angular's animation system."
             }
           ]
         },
+        {
+          "title": "Forms",
+          "tooltip": "Angular Forms",
+          "children": [
+            {
+              "url": "guide/user-input",
+              "title": "User Input",
+              "tooltip": "User input triggers DOM events. We listen to those events with event bindings that funnel updated values back into our components and models."
+            },
+            {
+              "url": "guide/forms",
+              "title": "Template-driven Forms",
+              "tooltip": "A form creates a cohesive, effective, and compelling data entry experience. An Angular form coordinates a set of data-bound user controls, tracks changes, validates input, and presents errors."
+            },
+            {
+              "url": "guide/form-validation",
+              "title": "Form Validation",
+              "tooltip": "Validate user's form entries."
+            },
+            {
+              "url": "guide/reactive-forms",
+              "title": "Reactive Forms",
+              "tooltip": "Create a reactive form using FormBuilder, groups, and arrays."
+            },
+            {
+              "url": "guide/dynamic-form",
+              "title": "Dynamic forms",
+              "tooltip": "Render dynamic forms with FormGroup."
+            }
+          ]
+        },
+
+        {
+          "url": "guide/bootstrapping",
+          "title": "Bootstrapping",
+          "tooltip": "Tell Angular how to construct and bootstrap the app in the root \"AppModule\"."
+        },
+
+        {
+          "title": "NgModules",
+          "tooltip": "Learn how to use NgModules to make your apps efficient.",
+          "children": [
+            {
+              "url": "guide/ngmodule",
+              "title": "NgModules",
+              "tooltip": "Define application modules with @NgModule."
+            },
+            {
+              "url": "guide/ngmodule-faq",
+              "title": "NgModule FAQs",
+              "tooltip": "Answers to frequently asked questions about @NgModule."
+            }
+        ]},
 
         {
           "title": "Dependency Injection",
@@ -216,72 +239,25 @@
         },
 
         {
-          "title": "Directives",
-          "tooltip": "Learn how directives modify the layout and behavior of elements.",
-          "children": [
-            {
-              "url": "guide/attribute-directives",
-              "title": "Attribute Directives",
-              "tooltip": "Attribute directives attach behavior to elements."
-            },
-            {
-              "url": "guide/structural-directives",
-              "title": "Structural Directives",
-              "tooltip": "Structural directives manipulate the layout of the page."
-            }
-          ]
-        },
-
-        {
           "url": "guide/http",
-          "title": "HTTP",
+          "title": "Server Communication",
           "tooltip": "Use HTTP to talk to a remote server."
         },
-
-        {
-          "url": "guide/i18n",
-          "title": "Internationalization (i18n)",
-          "tooltip": "Translate the app's template text into multiple languages."
-        },
-
         {
           "url": "guide/router",
           "title": "Routing & Navigation",
           "tooltip": "Discover the basics of screen navigation with the Angular Router."
         },
-
         {
-          "title": "User Input",
-          "tooltip": "User Input",
-          "children": [
-            {
-              "url": "guide/user-input",
-              "title": "User Input",
-              "tooltip": "User input triggers DOM events. We listen to those events with event bindings that funnel updated values back into our components and models."
-            },
-
-            {
-              "url": "guide/forms",
-              "title": "Template-driven Forms",
-              "tooltip": "A form creates a cohesive, effective, and compelling data entry experience. An Angular form coordinates a set of data-bound user controls, tracks changes, validates input, and presents errors."
-            },
-
-            {
-              "url": "guide/reactive-forms",
-              "title": "Reactive Forms",
-              "tooltip": "Create a reactive form using FormBuilder, groups, and arrays."
-            },
-            {
-              "url": "guide/form-validation",
-              "title": "Form Validation",
-              "tooltip": "Validate user's form entries."
-            },
-            {
-              "url": "guide/dynamic-form",
-              "title": "Dynamic forms",
-              "tooltip": "Render dynamic forms with FormGroup."
-            }
-        ]}
+          "url": "guide/testing",
+          "title": "Testing",
+          "tooltip": "Techniques and practices for testing an Angular app."
+        },
+        {
+          "url": "guide/cheatsheet",
+          "title": "Cheat Sheet",
+          "tooltip": "A quick guide to common Angular coding techniques."
+        }
     ]},
 
     {
@@ -290,17 +266,20 @@
       "children": [
 
         {
+          "url": "guide/i18n",
+          "title": "Internationalization (i18n)",
+          "tooltip": "Translate the app's template text into multiple languages."
+        },
+        {
           "url": "guide/security",
           "title": "Security",
           "tooltip": "Developing for content security in Angular applications."
         },
-
         {
-          "url": "guide/set-document-title",
-          "title": "Set the document tab title",
-          "tooltip": "Set the browser tab title dynamically with the Angular Title service"
+          "url": "guide/ts-to-js",
+          "title": "TypeScript to JavaScript",
+          "tooltip": "Convert Angular TypeScript examples into ES6 and ES5 JavaScript."
         },
-
         {
           "title": "Setup & Deployment",
           "tooltip": "Setup and Deployment",
@@ -345,30 +324,18 @@
         },
 
         {
-          "url": "guide/testing",
-          "title": "Testing",
-          "tooltip": "Techniques and practices for testing an Angular app."
-        },
-
-        {
-          "url": "guide/ts-to-js",
-          "title": "TypeScript to JavaScript",
-          "tooltip": "Convert Angular TypeScript examples into ES6 and ES5 JavaScript."
-        },
-
-        {
           "title": "Upgrading",
           "tooltip": "Incrementally upgrade an AngularJS application to Angular.",
           "children": [
             {
-              "url": "guide/ajs-quick-reference",
-              "title": "AngularJS to Angular",
-              "tooltip": "Learn how AngularJS concepts and techniques map to Angular."
-            },
-            {
               "url": "guide/upgrade",
               "title": "Upgrading from AngularJS",
               "tooltip": "Incrementally upgrade an AngularJS application to Angular."
+            },
+            {
+              "url": "guide/ajs-quick-reference",
+              "title": "AngularJS to Angular",
+              "tooltip": "Learn how AngularJS concepts and techniques map to Angular."
             }
           ]
         },
@@ -378,11 +345,15 @@
           "title": "Visual Studio 2015 QuickStart",
           "tooltip": "Use Visual Studio 2015 with the QuickStart files."
         },
-
         {
-          "url": "guide/webpack",
-          "title": "Webpack: An Introduction",
-          "tooltip": "Create Angular applications with Webpack based tooling."
+          "url": "guide/styleguide",
+          "title": "Style Guide",
+          "tooltip": "Write Angular with style."
+        },
+        {
+          "url": "guide/glossary",
+          "title": "Glossary",
+          "tooltip": "Brief definitions of the most important words in the Angular vocabulary."
         }
       ]
     },
@@ -391,36 +362,6 @@
       "title": "API",
       "tooltip": "Details of the Angular classes and values.",
       "url": "api"
-    },
-
-    {
-      "title": "References",
-      "tooltip": "References on Angular usage and style.",
-      "children": [
-        {
-          "url": "guide/change-log",
-          "title": "Change Log",
-          "tooltip": "An annotated history of recent documentation improvements."
-        },
-
-        {
-          "url": "guide/cheatsheet",
-          "title": "Cheat Sheet",
-          "tooltip": "A quick guide to common Angular coding techniques."
-        },
-
-        {
-          "url": "guide/glossary",
-          "title": "Glossary",
-          "tooltip": "Brief definitions of the most important words in the Angular vocabulary."
-        },
-
-        {
-          "url": "guide/styleguide",
-          "title": "Style Guide",
-          "tooltip": "Write Angular with style."
-        }
-      ]
     }
   ],
 
