@@ -376,8 +376,6 @@ export class MdInputContainer implements AfterViewInit, AfterContentInit, AfterC
   constructor(
     public _elementRef: ElementRef,
     private _changeDetectorRef: ChangeDetectorRef,
-    @Optional() private _parentForm: NgForm,
-    @Optional() private _parentFormGroup: FormGroupDirective,
     @Optional() @Inject(MD_PLACEHOLDER_GLOBAL_OPTIONS) placeholderOptions: PlaceholderOptions) {
       this._placeholderOptions = placeholderOptions ? placeholderOptions : {};
       this.floatPlaceholder = this._placeholderOptions.float || 'auto';
