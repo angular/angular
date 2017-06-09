@@ -1218,7 +1218,7 @@ function normalizeTriggerValue(value: any): string {
     case 'boolean':
       return value ? '1' : '0';
     default:
-      return value ? value.toString() : null;
+      return value != null ? value.toString() : null;
   }
 }
 
