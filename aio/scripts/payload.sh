@@ -34,6 +34,13 @@ for filename in dist/*.bundle.js; do
   fi
 done
 
+# Also track sizes of bundle/*umd.min.js files
+for filename in node_modules/@angular/*/bundles/*.umd.min.js; do
+  size=$(stat -c%s "$filename")
+  label=$(echo "$filename" | sed "s/.*\///" | sed "s/\..*//")
+  payloadData="$payloadData\"umd/$label\": $size, "
+done
+
 # Add Timestamp
 timestamp=$(date +%s)
 payloadData="$payloadData\"timestamp\": $timestamp, "
