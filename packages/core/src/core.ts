@@ -25,7 +25,7 @@ export {DebugElement, DebugNode, asNativeElements, getDebugNode, Predicate} from
 export {GetTestability, Testability, TestabilityRegistry, setTestabilityGetter} from './testability/testability';
 export * from './change_detection';
 export * from './platform_core_providers';
-export {TRANSLATIONS, TRANSLATIONS_FORMAT, LOCALE_ID, MissingTranslationStrategy, I18nVersion} from './i18n/tokens';
+export {TRANSLATIONS, TRANSLATIONS_FORMAT, LOCALE_ID, I18N_VERSION, MissingTranslationStrategy, I18nVersion} from './i18n/tokens';
 export {ApplicationModule} from './application_module';
 export {wtfCreateScope, wtfLeave, wtfStartTimeRange, wtfEndTimeRange, WtfScopeFn} from './profile/profile';
 export {Type} from './type';

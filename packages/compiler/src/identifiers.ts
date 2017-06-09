@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, ChangeDetectionStrategy, ChangeDetectorRef, ComponentFactory, ComponentFactoryResolver, ComponentRef, ElementRef, Injector, LOCALE_ID, NgModuleFactory, NgModuleRef, QueryList, Renderer, SecurityContext, TRANSLATIONS_FORMAT, TemplateRef, ViewContainerRef, ViewEncapsulation, ɵCodegenComponentFactoryResolver, ɵEMPTY_ARRAY, ɵEMPTY_MAP, ɵand, ɵccf, ɵcmf, ɵcrt, ɵdid, ɵeld, ɵinlineInterpolate, ɵinterpolate, ɵmod, ɵmpd, ɵncd, ɵnov, ɵpad, ɵpid, ɵpod, ɵppd, ɵprd, ɵqud, ɵregisterModuleFactory, ɵted, ɵunv, ɵvid} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, ChangeDetectionStrategy, ChangeDetectorRef, ComponentFactory, ComponentFactoryResolver, ComponentRef, ElementRef, I18N_VERSION, Injector, LOCALE_ID, NgModuleFactory, NgModuleRef, QueryList, Renderer, SecurityContext, TRANSLATIONS_FORMAT, TemplateRef, ViewContainerRef, ViewEncapsulation, ɵCodegenComponentFactoryResolver, ɵEMPTY_ARRAY, ɵEMPTY_MAP, ɵand, ɵccf, ɵcmf, ɵcrt, ɵdid, ɵeld, ɵinlineInterpolate, ɵinterpolate, ɵmod, ɵmpd, ɵncd, ɵnov, ɵpad, ɵpid, ɵpod, ɵppd, ɵprd, ɵqud, ɵregisterModuleFactory, ɵted, ɵunv, ɵvid} from '@angular/core';
 
-import {CompileIdentifierMetadata, CompileTokenMetadata} from './compile_metadata';
+import {CompileTokenMetadata} from './compile_metadata';
 import {CompileReflector} from './compile_reflector';
 import * as o from './output/output_ast';
 
@@ -92,6 +92,8 @@ export class Identifiers {
     moduleName: CORE,
     runtime: TRANSLATIONS_FORMAT
   };
+  static I18N_VERSION:
+      o.ExternalReference = {name: 'I18N_VERSION', moduleName: CORE, runtime: I18N_VERSION};
   static inlineInterpolate: o.ExternalReference = {
     name: 'ɵinlineInterpolate',
     moduleName: CORE,
