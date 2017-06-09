@@ -7,7 +7,7 @@
  */
 
 import {MessageBundle} from '../../../src/i18n/message_bundle';
-import {computeConflicts, generateV1ToV0Map} from '../../../src/i18n/migration/v0_to_v1';
+import {applyMapping, computeConflicts, generateV1ToV0Map} from '../../../src/i18n/migration/v0_to_v1';
 import {HtmlParser} from '../../../src/ml_parser/html_parser';
 import {DEFAULT_INTERPOLATION_CONFIG} from '../../../src/ml_parser/interpolation_config';
 
@@ -51,7 +51,7 @@ export function main(): void {
       });
     });
 
-    describe(' Compute conflicts', () => {
+    describe('Compute conflicts', () => {
       const v1ToV0Map = {
         'single.v1': {ids: ['single.v0']},
         'mul_ok.v1': {ids: ['mul_ok.1.v0', 'mul_ok.2.v0']},
@@ -113,6 +113,34 @@ export function main(): void {
 
         expect(computeConflicts(v1ToV0Map, TRANS, 'xliff2')).toEqual(EXPECTED_CONFLICTS);
       });
+    });
+
+    // TODO(vicb): add more tests for different formats
+    describe('ApplyMapping', () => {
+      it('should work with XMB', () => {
+        const SRC = `
+          <translationbundle>
+            <translation id="ignore">a</translation>
+            <translation id="remove">b</translation>
+            <translation id="old">c</translation>
+          </translationbundle>`;
+
+        const DST = `
+          <translationbundle>
+            <translation id="ignore">a</translation>
+            <translation id="new">c</translation>
+          </translationbundle>`;
+
+        const mapping = {
+          'remove': null,
+          'old': 'new',
+        };
+
+        expect(applyMapping(mapping, null !, SRC, 'xmb')).toEqual(DST);
+      });
+
+
+
     });
   });
 }

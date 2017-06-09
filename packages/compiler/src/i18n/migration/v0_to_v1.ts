@@ -9,20 +9,32 @@
 
 import {I18nVersion} from '@angular/core';
 
+import * as ml from '../../ml_parser/ast';
+import {XmlParser} from '../../ml_parser/xml_parser';
 import {Message} from '../i18n_ast';
 import {MessageSpan} from '../i18n_ast';
 import {MessageBundle} from '../message_bundle';
+import {I18nError} from '../parse_util';
 import {createSerializer} from '../serializers/factory';
 import {getXliffMsgTextById} from '../serializers/xliff';
 import {getXliff2MsgTextById} from '../serializers/xliff2';
 import {getXtbMsgTextById} from '../serializers/xtb';
 
+
+// Maps v1 ids to corresponding v0 ids and their MessageSpan
 export type V1ToV0Map = {
   [v1: string]: {ids: string[], sources?: MessageSpan[]}
 };
+// Map of v1 ids having conflicts
 export type V1ToV0Conflicts = {
   [v1: string]: {id: string, msg: string}[]
 };
+// Map of v0 ids and their new v1 ids or `null`.
+// `null` means that the ID is not used and should be removed
+export type V0ToV1Map = {
+  [v0: string]: string | null
+};
+
 
 /**
  * A single V1 message could replace multiple V0 messages.
@@ -116,4 +128,90 @@ export function computeConflicts(map: V1ToV0Map, content: string, format: string
   });
 
   return conflicts;
+}
+
+/**
+ * `v0ToV1` contains the mapping from the old id to the new id. If the mapping is `null` then the
+ * old message should be removed.
+ *
+ */
+export function applyMapping(
+    v0toV1: V0ToV1Map, v1toV0: V1ToV0Map, content: string, format: string) {
+  // First step is to migrate the IDs and remove obsolete messages
+  const {msgInfos, errors} = new MsgInfosVisitor().parse(content, '');
+
+  if (errors.length) {
+    throw new Error(`Translations parse errors:\n${errors.join('\n')}`);
+  }
+
+  // Process messages in reverse order because modifying a message invalidate the following
+  // SourceSpan
+  Array.from(msgInfos.entries()).reverse().forEach(([id, info]) => {
+    if (v0toV1.hasOwnProperty(id)) {
+      const newId = v0toV1[id];
+      if (newId === null) {
+        // Remove the whole element when the target id is null
+        const startOfEl = info.el.sourceSpan.start.offset;
+        const endOfPreviousEl = content.lastIndexOf('>', startOfEl);
+        const removeFrom = endOfPreviousEl === -1 ? startOfEl : endOfPreviousEl + 1;
+        const removeTo = info.el.endSourceSpan !.end.offset;
+        content = content.slice(0, removeFrom) + content.slice(removeTo);
+      } else {
+        // Change the id attribute when there is a target id
+        const removeFrom = info.id.valueSpan !.start.offset + 1;
+        const removeTo = info.id.valueSpan !.end.offset - 1;
+        content = content.slice(0, removeFrom) + newId + content.slice(removeTo);
+      }
+    }
+  });
+
+
+  // Second step is to replace the references to the source file
+
+  // TODO(vicb)
+
+  return content;
+}
+
+type MsgInfos = Map<string, {el: ml.Element, id: ml.Attribute}>;
+
+/**
+ * Parse a translation bundle and extract for each message:
+ * - the `id` attribute node,
+ * - the message element node.
+ *
+ * Supports: xtb, xliff and xliff2
+ */
+class MsgInfosVisitor extends ml.RecursiveVisitor {
+  private errors: I18nError[];
+  private msgInfos: MsgInfos = new Map();
+
+  parse(content: string, url: string): {msgInfos: MsgInfos, errors: I18nError[]} {
+    const xmlParser = new XmlParser().parse(content, url, false);
+    this.errors = xmlParser.errors;
+    ml.visitAll(this, xmlParser.rootNodes, null);
+    return {msgInfos: this.msgInfos, errors: this.errors};
+  }
+
+  visitElement(el: ml.Element, context: any): any {
+    switch (el.name) {
+      case 'trans-unit':   // xliff
+      case 'unit':         // xliff2
+      case 'translation':  // xtb
+        const id = el.attrs.find(attr => attr.name === 'id');
+        if (id) {
+          this.msgInfos.set(id.value, {el, id});
+        } else {
+          this._addError(el, `<${el.name}> misses the "id" attribute`);
+        }
+        break;
+
+      default:
+        super.visitElement(el, context);
+    }
+  }
+
+  private _addError(node: ml.Node, message: string): void {
+    this.errors.push(new I18nError(node.sourceSpan !, message));
+  }
 }
