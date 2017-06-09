@@ -8,7 +8,7 @@
   "scripts": {
     "ng": "yarn check-env && ng",
     "start": "yarn check-env && ng serve",
-    "build": "yarn check-env && yarn setup && ng build -prod -sm && yarn sw-manifest && yarn sw-copy",
+    "build": "yarn check-env && yarn setup && ng build -prod -sm -vc=false && yarn sw-manifest && yarn sw-copy",
     "lint": "yarn check-env && yarn docs-lint && ng lint && yarn example-lint",
     "test": "yarn check-env && ng test",
     "pree2e": "yarn ~~update-webdriver",
@@ -35,7 +35,7 @@
     "sw-manifest": "ngu-sw-manifest --dist dist --in ngsw-manifest.json --out dist/ngsw-manifest.json",
     "sw-copy": "cp node_modules/@angular/service-worker/bundles/worker-basic.min.js dist/",
     "postinstall": "node tools/cli-patches/patch.js",
-    "build-ie-polyfills": "webpack -p src/ie-polyfills.js src/generated/ie-polyfills.min.js"
+    "build-ie-polyfills": "node_modules/webpack/bin/webpack.js -p src/ie-polyfills.js src/generated/ie-polyfills.min.js"
   },
   "private": true,
   "dependencies": {
@@ -50,7 +50,7 @@
     "@angular/platform-browser-dynamic": "next",
     "@angular/platform-server": "next",
     "@angular/router": "next",
-    "@angular/service-worker": "^1.0.0-beta.12",
+    "@angular/service-worker": "^1.0.0-beta.15",
     "classlist.js": "^1.1.20150312",
     "core-js": "^2.4.1",
     "ng-pwa-tools": "^0.0.10",
@@ -62,7 +62,7 @@
     "zone.js": "^0.8.4"
   },
   "devDependencies": {
-    "@angular/cli": "^1.1.0-rc.0",
+    "@angular/cli": "angular/cli-builds#webpack-next",
     "@angular/compiler-cli": "next",
     "@types/jasmine": "^2.5.47",
     "@types/node": "~6.0.60",
@@ -113,7 +113,6 @@
     "unist-util-visit": "^1.1.1",
     "vrsource-tslint-rules": "^4.0.1",
     "watchr": "^3.0.1",
-    "webpack": "^2.5.1",
     "yargs": "^7.0.2"
   }
 }

@@ -54,7 +54,11 @@ if [[ ${TRAVIS} && (${CI_MODE} == "aio" || ${CI_MODE} == "aio_e2e" || ${CI_MODE}
   travisFoldStart "yarn-install.aio"
     (
       cd ${PROJECT_ROOT}/aio
+      npm rebuild node-sass
       yarn install
+      # debugging
+      yarn list
+      # debugging
     )
   travisFoldEnd "yarn-install.aio"
 fi
