@@ -81,6 +81,10 @@ interface Options extends ts.CompilerOptions {
 
   // Whether to enable support for <template> and the template attribute (true by default)
   enableLegacyTemplate?: boolean;
+
+  // Whether to generate .ngsummary.ts files that allow to use AOTed artifacts
+  // in JIT mode.
+  enableSummariesForJit?: boolean;
 }
 
 export default Options;
