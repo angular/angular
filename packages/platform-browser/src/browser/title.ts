@@ -20,7 +20,12 @@ import {DOCUMENT} from '../dom/dom_tokens';
  * (representing the `<title>` tag). Instead, this service can be used to set and get the current
  * title value.
  *
- * @experimental
+ * You can inject the `Title` service into a `Component` and use its `setTitle`
+ * method to set the title.
+*
+ * {@example platform-browser/browser/title.ts region='class'}
+ *
+ *  @experimental
  */
 @Injectable()
 export class Title {

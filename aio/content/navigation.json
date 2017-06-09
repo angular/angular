@@ -296,12 +296,6 @@
         },
 
         {
-          "url": "guide/set-document-title",
-          "title": "Set the document tab title",
-          "tooltip": "Set the browser tab title dynamically with the Angular Title service"
-        },
-
-        {
           "title": "Setup & Deployment",
           "tooltip": "Setup and Deployment",
           "children": [

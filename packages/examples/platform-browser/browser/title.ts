@@ -1,13 +1,12 @@
 // #docplaster
 // #docregion
 // Import the native Angular services.
-import { Component } from '@angular/core';
-import { Title }     from '@angular/platform-browser';
+import {Component} from '@angular/core';
+import {Title} from '@angular/platform-browser';
 
 @Component({
-selector: 'my-app',
-template:
-  `<p>
+  selector: 'example-app',
+  template: `<p>
     Select a title to set on the current HTML document:
   </p>
 
@@ -19,11 +18,9 @@ template:
   `
 })
 // #docregion class
-export class AppComponent {
-  public constructor(private titleService: Title ) { }
+export class TitleComponent {
+  public constructor(private titleService: Title) {}
 
-  public setTitle( newTitle: string) {
-    this.titleService.setTitle( newTitle );
-  }
+  public setTitle(newTitle: string) { this.titleService.setTitle(newTitle); }
 }
 // #enddocregion class
