@@ -223,6 +223,44 @@ export function main() {
         ]);
       });
 
+      it('should allow a state value to be `0`', () => {
+        @Component({
+          selector: 'if-cmp',
+          template: `
+            <div [@myAnimation]="exp"></div>
+          `,
+          animations: [trigger(
+              'myAnimation',
+              [
+                transition(
+                    '0 => 1', [style({height: '0px'}), animate(1234, style({height: '100px'}))]),
+                transition(
+                    '* => 1', [style({width: '0px'}), animate(4567, style({width: '100px'}))])
+              ])]
+        })
+        class Cmp {
+          exp: any = false;
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+
+        const engine = TestBed.get(ɵAnimationEngine);
+        const fixture = TestBed.createComponent(Cmp);
+        const cmp = fixture.componentInstance;
+        cmp.exp = 0;
+        fixture.detectChanges();
+        engine.flush();
+        resetLog();
+
+        cmp.exp = 1;
+        fixture.detectChanges();
+        engine.flush();
+
+        expect(getLog().length).toEqual(1);
+        const player = getLog().pop() !;
+        expect(player.duration).toEqual(1234);
+      });
+
       it('should always cancel the previous transition if a follow-up transition is not matched',
          fakeAsync(() => {
            @Component({
