@@ -7,12 +7,10 @@
  */
 
 import * as compiler from '@angular/compiler';
-import {applyMapping, computeConflicts} from '@angular/compiler';
 import {I18nVersion} from '@angular/core';
 import * as tsc from '@angular/tsc-wrapped';
 import {readFileSync} from 'fs';
 import * as inquirer from 'inquirer';
-import {join} from 'path';
 import * as ts from 'typescript';
 
 import {CompilerHost, CompilerHostContext, ModuleResolutionHostAdapter} from '../compiler_host';
@@ -67,10 +65,10 @@ export class V0ToV1Migration {
     return (files: string[]) => {
       try {
         const content = readFileSync(file, 'utf8');
-        const conflicts = computeConflicts(v1toV0, content, this.format);
+        const conflicts = compiler.computeConflicts(v1toV0, content, this.format);
         return resolveConflicts(v1toV0, conflicts, file, this.autoResolve)
             .then((v0ToV1: compiler.V0ToV1Map) => {
-              const migratedContent = applyMapping(v0ToV1, v1toV0, content, this.format);
+              const migratedContent = compiler.applyMapping(v0ToV1, v1toV0, content, this.format);
               this.host.writeFile(file, migratedContent, false);
               return files.concat(file);
             });
@@ -78,7 +76,7 @@ export class V0ToV1Migration {
         console.error(`Error reading file : ${file}`);
         return files;
       }
-    }
+    };
   }
 
   static create(

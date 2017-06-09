@@ -200,8 +200,7 @@ export function applyMapping(
         const startOfEl = info.el.sourceSpan.start.offset;
         const endOfPreviousEl = content.lastIndexOf('>', startOfEl);
         const removeFrom = endOfPreviousEl === -1 ? startOfEl : endOfPreviousEl + 1;
-        const removeTo = info.el.endSourceSpan !.end.offset;
-        content = content.slice(0, removeFrom) + content.slice(removeTo);
+        content = content.slice(0, removeFrom) + content.slice(info.el.endSourceSpan !.end.offset);
       } else {
         // Change the id attribute when there is a target id
         const removeFrom = info.id.valueSpan !.start.offset + 1;

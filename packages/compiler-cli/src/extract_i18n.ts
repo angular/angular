@@ -15,7 +15,6 @@ import * as tsc from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
 
 import {normalizeI18nVersion, normalizeI18nFormat} from './i18n_options';
-
 import {Extractor} from './extractor';
 
 /**

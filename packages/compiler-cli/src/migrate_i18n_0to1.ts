@@ -13,10 +13,8 @@ import 'reflect-metadata';
 
 import * as tsc from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
-import * as glob from 'glob';
 
-import {normalizeI18nFormat} from './i18n_options';
-
+import {normalizeFiles, normalizeI18nFormat, normalizeResolve} from './i18n_options';
 import {V0ToV1Migration} from './migration/v0_to_v1';
 
 export class CliOptions extends tsc.CliOptions {
@@ -42,14 +40,9 @@ export class CliOptions extends tsc.CliOptions {
 function extract(
     ngOptions: tsc.AngularCompilerOptions, cliOptions: CliOptions, program: ts.Program,
     host: ts.CompilerHost) {
+  const files = normalizeFiles(cliOptions.files);
   const format = normalizeI18nFormat(cliOptions.i18nFormat);
-  const autoResolve = (cliOptions.resolve || 'auto').toLowerCase() !== 'manual';
-
-  if (!cliOptions.files) {
-    throw new Error(`You must provide a glob pattern for the files to migrate`);
-  }
-
-  const files = glob.sync(cliOptions.files);
+  const autoResolve = normalizeResolve(cliOptions.resolve);
 
   const migration = V0ToV1Migration.create(ngOptions, program, host, files, format, autoResolve);
 

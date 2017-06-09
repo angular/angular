@@ -21,6 +21,8 @@ import * as ts from 'typescript';
 import {CodeGenerator} from './codegen';
 import {CompilerHost, CompilerHostContext, ModuleResolutionHostAdapter} from './compiler_host';
 import {Extractor} from './extractor';
+import {normalizeFiles, normalizeI18nFormat, normalizeResolve} from './i18n_options';
+import {V0ToV1Migration} from './migration/v0_to_v1'
 import {listLazyRoutesOfModule} from './ngtools_impl';
 import {PathMappedCompilerHost} from './path_mapped_compiler_host';
 
@@ -60,11 +62,24 @@ export interface NgTools_InternalApi_NG2_ExtractI18n_Options {
   program: ts.Program;
   host: ts.CompilerHost;
   angularCompilerOptions: AngularCompilerOptions;
-  i18nFormat?: string;
   readResource: (fileName: string) => Promise<string>;
   // Every new property under this line should be optional.
+  i18nFormat?: string;
   locale?: string;
   outFile?: string;
+}
+
+export interface NgTools_InternalApi_NG2_MigrateI18n_Options {
+  basePath: string;
+  compilerOptions: ts.CompilerOptions;
+  program: ts.Program;
+  host: ts.CompilerHost;
+  angularCompilerOptions: AngularCompilerOptions;
+  readResource: (fileName: string) => Promise<string>;
+  files: string;
+  // Every new property under this line should be optional.
+  i18nFormat?: string;
+  resolve?: string;
 }
 
 /**
@@ -158,5 +173,24 @@ export class NgTools_InternalApi_NG_2 {
         hostContext);
 
     return extractor.extract(options.i18nFormat !, options.outFile || null);
+  }
+
+  /**
+   * @internal
+   * @private
+   */
+  static migrateI18n(options: NgTools_InternalApi_NG2_MigrateI18n_Options): Promise<any> {
+    const hostContext: CompilerHostContext =
+        new CustomLoaderModuleResolutionHostAdapter(options.readResource, options.host);
+    const files = normalizeFiles(options.files);
+    const format = normalizeI18nFormat(options.i18nFormat);
+    const autoResolve = normalizeResolve(options.resolve);
+
+    // Create the i18n migrator
+    const migrator = V0ToV1Migration.create(
+        options.angularCompilerOptions, options.program, options.host, files, format, autoResolve,
+        hostContext);
+
+    return migrator.execute();
   }
 }

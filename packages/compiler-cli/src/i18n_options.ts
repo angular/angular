@@ -7,14 +7,16 @@
  */
 
 import {I18nVersion} from '@angular/core';
+import * as glob from 'glob';
+
 
 /** @internal */
-export function normalizeI18nFormat(i18nFormat: string | null): string {
+export function normalizeI18nFormat(i18nFormat?: string | null): string {
   return i18nFormat || 'xlf';
 }
 
 /** @internal */
-export function normalizeI18nVersion(i18nVersion: string | number | null): I18nVersion {
+export function normalizeI18nVersion(i18nVersion?: string | number | null): I18nVersion {
   if (i18nVersion) {
     switch (i18nVersion) {
       case '0':
@@ -28,4 +30,18 @@ export function normalizeI18nVersion(i18nVersion: string | number | null): I18nV
     }
   }
   return I18nVersion.V0;
+}
+
+/** @internal */
+export function normalizeResolve(resolve?: string | null): boolean {
+  return (resolve || 'auto').toLowerCase() !== 'manual';
+}
+
+/** @internal */
+export function normalizeFiles(files?: string | null) {
+  if (!files) {
+    throw new Error(`You must provide a glob pattern for the files to migrate`);
+  }
+
+  return glob.sync(files);
 }

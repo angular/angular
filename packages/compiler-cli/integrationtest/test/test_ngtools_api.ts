@@ -16,6 +16,7 @@ import * as ts from 'typescript';
 import * as assert from 'assert';
 import {tsc} from '@angular/tsc-wrapped/src/tsc';
 import {__NGTOOLS_PRIVATE_API_2} from '@angular/compiler-cli';
+import * as fs from 'fs';
 
 const glob = require('glob');
 
@@ -31,6 +32,8 @@ function main() {
       .then(() => codeGenTest())
       .then(() => codeGenTest(true))
       .then(() => i18nTest())
+      .then(() => i18nMigrationTest())
+      // .then(() => i18nMigrationMappingTest())
       .then(() => lazyRoutesTest())
       .then(() => {
         console.log('All done!');
@@ -90,22 +93,7 @@ function codeGenTest(forceError = false) {
         // Assert for each file that it has been read and each `ts` has a written file associated.
         const allFiles = glob.sync(path.join(basePath, '**/*'), {nodir: true});
 
-        allFiles.forEach((fileName: string) => {
-          // Skip tsconfig.
-          if (fileName.match(/tsconfig-build.json$/)) {
-            return;
-          }
-
-          // Assert that file was read.
-          if (fileName.match(/\.module\.ts$/)) {
-            const factory = fileName.replace(/\.module\.ts$/, '.module.ngfactory.ts');
-            assert(wroteFiles.indexOf(factory) != -1, `Expected file "${factory}" to be written.`);
-          } else if (fileName.match(/\.css$/) || fileName.match(/\.html$/)) {
-            assert(
-                readResources.indexOf(fileName) != -1,
-                `Expected resource "${fileName}" to be read.`);
-          }
-        });
+        assertFilesRead(allFiles, readResources, wroteFiles);
 
         console.log(`done, no errors.`);
       })
@@ -114,11 +102,9 @@ function codeGenTest(forceError = false) {
           assert(
               e.message.match(`Missing translation for message`),
               `Expected error message for missing translations`);
-          console.log(`done, error catched`);
+          console.log(`done, expected error catched`);
         } else {
-          console.error(e.stack);
-          console.error('Compilation failed');
-          throw e;
+          onRejected('Compilation failed')(e);
         }
       });
 }
@@ -166,27 +152,158 @@ function i18nTest() {
             wroteFiles[0].endsWith('/ngtools_src/messages.xlf'),
             `Expected the bundle file to be "message.xlf".`);
 
-        allFiles.forEach((fileName: string) => {
-          // Skip tsconfig.
-          if (fileName.match(/tsconfig-build.json$/)) {
-            return;
-          }
-
-          // Assert that file was read.
-          if (fileName.match(/\.css$/) || fileName.match(/\.html$/)) {
-            assert(
-                readResources.indexOf(fileName) != -1,
-                `Expected resource "${fileName}" to be read.`);
-          }
-        });
+        assertFilesRead(allFiles, readResources);
 
         console.log(`done, no errors.`);
       })
-      .catch((e: Error) => {
-        console.error(e.stack);
-        console.error('Extraction failed');
-        throw e;
-      });
+      .catch(onRejected('Extraction failed'));
+}
+
+/**
+ * Testing that the cli migration works and updates the ids of an xlf file
+ */
+function i18nMigrationTest() {
+  const basePath = path.join(__dirname, '../');
+  const srcPath = path.join(__dirname, '../src');
+  const project = path.join(basePath, 'tsconfig-xi18n.json');
+  const readResources: string[] = [];
+  const wroteFiles: {fileName: string, content: string}[] = [];
+
+  const config = tsc.readConfiguration(project, basePath);
+  const delegateHost = ts.createCompilerHost(config.parsed.options, true);
+  const host: ts.CompilerHost = Object.assign({}, delegateHost, {
+    writeFile: (fileName: string, content: string, ...rest: any[]) => {
+      wroteFiles.push({fileName, content});
+    }
+  });
+  const program = ts.createProgram(config.parsed.fileNames, config.parsed.options, host);
+
+  config.ngOptions.basePath = basePath;
+
+  console.log(`>>> running i18n migration for ${project}`);
+  return __NGTOOLS_PRIVATE_API_2
+      .migrateI18n({
+        basePath,
+        compilerOptions: config.parsed.options, program, host,
+        angularCompilerOptions: config.ngOptions,
+        i18nFormat: 'xlf',
+        files: path.join(srcPath, 'messages_v0.fr.xlf'),
+        resolve: 'auto',
+        readResource: (fileName: string) => {
+          readResources.push(fileName);
+          if (!host.fileExists(fileName)) {
+            throw new Error(`Compilation failed. Resource file not found: ${fileName}`);
+          }
+          return Promise.resolve(host.readFile(fileName));
+        },
+      })
+      .then((files: string[]) => {
+        console.log(`>>> i18n migration done, asserting migrated files`);
+
+        const allFiles = glob.sync(path.join(srcPath, '**/*'), {nodir: true});
+
+        assert(wroteFiles.length == 1, `Expected a single message translations file.`);
+        assert(
+            wroteFiles[0].fileName.endsWith('/messages_v0.fr.xlf'),
+            `Expected the translations file to be "messages_v0.fr.xlf" but it was ${wroteFiles[0].fileName} instead.`);
+
+        assertFilesRead(allFiles, readResources);
+
+        assert.equal(
+            wroteFiles[0].content,
+            fs.readFileSync(path.join(srcPath, 'messages_v1.fr.xlf'), 'utf8'),
+            `Expected translations to have been migrated to the last version`);
+
+        console.log(`done, no errors.`);
+      })
+      .catch(onRejected('Migration failed'));
+}
+
+/**
+ * Testing that the map file generated by the migration tool is correctly generated
+ */
+/*function i18nMigrationMappingTest() {
+  const basePath = path.join(__dirname, '../');
+  const srcPath = path.join(__dirname, '../src');
+  const project = path.join(basePath, 'tsconfig-xi18n.json');
+  const readResources: string[] = [];
+  const wroteFiles: {fileName: string, content: string}[] = [];
+
+  const config = tsc.readConfiguration(project, basePath);
+  const delegateHost = ts.createCompilerHost(config.parsed.options, true);
+  const host: ts.CompilerHost = Object.assign({}, delegateHost, {
+    writeFile: (fileName: string, content: string, ...rest: any[]) => {
+      wroteFiles.push({fileName, content});
+    }
+  });
+  const program = ts.createProgram(config.parsed.fileNames, config.parsed.options, host);
+
+  config.ngOptions.basePath = basePath;
+
+  console.log(`>>> running i18n migration mapping for ${project}`);
+  const options: any = {
+    basePath,
+    compilerOptions: config.parsed.options, program, host,
+    angularCompilerOptions: config.ngOptions,
+    i18nFormat: 'xlf',
+    files: path.join(srcPath, 'messages_v0.fr.xlf'),
+    mapping: true,
+    readResource: (fileName: string) => {
+      readResources.push(fileName);
+      if (!host.fileExists(fileName)) {
+        throw new Error(`Compilation failed. Resource file not found: ${fileName}`);
+      }
+      return Promise.resolve(host.readFile(fileName));
+    },
+  };
+  return __NGTOOLS_PRIVATE_API_2.migrateI18n(options)
+      .then((files: string[]) => {
+        console.log(`>>> i18n migration mapping done, asserting mapping file`);
+
+        const mappingFile = 'messages_v0.fr_mapping.json';
+        const allFiles = glob.sync(path.join(srcPath, '**/ /*'), {nodir: true});
+
+         assert(wroteFiles.length == 1, `Expected a single mapping file.`);
+         assert(
+             wroteFiles[0].fileName.endsWith(mappingFile),
+             `Expected the mapping file to be "${mappingFile}" but it was ${wroteFiles[0].fileName}
+ instead.`);
+
+         assertFilesRead(allFiles, readResources);
+
+         assert.deepEqual(
+             JSON.parse(wroteFiles[0].content),
+             JSON.parse(fs.readFileSync(path.join(srcPath, 'messages_mapping.json'), 'utf8')),
+             `Expected mapping file to have been generated`);
+
+         console.log(`done, no errors.`);
+       })
+       .catch(onRejected('Migration failed'));
+ }*/
+
+function assertFilesRead(allFiles: string[], readResources: string[], wroteFiles?: string[]): void {
+  allFiles.forEach((fileName: string) => {
+    // Skip tsconfig.
+    if (fileName.match(/tsconfig-build.json$/)) {
+      return;
+    }
+
+    // Assert that file was read.
+    if (wroteFiles && fileName.match(/\.module\.ts$/)) {
+      const factory = fileName.replace(/\.module\.ts$/, '.module.ngfactory.ts');
+      assert(wroteFiles.indexOf(factory) != -1, `Expected file "${factory}" to be written.`);
+    } else if (fileName.match(/\.css$/) || fileName.match(/\.html$/)) {
+      assert(readResources.indexOf(fileName) != -1, `Expected resource "${fileName}" to be read.`);
+    }
+  });
+}
+
+function onRejected(msg: string): (e: Error) => void {
+  return (e: Error) => {
+    console.error(e.stack);
+    console.error(msg);
+    throw e;
+  };
 }
 
 function lazyRoutesTest() {

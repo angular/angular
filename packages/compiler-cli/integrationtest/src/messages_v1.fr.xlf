@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" datatype="plaintext" original="ng2.template" target-language="fr">
+    <body>
+      <trans-unit id="8136548302122759730" datatype="html">
+        <source>translate me</source>
+        <target>traduis moi</target>
+        <note priority="1" from="description">desc</note>
+        <note priority="1" from="meaning">meaning</note>
+      </trans-unit>
+      <trans-unit id="3492007542396725315" datatype="html">
+        <source>Welcome</source>
+        <target>Bienvenue</target>
+      </trans-unit>
+      <trans-unit id="126808141597411718" datatype="html">
+        <source>other-3rdP-component
+multi-lines</source>
+        <target>autre-3rdP-component
+multi-lignes</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
