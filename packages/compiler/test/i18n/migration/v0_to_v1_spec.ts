@@ -7,7 +7,7 @@
  */
 
 import {MessageBundle} from '../../../src/i18n/message_bundle';
-import {applyMapping, computeConflicts, generateV1ToV0Map} from '../../../src/i18n/migration/v0_to_v1';
+import {applyMapping, computeConflicts, generateV1ToV0Map, resolveConflicts, resolveConflictsAuto} from '../../../src/i18n/migration/v0_to_v1';
 import {HtmlParser} from '../../../src/ml_parser/html_parser';
 import {DEFAULT_INTERPOLATION_CONFIG} from '../../../src/ml_parser/interpolation_config';
 
@@ -112,6 +112,37 @@ export function main(): void {
           </xliff>`;
 
         expect(computeConflicts(v1ToV0Map, TRANS, 'xliff2')).toEqual(EXPECTED_CONFLICTS);
+      });
+    });
+
+    describe('Conflicts resolution', () => {
+      const v1ToV0 = {
+        'new.a': {ids: ['old.a1', 'old.a2', 'old.a3']},
+        'new.b': {ids: ['old.b']},
+      };
+
+      it('should solve conflicts automatically', () => {
+        expect(resolveConflictsAuto(v1ToV0)).toEqual({
+          'old.a1': 'new.a',
+          'old.a2': null,
+          'old.a3': null,
+          'old.b': 'new.b',
+        });
+      });
+
+      it('should solve conflicts using the resolution map', () => {
+        expect(resolveConflicts(v1ToV0, {'new.a': 'old.a2'})).toEqual({
+          'old.a1': null,
+          'old.a2': 'new.a',
+          'old.a3': null,
+          'old.b': 'new.b',
+        });
+      });
+
+      it('should throw on missing resolution', () => {
+        expect(() => {
+          resolveConflicts(v1ToV0, {});
+        }).toThrowError('Missing resolution for new id "new.a"');
       });
     });
 

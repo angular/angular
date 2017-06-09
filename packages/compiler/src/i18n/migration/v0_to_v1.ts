@@ -11,8 +11,7 @@ import {I18nVersion} from '@angular/core';
 
 import * as ml from '../../ml_parser/ast';
 import {XmlParser} from '../../ml_parser/xml_parser';
-import {Message} from '../i18n_ast';
-import {MessageSpan} from '../i18n_ast';
+import {Message, MessageSpan} from '../i18n_ast';
 import {MessageBundle} from '../message_bundle';
 import {I18nError} from '../parse_util';
 import {createSerializer} from '../serializers/factory';
@@ -131,9 +130,56 @@ export function computeConflicts(map: V1ToV0Map, content: string, format: string
 }
 
 /**
+ * Auto conflict resolution: when a v1 message replaces several v0 messages we keep only the
+ * first v0 message (arbitrary choice).
+ */
+export function resolveConflictsAuto(v1ToV0: V1ToV0Map): V0ToV1Map {
+  const v0ToV1: V0ToV1Map = {};
+
+  Object.keys(v1ToV0).forEach(v1 => {
+    const v0Ids = v1ToV0[v1].ids;
+    // Take the first value
+    v0ToV1[v0Ids[0]] = v1;
+
+    // Set other values to `null` to be removed
+    for (let i = 1; i < v0Ids.length; i++) {
+      v0ToV1[v1ToV0[v1].ids[i]] = null;
+    }
+  });
+
+  return v0ToV1;
+}
+
+
+/**
+ * Manual conflict resolution: the conflicts in `v1ToV0` are resolved by using the provided
+ * `resolutions` that maps the new id to the one former id that should be used.
+ */
+export function resolveConflicts(
+    v1ToV0: V1ToV0Map, resolutions: {[v1: string]: string}): V0ToV1Map {
+  const v0ToV1: V0ToV1Map = {};
+
+  Object.keys(v1ToV0).forEach(v1 => {
+    const v0Ids = v1ToV0[v1].ids;
+
+    if (v0Ids.length === 1) {
+      v0ToV1[v0Ids[0]] = v1;
+    } else {
+      if (!resolutions.hasOwnProperty(v1)) {
+        throw new Error(`Missing resolution for new id "${v1}"`);
+      }
+
+      v0Ids.forEach(v0 => { v0ToV1[v0] = v0 === resolutions[v1] ? v1 : null; });
+    }
+  });
+
+  return v0ToV1;
+}
+
+
+/**
  * `v0ToV1` contains the mapping from the old id to the new id. If the mapping is `null` then the
  * old message should be removed.
- *
  */
 export function applyMapping(
     v0toV1: V0ToV1Map, v1toV0: V1ToV0Map, content: string, format: string) {

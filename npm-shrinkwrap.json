@@ -17,10 +17,20 @@
       "from": "@types/fs-extra@latest",
       "resolved": "https://registry.npmjs.org/@types/fs-extra/-/fs-extra-0.0.22-alpha.tgz"
     },
+    "@types/glob": {
+      "version": "5.0.30",
+      "from": "@types/glob@>=5.0.30 <6.0.0",
+      "resolved": "https://registry.npmjs.org/@types/glob/-/glob-5.0.30.tgz"
+    },
     "@types/hammerjs": {
       "version": "2.0.33",
       "from": "@types/hammerjs@latest",
       "resolved": "https://registry.npmjs.org/@types/hammerjs/-/hammerjs-2.0.33.tgz"
+    },
+    "@types/inquirer": {
+      "version": "0.0.34",
+      "from": "@types/inquirer@0.0.34",
+      "resolved": "https://registry.npmjs.org/@types/inquirer/-/inquirer-0.0.34.tgz"
     },
     "@types/jasmine": {
       "version": "2.2.22-alpha",
@@ -32,6 +42,11 @@
       "from": "@types/jquery@*",
       "resolved": "https://registry.npmjs.org/@types/jquery/-/jquery-1.10.21-alpha.tgz"
     },
+    "@types/minimatch": {
+      "version": "2.0.29",
+      "from": "@types/minimatch@*",
+      "resolved": "https://registry.npmjs.org/@types/minimatch/-/minimatch-2.0.29.tgz"
+    },
     "@types/node": {
       "version": "4.0.22-alpha",
       "from": "@types/node@latest",
@@ -42,6 +57,71 @@
       "from": "@types/q@>=0.0.32 <0.0.33",
       "resolved": "https://registry.npmjs.org/@types/q/-/q-0.0.32.tgz"
     },
+    "@types/rx": {
+      "version": "4.1.1",
+      "from": "@types/rx@*",
+      "resolved": "https://registry.npmjs.org/@types/rx/-/rx-4.1.1.tgz"
+    },
+    "@types/rx-core": {
+      "version": "4.0.3",
+      "from": "@types/rx-core@*",
+      "resolved": "https://registry.npmjs.org/@types/rx-core/-/rx-core-4.0.3.tgz"
+    },
+    "@types/rx-core-binding": {
+      "version": "4.0.3",
+      "from": "@types/rx-core-binding@*",
+      "resolved": "https://registry.npmjs.org/@types/rx-core-binding/-/rx-core-binding-4.0.3.tgz"
+    },
+    "@types/rx-lite": {
+      "version": "4.0.4",
+      "from": "@types/rx-lite@*",
+      "resolved": "https://registry.npmjs.org/@types/rx-lite/-/rx-lite-4.0.4.tgz"
+    },
+    "@types/rx-lite-aggregates": {
+      "version": "4.0.2",
+      "from": "@types/rx-lite-aggregates@*",
+      "resolved": "https://registry.npmjs.org/@types/rx-lite-aggregates/-/rx-lite-aggregates-4.0.2.tgz"
+    },
+    "@types/rx-lite-async": {
+      "version": "4.0.1",
+      "from": "@types/rx-lite-async@*",
+      "resolved": "https://registry.npmjs.org/@types/rx-lite-async/-/rx-lite-async-4.0.1.tgz"
+    },
+    "@types/rx-lite-backpressure": {
+      "version": "4.0.2",
+      "from": "@types/rx-lite-backpressure@*",
+      "resolved": "https://registry.npmjs.org/@types/rx-lite-backpressure/-/rx-lite-backpressure-4.0.2.tgz"
+    },
+    "@types/rx-lite-coincidence": {
+      "version": "4.0.2",
+      "from": "@types/rx-lite-coincidence@*",
+      "resolved": "https://registry.npmjs.org/@types/rx-lite-coincidence/-/rx-lite-coincidence-4.0.2.tgz"
+    },
+    "@types/rx-lite-experimental": {
+      "version": "4.0.1",
+      "from": "@types/rx-lite-experimental@*",
+      "resolved": "https://registry.npmjs.org/@types/rx-lite-experimental/-/rx-lite-experimental-4.0.1.tgz"
+    },
+    "@types/rx-lite-joinpatterns": {
+      "version": "4.0.1",
+      "from": "@types/rx-lite-joinpatterns@*",
+      "resolved": "https://registry.npmjs.org/@types/rx-lite-joinpatterns/-/rx-lite-joinpatterns-4.0.1.tgz"
+    },
+    "@types/rx-lite-testing": {
+      "version": "4.0.1",
+      "from": "@types/rx-lite-testing@*",
+      "resolved": "https://registry.npmjs.org/@types/rx-lite-testing/-/rx-lite-testing-4.0.1.tgz"
+    },
+    "@types/rx-lite-time": {
+      "version": "4.0.2",
+      "from": "@types/rx-lite-time@*",
+      "resolved": "https://registry.npmjs.org/@types/rx-lite-time/-/rx-lite-time-4.0.2.tgz"
+    },
+    "@types/rx-lite-virtualtime": {
+      "version": "4.0.2",
+      "from": "@types/rx-lite-virtualtime@*",
+      "resolved": "https://registry.npmjs.org/@types/rx-lite-virtualtime/-/rx-lite-virtualtime-4.0.2.tgz"
+    },
     "@types/selenium-webdriver": {
       "version": "2.53.35",
       "from": "@types/selenium-webdriver@latest",
@@ -51,6 +131,11 @@
       "version": "0.19.32",
       "from": "@types/systemjs@latest",
       "resolved": "https://registry.npmjs.org/@types/systemjs/-/systemjs-0.19.32.tgz"
+    },
+    "@types/through": {
+      "version": "0.0.28",
+      "from": "@types/through@*",
+      "resolved": "https://registry.npmjs.org/@types/through/-/through-0.0.28.tgz"
     },
     "abbrev": {
       "version": "1.0.9",
