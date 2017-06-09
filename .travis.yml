@@ -24,9 +24,9 @@ branches:
 cache:
   yarn: true
   directories:
-     - ./node_modules
-     - ./.chrome/chromium
-    #  - ./aio/node_modules
+    - ./node_modules
+    - ./.chrome/chromium
+    - ./aio/node_modules
 
 env:
   global:
