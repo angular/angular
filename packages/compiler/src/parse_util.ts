@@ -118,12 +118,14 @@ export class ParseError {
       public span: ParseSourceSpan, public msg: string,
       public level: ParseErrorLevel = ParseErrorLevel.ERROR) {}
 
-  toString(): string {
+  contextualMessage(): string {
     const ctx = this.span.start.getContext(100, 3);
-    const contextStr =
-        ctx ? ` ("${ctx.before}[${ParseErrorLevel[this.level]} ->]${ctx.after}")` : '';
+    return ctx ? ` ("${ctx.before}[${ParseErrorLevel[this.level]} ->]${ctx.after}")` : '';
+  }
+
+  toString(): string {
     const details = this.span.details ? `, ${this.span.details}` : '';
-    return `${this.msg}${contextStr}: ${this.span.start}${details}`;
+    return `${this.msg}${this.contextualMessage()}: ${this.span.start}${details}`;
   }
 }
 

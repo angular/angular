@@ -10,7 +10,8 @@ import {AotCompilerOptions, createAotCompiler} from '@angular/compiler';
 import {EmittingCompilerHost, MockAotCompilerHost, MockCompilerHost, MockData, MockDirectory, MockMetadataBundlerHost, arrayToMockDir, arrayToMockMap, isSource, settings, setup, toMockFileArray} from '@angular/compiler/test/aot/test_util';
 import * as ts from 'typescript';
 
-import {Diagnostic, TypeChecker} from '../../src/diagnostics/check_types';
+import {TypeChecker} from '../../src/diagnostics/check_types';
+import {Diagnostic} from '../../src/transformers/api';
 
 function compile(
     rootDirs: MockData, options: AotCompilerOptions = {},
