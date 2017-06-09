@@ -43,9 +43,11 @@ aio-top-menu {
 
     &:focus {
       outline: none;
-      background: rgba($white, 0.15);
-      border-radius: 4px;
-      padding: 8px 16px;
+      // Temporarily remove the focus styling until we update to an @angular/material version that
+      // includes https://github.com/angular/material2/commit/3bc82f6dc.
+      // background: rgba($white, 0.15);
+      // border-radius: 4px;
+      // padding: 8px 16px;
     }
   }
 }
