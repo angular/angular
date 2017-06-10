@@ -37,6 +37,8 @@ export * from './codegen_private_exports';
 export * from './animation/animation_metadata_wrapped';
 import {AnimationTriggerMetadata} from './animation/animation_metadata_wrapped';
 
+export {Logger, LOGGER_OPTIONS, LoggerOptions} from './logger';
+
 
 // For backwards compatibility.
 /**
