@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {I18nVersion, MissingTranslationStrategy, ViewEncapsulation, ɵConsole as Console} from '@angular/core';
+import {I18nVersion, ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 
 import {CompilerConfig} from '../config';
 import {DirectiveNormalizer} from '../directive_normalizer';
@@ -30,10 +30,9 @@ import {AotCompiler} from './compiler';
 import {AotCompilerHost} from './compiler_host';
 import {AotCompilerOptions} from './compiler_options';
 import {StaticReflector} from './static_reflector';
-import {StaticSymbol, StaticSymbolCache} from './static_symbol';
+import {StaticSymbolCache} from './static_symbol';
 import {StaticSymbolResolver} from './static_symbol_resolver';
 import {AotSummaryResolver} from './summary_resolver';
-
 
 
 /**
@@ -41,8 +40,6 @@ import {AotSummaryResolver} from './summary_resolver';
  */
 export function createAotCompiler(compilerHost: AotCompilerHost, options: AotCompilerOptions):
     {compiler: AotCompiler, reflector: StaticReflector} {
-  let translations: string = options.translations || '';
-
   const urlResolver = createOfflineCompileUrlResolver();
   const symbolCache = new StaticSymbolCache();
   const summaryResolver = new AotSummaryResolver(compilerHost, symbolCache);
@@ -51,8 +48,8 @@ export function createAotCompiler(compilerHost: AotCompilerHost, options: AotCom
   const console = new Console();
   const i18nFormat = options.i18nFormat || 'xlf';
   const htmlParser = new I18NHtmlParser(
-      new HtmlParser(), I18nVersion.V0, translations, i18nFormat, options.missingTranslation,
-      console);
+      new HtmlParser(), options.i18nVersion || I18nVersion.V0, options.translations, i18nFormat,
+      options.missingTranslation, console);
   const config = new CompilerConfig({
     defaultEncapsulation: ViewEncapsulation.Emulated,
     useJit: false,

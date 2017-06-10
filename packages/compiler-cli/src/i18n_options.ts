@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {I18nVersion} from '@angular/core';
+import {I18nVersion, MissingTranslationStrategy} from '@angular/core';
 import * as glob from 'glob';
 
 
@@ -44,4 +44,23 @@ export function normalizeFiles(files?: string | null) {
   }
 
   return glob.sync(files);
+}
+
+/** @internal */
+export function normalizeMissingTranslation(missingTranslation?: string | null):
+    MissingTranslationStrategy {
+  if (missingTranslation) {
+    switch (missingTranslation) {
+      case 'error':
+        return MissingTranslationStrategy.Error;
+      case 'warning':
+        return MissingTranslationStrategy.Warning;
+      case 'ignore':
+        return MissingTranslationStrategy.Ignore;
+      default:
+        throw new Error(
+            `Unknown option for missingTranslation (${missingTranslation}). Use either error, warning or ignore.`);
+    }
+  }
+  return MissingTranslationStrategy.Warning;
 }

@@ -6,10 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken, MissingTranslationStrategy, ViewEncapsulation, isDevMode} from '@angular/core';
-
-import {CompileIdentifierMetadata} from './compile_metadata';
-import {Identifiers} from './identifiers';
+import {MissingTranslationStrategy, ViewEncapsulation} from '@angular/core';
 
 
 export class CompilerConfig {
@@ -21,7 +18,7 @@ export class CompilerConfig {
   public missingTranslation: MissingTranslationStrategy|null;
 
   constructor(
-      {defaultEncapsulation = ViewEncapsulation.Emulated, useJit = true, missingTranslation,
+      {defaultEncapsulation = ViewEncapsulation.Emulated, useJit = true, missingTranslation = null,
        enableLegacyTemplate}: {
         defaultEncapsulation?: ViewEncapsulation,
         useJit?: boolean,
@@ -30,7 +27,7 @@ export class CompilerConfig {
       } = {}) {
     this.defaultEncapsulation = defaultEncapsulation;
     this.useJit = !!useJit;
-    this.missingTranslation = missingTranslation || null;
+    this.missingTranslation = missingTranslation;
     this.enableLegacyTemplate = enableLegacyTemplate !== false;
   }
 }

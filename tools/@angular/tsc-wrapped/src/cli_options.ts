@@ -31,23 +31,26 @@ export class I18nExtractionCliOptions extends CliOptions {
 }
 
 export class NgcCliOptions extends CliOptions {
-  public i18nFormat: string;
-  public i18nFile: string;
-  public locale: string;
-  public missingTranslation: string;
+  i18nFormat: string|null;
+  i18nFile: string|null;
+  locale: string|null;
+  missingTranslation: string|null;
+  i18nVersion: string|null;
 
   constructor({i18nFormat = null, i18nFile = null, locale = null, missingTranslation = null,
-               basePath = null}: {
+               i18nVersion = null, basePath = null}: {
     i18nFormat?: string,
     i18nFile?: string,
     locale?: string,
     missingTranslation?: string,
-    basePath?: string
+    i18nVersion?: string,
+    basePath?: string,
   }) {
     super({basePath: basePath});
     this.i18nFormat = i18nFormat;
     this.i18nFile = i18nFile;
     this.locale = locale;
     this.missingTranslation = missingTranslation;
+    this.i18nVersion = i18nVersion;
   }
 }

@@ -38,6 +38,7 @@ export interface NgTools_InternalApi_NG2_CodeGen_Options {
   i18nFormat?: string;
   i18nFile?: string;
   locale?: string;
+  i18nVersion?: string;
   missingTranslation?: string;
 
   readResource: (fileName: string) => Promise<string>;
@@ -109,10 +110,11 @@ export class NgTools_InternalApi_NG_2 {
         new CustomLoaderModuleResolutionHostAdapter(options.readResource, options.host);
 
     const cliOptions: NgcCliOptions = {
-      i18nFormat: options.i18nFormat !,
-      i18nFile: options.i18nFile !,
-      locale: options.locale !,
-      missingTranslation: options.missingTranslation !,
+      i18nFormat: options.i18nFormat || null,
+      i18nFile: options.i18nFile || null,
+      locale: options.locale || null,
+      i18nVersion: options.i18nVersion || null,
+      missingTranslation: options.missingTranslation || null,
       basePath: options.basePath
     };
     const ngOptions = options.angularCompilerOptions;

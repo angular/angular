@@ -15,8 +15,8 @@ import {MissingTranslationStrategy} from '@angular/core';
 import {AngularCompilerOptions, NgcCliOptions} from '@angular/tsc-wrapped';
 import {readFileSync} from 'fs';
 import * as ts from 'typescript';
-
 import {CompilerHost, CompilerHostContext, ModuleResolutionHostAdapter} from './compiler_host';
+import {normalizeI18nFormat, normalizeI18nVersion, normalizeMissingTranslation} from './i18n_options';
 import {PathMappedCompilerHost} from './path_mapped_compiler_host';
 
 const GENERATED_META_FILES = /\.json$/;
@@ -70,41 +70,31 @@ export class CodeGenerator {
       ngCompilerHost = usePathMapping ? new PathMappedCompilerHost(program, options, context) :
                                         new CompilerHost(program, options, context);
     }
-    let transContent: string = '';
-    if (cliOptions.i18nFile) {
-      if (!cliOptions.locale) {
-        throw new Error(
-            `The translation file (${cliOptions.i18nFile}) locale must be provided. Use the --locale option.`);
-      }
-      transContent = readFileSync(cliOptions.i18nFile, 'utf8');
-    }
-    let missingTranslation = MissingTranslationStrategy.Warning;
-    if (cliOptions.missingTranslation) {
-      switch (cliOptions.missingTranslation) {
-        case 'error':
-          missingTranslation = MissingTranslationStrategy.Error;
-          break;
-        case 'warning':
-          missingTranslation = MissingTranslationStrategy.Warning;
-          break;
-        case 'ignore':
-          missingTranslation = MissingTranslationStrategy.Ignore;
-          break;
-        default:
-          throw new Error(
-              `Unknown option for missingTranslation (${cliOptions.missingTranslation}). Use either error, warning or ignore.`);
-      }
-    }
+
+    let missingTranslation = normalizeMissingTranslation(cliOptions.missingTranslation);
+    let transContent = getTranslations(cliOptions.i18nFile);
+
     if (!transContent) {
       missingTranslation = MissingTranslationStrategy.Ignore
     }
+
     const {compiler: aotCompiler} = compiler.createAotCompiler(ngCompilerHost, {
       translations: transContent,
-      i18nFormat: cliOptions.i18nFormat,
-      locale: cliOptions.locale, missingTranslation,
+      missingTranslation: missingTranslation,
+      i18nFormat: normalizeI18nFormat(cliOptions.i18nFormat),
+      locale: cliOptions.locale,
+      i18nVersion: normalizeI18nVersion(cliOptions.i18nVersion),
       enableLegacyTemplate: options.enableLegacyTemplate !== false,
-      enableSummariesForJit: options.enableSummariesForJit !== false,
     });
+
     return new CodeGenerator(options, program, tsCompilerHost, aotCompiler, ngCompilerHost);
   }
+}
+
+/** @internal */
+export function getTranslations(i18nFile: string | null): string {
+  if (i18nFile) {
+    return readFileSync(i18nFile, 'utf8');
+  }
+  return '';
 }
