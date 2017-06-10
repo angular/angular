@@ -5645,8 +5645,8 @@ punycode@^1.2.4, punycode@^1.3.2, punycode@^1.4.1:
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-1.4.1.tgz#c0d5a63b2718800ad8e1eb0fa5269c84dd41845e"
 
 purify@igorminar/purify:
-  version "0.0.24"
-  resolved "https://codeload.github.com/igorminar/purify/tar.gz/988238c80a8bb9005b52867189cd1a51dbd7a43c"
+  version "0.0.25"
+  resolved "https://codeload.github.com/igorminar/purify/tar.gz/1b4f00d9c29efad03acc10a69ce280bdf59fc9cb"
   dependencies:
     tslib "^1.7.1"
 
