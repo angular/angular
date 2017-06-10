@@ -10,12 +10,15 @@
 
 aio-nav-menu {
   display: block;
-  padding: 16px 0 0;
   margin: 0 auto;
   font-size: 13px;
   ul, a {
     padding: 0;
     margin: 0;
+  }
+
+  &:first-child {
+    margin-top: 16px;
   }
 
   aio-nav-item div a {
