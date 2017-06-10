@@ -23,28 +23,28 @@ export function main(): void {
 <p i18n="@@fixed_id">foo {{buz}}</p>
         `;
         const bundle = new MessageBundle(new HtmlParser, [], {});
-        bundle.updateFromTemplate(HTML, '/path/to/html', DEFAULT_INTERPOLATION_CONFIG);
-        const v1toV0 = generateV1ToV0Map(bundle, 'xmb');
+        bundle.updateFromTemplate(HTML, '/root/path/to/html', DEFAULT_INTERPOLATION_CONFIG);
+        const v1toV0 = generateV1ToV0Map(bundle, 'xmb', '/root/');
 
         // `foo {{bar}}` and `foo {{baz}}` generate different v0 ids but a single v1 id
         expect(v1toV0).toEqual({
           '3667842621564887364': {
             ids: ['3667842621564887364'],
             sources: [
-              {filePath: '/path/to/html', startLine: 2, startCol: 9, endLine: 2, endCol: 9},
+              {filePath: 'path/to/html', startLine: 2, startCol: 9, endLine: 2, endCol: 9},
             ],
           },
           '7312636350219285759': {
             ids: ['7291167978964532459', '2231161507516844600'],
             sources: [
-              {filePath: '/path/to/html', startLine: 3, startCol: 9, endLine: 3, endCol: 9},
-              {filePath: '/path/to/html', startLine: 4, startCol: 9, endLine: 4, endCol: 9},
+              {filePath: 'path/to/html', startLine: 3, startCol: 9, endLine: 3, endCol: 9},
+              {filePath: 'path/to/html', startLine: 4, startCol: 9, endLine: 4, endCol: 9},
             ],
           },
           'fixed_id': {
             ids: ['fixed_id'],
             sources: [
-              {filePath: '/path/to/html', startLine: 5, startCol: 22, endLine: 5, endCol: 22},
+              {filePath: 'path/to/html', startLine: 5, startCol: 22, endLine: 5, endCol: 22},
             ],
           },
         });

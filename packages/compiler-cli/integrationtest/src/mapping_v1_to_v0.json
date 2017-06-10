@@ -1,0 +1,44 @@
+{
+  "8136548302122759730": {
+    "ids": [
+      "76e1eccb1b772fa9f294ef9c146ea6d0efa8a2d4"
+    ],
+    "sources": [
+      {
+        "filePath": "src/basic.ts",
+        "startLine": 1,
+        "startCol": 44,
+        "endLine": 1,
+        "endCol": 44
+      }
+    ]
+  },
+  "3492007542396725315": {
+    "ids": [
+      "65cc4ab3b4c438e07c89be2b677d08369fb62da2"
+    ],
+    "sources": [
+      {
+        "filePath": "src/basic.ts",
+        "startLine": 5,
+        "startCol": 35,
+        "endLine": 5,
+        "endCol": 35
+      }
+    ]
+  },
+  "126808141597411718": {
+    "ids": [
+      "b0a17f08a4bd742b2acf39780c257c2f519d33ed"
+    ],
+    "sources": [
+      {
+        "filePath": "node_modules/third_party/other_comp.d.ts",
+        "startLine": 1,
+        "startCol": 11,
+        "endLine": 2,
+        "endCol": 11
+      }
+    ]
+  }
+}

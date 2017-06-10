@@ -85,6 +85,7 @@ export class CodeGenerator {
       locale: cliOptions.locale,
       i18nVersion: normalizeI18nVersion(cliOptions.i18nVersion),
       enableLegacyTemplate: options.enableLegacyTemplate !== false,
+      enableSummariesForJit: options.enableSummariesForJit !== false,
     });
 
     return new CodeGenerator(options, program, tsCompilerHost, aotCompiler, ngCompilerHost);

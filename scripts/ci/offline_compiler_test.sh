@@ -71,6 +71,7 @@ cp -v package.json $TMP
 
   # Test migration
   ./node_modules/.bin/ng-migrate-i18n-0to1 -p tsconfig-xi18n.json --i18nFormat=xlf --files=src/messages_v0.fr.xlf --resolve=auto
+  ./node_modules/.bin/ng-migrate-i18n-0to1 -p tsconfig-xi18n.json --i18nFormat=xlf --files=src/messages_v0.fr.xlf --resolve=auto --mapping=true
 
   # Removed until #15219 is fixed
   # node test/test_summaries.js

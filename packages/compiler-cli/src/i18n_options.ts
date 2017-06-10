@@ -64,3 +64,8 @@ export function normalizeMissingTranslation(missingTranslation?: string | null):
   }
   return MissingTranslationStrategy.Warning;
 }
+
+/** @internal */
+export function normalizeMapping(mapping?: string | boolean | null): boolean {
+  return typeof mapping !== 'undefined' && mapping !== 'false' && mapping !== null;
+}

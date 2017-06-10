@@ -21,7 +21,7 @@ import * as ts from 'typescript';
 import {CodeGenerator} from './codegen';
 import {CompilerHost, CompilerHostContext, ModuleResolutionHostAdapter} from './compiler_host';
 import {Extractor} from './extractor';
-import {normalizeFiles, normalizeI18nFormat, normalizeResolve} from './i18n_options';
+import {normalizeFiles, normalizeI18nFormat, normalizeMapping, normalizeResolve} from './i18n_options';
 import {V0ToV1Migration} from './migration/v0_to_v1'
 import {listLazyRoutesOfModule} from './ngtools_impl';
 import {PathMappedCompilerHost} from './path_mapped_compiler_host';
@@ -81,6 +81,7 @@ export interface NgTools_InternalApi_NG2_MigrateI18n_Options {
   // Every new property under this line should be optional.
   i18nFormat?: string;
   resolve?: string;
+  mapping?: boolean;
 }
 
 /**
@@ -187,12 +188,13 @@ export class NgTools_InternalApi_NG_2 {
     const files = normalizeFiles(options.files);
     const format = normalizeI18nFormat(options.i18nFormat);
     const autoResolve = normalizeResolve(options.resolve);
+    const isMapping = normalizeMapping(options.mapping);
 
     // Create the i18n migrator
     const migrator = V0ToV1Migration.create(
         options.angularCompilerOptions, options.program, options.host, files, format, autoResolve,
         hostContext);
 
-    return migrator.execute();
+    return migrator.execute(isMapping);
   }
 }

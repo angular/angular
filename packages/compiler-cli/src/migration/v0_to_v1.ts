@@ -11,11 +11,13 @@ import {I18nVersion} from '@angular/core';
 import * as tsc from '@angular/tsc-wrapped';
 import {readFileSync} from 'fs';
 import * as inquirer from 'inquirer';
+import {join} from 'path';
 import * as ts from 'typescript';
 
 import {CompilerHost, CompilerHostContext, ModuleResolutionHostAdapter} from '../compiler_host';
 import {Extractor} from '../extractor';
 import {PathMappedCompilerHost} from '../path_mapped_compiler_host';
+
 
 
 /**
@@ -49,15 +51,21 @@ function resolveConflicts(
  */
 export class V0ToV1Migration {
   constructor(
-      private host: ts.CompilerHost, private extractor: Extractor, private files: string[],
-      private format: string, private autoResolve: boolean) {}
+      private options: tsc.AngularCompilerOptions, private host: ts.CompilerHost,
+      private extractor: Extractor, private files: string[], private format: string,
+      private autoResolve: boolean) {}
 
-  execute(): Promise<string[]> {
+  execute(isMapping: boolean): Promise<string[]> {
     return this.extractor.extractBundle().then((bundle: compiler.MessageBundle) => {
-      const v1toV0 = compiler.generateV1ToV0Map(bundle, this.format);
+      const v1toV0 =
+          compiler.generateV1ToV0Map(bundle, this.format, join(this.options.genDir, '/'));
 
-      return this.files.reduce(
-          (p, file) => p.then(this.genMigrateFileCallback(v1toV0, file)), Promise.resolve([]));
+      if (isMapping) {
+        return Promise.resolve(this.genMappingFile(v1toV0));
+      } else {
+        return this.files.reduce(
+            (p, file) => p.then(this.genMigrateFileCallback(v1toV0, file)), Promise.resolve([]));
+      }
     });
   }
 
@@ -79,6 +87,12 @@ export class V0ToV1Migration {
     };
   }
 
+  private genMappingFile(v1toV0: compiler.V1ToV0Map): string[] {
+    let dstPath = join(this.options.genDir, `mapping_v1_to_v0.json`);
+    this.host.writeFile(dstPath, JSON.stringify(v1toV0), false);
+    return [dstPath];
+  }
+
   static create(
       options: tsc.AngularCompilerOptions, program: ts.Program, tsCompilerHost: ts.CompilerHost,
       files: string[], format: string, autoResolve: boolean,
@@ -94,6 +108,6 @@ export class V0ToV1Migration {
         I18nVersion.V1, options, program, tsCompilerHost, null, compilerHostContext,
         ngCompilerHost);
 
-    return new V0ToV1Migration(tsCompilerHost, extractor, files, format, autoResolve);
+    return new V0ToV1Migration(options, tsCompilerHost, extractor, files, format, autoResolve);
   }
 }

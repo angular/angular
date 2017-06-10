@@ -14,23 +14,26 @@ import 'reflect-metadata';
 import * as tsc from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
 
-import {normalizeFiles, normalizeI18nFormat, normalizeResolve} from './i18n_options';
+import {normalizeFiles, normalizeI18nFormat, normalizeMapping, normalizeResolve} from './i18n_options';
 import {V0ToV1Migration} from './migration/v0_to_v1';
 
 export class CliOptions extends tsc.CliOptions {
   public i18nFormat: string|null;
   public files: string|null;
   public resolve: string|null;
+  public mapping: string|null;
 
-  constructor({i18nFormat = null, files = null, resolve = null}: {
+  constructor({i18nFormat = null, files = null, resolve = null, mapping = null}: {
     i18nFormat?: string,
     files?: string,
     resolve?: string,
+    mapping?: string,
   }) {
     super({});
     this.i18nFormat = i18nFormat;
     this.files = files;
     this.resolve = resolve;
+    this.mapping = mapping;
   }
 }
 
@@ -43,10 +46,11 @@ function extract(
   const files = normalizeFiles(cliOptions.files);
   const format = normalizeI18nFormat(cliOptions.i18nFormat);
   const autoResolve = normalizeResolve(cliOptions.resolve);
+  const isMapping = normalizeMapping(cliOptions.mapping);
 
   const migration = V0ToV1Migration.create(ngOptions, program, host, files, format, autoResolve);
 
-  return migration.execute();
+  return migration.execute(isMapping);
 }
 
 // Entry point

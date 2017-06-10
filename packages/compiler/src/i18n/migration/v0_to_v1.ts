@@ -42,25 +42,34 @@ export type V0ToV1Map = {
  * - `ids`: the list of v0 ids that the v1 id replaces.
  * - `sources`: the list of `MessageSpan` for the v1 id.
  */
-export function generateV1ToV0Map(messageBundle: MessageBundle, formatName: string): V1ToV0Map {
+export function generateV1ToV0Map(
+    messageBundle: MessageBundle, formatName: string, basePath: string = ''): V1ToV0Map {
   const serializerV0 = createSerializer(formatName, I18nVersion.V0);
   const serializerV1 = createSerializer(formatName, I18nVersion.V1);
 
   const v1ToV0: V1ToV0Map = {};
 
+  function cleanPaths(sources: MessageSpan[]) {
+    return [...sources].map(source => {
+      source.filePath = source.filePath.replace(basePath, '');
+      return source;
+    });
+  }
+
   messageBundle.getMessages().forEach((msg: Message) => {
     const v0 = serializerV0.digest(msg);
     const v1 = serializerV1.digest(msg);
+    const sources = cleanPaths(msg.sources);
 
     if (v1ToV0.hasOwnProperty(v1)) {
       if (v1ToV0[v1].ids.indexOf(v0) === -1) {
         v1ToV0[v1].ids.push(v0);
-        v1ToV0[v1].sources !.push(...msg.sources);
+        v1ToV0[v1].sources !.push(...sources);
       }
     } else {
       v1ToV0[v1] = {
         ids: [v0],
-        sources: msg.sources,
+        sources: sources,
       };
     }
   });
