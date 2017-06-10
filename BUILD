@@ -10,7 +10,7 @@ filegroup(
         # Performance workaround: list individual files
         # This won't scale in the general case.
         # TODO(alexeagle): figure out what to do
-        "node_modules/typescript/lib/**",
+        "node_modules/typescript/**",
         "node_modules/zone.js/**/*.d.ts",
         "node_modules/rxjs/**/*.d.ts",
         "node_modules/@types/**/*.d.ts",
