@@ -1,11 +1,7 @@
 /* API EDIT ICON */
 #api {
-  .info-banner .material-icons {
+  .api-filter .material-icons {
     right: 48px;
-
-    @media screen and (max-width: 600px) {
-        left: 50px;
-    }
   }
 }
 
@@ -25,21 +21,25 @@ aio-api-list {
       display: flex;
       flex-direction: column;
       margin: 0 auto;
+
+      h2 {
+        margin-top: 16px;
+      }
     }
 }
 
-aio-api-list > div {
-    display: flex;
-    margin: 32px auto;
+.api-filter {
+  display: flex;
+  margin: 0 auto;
 
-    @media (max-width: 600px) {
-        flex-direction: column;
-        margin: 16px auto;
-    }
+  @media (max-width: 600px) {
+      flex-direction: column;
+      margin: 16px auto;
+  }
 
-    .form-select-menu, .form-search {
-        margin: 8px;
-    }
+  .form-select-menu, .form-search {
+      margin: 8px;
+  }
 }
 
 $phone-breakpoint: 480px;
@@ -165,7 +165,7 @@ $tablet-breakpoint: 800px;
 
 .docs-content .api-list {
   list-style: none;
-  margin: 0 0 48px -8px;
+  margin: 0 0 32px -8px;
   padding: 0;
   overflow: hidden;
 
