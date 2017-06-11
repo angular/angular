@@ -2,6 +2,7 @@
 
 .info-banner {
     margin: 16px 0;
+    align-items: center;
     justify-content: center;
     background: $white;
     border: 1px solid rgba($lightgray, 0.5);
@@ -11,10 +12,6 @@
     background: $white;
     height: auto;
     overflow: visible;
-
-    @media screen and (max-width: 600px) {
-        text-align: center;
-    }
 
     p, .text-body {
         color: $darkgray;
