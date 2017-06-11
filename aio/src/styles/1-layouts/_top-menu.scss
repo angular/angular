@@ -122,6 +122,10 @@ aio-search-box.search-container {
     max-width: 240px;
     height: 50%;
 
+    &:focus {
+        outline: none;
+    }
+
     @include bp(big) {
       transition: width 0.4s ease-in-out;
 
