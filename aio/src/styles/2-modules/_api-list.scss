@@ -175,7 +175,7 @@ $tablet-breakpoint: 800px;
 
   li {
     font-size: 14px;
-    margin: 8px;
+    margin: 8px 0;
     line-height: 14px;
     padding: 0;
     float: left;
@@ -192,7 +192,7 @@ $tablet-breakpoint: 800px;
       color: $blue-grey-600;
       display: inline-block;
       line-height: 16px;
-      padding: 0 16px 0 0;
+      padding: 0 16px 0;
       text-decoration: none;
       transition: all .3s;
       overflow: hidden;
