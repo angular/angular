@@ -723,6 +723,13 @@ describe('AppComponent', () => {
           fixture.detectChanges();
           expect(component.showSearchResults).toBe(false);
         });
+
+        it('should re-run the search when the search box regains focus', () => {
+          const doSearchSpy = spyOn(component, 'doSearch');
+          const searchBox = fixture.debugElement.query(By.directive(SearchBoxComponent));
+          searchBox.triggerEventHandler('onFocus', 'some query');
+          expect(doSearchSpy).toHaveBeenCalledWith('some query');
+        });
       });
     });
 
