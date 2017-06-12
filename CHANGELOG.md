@@ -1,3 +1,16 @@
+<a name="4.2.2"></a>
+## [4.2.2](https://github.com/angular/angular/compare/4.2.1...4.2.2) (2017-06-12)
+
+
+### Bug Fixes
+
+* **animations:** compute removal node height correctly ([185075d](https://github.com/angular/angular/commit/185075d))
+* **animations:** do not treat a `0` animation state as `void` ([451257a](https://github.com/angular/angular/commit/451257a))
+* **animations:** properly collect :enter nodes in a partially updated collection ([6ca4692](https://github.com/angular/angular/commit/6ca4692)), closes [#17440](https://github.com/angular/angular/issues/17440)
+* **compiler:** don’t always compile `.ngfactory.ts` files by default ([ed73d4f](https://github.com/angular/angular/commit/ed73d4f3ac6b542bf5ea3eb73fbe91e2ceabcdb4))
+
+
+
 <a name="4.2.1"></a>
 ## [4.2.1](https://github.com/angular/angular/compare/4.2.0-rc.2...4.2.1) (2017-06-09)
 
