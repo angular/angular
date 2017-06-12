@@ -334,7 +334,7 @@
             },
             {
               "url": "guide/ajs-quick-reference",
-              "title": "AngularJS to Angular",
+              "title": "Upgrade Cheatsheet",
               "tooltip": "Learn how AngularJS concepts and techniques map to Angular."
             }
           ]
