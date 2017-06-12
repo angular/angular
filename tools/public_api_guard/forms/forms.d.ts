@@ -21,42 +21,42 @@ export declare abstract class AbstractControl {
     constructor(validator: ValidatorFn | null, asyncValidator: AsyncValidatorFn | null);
     clearAsyncValidators(): void;
     clearValidators(): void;
-    disable({onlySelf, emitEvent}?: {
+    disable(opts?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
     }): void;
-    enable({onlySelf, emitEvent}?: {
+    enable(opts?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
     }): void;
     get(path: Array<string | number> | string): AbstractControl | null;
     getError(errorCode: string, path?: string[]): any;
     hasError(errorCode: string, path?: string[]): boolean;
-    markAsDirty({onlySelf}?: {
+    markAsDirty(opts?: {
         onlySelf?: boolean;
     }): void;
-    markAsPending({onlySelf}?: {
+    markAsPending(opts?: {
         onlySelf?: boolean;
     }): void;
-    markAsPristine({onlySelf}?: {
+    markAsPristine(opts?: {
         onlySelf?: boolean;
     }): void;
-    markAsTouched({onlySelf}?: {
+    markAsTouched(opts?: {
         onlySelf?: boolean;
     }): void;
-    markAsUntouched({onlySelf}?: {
+    markAsUntouched(opts?: {
         onlySelf?: boolean;
     }): void;
     abstract patchValue(value: any, options?: Object): void;
     abstract reset(value?: any, options?: Object): void;
     setAsyncValidators(newValidator: AsyncValidatorFn | AsyncValidatorFn[]): void;
-    setErrors(errors: ValidationErrors | null, {emitEvent}?: {
+    setErrors(errors: ValidationErrors | null, opts?: {
         emitEvent?: boolean;
     }): void;
     setParent(parent: FormGroup | FormArray): void;
     setValidators(newValidator: ValidatorFn | ValidatorFn[] | null): void;
     abstract setValue(value: any, options?: Object): void;
-    updateValueAndValidity({onlySelf, emitEvent}?: {
+    updateValueAndValidity(opts?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
     }): void;

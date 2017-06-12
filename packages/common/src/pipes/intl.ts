@@ -13,16 +13,15 @@ export enum NumberFormatStyle {
 }
 
 export class NumberFormatter {
-  static format(
-      num: number, locale: string, style: NumberFormatStyle,
-      {minimumIntegerDigits, minimumFractionDigits, maximumFractionDigits, currency,
-       currencyAsSymbol = false}: {
-        minimumIntegerDigits?: number,
-        minimumFractionDigits?: number,
-        maximumFractionDigits?: number,
-        currency?: string|null,
-        currencyAsSymbol?: boolean
-      } = {}): string {
+  static format(num: number, locale: string, style: NumberFormatStyle, opts: {
+    minimumIntegerDigits?: number,
+    minimumFractionDigits?: number,
+    maximumFractionDigits?: number,
+    currency?: string|null,
+    currencyAsSymbol?: boolean
+  } = {}): string {
+    const {minimumIntegerDigits, minimumFractionDigits, maximumFractionDigits, currency,
+           currencyAsSymbol = false} = opts;
     const options: Intl.NumberFormatOptions = {
       minimumIntegerDigits,
       minimumFractionDigits,

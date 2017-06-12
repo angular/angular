@@ -262,10 +262,10 @@ export declare const ContentChild: ContentChildDecorator;
 
 /** @stable */
 export interface ContentChildDecorator {
-    /** @stable */ (selector: Type<any> | Function | string, {read}?: {
+    /** @stable */ (selector: Type<any> | Function | string, opts?: {
         read?: any;
     }): any;
-    new (selector: Type<any> | Function | string, {read}?: {
+    new (selector: Type<any> | Function | string, opts?: {
         read?: any;
     }): ContentChild;
 }
@@ -275,11 +275,11 @@ export declare const ContentChildren: ContentChildrenDecorator;
 
 /** @stable */
 export interface ContentChildrenDecorator {
-    /** @stable */ (selector: Type<any> | Function | string, {descendants, read}?: {
+    /** @stable */ (selector: Type<any> | Function | string, opts?: {
         descendants?: boolean;
         read?: any;
     }): any;
-    new (selector: Type<any> | Function | string, {descendants, read}?: {
+    new (selector: Type<any> | Function | string, opts?: {
         descendants?: boolean;
         read?: any;
     }): Query;
@@ -1058,10 +1058,10 @@ export declare const ViewChild: ViewChildDecorator;
 
 /** @stable */
 export interface ViewChildDecorator {
-    /** @stable */ (selector: Type<any> | Function | string, {read}?: {
+    /** @stable */ (selector: Type<any> | Function | string, opts?: {
         read?: any;
     }): any;
-    new (selector: Type<any> | Function | string, {read}?: {
+    new (selector: Type<any> | Function | string, opts?: {
         read?: any;
     }): ViewChild;
 }
@@ -1071,10 +1071,10 @@ export declare const ViewChildren: ViewChildrenDecorator;
 
 /** @stable */
 export interface ViewChildrenDecorator {
-    /** @stable */ (selector: Type<any> | Function | string, {read}?: {
+    /** @stable */ (selector: Type<any> | Function | string, opts?: {
         read?: any;
     }): any;
-    new (selector: Type<any> | Function | string, {read}?: {
+    new (selector: Type<any> | Function | string, opts?: {
         read?: any;
     }): ViewChildren;
 }

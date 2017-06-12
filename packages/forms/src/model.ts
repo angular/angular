@@ -238,11 +238,11 @@ export abstract class AbstractControl {
    * This will also mark all direct ancestors as `touched` to maintain
    * the model.
    */
-  markAsTouched({onlySelf}: {onlySelf?: boolean} = {}): void {
+  markAsTouched(opts: {onlySelf?: boolean} = {}): void {
     this._touched = true;
 
-    if (this._parent && !onlySelf) {
-      this._parent.markAsTouched({onlySelf});
+    if (this._parent && !opts.onlySelf) {
+      this._parent.markAsTouched(opts);
     }
   }
 
@@ -253,14 +253,14 @@ export abstract class AbstractControl {
    * to maintain the model, and re-calculate the `touched` status of all parent
    * controls.
    */
-  markAsUntouched({onlySelf}: {onlySelf?: boolean} = {}): void {
+  markAsUntouched(opts: {onlySelf?: boolean} = {}): void {
     this._touched = false;
 
     this._forEachChild(
         (control: AbstractControl) => { control.markAsUntouched({onlySelf: true}); });
 
-    if (this._parent && !onlySelf) {
-      this._parent._updateTouched({onlySelf});
+    if (this._parent && !opts.onlySelf) {
+      this._parent._updateTouched(opts);
     }
   }
 
@@ -270,11 +270,11 @@ export abstract class AbstractControl {
    * This will also mark all direct ancestors as `dirty` to maintain
    * the model.
    */
-  markAsDirty({onlySelf}: {onlySelf?: boolean} = {}): void {
+  markAsDirty(opts: {onlySelf?: boolean} = {}): void {
     this._pristine = false;
 
-    if (this._parent && !onlySelf) {
-      this._parent.markAsDirty({onlySelf});
+    if (this._parent && !opts.onlySelf) {
+      this._parent.markAsDirty(opts);
     }
   }
 
@@ -285,24 +285,24 @@ export abstract class AbstractControl {
    * to maintain the model, and re-calculate the `pristine` status of all parent
    * controls.
    */
-  markAsPristine({onlySelf}: {onlySelf?: boolean} = {}): void {
+  markAsPristine(opts: {onlySelf?: boolean} = {}): void {
     this._pristine = true;
 
     this._forEachChild((control: AbstractControl) => { control.markAsPristine({onlySelf: true}); });
 
-    if (this._parent && !onlySelf) {
-      this._parent._updatePristine({onlySelf});
+    if (this._parent && !opts.onlySelf) {
+      this._parent._updatePristine(opts);
     }
   }
 
   /**
    * Marks the control as `pending`.
    */
-  markAsPending({onlySelf}: {onlySelf?: boolean} = {}): void {
+  markAsPending(opts: {onlySelf?: boolean} = {}): void {
     this._status = PENDING;
 
-    if (this._parent && !onlySelf) {
-      this._parent.markAsPending({onlySelf});
+    if (this._parent && !opts.onlySelf) {
+      this._parent.markAsPending(opts);
     }
   }
 
@@ -312,18 +312,18 @@ export abstract class AbstractControl {
    *
    * If the control has children, all children will be disabled to maintain the model.
    */
-  disable({onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
+  disable(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     this._status = DISABLED;
     this._errors = null;
     this._forEachChild((control: AbstractControl) => { control.disable({onlySelf: true}); });
     this._updateValue();
 
-    if (emitEvent !== false) {
+    if (opts.emitEvent !== false) {
       this._valueChanges.emit(this._value);
       this._statusChanges.emit(this._status);
     }
 
-    this._updateAncestors(!!onlySelf);
+    this._updateAncestors(!!opts.onlySelf);
     this._onDisabledChange.forEach((changeFn) => changeFn(true));
   }
 
@@ -334,12 +334,12 @@ export abstract class AbstractControl {
    *
    * If the control has children, all children will be enabled.
    */
-  enable({onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
+  enable(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     this._status = VALID;
     this._forEachChild((control: AbstractControl) => { control.enable({onlySelf: true}); });
-    this.updateValueAndValidity({onlySelf: true, emitEvent});
+    this.updateValueAndValidity({onlySelf: true, emitEvent: opts.emitEvent});
 
-    this._updateAncestors(!!onlySelf);
+    this._updateAncestors(!!opts.onlySelf);
     this._onDisabledChange.forEach((changeFn) => changeFn(false));
   }
 
@@ -373,8 +373,7 @@ export abstract class AbstractControl {
    *
    * By default, it will also update the value and validity of its ancestors.
    */
-  updateValueAndValidity({onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}):
-      void {
+  updateValueAndValidity(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     this._setInitialStatus();
     this._updateValue();
 
@@ -384,24 +383,24 @@ export abstract class AbstractControl {
       this._status = this._calculateStatus();
 
       if (this._status === VALID || this._status === PENDING) {
-        this._runAsyncValidator(emitEvent);
+        this._runAsyncValidator(opts.emitEvent);
       }
     }
 
-    if (emitEvent !== false) {
+    if (opts.emitEvent !== false) {
       this._valueChanges.emit(this._value);
       this._statusChanges.emit(this._status);
     }
 
-    if (this._parent && !onlySelf) {
-      this._parent.updateValueAndValidity({onlySelf, emitEvent});
+    if (this._parent && !opts.onlySelf) {
+      this._parent.updateValueAndValidity(opts);
     }
   }
 
   /** @internal */
-  _updateTreeValidity({emitEvent}: {emitEvent?: boolean} = {emitEvent: true}) {
-    this._forEachChild((ctrl: AbstractControl) => ctrl._updateTreeValidity({emitEvent}));
-    this.updateValueAndValidity({onlySelf: true, emitEvent});
+  _updateTreeValidity(opts: {emitEvent?: boolean} = {emitEvent: true}) {
+    this._forEachChild((ctrl: AbstractControl) => ctrl._updateTreeValidity(opts));
+    this.updateValueAndValidity({onlySelf: true, emitEvent: opts.emitEvent});
   }
 
   private _setInitialStatus() { this._status = this._allControlsDisabled() ? DISABLED : VALID; }
@@ -448,9 +447,9 @@ export abstract class AbstractControl {
    * expect(login.valid).toEqual(true);
    * ```
    */
-  setErrors(errors: ValidationErrors|null, {emitEvent}: {emitEvent?: boolean} = {}): void {
+  setErrors(errors: ValidationErrors|null, opts: {emitEvent?: boolean} = {}): void {
     this._errors = errors;
-    this._updateControlsErrors(emitEvent !== false);
+    this._updateControlsErrors(opts.emitEvent !== false);
   }
 
   /**
@@ -556,20 +555,20 @@ export abstract class AbstractControl {
   }
 
   /** @internal */
-  _updatePristine({onlySelf}: {onlySelf?: boolean} = {}): void {
+  _updatePristine(opts: {onlySelf?: boolean} = {}): void {
     this._pristine = !this._anyControlsDirty();
 
-    if (this._parent && !onlySelf) {
-      this._parent._updatePristine({onlySelf});
+    if (this._parent && !opts.onlySelf) {
+      this._parent._updatePristine(opts);
     }
   }
 
   /** @internal */
-  _updateTouched({onlySelf}: {onlySelf?: boolean} = {}): void {
+  _updateTouched(opts: {onlySelf?: boolean} = {}): void {
     this._touched = this._anyControlsTouched();
 
-    if (this._parent && !onlySelf) {
-      this._parent._updateTouched({onlySelf});
+    if (this._parent && !opts.onlySelf) {
+      this._parent._updateTouched(opts);
     }
   }
 
