@@ -19,7 +19,7 @@ import 'rxjs/add/operator/debounceTime';
 @Injectable()
 export class MdMutationObserverFactory {
   create(callback): MutationObserver {
-    return new MutationObserver(callback);
+    return typeof MutationObserver === 'undefined' ? null : new MutationObserver(callback);
   }
 }
 
@@ -59,11 +59,13 @@ export class ObserveContent implements AfterContentInit, OnDestroy {
       this._debouncer.next(mutations);
     });
 
-    this._observer.observe(this._elementRef.nativeElement, {
-      characterData: true,
-      childList: true,
-      subtree: true
-    });
+    if (this._observer) {
+      this._observer.observe(this._elementRef.nativeElement, {
+        characterData: true,
+        childList: true,
+        subtree: true
+      });
+    }
   }
 
   ngOnDestroy() {

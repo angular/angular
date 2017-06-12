@@ -20,7 +20,7 @@ import {
   Inject
 } from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
-import {coerceBooleanProperty} from '../core';
+import {coerceBooleanProperty, Platform} from '../core';
 import {FormGroupDirective, NgControl, NgForm} from '@angular/forms';
 import {getSupportedInputTypes} from '../core/platform/features';
 import {
@@ -213,6 +213,7 @@ export class MdInputDirective {
 
   constructor(private _elementRef: ElementRef,
               private _renderer: Renderer2,
+              private _platform: Platform,
               @Optional() @Self() public _ngControl: NgControl,
               @Optional() private _parentForm: NgForm,
               @Optional() private _parentFormGroup: FormGroupDirective) {
@@ -267,7 +268,12 @@ export class MdInputDirective {
   /** Determines if the component host is a textarea. If not recognizable it returns false. */
   private _isTextarea() {
     let nativeElement = this._elementRef.nativeElement;
-    return nativeElement ? nativeElement.nodeName.toLowerCase() === 'textarea' : false;
+
+    // In Universal, we don't have access to `nodeName`, but the same can be achieved with `name`.
+    // Note that this shouldn't be necessary once Angular switches to an API that resembles the
+    // DOM closer.
+    let nodeName = this._platform.isBrowser ? nativeElement.nodeName : nativeElement.name;
+    return nodeName ? nodeName.toLowerCase() === 'textarea' : false;
   }
 }
 

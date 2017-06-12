@@ -86,7 +86,7 @@
 <h2>Datepicker</h2>
 
 <md-input-container>
-  <input mdInput [mdDatepicker]="birthday" placeholder="Birthday">
+  <input type="text" mdInput [mdDatepicker]="birthday" placeholder="Birthday">
   <button mdSuffix [mdDatepickerToggle]="birthday"></button>
   <md-datepicker #birthday></md-datepicker>
 </md-input-container>
@@ -106,7 +106,7 @@
 <h2>Input</h2>
 
 <md-input-container>
-  <input mdInput placeholder="amount">
+  <input type="number" mdInput placeholder="amount">
   <span mdPrefix>$&nbsp;</span>
   <span mdSuffix>.00</span>
   <md-hint>Dolla dolla bills</md-hint>
