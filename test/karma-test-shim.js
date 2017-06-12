@@ -1,6 +1,10 @@
 /*global jasmine, __karma__, window*/
 Error.stackTraceLimit = Infinity;
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 3000;
+
+// The default time that jasmine waits for an asynchronous test to finish is five seconds.
+// If this timeout is too short the CI may fail randomly because our asynchronous tests can
+// take longer in some situations (e.g Saucelabs and Browserstack tunnels)
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
 
 __karma__.loaded = function () {};
 
@@ -84,8 +88,6 @@ function configureTestBed() {
   ]).then(function (providers) {
     var testing = providers[0];
     var testingBrowser = providers[1];
-
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
 
     var testBed = testing.TestBed.initTestEnvironment(
       testingBrowser.BrowserDynamicTestingModule,
