@@ -36,6 +36,5 @@ esac
   firebase deploy --message "Commit: $TRAVIS_COMMIT" --non-interactive --token "$firebaseToken"
 
   # Run PWA-score tests
-  # TODO(gkalpak): Figure out why this fails and re-enable.
-  yarn test-pwa-score -- "$deployedUrl" "$MIN_PWA_SCORE" "$PWA_RESULTS_LOG" || true
+  yarn test-pwa-score -- "$deployedUrl" "$MIN_PWA_SCORE" "$PWA_RESULTS_LOG"
 )
