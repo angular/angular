@@ -1935,22 +1935,32 @@ It works perfectly with long property paths such as `a?.b?.c?.d`.
 
 ### The non-null assertion operator ( <span class="syntax">!</span> )
 
-The Angular **non-null assertion operator (`!`)** is a post-fix operator that asserts that the preceeding property path
-will never be null or undefined.
+As of Typescript 2.0, you can enforce [strict null checking](http://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html "Strict null checking in TypeScript") with the `--strictNullChecks` flag. TypeScript then ensures that no variable is _unintentionally_ null or undefined.
 
-Unlike the [_safe navigation operator_](guide/template-syntax#safe-navigation-operator "Safe naviation operator (?.)")
-the **non-null assertion operator** does not guard against a null or undefined; rather, it informs the TypeScript type
-checker that there is something it might be unaware of that ensures that this property path is defined. This prevents
-TypeScript from reporting that the path is possibly null or undefined when strict null checking is enabled.
+In this mode, typed variables disallow null and undefined by default. The type checker throws an error if you leave a variable unassigned or try to assign null or undefined to a variable whose type disallows null and undefined.
 
-For example, if you use [*ngIf](guide/template-syntax#ngIf) to check if `hero` is defined, you can assert the uses of
-`hero` are defined in the body of the template.
+The type checker also throws an error if it can't determine whether a variable will be null or undefined at runtime. 
+You may know that can't happen but the type checker doesn't know. 
+You tell the type checker that it can't happen by applying the post-fix
+[_non-null assertion operator (!)_]((http://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html#non-null-assertion-operator "Non-null assertion operator").
+
+The _Angular_ **non-null assertion operator (`!`)** serves the same purpose in an Angular template. 
+
+For example, after you use [*ngIf](guide/template-syntax#ngIf) to check that `hero` is defined, you can assert that
+`hero` properties are also defined.
 
 <code-example path="template-syntax/src/app/app.component.html" region="non-null-assertion-1" title="src/app/app.component.html" linenums="false">
 </code-example>
 
-The Angular **non-null assertion operator (`!`)** is like TypeScript's _non-null assertion operator (!)_
-introduced in [TypeScript 2.0](http://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html).
+When the Angular compiler turns your template into TypeScript code,
+it prevents TypeScript from reporting that `hero.name` might be null or undefined.
+
+Unlike the [_safe navigation operator_](guide/template-syntax#safe-navigation-operator "Safe naviation operator (?.)"),
+the **non-null assertion operator** does not guard against null or undefined.
+Rather it tells the TypeScript type checker to suspend strict null checks for a specific property expression.
+
+You'll need this template operator when you turn on strict null checks. It's optional otherwise.
+
 
 ## Summary
 You've completed this survey of template syntax.
