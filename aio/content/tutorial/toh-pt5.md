@@ -561,6 +561,14 @@ In <code>dashboard.component.ts</code>, add the following `import` statements.
 
 
 
+Include the provider like this:
+
+<code-example path="toh-pt5/src/app/dashboard.component.ts" region="class" title="src/app/dashboard.component.ts (providers)">
+
+</code-example>
+
+
+
 Now create the `DashboardComponent` class like this:
 
 

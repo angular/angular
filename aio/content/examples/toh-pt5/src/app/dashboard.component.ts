@@ -11,6 +11,9 @@ import { HeroService } from './hero.service';
   selector: 'my-dashboard',
   templateUrl: './dashboard.component.html',
   // #enddocregion metadata
+  // #docregion providers
+  providers: [ HeroService ],
+  // #enddocregion providers
   // #docregion css
   styleUrls: [ './dashboard.component.css' ]
   // #enddocregion css
