@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: ~/ng
     docker:
-      - image: alexeagle/ngcontainer
+      - image: angular/ngcontainer
     steps:
       - checkout
       - restore_cache:
