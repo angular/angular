@@ -4,6 +4,8 @@ import {statSync} from 'fs';
 import {isTravisBuild, isTravisMasterBuild} from '../util/travis-ci';
 import {buildConfig} from '../packaging/build-config';
 import {openFirebaseDashboardApp, openFirebaseDashboardAppAsGuest} from '../util/firebase';
+import * as firebaseAdmin from 'firebase-admin';
+
 
 // These imports lack of type definitions.
 const request = require('request');
@@ -66,7 +68,8 @@ function getFilesize(filePath: string) {
  * Calculates the difference between the last and current library payload.
  * The results will be published as a commit status on Github.
  */
-async function calculatePayloadDiff(database: any, currentSha: string, currentPayload: any) {
+async function calculatePayloadDiff(database: firebaseAdmin.database.Database, currentSha: string,
+                                    currentPayload: any) {
   const authToken = process.env['FIREBASE_ACCESS_TOKEN'];
 
   if (!authToken) {
@@ -121,14 +124,15 @@ async function updateGithubStatus(commitSha: string, payloadDiff: number, authTo
 }
 
 /** Uploads the current payload results to the Dashboard database. */
-async function uploadPayloadResults(database: any, currentSha: string, currentPayload: any) {
+async function uploadPayloadResults(database: firebaseAdmin.database.Database, currentSha: string,
+                                    currentPayload: any) {
   if (isTravisMasterBuild()) {
     await database.ref('payloads').child(currentSha).set(currentPayload);
   }
 }
 
 /** Gets the last payload uploaded from previous Travis builds. */
-async function getLastPayloadResults(database: admin.database.Database) {
+async function getLastPayloadResults(database: firebaseAdmin.database.Database) {
   const snapshot = await database.ref('payloads')
     .orderByChild('timestamp')
     .limitToLast(1)

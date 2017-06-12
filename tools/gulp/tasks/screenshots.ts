@@ -1,7 +1,7 @@
 import {task} from 'gulp';
 import {readdirSync, statSync, existsSync, mkdirp, readFileSync, writeFileSync} from 'fs-extra';
 import * as path from 'path';
-import * as admin from 'firebase-admin';
+import * as firebaseAdmin from 'firebase-admin';
 import * as firebase from 'firebase';
 import {
   openScreenshotsBucket,
@@ -55,7 +55,7 @@ function updateResult(database: firebase.database.Database, prNumber: string, re
     .child(process.env['TRAVIS_PULL_REQUEST_SHA']).set(result).then(() => result);
 }
 
-function getPullRequestRef(database: firebase.database.Database | admin.database.Database,
+function getPullRequestRef(database: firebase.database.Database | firebaseAdmin.database.Database,
                            prNumber: string) {
   let secureToken = getSecureToken();
   return database.ref(FIREBASE_REPORT).child(prNumber).child(secureToken);
