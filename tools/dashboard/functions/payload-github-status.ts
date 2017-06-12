@@ -15,7 +15,7 @@ export const payloadGithubStatus = https.onRequest(async (request, response) => 
     return response.status(404).json({message: 'No commit has been specified'});
   }
 
-  if (!payloadDiff || isNaN(payloadDiff)) {
+  if (isNaN(payloadDiff)) {
     return response.status(400).json({message: 'No valid payload diff has been specified.'});
   }
 
