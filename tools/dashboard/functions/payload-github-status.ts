@@ -5,7 +5,7 @@ import {setGithubStatus} from './github/github-status';
 export const payloadGithubStatus = https.onRequest(async (request, response) => {
   const authToken = request.header('auth-token');
   const commitSha = request.header('commit-sha');
-  const payloadDiff = parseInt(request.header('commit-payload-diff'));
+  const payloadDiff = parseFloat(request.header('commit-payload-diff'));
 
   if (!verifyToken(authToken)) {
     return response.status(403).json({message: 'Auth token is not valid'});
@@ -22,8 +22,7 @@ export const payloadGithubStatus = https.onRequest(async (request, response) => 
   await setGithubStatus(commitSha, {
     result: true,
     name: 'Library Payload',
-    url: `https://travis-ci.org/angular/material2/jobs/${process.env['TRAVIS_JOB_ID']}`,
-    description: `${payloadDiff > 0 ? `+` : ''} ${payloadDiff.toFixed(2)}KB`
+    description: `${payloadDiff >= 0 ? `+` : ''}${payloadDiff.toFixed(2)}KB`
   });
 
   response.json({message: 'Payload Github status successfully set.'});

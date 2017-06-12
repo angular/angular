@@ -11,7 +11,7 @@ export type GithubStatusData = {
   result: boolean;
   name: string;
   description: string;
-  url: string;
+  url?: string;
 };
 
 /** Function that sets a Github commit status */
