@@ -124,8 +124,11 @@ export function main(
     if (diagnostics) console.time('NG codegen');
     return codegen(ngOptions, cliOptions, program, host).then((genFiles) => {
       if (diagnostics) console.timeEnd('NG codegen');
+
       // Add the generated files to the configuration so they will become part of the program.
-      genFiles.forEach(genFileName => addGeneratedFileName(genFileName));
+      if (ngOptions.alwaysCompileGeneratedCode) {
+        genFiles.forEach(genFileName => addGeneratedFileName(genFileName));
+      }
       let definitionsHost: ts.CompilerHost = tsickleCompilerHost;
       if (!ngOptions.skipMetadataEmit) {
         // if tsickle is not not used for emitting, but we do use the MetadataWriterHost,
