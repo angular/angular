@@ -24,7 +24,6 @@ import {
 } from './input-container-errors';
 import {MD_PLACEHOLDER_GLOBAL_OPTIONS} from '../core/placeholder/placeholder-options';
 
-
 describe('MdInputContainer', function () {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -108,7 +107,7 @@ describe('MdInputContainer', function () {
 
   it('should not be treated as empty if type is date',
       inject([Platform], (platform: Platform) => {
-        if (!(platform.TRIDENT || platform.FIREFOX)) {
+        if (!(platform.TRIDENT || platform.FIREFOX || (platform.SAFARI && !platform.IOS))) {
           let fixture = TestBed.createComponent(MdInputContainerDateTestController);
           fixture.detectChanges();
 
@@ -118,10 +117,10 @@ describe('MdInputContainer', function () {
         }
       }));
 
-  // Firefox and IE don't support type="date" and fallback to type="text".
+  // Firefox, Safari Desktop and IE don't support type="date" and fallback to type="text".
   it('should be treated as empty if type is date on Firefox and IE',
       inject([Platform], (platform: Platform) => {
-        if (platform.TRIDENT || platform.FIREFOX) {
+        if (platform.TRIDENT || platform.FIREFOX || (platform.SAFARI && !platform.IOS)) {
           let fixture = TestBed.createComponent(MdInputContainerDateTestController);
           fixture.detectChanges();
 

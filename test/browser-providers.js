@@ -5,9 +5,9 @@
  * Target can be either: BS (Browserstack) | SL (Saucelabs) | null (To not run at all)
  */
 const browserConfig = {
-  'Chrome':       { unitTest: {target: 'SL', required: true  }},
-  'Firefox':      { unitTest: {target: 'SL', required: true  }},
-  'ChromeBeta':   { unitTest: {target: 'SL', required: false }},
+  'Chrome':       { unitTest: {target: 'BS', required: true  }},
+  'Firefox':      { unitTest: {target: 'BS', required: true  }},
+  'ChromeBeta':   { unitTest: {target: null, required: false }},
   'FirefoxBeta':  { unitTest: {target: null, required: false }},
   'ChromeDev':    { unitTest: {target: null, required: true  }},
   'FirefoxDev':   { unitTest: {target: null, required: true  }},
@@ -19,15 +19,15 @@ const browserConfig = {
   'Android4.2':   { unitTest: {target: null, required: false }},
   'Android4.3':   { unitTest: {target: null, required: false }},
   'Android4.4':   { unitTest: {target: null, required: false }},
-  'Android5':     { unitTest: {target: 'SL', required: false }},
+  'Android5':     { unitTest: {target: null, required: false }},
   'Safari7':      { unitTest: {target: null, required: false }},
   'Safari8':      { unitTest: {target: null, required: false }},
-  'Safari9':      { unitTest: {target: 'BS', required: false }},
-  'Safari10':     { unitTest: {target: 'SL', required: false }},
+  'Safari9':      { unitTest: {target: 'SL', required: true }},
+  'Safari10':     { unitTest: {target: 'BS', required: true }},
   'iOS7':         { unitTest: {target: null, required: false }},
   'iOS8':         { unitTest: {target: null, required: false }},
   'iOS9':         { unitTest: {target: 'BS', required: true  }},
-  'WindowsPhone': { unitTest: {target: 'BS', required: false }}
+  'WindowsPhone': { unitTest: {target: null, required: false }}
 };
 
 /** Exports all available remote browsers. */

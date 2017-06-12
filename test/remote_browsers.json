@@ -167,6 +167,13 @@
     "os": "OS X",
     "os_version": "El Capitan"
   },
+  "BS_SAFARI10": {
+    "base": "BrowserStack",
+    "browser": "safari",
+    "browser_version": "10.1",
+    "os": "OS X",
+    "os_version": "Sierra"
+  },
   "BS_IOS7": {
     "base": "BrowserStack",
     "device": "iPhone 5S",

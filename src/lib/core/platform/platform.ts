@@ -37,4 +37,9 @@ export class Platform {
 
   // Trident on mobile adds the android platform to the userAgent to trick detections.
   ANDROID = this.isBrowser && /android/i.test(navigator.userAgent) && !this.TRIDENT;
+
+  // Safari browsers will include the Safari keyword in their userAgent. Some browsers may fake
+  // this and just place the Safari keyword in the userAgent. To be more safe about Safari every
+  // Safari browser should also use Webkit as its layout engine.
+  SAFARI = this.isBrowser && /safari/i.test(navigator.userAgent) && this.WEBKIT;
 }
