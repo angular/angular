@@ -259,7 +259,7 @@ export declare class Router {
     readonly url: string;
     urlHandlingStrategy: UrlHandlingStrategy;
     constructor(rootComponentType: Type<any> | null, urlSerializer: UrlSerializer, rootContexts: ChildrenOutletContexts, location: Location, injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler, config: Routes);
-    createUrlTree(commands: any[], {relativeTo, queryParams, fragment, preserveQueryParams, queryParamsHandling, preserveFragment}?: NavigationExtras): UrlTree;
+    createUrlTree(commands: any[], navigationExtras?: NavigationExtras): UrlTree;
     dispose(): void;
     initialNavigation(): void;
     isActive(url: string | UrlTree, exact: boolean): boolean;
