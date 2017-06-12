@@ -130,7 +130,7 @@ export class MinValidator implements Validator,
 
   registerOnValidatorChange(fn: () => void): void { this._onChange = fn; }
 
-  private _createValidator(): void { this._validator = Validators.min(parseInt(this.min, 10)); }
+  private _createValidator(): void { this._validator = Validators.min(parseFloat(this.min)); }
 }
 
 
@@ -169,7 +169,7 @@ export class MaxValidator implements Validator,
 
   registerOnValidatorChange(fn: () => void): void { this._onChange = fn; }
 
-  private _createValidator(): void { this._validator = Validators.max(parseInt(this.max, 10)); }
+  private _createValidator(): void { this._validator = Validators.max(parseFloat(this.max)); }
 }
 
 
