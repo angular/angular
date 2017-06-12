@@ -113,6 +113,15 @@ describe('Chips', () => {
         expect(testComponent.chipSelect).toHaveBeenCalledWith({ chip: chipInstance });
       });
 
+      it('should update the aria-label for disabled chips', () => {
+        expect(chipNativeElement.getAttribute('aria-disabled')).toBe('false');
+
+        testComponent.disabled = true;
+        fixture.detectChanges();
+
+        expect(chipNativeElement.getAttribute('aria-disabled')).toBe('true');
+      });
+
     });
   });
 });
@@ -121,7 +130,7 @@ describe('Chips', () => {
   template: `
     <md-chip-list>
       <div *ngIf="shouldShow">
-        <md-chip [color]="color" [selected]="selected"
+        <md-chip [color]="color" [selected]="selected" [disabled]="disabled"
                  (focus)="chipFocus($event)" (destroy)="chipDestroy($event)"
                  (select)="chipSelect($event)" (deselect)="chipDeselect($event)">
           {{name}}
@@ -130,6 +139,7 @@ describe('Chips', () => {
     </md-chip-list>`
 })
 class SingleChip {
+  disabled: boolean = false;
   name: string = 'Test';
   color: string = 'primary';
   selected: boolean = false;

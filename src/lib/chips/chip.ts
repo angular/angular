@@ -11,6 +11,7 @@ import {
 import {Focusable} from '../core/a11y/focus-key-manager';
 import {coerceBooleanProperty} from '../core/coercion/boolean-property';
 import {CanColor, mixinColor} from '../core/common-behaviors/color';
+import {CanDisable, mixinDisabled} from '../core/common-behaviors/disabled';
 
 export interface MdChipEvent {
   chip: MdChip;
@@ -20,7 +21,7 @@ export interface MdChipEvent {
 export class MdChipBase {
   constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
 }
-export const _MdChipMixinBase = mixinColor(MdChipBase, 'primary');
+export const _MdChipMixinBase = mixinColor(mixinDisabled(MdChipBase), 'primary');
 
 
 /**
@@ -39,7 +40,7 @@ export class MdBasicChip { }
 @Directive({
   selector: `md-basic-chip, [md-basic-chip], md-chip, [md-chip],
              mat-basic-chip, [mat-basic-chip], mat-chip, [mat-chip]`,
-  inputs: ['color'],
+  inputs: ['color', 'disabled'],
   host: {
     'class': 'mat-chip',
     'tabindex': '-1',
@@ -52,11 +53,7 @@ export class MdBasicChip { }
     '(blur)': '_hasFocus = false',
   }
 })
-export class MdChip extends _MdChipMixinBase implements Focusable, OnDestroy, CanColor {
-  /** Whether or not the chip is disabled. */
-  @Input() get disabled(): boolean { return this._disabled; }
-  set disabled(value: boolean) { this._disabled = coerceBooleanProperty(value); }
-  protected _disabled: boolean = null;
+export class MdChip extends _MdChipMixinBase implements Focusable, OnDestroy, CanColor, CanDisable {
 
   /** Whether the chip is selected. */
   @Input() get selected(): boolean { return this._selected; }
