@@ -8,7 +8,9 @@
   "scripts": {
     "ng": "yarn check-env && ng",
     "start": "yarn check-env && ng serve",
-    "build": "yarn check-env && yarn setup && ng build -prod -sm -vc=false && yarn sw-manifest && yarn sw-copy",
+    "prebuild": "yarn check-env && yarn setup",
+    "build": "ng build -prod -sm -vc=false",
+    "postbuild": "yarn sw-manifest && yarn sw-copy",
     "lint": "yarn check-env && yarn docs-lint && ng lint && yarn example-lint",
     "test": "yarn check-env && ng test",
     "pree2e": "yarn ~~update-webdriver",
