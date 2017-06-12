@@ -1249,6 +1249,17 @@ function cloakElement(element: any, value?: string) {
   return oldValue;
 }
 
+/*
+1. start from the root, find the first matching child
+  a) if not found then check to see if a previously stopped node was set in the stack
+    -> if so then use that as the nextCursor
+  b) if no queried item and no parent then stop completely
+  c) if no queried item and yes parent then jump to the parent and restart loop
+2. visit the next node, check if matches
+  a) if doesn't exist then set that as the cursor and repeat
+    -> add to the previous cursor stack when the inner queries return nothing
+  b) if matches then add it and continue
+ */
 function filterNodeClasses(
     driver: AnimationDriver, rootElement: any | null, selector: string): any[] {
   const rootElements: any[] = [];
@@ -1256,23 +1267,53 @@ function filterNodeClasses(
 
   let cursor: any = rootElement;
   let nextCursor: any = {};
+  let potentialCursorStack: any[] = [];
   do {
-    nextCursor = driver.query(cursor, selector, false)[0];
+    // 1. query from root
+    nextCursor = cursor ? driver.query(cursor, selector, false)[0] : null;
+
+    // this is used to avoid the extra matchesElement call when we
+    // know that the element does match based it on being queried
+    let justQueried = !!nextCursor;
+
     if (!nextCursor) {
-      cursor = cursor.parentElement;
-      if (!cursor) break;
-      nextCursor = cursor = cursor.nextElementSibling;
-    } else {
-      while (nextCursor && driver.matchesElement(nextCursor, selector)) {
-        rootElements.push(nextCursor);
-        nextCursor = nextCursor.nextElementSibling;
-        if (nextCursor) {
-          cursor = nextCursor;
-        } else {
-          cursor = cursor.parentElement;
-          if (!cursor) break;
-          nextCursor = cursor = cursor.nextElementSibling;
-        }
+      const nextPotentialCursor = potentialCursorStack.pop();
+      if (nextPotentialCursor) {
+        // 1a)
+        nextCursor = nextPotentialCursor;
+      } else {
+        cursor = cursor.parentElement;
+        // 1b)
+        if (!cursor) break;
+        // 1c)
+        nextCursor = cursor = cursor.nextElementSibling;
+        continue;
+      }
+    }
+
+    // 2. visit the next node
+    while (nextCursor) {
+      const matches = justQueried || driver.matchesElement(nextCursor, selector);
+      justQueried = false;
+
+      const nextPotentialCursor = nextCursor.nextElementSibling;
+
+      // 2a)
+      if (!matches) {
+        potentialCursorStack.push(nextPotentialCursor);
+        cursor = nextCursor;
+        break;
+      }
+
+      // 2b)
+      rootElements.push(nextCursor);
+      nextCursor = nextPotentialCursor;
+      if (nextCursor) {
+        cursor = nextCursor;
+      } else {
+        cursor = cursor.parentElement;
+        if (!cursor) break;
+        nextCursor = cursor = cursor.nextElementSibling;
       }
     }
   } while (nextCursor && nextCursor !== rootElement);
