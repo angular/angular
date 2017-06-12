@@ -385,9 +385,9 @@ export class Router {
    * router.createUrlTree(['../../team/44/user/22'], {relativeTo: route});
    * ```
    */
-  createUrlTree(
-      commands: any[], {relativeTo, queryParams, fragment, preserveQueryParams, queryParamsHandling,
-                        preserveFragment}: NavigationExtras = {}): UrlTree {
+  createUrlTree(commands: any[], navigationExtras: NavigationExtras = {}): UrlTree {
+    const {relativeTo,          queryParams,         fragment,
+           preserveQueryParams, queryParamsHandling, preserveFragment} = navigationExtras;
     if (isDevMode() && preserveQueryParams && <any>console && <any>console.warn) {
       console.warn('preserveQueryParams is deprecated, use queryParamsHandling instead.');
     }
