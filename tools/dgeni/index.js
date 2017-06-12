@@ -91,6 +91,7 @@ let apiDocsPackage = new DgeniPackage('material2-api-docs', dgeniPackageDeps)
     'core/index.ts',
     'datepicker/index.ts',
     'dialog/index.ts',
+    'expansion/index.ts',
     'grid-list/index.ts',
     'icon/index.ts',
     'input/index.ts',
