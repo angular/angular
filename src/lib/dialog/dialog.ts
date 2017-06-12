@@ -146,7 +146,7 @@ export class MdDialog {
     let containerPortal = new ComponentPortal(MdDialogContainer, viewContainer);
 
     let containerRef: ComponentRef<MdDialogContainer> = overlay.attach(containerPortal);
-    containerRef.instance.config = config;
+    containerRef.instance._config = config;
 
     return containerRef.instance;
   }
