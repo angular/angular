@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, EventEmitter, Output } from '@angular/core';
 import { LocationService } from 'app/shared/location.service';
 import { Subject } from 'rxjs/Subject';
-import 'rxjs/add/operator/filter';
 import 'rxjs/add/operator/distinctUntilChanged';
 
 /**
@@ -22,7 +21,7 @@ import 'rxjs/add/operator/distinctUntilChanged';
     placeholder="Search"
     (input)="doSearch()"
     (keyup)="doSearch()"
-    (focus)="doSearch()"
+    (focus)="doFocus()"
     (click)="doSearch()">`
 })
 export class SearchBoxComponent implements OnInit {
@@ -30,9 +29,8 @@ export class SearchBoxComponent implements OnInit {
   private searchSubject = new Subject<string>();
 
   @ViewChild('searchBox') searchBox: ElementRef;
-  @Output() onSearch = this.searchSubject
-                           .filter(value => !!(value && value.trim()))
-                           .distinctUntilChanged();
+  @Output() onSearch = this.searchSubject.distinctUntilChanged();
+  @Output() onFocus = new EventEmitter<string>();
 
   constructor(private locationService: LocationService) { }
 
@@ -42,16 +40,23 @@ export class SearchBoxComponent implements OnInit {
   ngOnInit() {
     const query = this.locationService.search()['search'];
     if (query) {
-      this.searchBox.nativeElement.value = query;
+      this.query = query;
       this.doSearch();
     }
   }
 
   doSearch() {
-    this.searchSubject.next(this.searchBox.nativeElement.value);
+    this.searchSubject.next(this.query);
+  }
+
+  doFocus() {
+    this.onFocus.emit(this.query);
   }
 
   focus() {
     this.searchBox.nativeElement.focus();
   }
+
+  private get query() { return this.searchBox.nativeElement.value; }
+  private set query(value: string) { this.searchBox.nativeElement.value = value; }
 }

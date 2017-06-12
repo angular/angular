@@ -7,10 +7,11 @@ import { LocationService } from 'app/shared/location.service';
 import { MockLocationService } from 'testing/location.service';
 
 @Component({
-  template: '<aio-search-box (onSearch)="searchHandler($event)"></aio-search-box>'
+  template: '<aio-search-box (onSearch)="searchHandler($event)" (onFocus)="focusHandler($event)"></aio-search-box>'
 })
 class HostComponent {
   searchHandler = jasmine.createSpy('searchHandler');
+  focusHandler = jasmine.createSpy('focusHandler');
 }
 
 describe('SearchBoxComponent', () => {
@@ -63,11 +64,11 @@ describe('SearchBoxComponent', () => {
   });
 
   describe('on focus', () => {
-    it('should trigger the onSearch event', () => {
+    it('should trigger the onFocus event', () => {
       const input = fixture.debugElement.query(By.css('input'));
       input.nativeElement.value = 'some query (focus)';
       input.triggerEventHandler('focus', { });
-      expect(host.searchHandler).toHaveBeenCalledWith('some query (focus)');
+      expect(host.focusHandler).toHaveBeenCalledWith('some query (focus)');
     });
   });
 
