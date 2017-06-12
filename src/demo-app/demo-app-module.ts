@@ -73,7 +73,8 @@ import {
   MdTabsModule,
   MdToolbarModule,
   MdTooltipModule,
-  OverlayContainer
+  OverlayContainer,
+  StyleModule
 } from '@angular/material';
 import {TableHeaderDemo} from './data-table/table-header-demo';
 
@@ -111,6 +112,7 @@ import {TableHeaderDemo} from './data-table/table-header-demo';
     MdTooltipModule,
     MdNativeDateModule,
     CdkDataTableModule,
+    StyleModule
   ]
 })
 export class DemoMaterialModule {}
