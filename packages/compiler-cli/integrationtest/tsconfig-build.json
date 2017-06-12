@@ -4,7 +4,8 @@
     // in the same source directory with your code.
     "genDir": ".",
     "debug": true,
-    "enableSummariesForJit": true
+    "enableSummariesForJit": true,
+    "alwaysCompileGeneratedCode": true
   },
 
   "compilerOptions": {
