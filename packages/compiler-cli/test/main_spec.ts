@@ -199,10 +199,40 @@ describe('compiler-cli', () => {
   });
 
   describe('compile ngfactory files', () => {
+    it('should only compile ngfactory files that are referenced by root files by default',
+       (done) => {
+         writeConfig(`{
+          "extends": "./tsconfig-base.json",
+          "files": ["mymodule.ts"]
+        }`);
+         write('mymodule.ts', `
+        import {CommonModule} from '@angular/common';
+        import {NgModule} from '@angular/core';
+
+        @NgModule({
+          imports: [CommonModule]
+        })
+        export class MyModule {}
+      `);
+
+         main({p: basePath})
+             .then((exitCode) => {
+               expect(exitCode).toEqual(0);
+
+               expect(fs.existsSync(path.resolve(outDir, 'mymodule.ngfactory.js'))).toBe(false);
+
+               done();
+             })
+             .catch(e => done.fail(e));
+       });
+
     it('should report errors for ngfactory files that are not referenced by root files', (done) => {
       writeConfig(`{
           "extends": "./tsconfig-base.json",
-          "files": ["mymodule.ts"]
+          "files": ["mymodule.ts"],
+          "angularCompilerOptions": {
+            "alwaysCompileGeneratedCode": true
+          }
         }`);
       write('mymodule.ts', `
         import {NgModule, Component} from '@angular/core';
@@ -235,7 +265,10 @@ describe('compiler-cli', () => {
     it('should compile ngfactory files that are not referenced by root files', (done) => {
       writeConfig(`{
           "extends": "./tsconfig-base.json",
-          "files": ["mymodule.ts"]
+          "files": ["mymodule.ts"],
+          "angularCompilerOptions": {
+            "alwaysCompileGeneratedCode": true
+          }
         }`);
       write('mymodule.ts', `
         import {CommonModule} from '@angular/common';
@@ -289,7 +322,8 @@ describe('compiler-cli', () => {
           "extends": "./tsconfig-base.json",
           "files": ["mymodule.ts"],
           "angularCompilerOptions": {
-            "enableSummariesForJit": true
+            "enableSummariesForJit": true,
+            "alwaysCompileGeneratedCode": true
           }
         }`);
       write('mymodule.ts', `
