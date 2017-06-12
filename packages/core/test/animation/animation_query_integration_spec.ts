@@ -735,6 +735,56 @@ export function main() {
         });
       });
 
+      it('should find :enter nodes that have been inserted around non enter nodes', () => {
+        @Component({
+          selector: 'ani-cmp',
+          template: `
+            <div [@myAnimation]="exp" class="parent">
+              <div *ngFor="let item of items" class="child">
+                {{ item }}
+              </div>
+            </div>
+          `,
+          animations: [trigger(
+              'myAnimation',
+              [
+                transition(
+                    '* => go',
+                    [query(':enter', [style({opacity: 0}), animate(1000, style({opacity: 1}))])]),
+              ])]
+        })
+        class Cmp {
+          public exp: any;
+          public items: any[] = [];
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+
+        const engine = TestBed.get(ɵAnimationEngine);
+        const fixture = TestBed.createComponent(Cmp);
+        const cmp = fixture.componentInstance;
+
+        cmp.exp = 'no';
+        cmp.items = [2];
+        fixture.detectChanges();
+        engine.flush();
+        resetLog();
+
+        cmp.exp = 'go';
+        cmp.items = [0, 1, 2, 3, 4];
+        fixture.detectChanges();
+        engine.flush();
+
+        const players = getLog();
+        expect(players.length).toEqual(4);
+
+        const [p1, p2, p3, p4] = players;
+        expect(p1.element.innerText.trim()).toEqual('0');
+        expect(p2.element.innerText.trim()).toEqual('1');
+        expect(p3.element.innerText.trim()).toEqual('3');
+        expect(p4.element.innerText.trim()).toEqual('4');
+      });
+
       it('should properly cancel items that were queried into a former animation', () => {
         @Component({
           selector: 'ani-cmp',
