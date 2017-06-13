@@ -6,8 +6,8 @@ IF YOU DON'T FILL OUT THE FOLLOWING INFORMATION WE MIGHT CLOSE YOUR ISSUE WITHOU
 ```
 [ ] bug report => search github for a similar issue or PR before submitting
 [ ] feature request
+[ ] documentation issue or request
 [ ] support request => Please do not submit support request here, instead see https://github.com/angular/angular/blob/master/CONTRIBUTING.md#question
-[ ] documentation request => Please add the details below and delete the rest of this template
 ```
 
 **Current behavior**
