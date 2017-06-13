@@ -30,6 +30,9 @@
       // docs/ts/latest/api/*/index/*-type.html
       {"type": 301, "source": "/docs/ts/latest/api/:package/index/:api-*.html", "destination": "/api/:package/:api"},
 
+      // docs/ts/latest
+      {"type": 301, "source": "/docs/ts/latest", "destination": "/docs"},
+
       // guide/*, tutorial/*, **/*
       {"type": 301, "source": "/docs/ts/latest/:any*", "destination": "/:any*"}
     ],
