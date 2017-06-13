@@ -31,8 +31,6 @@ function toolsDirRequire(moduleId: string) {
 // Tun on full stack traces in errors to help debugging
 (<any>Error)['stackTraceLimit'] = Infinity;
 
-jrunner.jasmine.DEFAULT_TIMEOUT_INTERVAL = 100;
-
 // Support passing multiple globs
 var globsIndex = process.argv.indexOf('--');
 var args: string[];
