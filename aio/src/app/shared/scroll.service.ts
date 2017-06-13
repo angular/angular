@@ -57,11 +57,17 @@ export class ScrollService {
   scrollToElement(element: Element) {
     if (element) {
       element.scrollIntoView();
+
       if (window && window.scrollBy) {
-        window.scrollBy(0, -this.topOffset);
+        // Scroll as much as necessary to align the top of `element` at `topOffset`.
+        // (Usually, `.top` will be 0, except for cases where the element cannot be scrolled all the
+        //  way to the top, because the viewport is larger than the height of the content after the
+        //  element.)
+        window.scrollBy(0, element.getBoundingClientRect().top - this.topOffset);
+
+        // If we are very close to the top (<20px), then scroll all the way up.
+        // (This can happen if `element` is at the top of the page, but has a small top-margin.)
         if (window.pageYOffset < 20) {
-          // If we are very close to the top (<20px), then scroll all the way up.
-          // (This can happen if `element` is at the top of the page, but has a small top-margin.)
           window.scrollBy(0, -window.pageYOffset);
         }
       }
