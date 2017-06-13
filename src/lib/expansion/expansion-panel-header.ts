@@ -56,7 +56,7 @@ export class MdExpansionPanelHeader {
   constructor(@Host() public panel: MdExpansionPanel) {}
 
   /** Toggles the expanded state of the panel. */
-  _toggle(event?: KeyboardEvent): void {
+  _toggle(): void {
     this.panel.toggle();
   }
 

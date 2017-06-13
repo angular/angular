@@ -3,6 +3,7 @@
 {
   "compilerOptions": {
     "experimentalDecorators": true,
+    "noUnusedParameters": true,
     "lib": ["es2015", "dom"],
     "module": "commonjs",
     "moduleResolution": "node",

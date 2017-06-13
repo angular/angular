@@ -9,7 +9,7 @@ const screenshotFirebaseConfig = require('../../screenshot-test/functions/config
 const dashboardDatabaseUrl = 'https://material2-board.firebaseio.com';
 
 /** Opens a connection to the Firebase dashboard app using a service account. */
-export function openFirebaseDashboardApp(asGuest = false) {
+export function openFirebaseDashboardApp() {
   // Initialize the Firebase application with firebaseAdmin credentials.
   // Credentials need to be for a Service Account, which can be created in the Firebase console.
   return firebaseAdmin.initializeApp({

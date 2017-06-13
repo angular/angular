@@ -5,6 +5,7 @@
     "declaration": true,
     "stripInternal": false,
     "experimentalDecorators": true,
+    "noUnusedParameters": true,
     "module": "commonjs",
     "moduleResolution": "node",
     "outDir": ".",

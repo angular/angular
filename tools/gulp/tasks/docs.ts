@@ -130,12 +130,12 @@ function transformMarkdownFiles(buffer: Buffer, file: any): string {
   let content = buffer.toString('utf-8');
 
   // Replace <!-- example(..) --> comments with HTML elements.
-  content = content.replace(EXAMPLE_PATTERN, (match: string, name: string) =>
+  content = content.replace(EXAMPLE_PATTERN, (_match: string, name: string) =>
     `<div material-docs-example="${name}"></div>`
   );
 
   // Replace the URL in anchor elements inside of compiled markdown files.
-  content = content.replace(LINK_PATTERN, (match: string, head: string, link: string) =>
+  content = content.replace(LINK_PATTERN, (_match: string, head: string, link: string) =>
     // The head is the first match of the RegExp and is necessary to ensure that the RegExp matches
     // an anchor element. The head will be then used to re-create the existing anchor element.
     // If the head is not prepended to the replaced value, then the first match will be lost.

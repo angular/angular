@@ -5,6 +5,8 @@
     "declaration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    // TODO(paul): Remove once Angular has been upgraded and supports noUnusedParameters in AOT.
+    "noUnusedParameters": false,
     "lib": ["es6", "es2015", "dom"],
     "module": "commonjs",
     "moduleResolution": "node",

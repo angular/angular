@@ -22,7 +22,7 @@ export function inlineResources(filePath: string) {
 
 /** Inlines the templates of Angular components for a specified source file. */
 function inlineTemplate(fileContent: string, filePath: string) {
-  return fileContent.replace(/templateUrl:\s*'([^']+?\.html)'/g, (match, templateUrl) => {
+  return fileContent.replace(/templateUrl:\s*'([^']+?\.html)'/g, (_match, templateUrl) => {
     const templatePath = join(dirname(filePath), templateUrl);
     const templateContent = loadResourceFile(templatePath);
     return `template: "${templateContent}"`;
@@ -31,7 +31,7 @@ function inlineTemplate(fileContent: string, filePath: string) {
 
 /** Inlines the external styles of Angular components for a specified source file. */
 function inlineStyles(fileContent: string, filePath: string) {
-  return fileContent.replace(/styleUrls:\s*(\[[\s\S]*?])/gm, (match, styleUrlsValue) => {
+  return fileContent.replace(/styleUrls:\s*(\[[\s\S]*?])/gm, (_match, styleUrlsValue) => {
     // The RegExp matches the array of external style files. This is a string right now and
     // can to be parsed using the `eval` method. The value looks like "['AAA.css', 'BBB.css']"
     const styleUrls = eval(styleUrlsValue) as string[];
