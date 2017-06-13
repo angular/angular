@@ -65,7 +65,7 @@
         "order": 5,
         "resources": {
           "a2b": {
-            "desc": "Angular 2 and React Native to build applications for Android and iOS",
+            "desc": "Angular and React Native to build applications for Android and iOS",
             "logo": "",
             "rev": true,
             "title": "ReactNative",
@@ -79,7 +79,7 @@
             "url": "http://ionicframework.com/docs/v2/"
           },
           "a4b": {
-            "desc": "Electron Platform for Angular 2.",
+            "desc": "Electron Platform for Angular.",
             "logo": "",
             "rev": true,
             "title": "Electron",
@@ -93,7 +93,7 @@
             "url": "https://github.com/NativeScript/nativescript-angular"
           },
           "ab5": {
-            "desc": "An Universal Windows App (uwp) powered by Angular 2",
+            "desc": "An Universal Windows App (uwp) powered by Angular",
             "logo": "",
             "rev": true,
             "title": "Windows (UWP)",
@@ -111,14 +111,14 @@
             "url": "http://github.com/ngrx"
           },
           "ab": {
-            "desc": "The official library for Firebase and Angular 2",
+            "desc": "The official library for Firebase and Angular",
             "logo": "",
             "rev": true,
             "title": "Angular Fire",
             "url": "https://github.com/angular/angularfire2"
           },
           "ab2": {
-            "desc": "Use Angular 2 and Meteor to build full-stack JavaScript apps  for Mobile and Desktop.",
+            "desc": "Use Angular and Meteor to build full-stack JavaScript apps  for Mobile and Desktop.",
             "logo": "http://www.angular-meteor.com/images/logo.png",
             "rev": true,
             "title": "Meteor",
@@ -169,20 +169,20 @@
         "order": 2,
         "resources": {
           "-KLIzHfBEr1qMMUDxfq3": {
-            "desc": "Generate an Angular 2 CRUD application from an existing database schema",
+            "desc": "Generate an Angular CRUD application from an existing database schema",
             "rev": true,
             "title": "Celerio Angular Quickstart",
             "url": "https://github.com/jaxio/celerio-angular-quickstart"
           },
           "a1": {
-            "desc": "A Google Chrome Dev Tools extension for debugging Angular 2 applications.",
+            "desc": "A Google Chrome Dev Tools extension for debugging Angular applications.",
             "logo": "https://augury.angular.io/images/augury-logo.svg",
             "rev": true,
             "title": "Augury",
             "url": "http://augury.angular.io/"
           },
           "b1": {
-            "desc": "Server-side Rendering for Angular 2 apps.",
+            "desc": "Server-side Rendering for Angular apps.",
             "logo": "https://cloud.githubusercontent.com/assets/1016365/10639063/138338bc-7806-11e5-8057-d34c75f3cafc.png",
             "rev": true,
             "title": "Angular Universal",
@@ -202,14 +202,14 @@
             "url": "https://cli.angular.io"
           },
           "d1": {
-            "desc": "A set of tslint rules for static code analysis of Angular 2 TypeScript projects.",
+            "desc": "A set of tslint rules for static code analysis of Angular TypeScript projects.",
             "logo": "",
             "rev": true,
             "title": "Codelyzer",
             "url": "https://github.com/mgechev/codelyzer"
           },
           "e1": {
-            "desc": "This package provides facilities for developers building Angular 2 applications on ASP.NET.",
+            "desc": "This package provides facilities for developers building Angular applications on ASP.NET.",
             "logo": "",
             "rev": true,
             "title": "Universal for ASP.NET",
@@ -221,7 +221,7 @@
         "order": 4,
         "resources": {
           "234237": {
-            "desc": "UX guidelines, HTML/CSS framework, and Angular 2 components working together to craft exceptional experiences",
+            "desc": "UX guidelines, HTML/CSS framework, and Angular components working together to craft exceptional experiences",
             "rev": true,
             "title": "Clarity Design System",
             "url": "https://vmware.github.io/clarity/"
@@ -233,13 +233,13 @@
             "url": "https://github.com/vladotesanovic/ngSemantic"
           },
           "-KMVB8P4TDfht8c0L1AE": {
-            "desc": "The Angular 2 version of the Angular UI Bootstrap library. This library is being built from scratch in Typescript using the Bootstrap 4 CSS framework.",
+            "desc": "The Angular version of the Angular UI Bootstrap library. This library is being built from scratch in Typescript using the Bootstrap 4 CSS framework.",
             "rev": true,
             "title": "ng-bootstrap",
             "url": "https://ng-bootstrap.github.io/"
           },
           "4ab": {
-            "desc": "Native Angular 2 components & directives for Lightning Design System",
+            "desc": "Native Angular components & directives for Lightning Design System",
             "logo": "http://ng-lightning.github.io/ng-lightning/img/shield.svg",
             "rev": true,
             "title": "ng-lightning",
@@ -252,21 +252,21 @@
             "url": "https://onsen.io/v2/"
           },
           "a2b": {
-            "desc": "PrimeNG is a collection of rich UI components for Angular 2",
+            "desc": "PrimeNG is a collection of rich UI components for Angular",
             "logo": "http://www.primefaces.org/primeng/showcase/resources/images/primeng.svg",
             "rev": true,
             "title": "Prime Faces",
             "url": "http://www.primefaces.org/primeng/"
           },
           "a3b": {
-            "desc": "One of the first major UI frameworks to support Angular 2",
+            "desc": "One of the first major UI frameworks to support Angular",
             "logo": "",
             "rev": true,
             "title": "Kendo UI",
             "url": "http://www.telerik.com/kendo-angular-ui/"
           },
           "a5b": {
-            "desc": "High-performance UI controls with the most complete Angular 2 support available. Wijmo’s controls are all written in TypeScript and have zero dependencies. FlexGrid control includes full declarative markup, including cell templates.",
+            "desc": "High-performance UI controls with the most complete Angular support available. Wijmo’s controls are all written in TypeScript and have zero dependencies. FlexGrid control includes full declarative markup, including cell templates.",
             "logo": "http://wijmocdn.azureedge.net/wijmositeblob/wijmo-theme/logos/wijmo-55.png",
             "rev": true,
             "title": "Wijmo",
@@ -287,14 +287,14 @@
             "url": "http://valor-software.com/ng2-bootstrap/"
           },
           "ab": {
-            "desc": "Material Design components for Angular 2",
+            "desc": "Material Design components for Angular",
             "logo": "",
             "rev": true,
             "title": "Angular Material 2",
             "url": "https://github.com/angular/material2"
           },
           "aggrid": {
-            "desc": "A datagrid for Angular 2 with enterprise style features such as sorting, filtering, custom rendering, editing, grouping, aggregation and pivoting.",
+            "desc": "A datagrid for Angular with enterprise style features such as sorting, filtering, custom rendering, editing, grouping, aggregation and pivoting.",
             "rev": true,
             "title": "ag-Grid",
             "url": "https://www.ag-grid.com/best-angular-2-data-grid/"
@@ -312,13 +312,13 @@
           "-KLI8vJ0ZkvWhqPembZ7": {
             "desc": "A guide that helps developers get up to speed quickly on Angular and its accompanying technologies.",
             "rev": true,
-            "title": "How to Get Started and Productive in Angular 2 Fast",
+            "title": "How to Get Started and Productive in Angular Fast",
             "url": "http://www.amazon.com/How-Started-Productive-Angular-Fast-ebook/dp/B01D3B0ET4/ref=sr_1_1_twi_kin_2?ie=UTF8&qid=1462381159&sr=8-1"
           },
           "-KLIzGEp8Mh5W-FkiQnL": {
             "desc": "Your quick, no-nonsense guide to building real-world apps with Angular",
             "rev": true,
-            "title": "Learning Angular 2",
+            "title": "Learning Angular",
             "url": "https://www.packtpub.com/web-development/learning-angular-2"
           },
           "3ab": {
@@ -330,7 +330,7 @@
           "8ab": {
             "desc": "This books shows all the steps necessary for the development of SPA (Single Page Application) applications with the brand new Angular",
             "rev": true,
-            "title": "Practical Angular 2",
+            "title": "Practical Angular",
             "url": "https://leanpub.com/practical-angular-2"
           },
           "a2b": {
@@ -354,7 +354,7 @@
           "a6b": {
             "desc": "A Practical Introduction to the new Web Development Platform Angular",
             "rev": true,
-            "title": "Angular 2 Book",
+            "title": "Angular Book",
             "url": "https://leanpub.com/angular2-book"
           },
           "a7b": {
@@ -395,13 +395,13 @@
           "-KLIBoTWXMiBcvG0dAM6": {
             "desc": "This course introduces you to the essentials of this \"superheroic\" framework, including declarative templates, two-way data binding, and dependency injection.",
             "rev": true,
-            "title": "Angular 2: Essential Training",
+            "title": "Angular: Essential Training",
             "url": "https://www.lynda.com/AngularJS-tutorials/Angular-2-Essential-Training/540347-2.html"
           },
           "-KLIzGq3CiFeoZUemVyE": {
-            "desc": "Learn the core concepts, play with the code, become a competent Angular 2 developer",
+            "desc": "Learn the core concepts, play with the code, become a competent Angular developer",
             "rev": true,
-            "title": "Angular 2 Concepts, Code and Collective Wisdom",
+            "title": "Angular Concepts, Code and Collective Wisdom",
             "url": "https://www.udemy.com/angular-2-concepts-code-and-collective-wisdom/"
           },
           "-KLIzHwg-glQLXni1hvL": {
@@ -411,9 +411,9 @@
             "url": "http://academia-binaria.com/"
           },
           "-KLIzIOgdPXzI4LMOzYP": {
-            "desc": "In this course, you will learn the features listed above and so much more. This amazing Angular 2 tutorial will cover the fundamentals of Angular 2 (you don’t even need to know Angular), TypeScript, and introduction to the programming concepts such as conditions, arrays, functions, directives, pipes, etc.",
+            "desc": "In this course, you will learn the features listed above and so much more. This amazing Angular tutorial will cover the fundamentals of Angular (you don’t even need to know Angular), TypeScript, and introduction to the programming concepts such as conditions, arrays, functions, directives, pipes, etc.",
             "rev": true,
-            "title": "Eduonix Angular 2 Fundamentals",
+            "title": "Eduonix Angular Fundamentals",
             "url": "https://www.eduonix.com/courses/Web-Development/angular-2-fundamentals-for-web-developers"
           },
           "-KMUuOWwciL_S_o0fzFO": {
@@ -424,10 +424,10 @@
           },
           "-KN3uNQvxifu26D6WKJW": {
             "category": "Education",
-            "desc": "Create the future of web applications by taking Angular 2 for a test drive.",
+            "desc": "Create the future of web applications by taking Angular for a test drive.",
             "rev": true,
             "subcategory": "Online Training",
-            "title": "CodeSchool: Accelerating Through Angular 2",
+            "title": "CodeSchool: Accelerating Through Angular",
             "url": "https://www.codeschool.com/courses/accelerating-through-angular-2"
           },
           "a2b": {
@@ -438,28 +438,28 @@
             "url": "https://www.pluralsight.com/search?q=angular+2&categories=all"
           },
           "ab": {
-            "desc": "Take this introduction to Angular 2 course, to learn the fundamentals in just two days, free of charge.",
+            "desc": "Take this introduction to Angular course, to learn the fundamentals in just two days, free of charge.",
             "logo": "",
             "rev": true,
             "title": "Rangle.io",
             "url": "https://rangle.io/services/javascript-training/training-angular1-angular2-with-ngupgrade/"
           },
           "ab3": {
-            "desc": "Angular 2 courses hosted by  Udemy",
+            "desc": "Angular courses hosted by  Udemy",
             "logo": "",
             "rev": true,
             "title": "Udemy",
             "url": "https://www.udemy.com/courses/search/?ref=home&src=ukw&q=angular+2&lang=en"
           },
           "ab4": {
-            "desc": "Angular 2 Fundamentals and advanced topics focused on Redux Style Angular Applications",
+            "desc": "Angular Fundamentals and advanced topics focused on Redux Style Angular Applications",
             "logo": "",
             "rev": true,
             "title": "Egghead.io",
             "url": "https://egghead.io/technologies/angular2"
           },
           "ab5": {
-            "desc": "Build Web Apps with Angular 2 - recorded video content",
+            "desc": "Build Web Apps with Angular - recorded video content",
             "logo": "",
             "rev": true,
             "title": "Frontend Masters",
@@ -480,7 +480,7 @@
           "angular2forms": {
             "desc": "Learn about how to use Reactive Forms with Angular.",
             "rev": true,
-            "title": "Angular 2 Forms: Data Binding and Validation",
+            "title": "Angular Forms: Data Binding and Validation",
             "url": "https://www.lynda.com/AngularJS-tutorials/Angular-2-Forms-Data-Binding-Validation/461451-2.html"
           },
           "learn-angular-fr": {
@@ -507,13 +507,13 @@
         "order": 2,
         "resources": {
           "-KLIBo3ANF3-1B9wxsoB": {
-            "desc": "Angular 2 Classes from Intertech in Minnesota",
+            "desc": "Angular Classes from Intertech in Minnesota",
             "rev": true,
             "title": "Intertech",
             "url": "http://www.intertech.com/Training/Web-Dev/AngularJS/AngularJS/Angular-2-Training"
           },
           "-KLIBoFWStce29UCwkvY": {
-            "desc": "Private Angular 2 Training and Mentoring",
+            "desc": "Private Angular Training and Mentoring",
             "rev": true,
             "title": "Chariot Solutions",
             "url": "http://chariotsolutions.com/course/angular2-workshop-fundamentals-architecture/"
@@ -531,7 +531,7 @@
             "url": "https://www.thecodecampus.de/#!/angularjs"
           },
           "-KLIzFhfGKi1xttqJ7Uh": {
-            "desc": "4 day in-depth Angular 2 training in Israel",
+            "desc": "4 day in-depth Angular training in Israel",
             "rev": true,
             "title": "ng-course (Israel)",
             "url": "http://ng-course.org/"
@@ -543,13 +543,13 @@
             "url": "http://www.webagesolutions.com/courses/WA2533-angular-2-programming"
           },
           "500tech": {
-            "desc": "Learn from 500Tech, an Angular consultancy in Israel.  This course was built by an expert developer, who lives and breathes Angular 2, and has practical experience  with real world large scale Angular 2 apps.",
+            "desc": "Learn from 500Tech, an Angular consultancy in Israel.  This course was built by an expert developer, who lives and breathes Angular, and has practical experience  with real world large scale Angular apps.",
             "rev": true,
             "title": "Angular Hands-on Course (Israel)",
             "url": "http://angular2.courses.500tech.com/"
           },
           "9ab": {
-            "desc": "OnSite Training From the Authors of  \"Become A Ninja with Angular 2\"",
+            "desc": "OnSite Training From the Authors of  \"Become A Ninja with Angular\"",
             "rev": true,
             "title": "Ninja Squad",
             "url": "http://ninja-squad.com/formations/formation-angular2"
@@ -562,7 +562,7 @@
             "url": "https://angularbootcamp.com"
           },
           "ab": {
-            "desc": "With Rangle’s Custom Training, you can cover Angular 2 in comprehensive detail, on your premises or theirs. Learn directly from Angular 2 experts who will tailor course material to suit your specific application needs.",
+            "desc": "With Rangle’s Custom Training, you can cover Angular in comprehensive detail, on your premises or theirs. Learn directly from Angular experts who will tailor course material to suit your specific application needs.",
             "logo": "",
             "rev": true,
             "title": "Rangle.io",
