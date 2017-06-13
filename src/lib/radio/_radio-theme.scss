@@ -2,6 +2,19 @@
 @import '../core/theming/theming';
 @import '../core/typography/typography-utils';
 
+@mixin mat-radio-color($palette) {
+  &.mat-radio-checked .mat-radio-outer-circle {
+    border-color: mat-color($palette);
+  }
+
+  .mat-radio-inner-circle {
+    background-color: mat-color($palette);
+  }
+
+  .mat-radio-ripple .mat-ripple-element {
+    background-color: mat-color($palette, 0.26);
+  }
+}
 
 @mixin mat-radio-theme($theme) {
   $primary: map-get($theme, primary);
@@ -14,20 +27,8 @@
     border-color: mat-color($foreground, secondary-text);
   }
 
-  .mat-radio-checked .mat-radio-outer-circle {
-    border-color: mat-color($accent);
-  }
-
   .mat-radio-disabled .mat-radio-outer-circle {
     border-color: mat-color($foreground, disabled);
-  }
-
-  .mat-radio-inner-circle {
-    background-color: mat-color($accent);
-  }
-
-  .mat-radio-ripple .mat-ripple-element {
-    background-color: mat-color($accent, 0.26);
   }
 
   .mat-radio-disabled {
@@ -37,6 +38,20 @@
 
     .mat-radio-label-content {
       color: mat-color($foreground, disabled);
+    }
+  }
+
+  .mat-radio-button {
+    &.mat-primary {
+      @include mat-radio-color($primary);
+    }
+
+    &.mat-accent {
+      @include mat-radio-color($accent);
+    }
+
+    &.mat-warn {
+      @include mat-radio-color($warn);
     }
   }
 }

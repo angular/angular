@@ -29,6 +29,7 @@ import {
 } from '../core';
 import {coerceBooleanProperty} from '../core/coercion/boolean-property';
 import {mixinDisabled, CanDisable} from '../core/common-behaviors/disabled';
+import {CanColor, mixinColor} from '../core/common-behaviors/color';
 
 
 /**
@@ -287,6 +288,14 @@ export class MdRadioGroup extends _MdRadioGroupMixinBase
   }
 }
 
+// Boilerplate for applying mixins to MdRadioButton.
+export class MdRadioButtonBase {
+  constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
+}
+// As per Material design specifications the selection control radio should use the accent color
+// palette by default. https://material.io/guidelines/components/selection-controls.html
+export const _MdRadioButtonMixinBase = mixinColor(MdRadioButtonBase, 'accent');
+
 /**
  * A radio-button. May be inside of
  */
@@ -295,6 +304,7 @@ export class MdRadioGroup extends _MdRadioGroupMixinBase
   selector: 'md-radio-button, mat-radio-button',
   templateUrl: 'radio.html',
   styleUrls: ['radio.css'],
+  inputs: ['color'],
   encapsulation: ViewEncapsulation.None,
   host: {
     '[class.mat-radio-button]': 'true',
@@ -304,7 +314,8 @@ export class MdRadioGroup extends _MdRadioGroupMixinBase
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MdRadioButton implements OnInit, AfterViewInit, OnDestroy {
+export class MdRadioButton extends _MdRadioButtonMixinBase
+    implements OnInit, AfterViewInit, OnDestroy, CanColor {
 
   /** The unique ID for the radio button. */
   @Input() id: string = `md-radio-${_uniqueIdCounter++}`;
@@ -443,14 +454,15 @@ export class MdRadioButton implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('input') _inputElement: ElementRef;
 
   constructor(@Optional() radioGroup: MdRadioGroup,
-              private _elementRef: ElementRef,
-              private _renderer: Renderer2,
+              elementRef: ElementRef,
+              renderer: Renderer2,
               private _changeDetector: ChangeDetectorRef,
               private _focusOriginMonitor: FocusOriginMonitor,
               private _radioDispatcher: UniqueSelectionDispatcher) {
+    super(renderer, elementRef);
+
     // Assertions. Ideally these should be stripped out by the compiler.
     // TODO(jelbourn): Assert that there's no name binding AND a parent radio group.
-
     this.radioGroup = radioGroup;
 
     _radioDispatcher.listen((id: string, name: string) => {
