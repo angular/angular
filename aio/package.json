@@ -97,7 +97,7 @@
     "karma-coverage-istanbul-reporter": "^1.3.0",
     "karma-jasmine": "^1.1.0",
     "karma-jasmine-html-reporter": "^0.2.2",
-    "lighthouse": "^1.6.3",
+    "lighthouse": "^2.1.0",
     "lodash": "^4.17.4",
     "lunr": "^2.1.0",
     "protractor": "~5.1.0",
