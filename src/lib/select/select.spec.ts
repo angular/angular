@@ -29,6 +29,7 @@ import {
   FloatPlaceholderType,
   MD_PLACEHOLDER_GLOBAL_OPTIONS
 } from '../core/placeholder/placeholder-options';
+import {map} from 'rxjs/operator/map';
 
 
 describe('MdSelect', () => {
@@ -1674,6 +1675,17 @@ describe('MdSelect', () => {
         let event = dispatchKeyboardEvent(select, 'keydown', SPACE);
 
         expect(event.defaultPrevented).toBe(true);
+      });
+
+      it('should consider the selection as a result of a user action when closed', () => {
+        const option = fixture.componentInstance.options.first;
+        const spy = jasmine.createSpy('option selection spy');
+        const subscription = map.call(option.onSelectionChange, e => e.isUserInput).subscribe(spy);
+
+        dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
+        expect(spy).toHaveBeenCalledWith(true);
+
+        subscription.unsubscribe();
       });
 
     });

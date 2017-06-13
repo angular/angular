@@ -566,7 +566,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
    * Sets the selected option based on a value. If no option can be
    * found with the designated value, the select trigger is cleared.
    */
-  private _setSelectionByValue(value: any | any[]): void {
+  private _setSelectionByValue(value: any | any[], isUserInput = false): void {
     const isArray = Array.isArray(value);
 
     if (this.multiple && value && !isArray) {
@@ -576,10 +576,10 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
     this._clearSelection();
 
     if (isArray) {
-      value.forEach((currentValue: any) => this._selectValue(currentValue));
+      value.forEach((currentValue: any) => this._selectValue(currentValue, isUserInput));
       this._sortValues();
     } else {
-      this._selectValue(value);
+      this._selectValue(value, isUserInput);
     }
 
     this._setValueWidth();
@@ -595,14 +595,14 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
    * Finds and selects and option based on its value.
    * @returns Option that has the corresponding value.
    */
-  private _selectValue(value: any): MdOption {
+  private _selectValue(value: any, isUserInput = false): MdOption {
     let optionsArray = this.options.toArray();
     let correspondingOption = optionsArray.find(option => {
       return option.value != null && option.value === value;
     });
 
     if (correspondingOption) {
-      correspondingOption.select();
+      isUserInput ? correspondingOption._selectViaInteraction() : correspondingOption.select();
       this._selectionModel.select(correspondingOption);
       this._keyManager.setActiveItem(optionsArray.indexOf(correspondingOption));
     }
@@ -1027,7 +1027,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
 
       if (currentActiveItem !== prevActiveItem) {
         this._clearSelection();
-        this._setSelectionByValue(currentActiveItem.value);
+        this._setSelectionByValue(currentActiveItem.value, true);
         this._propagateChanges();
       }
     }
