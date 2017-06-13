@@ -1,5 +1,8 @@
 import { Component, OnInit, ViewChild, ElementRef, EventEmitter, Output } from '@angular/core';
 import { LocationService } from 'app/shared/location.service';
+import { Subject } from 'rxjs/Subject';
+import 'rxjs/add/operator/filter';
+import 'rxjs/add/operator/distinctUntilChanged';
 
 /**
  * This component provides a text box to type a search query that will be sent to the SearchService.
@@ -17,15 +20,19 @@ import { LocationService } from 'app/shared/location.service';
     type="search"
     aria-label="search"
     placeholder="Search"
-    (input)="onSearch($event.target.value)"
-    (keyup)="onSearch($event.target.value)"
-    (focus)="onSearch($event.target.value)"
-    (click)="onSearch($event.target.value)">`
+    (input)="doSearch()"
+    (keyup)="doSearch()"
+    (focus)="doSearch()"
+    (click)="doSearch()">`
 })
 export class SearchBoxComponent implements OnInit {
 
+  private searchSubject = new Subject<string>();
+
   @ViewChild('searchBox') searchBox: ElementRef;
-  @Output() search = new EventEmitter<string>();
+  @Output() onSearch = this.searchSubject
+                           .filter(value => !!(value && value.trim()))
+                           .distinctUntilChanged();
 
   constructor(private locationService: LocationService) { }
 
@@ -36,12 +43,12 @@ export class SearchBoxComponent implements OnInit {
     const query = this.locationService.search()['search'];
     if (query) {
       this.searchBox.nativeElement.value = query;
-      this.onSearch(query);
+      this.doSearch();
     }
   }
 
-  onSearch(query: string) {
-    this.search.emit(query);
+  doSearch() {
+    this.searchSubject.next(this.searchBox.nativeElement.value);
   }
 
   focus() {
