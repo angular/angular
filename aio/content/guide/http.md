@@ -407,6 +407,9 @@ like the Observable-based version.
 
 </div>
 
+First, make sure to import the `toPromise` operator of the RxJS library.
+
+<code-example path="http/src/app/toh/hero.service.promise.ts" region="rxjs-imports" title="src/app/toh/hero.service.promise.ts (import rxjs)" linenums="false"></code-example>
 
 Here is a comparison of the `HeroService` using Promises versus Observables,
 highlighting just the parts that are different.
