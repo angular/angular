@@ -86,28 +86,35 @@ async function calculatePayloadDiff(database: firebaseAdmin.database.Database, c
     return;
   }
 
-  // Calculate library sizes by combining the CDK and Material FESM 2015 bundles.
-  const previousSize = previousPayload.cdk_fesm_2015 + previousPayload.material_fesm_2015;
-  const currentSize = currentPayload.cdk_fesm_2015 + currentPayload.material_fesm_2015;
-  const deltaSize = currentSize - previousSize;
+  // Calculate the payload diffs by subtracting the previous size of the FESM ES2015 bundles.
+  const cdkFullSize = currentPayload.cdk_fesm_2015;
+  const cdkDiff = cdkFullSize - previousPayload.cdk_fesm_2015;
 
-  // Update the Github status of the current commit by sending a request to the dashboard
-  // firebase http trigger function.
-  await updateGithubStatus(currentSha, deltaSize, authToken);
+  const materialFullSize = currentPayload.material_fesm_2015;
+  const materialDiff = materialFullSize - previousPayload.material_fesm_2015;
+
+  // Set the Github statuses for the packages by sending a HTTP request to the dashboard functions.
+  await Promise.all([
+    updateGithubStatus(currentSha, 'material', materialDiff, materialFullSize, authToken),
+    updateGithubStatus(currentSha, 'cdk', cdkDiff, cdkFullSize, authToken)
+  ]);
 }
 
 /**
  * Updates the Github status of a given commit by sending a request to a Firebase function of
  * the dashboard. The function has access to the Github repository and can set status for PRs too.
  */
-async function updateGithubStatus(commitSha: string, payloadDiff: number, authToken: string) {
+async function updateGithubStatus(commitSha: string, packageName: string, packageDiff: number,
+                                  packageFullSize: number, authToken: string) {
   const options = {
     url: 'https://us-central1-material2-board.cloudfunctions.net/payloadGithubStatus',
     headers: {
       'User-Agent': 'Material2/PayloadTask',
       'auth-token': authToken,
       'commit-sha': commitSha,
-      'commit-payload-diff': payloadDiff
+      'package-name': packageName,
+      'package-full-size': packageFullSize,
+      'package-size-diff': packageDiff
     }
   };
 

@@ -18,26 +18,25 @@ export type GithubStatusData = {
 export function setGithubStatus(commitSHA: string, data: GithubStatusData) {
   const state = data.result ? 'success' : 'failure';
 
-  const requestData = JSON.stringify({
+  const requestData = {
     state: state,
     target_url: data.url,
     context: data.name,
     description: data.description
-  });
+  };
 
   const headers = {
     'Authorization': `token ${repoToken}`,
-    'User-Agent': `${name}/${version}`,
-    'Content-Type': 'application/json',
-    'Content-Length': Buffer.byteLength(requestData)
+    'User-Agent': `${name}/${version}`
   };
 
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     request({
       url: `https://api.github.com/repos/angular/material2/statuses/${commitSHA}`,
       method: 'POST',
-      form: requestData,
-      headers: headers
-    }, (error: any, response: any) => resolve(response.statusCode));
+      body: requestData,
+      headers: headers,
+      json: true
+    }, (error: any, response: any) => error ? reject(error) : resolve(response.statusCode));
   });
 }
