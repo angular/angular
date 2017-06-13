@@ -6,7 +6,7 @@ Does please check if your PR fulfills the following requirements:
 - [ ] Docs have been added / updated (for bug fixes / features)
 
 
-# PR Type
+## PR Type
 What kind of change does this PR introduce?
 
 <!-- Please check the one that applies to this PR using "x". -->
