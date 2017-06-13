@@ -3864,7 +3864,7 @@ jasmine-spec-reporter@^4.1.0:
   dependencies:
     colors "1.1.2"
 
-jasmine@^2.5.3:
+jasmine@^2.5.3, jasmine@^2.6.0:
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/jasmine/-/jasmine-2.6.0.tgz#6b22e70883e8e589d456346153b4d206ddbe217f"
   dependencies:
