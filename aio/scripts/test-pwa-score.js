@@ -12,16 +12,12 @@
 
 // Imports
 const lighthouse = require('lighthouse');
-const ChromeLauncher = require('lighthouse/lighthouse-cli/chrome-launcher').ChromeLauncher;
-const Printer = require('lighthouse/lighthouse-cli/printer');
-const config = require('lighthouse/lighthouse-core/config/default.json');
+const chromeLauncher = require('lighthouse/chrome-launcher/chrome-launcher');
+const printer = require('lighthouse/lighthouse-cli/printer');
+const config = require('lighthouse/lighthouse-core/config/default.js');
 
 // Constants
 const VIEWER_URL = 'https://googlechrome.github.io/lighthouse/viewer/';
-
-// Work-around traceviewer-js bug.
-global.atob = str => new Buffer(str, 'base64').toString('binary');
-global.btoa = str => new Buffer(str, 'binary').toString('base64');
 
 // Specify the path to Chrome on Travis
 if (process.env.TRAVIS) {
@@ -39,7 +35,7 @@ function _main(args) {
   console.log(`Running PWA audit for '${url}'...`);
 
   if (isOnHttp) {
-    ignoreHttpsAudits(config.aggregations);
+    ignoreHttpsAudits(config);
   }
 
   launchChromeAndRunLighthouse(url, {}, config).
@@ -58,31 +54,29 @@ function evaluateScore(expectedScore, actualScore) {
   }
 }
 
-function ignoreHttpsAudits(aggregations) {
+function ignoreHttpsAudits(config) {
   const httpsAudits = [
     'redirects-http'
   ];
 
   console.info(`Ignoring HTTPS-related audits (${httpsAudits.join(', ')})...`);
 
-  aggregations.forEach(aggregation =>
-    aggregation.items.forEach(item =>
-      httpsAudits.map(key => item.audits[key]).forEach(audit =>
-        // Ugly hack to ignore HTTPS-related audits (i.e. simulate them passing).
-        // Only meant for use during development.
-        audit && (audit.expectedValue = !audit.expectedValue))));
+  config.categories.pwa.audits.forEach(audit => {
+    if (httpsAudits.indexOf(audit.id) !== -1) {
+      // Ugly hack to ignore HTTPS-related audits.
+      // Only meant for use during development.
+      audit.weight = 0;
+     }
+   });
 }
 
 function launchChromeAndRunLighthouse(url, flags, config) {
-  const launcher = new ChromeLauncher({autoSelectChrome: true});
-
-  return launcher.run().
-    then(() => lighthouse(url, flags, config)).
-    // Avoid race condition by adding a delay before killing Chrome.
-    // (See also https://github.com/paulirish/pwmetrics/issues/63#issuecomment-282721068.)
-    then(results => new Promise(resolve => setTimeout(() => resolve(results), 1000))).
-    then(results => launcher.kill().then(() => results)).
-    catch(err => launcher.kill().then(() => { throw err; }, () => { throw err; }));
+  return chromeLauncher.launch().then(chrome => {
+    flags.port = chrome.port;
+    return lighthouse(url, flags, config).
+      then(results => chrome.kill().then(() => results)).
+      catch(err => chrome.kill().then(() => { throw err; }, () => { throw err; }));
+  });
 }
 
 function onError(err) {
@@ -105,16 +99,15 @@ function parseInput(args) {
 }
 
 function processResults(results, logFile) {
+  let promise = Promise.resolve();
+
   if (logFile) {
     console.log(`Saving results in '${logFile}'...`);
     console.log(`(LightHouse viewer: ${VIEWER_URL})`);
 
-    results.artifacts = undefined;   // Avoid circular dependency errors.
-    Printer.write(results, 'json', logFile);
+    results.artifacts = undefined;   // Too large for the logs.
+    promise = printer.write(results, 'json', logFile);
   }
 
-  const scoredAggregations = results.aggregations.filter(a => a.scored);
-  const total = scoredAggregations.reduce((sum, a) => sum + a.total, 0);
-
-  return Math.round((total / scoredAggregations.length) * 100);
+  return promise.then(() => Math.round(results.score));
 }
