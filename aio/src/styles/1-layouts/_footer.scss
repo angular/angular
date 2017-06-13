@@ -43,7 +43,7 @@ footer {
   p {
     text-align: center;
     margin: 10px 0px 5px;
-    
+
     @media (max-width: 480px) {
       text-align: left;
     }
@@ -79,7 +79,7 @@ footer {
     }
   }
 
-  
+
 
 
   @media (max-width: 700px) {
@@ -97,7 +97,7 @@ footer {
 footer::after {
     content: "";
     position: absolute;
-    z-index: 10;
+    z-index: -1;
     top: 0;
     bottom: 0;
     left: 0;
