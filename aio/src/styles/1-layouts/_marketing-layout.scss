@@ -138,27 +138,22 @@ section#intro {
     padding: 32px 16px;
   }
 
-  button {
-    min-width: 160px;
+  .button {
+    align-items: center;
     background-color: $blue;
     border-radius: 48px;
     box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
+    box-sizing: border-box;
+    color: $white;
     cursor: pointer;
     display: flex;
-    align-items: center;
+    font-size: 16px;
     height: 40px;
     justify-content: center;
+    min-width: 160px;
 
     &:hover {
-      a {
-        color: $white;
-        opacity: 0.7;
-      }
-    }
-
-    a {
-      color: $white;
-      font-size: 16px;
+      color: rgba($white, 0.7);
     }
   }
 
@@ -239,21 +234,21 @@ section#intro {
   }
 }
 
-button.hero-cta {
+.button.hero-cta {
+  background-color: $white;
   border-radius: 48px;
-  display: flex;
-  height: 40px;
   box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
+  box-sizing: border-box;
   cursor: pointer;
+  font-size: 18px;
+  font-weight: 600;
+  height: 40px;
+  line-height: 40px;
+  padding: 0 24px;
+  text-align: center;
 
   &:hover {
     opacity: 0.9;
-  }
-
-  a {
-    font-size: 18px;
-    font-weight: 600;
-    text-transform: uppercase;
   }
 }
 
