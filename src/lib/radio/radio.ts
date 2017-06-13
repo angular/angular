@@ -66,7 +66,7 @@ export const _MdRadioGroupMixinBase = mixinDisabled(MdRadioGroupBase);
   providers: [MD_RADIO_GROUP_CONTROL_VALUE_ACCESSOR],
   host: {
     'role': 'radiogroup',
-    '[class.mat-radio-group]': 'true',
+    'class': 'mat-radio-group',
   },
   inputs: ['disabled'],
 })
@@ -307,7 +307,7 @@ export const _MdRadioButtonMixinBase = mixinColor(MdRadioButtonBase, 'accent');
   inputs: ['color'],
   encapsulation: ViewEncapsulation.None,
   host: {
-    '[class.mat-radio-button]': 'true',
+    'class': 'mat-radio-button',
     '[class.mat-radio-checked]': 'checked',
     '[class.mat-radio-disabled]': 'disabled',
     '[attr.id]': 'id',

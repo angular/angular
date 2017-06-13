@@ -125,7 +125,7 @@ export const _MdSelectMixinBase = mixinColor(MdSelectBase, 'primary');
     '[attr.aria-invalid]': '_control?.invalid || "false"',
     '[attr.aria-owns]': '_optionIds',
     '[class.mat-select-disabled]': 'disabled',
-    '[class.mat-select]': 'true',
+    'class': 'mat-select',
     '(keydown)': '_handleClosedKeydown($event)',
     '(blur)': '_onBlur()',
   },

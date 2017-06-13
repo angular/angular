@@ -33,7 +33,7 @@ import {Subscription} from 'rxjs/Subscription';
     // Properties
     '[attr.tabindex]': '_tabIndex',
     'role': 'listbox',
-    '[class.mat-chip-list]': 'true',
+    'class': 'mat-chip-list',
 
     // Events
     '(focus)': 'focus()',

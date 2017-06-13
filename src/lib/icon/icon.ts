@@ -62,7 +62,7 @@ export const _MdIconMixinBase = mixinColor(MdIconBase);
   inputs: ['color'],
   host: {
     'role': 'img',
-    'class': 'mat-icon'
+    'class': 'mat-icon',
   },
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,

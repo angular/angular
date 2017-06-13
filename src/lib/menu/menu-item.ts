@@ -11,7 +11,7 @@ import {coerceBooleanProperty} from '../core/coercion/boolean-property';
   selector: '[md-menu-item], [mat-menu-item]',
   host: {
     'role': 'menuitem',
-    '[class.mat-menu-item]': 'true',
+    'class': 'mat-menu-item',
     '[attr.tabindex]': '_getTabIndex()',
     '[attr.aria-disabled]': 'disabled.toString()',
     '[attr.disabled]': '_getDisabledAttr()',

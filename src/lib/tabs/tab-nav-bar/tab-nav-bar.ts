@@ -28,13 +28,13 @@ import {Subject} from 'rxjs/Subject';
  */
 @Component({
   moduleId: module.id,
-  selector: '[md-tab-nav-bar], [mat-tab-nav-bar]',
+  selector: '[md-tab-nav-bar], [mat-tab-nav-bar], [mdTabNav], [matTabNav]',
   templateUrl: 'tab-nav-bar.html',
   styleUrls: ['tab-nav-bar.css'],
   host: {'class': 'mat-tab-nav-bar'},
   encapsulation: ViewEncapsulation.None,
 })
-export class MdTabNavBar implements AfterContentInit, OnDestroy {
+export class MdTabNav implements AfterContentInit, OnDestroy {
   /** Subject that emits when the component has been destroyed. */
   private _onDestroy = new Subject<void>();
 
@@ -88,7 +88,7 @@ export class MdTabNavBar implements AfterContentInit, OnDestroy {
  * Link inside of a `md-tab-nav-bar`.
  */
 @Directive({
-  selector: '[md-tab-link], [mat-tab-link]',
+  selector: '[md-tab-link], [mat-tab-link], [mdTabLink], [matTabLink]',
   host: {'class': 'mat-tab-link'}
 })
 export class MdTabLink {
@@ -104,7 +104,7 @@ export class MdTabLink {
     }
   }
 
-  constructor(private _mdTabNavBar: MdTabNavBar, private _elementRef: ElementRef) {}
+  constructor(private _mdTabNavBar: MdTabNav, private _elementRef: ElementRef) {}
 }
 
 /**
@@ -112,8 +112,7 @@ export class MdTabLink {
  * adds the ripple behavior to nav bar labels.
  */
 @Directive({
-  selector: '[md-tab-link], [mat-tab-link]',
-  host: {'class': 'mat-tab-link'},
+  selector: '[md-tab-link], [mat-tab-link], [mdTabLink], [matTabLink]',
 })
 export class MdTabLinkRipple extends MdRipple {
   constructor(

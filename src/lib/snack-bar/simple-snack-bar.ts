@@ -13,7 +13,7 @@ import {MdSnackBarRef} from './snack-bar-ref';
   styleUrls: ['simple-snack-bar.css'],
   encapsulation: ViewEncapsulation.None,
   host: {
-    '[class.mat-simple-snackbar]': 'true',
+    'class': 'mat-simple-snackbar',
   }
 })
 export class SimpleSnackBar {

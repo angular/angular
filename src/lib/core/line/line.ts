@@ -14,10 +14,8 @@ import {MdCommonModule} from '../common-behaviors/common-module';
  * counted by checking the query list's length.
  */
 @Directive({
-  selector: '[md-line], [mat-line]',
-  host: {
-    '[class.mat-line]': 'true'
-  }
+  selector: '[md-line], [mat-line], [mdLine], [matLine]',
+  host: {'class': 'mat-line'}
 })
 export class MdLine {}
 

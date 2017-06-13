@@ -1,6 +1,6 @@
 import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {MdTabsModule} from '../index';
-import {MdTabNavBar} from './tab-nav-bar';
+import {MdTabNav} from './tab-nav-bar';
 import {Component, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {ViewportRuler} from '../../core/overlay/position/viewport-ruler';
@@ -131,7 +131,7 @@ describe('MdTabNavBar', () => {
   `
 })
 class SimpleTabNavBarTestApp {
-  @ViewChild(MdTabNavBar) tabNavBar: MdTabNavBar;
+  @ViewChild(MdTabNav) tabNavBar: MdTabNav;
 
   label = '';
   tabs = [0, 1, 2];

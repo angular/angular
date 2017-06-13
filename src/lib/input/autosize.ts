@@ -19,8 +19,7 @@ export class MdTextareaAutosize implements AfterViewInit {
   private _minRows: number;
   private _maxRows: number;
 
-  /** @deprecated Use mdAutosizeMinRows */
-  @Input()
+  @Input('mdAutosizeMinRows')
   get minRows() { return this._minRows; }
 
   set minRows(value: number) {
@@ -28,24 +27,20 @@ export class MdTextareaAutosize implements AfterViewInit {
     this._setMinHeight();
   }
 
-  /** @deprecated Use mdAutosizeMaxRows */
-  @Input()
+  @Input('mdAutosizeMaxRows')
   get maxRows() { return this._maxRows; }
-
   set maxRows(value: number) {
     this._maxRows = value;
     this._setMaxHeight();
   }
 
-  /** Minimum number of rows for this textarea. */
-  @Input()
-  get mdAutosizeMinRows(): number { return this.minRows; }
-  set mdAutosizeMinRows(value: number) { this.minRows = value; }
+  @Input('matAutosizeMaxRows')
+  get _matAutosizeMinRows() { return this.minRows; }
+  set _matAutosizeMinRows(v) { this.minRows = v; }
 
-  /** Maximum number of rows for this textarea. */
-  @Input()
-  get mdAutosizeMaxRows(): number { return this.maxRows; }
-  set mdAutosizeMaxRows(value: number) { this.maxRows = value; }
+  @Input('matAutosizeMaxRows')
+  get _matAutosizeMaxRows() { return this.maxRows; }
+  set _matAutosizeMaxRows(v) { this.maxRows = v; }
 
   /** Cached height of a textarea with a single row. */
   private _cachedLineHeight: number;

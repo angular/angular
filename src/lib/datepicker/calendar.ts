@@ -39,7 +39,7 @@ import {MATERIAL_COMPATIBILITY_MODE} from '../core';
   templateUrl: 'calendar.html',
   styleUrls: ['calendar.css'],
   host: {
-    '[class.mat-calendar]': 'true',
+    'class': 'mat-calendar',
   },
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,

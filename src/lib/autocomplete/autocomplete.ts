@@ -29,7 +29,7 @@ export type AutocompletePositionY = 'above' | 'below';
   encapsulation: ViewEncapsulation.None,
   exportAs: 'mdAutocomplete',
   host: {
-    '[class.mat-autocomplete]': 'true'
+    'class': 'mat-autocomplete'
   }
 })
 export class MdAutocomplete implements AfterContentInit {

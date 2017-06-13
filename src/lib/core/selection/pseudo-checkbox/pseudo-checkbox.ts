@@ -36,7 +36,7 @@ export const _MdPseudoCheckboxBase = mixinColor(MdPseudoCheckboxBase, 'accent');
   inputs: ['color'],
   template: '',
   host: {
-    '[class.mat-pseudo-checkbox]': 'true',
+    'class': 'mat-pseudo-checkbox',
     '[class.mat-pseudo-checkbox-indeterminate]': 'state === "indeterminate"',
     '[class.mat-pseudo-checkbox-checked]': 'state === "checked"',
     '[class.mat-pseudo-checkbox-disabled]': 'disabled',

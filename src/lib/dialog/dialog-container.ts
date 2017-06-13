@@ -56,7 +56,7 @@ export function throwMdDialogContentAlreadyAttachedError() {
     ])
   ],
   host: {
-    '[class.mat-dialog-container]': 'true',
+    'class': 'mat-dialog-container',
     '[attr.role]': '_config?.role',
     '[@slideDialog]': '_state',
     '(@slideDialog.done)': '_onAnimationDone($event)',

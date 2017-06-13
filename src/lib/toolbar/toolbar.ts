@@ -11,9 +11,7 @@ import {CanColor, mixinColor} from '../core/common-behaviors/color';
 
 @Directive({
   selector: 'md-toolbar-row, mat-toolbar-row',
-  host: {
-    '[class.mat-toolbar-row]': 'true',
-  },
+  host: {'class': 'mat-toolbar-row'},
 })
 export class MdToolbarRow {}
 
@@ -31,7 +29,7 @@ export const _MdToolbarMixinBase = mixinColor(MdToolbarBase);
   styleUrls: ['toolbar.css'],
   inputs: ['color'],
   host: {
-    '[class.mat-toolbar]': 'true',
+    'class': 'mat-toolbar',
     'role': 'toolbar'
   },
   changeDetection: ChangeDetectionStrategy.OnPush,

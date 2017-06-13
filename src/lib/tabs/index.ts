@@ -7,7 +7,7 @@ import {MdTab} from './tab';
 import {MdTabGroup} from './tab-group';
 import {MdTabLabel} from './tab-label';
 import {MdTabLabelWrapper} from './tab-label-wrapper';
-import {MdTabNavBar, MdTabLink, MdTabLinkRipple} from './tab-nav-bar/tab-nav-bar';
+import {MdTabNav, MdTabLink, MdTabLinkRipple} from './tab-nav-bar/tab-nav-bar';
 import {MdInkBar} from './ink-bar';
 import {MdTabBody} from './tab-body';
 import {VIEWPORT_RULER_PROVIDER} from '../core/overlay/position/viewport-ruler';
@@ -28,7 +28,7 @@ import {ScrollDispatchModule} from '../core/overlay/scroll/index';
     MdTabGroup,
     MdTabLabel,
     MdTab,
-    MdTabNavBar,
+    MdTabNav,
     MdTabLink,
     MdTabLinkRipple
   ],
@@ -38,7 +38,7 @@ import {ScrollDispatchModule} from '../core/overlay/scroll/index';
     MdTab,
     MdInkBar,
     MdTabLabelWrapper,
-    MdTabNavBar,
+    MdTabNav,
     MdTabLink,
     MdTabBody,
     MdTabLinkRipple,
@@ -56,3 +56,4 @@ export {MdTabHeader, ScrollDirection} from './tab-header';
 export {MdTabLabelWrapper} from './tab-label-wrapper';
 export {MdTab} from './tab';
 export {MdTabLabel} from './tab-label';
+export {MdTabNav, MdTabLink} from './tab-nav-bar/index';

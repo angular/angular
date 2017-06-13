@@ -66,7 +66,7 @@ export class MdPlaceholder {}
 @Directive({
   selector: 'md-hint, mat-hint',
   host: {
-    '[class.mat-hint]': 'true',
+    'class': 'mat-hint',
     '[class.mat-right]': 'align == "end"',
     '[attr.id]': 'id',
   }
@@ -83,7 +83,7 @@ export class MdHint {
 @Directive({
   selector: 'md-error, mat-error',
   host: {
-    '[class.mat-input-error]': 'true'
+    'class': 'mat-input-error'
   }
 })
 export class MdErrorDirective { }
@@ -106,7 +106,7 @@ export class MdSuffix {}
 @Directive({
   selector: `input[mdInput], textarea[mdInput], input[matInput], textarea[matInput]`,
   host: {
-    '[class.mat-input-element]': 'true',
+    'class': 'mat-input-element',
     // Native input properties that are overwritten by Angular inputs need to be synced with
     // the native input element. Otherwise property bindings for those don't work.
     '[id]': 'id',
@@ -298,7 +298,7 @@ export class MdInputDirective {
   host: {
     // Remove align attribute to prevent it from interfering with layout.
     '[attr.align]': 'null',
-    '[class.mat-input-container]': 'true',
+    'class': 'mat-input-container',
     '[class.mat-input-invalid]': '_mdInputChild._isErrorState()',
     '[class.mat-focused]': '_mdInputChild.focused',
     '[class.ng-untouched]': '_shouldForward("untouched")',

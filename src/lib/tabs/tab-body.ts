@@ -53,7 +53,7 @@ export type MdTabBodyOriginState = 'left' | 'right';
   styleUrls: ['tab-body.css'],
   encapsulation: ViewEncapsulation.None,
   host: {
-    '[class.mat-tab-body]': 'true',
+    'class': 'mat-tab-body',
   },
   animations: [
     trigger('translateTab', [

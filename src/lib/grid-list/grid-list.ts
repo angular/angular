@@ -33,7 +33,7 @@ const MD_FIT_MODE = 'fit';
   styleUrls: ['grid-list.css'],
   host: {
     'role': 'list',
-    '[class.mat-grid-list]': 'true',
+    'class': 'mat-grid-list',
   },
   encapsulation: ViewEncapsulation.None,
 })
