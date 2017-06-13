@@ -15,8 +15,9 @@ $mat-radio-ripple-size: $mat-radio-size * 0.75;
 .mat-radio-label {
   cursor: pointer;
   display: inline-flex;
-  align-items: baseline;
+  align-items: center;
   white-space: nowrap;
+  vertical-align: middle;
 }
 
 // Container for radio circles and ripple.
@@ -26,7 +27,6 @@ $mat-radio-ripple-size: $mat-radio-size * 0.75;
   height: $mat-radio-size;
   position: relative;
   width: $mat-radio-size;
-  top: 2px;
 }
 
 // The outer circle for the radio, always present.
