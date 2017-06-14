@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {Subscription} from 'rxjs/Subscription';
 import {ScrollStrategy, getMdScrollStrategyAlreadyAttachedError} from './scroll-strategy';
 import {OverlayRef} from '../overlay-ref';

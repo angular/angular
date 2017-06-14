@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 /** Creates a browser MouseEvent with the specified options. */
 export function createMouseEvent(type: string, x = 0, y = 0) {
   let event = document.createEvent('MouseEvent');

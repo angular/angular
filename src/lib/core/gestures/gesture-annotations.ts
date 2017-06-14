@@ -1,4 +1,12 @@
 /**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
  * Stripped-down HammerJS annotations to be used within Material, which are necessary,
  * because HammerJS is an optional dependency. For the full annotations see:
  * https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/hammerjs

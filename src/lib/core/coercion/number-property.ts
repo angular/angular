@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 /** Coerces a data-bound value (typically a string) to a number. */
 export function coerceNumberProperty(value: any, fallbackValue = 0) {
   // parseFloat(value) handles most of the cases we're interested in (it treats null, empty string,

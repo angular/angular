@@ -1,3 +1,10 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
 // Due to a bug in the ChromeDriver, Angular keyboard events are not triggered by `sendKeys`
 // during E2E tests when using dot notation such as `(keydown.rightArrow)`. To get around this,

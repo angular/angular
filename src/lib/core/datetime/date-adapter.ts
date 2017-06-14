@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 /** Adapts type `D` to be usable as a date by cdk-based components that work with dates. */
 export abstract class DateAdapter<D> {
   /** The locale to use for all dates. */

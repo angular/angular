@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 /** @docs-private */
 export function getMdInputContainerPlaceholderConflictError(): Error {
   return new Error('Placeholder attribute and child element were both specified.');

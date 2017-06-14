@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {PositionStrategy} from './position/position-strategy';
 import {LayoutDirection} from '../rtl/dir';
 import {ScrollStrategy} from './scroll/scroll-strategy';

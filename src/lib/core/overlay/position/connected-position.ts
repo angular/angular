@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 /** Horizontal dimension of a connection point on the perimeter of the origin or overlay element. */
 import {Optional} from '@angular/core';
 export type HorizontalConnectionPos = 'start' | 'center' | 'end';
