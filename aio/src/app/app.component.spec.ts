@@ -59,12 +59,9 @@ describe('AppComponent', () => {
 
   describe('with proper DocViewer', () => {
 
-    // For reasons unknown, not using `done` (even calling it synchronously),
-    // causes Chrome (v58+) to often get disconnected (at least on Windows and Travis).
-    beforeEach(done => {
+    beforeEach(() => {
       createTestingModule('a/b');
       initializeTest();
-      done();
     });
 
     it('should create', () => {
