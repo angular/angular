@@ -72,6 +72,7 @@
     // Disallows importing the whole RxJS library. Submodules can be still imported.
     "import-blacklist": [true, "rxjs"],
     // Avoids inconsistent linebreak styles in source files. Forces developers to use LF linebreaks.
-    "linebreak-style": [true, "LF"]
+    "linebreak-style": [true, "LF"],
+    "require-license-banner": true
   }
 }
