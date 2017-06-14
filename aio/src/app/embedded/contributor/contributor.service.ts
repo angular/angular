@@ -5,7 +5,6 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/publishLast';
 
-import { Logger } from 'app/shared/logger.service';
 import { Contributor, ContributorGroup } from './contributors.model';
 import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
 
@@ -16,7 +15,7 @@ const knownGroups = ['Angular', 'Community'];
 export class ContributorService {
   contributors: Observable<ContributorGroup[]>;
 
-  constructor(private http: Http, private logger: Logger) {
+  constructor(private http: Http) {
     this.contributors = this.getContributors();
   }
 
