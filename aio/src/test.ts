@@ -42,6 +42,14 @@ getTestBed().initTestEnvironment(
   platformBrowserDynamicTesting()
 );
 
+// HACK: Chrome 59 disconnects if there are too many synchronous tests in a row
+// because it appears to lock up the thread that communicates to Karma's socket
+// This async beforeEach gets called on every spec and releases the JS thread long
+// enough for the socket to continue to communicate.
+// The downside is that it creates a minor performance penalty of around 10-15%
+// increase in the time it takes to run out unit tests.
+beforeEach((done) => done());
+
 declare var System: any;
 // Then we find all the tests.
 System.import('./test-specs.ts')
