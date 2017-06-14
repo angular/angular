@@ -574,6 +574,13 @@
             "rev": true,
             "title": "Thoughtram",
             "url": "http://thoughtram.io/"
+          },
+          "jsru": {
+            "desc": "Complete Angular online course. Constantly updating. Real-time webinars with immediate feedback from the teacher.",
+            "logo": "https://learn.javascript.ru/img/sitetoolbar__logo_ru.svg",
+            "rev": true,
+            "title": "Learn Javascript (Russian)",
+            "url": "https://learn.javascript.ru/courses/angular"
           }
         }
       }
