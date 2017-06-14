@@ -4,7 +4,6 @@ import { MockBackend } from '@angular/http/testing';
 
 import { ResourceService } from './resource.service';
 import { Category, SubCategory, Resource } from './resource.model';
-import { Logger } from 'app/shared/logger.service';
 
 describe('ResourceService', () => {
 
@@ -21,8 +20,7 @@ describe('ResourceService', () => {
       ResourceService,
       { provide: ConnectionBackend, useClass: MockBackend },
       { provide: RequestOptions, useClass: BaseRequestOptions },
-      Http,
-      Logger
+      Http
     ]);
 
     backend = injector.get(ConnectionBackend);

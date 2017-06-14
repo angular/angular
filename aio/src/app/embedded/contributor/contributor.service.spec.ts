@@ -4,7 +4,6 @@ import { MockBackend } from '@angular/http/testing';
 
 import { ContributorService } from './contributor.service';
 import { Contributor, ContributorGroup } from './contributors.model';
-import { Logger } from 'app/shared/logger.service';
 
 describe('ContributorService', () => {
 
@@ -21,8 +20,7 @@ describe('ContributorService', () => {
         ContributorService,
         { provide: ConnectionBackend, useClass: MockBackend },
         { provide: RequestOptions, useClass: BaseRequestOptions },
-        Http,
-        Logger
+        Http
     ]);
 
     backend = injector.get(ConnectionBackend);
