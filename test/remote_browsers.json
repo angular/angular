@@ -1,8 +1,8 @@
 {
-  "ChromeNoSandbox": {
-    "base": "Chrome",
+  "ChromeHeadless_CI": {
+    "base": "ChromeHeadless",
     "flags": [
-      "--no-sandbox"
+      "--window-size=1024,768"
     ]
   },
   "Chrome_1024x768": {

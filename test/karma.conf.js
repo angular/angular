@@ -92,7 +92,7 @@ module.exports = (config) => {
   });
 
   if (process.env['TRAVIS']) {
-    let buildId = `TRAVIS #${process.env.TRAVIS_BUILD_NUMBER} (${process.env.TRAVIS_BUILD_ID})`;
+    const buildId = `TRAVIS #${process.env.TRAVIS_BUILD_NUMBER} (${process.env.TRAVIS_BUILD_ID})`;
 
     if (process.env['TRAVIS_PULL_REQUEST'] === 'false' &&
         process.env['MODE'] === "browserstack_required") {
@@ -102,10 +102,10 @@ module.exports = (config) => {
     }
 
     // The MODE variable is the indicator of what row in the test matrix we're running.
-    // It will look like <platform>_<alias>, where platform is one of 'saucelabs' or 'browserstack',
-    // and alias is one of the keys in the CI configuration variable declared in
-    // browser-providers.ts.
-    let [platform, alias] = process.env.MODE.split('_');
+    // It will look like <platform>_<target>, where platform is one of 'saucelabs', 'browserstack'
+    // or 'travis'. The target is a reference to different collections of browsers that can run
+    // in the previously specified platform.
+    const [platform, target] = process.env.MODE.split('_');
 
     if (platform === 'saucelabs') {
       config.sauceLabs.build = buildId;
@@ -113,10 +113,10 @@ module.exports = (config) => {
     } else if (platform === 'browserstack') {
       config.browserStack.build = buildId;
       config.browserStack.tunnelIdentifier = process.env.TRAVIS_JOB_ID;
-    } else {
+    } else if (platform !== 'travis') {
       throw new Error(`Platform "${platform}" unknown, but Travis specified. Exiting.`);
     }
 
-    config.browsers = platformMap[platform][alias.toLowerCase()];
+    config.browsers = platformMap[platform][target.toLowerCase()];
   }
 };

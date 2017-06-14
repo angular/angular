@@ -2,27 +2,27 @@
 source ./scripts/ci/sources/tunnel.sh
 
 is_e2e() {
-  [[ "$MODE" = e2e ]]
+  [[ "${MODE}" = e2e ]]
 }
 
 is_lint() {
-  [[ "$MODE" = lint ]]
+  [[ "${MODE}" = lint ]]
 }
 
 is_aot() {
-  [[ "$MODE" = aot ]]
+  [[ "${MODE}" = aot ]]
 }
 
 is_closure_compiler() {
-  [[ "$MODE" = closure-compiler ]]
+  [[ "${MODE}" = closure-compiler ]]
 }
 
 is_payload() {
-  [[ "$MODE" = payload ]]
+  [[ "${MODE}" = payload ]]
 }
 
 is_unit() {
-  [[ "$MODE" = saucelabs_required || "$MODE" = browserstack_required ]]
+  [[ "${MODE}" =~ ^.*_(optional|required)$ ]]
 }
 
 is_prerender() {
