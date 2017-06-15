@@ -1,10 +1,11 @@
 #!/bin/bash
 
+set -u -e -o pipefail
+
 readonly TOKEN=$ANGULAR_PAYLOAD_FIREBASE_TOKEN
 readonly PROJECT_NAME="angular-payload-size"
-readonly OUTPUT_FILE=/tmp/snapshot.tar.gz
 
-source scripts/payload-limit.sh
+source scripts/_payload-limits.sh
 
 failed=false
 payloadData=""
@@ -45,7 +46,7 @@ done
 timestamp=$(date +%s)
 payloadData="$payloadData\"timestamp\": $timestamp, "
 
-# Add change source: local, dependencies, or 'local+dependencies'
+# Add change source: application, dependencies, or 'application+dependencies'
 allChangedFiles=$(git diff --name-only $TRAVIS_COMMIT_RANGE)
 yarnChangedFiles=$(git diff --name-only $TRAVIS_COMMIT_RANGE | grep yarn.lock)
 
