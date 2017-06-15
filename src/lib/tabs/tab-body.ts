@@ -65,11 +65,11 @@ export type MdTabBodyOriginState = 'left' | 'right';
   },
   animations: [
     trigger('translateTab', [
-      state('void', style({transform: 'translate3d(0, 0, 0)'})),
+      state('void', style({transform: 'translate3d(0%, 0, 0)'})),
       state('left', style({transform: 'translate3d(-100%, 0, 0)'})),
-      state('left-origin-center', style({transform: 'translate3d(0, 0, 0)'})),
-      state('right-origin-center', style({transform: 'translate3d(0, 0, 0)'})),
-      state('center', style({transform: 'translate3d(0, 0, 0)'})),
+      state('left-origin-center', style({transform: 'translate3d(0%, 0, 0)'})),
+      state('right-origin-center', style({transform: 'translate3d(0%, 0, 0)'})),
+      state('center', style({transform: 'translate3d(0%, 0, 0)'})),
       state('right', style({transform: 'translate3d(100%, 0, 0)'})),
       transition('* => left, * => right, left => center, right => center',
           animate('500ms cubic-bezier(0.35, 0, 0.25, 1)')),
