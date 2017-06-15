@@ -50,7 +50,7 @@ payloadData="$payloadData\"timestamp\": $timestamp, "
 allChangedFiles=$(git diff --name-only $TRAVIS_COMMIT_RANGE)
 yarnChangedFiles=$(git diff --name-only $TRAVIS_COMMIT_RANGE | grep yarn.lock)
 
-if [ $allChangedFiles ] && [ $yarnChangedFiles ] && [ "$allChangedFiles" -ne "$yarnChangedFiles" ]; then
+if [[ $allChangedFiles ]] && [[ $yarnChangedFiles ]] && [ "$allChangedFiles" -ne "$yarnChangedFiles" ]; then
   change='local+dependencies'
 elif [[ ! -z $yarnChangedFiles ]]; then
   change='dependencies'
