@@ -529,6 +529,72 @@ export function main() {
         expect(p3.duration).toEqual(4000);
       });
 
+      it('should properly apply pre styling before a stagger is issued', () => {
+        @Component({
+          selector: 'ani-cmp',
+          template: `
+          <div [@myAnimation]="exp">
+            <div *ngFor="let item of items" class="item">
+              {{ item }} 
+            </div> 
+          </div> 
+        `,
+          animations: [
+            trigger(
+                'myAnimation',
+                [
+                  transition(
+                      '* => go',
+                      [
+                        query(
+                            ':enter',
+                            [
+                              style({opacity: 0}),
+                              stagger(
+                                  100,
+                                  [
+                                    animate(1000, style({opacity: 1})),
+                                  ]),
+                            ]),
+                      ]),
+                ]),
+          ]
+        })
+        class Cmp {
+          public exp: any;
+          public items: any[] = [0, 1, 2, 3, 4];
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+
+        const engine = TestBed.get(ɵAnimationEngine);
+        const fixture = TestBed.createComponent(Cmp);
+        const cmp = fixture.componentInstance;
+
+        cmp.exp = 'go';
+        fixture.detectChanges();
+        engine.flush();
+
+        const players = getLog();
+        expect(players.length).toEqual(5);
+
+        for (let i = 0; i < players.length; i++) {
+          const player = players[i];
+          const kf = player.keyframes;
+          const limit = kf.length - 1;
+          const staggerDelay = 100 * i;
+          const duration = 1000 + staggerDelay;
+
+          expect(kf[0]).toEqual({opacity: '0', offset: 0});
+          if (limit > 1) {
+            const offsetAtStaggerDelay = staggerDelay / duration;
+            expect(kf[1]).toEqual({opacity: '0', offset: offsetAtStaggerDelay});
+          }
+          expect(kf[limit]).toEqual({opacity: '1', offset: 1});
+          expect(player.duration).toEqual(duration);
+        }
+      });
+
       it('should apply a full stagger step delay if the timing data is left undefined', () => {
         @Component({
           selector: 'ani-cmp',
