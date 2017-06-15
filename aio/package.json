@@ -21,6 +21,7 @@
     "test-pwa-score": "node scripts/test-pwa-score",
     "example-e2e": "node ./tools/examples/run-example-e2e",
     "example-lint": "tslint -c \"content/examples/tslint.json\" \"content/examples/**/*.ts\" -e \"content/examples/styleguide/**/*.avoid.ts\"",
+    "deploy-preview": "scripts/deploy-preview.sh",
     "deploy-staging": "scripts/deploy-to-firebase.sh staging",
     "deploy-production": "scripts/deploy-to-firebase.sh production",
     "check-env": "node scripts/check-environment",

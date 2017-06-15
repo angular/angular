@@ -1,8 +1,8 @@
 #!/bin/bash
 
-set -u -e -o pipefail
+set -e -o pipefail
 
-readonly TOKEN=$ANGULAR_PAYLOAD_FIREBASE_TOKEN
+readonly TOKEN=${ANGULAR_PAYLOAD_FIREBASE_TOKEN:-}
 readonly PROJECT_NAME="angular-payload-size"
 
 source scripts/_payload-limits.sh
@@ -47,15 +47,15 @@ timestamp=$(date +%s)
 payloadData="$payloadData\"timestamp\": $timestamp, "
 
 # Add change source: application, dependencies, or 'application+dependencies'
-allChangedFiles=$(git diff --name-only $TRAVIS_COMMIT_RANGE)
-yarnChangedFiles=$(git diff --name-only $TRAVIS_COMMIT_RANGE | grep yarn.lock)
+allChangedFiles=$(git diff --name-only $TRAVIS_COMMIT_RANGE || "")
+yarnChangedFiles=$(git diff --name-only $TRAVIS_COMMIT_RANGE | grep yarn.lock || "")
 
-if [[ $allChangedFiles ]] && [[ $yarnChangedFiles ]] && [ "$allChangedFiles" -ne "$yarnChangedFiles" ]; then
-  change='local+dependencies'
+if [[ ! -z $allChangedFiles ]] && [[ ! -z $yarnChangedFiles ]] && [ "$allChangedFiles" != "$yarnChangedFiles" ]; then
+  change='application+dependencies'
 elif [[ ! -z $yarnChangedFiles ]]; then
   change='dependencies'
 elif [[ ! -z $allChangedFiles ]]; then
-  change='local'
+  change='application'
 else
   change=''
 fi
@@ -65,10 +65,10 @@ payloadData="{${payloadData}}"
 
 echo $payloadData
 
-if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then
+if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
   firebase database:update --data "$payloadData" --project $PROJECT_NAME --confirm --token "$TOKEN" /payload/aio/$TRAVIS_COMMIT
 fi
 
-if [ $failed = true ]; then
+if [[ $failed = true ]]; then
   exit 1
 fi
