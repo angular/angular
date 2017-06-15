@@ -1,4 +1,4 @@
-#!/bin/bash
+set -u -e -o pipefail
 
 declare -A limitUncompressed
 limitUncompressed=(["0"]=16000 ["inline"]=1600 ["main"]=360000 ["polyfills"]=40000 ["vendor"]=520000)
