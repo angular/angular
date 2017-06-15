@@ -134,7 +134,7 @@ export declare class NgClass implements DoCheck {
     ngClass: string | string[] | Set<string> | {
         [klass: string]: any;
     };
-    constructor(_iterableDiffers: IterableDiffers, _keyValueDiffers: KeyValueDiffers, _ngEl: ElementRef, _renderer: Renderer);
+    constructor(_iterableDiffers: IterableDiffers, _keyValueDiffers: KeyValueDiffers, _ngEl: ElementRef, _renderer: Renderer2);
     ngDoCheck(): void;
 }
 
@@ -219,7 +219,7 @@ export declare class NgStyle implements DoCheck {
     ngStyle: {
         [key: string]: string;
     };
-    constructor(_differs: KeyValueDiffers, _ngEl: ElementRef, _renderer: Renderer);
+    constructor(_differs: KeyValueDiffers, _ngEl: ElementRef, _renderer: Renderer2);
     ngDoCheck(): void;
 }
 
