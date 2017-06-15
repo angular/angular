@@ -204,6 +204,15 @@
    "group": "Angular"
  },
 
+ "paulgschwendtner": {
+   "name": "Paul Gschwendtner",
+   "picture": "devversion.jpg",
+   "twitter": "DevVersion",
+   "website": "https://github.com/DevVersion",
+   "bio": "Paul is a 17-year-old developer living in Germany. While he attends school, Paul works as a core team member on Angular Material. Paul focuses on tooling and building components for Angular.",
+   "group": "Angular"
+ },
+
  "elad": {
    "name": "Elad Bezalel",
    "picture": "eladbezalel.jpg",
