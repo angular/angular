@@ -368,12 +368,6 @@ describe('Portals', () => {
 
       expect(spy).toHaveBeenCalled();
     });
-
-    it('should run change detection in the created component when a ComponentPortal is attached',
-      () => {
-        host.attach(new ComponentPortal(ComponentWithBoundVariable, someViewContainerRef));
-        expect(someDomElement.textContent).toContain('initial value');
-      });
   });
 });
 
@@ -408,15 +402,6 @@ class PizzaMsg {
 })
 class ArbitraryViewContainerRefComponent {
   constructor(public viewContainerRef: ViewContainerRef, public injector: Injector) { }
-}
-
-/** Simple component with a bound variable in the template */
-@Component({
-  selector: 'bound-text',
-  template: '<p>{{text}}</p>'
-})
-class ComponentWithBoundVariable {
-  text: string = 'initial value';
 }
 
 
@@ -468,12 +453,7 @@ class PortalTestApp {
 
 // Create a real (non-test) NgModule as a workaround for
 // https://github.com/angular/angular/issues/10760
-const TEST_COMPONENTS = [
-  PortalTestApp,
-  ArbitraryViewContainerRefComponent,
-  PizzaMsg,
-  ComponentWithBoundVariable
-];
+const TEST_COMPONENTS = [PortalTestApp, ArbitraryViewContainerRefComponent, PizzaMsg];
 @NgModule({
   imports: [CommonModule, PortalModule],
   exports: TEST_COMPONENTS,

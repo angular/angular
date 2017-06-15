@@ -131,6 +131,11 @@ export class MdSnackBar {
     let containerRef: ComponentRef<MdSnackBarContainer> = overlayRef.attach(containerPortal);
     containerRef.instance.snackBarConfig = config;
 
+    // The snackbar animation needs the content to be resolved in order to transform the bar
+    // out of the view initially (so it can slide in). To make the content resolve, we manually
+    // detect changes.
+    containerRef.changeDetectorRef.detectChanges();
+
     return containerRef.instance;
   }
 
