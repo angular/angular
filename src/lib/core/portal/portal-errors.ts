@@ -11,7 +11,7 @@
  * @docs-private
  */
 export function throwNullPortalError() {
-  throw new Error('Must provide a portal to attach');
+  throw Error('Must provide a portal to attach');
 }
 
 /**
@@ -19,7 +19,7 @@ export function throwNullPortalError() {
  * @docs-private
  */
 export function throwPortalAlreadyAttachedError() {
-  throw new Error('Host already has a portal attached');
+  throw Error('Host already has a portal attached');
 }
 
 /**
@@ -27,7 +27,7 @@ export function throwPortalAlreadyAttachedError() {
  * @docs-private
  */
 export function throwPortalHostAlreadyDisposedError() {
-  throw new Error('This PortalHost has already been disposed');
+  throw Error('This PortalHost has already been disposed');
 }
 
 /**
@@ -35,7 +35,7 @@ export function throwPortalHostAlreadyDisposedError() {
  * @docs-private
  */
 export function throwUnknownPortalTypeError() {
-  throw new Error('Attempting to attach an unknown Portal type. BasePortalHost accepts either' +
+  throw Error('Attempting to attach an unknown Portal type. BasePortalHost accepts either' +
                   'a ComponentPortal or a TemplatePortal.');
 }
 
@@ -44,7 +44,7 @@ export function throwUnknownPortalTypeError() {
  * @docs-private
  */
 export function throwNullPortalHostError() {
-  throw new Error('Attempting to attach a portal to a null PortalHost');
+  throw Error('Attempting to attach a portal to a null PortalHost');
 }
 
 /**
@@ -52,5 +52,5 @@ export function throwNullPortalHostError() {
  * @docs-privatew
  */
 export function throwNoPortalAttachedError() {
-  throw new Error('Attempting to detach a portal that is not attached to a host');
+  throw Error('Attempting to detach a portal that is not attached to a host');
 }

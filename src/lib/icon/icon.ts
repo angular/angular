@@ -128,7 +128,7 @@ export class MdIcon extends _MdIconMixinBase implements OnChanges, OnInit, CanCo
       case 2:
         return <[string, string]>parts;
       default:
-        throw new Error(`Invalid icon name: "${iconName}"`);
+        throw Error(`Invalid icon name: "${iconName}"`);
     }
   }
 

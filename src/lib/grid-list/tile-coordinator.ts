@@ -76,7 +76,7 @@ export class TileCoordinator {
   /** Finds the next available space large enough to fit the tile. */
   private _findMatchingGap(tileCols: number): number {
     if (tileCols > this.tracker.length) {
-      throw new Error(`md-grid-list: tile with colspan ${tileCols} is wider than ` +
+      throw Error(`md-grid-list: tile with colspan ${tileCols} is wider than ` +
                       `grid with cols="${this.tracker.length}".`);
     }
 

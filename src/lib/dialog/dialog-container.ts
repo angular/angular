@@ -37,7 +37,7 @@ import {FocusTrapFactory, FocusTrap} from '../core/a11y/focus-trap';
  * @docs-private
  */
 export function throwMdDialogContentAlreadyAttachedError() {
-  throw new Error('Attempting to attach dialog content after content is already attached');
+  throw Error('Attempting to attach dialog content after content is already attached');
 }
 
 /**

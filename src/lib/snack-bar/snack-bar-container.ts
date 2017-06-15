@@ -92,7 +92,7 @@ export class MdSnackBarContainer extends BasePortalHost implements OnDestroy {
   /** Attach a component portal as content to this snack bar container. */
   attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T> {
     if (this._portalHost.hasAttached()) {
-      throw new Error('Attempting to attach snack bar content after content is already attached');
+      throw Error('Attempting to attach snack bar content after content is already attached');
     }
 
     if (this.snackBarConfig.extraClasses) {
@@ -108,7 +108,7 @@ export class MdSnackBarContainer extends BasePortalHost implements OnDestroy {
 
   /** Attach a template portal as content to this snack bar container. */
   attachTemplatePortal(): Map<string, any> {
-    throw new Error('Not yet implemented');
+    throw Error('Not yet implemented');
   }
 
   /** Handle end of animations, updating the state of the snackbar. */

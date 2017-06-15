@@ -31,7 +31,7 @@ import {DOCUMENT} from '@angular/platform-browser';
 
 /** Throws an exception when two MdSidenav are matching the same side. */
 export function throwMdDuplicatedSidenavError(align: string) {
-  throw new Error(`A sidenav was already declared for 'align="${align}"'`);
+  throw Error(`A sidenav was already declared for 'align="${align}"'`);
 }
 
 

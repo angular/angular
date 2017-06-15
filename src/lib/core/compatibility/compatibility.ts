@@ -16,7 +16,7 @@ export const MATERIAL_COMPATIBILITY_MODE = new InjectionToken<boolean>('md-compa
  * @docs-private
  */
 export function getMdCompatibilityInvalidPrefixError(prefix: string, nodeName: string) {
-  return new Error(`The "${prefix}-" prefix cannot be used in ng-material v1 compatibility mode. ` +
+  return Error(`The "${prefix}-" prefix cannot be used in ng-material v1 compatibility mode. ` +
                    `It was used on an "${nodeName.toLowerCase()}" element.`);
 }
 

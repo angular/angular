@@ -52,7 +52,7 @@ export const SCROLL_THROTTLE_MS = 20;
 
 /** Throws an error if the user supplied an invalid tooltip position. */
 export function throwMdTooltipInvalidPositionError(position: string) {
-  throw new Error(`Tooltip position "${position}" is invalid.`);
+  throw Error(`Tooltip position "${position}" is invalid.`);
 }
 
 /**

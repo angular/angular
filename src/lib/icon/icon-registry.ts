@@ -27,7 +27,7 @@ import 'rxjs/add/observable/throw';
  * @docs-private
  */
 export function getMdIconNameNotFoundError(iconName: string): Error {
-  return new Error(`Unable to find icon with the name "${iconName}"`);
+  return Error(`Unable to find icon with the name "${iconName}"`);
 }
 
 
@@ -37,7 +37,7 @@ export function getMdIconNameNotFoundError(iconName: string): Error {
  * @docs-private
  */
 export function getMdIconNoHttpProviderError(): Error {
-  return new Error('Could not find Http provider for use with Angular Material icons. ' +
+  return Error('Could not find Http provider for use with Angular Material icons. ' +
                    'Please include the HttpModule from @angular/http in your app imports.');
 }
 
@@ -375,7 +375,7 @@ export class MdIconRegistry {
     div.innerHTML = str;
     const svg = div.querySelector('svg') as SVGElement;
     if (!svg) {
-      throw new Error('<svg> tag not found');
+      throw Error('<svg> tag not found');
     }
     return svg;
   }

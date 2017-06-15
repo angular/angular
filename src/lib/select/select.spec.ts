@@ -2556,7 +2556,7 @@ class SelectWithErrorSibling {
 })
 export class ThrowsErrorOnInit implements OnInit {
   ngOnInit() {
-    throw new Error('Oh no!');
+    throw Error('Oh no!');
   }
 }
 

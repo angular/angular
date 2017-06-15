@@ -207,7 +207,7 @@ export class RatioTileStyler extends TileStyler {
     let ratioParts = value.split(':');
 
     if (ratioParts.length !== 2) {
-      throw new Error(`md-grid-list: invalid ratio given for row-height: "${value}"`);
+      throw Error(`md-grid-list: invalid ratio given for row-height: "${value}"`);
     }
 
     this.rowHeightRatio = parseFloat(ratioParts[0]) / parseFloat(ratioParts[1]);

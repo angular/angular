@@ -104,7 +104,7 @@ export class MdGridList implements OnInit, AfterContentChecked {
   /** Throw a friendly error if cols property is missing */
   private _checkCols() {
     if (!this.cols) {
-      throw new Error(`md-grid-list: must pass in number of columns. ` +
+      throw Error(`md-grid-list: must pass in number of columns. ` +
                       `Example: <md-grid-list cols="3">`);
     }
   }
