@@ -9,7 +9,8 @@
             [mdTooltipPosition]="position"
             [mdTooltipDisabled]="disabled"
             [mdTooltipShowDelay]="showDelay"
-            [mdTooltipHideDelay]="hideDelay">
+            [mdTooltipHideDelay]="hideDelay"
+            [mdTooltipClass]="{'red-tooltip': showExtraClass}">
       Mouse over to see the tooltip
     </button>
     <div>Scroll down while tooltip is open to see it hide automatically</div>
@@ -59,5 +60,8 @@
   </button>
   <button md-raised-button color="primary" (mouseenter)="tooltip.toggle()">
     Toggle tooltip
+  </button>
+  <button md-raised-button color="primary" (mouseenter)="showExtraClass = !showExtraClass">
+    Toggle tooltipClass
   </button>
 </div>

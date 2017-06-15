@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ViewEncapsulation} from '@angular/core';
 import {TooltipPosition} from '@angular/material';
 
 
@@ -7,6 +7,7 @@ import {TooltipPosition} from '@angular/material';
   selector: 'tooltip-demo',
   templateUrl: 'tooltip-demo.html',
   styleUrls: ['tooltip-demo.css'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class TooltipDemo {
   position: TooltipPosition = 'below';
@@ -14,4 +15,5 @@ export class TooltipDemo {
   disabled = false;
   showDelay = 0;
   hideDelay = 1000;
+  showExtraClass = false;
 }

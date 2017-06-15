@@ -17,6 +17,7 @@ import {
   OnDestroy,
   Renderer2,
   ChangeDetectorRef,
+  ViewEncapsulation,
 } from '@angular/core';
 import {
   style,
@@ -75,6 +76,7 @@ export class MdTooltip implements OnDestroy {
 
   private _position: TooltipPosition = 'below';
   private _disabled: boolean = false;
+  private _tooltipClass: string|string[]|Set<string>|{[key: string]: any};
 
   /** Allows the user to define the position of the tooltip relative to the parent element */
   @Input('mdTooltipPosition')
@@ -125,6 +127,16 @@ export class MdTooltip implements OnDestroy {
     }
   }
 
+  /** Classes to be passed to the tooltip. Supports the same syntax as `ngClass`. */
+  @Input('mdTooltipClass')
+  get tooltipClass() { return this._tooltipClass; }
+  set tooltipClass(value: string|string[]|Set<string>|{[key: string]: any}) {
+    this._tooltipClass = value;
+    if (this._tooltipInstance) {
+      this._setTooltipClass(this._tooltipClass);
+    }
+  }
+
   /** @deprecated */
   @Input('md-tooltip')
   get _deprecatedMessage(): string { return this.message; }
@@ -154,6 +166,11 @@ export class MdTooltip implements OnDestroy {
   @Input('matTooltipShowDelay')
   get _matShowDelay() { return this.showDelay; }
   set _matShowDelay(v) { this.showDelay = v; }
+
+  // Properties with `mat-` prefix for nonconflict mode.
+  @Input('matTooltipClass')
+  get _matClass() { return this.tooltipClass; }
+  set _matClass(v) { this.tooltipClass = v; }
 
   constructor(
     private _overlay: Overlay,
@@ -190,6 +207,7 @@ export class MdTooltip implements OnDestroy {
       this._createTooltip();
     }
 
+    this._setTooltipClass(this._tooltipClass);
     this._setTooltipMessage(this._message);
     this._tooltipInstance.show(this._position, delay);
   }
@@ -322,6 +340,12 @@ export class MdTooltip implements OnDestroy {
       }
     });
   }
+
+  /** Updates the tooltip class */
+  private _setTooltipClass(tooltipClass: string|string[]|Set<string>|{[key: string]: any}) {
+    this._tooltipInstance.tooltipClass = tooltipClass;
+    this._tooltipInstance._markForCheck();
+  }
 }
 
 export type TooltipVisibility = 'initial' | 'visible' | 'hidden';
@@ -335,6 +359,7 @@ export type TooltipVisibility = 'initial' | 'visible' | 'hidden';
   selector: 'md-tooltip-component, mat-tooltip-component',
   templateUrl: 'tooltip.html',
   styleUrls: ['tooltip.css'],
+  encapsulation: ViewEncapsulation.None,
   animations: [
     trigger('state', [
       state('void', style({transform: 'scale(0)'})),
@@ -355,6 +380,9 @@ export type TooltipVisibility = 'initial' | 'visible' | 'hidden';
 export class TooltipComponent {
   /** Message to display in the tooltip */
   message: string;
+
+  /** Classes to be added to the tooltip. Supports the same syntax as `ngClass`. */
+  tooltipClass: string|string[]|Set<string>|{[key: string]: any};
 
   /** The timeout ID of any current timer set to show the tooltip */
   _showTimeoutId: number;
