@@ -7,7 +7,9 @@
  */
 
 import {DefaultKeyValueDiffer, DefaultKeyValueDifferFactory} from '@angular/core/src/change_detection/differs/default_keyvalue_differ';
-import {kvChangesAsString} from '../../change_detection/util';
+
+import {kvChangesAsString, testChangesAsString} from '../../change_detection/util';
+
 
 // todo(vicb): Update the code & tests for object equality
 export function main() {
@@ -28,13 +30,13 @@ export function main() {
 
         m.set('a', 1);
         differ.check(m);
-        expect(differ.toString())
-            .toEqual(kvChangesAsString({map: ['a[null->1]'], additions: ['a[null->1]']}));
+        expect(kvChangesAsString(differ))
+            .toEqual(testChangesAsString({map: ['a[null->1]'], additions: ['a[null->1]']}));
 
         m.set('b', 2);
         differ.check(m);
-        expect(differ.toString())
-            .toEqual(kvChangesAsString(
+        expect(kvChangesAsString(differ))
+            .toEqual(testChangesAsString(
                 {map: ['a', 'b[null->2]'], previous: ['a'], additions: ['b[null->2]']}));
       });
 
@@ -46,7 +48,7 @@ export function main() {
         m.set(2, 10);
         m.set(1, 20);
         differ.check(m);
-        expect(differ.toString()).toEqual(kvChangesAsString({
+        expect(kvChangesAsString(differ)).toEqual(testChangesAsString({
           map: ['1[10->20]', '2[20->10]'],
           previous: ['1[10->20]', '2[20->10]'],
           changes: ['1[10->20]', '2[20->10]']
@@ -72,19 +74,19 @@ export function main() {
 
         m.set('a', 'A');
         differ.check(m);
-        expect(differ.toString())
-            .toEqual(kvChangesAsString({map: ['a[null->A]'], additions: ['a[null->A]']}));
+        expect(kvChangesAsString(differ))
+            .toEqual(testChangesAsString({map: ['a[null->A]'], additions: ['a[null->A]']}));
 
         m.set('b', 'B');
         differ.check(m);
-        expect(differ.toString())
-            .toEqual(kvChangesAsString(
+        expect(kvChangesAsString(differ))
+            .toEqual(testChangesAsString(
                 {map: ['a', 'b[null->B]'], previous: ['a'], additions: ['b[null->B]']}));
 
         m.set('b', 'BB');
         m.set('d', 'D');
         differ.check(m);
-        expect(differ.toString()).toEqual(kvChangesAsString({
+        expect(kvChangesAsString(differ)).toEqual(testChangesAsString({
           map: ['a', 'b[B->BB]', 'd[null->D]'],
           previous: ['a', 'b[B->BB]'],
           additions: ['d[null->D]'],
@@ -93,13 +95,13 @@ export function main() {
 
         m.delete('b');
         differ.check(m);
-        expect(differ.toString())
-            .toEqual(kvChangesAsString(
+        expect(kvChangesAsString(differ))
+            .toEqual(testChangesAsString(
                 {map: ['a', 'd'], previous: ['a', 'b[BB->null]', 'd'], removals: ['b[BB->null]']}));
 
         m.clear();
         differ.check(m);
-        expect(differ.toString()).toEqual(kvChangesAsString({
+        expect(kvChangesAsString(differ)).toEqual(testChangesAsString({
           previous: ['a[A->null]', 'd[D->null]'],
           removals: ['a[A->null]', 'd[D->null]']
         }));
@@ -110,7 +112,8 @@ export function main() {
         differ.check(m);
 
         differ.check(m);
-        expect(differ.toString()).toEqual(kvChangesAsString({map: ['foo'], previous: ['foo']}));
+        expect(kvChangesAsString(differ))
+            .toEqual(testChangesAsString({map: ['foo'], previous: ['foo']}));
       });
 
       it('should work regardless key order', () => {
@@ -123,7 +126,7 @@ export function main() {
         m.set('a', 1);
         differ.check(m);
 
-        expect(differ.toString()).toEqual(kvChangesAsString({
+        expect(kvChangesAsString(differ)).toEqual(testChangesAsString({
           map: ['b[0->1]', 'a[0->1]'],
           previous: ['a[0->1]', 'b[0->1]'],
           changes: ['b[0->1]', 'a[0->1]']
@@ -145,19 +148,19 @@ export function main() {
 
           m['a'] = 'A';
           differ.check(m);
-          expect(differ.toString())
-              .toEqual(kvChangesAsString({map: ['a[null->A]'], additions: ['a[null->A]']}));
+          expect(kvChangesAsString(differ))
+              .toEqual(testChangesAsString({map: ['a[null->A]'], additions: ['a[null->A]']}));
 
           m['b'] = 'B';
           differ.check(m);
-          expect(differ.toString())
-              .toEqual(kvChangesAsString(
+          expect(kvChangesAsString(differ))
+              .toEqual(testChangesAsString(
                   {map: ['a', 'b[null->B]'], previous: ['a'], additions: ['b[null->B]']}));
 
           m['b'] = 'BB';
           m['d'] = 'D';
           differ.check(m);
-          expect(differ.toString()).toEqual(kvChangesAsString({
+          expect(kvChangesAsString(differ)).toEqual(testChangesAsString({
             map: ['a', 'b[B->BB]', 'd[null->D]'],
             previous: ['a', 'b[B->BB]'],
             additions: ['d[null->D]'],
@@ -168,7 +171,7 @@ export function main() {
           m['a'] = 'A';
           m['d'] = 'D';
           differ.check(m);
-          expect(differ.toString()).toEqual(kvChangesAsString({
+          expect(kvChangesAsString(differ)).toEqual(testChangesAsString({
             map: ['a', 'd'],
             previous: ['a', 'b[BB->null]', 'd'],
             removals: ['b[BB->null]']
@@ -176,7 +179,7 @@ export function main() {
 
           m = {};
           differ.check(m);
-          expect(differ.toString()).toEqual(kvChangesAsString({
+          expect(kvChangesAsString(differ)).toEqual(testChangesAsString({
             previous: ['a[A->null]', 'd[D->null]'],
             removals: ['a[A->null]', 'd[D->null]']
           }));
@@ -187,7 +190,7 @@ export function main() {
           differ.check({a: 0, b: 0});
           differ.check({b: 1, a: 1});
 
-          expect(differ.toString()).toEqual(kvChangesAsString({
+          expect(kvChangesAsString(differ)).toEqual(testChangesAsString({
             map: ['b[0->1]', 'a[0->1]'],
             previous: ['a[0->1]', 'b[0->1]'],
             changes: ['b[0->1]', 'a[0->1]']
@@ -200,7 +203,7 @@ export function main() {
           differ.check({b: 3, a: 2});
           differ.check({a: 1, b: 2});
 
-          expect(differ.toString()).toEqual(kvChangesAsString({
+          expect(kvChangesAsString(differ)).toEqual(testChangesAsString({
             map: ['a[2->1]', 'b[3->2]'],
             previous: ['b[3->2]', 'a[2->1]'],
             changes: ['a[2->1]', 'b[3->2]']
@@ -211,7 +214,7 @@ export function main() {
           differ.check({a: 'a', b: 'b'});
           differ.check({c: 'c', a: 'a'});
 
-          expect(differ.toString()).toEqual(kvChangesAsString({
+          expect(kvChangesAsString(differ)).toEqual(testChangesAsString({
             map: ['c[null->c]', 'a'],
             previous: ['a', 'b[b->null]'],
             additions: ['c[null->c]'],
@@ -236,8 +239,8 @@ export function main() {
         it('should treat null as an empty list', () => {
           m.set('a', 'A');
           differ.diff(m);
-          expect(differ.diff(null).toString())
-              .toEqual(kvChangesAsString({previous: ['a[A->null]'], removals: ['a[A->null]']}));
+          expect(kvChangesAsString(differ.diff(null)))
+              .toEqual(testChangesAsString({previous: ['a[A->null]'], removals: ['a[A->null]']}));
         });
 
         it('should throw when given an invalid collection', () => {

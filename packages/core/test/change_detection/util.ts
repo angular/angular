@@ -6,6 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {KeyValueChangeRecord, KeyValueChanges} from '@angular/core/src/change_detection/differs/keyvalue_differs';
+
+import {looseIdentical, stringify} from '../../src/util';
 
 
 export function iterableChangesAsString(
@@ -19,7 +22,30 @@ export function iterableChangesAsString(
       'identityChanges: ' + identityChanges.join(', ') + '\n';
 }
 
-export function kvChangesAsString(
+function kvcrAsString(kvcr: KeyValueChangeRecord<string, any>) {
+  return looseIdentical(kvcr.previousValue, kvcr.currentValue) ?
+      stringify(kvcr.key) :
+      (stringify(kvcr.key) + '[' + stringify(kvcr.previousValue) + '->' +
+       stringify(kvcr.currentValue) + ']');
+}
+
+export function kvChangesAsString(kvChanges: KeyValueChanges<string, any>) {
+  const map: string[] = [];
+  const previous: string[] = [];
+  const changes: string[] = [];
+  const additions: string[] = [];
+  const removals: string[] = [];
+
+  kvChanges.forEachItem(r => map.push(kvcrAsString(r)));
+  kvChanges.forEachPreviousItem(r => previous.push(kvcrAsString(r)));
+  kvChanges.forEachChangedItem(r => changes.push(kvcrAsString(r)));
+  kvChanges.forEachAddedItem(r => additions.push(kvcrAsString(r)));
+  kvChanges.forEachRemovedItem(r => removals.push(kvcrAsString(r)));
+
+  return testChangesAsString({map, previous, additions, changes, removals});
+}
+
+export function testChangesAsString(
     {map, previous, additions, changes, removals}:
         {map?: any[], previous?: any[], additions?: any[], changes?: any[], removals?: any[]}):
     string {
