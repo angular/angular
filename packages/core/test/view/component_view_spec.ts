@@ -136,7 +136,7 @@ export function main() {
         value = 'v2';
         expect(() => Services.checkNoChangesView(view))
             .toThrowError(
-                `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: 'v1'. Current value: 'v2'.`);
+                `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Name: 'a'. Previous value: 'v1'. Current value: 'v2'.`);
       });
 
       it('should support detaching and attaching component views for dirty checking', () => {

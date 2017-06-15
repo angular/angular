@@ -10,9 +10,15 @@ import {ERROR_DEBUG_CONTEXT, ERROR_LOGGER, getDebugContext} from '../errors';
 import {DebugContext, ViewState} from './types';
 
 export function expressionChangedAfterItHasBeenCheckedError(
-    context: DebugContext, oldValue: any, currValue: any, isFirstCheck: boolean): Error {
+    context: DebugContext, oldValue: any, currValue: any, isFirstCheck: boolean,
+    expressionName?: string | null): Error {
   let msg =
-      `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: '${oldValue}'. Current value: '${currValue}'.`;
+      `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked.`;
+  if (expressionName) {
+    msg += ` Name: '${expressionName}'.`;
+  }
+  msg += ` Previous value: '${oldValue}'. Current value: '${currValue}'.`;
+
   if (isFirstCheck) {
     msg +=
         ` It seems like the view has been created after its parent and its children have been dirty checked.` +

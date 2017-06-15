@@ -164,7 +164,7 @@ export function main() {
       childValue = 'v2';
       expect(() => Services.checkNoChangesView(parentView))
           .toThrowError(
-              `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: 'v1'. Current value: 'v2'.`);
+              `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Name: 'name'. Previous value: 'v1'. Current value: 'v2'.`);
     });
 
     it('should destroy embedded views', () => {
