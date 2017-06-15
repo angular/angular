@@ -146,11 +146,11 @@ async function uploadPayloadResults(database: firebaseAdmin.database.Database, c
 async function getPayloadResults(database: firebaseAdmin.database.Database, commitSha: string) {
   const snapshot = await database.ref('payloads').child(commitSha).once('value');
 
-  if (!snapshot.exists()) {
-    throw `There is no payload data uploaded for SHA ${commitSha}`;
+  if (snapshot.exists()) {
+    return snapshot.val();
+  } else {
+    console.error(`There is no payload data uploaded for SHA ${commitSha}`);
   }
-
-  return snapshot.val();
 }
 
 /** Gets the SHA of the commit where the payload was uploaded before this Travis Job started. */

@@ -42,8 +42,8 @@ publishPackage() {
   rm -rf ${repoDir}
   mkdir -p ${repoDir}
 
-  # Clone the repository
-  git clone ${repoUrl} ${repoDir}
+  # Clone the repository and only fetch the last commit to download less unused data.
+  git clone ${repoUrl} ${repoDir} --depth 1
 
   # Copy the build files to the repository
   rm -rf ${repoDir}/*

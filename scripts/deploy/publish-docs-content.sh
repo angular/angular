@@ -25,7 +25,7 @@ commitMessage="$(git log --oneline -n 1)"
 # create directory and clone test repo
 rm -rf $repoPath
 mkdir -p $repoPath
-git clone $repoUrl $repoPath
+git clone $repoUrl $repoPath --depth 1
 
 # Clean out repo directory and copy contents of dist/docs into it
 rm -rf $repoPath/*
