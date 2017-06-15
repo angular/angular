@@ -25,7 +25,7 @@ import {applyRedirects} from './apply_redirects';
 import {LoadedRouterConfig, QueryParamsHandling, ResolveData, Route, Routes, RunGuardsAndResolvers, validateConfig} from './config';
 import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
-import {Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
+import {Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
 import {recognize} from './recognize';
 import {DefaultRouteReuseStrategy, DetachedRouteHandleInternal, RouteReuseStrategy} from './route_reuse_strategy';
 import {RouterConfigLoader} from './router_config_loader';
@@ -639,20 +639,33 @@ export class Router {
           ({appliedUrl, snapshot}: {appliedUrl: string, snapshot: RouterStateSnapshot}) => {
             if (this.navigationId !== id) return of (false);
 
+            this.triggerEvent(
+                new GuardsCheckStart(id, this.serializeUrl(url), appliedUrl, snapshot));
+
             return map.call(preActivation.checkGuards(), (shouldActivate: boolean) => {
+              this.triggerEvent(new GuardsCheckEnd(
+                  id, this.serializeUrl(url), appliedUrl, snapshot, shouldActivate));
               return {appliedUrl: appliedUrl, snapshot: snapshot, shouldActivate: shouldActivate};
             });
           });
 
-      const preactivationResolveData$ = mergeMap.call(preactivationCheckGuards$, (p: any) => {
-        if (this.navigationId !== id) return of (false);
+      const preactivationResolveData$ = mergeMap.call(
+          preactivationCheckGuards$,
+          (p: {appliedUrl: string, snapshot: RouterStateSnapshot, shouldActivate: boolean}) => {
+            if (this.navigationId !== id) return of (false);
 
-        if (p.shouldActivate) {
-          return map.call(preActivation.resolveData(), () => p);
-        } else {
-          return of (p);
-        }
-      });
+            if (p.shouldActivate && preActivation.isActivating()) {
+              this.triggerEvent(
+                  new ResolveStart(id, this.serializeUrl(url), p.appliedUrl, p.snapshot));
+              return map.call(preActivation.resolveData(), () => {
+                this.triggerEvent(
+                    new ResolveEnd(id, this.serializeUrl(url), p.appliedUrl, p.snapshot));
+                return p;
+              });
+            } else {
+              return of (p);
+            }
+          });
 
       const preactivationDone$ = mergeMap.call(preactivationResolveData$, (p: any) => {
         return map.call(this.hooks.afterPreactivation(p.snapshot), () => p);
@@ -772,8 +785,12 @@ export class PreActivation {
     this.traverseChildRoutes(futureRoot, currRoot, parentContexts, [futureRoot.value]);
   }
 
+  // TODO(jasonaden): Refactor checkGuards and resolveData so they can collect the checks
+  // and guards before mapping into the observable. Likely remove the observable completely
+  // and make these pure functions so they are more predictable and don't rely on so much
+  // external state.
   checkGuards(): Observable<boolean> {
-    if (this.canDeactivateChecks.length === 0 && this.canActivateChecks.length === 0) {
+    if (!this.isDeactivating() && !this.isActivating()) {
       return of (true);
     }
     const canDeactivate$ = this.runCanDeactivateChecks();
@@ -783,12 +800,16 @@ export class PreActivation {
   }
 
   resolveData(): Observable<any> {
-    if (this.canActivateChecks.length === 0) return of (null);
+    if (!this.isActivating()) return of (null);
     const checks$ = from(this.canActivateChecks);
     const runningChecks$ =
         concatMap.call(checks$, (check: CanActivate) => this.runResolve(check.route));
     return reduce.call(runningChecks$, (_: any, __: any) => _);
   }
+
+  isDeactivating(): boolean { return this.canDeactivateChecks.length !== 0; }
+
+  isActivating(): boolean { return this.canActivateChecks.length !== 0; }
 
   private traverseChildRoutes(
       futureNode: TreeNode<ActivatedRouteSnapshot>, currNode: TreeNode<ActivatedRouteSnapshot>|null,

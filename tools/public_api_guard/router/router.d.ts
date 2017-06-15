@@ -87,7 +87,7 @@ export declare class DefaultUrlSerializer implements UrlSerializer {
 export declare type DetachedRouteHandle = {};
 
 /** @stable */
-export declare type Event = NavigationStart | NavigationEnd | NavigationCancel | NavigationError | RoutesRecognized | RouteConfigLoadStart | RouteConfigLoadEnd;
+export declare type Event = NavigationStart | NavigationEnd | NavigationCancel | NavigationError | RoutesRecognized | RouteConfigLoadStart | RouteConfigLoadEnd | GuardsCheckStart | GuardsCheckEnd | ResolveStart | ResolveEnd;
 
 /** @stable */
 export interface ExtraOptions {
@@ -96,6 +96,36 @@ export interface ExtraOptions {
     initialNavigation?: InitialNavigation;
     preloadingStrategy?: any;
     useHash?: boolean;
+}
+
+/** @experimental */
+export declare class GuardsCheckEnd {
+    id: number;
+    shouldActivate: boolean;
+    state: RouterStateSnapshot;
+    url: string;
+    urlAfterRedirects: string;
+    constructor(
+        id: number,
+        url: string,
+        urlAfterRedirects: string,
+        state: RouterStateSnapshot,
+        shouldActivate: boolean);
+    toString(): string;
+}
+
+/** @experimental */
+export declare class GuardsCheckStart {
+    id: number;
+    state: RouterStateSnapshot;
+    url: string;
+    urlAfterRedirects: string;
+    constructor(
+        id: number,
+        url: string,
+        urlAfterRedirects: string,
+        state: RouterStateSnapshot);
+    toString(): string;
 }
 
 /** @stable */
@@ -214,6 +244,34 @@ export interface Resolve<T> {
 export declare type ResolveData = {
     [name: string]: any;
 };
+
+/** @experimental */
+export declare class ResolveEnd {
+    id: number;
+    state: RouterStateSnapshot;
+    url: string;
+    urlAfterRedirects: string;
+    constructor(
+        id: number,
+        url: string,
+        urlAfterRedirects: string,
+        state: RouterStateSnapshot);
+    toString(): string;
+}
+
+/** @experimental */
+export declare class ResolveStart {
+    id: number;
+    state: RouterStateSnapshot;
+    url: string;
+    urlAfterRedirects: string;
+    constructor(
+        id: number,
+        url: string,
+        urlAfterRedirects: string,
+        state: RouterStateSnapshot);
+    toString(): string;
+}
 
 /** @stable */
 export interface Route {
