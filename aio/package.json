@@ -57,7 +57,7 @@
     "@angular/platform-browser-dynamic": "4.2.1",
     "@angular/platform-server": "4.2.1",
     "@angular/router": "4.2.1",
-    "@angular/service-worker": "^1.0.0-beta.15",
+    "@angular/service-worker": "^1.0.0-beta.16",
     "classlist.js": "^1.1.20150312",
     "core-js": "^2.4.1",
     "jasmine": "^2.6.0",
