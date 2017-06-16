@@ -101,7 +101,7 @@
   <md-toolbar color="primary">Prefix + Suffix</md-toolbar>
   <md-card-content>
     <h4>Text</h4>
-    <md-input-container align="end">
+    <md-input-container class="demo-text-align-end">
       <input mdInput placeholder="amount">
       <span mdPrefix>$&nbsp;</span>
       <span mdSuffix>.00</span>
@@ -301,13 +301,13 @@
         <input mdInput placeholder="Prefixed" value="example">
         <div mdPrefix>Example:&nbsp;</div>
       </md-input-container>
-      <md-input-container align="end">
+      <md-input-container class="demo-text-align-end">
         <input mdInput placeholder="Suffixed" value="123">
         <span mdSuffix>.00 €</span>
       </md-input-container>
       <br/>
       Both:
-      <md-input-container align="end">
+      <md-input-container class="demo-text-align-end">
         <input mdInput #email placeholder="Email Address" value="angular-core">
         <span mdPrefix><md-icon [class.primary]="email.focused">email</md-icon>&nbsp;</span>
         <span mdSuffix [class.primary]="email.focused">&nbsp;@gmail.com</span>

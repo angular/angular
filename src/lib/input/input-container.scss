@@ -88,14 +88,6 @@ $mat-input-underline-height: 1px !default;
   // Needed to make last line of the textarea line up with the baseline.
   vertical-align: bottom;
 
-  .mat-end & {
-    text-align: right;
-
-    [dir='rtl'] & {
-      text-align: left;
-    }
-  }
-
   // Undo the red box-shadow glow added by Firefox on invalid inputs.
   // See https://developer.mozilla.org/en-US/docs/Web/CSS/:-moz-ui-invalid
   &:-moz-ui-invalid {

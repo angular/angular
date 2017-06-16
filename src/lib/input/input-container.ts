@@ -324,9 +324,6 @@ export class MdInputDirective {
 export class MdInputContainer implements AfterViewInit, AfterContentInit, AfterContentChecked {
   private _placeholderOptions: PlaceholderOptions;
 
-  /** Alignment of the input container's content. */
-  @Input() align: 'start' | 'end' = 'start';
-
   /** Color of the input divider, based on the theme. */
   @Input() color: 'primary' | 'accent' | 'warn' = 'primary';
 
