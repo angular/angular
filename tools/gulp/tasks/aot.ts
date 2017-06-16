@@ -1,8 +1,8 @@
 import {task} from 'gulp';
 import {copySync} from 'fs-extra';
-import {sequenceTask, execNodeTask} from '../util/task_helpers';
+import {execNodeTask} from '../util/task_helpers';
 import {join} from 'path';
-import {buildConfig} from '../packaging/build-config';
+import {buildConfig, sequenceTask} from 'material2-build-tools';
 
 const {outputDir} = buildConfig;
 

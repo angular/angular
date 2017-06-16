@@ -2,7 +2,7 @@ import {task} from 'gulp';
 import {join} from 'path';
 import {statSync} from 'fs';
 import {isTravisBuild, isTravisMasterBuild} from '../util/travis-ci';
-import {buildConfig} from '../packaging/build-config';
+import {buildConfig} from 'material2-build-tools';
 import {openFirebaseDashboardApp, openFirebaseDashboardAppAsGuest} from '../util/firebase';
 import {spawnSync} from 'child_process';
 import * as firebaseAdmin from 'firebase-admin';

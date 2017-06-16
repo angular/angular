@@ -1,11 +1,13 @@
 import {task, watch, src, dest} from 'gulp';
 import {join} from 'path';
 import {main as tsc} from '@angular/tsc-wrapped';
-import {buildConfig} from './build-config';
-import {sequenceTask, sassBuildTask, copyTask, triggerLivereload} from '../util/task_helpers';
-import {composeRelease} from './build-release';
-import {buildPackageBundles} from './build-bundles';
-import {inlineResourcesForDirectory} from './inline-resources';
+import {buildConfig} from '../build-config';
+import {composeRelease} from '../build-release';
+import {buildPackageBundles} from '../build-bundles';
+import {inlineResourcesForDirectory} from '../inline-resources';
+import {buildScssTask} from './build-scss-task';
+import {sequenceTask} from './sequence-task';
+import {triggerLivereload} from './trigger-livereload';
 
 // There are no type definitions available for these imports.
 const htmlmin = require('gulp-htmlmin');
@@ -87,8 +89,10 @@ export function createPackageBuildTasks(packageName: string, requiredPackages: s
     `${packageName}:assets:scss`, `${packageName}:assets:copy-styles`, `${packageName}:assets:html`
   ]);
 
-  task(`${packageName}:assets:scss`, sassBuildTask(packageOut, packageRoot, true));
-  task(`${packageName}:assets:copy-styles`, copyTask(stylesGlob, packageOut));
+  task(`${packageName}:assets:scss`, buildScssTask(packageOut, packageRoot, true));
+  task(`${packageName}:assets:copy-styles`, () => {
+    return src(stylesGlob).pipe(dest(packageOut));
+  });
   task(`${packageName}:assets:html`, () => {
     return src(htmlGlob).pipe(htmlmin(htmlMinifierOptions)).pipe(dest(packageOut));
   });

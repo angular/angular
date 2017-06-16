@@ -1,5 +1,5 @@
 import {join} from 'path';
-import {copyFiles} from '../util/copy-files';
+import {copyFiles} from './copy-files';
 import {addPureAnnotationsToFile} from './pure-annotations';
 import {updatePackageVersion} from './package-versions';
 import {inlinePackageMetadataFiles} from './metadata-inlining';

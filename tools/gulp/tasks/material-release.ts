@@ -2,9 +2,7 @@ import {task, src, dest} from 'gulp';
 import {join} from 'path';
 import {writeFileSync, mkdirpSync} from 'fs-extra';
 import {Bundler} from 'scss-bundle';
-import {sequenceTask} from '../util/task_helpers';
-import {composeRelease} from '../packaging/build-release';
-import {buildConfig} from '../packaging/build-config';
+import {composeRelease, buildConfig, sequenceTask} from 'material2-build-tools';
 
 // There are no type definitions available for these imports.
 const gulpRename = require('gulp-rename');

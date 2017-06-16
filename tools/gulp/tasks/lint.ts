@@ -1,7 +1,7 @@
 import {task} from 'gulp';
 import {execNodeTask} from '../util/task_helpers';
 import {join} from 'path';
-import {buildConfig} from '../packaging/build-config';
+import {buildConfig} from 'material2-build-tools';
 
 /** Glob that matches all SCSS or CSS files that should be linted. */
 const stylesGlob = '+(tools|src)/**/*.+(css|scss)';

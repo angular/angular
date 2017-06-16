@@ -1,8 +1,8 @@
 import {task, watch} from 'gulp';
 import {join} from 'path';
-import {ngcBuildTask, copyTask, execNodeTask, sequenceTask, serverTask} from '../util/task_helpers';
+import {ngcBuildTask, copyTask, execNodeTask, serverTask} from '../util/task_helpers';
 import {copySync} from 'fs-extra';
-import {buildConfig} from '../packaging/build-config';
+import {buildConfig, sequenceTask} from 'material2-build-tools';
 
 // There are no type definitions available for these imports.
 const gulpConnect = require('gulp-connect');

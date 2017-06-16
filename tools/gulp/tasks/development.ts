@@ -1,11 +1,9 @@
 import {task, watch} from 'gulp';
-import {
-  sassBuildTask, tsBuildTask, copyTask, buildAppTask, sequenceTask, triggerLivereload,
-  serverTask
-} from '../util/task_helpers';
+import {tsBuildTask, copyTask, buildAppTask, serverTask} from '../util/task_helpers';
 import {join} from 'path';
-import {copyFiles} from '../util/copy-files';
-import {buildConfig} from '../packaging/build-config';
+import {
+  buildConfig, copyFiles, buildScssTask, triggerLivereload, sequenceTask
+} from 'material2-build-tools';
 
 // These imports don't have any typings provided.
 const firebaseTools = require('firebase-tools');
@@ -44,7 +42,7 @@ task(':watch:devapp', () => {
 const tsconfigPath = join(appDir, 'tsconfig-build.json');
 
 task(':build:devapp:ts', tsBuildTask(tsconfigPath));
-task(':build:devapp:scss', sassBuildTask(outDir, appDir));
+task(':build:devapp:scss', buildScssTask(outDir, appDir));
 task(':build:devapp:assets', copyTask(appDir, outDir));
 task('build:devapp', buildAppTask('devapp'));
 
