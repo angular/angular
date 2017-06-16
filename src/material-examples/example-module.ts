@@ -75,7 +75,8 @@ import {
   MdAutocompleteModule, MdButtonModule, MdButtonToggleModule, MdCardModule, MdCheckboxModule,
   MdChipsModule, MdDatepickerModule, MdDialogModule, MdGridListModule, MdIconModule, MdInputModule,
   MdListModule, MdMenuModule, MdProgressBarModule, MdProgressSpinnerModule, MdRadioModule,
-  MdSelectModule, MdSliderModule, MdSlideToggleModule, MdSnackBarModule, MdTabsModule,
+  MdSelectModule, MdSidenavModule, MdSliderModule, MdSlideToggleModule, MdSnackBarModule,
+  MdTabsModule,
   MdToolbarModule, MdTooltipModule
 } from '@angular/material';
 
@@ -199,6 +200,7 @@ export const EXAMPLE_COMPONENTS = {
     MdSelectModule,
     MdSlideToggleModule,
     MdSliderModule,
+    MdSidenavModule,
     MdSnackBarModule,
     MdTabsModule,
     MdToolbarModule,
