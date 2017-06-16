@@ -36,11 +36,14 @@ const BaseConfig = {
 };
 
 if (platform == 'node') {
+  // Debug node tests using the chrome dev tools:
+  // $ DEBUG=1 ./test.sh node
+  const debugOpts = process.env.DEBUG ? ['--debug-brk', '--inspect'] : [];
   tscWatch = new TscWatch(Object.assign(
       {
         tsconfig: 'packages/tsconfig.json',
         onChangeCmds: [[
-          'node', 'dist/tools/cjs-jasmine', '--', '@angular/**/*_spec.js',
+          'node', ...debugOpts, 'dist/tools/cjs-jasmine', '--', '@angular/**/*_spec.js',
           '@angular/compiler-cli/test/**/*_spec.js', '@angular/benchpress/test/**/*_spec.js'
         ]]
       },
