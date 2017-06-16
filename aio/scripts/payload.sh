@@ -1,6 +1,7 @@
 #!/bin/bash
 
-set -e -o pipefail
+# WARNING: FIREBASE_TOKEN should NOT be printed.
+set +x -eu -o pipefail
 
 readonly TOKEN=${ANGULAR_PAYLOAD_FIREBASE_TOKEN:-}
 readonly PROJECT_NAME="angular-payload-size"
@@ -35,23 +36,13 @@ for filename in dist/*.bundle.js; do
   fi
 done
 
-# Also track sizes of bundle/*umd.min.js files
-for filename in node_modules/@angular/*/bundles/*.umd.min.js; do
-  size=$(stat -c%s "$filename")
-  label=$(echo "$filename" | sed "s/.*\///" | sed "s/\..*//")
-  payloadData="$payloadData\"umd/$label\": $size, "
-done
-
 # Add Timestamp
 timestamp=$(date +%s)
 payloadData="$payloadData\"timestamp\": $timestamp, "
 
-echo $TRAVIS_COMMIT_RANGE
 # Add change source: application, dependencies, or 'application+dependencies'
 allChangedFiles=$(git diff --name-only $TRAVIS_COMMIT_RANGE)
-echo $allChangedFiles
-yarnChangedFiles=$(git diff --name-only $TRAVIS_COMMIT_RANGE | grep yarn.lock)
-echo $yarnChangedFiles
+yarnChangedFiles=$(grep yarn.lock <<< $allChangedFiles)
 
 if [[ ! -z $allChangedFiles ]] && [[ ! -z $yarnChangedFiles ]] && [ "$allChangedFiles" != "$yarnChangedFiles" ]; then
   change='application+dependencies'
