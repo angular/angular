@@ -31,12 +31,12 @@ esac
   # Build the app
   yarn build -- --env=$buildEnv
 
+  # Check payload size
+  yarn payload-size
+
   # Deploy to Firebase
   firebase use "$projectId" --token "$firebaseToken"
   firebase deploy --message "Commit: $TRAVIS_COMMIT" --non-interactive --token "$firebaseToken"
-
-  # Check payload size
-  yarn payload-size
 
   # Run PWA-score tests
   yarn test-pwa-score -- "$deployedUrl" "$MIN_PWA_SCORE" "$PWA_RESULTS_LOG"
