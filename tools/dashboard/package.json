@@ -1,0 +1,37 @@
+{
+  "name": "material2-board",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "build-production": "ng build --aot -prod"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "^4.2.2",
+    "@angular/common": "^4.2.2",
+    "@angular/compiler": "^4.2.2",
+    "@angular/core": "^4.2.2",
+    "@angular/forms": "^4.2.2",
+    "@angular/http": "^4.2.2",
+    "@angular/platform-browser": "^4.2.2",
+    "@angular/platform-browser-dynamic": "^4.2.2",
+    "@angular/router": "^4.2.2",
+    "core-js": "^2.4.1",
+    "rxjs": "^5.1.0",
+    "zone.js": "^0.8.12"
+  },
+  "devDependencies": {
+    "@angular/cli": "1.1.1",
+    "@angular/compiler-cli": "^4.2.2",
+    "@angular/language-service": "^4.2.2",
+    "@types/jasmine": "2.5.45",
+    "@types/node": "~6.0.60",
+    "firebase-tools": "^3.9.1",
+    "ts-node": "~3.0.4",
+    "tslint": "~5.3.2",
+    "typescript": "~2.3.3"
+  }
+}
