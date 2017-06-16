@@ -141,9 +141,9 @@
   dependencies:
     tslib "^1.7.1"
 
-"@angular/service-worker@^1.0.0-beta.15":
-  version "1.0.0-beta.15"
-  resolved "https://registry.yarnpkg.com/@angular/service-worker/-/service-worker-1.0.0-beta.15.tgz#222fab4570ba1e77c56b54181aa55d26d4f60cc9"
+"@angular/service-worker@^1.0.0-beta.16":
+  version "1.0.0-beta.16"
+  resolved "https://registry.yarnpkg.com/@angular/service-worker/-/service-worker-1.0.0-beta.16.tgz#cb4fcd1d5b311195136fd284bcf2dbb870544d64"
   dependencies:
     base64-js "^1.1.2"
     jshashes "^1.0.5"
