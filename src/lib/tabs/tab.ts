@@ -11,16 +11,20 @@ import {
   ViewContainerRef, Input, TemplateRef, ViewChild, OnInit, ContentChild,
   Component
 } from '@angular/core';
-import {coerceBooleanProperty} from '../core/coercion/boolean-property';
-
+import {CanDisable, mixinDisabled} from '../core/common-behaviors/disabled';
 import {MdTabLabel} from './tab-label';
+
+// Boilerplate for applying mixins to MdTab.
+export class MdTabBase {}
+export const _MdTabMixinBase = mixinDisabled(MdTabBase);
 
 @Component({
   moduleId: module.id,
   selector: 'md-tab, mat-tab',
   templateUrl: 'tab.html',
+  inputs: ['disabled']
 })
-export class MdTab implements OnInit {
+export class MdTab extends _MdTabMixinBase implements OnInit, CanDisable {
   /** Content for the tab label given by <ng-template md-tab-label>. */
   @ContentChild(MdTabLabel) templateLabel: MdTabLabel;
 
@@ -46,14 +50,9 @@ export class MdTab implements OnInit {
    */
   origin: number = null;
 
-  private _disabled = false;
-
-  /** Whether the tab is disabled */
-  @Input()
-  set disabled(value: boolean) { this._disabled = coerceBooleanProperty(value); }
-  get disabled(): boolean { return this._disabled; }
-
-  constructor(private _viewContainerRef: ViewContainerRef) { }
+  constructor(private _viewContainerRef: ViewContainerRef) {
+    super();
+  }
 
   ngOnInit() {
     this._contentPortal = new TemplatePortal(this._content, this._viewContainerRef);

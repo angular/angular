@@ -6,9 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Input} from '@angular/core';
-import {coerceBooleanProperty} from '../core/coercion/boolean-property';
+import {Directive, ElementRef} from '@angular/core';
+import {CanDisable, mixinDisabled} from '../core/common-behaviors/disabled';
 
+// Boilerplate for applying mixins to MdTabLabelWrapper.
+export class MdTabLabelWrapperBase {}
+export const _MdTabLabelWrapperMixinBase = mixinDisabled(MdTabLabelWrapperBase);
 
 /**
  * Used in the `md-tab-group` view to display tab labels.
@@ -16,20 +19,15 @@ import {coerceBooleanProperty} from '../core/coercion/boolean-property';
  */
 @Directive({
   selector: '[md-tab-label-wrapper], [mat-tab-label-wrapper]',
+  inputs: ['disabled'],
   host: {
     '[class.mat-tab-disabled]': 'disabled'
   }
 })
-export class MdTabLabelWrapper {
-  constructor(public elementRef: ElementRef) {}
-
-  /** Whether the tab label is disabled.  */
-  private _disabled: boolean = false;
-
-  /** Whether the element is disabled. */
-  @Input()
-  get disabled() { return this._disabled; }
-  set disabled(value: any) { this._disabled = coerceBooleanProperty(value); }
+export class MdTabLabelWrapper extends _MdTabLabelWrapperMixinBase implements CanDisable {
+  constructor(public elementRef: ElementRef) {
+    super();
+  }
 
   /** Sets focus on the wrapper element */
   focus(): void {
