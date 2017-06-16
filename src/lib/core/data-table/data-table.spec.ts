@@ -21,7 +21,7 @@ describe('CdkTable', () => {
 
     TestBed.configureTestingModule({
       imports: [CdkDataTableModule],
-      declarations: [SimpleCdkTableApp, CustomRoleCdkTableApp],
+      declarations: [SimpleCdkTableApp, DynamicDataSourceCdkTableApp, CustomRoleCdkTableApp],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SimpleCdkTableApp);
@@ -164,6 +164,40 @@ describe('CdkTable', () => {
     ]);
   });
 
+  it('should match the right table content with dynamic data source', () => {
+    fixture = TestBed.createComponent(DynamicDataSourceCdkTableApp);
+    component = fixture.componentInstance;
+    tableElement = fixture.nativeElement.querySelector('cdk-table');
+
+    fixture.detectChanges();  // Let the table render the rows
+    fixture.detectChanges();  // Let the rows render their cells
+
+    // Expect that the component has no data source and the table element reflects empty data.
+    expect(component.dataSource).toBe(undefined);
+    expect(tableElement).toMatchTableContent([
+      ['Column A']
+    ]);
+
+    // Add a data source that has initialized data. Expect that the table shows this data.
+    component.dataSource = new FakeDataSource();
+    fixture.detectChanges();
+
+    let data = component.dataSource.data;
+    expect(tableElement).toMatchTableContent([
+      ['Column A'],
+      [data[0].a],
+      [data[1].a],
+      [data[2].a],
+    ]);
+
+    // Remove the data source and check to make sure the table is empty again.
+    component.dataSource = null;
+    fixture.detectChanges();
+    expect(tableElement).toMatchTableContent([
+      ['Column A']
+    ]);
+  });
+
   it('should be able to dynamically change the columns for header and rows', () => {
     expect(dataSource.data.length).toBe(3);
 
@@ -264,6 +298,26 @@ class SimpleCdkTableApp {
 
 @Component({
   template: `
+    <cdk-table [dataSource]="dataSource">
+      <ng-container cdkColumnDef="column_a">
+        <cdk-header-cell *cdkHeaderCellDef> Column A</cdk-header-cell>
+        <cdk-cell *cdkCellDef="let row"> {{row.a}}</cdk-cell>
+      </ng-container>
+
+      <cdk-header-row *cdkHeaderRowDef="columnsToRender"></cdk-header-row>
+      <cdk-row *cdkRowDef="let row; columns: columnsToRender"></cdk-row>
+    </cdk-table>
+  `
+})
+class DynamicDataSourceCdkTableApp {
+  dataSource: FakeDataSource;
+  columnsToRender = ['column_a'];
+
+  @ViewChild(CdkTable) table: CdkTable<TestData>;
+}
+
+@Component({
+  template: `
     <cdk-table [dataSource]="dataSource" role="treegrid">
       <ng-container cdkColumnDef="column_a">
         <cdk-header-cell *cdkHeaderCellDef> Column A</cdk-header-cell>
@@ -317,13 +371,19 @@ const tableCustomMatchers: jasmine.CustomMatcherFactories = {
         // Check header cells
         const expectedHeaderContent = expectedTableContent.shift();
         getHeaderCells(tableElement).forEach((cell, index) => {
-          return checkCellContent(cell, expectedHeaderContent[index]);
+          const expected = expectedHeaderContent ?
+              expectedHeaderContent[index] :
+              null;
+          checkCellContent(cell, expected);
         });
 
         // Check data row cells
         getRows(tableElement).forEach((row, rowIndex) => {
           getCells(row).forEach((cell, cellIndex) => {
-            checkCellContent(cell, expectedTableContent[rowIndex][cellIndex]);
+            const expected = expectedHeaderContent ?
+                expectedTableContent[rowIndex][cellIndex] :
+                null;
+            checkCellContent(cell, expected);
           });
         });
 

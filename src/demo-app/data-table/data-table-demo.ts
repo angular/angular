@@ -12,12 +12,21 @@ export type UserProperties = 'userId' | 'userName' | 'progress' | 'color';
 })
 export class DataTableDemo {
   dataSource: PersonDataSource;
-  propertiesToDisplay: UserProperties[] = ['userId', 'userName', 'progress', 'color'];
+  propertiesToDisplay: UserProperties[] = [];
 
-  constructor(private _peopleDatabase: PeopleDatabase) { }
+  constructor(private _peopleDatabase: PeopleDatabase) {
+    this.connect();
+  }
 
-  ngOnInit() {
+  connect() {
+    this.propertiesToDisplay = ['userId', 'userName', 'progress', 'color'];
     this.dataSource = new PersonDataSource(this._peopleDatabase);
+    this._peopleDatabase.initialize();
+  }
+
+  disconnect() {
+    this.dataSource = null;
+    this.propertiesToDisplay = [];
   }
 
   getOpacity(progress: number) {

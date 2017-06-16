@@ -16,6 +16,12 @@ export class PeopleDatabase {
   data: UserData[] = [];
 
   constructor() {
+    this.initialize();
+  }
+
+  initialize() {
+    LATEST_ID = 0;
+    this.data = [];
     for (let i = 0; i < 100; i++) { this.addPerson(); }
   }
 
