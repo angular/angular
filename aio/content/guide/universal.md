@@ -1,64 +1,13 @@
-**Note: This build setup described in this guide is experimental and subject to change.**
-
 # Angular Universal
 
-<!--
-## Table of Contents
+**Note: This build setup described in this guide is experimental and subject to change.**
 
-* [Overview](#overview)
 
-    * [How does it work?](#how-does-it-work)
+## Overview
 
-        * [Limitations](#limitations)
-        * [Transition](#transition)
+<b>Server-side Rendering for your Angular application</b>
 
-    * [Why do it?](#why-do-it)
-
-        * [SEO (Search Engine Optimization)](#seo)
-        * [No JavaScript / Low Performance Device](#no-javascript)
-        * [Startup Performance](#startup-performance)
-
-    * [The Example](#the-example)
-
-* [Preparation](#preparation)
-
-    * [Installing the tools](#installing-the-tools)
-    * [Component-relative URLs](#component-relative-urls)
-    * [Server Transition](#server-transition)
-    * [Absolute URLs for HTTP](#absolute-url-http)
-
-* [Server Code](#server-code)
-
-    * [App Server Module](#app-server-module)
-    * [Universal Engine](#universal-engine)
-    * [Web Server](#web-server)
-
-* [Configuration - Universal](#configuration-universal)
-
-    * [TypeScript Configuration](#typescript-configuration)
-    * [Webpack Configuration](#webpack-configuration)
-
-        * [Loader](#loader)
-        * [Plugin](#plugin)
-        * [Input](#input)
-        * [Output](#output)
-
-* [Build and Serve - Universal](#build-and-serve-universal)
-
-    * [Build](#build)
-    * [Run](#run)
-    * [Exercising Universal](#exercising-universal)
-
-        * [App Limitations](#app-limitations)
-        * [Client Transition](#client-transition)
-        * [Throttling](#throttling)
-
-* [Conclusion](#conclusion)
--->
-
-## Overview <a name="overview"></a>
-
-Angular Universal is a technology that lets Angular applications run outside of the browser.  Using Universal, you can run your Angular application on any [Node.js](https://nodejs.org/en/) or  [ASP.NET Core](https://github.com/MarkPieszak/aspnetcore-angular2-universal) support on the way).  You can use it to generate HTML output from your app on-demand, or generate HTML files ahead of time.  A Universal application is a server that generates HTML using your Angular application.
+Angular Universal is a technology that lets Angular applications run outside of the browser.  Using Universal, you can run your Angular application on any [Node.js](https://nodejs.org/en/) or  [ASP.NET Core](https://github.com/MarkPieszak/aspnetcore-angular2-universal) server.  You can use it to generate HTML output from your app on-demand, or generate HTML files ahead of time.  A Universal application is a server that generates HTML using your Angular application.
 
 ### How does it work? <a name="how-does-it-work"></a>
 
@@ -136,19 +85,19 @@ Note that this is a single test with a single sample app, and does not represent
     <th>Time Allocation</th>
   </tr>
   <tr>
-    <td>JIT</td>
+    <th>JIT</th>
     <td>37.3s</td>
-    <td><img src="../images/guide/universal/toh-jit-throttled-pie.png" alt="JIT 3G time allocation"></td>
+    <td><img src="generated/images/guide/universal/toh-jit-throttled-pie.png" alt="JIT 3G time allocation"></td>
   </tr>
   <tr>
-    <td>AOT</td>
+    <th>AOT</th>
     <td>5.5s</td>
-    <td><img src="../images/guide/universal/toh-aot-throttled-pie.png" alt="AOT 3G time allocation"></td>
+    <td><img src="generated/images/guide/universal/toh-aot-throttled-pie.png" alt="AOT 3G time allocation"></td>
   </tr>
   <tr>
-    <td>Universal</td>
+    <th>Universal</th>
     <td>0.4s</td>
-    <td><img src="../images/guide/universal/toh-uni-throttled-pie.png" alt="Universal 3G time allocation"></td>
+    <td><img src="generated/images/guide/universal/toh-uni-throttled-pie.png" alt="Universal 3G time allocation"></td>
   </tr>
 </table>
 
@@ -182,24 +131,25 @@ To build and run the Universal version, you need to create:
 
 Building upon _Tour of Heroes_, the folder structure will look like this:
 
-```shell
-src/  index.html                    index file
-      main.ts                       bootstrapper for client app
-      style.css                     styles
-      systemjs.config.js            SystemJS configuration for client app
-      systemjs-angular-loader.js    component loader that allows relative paths
-      tsconfig.json                 TypeScript configuration for client app
-      app/  app.module.ts           application code
-            ...                     ...
-      uni/  app.server.module.ts    server-side application module *
-            server-aot.ts           express web server *
-            universal-engine.ts     server-side app renderer *
-      dist/ server.js               AOT-compiled server bundle *
-bs-config.json                      config file for lite server
-package.json                        npm configuration
-tsconfig-uni.json                   TypeScript configuration for Universal app *
-webpack.config.uni.js               Webpack configuration for Universal app *
-```
+<code-example format="." language="none" linenums="false">
+src/  index.html                    <i>index file</i>
+      main.ts                       <i>bootstrapper for client app</i>
+      style.css                     <i>styles</i>
+      systemjs.config.js            <i>SystemJS configuration for client app</i>
+      systemjs-angular-loader.js    <i>component loader that allows relative paths</i>
+      tsconfig.json                 <i>TypeScript configuration for client app</i>
+      app/  app.module.ts           <i>application code</i>
+            ...                     <i>...</i>
+      uni/  app.server.module.ts    <i>server-side application module *</i>
+            server-aot.ts           <i>express web server *</i>
+            universal-engine.ts     <i>server-side app renderer *</i>
+      dist/ server.js               <i>AOT-compiled server bundle *</i>
+bs-config.json                      <i>config file for lite server</i>
+package.json                        <i>npm configuration</i>
+tsconfig-uni.json                   <i>TypeScript configuration for Universal app *</i>
+webpack.config.uni.js               <i>Webpack configuration for Universal app *</i>
+</code-example>
+
 The files marked with * are new and not in the original Tour of Heroes demo.  This guide covers the new files in the sections below.
 
 ## Preparation <a name="preparation"></a>
@@ -217,10 +167,10 @@ To get started, you need to install the necessary modules for AOT and Webpack.
 
 You can install them with the following commands:
 
-```
+<code-example format="." language="bash">
 npm install @angular/compiler-cli @angular/platform-server --save-dev
 npm install webpack @ngtools/webpack raw-loader express --save-dev
-```
+</code-example>
 
 ### Component-relative URLs <a name="component-relative-urls"></a>
 
@@ -233,20 +183,21 @@ SystemJS allows both absolute and relative URLs (via [systemjs-angular-loader]()
 
 From this:
 
-```ts
+<code-example format="." language="ts">
     @Component({
         selector: 'my-component',
         templateUrl: 'app/demo/components/my.component.html'
     })
-```
+</code-example>
+
 To this:
 
-```ts
+<code-example format="." language="ts">
     @Component({
         selector: 'my-component',
         templateUrl: './my.component.html'
     })
-```
+</code-example>
 
 ### Server Transition <a name="server-transition"></a>
 
@@ -254,24 +205,18 @@ When a client-side Angular app bootstraps into a Universal page, it replaces the
 
 Open file `src/app.module.ts` and find the `BrowserModule` import.  Then replace this:
 
-```ts
+<code-example format="." language="ts">
 @NgModule({
   imports: [
     BrowserModule,
     FormsModule,
     ...
-```
+</code-example>
 
 with this:
-```ts
-@NgModule({
-  imports: [
-    BrowserModule.withServerTransition({
-      appId: 'toh-universal'  // choose a name for your application
-    }),
-    FormsModule,
-    ...
-```
+
+<code-example path="universal/src/app/app.module.ts" region="browsermodule" title="src/app/app.module.ts (withServerTransition)">
+</code-example>
 
 #### Absolute URLs for HTTP <a name="absolute-url-http"></a>
 
@@ -282,16 +227,12 @@ In a Universal app, the `Http` service needs all URLs to be absolute, because it
 Change the constructor of `HeroService` (in `hero.service.ts`) to take a second, optional parameter that accepts the `APP_BASE_HREF` value.  The value, if provided, is prepended to the `heroesUrl` that is hardcoded in the class. 
 
 From this:
-```ts
+<code-example format="." language="ts">
   constructor(private http: Http) {}
-```
+</code-example>
 to this:
-```ts
-  constructor(private http: Http, @Optional() @Inject(APP_BASE_HREF) origin: InjectionToken<string>) {
-    // make heroesUrl absolute if origin is provided
-    this.heroesUrl = origin ? origin + this.heroesUrl : this.heroesUrl;
-  }
-```
+<code-example path="universal/src/app/hero.service.ts" region="ctor" title="src/app/hero.service.ts (constructor with optional origin)">
+</code-example>
 In the client version of the app, the `APP_BASE_HREF` is not provided, so the `heroesUrl` will remain relative.  In the Universal version, the `APP_BASE_HREF` will be provided (in the `AppServerModule`; see below), so the `heroesUrl` will be changed to an absolute URL.
  
 
@@ -313,28 +254,8 @@ The app server module is an Angular module that imports both the client-side app
 
 Create an `app.server.module.ts` file in the `src/uni` directory and add the following code:
 
-```ts
-import { NgModule } from '@angular/core';
-import { APP_BASE_HREF } from '@angular/common';
-import { ServerModule } from '@angular/platform-server';
-import { AppComponent } from '../app/app.component';
-import { AppModule } from '../app/app.module';
-
-@NgModule({
-  imports: [
-    ServerModule,
-    AppModule
-  ],
-  bootstrap: [
-    AppComponent
-  ],
-  providers: [
-    {provide: APP_BASE_HREF, useValue: 'http://localhost:3200/'}
-  ]
-})
-export class AppServerModule {
-}
-```
+<code-example path="universal/src/uni/app.server.module.ts" title="src/uni/app.server.module.ts">
+</code-example>
 The APP_BASE_HREF value is provided to the application's router so that URLs are expressed relative to that value.  
 
 In our application, we use APP_BASE_HREF value in the `HeroService` to fetch data using `Http`.  In platform-server, `Http` needs all URLs to be absolute, because it doesn't know how to interpret relative URLs.
@@ -347,44 +268,8 @@ The rendered output could be stored as static HTML files to be served later.  Th
 
 Create the `universal-engine.ts` file in the `src/uni` directory, and add the following code:
 
-```ts
-import * as fs from 'fs';
-import { renderModuleFactory } from '@angular/platform-server';
-
-const templateCache = {}; // cache for page templates
-const outputCache = {};   // cache for rendered pages
-
-export function ngUniversalEngine(setupOptions: any) {
-
-  return function (filePath: string, options: { req: Request }, callback: (err: Error, html: string) => void) {
-    let url: string = options.req.url;
-    let html: string = outputCache[url];
-    if (html) {
-      // return already-built page for this url
-      console.log('from cache: ' + url);
-      callback(null, html);
-      return;
-    }
-
-    console.log('building: ' + url);
-    if (!templateCache[filePath]) {
-      let file = fs.readFileSync(filePath);
-      templateCache[filePath] = file.toString();
-    }
-
-    // render the page via angular platform-server
-    let appModuleFactory = setupOptions.bootstrap[0];
-    renderModuleFactory(appModuleFactory, {
-      document: templateCache[filePath],
-      url: url
-    }).then(str => {
-      outputCache[url] = str;
-      callback(null, str);
-    });
-  };
-}
-
-```
+<code-example path="universal/src/uni/universal-engine.ts" title="src/uni/universal-engine.ts">
+</code-example>
 
 ### Web Server <a name="web-server"></a>
 
@@ -394,59 +279,18 @@ This web server is based on the popular [Express](https://expressjs.com/) web fr
 
 Create the `server-aot.ts` file in the `src/uni` directory, and add the following code:
 
-```ts
-import 'zone.js/dist/zone-node';
-import { enableProdMode } from '@angular/core';
-import { AppServerModuleNgFactory } from '../../aot/src/uni/app.server.module.ngfactory';
-import * as express from 'express';
-import { ngUniversalEngine } from './universal-engine';
-
-enableProdMode();
-
-const server = express();
-
-// set our angular engine as the handler for html files, so it will be used to render them.
-server.engine('html', ngUniversalEngine({
-    bootstrap: AppServerModuleNgFactory
-}));
-
-// set default view directory
-server.set('views', 'src');
-
-// handle requests for routes in the app.  ngExpressEngine does the rendering.
-server.get(['/', '/dashboard', '/heroes', '/detail/:id'], (req, res) => {
-    res.render('index.html', {req});
-});
-
-// handle requests for static files
-server.get(['/*.js', '/*.css', '/*.html'], (req, res, next) => {
-    let fileName: string = req.originalUrl;
-    console.log(fileName);
-    let root = fileName.startsWith('/node_modules/') ? '.' : 'src';
-    res.sendFile(fileName, { root: root }, function (err) {
-        if (err) {
-            next(err);
-        }
-    });
-});
-
-// start the server
-server.listen(3200, () => {
-    console.log('listening on port 3200...');
-});
-
-```
-
+<code-example path="universal/src/uni/server-aot.ts" title="src/uni/server-aot.ts">
+</code-example>
 There's a chicken-and-egg problem here.  The server depends on `AppServerModuleNgFactory`, which won't exist until the app is compiled.  But the `server-aot.ts` won't compile because `AppServerModuleNgFactory` doesn't exist yet.
 
 One way around this problem is to compile `app.server.module.ts` before `server-aot.ts`.  You can tell the compiler to do that using the `files` array in the `tsconfig-uni.json`, which you will create in the next section.
 
-```json
+<code-example format="." language="ts" linenums="false">
   "files": [
     "src/uni/app.server.module.ts",
     "src/uni/server-aot.ts"
   ],
-```
+</code-example>
 
 Since `app.server.module.ts` appears first in the array, it will be compiled into an `ngfactory` first.  So `AppServerModuleNgFactory` will be available for `server-aot.ts`.
 
@@ -470,35 +314,8 @@ You configure it using a JSON file similar to `tsconfig.json`.  There are a few 
 
 Create a `tsconfig-uni.json` file in the project rood directory by copying your `tsconfig.json` and applying the changes described above.  It should look like this:
 
-```json
-{
-  "compilerOptions": {
-    "target": "es5",
-    "module": "es2015",
-    "moduleResolution": "node",
-    "sourceMap": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "lib": ["es2015", "dom"],
-    "noImplicitAny": true,
-    "suppressImplicitAnyIndexErrors": true,
-    "typeRoots": [
-      "../../node_modules/@types/"
-    ]
-  },
-
-  "files": [
-    "src/uni/app.server.module.ts",
-    "src/uni/server-aot.ts"
-  ],
-
-  "angularCompilerOptions": {
-    "genDir": "aot",
-    "entryModule": "./src/app/app.module#AppModule",
-    "skipMetadataEmit" : true
-  }
-}
-```
+<code-example path="universal/tsconfig-uni.json" title="tsconfig-uni.json">
+</code-example>
 
 ### Webpack Configuration <a name="webpack-configuration"></a>
 
@@ -507,38 +324,8 @@ Using Webpack for Universal AOT compilation is similar, but uses different [load
 
 Create a `webpack.config.uni.js` file in the project root directory, and add the content shown below.  The salient parts are explained in the following sections.
 
-```ts
-const ngtools = require('@ngtools/webpack');
-const webpack = require('webpack');
-
-module.exports = {
-    devtool: 'source-map',
-    entry: {
-		main: ['./src/uni/app.server.module.ts', './src/uni/server-aot.ts']
-    },
-    resolve: {
-        extensions: ['.ts', '.js']
-    },
-    target: 'node',
-    output: {
-        path: 'src/dist',
-        filename: 'server.js'
-    },
-    plugins: [
-        new ngtools.AotPlugin({
-            tsConfigPath: './tsconfig-uni.json'
-        }),
-        new webpack.optimize.UglifyJsPlugin({ sourceMap: true })
-    ],
-    module: {
-        rules: [
-            { test: /\.css$/, loader: 'raw-loader' },
-            { test: /\.html$/, loader: 'raw-loader' },
-            { test: /\.ts$/, loader: '@ngtools/webpack' }
-        ]
-    }
-}
-```
+<code-example path="universal/webpack.config.uni.js" title="webpack.config.uni.js">
+</code-example>
 
 #### Loader <a name="loader"></a>
 
@@ -546,14 +333,14 @@ For AOT, the **loader** to use for TypeScript files is `@ngtools/webpack`.
 This loads TypeScript files and interprets the Angular decorators to prepare for AOT compilation.
 Since it is used for TypeScript files, configure the loader for `*.ts`:
 
-```ts
+<code-example format="." language="ts" linenums="false">
 module: {
     rules: [
         ...
         { test: /\.ts$/, loader: '@ngtools/webpack' } // use ngtools loader for typescript
     ]
 }
-```
+</code-example>
 
 When CSS and HTML files are encountered while processing the TypeScript, the [raw-loader](https://webpack.js.org/loaders/raw-loader/) is used.
 It simply loads the file as a string, allowing Webpack to include it in the bundle.
@@ -570,13 +357,13 @@ The plugin accepts [several options](https://www.npmjs.com/package/@ngtools/webp
 Despite the <a href="https://www.npmjs.com/package/@ngtools/webpack#options">ngtools documentation</a>, the `entryModule` option must be in the `tsconfig-uni.json`, not inside the Webpack config.
 </div>
 
-```ts
+<code-example format="." language="ts" linenums="false">
 plugins: [
     new ngtools.AotPlugin({
         tsConfigPath: './tsconfig-uni.json'
     })
 ],
-```
+</code-example>
 
 The `tsConfigPath` tells the plugin where to find the TypeScript configuration file to use when compiling.
 This should be the Universal-specific `tsconfig-uni.json` described above.
@@ -592,11 +379,11 @@ It will pull in the Angular libraries used by the app, but it will *not* pull in
 
 This ensures that the code for both appears in the final bundle.
 
-```ts
+<code-example format="." language="ts" linenums="false">
 entry: {
     main: ['./src/uni/app.server.ts', './src/uni/server-aot.ts']
 },
-```
+</code-example>
 
 The [Webpack Introduction](webpack.html#entries-outputs) describes how to create separate bundles for 
 app code, vendor libraries, and polyfills.  For simplicity, this example shows a single-bundle scenario.
@@ -606,12 +393,12 @@ app code, vendor libraries, and polyfills.  For simplicity, this example shows a
 After the plugin compiles the app files, Webpack bundles them into one or more output bundles.
 The bundles contains the all the code necessary to run the web server and serve the app.
 
-```ts
+<code-example format="." language="ts" linenums="false">
 output: {
     path: 'src/dist',
     filename: 'server.js'
 },
-```
+</code-example>
 
 We put them in a `dist` directory under `src`.  We will run the server from this directory with a script.
 
@@ -620,21 +407,21 @@ We put them in a `dist` directory under `src`.  We will run the server from this
 
 Now that you've created the TypeScript and Webpack config files, you can build and run the Universal application.  First add the build and serve commands to the `scripts` section of your `package.json`:
 
-```json
+<code-example format="." language="ts" linenums="false">
 "scripts": {
     "build:uni": "webpack --config webpack.config.uni.js",
     "serve:uni": "node src/dist/server.js",
    ...
 }
-```
+</code-example>
 
 ### Build <a name="build"></a>
 
 From the command prompt, type
 
-```shell
+<code-example format="." language="bash" linenums="false">
 npm run build:uni
-```
+</code-example>
 
 As configured above, this transpiles the TypeScript files, Angular-compiles the components, and Webpacks the results into a single output file, `src/dist/server.js`.
 It also generates a [source map](https://webpack.js.org/configuration/devtool/), `src/dist/server.js.map` that relates the bundle code to the source code.  
@@ -644,21 +431,21 @@ Source maps are primarily for the browser's [dev tools](https://developers.googl
 ### Run <a name="run"></a>
 Once the server bundle is created, type
 
-```shell
+<code-example format="." language="bash" linenums="false">
 npm run serve:uni
-```
+</code-example>
 
 to start the server.  The console window should say 
 
-```shell
+<code-example format="." language="bash" linenums="false">
 listening on port 3200...
-```
+</code-example>
 
 ### Exercising Universal <a name="exercising-universal"></a>
 
 Open a browser to http://localhost:3200/ and you should be greeted by the familiar Tour of Heroes dashboard page.  Meanwhile, the console window shows:
 
-```shell
+<code-example format="." language="bash" linenums="false">
 building: /
 /styles.css
 /node_modules/core-js/client/shim.min.js
@@ -668,7 +455,7 @@ building: /
 /main.js
 Error: ENOENT: no such file or directory, stat './src/main.js'
     at Error (native)
-```
+</code-example>
 
 The first line shows that the server received a request for '/' and passed it to the Universal engine, which then built the HTML page from your Angular application.  If you reload the page for the same URL, the console will report 'from cache' instead of 'building', and the server will return HTML that was previously rendered for that URL.
 
@@ -684,9 +471,10 @@ Now you can see the limitations of the Universal app.  Navigation using `routerL
 
 Now build the client-side version of the app described in the [Tour of Heroes tutorial](https://angular.io/docs/ts/latest/tutorial/).
 
-```shell
+<code-example format="." language="bash" linenums="false">
 npm run build
-```
+</code-example>
+
 This compiles the TypeScript so it can be loaded by SystemJS and run in the browser.
 
 Now refresh the browser.  This time, the Universal app is displayed, but it is quickly replaced by the full Angular app.  Now you can use the event-based features that were missing.
