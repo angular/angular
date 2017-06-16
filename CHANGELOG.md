@@ -1,3 +1,37 @@
+<a name="4.2.3"></a>
+## [4.2.3](https://github.com/angular/angular/compare/4.2.1...4.2.3) (2017-06-16)
+
+
+### Bug Fixes
+
+* **aio:** add missing redirect rule for `/styleguide` ([64e63b9](https://github.com/angular/angular/commit/64e63b9)), closes [#17542](https://github.com/angular/angular/issues/17542)
+* **aio:** always cover the whole footer with its background ([86df710](https://github.com/angular/angular/commit/86df710)), closes [#17465](https://github.com/angular/angular/issues/17465)
+* **aio:** do not log messages in production ([ab90f63](https://github.com/angular/angular/commit/ab90f63)), closes [#17453](https://github.com/angular/angular/issues/17453)
+* **aio:** ensure that API filter page can display 3 columns in wide view ([203c5ba](https://github.com/angular/angular/commit/203c5ba)), closes [#17251](https://github.com/angular/angular/issues/17251)
+* **aio:** fix buttons in "Home" and "Features" ([2d31e17](https://github.com/angular/angular/commit/2d31e17)), closes [#17448](https://github.com/angular/angular/issues/17448)
+* **aio:** fix scrolling to elements near the bottom of the page ([a2f2321](https://github.com/angular/angular/commit/a2f2321)), closes [#17452](https://github.com/angular/angular/issues/17452)
+* **aio:** fix trackBy demo in template-syntax article ([e7a4f92](https://github.com/angular/angular/commit/e7a4f92))
+* **aio:** make search results better ([ad4fee7](https://github.com/angular/angular/commit/ad4fee7)), closes [#17417](https://github.com/angular/angular/issues/17417)
+* **aio:** make the footer links clickable on all browsers ([d363aa0](https://github.com/angular/angular/commit/d363aa0)), closes [#17460](https://github.com/angular/angular/issues/17460)
+* **aio:** remove gap between sidenav menus ([e543272](https://github.com/angular/angular/commit/e543272)), closes [#17394](https://github.com/angular/angular/issues/17394)
+* **aio:** remove outline from search input on focus ([d6087f7](https://github.com/angular/angular/commit/d6087f7)), closes [#17396](https://github.com/angular/angular/issues/17396)
+* **aio:** show search results when search box gets focus ([668f9ed](https://github.com/angular/angular/commit/668f9ed))
+* **aio:** specify large image for PWA splash-screen ([64fa100](https://github.com/angular/angular/commit/64fa100))
+* **aio:** tidy up layout of api filter page ([eda7bb5](https://github.com/angular/angular/commit/eda7bb5)), closes [#17395](https://github.com/angular/angular/issues/17395)
+* **aio:** use locally hosted lunr library ([b784829](https://github.com/angular/angular/commit/b784829))
+* **animations:** compute removal node height correctly ([185075d](https://github.com/angular/angular/commit/185075d))
+* **animations:** do not treat a `0` animation state as `void` ([451257a](https://github.com/angular/angular/commit/451257a))
+* **animations:** properly collect :enter nodes in a partially updated collection ([6ca4692](https://github.com/angular/angular/commit/6ca4692)), closes [#17440](https://github.com/angular/angular/issues/17440)
+* **animations:** remove duplicate license header ([b192dd5](https://github.com/angular/angular/commit/b192dd5))
+* **forms:** temp roll back breaking change with min/max directives ([b8c39cd](https://github.com/angular/angular/commit/b8c39cd)), closes [#17491](https://github.com/angular/angular/issues/17491)
+
+
+### Features
+
+* **aio:** add iphone pwa features ([8abc1df](https://github.com/angular/angular/commit/8abc1df))
+
+
+
 <a name="4.2.2"></a>
 ## [4.2.2](https://github.com/angular/angular/compare/4.2.1...4.2.2) (2017-06-12)
 
