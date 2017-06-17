@@ -41,14 +41,22 @@ timestamp=$(date +%s)
 payloadData="$payloadData\"timestamp\": $timestamp, "
 
 # Add change source: application, dependencies, or 'application+dependencies'
-allChangedFiles=$(git diff --name-only $TRAVIS_COMMIT_RANGE)
-yarnChangedFiles=$(grep yarn.lock <<< $allChangedFiles)
+yarnChanged=false
+allChangedFiles=$(git diff --name-only $TRAVIS_COMMIT_RANGE | grep -c "")
+allChangedFileNames=$(git diff --name-only $TRAVIS_COMMIT_RANGE)
 
-if [[ ! -z $allChangedFiles ]] && [[ ! -z $yarnChangedFiles ]] && [ "$allChangedFiles" != "$yarnChangedFiles" ]; then
-  change='application+dependencies'
-elif [[ ! -z $yarnChangedFiles ]]; then
+if [[ $allChangedFileNames == *"yarn.lock"* ]]; then
+  yarnChanged=true
+fi
+echo $yarnChanged
+echo $allChangedFileNames
+
+if [[ $allChangedFiles -eq 1 ]] && [[ "$yarnChanged" = true ]]; then
+  # only yarn.lock changed
   change='dependencies'
-elif [[ ! -z $allChangedFiles ]]; then
+elif [[ $allChangedFiles -gt 1 ]] && [[ "$yarnChanged" = true ]]; then
+  change='application+dependencies'
+elif [[ $allChangedFiles -gt 0 ]]; then
   change='application'
 else
   change=''
