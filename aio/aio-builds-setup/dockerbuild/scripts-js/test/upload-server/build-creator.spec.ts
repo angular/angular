@@ -2,6 +2,7 @@
 import * as cp from 'child_process';
 import {EventEmitter} from 'events';
 import * as fs from 'fs';
+import * as path from 'path';
 import * as shell from 'shelljs';
 import {BuildCreator} from '../../lib/upload-server/build-creator';
 import {CreatedBuildEvent} from '../../lib/upload-server/build-events';
@@ -14,8 +15,8 @@ describe('BuildCreator', () => {
   const sha = '9'.repeat(40);
   const archive = 'snapshot.tar.gz';
   const buildsDir = 'builds/dir';
-  const prDir = `${buildsDir}/${pr}`;
-  const shaDir = `${prDir}/${sha}`;
+  const prDir = path.join(buildsDir, pr);
+  const shaDir = path.join(prDir, sha);
   let bc: BuildCreator;
 
   beforeEach(() => bc = new BuildCreator(buildsDir));
