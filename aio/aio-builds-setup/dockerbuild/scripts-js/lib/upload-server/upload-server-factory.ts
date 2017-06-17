@@ -41,7 +41,7 @@ class UploadServerFactory {
     const buildCreator = this.createBuildCreator(buildsDir, githubToken, repoSlug, domainName);
 
     const middleware = this.createMiddleware(buildVerifier, buildCreator);
-    const httpServer = http.createServer(middleware);
+    const httpServer = http.createServer(middleware as any);
 
     httpServer.on('listening', () => {
       const info = httpServer.address();
@@ -80,13 +80,13 @@ class UploadServerFactory {
         this.throwRequestError(401, `Missing or empty '${AUTHORIZATION_HEADER}' header`, req);
       } else if (!archive) {
         this.throwRequestError(400, `Missing or empty '${X_FILE_HEADER}' header`, req);
+      } else {
+        buildVerifier.
+          verify(+pr, authHeader).
+          then(() => buildCreator.create(pr, sha, archive)).
+          then(() => res.sendStatus(201)).
+          catch(err => this.respondWithError(res, err));
       }
-
-      buildVerifier.
-        verify(+pr, authHeader).
-        then(() => buildCreator.create(pr, sha, archive)).
-        then(() => res.sendStatus(201)).
-        catch(err => this.respondWithError(res, err));
     });
     middleware.get(/^\/health-check\/?$/, (_req, res) => res.sendStatus(200));
     middleware.get('*', req => this.throwRequestError(404, 'Unknown resource', req));
