@@ -66,7 +66,7 @@ describe('GithubPullRequests', () => {
 
     it('should resolve with the returned response', done => {
       prs.addComment(42, 'body').then(data => {
-        expect(data).toEqual('Test');
+        expect(data as any).toBe('Test');
         done();
       });
 
@@ -109,7 +109,7 @@ describe('GithubPullRequests', () => {
 
     it('should forward the value returned by \'getPaginated()\'', () => {
       prsGetPaginatedSpy.and.returnValue('Test');
-      expect(prs.fetchAll()).toBe('Test');
+      expect(prs.fetchAll() as any).toBe('Test');
     });
 
   });

@@ -54,7 +54,7 @@ export class BuildVerifier {
 
   protected verifyJwt(expectedPr: number, token: string): Promise<JwtPayload> {
     return new Promise((resolve, reject) => {
-      jwt.verify(token, this.secret, {issuer: 'Travis CI, GmbH'}, (err, payload) => {
+      jwt.verify(token, this.secret, {issuer: 'Travis CI, GmbH'}, (err, payload: JwtPayload) => {
         if (err) {
           reject(err.message || err);
         } else if (payload.slug !== this.repoSlug) {

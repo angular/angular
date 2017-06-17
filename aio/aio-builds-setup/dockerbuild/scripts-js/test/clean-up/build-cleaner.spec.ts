@@ -114,7 +114,7 @@ describe('BuildCleaner', () => {
 
     it('should resolve with the value returned by \'removeUnnecessaryBuilds()\'', done => {
       promise.then(result => {
-        expect(result).toBe('Test');
+        expect(result as any).toBe('Test');
         done();
       });
 

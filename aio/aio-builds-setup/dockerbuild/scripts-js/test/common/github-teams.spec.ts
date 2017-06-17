@@ -38,7 +38,7 @@ describe('GithubTeams', () => {
 
     it('should forward the value returned by \'getPaginated()\'', () => {
       teamsGetPaginatedSpy.and.returnValue('Test');
-      expect(teams.fetchAll()).toBe('Test');
+      expect(teams.fetchAll() as any).toBe('Test');
     });
 
   });
@@ -50,12 +50,16 @@ describe('GithubTeams', () => {
 
     beforeEach(() => {
       teams = new GithubTeams('12345', 'foo');
-      teamsGetSpy = spyOn(teams, 'get');
+      teamsGetSpy = spyOn(teams, 'get').and.returnValue(Promise.resolve(null));
     });
 
 
-    it('should return a promise', () => {
-      expect(teams.isMemberById('user', [1])).toEqual(jasmine.any(Promise));
+    it('should return a promise', done => {
+      const promise = teams.isMemberById('user', [1]);
+      promise.then(done);   // Do not complete the test (and release the spies) synchronously
+                            // to avoid running the actual `get()`.
+
+      expect(promise).toEqual(jasmine.any(Promise));
     });
 
 
@@ -69,7 +73,6 @@ describe('GithubTeams', () => {
 
 
     it('should call \'get()\' with the correct pathname', done => {
-      teamsGetSpy.and.returnValue(Promise.resolve(null));
       teams.isMemberById('user', [1]).then(() => {
         expect(teamsGetSpy).toHaveBeenCalledWith('/teams/1/memberships/user');
         done();

@@ -22,7 +22,7 @@ describe('uploadServerFactory', () => {
 
   // Helpers
   const createUploadServer = (partialConfig: Partial<typeof defaultConfig> = {}) =>
-    usf.create({...defaultConfig, ...partialConfig});
+    usf.create({...defaultConfig, ...partialConfig} as typeof defaultConfig);
 
 
   describe('create()', () => {

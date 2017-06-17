@@ -18,7 +18,7 @@ describe('BuildVerifier', () => {
 
   // Helpers
   const createBuildVerifier = (partialConfig: Partial<typeof defaultConfig> = {}) => {
-    const cfg = {...defaultConfig, ...partialConfig};
+    const cfg = {...defaultConfig, ...partialConfig} as typeof defaultConfig;
     return new BuildVerifier(cfg.secret, cfg.githubToken, cfg.repoSlug, cfg.organization,
                              cfg.allowedTeamSlugs);
   };
