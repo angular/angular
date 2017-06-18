@@ -17,10 +17,11 @@ available:
   useful for CI integration. See [here](misc--integrate-with-ci.md) for more info.
 
 - `travis-preverify-pr.sh`
-  Can be used for "preverifying" a PR before uploading the artifacts to the server. It checks that
-  the author of the PR is a member of one of the specified GitHub teams and therefore allowed to
-  upload build artifacts. This is useful for CI integration. See [here](misc--integrate-with-ci.md)
-  for more info.
+  Can be used for "pre-verifying" a PR before uploading the artifacts to the server. It checks
+  whether the author of the PR is a member of one of the specified GitHub teams (therefore allowed
+  to upload build artifacts) or the PR has the specified "trusted PR" label (meaning it has been
+  manually verified by a trusted member). This is useful for CI integration.
+  See [here](misc--integrate-with-ci.md) for more info.
 
 - `update-preview-server.sh`
   Can be used for updating the docker container (and image) based on the latest changes checked out
