@@ -12,7 +12,7 @@ describe('SearchResultsComponent', () => {
   let searchResults: Subject<SearchResults>;
 
   /** Get all text from component element */
-  function getText() { return fixture.debugElement.nativeElement.innerText; }
+  function getText() { return fixture.debugElement.nativeElement.textContent; }
 
   /** Get a full set of test results. "Take" what you need */
   function getTestResults(take?: number) {

@@ -108,7 +108,7 @@ export class CodeComponent implements OnChanges {
 
     if (!this.code) {
       const src = this.path ? this.path + (this.region ? '#' + this.region : '') : '';
-      const srcMsg = src ? ` for<br>${src}` : '.';
+      const srcMsg = src ? ` for\n${src}` : '.';
       this.setCodeHtml(`<p class="code-missing">The code sample is missing${srcMsg}</p>`);
       return;
     }
@@ -129,8 +129,8 @@ export class CodeComponent implements OnChanges {
   }
 
   doCopy() {
-    // We take the innerText because we don't want it to be HTML encoded
-    const code = this.codeContainer.nativeElement.innerText;
+    // We take the textContent because we don't want it to be HTML encoded
+    const code = this.codeContainer.nativeElement.textContent.trim();
     if (this.copier.copyText(code)) {
       this.logger.log('Copied code to clipboard:', code);
       // success snackbar alert
