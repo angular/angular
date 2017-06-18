@@ -183,7 +183,7 @@ describe('LiveExampleComponent', () => {
       testComponent(() => {
         const expectedTitle = 'live example';
         const anchor = getLiveExampleAnchor();
-        expect(anchor.innerText).toBe(expectedTitle, 'anchor content');
+        expect(anchor.textContent).toBe(expectedTitle, 'anchor content');
         expect(anchor.getAttribute('title')).toBe(expectedTitle, 'title');
       });
     });
@@ -193,7 +193,7 @@ describe('LiveExampleComponent', () => {
       setHostTemplate(`<live-example title="${expectedTitle}"></live-example>`);
       testComponent(() => {
         const anchor = getLiveExampleAnchor();
-        expect(anchor.innerText).toBe(expectedTitle, 'anchor content');
+        expect(anchor.textContent).toBe(expectedTitle, 'anchor content');
         expect(anchor.getAttribute('title')).toBe(expectedTitle, 'title');
       });
     });
@@ -203,7 +203,7 @@ describe('LiveExampleComponent', () => {
       setHostTemplate('<live-example title="ignore this title"></live-example>');
       testComponent(() => {
         const anchor = getLiveExampleAnchor();
-        expect(anchor.innerText).toBe(liveExampleContent, 'anchor content');
+        expect(anchor.textContent).toBe(liveExampleContent, 'anchor content');
         expect(anchor.getAttribute('title')).toBe(liveExampleContent, 'title');
       });
     });
