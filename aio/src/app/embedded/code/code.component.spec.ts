@@ -116,7 +116,7 @@ describe('CodeComponent', () => {
       hostComponent.linenums = false;
       hostComponent.code = '  abc\n   let x = text.split(\'\\n\');\n  ghi\n\n  jkl\n';
       fixture.detectChanges();
-      const codeContent = codeComponentDe.nativeElement.querySelector('code').innerText;
+      const codeContent = codeComponentDe.nativeElement.querySelector('code').textContent;
       expect(codeContent).toEqual('abc\n let x = text.split(\'\\n\');\nghi\n\njkl');
     });
 
@@ -124,7 +124,7 @@ describe('CodeComponent', () => {
       hostComponent.linenums = false;
       hostComponent.code = '\n\n\n' + smallMultiLineCode + '\n\n\n';
       fixture.detectChanges();
-      const codeContent = codeComponentDe.nativeElement.querySelector('code').innerText;
+      const codeContent = codeComponentDe.nativeElement.querySelector('code').textContent;
       expect(codeContent).toEqual(codeContent.trim());
     });
 
@@ -141,7 +141,7 @@ describe('CodeComponent', () => {
 
     function getErrorMessage() {
       const missing: HTMLElement = codeComponentDe.nativeElement.querySelector('.code-missing');
-      return missing ? missing.innerText : null;
+      return missing ? missing.textContent : null;
     }
 
     it('should not display "code-missing" class when there is some code', () => {

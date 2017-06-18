@@ -62,7 +62,7 @@ describe('CodeExampleComponent', () => {
     TestBed.overrideComponent(HostComponent, {
       set: {template: '<code-example title="Great Example"></code-example>'}});
     createComponent(oneLineCode);
-    const actual = codeExampleDe.query(By.css('header')).nativeElement.innerText;
+    const actual = codeExampleDe.query(By.css('header')).nativeElement.textContent;
     expect(actual).toBe('Great Example');
   });
 
