@@ -398,19 +398,19 @@ describe('AppComponent', () => {
       it('should display a guide page (guide/pipes)', () => {
         locationService.go('guide/pipes');
         fixture.detectChanges();
-        expect(docViewer.innerText).toMatch(/Pipes/i);
+        expect(docViewer.textContent).toMatch(/Pipes/i);
       });
 
       it('should display the api page', () => {
         locationService.go('api');
         fixture.detectChanges();
-        expect(docViewer.innerText).toMatch(/API/i);
+        expect(docViewer.textContent).toMatch(/API/i);
       });
 
       it('should display a marketing page', () => {
         locationService.go('features');
         fixture.detectChanges();
-        expect(docViewer.innerText).toMatch(/Features/i);
+        expect(docViewer.textContent).toMatch(/Features/i);
       });
 
       it('should update the document title', () => {
@@ -632,7 +632,7 @@ describe('AppComponent', () => {
     describe('footer', () => {
       it('should have version number', () => {
         const versionEl: HTMLElement = fixture.debugElement.query(By.css('aio-footer')).nativeElement;
-        expect(versionEl.innerText).toContain(TestHttp.versionFull);
+        expect(versionEl.textContent).toContain(TestHttp.versionFull);
       });
     });
 
