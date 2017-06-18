@@ -841,12 +841,11 @@ Although the dashboard heroes are presented as button-like blocks, they should b
 When hovering over a hero block, the target URL should display in the browser status bar
 and the user should be able to copy the link or open the hero detail view in a new tab.
 
-To achieve this effect, reopen `dashboard.component.html` and replace the repeated `<div *ngFor...>` tags
-with `<a>` tags. Change the opening `<a>` tag to the following:
+To achieve this effect, reopen `dashboard.component.html` and add `[routerLink]="['/detail', hero.id]"` to the `<div *ngFor...>` tag. The `<div *ngFor...>` tag should now look like this:
 
-
-<code-example path="toh-pt5/src/app/dashboard.component.html" region="click" title="src/app/dashboard.component.html (repeated &lt;a&gt; tag)">
-
+correct line of code: `<div *ngFor="let hero of heroes"  [routerLink]="['/detail', hero.id]"  class="col-1-4">`
+<code-example>
+[add new correct picture here]
 </code-example>
 
 
