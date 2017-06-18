@@ -1,3 +1,4 @@
+import { DebugElement } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Observable } from 'rxjs/Observable';
@@ -128,19 +129,47 @@ describe('SearchResultsComponent', () => {
     expect(component.searchAreas).toEqual([]);
   });
 
-  it('should emit a "resultSelected" event when a search result anchor is clicked', () => {
-    const searchResult = { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '' };
+  describe('when a search result anchor is clicked', () => {
+    let searchResult: SearchResult;
     let selected: SearchResult;
-    component.resultSelected.subscribe(result => selected = result);
+    let anchor: DebugElement;
 
-    searchResults.next({ query: 'something', results: [searchResult] });
-    fixture.detectChanges();
-    expect(selected).toBeUndefined();
+    beforeEach(() => {
+      component.resultSelected.subscribe(result => selected = result);
 
-    const anchor = fixture.debugElement.query(By.css('a'));
-    anchor.triggerEventHandler('click', {});
-    fixture.detectChanges();
-    expect(selected).toEqual(searchResult);
+      selected = null;
+      searchResult = { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '' };
+      searchResults.next({ query: 'something', results: [searchResult] });
+
+      fixture.detectChanges();
+      anchor = fixture.debugElement.query(By.css('a'));
+
+      expect(selected).toBeNull();
+    });
+
+    it('should emit a "resultSelected" event', () => {
+      anchor.triggerEventHandler('click', {button: 0, ctrlKey: false, metaKey: false});
+      fixture.detectChanges();
+      expect(selected).toBe(searchResult);
+    });
+
+    it('should not emit an event if mouse button is not zero (middle or right)', () => {
+      anchor.triggerEventHandler('click', {button: 1, ctrlKey: false, metaKey: false});
+      fixture.detectChanges();
+      expect(selected).toBeNull();
+    });
+
+    it('should not emit an event if the `ctrl` key is pressed', () => {
+      anchor.triggerEventHandler('click', {button: 0, ctrlKey: true, metaKey: false});
+      fixture.detectChanges();
+      expect(selected).toBeNull();
+    });
+
+    it('should not emit an event if the `meta` key is pressed', () => {
+      anchor.triggerEventHandler('click', {button: 0, ctrlKey: false, metaKey: true});
+      fixture.detectChanges();
+      expect(selected).toBeNull();
+    });
   });
 
   describe('when no query results', () => {
