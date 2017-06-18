@@ -25,24 +25,6 @@ and the [Reactive Forms](guide/reactive-forms) guides.
 
 </live-example>
 
-
-
-
-## Built-in validators
-
-Angular forms include a number of built-in validator functions, which are functions 
-that help you check common user input in forms. In addition to the built-in 
-validators covered here of `minlength`, `maxlength`, 
-and `required`, there are others such as `min`, `max`, `email` and `pattern` 
-for Template Driven as well as Reactive Forms. 
-For a full list of built-in validators, 
-see the [Validators](api/forms/Validators) API reference.
-
-
-
-
-
-
 ## Simple Template Driven Forms
 
 In the Template Driven approach, you arrange
@@ -473,8 +455,15 @@ Then it attaches the same `onValueChanged` handler (there's a one line differenc
 to the form's `valueChanges` event and calls it immediately
 to set error messages for the new control model.
 
+## Built-in validators
 
-{@a formbuilder}
+Angular forms include a number of built-in validator functions, which are functions 
+that help you check common user input in forms. In addition to the built-in 
+validators covered here of `minlength`, `maxlength`, 
+and `required`, there are others such as `email` and `pattern` 
+for Reactive Forms. 
+For a full list of built-in validators, 
+see the [Validators](api/forms/Validators) API reference.
 
 
 #### _FormBuilder_ declaration
@@ -490,18 +479,11 @@ Angular has stock validators that correspond to the standard HTML validation att
 The `forbiddenName` validator on the `"name"` control is a custom validator,
 discussed in a separate [section below](guide/form-validation#custom-validation).
 
-
 <div class="l-sub-section">
-
-
 
 Learn more about `FormBuilder` in the [Introduction to FormBuilder](guide/reactive-forms#formbuilder) section of Reactive Forms guide.
 
 </div>
-
-
-
-{@a committing-changes}
 
 #### Committing hero value changes
 
@@ -518,14 +500,12 @@ This sample updates the model twice:
 The `onSubmit()` method simply replaces the `hero` object with the combined values of the form:
 
 <code-example path="form-validation/src/app/reactive/hero-form-reactive.component.ts" region="on-submit" title="form-validation/src/app/reactive/hero-form-reactive.component.ts" linenums="false">
-
 </code-example>
 
 
 The `addHero()` method discards pending changes and creates a brand new `hero` model object.
 
 <code-example path="form-validation/src/app/reactive/hero-form-reactive.component.ts" region="add-hero" title="form-validation/src/app/reactive/hero-form-reactive.component.ts" linenums="false">
-
 </code-example>
 
 
@@ -555,19 +535,10 @@ Here's the complete reactive component file, compared to the two Template Driven
 
 <div class="l-sub-section">
 
-
-
 Run the [live example](guide/form-validation#live-example) to see how the reactive form behaves,
 and to compare all of the files in this sample.
 
-
 </div>
-
-
-
-
-{@a custom-validation}
-
 
 ## Custom validation
 This cookbook sample has a custom `forbiddenNameValidator()` function that's applied to both the
@@ -577,7 +548,6 @@ and declared in the `SharedModule`.
 Here's the `forbiddenNameValidator()` function:
 
 <code-example path="form-validation/src/app/shared/forbidden-name.directive.ts" region="custom-validator" title="shared/forbidden-name.directive.ts (forbiddenNameValidator)" linenums="false">
-
 </code-example>
 
 
@@ -596,15 +566,12 @@ The validation error object typically has a property whose name is the validatio
 and whose value is an arbitrary dictionary of values that you could insert into an error message (`{name}`).
 
 
-{@a custom-validation-directive}
-
 
 ### Custom validation directive
 In the Reactive Forms component, the `'name'` control's validator function list
 has a `forbiddenNameValidator` at the bottom.
 
 <code-example path="form-validation/src/app/reactive/hero-form-reactive.component.ts" region="name-validators" title="reactive/hero-form-reactive.component.ts (name validators)" linenums="false">
-
 </code-example>
 
 
@@ -613,7 +580,6 @@ In the Template Driven example, the `<input>` has the selector (`forbiddenName`)
 of a custom _attribute directive_, which rejects "bob".
 
 <code-example path="form-validation/src/app/template/hero-form-template2.component.html" region="name-input" title="template/hero-form-template2.component.html (name input)" linenums="false">
-
 </code-example>
 
 
@@ -624,7 +590,6 @@ Angular `forms` recognizes the directive's role in the validation process becaus
 with the `NG_VALIDATORS` provider, a provider with an extensible collection of validation directives.
 
 <code-example path="form-validation/src/app/shared/forbidden-name.directive.ts" region="directive-providers" title="shared/forbidden-name.directive.ts (providers)" linenums="false">
-
 </code-example>
 
 
@@ -632,7 +597,6 @@ with the `NG_VALIDATORS` provider, a provider with an extensible collection of v
 Here is the rest of the directive to help you get an idea of how it all comes together:
 
 <code-example path="form-validation/src/app/shared/forbidden-name.directive.ts" region="directive" title="shared/forbidden-name.directive.ts (directive)">
-
 </code-example>
 
 
@@ -640,8 +604,6 @@ Here is the rest of the directive to help you get an idea of how it all comes to
 
 
 <div class="l-sub-section">
-
-
 
 If you are familiar with Angular validations, you may have noticed
 that the custom validation directive is instantiated with `useExisting`
@@ -655,27 +617,16 @@ To see this in action, run the example and then type “bob” in the name of He
 Notice that you get a validation error. Now change from `useExisting` to `useClass` and try again.
 This time, when you type “bob”, there's no "bob" error message.
 
-
 </div>
-
-
-
 
 
 <div class="l-sub-section">
 
-
-
 For more information on attaching behavior to elements,
 see [Attribute Directives](guide/attribute-directives).
 
-
 </div>
 
-
-
-
-{@a testing}
 
 
 ## Testing Considerations
