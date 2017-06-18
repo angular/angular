@@ -76,6 +76,30 @@ describe('GithubPullRequests', () => {
   });
 
 
+  describe('fetch()', () => {
+    let prs: GithubPullRequests;
+    let prsGetSpy: jasmine.Spy;
+
+    beforeEach(() => {
+      prs = new GithubPullRequests('12345', 'foo/bar');
+      prsGetSpy = spyOn(prs as any, 'get');
+    });
+
+
+    it('should call \'get()\' with the correct pathname', () => {
+      prs.fetch(42);
+      expect(prsGetSpy).toHaveBeenCalledWith('/repos/foo/bar/issues/42');
+    });
+
+
+    it('should forward the value returned by \'get()\'', () => {
+      prsGetSpy.and.returnValue('Test');
+      expect(prs.fetch(42) as any).toBe('Test');
+    });
+
+  });
+
+
   describe('fetchAll()', () => {
     let prs: GithubPullRequests;
     let prsGetPaginatedSpy: jasmine.Spy;
