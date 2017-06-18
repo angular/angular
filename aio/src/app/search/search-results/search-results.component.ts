@@ -45,8 +45,11 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
     this.resultsSubscription.unsubscribe();
   }
 
-  onResultSelected(page: SearchResult) {
-    this.resultSelected.emit(page);
+  onResultSelected(page: SearchResult, event: MouseEvent) {
+    // Emit a `resultSelected` event if the result is to be displayed on this page.
+    if (event.button === 0 && !event.ctrlKey && !event.metaKey) {
+      this.resultSelected.emit(page);
+    }
   }
 
   // Map the search results into groups by area
