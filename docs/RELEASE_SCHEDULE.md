@@ -38,9 +38,11 @@ Week Of       | Stable Release<br>(@latest npm tag) | Beta/RC Release<br>(@n
 2017‑05‑26	  | ‑                                   | 4.2.0‑rc.1                         |
 2017‑06‑01    | ‑                                   | 4.2.0‑rc.2                         |
 2017‑06‑05	  | 4.2.0                               | ‑                                  | Minor Version Release
-2017‑06‑12	  | 4.2.1                               | 4.3.0‑beta.0                       |
-2017‑06‑19	  | 4.2.2                               | 4.3.0‑beta.1                       |
-2017‑06‑26	  | 4.2.3                               | 4.3.0‑rc.0                         |
+*2017‑06‑09*  | 4.2.1                               | ‑                                  | *Regression Patch Release*
+2017-06-12    | 4.2.2                               | ‑                                  |
+*2017-06-16*  | 4.2.3                               | ‑                                  | *Regression Patch Release*
+2017‑06‑19	  | 4.2.4                               | 4.3.0‑beta.0                       |
+2017‑06‑26	  | 4.2.5                               | 4.3.0‑rc.0                         |
 2017‑07‑03	  | 4.3.0                               | ‑                                  | Minor Version Release
 2017‑07‑10	  | 4.3.1                               | 5.0.0‑beta.0                       |
 2017‑07‑17	  | 4.3.2                               | 5.0.0‑beta.1                       |
@@ -61,7 +63,7 @@ Week Of       | Stable Release<br>(@latest npm tag) | Beta/RC Release<br>(@n
  March 2018             | 6.0.0          | ^5.0.0
  September/October 2018 | 7.0.0          | ^6.0.0
 
- `*` The goal of the backwards compatibility promise, is to ensure that changes in the core framework and tooling don't break the existing ecosystem of components and applications and don't put undue upgrade/migration burden on Angular application and component authors.
+ `*` The primary goal of the backwards compatibility promise is to ensure that changes in the core framework and tooling don't break the existing ecosystem of components and applications and don't put undue upgrade/migration burden on Angular application and component authors.
 
 
 ## More Info & Resources
