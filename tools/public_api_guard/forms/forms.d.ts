@@ -352,25 +352,9 @@ export declare class MaxLengthValidator implements Validator, OnChanges {
     validate(c: AbstractControl): ValidationErrors | null;
 }
 
-/** @experimental */
-export declare class MaxValidator implements Validator, OnChanges {
-    max: string;
-    ngOnChanges(changes: SimpleChanges): void;
-    registerOnValidatorChange(fn: () => void): void;
-    validate(c: AbstractControl): ValidationErrors | null;
-}
-
 /** @stable */
 export declare class MinLengthValidator implements Validator, OnChanges {
     minlength: string;
-    ngOnChanges(changes: SimpleChanges): void;
-    registerOnValidatorChange(fn: () => void): void;
-    validate(c: AbstractControl): ValidationErrors | null;
-}
-
-/** @experimental */
-export declare class MinValidator implements Validator, OnChanges {
-    min: string;
     ngOnChanges(changes: SimpleChanges): void;
     registerOnValidatorChange(fn: () => void): void;
     validate(c: AbstractControl): ValidationErrors | null;
