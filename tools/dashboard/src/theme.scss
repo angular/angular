@@ -1,0 +1,10 @@
+@import '~@angular/material/_theming';
+
+$dashboard-primary: mat-palette($mat-blue);
+$dashboard-accent: mat-palette($mat-grey);
+$dashboard-light-theme: mat-light-theme($dashboard-primary, $dashboard-accent);
+
+@include mat-core();
+
+// Only include the theme of the components that are used.
+@include mat-toolbar-theme($dashboard-light-theme);

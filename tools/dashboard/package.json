@@ -16,10 +16,13 @@
     "@angular/core": "^4.2.2",
     "@angular/forms": "^4.2.2",
     "@angular/http": "^4.2.2",
+    "@angular/material": "github:angular/material2-builds",
     "@angular/platform-browser": "^4.2.2",
     "@angular/platform-browser-dynamic": "^4.2.2",
     "@angular/router": "^4.2.2",
+    "angularfire2": "^4.0.0-rc.1",
     "core-js": "^2.4.1",
+    "firebase": "^4.1.2",
     "rxjs": "^5.1.0",
     "zone.js": "^0.8.12"
   },
