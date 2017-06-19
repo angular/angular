@@ -7,8 +7,10 @@ const uglify = require('uglify-js');
 export function uglifyJsFile(inputPath: string, outputPath: string) {
   const sourcemapOut = `${outputPath}.map`;
   const result = uglify.minify(inputPath, {
-    preserveComments: 'license',
-    outSourceMap: sourcemapOut
+    outSourceMap: sourcemapOut,
+    output: {
+      comments: 'some'
+    }
   });
 
   writeFileSync(outputPath, result.code);
