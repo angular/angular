@@ -33,8 +33,7 @@ export class HeroDetailComponent implements OnInit  {
 
   // #docregion snapshot
   ngOnInit() {
-    // (+) converts string 'id' to a number
-    let id = +this.route.snapshot.params['id'];
+    let id = this.route.snapshot.paramMap.get('id');
 
     this.service.getHero(id)
       .then((hero: Hero) => this.hero = hero);
