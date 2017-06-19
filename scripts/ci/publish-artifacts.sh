@@ -27,6 +27,6 @@ $(npm bin)/gulp docs
 
 # Deploy the screenshot and dashboard functions for each push build.
 ./scripts/deploy/deploy-screenshot-functions.sh &
-./scripts/deploy/deploy-dashboard-functions.sh &
+./scripts/deploy/deploy-dashboard.sh &
 
 wait
