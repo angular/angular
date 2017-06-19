@@ -4,7 +4,7 @@ import {Component, DebugElement} from '@angular/core';
 import {By, HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 import {MdSlider, MdSliderModule} from './index';
 import {TestGestureConfig} from './test-gesture-config';
-import {RtlModule} from '../core/rtl/dir';
+import {BidiModule} from '../core/bidi/index';
 import {
   DOWN_ARROW,
   END,
@@ -23,7 +23,7 @@ describe('MdSlider', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdSliderModule, ReactiveFormsModule, FormsModule, RtlModule],
+      imports: [MdSliderModule, ReactiveFormsModule, FormsModule, BidiModule],
       declarations: [
         StandardSlider,
         DisabledSlider,

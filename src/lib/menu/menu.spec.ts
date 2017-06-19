@@ -18,7 +18,7 @@ import {
   MenuPositionY
 } from './index';
 import {OverlayContainer} from '../core/overlay/overlay-container';
-import {Dir, LayoutDirection} from '../core/rtl/dir';
+import {Directionality, Direction} from '../core/bidi/index';
 import {extendObject} from '../core/util/object-extend';
 import {ESCAPE} from '../core/keyboard/keycodes';
 import {dispatchKeyboardEvent} from '../core/testing/dispatch-events';
@@ -26,7 +26,7 @@ import {dispatchKeyboardEvent} from '../core/testing/dispatch-events';
 
 describe('MdMenu', () => {
   let overlayContainerElement: HTMLElement;
-  let dir: LayoutDirection;
+  let dir: Direction;
 
   beforeEach(async(() => {
     dir = 'ltr';
@@ -44,9 +44,7 @@ describe('MdMenu', () => {
           document.body.style.margin = '0';
           return {getContainerElement: () => overlayContainerElement};
         }},
-        {provide: Dir, useFactory: () => {
-          return {value: dir};
-        }}
+        {provide: Directionality, useFactory: () => ({value: dir})}
       ]
     });
 

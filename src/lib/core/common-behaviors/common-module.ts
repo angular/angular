@@ -9,6 +9,7 @@
 import {NgModule, InjectionToken, Optional, Inject, isDevMode} from '@angular/core';
 import {DOCUMENT} from '@angular/platform-browser';
 import {CompatibilityModule} from '../compatibility/compatibility';
+import {BidiModule} from '../bidi/index';
 
 
 /** Injection token that configures whether the Material sanity checks are enabled. */
@@ -22,8 +23,8 @@ export const MATERIAL_SANITY_CHECKS = new InjectionToken<boolean>('md-sanity-che
  * This module should be imported to each top-level component module (e.g., MdTabsModule).
  */
 @NgModule({
-  imports: [CompatibilityModule],
-  exports: [CompatibilityModule],
+  imports: [CompatibilityModule, BidiModule],
+  exports: [CompatibilityModule, BidiModule],
   providers: [{
     provide: MATERIAL_SANITY_CHECKS, useValue: true,
   }],

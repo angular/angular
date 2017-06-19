@@ -22,7 +22,7 @@ import {
   NgZone,
   OnDestroy, Inject,
 } from '@angular/core';
-import {Dir, coerceBooleanProperty} from '../core';
+import {Directionality, coerceBooleanProperty} from '../core';
 import {FocusTrapFactory, FocusTrap} from '../core/a11y/focus-trap';
 import {ESCAPE} from '../core/keyboard/keycodes';
 import 'rxjs/add/operator/first';
@@ -365,12 +365,12 @@ export class MdSidenavContainer implements AfterContentInit {
   /** Whether to enable open/close trantions. */
   _enableTransitions = false;
 
-  constructor(@Optional() private _dir: Dir, private _element: ElementRef,
+  constructor(@Optional() private _dir: Directionality, private _element: ElementRef,
               private _renderer: Renderer2, private _ngZone: NgZone) {
     // If a `Dir` directive exists up the tree, listen direction changes and update the left/right
     // properties to point to the proper start/end.
     if (_dir != null) {
-      _dir.dirChange.subscribe(() => this._validateDrawers());
+      _dir.change.subscribe(() => this._validateDrawers());
     }
   }
 

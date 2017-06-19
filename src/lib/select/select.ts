@@ -29,7 +29,7 @@ import {
 import {MdOption, MdOptionSelectionChange, MdOptgroup} from '../core/option/index';
 import {ENTER, SPACE, UP_ARROW, DOWN_ARROW, HOME, END} from '../core/keyboard/keycodes';
 import {FocusKeyManager} from '../core/a11y/focus-key-manager';
-import {Dir} from '../core/rtl/dir';
+import {Directionality} from '../core/bidi/index';
 import {Observable} from 'rxjs/Observable';
 import {Subscription} from 'rxjs/Subscription';
 import {transformPlaceholder, transformPanel, fadeInContent} from './select-animations';
@@ -322,7 +322,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
     private _changeDetectorRef: ChangeDetectorRef,
     renderer: Renderer2,
     elementRef: ElementRef,
-    @Optional() private _dir: Dir,
+    @Optional() private _dir: Directionality,
     @Self() @Optional() public _control: NgControl,
     @Attribute('tabindex') tabIndex: string,
     @Optional() @Inject(MD_PLACEHOLDER_GLOBAL_OPTIONS) placeholderOptions: PlaceholderOptions) {

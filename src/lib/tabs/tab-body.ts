@@ -26,7 +26,7 @@ import {
   transition,
   AnimationEvent,
 } from '@angular/animations';
-import {TemplatePortal, PortalHostDirective, Dir, LayoutDirection} from '../core';
+import {TemplatePortal, PortalHostDirective, Directionality, Direction} from '../core';
 import 'rxjs/add/operator/map';
 
 /**
@@ -124,7 +124,8 @@ export class MdTabBody implements OnInit, AfterViewChecked {
     }
   }
 
-  constructor(@Optional() private _dir: Dir, private _elementRef: ElementRef) { }
+  constructor(private _elementRef: ElementRef,
+              @Optional() private _dir: Directionality) { }
 
   /**
    * After initialized, check if the content is centered and has an origin. If so, set the
@@ -165,7 +166,7 @@ export class MdTabBody implements OnInit, AfterViewChecked {
   }
 
   /** The text direction of the containing app. */
-  _getLayoutDirection(): LayoutDirection {
+  _getLayoutDirection(): Direction {
     return this._dir && this._dir.value === 'rtl' ? 'rtl' : 'ltr';
   }
 

@@ -20,7 +20,7 @@ import {
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {coerceBooleanProperty, coerceNumberProperty, HammerInput} from '../core';
-import {Dir} from '../core/rtl/dir';
+import {Directionality} from '../core/bidi/index';
 import {
   DOWN_ARROW,
   END,
@@ -390,7 +390,8 @@ export class MdSlider extends _MdSliderMixinBase
   }
 
   constructor(renderer: Renderer2, private _elementRef: ElementRef,
-              private _focusOriginMonitor: FocusOriginMonitor, @Optional() private _dir: Dir) {
+              private _focusOriginMonitor: FocusOriginMonitor,
+              @Optional() private _dir: Directionality) {
     super();
     this._focusOriginMonitor.monitor(this._elementRef.nativeElement, renderer, true)
         .subscribe((origin: FocusOrigin) => this._isActive = !!origin && origin !== 'keyboard');

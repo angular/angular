@@ -21,7 +21,7 @@ import {
 import {MdGridTile} from './grid-tile';
 import {TileCoordinator} from './tile-coordinator';
 import {TileStyler, FitTileStyler, RatioTileStyler, FixedTileStyler} from './tile-styler';
-import {Dir} from '../core';
+import {Directionality} from '../core';
 import {
   coerceToString,
   coerceToNumber,
@@ -69,7 +69,7 @@ export class MdGridList implements OnInit, AfterContentChecked {
   constructor(
       private _renderer: Renderer2,
       private _element: ElementRef,
-      @Optional() private _dir: Dir) {}
+      @Optional() private _dir: Directionality) {}
 
   /** Amount of columns in the grid list. */
   @Input()

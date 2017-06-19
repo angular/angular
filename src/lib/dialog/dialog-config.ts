@@ -7,7 +7,7 @@
  */
 
 import {ViewContainerRef} from '@angular/core';
-import {LayoutDirection} from '../core';
+import {Direction} from '../core';
 
 /** Valid ARIA roles for a dialog element. */
 export type DialogRole = 'dialog' | 'alertdialog';
@@ -61,7 +61,7 @@ export class MdDialogConfig {
   data?: any = null;
 
   /** Layout direction for the dialog's content. */
-  direction?: LayoutDirection = 'ltr';
+  direction?: Direction = 'ltr';
 
   // TODO(jelbourn): add configuration for lifecycle hooks, ARIA labelling.
 }

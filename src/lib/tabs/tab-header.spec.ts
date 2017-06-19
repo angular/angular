@@ -1,6 +1,6 @@
 import {async, ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
 import {Component, ViewChild, ViewContainerRef} from '@angular/core';
-import {LayoutDirection, Dir} from '../core/rtl/dir';
+import {Direction, Directionality} from '../core/bidi/index';
 import {MdTabHeader} from './tab-header';
 import {MdRippleModule} from '../core/ripple/index';
 import {CommonModule} from '@angular/common';
@@ -17,8 +17,8 @@ import {By} from '@angular/platform-browser';
 
 
 describe('MdTabHeader', () => {
-  let dir: LayoutDirection = 'ltr';
-  let dirChange = new Subject();
+  let dir: Direction = 'ltr';
+  let change = new Subject();
   let fixture: ComponentFixture<SimpleTabHeaderApp>;
   let appComponent: SimpleTabHeaderApp;
 
@@ -33,9 +33,7 @@ describe('MdTabHeader', () => {
         SimpleTabHeaderApp,
       ],
       providers: [
-        {provide: Dir, useFactory: () => {
-          return {value: dir,  dirChange: dirChange.asObservable()};
-        }},
+        {provide: Directionality, useFactory: () => ({value: dir, change: change.asObservable()})},
         {provide: ViewportRuler, useClass: FakeViewportRuler},
       ]
     });
@@ -239,13 +237,13 @@ describe('MdTabHeader', () => {
 
     it('should re-align the ink bar when the direction changes', () => {
       fixture = TestBed.createComponent(SimpleTabHeaderApp);
-      fixture.detectChanges();
 
       const inkBar = fixture.componentInstance.mdTabHeader._inkBar;
-
       spyOn(inkBar, 'alignToElement');
 
-      dirChange.next();
+      fixture.detectChanges();
+
+      change.next();
       fixture.detectChanges();
 
       expect(inkBar.alignToElement).toHaveBeenCalled();
@@ -301,7 +299,7 @@ class SimpleTabHeaderApp {
   focusedIndex: number;
   disabledTabIndex = 1;
   tabs: Tab[] = [{label: 'tab one'}, {label: 'tab one'}, {label: 'tab one'}, {label: 'tab one'}];
-  dir: LayoutDirection = 'ltr';
+  dir: Direction = 'ltr';
 
   @ViewChild(MdTabHeader) mdTabHeader: MdTabHeader;
 

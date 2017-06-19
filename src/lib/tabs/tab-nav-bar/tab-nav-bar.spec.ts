@@ -6,12 +6,12 @@ import {By} from '@angular/platform-browser';
 import {ViewportRuler} from '../../core/overlay/position/viewport-ruler';
 import {FakeViewportRuler} from '../../core/overlay/position/fake-viewport-ruler';
 import {dispatchFakeEvent, dispatchMouseEvent} from '../../core/testing/dispatch-events';
-import {Dir, LayoutDirection} from '../../core/rtl/dir';
+import {Direction, Directionality} from '../../core/bidi/index';
 import {Subject} from 'rxjs/Subject';
 
 
 describe('MdTabNavBar', () => {
-  let dir: LayoutDirection = 'ltr';
+  let dir: Direction = 'ltr';
   let dirChange = new Subject();
 
   beforeEach(async(() => {
@@ -22,9 +22,10 @@ describe('MdTabNavBar', () => {
         TabLinkWithNgIf,
       ],
       providers: [
-        {provide: Dir, useFactory: () => {
-          return {value: dir,  dirChange: dirChange.asObservable()};
-        }},
+        {provide: Directionality, useFactory: () => ({
+          value: dir,
+          change: dirChange.asObservable()
+        })},
         {provide: ViewportRuler, useClass: FakeViewportRuler},
       ]
     });

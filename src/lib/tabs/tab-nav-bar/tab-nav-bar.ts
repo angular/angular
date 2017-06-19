@@ -22,7 +22,7 @@ import {
 import {MdInkBar} from '../ink-bar';
 import {MdRipple} from '../../core/ripple/index';
 import {ViewportRuler} from '../../core/overlay/position/viewport-ruler';
-import {Dir, MD_RIPPLE_GLOBAL_OPTIONS, Platform, RippleGlobalOptions} from '../../core';
+import {Directionality, MD_RIPPLE_GLOBAL_OPTIONS, Platform, RippleGlobalOptions} from '../../core';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/auditTime';
 import 'rxjs/add/operator/takeUntil';
@@ -51,7 +51,7 @@ export class MdTabNav implements AfterContentInit, OnDestroy {
 
   @ViewChild(MdInkBar) _inkBar: MdInkBar;
 
-  constructor(@Optional() private _dir: Dir, private _ngZone: NgZone) { }
+  constructor(@Optional() private _dir: Directionality, private _ngZone: NgZone) { }
 
   /** Notifies the component that the active link has been changed. */
   updateActiveLink(element: ElementRef) {
@@ -61,7 +61,7 @@ export class MdTabNav implements AfterContentInit, OnDestroy {
 
   ngAfterContentInit(): void {
     this._ngZone.runOutsideAngular(() => {
-      let dirChange = this._dir ? this._dir.dirChange : Observable.of(null);
+      let dirChange = this._dir ? this._dir.change : Observable.of(null);
       let resize = typeof window !== 'undefined' ?
           Observable.fromEvent(window, 'resize').auditTime(10) :
           Observable.of(null);

@@ -27,7 +27,7 @@ import {Overlay} from '../core/overlay/overlay';
 import {OverlayRef} from '../core/overlay/overlay-ref';
 import {ComponentPortal} from '../core/portal/portal';
 import {OverlayState} from '../core/overlay/overlay-state';
-import {Dir} from '../core/rtl/dir';
+import {Directionality} from '../core/bidi/index';
 import {MdDialog} from '../dialog/dialog';
 import {MdDialogRef} from '../dialog/dialog-ref';
 import {PositionStrategy} from '../core/overlay/position/position-strategy';
@@ -164,9 +164,8 @@ export class MdDatepicker<D> implements OnDestroy {
               private _ngZone: NgZone,
               private _viewContainerRef: ViewContainerRef,
               @Optional() private _dateAdapter: DateAdapter<D>,
-              @Optional() private _dir: Dir,
+              @Optional() private _dir: Directionality,
               @Optional() @Inject(DOCUMENT) private _document: any) {
-
     if (!this._dateAdapter) {
       throw createMissingDateImplError('DateAdapter');
     }

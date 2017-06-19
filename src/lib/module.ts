@@ -12,10 +12,10 @@ import {
   A11yModule,
   MdCommonModule,
   MdRippleModule,
+  BidiModule,
   ObserveContentModule,
   OverlayModule,
-  PortalModule,
-  RtlModule
+  PortalModule
 } from './core/index';
 
 import {MdButtonToggleModule} from './button-toggle/index';
@@ -76,7 +76,7 @@ const MATERIAL_MODULES = [
   MdTooltipModule,
   OverlayModule,
   PortalModule,
-  RtlModule,
+  BidiModule,
   StyleModule,
   A11yModule,
   PlatformModule,

@@ -37,7 +37,7 @@ import {
 } from '../core';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
-import {Dir} from '../core/rtl/dir';
+import {Directionality} from '../core/bidi/index';
 import {Platform} from '../core/platform/index';
 import 'rxjs/add/operator/first';
 import {ScrollDispatcher} from '../core/overlay/scroll/scroll-dispatcher';
@@ -180,7 +180,7 @@ export class MdTooltip implements OnDestroy {
     private _ngZone: NgZone,
     private _renderer: Renderer2,
     private _platform: Platform,
-    @Optional() private _dir: Dir) {
+    @Optional() private _dir: Directionality) {
 
     // The mouse events shouldn't be bound on iOS devices, because
     // they can prevent the first tap from firing its click event.
@@ -402,7 +402,8 @@ export class TooltipComponent {
   /** Subject for notifying that the tooltip has been hidden from the view */
   private _onHide: Subject<any> = new Subject();
 
-  constructor(@Optional() private _dir: Dir, private _changeDetectorRef: ChangeDetectorRef) {}
+  constructor(@Optional() private _dir: Directionality,
+              private _changeDetectorRef: ChangeDetectorRef) {}
 
   /**
    * Shows the tooltip with an animation originating from the provided origin

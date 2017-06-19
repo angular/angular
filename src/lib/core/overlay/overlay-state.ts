@@ -7,7 +7,7 @@
  */
 
 import {PositionStrategy} from './position/position-strategy';
-import {LayoutDirection} from '../rtl/dir';
+import {Direction} from '../bidi/index';
 import {ScrollStrategy} from './scroll/scroll-strategy';
 
 
@@ -44,7 +44,7 @@ export class OverlayState {
   minHeight: number | string;
 
   /** The direction of the text in the overlay panel. */
-  direction: LayoutDirection = 'ltr';
+  direction: Direction = 'ltr';
 
   // TODO(jelbourn): configuration still to add
   // - focus trap

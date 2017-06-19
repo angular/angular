@@ -8,7 +8,7 @@
 
 import {NgModule} from '@angular/core';
 import {MdLineModule} from './line/line';
-import {RtlModule} from './rtl/dir';
+import {BidiModule} from './bidi/index';
 import {ObserveContentModule} from './observe-content/observe-content';
 import {MdOptionModule} from './option/index';
 import {PortalModule} from './portal/portal-directives';
@@ -19,7 +19,7 @@ import {MdRippleModule} from './ripple/index';
 
 
 // RTL
-export {Dir, LayoutDirection, RtlModule} from './rtl/dir';
+export {Dir, Direction, Directionality, BidiModule} from './bidi/index';
 
 // Mutation Observer
 export {ObserveContentModule, ObserveContent} from './observe-content/observe-content';
@@ -121,7 +121,7 @@ export {
 @NgModule({
   imports: [
     MdLineModule,
-    RtlModule,
+    BidiModule,
     MdRippleModule,
     ObserveContentModule,
     PortalModule,
@@ -132,7 +132,7 @@ export {
   ],
   exports: [
     MdLineModule,
-    RtlModule,
+    BidiModule,
     MdRippleModule,
     ObserveContentModule,
     PortalModule,

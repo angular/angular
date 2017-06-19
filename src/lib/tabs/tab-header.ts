@@ -22,7 +22,14 @@ import {
   OnDestroy,
   NgZone,
 } from '@angular/core';
-import {RIGHT_ARROW, LEFT_ARROW, ENTER, Dir, LayoutDirection, coerceBooleanProperty} from '../core';
+import {
+  RIGHT_ARROW,
+  LEFT_ARROW,
+  ENTER,
+  Directionality,
+  Direction,
+  coerceBooleanProperty
+} from '../core';
 import {MdTabLabelWrapper} from './tab-label-wrapper';
 import {MdInkBar} from './ink-bar';
 import {Subscription} from 'rxjs/Subscription';
@@ -131,7 +138,7 @@ export class MdTabHeader implements AfterContentChecked, AfterContentInit, OnDes
   constructor(
     private _elementRef: ElementRef,
     private _ngZone: NgZone,
-    @Optional() private _dir: Dir) { }
+    @Optional() private _dir: Directionality) { }
 
   ngAfterContentChecked(): void {
     // If the number of tab labels have changed, check if scrolling should be enabled
@@ -176,7 +183,7 @@ export class MdTabHeader implements AfterContentChecked, AfterContentInit, OnDes
    */
   ngAfterContentInit() {
     this._realignInkBar = this._ngZone.runOutsideAngular(() => {
-      let dirChange = this._dir ? this._dir.dirChange : Observable.of(null);
+      let dirChange = this._dir ? this._dir.change : Observable.of(null);
       let resize = typeof window !== 'undefined' ?
           Observable.fromEvent(window, 'resize').auditTime(10) :
           Observable.of(null);
@@ -288,7 +295,7 @@ export class MdTabHeader implements AfterContentChecked, AfterContentInit, OnDes
   }
 
   /** The layout direction of the containing app. */
-  _getLayoutDirection(): LayoutDirection {
+  _getLayoutDirection(): Direction {
     return this._dir && this._dir.value === 'rtl' ? 'rtl' : 'ltr';
   }
 

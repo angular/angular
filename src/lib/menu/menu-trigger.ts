@@ -21,8 +21,8 @@ import {MdMenuPanel} from './menu-panel';
 import {throwMdMenuMissingError} from './menu-errors';
 import {
     isFakeMousedownFromScreenReader,
-    Dir,
-    LayoutDirection,
+    Directionality,
+    Direction,
     Overlay,
     OverlayState,
     OverlayRef,
@@ -86,7 +86,8 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
   @Output() onMenuClose = new EventEmitter<void>();
 
   constructor(private _overlay: Overlay, private _element: ElementRef,
-              private _viewContainerRef: ViewContainerRef, @Optional() private _dir: Dir) { }
+              private _viewContainerRef: ViewContainerRef,
+              @Optional() private _dir: Directionality) { }
 
   ngAfterViewInit() {
     this._checkMenu();
@@ -138,7 +139,7 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
   }
 
   /** The text direction of the containing app. */
-  get dir(): LayoutDirection {
+  get dir(): Direction {
     return this._dir && this._dir.value === 'rtl' ? 'rtl' : 'ltr';
   }
 

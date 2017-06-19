@@ -7,7 +7,7 @@
  */
 
 import {ViewContainerRef} from '@angular/core';
-import {AriaLivePoliteness, LayoutDirection} from '../core';
+import {AriaLivePoliteness, Direction} from '../core';
 
 /**
  * Configuration used when opening a snack-bar.
@@ -29,5 +29,5 @@ export class MdSnackBarConfig {
   extraClasses?: string[];
 
   /** Text layout direction for the snack bar. */
-  direction?: LayoutDirection = 'ltr';
+  direction?: Direction = 'ltr';
 }
