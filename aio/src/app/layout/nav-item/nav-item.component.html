@@ -20,7 +20,7 @@
   </button>
 
   <div class="heading-children" [ngClass]="classes">
-    <aio-nav-item *ngFor="let node of node.children" [level]="level + 1" [isWide]="isWide"
+    <aio-nav-item *ngFor="let node of nodeChildren" [level]="level + 1" [isWide]="isWide"
     [node]="node" [selectedNodes]="selectedNodes"></aio-nav-item>
   </div>
 </div>
