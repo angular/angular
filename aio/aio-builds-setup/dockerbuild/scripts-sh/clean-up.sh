@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e -o pipefail
+set -eu -o pipefail
 
 # Set up env variables
 export AIO_GITHUB_TOKEN=$(head -c -1 /aio-secrets/GITHUB_TOKEN 2>/dev/null)
