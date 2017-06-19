@@ -19,7 +19,7 @@
   "routing": {
     "index": "/index.html",
     "routes": {
-      "^(?!/docs/ts/latest|/styleguide).*/(?!e?plnkr)[^/.]*$": {
+      "^(?!/docs/ts/latest|/guide/cli-quickstart|/styleguide).*/(?!e?plnkr)[^/.]*$": {
         "match": "regex"
       }
     }
