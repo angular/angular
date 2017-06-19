@@ -22,8 +22,8 @@ export class AdminDashboardComponent implements OnInit {
   ngOnInit() {
     // Capture the session ID if available
     this.sessionId = this.route
-      .queryParams
-      .map(params => params['session_id'] || 'None');
+      .queryParamMap
+      .map(params => params.get('session_id') || 'None');
 
     // Capture the fragment if available
     this.token = this.route
