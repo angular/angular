@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges} from '@angular/core';
 import { NavigationNode } from 'app/navigation/navigation.model';
 
 @Component({
@@ -14,19 +14,21 @@ export class NavItemComponent implements OnChanges {
   isExpanded = false;
   isSelected = false;
   classes: {[index: string]: boolean };
+  nodeChildren: NavigationNode[];
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['selectedNodes'] || changes['node'] || changes['isWide']) {
-      if (this.selectedNodes) {
-        const ix = this.selectedNodes.indexOf(this.node);
-        this.isSelected = ix !== -1; // this node is the selected node or its ancestor
-        this.isExpanded = this.isSelected || // expand if selected or ...
-          // preserve expanded state when display is wide; collapse in mobile.
-          (this.isWide && this.isExpanded);
-      } else {
-        this.isSelected = false;
-      }
+  ngOnChanges() {
+    this.nodeChildren = this.node && this.node.children ? this.node.children.filter(n => !n.hidden) : [];
+
+    if (this.selectedNodes) {
+      const ix = this.selectedNodes.indexOf(this.node);
+      this.isSelected = ix !== -1; // this node is the selected node or its ancestor
+      this.isExpanded = this.isSelected || // expand if selected or ...
+        // preserve expanded state when display is wide; collapse in mobile.
+        (this.isWide && this.isExpanded);
+    } else {
+      this.isSelected = false;
     }
+
     this.setClasses();
   }
 

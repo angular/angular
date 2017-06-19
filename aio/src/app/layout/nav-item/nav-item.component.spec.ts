@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { SimpleChange, SimpleChanges, NO_ERRORS_SCHEMA } from '@angular/core';
 
@@ -24,7 +24,7 @@ describe('NavItemComponent', () => {
 
     // Enough to triggers component's ngOnChange method
     function onChanges() {
-      component.ngOnChanges({node: <SimpleChange><any> 'anything' });
+      component.ngOnChanges();
     }
 
     beforeEach(() => {
@@ -169,27 +169,46 @@ describe('NavItemComponent', () => {
   });
 
   describe('(via TestBed)', () => {
-    it('should pass the `isWide` property to all child nav-items', () => {
+    let component: NavItemComponent;
+    let fixture: ComponentFixture<NavItemComponent>;
+
+    beforeEach(() => {
       TestBed.configureTestingModule({
         declarations: [NavItemComponent],
         schemas: [NO_ERRORS_SCHEMA]
       });
-      const fixture = TestBed.createComponent(NavItemComponent);
-      fixture.componentInstance.node = {
+      fixture = TestBed.createComponent(NavItemComponent);
+      component = fixture.componentInstance;
+      component.node = {
         title: 'x',
-        children: [{ title: 'a' }, { title: 'b' }]
+        children: [
+          { title: 'a' },
+          { title: 'b', hidden: true},
+          { title: 'c' }
+        ]
       };
+    });
 
-      fixture.componentInstance.isWide = true;
+    it('should not show the hidden child nav-item', () => {
+      component.ngOnChanges(); // assume component.ngOnChanges ignores arguments
+      fixture.detectChanges();
+      const children = fixture.debugElement.queryAll(By.directive(NavItemComponent));
+      expect(children.length).toEqual(2);
+    });
+
+    it('should pass the `isWide` property to all displayed child nav-items', () => {
+      component.isWide = true;
+      component.ngOnChanges(); // assume component.ngOnChanges ignores arguments
       fixture.detectChanges();
       let children = fixture.debugElement.queryAll(By.directive(NavItemComponent));
-      expect(children.length).toEqual(2);
+      expect(children.length).toEqual(2, 'when IsWide is true');
       children.forEach(child => expect(child.componentInstance.isWide).toBe(true));
 
-      fixture.componentInstance.isWide = false;
+      component.isWide = false;
+      component.ngOnChanges();
       fixture.detectChanges();
       children = fixture.debugElement.queryAll(By.directive(NavItemComponent));
-      expect(children.length).toEqual(2);
+      expect(children.length).toEqual(2, 'when IsWide is false');
       children.forEach(child => expect(child.componentInstance.isWide).toBe(false));
     });
   });
