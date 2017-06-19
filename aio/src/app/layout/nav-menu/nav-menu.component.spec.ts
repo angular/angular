@@ -8,7 +8,7 @@ describe('NavMenuComponent (class-only)', () => {
   it('should filter out hidden nodes', () => {
     const component = new NavMenuComponent();
     const nodes: NavigationNode[] =
-      [ { title: 'a' }, { title: 'b', hidden: 'true'}, { title: 'c'} ];
+      [ { title: 'a' }, { title: 'b', hidden: true}, { title: 'c'} ];
     component.nodes = nodes;
     expect(component.filteredNodes).toEqual([ nodes[0], nodes[2] ]);
   });
