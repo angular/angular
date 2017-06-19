@@ -74,12 +74,18 @@ More info on how to set things up on CI can be found [here](misc--integrate-with
 - If the PR is publicly accessible, the upload-server posts a comment on the corresponding PR on
   GitHub mentioning the SHA and the link where the preview can be found.
 
+More info on the possible HTTP status codes and their meaning can be found
+[here](overview--http-status-codes.md).
+
 
 ### Serving build artifacts
 - nginx receives a request for an uploaded resource on a subdomain corresponding to the PR and SHA.
   E.g.: `pr<PR>-<SHA>.ngbuilds.io/path/to/resource`
 - nginx maps the subdomain to the correct sub-directory and serves the resource.
   E.g.: `/<PR>/<SHA>/path/to/resource`
+
+Again, more info on the possible HTTP status codes and their meaning can be found
+[here](overview--http-status-codes.md).
 
 
 ### Removing obsolete artifacts
