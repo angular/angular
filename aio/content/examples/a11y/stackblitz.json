@@ -1,0 +1,8 @@
+{
+  "description": "A11y Cookbook samples",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js"
+  ],
+  "tags":["cookbook", "a11y"]
+}

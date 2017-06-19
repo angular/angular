@@ -1,0 +1,19 @@
+<!-- #docregion -->
+<div class="row">
+  <div class="form-group col-xs-6">
+    <label>
+      <ng-content select=".wrapped-label"></ng-content>
+      <div class="input-group">
+        <ng-content select="input"></ng-content>
+        <div class="input-group-btn">
+          <button type="button"
+                  class="btn btn-default"
+                  (click)="save()">
+            Save
+          </button>
+        </div>
+      </div>
+    </label>
+  </div>
+</div>
+<!-- #enddocregion -->
