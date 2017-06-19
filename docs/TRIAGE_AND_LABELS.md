@@ -1,48 +1,51 @@
-# Triage Process and Github Labels for Angular
+# Triage Process and GitHub Labels for Angular
 
-This document describes how the Angular team uses labels and milestones 
+This document describes how the Angular team uses labels and milestones
 to triage issues on github. The basic idea of the process is that
-caretaker only assigns a component and type (bug, feature) label. The 
-owner of the component than is in full control of how the issues should 
+caretaker only assigns a component and type (bug, feature) label. The
+owner of the component than is in full control of how the issues should
 be triaged further.
 
-Once this process is implemented and in use, we will revisit it to see 
+Once this process is implemented and in use, we will revisit it to see
 if further labeling is needed.
 
-## Components
+## Label Types
 
-A caretaker should be able to determine which component the issue 
+### Components
+
+A caretaker should be able to determine which component the issue
 belongs to. The components have a clear piece of source code associated
-with it.
+with it within the `/packages/` folder of this repo.
 
-* `comp: animations`: `@matsko`
-* `comp: benchpress`: `@tbosch`
-* `comp: build & ci`: `@IgorMinar` -- All build and CI scripts 
-* `comp: common`: `@mhevery`  -- This includes core components / pipes.
-* `comp: core & compiler`: `@tbosch` -- Because core and compiler are very 
-  intertwined, we will be treating them as one.
-* `comp: forms`: `@kara`
-* `comp: http`: `@jeffbcross`
-* `comp: i18n`: `@vicb`
-* `comp: language service`: `@chuckjaz`
-* `comp: metadata-extractor`: `@chuckjaz`
-* `comp: router`: `@vicb`
-* `comp: testing`: `@juliemr`
-* `comp: upgrade`: `@mhevery`
-* `comp: web-worker`: `@vicb`
-* `comp: zones`: `@mhevery`
+* `comp: aio` - the angular.io application
+* `comp: animations`
+* `comp: benchpress`
+* `comp: common` - this includes core components / pipes
+* `comp: core, compiler` - because core, compiler, compiler-cli and
+  browser-platforms are very intertwined, we will be treating them as one
+* `comp: forms`
+* `comp: http`
+* `comp: i18n`
+* `comp: language service`
+* `comp: router`
+* `comp: testing`
+* `comp: upgrade`
+* `comp: web-worker`
+* `comp: zones`
 
 There are few components which are cross-cutting. They don't have
 a clear location in the source tree. We will treat them as a component
 even thought no specific source tree is associated with them.
 
-* `comp: docs`: `@naomiblack`
-* `comp: packaging`: `@IgorMinar`
-* `comp: performance`: `@tbosch`
-* `comp: security`: `@IgorMinar`
+* `comp: build & ci` - all build and CI scripts
+* `comp: docs` - documentation, including API docs, guides, tutorial
+* `comp: packaging`
+* `comp: performance`
+* `comp: security`
 
 
-## Type
+### Type
+
 What kind of problem is this?
 
 * `type: RFC / discussion / question`
@@ -95,62 +98,49 @@ These criteria are then used to calculate a "user pain" score as follows:
 `pain = severity × frequency`
 
 
-### Assigning Issues to Milestones
-
-Any issue that is being worked on must have:
-
-* An `Assignee`: The person doing the work.
-* A `Milestone`: When we expect to complete this work.
-
-We aim to only have at most three milestones open at a time:
-
-* Closing Milestone: A milestone with a very small number of issues, about to release. 
-* Current Milestone: Work that we plan to complete within one week.
-* Next Milestone: Work that is > 1 week but current for the team.
-
-The [backlog](https://github.com/angular/angular/issues?q=is%3Aopen+is%3Aissue+no%3Amilestone) 
-consists of all issues that have been triaged but do not have an assignee or milestone.  
-
 ## Triaged vs Untrained PRs
 
-PRs should also be label with a `comp: *` so that it is clear which 
+PRs should also be label with a `comp: *` so that it is clear which
 primary area the PR effects.
 
-Because of the cumulative pain associated with rebasing PRs, we triage PRs daily, and 
-closing or reviewing PRs is a top priority ahead of other ongoing work. 
+Because of the cumulative pain associated with rebasing PRs, we triage PRs daily, and
+closing or reviewing PRs is a top priority ahead of other ongoing work.
 
 Every triaged PR must have a `pr_action` label assigned to it and an assignee:
- 
-* `pr_action: review` -- work is complete and comment is needed from the assignee.
-* `pr_action: cleanup` -- more work is needed from the current assignee. 
-* `pr_action: discuss` -- discussion is needed, to be led by the current assignee.
-* `pr_action: merge` -- the PR should be merged. Add this to a PR when you would like to 
+
+* `pr_action: review` - work is complete and comment is needed from the assignee.
+* `pr_action: cleanup` - more work is needed from the current assignee.
+* `pr_action: discuss` - discussion is needed, to be led by the current assignee.
+* `pr_action: merge` - the PR should be merged. Add this to a PR when you would like to
   trigger automatic merging following a successful build. This is described in [COMMITTER.md](COMMITTER.md).
 
 In addition, PRs can have the following states:
 
-* `pr_state: LGTM` -- PR may have outstanding changes but does not require further review.
-* `pr_state: WIP` -- PR is experimental or rapidly changing. Not ready for review or triage.
-* `pr_state: blocked` -- PR is blocked on an issue or other PR. Not ready for review or triage.
+* `pr_state: WIP` - PR is experimental or rapidly changing. Not ready for review or triage.
+* `pr_state: blocked` - PR is blocked on an issue or other PR. Not ready for review or triage.
 
-Note that an LGTM state does not mean a PR is ready to merge: for example, a reviewer might set the
-LGTM state but request a minor tweak that doesn't need further review, e.g., a rebase or small 
+
+## PR Approvals
+
+Before a PR can be merged it must be approved by the appropriate reviewer(s).
+
+To ensure that there right people review each change, we configured [PullApprove bot](https://about.pullapprove.com/) via (`.pullapprove.yaml`) to provide aggregate approval state via the GitHub PR Status API.
+
+Note that approved state does not mean a PR is ready to be merged. For example, a reviewer might
+approve the PR but request a minor tweak that doesn't need further review, e.g., a rebase or small
 uncontroversial change.
-
-PRs do not need to be assigned to milestones, unless a milestone release should be held for that 
-PR to land.
 
 
 ## Special Labels
 
 ### action:design
-More active discussion is needed before the issue can be worked on further. Typically used for 
+More active discussion is needed before the issue can be worked on further. Typically used for
 `type: feature` or `type: RFC/discussion/question`
 
 [See all issues that need discussion](https://github.com/angular/angular/labels/action:%20Design)
 
-### cla
-Managed by googlebot. Indicates whether a PR has a CLA on file for its author(s). Only issues with 
+### cla: yes, cla: no
+Managed by googlebot. Indicates whether a PR has a CLA on file for its author(s). Only issues with
 `cla:yes` should be merged into master.
 
 ### WORKS_AS_INTENDED
