@@ -2,7 +2,7 @@
 // #docregion
 import 'rxjs/add/operator/switchMap';
 import { Component, OnInit, HostBinding } from '@angular/core';
-import { ActivatedRoute, Router, Params } from '@angular/router';
+import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 
 import { slideInDownAnimation }   from '../animations';
 import { Crisis, CrisisService }  from './crisis.service';
@@ -44,8 +44,8 @@ export class CrisisDetailComponent implements OnInit {
 
   // #docregion ngOnInit
   ngOnInit() {
-    this.route.params
-      .switchMap((params: Params) => this.service.getCrisis(params['id']))
+    this.route.paramMap
+      .switchMap((params: ParamMap) => this.service.getCrisis(params.get('id')))
       .subscribe((crisis: Crisis) => {
         if (crisis) {
           this.editName = crisis.name;

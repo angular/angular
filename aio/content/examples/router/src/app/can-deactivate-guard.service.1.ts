@@ -15,7 +15,7 @@ export class CanDeactivateGuard implements CanDeactivate<CrisisDetailComponent> 
     state: RouterStateSnapshot
   ): Promise<boolean> | boolean {
     // Get the Crisis Center ID
-    console.log(route.params['id']);
+    console.log(route.paramMap.get('id'));
 
     // Get the current URL
     console.log(state.url);

@@ -680,7 +680,7 @@ The major changes are driven by how you get hero names.
 
 
 You'll no longer receive the hero in a parent component property binding.
-The new `HeroDetailComponent` should take the `id` parameter from the `params` Observable
+The new `HeroDetailComponent` should take the `id` parameter from the `paramMap` Observable
 in the `ActivatedRoute` service and use the `HeroService` to fetch the hero with that `id`.
 
 
@@ -721,7 +721,7 @@ Tell the class to implement the `OnInit` interface.
 
 
 
-Inside the `ngOnInit()` lifecycle hook, use the `params` Observable to
+Inside the `ngOnInit()` lifecycle hook, use the `paramMap` Observable to
 extract the `id` parameter value from the `ActivatedRoute` service
 and use the `HeroService` to fetch the hero with that `id`.
 
@@ -753,7 +753,7 @@ As described in the [ActivatedRoute: the one-stop-shop for route information](gu
 section of the [Routing & Navigation](guide/router) page,
 the `Router` manages the observables it provides and localizes
 the subscriptions. The subscriptions are cleaned up when the component is destroyed, protecting against
-memory leaks, so you don't need to unsubscribe from the route `params` `Observable`.
+memory leaks, so you don't need to unsubscribe from the route `paramMap` `Observable`.
 
 
 </div>

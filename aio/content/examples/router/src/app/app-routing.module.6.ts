@@ -37,9 +37,12 @@ const appRoutes: Routes = [
   imports: [
     // #docregion forRoot
     RouterModule.forRoot(
-      appRoutes
+      appRoutes,
       // #enddocregion preload-v1
-      , { preloadingStrategy: PreloadAllModules }
+      {
+        enableTracing: true, // <-- debugging purposes only
+        preloadingStrategy: PreloadAllModules
+      }
       // #docregion preload-v1
     )
     // #enddocregion forRoot
