@@ -127,7 +127,7 @@ async function updateGithubStatus(commitSha: string, packageName: string, packag
       if (err) {
         reject(`Dashboard Error ${err.toString()}`);
       } else {
-        console.info('Dashboard Response:', JSON.parse(body).message);
+        console.info(`Dashboard Response (${response.statusCode}): ${body}`);
         resolve(response.statusCode);
       }
     });
