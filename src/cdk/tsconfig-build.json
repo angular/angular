@@ -8,6 +8,7 @@
     "experimentalDecorators": true,
     "noUnusedParameters": true,
     "importHelpers": true,
+    "newLine": "lf",
     "module": "es2015",
     "moduleResolution": "node",
     "outDir": "../../dist/packages/cdk",

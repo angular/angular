@@ -1,4 +1,5 @@
 import {buildConfig} from './build-config';
+import {rollupRemoveLicensesPlugin} from './rollup-remove-licenses';
 
 // There are no type definitions available for these imports.
 const rollup = require('rollup');
@@ -59,10 +60,11 @@ export type BundleConfig = {
 
 /** Creates a rollup bundle of a specified JavaScript file.*/
 export function createRollupBundle(config: BundleConfig): Promise<any> {
-  const bundleOptions: any = {
+  const bundleOptions = {
     context: 'this',
     external: Object.keys(ROLLUP_GLOBALS),
     entry: config.entry,
+    plugins: [rollupRemoveLicensesPlugin]
   };
 
   const writeOptions = {
@@ -79,7 +81,7 @@ export function createRollupBundle(config: BundleConfig): Promise<any> {
   // When creating a UMD, we want to exclude tslib from the `external` bundle option so that it
   // is inlined into the bundle.
   if (config.format === 'umd') {
-    bundleOptions.plugins = [rollupNodeResolutionPlugin()];
+    bundleOptions.plugins.push(rollupNodeResolutionPlugin());
 
     const external = Object.keys(ROLLUP_GLOBALS);
     external.splice(external.indexOf('tslib'), 1);

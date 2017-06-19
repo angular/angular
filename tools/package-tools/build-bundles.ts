@@ -1,5 +1,5 @@
 import {join} from 'path';
-import {ScriptTarget, ModuleKind} from 'typescript';
+import {ScriptTarget, ModuleKind, NewLineKind} from 'typescript';
 import {uglifyJsFile} from './minify-sources';
 import {createRollupBundle} from './rollup-helpers';
 import {remapSourcemap} from './sourcemap-remap';
@@ -38,7 +38,8 @@ export async function buildPackageBundles(entryFile: string, packageName: string
     importHelpers: true,
     target: ScriptTarget.ES5,
     module: ModuleKind.ES2015,
-    allowJs: true
+    allowJs: true,
+    newLine: NewLineKind.LineFeed
   });
 
   await remapSourcemap(fesm2014File);
