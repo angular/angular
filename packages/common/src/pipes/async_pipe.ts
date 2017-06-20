@@ -74,8 +74,9 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
   private _subscription: ISubscription|Promise<any>|null = null;
   private _obj: Observable<any>|Promise<any>|EventEmitter<any>|null = null;
   private _strategy: SubscriptionStrategy = null !;
+  private _ref: ChangeDetectorRef|null;
 
-  constructor(private _ref: ChangeDetectorRef) {}
+  constructor(_ref: ChangeDetectorRef) { this._ref = _ref; }
 
   ngOnDestroy(): void {
     if (this._subscription) {
@@ -134,12 +135,15 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
     this._latestReturnedValue = null;
     this._subscription = null;
     this._obj = null;
+    this._ref = null;
   }
 
   private _updateLatestValue(async: any, value: Object): void {
     if (async === this._obj) {
       this._latestValue = value;
-      this._ref.markForCheck();
+      if (this._ref) {
+        this._ref.markForCheck();
+      }
     }
   }
 }

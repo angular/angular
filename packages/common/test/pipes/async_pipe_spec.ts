@@ -99,6 +99,17 @@ export function main() {
                async.done();
              }, 0);
            }));
+
+        it('should reset reference to changeDetectorRef',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+             pipe.transform(emitter);
+             pipe.ngOnDestroy();
+
+             setTimeout(() => {
+               expect(pipe['_ref']).toBe(null);
+               async.done();
+             }, 0);
+           }));
       });
     });
 
