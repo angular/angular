@@ -5,6 +5,7 @@ import * as http from 'http';
 import * as path from 'path';
 import * as shell from 'shelljs';
 import {getEnvVar} from '../common/utils';
+import {BuildCreator} from '../upload-server/build-creator';
 
 // Constans
 const TEST_AIO_BUILDS_DIR = getEnvVar('TEST_AIO_BUILDS_DIR');
@@ -31,10 +32,10 @@ class Helper {
   public get nginxHostname() { return TEST_AIO_NGINX_HOSTNAME; }
   public get nginxPortHttp() { return TEST_AIO_NGINX_PORT_HTTP; }
   public get nginxPortHttps() { return TEST_AIO_NGINX_PORT_HTTPS; }
-  public get wwwUser() { return WWW_USER; }
   public get uploadHostname() { return TEST_AIO_UPLOAD_HOSTNAME; }
   public get uploadPort() { return TEST_AIO_UPLOAD_PORT; }
   public get uploadMaxSize() { return TEST_AIO_UPLOAD_MAX_SIZE; }
+  public get wwwUser() { return WWW_USER; }
 
   // Properties - Protected
   protected cleanUpFns: CleanUpFn[] = [];
@@ -50,6 +51,11 @@ class Helper {
   }
 
   // Methods - Public
+  public buildExists(pr: string, sha = '', isPublic = true): boolean {
+    const dir = path.join(this.getPrDir(pr, isPublic), sha);
+    return fs.existsSync(dir);
+  }
+
   public cleanUp() {
     while (this.cleanUpFns.length) {
       // Clean-up fns remove themselves from the list.
@@ -66,7 +72,7 @@ class Helper {
     const cmd1 = `tar --create --gzip --directory "${inputDir}" --file "${archivePath}" .`;
     const cmd2 = `chown ${this.wwwUser} ${archivePath}`;
 
-    const cleanUpTemp = this.createDummyBuild(`uploaded/${pr}`, sha, true);
+    const cleanUpTemp = this.createDummyBuild(`uploaded/${pr}`, sha, true, true);
     shell.exec(cmd1);
     shell.exec(cmd2);
     cleanUpTemp();
@@ -74,8 +80,8 @@ class Helper {
     return this.createCleanUpFn(() => shell.rm('-rf', archivePath));
   }
 
-  public createDummyBuild(pr: string, sha: string, force = false): CleanUpFn {
-    const prDir = path.join(this.buildsDir, pr);
+  public createDummyBuild(pr: string, sha: string, isPublic = true, force = false): CleanUpFn {
+    const prDir = this.getPrDir(pr, isPublic);
     const shaDir = path.join(prDir, sha);
     const idxPath = path.join(shaDir, 'index.html');
     const barPath = path.join(shaDir, 'foo', 'bar.js');
@@ -87,8 +93,8 @@ class Helper {
     return this.createCleanUpFn(() => shell.rm('-rf', prDir));
   }
 
-  public deletePrDir(pr: string) {
-    const prDir = path.join(this.buildsDir, pr);
+  public deletePrDir(pr: string, isPublic = true) {
+    const prDir = this.getPrDir(pr, isPublic);
 
     if (fs.existsSync(prDir)) {
       // Undocumented signature (see https://github.com/shelljs/shelljs/pull/663).
@@ -97,8 +103,14 @@ class Helper {
     }
   }
 
-  public readBuildFile(pr: string, sha: string, relFilePath: string): string {
-    const absFilePath = path.join(this.buildsDir, pr, sha, relFilePath);
+  public getPrDir(pr: string, isPublic: boolean): string {
+    const prDirName = isPublic ? pr : BuildCreator.HIDDEN_DIR_PREFIX + pr;
+    return path.join(this.buildsDir, prDirName);
+  }
+
+  public readBuildFile(pr: string, sha: string, relFilePath: string, isPublic = true): string {
+    const prDir = this.getPrDir(pr, isPublic);
+    const absFilePath = path.join(prDir, sha, relFilePath);
     return fs.readFileSync(absFilePath, 'utf8');
   }
 
@@ -129,7 +141,8 @@ class Helper {
       const [headers, body] = result.stdout.
         split(/(?:\r?\n){2,}/).
         map(s => s.trim()).
-        slice(-2);
+        slice(-2);   // In case of redirect, discard the previous headers.
+                     // Only keep the last to sections (final headers and body).
 
       if (!result.success) {
         console.log('Stdout:', result.stdout);
@@ -143,8 +156,8 @@ class Helper {
     };
   }
 
-  public writeBuildFile(pr: string, sha: string, relFilePath: string, content: string): CleanUpFn {
-    const absFilePath = path.join(this.buildsDir, pr, sha, relFilePath);
+  public writeBuildFile(pr: string, sha: string, relFilePath: string, content: string, isPublic = true): CleanUpFn {
+    const absFilePath = path.join(this.getPrDir(pr, isPublic), sha, relFilePath);
     return this.writeFile(absFilePath, {content}, true);
   }
 
