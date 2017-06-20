@@ -266,6 +266,30 @@ describe('compiler (unbundled Angular)', () => {
     });
   });
 
+  it('should report when an entry component is not in any module', () => {
+    const FILES: MockDirectory = {
+      app: {
+        'app.ts': `
+          import {Component, NgModule} from '@angular/core';
+
+          @Component({selector: 'my-comp', template: ''})
+          export class MyComp {}
+
+          @Component({selector: 'entry-comp', template: ''})
+          export class EntryCmp {}
+
+          @NgModule({
+            declarations: [MyComp],
+            entryComponents: [EntryCmp],
+          })
+          export class MyModule {}
+        `
+      }
+    };
+    expect(() => compile([FILES, angularFiles]))
+        .toThrowError(/Cannot determine the module for class EntryCmp/);
+  });
+
   it('should add the preamble to generated files', () => {
     const FILES: MockDirectory = {
       app: {
