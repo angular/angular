@@ -13,4 +13,9 @@ const result = renderModuleFactory(KitchenSinkServerModuleNgFactory, {
   document: readFileSync(join(__dirname, 'index.html'), 'utf-8')
 });
 
-result.then(html => console.log(html));
+result
+  .then(html => console.log(html))
+  // If rendering the module factory fails, exit the process with an error code because otherwise
+  // the CI task will not recognize the failure and will show as "success". The error message
+  // will be printed automatically by the `renderModuleFactory` method.
+  .catch(() => process.exit(1));
