@@ -8,12 +8,12 @@
 
 import {GeneratedFile, toTypeScript} from '@angular/compiler';
 import {NodeFlags} from '@angular/core/src/view/index';
-import {MetadataBundler, MetadataCollector, ModuleMetadata, privateEntriesToIndex} from '@angular/tsc-wrapped';
+import {MetadataBundler, privateEntriesToIndex} from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
 
 import {extractSourceMap, originalPositionFor} from '../output/source_map_util';
 
-import {EmittingCompilerHost, MockData, MockDirectory, MockMetadataBundlerHost, arrayToMockDir, arrayToMockMap, compile, expectNoDiagnostics, settings, setup, toMockFileArray} from './test_util';
+import {EmittingCompilerHost, MockDirectory, MockMetadataBundlerHost, arrayToMockDir, compile, expectNoDiagnostics, settings, setup, toMockFileArray} from './test_util';
 
 describe('compiler (unbundled Angular)', () => {
   let angularFiles = setup();
@@ -208,7 +208,7 @@ describe('compiler (unbundled Angular)', () => {
 
     });
 
-    it('should be able to supress a null access', () => {
+    it('should be able to suppress a null access', () => {
       const FILES: MockDirectory = {
         app: {
           'app.ts': `
@@ -746,7 +746,6 @@ const LIBRARY: MockDirectory = {
   }
 };
 
-const LIBRARY_USING_APP_MODULE = ['/lib-user/app/app.module.ts'];
 const LIBRARY_USING_APP: MockDirectory = {
   'lib-user': {
     app: {
