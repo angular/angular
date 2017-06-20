@@ -31,7 +31,7 @@ describe(`nginx`, () => {
   });
 
 
-  h.runForAllSupportedSchemes((scheme, port) => describe(`nginx (on ${scheme.toUpperCase()})`, () => {
+  h.runForAllSupportedSchemes((scheme, port) => describe(`(on ${scheme.toUpperCase()})`, () => {
     const hostname = h.nginxHostname;
     const host = `${hostname}:${port}`;
     const pr = '9';
@@ -41,101 +41,127 @@ describe(`nginx`, () => {
 
     describe(`pr<pr>-<sha>.${host}/*`, () => {
 
-      beforeEach(() => {
-        h.createDummyBuild(pr, sha9);
-        h.createDummyBuild(pr, sha0);
+      describe('(for public builds)', () => {
+
+        beforeEach(() => {
+          h.createDummyBuild(pr, sha9);
+          h.createDummyBuild(pr, sha0);
+        });
+
+
+        it('should return /index.html', done => {
+          const origin = `${scheme}://pr${pr}-${sha9}.${host}`;
+          const bodyRegex = new RegExp(`^PR: ${pr} | SHA: ${sha9} | File: /index\\.html$`);
+
+          Promise.all([
+            h.runCmd(`curl -iL ${origin}/index.html`).then(h.verifyResponse(200, bodyRegex)),
+            h.runCmd(`curl -iL ${origin}/`).then(h.verifyResponse(200, bodyRegex)),
+            h.runCmd(`curl -iL ${origin}`).then(h.verifyResponse(200, bodyRegex)),
+          ]).then(done);
+        });
+
+
+        it('should return /foo/bar.js', done => {
+          const bodyRegex = new RegExp(`^PR: ${pr} | SHA: ${sha9} | File: /foo/bar\\.js$`);
+
+          h.runCmd(`curl -iL ${scheme}://pr${pr}-${sha9}.${host}/foo/bar.js`).
+            then(h.verifyResponse(200, bodyRegex)).
+            then(done);
+        });
+
+
+        it('should respond with 403 for directories', done => {
+          Promise.all([
+            h.runCmd(`curl -iL ${scheme}://pr${pr}-${sha9}.${host}/foo/`).then(h.verifyResponse(403)),
+            h.runCmd(`curl -iL ${scheme}://pr${pr}-${sha9}.${host}/foo`).then(h.verifyResponse(403)),
+          ]).then(done);
+        });
+
+
+        it('should respond with 404 for unknown paths to files', done => {
+          h.runCmd(`curl -iL ${scheme}://pr${pr}-${sha9}.${host}/foo/baz.css`).
+            then(h.verifyResponse(404)).
+            then(done);
+        });
+
+
+        it('should rewrite to \'index.html\' for unknown paths that don\'t look like files', done => {
+          const bodyRegex = new RegExp(`^PR: ${pr} | SHA: ${sha9} | File: /index\\.html$`);
+
+          Promise.all([
+            h.runCmd(`curl -iL ${scheme}://pr${pr}-${sha9}.${host}/foo/baz`).then(h.verifyResponse(200, bodyRegex)),
+            h.runCmd(`curl -iL ${scheme}://pr${pr}-${sha9}.${host}/foo/baz/`).then(h.verifyResponse(200, bodyRegex)),
+          ]).then(done);
+        });
+
+
+        it('should respond with 404 for unknown PRs/SHAs', done => {
+          const otherPr = 54321;
+          const otherSha = '8'.repeat(40);
+
+          Promise.all([
+            h.runCmd(`curl -iL ${scheme}://pr${pr}9-${sha9}.${host}`).then(h.verifyResponse(404)),
+            h.runCmd(`curl -iL ${scheme}://pr${otherPr}-${sha9}.${host}`).then(h.verifyResponse(404)),
+            h.runCmd(`curl -iL ${scheme}://pr${pr}-${sha9}9.${host}`).then(h.verifyResponse(404)),
+            h.runCmd(`curl -iL ${scheme}://pr${pr}-${otherSha}.${host}`).then(h.verifyResponse(404)),
+          ]).then(done);
+        });
+
+
+        it('should respond with 404 if the subdomain format is wrong', done => {
+          Promise.all([
+            h.runCmd(`curl -iL ${scheme}://xpr${pr}-${sha9}.${host}`).then(h.verifyResponse(404)),
+            h.runCmd(`curl -iL ${scheme}://prx${pr}-${sha9}.${host}`).then(h.verifyResponse(404)),
+            h.runCmd(`curl -iL ${scheme}://xx${pr}-${sha9}.${host}`).then(h.verifyResponse(404)),
+            h.runCmd(`curl -iL ${scheme}://p${pr}-${sha9}.${host}`).then(h.verifyResponse(404)),
+            h.runCmd(`curl -iL ${scheme}://r${pr}-${sha9}.${host}`).then(h.verifyResponse(404)),
+            h.runCmd(`curl -iL ${scheme}://${pr}-${sha9}.${host}`).then(h.verifyResponse(404)),
+            h.runCmd(`curl -iL ${scheme}://pr${pr}${sha9}.${host}`).then(h.verifyResponse(404)),
+            h.runCmd(`curl -iL ${scheme}://pr${pr}_${sha9}.${host}`).then(h.verifyResponse(404)),
+          ]).then(done);
+        });
+
+
+        it('should reject PRs with leading zeros', done => {
+          h.runCmd(`curl -iL ${scheme}://pr0${pr}-${sha9}.${host}`).
+            then(h.verifyResponse(404)).
+            then(done);
+        });
+
+
+        it('should accept SHAs with leading zeros (but not trim the zeros)', done => {
+          const bodyRegex9 = new RegExp(`^PR: ${pr} | SHA: ${sha9} | File: /index\\.html$`);
+          const bodyRegex0 = new RegExp(`^PR: ${pr} | SHA: ${sha0} | File: /index\\.html$`);
+
+          Promise.all([
+            h.runCmd(`curl -iL ${scheme}://pr${pr}-0${sha9}.${host}`).then(h.verifyResponse(404)),
+            h.runCmd(`curl -iL ${scheme}://pr${pr}-${sha9}.${host}`).then(h.verifyResponse(200, bodyRegex9)),
+            h.runCmd(`curl -iL ${scheme}://pr${pr}-${sha0}.${host}`).then(h.verifyResponse(200, bodyRegex0)),
+          ]).then(done);
+        });
+
       });
 
 
-      it('should return /index.html', done => {
-        const origin = `${scheme}://pr${pr}-${sha9}.${host}`;
-        const bodyRegex = new RegExp(`^PR: ${pr} | SHA: ${sha9} | File: /index\\.html$`);
+      describe('(for hidden builds)', () => {
 
-        Promise.all([
-          h.runCmd(`curl -iL ${origin}/index.html`).then(h.verifyResponse(200, bodyRegex)),
-          h.runCmd(`curl -iL ${origin}/`).then(h.verifyResponse(200, bodyRegex)),
-          h.runCmd(`curl -iL ${origin}`).then(h.verifyResponse(200, bodyRegex)),
-        ]).then(done);
-      });
+        beforeEach(() => h.createDummyBuild(pr, sha9, false));
 
 
-      it('should return /foo/bar.js', done => {
-        const bodyRegex = new RegExp(`^PR: ${pr} | SHA: ${sha9} | File: /foo/bar\\.js$`);
+        it('should respond with 404 for any file or directory', done => {
+          const origin = `${scheme}://pr${pr}-${sha9}.${host}`;
+          const assert404 = h.verifyResponse(404);
 
-        h.runCmd(`curl -iL ${scheme}://pr${pr}-${sha9}.${host}/foo/bar.js`).
-          then(h.verifyResponse(200, bodyRegex)).
-          then(done);
-      });
+          Promise.all([
+            h.runCmd(`curl -iL ${origin}/index.html`).then(assert404),
+            h.runCmd(`curl -iL ${origin}/`).then(assert404),
+            h.runCmd(`curl -iL ${origin}`).then(assert404),
+            h.runCmd(`curl -iL ${origin}/foo/bar.js`).then(assert404),
+            h.runCmd(`curl -iL ${origin}/foo/`).then(assert404),
+            h.runCmd(`curl -iL ${origin}/foo`).then(assert404),
+          ]).then(done);
+        });
 
-
-      it('should respond with 403 for directories', done => {
-        Promise.all([
-          h.runCmd(`curl -iL ${scheme}://pr${pr}-${sha9}.${host}/foo/`).then(h.verifyResponse(403)),
-          h.runCmd(`curl -iL ${scheme}://pr${pr}-${sha9}.${host}/foo`).then(h.verifyResponse(403)),
-        ]).then(done);
-      });
-
-
-      it('should respond with 404 for unknown paths to files', done => {
-        h.runCmd(`curl -iL ${scheme}://pr${pr}-${sha9}.${host}/foo/baz.css`).
-          then(h.verifyResponse(404)).
-          then(done);
-      });
-
-
-      it('should rewrite to \'index.html\' for unknown paths that don\'t look like files', done => {
-        const bodyRegex = new RegExp(`^PR: ${pr} | SHA: ${sha9} | File: /index\\.html$`);
-
-        Promise.all([
-          h.runCmd(`curl -iL ${scheme}://pr${pr}-${sha9}.${host}/foo/baz`).then(h.verifyResponse(200, bodyRegex)),
-          h.runCmd(`curl -iL ${scheme}://pr${pr}-${sha9}.${host}/foo/baz/`).then(h.verifyResponse(200, bodyRegex)),
-        ]).then(done);
-      });
-
-
-      it('should respond with 404 for unknown PRs/SHAs', done => {
-        const otherPr = 54321;
-        const otherSha = '8'.repeat(40);
-
-        Promise.all([
-          h.runCmd(`curl -iL ${scheme}://pr${pr}9-${sha9}.${host}`).then(h.verifyResponse(404)),
-          h.runCmd(`curl -iL ${scheme}://pr${otherPr}-${sha9}.${host}`).then(h.verifyResponse(404)),
-          h.runCmd(`curl -iL ${scheme}://pr${pr}-${sha9}9.${host}`).then(h.verifyResponse(404)),
-          h.runCmd(`curl -iL ${scheme}://pr${pr}-${otherSha}.${host}`).then(h.verifyResponse(404)),
-        ]).then(done);
-      });
-
-
-      it('should respond with 404 if the subdomain format is wrong', done => {
-        Promise.all([
-          h.runCmd(`curl -iL ${scheme}://xpr${pr}-${sha9}.${host}`).then(h.verifyResponse(404)),
-          h.runCmd(`curl -iL ${scheme}://prx${pr}-${sha9}.${host}`).then(h.verifyResponse(404)),
-          h.runCmd(`curl -iL ${scheme}://xx${pr}-${sha9}.${host}`).then(h.verifyResponse(404)),
-          h.runCmd(`curl -iL ${scheme}://p${pr}-${sha9}.${host}`).then(h.verifyResponse(404)),
-          h.runCmd(`curl -iL ${scheme}://r${pr}-${sha9}.${host}`).then(h.verifyResponse(404)),
-          h.runCmd(`curl -iL ${scheme}://${pr}-${sha9}.${host}`).then(h.verifyResponse(404)),
-          h.runCmd(`curl -iL ${scheme}://pr${pr}${sha9}.${host}`).then(h.verifyResponse(404)),
-          h.runCmd(`curl -iL ${scheme}://pr${pr}_${sha9}.${host}`).then(h.verifyResponse(404)),
-        ]).then(done);
-      });
-
-
-      it('should reject PRs with leading zeros', done => {
-        h.runCmd(`curl -iL ${scheme}://pr0${pr}-${sha9}.${host}`).
-          then(h.verifyResponse(404)).
-          then(done);
-      });
-
-
-      it('should accept SHAs with leading zeros (but not trim the zeros)', done => {
-        const bodyRegex9 = new RegExp(`^PR: ${pr} | SHA: ${sha9} | File: /index\\.html$`);
-        const bodyRegex0 = new RegExp(`^PR: ${pr} | SHA: ${sha0} | File: /index\\.html$`);
-
-        Promise.all([
-          h.runCmd(`curl -iL ${scheme}://pr${pr}-0${sha9}.${host}`).then(h.verifyResponse(404)),
-          h.runCmd(`curl -iL ${scheme}://pr${pr}-${sha9}.${host}`).then(h.verifyResponse(200, bodyRegex9)),
-          h.runCmd(`curl -iL ${scheme}://pr${pr}-${sha0}.${host}`).then(h.verifyResponse(200, bodyRegex0)),
-        ]).then(done);
       });
 
     });
