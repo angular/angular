@@ -6,9 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Input} from '@angular/core';
+import {Directive, Input, Optional, OnInit} from '@angular/core';
 import {MdDialogRef} from './dialog-ref';
+import {MdDialogContainer} from './dialog-container';
 
+/** Counter used to generate unique IDs for dialog elements. */
+let dialogElementUid = 0;
 
 /**
  * Button that will close the current dialog.
@@ -40,9 +43,22 @@ export class MdDialogClose {
  */
 @Directive({
   selector: '[md-dialog-title], [mat-dialog-title], [mdDialogTitle], [matDialogTitle]',
-  host: {'class': 'mat-dialog-title'},
+  host: {
+    'class': 'mat-dialog-title',
+    '[id]': 'id',
+  },
 })
-export class MdDialogTitle { }
+export class MdDialogTitle implements OnInit {
+  @Input() id = `md-dialog-title-${dialogElementUid++}`;
+
+  constructor(@Optional() private _container: MdDialogContainer) { }
+
+  ngOnInit() {
+    if (this._container && !this._container._ariaLabelledBy) {
+      Promise.resolve().then(() => this._container._ariaLabelledBy = this.id);
+    }
+  }
+}
 
 
 /**

@@ -21,11 +21,10 @@ import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {Location} from '@angular/common';
 import {SpyLocation} from '@angular/common/testing';
 import {MdDialogModule} from './index';
-import {MdDialog} from './dialog';
+import {MdDialog, MD_DIALOG_DATA} from './dialog';
 import {MdDialogContainer} from './dialog-container';
 import {OverlayContainer, ESCAPE} from '../core';
 import {MdDialogRef} from './dialog-ref';
-import {MD_DIALOG_DATA} from './dialog-injector';
 import {dispatchKeyboardEvent} from '../core/testing/dispatch-events';
 
 
@@ -666,6 +665,17 @@ describe('MdDialog', () => {
 
       viewContainerFixture.whenStable().then(() => {
         expect(afterCloseCallback).toHaveBeenCalledWith(true);
+      });
+    }));
+
+    it('should set the aria-labelled by attribute to the id of the title', async(() => {
+      let title = overlayContainerElement.querySelector('[md-dialog-title]');
+      let container = overlayContainerElement.querySelector('md-dialog-container');
+
+      viewContainerFixture.whenStable().then(() => {
+        expect(title.id).toBeTruthy('Expected title element to have an id.');
+        expect(container.getAttribute('aria-labelledby'))
+            .toBe(title.id, 'Expected the aria-labelledby to match the title id.');
       });
     }));
 

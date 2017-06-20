@@ -6,7 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, ComponentRef, Injectable, Optional, SkipSelf, TemplateRef} from '@angular/core';
+import {
+  Injector,
+  InjectionToken,
+  ComponentRef,
+  Injectable,
+  Optional,
+  SkipSelf,
+  TemplateRef,
+} from '@angular/core';
 import {Location} from '@angular/common';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
@@ -24,6 +32,8 @@ import {MdDialogConfig} from './dialog-config';
 import {MdDialogRef} from './dialog-ref';
 import {MdDialogContainer} from './dialog-container';
 import {TemplatePortal} from '../core/portal/portal';
+
+export const MD_DIALOG_DATA = new InjectionToken<any>('MdDialogData');
 
 
 /**
@@ -187,17 +197,12 @@ export class MdDialog {
       });
     }
 
-    // We create an injector specifically for the component we're instantiating so that it can
-    // inject the MdDialogRef. This allows a component loaded inside of a dialog to close itself
-    // and, optionally, to return a value.
-    let userInjector = config && config.viewContainerRef && config.viewContainerRef.injector;
-    let dialogInjector = new DialogInjector(userInjector || this._injector, dialogRef, config.data);
-
     if (componentOrTemplateRef instanceof TemplateRef) {
       dialogContainer.attachTemplatePortal(new TemplatePortal(componentOrTemplateRef, null));
     } else {
+      let injector = this._createInjector<T>(config, dialogRef, dialogContainer);
       let contentRef = dialogContainer.attachComponentPortal(
-          new ComponentPortal(componentOrTemplateRef, null, dialogInjector));
+          new ComponentPortal(componentOrTemplateRef, null, injector));
       dialogRef.componentInstance = contentRef.instance;
     }
 
@@ -206,6 +211,29 @@ export class MdDialog {
       .updatePosition(config.position);
 
     return dialogRef;
+  }
+
+  /**
+   * Creates a custom injector to be used inside the dialog. This allows a component loaded inside
+   * of a dialog to close itself and, optionally, to return a value.
+   * @param config Config object that is used to construct the dialog.
+   * @param dialogRef Reference to the dialog.
+   * @param container Dialog container element that wraps all of the contents.
+   * @returns The custom injector that can be used inside the dialog.
+   */
+  private _createInjector<T>(
+      config: MdDialogConfig,
+      dialogRef: MdDialogRef<T>,
+      dialogContainer: MdDialogContainer): DialogInjector {
+
+    let userInjector = config && config.viewContainerRef && config.viewContainerRef.injector;
+    let injectionTokens = new WeakMap();
+
+    injectionTokens.set(MdDialogRef, dialogRef);
+    injectionTokens.set(MdDialogContainer, dialogContainer);
+    injectionTokens.set(MD_DIALOG_DATA, config.data);
+
+    return new DialogInjector(userInjector || this._injector, injectionTokens);
   }
 
   /**
