@@ -12,7 +12,7 @@ import {BidiModule} from './bidi/index';
 import {ObserveContentModule} from './observe-content/observe-content';
 import {MdOptionModule} from './option/index';
 import {PortalModule} from './portal/portal-directives';
-import {OverlayModule} from './overlay/overlay-directives';
+import {OverlayModule} from './overlay/index';
 import {A11yModule} from './a11y/index';
 import {MdSelectionModule} from './selection/index';
 import {MdRippleModule} from './ripple/index';

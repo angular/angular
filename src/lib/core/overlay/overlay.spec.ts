@@ -2,14 +2,17 @@ import {inject, TestBed, async, ComponentFixture} from '@angular/core/testing';
 import {NgModule, Component, ViewChild, ViewContainerRef} from '@angular/core';
 import {TemplatePortalDirective, PortalModule} from '../portal/portal-directives';
 import {TemplatePortal, ComponentPortal} from '../portal/portal';
-import {Overlay} from './overlay';
-import {OverlayContainer} from './overlay-container';
-import {OverlayState} from './overlay-state';
-import {OverlayRef} from './overlay-ref';
-import {PositionStrategy} from './position/position-strategy';
-import {OverlayModule} from './overlay-directives';
-import {ViewportRuler} from './position/viewport-ruler';
-import {ScrollStrategy, ScrollDispatcher} from './scroll/index';
+import {
+  OverlayModule,
+  OverlayRef,
+  OverlayState,
+  OverlayContainer,
+  Overlay,
+  PositionStrategy,
+  ViewportRuler,
+  ScrollStrategy,
+  ScrollDispatcher,
+} from './index';
 
 
 describe('Overlay', () => {

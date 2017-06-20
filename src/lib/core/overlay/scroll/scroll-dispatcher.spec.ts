@@ -1,8 +1,6 @@
 import {inject, TestBed, async, fakeAsync, ComponentFixture, tick} from '@angular/core/testing';
 import {NgModule, Component, ViewChild, ElementRef} from '@angular/core';
-import {ScrollDispatcher} from './scroll-dispatcher';
-import {OverlayModule} from '../overlay-directives';
-import {Scrollable} from './scrollable';
+import {OverlayModule, Scrollable, ScrollDispatcher} from '../index';
 import {dispatchFakeEvent} from '../../testing/dispatch-events';
 
 describe('Scroll Dispatcher', () => {
