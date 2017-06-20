@@ -209,6 +209,11 @@ export function main() {
         expect(form.value).toEqual({parent: {'one': '', 'two': ''}});
       });
 
+      it('should throw when passed null', () => {
+        const g = new FormGroup({'a': new FormControl()});
+        expect(() => g.setValue(null)).toThrowError(new RegExp('Must supply a value'))
+      });
+
       it('should throw if fields are missing from supplied value (subset)', () => {
         expect(() => g.setValue({
           'one': 'one'
