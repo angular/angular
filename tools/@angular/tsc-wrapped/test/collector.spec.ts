@@ -634,10 +634,6 @@ describe('Collector', () => {
   });
 
   describe('with interpolations', () => {
-    function createSource(text: string): ts.SourceFile {
-      return ts.createSourceFile('', text, ts.ScriptTarget.Latest, true);
-    }
-
     function e(expr: string, prefix?: string) {
       const source = createSource(`${prefix || ''} export let value = ${expr};`);
       const metadata = collector.getMetadata(source);
@@ -821,16 +817,52 @@ describe('Collector', () => {
 
   describe('regerssion', () => {
     it('should be able to collect a short-hand property value', () => {
-      const source = ts.createSourceFile(
-          '', `
+      const source = createSource(`
         const children = { f1: 1 };
         export const r = [
           {path: ':locale', children}
         ];
-      `,
-          ts.ScriptTarget.Latest, true);
+      `);
       const metadata = collector.getMetadata(source);
       expect(metadata.metadata).toEqual({r: [{path: ':locale', children: {f1: 1}}]});
+    });
+
+    // #17518
+    it('should skip a default function', () => {
+      const source = createSource(`
+        export default function () {
+
+          const mainRoutes = [
+            {name: 'a', abstract: true, component: 'main'},
+
+            {name: 'a.welcome', url: '/welcome', component: 'welcome'}
+          ];
+
+          return mainRoutes;
+
+        }`);
+      const metadata = collector.getMetadata(source);
+      expect(metadata).toBeUndefined();
+    });
+
+    it('should skip a named default export', () => {
+      const source = createSource(`
+        function mainRoutes() {
+
+          const mainRoutes = [
+            {name: 'a', abstract: true, component: 'main'},
+
+            {name: 'a.welcome', url: '/welcome', component: 'welcome'}
+          ];
+
+          return mainRoutes;
+
+        }
+
+        exports = foo;
+        `);
+      const metadata = collector.getMetadata(source);
+      expect(metadata).toBeUndefined();
     });
   });
 
@@ -1321,3 +1353,7 @@ const FILES: Directory = {
     }
   }
 };
+
+function createSource(text: string): ts.SourceFile {
+  return ts.createSourceFile('', text, ts.ScriptTarget.Latest, true);
+}
