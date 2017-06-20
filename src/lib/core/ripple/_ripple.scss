@@ -32,39 +32,3 @@ $mat-ripple-color-opacity: 0.1;
     background-color: rgba($foreground-base, $mat-ripple-color-opacity);
   }
 }
-
-
-// A mixin, which generates temporary ink ripple on a given component.
-// To be removed once the real ripple is applied to all elements.
-// When $bindToParent is set to true, it will check for the focused class on the same selector as you included
-// that mixin.
-// It is also possible to specify the color palette of the temporary ripple. By default it uses the
-// accent palette for its background.
-@mixin mat-temporary-ink-ripple($component, $bindToParent: false) {
-  // TODO(mtlin): Replace when ink ripple component is implemented.
-  // A placeholder ink ripple, shown when keyboard focused.
-  .mat-ink-ripple {
-    border-radius: 50%;
-    opacity: 0;
-    height: 48px;
-    left: 50%;
-    overflow: hidden;
-    pointer-events: none;
-    position: absolute;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    transition: opacity ease 280ms, background-color ease 280ms;
-    width: 48px;
-  }
-
-  // Fade in when radio focused.
-  #{if($bindToParent, '&', '')}.mat-#{$component}-focused .mat-ink-ripple {
-    opacity: 1;
-  }
-
-  // TODO(mtlin): This corresponds to disabled focus state, but it's unclear how to enter into
-  // this state.
-  #{if($bindToParent, '&', '')}.mat-#{$component}-disabled .mat-ink-ripple {
-    background-color: #000;
-  }
-}
