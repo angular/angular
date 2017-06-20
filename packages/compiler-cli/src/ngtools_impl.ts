@@ -124,6 +124,12 @@ function _assertRoute(map: LazyRouteMap, route: LazyRoute) {
   }
 }
 
+export function flatten<T>(list: Array<T|T[]>): T[] {
+  return list.reduce((flat: any[], item: T | T[]): T[] => {
+    const flatItem = Array.isArray(item) ? flatten(item) : item;
+    return (<T[]>flat).concat(flatItem);
+  }, []);
+}
 
 /**
  * Extract all the LazyRoutes from a module. This extracts all `loadChildren` keys from this
@@ -134,12 +140,10 @@ function _extractLazyRoutesFromStaticModule(
     staticSymbol: StaticSymbol, reflector: StaticReflector, host: AotCompilerHost,
     ROUTES: StaticSymbol): LazyRoute[] {
   const moduleMetadata = _getNgModuleMetadata(staticSymbol, reflector);
-  const allRoutes: any =
-      (moduleMetadata.imports || [])
-          .filter(i => 'providers' in i)
-          .reduce((mem: Route[], m: any) => {
-            return mem.concat(_collectRoutes(m.providers || [], reflector, ROUTES));
-          }, _collectRoutes(moduleMetadata.providers || [], reflector, ROUTES));
+  const imports = flatten(moduleMetadata.imports || []);
+  const allRoutes: any = imports.filter(i => 'providers' in i).reduce((mem: Route[], m: any) => {
+    return mem.concat(_collectRoutes(m.providers || [], reflector, ROUTES));
+  }, _collectRoutes(moduleMetadata.providers || [], reflector, ROUTES));
 
   const lazyRoutes: LazyRoute[] =
       _collectLoadChildren(allRoutes).reduce((acc: LazyRoute[], route: string) => {
@@ -150,7 +154,7 @@ function _extractLazyRoutesFromStaticModule(
       }, []);
 
   const importedSymbols =
-      ((moduleMetadata.imports || []) as any[])
+      (imports as any[])
           .filter(i => i instanceof StaticSymbol || i.ngModule instanceof StaticSymbol)
           .map(i => {
             if (i instanceof StaticSymbol) return i;
