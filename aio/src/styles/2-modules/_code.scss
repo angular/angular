@@ -147,21 +147,21 @@ ol.linenums {
 /* The following class|color styles are derived from https://github.com/google/code-prettify/blob/master/src/prettify.css*/
 
 /* SPAN elements with the classes below are added by prettyprint. */
-.pln { color: #000 }  /* plain text */
+.pln { color: map-get($mat-blue-grey, 700) }  /* plain text */
 
 @media screen {
-  .str { color: #800 }  /* string content */
-  .kwd { color: #00f }  /* a keyword */
-  .com { color: #060 }  /* a comment */
-  .typ { color: red }  /* a type name */
-  .lit { color: #08c }  /* a literal value */
+  .str { color: map-get($mat-deep-orange, A400) }  /* string content */
+  .kwd { color: map-get($mat-light-blue, 800) }  /* a keyword */
+  .com { color: map-get($mat-green, 600) }  /* a comment */
+  .typ { color: map-get($mat-orange, 700) }  /* a type name */
+  .lit { color: map-get($mat-light-green, 600) }  /* a literal value */
   /* punctuation, lisp open bracket, lisp close bracket */
-  .pun, .opn, .clo { color: #660 }
-  .tag { color: #008 }  /* a markup tag name */
-  .atn { color: #606 }  /* a markup attribute name */
-  .atv { color: #800 }  /* a markup attribute value */
-  .dec, .var { color: #606 }  /* a declaration; a variable name */
-  .fun { color: red }  /* a function name */
+  .pun, .opn, .clo { color: map-get($mat-blue-grey, 700) }
+  .tag { color: map-get($mat-blue, 500) }  /* a markup tag name */
+  .atn { color: map-get($mat-purple, 400) }  /* a markup attribute name */
+  .atv { color: map-get($mat-red, 600) }  /* a markup attribute value */
+  .dec, .var { color: map-get($mat-purple, 500) }  /* a declaration; a variable name */
+  .fun { color: map-get($mat-red, A700) }  /* a function name */
 }
 
 /* Use higher contrast and text-weight for printable form. */
