@@ -491,6 +491,40 @@ function _analyzeNgModules(
     });
   });
 
+  // Make sure entry components from bootstrapable modules are imported
+  // https://github.com/angular/angular/issues/17446
+  ngModuleMetas.forEach((ngModuleMeta) => {
+    const transitiveModules = (ngModuleMeta.transitiveModule.modules || []).map(m => m.reference);
+    const errors: {cmp: StaticSymbol, mod: StaticSymbol}[] = [];
+
+    if (ngModuleMeta.bootstrapComponents.length === 0) {
+      // We only want to check module bootstrapable modules
+      return;
+    }
+
+    ngModuleMeta.transitiveModule.entryComponents.forEach(cmp => {
+      const cmpModule = ngModuleByPipeOrDirective.get(cmp.componentType);
+      if (cmpModule && transitiveModules.indexOf(cmpModule.type.reference) == -1) {
+        // Note: cmpModule is undefined when the component is not part of a NgModule
+        // in such a case the component is already in symbolsMissingModule
+        errors.push({
+          cmp: cmp.componentType,
+          mod: cmpModule.type.reference,
+        });
+      }
+    });
+
+    if (errors.length) {
+      const module = ngModuleMeta.type.reference;
+      const messages = errors.map(
+          e =>
+              `${module.filePath}: The component ${e.cmp.name}, declared in ${e.mod.name}, is declared as an entry component in module ${module.name} which does not import ${e.mod.name}.\n` +
+              `Consider adding ${e.mod.name} to the imports of ${module.name}.\n` +
+              `Note that ${e.cmp.name} might be referenced by a route which will automatically declare it as an entry component.`);
+      throw syntaxError(messages.join('\n'));
+    }
+  });
+
   const files: {
     srcUrl: string,
     directives: StaticSymbol[],

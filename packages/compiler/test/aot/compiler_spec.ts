@@ -264,6 +264,46 @@ describe('compiler (unbundled Angular)', () => {
         }
       });
     });
+
+    // https://github.com/angular/angular/issues/17446
+    it('should report when an entry component is not reachable from its module', () => {
+      const FILES: MockDirectory = {
+        app: {
+          'app.ts': `
+                import {Component, NgModule} from '@angular/core';
+
+                @Component({selector: 'my-comp', template: ''})
+                export class MyComp {}
+
+                @Component({selector: 'routed-comp', template: ''})
+                export class RoutedCmp {}
+
+                @Component({selector: 'entry-comp', template: ''})
+                export class EntryCmp {}
+
+                @NgModule({
+                  declarations: [EntryCmp],
+                })
+                export class UnreachableModule {}
+
+                @NgModule({
+                  entryComponents: [RoutedCmp],
+                })
+                export class RoutingModule {}
+
+                @NgModule({
+                  imports: [RoutingModule],
+                  declarations: [MyComp, RoutedCmp],
+                  entryComponents: [EntryCmp],
+                  bootstrap: [MyComp],
+                })
+                export class MyModule {}
+              `
+        }
+      };
+      expect(() => compile([FILES, angularFiles]))
+          .toThrowError(/Consider adding UnreachableModule to the imports of MyModule/);
+    });
   });
 
   it('should report when an entry component is not in any module', () => {
