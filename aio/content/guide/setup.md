@@ -34,7 +34,7 @@ Perform the _clone-to-launch_ steps with these terminal commands.
 
 
 
-`npm start` fails in _Bash for Windows_ which does not support networking to servers as of January, 2017.
+`npm start` fails in _Bash for Windows_ in versions earlier than the Creator's Update (April 2017).
 
 
 </div>
@@ -62,7 +62,7 @@ and unzip it into your project folder. Then perform the remaining steps with the
 
 
 
-`npm start` fails in _Bash for Windows_ which does not support networking to servers as of January, 2017.
+`npm start` fails in _Bash for Windows_ in versions earlier than the Creator's Update (April 2017).
 
 
 </div>
