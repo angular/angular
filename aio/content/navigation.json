@@ -55,6 +55,13 @@
     },
 
     {
+      "url": "guide/docs-style-guide",
+      "title": "Doc authors style guide",
+      "tooltip": "Style guide for documentation authors",
+      "hidden": true
+    },
+
+    {
       "url": "guide/quickstart",
       "title": "Getting Started",
       "tooltip": "A gentle introduction to Angular."
