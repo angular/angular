@@ -1,0 +1,9 @@
+<form class="example-form">
+
+  <md-input-container class="example-full-width">
+    <input mdInput #message maxlength="256" placeholder="Message">
+    <md-hint align="start"><strong>Don't disclose personal info</strong> </md-hint>
+    <md-hint align="end">{{message.value.length}} / 256</md-hint>
+  </md-input-container>
+  
+</form>

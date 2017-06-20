@@ -28,7 +28,6 @@ import {IconOverviewExample} from './icon-overview/icon-overview-example';
 import {ProgressBarOverviewExample} from './progress-bar-overview/progress-bar-overview-example';
 import {SlideToggleOverviewExample} from './slide-toggle-overview/slide-toggle-overview-example';
 import {SlideToggleFormsExample} from './slide-toggle-forms/slide-toggle-forms-example';
-import {InputOverviewExample} from './input-overview/input-overview-example';
 import {MenuOverviewExample} from './menu-overview/menu-overview-example';
 import {CheckboxConfigurableExample} from './checkbox-configurable/checkbox-configurable-example';
 import {
@@ -51,7 +50,6 @@ import {TooltipPositionExample} from './tooltip-position/tooltip-position-exampl
 import {
   ProgressSpinnerConfigurableExample
 } from './progress-spinner-configurable/progress-spinner-configurable-example';
-import {InputFormExample} from './input-form/input-form-example';
 import {ListOverviewExample} from './list-overview/list-overview-example';
 import {SliderOverviewExample} from './slider-overview/slider-overview-example';
 import {
@@ -71,6 +69,12 @@ import {ChipsOverviewExample} from './chips-overview/chips-overview-example';
 import {ChipsStackedExample} from './chips-stacked/chips-stacked-example';
 import {SelectFormExample} from './select-form/select-form-example';
 import {DatepickerOverviewExample} from './datepicker-overview/datepicker-overview-example';
+import {InputOverviewExample} from './input-overview/input-overview-example';
+import {InputErrorsExample} from './input-errors/input-errors-example';
+import {InputFormExample} from './input-form/input-form-example';
+import {InputPrefixSuffixExample} from './input-prefix-suffix/input-prefix-suffix-example';
+import {InputHintExample} from './input-hint/input-hint-example';
+
 import {
   MdAutocompleteModule, MdButtonModule, MdButtonToggleModule, MdCardModule, MdCheckboxModule,
   MdChipsModule, MdDatepickerModule, MdDialogModule, MdGridListModule, MdIconModule, MdInputModule,
@@ -132,6 +136,9 @@ export const EXAMPLE_COMPONENTS = {
   'icon-svg': {title: 'SVG icons', component: IconSvgExample},
   'input-form': {title: 'Inputs in a form', component: InputFormExample},
   'input-overview': {title: 'Basic inputs', component: InputOverviewExample},
+  'input-errors': {title: 'Input Errors', component: InputErrorsExample},
+  'input-prefix-suffix': {title: 'Input Prefixes/Suffixes', component: InputPrefixSuffixExample},
+  'input-hint': {title: 'Input Hint', component: InputHintExample},
   'list-overview': {title: 'Basic list', component: ListOverviewExample},
   'list-sections': {title: 'List with sections', component: ListSectionsExample},
   'menu-icons': {title: 'Menu with icons', component: MenuIconsExample},
@@ -238,6 +245,9 @@ export const EXAMPLE_LIST = [
   IconSvgExample,
   InputFormExample,
   InputOverviewExample,
+  InputPrefixSuffixExample,
+  InputHintExample,
+  InputErrorsExample,
   ListOverviewExample,
   ListSectionsExample,
   MenuIconsExample,

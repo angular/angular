@@ -46,6 +46,8 @@ messages should be displayed. This can be done with CSS, `ngIf` or `ngSwitch`.
 Note that, while multiple error messages can be displayed at the same time, it is recommended to
 only show one at a time.
 
+<!-- example(input-errors) -->
+
 ### Placeholder
 
 A placeholder is an indicative text displayed in the input zone when the input does not contain
@@ -84,6 +86,8 @@ per the Material specification, and clicking it will focus the input.
 Adding the `mdPrefix` attribute to an element inside the `md-input-container` will designate it as
 the prefix. Similarly, adding `mdSuffix` will designate it as the suffix.
 
+<!-- example(input-prefix-suffix) -->
+
 ### Hint Labels
 
 Hint labels are the labels that show below the underline. An `md-input-container` can have up to two
@@ -94,6 +98,8 @@ Hint labels are specified in one of two ways: either using the `hintLabel` attri
 `md-input-container`, or using an `md-hint` element inside the `md-input-container`, which takes an
 `align` attribute containing the side. The attribute version is assumed to be at the `start`.
 Specifying a side twice will result in an exception during initialization.
+
+<!-- example(input-hint) -->
 
 ### Underline Color
 
