@@ -352,8 +352,8 @@ performs the initial navigation based on the current browser URL.
 ### Router outlet
 
 If you paste the path, `/heroes`, into the browser address bar at the end of the URL,
-the router should match it to the `heroes` route and retrieve the `HeroesComponent`.
-However, you have to tell the router where to display the component.
+the router should match it to the `heroes` route and render a `HeroesComponent` instance (optional: to the screen).
+Next, you have to tell the router where to display the component.
 To do this, you can add a `<router-outlet>` element at the end of the template.
 `RouterOutlet` is one of the directives provided by the `RouterModule`.
 The router displays each component immediately below the `<router-outlet>` as users navigate through the app.
