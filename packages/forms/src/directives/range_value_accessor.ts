@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Provider, Renderer, forwardRef} from '@angular/core';
+import {Directive, ElementRef, Provider, Renderer2, forwardRef} from '@angular/core';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
@@ -39,10 +39,10 @@ export class RangeValueAccessor implements ControlValueAccessor {
   onChange = (_: any) => {};
   onTouched = () => {};
 
-  constructor(private _renderer: Renderer, private _elementRef: ElementRef) {}
+  constructor(private _renderer: Renderer2, private _elementRef: ElementRef) {}
 
   writeValue(value: any): void {
-    this._renderer.setElementProperty(this._elementRef.nativeElement, 'value', parseFloat(value));
+    this._renderer.setProperty(this._elementRef.nativeElement, 'value', parseFloat(value));
   }
 
   registerOnChange(fn: (_: number|null) => void): void {
@@ -52,6 +52,6 @@ export class RangeValueAccessor implements ControlValueAccessor {
   registerOnTouched(fn: () => void): void { this.onTouched = fn; }
 
   setDisabledState(isDisabled: boolean): void {
-    this._renderer.setElementProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
+    this._renderer.setProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
   }
 }
