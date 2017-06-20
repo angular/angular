@@ -377,7 +377,7 @@ export class MetadataCollector {
           // Record functions that return a single value. Record the parameter
           // names substitution will be performed by the StaticReflector.
           const functionDeclaration = <ts.FunctionDeclaration>node;
-          if (isExported(functionDeclaration)) {
+          if (isExported(functionDeclaration) && functionDeclaration.name) {
             if (!metadata) metadata = {};
             const name = exportedName(functionDeclaration);
             const maybeFunc = maybeGetSimpleFunction(functionDeclaration);
