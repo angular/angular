@@ -160,6 +160,7 @@ This guide describes specific choices that are known to work well.
 ### Setup
 
 There are two fast paths to getting started with unit testing.
+
 1. Start a new project following the instructions in [Setup](guide/setup "Setup").
 
 1. Start a new project with the
