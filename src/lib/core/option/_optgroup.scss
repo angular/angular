@@ -6,9 +6,5 @@
     @include mat-menu-item-base();
     @include user-select(none);
     cursor: default;
-
-    // TODO(crisbeto): should use the typography functions once #4375 is in.
-    font-weight: bold;
-    font-size: 14px;
   }
 }

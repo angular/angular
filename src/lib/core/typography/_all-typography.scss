@@ -24,6 +24,7 @@
 @import '../../tooltip/tooltip-theme';
 @import '../../snack-bar/simple-snack-bar-theme';
 @import '../option/option-theme';
+@import '../option/optgroup-theme';
 
 
 // Includes all of the typographic styles.
@@ -53,5 +54,6 @@
   @include mat-tooltip-typography($config);
   @include mat-list-typography($config);
   @include mat-option-typography($config);
+  @include mat-optgroup-typography($config);
   @include mat-simple-snack-bar-typography($config);
 }

@@ -1,5 +1,6 @@
 @import '../theming/palette';
 @import '../theming/theming';
+@import '../typography/typography-utils';
 
 @mixin mat-optgroup-theme($theme) {
   $foreground: map-get($theme, foreground);
@@ -10,5 +11,11 @@
 
   .mat-optgroup-disabled .mat-optgroup-label {
     color: mat-color($foreground, hint-text);
+  }
+}
+
+@mixin mat-optgroup-typography($config) {
+  .mat-optgroup-label {
+    @include mat-typography-level-to-styles($config, body-2);
   }
 }
