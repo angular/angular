@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 const Package = require('dgeni').Package;
-const globby = require('globby');
+const glob = require('glob');
 const ignore = require('ignore');
 const fs = require('fs');
 const path = require('canonical-path');
@@ -23,7 +23,7 @@ module.exports = new Package('angular-content', [basePackage, contentPackage])
     const gitignoreFile = fs.readFileSync(path.resolve(GUIDE_EXAMPLES_PATH, '.gitignore'), 'utf8');
     const gitignore = ignore().add(gitignoreFile);
 
-    const examplePaths = globby.sync('**/*', { cwd: GUIDE_EXAMPLES_PATH, mark: true, dot: true })
+    const examplePaths = glob.sync('**/*', { cwd: GUIDE_EXAMPLES_PATH, dot: true, ignore: '**/node_modules/**', mark: true })
                             .filter(filePath => filePath !== '.gitignore') // we are not interested in the .gitignore file itself
                             .filter(filePath => !/\/$/.test(filePath)); // this filter removes the folders, leaving only files
     const filteredExamplePaths = gitignore.filter(examplePaths) // filter out files that match the .gitignore rules
