@@ -110,7 +110,7 @@ export class CompilerHost implements AotCompilerHost {
   fileNameToModuleName(importedFile: string, containingFile: string): string {
     // If a file does not yet exist (because we compile it later), we still need to
     // assume it exists it so that the `resolve` method works!
-    if (!this.context.fileExists(importedFile)) {
+    if (importedFile !== containingFile && !this.context.fileExists(importedFile)) {
       this.context.assumeFileExists(importedFile);
     }
 

@@ -304,7 +304,10 @@ export class AotCompiler {
       }
       const arity = this._symbolResolver.getTypeArity(symbol) || 0;
       const {filePath, name, members} = this._symbolResolver.getImportAs(symbol) || symbol;
-      const moduleName = this._symbolResolver.fileNameToModuleName(filePath, genFilePath);
+      const importModule = this._symbolResolver.fileNameToModuleName(filePath, genFilePath);
+      const selfReference = this._symbolResolver.fileNameToModuleName(genFilePath, genFilePath);
+      const moduleName = importModule === selfReference ? null : importModule;
+
       // If we are in a type expression that refers to a generic type then supply
       // the required type parameters. If there were not enough type parameters
       // supplied, supply any as the type. Outside a type expression the reference

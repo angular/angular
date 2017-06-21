@@ -162,9 +162,6 @@ export class StaticSymbolResolver {
    * Converts a file path to a module name that can be used as an `import`.
    */
   fileNameToModuleName(importedFilePath: string, containingFilePath: string): string|null {
-    if (importedFilePath === containingFilePath) {
-      return null;
-    }
     return this.knownFileNameToModuleNames.get(importedFilePath) ||
         this.host.fileNameToModuleName(importedFilePath, containingFilePath);
   }
