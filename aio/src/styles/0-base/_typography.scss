@@ -8,7 +8,6 @@ body {
 }
 
 h1 {
-  display: inline-block;
   font-size: 24px;
   font-weight: 500;
   margin: 8px 0px;
@@ -18,8 +17,7 @@ h1:after {
   content: "";
   display: block;
   height: 1px;
-  width: 40%;
-  margin: 24px 0px 10px;
+  margin: 15px 0px 35px 0px;
   background: $lightgray;
   clear: both;
 }
