@@ -45,7 +45,7 @@ export class LocationService {
   }
 
   goExternal(url: string) {
-    location.assign(url);
+    window.location.assign(url);
   }
 
   private stripSlashes(url: string) {
