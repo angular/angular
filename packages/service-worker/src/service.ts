@@ -60,6 +60,9 @@ export interface UpdateEvent {
 export class NgPushRegistration {
   private ps: PushSubscription;
 
+  /**
+   * @internal
+   */
   constructor(ps: any) { this.ps = ps; }
 
   // Get the authentication key

@@ -1,0 +1,7 @@
+{
+  "name": "@angular/service-worker/build/webpack",
+  "typings": "../build/webpack.d.ts",
+  "main": "../bundles/service-worker-build-webpack.umd.js",
+  "module": "../@angular/service-worker/build/webpack.es5.js",
+  "es2015": "../@angular/service-worker/build/webpack.js"
+}

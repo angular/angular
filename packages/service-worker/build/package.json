@@ -1,0 +1,7 @@
+{
+  "name": "@angular/service-worker/build",
+  "typings": "../build.d.ts",
+  "main": "../bundles/service-worker-build.umd.js",
+  "module": "../@angular/service-worker/build.es5.js",
+  "es2015": "../@angular/service-worker/build.js"
+}
