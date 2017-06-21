@@ -129,6 +129,11 @@ describe('SearchResultsComponent', () => {
     expect(component.searchAreas).toEqual([]);
   });
 
+  it('should display "Searching ..." while waiting for search results', () => {
+    fixture.detectChanges();
+    expect(getText()).toContain('Searching ...');
+  });
+
   describe('when a search result anchor is clicked', () => {
     let searchResult: SearchResult;
     let selected: SearchResult;
@@ -179,4 +184,5 @@ describe('SearchResultsComponent', () => {
       expect(getText()).toContain('No results');
     });
   });
+
 });
