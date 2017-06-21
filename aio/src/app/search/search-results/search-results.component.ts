@@ -21,6 +21,7 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
 
   private resultsSubscription: Subscription;
   readonly defaultArea = 'other';
+  notFoundMessage = 'Searching ...';
   readonly topLevelFolders = ['guide', 'tutorial'];
 
   /**
@@ -54,6 +55,7 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
 
   // Map the search results into groups by area
   private processSearchResults(search: SearchResults) {
+    this.notFoundMessage = 'No results found.';
     const searchAreaMap = {};
     search.results.forEach(result => {
       if (!result.title) { return; } // bad data; should fix
