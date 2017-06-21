@@ -15,28 +15,23 @@ jobs:
           post: git pull --ff-only origin "refs/pull/${CI_PULL_REQUEST//*pull\//}/merge"
       - restore_cache:
           key: angular-{{ .Branch }}-{{ checksum "npm-shrinkwrap.json" }}
+
       - run: npm install
-      - run: npm run postinstall
-      - save_cache:
-          key: angular-{{ .Branch }}-{{ checksum "npm-shrinkwrap.json" }}
-          paths:
-            - "node_modules"
       - run: ./node_modules/.bin/gulp lint
+
   build:
     <<: *defaults
     steps:
       - checkout
       - restore_cache:
           key: angular-{{ .Branch }}-{{ checksum "npm-shrinkwrap.json" }}
-      - run: npm install
-      - run: npm run postinstall
+
+      - run: bazel run @io_bazel_rules_typescript_node//:bin/npm install
+      - run: bazel build ...
       - save_cache:
           key: angular-{{ .Branch }}-{{ checksum "npm-shrinkwrap.json" }}
           paths:
             - "node_modules"
-      # Build twice, workaround for
-      # https://github.com/bazelbuild/bazel/issues/3114
-      - run: bazel build ... || bazel build ...
 
 workflows:
   version: 2
