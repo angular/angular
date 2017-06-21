@@ -17,9 +17,9 @@ import {TestBed} from './test_bed';
 
 declare var global: any;
 
-let resetTestingModuleInBeforeEach = true;
-
 const _global = <any>(typeof window === 'undefined' ? global : window);
+
+let resetTestingModuleInBeforeEach = true;
 
 // Reset the test providers and the fake async zone before each test.
 if (_global.beforeEach) {
@@ -43,4 +43,8 @@ export function disableTestBedAutoReset() {
  */
 export function enableTestBedAutoReset() {
   resetTestingModuleInBeforeEach = true;
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> dac4928... feat(core): allow tests to disable the automatic calls of TestBed.resetTestingModule in beforeEach
