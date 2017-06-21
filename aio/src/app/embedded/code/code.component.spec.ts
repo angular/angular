@@ -218,7 +218,29 @@ describe('CodeComponent', () => {
       const copierService: CopierService = TestBed.get(CopierService);
       const spy = spyOn(copierService, 'copyText');
       getButton().click();
-      expect(spy.calls.argsFor(0)[0]).toEqual(oneLineCode, 'after click');
+      expect(spy.calls.argsFor(0)[0]).toBe(oneLineCode, 'after click');
+    });
+
+    it('should preserve newlines in the copied code', () => {
+      const copierService: CopierService = TestBed.get(CopierService);
+      const spy = spyOn(copierService, 'copyText');
+      const expectedCode = smallMultiLineCode.trim().replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+      let actualCode;
+
+      hostComponent.code = smallMultiLineCode;
+
+      [false, true, 42].forEach(linenums => {
+        hostComponent.linenums = linenums;
+        fixture.detectChanges();
+        codeComponent.ngOnChanges();
+        getButton().click();
+        actualCode = spy.calls.mostRecent().args[0];
+
+        expect(actualCode).toBe(expectedCode, `when linenums=${linenums}`);
+        expect(actualCode.match(/\r?\n/g).length).toBe(5);
+
+        spy.calls.reset();
+      });
     });
 
     it('should display a message when copy succeeds', () => {

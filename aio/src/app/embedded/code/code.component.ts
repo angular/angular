@@ -52,6 +52,11 @@ export class CodeComponent implements OnChanges {
   code: string;
 
   /**
+   * The code to be copied when clicking the copy button, this should not be HTML encoded
+   */
+  private codeText: string;
+
+  /**
    * set to true if the copy button is not to be shown
    */
   @Input()
@@ -116,6 +121,7 @@ export class CodeComponent implements OnChanges {
     const linenums = this.getLinenums();
 
     this.setCodeHtml(this.code); // start with unformatted code
+    this.codeText = this.getCodeText(); // store the unformatted code as text (for copying)
     this.pretty.formatCode(this.code, this.language, linenums).subscribe(
       formattedCode => this.setCodeHtml(formattedCode),
       err => { /* ignore failure to format */ }
@@ -128,9 +134,15 @@ export class CodeComponent implements OnChanges {
     this.codeContainer.nativeElement.innerHTML = formattedCode;
   }
 
+  private getCodeText() {
+    // `prettify` may remove newlines, e.g. when `linenums` are on. Retrieve the content of the
+    // container as text, before prettifying it.
+    // We take the textContent because we don't want it to be HTML encoded.
+    return this.codeContainer.nativeElement.textContent;
+  }
+
   doCopy() {
-    // We take the textContent because we don't want it to be HTML encoded
-    const code = this.codeContainer.nativeElement.textContent.trim();
+    const code = this.codeText;
     if (this.copier.copyText(code)) {
       this.logger.log('Copied code to clipboard:', code);
       // success snackbar alert
