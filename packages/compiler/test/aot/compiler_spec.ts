@@ -233,6 +233,37 @@ describe('compiler (unbundled Angular)', () => {
       };
       compile([FILES, angularFiles], {postCompile: expectNoDiagnostics});
     });
+
+    it('should not contain a self import in factory', () => {
+      const FILES: MockDirectory = {
+        app: {
+          'app.ts': `
+                import {Component, NgModule} from '@angular/core';
+
+                interface Person { name: string; }
+
+                @Component({
+                  selector: 'my-comp',
+                  template: '{{person.name}}'
+                })
+                export class MyComp {
+                  person: Person;
+                }
+
+                @NgModule({
+                  declarations: [MyComp]
+                })
+                export class MyModule {}
+              `
+        }
+      };
+      compile([FILES, angularFiles], {
+        postCompile: program => {
+          const factorySource = program.getSourceFile('/app/app.ngfactory.ts');
+          expect(factorySource.text).not.toContain('\'/app/app.ngfactory\'');
+        }
+      });
+    });
   });
 
   it('should add the preamble to generated files', () => {
