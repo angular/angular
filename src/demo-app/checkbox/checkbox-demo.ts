@@ -41,6 +41,11 @@ export class MdCheckboxDemoNestedChecklist {
 
   allComplete(task: Task): boolean {
     let subtasks = task.subtasks;
+
+    if (!subtasks) {
+      return false;
+    }
+
     return subtasks.every(t => t.completed) ? true
         : subtasks.every(t => !t.completed) ? false
         : task.completed;

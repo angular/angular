@@ -283,7 +283,7 @@ describe('MdCalendar', () => {
             dispatchKeyboardEvent(calendarBodyEl, 'keydown', LEFT_ARROW);
             fixture.detectChanges();
 
-            expect(testComponent.selected).toBeNull();
+            expect(testComponent.selected).toBeUndefined();
 
             dispatchKeyboardEvent(calendarBodyEl, 'keydown', ENTER);
             fixture.detectChanges();
@@ -436,7 +436,7 @@ describe('MdCalendar', () => {
 
             expect(calendarInstance._monthView).toBe(true);
             expect(calendarInstance._activeDate).toEqual(new Date(2017, FEB, 28));
-            expect(testComponent.selected).toBeNull();
+            expect(testComponent.selected).toBeUndefined();
           });
         });
       });
@@ -564,7 +564,7 @@ describe('MdCalendar', () => {
         dispatchKeyboardEvent(calendarBodyEl, 'keydown', ENTER);
         fixture.detectChanges();
 
-        expect(testComponent.selected).toBeNull();
+        expect(testComponent.selected).toBeUndefined();
       });
 
       it('should allow entering month view at disabled month', () => {
@@ -582,7 +582,7 @@ describe('MdCalendar', () => {
         fixture.detectChanges();
 
         expect(calendarInstance._monthView).toBe(true);
-        expect(testComponent.selected).toBeNull();
+        expect(testComponent.selected).toBeUndefined();
       });
     });
   });
@@ -624,7 +624,7 @@ describe('MdCalendar in compatibility mode', () => {
   template: `<md-calendar [startAt]="startDate" [(selected)]="selected"></md-calendar>`
 })
 class StandardCalendar {
-  selected: Date = null;
+  selected: Date;
   startDate = new Date(2017, JAN, 31);
 }
 
@@ -648,7 +648,7 @@ class CalendarWithMinMax {
   `
 })
 class CalendarWithDateFilter {
-  selected: Date = null;
+  selected: Date;
   startDate = new Date(2017, JAN, 1);
 
   dateFilter (date: Date) {

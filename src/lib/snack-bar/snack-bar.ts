@@ -32,15 +32,15 @@ export class MdSnackBar {
    * If there is a parent snack-bar service, all operations should delegate to that parent
    * via `_openedSnackBarRef`.
    */
-  private _snackBarRefAtThisLevel: MdSnackBarRef<any>;
+  private _snackBarRefAtThisLevel: MdSnackBarRef<any> | null = null;
 
   /** Reference to the currently opened snackbar at *any* level. */
-  get _openedSnackBarRef(): MdSnackBarRef<any> {
-    return this._parentSnackBar ?
-        this._parentSnackBar._openedSnackBarRef : this._snackBarRefAtThisLevel;
+  get _openedSnackBarRef(): MdSnackBarRef<any> | null {
+    let parent = this._parentSnackBar;
+    return parent ? parent._openedSnackBarRef : this._snackBarRefAtThisLevel;
   }
 
-  set _openedSnackBarRef(value: MdSnackBarRef<any>) {
+  set _openedSnackBarRef(value: MdSnackBarRef<any> | null) {
     if (this._parentSnackBar) {
       this._parentSnackBar._openedSnackBarRef = value;
     } else {
@@ -87,13 +87,16 @@ export class MdSnackBar {
     }
 
     // If a dismiss timeout is provided, set up dismiss based on after the snackbar is opened.
-    if (config.duration > 0) {
+    if (config.duration && config.duration > 0) {
       snackBarRef.afterOpened().subscribe(() => {
-        setTimeout(() => snackBarRef.dismiss(), config.duration);
+        setTimeout(() => snackBarRef.dismiss(), config!.duration);
       });
     }
 
-    this._live.announce(config.announcementMessage, config.politeness);
+    if (config.announcementMessage) {
+      this._live.announce(config.announcementMessage, config.politeness);
+    }
+
     this._openedSnackBarRef = snackBarRef;
     return this._openedSnackBarRef;
   }
@@ -104,9 +107,11 @@ export class MdSnackBar {
    * @param action The label for the snackbar action.
    * @param config Additional configuration options for the snackbar.
    */
-  open(message: string, action = '', config: MdSnackBarConfig = {}): MdSnackBarRef<SimpleSnackBar> {
-    config.announcementMessage = message;
-    let simpleSnackBarRef = this.openFromComponent(SimpleSnackBar, config);
+  open(message: string, action = '', config?: MdSnackBarConfig): MdSnackBarRef<SimpleSnackBar> {
+    let _config = _applyConfigDefaults(config);
+    _config.announcementMessage = message;
+
+    let simpleSnackBarRef = this.openFromComponent(SimpleSnackBar, _config);
     simpleSnackBarRef.instance.snackBarRef = simpleSnackBarRef;
     simpleSnackBarRef.instance.message = message;
     simpleSnackBarRef.instance.action = action;
@@ -167,6 +172,6 @@ export class MdSnackBar {
  * @param config The configuration to which the defaults will be applied.
  * @returns The new configuration object with defaults applied.
  */
-function _applyConfigDefaults(config: MdSnackBarConfig): MdSnackBarConfig {
+function _applyConfigDefaults(config?: MdSnackBarConfig): MdSnackBarConfig {
   return extendObject(new MdSnackBarConfig(), config);
 }

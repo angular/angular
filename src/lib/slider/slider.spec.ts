@@ -499,7 +499,7 @@ describe('MdSlider', () => {
       expect(sliderNativeElement.classList)
           .toContain('mat-slider-has-ticks', 'Expected element to have ticks initially.');
 
-      fixture.componentInstance.tickInterval = null;
+      fixture.componentInstance.tickInterval = 0;
       fixture.detectChanges();
 
       expect(sliderNativeElement.classList)
@@ -523,7 +523,7 @@ describe('MdSlider', () => {
       sliderNativeElement = sliderDebugElement.nativeElement;
       sliderInstance = sliderDebugElement.componentInstance;
       sliderWrapperElement = <HTMLElement>sliderNativeElement.querySelector('.mat-slider-wrapper');
-      thumbLabelTextElement = sliderNativeElement.querySelector('.mat-slider-thumb-label-text');
+      thumbLabelTextElement = sliderNativeElement.querySelector('.mat-slider-thumb-label-text')!;
     });
 
     it('should add the thumb label class to the slider container', () => {
@@ -1300,7 +1300,7 @@ class VerticalSlider {
  * physical location of the click.
  */
 function dispatchClickEventSequence(sliderElement: HTMLElement, percentage: number): void {
-  let trackElement = sliderElement.querySelector('.mat-slider-wrapper');
+  let trackElement = sliderElement.querySelector('.mat-slider-wrapper')!;
   let dimensions = trackElement.getBoundingClientRect();
   let x = dimensions.left + (dimensions.width * percentage);
   let y = dimensions.top + (dimensions.height * percentage);
@@ -1333,7 +1333,7 @@ function dispatchSlideEventSequence(sliderElement: HTMLElement, startPercent: nu
  */
 function dispatchSlideEvent(sliderElement: HTMLElement, percent: number,
                             gestureConfig: TestGestureConfig): void {
-  let trackElement = sliderElement.querySelector('.mat-slider-wrapper');
+  let trackElement = sliderElement.querySelector('.mat-slider-wrapper')!;
   let dimensions = trackElement.getBoundingClientRect();
   let x = dimensions.left + (dimensions.width * percent);
   let y = dimensions.top + (dimensions.height * percent);
@@ -1352,7 +1352,7 @@ function dispatchSlideEvent(sliderElement: HTMLElement, percent: number,
  */
 function dispatchSlideStartEvent(sliderElement: HTMLElement, percent: number,
                                  gestureConfig: TestGestureConfig): void {
-  let trackElement = sliderElement.querySelector('.mat-slider-wrapper');
+  let trackElement = sliderElement.querySelector('.mat-slider-wrapper')!;
   let dimensions = trackElement.getBoundingClientRect();
   let x = dimensions.left + (dimensions.width * percent);
   let y = dimensions.top + (dimensions.height * percent);
@@ -1373,7 +1373,7 @@ function dispatchSlideStartEvent(sliderElement: HTMLElement, percent: number,
  */
 function dispatchSlideEndEvent(sliderElement: HTMLElement, percent: number,
                                gestureConfig: TestGestureConfig): void {
-  let trackElement = sliderElement.querySelector('.mat-slider-wrapper');
+  let trackElement = sliderElement.querySelector('.mat-slider-wrapper')!;
   let dimensions = trackElement.getBoundingClientRect();
   let x = dimensions.left + (dimensions.width * percent);
   let y = dimensions.top + (dimensions.height * percent);

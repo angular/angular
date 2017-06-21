@@ -26,7 +26,7 @@ import 'rxjs/add/operator/debounceTime';
  */
 @Injectable()
 export class MdMutationObserverFactory {
-  create(callback): MutationObserver {
+  create(callback): MutationObserver | null {
     return typeof MutationObserver === 'undefined' ? null : new MutationObserver(callback);
   }
 }
@@ -39,7 +39,7 @@ export class MdMutationObserverFactory {
   selector: '[cdkObserveContent]'
 })
 export class ObserveContent implements AfterContentInit, OnDestroy {
-  private _observer: MutationObserver;
+  private _observer: MutationObserver | null;
 
   /** Event emitted for each change in the element's content. */
   @Output('cdkObserveContent') event = new EventEmitter<MutationRecord[]>();
@@ -80,7 +80,6 @@ export class ObserveContent implements AfterContentInit, OnDestroy {
     if (this._observer) {
       this._observer.disconnect();
       this._debouncer.complete();
-      this._debouncer = this._observer = null;
     }
   }
 }

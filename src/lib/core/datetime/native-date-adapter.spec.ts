@@ -159,13 +159,13 @@ describe('NativeDateAdapter', () => {
   });
 
   it('should not create Date with month over/under-flow', () => {
-    expect(adapter.createDate(2017, DEC + 1, 1)).toBeNull();
-    expect(adapter.createDate(2017, JAN - 1, 1)).toBeNull();
+    expect(() => adapter.createDate(2017, DEC + 1, 1)).toThrow();
+    expect(() => adapter.createDate(2017, JAN - 1, 1)).toThrow();
   });
 
   it('should not create Date with date over/under-flow', () => {
-    expect(adapter.createDate(2017, JAN, 32)).toBeNull();
-    expect(adapter.createDate(2017, JAN, 0)).toBeNull();
+    expect(() => adapter.createDate(2017, JAN, 32)).toThrow();
+    expect(() => adapter.createDate(2017, JAN, 0)).toThrow();
   });
 
   it('should create Date with low year number', () => {

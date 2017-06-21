@@ -47,8 +47,8 @@ import {CanDisable, mixinDisabled} from '../core/common-behaviors/disabled';
 import {
   FloatPlaceholderType,
   PlaceholderOptions,
-  MD_PLACEHOLDER_GLOBAL_OPTIONS}
-from '../core/placeholder/placeholder-options';
+  MD_PLACEHOLDER_GLOBAL_OPTIONS
+} from '../core/placeholder/placeholder-options';
 
 /**
  * The following style constants are necessary to save here in order
@@ -149,7 +149,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
   private _panelOpen = false;
 
   /** Subscriptions to option events. */
-  private _optionSubscription: Subscription;
+  private _optionSubscription: Subscription | null;
 
   /** Subscription to changes in the option list. */
   private _changeSubscription: Subscription;
@@ -339,7 +339,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
   }
 
   ngOnInit() {
-    this._selectionModel = new SelectionModel<MdOption>(this.multiple, null, false);
+    this._selectionModel = new SelectionModel<MdOption>(this.multiple, undefined, false);
   }
 
   ngAfterContentInit() {
@@ -556,7 +556,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
   private _setScrollTop(): void {
     const scrollContainer =
         this.overlayDir.overlayRef.overlayElement.querySelector('.mat-select-panel');
-    scrollContainer.scrollTop = this._scrollTop;
+    scrollContainer!.scrollTop = this._scrollTop;
   }
 
   /**
@@ -592,7 +592,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
    * Finds and selects and option based on its value.
    * @returns Option that has the corresponding value.
    */
-  private _selectValue(value: any, isUserInput = false): MdOption {
+  private _selectValue(value: any, isUserInput = false): MdOption | undefined {
     let optionsArray = this.options.toArray();
     let correspondingOption = optionsArray.find(option => {
       return option.value != null && option.value === value;
@@ -662,7 +662,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
       wasSelected ? option.deselect() : option.select();
       this._sortValues();
     } else {
-      this._clearSelection(option.value == null ? null : option);
+      this._clearSelection(option.value == null ? undefined : option);
 
       if (option.value == null) {
         this._propagateChanges(option.value);
@@ -702,7 +702,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
 
   /** Emits change event to set the model value. */
   private _propagateChanges(fallbackValue?: any): void {
-    let valueToEmit = null;
+    let valueToEmit: any = null;
 
     if (Array.isArray(this.selected)) {
       valueToEmit = this.selected.map(option => option.value);
@@ -748,7 +748,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
     if (this._selectionModel.isEmpty()) {
       this._keyManager.setFirstItemActive();
     } else {
-      this._keyManager.setActiveItem(this._getOptionIndex(this._selectionModel.selected[0]));
+      this._keyManager.setActiveItem(this._getOptionIndex(this._selectionModel.selected[0])!);
     }
   }
 
@@ -758,7 +758,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
   }
 
   /** Gets the index of the provided option in the option list. */
-  private _getOptionIndex(option: MdOption): number {
+  private _getOptionIndex(option: MdOption): number | undefined {
     return this.options.reduce((result: number, current: MdOption, index: number) => {
       return result === undefined ? (option === current ? index : undefined) : result;
     }, undefined);
@@ -774,7 +774,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
     const maxScroll = scrollContainerHeight - panelHeight;
 
     if (this._selectionModel.hasValue()) {
-      let selectedOptionOffset = this._getOptionIndex(this._selectionModel.selected[0]);
+      let selectedOptionOffset = this._getOptionIndex(this._selectionModel.selected[0])!;
 
       selectedOptionOffset += this._getLabelCountBeforeOption(selectedOptionOffset);
 
@@ -838,7 +838,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
   }
 
   /** Returns the aria-label of the select component. */
-  get _ariaLabel(): string {
+  get _ariaLabel(): string | null {
     // If an ariaLabelledby value has been set, the select should not overwrite the
     // `aria-labelledby` value by setting the ariaLabel to the placeholder.
     return this.ariaLabelledby ? null : this.ariaLabel || this.placeholder;

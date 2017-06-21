@@ -116,16 +116,19 @@ export class NativeDateAdapter extends DateAdapter<Date> {
   createDate(year: number, month: number, date: number): Date {
     // Check for invalid month and date (except upper bound on date which we have to check after
     // creating the Date).
-    if (month < 0 || month > 11 || date < 1) {
-      return null;
+    if (month < 0 || month > 11) {
+      throw Error(`Invalid month index "${month}". Month index has to be between 0 and 11.`);
+    }
+
+    if (date < 1) {
+      throw Error(`Invalid date "${date}". Date has to be greater than 0.`);
     }
 
     let result = this._createDateWithOverflow(year, month, date);
 
-    // Check that the date wasn't above the upper bound for the month, causing the month to
-    // overflow.
+    // Check that the date wasn't above the upper bound for the month, causing the month to overflow
     if (result.getMonth() != month) {
-      return null;
+      throw Error(`Invalid date "${date}" for month with index "${month}".`);
     }
 
     return result;
@@ -207,10 +210,10 @@ export class NativeDateAdapter extends DateAdapter<Date> {
    * Strip out unicode LTR and RTL characters. Edge and IE insert these into formatted dates while
    * other browsers do not. We remove them to make output consistent and because they interfere with
    * date parsing.
-   * @param s The string to strip direction characters from.
+   * @param str The string to strip direction characters from.
    * @returns The stripped string.
    */
-  private _stripDirectionalityCharacters(s: string) {
-    return s.replace(/[\u200e\u200f]/g, '');
+  private _stripDirectionalityCharacters(str: string) {
+    return str.replace(/[\u200e\u200f]/g, '');
   }
 }

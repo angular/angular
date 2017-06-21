@@ -130,25 +130,18 @@ describe('MdSidenav', () => {
       let sidenav: MdSidenav = fixture.debugElement
         .query(By.directive(MdSidenav)).componentInstance;
 
-      let openResult: MdSidenavToggleResult;
-      let closeResult: MdSidenavToggleResult;
-
-      sidenav.open().then((result) => {
-        openResult = result;
+      sidenav.open().then(openResult => {
+        expect(openResult.type).toBe('open');
+        expect(openResult.animationFinished).toBe(false);
       });
 
       // We do not call transition end, close directly.
-      sidenav.close().then((result) => {
-        closeResult = result;
+      sidenav.close().then(closeResult => {
+        expect(closeResult.type).toBe('close');
+        expect(closeResult.animationFinished).toBe(true);
       });
 
       endSidenavTransition(fixture);
-      tick();
-
-      expect(openResult.type).toBe('open');
-      expect(openResult.animationFinished).toBe(false);
-      expect(closeResult.type).toBe('close');
-      expect(closeResult.animationFinished).toBe(true);
       tick();
     }));
 
@@ -157,30 +150,24 @@ describe('MdSidenav', () => {
       let sidenav: MdSidenav = fixture.debugElement
         .query(By.directive(MdSidenav)).componentInstance;
 
-      let closeResult: MdSidenavToggleResult;
-      let openResult: MdSidenavToggleResult;
-
       // First, open the sidenav completely.
       sidenav.open();
       endSidenavTransition(fixture);
       tick();
 
       // Then close and check behavior.
-      sidenav.close().then((result) => {
-        closeResult = result;
+      sidenav.close().then(closeResult => {
+        expect(closeResult.type).toBe('close');
+        expect(closeResult.animationFinished).toBe(false);
       });
+
       // We do not call transition end, open directly.
-      sidenav.open().then((result) => {
-        openResult = result;
+      sidenav.open().then(openResult => {
+        expect(openResult.type).toBe('open');
+        expect(openResult.animationFinished).toBe(true);
       });
 
       endSidenavTransition(fixture);
-      tick();
-
-      expect(closeResult.type).toBe('close');
-      expect(closeResult.animationFinished).toBe(false);
-      expect(openResult.type).toBe('open');
-      expect(openResult.animationFinished).toBe(true);
       tick();
     }));
 

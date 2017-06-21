@@ -51,7 +51,7 @@ let _uniqueIdCounter = 0;
 /** Change event object emitted by MdButtonToggle. */
 export class MdButtonToggleChange {
   /** The MdButtonToggle that emits the event. */
-  source: MdButtonToggle;
+  source: MdButtonToggle | null;
   /** The value assigned to the MdButtonToggle. */
   value: any;
 }
@@ -81,7 +81,7 @@ export class MdButtonToggleGroup extends _MdButtonToggleGroupMixinBase implement
   private _vertical: boolean = false;
 
   /** The currently selected button toggle, should match the value. */
-  private _selected: MdButtonToggle = null;
+  private _selected: MdButtonToggle | null = null;
 
   /** Whether the button toggle group is initialized or not. */
   private _isInitialized: boolean = false;
@@ -96,8 +96,7 @@ export class MdButtonToggleGroup extends _MdButtonToggleGroupMixinBase implement
   onTouched: () => any = () => {};
 
   /** Child button toggle buttons. */
-  @ContentChildren(forwardRef(() => MdButtonToggle))
-  _buttonToggles: QueryList<MdButtonToggle> = null;
+  @ContentChildren(forwardRef(() => MdButtonToggle)) _buttonToggles: QueryList<MdButtonToggle>;
 
   ngAfterViewInit() {
     this._isInitialized = true;
@@ -150,7 +149,7 @@ export class MdButtonToggleGroup extends _MdButtonToggleGroupMixinBase implement
     return this._selected;
   }
 
-  set selected(selected: MdButtonToggle) {
+  set selected(selected: MdButtonToggle | null) {
     this._selected = selected;
     this.value = selected ? selected.value : null;
 
@@ -279,13 +278,13 @@ export class MdButtonToggle implements OnInit {
   _type: ToggleType;
 
   /** Whether or not this button toggle is disabled. */
-  private _disabled: boolean = null;
+  private _disabled: boolean = false;
 
   /** Value assigned to this button toggle. */
   private _value: any = null;
 
   /** Whether or not the button toggle is a single selection. */
-  private _isSingleSelector: boolean = null;
+  private _isSingleSelector: boolean = false;
 
   @ViewChild('input') _inputElement: ElementRef;
 
@@ -355,7 +354,7 @@ export class MdButtonToggle implements OnInit {
   }
 
   set disabled(value: boolean) {
-    this._disabled = (value != null && value !== false) ? true : null;
+    this._disabled = coerceBooleanProperty(value);
   }
 
   /** Event emitted when the group value changes. */

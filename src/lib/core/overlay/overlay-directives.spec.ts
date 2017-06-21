@@ -62,7 +62,7 @@ describe('Overlay directives', () => {
     fixture.detectChanges();
     fixture.destroy();
 
-    expect(overlayContainerElement.textContent.trim()).toBe('');
+    expect(overlayContainerElement.textContent!.trim()).toBe('');
     expect(getPaneElement())
       .toBeFalsy('Expected the overlay pane element to be removed when disposed.');
   });
@@ -107,7 +107,7 @@ describe('Overlay directives', () => {
     dispatchKeyboardEvent(document, 'keydown', ESCAPE);
     fixture.detectChanges();
 
-    expect(overlayContainerElement.textContent.trim()).toBe('',
+    expect(overlayContainerElement.textContent!.trim()).toBe('',
         'Expected overlay to have been detached.');
   });
 

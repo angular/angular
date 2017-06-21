@@ -142,7 +142,7 @@ export class MdGridList implements OnInit, AfterContentChecked {
   }
 
   /** Sets style on the main grid-list element, given the style name and value. */
-  _setListStyle(style: [string, string]): void {
+  _setListStyle(style: [string, string] | null): void {
     if (style) {
       this._renderer.setStyle(this._element.nativeElement, style[0], style[1]);
     }

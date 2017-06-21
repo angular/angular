@@ -197,8 +197,8 @@ describe('Overlay', () => {
     let attachCompleteSpy = jasmine.createSpy('attachCompleteSpy spy');
     let detachCompleteSpy = jasmine.createSpy('detachCompleteSpy spy');
 
-    overlayRef.attachments().subscribe(null, null, attachCompleteSpy);
-    overlayRef.detachments().subscribe(disposeSpy, null, detachCompleteSpy);
+    overlayRef.attachments().subscribe(undefined, undefined, attachCompleteSpy);
+    overlayRef.detachments().subscribe(disposeSpy, undefined, detachCompleteSpy);
 
     overlayRef.attach(componentPortal);
     overlayRef.dispose();
@@ -210,10 +210,10 @@ describe('Overlay', () => {
 
   it('should complete the attachment observable before the detachment one', () => {
     let overlayRef = overlay.create();
-    let callbackOrder = [];
+    let callbackOrder: string[] = [];
 
-    overlayRef.attachments().subscribe(null, null, () => callbackOrder.push('attach'));
-    overlayRef.detachments().subscribe(null, null, () => callbackOrder.push('detach'));
+    overlayRef.attachments().subscribe(undefined, undefined, () => callbackOrder.push('attach'));
+    overlayRef.detachments().subscribe(undefined, undefined, () => callbackOrder.push('detach'));
 
     overlayRef.attach(componentPortal);
     overlayRef.dispose();
@@ -339,7 +339,7 @@ describe('Overlay', () => {
       let backdrop = overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
       let completeHandler = jasmine.createSpy('backdrop complete handler');
 
-      overlayRef.backdropClick().subscribe(null, null, completeHandler);
+      overlayRef.backdropClick().subscribe(undefined, undefined, completeHandler);
       overlayRef.dispose();
 
       expect(completeHandler).toHaveBeenCalled();
@@ -463,7 +463,7 @@ describe('OverlayContainer theming', () => {
   }));
 
   afterEach(() => {
-    overlayContainerElement.parentNode.removeChild(overlayContainerElement);
+    overlayContainerElement.parentNode!.removeChild(overlayContainerElement);
   });
 
   it('should be able to set a theme on the overlay container', () => {
@@ -515,9 +515,9 @@ class OverlayTestModule { }
 class OverlayContainerThemingTestModule { }
 
 class FakePositionStrategy implements PositionStrategy {
-  apply(element: Element): Promise<void> {
+  apply(element: Element): Promise<null> {
     element.classList.add('fake-positioned');
-    return Promise.resolve();
+    return Promise.resolve(null);
   }
 
   dispose() {}

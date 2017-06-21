@@ -48,7 +48,7 @@ describe('MixinColor', () => {
     expect(instance.testElement.classList)
       .toContain('mat-primary', 'Expected the element to have the "mat-primary" class set');
 
-    instance.color = null;
+    instance.color = undefined;
 
     expect(instance.testElement.classList.length)
       .toBe(0, 'Expected the element to have no color class set.');
@@ -58,11 +58,10 @@ describe('MixinColor', () => {
     const classWithColor = mixinColor(TestClass, 'accent');
     const instance = new classWithColor();
 
-
     expect(instance.testElement.classList)
       .toContain('mat-accent', 'Expected the element to have the "mat-accent" class by default.');
 
-    instance.color = null;
+    instance.color = undefined;
 
     expect(instance.testElement.classList)
       .toContain('mat-accent', 'Expected the default color "mat-accent" to be set.');

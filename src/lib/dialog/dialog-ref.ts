@@ -27,7 +27,7 @@ export class MdDialogRef<T> {
   componentInstance: T;
 
   /** Whether the user is allowed to close the dialog. */
-  disableClose: boolean = this._containerInstance._config.disableClose;
+  disableClose = this._containerInstance._config.disableClose;
 
   /** Subject for notifying the user that the dialog has finished closing. */
   private _afterClosed: Subject<any> = new Subject();
@@ -38,10 +38,10 @@ export class MdDialogRef<T> {
   constructor(private _overlayRef: OverlayRef, private _containerInstance: MdDialogContainer) {
     _containerInstance._onAnimationStateChange
       .filter((event: AnimationEvent) => event.toState === 'exit')
-      .subscribe(() => this._overlayRef.dispose(), null, () => {
+      .subscribe(() => this._overlayRef.dispose(), undefined, () => {
         this._afterClosed.next(this._result);
         this._afterClosed.complete();
-        this.componentInstance = null;
+        this.componentInstance = null!;
       });
   }
 

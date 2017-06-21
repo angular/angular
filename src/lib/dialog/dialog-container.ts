@@ -79,7 +79,7 @@ export class MdDialogContainer extends BasePortalHost {
   private _focusTrap: FocusTrap;
 
   /** Element that was focused before the dialog was opened. Save this to restore upon close. */
-  private _elementFocusedBeforeDialogWasOpened: HTMLElement = null;
+  private _elementFocusedBeforeDialogWasOpened: HTMLElement | null = null;
 
   /** Reference to the global document object. */
   private _document: Document;

@@ -111,9 +111,9 @@ export class MdTextareaAutosize implements AfterViewInit {
     textareaClone.style.minHeight = '';
     textareaClone.style.maxHeight = '';
 
-    textarea.parentNode.appendChild(textareaClone);
+    textarea.parentNode!.appendChild(textareaClone);
     this._cachedLineHeight = textareaClone.clientHeight;
-    textarea.parentNode.removeChild(textareaClone);
+    textarea.parentNode!.removeChild(textareaClone);
 
     // Min and max heights have to be re-calculated if the cached line height changes
     this._setMinHeight();

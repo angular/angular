@@ -69,13 +69,13 @@ export class MdYearView<D> implements AfterContentInit {
   _yearLabel: string;
 
   /** The month in this year that today falls on. Null if today is in a different year. */
-  _todayMonth: number;
+  _todayMonth: number | null;
 
   /**
    * The month in this year that the selected Date falls on.
    * Null if the selected Date is in a different year.
    */
-  _selectedMonth: number;
+  _selectedMonth: number | null;
 
   constructor(@Optional() public _dateAdapter: DateAdapter<D>,
               @Optional() @Inject(MD_DATE_FORMATS) private _dateFormats: MdDateFormats) {

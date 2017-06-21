@@ -261,7 +261,7 @@ describe('MdCheckbox', () => {
 
     it('should project the checkbox content into the label element', () => {
       let label = <HTMLLabelElement>checkboxNativeElement.querySelector('.mat-checkbox-label');
-      expect(label.textContent.trim()).toBe('Simple checkbox');
+      expect(label.textContent!.trim()).toBe('Simple checkbox');
     });
 
     it('should make the host element a tab stop', () => {

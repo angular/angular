@@ -395,6 +395,7 @@ describe('MdRadio', () => {
       }
 
       groupInstance.name = 'new name';
+
       for (let radio of radioInstances) {
         expect(radio.name).toBe(groupInstance.name);
       }
@@ -410,7 +411,7 @@ describe('MdRadio', () => {
       for (let radio of radioInstances) {
         expect(radio.checked).toBe(groupInstance.value === radio.value);
       }
-      expect(groupInstance.selected.value).toBe(groupInstance.value);
+      expect(groupInstance.selected!.value).toBe(groupInstance.value);
     });
 
     it('should have the correct control state initially and after interaction', () => {
@@ -635,9 +636,9 @@ class RadiosInsideRadioGroup {
   labelPos: 'before' | 'after';
   isGroupDisabled: boolean = false;
   isFirstDisabled: boolean = false;
-  groupValue: string = null;
+  groupValue: string | null = null;
   disableRipple: boolean = false;
-  color: string;
+  color: string | null;
 }
 
 

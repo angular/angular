@@ -53,17 +53,17 @@ describe('MdYearView', () => {
     });
 
     it('has correct year label', () => {
-      let labelEl = yearViewNativeElement.querySelector('.mat-calendar-body-label');
+      let labelEl = yearViewNativeElement.querySelector('.mat-calendar-body-label')!;
       expect(labelEl.innerHTML.trim()).toBe('2017');
     });
 
     it('has 12 months', () => {
-      let cellEls = yearViewNativeElement.querySelectorAll('.mat-calendar-body-cell');
+      let cellEls = yearViewNativeElement.querySelectorAll('.mat-calendar-body-cell')!;
       expect(cellEls.length).toBe(12);
     });
 
     it('shows selected month if in same year', () => {
-      let selectedEl = yearViewNativeElement.querySelector('.mat-calendar-body-selected');
+      let selectedEl = yearViewNativeElement.querySelector('.mat-calendar-body-selected')!;
       expect(selectedEl.innerHTML.trim()).toBe('MAR');
     });
 
@@ -80,7 +80,7 @@ describe('MdYearView', () => {
       (cellEls[cellEls.length - 1] as HTMLElement).click();
       fixture.detectChanges();
 
-      let selectedEl = yearViewNativeElement.querySelector('.mat-calendar-body-selected');
+      let selectedEl = yearViewNativeElement.querySelector('.mat-calendar-body-selected')!;
       expect(selectedEl.innerHTML.trim()).toBe('DEC');
     });
 

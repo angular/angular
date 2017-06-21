@@ -7,17 +7,15 @@ import {
   MdRipple, MdRippleModule, MD_RIPPLE_GLOBAL_OPTIONS, RippleState, RippleGlobalOptions
 } from './index';
 
-/** Extracts the numeric value of a pixel size string like '123px'.  */
-const pxStringToFloat = (s: string) => {
-  return parseFloat(s.replace('px', ''));
-};
 
 describe('MdRipple', () => {
   let fixture: ComponentFixture<any>;
   let rippleTarget: HTMLElement;
-  let originalBodyMargin: string;
+  let originalBodyMargin: string | null;
   let viewportRuler: ViewportRuler;
 
+  /** Extracts the numeric value of a pixel size string like '123px'.  */
+  const pxStringToFloat = s => parseFloat(s) || 0;
   const startingWindowWidth = window.innerWidth;
   const startingWindowHeight = window.innerHeight;
 
@@ -173,8 +171,10 @@ describe('MdRipple', () => {
       let rippleElement = rippleTarget.querySelector('.mat-ripple-element') as HTMLElement;
 
       expect(rippleElement).toBeTruthy();
-      expect(parseFloat(rippleElement.style.left)).toBeCloseTo(TARGET_WIDTH / 2 - radius, 1);
-      expect(parseFloat(rippleElement.style.top)).toBeCloseTo(TARGET_HEIGHT / 2 - radius, 1);
+      expect(parseFloat(rippleElement.style.left as string))
+          .toBeCloseTo(TARGET_WIDTH / 2 - radius, 1);
+      expect(parseFloat(rippleElement.style.top as string))
+          .toBeCloseTo(TARGET_HEIGHT / 2 - radius, 1);
     });
 
     it('cleans up the event handlers when the container gets destroyed', () => {
@@ -194,7 +194,7 @@ describe('MdRipple', () => {
 
     it('does not run events inside the NgZone', () => {
       const spy = jasmine.createSpy('zone unstable callback');
-      const subscription = fixture.ngZone.onUnstable.subscribe(spy);
+      const subscription = fixture.ngZone!.onUnstable.subscribe(spy);
 
       dispatchMouseEvent(rippleTarget, 'mousedown');
       dispatchMouseEvent(rippleTarget, 'mouseup');
@@ -475,7 +475,7 @@ describe('MdRipple', () => {
       dispatchMouseEvent(rippleTarget, 'mousedown');
       dispatchMouseEvent(rippleTarget, 'mouseup');
 
-      let ripple = rippleTarget.querySelector('.mat-ripple-element');
+      let ripple = rippleTarget.querySelector('.mat-ripple-element')!;
       expect(window.getComputedStyle(ripple).backgroundColor).toBe(backgroundColor);
     });
 
@@ -593,7 +593,7 @@ class BasicRippleContainer {
   `,
 })
 class RippleContainerWithInputBindings {
-  trigger: HTMLElement = null;
+  trigger: HTMLElement;
   centered = false;
   disabled = false;
   radius = 0;

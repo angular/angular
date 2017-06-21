@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 import {PeopleDatabase} from './people-database';
 import {PersonDataSource} from './person-data-source';
 
-export type UserProperties = 'userId' | 'userName' | 'progress' | 'color';
+export type UserProperties = 'userId' | 'userName' | 'progress' | 'color' | undefined;
 
 @Component({
   moduleId: module.id,
@@ -11,7 +11,7 @@ export type UserProperties = 'userId' | 'userName' | 'progress' | 'color';
   styleUrls: ['data-table-demo.css'],
 })
 export class DataTableDemo {
-  dataSource: PersonDataSource;
+  dataSource: PersonDataSource | null;
   propertiesToDisplay: UserProperties[] = [];
 
   constructor(private _peopleDatabase: PeopleDatabase) {

@@ -31,7 +31,7 @@ export class CloseScrollStrategy implements ScrollStrategy {
 
   enable() {
     if (!this._scrollSubscription) {
-      this._scrollSubscription = this._scrollDispatcher.scrolled(null, () => {
+      this._scrollSubscription = this._scrollDispatcher.scrolled(0, () => {
         if (this._overlayRef.hasAttached()) {
           this._overlayRef.detach();
         }

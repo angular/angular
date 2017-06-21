@@ -1,11 +1,11 @@
 import {ElementRef} from '@angular/core';
+import {TestBed, inject} from '@angular/core/testing';
 import {ConnectedPositionStrategy} from './connected-position-strategy';
 import {ViewportRuler, VIEWPORT_RULER_PROVIDER} from './viewport-ruler';
 import {OverlayPositionBuilder} from './overlay-position-builder';
 import {ConnectedOverlayPositionChange} from './connected-position';
 import {Scrollable} from '../scroll/scrollable';
 import {Subscription} from 'rxjs/Subscription';
-import {TestBed, inject} from '@angular/core/testing';
 import Spy = jasmine.Spy;
 import {ScrollDispatchModule} from '../scroll/index';
 
@@ -44,9 +44,9 @@ describe('ConnectedPositionStrategy', () => {
     let fakeElementRef: ElementRef;
     let positionBuilder: OverlayPositionBuilder;
 
-    let originRect: ClientRect;
-    let originCenterX: number;
-    let originCenterY: number;
+    let originRect: ClientRect | null;
+    let originCenterX: number | null;
+    let originCenterY: number | null;
 
     beforeEach(() => {
       // The origin and overlay elements need to be in the document body in order to have geometry.
@@ -407,8 +407,8 @@ describe('ConnectedPositionStrategy', () => {
         strategy.apply(overlayElement);
 
         let overlayRect = overlayElement.getBoundingClientRect();
-        expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect.bottom));
-        expect(Math.floor(overlayRect.left)).toBe(Math.floor(originRect.left));
+        expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect!.bottom));
+        expect(Math.floor(overlayRect.left)).toBe(Math.floor(originRect!.left));
       });
 
       it('should position to the right, center aligned vertically', () => {
@@ -420,8 +420,8 @@ describe('ConnectedPositionStrategy', () => {
         strategy.apply(overlayElement);
 
         let overlayRect = overlayElement.getBoundingClientRect();
-        expect(Math.floor(overlayRect.top)).toBe(Math.floor(originCenterY - (OVERLAY_HEIGHT / 2)));
-        expect(Math.floor(overlayRect.left)).toBe(Math.floor(originRect.right));
+        expect(Math.floor(overlayRect.top)).toBe(Math.floor(originCenterY! - (OVERLAY_HEIGHT / 2)));
+        expect(Math.floor(overlayRect.left)).toBe(Math.floor(originRect!.right));
       });
 
       it('should position to the left, below', () => {
@@ -434,8 +434,8 @@ describe('ConnectedPositionStrategy', () => {
 
         let overlayRect = overlayElement.getBoundingClientRect();
 
-        expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect.bottom));
-        expect(Math.round(overlayRect.right)).toBe(Math.round(originRect.left));
+        expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect!.bottom));
+        expect(Math.round(overlayRect.right)).toBe(Math.round(originRect!.left));
       });
 
       it('should position above, right aligned', () => {
@@ -447,8 +447,8 @@ describe('ConnectedPositionStrategy', () => {
         strategy.apply(overlayElement);
 
         let overlayRect = overlayElement.getBoundingClientRect();
-        expect(Math.round(overlayRect.bottom)).toBe(Math.round(originRect.top));
-        expect(Math.round(overlayRect.right)).toBe(Math.round(originRect.right));
+        expect(Math.round(overlayRect.bottom)).toBe(Math.round(originRect!.top));
+        expect(Math.round(overlayRect.right)).toBe(Math.round(originRect!.right));
       });
 
       it('should position below, centered', () => {
@@ -460,8 +460,8 @@ describe('ConnectedPositionStrategy', () => {
         strategy.apply(overlayElement);
 
         let overlayRect = overlayElement.getBoundingClientRect();
-        expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect.bottom));
-        expect(Math.floor(overlayRect.left)).toBe(Math.floor(originCenterX - (OVERLAY_WIDTH / 2)));
+        expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect!.bottom));
+        expect(Math.floor(overlayRect.left)).toBe(Math.floor(originCenterX! - (OVERLAY_WIDTH / 2)));
       });
 
       it('should center the overlay on the origin', () => {
@@ -473,8 +473,8 @@ describe('ConnectedPositionStrategy', () => {
         strategy.apply(overlayElement);
 
         let overlayRect = overlayElement.getBoundingClientRect();
-        expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect.top));
-        expect(Math.floor(overlayRect.left)).toBe(Math.floor(originRect.left));
+        expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect!.top));
+        expect(Math.floor(overlayRect.left)).toBe(Math.floor(originRect!.left));
       });
     }
   });
@@ -514,7 +514,7 @@ describe('ConnectedPositionStrategy', () => {
           {overlayX: 'start', overlayY: 'top'});
 
       strategy.withScrollableContainers([
-          new Scrollable(new FakeElementRef(scrollable), null, null, null)]);
+          new Scrollable(new FakeElementRef(scrollable), null!, null!, null!)]);
 
       positionChangeHandler = jasmine.createSpy('positionChangeHandler');
       onPositionChangeSubscription = strategy.onPositionChange.subscribe(positionChangeHandler);

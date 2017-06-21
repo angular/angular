@@ -31,8 +31,8 @@ import 'rxjs/add/operator/first';
  * This will be replaced with a more intelligent solution before the library is considered stable.
  */
 export class FocusTrap {
-  private _startAnchor: HTMLElement;
-  private _endAnchor: HTMLElement;
+  private _startAnchor: HTMLElement | null;
+  private _endAnchor: HTMLElement | null;
 
   /** Whether the focus trap is active. */
   get enabled(): boolean { return this._enabled; }
@@ -89,11 +89,13 @@ export class FocusTrap {
     }
 
     this._ngZone.runOutsideAngular(() => {
-      this._startAnchor.addEventListener('focus', () => this.focusLastTabbableElement());
-      this._endAnchor.addEventListener('focus', () => this.focusFirstTabbableElement());
+      this._startAnchor!.addEventListener('focus', () => this.focusLastTabbableElement());
+      this._endAnchor!.addEventListener('focus', () => this.focusFirstTabbableElement());
 
-      this._element.parentNode.insertBefore(this._startAnchor, this._element);
-      this._element.parentNode.insertBefore(this._endAnchor, this._element.nextSibling);
+      if (this._element.parentNode) {
+        this._element.parentNode.insertBefore(this._startAnchor!, this._element);
+        this._element.parentNode.insertBefore(this._endAnchor!, this._element.nextSibling);
+      }
     });
   }
 
@@ -172,7 +174,7 @@ export class FocusTrap {
   }
 
   /** Get the first tabbable element from a DOM subtree (inclusive). */
-  private _getFirstTabbableElement(root: HTMLElement): HTMLElement {
+  private _getFirstTabbableElement(root: HTMLElement): HTMLElement | null {
     if (this._checker.isFocusable(root) && this._checker.isTabbable(root)) {
       return root;
     }
@@ -195,7 +197,7 @@ export class FocusTrap {
   }
 
   /** Get the last tabbable element from a DOM subtree (inclusive). */
-  private _getLastTabbableElement(root: HTMLElement): HTMLElement {
+  private _getLastTabbableElement(root: HTMLElement): HTMLElement | null {
     if (this._checker.isFocusable(root) && this._checker.isTabbable(root)) {
       return root;
     }

@@ -89,7 +89,7 @@ export function execNodeTask(packageName: string, executable: string | string[],
                              options: ExecTaskOptions = {}) {
   if (!args) {
     args = <string[]>executable;
-    executable = undefined;
+    executable = '';
   }
 
   return (done: (err: any) => void) => {
@@ -100,7 +100,7 @@ export function execNodeTask(packageName: string, executable: string | string[],
         // Execute the node binary within a new child process using spawn.
         // The binary needs to be `node` because on Windows the shell cannot determine the correct
         // interpreter from the shebang.
-        execTask('node', [binPath].concat(args), options)(done);
+        execTask('node', [binPath].concat(args!), options)(done);
       }
     });
   };

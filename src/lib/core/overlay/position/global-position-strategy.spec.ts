@@ -17,7 +17,7 @@ describe('GlobalPositonStrategy', () => {
   });
 
   afterEach(() => {
-    element.parentNode.removeChild(element);
+    element.parentNode!.removeChild(element);
     strategy.dispose();
   });
 
@@ -136,11 +136,11 @@ describe('GlobalPositonStrategy', () => {
 
     flushMicrotasks();
 
-    expect(document.body.contains(element.parentNode)).toBe(true);
+    expect(document.body.contains(element.parentNode!)).toBe(true);
 
     strategy.dispose();
 
-    expect(document.body.contains(element.parentNode)).toBe(false);
+    expect(document.body.contains(element.parentNode!)).toBe(false);
   }));
 
   it('should set the element width', fakeAsync(() => {

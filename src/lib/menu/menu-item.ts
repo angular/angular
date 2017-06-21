@@ -27,7 +27,7 @@ export const _MdMenuItemMixinBase = mixinDisabled(MdMenuItemBase);
     'class': 'mat-menu-item',
     '[attr.tabindex]': '_getTabIndex()',
     '[attr.aria-disabled]': 'disabled.toString()',
-    '[attr.disabled]': '_getDisabledAttr()',
+    '[attr.disabled]': 'disabled || null',
     '(click)': '_checkDisabled($event)',
   },
   templateUrl: 'menu-item.html',
@@ -47,11 +47,6 @@ export class MdMenuItem extends _MdMenuItemMixinBase implements Focusable, CanDi
   /** Used to set the `tabindex`. */
   _getTabIndex(): string {
     return this.disabled ? '-1' : '0';
-  }
-
-  /** Used to set the HTML `disabled` attribute. Necessary for links to be disabled properly. */
-  _getDisabledAttr(): boolean {
-    return this.disabled ? true : null;
   }
 
   /** Returns the host DOM element. */

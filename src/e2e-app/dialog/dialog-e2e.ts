@@ -7,7 +7,7 @@ import {MdDialog, MdDialogRef, MdDialogConfig} from '@angular/material';
   templateUrl: 'dialog-e2e.html'
 })
 export class DialogE2E {
-  dialogRef: MdDialogRef<TestDialog>;
+  dialogRef: MdDialogRef<TestDialog> | null;
 
   @ViewChild(TemplateRef) templateRef: TemplateRef<any>;
 
@@ -15,10 +15,7 @@ export class DialogE2E {
 
   private _openDialog(config?: MdDialogConfig) {
     this.dialogRef = this._dialog.open(TestDialog, config);
-
-    this.dialogRef.afterClosed().subscribe(() => {
-      this.dialogRef = null;
-    });
+    this.dialogRef.afterClosed().subscribe(() => this.dialogRef = null);
   }
 
   openDefault() {

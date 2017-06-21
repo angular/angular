@@ -24,13 +24,12 @@ export interface CanDisable {
  * of items, it will set the active item correctly when arrow events occur.
  */
 export class ListKeyManager<T extends CanDisable> {
-  private _activeItemIndex: number = null;
+  private _activeItemIndex: number = -1;
   private _activeItem: T;
-  private _tabOut = new Subject<void>();
+  private _tabOut = new Subject<null>();
   private _wrap: boolean = false;
 
-  constructor(private _items: QueryList<T>) {
-  }
+  constructor(private _items: QueryList<T>) { }
 
   /**
    * Turns on wrapping mode, which ensures that the active item will wrap to
@@ -77,12 +76,12 @@ export class ListKeyManager<T extends CanDisable> {
   }
 
   /** Returns the index of the currently active item. */
-  get activeItemIndex(): number {
+  get activeItemIndex(): number | null {
     return this._activeItemIndex;
   }
 
   /** Returns the currently active item. */
-  get activeItem(): T {
+  get activeItem(): T | null {
     return this._activeItem;
   }
 
@@ -98,13 +97,13 @@ export class ListKeyManager<T extends CanDisable> {
 
   /** Sets the active item to the next enabled item in the list. */
   setNextItemActive(): void {
-    this._activeItemIndex === null ? this.setFirstItemActive() : this._setActiveItemByDelta(1);
+    this._activeItemIndex < 0 ? this.setFirstItemActive() : this._setActiveItemByDelta(1);
   }
 
   /** Sets the active item to a previous enabled item in the list. */
   setPreviousItemActive(): void {
-    this._activeItemIndex === null && this._wrap ? this.setLastItemActive()
-                                                 : this._setActiveItemByDelta(-1);
+    this._activeItemIndex < 0 && this._wrap ? this.setLastItemActive()
+                                            : this._setActiveItemByDelta(-1);
   }
 
   /**
@@ -119,7 +118,7 @@ export class ListKeyManager<T extends CanDisable> {
    * Observable that emits any time the TAB key is pressed, so components can react
    * when focus is shifted off of the list.
    */
-  get tabOut(): Observable<void> {
+  get tabOut(): Observable<null> {
     return this._tabOut.asObservable();
   }
 

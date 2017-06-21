@@ -8,7 +8,7 @@ import {MdDialog, MdDialogRef} from '@angular/material';
 })
 export class FullscreenE2E {
 
-  dialogRef: MdDialogRef<TestDialog>;
+  dialogRef: MdDialogRef<TestDialog> | null;
 
   constructor (private _element: ElementRef, private _dialog: MdDialog) { }
 

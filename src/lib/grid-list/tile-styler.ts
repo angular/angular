@@ -138,7 +138,7 @@ export abstract class TileStyler {
    * This method can be implemented by each type of TileStyler.
    * @docs-private
    */
-  getComputedHeight(): [string, string] { return null; }
+  getComputedHeight(): [string, string] | null { return null; }
 }
 
 

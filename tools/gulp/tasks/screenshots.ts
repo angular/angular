@@ -82,9 +82,7 @@ function getScreenshotFiles(database: firebase.database.Database) {
       let binaryData = new Buffer(childSnapshot.val(), 'base64').toString('binary');
       writeFileSync(`${LOCAL_GOLDENS}/${key}.screenshot.png`, binaryData, 'binary');
       counter++;
-      if (counter == snapshot.numChildren()) {
-        return true;
-      }
+      return counter == snapshot.numChildren();
     });
   }).catch((error: any) => console.log(error));
 }

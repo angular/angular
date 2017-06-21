@@ -52,7 +52,7 @@ export class TemplatePortalDirective extends TemplatePortal {
 })
 export class PortalHostDirective extends BasePortalHost implements OnDestroy {
   /** The attached portal. */
-  private _portal: Portal<any>;
+  private _portal: Portal<any> | null = null;
 
   constructor(
       private _componentFactoryResolver: ComponentFactoryResolver,
@@ -66,11 +66,11 @@ export class PortalHostDirective extends BasePortalHost implements OnDestroy {
   set _deprecatedPortal(v) { this.portal = v; }
 
   /** Portal associated with the Portal host. */
-  get portal(): Portal<any> {
+  get portal(): Portal<any> | null {
     return this._portal;
   }
 
-  set portal(portal: Portal<any>) {
+  set portal(portal: Portal<any> | null) {
     if (this.hasAttached()) {
       super.detach();
     }

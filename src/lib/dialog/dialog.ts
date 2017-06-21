@@ -160,9 +160,7 @@ export class MdDialog {
    * @returns A promise resolving to a ComponentRef for the attached container.
    */
   private _attachDialogContainer(overlay: OverlayRef, config: MdDialogConfig): MdDialogContainer {
-    let viewContainer = config ? config.viewContainerRef : null;
-    let containerPortal = new ComponentPortal(MdDialogContainer, viewContainer);
-
+    let containerPortal = new ComponentPortal(MdDialogContainer, config.viewContainerRef);
     let containerRef: ComponentRef<MdDialogContainer> = overlay.attach(containerPortal);
     containerRef.instance._config = config;
 
@@ -198,11 +196,11 @@ export class MdDialog {
     }
 
     if (componentOrTemplateRef instanceof TemplateRef) {
-      dialogContainer.attachTemplatePortal(new TemplatePortal(componentOrTemplateRef, null));
+      dialogContainer.attachTemplatePortal(new TemplatePortal(componentOrTemplateRef, null!));
     } else {
       let injector = this._createInjector<T>(config, dialogRef, dialogContainer);
       let contentRef = dialogContainer.attachComponentPortal(
-          new ComponentPortal(componentOrTemplateRef, null, injector));
+          new ComponentPortal(componentOrTemplateRef, undefined, injector));
       dialogRef.componentInstance = contentRef.instance;
     }
 
@@ -273,6 +271,6 @@ export class MdDialog {
  * @param config Config to be modified.
  * @returns The new configuration object.
  */
-function _applyConfigDefaults(config: MdDialogConfig): MdDialogConfig {
+function _applyConfigDefaults(config?: MdDialogConfig): MdDialogConfig {
   return extendObject(new MdDialogConfig(), config);
 }

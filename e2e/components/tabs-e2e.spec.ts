@@ -75,7 +75,7 @@ describe('tabs', () => {
  */
 async function getFocusStates(elements: ElementArrayFinder) {
   return elements.map(async (element) => {
-    let elementText = await element.getText();
+    let elementText = await element!.getText();
     let activeText = await browser.driver.switchTo().activeElement().getText();
 
     return activeText === elementText;
@@ -98,7 +98,7 @@ function getBodyActiveStates(elements: ElementArrayFinder) {
  */
 async function getClassStates(elements: ElementArrayFinder, className: string) {
   return elements.map(async (element) => {
-    let classes = await element.getAttribute('class');
+    let classes = await element!.getAttribute('class');
     return classes.split(/ +/g).indexOf(className) >= 0;
   });
 }

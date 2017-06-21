@@ -32,7 +32,7 @@ export class ScrollDispatcher {
   _scrolled: Subject<void> = new Subject<void>();
 
   /** Keeps track of the global `scroll` and `resize` subscriptions. */
-  _globalSubscription: Subscription = null;
+  _globalSubscription: Subscription | null = null;
 
   /** Keeps track of the amount of subscriptions to `scrolled`. Used for cleaning up afterwards. */
   private _scrolledCount = 0;
@@ -59,8 +59,10 @@ export class ScrollDispatcher {
    * @param scrollable Scrollable instance to be deregistered.
    */
   deregister(scrollable: Scrollable): void {
-    if (this.scrollableReferences.has(scrollable)) {
-      this.scrollableReferences.get(scrollable).unsubscribe();
+    const scrollableReference = this.scrollableReferences.get(scrollable);
+
+    if (scrollableReference) {
+      scrollableReference.unsubscribe();
       this.scrollableReferences.delete(scrollable);
     }
   }
@@ -132,6 +134,8 @@ export class ScrollDispatcher {
     do {
       if (element == scrollableElement) { return true; }
     } while (element = element.parentElement);
+
+    return false;
   }
 
   /** Sends a notification that a scroll event has been fired. */

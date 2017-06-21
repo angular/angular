@@ -256,7 +256,7 @@ describe('MdButtonToggle', () => {
       for (let buttonToggle of buttonToggleInstances) {
         expect(buttonToggle.checked).toBe(groupInstance.value === buttonToggle.value);
       }
-      expect(groupInstance.selected.value).toBe(groupInstance.value);
+      expect(groupInstance.selected!.value).toBe(groupInstance.value);
     });
 
     it('should have the correct FormControl state initially and after interaction',
@@ -595,7 +595,7 @@ describe('MdButtonToggle', () => {
 class ButtonTogglesInsideButtonToggleGroup {
   isGroupDisabled: boolean = false;
   isVertical: boolean = false;
-  groupValue: string = null;
+  groupValue: string;
 }
 
 @Component({

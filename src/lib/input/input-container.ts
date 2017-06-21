@@ -454,8 +454,8 @@ export class MdInputContainer implements AfterViewInit, AfterContentInit, AfterC
    */
   private _validateHints() {
     if (this._hintChildren) {
-      let startHint: MdHint = null;
-      let endHint: MdHint = null;
+      let startHint: MdHint;
+      let endHint: MdHint;
       this._hintChildren.forEach((hint: MdHint) => {
         if (hint.align == 'start') {
           if (startHint || this.hintLabel) {

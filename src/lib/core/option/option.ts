@@ -107,7 +107,7 @@ export class MdOption {
    */
   get viewValue(): string {
     // TODO(kara): Add input property alternative for node envs.
-    return this._getHostElement().textContent.trim();
+    return (this._getHostElement().textContent || '').trim();
   }
 
   /** Selects the option. */

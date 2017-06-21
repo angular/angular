@@ -35,6 +35,7 @@ import 'rxjs/add/observable/merge';
 import 'rxjs/add/observable/fromEvent';
 import 'rxjs/add/operator/filter';
 import 'rxjs/add/operator/switchMap';
+import 'rxjs/add/observable/of';
 
 /**
  * The following style constants are necessary to save here in order
@@ -86,7 +87,7 @@ export function getMdAutocompleteMissingPanelError(): Error {
   providers: [MD_AUTOCOMPLETE_VALUE_ACCESSOR]
 })
 export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
-  private _overlayRef: OverlayRef;
+  private _overlayRef: OverlayRef | null;
   private _portal: TemplatePortal;
   private _panelOpen: boolean = false;
 
@@ -153,7 +154,7 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
       this._overlayRef.updateSize();
     }
 
-    if (!this._overlayRef.hasAttached()) {
+    if (this._overlayRef && !this._overlayRef.hasAttached()) {
       this._overlayRef.attach(this._portal);
       this._subscribeToClosingActions();
     }
@@ -197,10 +198,12 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   }
 
   /** The currently active option, coerced to MdOption type. */
-  get activeOption(): MdOption {
+  get activeOption(): MdOption | null {
     if (this.autocomplete && this.autocomplete._keyManager) {
       return this.autocomplete._keyManager.activeItem as MdOption;
     }
+
+    return null;
   }
 
   /** Stream of clicks outside of the autocomplete panel. */
@@ -214,9 +217,11 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
         return this._panelOpen &&
                clickTarget !== this._element.nativeElement &&
                (!inputContainer || !inputContainer.contains(clickTarget)) &&
-               !this._overlayRef.overlayElement.contains(clickTarget);
+               (!!this._overlayRef && !this._overlayRef.overlayElement.contains(clickTarget));
       });
     }
+
+    return Observable.of(null);
   }
 
   /**
@@ -312,8 +317,8 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
    * height, so the active option will be just visible at the bottom of the panel.
    */
   private _scrollToOption(): void {
-    const optionOffset =
-        this.autocomplete._keyManager.activeItemIndex * AUTOCOMPLETE_OPTION_HEIGHT;
+    const optionOffset = this.autocomplete._keyManager.activeItemIndex ?
+        this.autocomplete._keyManager.activeItemIndex * AUTOCOMPLETE_OPTION_HEIGHT : 0;
     const newScrollTop =
         Math.max(0, optionOffset - AUTOCOMPLETE_PANEL_HEIGHT + AUTOCOMPLETE_OPTION_HEIGHT);
     this.autocomplete._setScrollTop(newScrollTop);
@@ -419,9 +424,9 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
     return this._element.nativeElement.getBoundingClientRect().width;
   }
 
-  /** Reset active item to null so arrow events will activate the correct options.*/
+  /** Reset active item to -1 so arrow events will activate the correct options.*/
   private _resetActiveItem(): void {
-    this.autocomplete._keyManager.setActiveItem(null);
+    this.autocomplete._keyManager.setActiveItem(-1);
   }
 
   /**

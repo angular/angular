@@ -38,7 +38,18 @@ export function getMdIconNameNotFoundError(iconName: string): Error {
  */
 export function getMdIconNoHttpProviderError(): Error {
   return Error('Could not find Http provider for use with Angular Material icons. ' +
-                   'Please include the HttpModule from @angular/http in your app imports.');
+               'Please include the HttpModule from @angular/http in your app imports.');
+}
+
+
+/**
+ * Returns an exception to be thrown when a URL couldn't be sanitized.
+ * @param url URL that was attempted to be sanitized.
+ * @docs-private
+ */
+export function getMdIconFailedToSanitizeError(url: SafeResourceUrl): Error {
+  return Error(`The URL provided to MdIconRegistry was not trusted as a resource URL ` +
+               `via Angular's DomSanitizer. Attempted URL was "${url}".`);
 }
 
 /**
@@ -46,7 +57,7 @@ export function getMdIconNoHttpProviderError(): Error {
  * @docs-private
  */
 class SvgIconConfig {
-  svgElement: SVGElement = null;
+  svgElement: SVGElement | null = null;
   constructor(public url: SafeResourceUrl) { }
 }
 
@@ -124,8 +135,10 @@ export class MdIconRegistry {
    */
   addSvgIconSetInNamespace(namespace: string, url: SafeResourceUrl): this {
     const config = new SvgIconConfig(url);
-    if (this._iconSetConfigs.has(namespace)) {
-      this._iconSetConfigs.get(namespace).push(config);
+    const configNamespace = this._iconSetConfigs.get(namespace);
+
+    if (configNamespace) {
+      configNamespace.push(config);
     } else {
       this._iconSetConfigs.set(namespace, [config]);
     }
@@ -183,11 +196,18 @@ export class MdIconRegistry {
   getSvgIconFromUrl(safeUrl: SafeResourceUrl): Observable<SVGElement> {
     let url = this._sanitizer.sanitize(SecurityContext.RESOURCE_URL, safeUrl);
 
-    if (this._cachedIconsByUrl.has(url)) {
-      return Observable.of(cloneSvg(this._cachedIconsByUrl.get(url)));
+    if (!url) {
+      throw getMdIconFailedToSanitizeError(safeUrl);
     }
+
+    let cachedIcon = this._cachedIconsByUrl.get(url);
+
+    if (cachedIcon) {
+      return Observable.of(cloneSvg(cachedIcon));
+    }
+
     return this._loadSvgIconFromConfig(new SvgIconConfig(url))
-        .do(svg => this._cachedIconsByUrl.set(url, svg))
+        .do(svg => this._cachedIconsByUrl.set(url!, svg))
         .map(svg => cloneSvg(svg));
   }
 
@@ -202,8 +222,10 @@ export class MdIconRegistry {
   getNamedSvgIcon(name: string, namespace = ''): Observable<SVGElement> {
     // Return (copy of) cached icon if possible.
     const key = iconKey(namespace, name);
-    if (this._svgIconConfigs.has(key)) {
-      return this._getSvgFromConfig(this._svgIconConfigs.get(key));
+    const config = this._svgIconConfigs.get(key);
+
+    if (config) {
+      return this._getSvgFromConfig(config);
     }
     // See if we have any icon sets registered for the namespace.
     const iconSetConfigs = this._iconSetConfigs.get(namespace);
@@ -253,7 +275,7 @@ export class MdIconRegistry {
         .filter(iconSetConfig => !iconSetConfig.svgElement)
         .map(iconSetConfig =>
             this._loadSvgIconSetFromConfig(iconSetConfig)
-                .catch((err: any): Observable<SVGElement> => {
+                .catch((err: any): Observable<SVGElement | null> => {
                   let url =
                       this._sanitizer.sanitize(SecurityContext.RESOURCE_URL, iconSetConfig.url);
 
@@ -286,7 +308,7 @@ export class MdIconRegistry {
    * returns it. Returns null if no matching element is found.
    */
   private _extractIconWithNameFromAnySet(iconName: string, iconSetConfigs: SvgIconConfig[]):
-      SVGElement {
+      SVGElement | null {
     // Iterate backwards, so icon sets added later have precedence.
     for (let i = iconSetConfigs.length - 1; i >= 0; i--) {
       const config = iconSetConfigs[i];
@@ -333,7 +355,7 @@ export class MdIconRegistry {
    * tag matches the specified name. If found, copies the nested element to a new SVG element and
    * returns it. Returns null if no matching element is found.
    */
-  private _extractSvgIconFromSet(iconSet: SVGElement, iconName: string): SVGElement {
+  private _extractSvgIconFromSet(iconSet: SVGElement, iconName: string): SVGElement | null {
     const iconNode = iconSet.querySelector('#' + iconName);
 
     if (!iconNode) {
@@ -421,11 +443,17 @@ export class MdIconRegistry {
 
     const url = this._sanitizer.sanitize(SecurityContext.RESOURCE_URL, safeUrl);
 
+    if (!url) {
+      throw getMdIconFailedToSanitizeError(safeUrl);
+    }
+
     // Store in-progress fetches to avoid sending a duplicate request for a URL when there is
     // already a request in progress for that URL. It's necessary to call share() on the
     // Observable returned by http.get() so that multiple subscribers don't cause multiple XHRs.
-    if (this._inProgressUrlFetches.has(url)) {
-      return this._inProgressUrlFetches.get(url);
+    const inProgressFetch = this._inProgressUrlFetches.get(url);
+
+    if (inProgressFetch) {
+      return inProgressFetch;
     }
 
     // TODO(jelbourn): for some reason, the `finally` operator "loses" the generic type on the

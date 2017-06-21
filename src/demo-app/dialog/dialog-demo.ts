@@ -1,6 +1,6 @@
 import {Component, Inject, ViewChild, TemplateRef} from '@angular/core';
 import {DOCUMENT} from '@angular/platform-browser';
-import {MdDialog, MdDialogRef, MdDialogConfig, MD_DIALOG_DATA} from '@angular/material';
+import {MdDialog, MdDialogRef, MD_DIALOG_DATA} from '@angular/material';
 
 
 @Component({
@@ -10,10 +10,10 @@ import {MdDialog, MdDialogRef, MdDialogConfig, MD_DIALOG_DATA} from '@angular/ma
   styleUrls: ['dialog-demo.css'],
 })
 export class DialogDemo {
-  dialogRef: MdDialogRef<JazzDialog>;
+  dialogRef: MdDialogRef<JazzDialog> | null;
   lastCloseResult: string;
   actionsAlignment: string;
-  config: MdDialogConfig = {
+  config = {
     disableClose: false,
     panelClass: 'custom-overlay-pane-class',
     hasBackdrop: true,

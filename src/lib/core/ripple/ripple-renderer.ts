@@ -39,7 +39,7 @@ export class RippleRenderer {
   private _containerElement: HTMLElement;
 
   /** Element which triggers the ripple elements on mouse events. */
-  private _triggerElement: HTMLElement;
+  private _triggerElement: HTMLElement | null;
 
   /** Whether the mouse is currently down or not. */
   private _isMousedown: boolean = false;
@@ -104,7 +104,7 @@ export class RippleRenderer {
     ripple.style.width = `${radius * 2}px`;
 
     // If the color is not set, the default CSS color will be used.
-    ripple.style.backgroundColor = config.color;
+    ripple.style.backgroundColor = config.color || null;
     ripple.style.transitionDuration = `${duration}ms`;
 
     this._containerElement.appendChild(ripple);
@@ -153,7 +153,7 @@ export class RippleRenderer {
     // Once the ripple faded out, the ripple can be safely removed from the DOM.
     this.runTimeoutOutsideZone(() => {
       rippleRef.state = RippleState.HIDDEN;
-      rippleEl.parentNode.removeChild(rippleEl);
+      rippleEl.parentNode!.removeChild(rippleEl);
     }, RIPPLE_FADE_OUT_DURATION);
   }
 
@@ -163,10 +163,12 @@ export class RippleRenderer {
   }
 
   /** Sets the trigger element and registers the mouse events. */
-  setTriggerElement(element: HTMLElement) {
+  setTriggerElement(element: HTMLElement | null) {
     // Remove all previously register event listeners from the trigger element.
     if (this._triggerElement) {
-      this._triggerEvents.forEach((fn, type) => this._triggerElement.removeEventListener(type, fn));
+      this._triggerEvents.forEach((fn, type) => {
+        this._triggerElement!.removeEventListener(type, fn);
+      });
     }
 
     if (element) {

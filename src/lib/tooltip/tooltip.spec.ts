@@ -164,12 +164,12 @@ describe('MdTooltip', () => {
     it('should not show tooltip if message is not present or empty', () => {
       expect(tooltipDirective._tooltipInstance).toBeUndefined();
 
-      tooltipDirective.message = undefined;
+      tooltipDirective.message = undefined!;
       fixture.detectChanges();
       tooltipDirective.show();
       expect(tooltipDirective._tooltipInstance).toBeUndefined();
 
-      tooltipDirective.message = null;
+      tooltipDirective.message = null!;
       fixture.detectChanges();
       tooltipDirective.show();
       expect(tooltipDirective._tooltipInstance).toBeUndefined();
@@ -226,7 +226,7 @@ describe('MdTooltip', () => {
 
       tooltipDirective.show();
       tick(0); // Tick for the show delay (default is 0)
-      expect(tooltipDirective._tooltipInstance._visibility).toBe('visible');
+      expect(tooltipDirective._tooltipInstance!._visibility).toBe('visible');
 
       fixture.detectChanges();
       expect(overlayContainerElement.textContent).toContain(initialTooltipMessage);
@@ -284,7 +284,7 @@ describe('MdTooltip', () => {
       tick(tooltipDelay); // Change the tooltip state to hidden and trigger animation start
 
       // Store the tooltip instance, which will be set to null after the button is hidden.
-      const tooltipInstance = tooltipDirective._tooltipInstance;
+      const tooltipInstance = tooltipDirective._tooltipInstance!;
       fixture.componentInstance.showButton = false;
       fixture.detectChanges();
 
@@ -343,31 +343,31 @@ describe('MdTooltip', () => {
     it('should have consistent left transform origin in any dir', () => {
       tooltipDirective.position = 'right';
       tooltipDirective.show();
-      expect(tooltipDirective._tooltipInstance._transformOrigin).toBe('left');
+      expect(tooltipDirective._tooltipInstance!._transformOrigin).toBe('left');
 
       tooltipDirective.position = 'after';
       tooltipDirective.show();
-      expect(tooltipDirective._tooltipInstance._transformOrigin).toBe('left');
+      expect(tooltipDirective._tooltipInstance!._transformOrigin).toBe('left');
 
       dir.value = 'rtl';
       tooltipDirective.position = 'before';
       tooltipDirective.show();
-      expect(tooltipDirective._tooltipInstance._transformOrigin).toBe('left');
+      expect(tooltipDirective._tooltipInstance!._transformOrigin).toBe('left');
     });
 
     it('should have consistent right transform origin in any dir', () => {
       tooltipDirective.position = 'left';
       tooltipDirective.show();
-      expect(tooltipDirective._tooltipInstance._transformOrigin).toBe('right');
+      expect(tooltipDirective._tooltipInstance!._transformOrigin).toBe('right');
 
       tooltipDirective.position = 'before';
       tooltipDirective.show();
-      expect(tooltipDirective._tooltipInstance._transformOrigin).toBe('right');
+      expect(tooltipDirective._tooltipInstance!._transformOrigin).toBe('right');
 
       dir.value = 'rtl';
       tooltipDirective.position = 'after';
       tooltipDirective.show();
-      expect(tooltipDirective._tooltipInstance._transformOrigin).toBe('right');
+      expect(tooltipDirective._tooltipInstance!._transformOrigin).toBe('right');
     });
 
     it('should throw when trying to assign an invalid position', () => {
@@ -385,7 +385,7 @@ describe('MdTooltip', () => {
       tick(0);
       fixture.detectChanges();
 
-      const tooltipWrapper = overlayContainerElement.querySelector('.cdk-overlay-pane');
+      const tooltipWrapper = overlayContainerElement.querySelector('.cdk-overlay-pane')!;
 
       expect(tooltipWrapper).toBeTruthy('Expected tooltip to be shown.');
       expect(tooltipWrapper.getAttribute('dir')).toBe('rtl', 'Expected tooltip to be in RTL mode.');

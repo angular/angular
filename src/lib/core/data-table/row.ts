@@ -108,7 +108,7 @@ export class CdkCellOutlet {
    * a handle to provide that component's cells and context. After init, the CdkCellOutlet will
    * construct the cells with the provided context.
    */
-  static mostRecentCellOutlet: CdkCellOutlet = null;
+  static mostRecentCellOutlet: CdkCellOutlet;
 
   constructor(private _viewContainer: ViewContainerRef) {
     CdkCellOutlet.mostRecentCellOutlet = this;

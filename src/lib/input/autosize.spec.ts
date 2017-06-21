@@ -74,11 +74,11 @@ describe('MdTextareaAutosize', () => {
 
     expect(textarea.style.minHeight).toBeDefined('Expected a min-height to be set via minRows.');
 
-    let previousMinHeight = parseInt(textarea.style.minHeight);
+    let previousMinHeight = parseInt(textarea.style.minHeight as string);
     fixture.componentInstance.minRows = 6;
     fixture.detectChanges();
 
-    expect(parseInt(textarea.style.minHeight))
+    expect(parseInt(textarea.style.minHeight as string))
         .toBeGreaterThan(previousMinHeight, 'Expected increased min-height with minRows increase.');
   });
 
@@ -90,11 +90,11 @@ describe('MdTextareaAutosize', () => {
 
     expect(textarea.style.maxHeight).toBeDefined('Expected a max-height to be set via maxRows.');
 
-    let previousMaxHeight = parseInt(textarea.style.maxHeight);
+    let previousMaxHeight = parseInt(textarea.style.maxHeight as string);
     fixture.componentInstance.maxRows = 6;
     fixture.detectChanges();
 
-    expect(parseInt(textarea.style.maxHeight))
+    expect(parseInt(textarea.style.maxHeight as string))
         .toBeGreaterThan(previousMaxHeight, 'Expected increased max-height with maxRows increase.');
   });
 
@@ -113,7 +113,7 @@ describe('MdTextareaAutosize', () => {
     expect(textarea.rows)
       .toBe(1, 'Expected the textarea to have the rows property set to one.');
 
-    const previousMinHeight = parseInt(textarea.style.minHeight);
+    const previousMinHeight = parseInt(textarea.style.minHeight as string);
 
     fixture.componentInstance.minRows = 2;
     fixture.detectChanges();
@@ -121,7 +121,7 @@ describe('MdTextareaAutosize', () => {
     expect(textarea.rows).toBe(1, 'Expected the rows property to be set to one. ' +
       'The amount of rows will be specified using CSS.');
 
-    expect(parseInt(textarea.style.minHeight))
+    expect(parseInt(textarea.style.minHeight as string))
       .toBeGreaterThan(previousMinHeight, 'Expected the textarea to grow to two rows.');
   });
 
@@ -166,8 +166,8 @@ const textareaStyleReset = `
 })
 class AutosizeTextAreaWithContent {
   @ViewChild('autosize') autosize: MdTextareaAutosize;
-  minRows: number = null;
-  maxRows: number = null;
+  minRows: number | null = null;
+  maxRows: number | null = null;
   content: string = '';
 }
 

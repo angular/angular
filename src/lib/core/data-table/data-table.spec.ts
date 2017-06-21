@@ -118,7 +118,7 @@ describe('CdkTable', () => {
     expect(initialRows[2].getAttribute('initialIndex')).toBe('2');
 
     // Swap first and second data in data array
-    const copiedData = component.dataSource.data.slice();
+    const copiedData = component.dataSource!.data.slice();
     const temp = copiedData[0];
     copiedData[0] = copiedData[1];
     copiedData[1] = temp;
@@ -127,8 +127,8 @@ describe('CdkTable', () => {
     copiedData.splice(2, 1);
 
     // Add new data
-    component.dataSource.data = copiedData;
-    component.dataSource.addData();
+    component.dataSource!.data = copiedData;
+    component.dataSource!.addData();
 
     // Expect that the first and second rows were swapped and that the last row is new
     const changedRows = getRows(tableElement);
@@ -290,7 +290,7 @@ class FakeDataSource extends DataSource<TestData> {
   `
 })
 class SimpleCdkTableApp {
-  dataSource: FakeDataSource = new FakeDataSource();
+  dataSource: FakeDataSource | null = new FakeDataSource();
   columnsToRender = ['column_a', 'column_b', 'column_c'];
 
   @ViewChild(CdkTable) table: CdkTable<TestData>;
@@ -341,7 +341,7 @@ function getElements(element: Element, query: string): Element[] {
 }
 
 function getHeaderRow(tableElement: Element): Element {
-  return tableElement.querySelector('.cdk-header-row');
+  return tableElement.querySelector('.cdk-header-row')!;
 }
 
 function getRows(tableElement: Element): Element[] {
@@ -359,9 +359,9 @@ const tableCustomMatchers: jasmine.CustomMatcherFactories = {
   toMatchTableContent: () => {
     return {
       compare: function (tableElement: Element, expectedTableContent: any[]) {
-        const missedExpectations = [];
+        const missedExpectations: string[] = [];
         function checkCellContent(cell: Element, expectedTextContent: string) {
-          const actualTextContent = cell.textContent.trim();
+          const actualTextContent = cell.textContent!.trim();
           if (actualTextContent !== expectedTextContent) {
             missedExpectations.push(
                 `Expected cell contents to be ${expectedTextContent} but was ${actualTextContent}`);

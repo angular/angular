@@ -22,7 +22,7 @@ export class ViewportRuler {
 
   constructor(scrollDispatcher: ScrollDispatcher) {
     // Subscribe to scroll and resize events and update the document rectangle on changes.
-    scrollDispatcher.scrolled(null, () => this._cacheViewportGeometry());
+    scrollDispatcher.scrolled(0, () => this._cacheViewportGeometry());
   }
 
   /** Gets a ClientRect for the viewport's bounds. */
@@ -74,17 +74,17 @@ export class ViewportRuler {
     // `scrollTop` and `scrollLeft` is inconsistent. However, using the bounding rect of
     // `document.documentElement` works consistently, where the `top` and `left` values will
     // equal negative the scroll position.
-    const top = -documentRect.top || document.body.scrollTop || window.scrollY ||
+    const top = -documentRect!.top || document.body.scrollTop || window.scrollY ||
                   document.documentElement.scrollTop || 0;
 
-    const left = -documentRect.left || document.body.scrollLeft || window.scrollX ||
+    const left = -documentRect!.left || document.body.scrollLeft || window.scrollX ||
                   document.documentElement.scrollLeft || 0;
 
     return {top, left};
   }
 
   /** Caches the latest client rectangle of the document element. */
-  _cacheViewportGeometry?() {
+  _cacheViewportGeometry() {
     this._documentRect = document.documentElement.getBoundingClientRect();
   }
 

@@ -85,7 +85,7 @@ export class MdProgressSpinner extends _MdProgressSpinnerMixinBase
   private _lastAnimationId: number = 0;
 
   /** The id of the indeterminate interval. */
-  private _interdeterminateInterval: number;
+  private _interdeterminateInterval: number | null;
 
   /** The SVG <path> node that is used to draw the circle. */
   @ViewChild('path') private _path: ElementRef;
@@ -114,8 +114,11 @@ export class MdProgressSpinner extends _MdProgressSpinnerMixinBase
     return this._interdeterminateInterval;
   }
   /** @docs-private */
-  set interdeterminateInterval(interval: number) {
-    clearInterval(this._interdeterminateInterval);
+  set interdeterminateInterval(interval: number | null) {
+    if (this._interdeterminateInterval) {
+      clearInterval(this._interdeterminateInterval);
+    }
+
     this._interdeterminateInterval = interval;
   }
 
@@ -133,6 +136,8 @@ export class MdProgressSpinner extends _MdProgressSpinnerMixinBase
     if (this.mode == 'determinate') {
       return this._value;
     }
+
+    return 0;
   }
   set value(v: number) {
     if (v != null && this.mode == 'determinate') {
@@ -351,7 +356,7 @@ function materialEase(currentTime: number, startValue: number,
  * @return A string for an SVG path representing a circle filled from the starting point to the
  *    percentage value provided.
  */
-function getSvgArc(currentValue: number, rotation: number, strokeWidth: number) {
+function getSvgArc(currentValue: number, rotation: number, strokeWidth: number): string {
   let startPoint = rotation || 0;
   let radius = 50;
   let pathRadius = radius - strokeWidth;

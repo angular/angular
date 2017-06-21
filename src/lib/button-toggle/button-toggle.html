@@ -3,7 +3,7 @@
          [type]="_type"
          [id]="inputId"
          [checked]="checked"
-         [disabled]="disabled"
+         [disabled]="disabled || null"
          [name]="name"
          (change)="_onInputChange($event)"
          (click)="_onInputClick($event)">

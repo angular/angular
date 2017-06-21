@@ -15,7 +15,7 @@ export class RippleDemo {
   disabled = false;
   unbounded = false;
   rounded = false;
-  radius: number = null;
+  radius: number;
   rippleSpeed = 1;
   rippleColor = '';
 

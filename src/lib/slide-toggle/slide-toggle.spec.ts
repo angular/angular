@@ -487,7 +487,7 @@ describe('MdSlideToggle', () => {
       slideToggleModel = slideToggleDebug.injector.get<NgModel>(NgModel);
       slideThumbContainer = thumbContainerDebug.nativeElement;
 
-      inputElement = slideToggleElement.querySelector('input');
+      inputElement = slideToggleElement.querySelector('input')!;
     }));
 
     it('should drag from start to end', fakeAsync(() => {
@@ -677,10 +677,10 @@ class SlideToggleTestApp {
   slideModel: boolean = false;
   slideChecked: boolean = false;
   slideColor: string;
-  slideId: string;
-  slideName: string;
-  slideLabel: string;
-  slideLabelledBy: string;
+  slideId: string | null;
+  slideName: string | null;
+  slideLabel: string | null;
+  slideLabelledBy: string | null;
   slideTabindex: number;
   lastEvent: MdSlideToggleChange;
   labelPosition: string;

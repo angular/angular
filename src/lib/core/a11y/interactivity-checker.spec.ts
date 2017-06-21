@@ -324,13 +324,13 @@ describe('InteractivityChecker', () => {
 
         appendElements([iframe]);
 
-        iframe.tabIndex = -1;
+        iframe.setAttribute('tabindex', '-1');
         iframe.contentDocument.body.appendChild(button);
 
         expect(checker.isTabbable(iframe)).toBe(false);
         expect(checker.isTabbable(button)).toBe(false);
 
-        iframe.tabIndex = null;
+        iframe.removeAttribute('tabindex');
 
         expect(checker.isTabbable(iframe)).toBe(false);
         expect(checker.isTabbable(button)).toBe(true);
@@ -471,7 +471,7 @@ describe('InteractivityChecker', () => {
     let tmpRoot = document.createElement('div');
     tmpRoot.innerHTML = template;
 
-    let element = tmpRoot.firstElementChild;
+    let element = tmpRoot.firstElementChild!;
 
     tmpRoot.removeChild(element);
 

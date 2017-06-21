@@ -24,7 +24,7 @@ export class SelectionModel<T> {
   private _selectedToEmit: T[] = [];
 
   /** Cache for the array value of the selected items. */
-  private _selected: T[];
+  private _selected: T[] | null;
 
   /** Selected value(s). */
   get selected(): T[] {
@@ -36,7 +36,7 @@ export class SelectionModel<T> {
   }
 
   /** Event emitted when the value has changed. */
-  onChange: Subject<SelectionChange<T>> = this._emitChanges ? new Subject() : null;
+  onChange: Subject<SelectionChange<T>> | null = this._emitChanges ? new Subject() : null;
 
   constructor(
     private _isMulti = false,
@@ -111,7 +111,7 @@ export class SelectionModel<T> {
    * Sorts the selected values based on a predicate function.
    */
   sort(predicate?: (a: T, b: T) => number): void {
-    if (this._isMulti && this.selected) {
+    if (this._isMulti && this._selected) {
       this._selected.sort(predicate);
     }
   }
@@ -121,7 +121,10 @@ export class SelectionModel<T> {
     if (this._selectedToEmit.length || this._deselectedToEmit.length) {
       let eventData = new SelectionChange(this._selectedToEmit, this._deselectedToEmit);
 
-      this.onChange.next(eventData);
+      if (this.onChange) {
+        this.onChange.next(eventData);
+      }
+
       this._deselectedToEmit = [];
       this._selectedToEmit = [];
     }

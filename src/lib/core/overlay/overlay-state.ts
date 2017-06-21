@@ -23,28 +23,28 @@ export class OverlayState {
   scrollStrategy: ScrollStrategy;
 
   /** Custom class to add to the overlay pane. */
-  panelClass: string = '';
+  panelClass?: string = '';
 
   /** Whether the overlay has a backdrop. */
-  hasBackdrop: boolean = false;
+  hasBackdrop?: boolean = false;
 
   /** Custom class to add to the backdrop */
-  backdropClass: string = 'cdk-overlay-dark-backdrop';
+  backdropClass?: string = 'cdk-overlay-dark-backdrop';
 
   /** The width of the overlay panel. If a number is provided, pixel units are assumed. */
-  width: number | string;
+  width?: number | string;
 
   /** The height of the overlay panel. If a number is provided, pixel units are assumed. */
-  height: number | string;
+  height?: number | string;
 
   /** The min-width of the overlay panel. If a number is provided, pixel units are assumed. */
-  minWidth: number | string;
+  minWidth?: number | string;
 
   /** The min-height of the overlay panel. If a number is provided, pixel units are assumed. */
-  minHeight: number | string;
+  minHeight?: number | string;
 
   /** The direction of the text in the overlay panel. */
-  direction: Direction = 'ltr';
+  direction?: Direction = 'ltr';
 
   // TODO(jelbourn): configuration still to add
   // - focus trap

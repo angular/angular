@@ -1,4 +1,4 @@
-// TypeScript config file that matches all source files in the project. This file is read by 
+// TypeScript config file that matches all source files in the project. This file is read by
 // IDEs and ensures that `experimentalDecorator` warnings are not showing up.
 {
   "compilerOptions": {
@@ -6,6 +6,7 @@
     "module": "es2015",
     "moduleResolution": "node",
     "noUnusedParameters": true,
+    "strictNullChecks": true,
     "outDir": "../dist/packages/all",
     "sourceMap": true,
     "inlineSources": true,

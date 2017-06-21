@@ -51,13 +51,13 @@ describe('MdCalendarBody', () => {
     });
 
     it('highlights today', () => {
-      let todayCell = calendarBodyNativeElement.querySelector('.mat-calendar-body-today');
+      let todayCell = calendarBodyNativeElement.querySelector('.mat-calendar-body-today')!;
       expect(todayCell).not.toBeNull();
       expect(todayCell.innerHTML.trim()).toBe('3');
     });
 
     it('highlights selected', () => {
-      let selectedCell = calendarBodyNativeElement.querySelector('.mat-calendar-body-selected');
+      let selectedCell = calendarBodyNativeElement.querySelector('.mat-calendar-body-selected')!;
       expect(selectedCell).not.toBeNull();
       expect(selectedCell.innerHTML.trim()).toBe('4');
     });
@@ -71,7 +71,7 @@ describe('MdCalendarBody', () => {
       expect(rowEls.length).toBe(2);
       expect(labelEls.length).toBe(1);
       expect(cellEls.length).toBe(11);
-      expect(rowEls[0].firstElementChild.classList)
+      expect(rowEls[0].firstElementChild!.classList)
           .toContain('mat-calendar-body-label', 'first cell should be the label');
       expect(labelEls[0].getAttribute('colspan')).toBe('3');
     });

@@ -100,15 +100,15 @@ describe('MdDatepicker', () => {
         testComponent.datepicker.open();
         fixture.detectChanges();
 
-        let popup = document.querySelector('.cdk-overlay-pane');
+        let popup = document.querySelector('.cdk-overlay-pane')!;
         expect(popup).not.toBeNull();
-        expect(parseInt(getComputedStyle(popup).height)).not.toBe(0);
+        expect(parseInt(getComputedStyle(popup).height as string)).not.toBe(0);
 
         testComponent.datepicker.close();
         fixture.detectChanges();
 
         fixture.whenStable().then(() => {
-          expect(parseInt(getComputedStyle(popup).height)).toBe(0);
+          expect(parseInt(getComputedStyle(popup).height as string)).toBe(0);
         });
       }));
 
@@ -116,13 +116,13 @@ describe('MdDatepicker', () => {
         testComponent.datepicker.open();
         fixture.detectChanges();
 
-        let content = document.querySelector('.cdk-overlay-pane md-datepicker-content');
+        let content = document.querySelector('.cdk-overlay-pane md-datepicker-content')!;
         expect(content).toBeTruthy('Expected datepicker to be open.');
 
         let keyboadEvent = dispatchKeyboardEvent(content, 'keydown', ESCAPE);
         fixture.detectChanges();
 
-        content = document.querySelector('.cdk-overlay-pane md-datepicker-content');
+        content = document.querySelector('.cdk-overlay-pane md-datepicker-content')!;
 
         expect(content).toBeFalsy('Expected datepicker to be closed.');
         expect(keyboadEvent.defaultPrevented)
@@ -246,7 +246,7 @@ describe('MdDatepicker', () => {
         testComponent.datepicker.open();
         fixture.detectChanges();
 
-        const firstCalendarCell = document.querySelector('.mat-calendar-body-cell');
+        const firstCalendarCell = document.querySelector('.mat-calendar-body-cell')!;
 
         // When the calendar is in year view, the first cell should be for a month rather than
         // for a date.
@@ -460,7 +460,7 @@ describe('MdDatepicker', () => {
         fixture.componentInstance.datepicker.open();
         fixture.detectChanges();
 
-        let pane = document.querySelector('.cdk-overlay-pane');
+        let pane = document.querySelector('.cdk-overlay-pane')!;
 
         expect(pane).toBeTruthy('Expected calendar to be open.');
         expect(pane.contains(document.activeElement))
@@ -676,7 +676,7 @@ describe('MdDatepicker', () => {
       testComponent.datepicker.open();
       fixture.detectChanges();
 
-      const overlayRect = document.querySelector('.cdk-overlay-pane').getBoundingClientRect();
+      const overlayRect = document.querySelector('.cdk-overlay-pane')!.getBoundingClientRect();
       const inputRect = input.getBoundingClientRect();
 
       expect(Math.floor(overlayRect.top))
@@ -690,7 +690,7 @@ describe('MdDatepicker', () => {
       testComponent.datepicker.open();
       fixture.detectChanges();
 
-      const overlayRect = document.querySelector('.cdk-overlay-pane').getBoundingClientRect();
+      const overlayRect = document.querySelector('.cdk-overlay-pane')!.getBoundingClientRect();
       const inputRect = input.getBoundingClientRect();
 
       expect(Math.floor(overlayRect.bottom))
@@ -704,7 +704,7 @@ describe('MdDatepicker', () => {
       testComponent.datepicker.open();
       fixture.detectChanges();
 
-      const overlayRect = document.querySelector('.cdk-overlay-pane').getBoundingClientRect();
+      const overlayRect = document.querySelector('.cdk-overlay-pane')!.getBoundingClientRect();
       const inputRect = input.getBoundingClientRect();
 
       expect(Math.floor(overlayRect.top))
@@ -718,7 +718,7 @@ describe('MdDatepicker', () => {
       testComponent.datepicker.open();
       fixture.detectChanges();
 
-      const overlayRect = document.querySelector('.cdk-overlay-pane').getBoundingClientRect();
+      const overlayRect = document.querySelector('.cdk-overlay-pane')!.getBoundingClientRect();
       const inputRect = input.getBoundingClientRect();
 
       expect(Math.floor(overlayRect.bottom))
@@ -790,7 +790,7 @@ class DatepickerWithStartView {
   template: `<input [(ngModel)]="selected" [mdDatepicker]="d"><md-datepicker #d></md-datepicker>`,
 })
 class DatepickerWithNgModel {
-  selected: Date = null;
+  selected: Date | null = null;
   @ViewChild('d') datepicker: MdDatepicker<Date>;
   @ViewChild(MdDatepickerInput) datepickerInput: MdDatepickerInput<Date>;
 }

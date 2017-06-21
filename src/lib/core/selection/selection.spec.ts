@@ -71,7 +71,7 @@ describe('SelectionModel', () => {
 
       model.select(1);
 
-      model.onChange.subscribe(spy);
+      model.onChange!.subscribe(spy);
 
       model.select(2);
 
@@ -90,7 +90,7 @@ describe('SelectionModel', () => {
         model = new SelectionModel(true);
         spy = jasmine.createSpy('SelectionModel change event');
 
-        model.onChange.subscribe(spy);
+        model.onChange!.subscribe(spy);
       });
 
       it('should emit an event when a value is selected', () => {
@@ -113,7 +113,7 @@ describe('SelectionModel', () => {
       it('should not emit an event when preselecting values', () => {
         model = new SelectionModel(false, [1]);
         spy = jasmine.createSpy('SelectionModel initial change event');
-        model.onChange.subscribe(spy);
+        model.onChange!.subscribe(spy);
 
         expect(spy).not.toHaveBeenCalled();
       });
@@ -127,7 +127,7 @@ describe('SelectionModel', () => {
         model = new SelectionModel(true, [1, 2, 3]);
         spy = jasmine.createSpy('SelectionModel change event');
 
-        model.onChange.subscribe(spy);
+        model.onChange!.subscribe(spy);
       });
 
       it('should emit an event when a value is deselected', () => {
@@ -160,7 +160,7 @@ describe('SelectionModel', () => {
     let model: SelectionModel<any>;
 
     beforeEach(() => {
-      model = new SelectionModel(true, null, false);
+      model = new SelectionModel(true, undefined, false);
     });
 
     it('should not have an onChange stream if change events are disabled', () => {

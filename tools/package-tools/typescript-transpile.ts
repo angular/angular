@@ -8,7 +8,9 @@ export function transpileFile(inputPath: string, outputPath: string, options: ts
   const inputFile = fs.readFileSync(inputPath, 'utf-8');
   const transpiled = ts.transpileModule(inputFile, { compilerOptions: options });
 
-  reportDiagnostics(transpiled.diagnostics);
+  if (transpiled.diagnostics) {
+    reportDiagnostics(transpiled.diagnostics);
+  }
 
   fs.writeFileSync(outputPath, transpiled.outputText);
 
@@ -18,7 +20,7 @@ export function transpileFile(inputPath: string, outputPath: string, options: ts
 }
 
 /** Formats the TypeScript diagnostics into a error string. */
-function formatDiagnostics(diagnostics: ts.Diagnostic[], baseDir: string): string {
+function formatDiagnostics(diagnostics: ts.Diagnostic[], baseDir = ''): string {
   return diagnostics.map(diagnostic => {
     let res = `• ${chalk.red(`TS${diagnostic.code}`)} - `;
 

@@ -5,6 +5,7 @@
     "declaration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "strictNullChecks": true,
     "inlineSources": true,
     "lib": ["es2015"],
     "module": "commonjs",

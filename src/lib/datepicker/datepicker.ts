@@ -126,7 +126,7 @@ export class MdDatepicker<D> implements OnDestroy {
   id = `md-datepicker-${datepickerUid++}`;
 
   /** The currently selected date. */
-  _selected: D = null;
+  _selected: D | null = null;
 
   /** The minimum selectable date. */
   get _minDate(): D {
@@ -146,7 +146,7 @@ export class MdDatepicker<D> implements OnDestroy {
   private _popupRef: OverlayRef;
 
   /** A reference to the dialog when the calendar is opened as a dialog. */
-  private _dialogRef: MdDialogRef<any>;
+  private _dialogRef: MdDialogRef<any> | null;
 
   /** A portal containing the calendar for this datepicker. */
   private _calendarPortal: ComponentPortal<MdDatepickerContent<D>>;
@@ -155,7 +155,7 @@ export class MdDatepicker<D> implements OnDestroy {
   private _datepickerInput: MdDatepickerInput<D>;
 
   /** The element that was focused before the datepicker was opened. */
-  private _focusedElementBeforeOpen: HTMLElement;
+  private _focusedElementBeforeOpen: HTMLElement | null = null;
 
   private _inputSubscription: Subscription;
 

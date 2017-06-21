@@ -38,6 +38,15 @@ import {Subscription} from 'rxjs/Subscription';
 import {Subject} from 'rxjs/Subject';
 
 /**
+ * Returns an error to be thrown when attempting to find an unexisting column.
+ * @param id Id whose lookup failed.
+ * @docs-private
+ */
+export function getDataTableUnknownColumnError(id: string) {
+  return new Error(`md-data-table: Could not find column with id "${id}".`);
+}
+
+/**
  * Provides a handle for the table to grab the view container's ng-container to insert data rows.
  * @docs-private
  */
@@ -91,7 +100,7 @@ export class CdkTable<T> implements CollectionViewer {
   private _columnDefinitionsByName = new Map<string,  CdkColumnDef>();
 
   /** Differ used to find the changes in the data provided by the data source. */
-  private _dataDiffer: IterableDiffer<T> = null;
+  private _dataDiffer: IterableDiffer<T>;
 
   // TODO(andrewseguin): Remove max value as the end index
   //   and instead calculate the view on init and scroll.
@@ -261,7 +270,7 @@ export class CdkTable<T> implements CollectionViewer {
             this._rowPlaceholder.viewContainer.remove(adjustedPreviousIndex);
           } else {
             const view = this._rowPlaceholder.viewContainer.get(adjustedPreviousIndex);
-            this._rowPlaceholder.viewContainer.move(view, currentIndex);
+            this._rowPlaceholder.viewContainer.move(view!, currentIndex);
           }
         });
   }
@@ -296,8 +305,13 @@ export class CdkTable<T> implements CollectionViewer {
    */
   private _getHeaderCellTemplatesForRow(headerDef: CdkHeaderRowDef): CdkHeaderCellDef[] {
     return headerDef.columns.map(columnId => {
-      // TODO(andrewseguin): Throw an error if there is no column with this columnId
-      return this._columnDefinitionsByName.get(columnId).headerCell;
+      const column = this._columnDefinitionsByName.get(columnId);
+
+      if (!column) {
+        throw getDataTableUnknownColumnError(columnId);
+      }
+
+      return column.headerCell;
     });
   }
 
@@ -307,8 +321,14 @@ export class CdkTable<T> implements CollectionViewer {
    */
   private _getCellTemplatesForRow(rowDef: CdkRowDef): CdkCellDef[] {
     return rowDef.columns.map(columnId => {
-      // TODO(andrewseguin): Throw an error if there is no column with this columnId
-      return this._columnDefinitionsByName.get(columnId).cell;
+      const column = this._columnDefinitionsByName.get(columnId);
+
+      if (!column) {
+        throw getDataTableUnknownColumnError(columnId);
+      }
+
+      return column.cell;
     });
   }
 }
+

@@ -84,15 +84,15 @@ export class MdSlideToggle extends _MdSlideToggleMixinBase
   // A unique id for the slide-toggle. By default the id is auto-generated.
   private _uniqueId = `md-slide-toggle-${++nextId}`;
   private _checked: boolean = false;
-  private _slideRenderer: SlideToggleRenderer = null;
+  private _slideRenderer: SlideToggleRenderer;
   private _required: boolean = false;
   private _disableRipple: boolean = false;
 
   /** Reference to the focus state ripple. */
-  private _focusRipple: RippleRef;
+  private _focusRipple: RippleRef | null;
 
   /** Name value will be applied to the input element if present */
-  @Input() name: string = null;
+  @Input() name: string | null = null;
 
   /** A unique id for the slide-toggle input. If none is supplied, it will be auto-generated. */
   @Input() id: string = this._uniqueId;
@@ -104,10 +104,10 @@ export class MdSlideToggle extends _MdSlideToggleMixinBase
   @Input() labelPosition: 'before' | 'after' = 'after';
 
   /** Used to set the aria-label attribute on the underlying input element. */
-  @Input('aria-label') ariaLabel: string = null;
+  @Input('aria-label') ariaLabel: string | null = null;
 
   /** Used to set the aria-labelledby attribute on the underlying input element. */
-  @Input('aria-labelledby') ariaLabelledby: string = null;
+  @Input('aria-labelledby') ariaLabelledby: string | null = null;
 
   /** Whether the slide-toggle is required. */
   @Input()
@@ -326,7 +326,7 @@ class SlideToggleRenderer {
 
   /** Resets the current drag and returns the new checked value. */
   stopThumbDrag(): boolean {
-    if (!this.dragging) { return; }
+    if (!this.dragging) { return false; }
 
     this.dragging = false;
     this._thumbEl.classList.remove('mat-dragging');

@@ -85,7 +85,7 @@ describe('MdMenu', () => {
     fixture.detectChanges();
     fixture.componentInstance.trigger.openMenu();
 
-    const panel = overlayContainerElement.querySelector('.mat-menu-panel');
+    const panel = overlayContainerElement.querySelector('.mat-menu-panel')!;
     dispatchKeyboardEvent(panel, 'keydown', ESCAPE);
     fixture.detectChanges();
 
@@ -112,7 +112,7 @@ describe('MdMenu', () => {
     fixture.componentInstance.trigger.openMenu();
     fixture.detectChanges();
 
-    const overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane');
+    const overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane')!;
     expect(overlayPane.getAttribute('dir')).toEqual('rtl');
   });
 
@@ -123,7 +123,7 @@ describe('MdMenu', () => {
     fixture.componentInstance.trigger.openMenu();
 
     const menuEl = fixture.debugElement.query(By.css('md-menu')).nativeElement;
-    const panel = overlayContainerElement.querySelector('.mat-menu-panel');
+    const panel = overlayContainerElement.querySelector('.mat-menu-panel')!;
 
     expect(menuEl.classList).not.toContain('custom-one');
     expect(menuEl.classList).not.toContain('custom-two');
@@ -404,8 +404,8 @@ describe('MdMenu', () => {
       it('repositions the origin to be below, so the menu opens from the trigger', () => {
         subject.openMenu();
 
-        expect(subject.menuPanel.classList).toContain('mat-menu-below');
-        expect(subject.menuPanel.classList).not.toContain('mat-menu-above');
+        expect(subject.menuPanel!.classList).toContain('mat-menu-below');
+        expect(subject.menuPanel!.classList).not.toContain('mat-menu-above');
       });
 
     });

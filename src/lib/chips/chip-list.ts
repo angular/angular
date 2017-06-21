@@ -157,7 +157,7 @@ export class MdChipList implements AfterContentInit, OnDestroy {
 
     let focusedIndex = this._keyManager.activeItemIndex;
 
-    if (this._isValidIndex(focusedIndex)) {
+    if (typeof focusedIndex === 'number' && this._isValidIndex(focusedIndex)) {
       let focusedChip: MdChip = this.chips.toArray()[focusedIndex];
 
       if (focusedChip) {

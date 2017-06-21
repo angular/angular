@@ -30,7 +30,7 @@ import 'rxjs/add/observable/of';
 export const TOUCH_BUFFER_MS = 650;
 
 
-export type FocusOrigin = 'touch' | 'mouse' | 'keyboard' | 'program';
+export type FocusOrigin = 'touch' | 'mouse' | 'keyboard' | 'program' | null;
 
 
 type MonitoredElementInfo = {
@@ -54,7 +54,7 @@ export class FocusOriginMonitor {
   private _windowFocused = false;
 
   /** The target of the last touch event. */
-  private _lastTouchTarget: EventTarget;
+  private _lastTouchTarget: EventTarget | null;
 
   /** The timeout id of the touch timeout, used to cancel timeout later. */
   private _touchTimeout: number;
@@ -80,18 +80,18 @@ export class FocusOriginMonitor {
       checkChildren: boolean): Observable<FocusOrigin> {
     // Do nothing if we're not on the browser platform.
     if (!this._platform.isBrowser) {
-      return Observable.of();
+      return Observable.of(null);
     }
     // Check if we're already monitoring this element.
     if (this._elementInfo.has(element)) {
       let info = this._elementInfo.get(element);
-      info.checkChildren = checkChildren;
-      return info.subject.asObservable();
+      info!.checkChildren = checkChildren;
+      return info!.subject.asObservable();
     }
 
     // Create monitored element info.
     let info: MonitoredElementInfo = {
-      unlisten: null,
+      unlisten: () => {},
       checkChildren: checkChildren,
       renderer: renderer,
       subject: new Subject<FocusOrigin>()
@@ -126,7 +126,7 @@ export class FocusOriginMonitor {
       elementInfo.unlisten();
       elementInfo.subject.complete();
 
-      this._setClasses(element, null);
+      this._setClasses(element);
       this._elementInfo.delete(element);
     }
   }
@@ -189,17 +189,21 @@ export class FocusOriginMonitor {
    * @param element The element to update the classes on.
    * @param origin The focus origin.
    */
-  private _setClasses(element: HTMLElement, origin: FocusOrigin): void {
-    let renderer = this._elementInfo.get(element).renderer;
-    let toggleClass = (className: string, shouldSet: boolean) => {
-      shouldSet ? renderer.addClass(element, className) : renderer.removeClass(element, className);
-    };
+  private _setClasses(element: HTMLElement, origin?: FocusOrigin): void {
+    const elementInfo = this._elementInfo.get(element);
 
-    toggleClass('cdk-focused', !!origin);
-    toggleClass('cdk-touch-focused', origin === 'touch');
-    toggleClass('cdk-keyboard-focused', origin === 'keyboard');
-    toggleClass('cdk-mouse-focused', origin === 'mouse');
-    toggleClass('cdk-program-focused', origin === 'program');
+    if (elementInfo) {
+      const toggleClass = (className: string, shouldSet: boolean) => {
+        shouldSet ? elementInfo.renderer.addClass(element, className) :
+                    elementInfo.renderer.removeClass(element, className);
+      };
+
+      toggleClass('cdk-focused', !!origin);
+      toggleClass('cdk-touch-focused', origin === 'touch');
+      toggleClass('cdk-keyboard-focused', origin === 'keyboard');
+      toggleClass('cdk-mouse-focused', origin === 'mouse');
+      toggleClass('cdk-program-focused', origin === 'program');
+    }
   }
 
   /**
@@ -252,7 +256,8 @@ export class FocusOriginMonitor {
 
     // If we are not counting child-element-focus as focused, make sure that the event target is the
     // monitored element itself.
-    if (!this._elementInfo.get(element).checkChildren && element !== event.target) {
+    const elementInfo = this._elementInfo.get(element);
+    if (!elementInfo || (!elementInfo.checkChildren && element !== event.target)) {
       return;
     }
 
@@ -273,7 +278,7 @@ export class FocusOriginMonitor {
     }
 
     this._setClasses(element, this._origin);
-    this._elementInfo.get(element).subject.next(this._origin);
+    elementInfo.subject.next(this._origin);
     this._lastFocusOrigin = this._origin;
     this._origin = null;
   }
@@ -286,13 +291,15 @@ export class FocusOriginMonitor {
   private _onBlur(event: FocusEvent, element: HTMLElement) {
     // If we are counting child-element-focus as focused, make sure that we aren't just blurring in
     // order to focus another child of the monitored element.
-    if (this._elementInfo.get(element).checkChildren && event.relatedTarget instanceof Node &&
-        element.contains(event.relatedTarget)) {
+    const elementInfo = this._elementInfo.get(element);
+
+    if (!elementInfo || (elementInfo.checkChildren && event.relatedTarget instanceof Node &&
+        element.contains(event.relatedTarget))) {
       return;
     }
 
-    this._setClasses(element, null);
-    this._elementInfo.get(element).subject.next(null);
+    this._setClasses(element);
+    elementInfo.subject.next(null);
   }
 }
 

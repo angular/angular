@@ -63,7 +63,7 @@ describe('Portals', () => {
 
       // Set the selectedHost to be a ComponentPortal.
       let testAppComponent = fixture.debugElement.componentInstance;
-      testAppComponent.selectedPortal = new ComponentPortal(PizzaMsg, null, chocolateInjector);
+      testAppComponent.selectedPortal = new ComponentPortal(PizzaMsg, undefined, chocolateInjector);
       fixture.detectChanges();
 
       // Expect that the content of the attached portal is present.

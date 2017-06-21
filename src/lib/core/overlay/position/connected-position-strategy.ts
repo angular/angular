@@ -102,7 +102,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
    * @param element Element to which to apply the CSS styles.
    * @returns Resolves when the styles have been applied.
    */
-  apply(element: HTMLElement): Promise<void> {
+  apply(element: HTMLElement): void {
     // Cache the overlay pane element in case re-calculating position is necessary
     this._pane = element;
 
@@ -115,8 +115,8 @@ export class ConnectedPositionStrategy implements PositionStrategy {
     const viewportRect = this._viewportRuler.getViewportRect();
 
     // Fallback point if none of the fallbacks fit into the viewport.
-    let fallbackPoint: OverlayPoint = null;
-    let fallbackPosition: ConnectionPositionPair = null;
+    let fallbackPoint: OverlayPoint | undefined;
+    let fallbackPosition: ConnectionPositionPair | undefined;
 
     // We want to place the overlay in the first of the preferred positions such that the
     // overlay fits on-screen.
@@ -138,7 +138,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
         const positionChange = new ConnectedOverlayPositionChange(pos, scrollableViewProperties);
         this._onPositionChange.next(positionChange);
 
-        return Promise.resolve(null);
+        return;
       } else if (!fallbackPoint || fallbackPoint.visibleArea < overlayPoint.visibleArea) {
         fallbackPoint = overlayPoint;
         fallbackPosition = pos;
@@ -147,9 +147,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
 
     // If none of the preferred positions were in the viewport, take the one
     // with the largest visible area.
-    this._setElementPosition(element, overlayRect, fallbackPoint, fallbackPosition);
-
-    return Promise.resolve(null);
+    this._setElementPosition(element, overlayRect, fallbackPoint!, fallbackPosition!);
   }
 
   /**
@@ -432,6 +430,6 @@ interface Point {
  * how much of the element would be visible.
  */
 interface OverlayPoint extends Point {
-  visibleArea?: number;
-  fitsInViewport?: boolean;
+  visibleArea: number;
+  fitsInViewport: boolean;
 }

@@ -118,13 +118,13 @@ export class MdSidenav implements AfterContentInit, OnDestroy {
   @Output('align-changed') onAlignChanged = new EventEmitter<void>();
 
   /** The current toggle animation promise. `null` if no animation is in progress. */
-  private _toggleAnimationPromise: Promise<MdSidenavToggleResult> = null;
+  private _toggleAnimationPromise: Promise<MdSidenavToggleResult> | null = null;
 
   /**
    * The current toggle animation promise resolution function.
    * `null` if no animation is in progress.
    */
-  private _resolveToggleAnimationPromise: (animationFinished: boolean) => void = null;
+  private _resolveToggleAnimationPromise: ((animationFinished: boolean) => void) | null = null;
 
   get isFocusTrapEnabled() {
     // The focus trap is only enabled when the sidenav is open in any mode other than side.
@@ -174,7 +174,7 @@ export class MdSidenav implements AfterContentInit, OnDestroy {
 
     // This can happen when the sidenav is set to opened in
     // the template and the transition hasn't ended.
-    if (this._toggleAnimationPromise) {
+    if (this._toggleAnimationPromise && this._resolveToggleAnimationPromise) {
       this._resolveToggleAnimationPromise(true);
       this._toggleAnimationPromise = this._resolveToggleAnimationPromise = null;
     }
@@ -236,7 +236,7 @@ export class MdSidenav implements AfterContentInit, OnDestroy {
       this.onCloseStart.emit();
     }
 
-    if (this._toggleAnimationPromise) {
+    if (this._toggleAnimationPromise && this._resolveToggleAnimationPromise) {
       this._resolveToggleAnimationPromise(false);
     }
     this._toggleAnimationPromise = new Promise<MdSidenavToggleResult>(resolve => {
@@ -272,7 +272,7 @@ export class MdSidenav implements AfterContentInit, OnDestroy {
         this.onClose.emit();
       }
 
-      if (this._toggleAnimationPromise) {
+      if (this._toggleAnimationPromise && this._resolveToggleAnimationPromise) {
         this._resolveToggleAnimationPromise(true);
         this._toggleAnimationPromise = this._resolveToggleAnimationPromise = null;
       }
@@ -311,7 +311,7 @@ export class MdSidenav implements AfterContentInit, OnDestroy {
     return 0;
   }
 
-  private _elementFocusedBeforeSidenavWasOpened: HTMLElement = null;
+  private _elementFocusedBeforeSidenavWasOpened: HTMLElement | null = null;
 }
 
 /**
@@ -350,8 +350,8 @@ export class MdSidenavContainer implements AfterContentInit {
   @Output() backdropClick = new EventEmitter<void>();
 
   /** The sidenav at the start/end alignment, independent of direction. */
-  private _start: MdSidenav;
-  private _end: MdSidenav;
+  private _start: MdSidenav | null;
+  private _end: MdSidenav | null;
 
   /**
    * The sidenav at the left/right. When direction changes, these will change as well.
@@ -359,8 +359,8 @@ export class MdSidenavContainer implements AfterContentInit {
    * In LTR, _left == _start and _right == _end.
    * In RTL, _left == _end and _right == _start.
    */
-  private _left: MdSidenav;
-  private _right: MdSidenav;
+  private _left: MdSidenav | null;
+  private _right: MdSidenav | null;
 
   /** Whether to enable open/close trantions. */
   _enableTransitions = false;
@@ -389,12 +389,16 @@ export class MdSidenavContainer implements AfterContentInit {
 
   /** Calls `open` of both start and end sidenavs */
   public open() {
-    return Promise.all([this._start, this._end].map(sidenav => sidenav && sidenav.open()));
+    return Promise.all([this._start, this._end]
+      .filter(sidenav => sidenav)
+      .map(sidenav => sidenav!.open()));
   }
 
   /** Calls `close` of both start and end sidenavs */
   public close() {
-    return Promise.all([this._start, this._end].map(sidenav => sidenav && sidenav.close()));
+    return Promise.all([this._start, this._end]
+      .filter(sidenav => sidenav)
+      .map(sidenav => sidenav!.close()));
   }
 
   /**
@@ -473,15 +477,15 @@ export class MdSidenavContainer implements AfterContentInit {
     // Close all open sidenav's where closing is not disabled and the mode is not `side`.
     [this._start, this._end]
       .filter(sidenav => sidenav && !sidenav.disableClose && sidenav.mode !== 'side')
-      .forEach(sidenav => sidenav.close());
+      .forEach(sidenav => sidenav!.close());
   }
 
   _isShowingBackdrop(): boolean {
-    return (this._isSidenavOpen(this._start) && this._start.mode != 'side')
-        || (this._isSidenavOpen(this._end) && this._end.mode != 'side');
+    return (this._isSidenavOpen(this._start) && this._start!.mode != 'side')
+        || (this._isSidenavOpen(this._end) && this._end!.mode != 'side');
   }
 
-  private _isSidenavOpen(side: MdSidenav): boolean {
+  private _isSidenavOpen(side: MdSidenav | null): boolean {
     return side != null && side.opened;
   }
 
@@ -496,19 +500,19 @@ export class MdSidenavContainer implements AfterContentInit {
   }
 
   _getMarginLeft() {
-    return this._getSidenavEffectiveWidth(this._left, 'side');
+    return this._left ? this._getSidenavEffectiveWidth(this._left, 'side') : 0;
   }
 
   _getMarginRight() {
-    return this._getSidenavEffectiveWidth(this._right, 'side');
+    return this._right ? this._getSidenavEffectiveWidth(this._right, 'side') : 0;
   }
 
   _getPositionLeft() {
-    return this._getSidenavEffectiveWidth(this._left, 'push');
+    return this._left ? this._getSidenavEffectiveWidth(this._left, 'push') : 0;
   }
 
   _getPositionRight() {
-    return this._getSidenavEffectiveWidth(this._right, 'push');
+    return this._right ? this._getSidenavEffectiveWidth(this._right, 'push') : 0;
   }
 
   /**

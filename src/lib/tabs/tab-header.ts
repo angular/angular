@@ -91,7 +91,7 @@ export class MdTabHeader implements AfterContentChecked, AfterContentInit, OnDes
   private _selectedIndexChanged = false;
 
   /** Combines listeners that will re-align the ink bar whenever they're invoked. */
-  private _realignInkBar: Subscription = null;
+  private _realignInkBar: Subscription | null = null;
 
   /** Whether the controls for pagination should be displayed */
   _showPaginationControls = false;
@@ -240,7 +240,7 @@ export class MdTabHeader implements AfterContentChecked, AfterContentInit, OnDes
     if (!this._labelWrappers) { return true; }
 
     const tab = this._labelWrappers ? this._labelWrappers.toArray()[index] : null;
-    return tab && !tab.disabled;
+    return !!tab && !tab.disabled;
   }
 
   /**
