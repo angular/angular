@@ -1,0 +1,24 @@
+<!-- #docregion -->
+<h2>My Heroes</h2>
+<!-- #docregion add -->
+<div>
+  <label>Hero name:</label> <input #heroName />
+  <button (click)="add(heroName.value); heroName.value=''">
+    Add
+  </button>
+</div>
+<!-- #enddocregion add -->
+<!-- #docregion render-heroes -->
+<ul class="heroes">
+  <li *ngFor="let hero of heroes">
+    <span class="badge">{{hero.id}}</span>
+    <span>{{hero.name}}</span>
+  </li>
+</ul>
+<!-- #enddocregion render-heroes -->
+<div *ngIf="selectedHero">
+  <h2>
+    {{selectedHero.name | uppercase}} is my hero
+  </h2>
+  <button (click)="gotoDetail()">View Details</button>
+</div>

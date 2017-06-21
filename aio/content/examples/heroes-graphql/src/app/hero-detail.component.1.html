@@ -1,0 +1,17 @@
+<!-- #docregion -->
+<div *ngIf="hero">
+  <h2>{{hero.name}} details!</h2>
+  <div>
+    <label>id: </label>{{hero.id}}</div>
+  <div>
+  <!-- #docregion template-new-field -->
+    <label>name: </label>
+    <input [(ngModel)]="hero.name" placeholder="name" />
+    <label>age: </label>
+    <input [(ngModel)]="hero.age" placeholder="age" />
+   </div>
+  <!-- #enddocregion template-new-field -->
+  <button (click)="goBack()">Back</button>
+  
+  <button (click)="save()">Save</button>
+</div>

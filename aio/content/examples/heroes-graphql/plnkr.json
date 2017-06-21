@@ -1,0 +1,11 @@
+{
+  "description": "Tour of Heroes: GraphQL",
+  "basePath": "src/",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[1,2].*",
+    "systemjs.config.extras.js"
+  ],
+  "tags": ["tutorial", "tour", "heroes", "http", "GraphQL"]
+}
