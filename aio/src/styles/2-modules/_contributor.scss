@@ -69,32 +69,24 @@ aio-contributor {
     opacity: 0;
     border-radius: 50%;
 
-    button {
-      background: none;
-      border: none;
-      padding: 0;
-      margin: 8px;
-      text-transform: uppercase;
-      cursor: pointer;
-
-      &.icon {
-        width: 20px;
-        min-width: 20px;
-      }
-
-    }
-
-    a {
+    [md-button] {
       color: $white;
       font-size: 14px;
       font-weight: 500;
-
-      .fa-2x {
-        font-size: 20px;
-      }
+      margin: 8px;
+      padding: 0;
 
       &:hover {
         color: $lightgray;
+      }
+
+      &.icon {
+        min-width: 20px;
+        width: 20px;
+
+        .fa-2x {
+          font-size: 20px;
+        }
       }
     }
   }
@@ -170,7 +162,7 @@ aio-contributor {
     margin: 8px auto;
     border: 2px solid $lightgray;
     transition: all .2s ease-in-out;
-    }
+  }
 
   section {
     font-size: 14px;
