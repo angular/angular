@@ -567,34 +567,6 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
     }
     return record;
   }
-
-
-  toString(): string {
-    const list: IterableChangeRecord_<V>[] = [];
-    this.forEachItem((record: IterableChangeRecord_<V>) => list.push(record));
-
-    const previous: IterableChangeRecord_<V>[] = [];
-    this.forEachPreviousItem((record: IterableChangeRecord_<V>) => previous.push(record));
-
-    const additions: IterableChangeRecord_<V>[] = [];
-    this.forEachAddedItem((record: IterableChangeRecord_<V>) => additions.push(record));
-
-    const moves: IterableChangeRecord_<V>[] = [];
-    this.forEachMovedItem((record: IterableChangeRecord_<V>) => moves.push(record));
-
-    const removals: IterableChangeRecord_<V>[] = [];
-    this.forEachRemovedItem((record: IterableChangeRecord_<V>) => removals.push(record));
-
-    const identityChanges: IterableChangeRecord_<V>[] = [];
-    this.forEachIdentityChange((record: IterableChangeRecord_<V>) => identityChanges.push(record));
-
-    return 'collection: ' + list.join(', ') + '\n' +
-        'previous: ' + previous.join(', ') + '\n' +
-        'additions: ' + additions.join(', ') + '\n' +
-        'moves: ' + moves.join(', ') + '\n' +
-        'removals: ' + removals.join(', ') + '\n' +
-        'identityChanges: ' + identityChanges.join(', ') + '\n';
-  }
 }
 
 /**
@@ -627,12 +599,6 @@ export class IterableChangeRecord_<V> implements IterableChangeRecord<V> {
 
 
   constructor(public item: V, public trackById: any) {}
-
-  toString(): string {
-    return this.previousIndex === this.currentIndex ? stringify(this.item) :
-                                                      stringify(this.item) + '[' +
-            stringify(this.previousIndex) + '->' + stringify(this.currentIndex) + ']';
-  }
 }
 
 // A linked list of CollectionChangeRecords with the same IterableChangeRecord_.item
@@ -752,8 +718,6 @@ class _DuplicateMap<V> {
   get isEmpty(): boolean { return this.map.size === 0; }
 
   clear() { this.map.clear(); }
-
-  toString(): string { return '_DuplicateMap(' + stringify(this.map) + ')'; }
 }
 
 function getPreviousIndex(

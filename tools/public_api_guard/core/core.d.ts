@@ -345,7 +345,6 @@ export declare class DefaultIterableDiffer<V> implements IterableDiffer<V>, Iter
     forEachPreviousItem(fn: (record: IterableChangeRecord_<V>) => void): void;
     forEachRemovedItem(fn: (record: IterableChangeRecord_<V>) => void): void;
     onDestroy(): void;
-    toString(): string;
 }
 
 /** @experimental */
