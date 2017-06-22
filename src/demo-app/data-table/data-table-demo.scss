@@ -13,8 +13,19 @@
 }
 
 .demo-data-source-actions {
-  margin: 16px 0;
+  & > div {
+    margin: 16px 0;
+  }
+
+  .demo-highlighter .mat-checkbox {
+    margin: 0 8px;
+  }
 }
+
+.demo-row-highlight-first { background: #f3f315; }
+.demo-row-highlight-last { background: #0dd5fc; }
+.demo-row-highlight-even { background: #ff0099; }
+.demo-row-highlight-odd { background: #83f52c; }
 
 /*
  * Styles to make the demo's cdk-table match the material design spec

@@ -21,9 +21,16 @@ describe('CdkTable', () => {
 
     TestBed.configureTestingModule({
       imports: [CdkDataTableModule],
-      declarations: [SimpleCdkTableApp, DynamicDataSourceCdkTableApp, CustomRoleCdkTableApp],
+      declarations: [
+        SimpleCdkTableApp,
+        DynamicDataSourceCdkTableApp,
+        CustomRoleCdkTableApp,
+        RowContextCdkTableApp
+      ],
     }).compileComponents();
+  }));
 
+  beforeEach(() => {
     fixture = TestBed.createComponent(SimpleCdkTableApp);
 
     component = fixture.componentInstance;
@@ -33,7 +40,7 @@ describe('CdkTable', () => {
 
     fixture.detectChanges();  // Let the component and table create embedded views
     fixture.detectChanges();  // Let the cells render
-  }));
+  });
 
   describe('should initialize', () => {
     it('with a connected data source', () => {
@@ -153,6 +160,7 @@ describe('CdkTable', () => {
     // Add data to the table and recreate what the rendered output should be.
     dataSource.addData();
     expect(dataSource.data.length).toBe(initialDataLength + 1); // Make sure data was added
+    fixture.detectChanges();
 
     data = dataSource.data;
     expect(tableElement).toMatchTableContent([
@@ -196,6 +204,88 @@ describe('CdkTable', () => {
     expect(tableElement).toMatchTableContent([
       ['Column A']
     ]);
+  });
+
+  it('should be able to apply classes to rows based on their context', () => {
+    const contextFixture = TestBed.createComponent(RowContextCdkTableApp);
+    const contextComponent = contextFixture.componentInstance;
+    tableElement = contextFixture.nativeElement.querySelector('cdk-table');
+
+    contextFixture.detectChanges();  // Let the table initialize its view
+    contextFixture.detectChanges();  // Let the table render the rows and cells
+
+    const rowElements = contextFixture.nativeElement.querySelectorAll('cdk-row');
+
+    // Rows should not have any context classes
+    for (let i = 0; i < rowElements.length; i++) {
+      expect(rowElements[i].classList.contains('custom-row-class-first')).toBe(false);
+      expect(rowElements[i].classList.contains('custom-row-class-last')).toBe(false);
+      expect(rowElements[i].classList.contains('custom-row-class-even')).toBe(false);
+      expect(rowElements[i].classList.contains('custom-row-class-odd')).toBe(false);
+    }
+
+    // Enable all the context classes
+    contextComponent.enableRowContextClasses = true;
+    contextFixture.detectChanges();
+
+    expect(rowElements[0].classList.contains('custom-row-class-first')).toBe(true);
+    expect(rowElements[0].classList.contains('custom-row-class-last')).toBe(false);
+    expect(rowElements[0].classList.contains('custom-row-class-even')).toBe(true);
+    expect(rowElements[0].classList.contains('custom-row-class-odd')).toBe(false);
+
+    expect(rowElements[1].classList.contains('custom-row-class-first')).toBe(false);
+    expect(rowElements[1].classList.contains('custom-row-class-last')).toBe(false);
+    expect(rowElements[1].classList.contains('custom-row-class-even')).toBe(false);
+    expect(rowElements[1].classList.contains('custom-row-class-odd')).toBe(true);
+
+    expect(rowElements[2].classList.contains('custom-row-class-first')).toBe(false);
+    expect(rowElements[2].classList.contains('custom-row-class-last')).toBe(true);
+    expect(rowElements[2].classList.contains('custom-row-class-even')).toBe(true);
+    expect(rowElements[2].classList.contains('custom-row-class-odd')).toBe(false);
+  });
+
+  it('should be able to apply classes to cells based on their row context', () => {
+    const contextFixture = TestBed.createComponent(RowContextCdkTableApp);
+    const contextComponent = contextFixture.componentInstance;
+    tableElement = contextFixture.nativeElement.querySelector('cdk-table');
+
+    contextFixture.detectChanges();  // Let the table initialize its view
+    contextFixture.detectChanges();  // Let the table render the rows and cells
+
+    const rowElements = contextFixture.nativeElement.querySelectorAll('cdk-row');
+
+    for (let i = 0; i < rowElements.length; i++) {
+      // Cells should not have any context classes
+      const cellElements = rowElements[i].querySelectorAll('cdk-cell');
+      for (let j = 0; j < cellElements.length; j++) {
+        expect(cellElements[j].classList.contains('custom-cell-class-first')).toBe(false);
+        expect(cellElements[j].classList.contains('custom-cell-class-last')).toBe(false);
+        expect(cellElements[j].classList.contains('custom-cell-class-even')).toBe(false);
+        expect(cellElements[j].classList.contains('custom-cell-class-odd')).toBe(false);
+      }
+    }
+
+    // Enable the context classes
+    contextComponent.enableCellContextClasses = true;
+    contextFixture.detectChanges();
+
+    let cellElement = rowElements[0].querySelectorAll('cdk-cell')[0];
+    expect(cellElement.classList.contains('custom-cell-class-first')).toBe(true);
+    expect(cellElement.classList.contains('custom-cell-class-last')).toBe(false);
+    expect(cellElement.classList.contains('custom-cell-class-even')).toBe(true);
+    expect(cellElement.classList.contains('custom-cell-class-odd')).toBe(false);
+
+    cellElement = rowElements[1].querySelectorAll('cdk-cell')[0];
+    expect(cellElement.classList.contains('custom-cell-class-first')).toBe(false);
+    expect(cellElement.classList.contains('custom-cell-class-last')).toBe(false);
+    expect(cellElement.classList.contains('custom-cell-class-even')).toBe(false);
+    expect(cellElement.classList.contains('custom-cell-class-odd')).toBe(true);
+
+    cellElement = rowElements[2].querySelectorAll('cdk-cell')[0];
+    expect(cellElement.classList.contains('custom-cell-class-first')).toBe(false);
+    expect(cellElement.classList.contains('custom-cell-class-last')).toBe(true);
+    expect(cellElement.classList.contains('custom-cell-class-even')).toBe(true);
+    expect(cellElement.classList.contains('custom-cell-class-odd')).toBe(false);
   });
 
   it('should be able to dynamically change the columns for header and rows', () => {
@@ -334,6 +424,42 @@ class CustomRoleCdkTableApp {
   columnsToRender = ['column_a'];
 
   @ViewChild(CdkTable) table: CdkTable<TestData>;
+}
+
+@Component({
+  template: `
+    <cdk-table [dataSource]="dataSource">
+      <ng-container cdkColumnDef="column_a">
+        <cdk-header-cell *cdkHeaderCellDef> Column A</cdk-header-cell>
+        <cdk-cell *cdkCellDef="let row; let first = first;
+                               let last = last; let even = even; let odd = odd"
+                  [ngClass]="{
+                    'custom-cell-class-first': enableCellContextClasses && first,
+                    'custom-cell-class-last': enableCellContextClasses && last,
+                    'custom-cell-class-even': enableCellContextClasses && even,
+                    'custom-cell-class-odd': enableCellContextClasses && odd
+                  }">
+          {{row.a}}
+        </cdk-cell>
+      </ng-container>
+      <cdk-header-row *cdkHeaderRowDef="columnsToRender"></cdk-header-row>
+      <cdk-row *cdkRowDef="let row; columns: columnsToRender;
+                           let first = first; let last = last; let even = even; let odd = odd"
+               [ngClass]="{
+                 'custom-row-class-first': enableRowContextClasses && first,
+                 'custom-row-class-last': enableRowContextClasses && last,
+                 'custom-row-class-even': enableRowContextClasses && even,
+                 'custom-row-class-odd': enableRowContextClasses && odd
+               }">
+      </cdk-row>
+    </cdk-table>
+  `
+})
+class RowContextCdkTableApp {
+  dataSource: FakeDataSource = new FakeDataSource();
+  columnsToRender = ['column_a'];
+  enableRowContextClasses = false;
+  enableCellContextClasses = false;
 }
 
 function getElements(element: Element, query: string): Element[] {

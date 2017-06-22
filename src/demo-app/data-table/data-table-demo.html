@@ -1,6 +1,16 @@
 <div class="demo-data-source-actions">
-  <button md-raised-button (click)="connect()">Connect New Data Source</button>
-  <button md-raised-button (click)="disconnect()" [disabled]="!dataSource">Disconnect Data Source</button>
+  <div>
+    <button md-raised-button (click)="connect()">Connect New Data Source</button>
+    <button md-raised-button (click)="disconnect()" [disabled]="!dataSource">Disconnect Data Source</button>
+  </div>
+
+  <div class="demo-highlighter">
+    Highlight:
+    <md-checkbox (change)="toggleHighlight('first', $event.checked)">First Row</md-checkbox>
+    <md-checkbox (change)="toggleHighlight('last', $event.checked)">Last Row</md-checkbox>
+    <md-checkbox (change)="toggleHighlight('even', $event.checked)">Even Rows</md-checkbox>
+    <md-checkbox (change)="toggleHighlight('odd', $event.checked)">Odd Rows</md-checkbox>
+  </div>
 </div>
 
 <div class="demo-table-container mat-elevation-z4">
@@ -44,6 +54,14 @@
     </ng-container>
 
     <cdk-header-row *cdkHeaderRowDef="propertiesToDisplay"></cdk-header-row>
-    <cdk-row *cdkRowDef="let row; columns: propertiesToDisplay"></cdk-row>
+    <cdk-row *cdkRowDef="let row; columns: propertiesToDisplay;
+                         let first = first; let last = last; let even = even; let odd = odd"
+             [ngClass]="{
+               'demo-row-highlight-first': highlights.has('first') && first,
+               'demo-row-highlight-last': highlights.has('last') && last,
+               'demo-row-highlight-even': highlights.has('even') && even,
+               'demo-row-highlight-odd': highlights.has('odd') && odd
+             }">
+    </cdk-row>
   </cdk-table>
 </div>

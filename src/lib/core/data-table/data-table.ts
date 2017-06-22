@@ -15,6 +15,7 @@ import {
   ContentChildren,
   Directive,
   ElementRef,
+  EmbeddedViewRef,
   Input,
   IterableChangeRecord,
   IterableDiffer,
@@ -27,8 +28,7 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import {CollectionViewer, DataSource} from './data-source';
-import {BaseRowDef, CdkCellOutlet, CdkHeaderRowDef, CdkRowDef} from './row';
-import {CdkCellDef, CdkColumnDef, CdkHeaderCellDef} from './cell';
+import {CdkCellOutlet, CdkCellOutletRowContext, CdkHeaderRowDef, CdkRowDef} from './row';
 import {Observable} from 'rxjs/Observable';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import 'rxjs/add/operator/let';
@@ -36,6 +36,7 @@ import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/observable/combineLatest';
 import {Subscription} from 'rxjs/Subscription';
 import {Subject} from 'rxjs/Subject';
+import {CdkCellDef, CdkColumnDef, CdkHeaderCellDef} from './cell';
 
 /**
  * Returns an error to be thrown when attempting to find an unexisting column.
@@ -198,13 +199,14 @@ export class CdkTable<T> implements CollectionViewer {
   }
 
   ngAfterViewInit() {
+    this._isViewInitialized = true;
     this._renderHeaderRow();
+  }
 
-    if (this.dataSource) {
+  ngDoCheck() {
+    if (this._isViewInitialized && this.dataSource && !this._renderChangeSubscription) {
       this._observeRenderChanges();
     }
-
-    this._isViewInitialized = true;
   }
 
   /**
@@ -251,8 +253,10 @@ export class CdkTable<T> implements CollectionViewer {
     //   of `createEmbeddedView`.
     this._headerRowPlaceholder.viewContainer
         .createEmbeddedView(this._headerDefinition.template, {cells});
-    CdkCellOutlet.mostRecentCellOutlet.cells = cells;
-    CdkCellOutlet.mostRecentCellOutlet.context = {};
+
+    cells.forEach(cell => {
+      CdkCellOutlet.mostRecentCellOutlet._viewContainer.createEmbeddedView(cell.template, {});
+    });
 
     this._changeDetectorRef.markForCheck();
   }
@@ -262,17 +266,20 @@ export class CdkTable<T> implements CollectionViewer {
     const changes = this._dataDiffer.diff(this._data);
     if (!changes) { return; }
 
+    const viewContainer = this._rowPlaceholder.viewContainer;
     changes.forEachOperation(
         (item: IterableChangeRecord<any>, adjustedPreviousIndex: number, currentIndex: number) => {
           if (item.previousIndex == null) {
             this._insertRow(this._data[currentIndex], currentIndex);
           } else if (currentIndex == null) {
-            this._rowPlaceholder.viewContainer.remove(adjustedPreviousIndex);
+            viewContainer.remove(adjustedPreviousIndex);
           } else {
-            const view = this._rowPlaceholder.viewContainer.get(adjustedPreviousIndex);
-            this._rowPlaceholder.viewContainer.move(view!, currentIndex);
+            const view = viewContainer.get(adjustedPreviousIndex);
+            viewContainer.move(view!, currentIndex);
           }
         });
+
+    this._updateRowContext();
   }
 
   /**
@@ -285,18 +292,39 @@ export class CdkTable<T> implements CollectionViewer {
     //   the data rather than choosing the first row definition.
     const row = this._rowDefinitions.first;
 
-    // TODO(andrewseguin): Add more context, such as first/last/isEven/etc
-    const context = {$implicit: rowData};
+    // Row context that will be provided to both the created embedded row view and its cells.
+    const context: CdkCellOutletRowContext<T> = {$implicit: rowData};
 
     // TODO(andrewseguin): add some code to enforce that exactly one
     //   CdkCellOutlet was instantiated as a result  of `createEmbeddedView`.
     this._rowPlaceholder.viewContainer.createEmbeddedView(row.template, context, index);
 
     // Insert empty cells if there is no data to improve rendering time.
-    CdkCellOutlet.mostRecentCellOutlet.cells = rowData ? this._getCellTemplatesForRow(row) : [];
-    CdkCellOutlet.mostRecentCellOutlet.context = context;
+    const cells = rowData ? this._getCellTemplatesForRow(row) : [];
+
+    cells.forEach(cell => {
+      CdkCellOutlet.mostRecentCellOutlet._viewContainer.createEmbeddedView(cell.template, context);
+    });
 
     this._changeDetectorRef.markForCheck();
+  }
+
+  /**
+   * Updates the context for each row to reflect any data changes that may have caused
+   * rows to be added, removed, or moved. The view container contains the same context
+   * that was provided to each of its cells.
+   */
+  private _updateRowContext() {
+    const viewContainer = this._rowPlaceholder.viewContainer;
+    for (let index = 0, count = viewContainer.length; index < count; index++) {
+      const viewRef = viewContainer.get(index) as EmbeddedViewRef<CdkCellOutletRowContext<T>>;
+      viewRef.context.index = index;
+      viewRef.context.count = count;
+      viewRef.context.first = index === 0;
+      viewRef.context.last = index === count - 1;
+      viewRef.context.even = index % 2 === 0;
+      viewRef.context.odd = index % 2 !== 0;
+    }
   }
 
   /**

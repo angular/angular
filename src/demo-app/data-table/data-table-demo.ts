@@ -13,6 +13,7 @@ export type UserProperties = 'userId' | 'userName' | 'progress' | 'color' | unde
 export class DataTableDemo {
   dataSource: PersonDataSource | null;
   propertiesToDisplay: UserProperties[] = [];
+  highlights = new Set<string>();
 
   constructor(private _peopleDatabase: PeopleDatabase) {
     this.connect();
@@ -41,5 +42,9 @@ export class DataTableDemo {
     } else {
       this.propertiesToDisplay.splice(colorColumnIndex, 1);
     }
+  }
+
+  toggleHighlight(property: string, enable: boolean) {
+    enable ? this.highlights.add(property) : this.highlights.delete(property);
   }
 }
