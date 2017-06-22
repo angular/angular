@@ -65,11 +65,11 @@ export class MdTabGroup {
   /** Snapshot of the height of the tab body wrapper before another tab is activated. */
   private _tabBodyWrapperHeight: number = 0;
 
-  /** Whether the tab group should grow to the size of the active tab */
-  private _dynamicHeight: boolean = false;
+  /** Whether the tab group should grow to the size of the active tab. */
   @Input()
   get dynamicHeight(): boolean { return this._dynamicHeight; }
   set dynamicHeight(value: boolean) { this._dynamicHeight = coerceBooleanProperty(value); }
+  private _dynamicHeight: boolean = false;
 
   /** @deprecated */
   @Input('md-dynamic-height')
