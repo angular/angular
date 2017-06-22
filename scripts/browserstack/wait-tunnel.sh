@@ -2,6 +2,13 @@
 
 TUNNEL_LOG="$LOGS_DIR/browserstack-tunnel.log"
 
+# Method that prints the logfile output of the browserstack tunnel.
+printLog() {
+  echo "Logfile output of Browserstack tunnel (${TUNNEL_LOG}):"
+  echo ""
+  cat ${TUNNEL_LOG}
+}
+
 # Wait for Connect to be ready before exiting
 # Time out if we wait for more than 2 minutes, so the process won't run forever.
 let "counter=0"
@@ -10,7 +17,7 @@ let "counter=0"
 if [ -f $BROWSER_PROVIDER_ERROR_FILE ]; then
   echo
   echo "An error occurred while starting the tunnel. See error:"
-  cat $TUNNEL_LOG
+  printLog
   exit 5
 fi
 
@@ -20,6 +27,7 @@ while [ ! -f $BROWSER_PROVIDER_READY_FILE ]; do
   if [ $counter -gt 240 ]; then
     echo
     echo "Timed out after 2 minutes waiting for tunnel ready file"
+    printLog
     exit 5
   fi
 

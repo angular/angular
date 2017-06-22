@@ -6,7 +6,7 @@ TUNNEL_FILE="sc-4.4.7-linux.tar.gz"
 TUNNEL_URL="https://saucelabs.com/downloads/${TUNNEL_FILE}"
 TUNNEL_DIR="/tmp/saucelabs-connect"
 
-TUNNEL_LOG="${LOGS_DIR}/sauce-connect"
+TUNNEL_LOG="${LOGS_DIR}/saucelabs-tunnel.log"
 
 SAUCE_ACCESS_KEY=`echo ${SAUCE_ACCESS_KEY} | rev`
 
