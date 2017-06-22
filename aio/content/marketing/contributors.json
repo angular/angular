@@ -573,5 +573,14 @@
    "website": "http://www.methotic.com",
    "bio": "Thierry is a senior consultant and trainer, specialized on Angular, and a Google Developer Expert.",
    "group": "GDE"
+ },
+
+"gerardsans": {
+   "name": "Gerard Sans",
+   "picture": "https://pbs.twimg.com/profile_images/796861611030024192/pVl1eq7f_400x400.jpg",
+   "twitter": "gerardsans",
+   "website": "https://medium.com/@gerard.sans",
+   "bio": "Gerard is very excited about the future of the Web and JavaScript. He loves running AngularZone and GraphQL London, mentoring students and giving back to the community.",
+   "group": "GDE"
  }
 }
