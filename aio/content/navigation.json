@@ -369,6 +369,11 @@
           "tooltip": "Use Visual Studio 2015 with the QuickStart files."
         },
         {
+          "url": "guide/graphql",
+          "title": "GraphQL",
+          "tooltip": "Use GraphQL with Angular."
+        },
+        {
           "url": "guide/styleguide",
           "title": "Style Guide",
           "tooltip": "Write Angular with style."
