@@ -1,3 +1,20 @@
+<a name="4.2.4"></a>
+## [4.2.4](https://github.com/angular/angular/compare/4.2.3...4.2.4) (2017-06-21)
+
+
+### Bug Fixes
+
+* **compiler:** avoid emitting self importing factories ([c112232](https://github.com/angular/angular/commit/c112232))
+* **compiler-cli:** find lazy routes in nested module import arrays ([59299de](https://github.com/angular/angular/commit/59299de))
+* **core**: argument destructuring sometimes breaks strictNullChecks ([77860a0](https://github.com/angular/angular/commit/77860a0))
+* **forms:** roll back breaking change with min/max directives ([4ab7353](https://github.com/angular/angular/commit/4ab7353)), closes [#17491](https://github.com/angular/angular/issues/17491)
+* **language-service:** infer `any` `ngForOf` of type `any` ([63a5f33](https://github.com/angular/angular/commit/63a5f33))
+* **language-service:** rollup `tslib` into the language service package ([20eb5cf](https://github.com/angular/angular/commit/20eb5cf))
+* **router:** update the version placeholder so that it gets replaced during the build ([7de1ae2](https://github.com/angular/angular/commit/7de1ae2)), closes [#17403](https://github.com/angular/angular/issues/17403)
+* **tsc-wrapped:** skip collecting metadata for default functions ([3390648](https://github.com/angular/angular/commit/3390648))
+
+
+
 <a name="4.2.3"></a>
 ## [4.2.3](https://github.com/angular/angular/compare/4.2.1...4.2.3) (2017-06-16)
 
