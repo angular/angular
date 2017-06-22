@@ -1,9 +1,13 @@
-.demo-nav-bar {
-  border: 1px solid #e0e0e0;
+.demo-nav-bar, .demo-tab-group {
+  border: 1px solid #e8e8e8;
   margin-bottom: 40px;
-  .mat-tab-nav-bar {
-    background: #f9f9f9;
+
+  .unicorn-dark-theme & {
+    border-color: #464646;
   }
+}
+
+.demo-nav-bar {
   sunny-routed-content,
   rainy-routed-content,
   foggy-routed-content {
@@ -13,17 +17,11 @@
 }
 
 .demo-tab-group {
-  border: 1px solid #e0e0e0;
-  margin-bottom: 40px;
   flex-grow: 1;
-  .mat-tab-header {
-    background: #f9f9f9;
-  }
 }
 
 tabs-demo .mat-card {
   width: 160px;
-
 }
 
 .demo-dynamic-tabs {
