@@ -2113,6 +2113,125 @@ export function main() {
            expect(p4.element.classList.contains('d'));
          });
 
+      it('should collect multiple root levels of :enter and :leave nodes', () => {
+        @Component({
+          selector: 'ani-cmp',
+          animations: [
+            trigger('pageAnimation', [
+              transition(':enter', []),
+              transition('* => *', [
+                query(':leave', [
+                  animate('1s', style({ opacity: 0 }))
+                ], { optional: true }),
+                query(':enter', [
+                  animate('1s', style({ opacity: 1 }))
+                ], { optional: true })
+              ])
+            ])
+          ],
+          template: `
+            <div [@pageAnimation]="status">
+              <header>
+                <div *ngIf="!loading" class="title">{{ title }}</div>
+                <div *ngIf="loading" class="loading">loading...</div>
+              </header>
+              <section>
+                <div class="page">
+                  <div *ngIf="page1" class="page1">
+                    <div *ngIf="true">page 1</div>
+                  </div>
+                  <div *ngIf="page2" class="page2">
+                    <div *ngIf="true">page 2</div>
+                  </div>
+                </div>
+              </section>
+            </div>  
+          `
+        })
+        class Cmp {
+          get title() {
+            if (this.page1) {
+              return 'hello from page1';
+            }
+            return 'greetings from page2';
+          }
+
+          page1 = false;
+          page2 = false;
+          loading = false;
+
+          get status() {
+            if (this.loading) return 'loading';
+            if (this.page1) return 'page1';
+            if (this.page2) return 'page2';
+            return '';
+          }
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+
+        const engine = TestBed.get(ɵAnimationEngine);
+        const fixture = TestBed.createComponent(Cmp);
+        const cmp = fixture.componentInstance;
+        cmp.loading = true;
+        fixture.detectChanges();
+        engine.flush();
+
+        let players = getLog();
+        resetLog();
+        cancelAllPlayers(players);
+
+        cmp.page1 = true;
+        cmp.loading = false;
+        fixture.detectChanges();
+        engine.flush();
+
+        let p1: MockAnimationPlayer;
+        let p2: MockAnimationPlayer;
+        let p3: MockAnimationPlayer;
+
+        players = getLog();
+        expect(players.length).toEqual(3);
+        [p1, p2, p3] = players;
+
+        expect(p1.element.classList.contains('loading')).toBe(true);
+        expect(p2.element.classList.contains('title')).toBe(true);
+        expect(p3.element.classList.contains('page1')).toBe(true);
+
+        resetLog();
+        cancelAllPlayers(players);
+
+        cmp.page1 = false;
+        cmp.loading = true;
+        fixture.detectChanges();
+
+        players = getLog();
+        cancelAllPlayers(players);
+
+        expect(players.length).toEqual(3);
+        [p1, p2, p3] = players;
+
+        expect(p1.element.classList.contains('title')).toBe(true);
+        expect(p2.element.classList.contains('page1')).toBe(true);
+        expect(p3.element.classList.contains('loading')).toBe(true);
+
+        resetLog();
+        cancelAllPlayers(players);
+
+        cmp.page2 = true;
+        cmp.loading = false;
+        fixture.detectChanges();
+        engine.flush();
+
+        players = getLog();
+        expect(players.length).toEqual(3);
+        [p1, p2, p3] = players;
+
+        expect(p1.element.classList.contains('loading')).toBe(true);
+        expect(p2.element.classList.contains('title')).toBe(true);
+        expect(p3.element.classList.contains('page2')).toBe(true);
+      });
+
       it('should emulate leave animation callbacks for all sub elements that have leave triggers within the component',
          fakeAsync(() => {
            @Component({
