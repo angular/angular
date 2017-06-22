@@ -55,7 +55,7 @@ export class MdBasicChip { }
     'role': 'option',
     '[class.mat-chip-selected]': 'selected',
     '[attr.disabled]': 'disabled || null',
-    '[attr.aria-disabled]': '_isAriaDisabled()',
+    '[attr.aria-disabled]': 'disabled.toString()',
     '(click)': '_handleClick($event)',
     '(focus)': '_hasFocus = true',
     '(blur)': '_hasFocus = false',
@@ -107,11 +107,6 @@ export class MdChip extends _MdChipMixinBase implements Focusable, OnDestroy, Ca
   focus(): void {
     this._elementRef.nativeElement.focus();
     this.onFocus.emit({chip: this});
-  }
-
-  /** The aria-disabled state for the chip */
-  _isAriaDisabled(): string {
-    return String(this.disabled);
   }
 
   /** Ensures events fire properly upon click. */

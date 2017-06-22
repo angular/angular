@@ -193,7 +193,7 @@ export class MdButton extends _MdButtonMixinBase implements OnDestroy, CanDisabl
              a[mat-button], a[mat-raised-button], a[mat-icon-button], a[mat-fab], a[mat-mini-fab]`,
   host: {
     '[attr.disabled]': 'disabled || null',
-    '[attr.aria-disabled]': '_isAriaDisabled',
+    '[attr.aria-disabled]': 'disabled.toString()',
     '(click)': '_haltDisabledEvents($event)',
   },
   inputs: ['disabled', 'color'],
@@ -214,10 +214,6 @@ export class MdAnchor extends MdButton {
   @HostBinding('tabIndex')
   get tabIndex(): number {
     return this.disabled ? -1 : 0;
-  }
-
-  get _isAriaDisabled(): string {
-    return this.disabled ? 'true' : 'false';
   }
 
   _haltDisabledEvents(event: Event) {
