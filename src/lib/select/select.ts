@@ -788,7 +788,8 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
       // we must only adjust for the height difference between the option element
       // and the trigger element, then multiply it by -1 to ensure the panel moves
       // in the correct direction up the page.
-      this._offsetY = (SELECT_ITEM_HEIGHT - SELECT_TRIGGER_HEIGHT) / 2 * -1;
+      this._offsetY = (SELECT_ITEM_HEIGHT - SELECT_TRIGGER_HEIGHT) / 2 * -1 -
+          (this._getLabelCountBeforeOption(0) * SELECT_ITEM_HEIGHT);
     }
 
     this._checkOverlayWithinViewport(maxScroll);
@@ -863,7 +864,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
     if (this.multiple) {
       offsetX = SELECT_MULTIPLE_PANEL_PADDING_X;
     } else {
-      let selected = this._selectionModel.selected[0];
+      let selected = this._selectionModel.selected[0] || this.options.first;
       offsetX = selected && selected.group ? SELECT_PANEL_INDENT_PADDING_X : SELECT_PANEL_PADDING_X;
     }
 

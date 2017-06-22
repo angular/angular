@@ -1456,6 +1456,19 @@ describe('MdSelect', () => {
           expect(Math.floor(selectedOptionLeft)).toEqual(Math.floor(triggerLeft - 16));
         }));
 
+      it('should align the first option to the trigger, if nothing is selected', fakeAsync(() => {
+        trigger.click();
+        groupFixture.detectChanges();
+
+        const triggerTop = trigger.getBoundingClientRect().top;
+        const optionTop = overlayContainerElement.querySelector('.cdk-overlay-pane md-option')
+            .getBoundingClientRect().top;
+
+        // Since the option is 18px higher than the trigger, it needs to be adjusted by 9px.
+        expect(Math.floor(optionTop))
+            .toBe(Math.floor(triggerTop - 9), 'Expected trigger to align with the first option.');
+      }));
+
     });
 
   });
