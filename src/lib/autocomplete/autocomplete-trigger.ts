@@ -211,7 +211,10 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   /** Stream of clicks outside of the autocomplete panel. */
   private get _outsideClickStream(): Observable<any> {
     if (this._document) {
-      return Observable.fromEvent(this._document, 'click').filter((event: MouseEvent) => {
+      return Observable.merge(
+        Observable.fromEvent(this._document, 'click'),
+        Observable.fromEvent(this._document, 'touchend')
+      ).filter((event: MouseEvent | TouchEvent) => {
         const clickTarget = event.target as HTMLElement;
         const inputContainer = this._inputContainer ?
             this._inputContainer._elementRef.nativeElement : null;
@@ -442,4 +445,3 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   }
 
 }
-

@@ -146,7 +146,7 @@ describe('MdAutocomplete', () => {
         });
       }));
 
-    it('should close the panel when input loses focus', async(() => {
+    it('should close the panel when the user clicks away', async(() => {
       dispatchFakeEvent(input, 'focusin');
       fixture.detectChanges();
 
@@ -157,6 +157,20 @@ describe('MdAutocomplete', () => {
             .toBe(false, `Expected clicking outside the panel to set its state to closed.`);
         expect(overlayContainerElement.textContent)
             .toEqual('', `Expected clicking outside the panel to close the panel.`);
+      });
+    }));
+
+    it('should close the panel when the user taps away on a touch device', async(() => {
+      dispatchFakeEvent(input, 'focus');
+      fixture.detectChanges();
+
+      fixture.whenStable().then(() => {
+        dispatchFakeEvent(document, 'touchend');
+
+        expect(fixture.componentInstance.trigger.panelOpen)
+            .toBe(false, `Expected tapping outside the panel to set its state to closed.`);
+        expect(overlayContainerElement.textContent)
+            .toEqual('', `Expected tapping outside the panel to close the panel.`);
       });
     }));
 
