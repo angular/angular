@@ -17,6 +17,8 @@ import {A11yModule} from './a11y/index';
 import {MdSelectionModule} from './selection/index';
 import {MdRippleModule} from './ripple/index';
 
+// Re-exports of the CDK to avoid breaking changes.
+export {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk';
 
 // RTL
 export {Dir, Direction, Directionality, BidiModule} from './bidi/index';
@@ -97,10 +99,6 @@ export * from './animation/animation';
 
 // Selection
 export * from './selection/index';
-
-// Coercion
-export {coerceBooleanProperty} from './coercion/boolean-property';
-export {coerceNumberProperty} from './coercion/number-property';
 
 // Compatibility
 export {CompatibilityModule, NoConflictStyleCompatibilityMode} from './compatibility/compatibility';

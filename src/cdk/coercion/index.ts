@@ -6,4 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './coercion/index';
+export * from './boolean-property';
+export * from './number-property';

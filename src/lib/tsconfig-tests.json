@@ -12,6 +12,7 @@
     "strictNullChecks": true
   },
   "include": [
-    "**/*.spec.ts"
+    "**/*.spec.ts",
+    "index.ts"
   ]
 }

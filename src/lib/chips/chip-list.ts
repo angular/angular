@@ -19,8 +19,8 @@ import {
 
 import {MdChip} from './chip';
 import {FocusKeyManager} from '../core/a11y/focus-key-manager';
-import {coerceBooleanProperty} from '../core/coercion/boolean-property';
 import {SPACE, LEFT_ARROW, RIGHT_ARROW, TAB} from '../core/keyboard/keycodes';
+import {coerceBooleanProperty} from '@angular/cdk';
 import {Subscription} from 'rxjs/Subscription';
 
 /**

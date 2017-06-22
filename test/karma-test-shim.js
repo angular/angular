@@ -46,7 +46,8 @@ System.config({
       'node:@angular/platform-browser-dynamic/bundles/platform-browser-dynamic-testing.umd.js',
 
     // Path mappings for local packages that can be imported inside of tests.
-    '@angular/material': 'dist/packages/material/index.js',
+    // TODO(devversion): replace once the index.ts file for the Material package has been added.
+    '@angular/material': 'dist/packages/material/public_api.js',
     '@angular/cdk': 'dist/packages/cdk/index.js',
   },
   packages: {
