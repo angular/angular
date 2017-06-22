@@ -1461,8 +1461,9 @@ describe('MdSelect', () => {
         groupFixture.detectChanges();
 
         const triggerTop = trigger.getBoundingClientRect().top;
-        const optionTop = overlayContainerElement.querySelector('.cdk-overlay-pane md-option')
-            .getBoundingClientRect().top;
+
+        const option = overlayContainerElement.querySelector('.cdk-overlay-pane md-option');
+        const optionTop = option ? option.getBoundingClientRect().top : 0;
 
         // Since the option is 18px higher than the trigger, it needs to be adjusted by 9px.
         expect(Math.floor(optionTop))

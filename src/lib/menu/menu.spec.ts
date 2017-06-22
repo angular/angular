@@ -141,7 +141,9 @@ describe('MdMenu', () => {
     const menuPanel = overlayContainerElement.querySelector('.mat-menu-panel');
 
     expect(menuPanel).toBeTruthy('Expected to find a menu panel.');
-    expect(menuPanel.getAttribute('role')).toBe('menu', 'Expected panel to have the "menu" role.');
+
+    const role = menuPanel ? menuPanel.getAttribute('role') : '';
+    expect(role).toBe('menu', 'Expected panel to have the "menu" role.');
   });
 
   describe('positions', () => {
