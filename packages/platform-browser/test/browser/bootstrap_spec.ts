@@ -1,3 +1,4 @@
+import { APP_CHANGE_DETECT, defaultAppChangeDetect } from './../../../core/src/application_tokens';
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
@@ -13,6 +14,7 @@ import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
 import {Testability, TestabilityRegistry} from '@angular/core/src/testability/testability';
 import {AsyncTestCompleter, Log, afterEach, beforeEach, beforeEachProviders, ddescribe, describe, iit, inject, it} from '@angular/core/testing/src/testing_internal';
+import {NgZone} from '@angular/core/src/zone/ng_zone';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -303,6 +305,20 @@ export function main() {
 
          refPromise.then(ref => {
            expect(ref.injector.get(LOCALE_ID)).toEqual('fr-FR');
+           async.done();
+         });
+       }));
+
+    it('should not override change detection callback provided during bootstrap',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+
+         const changeDetect = (ref: ApplicationRef, zone: NgZone) => { zone.run(() => ref.tick())};
+         
+         const refPromise =
+             bootstrap(HelloRootCmp, [testProviders], [{provide: APP_CHANGE_DETECT, useValue: changeDetect}]);
+
+         refPromise.then(ref => {
+           expect(ref.injector.get(ApplicationRef)._detectChanges).toBe(changeDetect);
            async.done();
          });
        }));

@@ -17,9 +17,9 @@ import {scheduleMicroTask, stringify} from '../src/util';
 import {isPromise} from '../src/util/lang';
 
 import {ApplicationInitStatus} from './application_init';
-import {APP_BOOTSTRAP_LISTENER, PLATFORM_INITIALIZER} from './application_tokens';
+import { APP_BOOTSTRAP_LISTENER, PLATFORM_INITIALIZER, APP_CHANGE_DETECT, ChangeDetect} from './application_tokens';
 import {Console} from './console';
-import {Injectable, InjectionToken, Injector, Provider, ReflectiveInjector} from './di';
+import {Inject, Injectable, InjectionToken, Injector, Provider, ReflectiveInjector} from './di';
 import {CompilerFactory, CompilerOptions} from './linker/compiler';
 import {ComponentFactory, ComponentRef} from './linker/component_factory';
 import {ComponentFactoryBoundToModule, ComponentFactoryResolver} from './linker/component_factory_resolver';
@@ -469,12 +469,12 @@ export class ApplicationRef_ extends ApplicationRef {
       private _zone: NgZone, private _console: Console, private _injector: Injector,
       private _exceptionHandler: ErrorHandler,
       private _componentFactoryResolver: ComponentFactoryResolver,
-      private _initStatus: ApplicationInitStatus) {
+      private _initStatus: ApplicationInitStatus, @Inject(APP_CHANGE_DETECT) private _detectChanges: ChangeDetect) {
     super();
     this._enforceNoNewChanges = isDevMode();
 
     this._zone.onMicrotaskEmpty.subscribe(
-        {next: () => { this._zone.run(() => { this.tick(); }); }});
+        {next: this._detectChanges.bind(this, this, this._zone)});
 
     const isCurrentlyStable = new Observable<boolean>((observer: Observer<boolean>) => {
       this._stable = this._zone.isStable && !this._zone.hasPendingMacrotasks &&
