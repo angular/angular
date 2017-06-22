@@ -5,7 +5,11 @@ jobs:
     docker:
       - image: angular/ngcontainer
     steps:
-      - checkout
+      - checkout:
+          # After checkout, rebase on top of master.
+          # Similar to travis behavior, but not quite the same.
+          # See https://discuss.circleci.com/t/1662
+          post: git pull --ff-only origin "refs/pull/${CI_PULL_REQUEST//*pull\//}/merge"
       - restore_cache:
           key: angular-{{ .Branch }}-{{ checksum "npm-shrinkwrap.json" }}
       - run: npm install
