@@ -216,7 +216,7 @@
             "url": "https://github.com/aspnet/nodeservices"
           },
           "f1": {
-            "desc": "This tool generates a dedicated documentation for Angular applications.",
+            "desc": "This tool generates dedicated documentation for Angular applications.",
             "logo": "",
             "rev": true,
             "title": "Compodoc",
