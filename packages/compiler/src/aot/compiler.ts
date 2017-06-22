@@ -305,6 +305,11 @@ export class AotCompiler {
       const arity = this._symbolResolver.getTypeArity(symbol) || 0;
       const {filePath, name, members} = this._symbolResolver.getImportAs(symbol) || symbol;
       const importModule = this._symbolResolver.fileNameToModuleName(filePath, genFilePath);
+
+      // It should be good enough to compare filePath to genFilePath and if they are equal
+      // there is a self reference. However, ngfactory files generate to .ts but their
+      // symbols have .d.ts so a simple compare is insufficient. They should be canonical
+      // and is tracked by #17705.
       const selfReference = this._symbolResolver.fileNameToModuleName(genFilePath, genFilePath);
       const moduleName = importModule === selfReference ? null : importModule;
 
