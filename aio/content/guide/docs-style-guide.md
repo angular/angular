@@ -2,12 +2,35 @@
 
 This page presents design and layout guidelines for Angular documentation pages.  These guidelines should be followed by all guide page authors. Deviations must be approved by the documentation editor.
 
-For clarity and precision, every guideline on this page is illustrated with a working example 
-followed by the page markup for that example.
+Most guide pages should have [accompanying sample code](#from-code-samples) with 
+[special markup](#source-code-markup) for the code snippets on the page. 
+Code samples should adhere to the 
+[style guide for Angular applications](guide/styleguide "Application Code Style Guide") 
+because readers expect consistency.
+
+For clarity and precision, every guideline on _this_ page is illustrated with a working example, 
+followed by the page markup for that example ... as shown here.
 
 ```html
-  ... followed by the page markup for that example.
+  followed by the page markup for that example ... as shown here.
 ```
+
+## Doc generation and tooling
+
+To make changes to the documentation pages and sample code, clone the [Angular github repository](https://github.com/angular/angular "Angular repo") and go to the `aio/` folder.
+
+The [aio/README.md](https://github.com/angular/angular/blob/master/aio/README.md "AIO ReadMe") explains how to install and use the tools to edit and test your changes. 
+
+Here are a few essential commands for guide page authors.
+
+1. `yarn setup` &mdash; installs packages; builds docs, plunkers, and zips.
+
+1. `yarn docs-watch -- --watch-only` &mdash; watches for saved content changes and refreshes the browser. The (optional) `--watch-only` flag skips the initial docs rebuild.
+
+1. `yarn start`  &mdash;  starts the doc viewer application so you can see your local changes in the browser.
+
+1.  http://localhost:4200/  &mdash;  browse to the app running locally.
+
 ## Guide pages
 
  All but a few guide pages are [markdown](https://daringfireball.net/projects/markdown/syntax "markdown") files with an `.md` extension. 
@@ -254,7 +277,7 @@ Whatever the source, the doc viewer renders them as "code snippets", either indi
 
 {@a code-example}
 
-<h3 class="no-toc">Code example</h3>
+### Code example
 
 You can display a simple, inline code snippet with the markdown backtick syntax.
 We generally prefer to display a code snippet with the Angular documentation _code-example_ component
@@ -406,8 +429,7 @@ Here's the markup for an "avoid" example in the
 </code-example>
 
 {@a code-tabs}
-
-<h3 class="no-toc">Code Tabs</h3> 
+### Code Tabs
 
 Code tabs display code much like Code examples do.  The added advantage is that they can display mutiple code samples within a tabbed interface.  Each tab is displayed using Code-pane.
 
@@ -421,30 +443,52 @@ Code tabs display code much like Code examples do.  The added advantage is that 
 * `title` - seen in the header of a tab
 * `linenums` - overrides the `linenums` property at the `code-tabs` level for this particular pane. The value can be `true`, `false` or a number indicating the starting line number. If not specified, line numbers are are enabled only when there are 10 or more lines.
 
-The example below uses the source code for a small application that bundles with Webpack techniques.  This creates multiple tabs, each with its own title and be appropriately color coded.  By default, line numbers are shown.  Line number display can be specified using the linenums attribute at the code tab or code pane level.  The example below shows us how to display line numbers in just one code pane. 
+The next example displays multiple code tabs, each with its own title.
+Line numbers are explicitly disabled for all panes at the `<code-tabs>` level.
+The second pane adds line numbers back for itself. 
 
-<code-tabs>
-  <code-pane title="app.component.html" path="docs-style-guide/src/app/app.component.html">
+<code-tabs linenums="false">
+  <code-pane 
+    title="app.component.html" 
+    path="docs-style-guide/src/app/app.component.html">
   </code-pane>
-  <code-pane title="app.component.ts" path="docs-style-guide/src/app/app.component.ts">
+  <code-pane 
+    title="app.component.ts" 
+    path="docs-style-guide/src/app/app.component.ts"
+    linenums="true">
   </code-pane>
-  <code-pane title="app.component.css (heroes)" path="docs-style-guide/src/app/app.component.css"  region="heroes">
+  <code-pane 
+    title="app.component.css (heroes)" 
+    path="docs-style-guide/src/app/app.component.css"  
+    region="heroes">
   </code-pane>
-  <code-pane title="tsconfig.json" path="docs-style-guide/src/tsconfig.json" linenums="false">
+  <code-pane 
+    title="package.json (scripts)" 
+    path="docs-style-guide/package.1.json">
   </code-pane>
 </code-tabs>
 
-The markup below creates multiple tab pane, each with its own title and syntax-colored content.
+Here's the markup for that example.
 
 ```html
-<code-tabs>
-  <code-pane title="app.component.html" path="docs-style-guide/src/app/app.component.html">
+<code-tabs linenums="false">
+  <code-pane 
+    title="app.component.html" 
+    path="docs-style-guide/src/app/app.component.html">
   </code-pane>
-  <code-pane title="app.component.ts" path="docs-style-guide/src/app/app.component.ts">
+  <code-pane 
+    title="app.component.ts" 
+    path="docs-style-guide/src/app/app.component.ts"
+    linenums="true">
   </code-pane>
-  <code-pane title="app.component.css (heroes)" path="docs-style-guide/src/app/app.component.css"  region="heroes">
+  <code-pane 
+    title="app.component.css (heroes)" 
+    path="docs-style-guide/src/app/app.component.css"  
+    region="heroes">
   </code-pane>
-  <code-pane title="tsconfig.json" path="docs-style-guide/src/tsconfig.json" linenums="false">
+  <code-pane 
+    title="package.json (scripts)" 
+    path="docs-style-guide/package.1.json">
   </code-pane>
 </code-tabs>
 ```
