@@ -47,6 +47,7 @@
 
     z-index: $cdk-z-index-overlay-backdrop;
     pointer-events: auto;
+    -webkit-tap-highlight-color: transparent;
 
     // TODO(jelbourn): figure out if there are actually spec'ed colors for both light and dark
     // themes here. Currently using the values from AngularJS Material.
