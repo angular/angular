@@ -3,6 +3,7 @@
 # WARNING: FIREBASE_TOKEN should NOT be printed.
 set +x -eu -o pipefail
 
+readonly thisDir=$(cd $(dirname $0); pwd)
 readonly TOKEN=${ANGULAR_PAYLOAD_FIREBASE_TOKEN:-}
 readonly PROJECT_NAME="angular-payload-size"
 
@@ -42,8 +43,8 @@ payloadData="$payloadData\"timestamp\": $timestamp, "
 
 # Add change source: application, dependencies, or 'application+dependencies'
 yarnChanged=false
-allChangedFiles=$(git diff --name-only $TRAVIS_COMMIT_RANGE ./ | wc -l)
-allChangedFileNames=$(git diff --name-only $TRAVIS_COMMIT_RANGE ./)
+allChangedFiles=$(git diff --name-only $TRAVIS_COMMIT_RANGE $thisDir | wc -l)
+allChangedFileNames=$(git diff --name-only $TRAVIS_COMMIT_RANGE $thisDir)
 
 if [[ $allChangedFileNames == *"yarn.lock"* ]]; then
   yarnChanged=true
