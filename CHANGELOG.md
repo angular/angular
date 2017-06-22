@@ -1,3 +1,29 @@
+<a name="4.3.0-beta.0"></a>
+# [4.3.0-beta.0](https://github.com/angular/angular/compare/4.2.1...4.3.0-beta.0) (2017-06-22)
+
+
+### Bug Fixes
+
+* **animations:** compute removal node height correctly ([185075d](https://github.com/angular/angular/commit/185075d))
+* **animations:** do not treat a `0` animation state as `void` ([451257a](https://github.com/angular/angular/commit/451257a))
+* **animations:** properly collect :enter nodes in a partially updated collection ([6ca4692](https://github.com/angular/angular/commit/6ca4692)), closes [#17440](https://github.com/angular/angular/issues/17440)
+* **animations:** remove duplicate license header ([e096a85](https://github.com/angular/angular/commit/e096a85))
+* **compiler:** avoid emitting self importing factories ([4352dd2](https://github.com/angular/angular/commit/4352dd2))
+* **compiler-cli:** find lazy routes in nested module import arrays ([8c89cc4](https://github.com/angular/angular/commit/8c89cc4))
+* **core:** argument destructuring sometimes breaks strictNullChecks ([c59c390](https://github.com/angular/angular/commit/c59c390))
+* **forms:** roll back breaking change with min/max directives ([3e685f9](https://github.com/angular/angular/commit/3e685f9)), closes [#17491](https://github.com/angular/angular/issues/17491)
+* **language-service:** infer `any` `ngForOf` of type `any` ([f194f18](https://github.com/angular/angular/commit/f194f18))
+* **language-service:** rollup `tslib` into the language service package ([4e6be15](https://github.com/angular/angular/commit/4e6be15))
+* **router:** update the version placeholder so that it gets replaced during the build ([d3c92a3](https://github.com/angular/angular/commit/d3c92a3)), closes [#17403](https://github.com/angular/angular/issues/17403)
+* **tsc-wrapped:** skip collecting metadata for default functions ([46ddf50](https://github.com/angular/angular/commit/46ddf50))
+
+
+### Features
+
+* **core:** update zone.js to 0.8.12 ([5ac3919](https://github.com/angular/angular/commit/5ac3919))
+
+
+
 <a name="4.2.4"></a>
 ## [4.2.4](https://github.com/angular/angular/compare/4.2.3...4.2.4) (2017-06-21)
 
