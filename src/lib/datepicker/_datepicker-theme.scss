@@ -18,6 +18,7 @@ $mat-calendar-weekday-table-font-size: 11px !default;
 
   .mat-datepicker-content {
     background-color: mat-color($background, card);
+    color: mat-color($foreground, text);
   }
 
   .mat-calendar-arrow {
