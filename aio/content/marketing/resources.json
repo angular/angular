@@ -298,7 +298,13 @@
             "rev": true,
             "title": "ag-Grid",
             "url": "https://www.ag-grid.com/best-angular-2-data-grid/"
-          }
+          },
+          "jqwidgets": {
+            "desc": "Angular UI Components including Grids, Charts, Scheduling and more.",
+            "rev": true,
+            "title": "jQWidgets",
+            "url": "https://www.jqwidgets.com/angular/"
+          }          
         }
       }
     }
