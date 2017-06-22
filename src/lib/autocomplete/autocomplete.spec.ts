@@ -101,7 +101,7 @@ describe('MdAutocomplete', () => {
       expect(fixture.componentInstance.trigger.panelOpen)
           .toBe(false, `Expected panel state to start out closed.`);
 
-      dispatchFakeEvent(input, 'focus');
+      dispatchFakeEvent(input, 'focusin');
       fixture.whenStable().then(() => {
         fixture.detectChanges();
 
@@ -147,7 +147,7 @@ describe('MdAutocomplete', () => {
       }));
 
     it('should close the panel when input loses focus', async(() => {
-      dispatchFakeEvent(input, 'focus');
+      dispatchFakeEvent(input, 'focusin');
       fixture.detectChanges();
 
       fixture.whenStable().then(() => {
@@ -161,7 +161,7 @@ describe('MdAutocomplete', () => {
     }));
 
     it('should close the panel when an option is clicked', async(() => {
-      dispatchFakeEvent(input, 'focus');
+      dispatchFakeEvent(input, 'focusin');
       fixture.detectChanges();
 
       fixture.whenStable().then(() => {
@@ -177,7 +177,7 @@ describe('MdAutocomplete', () => {
     }));
 
     it('should close the panel when a newly created option is clicked', async(() => {
-      dispatchFakeEvent(input, 'focus');
+      dispatchFakeEvent(input, 'focusin');
       fixture.detectChanges();
 
       fixture.whenStable().then(() => {
@@ -222,7 +222,7 @@ describe('MdAutocomplete', () => {
     });
 
     it('should hide the panel when the options list is empty', async(() => {
-      dispatchFakeEvent(input, 'focus');
+      dispatchFakeEvent(input, 'focusin');
 
       fixture.whenStable().then(() => {
         fixture.detectChanges();
@@ -1127,7 +1127,7 @@ describe('MdAutocomplete', () => {
       fixture.detectChanges();
 
       const input = fixture.debugElement.query(By.css('input')).nativeElement;
-      dispatchFakeEvent(input, 'focus');
+      dispatchFakeEvent(input, 'focusin');
 
       fixture.whenStable().then(() => {
         fixture.detectChanges();
@@ -1226,7 +1226,7 @@ describe('MdAutocomplete', () => {
       let fixture = TestBed.createComponent(AutocompleteWithOnPushDelay);
 
       fixture.detectChanges();
-      dispatchFakeEvent(fixture.debugElement.query(By.css('input')).nativeElement, 'focus');
+      dispatchFakeEvent(fixture.debugElement.query(By.css('input')).nativeElement, 'focusin');
       tick(1000);
       fixture.detectChanges();
 

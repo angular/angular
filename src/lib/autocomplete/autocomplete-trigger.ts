@@ -64,13 +64,13 @@ export const MD_AUTOCOMPLETE_VALUE_ACCESSOR: any = {
  */
 export function getMdAutocompleteMissingPanelError(): Error {
   return Error('Attempting to open an undefined instance of `md-autocomplete`. ' +
-                   'Make sure that the id passed to the `mdAutocomplete` is correct and that ' +
-                   'you\'re attempting to open it after the ngAfterContentInit hook.');
+               'Make sure that the id passed to the `mdAutocomplete` is correct and that ' +
+               'you\'re attempting to open it after the ngAfterContentInit hook.');
 }
 
 @Directive({
   selector: 'input[mdAutocomplete], input[matAutocomplete],' +
-  'textarea[mdAutocomplete], textarea[matAutocomplete]',
+            'textarea[mdAutocomplete], textarea[matAutocomplete]',
   host: {
     'role': 'combobox',
     'autocomplete': 'off',
@@ -79,7 +79,9 @@ export function getMdAutocompleteMissingPanelError(): Error {
     '[attr.aria-activedescendant]': 'activeOption?.id',
     '[attr.aria-expanded]': 'panelOpen.toString()',
     '[attr.aria-owns]': 'autocomplete?.id',
-    '(focus)': 'openPanel()',
+    // Note: we use `focusin`, as opposed to `focus`, in order to open the panel
+    // a little earlier. This avoids issues where IE delays the focusing of the input.
+    '(focusin)': 'openPanel()',
     '(input)': '_handleInput($event)',
     '(blur)': '_onTouched()',
     '(keydown)': '_handleKeydown($event)',
