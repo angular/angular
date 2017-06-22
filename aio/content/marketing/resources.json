@@ -214,6 +214,13 @@
             "rev": true,
             "title": "Universal for ASP.NET",
             "url": "https://github.com/aspnet/nodeservices"
+          },
+          "f1": {
+            "desc": "This tool generates a dedicated documentation for Angular applications.",
+            "logo": "",
+            "rev": true,
+            "title": "Compodoc",
+            "url": "https://github.com/compodoc/compodoc"
           }
         }
       },
