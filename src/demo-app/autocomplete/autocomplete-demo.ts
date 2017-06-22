@@ -88,8 +88,11 @@ export class AutocompleteDemo {
   }
 
   filterStates(val: string) {
-    return val ? this.states.filter(s => new RegExp(`^${val}`, 'gi').test(s.name))
-               : this.states;
-  }
+    if (val) {
+      const filterValue = val.toLowerCase();
+      return this.states.filter(state => state.name.toLowerCase().startsWith(filterValue));
+    }
 
+    return this.states;
+  }
 }
