@@ -42,14 +42,12 @@ payloadData="$payloadData\"timestamp\": $timestamp, "
 
 # Add change source: application, dependencies, or 'application+dependencies'
 yarnChanged=false
-allChangedFiles=$(git diff --name-only $TRAVIS_COMMIT_RANGE | grep -c "")
-allChangedFileNames=$(git diff --name-only $TRAVIS_COMMIT_RANGE)
+allChangedFiles=$(git diff --name-only $TRAVIS_COMMIT_RANGE ./ | wc -l)
+allChangedFileNames=$(git diff --name-only $TRAVIS_COMMIT_RANGE ./)
 
 if [[ $allChangedFileNames == *"yarn.lock"* ]]; then
   yarnChanged=true
 fi
-echo $yarnChanged
-echo $allChangedFileNames
 
 if [[ $allChangedFiles -eq 1 ]] && [[ "$yarnChanged" = true ]]; then
   # only yarn.lock changed
@@ -59,7 +57,8 @@ elif [[ $allChangedFiles -gt 1 ]] && [[ "$yarnChanged" = true ]]; then
 elif [[ $allChangedFiles -gt 0 ]]; then
   change='application'
 else
-  change=''
+  # Nothing changed in aio/
+  exit 0
 fi
 payloadData="$payloadData\"change\": \"$change\""
 
@@ -68,7 +67,7 @@ payloadData="{${payloadData}}"
 echo $payloadData
 
 if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
-  firebase database:update --data "$payloadData" --project $PROJECT_NAME --confirm --token "$TOKEN" /payload/aio/$TRAVIS_COMMIT
+  firebase database:update --data "$payloadData" --project $PROJECT_NAME --confirm --token "$TOKEN" /payload/aio/$TRAVIS_BRANCH/$TRAVIS_COMMIT
 fi
 
 if [[ $failed = true ]]; then
