@@ -132,6 +132,18 @@ describe('MdMenu', () => {
     expect(panel.classList).toContain('custom-two');
   });
 
+  it('should set the "menu" role on the overlay panel', () => {
+    const fixture = TestBed.createComponent(SimpleMenu);
+    fixture.detectChanges();
+    fixture.componentInstance.trigger.openMenu();
+    fixture.detectChanges();
+
+    const menuPanel = overlayContainerElement.querySelector('.mat-menu-panel');
+
+    expect(menuPanel).toBeTruthy('Expected to find a menu panel.');
+    expect(menuPanel.getAttribute('role')).toBe('menu', 'Expected panel to have the "menu" role.');
+  });
+
   describe('positions', () => {
     let fixture: ComponentFixture<PositionedMenu>;
     let panel: HTMLElement;
