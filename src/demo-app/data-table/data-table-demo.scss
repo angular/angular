@@ -17,6 +17,15 @@
     margin: 16px 0;
   }
 
+  .demo-track-by-select {
+    display: flex;
+    align-items: center;
+
+    .demo-track-by-label {
+      margin-right: 8px;
+    }
+  }
+
   .demo-highlighter .mat-checkbox {
     margin: 0 8px;
   }
@@ -102,4 +111,3 @@
     font-family: cursive;
   }
 }
-

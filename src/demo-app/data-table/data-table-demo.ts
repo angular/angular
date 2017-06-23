@@ -1,8 +1,10 @@
 import {Component} from '@angular/core';
-import {PeopleDatabase} from './people-database';
+import {PeopleDatabase, UserData} from './people-database';
 import {PersonDataSource} from './person-data-source';
 
 export type UserProperties = 'userId' | 'userName' | 'progress' | 'color' | undefined;
+
+export type TrackByStrategy = 'id' | 'reference' | 'index';
 
 @Component({
   moduleId: module.id,
@@ -13,9 +15,11 @@ export type UserProperties = 'userId' | 'userName' | 'progress' | 'color' | unde
 export class DataTableDemo {
   dataSource: PersonDataSource | null;
   propertiesToDisplay: UserProperties[] = [];
+  trackByStrategy: TrackByStrategy = 'reference';
+  changeReferences = false;
   highlights = new Set<string>();
 
-  constructor(private _peopleDatabase: PeopleDatabase) {
+  constructor(public _peopleDatabase: PeopleDatabase) {
     this.connect();
   }
 
@@ -33,6 +37,14 @@ export class DataTableDemo {
   getOpacity(progress: number) {
     let distanceFromMiddle = Math.abs(50 - progress);
     return distanceFromMiddle / 50 + .3;
+  }
+
+  userTrackBy = (index: number, item: UserData) => {
+    switch (this.trackByStrategy) {
+      case 'id': return item.id;
+      case 'reference': return item;
+      case 'index': return index;
+    }
   }
 
   toggleColorColumn() {

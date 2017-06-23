@@ -17,12 +17,14 @@ import {
   ElementRef,
   EmbeddedViewRef,
   Input,
+  isDevMode,
   IterableChangeRecord,
   IterableDiffer,
   IterableDiffers,
   NgIterable,
   QueryList,
   Renderer2,
+  TrackByFunction,
   ViewChild,
   ViewContainerRef,
   ViewEncapsulation
@@ -103,6 +105,24 @@ export class CdkTable<T> implements CollectionViewer {
   /** Differ used to find the changes in the data provided by the data source. */
   private _dataDiffer: IterableDiffer<T>;
 
+  /**
+   * Tracking function that will be used to check the differences in data changes. Used similarly
+   * to ngFor trackBy function. Optimize row operations by identifying a row based on its data
+   * relative to the function to know if a row should be added/removed/moved.
+   * Accepts a function that takes two parameters, `index` and `item`.
+   */
+  @Input()
+  set trackBy(fn: TrackByFunction<T>) {
+    if (isDevMode() &&
+        fn != null && typeof fn !== 'function' &&
+        <any>console && <any>console.warn) {
+        console.warn(`trackBy must be a function, but received ${JSON.stringify(fn)}.`);
+    }
+    this._trackByFn = fn;
+  }
+  get trackBy(): TrackByFunction<T> { return this._trackByFn; }
+  private _trackByFn: TrackByFunction<T>;
+
   // TODO(andrewseguin): Remove max value as the end index
   //   and instead calculate the view on init and scroll.
   /**
@@ -156,10 +176,6 @@ export class CdkTable<T> implements CollectionViewer {
     if (!role) {
       renderer.setAttribute(elementRef.nativeElement, 'role', 'grid');
     }
-
-    // TODO(andrewseguin): Add trackby function input.
-    // Find and construct an iterable differ that can be used to find the diff in an array.
-    this._dataDiffer = this._differs.find(this._data).create();
   }
 
   ngOnDestroy() {
@@ -199,8 +215,11 @@ export class CdkTable<T> implements CollectionViewer {
   }
 
   ngAfterViewInit() {
-    this._isViewInitialized = true;
+    // Find and construct an iterable differ that can be used to find the diff in an array.
+    this._dataDiffer = this._differs.find([]).create(this._trackByFn);
+
     this._renderHeaderRow();
+    this._isViewInitialized = true;
   }
 
   ngDoCheck() {
