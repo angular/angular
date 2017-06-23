@@ -398,7 +398,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
         this._placeholderState = '';
       }
 
-      this._focusHost();
+      this.focus();
     }
   }
 
@@ -753,8 +753,8 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
     }
   }
 
-  /** Focuses the host element when the panel closes. */
-  private _focusHost(): void {
+  /** Focuses the select element. */
+  focus(): void {
     this._elementRef.nativeElement.focus();
   }
 

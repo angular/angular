@@ -1701,6 +1701,14 @@ describe('MdSelect', () => {
         subscription.unsubscribe();
       });
 
+      it('should be able to focus the select trigger', () => {
+        document.body.focus(); // ensure that focus isn't on the trigger already
+
+        fixture.componentInstance.select.focus();
+
+        expect(document.activeElement).toBe(select, 'Expected select element to be focused.');
+      });
+
     });
 
     describe('for options', () => {
