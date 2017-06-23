@@ -3,6 +3,9 @@ import {Observable} from 'rxjs/Observable';
 import {PeopleDatabase, UserData} from './people-database';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import 'rxjs/add/operator/map';
+import 'rxjs/add/observable/merge';
+import 'rxjs/add/observable/combineLatest';
+
 
 export class PersonDataSource extends DataSource<any> {
   /** Data that should be displayed by the table. */
