@@ -11,6 +11,7 @@ import {
   Component,
   Directive,
   ElementRef,
+  HostBinding,
   Inject,
   Input,
   NgZone,
@@ -20,15 +21,16 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import {MdInkBar} from '../ink-bar';
-import {MdRipple} from '../../core/ripple/index';
+import {CanDisable, mixinDisabled} from '../../core/common-behaviors/disabled';
+import {MdRipple} from '../../core';
 import {ViewportRuler} from '../../core/overlay/position/viewport-ruler';
 import {Directionality, MD_RIPPLE_GLOBAL_OPTIONS, Platform, RippleGlobalOptions} from '../../core';
 import {Observable} from 'rxjs/Observable';
+import {Subject} from 'rxjs/Subject';
 import 'rxjs/add/operator/auditTime';
 import 'rxjs/add/operator/takeUntil';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/observable/merge';
-import {Subject} from 'rxjs/Subject';
 
 /**
  * Navigation component matching the styles of the tab group header.
@@ -92,15 +94,29 @@ export class MdTabNav implements AfterContentInit, OnDestroy {
   }
 }
 
+
+// Boilerplate for applying mixins to MdTabLink.
+export class MdTabLinkBase {}
+export const _MdTabLinkMixinBase = mixinDisabled(MdTabLinkBase);
+
 /**
  * Link inside of a `md-tab-nav-bar`.
  */
 @Directive({
   selector: '[md-tab-link], [mat-tab-link], [mdTabLink], [matTabLink]',
-  host: {'class': 'mat-tab-link'}
+  inputs: ['disabled'],
+  host: {
+    'class': 'mat-tab-link',
+    '[attr.aria-disabled]': 'disabled.toString()',
+    '[class.mat-tab-disabled]': 'disabled'
+  }
 })
-export class MdTabLink {
+export class MdTabLink extends _MdTabLinkMixinBase implements OnDestroy, CanDisable {
+  /** Whether the tab link is active or not. */
   private _isActive: boolean = false;
+
+  /** Reference to the instance of the ripple for the tab link. */
+  private _tabLinkRipple: MdRipple;
 
   /** Whether the link is active. */
   @Input()
@@ -112,23 +128,28 @@ export class MdTabLink {
     }
   }
 
-  constructor(private _mdTabNavBar: MdTabNav, private _elementRef: ElementRef) {}
-}
+  /** @docs-private */
+  @HostBinding('tabIndex')
+  get tabIndex(): number {
+    return this.disabled ? -1 : 0;
+  }
 
-/**
- * Simple directive that extends the ripple and matches the selector of the MdTabLink. This
- * adds the ripple behavior to nav bar labels.
- */
-@Directive({
-  selector: '[md-tab-link], [mat-tab-link], [mdTabLink], [matTabLink]',
-})
-export class MdTabLinkRipple extends MdRipple {
-  constructor(
-      elementRef: ElementRef,
-      ngZone: NgZone,
-      ruler: ViewportRuler,
-      platform: Platform,
-      @Optional() @Inject(MD_RIPPLE_GLOBAL_OPTIONS) globalOptions: RippleGlobalOptions) {
-    super(elementRef, ngZone, ruler, platform, globalOptions);
+  constructor(private _mdTabNavBar: MdTabNav,
+              private _elementRef: ElementRef,
+              ngZone: NgZone,
+              ruler: ViewportRuler,
+              platform: Platform,
+              @Optional() @Inject(MD_RIPPLE_GLOBAL_OPTIONS) globalOptions: RippleGlobalOptions) {
+    super();
+
+    // Manually create a ripple instance that uses the tab link element as trigger element.
+    // Notice that the lifecycle hooks for the ripple config won't be called anymore.
+    this._tabLinkRipple = new MdRipple(_elementRef, ngZone, ruler, platform, globalOptions);
+  }
+
+  ngOnDestroy() {
+    // Manually call the ngOnDestroy lifecycle hook of the ripple instance because it won't be
+    // called automatically since its instance is not created by Angular.
+    this._tabLinkRipple.ngOnDestroy();
   }
 }

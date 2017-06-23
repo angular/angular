@@ -14,9 +14,15 @@ $mat-tab-animation-duration: 500ms !default;
   opacity: 0.6;
   min-width: 160px;
   text-align: center;
+
   &:focus {
     outline: none;
     opacity: 1;
+  }
+
+  &.mat-tab-disabled {
+    cursor: default;
+    pointer-events: none;
   }
 }
 
