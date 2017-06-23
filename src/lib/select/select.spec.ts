@@ -281,7 +281,7 @@ describe('MdSelect', () => {
       trigger.click();
       fixture.detectChanges();
 
-      const option = overlayContainerElement.querySelector('md-option');
+      const option = overlayContainerElement.querySelector('md-option')!;
       const event = dispatchKeyboardEvent(option, 'keydown', SPACE);
 
       expect(event.defaultPrevented).toBe(true);
@@ -291,7 +291,7 @@ describe('MdSelect', () => {
       trigger.click();
       fixture.detectChanges();
 
-      const option = overlayContainerElement.querySelector('md-option');
+      const option = overlayContainerElement.querySelector('md-option')!;
       const event = dispatchKeyboardEvent(option, 'keydown', ENTER);
 
       expect(event.defaultPrevented).toBe(true);
