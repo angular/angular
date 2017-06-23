@@ -55,6 +55,10 @@ publishPackage() {
   # Update the package.json version to include the current commit SHA.
   sed -i "s/${buildVersion}/${buildVersion}-${commitSha}/g" package.json
 
+  # For build artifacts the different Angular packages that refer to the 0.0.0-PLACEHOLDER should
+  # be replaced with the Github builds that are published at the same time.
+  sed -i "s/0.0.0-PLACEHOLDER/${buildVersion}-${commitSha}/g" package.json
+
   # Prepare Git for pushing the artifacts to the repository.
   git config user.name "${commitAuthorName}"
   git config user.email "${commitAuthorEmail}"
