@@ -110,6 +110,7 @@ export class MdSelectChange {
 }
 
 // Boilerplate for applying mixins to MdSelect.
+/** @docs-private */
 export class MdSelectBase {
   constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
 }

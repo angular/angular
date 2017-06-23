@@ -19,6 +19,7 @@ export type MdPseudoCheckboxState = 'unchecked' | 'checked' | 'indeterminate';
 
 
 // Boilerplate for applying mixins to MdChip.
+/** @docs-private */
 export class MdPseudoCheckboxBase {
   constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
 }

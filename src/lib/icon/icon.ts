@@ -23,6 +23,7 @@ import {CanColor, mixinColor} from '../core/common-behaviors/color';
 
 
 // Boilerplate for applying mixins to MdIcon.
+/** @docs-private */
 export class MdIconBase {
   constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
 }

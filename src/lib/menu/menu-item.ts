@@ -11,6 +11,7 @@ import {Focusable} from '../core/a11y/focus-key-manager';
 import {CanDisable, mixinDisabled} from '../core/common-behaviors/disabled';
 
 // Boilerplate for applying mixins to MdMenuItem.
+/** @docs-private */
 export class MdMenuItemBase {}
 export const _MdMenuItemMixinBase = mixinDisabled(MdMenuItemBase);
 

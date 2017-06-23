@@ -63,6 +63,7 @@ export class MdRadioChange {
 
 
 // Boilerplate for applying mixins to MdRadioGroup.
+/** @docs-private */
 export class MdRadioGroupBase { }
 export const _MdRadioGroupMixinBase = mixinDisabled(MdRadioGroupBase);
 
@@ -296,6 +297,7 @@ export class MdRadioGroup extends _MdRadioGroupMixinBase
 }
 
 // Boilerplate for applying mixins to MdRadioButton.
+/** @docs-private */
 export class MdRadioButtonBase {
   constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
 }

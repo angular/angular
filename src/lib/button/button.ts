@@ -100,6 +100,7 @@ export class MdMiniFab {
 
 
 // Boilerplate for applying mixins to MdButton.
+/** @docs-private */
 export class MdButtonBase {
   constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
 }

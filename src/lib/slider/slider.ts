@@ -71,6 +71,7 @@ export class MdSliderChange {
 
 
 // Boilerplate for applying mixins to MdSlider.
+/** @docs-private */
 export class MdSliderBase { }
 export const _MdSliderMixinBase = mixinDisabled(MdSliderBase);
 

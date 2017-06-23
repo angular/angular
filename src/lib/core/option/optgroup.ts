@@ -10,6 +10,7 @@ import {Component, ViewEncapsulation, ContentChildren, QueryList, Input} from '@
 import {mixinDisabled, CanDisable} from '../common-behaviors/disabled';
 
 // Boilerplate for applying mixins to MdOptgroup.
+/** @docs-private */
 export class MdOptgroupBase { }
 export const _MdOptgroupMixinBase = mixinDisabled(MdOptgroupBase);
 

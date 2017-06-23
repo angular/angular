@@ -66,6 +66,7 @@ export class MdCheckboxChange {
 }
 
 // Boilerplate for applying mixins to MdCheckbox.
+/** @docs-private */
 export class MdCheckboxBase {
   constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
 }

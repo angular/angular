@@ -33,6 +33,7 @@ import {CanDisable, mixinDisabled} from '../core/common-behaviors/disabled';
 export type ToggleType = 'checkbox' | 'radio';
 
 // Boilerplate for applying mixins to MdButtonToggleGroup and MdButtonToggleGroupMultiple
+/** @docs-private */
 export class MdButtonToggleGroupBase {}
 export const _MdButtonToggleGroupMixinBase = mixinDisabled(MdButtonToggleGroupBase);
 

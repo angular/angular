@@ -15,6 +15,7 @@ import {CanDisable, mixinDisabled} from '../core/common-behaviors/disabled';
 import {MdTabLabel} from './tab-label';
 
 // Boilerplate for applying mixins to MdTab.
+/** @docs-private */
 export class MdTabBase {}
 export const _MdTabMixinBase = mixinDisabled(MdTabBase);
 

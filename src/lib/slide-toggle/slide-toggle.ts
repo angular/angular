@@ -54,6 +54,7 @@ let nextId = 0;
 
 
 // Boilerplate for applying mixins to MdSlideToggle.
+/** @docs-private */
 export class MdSlideToggleBase {
   constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
 }

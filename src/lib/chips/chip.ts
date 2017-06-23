@@ -26,6 +26,7 @@ export interface MdChipEvent {
 }
 
 // Boilerplate for applying mixins to MdChip.
+/** @docs-private */
 export class MdChipBase {
   constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
 }

@@ -57,6 +57,7 @@ type EasingFn = (currentTime: number, startValue: number,
 export class MdProgressSpinnerCssMatStyler {}
 
 // Boilerplate for applying mixins to MdProgressSpinner.
+/** @docs-private */
 export class MdProgressSpinnerBase {
   constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
 }
