@@ -22,26 +22,13 @@ export class HeroFormTemplate1Component {
   onSubmit() {
     this.submitted = true;
   }
-// #enddocregion class
-// #enddocregion
-  // Reset the form with a new hero AND restore 'pristine' class state
-  // by toggling 'active' flag which causes the form
-  // to be removed/re-added in a tick via NgIf
-  // TODO: Workaround until NgForm has a reset method (#6822)
-  active = true;
-// #docregion
-// #docregion class
 
+  // #docregion add-hero
   addHero() {
     this.hero = new Hero(42, '', '');
-// #enddocregion class
-// #enddocregion
-
-    this.active = false;
-    setTimeout(() => this.active = true, 0);
-// #docregion
-// #docregion class
   }
+  // #enddocregion add-hero
+
 }
 // #enddocregion class
 // #enddocregion
