@@ -851,6 +851,91 @@ export function main() {
         expect(p4.element.innerText.trim()).toEqual('4');
       });
 
+      it('should find :enter/:leave nodes that are nested inside of ng-container elements', () => {
+        @Component({
+          selector: 'ani-cmp',
+          template: `
+            <div [@myAnimation]="items.length" class="parent">
+              <ng-container *ngFor="let item of items">
+                <section>
+                  <div *ngIf="item % 2 == 0">even {{ item }}</div>
+                  <div *ngIf="item % 2 == 1">odd {{ item }}</div>
+                </section>
+              </ng-container>
+            </div>
+          `,
+          animations: [trigger(
+            'myAnimation',
+            [
+              transition('0 => 5', [
+                query(':enter', [
+                  style({ opacity: '0' }),
+                  animate(1000, style({ opacity: '1' }))
+                ])
+              ]),
+              transition('5 => 0', [
+                query(':leave', [
+                  style({ opacity: '1' }),
+                  animate(1000, style({ opacity: '0' }))
+                ])
+              ]),
+            ])]
+        })
+        class Cmp {
+          public items: any[];
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+
+        const engine = TestBed.get(ɵAnimationEngine);
+        const fixture = TestBed.createComponent(Cmp);
+        const cmp = fixture.componentInstance;
+
+        cmp.items = [];
+        fixture.detectChanges();
+        engine.flush();
+        resetLog();
+
+        cmp.items = [0, 1, 2, 3, 4];
+        fixture.detectChanges();
+        engine.flush();
+
+        let players = getLog();
+        expect(players.length).toEqual(5);
+
+        for (let i = 0; i < 5; i++) {
+          let player = players[i] !;
+          expect(player.keyframes).toEqual([
+            {opacity: '0', offset: 0},
+            {opacity: '1', offset: 1},
+          ]);
+
+          let elm = player.element;
+          let text = i % 2 == 0 ? `even ${i}` : `odd ${i}`;
+          expect(elm.innerText.trim()).toEqual(text);
+        }
+
+        resetLog();
+        cmp.items = [];
+        fixture.detectChanges();
+        engine.flush();
+
+        players = getLog();
+        expect(players.length).toEqual(5);
+
+        for (let i = 0; i < 5; i++) {
+          let player = players[i] !;
+          expect(player.keyframes).toEqual([
+            {opacity: '1', offset: 0},
+            {opacity: '0', offset: 1},
+          ]);
+
+          let elm = player.element;
+          let text = i % 2 == 0 ? `even ${i}` : `odd ${i}`;
+          expect(elm.innerText.trim()).toEqual(text);
+        }
+      });
+
       it('should properly cancel items that were queried into a former animation', () => {
         @Component({
           selector: 'ani-cmp',
