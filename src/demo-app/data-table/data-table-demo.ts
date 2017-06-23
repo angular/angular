@@ -1,6 +1,7 @@
-import {Component} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {PeopleDatabase, UserData} from './people-database';
 import {PersonDataSource} from './person-data-source';
+import {MdPaginator} from '@angular/material';
 
 export type UserProperties = 'userId' | 'userName' | 'progress' | 'color' | undefined;
 
@@ -19,13 +20,17 @@ export class DataTableDemo {
   changeReferences = false;
   highlights = new Set<string>();
 
-  constructor(public _peopleDatabase: PeopleDatabase) {
+  @ViewChild(MdPaginator) _paginator: MdPaginator;
+
+  constructor(public _peopleDatabase: PeopleDatabase) { }
+
+  ngOnInit() {
     this.connect();
   }
 
   connect() {
     this.propertiesToDisplay = ['userId', 'userName', 'progress', 'color'];
-    this.dataSource = new PersonDataSource(this._peopleDatabase);
+    this.dataSource = new PersonDataSource(this._peopleDatabase, this._paginator);
     this._peopleDatabase.initialize();
   }
 

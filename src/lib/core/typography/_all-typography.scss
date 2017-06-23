@@ -12,6 +12,7 @@
 @import '../../input/input-theme';
 @import '../../list/list-theme';
 @import '../../menu/menu-theme';
+@import '../../paginator/paginator-theme';
 @import '../../progress-bar/progress-bar-theme';
 @import '../../progress-spinner/progress-spinner-theme';
 @import '../../radio/radio-theme';
@@ -42,6 +43,7 @@
   @include mat-icon-typography($config);
   @include mat-input-typography($config);
   @include mat-menu-typography($config);
+  @include mat-paginator-typography($config);
   @include mat-progress-bar-typography($config);
   @include mat-progress-spinner-typography($config);
   @include mat-radio-typography($config);

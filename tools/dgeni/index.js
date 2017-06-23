@@ -97,6 +97,7 @@ let apiDocsPackage = new DgeniPackage('material2-api-docs', dgeniPackageDeps)
     'input/index.ts',
     'list/index.ts',
     'menu/index.ts',
+    'paginator/index.ts',
     'progress-bar/index.ts',
     'progress-spinner/index.ts',
     'radio/index.ts',

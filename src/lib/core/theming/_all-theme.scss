@@ -14,6 +14,7 @@
 @import '../../input/input-theme';
 @import '../../list/list-theme';
 @import '../../menu/menu-theme';
+@import '../../paginator/paginator-theme';
 @import '../../progress-bar/progress-bar-theme';
 @import '../../progress-spinner/progress-spinner-theme';
 @import '../../radio/radio-theme';
@@ -44,6 +45,7 @@
   @include mat-input-theme($theme);
   @include mat-list-theme($theme);
   @include mat-menu-theme($theme);
+  @include mat-paginator-theme($theme);
   @include mat-progress-bar-theme($theme);
   @include mat-progress-spinner-theme($theme);
   @include mat-radio-theme($theme);

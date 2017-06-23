@@ -1,0 +1,28 @@
+<md-input-container>
+  List length:
+  <input mdInput [(ngModel)]="length">
+</md-input-container>
+
+<md-input-container>
+  Page size:
+  <input mdInput [(ngModel)]="pageSize">
+</md-input-container>
+<md-input-container>
+  Page size options:
+  <input mdInput
+         [ngModel]="pageSizeOptions"
+         (ngModelChange)="setPageSizeOptions($event)">
+</md-input-container>
+
+<md-paginator [length]="length"
+              [pageSize]="pageSize"
+              [pageSizeOptions]="pageSizeOptions"
+              (page)="pageEvent = $event">
+</md-paginator>
+
+<div *ngIf="pageEvent">
+  <h2>Page Change Event Properties</h2>
+  <div>List length: {{pageEvent.length}}</div>
+  <div>Page size: {{pageEvent.pageSize}}</div>
+  <div>Page index: {{pageEvent.pageIndex}}</div>
+</div>

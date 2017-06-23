@@ -1,0 +1,81 @@
+$mat-paginator-height: 56px;
+$mat-paginator-padding: 0 8px;
+
+$mat-paginator-items-per-page-label-margin: 0 4px;
+$mat-paginator-selector-margin: 0 4px;
+$mat-paginator-selector-trigger-min-width: 56px;
+
+$mat-paginator-range-label-margin: 0 32px;
+
+$mat-paginator-button-margin: 8px;
+$mat-paginator-button-icon-height: 8px;
+$mat-paginator-button-icon-width: 8px;
+
+$mat-paginator-button-decrement-icon-margin: 12px;
+$mat-paginator-button-increment-icon-margin: 16px;
+
+.mat-paginator {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: $mat-paginator-height;
+  padding: $mat-paginator-padding;
+}
+
+.mat-paginator-page-size {
+  display: flex;
+  align-items: center;
+}
+
+.mat-paginator-page-size-label {
+  margin: $mat-paginator-items-per-page-label-margin;
+}
+
+.mat-paginator-page-size-select {
+  margin: $mat-paginator-selector-margin;
+
+  .mat-select-trigger {
+    min-width: $mat-paginator-selector-trigger-min-width;
+  }
+}
+
+.mat-paginator-range-label {
+  margin: $mat-paginator-range-label-margin;
+}
+
+.mat-paginator-increment-button + .mat-paginator-increment-button {
+  margin: 0 0 0 $mat-paginator-button-margin;
+
+  [dir='rtl'] & {
+    margin: 0 $mat-paginator-button-margin 0 0;
+  }
+}
+
+.mat-paginator-increment,
+.mat-paginator-decrement {
+  width: $mat-paginator-button-icon-width;
+  height: $mat-paginator-button-icon-height;
+}
+
+.mat-paginator-decrement,
+[dir='rtl'] .mat-paginator-increment {
+  transform: rotate(45deg);
+}
+.mat-paginator-increment,
+[dir='rtl'] .mat-paginator-decrement {
+  transform: rotate(225deg);
+}
+
+.mat-paginator-decrement {
+  margin-left: $mat-paginator-button-decrement-icon-margin;
+  [dir='rtl'] & {
+    margin-right: $mat-paginator-button-decrement-icon-margin;
+  }
+}
+
+.mat-paginator-increment {
+  margin-left: $mat-paginator-button-increment-icon-margin;
+  [dir='rtl'] & {
+    margin-right: $mat-paginator-button-increment-icon-margin;
+  }
+}

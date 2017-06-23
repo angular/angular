@@ -1,0 +1,40 @@
+<div class="mat-paginator-page-size">
+  <div class="mat-paginator-page-size-label">
+    {{_intl.itemsPerPageLabel}}
+  </div>
+
+  <md-select *ngIf="_displayedPageSizeOptions.length > 1"
+             class="mat-paginator-page-size-select"
+             [ngModel]="pageSize"
+             [aria-label]="_intl.itemsPerPageLabel"
+             (change)="_changePageSize($event.value)">
+    <md-option *ngFor="let pageSizeOption of _displayedPageSizeOptions" [value]="pageSizeOption">
+      {{pageSizeOption}}
+    </md-option>
+  </md-select>
+
+  <div *ngIf="_displayedPageSizeOptions.length <= 1">{{pageSize}}</div>
+</div>
+
+<div class="mat-paginator-range-label">
+  {{_intl.getRangeLabel(pageIndex, pageSize, length)}}
+</div>
+
+<button md-icon-button
+        class="mat-paginator-navigation-previous"
+        (click)="previousPage()"
+        [attr.aria-label]="_intl.previousPageLabel"
+        [mdTooltip]="_intl.previousPageLabel"
+        [mdTooltipPosition]="'above'"
+        [disabled]="!hasPreviousPage()">
+  <div class="mat-paginator-increment"></div>
+</button>
+<button md-icon-button
+        class="mat-paginator-navigation-next"
+        (click)="nextPage()"
+        [attr.aria-label]="_intl.nextPageLabel"
+        [mdTooltip]="_intl.nextPageLabel"
+        [mdTooltipPosition]="'above'"
+        [disabled]="!hasNextPage()">
+  <div class="mat-paginator-decrement"></div>
+</button>
