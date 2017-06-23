@@ -39,6 +39,12 @@ export class MdSnackBarRef<T> {
   /** Subject for notifying the user that the snack bar action was called. */
   private _onAction: Subject<any> = new Subject();
 
+  /**
+   * Timeout ID for the duration setTimeout call. Used to clear the timeout if the snackbar is
+   * dismissed before the duration passes.
+   */
+  private _durationTimeoutId: number;
+
   constructor(instance: T,
               containerInstance: MdSnackBarContainer,
               private _overlayRef: OverlayRef) {
@@ -55,6 +61,12 @@ export class MdSnackBarRef<T> {
     if (!this._afterClosed.closed) {
       this.containerInstance.exit();
     }
+    clearTimeout(this._durationTimeoutId);
+  }
+
+  /** Dismisses the snack bar after some duration */
+  _dismissAfter(duration: number): void {
+    this._durationTimeoutId = setTimeout(() => this.dismiss(), duration);
   }
 
   /** Marks the snackbar action clicked. */

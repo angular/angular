@@ -89,7 +89,7 @@ export class MdSnackBar {
     // If a dismiss timeout is provided, set up dismiss based on after the snackbar is opened.
     if (config.duration && config.duration > 0) {
       snackBarRef.afterOpened().subscribe(() => {
-        setTimeout(() => snackBarRef.dismiss(), config!.duration);
+        snackBarRef._dismissAfter(config!.duration!);
       });
     }
 

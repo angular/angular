@@ -328,6 +328,20 @@ describe('MdSnackBar', () => {
     expect(dismissObservableCompleted).toBeTruthy('Expected the snack bar to be dismissed');
   }));
 
+  it('should clear the dismiss timeout when dismissed before timeout expiration', fakeAsync(() => {
+    let config = new MdSnackBarConfig();
+    config.duration = 1000;
+    snackBar.open('content', 'test', config);
+
+    setTimeout(() => snackBar.dismiss(), 500);
+
+    tick(600);
+    viewContainerFixture.detectChanges();
+    flushMicrotasks();
+
+    expect(viewContainerFixture.isStable()).toBe(true);
+  }));
+
   it('should add extra classes to the container', () => {
     snackBar.open(simpleMessage, simpleActionLabel, { extraClasses: ['one', 'two'] });
     viewContainerFixture.detectChanges();
