@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Input, AfterViewInit} from '@angular/core';
+import {Directive, ElementRef, Input, AfterViewInit, Optional, Self} from '@angular/core';
+import {NgControl} from '@angular/forms';
 
 
 /**
@@ -24,6 +25,9 @@ import {Directive, ElementRef, Input, AfterViewInit} from '@angular/core';
   },
 })
 export class MdTextareaAutosize implements AfterViewInit {
+  /** Keep track of the previous textarea value to avoid resizing when the value hasn't changed. */
+  private _previousValue: string;
+
   private _minRows: number;
   private _maxRows: number;
 
@@ -53,7 +57,11 @@ export class MdTextareaAutosize implements AfterViewInit {
   /** Cached height of a textarea with a single row. */
   private _cachedLineHeight: number;
 
-  constructor(private _elementRef: ElementRef) { }
+  constructor(private _elementRef: ElementRef, @Optional() @Self() formControl: NgControl) {
+    if (formControl && formControl.valueChanges) {
+      formControl.valueChanges.subscribe(() => this.resizeToFitContent());
+    }
+  }
 
   /** Sets the minimum height of the textarea as determined by minRows. */
   _setMinHeight(): void {
@@ -123,11 +131,16 @@ export class MdTextareaAutosize implements AfterViewInit {
   /** Resize the textarea to fit its content. */
   resizeToFitContent() {
     const textarea = this._elementRef.nativeElement as HTMLTextAreaElement;
+    if (textarea.value === this._previousValue) {
+      return;
+    }
 
     // Reset the textarea height to auto in order to shrink back to its default size.
     textarea.style.height = 'auto';
 
     // Use the scrollHeight to know how large the textarea *would* be if fit its entire value.
     textarea.style.height = `${textarea.scrollHeight}px`;
+
+    this._previousValue = textarea.value;
   }
 }

@@ -18,6 +18,7 @@ export class InputDemo {
   requiredField: boolean;
   hideRequiredMarker: boolean;
   ctrlDisabled = false;
+  textareaNgModelValue: string;
 
   name: string;
   errorMessageExample1: string;

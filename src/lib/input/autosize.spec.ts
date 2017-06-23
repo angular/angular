@@ -1,5 +1,6 @@
 import {Component, ViewChild} from '@angular/core';
-import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {FormsModule} from '@angular/forms';
+import {ComponentFixture, TestBed, async, fakeAsync, flushMicrotasks} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {MdInputModule} from './index';
 import {MdTextareaAutosize} from './autosize';
@@ -12,8 +13,12 @@ describe('MdTextareaAutosize', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdInputModule],
-      declarations: [AutosizeTextAreaWithContent, AutosizeTextAreaWithValue],
+      imports: [MdInputModule, FormsModule],
+      declarations: [
+        AutosizeTextAreaWithContent,
+        AutosizeTextAreaWithValue,
+        AutosizeTextareaWithNgModel
+      ],
     });
 
     TestBed.compileComponents();
@@ -145,6 +150,26 @@ describe('MdTextareaAutosize', () => {
       .toBe(textarea.scrollHeight, 'Expected textarea height to match its scrollHeight');
   });
 
+  it('should resize when an associated form control value changes', fakeAsync(() => {
+    const fixtureWithForms = TestBed.createComponent(AutosizeTextareaWithNgModel);
+    textarea = fixtureWithForms.nativeElement.querySelector('textarea');
+    fixtureWithForms.detectChanges();
+
+    const previousHeight =  textarea.clientHeight;
+
+    fixtureWithForms.componentInstance.model = `
+        And the silken, sad, uncertain rustling of each purple curtain
+    Thrilled me—filled me with fantastic terrors never felt before;
+        So that now, to still the beating of my heart, I stood repeating
+        “’Tis some visitor entreating entrance at my chamber door—
+    Some late visitor entreating entrance at my chamber door;—
+                This it is and nothing more.” `;
+    fixtureWithForms.detectChanges();
+    flushMicrotasks();
+
+    expect(textarea.clientHeight)
+        .toBeGreaterThan(previousHeight, 'Expected increased height when ngModel is updated.');
+  }));
 });
 
 
@@ -177,4 +202,12 @@ class AutosizeTextAreaWithContent {
 })
 class AutosizeTextAreaWithValue {
   value: string = '';
+}
+
+@Component({
+  template: `<textarea mdTextareaAutosize [(ngModel)]="model"></textarea>`,
+  styles: [textareaStyleReset],
+})
+class AutosizeTextareaWithNgModel {
+  model = '';
 }
