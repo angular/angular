@@ -3,18 +3,19 @@
 [![Build Status](https://travis-ci.org/angular/material2.svg?branch=master)](https://travis-ci.org/angular/material2)
 [![Gitter](https://badges.gitter.im/angular/material2.svg)](https://gitter.im/angular/material2?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-This is the home for the Angular team's Material Design components built on top of Angular.
+This is the home for the Angular team's Material Design components built for and with Angular.
 
 #### Quick links
-[Google group](https://groups.google.com/forum/#!forum/angular-material2),
-[Contributing](https://github.com/angular/material2/blob/master/CONTRIBUTING.md),
+[Documentation, demos, and guides](https://material.angular.io) | 
+[Google group](https://groups.google.com/forum/#!forum/angular-material2) |
+[Contributing](https://github.com/angular/material2/blob/master/CONTRIBUTING.md) |
 [Plunker Template](http://plnkr.co/edit/o077B6uEiiIgkC0S06dd?p=preview)
 
 ### Installation
 
 The latest release of Angular Material can be installed from npm
 
-`npm install --save @angular/material`
+`npm install @angular/material`
 
 A snapshot build with the latest changes from
 [master](https://github.com/angular/material2/tree/master) is also available. Note that this
@@ -40,60 +41,66 @@ and which pieces are blocked) and make a comment.
 Also see our [`Good for community contribution`](https://github.com/angular/material2/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+for+community+contribution%22)
 label.
 
-High level stuff planned for Q2 2017 (April - June):
-- Datepicker
-- Initial version of data-table
-- Design for tree component
-- Typography extension to theming API
-- Moving much of @angular/material's "core" to @angular/cdk
-- Accessibility fix-it
-- Scrolling strategies for overlays
+High level stuff planned for Q3 2017 (July - September):
+- As many bug fixes as humanly possible
+- Additional features for data-table
+- More accessibility improvements
 - Nested menus
-- Live theme swapping for material.angular.io
-- Search for material.angular.io
-- Support for prerendering with @angular/platform-server
+- All components are OnPush
+- Improved documentation, guides, examples, and navigation on material.angular.io
+- Improve library-wide API consistency
+- Stepper component
+- Sticky header helper
+- action-list and selection-list
 
 
-#### Feature status
-Note that all "planned" work is tentative / best estimate and is subject to changing priorities.
+#### Available features
+
+| Feature          | Notes                                                  | Docs         |
+|------------------|--------------------------------------------------------|--------------|
+| autocomplete     |                                                        |   [Docs][24] |
+| button           |                                                        |   [Docs][1]  |
+| button-toggle    |                                                        |   [Docs][15] |
+| cards            |                                                        |   [Docs][2]  |
+| checkbox         |                                                        |   [Docs][3]  |
+| chips            |        Chip-remove, integration with input in-progress |   [Docs][26] |
+| datepicker       |                                                        |   [Docs][25] |
+| dialog           |                                                        |   [Docs][22] |
+| expansion-panel  |                                    Needs documentation |           -  |
+| grid-list        |                                                        |   [Docs][9]  |
+| icon             |                                                        |   [Docs][10] |
+| input            |                                                        |   [Docs][5]  |
+| list             |                   Selection and action list planned Q3 |   [Docs][8]  |
+| menu             |                                 Nested menu planned Q3 |   [Docs][17] |
+| progress-bar     |                                                        |   [Docs][12] |
+| progress-spinner |                                                        |   [Docs][11] |
+| radio            |                                                        |   [Docs][4]  |
+| ripples          |                                                        |   [Docs][19] |
+| select           |                                                        |   [Docs][23] |
+| sidenav          |                                                        |   [Docs][6]  |
+| slide-toggle     |                                                        |   [Docs][14] |
+| slider           |                                                        |   [Docs][16] |
+| snackbar / toast |                                                        |   [Docs][21] |
+| tabs             |                                                        |   [Docs][13] |
+| textarea         |                                                        |   [Docs][5]  |
+| toolbar          |                                                        |   [Docs][7]  |
+| tooltip          |                                                        |   [Docs][18] |
+|                                                                                          |
+| theming          |                                                        |  [Guide][20] |
+| typography       |                                                        |  [Guide][27] |
+| layout           |                      See [angular/flex-layout][lay_rp] |  [Wiki][0]   |
+
+
+#### In progress, planned, and non-planned features
 
 | Feature          | Status                              | Docs         | Issue          |
 |------------------|-------------------------------------|--------------|----------------|
-| button           |                           Available | [README][1]  |              - |
-| cards            |                           Available | [README][2]  |              - |
-| checkbox         |                           Available | [README][3]  |              - |
-| radio            |                           Available | [README][4]  |              - |
-| input            |                           Available | [README][5]  |              - |
-| sidenav          |                           Available | [README][6]  |              - |
-| toolbar          |                           Available | [README][7]  |              - |
-| list             |                           Available | [README][8]  |   [#107][0107] |
-| grid-list        |                           Available | [README][9]  |              - |
-| icon             |                           Available | [README][10] |              - |
-| progress-spinner |                           Available | [README][11] |              - |
-| progress-bar     |                           Available | [README][12] |              - |
-| tabs             |                           Available | [README][13] |              - |
-| slide-toggle     |                           Available | [README][14] |              - |
-| button-toggle    |                           Available | [README][15] |              - |
-| slider           |                           Available | [README][16] |              - |
-| menu             |                           Available | [README][17] |   [#119][0119] |
-| tooltip          |                           Available | [README][18] |              - |
-| ripples          |                           Available | [README][19] |   [#108][0108] |
-| dialog           |                           Available | [README][22] |   [#114][0114] |
-| snackbar / toast |                           Available | [README][21] |   [#115][0115] |
-| select           |                           Available | [README][23] |   [#118][0118] |
-| textarea         |                           Available | [README][5]  |              - |
-| autocomplete     |                           Available | [README][24] |   [#117][0117] |
-| datepicker       |                           Available | [README][25] |              - |
-| chips            |  Initial version, features evolving |           -  |   [#120][0120] |
-| theming          |                           Available | [Guide][20]  |              - |
-| docs site        |                Launched & iterating | [Docs][26]   |              - |
-| typography       |                Started, coming soon |           -  |   [#205][0205] |
-| data-table       |                         In-progress |           -  |   [#581][0581] |
-| expansion-panel  |                         In-progress |           -  |  [#4191][4191] |
+| @angular/cdk     |                         Coming soon |           -  |                |
+| data-table       |                         Coming soon |           -  |   [#581][0581] |
 | tree             |                  Design in-progress |           -  |  [#3175][3175] |
-| virtual-repeat   |        Not started, planned Q3 2017 |           -  |   [#823][0823] |
-| stepper          |           Not started, planned 2017 |           -  |   [#508][0508] |
-| layout           |   See [angular/flex-layout][lay_rp] | [Wiki][0]    |              - |
+| stepper          |        Not started, planned Q3 2017 |           -  |   [#508][0508] |
+| sticky-header    |        Not started, planned Q3 2017 |           -  |   [#474][0474] |
+| virtual-repeat   |        Not started, planned Q4 2017 |           -  |   [#823][0823] |
 | fab speed-dial   |            Not started, not planned |           -  |   [#860][0860] |
 | fab toolbar      |            Not started, not planned |           -  |              - |
 | bottom-sheet     |            Not started, not planned |           -  |              - |
@@ -119,13 +126,14 @@ Note that all "planned" work is tentative / best estimate and is subject to chan
 [17]: https://material.angular.io/components/component/menu
 [18]: https://material.angular.io/components/component/tooltip
 [19]: https://github.com/angular/material2/blob/master/src/lib/core/ripple/README.md
-[20]: https://github.com/angular/material2/blob/master/guides/theming.md
+[20]: https://material.angular.io/guide/theming
 [21]: https://material.angular.io/components/component/snack-bar
 [22]: https://material.angular.io/components/component/dialog
 [23]: https://material.angular.io/components/component/select
 [24]: https://material.angular.io/components/component/autocomplete
 [25]: https://material.angular.io/components/component/datepicker
-[26]: https://material.angular.io
+[26]: https://material.angular.io/components/component/chips
+[27]: https://material.angular.io/guide/typography
 
 [0107]: https://github.com/angular/material2/issues/107
 [0119]: https://github.com/angular/material2/issues/119
@@ -145,14 +153,13 @@ Note that all "planned" work is tentative / best estimate and is subject to chan
 [0581]: https://github.com/angular/material2/issues/581
 [3175]: https://github.com/angular/material2/issues/3175
 [4191]: https://github.com/angular/material2/pull/4191
+[0995]: https://github.com/angular/material2/pull/995
+[0474]: https://github.com/angular/material2/pull/474
 
 [getting-started]: https://github.com/angular/material2/blob/master/guides/getting-started.md
 [theming]: https://github.com/angular/material2/blob/master/guides/theming.md
 [lay_rp]:  https://github.com/angular/flex-layout
 
-
-"Available" means that the components or feature is published and available for use, but may still
-be missing some behaviors or polish.
 
 ## The goal of Angular Material
 Our goal is to build a set of high-quality UI components built with Angular and TypeScript,
