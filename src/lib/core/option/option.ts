@@ -149,6 +149,9 @@ export class MdOption {
   _handleKeydown(event: KeyboardEvent): void {
     if (event.keyCode === ENTER || event.keyCode === SPACE) {
       this._selectViaInteraction();
+
+      // Prevent the page from scrolling down and form submits.
+      event.preventDefault();
     }
   }
 

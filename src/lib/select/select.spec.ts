@@ -277,6 +277,26 @@ describe('MdSelect', () => {
       expect(panel.classList).toContain('custom-two');
     });
 
+    it('should prevent the default action when pressing SPACE on an option', () => {
+      trigger.click();
+      fixture.detectChanges();
+
+      const option = overlayContainerElement.querySelector('md-option');
+      const event = dispatchKeyboardEvent(option, 'keydown', SPACE);
+
+      expect(event.defaultPrevented).toBe(true);
+    });
+
+    it('should prevent the default action when pressing ENTER on an option', () => {
+      trigger.click();
+      fixture.detectChanges();
+
+      const option = overlayContainerElement.querySelector('md-option');
+      const event = dispatchKeyboardEvent(option, 'keydown', ENTER);
+
+      expect(event.defaultPrevented).toBe(true);
+    });
+
   });
 
   describe('selection logic', () => {
