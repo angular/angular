@@ -1,6 +1,7 @@
 import {Component, ViewChild, ViewEncapsulation} from '@angular/core';
 import {FormControl, NgModel} from '@angular/forms';
 import 'rxjs/add/operator/startWith';
+import 'rxjs/add/operator/map';
 
 @Component({
   moduleId: module.id,

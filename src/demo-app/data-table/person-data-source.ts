@@ -2,6 +2,7 @@ import {CollectionViewer, DataSource, MdPaginator} from '@angular/material';
 import {Observable} from 'rxjs/Observable';
 import {PeopleDatabase, UserData} from './people-database';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import 'rxjs/add/operator/map';
 
 export class PersonDataSource extends DataSource<any> {
   /** Data that should be displayed by the table. */

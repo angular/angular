@@ -2,9 +2,11 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component, ViewChild} from '@angular/core';
 import {CdkTable} from './data-table';
 import {CollectionViewer, DataSource} from './data-source';
-import {Observable} from 'rxjs/Observable';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {customMatchers} from '../testing/jasmine-matchers';
+import {Observable} from 'rxjs/Observable';
+import {combineLatest} from 'rxjs/observable/combineLatest';
+import {map} from '../rxjs/index';
 import {CdkDataTableModule} from './index';
 
 describe('CdkTable', () => {
@@ -449,7 +451,7 @@ class FakeDataSource extends DataSource<TestData> {
   connect(collectionViewer: CollectionViewer): Observable<TestData[]> {
     this.isConnected = true;
     const streams = [this._dataChange, collectionViewer.viewChange];
-    return Observable.combineLatest(streams).map(([data]) => data);
+    return map.call(combineLatest(streams), ([data]) => data);
   }
 
   addData() {

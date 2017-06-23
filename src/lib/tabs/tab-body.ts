@@ -27,7 +27,6 @@ import {
   AnimationEvent,
 } from '@angular/animations';
 import {TemplatePortal, PortalHostDirective, Directionality, Direction} from '../core';
-import 'rxjs/add/operator/map';
 
 /**
  * These position states are used internally as animation states for the tab body. Setting the

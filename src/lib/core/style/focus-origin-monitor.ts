@@ -21,8 +21,7 @@ import {
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {Platform} from '../platform/platform';
-
-import 'rxjs/add/observable/of';
+import {of as observableOf} from 'rxjs/observable/of';
 
 
 // This is the value used by AngularJS Material. Through trial and error (on iPhone 6S) they found
@@ -80,7 +79,7 @@ export class FocusOriginMonitor {
       checkChildren: boolean): Observable<FocusOrigin> {
     // Do nothing if we're not on the browser platform.
     if (!this._platform.isBrowser) {
-      return Observable.of(null);
+      return observableOf(null);
     }
     // Check if we're already monitoring this element.
     if (this._elementInfo.has(element)) {

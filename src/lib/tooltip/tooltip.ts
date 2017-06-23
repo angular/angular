@@ -39,7 +39,7 @@ import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {Directionality} from '../core/bidi/index';
 import {Platform} from '../core/platform/index';
-import 'rxjs/add/operator/first';
+import {first} from '../core/rxjs/index';
 import {ScrollDispatcher} from '../core/overlay/scroll/scroll-dispatcher';
 import {coerceBooleanProperty} from '@angular/cdk';
 
@@ -339,7 +339,7 @@ export class MdTooltip implements OnDestroy {
       this._tooltipInstance.message = message;
       this._tooltipInstance._markForCheck();
 
-      this._ngZone.onMicrotaskEmpty.first().subscribe(() => {
+      first.call(this._ngZone.onMicrotaskEmpty).subscribe(() => {
         if (this._tooltipInstance) {
           this._overlayRef!.updatePosition();
         }

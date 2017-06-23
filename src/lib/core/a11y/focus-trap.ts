@@ -15,11 +15,10 @@ import {
   AfterContentInit,
   Injectable,
 } from '@angular/core';
+import {coerceBooleanProperty} from '@angular/cdk';
 import {InteractivityChecker} from './interactivity-checker';
 import {Platform} from '../platform/platform';
-import {coerceBooleanProperty} from '@angular/cdk';
-
-import 'rxjs/add/operator/first';
+import {first} from '../rxjs/index';
 
 
 /**
@@ -232,7 +231,7 @@ export class FocusTrap {
     if (this._ngZone.isStable) {
       fn();
     } else {
-      this._ngZone.onStable.first().subscribe(fn);
+      first.call(this._ngZone.onStable).subscribe(fn);
     }
   }
 }

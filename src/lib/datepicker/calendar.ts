@@ -35,6 +35,7 @@ import {MdDatepickerIntl} from './datepicker-intl';
 import {createMissingDateImplError} from './datepicker-errors';
 import {MD_DATE_FORMATS, MdDateFormats} from '../core/datetime/date-formats';
 import {MATERIAL_COMPATIBILITY_MODE} from '../core';
+import {first} from '../core/rxjs/index';
 
 
 /**
@@ -196,9 +197,8 @@ export class MdCalendar<D> implements AfterContentInit {
 
   /** Focuses the active cell after the microtask queue is empty. */
   _focusActiveCell() {
-    this._ngZone.runOutsideAngular(() => this._ngZone.onStable.first().subscribe(() => {
-      let activeEl = this._elementRef.nativeElement.querySelector('.mat-calendar-body-active');
-      activeEl.focus();
+    this._ngZone.runOutsideAngular(() => first.call(this._ngZone.onStable).subscribe(() => {
+      this._elementRef.nativeElement.querySelector('.mat-calendar-body-active').focus();
     }));
   }
 

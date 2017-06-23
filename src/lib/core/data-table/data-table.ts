@@ -31,11 +31,9 @@ import {
 } from '@angular/core';
 import {CollectionViewer, DataSource} from './data-source';
 import {CdkCellOutlet, CdkCellOutletRowContext, CdkHeaderRowDef, CdkRowDef} from './row';
-import {Observable} from 'rxjs/Observable';
+import {merge} from 'rxjs/observable/merge';
+import {takeUntil} from '../rxjs/index';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import 'rxjs/add/operator/let';
-import 'rxjs/add/operator/debounceTime';
-import 'rxjs/add/observable/combineLatest';
 import {Subscription} from 'rxjs/Subscription';
 import {Subject} from 'rxjs/Subject';
 import {CdkCellDef, CdkColumnDef, CdkHeaderCellDef} from './cell';
@@ -196,22 +194,20 @@ export class CdkTable<T> implements CollectionViewer {
 
     // Re-render the rows if any of their columns change.
     // TODO(andrewseguin): Determine how to only re-render the rows that have their columns changed.
-    Observable.merge(...this._rowDefinitions.map(rowDef => rowDef.columnsChange))
-        .takeUntil(this._onDestroy)
-        .subscribe(() => {
-          // Reset the data to an empty array so that renderRowChanges will re-render all new rows.
-          this._rowPlaceholder.viewContainer.clear();
-          this._dataDiffer.diff([]);
-          this._renderRowChanges();
-        });
+    const columnChangeEvents = this._rowDefinitions.map(rowDef => rowDef.columnsChange);
+
+    takeUntil.call(merge(...columnChangeEvents), this._onDestroy).subscribe(() => {
+      // Reset the data to an empty array so that renderRowChanges will re-render all new rows.
+      this._rowPlaceholder.viewContainer.clear();
+      this._dataDiffer.diff([]);
+      this._renderRowChanges();
+    });
 
     // Re-render the header row if the columns change
-    this._headerDefinition.columnsChange
-        .takeUntil(this._onDestroy)
-        .subscribe(() => {
-          this._headerRowPlaceholder.viewContainer.clear();
-          this._renderHeaderRow();
-        });
+    takeUntil.call(this._headerDefinition.columnsChange, this._onDestroy).subscribe(() => {
+      this._headerRowPlaceholder.viewContainer.clear();
+      this._renderHeaderRow();
+    });
   }
 
   ngAfterViewInit() {
@@ -252,12 +248,11 @@ export class CdkTable<T> implements CollectionViewer {
 
   /** Set up a subscription for the data provided by the data source. */
   private _observeRenderChanges() {
-    this._renderChangeSubscription = this.dataSource.connect(this)
-        .takeUntil(this._onDestroy)
-        .subscribe(data => {
-          this._data = data;
-          this._renderRowChanges();
-        });
+    this._renderChangeSubscription = takeUntil.call(this.dataSource.connect(this), this._onDestroy)
+      .subscribe(data => {
+        this._data = data;
+        this._renderRowChanges();
+      });
   }
 
   /**

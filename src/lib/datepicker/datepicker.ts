@@ -38,7 +38,7 @@ import {DateAdapter} from '../core/datetime/index';
 import {createMissingDateImplError} from './datepicker-errors';
 import {ESCAPE} from '../core/keyboard/keycodes';
 import {MdCalendar} from './calendar';
-import 'rxjs/add/operator/first';
+import {first} from '../core/rxjs/index';
 
 
 /** Used to generate a unique ID for each datepicker instance. */
@@ -269,7 +269,7 @@ export class MdDatepicker<D> implements OnDestroy {
       componentRef.instance.datepicker = this;
 
       // Update the position once the calendar has rendered.
-      this._ngZone.onStable.first().subscribe(() => this._popupRef.updatePosition());
+      first.call(this._ngZone.onStable).subscribe(() => this._popupRef.updatePosition());
     }
 
     this._popupRef.backdropClick().subscribe(() => this.close());

@@ -20,12 +20,13 @@ import {
   Renderer2,
   ViewEncapsulation,
   NgZone,
-  OnDestroy, Inject,
+  OnDestroy,
+  Inject,
 } from '@angular/core';
 import {Directionality, coerceBooleanProperty} from '../core';
 import {FocusTrapFactory, FocusTrap} from '../core/a11y/focus-trap';
 import {ESCAPE} from '../core/keyboard/keycodes';
-import 'rxjs/add/operator/first';
+import {first} from '../core/rxjs/index';
 import {DOCUMENT} from '@angular/platform-browser';
 
 
@@ -384,7 +385,7 @@ export class MdSidenavContainer implements AfterContentInit {
     this._validateDrawers();
 
     // Give the view a chance to render the initial state, then enable transitions.
-    this._ngZone.onMicrotaskEmpty.first().subscribe(() => this._enableTransitions = true);
+    first.call(this._ngZone.onMicrotaskEmpty).subscribe(() => this._enableTransitions = true);
   }
 
   /** Calls `open` of both start and end sidenavs */
@@ -423,7 +424,7 @@ export class MdSidenavContainer implements AfterContentInit {
     // NOTE: We need to wait for the microtask queue to be empty before validating,
     // since both drawers may be swapping sides at the same time.
     sidenav.onAlignChanged.subscribe(() =>
-        this._ngZone.onMicrotaskEmpty.first().subscribe(() => this._validateDrawers()));
+        first.call(this._ngZone.onMicrotaskEmpty).subscribe(() => this._validateDrawers()));
   }
 
   /** Toggles the 'mat-sidenav-opened' class on the main 'md-sidenav-container' element. */

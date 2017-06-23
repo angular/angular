@@ -18,7 +18,7 @@ import {
   Injectable,
 } from '@angular/core';
 import {Subject} from 'rxjs/Subject';
-import 'rxjs/add/operator/debounceTime';
+import {RxChain, debounceTime} from '../rxjs/index';
 
 /**
  * Factory that creates a new MutationObserver and allows us to stub it out in unit tests.
@@ -56,9 +56,9 @@ export class ObserveContent implements AfterContentInit, OnDestroy {
 
   ngAfterContentInit() {
     if (this.debounce > 0) {
-      this._debouncer
-        .debounceTime(this.debounce)
-        .subscribe(mutations => this.event.emit(mutations));
+      RxChain.from(this._debouncer)
+        .call(debounceTime, this.debounce)
+        .subscribe((mutations: MutationRecord[]) => this.event.emit(mutations));
     } else {
       this._debouncer.subscribe(mutations => this.event.emit(mutations));
     }

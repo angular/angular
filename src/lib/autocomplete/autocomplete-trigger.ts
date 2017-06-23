@@ -31,11 +31,10 @@ import {ENTER, UP_ARROW, DOWN_ARROW, ESCAPE} from '../core/keyboard/keycodes';
 import {Directionality} from '../core/bidi/index';
 import {MdInputContainer} from '../input/input-container';
 import {Subscription} from 'rxjs/Subscription';
-import 'rxjs/add/observable/merge';
-import 'rxjs/add/observable/fromEvent';
-import 'rxjs/add/operator/filter';
-import 'rxjs/add/operator/switchMap';
-import 'rxjs/add/observable/of';
+import {merge} from 'rxjs/observable/merge';
+import {fromEvent} from 'rxjs/observable/fromEvent';
+import {of as observableOf} from 'rxjs/observable/of';
+import {RxChain, switchMap, first, filter} from '../core/rxjs/index';
 
 /**
  * The following style constants are necessary to save here in order
@@ -187,7 +186,7 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
    * when an option is selected, on blur, and when TAB is pressed.
    */
   get panelClosingActions(): Observable<MdOptionSelectionChange> {
-    return Observable.merge(
+    return merge(
       this.optionSelections,
       this.autocomplete._keyManager.tabOut,
       this._outsideClickStream
@@ -196,7 +195,7 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
 
   /** Stream of autocomplete option selections. */
   get optionSelections(): Observable<MdOptionSelectionChange> {
-    return Observable.merge(...this.autocomplete.options.map(option => option.onSelectionChange));
+    return merge(...this.autocomplete.options.map(option => option.onSelectionChange));
   }
 
   /** The currently active option, coerced to MdOption type. */
@@ -210,23 +209,23 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
 
   /** Stream of clicks outside of the autocomplete panel. */
   private get _outsideClickStream(): Observable<any> {
-    if (this._document) {
-      return Observable.merge(
-        Observable.fromEvent(this._document, 'click'),
-        Observable.fromEvent(this._document, 'touchend')
-      ).filter((event: MouseEvent | TouchEvent) => {
-        const clickTarget = event.target as HTMLElement;
-        const inputContainer = this._inputContainer ?
-            this._inputContainer._elementRef.nativeElement : null;
-
-        return this._panelOpen &&
-               clickTarget !== this._element.nativeElement &&
-               (!inputContainer || !inputContainer.contains(clickTarget)) &&
-               (!!this._overlayRef && !this._overlayRef.overlayElement.contains(clickTarget));
-      });
+    if (!this._document) {
+      return observableOf(null);
     }
 
-    return Observable.of(null);
+    return RxChain.from(merge(
+      fromEvent(this._document, 'click'),
+      fromEvent(this._document, 'touchend')
+    )).call(filter, (event: MouseEvent | TouchEvent) => {
+      const clickTarget = event.target as HTMLElement;
+      const inputContainer = this._inputContainer ?
+          this._inputContainer._elementRef.nativeElement : null;
+
+      return this._panelOpen &&
+             clickTarget !== this._element.nativeElement &&
+             (!inputContainer || !inputContainer.contains(clickTarget)) &&
+             (!!this._overlayRef && !this._overlayRef.overlayElement.contains(clickTarget));
+    }).result();
   }
 
   /**
@@ -335,17 +334,17 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
    */
   private _subscribeToClosingActions(): void {
     // When the zone is stable initially, and when the option list changes...
-    Observable.merge(this._zone.onStable.first(), this.autocomplete.options.changes)
-        // create a new stream of panelClosingActions, replacing any previous streams
-        // that were created, and flatten it so our stream only emits closing events...
-        .switchMap(() => {
-          this._resetPanel();
-          return this.panelClosingActions;
-        })
-        // when the first closing event occurs...
-        .first()
-        // set the value, close the panel, and complete.
-        .subscribe(event => this._setValueAndClose(event));
+    RxChain.from(merge(first.call(this._zone.onStable), this.autocomplete.options.changes))
+      // create a new stream of panelClosingActions, replacing any previous streams
+      // that were created, and flatten it so our stream only emits closing events...
+      .call(switchMap, () => {
+        this._resetPanel();
+        return this.panelClosingActions;
+      })
+      // when the first closing event occurs...
+      .call(first)
+      // set the value, close the panel, and complete.
+      .subscribe(event => this._setValueAndClose(event));
   }
 
   /** Destroys the autocomplete suggestion panel. */

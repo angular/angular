@@ -33,13 +33,11 @@ import {
 import {MdTabLabelWrapper} from './tab-label-wrapper';
 import {MdInkBar} from './ink-bar';
 import {Subscription} from 'rxjs/Subscription';
-import {Observable} from 'rxjs/Observable';
 import {applyCssTransform} from '../core/style/apply-transform';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/auditTime';
-import 'rxjs/add/observable/of';
-import 'rxjs/add/observable/merge';
-import 'rxjs/add/operator/startWith';
+import {auditTime, startWith} from '../core/rxjs/index';
+import {of as observableOf} from 'rxjs/observable/of';
+import {merge} from 'rxjs/observable/merge';
+import {fromEvent} from 'rxjs/observable/fromEvent';
 
 
 /**
@@ -183,12 +181,12 @@ export class MdTabHeader implements AfterContentChecked, AfterContentInit, OnDes
    */
   ngAfterContentInit() {
     this._realignInkBar = this._ngZone.runOutsideAngular(() => {
-      let dirChange = this._dir ? this._dir.change : Observable.of(null);
+      let dirChange = this._dir ? this._dir.change : observableOf(null);
       let resize = typeof window !== 'undefined' ?
-          Observable.fromEvent(window, 'resize').auditTime(10) :
-          Observable.of(null);
+          auditTime.call(fromEvent(window, 'resize'), 10) :
+          observableOf(null);
 
-      return Observable.merge(dirChange, resize).startWith(null).subscribe(() => {
+      return startWith.call(merge(dirChange, resize), null).subscribe(() => {
         this._updatePagination();
         this._alignInkBarToSelectedTab();
       });

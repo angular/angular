@@ -27,10 +27,10 @@ import {ViewportRuler} from '../../core/overlay/position/viewport-ruler';
 import {Directionality, MD_RIPPLE_GLOBAL_OPTIONS, Platform, RippleGlobalOptions} from '../../core';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
-import 'rxjs/add/operator/auditTime';
-import 'rxjs/add/operator/takeUntil';
-import 'rxjs/add/observable/of';
-import 'rxjs/add/observable/merge';
+import {takeUntil, auditTime} from '../../core/rxjs/index';
+import {of as observableOf} from 'rxjs/observable/of';
+import {merge} from 'rxjs/observable/merge';
+import {fromEvent} from 'rxjs/observable/fromEvent';
 
 /**
  * Navigation component matching the styles of the tab group header.
@@ -63,13 +63,12 @@ export class MdTabNav implements AfterContentInit, OnDestroy {
 
   ngAfterContentInit(): void {
     this._ngZone.runOutsideAngular(() => {
-      let dirChange = this._dir ? this._dir.change : Observable.of(null);
+      let dirChange = this._dir ? this._dir.change : observableOf(null);
       let resize = typeof window !== 'undefined' ?
-          Observable.fromEvent(window, 'resize').auditTime(10) :
-          Observable.of(null);
+          auditTime.call(fromEvent(window, 'resize'), 10) :
+          observableOf(null);
 
-      return Observable.merge(dirChange, resize)
-          .takeUntil(this._onDestroy)
+      return takeUntil.call(merge(dirChange, resize), this._onDestroy)
           .subscribe(() => this._alignInkBar());
     });
   }

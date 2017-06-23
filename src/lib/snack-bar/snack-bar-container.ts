@@ -32,6 +32,7 @@ import {
 import {MdSnackBarConfig} from './snack-bar-config';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
+import {first} from '../core/rxjs/index';
 
 
 
@@ -167,7 +168,7 @@ export class MdSnackBarContainer extends BasePortalHost implements OnDestroy {
     // because it can cause a memory leak.
     const onExit = this.onExit;
 
-    this._ngZone.onMicrotaskEmpty.first().subscribe(() => {
+    first.call(this._ngZone.onMicrotaskEmpty).subscribe(() => {
       onExit.next();
       onExit.complete();
     });

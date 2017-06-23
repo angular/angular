@@ -12,7 +12,7 @@ import {DialogPosition} from './dialog-config';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {MdDialogContainer} from './dialog-container';
-import 'rxjs/add/operator/filter';
+import {filter} from '../core/rxjs/index';
 
 
 // TODO(jelbourn): resizing
@@ -36,8 +36,8 @@ export class MdDialogRef<T> {
   private _result: any;
 
   constructor(private _overlayRef: OverlayRef, private _containerInstance: MdDialogContainer) {
-    _containerInstance._onAnimationStateChange
-      .filter((event: AnimationEvent) => event.toState === 'exit')
+    filter.call(_containerInstance._onAnimationStateChange,
+      (event: AnimationEvent) => event.toState === 'exit')
       .subscribe(() => this._overlayRef.dispose(), undefined, () => {
         this._afterClosed.next(this._result);
         this._afterClosed.complete();

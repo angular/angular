@@ -39,9 +39,8 @@ import {ConnectedOverlayDirective} from '../core/overlay/overlay-directives';
 import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
 import {SelectionModel} from '../core/selection/selection';
 import {getMdSelectDynamicMultipleError, getMdSelectNonArrayValueError} from './select-errors';
-import 'rxjs/add/observable/merge';
-import 'rxjs/add/operator/startWith';
-import 'rxjs/add/operator/filter';
+import {startWith, filter} from '../core/rxjs/index';
+import {merge} from 'rxjs/observable/merge';
 import {CanColor, mixinColor} from '../core/common-behaviors/color';
 import {CanDisable, mixinDisabled} from '../core/common-behaviors/disabled';
 import {
@@ -306,7 +305,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
 
   /** Combined stream of all of the child options' change events. */
   get optionSelectionChanges(): Observable<MdOptionSelectionChange> {
-    return Observable.merge(...this.options.map(option => option.onSelectionChange));
+    return merge(...this.options.map(option => option.onSelectionChange));
   }
 
   /** Event emitted when the select has been opened. */
@@ -334,7 +333,6 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
     }
 
     this._tabIndex = parseInt(tabIndex) || 0;
-
     this._placeholderOptions = placeholderOptions ? placeholderOptions : {};
     this.floatPlaceholder = this._placeholderOptions.float || 'auto';
   }
@@ -346,7 +344,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
   ngAfterContentInit() {
     this._initKeyManager();
 
-    this._changeSubscription = this.options.changes.startWith(null).subscribe(() => {
+    this._changeSubscription = startWith.call(this.options.changes, null).subscribe(() => {
       this._resetOptions();
 
       if (this._control) {
@@ -641,9 +639,8 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
 
   /** Listens to user-generated selection events on each option. */
   private _listenToOptions(): void {
-    this._optionSubscription = this.optionSelectionChanges
-      .filter(event => event.isUserInput)
-      .subscribe(event => {
+    this._optionSubscription = filter.call(this.optionSelectionChanges,
+      event => event.isUserInput).subscribe(event => {
         this._onSelect(event.source);
         this._setValueWidth();
 

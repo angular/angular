@@ -5,6 +5,7 @@ import {DOWN_ARROW, UP_ARROW, TAB} from '../keyboard/keycodes';
 import {ListKeyManager} from './list-key-manager';
 import {ActiveDescendantKeyManager} from './activedescendant-key-manager';
 import {createKeyboardEvent} from '../testing/event-objects';
+import {first} from '../rxjs/index';
 
 
 class FakeFocusable {
@@ -189,7 +190,7 @@ describe('Key managers', () => {
 
       it('should emit tabOut when the tab key is pressed', () => {
         let spy = jasmine.createSpy('tabOut spy');
-        keyManager.tabOut.first().subscribe(spy);
+        first.call(keyManager.tabOut).subscribe(spy);
         keyManager.onKeydown(fakeKeyEvents.tab);
 
         expect(spy).toHaveBeenCalled();

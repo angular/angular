@@ -30,7 +30,7 @@ import {dispatchFakeEvent} from '../core/testing/dispatch-events';
 import {createKeyboardEvent} from '../core/testing/event-objects';
 import {typeInElement} from '../core/testing/type-in-element';
 import {ScrollDispatcher} from '../core/overlay/scroll/scroll-dispatcher';
-import 'rxjs/add/operator/map';
+import {RxChain, map, startWith, filter} from '../core/rxjs/index';
 
 
 describe('MdAutocomplete', () => {
@@ -1335,10 +1335,13 @@ class NgIfAutocomplete {
   @ViewChildren(MdOption) mdOptions: QueryList<MdOption>;
 
   constructor() {
-    this.filteredOptions = this.optionCtrl.valueChanges.startWith(null).map((val) => {
-      return val ? this.options.filter(option => new RegExp(val, 'gi').test(option))
-                 : this.options.slice();
-    });
+    this.filteredOptions = RxChain.from(this.optionCtrl.valueChanges)
+      .call(startWith, null)
+      .call(map, (val: string) => {
+        return val ? this.options.filter(option => new RegExp(val, 'gi').test(option))
+                   : this.options.slice();
+      })
+      .result();
   }
 }
 
@@ -1444,10 +1447,13 @@ class AutocompleteWithNativeInput {
   @ViewChildren(MdOption) mdOptions: QueryList<MdOption>;
 
   constructor() {
-    this.filteredOptions = this.optionCtrl.valueChanges.startWith(null).map((val) => {
-      return val ? this.options.filter(option => new RegExp(val, 'gi').test(option))
-                 : this.options.slice();
-    });
+    this.filteredOptions = RxChain.from(this.optionCtrl.valueChanges)
+      .call(startWith, null)
+      .call(map, (val: string) => {
+        return val ? this.options.filter(option => new RegExp(val, 'gi').test(option))
+                   : this.options.slice();
+      })
+      .result();
   }
 }
 

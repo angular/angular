@@ -20,7 +20,7 @@ import {
 import {coerceBooleanProperty} from '../core';
 import {Observable} from 'rxjs/Observable';
 import {MdTab} from './tab';
-import 'rxjs/add/operator/map';
+import {map} from '../core/rxjs/index';
 
 
 /** Used to generate unique ID's for each tab component */
@@ -96,7 +96,7 @@ export class MdTabGroup {
 
   /** Output to enable support for two-way binding on `[(selectedIndex)]` */
   @Output() get selectedIndexChange(): Observable<number> {
-    return this.selectChange.map(event => event.index);
+    return map.call(this.selectChange, event => event.index);
   }
 
   /** Event emitted when focus has changed within a tab group. */
