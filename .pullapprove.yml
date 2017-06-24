@@ -8,9 +8,11 @@
 # alexeagle - Alex Eagle
 # alxhub - Alex Rickabaugh
 # chuckjaz - Chuck Jazdzewski
+# Foxandxss - Jesús Rodríguez
 # gkalpak - George Kalpakas
 # IgorMinar - Igor Minar
 # jasonaden - Jason Aden
+# juleskremer - Jules Kremer
 # kara - Kara Erickson
 # matsko - Matias Niemelä
 # mhevery - Misko Hevery
@@ -18,10 +20,11 @@
 # pkozlowski-opensource - Pawel Kozlowski
 # robwormald - Rob Wormald
 # tbosch - Tobias Bosch
+# tinayuangao - Tina Gao
 # vicb - Victor Berchet
 # vikerman - Vikram Subramanian
 # wardbell - Ward Bell
-# tinayuangao - Tina Gao
+
 
 version: 2
 
@@ -250,10 +253,46 @@ groups:
   angular.io:
     conditions:
       files:
-        - "aio/*"
+        include:
+          - "aio/*"
+        exclude:
+          - "aio/content/*"
     users:
-      - IgorMinar #primary
-      - petebacondarwin #secondary
+      - petebacondarwin #primary
+      - IgorMinar
       - gkalpak
+      - mhevery #fallback
+
+  angular.io-guide-and-tutorial:
+    conditions:
+      files:
+        include:
+          - "aio/content/examples/*"
+          - "aio/content/guide/*"
+          - "aio/content/images/*"
+          - "aio/content/tutorial/*"
+          - "aio/content/file-not-found.md"
+    users:
+      - juleskremer #primary
+      - Foxandxss
+      - stephenfluin
       - wardbell
+      - IgorMinar #fallback
+      - mhevery #fallback
+
+  angular.io-marketing:
+    conditions:
+      files:
+        include:
+          - "aio/content/*"
+        exclude:
+          - "aio/content/examples/*"
+          - "aio/content/guide/*"
+          - "aio/content/images/*"
+          - "aio/content/tutorial/*"
+          - "aio/content/file-not-found.md"
+    users:
+      - juleskremer #primary
+      - stephenfluin
+      - IgorMinar #fallback
       - mhevery #fallback
