@@ -348,14 +348,14 @@ describe('encapsulation', () => {
     renderComponent(WrapperComponent, {rendererFactory: getRendererFactory2(document)});
     expect(containerEl.outerHTML)
         .toMatch(
-            /<div host=""><encapsulated _nghost-c(\d+)="">foo<leaf _ngcontent-c\1=""><span>bar<\/span><\/leaf><\/encapsulated><\/div>/);
+            /<div host=""><encapsulated _nghost-[a-z]+-c(\d+)="">foo<leaf _ngcontent-[a-z]+-c\1=""><span>bar<\/span><\/leaf><\/encapsulated><\/div>/);
   });
 
   it('should encapsulate host', () => {
     renderComponent(EncapsulatedComponent, {rendererFactory: getRendererFactory2(document)});
     expect(containerEl.outerHTML)
         .toMatch(
-            /<div host="" _nghost-c(\d+)="">foo<leaf _ngcontent-c\1=""><span>bar<\/span><\/leaf><\/div>/);
+            /<div host="" _nghost-[a-z]+-c(\d+)="">foo<leaf _ngcontent-[a-z]+-c\1=""><span>bar<\/span><\/leaf><\/div>/);
   });
 
   it('should encapsulate host and children with different attributes', () => {
@@ -401,7 +401,7 @@ describe('encapsulation', () => {
     renderComponent(WrapperComponentWith, {rendererFactory: getRendererFactory2(document)});
     expect(containerEl.outerHTML)
         .toMatch(
-            /<div host="" _nghost-c(\d+)=""><leaf _ngcontent-c\1="" _nghost-c(\d+)=""><span _ngcontent-c\2="">bar<\/span><\/leaf><\/div>/);
+            /<div host="" _nghost-[a-z]+-c(\d+)=""><leaf _ngcontent-[a-z]+-c\1="" _nghost-[a-z]+-c(\d+)=""><span _ngcontent-[a-z]+-c\2="">bar<\/span><\/leaf><\/div>/);
   });
 
 });
