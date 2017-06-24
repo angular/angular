@@ -4,8 +4,8 @@ import * as fs from 'fs';
 import * as http from 'http';
 import * as path from 'path';
 import * as shell from 'shelljs';
+import {HIDDEN_DIR_PREFIX} from '../common/constants';
 import {getEnvVar} from '../common/utils';
-import {BuildCreator} from '../upload-server/build-creator';
 
 // Constans
 const TEST_AIO_BUILDS_DIR = getEnvVar('TEST_AIO_BUILDS_DIR');
@@ -104,7 +104,7 @@ class Helper {
   }
 
   public getPrDir(pr: string, isPublic: boolean): string {
-    const prDirName = isPublic ? pr : BuildCreator.HIDDEN_DIR_PREFIX + pr;
+    const prDirName = isPublic ? pr : HIDDEN_DIR_PREFIX + pr;
     return path.join(this.buildsDir, prDirName);
   }
 
