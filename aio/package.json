@@ -38,7 +38,7 @@
     "generate-zips": "node ./tools/example-zipper/generateZips",
     "sw-manifest": "ngu-sw-manifest --dist dist --in ngsw-manifest.json --out dist/ngsw-manifest.json",
     "sw-copy": "cp node_modules/@angular/service-worker/bundles/worker-basic.min.js dist/",
-    "postinstall": "node tools/cli-patches/patch.js && uglifyjs node_modules/lunr/lunr.js -c -m -o src/assets/js/lunr.min.js --source-map",
+    "postinstall": "uglifyjs node_modules/lunr/lunr.js -c -m -o src/assets/js/lunr.min.js --source-map",
     "build-ie-polyfills": "node node_modules/webpack/bin/webpack.js -p src/ie-polyfills.js src/generated/ie-polyfills.min.js"
   },
   "engines": {
@@ -63,15 +63,13 @@
     "core-js": "^2.4.1",
     "jasmine": "^2.6.0",
     "ng-pwa-tools": "^0.0.10",
-    "ngo-loader": "alxhub/ngo",
-    "purify": "igorminar/purify",
     "rxjs": "^5.2.0",
     "tslib": "^1.7.1",
     "web-animations-js": "^2.2.5",
     "zone.js": "^0.8.4"
   },
   "devDependencies": {
-    "@angular/cli": "angular/cli-builds#webpack-next",
+    "@angular/cli": "angular/cli-builds#ngo-webpack-next",
     "@angular/compiler-cli": "4.2.1",
     "@types/jasmine": "^2.5.52",
     "@types/node": "~6.0.60",
