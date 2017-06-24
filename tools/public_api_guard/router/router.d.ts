@@ -476,6 +476,17 @@ export declare abstract class UrlHandlingStrategy {
     abstract shouldProcessUrl(url: UrlTree): boolean;
 }
 
+/** @experimental */
+export declare type UrlMatcher = (segments: UrlSegment[], group: UrlSegmentGroup, route: Route) => UrlMatchResult;
+
+/** @experimental */
+export declare type UrlMatchResult = {
+    consumed: UrlSegment[];
+    posParams?: {
+        [name: string]: UrlSegment;
+    };
+};
+
 /** @stable */
 export declare class UrlSegment {
     readonly parameterMap: ParamMap;
