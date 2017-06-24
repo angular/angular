@@ -7,7 +7,7 @@
  */
 
 
-export {Data, LoadChildren, LoadChildrenCallback, ResolveData, Route, Routes, RunGuardsAndResolvers} from './config';
+export {Data, LoadChildren, LoadChildrenCallback, ResolveData, Route, Routes, RunGuardsAndResolvers, UrlMatchResult, UrlMatcher} from './config';
 export {RouterLink, RouterLinkWithHref} from './directives/router_link';
 export {RouterLinkActive} from './directives/router_link_active';
 export {RouterOutlet} from './directives/router_outlet';
