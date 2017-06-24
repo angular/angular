@@ -245,9 +245,15 @@ The cookbook configuration file looks like this.
 <code-example path="aot-compiler/rollup-config.js" title="rollup-config.js" linenums="false">
 </code-example>
 
-This config file tells Rollup that the app entry point is `src/app/main.js` .
-The `dest` attribute tells Rollup to create a bundle called `build.js` in the `dist` folder.
-It overrides the default `onwarn` method in order to skip annoying messages about the AOT compiler's use of the `this` keyword.
+Here are some noteworthy observations about this configuration.
+
+* The app entry point is `src/app/main.js`.
+
+* The `dest` property tells Rollup to create a bundle called `build.js` in the `src` folder.
+
+* It overrides the default `onwarn` method in order to skip annoying messages about the AOT compiler's use of the `this` keyword.
+
+* It adds a bunch of plugins.
 
 The next section covers the plugins in more depth.
 
@@ -313,9 +319,13 @@ Execute the Rollup process with this command:
 
 ## Load the bundle
 
-Loading the generated application bundle does not require a module loader like SystemJS.
-Remove the scripts that concern SystemJS.
-Instead, load the bundle file using a single `<script>` tag **_after_** the `</body>` tag:
+You no longer require a module loader like SystemJS to load application modules.
+
+Instead, you let the browser load the Rollup-generated `bundle.js` in a `<script>` tag in `index.html`.
+
+* Open `index.html`
+* Remove the scripts that concern SystemJS.
+* Add the following `<script>` tag **_after_** the `</body>` tag:
 
 <code-example path="aot-compiler/src/index.html" region="bundle" title="index.html (load bundle)" linenums="false">
 </code-example>
@@ -328,7 +338,7 @@ You'll need a web server to host the application.
 Use the same `lite-server` employed elsewhere in the documentation:
 
 <code-example language="none" class="code-shell">
-  npm run lite
+  npm run serve
 </code-example>
 
 The server starts, launches a browser, and the app should appear.
@@ -496,6 +506,8 @@ Rollup does the tree shaking as before.
 
 <code-example path="toh-pt6/rollup-config.js" title="rollup-config.js" linenums="false">
 </code-example>
+
+This config differs slightly in that it outputs to the `aot/dist` folder, not to `src` as before.
 
 {@a running-app}
 
