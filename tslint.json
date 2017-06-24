@@ -29,6 +29,11 @@
     "no-var-keyword": true,
     "no-exposed-todo": true,
     "no-debugger": true,
+    "no-rxjs-patch-imports": [
+      true,
+      "src/lib",
+      "src/cdk"
+    ],
     "one-line": [
       true,
       "check-catch",
