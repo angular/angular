@@ -111,9 +111,11 @@
   dependencies:
     tslib "^1.7.1"
 
-"@angular/material@^2.0.0-beta.3":
-  version "2.0.0-beta.4"
-  resolved "https://registry.yarnpkg.com/@angular/material/-/material-2.0.0-beta.4.tgz#137ef759867213308613172c54dfe69061a10829"
+"@angular/material@^2.0.0-beta.7":
+  version "2.0.0-beta.7"
+  resolved "https://registry.yarnpkg.com/@angular/material/-/material-2.0.0-beta.7.tgz#2584aaf1ffbe24779916345f1ac82921ccbc2577"
+  dependencies:
+    tslib "^1.7.1"
 
 "@angular/platform-browser-dynamic@4.2.1":
   version "4.2.1"

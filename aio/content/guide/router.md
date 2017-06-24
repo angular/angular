@@ -123,7 +123,7 @@ this specific route. The data property is accessible within each activated route
 items such as page titles, breadcrumb text, and other read-only, _static_ data.
 You'll use the [resolve guard](guide/router#resolve-guard) to retrieve _dynamic_ data later in the guide.
 
-The `empty path` in the fourth route represents the default path for the application,
+The **empty path** in the fourth route represents the default path for the application,
 the place to go when the path in the URL is empty, as it typically is at the start.
 This default route redirects to the route for the `/heroes` URL and, therefore, will display the `HeroesListComponent`.
 

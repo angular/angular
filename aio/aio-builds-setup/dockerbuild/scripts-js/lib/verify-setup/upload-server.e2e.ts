@@ -19,7 +19,8 @@ describe('upload-server (on HTTP)', () => {
   describe(`${host}/create-build/<pr>/<sha>`, () => {
     const authorizationHeader = `--header "Authorization: Token FOO"`;
     const xFileHeader = `--header "X-File: ${h.buildsDir}/snapshot.tar.gz"`;
-    const curl = `curl -iL ${authorizationHeader} ${xFileHeader}`;
+    const defaultHeaders = `${authorizationHeader} ${xFileHeader}`;
+    const curl = (url: string, headers = defaultHeaders) => `curl -iL ${headers} ${url}`;
 
 
     it('should disallow non-GET requests', done => {
@@ -42,8 +43,8 @@ describe('upload-server (on HTTP)', () => {
       const bodyRegex = /^Missing or empty 'AUTHORIZATION' header/;
 
       Promise.all([
-        h.runCmd(`curl -iL ${headers1} ${url}`).then(h.verifyResponse(401, bodyRegex)),
-        h.runCmd(`curl -iL  ${headers2} ${url}`).then(h.verifyResponse(401, bodyRegex)),
+        h.runCmd(curl(url, headers1)).then(h.verifyResponse(401, bodyRegex)),
+        h.runCmd(curl(url, headers2)).then(h.verifyResponse(401, bodyRegex)),
       ]).then(done);
     });
 
@@ -55,14 +56,25 @@ describe('upload-server (on HTTP)', () => {
       const bodyRegex = /^Missing or empty 'X-FILE' header/;
 
       Promise.all([
-        h.runCmd(`curl -iL ${headers1} ${url}`).then(h.verifyResponse(400, bodyRegex)),
-        h.runCmd(`curl -iL ${headers2} ${url}`).then(h.verifyResponse(400, bodyRegex)),
+        h.runCmd(curl(url, headers1)).then(h.verifyResponse(400, bodyRegex)),
+        h.runCmd(curl(url, headers2)).then(h.verifyResponse(400, bodyRegex)),
       ]).then(done);
     });
 
 
+    it('should reject requests for which the PR verification fails', done => {
+      const headers = `--header "Authorization: FAKE_VERIFICATION_ERROR" ${xFileHeader}`;
+      const url = `http://${host}/create-build/${pr}/${sha9}`;
+      const bodyRegex = new RegExp(`Error while verifying upload for PR ${pr}: Test`);
+
+      h.runCmd(curl(url, headers)).
+        then(h.verifyResponse(403, bodyRegex)).
+        then(done);
+    });
+
+
     it('should respond with 404 for unknown paths', done => {
-      const cmdPrefix = `${curl} http://${host}`;
+      const cmdPrefix = curl(`http://${host}`);
 
       Promise.all([
         h.runCmd(`${cmdPrefix}/foo/create-build/${pr}/${sha9}`).then(h.verifyResponse(404)),
@@ -78,7 +90,7 @@ describe('upload-server (on HTTP)', () => {
 
 
     it('should reject PRs with leading zeros', done => {
-      h.runCmd(`${curl} http://${host}/create-build/0${pr}/${sha9}`).
+      h.runCmd(curl(`http://${host}/create-build/0${pr}/${sha9}`)).
         then(h.verifyResponse(404)).
         then(done);
     });
@@ -86,129 +98,208 @@ describe('upload-server (on HTTP)', () => {
 
     it('should accept SHAs with leading zeros (but not trim the zeros)', done => {
       Promise.all([
-        h.runCmd(`${curl} http://${host}/create-build/${pr}/0${sha9}`).then(h.verifyResponse(404)),
-        h.runCmd(`${curl} http://${host}/create-build/${pr}/${sha9}`).then(h.verifyResponse(500)),
-        h.runCmd(`${curl} http://${host}/create-build/${pr}/${sha0}`).then(h.verifyResponse(500)),
+        h.runCmd(curl(`http://${host}/create-build/${pr}/0${sha9}`)).then(h.verifyResponse(404)),
+        h.runCmd(curl(`http://${host}/create-build/${pr}/${sha9}`)).then(h.verifyResponse(500)),
+        h.runCmd(curl(`http://${host}/create-build/${pr}/${sha0}`)).then(h.verifyResponse(500)),
       ]).then(done);
     });
 
 
-    it('should not overwrite existing builds', done => {
-      h.createDummyBuild(pr, sha9);
-      expect(h.readBuildFile(pr, sha9, 'index.html')).toContain('index.html');
-
-      h.writeBuildFile(pr, sha9, 'index.html', 'My content');
-      expect(h.readBuildFile(pr, sha9, 'index.html')).toBe('My content');
-
-      h.runCmd(`${curl} http://${host}/create-build/${pr}/${sha9}`).
-        then(h.verifyResponse(409, /^Request to overwrite existing directory/)).
-        then(() => expect(h.readBuildFile(pr, sha9, 'index.html')).toBe('My content')).
-        then(done);
-    });
+    [true, false].forEach(isPublic => describe(`(for ${isPublic ? 'public' : 'hidden'} builds)`, () => {
+      const authorizationHeader2 = isPublic ?
+        authorizationHeader : '--header "Authorization: FAKE_VERIFIED_NOT_TRUSTED"';
+      const cmdPrefix = curl('', `${authorizationHeader2} ${xFileHeader}`);
 
 
-    it('should delete the PR directory on error (for new PR)', done => {
-      const prDir = path.join(h.buildsDir, pr);
+      it('should not overwrite existing builds', done => {
+        h.createDummyBuild(pr, sha9, isPublic);
+        expect(h.readBuildFile(pr, sha9, 'index.html', isPublic)).toContain('index.html');
 
-      h.runCmd(`${curl} http://${host}/create-build/${pr}/${sha9}`).
-        then(h.verifyResponse(500)).
-        then(() => expect(fs.existsSync(prDir)).toBe(false)).
-        then(done);
-    });
+        h.writeBuildFile(pr, sha9, 'index.html', 'My content', isPublic);
+        expect(h.readBuildFile(pr, sha9, 'index.html', isPublic)).toBe('My content');
 
-
-    it('should only delete the SHA directory on error (for existing PR)', done => {
-      const prDir = path.join(h.buildsDir, pr);
-      const shaDir = path.join(prDir, sha9);
-
-      h.createDummyBuild(pr, sha0);
-
-      h.runCmd(`${curl} http://${host}/create-build/${pr}/${sha9}`).
-        then(h.verifyResponse(500)).
-        then(() => {
-          expect(fs.existsSync(shaDir)).toBe(false);
-          expect(fs.existsSync(prDir)).toBe(true);
-        }).
-        then(done);
-    });
-
-
-    describe('on successful upload', () => {
-      const archivePath = path.join(h.buildsDir, 'snapshot.tar.gz');
-      let uploadPromise: Promise<CmdResult>;
-
-      beforeEach(() => {
-        h.createDummyArchive(pr, sha9, archivePath);
-        uploadPromise = h.runCmd(`${curl} http://${host}/create-build/${pr}/${sha9}`);
-      });
-      afterEach(() => h.deletePrDir(pr));
-
-
-      it('should respond with 201', done => {
-        uploadPromise.then(h.verifyResponse(201)).then(done);
+        h.runCmd(`${cmdPrefix} http://${host}/create-build/${pr}/${sha9}`).
+          then(h.verifyResponse(409, /^Request to overwrite existing directory/)).
+          then(() => expect(h.readBuildFile(pr, sha9, 'index.html', isPublic)).toBe('My content')).
+          then(done);
       });
 
 
-      it('should extract the contents of the uploaded file', done => {
-        uploadPromise.
+      it('should delete the PR directory on error (for new PR)', done => {
+        h.runCmd(`${cmdPrefix} http://${host}/create-build/${pr}/${sha9}`).
+          then(h.verifyResponse(500)).
+          then(() => expect(h.buildExists(pr, '', isPublic)).toBe(false)).
+          then(done);
+      });
+
+
+      it('should only delete the SHA directory on error (for existing PR)', done => {
+        h.createDummyBuild(pr, sha0, isPublic);
+
+        h.runCmd(`${cmdPrefix} http://${host}/create-build/${pr}/${sha9}`).
+          then(h.verifyResponse(500)).
           then(() => {
-            expect(h.readBuildFile(pr, sha9, 'index.html')).toContain(`uploaded/${pr}`);
-            expect(h.readBuildFile(pr, sha9, 'foo/bar.js')).toContain(`uploaded/${pr}`);
+            expect(h.buildExists(pr, sha9, isPublic)).toBe(false);
+            expect(h.buildExists(pr, '', isPublic)).toBe(true);
           }).
           then(done);
       });
 
 
-      it(`should create files/directories owned by '${h.wwwUser}'`, done => {
-        const shaDir = path.join(h.buildsDir, pr, sha9);
-        const idxPath = path.join(shaDir, 'index.html');
-        const barPath = path.join(shaDir, 'foo', 'bar.js');
+      describe('on successful upload', () => {
+        const archivePath = path.join(h.buildsDir, 'snapshot.tar.gz');
+        const statusCode = isPublic ? 201 : 202;
+        let uploadPromise: Promise<CmdResult>;
 
-        uploadPromise.
-          then(() => Promise.all([
-            h.runCmd(`find ${shaDir}`),
-            h.runCmd(`find ${shaDir} -user ${h.wwwUser}`),
-          ])).
-          then(([{stdout: allFiles}, {stdout: userFiles}]) => {
-            expect(userFiles).toBe(allFiles);
-            expect(userFiles).toContain(shaDir);
-            expect(userFiles).toContain(idxPath);
-            expect(userFiles).toContain(barPath);
-          }).
-          then(done);
+        beforeEach(() => {
+          h.createDummyArchive(pr, sha9, archivePath);
+          uploadPromise = h.runCmd(`${cmdPrefix} http://${host}/create-build/${pr}/${sha9}`);
+        });
+        afterEach(() => h.deletePrDir(pr, isPublic));
+
+
+        it(`should respond with ${statusCode}`, done => {
+          uploadPromise.then(h.verifyResponse(statusCode)).then(done);
+        });
+
+
+        it('should extract the contents of the uploaded file', done => {
+          uploadPromise.
+            then(() => {
+              expect(h.readBuildFile(pr, sha9, 'index.html', isPublic)).toContain(`uploaded/${pr}`);
+              expect(h.readBuildFile(pr, sha9, 'foo/bar.js', isPublic)).toContain(`uploaded/${pr}`);
+            }).
+            then(done);
+        });
+
+
+        it(`should create files/directories owned by '${h.wwwUser}'`, done => {
+          const prDir = h.getPrDir(pr, isPublic);
+          const shaDir = path.join(prDir, sha9);
+          const idxPath = path.join(shaDir, 'index.html');
+          const barPath = path.join(shaDir, 'foo', 'bar.js');
+
+          uploadPromise.
+            then(() => Promise.all([
+              h.runCmd(`find ${shaDir}`),
+              h.runCmd(`find ${shaDir} -user ${h.wwwUser}`),
+            ])).
+            then(([{stdout: allFiles}, {stdout: userFiles}]) => {
+              expect(userFiles).toBe(allFiles);
+              expect(userFiles).toContain(shaDir);
+              expect(userFiles).toContain(idxPath);
+              expect(userFiles).toContain(barPath);
+            }).
+            then(done);
+        });
+
+
+        it('should delete the uploaded file', done => {
+          expect(fs.existsSync(archivePath)).toBe(true);
+          uploadPromise.
+            then(() => expect(fs.existsSync(archivePath)).toBe(false)).
+            then(done);
+        });
+
+
+        it('should make the build directory non-writable', done => {
+          const prDir = h.getPrDir(pr, isPublic);
+          const shaDir = path.join(prDir, sha9);
+          const idxPath = path.join(shaDir, 'index.html');
+          const barPath = path.join(shaDir, 'foo', 'bar.js');
+
+          // See https://github.com/nodejs/node-v0.x-archive/issues/3045#issuecomment-4862588.
+          const isNotWritable = (fileOrDir: string) => {
+            const mode = fs.statSync(fileOrDir).mode;
+            // tslint:disable-next-line: no-bitwise
+            return !(mode & parseInt('222', 8));
+          };
+
+          uploadPromise.
+            then(() => {
+              expect(isNotWritable(shaDir)).toBe(true);
+              expect(isNotWritable(idxPath)).toBe(true);
+              expect(isNotWritable(barPath)).toBe(true);
+            }).
+            then(done);
+        });
+
       });
 
 
-      it('should delete the uploaded file', done => {
-        expect(fs.existsSync(archivePath)).toBe(true);
-        uploadPromise.
-          then(() => expect(fs.existsSync(archivePath)).toBe(false)).
-          then(done);
-      });
+      describe('when the PR\'s visibility has changed', () => {
+        const archivePath = path.join(h.buildsDir, 'snapshot.tar.gz');
+        const statusCode = isPublic ? 201 : 202;
 
-
-      it('should make the build directory non-writable', done => {
-        const shaDir = path.join(h.buildsDir, pr, sha9);
-        const idxPath = path.join(shaDir, 'index.html');
-        const barPath = path.join(shaDir, 'foo', 'bar.js');
-
-        // See https://github.com/nodejs/node-v0.x-archive/issues/3045#issuecomment-4862588.
-        const isNotWritable = (fileOrDir: string) => {
-          const mode = fs.statSync(fileOrDir).mode;
-          // tslint:disable-next-line: no-bitwise
-          return !(mode & parseInt('222', 8));
+        const checkPrVisibility = (isPublic2: boolean) => {
+          expect(h.buildExists(pr, '', isPublic2)).toBe(true);
+          expect(h.buildExists(pr, '', !isPublic2)).toBe(false);
+          expect(h.buildExists(pr, sha0, isPublic2)).toBe(true);
+          expect(h.buildExists(pr, sha0, !isPublic2)).toBe(false);
         };
+        const uploadBuild = (sha: string) => h.runCmd(`${cmdPrefix} http://${host}/create-build/${pr}/${sha}`);
 
-        uploadPromise.
-          then(() => {
-            expect(isNotWritable(shaDir)).toBe(true);
-            expect(isNotWritable(idxPath)).toBe(true);
-            expect(isNotWritable(barPath)).toBe(true);
-          }).
-          then(done);
+        beforeEach(() => {
+          h.createDummyBuild(pr, sha0, !isPublic);
+          h.createDummyArchive(pr, sha9, archivePath);
+          checkPrVisibility(!isPublic);
+        });
+        afterEach(() => h.deletePrDir(pr, isPublic));
+
+
+        it('should update the PR\'s visibility', done => {
+          uploadBuild(sha9).
+            then(h.verifyResponse(statusCode)).
+            then(() => {
+              checkPrVisibility(isPublic);
+              expect(h.buildExists(pr, sha9, isPublic)).toBe(true);
+              expect(h.readBuildFile(pr, sha9, 'index.html', isPublic)).toContain(`uploaded/${pr}`);
+              expect(h.readBuildFile(pr, sha9, 'index.html', isPublic)).toContain(sha9);
+            }).
+            then(done);
+        });
+
+
+        it('should not overwrite existing builds (but keep the updated visibility)', done => {
+          expect(h.buildExists(pr, sha0, isPublic)).toBe(false);
+
+          uploadBuild(sha0).
+            then(h.verifyResponse(409, /^Request to overwrite existing directory/)).
+            then(() => {
+              checkPrVisibility(isPublic);
+              expect(h.readBuildFile(pr, sha0, 'index.html', isPublic)).toContain(pr);
+              expect(h.readBuildFile(pr, sha0, 'index.html', isPublic)).not.toContain(`uploaded/${pr}`);
+              expect(h.readBuildFile(pr, sha0, 'index.html', isPublic)).toContain(sha0);
+              expect(h.readBuildFile(pr, sha0, 'index.html', isPublic)).not.toContain(sha9);
+            }).
+            then(done);
+        });
+
+
+        it('should reject the request if it fails to update the PR\'s visibility', done => {
+          // One way to cause an error is to have both a public and a hidden directory for the sme PR.
+          h.createDummyBuild(pr, sha0, isPublic);
+
+          expect(h.buildExists(pr, sha0, isPublic)).toBe(true);
+          expect(h.buildExists(pr, sha0, !isPublic)).toBe(true);
+
+          const errorRegex = new RegExp(`^Request to move '${h.getPrDir(pr, !isPublic)}' ` +
+                                        `to existing directory '${h.getPrDir(pr, isPublic)}'.`);
+
+          uploadBuild(sha9).
+            then(h.verifyResponse(409, errorRegex)).
+            then(() => {
+              expect(h.buildExists(pr, sha0, isPublic)).toBe(true);
+              expect(h.buildExists(pr, sha0, !isPublic)).toBe(true);
+              expect(h.buildExists(pr, sha9, isPublic)).toBe(false);
+              expect(h.buildExists(pr, sha9, !isPublic)).toBe(false);
+            }).
+            then(done);
+        });
+
       });
 
-    });
+    }));
 
   });
 

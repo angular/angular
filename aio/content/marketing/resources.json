@@ -105,7 +105,7 @@
         "order": 3,
         "resources": {
           "-KLIzHDRfiB3d7W7vk-e": {
-            "desc": "Reactive Extensions for angular2",
+            "desc": "Reactive Extensions for Angular",
             "rev": true,
             "title": "ngrx",
             "url": "http://github.com/ngrx"
@@ -214,6 +214,13 @@
             "rev": true,
             "title": "Universal for ASP.NET",
             "url": "https://github.com/aspnet/nodeservices"
+          },
+          "f1": {
+            "desc": "This tool generates dedicated documentation for Angular applications.",
+            "logo": "",
+            "rev": true,
+            "title": "Compodoc",
+            "url": "https://github.com/compodoc/compodoc"
           }
         }
       },
@@ -246,7 +253,7 @@
             "url": "http://ng-lightning.github.io/ng-lightning/"
           },
           "7ab": {
-            "desc": "UI components for hybrid mobile apps with bindings for both Angular 1 & 2.",
+            "desc": "UI components for hybrid mobile apps with bindings for both Angular & AngularJS.",
             "rev": true,
             "title": "Onsen UI",
             "url": "https://onsen.io/v2/"
@@ -280,11 +287,11 @@
             "url": "https://vaadin.com/elements"
           },
           "a7b": {
-            "desc": "Native Angular2 directives for Bootstrap",
+            "desc": "Native Angular directives for Bootstrap",
             "logo": "",
             "rev": true,
-            "title": "ng2-bootstrap",
-            "url": "http://valor-software.com/ng2-bootstrap/"
+            "title": "ngx-bootstrap",
+            "url": "http://valor-software.com/ngx-bootstrap/#/"
           },
           "ab": {
             "desc": "Material Design components for Angular",
@@ -298,7 +305,13 @@
             "rev": true,
             "title": "ag-Grid",
             "url": "https://www.ag-grid.com/best-angular-2-data-grid/"
-          }
+          },
+          "jqwidgets": {
+            "desc": "Angular UI Components including Grids, Charts, Scheduling and more.",
+            "rev": true,
+            "title": "jQWidgets",
+            "url": "https://www.jqwidgets.com/angular/"
+          }          
         }
       }
     }
@@ -348,7 +361,7 @@
           "a5b": {
             "desc": "The in-depth, complete, and up-to-date book on Angular. Become an Angular expert today.",
             "rev": true,
-            "title": "ng-book 2",
+            "title": "ng-book",
             "url": "https://www.ng-book.com/2/"
           },
           "a6b": {
@@ -417,7 +430,7 @@
             "url": "https://www.eduonix.com/courses/Web-Development/angular-2-fundamentals-for-web-developers"
           },
           "-KMUuOWwciL_S_o0fzFO": {
-            "desc": "The ngmigrate project is brought to you by Todd Motto, a Developer Advocate at Telerik, spreading the good word of Kendo UI, NativeScript and Angular 1 & 2. You can follow him on Twitter for questions, or even requests about this guide.",
+            "desc": "The ngMigrate project is brought to you by Todd Motto, a Developer Advocate at Telerik, spreading the good word of Kendo UI, NativeScript and Angular & AngularJS. You can follow him on Twitter for questions, or even requests about this guide.",
             "rev": true,
             "title": "ngMigrate",
             "url": "http://ngmigrate.telerik.com/"
@@ -466,7 +479,7 @@
             "url": "https://frontendmasters.com/courses/angular-2/"
           },
           "ac6": {
-            "desc": "French language Angular course covering TypeScript, ES6, Depdendency Injection, Observables, and more.",
+            "desc": "French language Angular course covering TypeScript, ES6, Dependency Injection, Observables, and more.",
             "rev": true,
             "title": "Wishtack's Angular Course (francais)",
             "url": "http://courses.wishtack.com/angular-2/ecmascript-6"
@@ -519,7 +532,7 @@
             "url": "http://chariotsolutions.com/course/angular2-workshop-fundamentals-architecture/"
           },
           "-KLIBoN0p9be3kwC6-ga": {
-            "desc": "Angular Academy is a 2 day hands-on public course given in-person across Canada!",
+            "desc": "Angular Academy is a two day hands-on public course given in-person across Canada!",
             "rev": true,
             "title": "Angular Academy (Canada)",
             "url": "http://www.angularacademy.ca"
@@ -574,6 +587,13 @@
             "rev": true,
             "title": "Thoughtram",
             "url": "http://thoughtram.io/"
+          },
+          "jsru": {
+            "desc": "Complete Angular online course. Constantly updating. Real-time webinars with immediate feedback from the teacher.",
+            "logo": "https://learn.javascript.ru/img/sitetoolbar__logo_ru.svg",
+            "rev": true,
+            "title": "Learn Javascript (Russian)",
+            "url": "https://learn.javascript.ru/courses/angular"
           }
         }
       }

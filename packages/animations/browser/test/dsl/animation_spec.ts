@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimationMetadata, AnimationMetadataType, animate, animation, group, keyframes, query, sequence, style, useAnimation, ɵStyleData} from '@angular/animations';
+import {AUTO_STYLE, AnimationMetadata, AnimationMetadataType, animate, animation, group, keyframes, query, sequence, style, transition, trigger, useAnimation, ɵStyleData} from '@angular/animations';
 import {AnimationOptions} from '@angular/core/src/animation/dsl';
 
 import {Animation} from '../../src/dsl/animation';
@@ -101,6 +101,23 @@ export function main() {
             .toThrowError(
                 /The CSS property "opacity" that exists between the times of "0ms" and "2000ms" is also being animated in a parallel animation between the times of "0ms" and "1500ms"/);
       });
+
+      it('should not throw an error if animations overlap in different query levels within different transitions',
+         () => {
+           const steps = trigger('myAnimation', [
+             transition('a => b', group([
+                          query('h1', animate('1s', style({opacity: 0}))),
+                          query('h2', animate('1s', style({opacity: 1}))),
+                        ])),
+
+             transition('b => a', group([
+                          query('h1', animate('1s', style({opacity: 0}))),
+                          query('h2', animate('1s', style({opacity: 1}))),
+                        ])),
+           ]);
+
+           expect(() => validateAndThrowAnimationSequence(steps)).not.toThrow();
+         });
 
       it('should throw an error if an animation time is invalid', () => {
         const steps = [animate('500xs', style({opacity: 1}))];

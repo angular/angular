@@ -4,8 +4,8 @@ import * as http from 'http';
 import {GithubPullRequests} from '../common/github-pull-requests';
 import {assertNotMissingOrEmpty} from '../common/utils';
 import {BuildCreator} from './build-creator';
-import {CreatedBuildEvent} from './build-events';
-import {BuildVerifier} from './build-verifier';
+import {ChangedPrVisibilityEvent, CreatedBuildEvent} from './build-events';
+import {BUILD_VERIFICATION_STATUS, BuildVerifier} from './build-verifier';
 import {UploadError} from './upload-error';
 
 // Constants
@@ -21,6 +21,7 @@ interface UploadServerConfig {
   githubToken: string;
   repoSlug: string;
   secret: string;
+  trustedPrLabel: string;
 }
 
 // Classes
@@ -34,14 +35,16 @@ class UploadServerFactory {
     githubToken,
     repoSlug,
     secret,
+    trustedPrLabel,
   }: UploadServerConfig): http.Server {
     assertNotMissingOrEmpty('domainName', domainName);
 
-    const buildVerifier = new BuildVerifier(secret, githubToken, repoSlug, githubOrganization, githubTeamSlugs);
+    const buildVerifier = new BuildVerifier(secret, githubToken, repoSlug, githubOrganization, githubTeamSlugs,
+                                            trustedPrLabel);
     const buildCreator = this.createBuildCreator(buildsDir, githubToken, repoSlug, domainName);
 
     const middleware = this.createMiddleware(buildVerifier, buildCreator);
-    const httpServer = http.createServer(middleware);
+    const httpServer = http.createServer(middleware as any);
 
     httpServer.on('listening', () => {
       const info = httpServer.address();
@@ -56,12 +59,24 @@ class UploadServerFactory {
                                domainName: string): BuildCreator {
     const buildCreator = new BuildCreator(buildsDir);
     const githubPullRequests = new GithubPullRequests(githubToken, repoSlug);
+    const postPreviewsComment = (pr: number, shas: string[]) => {
+      const body = shas.
+        map(sha => `You can preview ${sha} at https://pr${pr}-${sha}.${domainName}/.`).
+        join('\n');
 
-    buildCreator.on(CreatedBuildEvent.type, ({pr, sha}: CreatedBuildEvent) => {
-      const body = `The angular.io preview for ${sha} is available [here][1].\n\n` +
-                   `[1]: https://pr${pr}-${sha}.${domainName}/`;
+      return githubPullRequests.addComment(pr, body);
+    };
 
-      githubPullRequests.addComment(pr, body);
+    buildCreator.on(CreatedBuildEvent.type, ({pr, sha, isPublic}: CreatedBuildEvent) => {
+      if (isPublic) {
+        postPreviewsComment(pr, [sha]);
+      }
+    });
+
+    buildCreator.on(ChangedPrVisibilityEvent.type, ({pr, shas, isPublic}: ChangedPrVisibilityEvent) => {
+      if (isPublic && shas.length) {
+        postPreviewsComment(pr, shas);
+      }
     });
 
     return buildCreator;
@@ -80,13 +95,14 @@ class UploadServerFactory {
         this.throwRequestError(401, `Missing or empty '${AUTHORIZATION_HEADER}' header`, req);
       } else if (!archive) {
         this.throwRequestError(400, `Missing or empty '${X_FILE_HEADER}' header`, req);
+      } else {
+        buildVerifier.
+          verify(+pr, authHeader).
+          then(verStatus => verStatus === BUILD_VERIFICATION_STATUS.verifiedAndTrusted).
+          then(isPublic => buildCreator.create(pr, sha, archive, isPublic).
+            then(() => res.sendStatus(isPublic ? 201 : 202))).
+          catch(err => this.respondWithError(res, err));
       }
-
-      buildVerifier.
-        verify(+pr, authHeader).
-        then(() => buildCreator.create(pr, sha, archive)).
-        then(() => res.sendStatus(201)).
-        catch(err => this.respondWithError(res, err));
     });
     middleware.get(/^\/health-check\/?$/, (_req, res) => res.sendStatus(200));
     middleware.get('*', req => this.throwRequestError(404, 'Unknown resource', req));

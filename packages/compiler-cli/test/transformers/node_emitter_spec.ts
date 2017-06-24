@@ -43,8 +43,7 @@ describe('TypeScriptEmitter', () => {
     const transformers: ts.CustomTransformers = {
       before: [context => {
         return sourceFile => {
-          const [newSourceFile] = emitter.updateSourceFile(
-              sourceFile, someGenFileName, someGenFilePath, stmts, [], preamble);
+          const [newSourceFile] = emitter.updateSourceFile(sourceFile, stmts, preamble);
           return newSourceFile;
         };
       }]

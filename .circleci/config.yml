@@ -1,20 +1,41 @@
+defaults: &defaults
+  working_directory: ~/ng
+  docker:
+    - image: angular/ngcontainer
+
 version: 2
 jobs:
+  lint:
+    <<: *defaults
+    steps:
+      - checkout:
+          # After checkout, rebase on top of master.
+          # Similar to travis behavior, but not quite the same.
+          # See https://discuss.circleci.com/t/1662
+          post: git pull --ff-only origin "refs/pull/${CI_PULL_REQUEST//*pull\//}/merge"
+      - restore_cache:
+          key: angular-{{ .Branch }}-{{ checksum "npm-shrinkwrap.json" }}
+
+      - run: npm install
+      - run: ./node_modules/.bin/gulp lint
+
   build:
-    working_directory: ~/ng
-    docker:
-      - image: angular/ngcontainer
+    <<: *defaults
     steps:
       - checkout
       - restore_cache:
           key: angular-{{ .Branch }}-{{ checksum "npm-shrinkwrap.json" }}
-      - run: npm install
-      - run: npm run postinstall
-      - run: ./node_modules/.bin/gulp lint
-      # Build twice, workaround for
-      # https://github.com/bazelbuild/bazel/issues/3114
-      - run: bazel build ... || bazel build ...
+
+      - run: bazel run @io_bazel_rules_typescript_node//:bin/npm install
+      - run: bazel build ...
       - save_cache:
           key: angular-{{ .Branch }}-{{ checksum "npm-shrinkwrap.json" }}
           paths:
             - "node_modules"
+
+workflows:
+  version: 2
+  default_workflow:
+    jobs:
+      - lint
+      - build

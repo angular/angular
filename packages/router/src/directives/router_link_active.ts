@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterContentInit, ChangeDetectorRef, ContentChildren, Directive, ElementRef, Input, OnChanges, OnDestroy, QueryList, Renderer, SimpleChanges} from '@angular/core';
+import {AfterContentInit, ChangeDetectorRef, ContentChildren, Directive, ElementRef, Input, OnChanges, OnDestroy, QueryList, Renderer2, SimpleChanges} from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
 import {NavigationEnd} from '../events';
 import {Router} from '../router';
@@ -91,7 +91,7 @@ export class RouterLinkActive implements OnChanges,
   @Input() routerLinkActiveOptions: {exact: boolean} = {exact: false};
 
   constructor(
-      private router: Router, private element: ElementRef, private renderer: Renderer,
+      private router: Router, private element: ElementRef, private renderer: Renderer2,
       private cdr: ChangeDetectorRef) {
     this.subscription = router.events.subscribe(s => {
       if (s instanceof NavigationEnd) {
@@ -123,8 +123,13 @@ export class RouterLinkActive implements OnChanges,
 
     // react only when status has changed to prevent unnecessary dom updates
     if (this.active !== hasActiveLinks) {
-      this.classes.forEach(
-          c => this.renderer.setElementClass(this.element.nativeElement, c, hasActiveLinks));
+      this.classes.forEach((c) => {
+        if (hasActiveLinks) {
+          this.renderer.addClass(this.element.nativeElement, c);
+        } else {
+          this.renderer.removeClass(this.element.nativeElement, c);
+        }
+      });
       Promise.resolve(hasActiveLinks).then(active => this.active = active);
     }
   }
