@@ -4,15 +4,13 @@ import {EventEmitter} from 'events';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as shell from 'shelljs';
+import {HIDDEN_DIR_PREFIX} from '../common/constants';
 import {assertNotMissingOrEmpty} from '../common/utils';
 import {ChangedPrVisibilityEvent, CreatedBuildEvent} from './build-events';
 import {UploadError} from './upload-error';
 
 // Classes
 export class BuildCreator extends EventEmitter {
-  // Properties - Public, Static
-  public static HIDDEN_DIR_PREFIX = 'hidden--';
-
   // Constructor
   constructor(protected buildsDir: string) {
     super();
@@ -114,7 +112,7 @@ export class BuildCreator extends EventEmitter {
   }
 
   protected getCandidatePrDirs(pr: string, isPublic: boolean) {
-    const hiddenPrDir = path.join(this.buildsDir, BuildCreator.HIDDEN_DIR_PREFIX + pr);
+    const hiddenPrDir = path.join(this.buildsDir, HIDDEN_DIR_PREFIX + pr);
     const publicPrDir = path.join(this.buildsDir, pr);
 
     const oldPrDir = isPublic ? hiddenPrDir : publicPrDir;
