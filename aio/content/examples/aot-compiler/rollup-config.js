@@ -6,7 +6,7 @@ import uglify      from 'rollup-plugin-uglify';
 // #docregion config
 export default {
   entry: 'src/main.js',
-  dest: 'src/build.js', // output a single application bundle
+  dest: 'dist/build.js', // output a single application bundle
   sourceMap: false,
   format: 'iife',
   onwarn: function(warning) {
