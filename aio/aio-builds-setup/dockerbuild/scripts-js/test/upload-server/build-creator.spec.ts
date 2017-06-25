@@ -4,6 +4,7 @@ import {EventEmitter} from 'events';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as shell from 'shelljs';
+import {SHORT_SHA_LEN} from '../../lib/common/constants';
 import {BuildCreator} from '../../lib/upload-server/build-creator';
 import {ChangedPrVisibilityEvent, CreatedBuildEvent} from '../../lib/upload-server/build-events';
 import {UploadError} from '../../lib/upload-server/upload-error';
@@ -13,12 +14,13 @@ import {expectToBeUploadError} from './helpers';
 describe('BuildCreator', () => {
   const pr = '9';
   const sha = '9'.repeat(40);
+  const shortSha = sha.substr(0, SHORT_SHA_LEN);
   const archive = 'snapshot.tar.gz';
   const buildsDir = 'builds/dir';
   const hiddenPrDir = path.join(buildsDir, `hidden--${pr}`);
   const publicPrDir = path.join(buildsDir, pr);
-  const hiddenShaDir = path.join(hiddenPrDir, sha);
-  const publicShaDir = path.join(publicPrDir, sha);
+  const hiddenShaDir = path.join(hiddenPrDir, shortSha);
+  const publicShaDir = path.join(publicPrDir, shortSha);
   let bc: BuildCreator;
 
   beforeEach(() => bc = new BuildCreator(buildsDir));
@@ -267,7 +269,7 @@ describe('BuildCreator', () => {
           expect(type).toBe(CreatedBuildEvent.type);
           expect(evt).toEqual(jasmine.any(CreatedBuildEvent));
           expect(evt.pr).toBe(+pr);
-          expect(evt.sha).toBe(sha);
+          expect(evt.sha).toBe(shortSha);
           expect(evt.isPublic).toBe(isPublic);
 
           emitted = true;
