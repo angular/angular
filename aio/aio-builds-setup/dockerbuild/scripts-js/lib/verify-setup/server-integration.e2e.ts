@@ -12,7 +12,7 @@ h.runForAllSupportedSchemes((scheme, port) => describe(`integration (on ${scheme
   const archivePath = path.join(h.buildsDir, 'snapshot.tar.gz');
 
   const getFile = (pr: string, sha: string, file: string) =>
-    h.runCmd(`curl -iL ${scheme}://pr${pr}-${sha}.${host}/${file}`);
+    h.runCmd(`curl -iL ${scheme}://pr${pr}-${h.getShordSha(sha)}.${host}/${file}`);
   const uploadBuild = (pr: string, sha: string, archive: string, authHeader = 'Token FOO') => {
     // Using `FAKE_VERIFICATION_ERROR` or `FAKE_VERIFIED_NOT_TRUSTED` as `authHeader`,
     // we can fake the response of the overwritten `BuildVerifier.verify()` method.

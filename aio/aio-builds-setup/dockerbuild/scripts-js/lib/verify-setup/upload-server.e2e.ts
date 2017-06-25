@@ -125,6 +125,27 @@ describe('upload-server (on HTTP)', () => {
       });
 
 
+      it('should not overwrite existing builds (even if the SHA is different)', done => {
+        // Since only the first few characters of the SHA are used, it is possible for two different
+        // SHAs to correspond to the same directory. In that case, we don't want the second SHA to
+        // overwrite the first.
+
+        const sha9Almost = sha9.replace(/.$/, '8');
+        expect(sha9Almost).not.toBe(sha9);
+
+        h.createDummyBuild(pr, sha9, isPublic);
+        expect(h.readBuildFile(pr, sha9, 'index.html', isPublic)).toContain('index.html');
+
+        h.writeBuildFile(pr, sha9, 'index.html', 'My content', isPublic);
+        expect(h.readBuildFile(pr, sha9, 'index.html', isPublic)).toBe('My content');
+
+        h.runCmd(`${cmdPrefix} http://${host}/create-build/${pr}/${sha9Almost}`).
+          then(h.verifyResponse(409, /^Request to overwrite existing directory/)).
+          then(() => expect(h.readBuildFile(pr, sha9, 'index.html', isPublic)).toBe('My content')).
+          then(done);
+      });
+
+
       it('should delete the PR directory on error (for new PR)', done => {
         h.runCmd(`${cmdPrefix} http://${host}/create-build/${pr}/${sha9}`).
           then(h.verifyResponse(500)).
@@ -175,7 +196,7 @@ describe('upload-server (on HTTP)', () => {
 
         it(`should create files/directories owned by '${h.wwwUser}'`, done => {
           const prDir = h.getPrDir(pr, isPublic);
-          const shaDir = path.join(prDir, sha9);
+          const shaDir = h.getShaDir(prDir, sha9);
           const idxPath = path.join(shaDir, 'index.html');
           const barPath = path.join(shaDir, 'foo', 'bar.js');
 
@@ -204,7 +225,7 @@ describe('upload-server (on HTTP)', () => {
 
         it('should make the build directory non-writable', done => {
           const prDir = h.getPrDir(pr, isPublic);
-          const shaDir = path.join(prDir, sha9);
+          const shaDir = h.getShaDir(prDir, sha9);
           const idxPath = path.join(shaDir, 'index.html');
           const barPath = path.join(shaDir, 'foo', 'bar.js');
 
@@ -220,6 +241,30 @@ describe('upload-server (on HTTP)', () => {
               expect(isNotWritable(shaDir)).toBe(true);
               expect(isNotWritable(idxPath)).toBe(true);
               expect(isNotWritable(barPath)).toBe(true);
+            }).
+            then(done);
+        });
+
+
+        it('should ignore a legacy 40-chars long build directory (even if it starts with the same chars)', done => {
+          // It is possible that 40-chars long build directories exist, if they had been deployed
+          // before implementing the shorter build directory names. In that case, we don't want the
+          // second (shorter) name to be considered the same as the old one (even if they originate
+          // from the same SHA).
+
+          h.createDummyBuild(pr, sha9, isPublic, false, true);
+          expect(h.readBuildFile(pr, sha9, 'index.html', isPublic, true)).toContain('index.html');
+
+          h.writeBuildFile(pr, sha9, 'index.html', 'My content', isPublic, true);
+          expect(h.readBuildFile(pr, sha9, 'index.html', isPublic, true)).toBe('My content');
+
+          h.runCmd(`${cmdPrefix} http://${host}/create-build/${pr}/${sha9}`).
+            then(h.verifyResponse(statusCode)).
+            then(() => {
+              expect(h.buildExists(pr, sha9, isPublic)).toBe(true);
+              expect(h.buildExists(pr, sha9, isPublic, true)).toBe(true);
+              expect(h.readBuildFile(pr, sha9, 'index.html', isPublic)).toContain('index.html');
+              expect(h.readBuildFile(pr, sha9, 'index.html', isPublic, true)).toBe('My content');
             }).
             then(done);
         });
@@ -277,7 +322,7 @@ describe('upload-server (on HTTP)', () => {
 
 
         it('should reject the request if it fails to update the PR\'s visibility', done => {
-          // One way to cause an error is to have both a public and a hidden directory for the sme PR.
+          // One way to cause an error is to have both a public and a hidden directory for the same PR.
           h.createDummyBuild(pr, sha0, isPublic);
 
           expect(h.buildExists(pr, sha0, isPublic)).toBe(true);

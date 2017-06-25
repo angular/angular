@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import * as http from 'http';
 import * as path from 'path';
 import * as shell from 'shelljs';
-import {HIDDEN_DIR_PREFIX} from '../common/constants';
+import {HIDDEN_DIR_PREFIX, SHORT_SHA_LEN} from '../common/constants';
 import {getEnvVar} from '../common/utils';
 
 // Constans
@@ -51,8 +51,9 @@ class Helper {
   }
 
   // Methods - Public
-  public buildExists(pr: string, sha = '', isPublic = true): boolean {
-    const dir = path.join(this.getPrDir(pr, isPublic), sha);
+  public buildExists(pr: string, sha = '', isPublic = true, legacy = false): boolean {
+    const prDir = this.getPrDir(pr, isPublic);
+    const dir = !sha ? prDir : this.getShaDir(prDir, sha, legacy);
     return fs.existsSync(dir);
   }
 
@@ -68,7 +69,7 @@ class Helper {
   }
 
   public createDummyArchive(pr: string, sha: string, archivePath: string): CleanUpFn {
-    const inputDir = path.join(this.buildsDir, 'uploaded', pr, sha);
+    const inputDir = this.getShaDir(this.getPrDir(`uploaded/${pr}`, true), sha);
     const cmd1 = `tar --create --gzip --directory "${inputDir}" --file "${archivePath}" .`;
     const cmd2 = `chown ${this.wwwUser} ${archivePath}`;
 
@@ -80,9 +81,9 @@ class Helper {
     return this.createCleanUpFn(() => shell.rm('-rf', archivePath));
   }
 
-  public createDummyBuild(pr: string, sha: string, isPublic = true, force = false): CleanUpFn {
+  public createDummyBuild(pr: string, sha: string, isPublic = true, force = false, legacy = false): CleanUpFn {
     const prDir = this.getPrDir(pr, isPublic);
-    const shaDir = path.join(prDir, sha);
+    const shaDir = this.getShaDir(prDir, sha, legacy);
     const idxPath = path.join(shaDir, 'index.html');
     const barPath = path.join(shaDir, 'foo', 'bar.js');
 
@@ -108,9 +109,17 @@ class Helper {
     return path.join(this.buildsDir, prDirName);
   }
 
-  public readBuildFile(pr: string, sha: string, relFilePath: string, isPublic = true): string {
-    const prDir = this.getPrDir(pr, isPublic);
-    const absFilePath = path.join(prDir, sha, relFilePath);
+  public getShaDir(prDir: string, sha: string, legacy = false): string {
+    return path.join(prDir, legacy ? sha : this.getShordSha(sha));
+  }
+
+  public getShordSha(sha: string): string {
+    return sha.substr(0, SHORT_SHA_LEN);
+  }
+
+  public readBuildFile(pr: string, sha: string, relFilePath: string, isPublic = true, legacy = false): string {
+    const shaDir = this.getShaDir(this.getPrDir(pr, isPublic), sha, legacy);
+    const absFilePath = path.join(shaDir, relFilePath);
     return fs.readFileSync(absFilePath, 'utf8');
   }
 
@@ -156,8 +165,10 @@ class Helper {
     };
   }
 
-  public writeBuildFile(pr: string, sha: string, relFilePath: string, content: string, isPublic = true): CleanUpFn {
-    const absFilePath = path.join(this.getPrDir(pr, isPublic), sha, relFilePath);
+  public writeBuildFile(pr: string, sha: string, relFilePath: string, content: string, isPublic = true,
+                        legacy = false): CleanUpFn {
+    const shaDir = this.getShaDir(this.getPrDir(pr, isPublic), sha, legacy);
+    const absFilePath = path.join(shaDir, relFilePath);
     return this.writeFile(absFilePath, {content}, true);
   }
 

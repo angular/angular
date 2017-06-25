@@ -65,12 +65,14 @@ More info on how to set things up on CI can be found [here](misc--integrate-with
   found [here](overview--security-model.md)).
 - The upload-server changes the "visibility" of the associated PR, if necessary. For example, if
   builds for the same PR had been previously deployed as non-public and the current build has been
-  automatically verified, all previous builds are made public.
+  automatically verified, all previous builds are made public as well.
   If the PR transitions from "non-public" to "public", the upload-server posts a comment on the
   corresponding PR on GitHub mentioning the SHAs and the links where the previews can be found.
 - The upload-server verifies that the uploaded file is not trying to overwrite an existing build.
-- The upload-server deploys the artifacts to a sub-directory named after the PR number and SHA:
-  `<PR>/<SHA>/` (Non-publicly accessible PRs will be stored in a different location.)
+- The upload-server deploys the artifacts to a sub-directory named after the PR number and the first
+  few characters of the SHA: `<PR>/<SHA>/`
+  (Non-publicly accessible PRs will be stored in a different location, but again derived from the PR
+  number and SHA.)
 - If the PR is publicly accessible, the upload-server posts a comment on the corresponding PR on
   GitHub mentioning the SHA and the link where the preview can be found.
 
