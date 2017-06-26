@@ -188,4 +188,13 @@ export abstract class Renderer2 {
   abstract listen(
       target: 'window'|'document'|'body'|any, eventName: string,
       callback: (event: any) => boolean | void): () => void;
+
+  /**
+   * @internal
+   *
+   * This is a temporary flag to enable flex-layouts to pass in Google3
+   * This should be removed in Angular 5.0.0-beta.0. This should also
+   * be set to false when PR #17528 has landed.
+   */
+  static __render_1_support_required = true;
 }
