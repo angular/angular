@@ -42,10 +42,6 @@ with a bried explanation of what they mean:
 - **403 (Forbidden)**:
   Unable to verify build (e.g. invalid JWT token, or unable to talk to 3rd-party APIs, etc).
 
-- **404 (Not Found)**:
-  Tried to change PR visibility but the source directory did not exist.
-  (Currently, this can only happen as a rare race condition during build deployment.)
-
 - **405 (Method Not Allowed)**:
   Request method other than POST.
 
