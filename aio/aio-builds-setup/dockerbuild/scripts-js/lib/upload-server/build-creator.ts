@@ -18,45 +18,17 @@ export class BuildCreator extends EventEmitter {
   }
 
   // Methods - Public
-  public changePrVisibility(pr: string, makePublic: boolean): Promise<void> {
-    const {oldPrDir, newPrDir} = this.getCandidatePrDirs(pr, makePublic);
-
-    return Promise.
-      all([this.exists(oldPrDir), this.exists(newPrDir)]).
-      then(([oldPrDirExisted, newPrDirExisted]) => {
-        if (!oldPrDirExisted) {
-          throw new UploadError(404, `Request to move non-existing directory '${oldPrDir}' to '${newPrDir}'.`);
-        } else if (newPrDirExisted) {
-          throw new UploadError(409, `Request to move '${oldPrDir}' to existing directory '${newPrDir}'.`);
-        }
-
-        return Promise.resolve().
-          then(() => shell.mv(oldPrDir, newPrDir)).
-          then(() => this.listShasByDate(newPrDir)).
-          then(shas => this.emit(ChangedPrVisibilityEvent.type, new ChangedPrVisibilityEvent(+pr, shas, makePublic))).
-          then(() => undefined);
-      }).
-      catch(err => {
-        if (!(err instanceof UploadError)) {
-          err = new UploadError(500, `Error while making PR ${pr} ${makePublic ? 'public' : 'hidden'}.\n${err}`);
-        }
-
-        throw err;
-      });
-  }
-
   public create(pr: string, sha: string, archivePath: string, isPublic: boolean): Promise<void> {
     // Use only part of the SHA for more readable URLs.
     sha = sha.substr(0, SHORT_SHA_LEN);
 
-    const {oldPrDir: otherVisPrDir, newPrDir: prDir} = this.getCandidatePrDirs(pr, isPublic);
+    const {newPrDir: prDir} = this.getCandidatePrDirs(pr, isPublic);
     const shaDir = path.join(prDir, sha);
     let dirToRemoveOnError: string;
 
     return Promise.resolve().
-      then(() => this.exists(otherVisPrDir)).
       // If the same PR exists with different visibility, update the visibility first.
-      then(otherVisPrDirExisted => (otherVisPrDirExisted && this.changePrVisibility(pr, isPublic)) as any).
+      then(() => this.updatePrVisibility(pr, isPublic)).
       then(() => Promise.all([this.exists(prDir), this.exists(shaDir)])).
       then(([prDirExisted, shaDirExisted]) => {
         if (shaDirExisted) {
@@ -78,6 +50,36 @@ export class BuildCreator extends EventEmitter {
 
         if (!(err instanceof UploadError)) {
           err = new UploadError(500, `Error while uploading to directory: ${shaDir}\n${err}`);
+        }
+
+        throw err;
+      });
+  }
+
+  public updatePrVisibility(pr: string, makePublic: boolean): Promise<boolean> {
+    const {oldPrDir: otherVisPrDir, newPrDir: targetVisPrDir} = this.getCandidatePrDirs(pr, makePublic);
+
+    return Promise.
+      all([this.exists(otherVisPrDir), this.exists(targetVisPrDir)]).
+      then(([otherVisPrDirExisted, targetVisPrDirExisted]) => {
+        if (!otherVisPrDirExisted) {
+          // No visibility change: Either the visibility is up-to-date or the PR does not exist.
+          return false;
+        } else if (targetVisPrDirExisted) {
+          // Error: Directories for both visibilities exist.
+          throw new UploadError(409, `Request to move '${otherVisPrDir}' to existing directory '${targetVisPrDir}'.`);
+        }
+
+        // Visibility change: Moving `otherVisPrDir` to `targetVisPrDir`.
+        return Promise.resolve().
+          then(() => shell.mv(otherVisPrDir, targetVisPrDir)).
+          then(() => this.listShasByDate(targetVisPrDir)).
+          then(shas => this.emit(ChangedPrVisibilityEvent.type, new ChangedPrVisibilityEvent(+pr, shas, makePublic))).
+          then(() => true);
+      }).
+      catch(err => {
+        if (!(err instanceof UploadError)) {
+          err = new UploadError(500, `Error while making PR ${pr} ${makePublic ? 'public' : 'hidden'}.\n${err}`);
         }
 
         throw err;
