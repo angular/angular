@@ -155,6 +155,16 @@ If you do, this page can help you understand their purpose.
       in the custom `<my-app>` body tag.
 
       The same `index.html` satisfies all documentation application samples.
+
+      <br>
+
+      <div class="l-sub-section">
+
+        Angular expects files to be UTF8 encoded. 
+        Your `index.html` file should have `<meta charset="UTF-8">` in the `<head>` section.
+
+      </div>
+
     </td>
 
   </tr>
