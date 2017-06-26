@@ -17,6 +17,7 @@ jobs:
           key: angular-{{ .Branch }}-{{ checksum "npm-shrinkwrap.json" }}
 
       - run: npm install
+      - run: npm run postinstall
       - run: ./node_modules/.bin/gulp lint
 
   build:
