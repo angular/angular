@@ -20,6 +20,7 @@ import {
 } from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
+import {Subscription} from 'rxjs/Subscription';
 import {Platform} from '../platform/platform';
 import {of as observableOf} from 'rxjs/observable/of';
 
@@ -316,11 +317,12 @@ export class FocusOriginMonitor {
   selector: '[cdkMonitorElementFocus], [cdkMonitorSubtreeFocus]',
 })
 export class CdkMonitorFocus implements OnDestroy {
+  private _monitorSubscription: Subscription;
   @Output() cdkFocusChange = new EventEmitter<FocusOrigin>();
 
   constructor(private _elementRef: ElementRef, private _focusOriginMonitor: FocusOriginMonitor,
               renderer: Renderer2) {
-    this._focusOriginMonitor.monitor(
+    this._monitorSubscription = this._focusOriginMonitor.monitor(
         this._elementRef.nativeElement, renderer,
         this._elementRef.nativeElement.hasAttribute('cdkMonitorSubtreeFocus'))
         .subscribe(origin => this.cdkFocusChange.emit(origin));
@@ -328,6 +330,7 @@ export class CdkMonitorFocus implements OnDestroy {
 
   ngOnDestroy() {
     this._focusOriginMonitor.stopMonitoring(this._elementRef.nativeElement);
+    this._monitorSubscription.unsubscribe();
   }
 }
 

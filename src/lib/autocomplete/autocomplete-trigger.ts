@@ -101,6 +101,9 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   /** Whether or not the placeholder state is being overridden. */
   private _manuallyFloatingPlaceholder = false;
 
+  /** The subscription for closing actions (some are bound to document). */
+  private _closingActionsSubscription: Subscription;
+
   /** View -> model callback called when value changes */
   _onChange: (value: any) => void = () => {};
 
@@ -157,7 +160,7 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
 
     if (this._overlayRef && !this._overlayRef.hasAttached()) {
       this._overlayRef.attach(this._portal);
-      this._subscribeToClosingActions();
+      this._closingActionsSubscription = this._subscribeToClosingActions();
     }
 
     this.autocomplete._setVisibility();
@@ -169,6 +172,7 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   closePanel(): void {
     if (this._overlayRef && this._overlayRef.hasAttached()) {
       this._overlayRef.detach();
+      this._closingActionsSubscription.unsubscribe();
     }
 
     this._panelOpen = false;
@@ -332,9 +336,9 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
    * This method listens to a stream of panel closing actions and resets the
    * stream every time the option list changes.
    */
-  private _subscribeToClosingActions(): void {
+  private _subscribeToClosingActions(): Subscription {
     // When the zone is stable initially, and when the option list changes...
-    RxChain.from(merge(first.call(this._zone.onStable), this.autocomplete.options.changes))
+    return RxChain.from(merge(first.call(this._zone.onStable), this.autocomplete.options.changes))
       // create a new stream of panelClosingActions, replacing any previous streams
       // that were created, and flatten it so our stream only emits closing events...
       .call(switchMap, () => {
