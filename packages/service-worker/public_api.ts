@@ -1,2 +1,4 @@
-export {ServiceWorkerModule} from './src/module';
-export {NgPushRegistration, NgServiceWorker, PushOptions, UpdateEvent} from './src/service';
+export {NgswDebug} from './src/debug';
+export {NgswModule} from './src/module';
+export {NgswPush} from './src/push';
+export {NgswAppVersion, NgswUpdate, NgswUpdateActivatedEvent, NgswUpdateAvailableEvent} from './src/update';

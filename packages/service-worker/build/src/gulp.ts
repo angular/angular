@@ -1,10 +1,8 @@
+import * as crypto from 'crypto';
 import * as stream from 'stream';
 import * as Vinyl from 'vinyl';
-import * as crypto from 'crypto';
 
-export interface GulpAddStaticFileOptions {
-  manifestKey?: string;
-}
+export interface GulpAddStaticFileOptions { manifestKey?: string; }
 
 export function gulpGenerateManifest() {
   let readable = new stream.Readable({objectMode: true});
@@ -29,9 +27,7 @@ export function gulpAddStaticFiles(files: any, options: GulpAddStaticFileOptions
       throw new Error('Only one manifest allowed.');
     }
     let manifest = JSON.parse(manifestFile.contents.toString('utf8'));
-    let staticConfig: {[key: string]: any} = {
-      urls: {}
-    };
+    let staticConfig: {[key: string]: any} = {urls: {}};
     let property = options.manifestKey || 'static';
     manifest[property] = staticConfig;
 
@@ -39,8 +35,7 @@ export function gulpAddStaticFiles(files: any, options: GulpAddStaticFileOptions
     let ignored: RegExp[] = [];
     const ignoreKey = `${options.manifestKey}.ignore`;
     if (manifest.hasOwnProperty(ignoreKey)) {
-      ignored.push(...(manifest[ignoreKey] as string[])
-        .map(regex => new RegExp(regex)));
+      ignored.push(...(manifest[ignoreKey] as string[]).map(regex => new RegExp(regex)));
       delete manifest[ignoreKey];
     }
 

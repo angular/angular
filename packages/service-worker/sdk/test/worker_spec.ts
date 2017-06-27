@@ -1,10 +1,10 @@
 import 'reflect-metadata';
 
-import {SHA1} from 'jshashes';
 import {Observable} from 'rxjs/Rx';
 
 import {ConsoleHandler, Driver, LOG, LOGGER, Manifest} from '../';
 import {RouteRedirection, StaticContentCache} from '../plugins';
+import {sha1} from '../src/sha1';
 import {MockCache, MockRequest, MockResponse, TestWorkerDriver} from '../testing';
 
 const MANIFEST_URL = '/ngsw-manifest.json';
@@ -24,7 +24,7 @@ const SIMPLE_MANIFEST = JSON.stringify({
     ],
   },
 });
-const SIMPLE_MANIFEST_HASH = new SHA1().hex(SIMPLE_MANIFEST);
+const SIMPLE_MANIFEST_HASH = sha1(SIMPLE_MANIFEST);
 
 const ROUTING_MANIFEST = JSON.stringify({
   static: {urls: {'/hello.txt': 'test'}},
@@ -64,7 +64,7 @@ function errored(err: any, done: any) {
 function expectOkResponse(value: Response): Response {
   expect(value).not.toBeUndefined();
   expect(value.ok).toBeTruthy();
-  expect((value as any)['redirected']).toBeTruthy();
+  expect((value as any)['redirected']).toBeFalsy();
   return value;
 }
 
@@ -104,7 +104,7 @@ function createServiceWorker(
 }
 
 export function main() {
-  describe('ngsw', () => {
+  fdescribe('ngsw', () => {
     const simpleManifestCache = `ngsw:manifest:${SIMPLE_MANIFEST_HASH}:static`;
     describe('initial load', () => {
       let driver: TestWorkerDriver = new TestWorkerDriver(createServiceWorker);

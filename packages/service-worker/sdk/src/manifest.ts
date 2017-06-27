@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SHA1} from 'jshashes';
+import {sha1} from './sha1';
 
 /**
  * @experimental
@@ -23,6 +23,6 @@ export interface Manifest {
 export function parseManifest(data: string): Manifest {
   const manifest: Manifest = JSON.parse(data) as Manifest;
   manifest._json = data;
-  manifest._hash = new SHA1().hex(data);
+  manifest._hash = sha1(data);
   return manifest;
 }

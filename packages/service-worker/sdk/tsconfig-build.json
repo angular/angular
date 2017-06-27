@@ -21,8 +21,7 @@
   },
   "files": [
     "public_api.ts",
-    "./src/typings/service-worker.d.ts",
-    "./src/typings/jshashes.d.ts"
+    "./src/typings/service-worker.d.ts"
   ],
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,

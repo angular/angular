@@ -1,4 +1,4 @@
-export {FetchDelegate, FetchInstruction, Operation, Plugin, PluginFactory, StreamController, VersionWorker} from './src/api';
+export {FetchDelegate, FetchInstruction, Operation, Plugin, PluginFactory, VersionWorker} from './src/api';
 export {BootstrapOptions, bootstrapServiceWorker} from './src/bootstrap';
 export {ScopedCache} from './src/cache';
 export {cacheFromNetworkOp, copyExistingCacheOp, copyExistingOrFetchOp, deleteCacheOp, fetchFromCacheInstruction, fetchFromNetworkInstruction, rewriteUrlInstruction} from './src/common';
@@ -7,6 +7,7 @@ export {BrowserClock, Clock, NgSwAdapter} from './src/facade/adapter';
 export {NgSwCache, NgSwCacheImpl} from './src/facade/cache';
 export {Callback, NgSwEvents} from './src/facade/events';
 export {NgSwFetch} from './src/facade/fetch';
+export {FsaBroadcastMessage, FsaMessage, makeBroadcastFsa} from './src/fsa';
 export {ConsoleHandler, HttpHandler, LOG, LOGGER, LogEntry, LogHandler, Logger, Logging, Verbosity} from './src/logging';
 export {Manifest, parseManifest} from './src/manifest';
 export {UrlConfig, UrlMatchType, UrlMatcher} from './src/url';

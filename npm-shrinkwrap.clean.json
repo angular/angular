@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "4.2.0-beta.1",
+  "version": "4.3.0-beta.1",
   "dependencies": {
     "@types/angularjs": {
       "version": "1.5.13-alpha"
@@ -31,6 +31,9 @@
     },
     "@types/systemjs": {
       "version": "0.19.32"
+    },
+    "@types/vinyl": {
+      "version": "2.0.0"
     },
     "abbrev": {
       "version": "1.0.9"
@@ -1577,8 +1580,36 @@
     "clone": {
       "version": "1.0.2"
     },
+    "clone-buffer": {
+      "version": "1.0.0"
+    },
     "clone-stats": {
       "version": "0.0.1"
+    },
+    "cloneable-readable": {
+      "version": "1.0.0",
+      "dependencies": {
+        "isarray": {
+          "version": "1.0.0"
+        },
+        "readable-stream": {
+          "version": "2.3.3",
+          "dependencies": {
+            "inherits": {
+              "version": "2.0.3"
+            }
+          }
+        },
+        "safe-buffer": {
+          "version": "5.1.1"
+        },
+        "string_decoder": {
+          "version": "1.0.3"
+        },
+        "through2": {
+          "version": "2.0.3"
+        }
+      }
     },
     "cmd-shim": {
       "version": "2.0.2",
@@ -4243,6 +4274,9 @@
     "registry-url": {
       "version": "3.1.0"
     },
+    "remove-trailing-separator": {
+      "version": "1.0.2"
+    },
     "repeat-element": {
       "version": "1.1.2"
     },
@@ -5018,6 +5052,17 @@
     },
     "vhost": {
       "version": "3.0.2"
+    },
+    "vinyl": {
+      "version": "2.0.2",
+      "dependencies": {
+        "clone-stats": {
+          "version": "1.0.0"
+        },
+        "replace-ext": {
+          "version": "1.0.0"
+        }
+      }
     },
     "vinyl-fs": {
       "version": "0.3.14",

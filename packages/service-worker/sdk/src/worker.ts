@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FetchDelegate, FetchInstruction, Operation, Plugin, StreamController, VersionWorker} from './api';
+import {FetchDelegate, FetchInstruction, IDriver, Operation, Plugin, VersionWorker} from './api';
 import {ScopedCache} from './cache';
 import {fetchFromNetworkInstruction} from './common';
 import {Clock, NgSwAdapter} from './facade/adapter';
@@ -18,9 +18,9 @@ import {Manifest} from './manifest';
  */
 export class VersionWorkerImpl implements VersionWorker {
   constructor(
-      public streamController: StreamController, public scope: ServiceWorkerGlobalScope,
-      public manifest: Manifest, public adapter: NgSwAdapter, public cache: ScopedCache,
-      public clock: Clock, private fetcher: NgSwFetch, private plugins: Plugin<any>[]) {}
+      public driver: IDriver, public scope: ServiceWorkerGlobalScope, public manifest: Manifest,
+      public adapter: NgSwAdapter, public cache: ScopedCache, public clock: Clock,
+      private fetcher: NgSwFetch, private plugins: Plugin<any>[]) {}
 
   refresh(req: Request, cacheBust: boolean = true): Promise<Response> {
     if (cacheBust) {
@@ -69,21 +69,10 @@ export class VersionWorkerImpl implements VersionWorker {
     }, []);
   }
 
-  message(message: any, id: number): Promise<any> {
-    return Promise.all(this.plugins.filter(plugin => !!plugin.message)
-                           .map(plugin => plugin.message !(message, id)));
+  message(message: any): Promise<any> {
+    return Promise.all(
+        this.plugins.filter(plugin => !!plugin.message).map(plugin => plugin.message !(message)));
   }
-
-  messageClosed(id: number): void {
-    this.plugins.filter(plugin => !!plugin.messageClosed)
-        .forEach(plugin => plugin.messageClosed !(id));
-  }
-
-  sendToStream(id: number, message: Object): void {
-    this.streamController.sendToStream(id, message);
-  }
-
-  closeStream(id: number): void { this.streamController.closeStream(id); }
 
   push(data: any): Promise<any> {
     return Promise.all(

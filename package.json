@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "4.2.2",
+  "version": "4.3.0-beta.1",
   "private": true,
   "branchPattern": "2.0.*",
   "description": "Angular - a web framework for modern web apps",
@@ -21,13 +21,11 @@
     "check-env": "gulp check-env"
   },
   "dependencies": {
-    "@types/vinyl": "^2.0.0",
     "core-js": "^2.4.1",
     "reflect-metadata": "^0.1.3",
     "rxjs": "^5.0.1",
     "tslib": "^1.7.1",
     "typescript": "^2.3.2",
-    "vinyl": "^2.0.2",
     "zone.js": "^0.8.12"
   },
   "optionalDependencies": {
@@ -42,6 +40,7 @@
     "@types/node": "^4.0.22-alpha",
     "@types/selenium-webdriver": "^2.53.35",
     "@types/systemjs": "^0.19.32",
+    "@types/vinyl": "^2.0.0",
     "angular": "^1.5.0",
     "angular-animate": "^1.5.0",
     "angular-mocks": "^1.5.0",
@@ -70,7 +69,6 @@
     "jasmine": "^2.4.1",
     "jasmine-core": "^2.4.1",
     "jpm": "1.0.0",
-    "jshashes": "^1.0.6",
     "karma": "^0.13.20",
     "karma-browserstack-launcher": "^0.1.9",
     "karma-chrome-launcher": "^0.2.0",
@@ -101,6 +99,7 @@
     "tslint-eslint-rules": "^3.1.0",
     "typescript": "^2.1.5",
     "universal-analytics": "^0.3.9",
+    "vinyl": "^2.0.2",
     "vrsource-tslint-rules": "^4.0.0",
     "webpack": "^1.12.6",
     "xhr2": "^0.1.4",

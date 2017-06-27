@@ -9,6 +9,12 @@ declare interface ServiceWorkerGlobalScope {
   skipWaiting(): Promise<void>;
 }
 
+declare class BroadcastChannel extends EventTarget {
+  readonly name: string;
+  constructor(name: string);
+  postMessage(value: Object): void;
+}
+
 declare interface InstallEvent extends ExtendableEvent {}
 
 declare interface ActivateEvent extends ExtendableEvent {}

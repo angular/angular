@@ -24,6 +24,7 @@
   },
   "files": [
     "public_api.ts",
+    "src/typings/channel.d.ts",
     "../../node_modules/zone.js/dist/zone.js.d.ts"
   ],
   "angularCompilerOptions": {

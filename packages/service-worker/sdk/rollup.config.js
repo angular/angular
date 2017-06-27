@@ -7,8 +7,6 @@
  */
 
 import resolve from 'rollup-plugin-node-resolve';
-import commonJs from 'rollup-plugin-commonjs';
-
 
 export default {
   entry: '../../../dist/packages-dist/service-worker/@angular/service-worker/sdk.es5.js',
@@ -17,9 +15,6 @@ export default {
   exports: 'named',
   moduleName: 'ng.serviceWorker.sdk',
   plugins: [
-    resolve(), commonJs({
-      include: '../../../node_modules/**',
-      namedExports: {'../../../node_modules/jshashes/hashes.js': ['SHA1']},
-    })
+    resolve(),
   ],
 };

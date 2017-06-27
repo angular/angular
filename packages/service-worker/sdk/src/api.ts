@@ -8,7 +8,9 @@
 
 import {NgSwAdapter} from './facade/adapter';
 import {NgSwCache} from './facade/cache';
+import {BroadcastFsa, FsaBroadcastMessage, makeBroadcastFsa} from './fsa';
 import {Manifest} from './manifest';
+
 
 /**
  * @experimental
@@ -31,10 +33,13 @@ export interface Operation {
   desc?: Object;
 }
 
+export interface IDriver { broadcast(message: FsaBroadcastMessage<Object>): void; }
+
 /**
  * @experimental
  */
-export interface VersionWorker extends StreamController {
+export interface VersionWorker {
+  readonly driver: IDriver;
   readonly manifest: Manifest;
   readonly cache: NgSwCache;
   readonly adapter: NgSwAdapter;
@@ -42,16 +47,6 @@ export interface VersionWorker extends StreamController {
   refresh(req: Request, cacheBust?: boolean): Promise<Response>;
   fetch(req: Request): Promise<Response>;
   showNotification(title: string, options?: Object): void;
-  sendToStream(id: number, message: Object): void;
-  closeStream(id: number): void;
-}
-
-/**
- * @experimental
- */
-export interface StreamController {
-  sendToStream(id: number, message: Object): void;
-  closeStream(id: number): void;
 }
 
 /**
@@ -62,9 +57,8 @@ export interface Plugin<T extends Plugin<T>> {
   update?(operations: Operation[], previous: T): void;
   fetch?(req: Request): FetchInstruction|null;
   cleanup?(operations: Operation[]): void;
-  message?(message: any, id: number): Promise<any>;
-  messageClosed?(id: number): void;
-  push?(data: any): void;
+  message?(message: any): Promise<any>;
+  push?(data: any): Promise<any>;
   validate?(): Promise<boolean>;
 }
 

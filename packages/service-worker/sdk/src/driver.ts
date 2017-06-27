@@ -12,11 +12,16 @@ import {Clock, NgSwAdapter} from './facade/adapter';
 import {NgSwCache} from './facade/cache';
 import {NgSwEvents} from './facade/events';
 import {NgSwFetch} from './facade/fetch';
+import {BroadcastFsa, FsaBroadcastMessage, FsaDispatchParser, FsaMessage, makeBroadcastFsa} from './fsa';
 import {LOG, LOGGER, Verbosity} from './logging';
 import {Manifest, parseManifest} from './manifest';
 import {VersionWorkerImpl} from './worker';
 
 let driverId: number = 0;
+
+const BROADCAST_CHANNEL_NAME = 'ngsw:broadcast';
+
+const IS_LOCALHOST = /^https?:\/\/localhost[:\/]/;
 
 /**
  * Possible states for the service worker.
@@ -104,11 +109,7 @@ export class Driver {
   // from a critical error.
   private scopedCache: ScopedCache;
 
-  // The next available id for observable streams used to communicate with application tabs.
-  private streamId: number = 0;
-
-  // A map of stream ids to `MessagePort`s that communicate with application tabs.
-  private streams: {[key: number]: MessagePort} = {};
+  private broadcasts: BroadcastChannel|null;
 
   // The worker's lifecycle log, which is appended to when lifecycle events happen. This
   // is not ever cleared, but should not grow very large.
@@ -127,9 +128,6 @@ export class Driver {
   // A resolve function that resolves the `ready` promise. Used only for testing.
   updatePendingResolve: Function;
 
-  // Stream IDs that are actively listening for update lifecycle events.
-  private updateListeners: number[] = [];
-
   constructor(
       private manifestUrl: string, private plugins: PluginFactory<any>[],
       private scope: ServiceWorkerGlobalScope, private adapter: NgSwAdapter,
@@ -143,6 +141,10 @@ export class Driver {
 
     // All SW caching should go through this cache.
     this.scopedCache = new ScopedCache(this.cache, 'ngsw:');
+
+    this.broadcasts = typeof BroadcastChannel === 'function' ?
+        new BroadcastChannel(BROADCAST_CHANNEL_NAME) :
+        null;
 
     // Subscribe to all the service worker lifecycle events:
 
@@ -245,11 +247,6 @@ export class Driver {
         throw new Error(`init Promise not present in state ${DriverState[this.state]}`);
       }
 
-      // Some sanity checks against the incoming message - is it intended for the worker?
-      if (event.ports.length !== 1 || !event.data || !event.data.hasOwnProperty('$ngsw')) {
-        return;
-      }
-
       // Wait for initialization.
       event.waitUntil(this.init.then(() => {
         // Did the worker reach a good state?
@@ -258,17 +255,8 @@ export class Driver {
           return;
         }
 
-        // The message includes a MessagePort for sending responses. Set this up as a stream.
-        const respond: MessagePort = event.ports[0];
-        const id = this.streamId++;
-        this.streams[id] = respond;
-
-        // Send the id as the first response. This can be used by the client to notify of an
-        // "unsubscription" to this request.
-        respond.postMessage({'$ngsw': true, 'id': id});
-
         // Handle the actual payload.
-        return this.handleMessage(event.data, id);
+        return this.onDispatch(event.data);
       }));
     };
 
@@ -420,12 +408,16 @@ export class Driver {
                                         `cleaned up old version ${oldActive.manifest._hash}`));
 
                                 // Notify update listeners that an update has occurred.
-                                this.updateListeners.forEach(id => {
-                                  this.sendToStream(id, {
-                                    type: 'activation',
-                                    version: manifest._hash,
-                                  });
-                                });
+                                this.broadcast(makeBroadcastFsa(BroadcastFsa.APP_UPDATE_ACTIVATED, {
+                                  previous: {
+                                    manifestHash: oldActive.manifest._hash,
+                                    appData: null,
+                                  },
+                                  current: {
+                                    manifestHash: manifest._hash,
+                                    appData: null,
+                                  },
+                                }));
 
                                 this.lifecycle(`updated to manifest ${manifest._hash}`);
                               }
@@ -480,6 +472,7 @@ export class Driver {
 
     // If the worker is in the UPDATE_PENDING state, then no need to check, there is an update.
     if (this.state === DriverState.UPDATE_PENDING) {
+      this.broadcastPendingUpdate();
       return Promise.resolve(true);
     }
 
@@ -519,7 +512,6 @@ export class Driver {
           // this shouldn't happen since initialize() should have already transitioned to
           // UPDATE_PENDING, but as above, this is here for safety.
           if (!!staged && staged._hash === network._hash) {
-            this.lifecycle(`network manifest ${network._hash} is already staged`);
             this.pendingUpdateHash = staged._hash;
             this.transition(DriverState.UPDATE_PENDING);
             return true;
@@ -810,133 +802,103 @@ export class Driver {
     // If the driver entered the UPDATE_PENDING state, notify all update subscribers
     // about the pending update.
     if (state === DriverState.UPDATE_PENDING && this.pendingUpdateHash !== null) {
-      this.updateListeners.forEach(id => this.sendToStream(id, {
-        type: 'pending',
-        version: this.pendingUpdateHash,
-      }));
+      // TODO: add app{} section once manifest format is updated.
+      this.broadcastPendingUpdate();
     } else if (state !== DriverState.UPDATE_PENDING) {
       // Reset the pending update hash if not transitioning to UPDATE_PENDING.
       this.pendingUpdateHash = null !;
     }
+
+    // If the driver entered the READY state, let the application know about a new
+    // version, if any.
+    if (state === DriverState.READY) {
+      this.broadcastVersion();
+    }
+  }
+
+  private broadcastPendingUpdate(): void {
+    this.broadcast(makeBroadcastFsa(BroadcastFsa.APP_UPDATE_AVAILABLE, {
+      current: {
+        manifestHash: this.active.manifest._hash,
+        appData: null,
+      },
+      next: {
+        manifestHash: this.pendingUpdateHash,
+        appData: null,
+      },
+    }));
+  }
+
+  private broadcastVersion(): void {
+    if (!this.active) {
+      this.broadcast(makeBroadcastFsa(BroadcastFsa.VERSION, {version: null}));
+    } else {
+      this.broadcast(makeBroadcastFsa(BroadcastFsa.VERSION, {
+        version: {
+          manifestHash: this.active.manifest._hash,
+          appData: null,
+        },
+      }));
+    }
+  }
+
+  private broadcastSuccess(nonce: number): void {
+    this.broadcast(makeBroadcastFsa(BroadcastFsa.STATUS, {nonce, status: true, error: null}));
+  }
+
+  private broadcastError(error: Error, nonce: number): void {
+    this.broadcast(makeBroadcastFsa(BroadcastFsa.STATUS, {nonce, status: false, error}));
   }
 
   /**
    * Process a `postMessage` received by the worker.
    */
-  private handleMessage(message: any, id: number): Promise<any> {
+  private onDispatch(message: any): Promise<any> {
     // If the `Driver` is not in a known good state, nothing to do but exit.
     if (this.state !== DriverState.READY && this.state !== DriverState.UPDATE_PENDING) {
       this.lifecycle(`can't handle message in state ${DriverState[this.state]}`);
       return Promise.resolve();
     }
 
-    // The message has a 'cmd' key which determines the action the `Driver` will take.
-    // Some commands are handled directly by the `Driver`, the rest are passed on to the
-    // active `VersionWorker` to be handled by a plugin.
-    switch (message['cmd']) {
-      // A ping is a request for the service worker to assert it is up and running by
-      // completing the "Observable" stream.
-      case 'ping':
-        this.lifecycle(`responding to ping on ${id}`);
-        this.closeStream(id);
-        break;
-      // An update message is a request for the service worker to keep the application
-      // apprised of any pending update events, such as a new manifest becoming pending.
-      case 'update':
-        this.updateListeners.push(id);
-
-        // Since this is a new subscriber, check if there's a pending update now and
-        // deliver an initial event if so.
-        if (this.state === DriverState.UPDATE_PENDING && this.pendingUpdateHash !== null) {
-          this.sendToStream(id, {
-            type: 'pending',
-            version: this.pendingUpdateHash,
-          });
-        }
-        break;
-      // Check for a pending update, fetching a new manifest from the network if necessary,
-      // and return the result as a boolean value beore completing.
-      case 'checkUpdate':
-        return this.checkForUpdate().then(value => {
-          this.sendToStream(id, value);
-          this.closeStream(id);
-        });
-      case 'activateUpdate':
-        return this.doUpdate(message['version'] || undefined).then(success => {
-          this.sendToStream(id, success);
-          this.closeStream(id);
-        });
-      // 'cancel' is a special command that the other side has unsubscribed from the stream.
-      // Plugins may choose to take action as a result.
-      case 'cancel':
-        // Attempt to look up the stream the client is requesting to cancel.
-        const idToCancel = `${message['id']}`;
-        if (!this.streams.hasOwnProperty(idToCancel)) {
-          // Not found - nothing to do but exit.
-          return Promise.resolve();
-        }
-
-        // Notify the active `VersionWorker` that the client has unsubscribed.
-        this.active.messageClosed(id);
-
-        // This listener may have been a subscriber to 'update' events.
-        this.maybeRemoveUpdateListener(id);
-
-        // Finally, remove the stream.
-        delete this.streams[id];
-        break;
-      // A request to stream the service worker debugging log. Only one of these is valid
-      // at a time.
-      case 'log':
-        LOGGER.messages = (message: string) => { this.sendToStream(id, message); };
-        break;
-      // A test push message
-      case 'fakePush':
-        let resolve: Function;
-        let res = new Promise(r => resolve = r);
-        this.events.push({
-          data: {text: () => Promise.resolve(message['push'])} as any,
-          waitUntil: (promise: Promise<any>) => { promise.then(() => resolve()); }
-        });
-        return res;
-      // If the command is unknown, delegate to the active `VersionWorker` to handle it.
-      default:
-        return this.active.message(message, id);
+    // If the event doesn't follow the FSA format, ignore it.
+    if (!message.type || !message.payload) {
+      return Promise.resolve();
     }
+
+    const isLocalhost = IS_LOCALHOST.test(this.scope.registration.scope.toLowerCase());
+
+    if (FsaDispatchParser.isPingAction(message)) {
+      this.broadcast(makeBroadcastFsa(BroadcastFsa.PONG, message.payload));
+    } else if (FsaDispatchParser.isCheckForUpdatesAction(message)) {
+      return this.checkForUpdate()
+          .then(() => this.broadcastSuccess(message.payload.statusNonce))
+          .catch(err => this.broadcastError(err, message.payload.statusNonce));
+    } else if (FsaDispatchParser.isActivateUpdateAction(message)) {
+      return this.doUpdate(message.payload.manifestHash)
+          .then(() => this.broadcastSuccess(message.payload.statusNonce))
+          .catch(err => this.broadcastError(err, message.payload.statusNonce));
+    } else if (FsaDispatchParser.isRequestUpdateStatusAction(message)) {
+      if (this.state === DriverState.UPDATE_PENDING && this.pendingUpdateHash !== null) {
+        this.broadcastPendingUpdate();
+      }
+    } else if (FsaDispatchParser.isRequestVersionAction(message)) {
+      this.broadcastVersion();
+    } else if (FsaDispatchParser.isFakePushAction(message) && isLocalhost) {
+      let resolve: Function;
+      let res = new Promise(r => resolve = r);
+      this.events.push({
+        data: {text: () => Promise.resolve(message.payload.payload)} as any,
+        waitUntil: (promise: Promise<any>) => { promise.then(() => resolve()); }
+      });
+      return res;
+    }
+
     return Promise.resolve();
   }
 
-  /**
-   * Remove the given stream id from the set of subscribers to update events, if present.
-   */
-  private maybeRemoveUpdateListener(id: number): void {
-    const idx = this.updateListeners.indexOf(id);
-    if (idx !== -1) {
-      this.updateListeners.splice(idx, 1);
+  broadcast<T>(message: FsaMessage<T>) {
+    if (this.broadcasts !== null) {
+      this.broadcasts.postMessage(message);
     }
-  }
-
-  /**
-   * Post a message to the stream with the given id.
-   */
-  sendToStream(id: number, message: Object): void {
-    if (!this.streams.hasOwnProperty(`${id}`)) {
-      return;
-    }
-    this.streams[id].postMessage(message);
-  }
-
-  /**
-   * Complete the stream with the given id.
-   *
-   * Per the protocol between the service worker and client tabs, a completion is modeled as
-   * a null message.
-   */
-  closeStream(id: number): void {
-    if (!this.streams.hasOwnProperty(`${id}`)) {
-      return;
-    }
-    this.streams[id].postMessage(null);
-    delete this.streams[id];
   }
 }

@@ -1,6 +1,8 @@
 import {Component} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
-import {NgServiceWorker} from '@angular/service-worker';
+import {NgswModule, NgswPush, NgswUpdate, NgswDebug, NgswAppVersion} from '@angular/service-worker';
+
+import 'rxjs/add/observable/merge';
 
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/scan';
@@ -85,9 +87,7 @@ export class ControllerCmp {
   updateSub = null;
   pushes = [];
 
-  constructor(public sw: NgServiceWorker) {
-    sw.log().subscribe(message => this.log.push(message));
-  }
+  constructor(public swPush: NgswPush, public swDebug: NgswDebug, public swUpdate: NgswUpdate) {}
   
   actionSelected(action): void {
     console.log('set action', action);
@@ -115,12 +115,14 @@ export class ControllerCmp {
         break;
       case 'CHECK_FOR_UPDATES':
         this
-          .sw
-          .checkForUpdate()
+          .swUpdate
+          .available
+          .take(1)
           .subscribe(res => {
             this.result = JSON.stringify(res);
             this.alert = true;
           });
+        this.swUpdate.check();
         break;
       case 'CACHE_KEYS':
         this.loadCacheKeys();
@@ -130,54 +132,56 @@ export class ControllerCmp {
         break;
       case 'COMPANION_PING':
         this
-          .sw
+          .swDebug
           .ping()
-          .subscribe(undefined, undefined, () => {
+          .then(() => {
             this.result = 'pong';
             this.alert = true;
           });
         break;
       case 'COMPANION_REG_PUSH':
         this
-          .sw
-          .registerForPush({applicationServerKey: 'BLRl_fG1TCTc1D2JwzOpdZjaRcJucXtG8TAd5g9vuYjl6KUUDxgoRjQPCgjZfY-_Rusd_qtjNvanHXeFvOFlxH4'})
-          .subscribe(handler => {
-            this.result = JSON.stringify(handler.toJSON());
+          .swPush
+          .requestSubscription({serverPublicKey: 'BLRl_fG1TCTc1D2JwzOpdZjaRcJucXtG8TAd5g9vuYjl6KUUDxgoRjQPCgjZfY-_Rusd_qtjNvanHXeFvOFlxH4'})
+          .then(sub => {
+            this.result = JSON.stringify(sub.toJSON());
             this.alert = true;
           });
           break;
         case 'COMPANION_WAIT_FOR_PUSH':
           this.pushSub = this
-            .sw
-            .push
+            .swPush
+            .messages
             .take(1)
             .map(value => JSON.stringify(value))
             .subscribe(value => {
               this.result = value;
               this.alert = true;
             });
-          (this.sw as any).send({cmd: 'fakePush', push: JSON.stringify({
-            notification: {
-              title: 'push notification test',
-              body: 'this is a test of push notifications',
-              requireInteraction: true
-            },
-            message: 'hello from the server',
-          })}).subscribe();
+          (this
+            .swDebug as any)
+            .fakePush(JSON.stringify({
+              notification: {
+                title: 'push notification test',
+                body: 'this is a test of push notifications',
+                requireInteraction: true
+              },
+              message: 'hello from the server',
+            }));
           break;
         case 'COMPANION_SUBSCRIBE_TO_UPDATES':
-          this.updateSub = this
-            .sw
-            .updates
+          this.updateSub = Observable
+            .merge(this.swUpdate.available, this.swUpdate.activated)
             .scan((acc, value) => acc.concat(value), [])
             .startWith([])
-            .map(value => JSON.stringify(value))
             .subscribe(value => {
-              this.updates = value;
-              if (value.length > 2) {
-                this.updateAlert = true;
+              this.updates = JSON.stringify(value);
+              if (value.length > 0) {
+                this.updateAlert = true;          
               }
             });
+          this.result = 'true';
+          this.alert = true;
           break;
       default:
         this.result = null;
@@ -205,12 +209,12 @@ export class ControllerCmp {
       });
   }
 
-  forceUpdate(version: string): void {
+  forceUpdate(version: NgswAppVersion): void {
     this
-      .sw
+      .swUpdate
       .activateUpdate(version)
-      .subscribe(value => {
-        this.result = JSON.stringify(value);
+      .then(() => {
+        this.result = 'activated';
         this.alert = true;
       })
   }

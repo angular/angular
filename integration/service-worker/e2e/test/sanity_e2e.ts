@@ -1,5 +1,4 @@
 import {create, Server} from '../server/server';
-import {sendPush} from '../server/push';
 import {HarnessPageObject} from '../server/page-object';
 
 import fs = require('fs');
@@ -78,7 +77,6 @@ const FORCED_UPDATE_MANIFEST = {
 };
 
 beforeAll(done => {
-  console.log(process.cwd());
   create(8080, 'dist').then(s => {
     server = s;
     done();
@@ -212,8 +210,8 @@ describe('world sanity', () => {
       .then(updates => {
         expect(updates.length).toBe(1);
         const update = updates[0];
-        expect(update['type']).toBe('pending');
-        const hash = update['version'];
+        expect(update['next']).toBeTruthy();
+        const hash = update['next']['manifestHash'];
         po.reset();
         return po.forceUpdate(hash);
       })
@@ -221,7 +219,7 @@ describe('world sanity', () => {
       .then(updates => JSON.parse(updates))
       .then(updates => {
         expect(updates.length).toBe(2);
-        expect(updates[1].type).toBe('activation');
+        expect(updates[1]['previous']).toBeTruthy();
       })
       .then(() => po.request('/hello.txt'))
       .then(result => expect(result).toBe('And again'))

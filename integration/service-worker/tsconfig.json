@@ -15,6 +15,7 @@
     ],
     "types": [
       "jasmine",
+      "node",
       "protractor"
     ],
     "lib": [

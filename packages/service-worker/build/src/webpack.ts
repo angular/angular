@@ -10,7 +10,6 @@ export interface SwPluginConfig {
  * Webpack plugin that generates a basic Angular service worker manifest.
  */
 export class AngularServiceWorkerPlugin {
-
   public manifestFile: string;
   public manifestKey: string;
   public baseHref: string;
@@ -42,16 +41,15 @@ export class AngularServiceWorkerPlugin {
 
       // Throw if the manifest already has this particular key.
       if (manifest.hasOwnProperty(this.manifestKey) &&
-        !manifest[this.manifestKey].hasOwnProperty('_generatedFromWebpack')) {
-          throw new Error(`Manifest already contains key: ${this.manifestKey}`);
+          !manifest[this.manifestKey].hasOwnProperty('_generatedFromWebpack')) {
+        throw new Error(`Manifest already contains key: ${this.manifestKey}`);
       }
 
       // Look for ignored patterns in the manifest.
       let ignored: RegExp[] = [];
       const ignoreKey = `${this.manifestKey}.ignore`;
       if (manifest.hasOwnProperty(ignoreKey)) {
-        ignored.push(...(manifest[ignoreKey] as string[])
-          .map(regex => new RegExp(regex)));
+        ignored.push(...(manifest[ignoreKey] as string[]).map(regex => new RegExp(regex)));
         delete manifest[ignoreKey];
       }
 
@@ -60,24 +58,21 @@ export class AngularServiceWorkerPlugin {
       manifest[this.manifestKey] = {urls, _generatedFromWebpack: true};
       // Go through every asset in the compilation and include it in the manifest,
       // computing a hash for proper versioning.
-      Object
-        .keys(compilation.assets)
-        .filter(key => key !== this.manifestFile)
-        .forEach(key => {
-          let url = `${this.baseHref}${key}`;
-          if (ignored.some(regex => regex.test(url))) {
-            return;
-          }
-          urls[url] = sha1(compilation.assets[key].source());
-        });
-      
+      Object.keys(compilation.assets).filter(key => key !== this.manifestFile).forEach(key => {
+        let url = `${this.baseHref}${key}`;
+        if (ignored.some(regex => regex.test(url))) {
+          return;
+        }
+        urls[url] = sha1(compilation.assets[key].source());
+      });
+
       // Serialize the manifest to a buffer, and include (or overwrite) it in the assets.
       let serialized = new Buffer(JSON.stringify(manifest, null, 2));
       compilation.assets[this.manifestFile] = {
         source: () => serialized,
         size: () => serialized.length,
       };
-      
+
       callback();
     });
   }

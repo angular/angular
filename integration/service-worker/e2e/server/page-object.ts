@@ -126,8 +126,11 @@ export class HarnessPageObject {
       .then(JSON.parse);
   }
 
-  subscribeToUpdates(): void {
+  subscribeToUpdates(): Promise<boolean> {
     this.reset();
     this.selectAction('COMPANION_SUBSCRIBE_TO_UPDATES');
+    return this
+      .asyncResult
+      .then(JSON.parse);
   }
 }

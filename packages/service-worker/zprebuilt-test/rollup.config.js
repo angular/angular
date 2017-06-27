@@ -7,7 +7,6 @@
  */
 
 import resolve from 'rollup-plugin-node-resolve';
-import commonJs from 'rollup-plugin-commonjs';
 import * as path from 'path';
 
 const globals = {};
@@ -37,11 +36,6 @@ export default {
   entry: '../../../dist/packages-dist/service-worker/@angular/service-worker/zprebuilt-test.es5.js',
   dest: '../../../dist/packages-dist/service-worker/bundles/worker-test.js',
   format: 'iife',
-  plugins: [
-    sdkResolver(), resolve(), commonJs({
-      include: '../../../node_modules/**',
-      namedExports: {'../../../node_modules/jshashes/hashes.js': ['SHA1']},
-    })
-  ],
+  plugins: [sdkResolver(), resolve()],
   moduleName: 'angular.serviceWorker.prebuilt.basic',
 };

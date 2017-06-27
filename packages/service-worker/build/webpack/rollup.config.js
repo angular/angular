@@ -11,7 +11,8 @@ const globals = {
 };
 
 export default {
-  entry: '../../../../dist/packages-dist/service-worker/@angular/service-worker/build/webpack.es5.js',
+  entry:
+      '../../../../dist/packages-dist/service-worker/@angular/service-worker/build/webpack.es5.js',
   dest: '../../../../dist/packages-dist/service-worker/bundles/service-worker-build-webpack.umd.js',
   format: 'umd',
   exports: 'named',
