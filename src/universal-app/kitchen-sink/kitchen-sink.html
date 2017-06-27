@@ -183,19 +183,17 @@
 <md-slider tickInterval="1" min="1" max="10" value="5" thumbLabel></md-slider>
 
 <h2>Tabs</h2>
-
-<!-- Tabs don't work because `_updateTabScrollPosition` tries to set the transform on start-up -->
-<!--<md-tab-group>-->
-  <!--<md-tab label="Overview">-->
-    <!--The overview-->
-  <!--</md-tab>-->
-  <!--<md-tab>-->
-    <!--<ng-template md-tab-label>-->
-      <!--API docs-->
-    <!--</ng-template>-->
-    <!--The API docs-->
-  <!--</md-tab>-->
-<!--</md-tab-group>-->
+<md-tab-group>
+  <md-tab label="Overview">
+    The overview
+  </md-tab>
+  <md-tab>
+    <ng-template md-tab-label>
+      API docs
+    </ng-template>
+    The API docs
+  </md-tab>
+</md-tab-group>
 
 <nav md-tab-nav-bar>
  <a md-tab-link href="https://google.com">Google</a>
