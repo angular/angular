@@ -1,7 +1,7 @@
 // Imports
 import {GithubPullRequests} from '../common/github-pull-requests';
-import {BUILD_VERIFICATION_STATUS, BuildVerifier} from './build-verifier';
-import {UploadError} from './upload-error';
+import {BUILD_VERIFICATION_STATUS, BuildVerifier} from '../upload-server/build-verifier';
+import {UploadError} from '../upload-server/upload-error';
 
 // Run
 // TODO(gkalpak): Add e2e tests to cover these interactions as well.
@@ -21,4 +21,4 @@ BuildVerifier.prototype.verify = (expectedPr: number, authHeader: string) => {
 };
 
 // tslint:disable-next-line: no-var-requires
-require('./index');
+require('../upload-server/index');
