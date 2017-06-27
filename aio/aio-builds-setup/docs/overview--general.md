@@ -80,13 +80,31 @@ More info on the possible HTTP status codes and their meaning can be found
 [here](overview--http-status-codes.md).
 
 
+### Updating PR visibility
+- nginx receives a natification that a PR has been updated and passes it through to the
+  upload-server. This could, for example, be sent by a GitHub webhook every time a PR's labels
+  change.
+  E.g.: `ngbuilds.io/pr-updated` (payload: `{"number":<PR>,"action":"labeled"}`)
+- The request contains the PR number (as `number`) and optionally the action that triggered the
+  request (as `action`) in the payload.
+- The upload-server verifies the payload and determines whether the `action` (if specified) could
+  have led to PR visibility changes. Only requests that omit the `action` field altogether or
+  specify an action that can affect visibility are further processed.
+  (Currently, the only actions that are considered capable of affecting visibility are `labeled` and
+  `unlabeled`.)
+- The upload-server re-checks and if necessary updates the PR's visibility.
+
+More info on the possible HTTP status codes and their meaning can be found
+[here](overview--http-status-codes.md).
+
+
 ### Serving build artifacts
 - nginx receives a request for an uploaded resource on a subdomain corresponding to the PR and SHA.
   E.g.: `pr<PR>-<SHA>.ngbuilds.io/path/to/resource`
 - nginx maps the subdomain to the correct sub-directory and serves the resource.
   E.g.: `/<PR>/<SHA>/path/to/resource`
 
-Again, more info on the possible HTTP status codes and their meaning can be found
+More info on the possible HTTP status codes and their meaning can be found
 [here](overview--http-status-codes.md).
 
 

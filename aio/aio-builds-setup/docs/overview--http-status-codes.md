@@ -53,6 +53,28 @@ with a bried explanation of what they mean:
   Payload larger than size specified in `AIO_UPLOAD_MAX_SIZE`.
 
 
+## `https://ngbuilds.io/health-check`
+
+- **200 (OK)**:
+  The server is healthy (i.e. up and running and processing requests).
+
+
+## `https://ngbuilds.io/pr-updated`
+
+- **200 (OK)**:
+  Request processed successfully. Processing may or may not have resulted in further actions.
+
+- **400 (Bad Request)**:
+  No payload or no `number` field in payload.
+
+- **405 (Method Not Allowed)**:
+  Request method other than POST.
+
+- **409 (Conflict)**:
+  Request to overwrite existing directory (i.e. directories for both visibilities exist).
+  (Normally, this should not happen.)
+
+
 ## `https://*.ngbuilds.io/*`
 
 - **404 (Not Found)**:

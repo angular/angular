@@ -442,6 +442,146 @@ describe('uploadServerFactory', () => {
     });
 
 
+    describe('POST /pr-updated', () => {
+      const pr = '9';
+      const url = '/pr-updated';
+      let bvGetPrIsTrustedSpy: jasmine.Spy;
+      let bcUpdatePrVisibilitySpy: jasmine.Spy;
+
+      // Helpers
+      const createRequest = (num: number, action?: string) =>
+        agent.post(url).send({number: num, action});
+
+      beforeEach(() => {
+        bvGetPrIsTrustedSpy = spyOn(buildVerifier, 'getPrIsTrusted');
+        bcUpdatePrVisibilitySpy = spyOn(buildCreator, 'updatePrVisibility');
+      });
+
+
+      it('should respond with 404 for non-POST requests', done => {
+        verifyRequests([
+          agent.get(url).expect(404),
+          agent.put(url).expect(404),
+          agent.patch(url).expect(404),
+          agent.delete(url).expect(404),
+        ], done);
+      });
+
+
+      it('should respond with 400 for requests without a payload', done => {
+        const responseBody = `Missing or empty 'number' field in request: POST ${url} {}`;
+
+        const request1 = agent.post(url);
+        const request2 = agent.post(url).send();
+
+        verifyRequests([
+          request1.expect(400, responseBody),
+          request2.expect(400, responseBody),
+        ], done);
+      });
+
+
+      it('should respond with 400 for requests without a \'number\' field', done => {
+        const responseBodyPrefix = `Missing or empty 'number' field in request: POST ${url}`;
+
+        const request1 = agent.post(url).send({});
+        const request2 = agent.post(url).send({number: null});
+
+        verifyRequests([
+          request1.expect(400, `${responseBodyPrefix} {}`),
+          request2.expect(400, `${responseBodyPrefix} {"number":null}`),
+        ], done);
+      });
+
+
+      it('should call \'BuildVerifier#gtPrIsTrusted()\' with the correct arguments', done => {
+        const req = createRequest(+pr);
+
+        promisifyRequest(req).
+          then(() => expect(bvGetPrIsTrustedSpy).toHaveBeenCalledWith(9)).
+          then(done, done.fail);
+      });
+
+
+      it('should propagate errors from BuildVerifier', done => {
+        bvGetPrIsTrustedSpy.and.callFake(() => Promise.reject('Test'));
+
+        const req = createRequest(+pr).expect(500, 'Test');
+
+        promisifyRequest(req).
+          then(() => {
+            expect(bvGetPrIsTrustedSpy).toHaveBeenCalledWith(9);
+            expect(bcUpdatePrVisibilitySpy).not.toHaveBeenCalled();
+          }).
+          then(done, done.fail);
+      });
+
+
+      it('should call \'BuildCreator#updatePrVisibility()\' with the correct arguments', done => {
+        bvGetPrIsTrustedSpy.and.callFake((pr2: number) => Promise.resolve(pr2 === 42));
+
+        const req1 = createRequest(24);
+        const req2 = createRequest(42);
+
+        Promise.all([
+          promisifyRequest(req1).then(() => expect(bcUpdatePrVisibilitySpy).toHaveBeenCalledWith('24', false)),
+          promisifyRequest(req2).then(() => expect(bcUpdatePrVisibilitySpy).toHaveBeenCalledWith('42', true)),
+        ]).then(done, done.fail);
+      });
+
+
+      it('should propagate errors from BuildCreator', done => {
+        bcUpdatePrVisibilitySpy.and.callFake(() => Promise.reject('Test'));
+
+        const req = createRequest(+pr).expect(500, 'Test');
+        verifyRequests([req], done);
+      });
+
+
+      describe('on success', () => {
+
+        it('should respond with 200 (action: undefined)', done => {
+          bvGetPrIsTrustedSpy.and.returnValues(Promise.resolve(true), Promise.resolve(false));
+
+          const reqs = [4, 2].map(num => createRequest(num).expect(200, http.STATUS_CODES[200]));
+          verifyRequests(reqs, done);
+        });
+
+
+        it('should respond with 200 (action: labeled)', done => {
+          bvGetPrIsTrustedSpy.and.returnValues(Promise.resolve(true), Promise.resolve(false));
+
+          const reqs = [4, 2].map(num => createRequest(num, 'labeled').expect(200, http.STATUS_CODES[200]));
+          verifyRequests(reqs, done);
+        });
+
+
+        it('should respond with 200 (action: unlabeled)', done => {
+          bvGetPrIsTrustedSpy.and.returnValues(Promise.resolve(true), Promise.resolve(false));
+
+          const reqs = [4, 2].map(num => createRequest(num, 'unlabeled').expect(200, http.STATUS_CODES[200]));
+          verifyRequests(reqs, done);
+        });
+
+
+        it('should respond with 200 (and do nothing) if \'action\' implies no visibility change', done => {
+          const promises = ['foo', 'notlabeled'].
+            map(action => createRequest(+pr, action).expect(200, http.STATUS_CODES[200])).
+            map(promisifyRequest);
+
+          Promise.all(promises).
+            then(() => {
+              expect(bvGetPrIsTrustedSpy).not.toHaveBeenCalled();
+              expect(bcUpdatePrVisibilitySpy).not.toHaveBeenCalled();
+            }).
+            then(done, done.fail);
+        });
+
+      });
+
+    });
+
+
     describe('ALL *', () => {
 
       it('should respond with 404', done => {

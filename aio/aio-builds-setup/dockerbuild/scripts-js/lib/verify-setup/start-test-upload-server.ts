@@ -7,6 +7,19 @@ import * as c from './constants';
 // Run
 // TODO(gkalpak): Add e2e tests to cover these interactions as well.
 GithubPullRequests.prototype.addComment = () => Promise.resolve();
+BuildVerifier.prototype.getPrIsTrusted = (pr: number) => {
+  switch (pr) {
+    case c.BV_getPrIsTrusted_error:
+      // For e2e tests, fake an error.
+      return Promise.reject('Test');
+    case c.BV_getPrIsTrusted_notTrusted:
+      // For e2e tests, fake an untrusted PR (`false`).
+      return Promise.resolve(false);
+    default:
+      // For e2e tests, default to trusted PRs (`true`).
+      return Promise.resolve(true);
+  }
+};
 BuildVerifier.prototype.verify = (expectedPr: number, authHeader: string) => {
   switch (authHeader) {
     case c.BV_verify_error:

@@ -1,4 +1,5 @@
 // Imports
+import * as bodyParser from 'body-parser';
 import * as express from 'express';
 import * as http from 'http';
 import {GithubPullRequests} from '../common/github-pull-requests';
@@ -84,6 +85,7 @@ class UploadServerFactory {
 
   protected createMiddleware(buildVerifier: BuildVerifier, buildCreator: BuildCreator): express.Express {
     const middleware = express();
+    const jsonParser = bodyParser.json();
 
     middleware.get(/^\/create-build\/([1-9][0-9]*)\/([0-9a-f]{40})\/?$/, (req, res) => {
       const pr = req.params[0];
@@ -96,8 +98,8 @@ class UploadServerFactory {
       } else if (!archive) {
         this.throwRequestError(400, `Missing or empty '${X_FILE_HEADER}' header`, req);
       } else {
-        buildVerifier.
-          verify(+pr, authHeader).
+        Promise.resolve().
+          then(() => buildVerifier.verify(+pr, authHeader)).
           then(verStatus => verStatus === BUILD_VERIFICATION_STATUS.verifiedAndTrusted).
           then(isPublic => buildCreator.create(pr, sha, archive, isPublic).
             then(() => res.sendStatus(isPublic ? 201 : 202))).
@@ -105,6 +107,22 @@ class UploadServerFactory {
       }
     });
     middleware.get(/^\/health-check\/?$/, (_req, res) => res.sendStatus(200));
+    middleware.post(/^\/pr-updated\/?$/, jsonParser, (req, res) => {
+      const {action, number: prNo}: {action?: string, number?: number} = req.body;
+      const visMayHaveChanged = !action || (action === 'labeled') || (action === 'unlabeled');
+
+      if (!visMayHaveChanged) {
+        res.sendStatus(200);
+      } else if (!prNo) {
+        this.throwRequestError(400, `Missing or empty 'number' field`, req);
+      } else {
+        Promise.resolve().
+          then(() => buildVerifier.getPrIsTrusted(prNo)).
+          then(isPublic => buildCreator.updatePrVisibility(String(prNo), isPublic)).
+          then(() => res.sendStatus(200)).
+          catch(err => this.respondWithError(res, err));
+      }
+    });
     middleware.all('*', req => this.throwRequestError(404, 'Unknown resource', req));
     middleware.use((err: any, _req: any, res: express.Response, _next: any) => this.respondWithError(res, err));
 
@@ -124,7 +142,10 @@ class UploadServerFactory {
   }
 
   protected throwRequestError(status: number, error: string, req: express.Request) {
-    throw new UploadError(status, `${error} in request: ${req.method} ${req.originalUrl}`);
+    const message = `${error} in request: ${req.method} ${req.originalUrl}` +
+                    (!req.body ? '' : ` ${JSON.stringify(req.body)}`);
+
+    throw new UploadError(status, message);
   }
 }
 

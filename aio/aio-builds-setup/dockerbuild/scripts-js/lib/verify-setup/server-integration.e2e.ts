@@ -18,6 +18,11 @@ h.runForAllSupportedSchemes((scheme, port) => describe(`integration (on ${scheme
     const curlPost = `curl -iLX POST --header "Authorization: ${authHeader}"`;
     return h.runCmd(`${curlPost} --data-binary "@${archive}" ${scheme}://${host}/create-build/${pr}/${sha}`);
   };
+  const prUpdated = (pr: number, action?: string) => {
+    const url = `${scheme}://${host}/pr-updated`;
+    const payloadStr = JSON.stringify({number: pr, action});
+    return h.runCmd(`curl -iLX POST --header "Content-Type: application/json" --data '${payloadStr}' ${url}`);
+  };
 
   beforeEach(() => jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000);
   afterEach(() => {
@@ -27,7 +32,7 @@ h.runForAllSupportedSchemes((scheme, port) => describe(`integration (on ${scheme
   });
 
 
-  describe('for a new PR', () => {
+  describe('for a new/non-existing PR', () => {
 
     it('should be able to upload and serve a public build', done => {
       const regexPrefix9 = `^PR: uploaded\\/${pr9} \\| SHA: ${sha9} \\| File:`;
@@ -77,6 +82,18 @@ h.runForAllSupportedSchemes((scheme, port) => describe(`integration (on ${scheme
         then(() => {
           expect(h.buildExists(pr9)).toBe(false);
           expect(h.buildExists(pr9, '', false)).toBe(false);
+        }).
+        then(done);
+    });
+
+
+    it('should be able to notify that a PR has been updated (and do nothing)', done => {
+      prUpdated(+pr9).
+        then(h.verifyResponse(200)).
+        then(() => {
+          // The PR should still not exist.
+          expect(h.buildExists(pr9, '', false)).toBe(false);
+          expect(h.buildExists(pr9, '', true)).toBe(false);
         }).
         then(done);
     });
@@ -189,6 +206,110 @@ h.runForAllSupportedSchemes((scheme, port) => describe(`integration (on ${scheme
         then(() => {
           expect(h.readBuildFile(pr9, sha9, 'index.html', false)).toMatch(idxContentRegex9);
           expect(h.readBuildFile(pr9, sha9, 'foo/bar.js', false)).toMatch(barContentRegex9);
+        }).
+        then(done);
+    });
+
+
+    it('should be able to request re-checking visibility (if outdated)', done => {
+      const publicPr = pr9;
+      const hiddenPr = String(c.BV_getPrIsTrusted_notTrusted);
+
+      h.createDummyBuild(publicPr, sha9, false);
+      h.createDummyBuild(hiddenPr, sha9, true);
+
+      // PR visibilities are outdated (i.e. the opposte of what the should).
+      expect(h.buildExists(publicPr, '', false)).toBe(true);
+      expect(h.buildExists(publicPr, '', true)).toBe(false);
+      expect(h.buildExists(hiddenPr, '', false)).toBe(false);
+      expect(h.buildExists(hiddenPr, '', true)).toBe(true);
+
+      Promise.
+        all([
+          prUpdated(+publicPr).then(h.verifyResponse(200)),
+          prUpdated(+hiddenPr).then(h.verifyResponse(200)),
+        ]).
+        then(() => {
+          // PR visibilities should have been updated.
+          expect(h.buildExists(publicPr, '', false)).toBe(false);
+          expect(h.buildExists(publicPr, '', true)).toBe(true);
+          expect(h.buildExists(hiddenPr, '', false)).toBe(true);
+          expect(h.buildExists(hiddenPr, '', true)).toBe(false);
+        }).
+        then(() => {
+          h.deletePrDir(publicPr, true);
+          h.deletePrDir(hiddenPr, false);
+        }).
+        then(done);
+    });
+
+
+    it('should be able to request re-checking visibility (if up-to-date)', done => {
+      const publicPr = pr9;
+      const hiddenPr = String(c.BV_getPrIsTrusted_notTrusted);
+
+      h.createDummyBuild(publicPr, sha9, true);
+      h.createDummyBuild(hiddenPr, sha9, false);
+
+      // PR visibilities are already up-to-date.
+      expect(h.buildExists(publicPr, '', false)).toBe(false);
+      expect(h.buildExists(publicPr, '', true)).toBe(true);
+      expect(h.buildExists(hiddenPr, '', false)).toBe(true);
+      expect(h.buildExists(hiddenPr, '', true)).toBe(false);
+
+      Promise.
+        all([
+          prUpdated(+publicPr).then(h.verifyResponse(200)),
+          prUpdated(+hiddenPr).then(h.verifyResponse(200)),
+        ]).
+        then(() => {
+          // PR visibilities are still up-to-date.
+          expect(h.buildExists(publicPr, '', false)).toBe(false);
+          expect(h.buildExists(publicPr, '', true)).toBe(true);
+          expect(h.buildExists(hiddenPr, '', false)).toBe(true);
+          expect(h.buildExists(hiddenPr, '', true)).toBe(false);
+        }).
+        then(done);
+    });
+
+
+    it('should reject a request if re-checking visibility fails', done => {
+      const errorPr = String(c.BV_getPrIsTrusted_error);
+
+      h.createDummyBuild(errorPr, sha9, true);
+
+      expect(h.buildExists(errorPr, '', false)).toBe(false);
+      expect(h.buildExists(errorPr, '', true)).toBe(true);
+
+      prUpdated(+errorPr).
+        then(h.verifyResponse(500, /Test/)).
+        then(() => {
+          // PR visibility should not have been updated.
+          expect(h.buildExists(errorPr, '', false)).toBe(false);
+          expect(h.buildExists(errorPr, '', true)).toBe(true);
+        }).
+        then(done);
+    });
+
+
+    it('should reject a request if updating visibility fails', done => {
+      // One way to cause an error is to have both a public and a hidden directory for the same PR.
+      h.createDummyBuild(pr9, sha9, false);
+      h.createDummyBuild(pr9, sha9, true);
+
+      const hiddenPrDir = h.getPrDir(pr9, false);
+      const publicPrDir = h.getPrDir(pr9, true);
+      const bodyRegex = new RegExp(`Request to move '${hiddenPrDir}' to existing directory '${publicPrDir}'`);
+
+      expect(h.buildExists(pr9, '', false)).toBe(true);
+      expect(h.buildExists(pr9, '', true)).toBe(true);
+
+      prUpdated(+pr9).
+        then(h.verifyResponse(409, bodyRegex)).
+        then(() => {
+          // PR visibility should not have been updated.
+          expect(h.buildExists(pr9, '', false)).toBe(true);
+          expect(h.buildExists(pr9, '', true)).toBe(true);
         }).
         then(done);
     });
