@@ -1,6 +1,7 @@
 // Imports
 import * as fs from 'fs';
 import * as path from 'path';
+import * as c from './constants';
 import {CmdResult, helper as h} from './helper';
 
 // Tests
@@ -63,7 +64,7 @@ describe('upload-server (on HTTP)', () => {
 
 
     it('should reject requests for which the PR verification fails', done => {
-      const headers = `--header "Authorization: FAKE_VERIFICATION_ERROR" ${xFileHeader}`;
+      const headers = `--header "Authorization: ${c.BV_verify_error}" ${xFileHeader}`;
       const url = `http://${host}/create-build/${pr}/${sha9}`;
       const bodyRegex = new RegExp(`Error while verifying upload for PR ${pr}: Test`);
 
@@ -107,7 +108,7 @@ describe('upload-server (on HTTP)', () => {
 
     [true, false].forEach(isPublic => describe(`(for ${isPublic ? 'public' : 'hidden'} builds)`, () => {
       const authorizationHeader2 = isPublic ?
-        authorizationHeader : '--header "Authorization: FAKE_VERIFIED_NOT_TRUSTED"';
+        authorizationHeader : `--header "Authorization: ${c.BV_verify_verifiedNotTrusted}"`;
       const cmdPrefix = curl('', `${authorizationHeader2} ${xFileHeader}`);
 
 
