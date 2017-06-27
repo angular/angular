@@ -1,5 +1,6 @@
 // Imports
 import * as path from 'path';
+import * as c from './constants';
 import {helper as h} from './helper';
 
 // Tests
@@ -14,9 +15,6 @@ h.runForAllSupportedSchemes((scheme, port) => describe(`integration (on ${scheme
   const getFile = (pr: string, sha: string, file: string) =>
     h.runCmd(`curl -iL ${scheme}://pr${pr}-${h.getShordSha(sha)}.${host}/${file}`);
   const uploadBuild = (pr: string, sha: string, archive: string, authHeader = 'Token FOO') => {
-    // Using `FAKE_VERIFICATION_ERROR` or `FAKE_VERIFIED_NOT_TRUSTED` as `authHeader`,
-    // we can fake the response of the overwritten `BuildVerifier.verify()` method.
-    // (See 'lib/upload-server/index-test.ts'.)
     const curlPost = `curl -iLX POST --header "Authorization: ${authHeader}"`;
     return h.runCmd(`${curlPost} --data-binary "@${archive}" ${scheme}://${host}/create-build/${pr}/${sha}`);
   };
@@ -54,7 +52,7 @@ h.runForAllSupportedSchemes((scheme, port) => describe(`integration (on ${scheme
 
       h.createDummyArchive(pr9, sha9, archivePath);
 
-      uploadBuild(pr9, sha9, archivePath, 'FAKE_VERIFIED_NOT_TRUSTED').
+      uploadBuild(pr9, sha9, archivePath, c.BV_verify_verifiedNotTrusted).
         then(() => Promise.all([
           getFile(pr9, sha9, 'index.html').then(h.verifyResponse(404)),
           getFile(pr9, sha9, 'foo/bar.js').then(h.verifyResponse(404)),
@@ -74,7 +72,7 @@ h.runForAllSupportedSchemes((scheme, port) => describe(`integration (on ${scheme
 
       h.createDummyArchive(pr9, sha9, archivePath);
 
-      uploadBuild(pr9, sha9, archivePath, 'FAKE_VERIFICATION_ERROR').
+      uploadBuild(pr9, sha9, archivePath, c.BV_verify_error).
         then(h.verifyResponse(403, errorRegex9)).
         then(() => {
           expect(h.buildExists(pr9)).toBe(false);
@@ -123,7 +121,7 @@ h.runForAllSupportedSchemes((scheme, port) => describe(`integration (on ${scheme
       h.createDummyBuild(pr9, sha0, false);
       h.createDummyArchive(pr9, sha9, archivePath);
 
-      uploadBuild(pr9, sha9, archivePath, 'FAKE_VERIFIED_NOT_TRUSTED').
+      uploadBuild(pr9, sha9, archivePath, c.BV_verify_verifiedNotTrusted).
         then(() => Promise.all([
           getFile(pr9, sha0, 'index.html').then(h.verifyResponse(404)),
           getFile(pr9, sha0, 'foo/bar.js').then(h.verifyResponse(404)),
@@ -148,7 +146,7 @@ h.runForAllSupportedSchemes((scheme, port) => describe(`integration (on ${scheme
       h.createDummyBuild(pr9, sha0);
       h.createDummyArchive(pr9, sha9, archivePath);
 
-      uploadBuild(pr9, sha9, archivePath, 'FAKE_VERIFICATION_ERROR').
+      uploadBuild(pr9, sha9, archivePath, c.BV_verify_error).
         then(h.verifyResponse(403, errorRegex9)).
         then(() => {
           expect(h.buildExists(pr9)).toBe(true);
@@ -186,7 +184,7 @@ h.runForAllSupportedSchemes((scheme, port) => describe(`integration (on ${scheme
       h.createDummyBuild(pr9, sha9, false);
       h.createDummyArchive(pr9, sha9, archivePath);
 
-      uploadBuild(pr9, sha9, archivePath, 'FAKE_VERIFIED_NOT_TRUSTED').
+      uploadBuild(pr9, sha9, archivePath, c.BV_verify_verifiedNotTrusted).
         then(h.verifyResponse(409)).
         then(() => {
           expect(h.readBuildFile(pr9, sha9, 'index.html', false)).toMatch(idxContentRegex9);
