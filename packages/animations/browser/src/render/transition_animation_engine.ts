@@ -13,7 +13,7 @@ import {AnimationTransitionInstruction} from '../dsl/animation_transition_instru
 import {AnimationTrigger} from '../dsl/animation_trigger';
 import {ElementInstructionMap} from '../dsl/element_instruction_map';
 import {AnimationStyleNormalizer} from '../dsl/style_normalization/animation_style_normalizer';
-import {ENTER_CLASSNAME, LEAVE_CLASSNAME, NG_ANIMATING_CLASSNAME, NG_TRIGGER_CLASSNAME, NG_TRIGGER_SELECTOR, copyObj, eraseStyles, setStyles} from '../util';
+import {ENTER_CLASSNAME, LEAVE_CLASSNAME, NG_ANIMATING_CLASSNAME, NG_ANIMATING_SELECTOR, NG_TRIGGER_CLASSNAME, NG_TRIGGER_SELECTOR, copyObj, eraseStyles, setStyles} from '../util';
 
 import {AnimationDriver} from './animation_driver';
 import {getOrSetAsInMap, listenOnPlayer, makeAnimationEvent, normalizeKeyframes, optimizeGroupPlayer} from './shared';
@@ -642,7 +642,8 @@ export class TransitionAnimationEngine {
   }
 
   destroyInnerAnimations(containerElement: any) {
-    this.driver.query(containerElement, NG_TRIGGER_SELECTOR, true).forEach(element => {
+    let elements = this.driver.query(containerElement, NG_TRIGGER_SELECTOR, true);
+    elements.forEach(element => {
       const players = this.playersByElement.get(element);
       if (players) {
         players.forEach(player => {
@@ -661,6 +662,18 @@ export class TransitionAnimationEngine {
         Object.keys(stateMap).forEach(triggerName => stateMap[triggerName] = DELETED_STATE_VALUE);
       }
     });
+
+    if (this.playersByQueriedElement.size == 0) return;
+
+    elements = this.driver.query(containerElement, NG_ANIMATING_SELECTOR, true);
+    if (elements.length) {
+      elements.forEach(element => {
+        const players = this.playersByQueriedElement.get(element);
+        if (players) {
+          players.forEach(player => player.finish());
+        }
+      });
+    }
   }
 
   whenRenderingDone(): Promise<any> {
@@ -922,14 +935,36 @@ export class TransitionAnimationEngine {
     // operation right away unless a parent animation is ongoing.
     for (let i = 0; i < allLeaveNodes.length; i++) {
       const element = allLeaveNodes[i];
-      const players = queriedElements.get(element);
-      if (players) {
+      const details = element[REMOVAL_FLAG] as ElementAnimationState;
+
+      // this means the element has a removal animation that is being
+      // taken care of and therefore the inner elements will hang around
+      // until that animation is over (or the parent queried animation)
+      if (details && details.hasAnimation) continue;
+
+      let players: AnimationPlayer[] = [];
+
+      // if this element is queried or if it contains queried children
+      // then we want for the element not to be removed from the page
+      // until the queried animations have finished
+      if (queriedElements.size) {
+        let queriedPlayerResults = queriedElements.get(element);
+        if (queriedPlayerResults && queriedPlayerResults.length) {
+          players.push(...queriedPlayerResults);
+        }
+
+        let queriedInnerElements = this.driver.query(element, NG_ANIMATING_SELECTOR, true);
+        for (let j = 0; j < queriedInnerElements.length; j++) {
+          let queriedPlayers = queriedElements.get(queriedInnerElements[j]);
+          if (queriedPlayers && queriedPlayers.length) {
+            players.push(...queriedPlayers);
+          }
+        }
+      }
+      if (players.length) {
         removeNodesAfterAnimationDone(this, element, players);
       } else {
-        const details = element[REMOVAL_FLAG] as ElementAnimationState;
-        if (details && !details.hasAnimation) {
-          this.processLeaveNode(element);
-        }
+        this.processLeaveNode(element);
       }
     }
 
@@ -1079,8 +1114,7 @@ export class TransitionAnimationEngine {
 
     allQueriedPlayers.forEach(player => {
       getOrSetAsInMap(this.playersByQueriedElement, player.element, []).push(player);
-      player.onDone(
-          () => { deleteOrUnsetInMap(this.playersByQueriedElement, player.element, player); });
+      player.onDone(() => deleteOrUnsetInMap(this.playersByQueriedElement, player.element, player));
     });
 
     allConsumedElements.forEach(element => addClass(element, NG_ANIMATING_CLASSNAME));

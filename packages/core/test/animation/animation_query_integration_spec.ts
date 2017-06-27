@@ -915,6 +915,164 @@ export function main() {
         expect(p4.previousPlayers).toEqual([]);
       });
 
+      it('should not remove a parent container if its contents are queried into by an ancestor element',
+         () => {
+           @Component({
+             selector: 'ani-cmp',
+             template: `
+            <div [@myAnimation]="exp1" class="ancestor" #ancestor>
+              <div class="parent" *ngIf="exp2" #parent>
+                <div class="child"></div>
+                <div class="child"></div>
+              </div>
+            </div>
+          `,
+             animations: [
+               trigger(
+                   'myAnimation',
+                   [
+                     transition(
+                         '* => go',
+                         [
+                           query(
+                               '.child',
+                               [
+                                 style({opacity: 0}),
+                                 animate(1000, style({opacity: 1})),
+                               ]),
+                         ]),
+                   ]),
+             ]
+           })
+           class Cmp {
+             public exp1: any = '';
+             public exp2: any = true;
+
+             @ViewChild('ancestor') public ancestorElm: any;
+
+             @ViewChild('parent') public parentElm: any;
+           }
+
+           TestBed.configureTestingModule({declarations: [Cmp]});
+
+           const engine = TestBed.get(ɵAnimationEngine);
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
+           fixture.detectChanges();
+           engine.flush();
+           resetLog();
+
+           const ancestorElm = cmp.ancestorElm.nativeElement;
+           const parentElm = cmp.parentElm.nativeElement;
+
+           cmp.exp1 = 'go';
+           cmp.exp2 = false;
+           fixture.detectChanges();
+           engine.flush();
+
+           expect(ancestorElm.contains(parentElm)).toBe(true);
+
+           const players = getLog();
+           expect(players.length).toEqual(2);
+           const [p1, p2] = players;
+           expect(parentElm.contains(p1.element)).toBe(true);
+           expect(parentElm.contains(p2.element)).toBe(true);
+
+           cancelAllPlayers(players);
+
+           expect(ancestorElm.contains(parentElm)).toBe(false);
+         });
+
+      it('should only retain a to-be-removed node if the inner queried items are apart of an animation issued by an ancestor',
+         fakeAsync(() => {
+           @Component({
+             selector: 'ani-cmp',
+             template: `
+            <div [@one]="exp1" [@two]="exp2" class="ancestor" #ancestor>
+              <header>hello</header>
+              <div class="parent" *ngIf="parentExp" #parent>
+                <div class="child">child</div>
+              </div>
+            </div>
+          `,
+             animations: [
+               trigger(
+                   'one',
+                   [
+                     transition(
+                         '* => go',
+                         [
+                           query(
+                               '.child',
+                               [
+                                 style({height: '100px'}),
+                                 animate(1000, style({height: '0px'})),
+                               ]),
+                         ]),
+                   ]),
+               trigger(
+                   'two',
+                   [
+                     transition('* => go', [query(
+                                               'header',
+                                               [
+                                                 style({width: '100px'}),
+                                                 animate(1000, style({width: '0px'})),
+                                               ])]),
+                   ]),
+             ]
+           })
+           class Cmp {
+             public exp1: any = '';
+             public exp2: any = '';
+             public parentExp: any = true;
+
+             @ViewChild('ancestor') public ancestorElm: any;
+
+             @ViewChild('parent') public parentElm: any;
+           }
+
+           TestBed.configureTestingModule({declarations: [Cmp]});
+
+           const engine = TestBed.get(ɵAnimationEngine);
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
+           fixture.detectChanges();
+           engine.flush();
+           resetLog();
+
+           const ancestorElm = cmp.ancestorElm.nativeElement;
+           const parentElm = cmp.parentElm.nativeElement;
+           expect(ancestorElm.contains(parentElm)).toBe(true);
+
+           cmp.exp1 = 'go';
+           fixture.detectChanges();
+           engine.flush();
+
+           expect(ancestorElm.contains(parentElm)).toBe(true);
+
+           const onePlayers = getLog();
+           expect(onePlayers.length).toEqual(1);  // element.child
+           const [childPlayer] = onePlayers;
+
+           let childPlayerComplete = false;
+           childPlayer.onDone(() => childPlayerComplete = true);
+           resetLog();
+           flushMicrotasks();
+
+           expect(childPlayerComplete).toBe(false);
+
+           cmp.exp2 = 'go';
+           cmp.parentExp = false;
+           fixture.detectChanges();
+           engine.flush();
+
+           const twoPlayers = getLog();
+           expect(twoPlayers.length).toEqual(1);  // the header element
+           expect(ancestorElm.contains(parentElm)).toBe(false);
+           expect(childPlayerComplete).toBe(true);
+         }));
+
       it('should finish queried players in an animation when the next animation takes over', () => {
         @Component({
           selector: 'ani-cmp',
