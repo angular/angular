@@ -9,7 +9,7 @@
 import {Observable, ObservableInput} from 'rxjs/Observable';
 import {PartialObserver} from 'rxjs/Observer';
 import {Subscription} from 'rxjs/Subscription';
-import {Scheduler, IScheduler} from 'rxjs/Scheduler';
+import {IScheduler} from 'rxjs/Scheduler';
 import {_finally as _finallyOperator} from 'rxjs/operator/finally';
 import {_catch as _catchOperator} from 'rxjs/operator/catch';
 import {_do as _doOperator} from 'rxjs/operator/do';
@@ -34,8 +34,6 @@ import {takeUntil as takeUntilOperator} from 'rxjs/operator/takeUntil';
  *
  * The downside to this approach is that operators must be imported in their type-coerced form
  * rather than from the normal rxjs location.
- *
- * @docs-private
  */
 export interface StrictRxChain<T> {
   call<R>(operator: mapOperatorType<T, R>,
@@ -78,77 +76,41 @@ export interface StrictRxChain<T> {
   result(): Observable<T>;
 }
 
-// @docs-private
 export class FinallyBrand { private _; }
-// @docs-private
 export class CatchBrand { private _; }
-// @docs-private
 export class DoBrand { private _; }
-// @docs-private
 export class MapBrand { private _; }
-// @docs-private
 export class FilterBrand { private _; }
-// @docs-private
 export class ShareBrand { private _; }
-// @docs-private
 export class FirstBrand { private _; }
-// @docs-private
 export class SwitchMapBrand { private _; }
-// @docs-private
 export class StartWithBrand { private _; }
-// @docs-private
 export class DebounceTimeBrand { private _; }
-// @docs-private
 export class AuditTimeBrand { private _; }
-// @docs-private
 export class TakeUntilBrand { private _; }
 
-// @docs-private
 export type finallyOperatorType<T> = typeof _finallyOperator & FinallyBrand;
-// @docs-private
 export type catchOperatorType<T, R> = typeof _catchOperator & CatchBrand;
-// @docs-private
 export type doOperatorType<T> = typeof _doOperator & DoBrand;
-// @docs-private
 export type mapOperatorType<T, R> = typeof mapOperator & MapBrand;
-// @docs-private
 export type filterOperatorType<T> = typeof filterOperator & FilterBrand;
-// @docs-private
 export type shareOperatorType<T> = typeof shareOperator & ShareBrand;
-// @docs-private
 export type firstOperatorType<T> = typeof firstOperator & FirstBrand;
-// @docs-private
 export type switchMapOperatorType<T, R> = typeof switchMapOperator & SwitchMapBrand;
-// @docs-private
 export type startWithOperatorType<T> = typeof startWithOperator & StartWithBrand;
-// @docs-private
 export type debounceTimeOperatorType<T> = typeof debounceTimeOperator & DebounceTimeBrand;
-// @docs-private
 export type auditTimeOperatorType<T> = typeof auditTimeOperator & AuditTimeBrand;
-// @docs-private
 export type takeUntilOperatorType<T> = typeof takeUntilOperator & TakeUntilBrand;
 
-// @docs-private
 export const finallyOperator = _finallyOperator as typeof _finallyOperator & FinallyBrand;
-// @docs-private
 export const catchOperator = _catchOperator as typeof _catchOperator & CatchBrand;
-// @docs-private
 export const doOperator = _doOperator as typeof _doOperator & DoBrand;
-// @docs-private
 export const map = mapOperator as typeof mapOperator & MapBrand;
-// @docs-private
 export const filter = filterOperator as typeof filterOperator & FilterBrand;
-// @docs-private
 export const share = shareOperator as typeof shareOperator & ShareBrand;
-// @docs-private
 export const first = firstOperator as typeof firstOperator & FirstBrand;
-// @docs-private
 export const switchMap = switchMapOperator as typeof switchMapOperator & SwitchMapBrand;
-// @docs-private
 export const startWith = startWithOperator as typeof startWithOperator & StartWithBrand;
-// @docs-private
 export const debounceTime = debounceTimeOperator as typeof debounceTimeOperator & DebounceTimeBrand;
-// @docs-private
 export const auditTime = auditTimeOperator as typeof auditTimeOperator & AuditTimeBrand;
-// @docs-private
 export const takeUntil = takeUntilOperator as typeof takeUntilOperator & TakeUntilBrand;
