@@ -1,7 +1,9 @@
-import {CollectionViewer, DataSource, MdPaginator} from '@angular/material';
+import {CollectionViewer, DataSource, MdPaginator, MdSort} from '@angular/material';
 import {Observable} from 'rxjs/Observable';
 import {PeopleDatabase, UserData} from './people-database';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import 'rxjs/add/observable/combineLatest';
+import 'rxjs/add/observable/merge';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/observable/merge';
 import 'rxjs/add/observable/combineLatest';
@@ -15,12 +17,15 @@ export class PersonDataSource extends DataSource<any> {
   _renderedData: any[] = [];
 
   constructor(private _peopleDatabase: PeopleDatabase,
-              private _paginator: MdPaginator) {
+              private _paginator: MdPaginator,
+              private _sort: MdSort) {
     super();
 
-    // Subscribe to page changes and database changes by clearing the cached data and
+    // Subscribe to paging, sorting, and database changes by clearing the cached data and
     // determining the updated display data.
-    Observable.merge(this._paginator.page, this._peopleDatabase.dataChange).subscribe(() => {
+    Observable.merge(this._paginator.page,
+        this._peopleDatabase.dataChange,
+        this._sort.mdSortChange).subscribe(() => {
       this._renderedData = [];
       this.updateDisplayData();
     });
@@ -51,12 +56,35 @@ export class PersonDataSource extends DataSource<any> {
   }
 
   updateDisplayData() {
-    const data = this._peopleDatabase.data.slice();
+    const data = this.getSortedData();
 
     // Grab the page's slice of data.
     const startIndex = this._paginator.pageIndex * this._paginator.pageSize;
     const paginatedData = data.splice(startIndex, this._paginator.pageSize);
 
     this._displayData.next(paginatedData);
+  }
+
+  /** Returns a sorted copy of the database data. */
+  getSortedData(): UserData[] {
+    const data = this._peopleDatabase.data.slice();
+    if (!this._sort.active || this._sort.direction == '') { return data; }
+
+    return data.sort((a, b) => {
+      let propertyA: number|string = '';
+      let propertyB: number|string = '';
+
+      switch (this._sort.active) {
+        case 'userId': [propertyA, propertyB] = [a.id, b.id]; break;
+        case 'userName': [propertyA, propertyB] = [a.name, b.name]; break;
+        case 'progress': [propertyA, propertyB] = [a.progress, b.progress]; break;
+        case 'color': [propertyA, propertyB] = [a.color, b.color]; break;
+      }
+
+      let valueA = isNaN(+propertyA) ? propertyA : +propertyA;
+      let valueB = isNaN(+propertyB) ? propertyB : +propertyB;
+
+      return (valueA < valueB ? -1 : 1) * (this._sort.direction == 'asc' ? 1 : -1);
+    });
   }
 }

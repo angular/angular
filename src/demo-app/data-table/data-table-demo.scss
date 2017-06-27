@@ -63,6 +63,10 @@
   font-size: 12px;
   font-weight: bold;
   color: rgba(0, 0, 0, 0.54);
+
+  &.mat-sort-header-sorted {
+    color: black;
+  }
 }
 
 .cdk-cell {
@@ -73,6 +77,8 @@
 /* Column and cell styles */
 .cdk-column-userId {
   max-width: 32px;
+  text-align: right;
+  justify-content: flex-end;
 }
 
 .cdk-column-userName {

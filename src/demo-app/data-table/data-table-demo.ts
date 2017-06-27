@@ -2,6 +2,7 @@ import {Component, ViewChild} from '@angular/core';
 import {PeopleDatabase, UserData} from './people-database';
 import {PersonDataSource} from './person-data-source';
 import {MdPaginator} from '@angular/material';
+import {MdSort} from '@angular/material';
 
 export type UserProperties = 'userId' | 'userName' | 'progress' | 'color' | undefined;
 
@@ -22,6 +23,8 @@ export class DataTableDemo {
 
   @ViewChild(MdPaginator) _paginator: MdPaginator;
 
+  @ViewChild(MdSort) sort: MdSort;
+
   constructor(public _peopleDatabase: PeopleDatabase) { }
 
   ngOnInit() {
@@ -30,7 +33,8 @@ export class DataTableDemo {
 
   connect() {
     this.propertiesToDisplay = ['userId', 'userName', 'progress', 'color'];
-    this.dataSource = new PersonDataSource(this._peopleDatabase, this._paginator);
+    this.dataSource = new PersonDataSource(this._peopleDatabase,
+        this._paginator, this.sort);
     this._peopleDatabase.initialize();
   }
 

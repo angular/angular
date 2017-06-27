@@ -213,14 +213,15 @@ export class CdkTable<T> implements CollectionViewer {
   ngAfterViewInit() {
     // Find and construct an iterable differ that can be used to find the diff in an array.
     this._dataDiffer = this._differs.find([]).create(this._trackByFn);
-
-    this._renderHeaderRow();
     this._isViewInitialized = true;
   }
 
   ngDoCheck() {
     if (this._isViewInitialized && this.dataSource && !this._renderChangeSubscription) {
-      this._observeRenderChanges();
+      this._renderHeaderRow();
+      if (this.dataSource && !this._renderChangeSubscription) {
+        this._observeRenderChanges();
+      }
     }
   }
 

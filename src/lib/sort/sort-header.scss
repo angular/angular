@@ -1,0 +1,74 @@
+$mat-sort-header-arrow-margin: 6px;
+$mat-sort-header-arrow-container-size: 10px;
+$mat-sort-header-arrow-pointer-length: 8px;
+$mat-sort-header-arrow-thickness: 2px;
+
+.mat-sort-header-container {
+  display: flex;
+  cursor: pointer;
+}
+
+.mat-sort-header-position-before {
+  flex-direction: row-reverse;
+}
+
+.mat-sort-header-button {
+  border: none;
+  background: 0 0;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  cursor: pointer;
+  outline: 0;
+  font: inherit;
+  color: currentColor;
+}
+
+.mat-sort-header-arrow {
+  display: none;
+  height: $mat-sort-header-arrow-container-size;
+  width: $mat-sort-header-arrow-container-size;
+  position: relative;
+  margin: 0 0 0 $mat-sort-header-arrow-margin;
+
+  .mat-sort-header-position-before & {
+    margin: 0 $mat-sort-header-arrow-margin 0 0;
+  }
+}
+
+.mat-sort-header-asc {
+  display: block;
+  transform: rotate(45deg);
+}
+
+.mat-sort-header-desc {
+  display: block;
+  transform: rotate(225deg);
+  top: $mat-sort-header-arrow-thickness;
+}
+
+.mat-sort-header-stem {
+  background: currentColor;
+  transform: rotate(135deg);
+  height: $mat-sort-header-arrow-container-size;
+  width: $mat-sort-header-arrow-thickness;
+  margin: auto;
+}
+
+.mat-sort-header-pointer-left {
+  background: currentColor;
+  width: $mat-sort-header-arrow-thickness;
+  height: $mat-sort-header-arrow-pointer-length;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+.mat-sort-header-pointer-right {
+  background: currentColor;
+  width: $mat-sort-header-arrow-pointer-length;
+  height: $mat-sort-header-arrow-thickness;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}

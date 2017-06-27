@@ -46,6 +46,7 @@ import {StyleModule} from './core/style/index';
 import {MdDatepickerModule} from './datepicker/index';
 import {CdkDataTableModule} from './core/data-table/index';
 import {MdExpansionModule} from './expansion/index';
+import {MdSortModule} from './sort/index';
 import {MdPaginatorModule} from './paginator/index';
 
 const MATERIAL_MODULES = [
@@ -73,6 +74,7 @@ const MATERIAL_MODULES = [
   MdSliderModule,
   MdSlideToggleModule,
   MdSnackBarModule,
+  MdSortModule,
   MdTabsModule,
   MdToolbarModule,
   MdTooltipModule,
