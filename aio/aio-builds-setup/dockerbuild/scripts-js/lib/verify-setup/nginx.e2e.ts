@@ -317,6 +317,51 @@ describe(`nginx`, () => {
     });
 
 
+    describe(`${host}/pr-updated`, () => {
+      const url = `${scheme}://${host}/pr-updated`;
+
+
+      it('should disallow non-POST requests', done => {
+        Promise.all([
+          h.runCmd(`curl -iLX GET ${url}`).then(h.verifyResponse([405, 'Not Allowed'])),
+          h.runCmd(`curl -iLX PUT ${url}`).then(h.verifyResponse([405, 'Not Allowed'])),
+          h.runCmd(`curl -iLX PATCH ${url}`).then(h.verifyResponse([405, 'Not Allowed'])),
+          h.runCmd(`curl -iLX DELETE ${url}`).then(h.verifyResponse([405, 'Not Allowed'])),
+        ]).then(done);
+      });
+
+
+      it('should pass requests through to the upload server', done => {
+        const cmdPrefix = `curl -iLX POST --header "Content-Type: application/json"`;
+
+        const cmd1 = `${cmdPrefix} ${url}`;
+        const cmd2 = `${cmdPrefix} --data '{"number":${pr}}' ${url}`;
+        const cmd3 = `${cmdPrefix} --data '{"number":${pr},"action":"foo"}' ${url}`;
+
+        Promise.all([
+          h.runCmd(cmd1).then(h.verifyResponse(400, /Missing or empty 'number' field/)),
+          h.runCmd(cmd2).then(h.verifyResponse(200)),
+          h.runCmd(cmd3).then(h.verifyResponse(200)),
+        ]).then(done);
+      });
+
+
+      it('should respond with 404 for unknown paths', done => {
+        const cmdPrefix = `curl -iLX POST ${scheme}://${host}`;
+
+        Promise.all([
+          h.runCmd(`${cmdPrefix}/foo/pr-updated`).then(h.verifyResponse(404)),
+          h.runCmd(`${cmdPrefix}/foo-pr-updated`).then(h.verifyResponse(404)),
+          h.runCmd(`${cmdPrefix}/foonpr-updated`).then(h.verifyResponse(404)),
+          h.runCmd(`${cmdPrefix}/pr-updated/foo`).then(h.verifyResponse(404)),
+          h.runCmd(`${cmdPrefix}/pr-updated-foo`).then(h.verifyResponse(404)),
+          h.runCmd(`${cmdPrefix}/pr-updatednfoo`).then(h.verifyResponse(404)),
+        ]).then(done);
+      });
+
+    });
+
+
     describe(`${host}/*`, () => {
 
       it('should respond with 404 for unknown URLs (even if the resource exists)', done => {
