@@ -21,7 +21,7 @@ appName=aio-upload-server-test
 if [[ "$1" == "stop" ]]; then
   pm2 delete $appName
 else
-  pm2 start $AIO_SCRIPTS_JS_DIR/dist/lib/upload-server/index-test.js \
+  pm2 start $AIO_SCRIPTS_JS_DIR/dist/lib/verify-setup/start-test-upload-server.js \
     --log /var/log/aio/upload-server-test.log \
     --name $appName \
     --no-autorestart \
