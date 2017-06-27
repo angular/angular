@@ -258,12 +258,12 @@ describe('uploadServerFactory', () => {
       });
 
 
-      it('should respond with 405 for non-GET requests', done => {
+      it('should respond with 404 for non-GET requests', done => {
         verifyRequests([
-          agent.put(`/create-build/${pr}/${sha}`).expect(405),
-          agent.post(`/create-build/${pr}/${sha}`).expect(405),
-          agent.patch(`/create-build/${pr}/${sha}`).expect(405),
-          agent.delete(`/create-build/${pr}/${sha}`).expect(405),
+          agent.put(`/create-build/${pr}/${sha}`).expect(404),
+          agent.post(`/create-build/${pr}/${sha}`).expect(404),
+          agent.patch(`/create-build/${pr}/${sha}`).expect(404),
+          agent.delete(`/create-build/${pr}/${sha}`).expect(404),
         ], done);
       });
 
@@ -418,12 +418,12 @@ describe('uploadServerFactory', () => {
       });
 
 
-      it('should respond with 405 for non-GET requests', done => {
+      it('should respond with 404 for non-GET requests', done => {
         verifyRequests([
-          agent.put('/health-check').expect(405),
-          agent.post('/health-check').expect(405),
-          agent.patch('/health-check').expect(405),
-          agent.delete('/health-check').expect(405),
+          agent.put('/health-check').expect(404),
+          agent.post('/health-check').expect(404),
+          agent.patch('/health-check').expect(404),
+          agent.delete('/health-check').expect(404),
         ], done);
       });
 
@@ -442,26 +442,17 @@ describe('uploadServerFactory', () => {
     });
 
 
-    describe('GET *', () => {
-
-      it('should respond with 404', done => {
-        const responseBody = 'Unknown resource in request: GET /some/url';
-        verifyRequests([agent.get('/some/url').expect(404, responseBody)], done);
-      });
-
-    });
-
-
     describe('ALL *', () => {
 
-      it('should respond with 405', done => {
-        const responseFor = (method: string) => `Unsupported method in request: ${method.toUpperCase()} /some/url`;
+      it('should respond with 404', done => {
+        const responseFor = (method: string) => `Unknown resource in request: ${method.toUpperCase()} /some/url`;
 
         verifyRequests([
-          agent.put('/some/url').expect(405, responseFor('put')),
-          agent.post('/some/url').expect(405, responseFor('post')),
-          agent.patch('/some/url').expect(405, responseFor('patch')),
-          agent.delete('/some/url').expect(405, responseFor('delete')),
+          agent.get('/some/url').expect(404, responseFor('get')),
+          agent.put('/some/url').expect(404, responseFor('put')),
+          agent.post('/some/url').expect(404, responseFor('post')),
+          agent.patch('/some/url').expect(404, responseFor('patch')),
+          agent.delete('/some/url').expect(404, responseFor('delete')),
         ], done);
       });
 
