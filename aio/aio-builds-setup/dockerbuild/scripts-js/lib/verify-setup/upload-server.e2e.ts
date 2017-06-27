@@ -26,13 +26,13 @@ describe('upload-server (on HTTP)', () => {
 
     it('should disallow non-GET requests', done => {
       const url = `http://${host}/create-build/${pr}/${sha9}`;
-      const bodyRegex = /^Unsupported method/;
+      const bodyRegex = /^Unknown resource/;
 
       Promise.all([
-        h.runCmd(`curl -iLX PUT ${url}`).then(h.verifyResponse(405, bodyRegex)),
-        h.runCmd(`curl -iLX POST ${url}`).then(h.verifyResponse(405, bodyRegex)),
-        h.runCmd(`curl -iLX PATCH ${url}`).then(h.verifyResponse(405, bodyRegex)),
-        h.runCmd(`curl -iLX DELETE ${url}`).then(h.verifyResponse(405, bodyRegex)),
+        h.runCmd(`curl -iLX PUT ${url}`).then(h.verifyResponse(404, bodyRegex)),
+        h.runCmd(`curl -iLX POST ${url}`).then(h.verifyResponse(404, bodyRegex)),
+        h.runCmd(`curl -iLX PATCH ${url}`).then(h.verifyResponse(404, bodyRegex)),
+        h.runCmd(`curl -iLX DELETE ${url}`).then(h.verifyResponse(404, bodyRegex)),
       ]).then(done);
     });
 
@@ -376,25 +376,17 @@ describe('upload-server (on HTTP)', () => {
 
   describe(`${host}/*`, () => {
 
-    it('should respond with 404 for GET requests to unknown URLs', done => {
+    it('should respond with 404 for requests to unknown URLs', done => {
       const bodyRegex = /^Unknown resource/;
 
       Promise.all([
         h.runCmd(`curl -iL http://${host}/index.html`).then(h.verifyResponse(404, bodyRegex)),
         h.runCmd(`curl -iL http://${host}/`).then(h.verifyResponse(404, bodyRegex)),
         h.runCmd(`curl -iL http://${host}`).then(h.verifyResponse(404, bodyRegex)),
-      ]).then(done);
-    });
-
-
-    it('should respond with 405 for non-GET requests to any URL', done => {
-      const bodyRegex = /^Unsupported method/;
-
-      Promise.all([
-        h.runCmd(`curl -iLX PUT http://${host}`).then(h.verifyResponse(405, bodyRegex)),
-        h.runCmd(`curl -iLX POST http://${host}`).then(h.verifyResponse(405, bodyRegex)),
-        h.runCmd(`curl -iLX PATCH http://${host}`).then(h.verifyResponse(405, bodyRegex)),
-        h.runCmd(`curl -iLX DELETE http://${host}`).then(h.verifyResponse(405, bodyRegex)),
+        h.runCmd(`curl -iLX PUT http://${host}`).then(h.verifyResponse(404, bodyRegex)),
+        h.runCmd(`curl -iLX POST http://${host}`).then(h.verifyResponse(404, bodyRegex)),
+        h.runCmd(`curl -iLX PATCH http://${host}`).then(h.verifyResponse(404, bodyRegex)),
+        h.runCmd(`curl -iLX DELETE http://${host}`).then(h.verifyResponse(404, bodyRegex)),
       ]).then(done);
     });
 
