@@ -105,8 +105,7 @@ class UploadServerFactory {
       }
     });
     middleware.get(/^\/health-check\/?$/, (_req, res) => res.sendStatus(200));
-    middleware.get('*', req => this.throwRequestError(404, 'Unknown resource', req));
-    middleware.all('*', req => this.throwRequestError(405, 'Unsupported method', req));
+    middleware.all('*', req => this.throwRequestError(404, 'Unknown resource', req));
     middleware.use((err: any, _req: any, res: express.Response, _next: any) => this.respondWithError(res, err));
 
     return middleware;
