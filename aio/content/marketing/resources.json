@@ -93,7 +93,7 @@
             "url": "https://github.com/NativeScript/nativescript-angular"
           },
           "ab5": {
-            "desc": "An Universal Windows App (uwp) powered by Angular",
+            "desc": "A Universal Windows App (uwp) powered by Angular",
             "logo": "",
             "rev": true,
             "title": "Windows (UWP)",
@@ -354,7 +354,7 @@
             "url": "https://ssearch.oreilly.com/?q=angular+2&x=0&y=0"
           },
           "8ab": {
-            "desc": "This books shows all the steps necessary for the development of SPA (Single Page Application) applications with the brand new Angular",
+            "desc": "This book shows all the steps necessary for the development of SPA (Single Page Application) applications with the brand new Angular",
             "rev": true,
             "title": "Practical Angular",
             "url": "https://leanpub.com/practical-angular-2"
@@ -366,7 +366,7 @@
             "url": "https://www.manning.com/search?q=angular"
           },
           "a4b": {
-            "desc": "From getting started with the Angular toolchain to writing applications with scalable front end architectures, this book walks you through everything you need to know.",
+            "desc": "From getting started with the Angular toolchain to writing applications with scalable front-end architectures, this book walks you through everything you need to know.",
             "rev": true,
             "title": "Rangle's Angular Training Book",
             "url": "http://ngcourse.rangle.io/"
@@ -408,7 +408,7 @@
             "url": "https://leanpub.com/router"
           },
           "vsavkin-essential-angular": {
-            "desc": "The book is a short, but at the same time, fairly complete overview of the key aspects of Angular written by its core contributors Victor Savkin and Jeff Cross. The book will give you a strong foundation. It will help you put all the concepts into right places. So you will get a good understanding of why the framework is the way it is.",
+            "desc": "The book is short, but at the same time, fairly complete overview of the key aspects of Angular written by its core contributors Victor Savkin and Jeff Cross. The book will give you a strong foundation. It will help you put all the concepts into right places. So you will get a good understanding of why the framework is the way it is.",
             "rev": true,
             "title": "Essential Angular",
             "url": "https://gumroad.com/l/essential_angular"
@@ -516,7 +516,7 @@
             "url": "http://www.learn-angular.fr/"
           },
           "toddmotto-ultimateangular": {
-            "desc": "Online courses providing in-depth coverage of the Angular ecosystem, AngularJS, Angular and TypeScript, with functional code samples and a full-featured seed environment. Get a deep understanding of Angular and TypeScript from foundation to functional application, then move on to advanced topics with Todd Motto and collaborators.",
+            "desc": "Online courses providing in-depth coverage of the Angular ecosystem, AngularJS, Angular and TypeScript, with functional code samples and a full-featured seed environment. Get a deep understanding of Angular and TypeScript from foundation to a functional application, then move on to advanced topics with Todd Motto and collaborators.",
             "rev": true,
             "title": "Ultimate Angular",
             "url": "https://ultimateangular.com/"
@@ -539,7 +539,7 @@
             "url": "http://chariotsolutions.com/course/angular2-workshop-fundamentals-architecture/"
           },
           "-KLIBoN0p9be3kwC6-ga": {
-            "desc": "Angular Academy is a two day hands-on public course given in-person across Canada!",
+            "desc": "Angular Academy is a two-day hands-on public course given in-person across Canada!",
             "rev": true,
             "title": "Angular Academy (Canada)",
             "url": "http://www.angularacademy.ca"
@@ -575,7 +575,7 @@
             "url": "http://ninja-squad.com/formations/formation-angular2"
           },
           "a2b": {
-            "desc": "Angular Boot Camp covers introductory and intermediate content. It includes extensive workshop session, with hands-on help from our experienced developer-trainers. At the end of this class, student are usually able to use AngularJS to make an end-to-end, working application.",
+            "desc": "Angular Boot Camp covers the introductory and intermediate content. It includes an extensive workshop session, with hands-on help from our experienced developer-trainers. At the end of this class, students are usually able to use AngularJS to make an end-to-end, working application.",
             "logo": "",
             "rev": true,
             "title": "Angular Boot Camp",
@@ -589,7 +589,7 @@
             "url": "http://rangle.io/services/javascript-training/angular2-training/"
           },
           "ab3": {
-            "desc": "Trainings & Code Reviews. We help people to get a deep understanding of different technologies through trainings and code reviews. Our services can be arranged online, making it possible to join in from anywhere in the world, or on-site to get the best experience possible.",
+            "desc": "Training & Code Reviews. We help people to get a deep understanding of different technologies through training and code reviews. Our services can be arranged online, making it possible to join in from anywhere in the world, or on-site to get the best experience possible.",
             "logo": "",
             "rev": true,
             "title": "Thoughtram",
