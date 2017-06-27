@@ -312,7 +312,7 @@
             "title": "jQWidgets",
             "url": "https://www.jqwidgets.com/angular/"
           },
-         "amexio": {
+          "amexio": {
             "desc": "Amexio is a rich set of components powered by Bootstrap, which includes Grids,Tree's and all major form components",
             "rev": true,
             "title": "Amexio - Angular Extensions",
