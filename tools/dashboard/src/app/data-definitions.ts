@@ -2,13 +2,13 @@
 export interface PayloadResult {
   timestamp: number;
   // Material bundles
-  material_umd: string;
-  material_umd_minified_uglify: string;
-  material_fesm_2015: string;
-  material_fesm_2014: string;
+  material_umd: number;
+  material_umd_minified_uglify: number;
+  material_fesm_2015: number;
+  material_fesm_2014: number;
   // CDK bundles
-  cdk_umd: string;
-  cdk_umd_minified_uglify: string;
-  cdk_fesm_2015: string;
-  cdk_fesm_2014: string;
+  cdk_umd: number;
+  cdk_umd_minified_uglify: number;
+  cdk_fesm_2015: number;
+  cdk_fesm_2014: number;
 }

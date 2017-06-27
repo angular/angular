@@ -5,6 +5,9 @@ import {NgModule} from '@angular/core';
 import {DashboardApp} from './dashboard-app';
 import {environment} from '../environments/environment';
 import {MdToolbarModule} from '@angular/material';
+import {NgxChartsModule} from '@swimlane/ngx-charts';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {PayloadChart} from './payload-chart/payload-chart';
 
 @NgModule({
   exports: [
@@ -15,13 +18,16 @@ export class DashboardMaterialModule {}
 
 @NgModule({
   declarations: [
-    DashboardApp
+    DashboardApp,
+    PayloadChart
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireDatabaseModule,
-    DashboardMaterialModule
+    DashboardMaterialModule,
+    NgxChartsModule
   ],
   providers: [],
   bootstrap: [DashboardApp]

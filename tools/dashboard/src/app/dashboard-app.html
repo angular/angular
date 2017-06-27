@@ -2,5 +2,6 @@
   <span>Angular Material - Board</span>
 </md-toolbar>
 
-<p>Payload Test Data</p>
-{{ payloads | async | json }}
+<div class="dashboard-content">
+  <payload-chart [data]="payloads | async" *ngIf="payloads | async"></payload-chart>
+</div>

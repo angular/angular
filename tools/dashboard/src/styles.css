@@ -1,4 +1,5 @@
 body, html {
   margin: 0;
   font-family: Roboto, Arial, sans-serif;
+  min-height: 100vh;
 }
