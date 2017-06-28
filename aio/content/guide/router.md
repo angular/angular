@@ -833,8 +833,7 @@ When the application launches, the initial URL in the browser bar is something l
 
 
 
-That doesn't match any of the configured routes which means that the application won't display any component when it's launched.
-The user must click one of the links to trigger a navigation and display a component.
+However, the router will match this url to the wildcard route, displaying the `PageNotFoundComponent`.
 
 It would be nicer if the application had a **default route** that displayed the list of heroes immediately,
 just as it will when the user clicks the "Heroes" link or pastes `localhost:3000/heroes` into the address bar.
