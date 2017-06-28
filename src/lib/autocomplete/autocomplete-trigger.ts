@@ -321,15 +321,26 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   /**
    * Given that we are not actually focusing active options, we must manually adjust scroll
    * to reveal options below the fold. First, we find the offset of the option from the top
-   * of the panel. The new scrollTop will be that offset - the panel height + the option
-   * height, so the active option will be just visible at the bottom of the panel.
+   * of the panel. If that offset is below the fold, the new scrollTop will be the offset -
+   * the panel height + the option height, so the active option will be just visible at the
+   * bottom of the panel. If that offset is above the top of the visible panel, the new scrollTop
+   * will become the offset. If that offset is visible within the panel already, the scrollTop is
+   * not adjusted.
    */
   private _scrollToOption(): void {
     const optionOffset = this.autocomplete._keyManager.activeItemIndex ?
         this.autocomplete._keyManager.activeItemIndex * AUTOCOMPLETE_OPTION_HEIGHT : 0;
-    const newScrollTop =
-        Math.max(0, optionOffset - AUTOCOMPLETE_PANEL_HEIGHT + AUTOCOMPLETE_OPTION_HEIGHT);
-    this.autocomplete._setScrollTop(newScrollTop);
+    const panelTop = this.autocomplete._getScrollTop();
+
+    if (optionOffset < panelTop) {
+      // Scroll up to reveal selected option scrolled above the panel top
+      this.autocomplete._setScrollTop(optionOffset);
+    } else if (optionOffset + AUTOCOMPLETE_OPTION_HEIGHT > panelTop + AUTOCOMPLETE_PANEL_HEIGHT) {
+      // Scroll down to reveal selected option scrolled below the panel bottom
+      const newScrollTop =
+          Math.max(0, optionOffset - AUTOCOMPLETE_PANEL_HEIGHT + AUTOCOMPLETE_OPTION_HEIGHT);
+      this.autocomplete._setScrollTop(newScrollTop);
+    }
   }
 
   /**

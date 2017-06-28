@@ -548,6 +548,7 @@ describe('MdAutocomplete', () => {
     let fixture: ComponentFixture<SimpleAutocomplete>;
     let input: HTMLInputElement;
     let DOWN_ARROW_EVENT: KeyboardEvent;
+    let UP_ARROW_EVENT: KeyboardEvent;
     let ENTER_EVENT: KeyboardEvent;
 
     beforeEach(() => {
@@ -556,6 +557,7 @@ describe('MdAutocomplete', () => {
 
       input = fixture.debugElement.query(By.css('input')).nativeElement;
       DOWN_ARROW_EVENT = createKeyboardEvent('keydown', DOWN_ARROW);
+      UP_ARROW_EVENT = createKeyboardEvent('keydown', UP_ARROW);
       ENTER_EVENT = createKeyboardEvent('keydown', ENTER);
 
       fixture.componentInstance.trigger.openPanel();
@@ -614,7 +616,6 @@ describe('MdAutocomplete', () => {
       const optionEls =
           overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
 
-      const UP_ARROW_EVENT = createKeyboardEvent('keydown', UP_ARROW);
       fixture.componentInstance.trigger._handleKeydown(UP_ARROW_EVENT);
       tick();
       fixture.detectChanges();
@@ -768,13 +769,70 @@ describe('MdAutocomplete', () => {
       const scrollContainer =
           document.querySelector('.cdk-overlay-pane .mat-autocomplete-panel')!;
 
-      const UP_ARROW_EVENT = createKeyboardEvent('keydown', UP_ARROW);
       fixture.componentInstance.trigger._handleKeydown(UP_ARROW_EVENT);
       tick();
       fixture.detectChanges();
 
       // Expect option bottom minus the panel height (528 - 256 = 272)
       expect(scrollContainer.scrollTop).toEqual(272, `Expected panel to reveal last option.`);
+    }));
+
+    it('should not scroll to active options that are fully in the panel', fakeAsync(() => {
+      tick();
+      const scrollContainer =
+          document.querySelector('.cdk-overlay-pane .mat-autocomplete-panel')!;
+
+      fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+      tick();
+      fixture.detectChanges();
+      expect(scrollContainer.scrollTop).toEqual(0, `Expected panel not to scroll.`);
+
+      // These down arrows will set the 6th option active, below the fold.
+      [1, 2, 3, 4, 5].forEach(() => {
+        fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+        tick();
+      });
+
+      // Expect option bottom minus the panel height (288 - 256 = 32)
+      expect(scrollContainer.scrollTop)
+          .toEqual(32, `Expected panel to reveal the sixth option.`);
+
+      // These up arrows will set the 2nd option active
+      [4, 3, 2, 1].forEach(() => {
+        fixture.componentInstance.trigger._handleKeydown(UP_ARROW_EVENT);
+        tick();
+      });
+
+      // Expect no scrolling to have occurred. Still showing bottom of 6th option.
+      expect(scrollContainer.scrollTop)
+          .toEqual(32, `Expected panel not to scroll up since sixth option still fully visible.`);
+    }));
+
+    it('should scroll to active options that are above the panel', fakeAsync(() => {
+      tick();
+      const scrollContainer =
+          document.querySelector('.cdk-overlay-pane .mat-autocomplete-panel')!;
+
+      fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+      tick();
+      fixture.detectChanges();
+      expect(scrollContainer.scrollTop).toEqual(0, `Expected panel not to scroll.`);
+
+      // These down arrows will set the 7th option active, below the fold.
+      [1, 2, 3, 4, 5, 6].forEach(() => {
+        fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+        tick();
+      });
+
+      // These up arrows will set the 2nd option active
+      [5, 4, 3, 2, 1].forEach(() => {
+        fixture.componentInstance.trigger._handleKeydown(UP_ARROW_EVENT);
+        tick();
+      });
+
+      // Expect to show the top of the 2nd option at the top of the panel
+      expect(scrollContainer.scrollTop)
+          .toEqual(48, `Expected panel to scroll up when option is above panel.`);
     }));
 
     it('should close the panel when pressing escape', async(() => {

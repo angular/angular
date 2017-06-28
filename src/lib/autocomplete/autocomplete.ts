@@ -73,13 +73,18 @@ export class MdAutocomplete implements AfterContentInit {
   }
 
   /**
-   * Sets the panel scrollTop. This allows us to manually scroll to display
-   * options below the fold, as they are not actually being focused when active.
+   * Sets the panel scrollTop. This allows us to manually scroll to display options
+   * above or below the fold, as they are not actually being focused when active.
    */
   _setScrollTop(scrollTop: number): void {
     if (this.panel) {
       this.panel.nativeElement.scrollTop = scrollTop;
     }
+  }
+
+  /** Returns the panel's scrollTop. */
+  _getScrollTop(): number {
+    return this.panel ? this.panel.nativeElement.scrollTop : 0;
   }
 
   /** Panel should hide itself when the option list is empty. */
