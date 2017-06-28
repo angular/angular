@@ -342,6 +342,28 @@ describe('DocViewerComponent', () => {
       fixture.detectChanges();
       expect(titleService.setTitle).toHaveBeenCalledWith('Angular - Features');
     });
+
+    it('should not include hidden content of the <h1> in the title', () => {
+      setCurrentDoc('<h1><i style="visibility: hidden">link</i>Features</h1>Some content');
+      fixture.detectChanges();
+      expect(titleService.setTitle).toHaveBeenCalledWith('Angular - Features');
+    });
+
+    it('should fall back to `textContent` if `innerText` is not available', () => {
+      const querySelector_ = docViewerEl.querySelector;
+      spyOn(docViewerEl, 'querySelector').and.callFake((selector: string) => {
+        const elem = querySelector_.call(docViewerEl, selector);
+        Object.defineProperties(elem, {
+          innerText: { value: undefined },
+          textContent: { value: 'Text Content' }
+        });
+        return elem;
+      });
+
+      setCurrentDoc('<h1><i style="visibility: hidden">link</i>Features</h1>Some content');
+      fixture.detectChanges();
+      expect(titleService.setTitle).toHaveBeenCalledWith('Angular - Text Content');
+    });
   });
 
   describe('TOC', () => {
