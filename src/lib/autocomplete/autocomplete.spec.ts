@@ -53,6 +53,7 @@ describe('MdAutocomplete', () => {
         AutocompleteWithoutForms,
         NgIfAutocomplete,
         AutocompleteWithNgModel,
+        AutocompleteWithNumbers,
         AutocompleteWithOnPushDelay,
         AutocompleteWithNativeInput,
         AutocompleteWithoutPanel
@@ -1194,6 +1195,19 @@ describe('MdAutocomplete', () => {
       });
     }));
 
+    it('should display the number when the selected option is the number zero', async(() => {
+      const fixture = TestBed.createComponent(AutocompleteWithNumbers);
+
+      fixture.componentInstance.selectedNumber = 0;
+      fixture.detectChanges();
+
+      fixture.whenStable().then(() => {
+        const input = fixture.debugElement.query(By.css('input')).nativeElement;
+
+        expect(input.value).toBe('0');
+      });
+    }));
+
     it('should work when input is wrapped in ngIf', async(() => {
       const fixture = TestBed.createComponent(NgIfAutocomplete);
       fixture.detectChanges();
@@ -1462,6 +1476,23 @@ class AutocompleteWithNgModel {
 
 }
 
+@Component({
+  template: `
+    <md-input-container>
+      <input mdInput placeholder="Number" [mdAutocomplete]="auto" [(ngModel)]="selectedNumber">
+    </md-input-container>
+
+    <md-autocomplete #auto="mdAutocomplete">
+      <md-option *ngFor="let number of numbers" [value]="number">
+        <span>{{ number }}</span>
+      </md-option>
+    </md-autocomplete>
+  `
+})
+class AutocompleteWithNumbers {
+  selectedNumber: number;
+  numbers = [0, 1, 2];
+}
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
