@@ -97,7 +97,7 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
     // Only create TOC for docs with an <h1> title
     // If you don't want a TOC, add "no-toc" class to <h1>
     if (titleEl) {
-      title = titleEl.textContent.trim();
+      title = (titleEl.innerText || titleEl.textContent).trim();
       if (!/(no-toc|notoc)/i.test(titleEl.className)) {
         this.tocService.genToc(this.hostElement, docId);
         titleEl.insertAdjacentHTML('afterend', '<aio-toc class="embedded"></aio-toc>');
