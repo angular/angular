@@ -107,3 +107,45 @@ The underline (line under the `input` content) color can be changed by using the
 attribute of `md-input-container`. A value of `primary` is the default and will correspond to the
 theme primary color. Alternatively, `accent` or `warn` can be specified to use the theme's accent or
 warn color.
+
+### Custom Error Matcher
+
+By default, error messages are shown when the control is invalid and either the user has interacted with
+(touched) the element or the parent form has been submitted. If you wish to override this
+behavior (e.g. to show the error as soon as the invalid control is dirty or when a parent form group
+is invalid), you can use the `errorStateMatcher` property of the `mdInput`. To use this property,
+create a function in your component class that returns a boolean. A result of `true` will display
+the error messages.
+
+```html
+<md-input-container>
+  <input mdInput [(ngModel)]="myInput" required [errorStateMatcher]="myErrorStateMatcher">
+  <md-error>This field is required</md-error>
+</md-input-container>
+```
+
+```ts
+function myErrorStateMatcher(control: FormControl, form: FormGroupDirective | NgForm): boolean {
+  // Error when invalid control is dirty, touched, or submitted
+  const isSubmitted = form && form.submitted;
+  return !!(control.invalid && (control.dirty || control.touched || isSubmitted)));
+}
+```
+
+A global error state matcher can be specified by setting the `MD_ERROR_GLOBAL_OPTIONS` provider. This applies
+to all inputs. For convenience, `showOnDirtyErrorStateMatcher` is available in order to globally cause
+input errors to show when the input is dirty and invalid.
+
+```ts
+@NgModule({
+  providers: [
+    {provide: MD_ERROR_GLOBAL_OPTIONS, useValue: { errorStateMatcher: showOnDirtyErrorStateMatcher }}
+  ]
+})
+```
+
+Here are the available global options:
+
+| Name              | Type     | Description |
+| ----------------- | -------- | ----------- |
+| errorStateMatcher | Function | Returns a boolean specifying if the error should be shown |

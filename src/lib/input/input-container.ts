@@ -29,7 +29,7 @@ import {
 } from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {coerceBooleanProperty, Platform} from '../core';
-import {FormGroupDirective, NgControl, NgForm} from '@angular/forms';
+import {FormGroupDirective, NgControl, NgForm, FormControl} from '@angular/forms';
 import {getSupportedInputTypes} from '../core/platform/features';
 import {
   getMdInputContainerDuplicatedHintError,
@@ -42,6 +42,12 @@ import {
   PlaceholderOptions,
   MD_PLACEHOLDER_GLOBAL_OPTIONS
 } from '../core/placeholder/placeholder-options';
+import {
+  defaultErrorStateMatcher,
+  ErrorStateMatcher,
+  ErrorOptions,
+  MD_ERROR_GLOBAL_OPTIONS
+} from '../core/error/error-options';
 
 // Invalid input type. Using one of these will throw an MdInputContainerUnsupportedTypeError.
 const MD_INPUT_INVALID_TYPES = [
@@ -137,6 +143,7 @@ export class MdInputDirective {
   private _required = false;
   private _id: string;
   private _cachedUid: string;
+  private _errorOptions: ErrorOptions;
 
   /** Whether the element is focused or not. */
   focused = false;
@@ -189,6 +196,9 @@ export class MdInputDirective {
     }
   }
 
+  /** A function used to control when error messages are shown. */
+  @Input() errorStateMatcher: ErrorStateMatcher;
+
   /** The input element's value. */
   get value() { return this._elementRef.nativeElement.value; }
   set value(value: string) { this._elementRef.nativeElement.value = value; }
@@ -224,10 +234,14 @@ export class MdInputDirective {
               private _platform: Platform,
               @Optional() @Self() public _ngControl: NgControl,
               @Optional() private _parentForm: NgForm,
-              @Optional() private _parentFormGroup: FormGroupDirective) {
+              @Optional() private _parentFormGroup: FormGroupDirective,
+              @Optional() @Inject(MD_ERROR_GLOBAL_OPTIONS) errorOptions: ErrorOptions) {
 
     // Force setter to be called in case id was not specified.
     this.id = this.id;
+
+    this._errorOptions = errorOptions ? errorOptions : {};
+    this.errorStateMatcher = this._errorOptions.errorStateMatcher || defaultErrorStateMatcher;
   }
 
   /** Focuses the input element. */
@@ -250,12 +264,8 @@ export class MdInputDirective {
   /** Whether the input is in an error state. */
   _isErrorState(): boolean {
     const control = this._ngControl;
-    const isInvalid = control && control.invalid;
-    const isTouched = control && control.touched;
-    const isSubmitted = (this._parentFormGroup && this._parentFormGroup.submitted) ||
-        (this._parentForm && this._parentForm.submitted);
-
-    return !!(isInvalid && (isTouched || isSubmitted));
+    const form = this._parentFormGroup || this._parentForm;
+    return control && this.errorStateMatcher(control.control as FormControl, form);
   }
 
   /** Make sure the input is a supported type. */

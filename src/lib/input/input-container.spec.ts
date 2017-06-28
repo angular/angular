@@ -23,6 +23,7 @@ import {
   getMdInputContainerPlaceholderConflictError
 } from './input-container-errors';
 import {MD_PLACEHOLDER_GLOBAL_OPTIONS} from '../core/placeholder/placeholder-options';
+import {MD_ERROR_GLOBAL_OPTIONS, showOnDirtyErrorStateMatcher} from '../core/error/error-options';
 
 describe('MdInputContainer', function () {
   beforeEach(async(() => {
@@ -56,6 +57,7 @@ describe('MdInputContainer', function () {
         MdInputContainerWithDynamicPlaceholder,
         MdInputContainerWithFormControl,
         MdInputContainerWithFormErrorMessages,
+        MdInputContainerWithCustomErrorStateMatcher,
         MdInputContainerWithFormGroupErrorMessages,
         MdInputContainerWithId,
         MdInputContainerWithPrefixAndSuffix,
@@ -749,6 +751,113 @@ describe('MdInputContainer', function () {
 
   });
 
+  describe('custom error behavior', () => {
+    it('should display an error message when a custom error matcher returns true', () => {
+      let fixture = TestBed.createComponent(MdInputContainerWithCustomErrorStateMatcher);
+      fixture.detectChanges();
+
+      let component = fixture.componentInstance;
+      let containerEl = fixture.debugElement.query(By.css('md-input-container')).nativeElement;
+
+      const control = component.formGroup.get('name')!;
+
+      expect(control.invalid).toBe(true, 'Expected form control to be invalid');
+      expect(containerEl.querySelectorAll('md-error').length)
+          .toBe(0, 'Expected no error messages');
+
+      control.markAsTouched();
+      fixture.detectChanges();
+
+      expect(containerEl.querySelectorAll('md-error').length)
+          .toBe(0, 'Expected no error messages after being touched.');
+
+      component.errorState = true;
+      fixture.detectChanges();
+
+      expect(containerEl.querySelectorAll('md-error').length)
+          .toBe(1, 'Expected one error messages to have been rendered.');
+    });
+
+    it('should display an error message when global error matcher returns true', () => {
+
+      // Global error state matcher that will always cause errors to show
+      function globalErrorStateMatcher() {
+        return true;
+      }
+
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        imports: [
+          FormsModule,
+          MdInputModule,
+          NoopAnimationsModule,
+          ReactiveFormsModule,
+        ],
+        declarations: [
+          MdInputContainerWithFormErrorMessages
+        ],
+        providers: [
+          {
+            provide: MD_ERROR_GLOBAL_OPTIONS,
+            useValue: { errorStateMatcher: globalErrorStateMatcher } }
+        ]
+      });
+
+      let fixture = TestBed.createComponent(MdInputContainerWithFormErrorMessages);
+
+      fixture.detectChanges();
+
+      let containerEl = fixture.debugElement.query(By.css('md-input-container')).nativeElement;
+      let testComponent = fixture.componentInstance;
+
+      // Expect the control to still be untouched but the error to show due to the global setting
+      expect(testComponent.formControl.untouched).toBe(true, 'Expected untouched form control');
+      expect(containerEl.querySelectorAll('md-error').length).toBe(1, 'Expected an error message');
+    });
+
+    it('should display an error message when using showOnDirtyErrorStateMatcher', async(() => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        imports: [
+          FormsModule,
+          MdInputModule,
+          NoopAnimationsModule,
+          ReactiveFormsModule,
+        ],
+        declarations: [
+          MdInputContainerWithFormErrorMessages
+        ],
+        providers: [
+          {
+            provide: MD_ERROR_GLOBAL_OPTIONS,
+            useValue: { errorStateMatcher: showOnDirtyErrorStateMatcher }
+          }
+        ]
+      });
+
+      let fixture = TestBed.createComponent(MdInputContainerWithFormErrorMessages);
+      fixture.detectChanges();
+
+      let containerEl = fixture.debugElement.query(By.css('md-input-container')).nativeElement;
+      let testComponent = fixture.componentInstance;
+
+      expect(testComponent.formControl.invalid).toBe(true, 'Expected form control to be invalid');
+      expect(containerEl.querySelectorAll('md-error').length).toBe(0, 'Expected no error messages');
+
+      testComponent.formControl.markAsTouched();
+      fixture.detectChanges();
+
+      expect(containerEl.querySelectorAll('md-error').length)
+          .toBe(0, 'Expected no error messages when touched');
+
+      testComponent.formControl.markAsDirty();
+      fixture.detectChanges();
+
+      expect(containerEl.querySelectorAll('md-error').length)
+          .toBe(1, 'Expected one error message when dirty');
+    }));
+  });
+
   it('should not have prefix and suffix elements when none are specified', () => {
     let fixture = TestBed.createComponent(MdInputContainerWithId);
     fixture.detectChanges();
@@ -1016,6 +1125,31 @@ class MdInputContainerWithFormErrorMessages {
   @ViewChild('form') form: NgForm;
   formControl = new FormControl('', Validators.required);
   renderError = true;
+}
+
+@Component({
+  template: `
+    <form [formGroup]="formGroup">
+      <md-input-container>
+        <input mdInput
+            formControlName="name"
+            [errorStateMatcher]="customErrorStateMatcher.bind(this)">
+        <md-hint>Please type something</md-hint>
+        <md-error>This field is required</md-error>
+      </md-input-container>
+    </form>
+  `
+})
+class MdInputContainerWithCustomErrorStateMatcher {
+  formGroup = new FormGroup({
+    name: new FormControl('', Validators.required)
+  });
+
+  errorState = false;
+
+  customErrorStateMatcher(): boolean {
+    return this.errorState;
+  }
 }
 
 @Component({

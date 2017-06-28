@@ -116,6 +116,15 @@ export {
   MD_PLACEHOLDER_GLOBAL_OPTIONS
 } from './placeholder/placeholder-options';
 
+// Error
+export {
+  ErrorStateMatcher,
+  ErrorOptions,
+  MD_ERROR_GLOBAL_OPTIONS,
+  defaultErrorStateMatcher,
+  showOnDirtyErrorStateMatcher
+} from './error/error-options';
+
 @NgModule({
   imports: [
     MdLineModule,
