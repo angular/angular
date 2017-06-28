@@ -313,11 +313,11 @@
             "url": "https://www.jqwidgets.com/angular/"
           },
           "amexio": {
-            "desc": "Amexio is a rich set of components powered by Bootstrap, which includes Data Grid,Tree, Tree Grid and all Form components",
+            "desc": "Amexio (Angular MetaMagic EXtensions for Inputs and Outputs)  is a rich set of Angular 4 components powered by Bootstrap for Responsive Design. UI Components include Standard Form Components, Data Grids, Tree Grids, Tabs etc. Open Source (Apache 2 License) & Free and backed by MetaMagic Global Inc",
             "rev": true,
-            "title": "Amexio-Angular Extensions",
-            "url": "http://www.amexio.org/metamagic-showcase/index.html#/home",
-            "logo": "http://www.amexio.org/metamagic-showcase/assets/logo.png"
+            "title": "Amexio - Angular Extensions",
+            "url": "http://www.amexio.tech/",
+            "logo": "http://www.amexio.org/amexio-logo.png"
           }          
         }
       }
