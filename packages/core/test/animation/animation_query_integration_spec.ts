@@ -8,6 +8,7 @@
 import {AUTO_STYLE, AnimationPlayer, animate, animateChild, query, stagger, state, style, transition, trigger, ɵAnimationGroupPlayer as AnimationGroupPlayer} from '@angular/animations';
 import {AnimationDriver, ɵAnimationEngine} from '@angular/animations/browser';
 import {matchesElement} from '@angular/animations/browser/src/render/shared';
+import {ENTER_CLASSNAME, LEAVE_CLASSNAME} from '@angular/animations/browser/src/util';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {CommonModule} from '@angular/common';
 import {Component, HostBinding, ViewChild} from '@angular/core';
@@ -748,6 +749,69 @@ export function main() {
           expect(p.keyframes).toEqual([{opacity: '0', offset: 0}, {opacity: '0.5', offset: 1}]);
         });
       });
+
+      it('should cleanup :enter and :leave artifacts from nodes when any animation sequences fail to be built',
+         () => {
+           @Component({
+             selector: 'ani-cmp',
+             template: `
+            <div [@myAnimation]="items.length" class="parent" #container>
+              <div *ngFor="let item of items" class="child">
+                {{ item }}
+              </div>
+              <div *ngIf="items.length == 0" class="child">Leave!</div>
+            </div>
+          `,
+             animations: [
+               trigger(
+                   'myAnimation',
+                   [
+                     transition('* => 0', []),
+                     transition(
+                         '* => *',
+                         [
+                           query(
+                               '.child:enter',
+                               [
+                                 style({opacity: 0}),
+                                 animate(1000, style({opacity: 1})),
+                               ]),
+                           query(
+                               '.incorrect-child:leave',
+                               [
+                                 animate(1000, style({opacity: 0})),
+                               ]),
+                         ]),
+                   ]),
+             ]
+           })
+           class Cmp {
+             @ViewChild('container') public container: any;
+             public items: any[] = [];
+           }
+
+           TestBed.configureTestingModule({declarations: [Cmp]});
+
+           const engine = TestBed.get(ɵAnimationEngine);
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
+
+           cmp.items = [];
+           fixture.detectChanges();
+
+           cmp.items = [0, 1, 2, 3, 4];
+
+           expect(() => { fixture.detectChanges(); }).toThrow();
+
+           const children = cmp.container.nativeElement.querySelectorAll('.child');
+           expect(children.length).toEqual(5);
+
+           for (let i = 0; i < children.length; i++) {
+             let child = children[i];
+             expect(child.classList.contains(ENTER_CLASSNAME)).toBe(false);
+             expect(child.classList.contains(LEAVE_CLASSNAME)).toBe(false);
+           }
+         });
 
       it('should find elements that have been removed via :leave', () => {
         @Component({
