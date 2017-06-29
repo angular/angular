@@ -9,7 +9,7 @@
 import {ContentChild, Directive, ElementRef, Input, Renderer2, TemplateRef} from '@angular/core';
 
 /**
- * Cell definition for a CDK data-table.
+ * Cell definition for a CDK table.
  * Captures the template of a column's data row cell as well as cell-specific properties.
  */
 @Directive({selector: '[cdkCellDef]'})
@@ -18,7 +18,7 @@ export class CdkCellDef {
 }
 
 /**
- * Header cell definition for a CDK data-table.
+ * Header cell definition for a CDK table.
  * Captures the template of a column's header cell and as well as cell-specific properties.
  */
 @Directive({selector: '[cdkHeaderCellDef]'})
@@ -27,7 +27,7 @@ export class CdkHeaderCellDef {
 }
 
 /**
- * Column definition for the CDK data-table.
+ * Column definition for the CDK table.
  * Defines a set of cells available for a table column.
  */
 @Directive({selector: '[cdkColumnDef]'})

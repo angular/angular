@@ -8,7 +8,7 @@
 
 import {NgModule} from '@angular/core';
 import {MdTable} from './table';
-import {CdkDataTableModule} from '../core/data-table/index';
+import {CdkTableModule} from '@angular/cdk';
 import {MdCell, MdHeaderCell} from './cell';
 import {MdHeaderRow, MdRow} from './row';
 import {CommonModule} from '@angular/common';
@@ -19,7 +19,7 @@ export * from './table';
 export * from './row';
 
 @NgModule({
-  imports: [CdkDataTableModule, CommonModule, MdCommonModule],
+  imports: [CdkTableModule, CommonModule, MdCommonModule],
   exports: [MdTable, MdHeaderCell, MdCell, MdHeaderRow, MdRow],
   declarations: [MdTable, MdHeaderCell, MdCell, MdHeaderRow, MdRow],
 })

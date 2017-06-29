@@ -7,7 +7,11 @@
  */
 
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {CdkHeaderRow, CdkRow, CDK_ROW_TEMPLATE} from '../core/data-table/row';
+import {CdkHeaderRow, CdkRow, CDK_ROW_TEMPLATE} from '@angular/cdk';
+
+/** Workaround for https://github.com/angular/angular/issues/17849 */
+export const _MdHeaderRow = CdkHeaderRow;
+export const _MdRow = CdkHeaderRow;
 
 /** Header template container that contains the cell outlet. Adds the right class and role. */
 @Component({
@@ -19,7 +23,7 @@ import {CdkHeaderRow, CdkRow, CDK_ROW_TEMPLATE} from '../core/data-table/row';
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MdHeaderRow extends CdkHeaderRow { }
+export class MdHeaderRow extends _MdHeaderRow { }
 
 /** Data row template container that contains the cell outlet. Adds the right class and role. */
 @Component({
@@ -31,4 +35,4 @@ export class MdHeaderRow extends CdkHeaderRow { }
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MdRow extends CdkRow { }
+export class MdRow extends _MdRow { }

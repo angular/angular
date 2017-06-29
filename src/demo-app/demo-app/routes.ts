@@ -33,7 +33,7 @@ import {AutocompleteDemo} from '../autocomplete/autocomplete-demo';
 import {InputDemo} from '../input/input-demo';
 import {StyleDemo} from '../style/style-demo';
 import {DatepickerDemo} from '../datepicker/datepicker-demo';
-import {DataTableDemo} from '../data-table/data-table-demo';
+import {TableDemo} from '../table/table-demo';
 import {TypographyDemo} from '../typography/typography-demo';
 import {ExpansionDemo} from '../expansion/expansion-demo';
 
@@ -43,7 +43,7 @@ export const DEMO_APP_ROUTES: Routes = [
   {path: 'button', component: ButtonDemo},
   {path: 'card', component: CardDemo},
   {path: 'chips', component: ChipsDemo},
-  {path: 'data-table', component: DataTableDemo},
+  {path: 'table', component: TableDemo},
   {path: 'datepicker', component: DatepickerDemo},
   {path: 'radio', component: RadioDemo},
   {path: 'select', component: SelectDemo},

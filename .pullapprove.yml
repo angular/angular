@@ -117,9 +117,9 @@ groups:
   data-table:
     conditions:
       files:
-        - 'src/(demo-app|e2e-app|lib)/data-table/*'
-        - 'src/lib/core/data-table/*'
-        - 'src/material-examples/data-table-*'
+        - 'src/(demo-app|e2e-app|lib)/table/*'
+        - 'src/lib/core/table/*'
+        - 'src/material-examples/table-*'
     users:
       - andrewseguin # primary
       - jelbourn

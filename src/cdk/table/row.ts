@@ -66,7 +66,7 @@ export abstract class BaseRowDef {
 }
 
 /**
- * Header row definition for the CDK data-table.
+ * Header row definition for the CDK table.
  * Captures the header row's template and other header properties such as the columns to display.
  */
 @Directive({
@@ -80,7 +80,7 @@ export class CdkHeaderRowDef extends BaseRowDef {
 }
 
 /**
- * Data row definition for the CDK data-table.
+ * Data row definition for the CDK table.
  * Captures the header row's template and other row properties such as the columns to display.
  */
 @Directive({
@@ -133,7 +133,7 @@ export class CdkCellOutlet {
 
   /**
    * Static property containing the latest constructed instance of this class.
-   * Used by the CDK data-table when each CdkHeaderRow and CdkRow component is created using
+   * Used by the CDK table when each CdkHeaderRow and CdkRow component is created using
    * createEmbeddedView. After one of these components are created, this property will provide
    * a handle to provide that component's cells and context. After init, the CdkCellOutlet will
    * construct the cells with the provided context.

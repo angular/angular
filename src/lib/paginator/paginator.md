@@ -1,4 +1,4 @@
-`<md-paginator>` is a navigation for pages information, typically used with a data-table.
+`<md-paginator>` is a navigation for pages information, typically used with a table.
 
 <!-- example(pagination-overview) -->
 

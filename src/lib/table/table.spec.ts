@@ -1,10 +1,9 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component, ViewChild} from '@angular/core';
-import {CdkTable} from '../core/data-table/data-table';
-import {DataSource} from '../core/data-table/data-source';
+import {CdkTable, DataSource, CdkTableModule} from '@angular/cdk';
+import {} from '../core/data-table/data-source';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {Observable} from 'rxjs/Observable';
-import {CdkDataTableModule} from '../core/data-table/index';
 import {MdTableModule} from './index';
 
 describe('MdTable', () => {
@@ -12,7 +11,7 @@ describe('MdTable', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdTableModule, CdkDataTableModule],
+      imports: [MdTableModule, CdkTableModule],
       declarations: [SimpleMdTableApp],
     }).compileComponents();
   }));

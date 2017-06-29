@@ -7,7 +7,11 @@
  */
 
 import {Directive, ElementRef, Renderer2} from '@angular/core';
-import {CdkCell, CdkColumnDef, CdkHeaderCell} from '../core/data-table/cell';
+import {CdkCell, CdkColumnDef, CdkHeaderCell} from '@angular/cdk';
+
+/** Workaround for https://github.com/angular/angular/issues/17849 */
+export const _MdHeaderCellBase = CdkHeaderCell;
+export const _MdCell = CdkCell;
 
 /** Header cell template container that adds the right classes and role. */
 @Directive({
@@ -17,7 +21,7 @@ import {CdkCell, CdkColumnDef, CdkHeaderCell} from '../core/data-table/cell';
     'role': 'columnheader',
   },
 })
-export class MdHeaderCell extends CdkHeaderCell {
+export class MdHeaderCell extends _MdHeaderCellBase {
   constructor(columnDef: CdkColumnDef,
               elementRef: ElementRef,
               renderer: Renderer2) {
@@ -34,7 +38,7 @@ export class MdHeaderCell extends CdkHeaderCell {
     'role': 'gridcell',
   },
 })
-export class MdCell extends CdkCell {
+export class MdCell extends _MdCell {
   constructor(columnDef: CdkColumnDef,
               elementRef: ElementRef,
               renderer: Renderer2) {

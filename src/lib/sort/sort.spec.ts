@@ -1,7 +1,7 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component, ElementRef, ViewChild} from '@angular/core';
 import {MdSort, MdSortHeader, Sort, SortDirection, MdSortModule} from './index';
-import {CdkDataTableModule, DataSource, CollectionViewer} from '../core/data-table/index';
+import {CdkTableModule, DataSource, CollectionViewer} from '@angular/cdk';
 import {Observable} from 'rxjs/Observable';
 import {dispatchMouseEvent} from '../core/testing/dispatch-events';
 import {
@@ -19,7 +19,7 @@ describe('MdSort', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdSortModule, CdkDataTableModule],
+      imports: [MdSortModule, CdkTableModule],
       declarations: [
         SimpleMdSortApp,
         CdkTableMdSortApp,

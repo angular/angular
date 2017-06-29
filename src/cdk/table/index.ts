@@ -8,12 +8,14 @@
 
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {HeaderRowPlaceholder, RowPlaceholder, CdkTable} from './data-table';
+import {HeaderRowPlaceholder, RowPlaceholder, CdkTable} from './table';
 import {CdkCellOutlet, CdkHeaderRow, CdkHeaderRowDef, CdkRow, CdkRowDef} from './row';
 import {CdkColumnDef, CdkHeaderCellDef, CdkHeaderCell, CdkCell, CdkCellDef} from './cell';
 
 export * from './data-source';
-export * from './data-table';
+export * from './table';
+export * from './cell';
+export * from './row';
 
 const EXPORTED_DECLARATIONS = [
   CdkTable,
@@ -37,4 +39,4 @@ const EXPORTED_DECLARATIONS = [
   declarations: [EXPORTED_DECLARATIONS]
 
 })
-export class CdkDataTableModule { }
+export class CdkTableModule { }

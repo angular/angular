@@ -10,11 +10,11 @@ export type TrackByStrategy = 'id' | 'reference' | 'index';
 
 @Component({
   moduleId: module.id,
-  selector: 'data-table-demo',
-  templateUrl: 'data-table-demo.html',
-  styleUrls: ['data-table-demo.css'],
+  selector: 'table-demo',
+  templateUrl: 'table-demo.html',
+  styleUrls: ['table-demo.css'],
 })
-export class DataTableDemo {
+export class TableDemo {
   dataSource: PersonDataSource | null;
   propertiesToDisplay: UserProperties[] = [];
   trackByStrategy: TrackByStrategy = 'reference';

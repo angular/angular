@@ -1,13 +1,12 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component, ViewChild} from '@angular/core';
-import {CdkTable} from './data-table';
+import {CdkTable} from './table';
 import {CollectionViewer, DataSource} from './data-source';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import {customMatchers} from '../testing/jasmine-matchers';
 import {Observable} from 'rxjs/Observable';
 import {combineLatest} from 'rxjs/observable/combineLatest';
-import {map} from '../rxjs/index';
-import {CdkDataTableModule} from './index';
+import {CdkTableModule} from './index';
+import {map} from 'rxjs/operator/map';
 
 describe('CdkTable', () => {
   let fixture: ComponentFixture<SimpleCdkTableApp>;
@@ -18,11 +17,8 @@ describe('CdkTable', () => {
   let tableElement: HTMLElement;
 
   beforeEach(async(() => {
-    jasmine.addMatchers(customMatchers);
-    jasmine.addMatchers(tableCustomMatchers);
-
     TestBed.configureTestingModule({
-      imports: [CdkDataTableModule],
+      imports: [CdkTableModule],
       declarations: [
         SimpleCdkTableApp,
         DynamicDataSourceCdkTableApp,
@@ -82,14 +78,18 @@ describe('CdkTable', () => {
     });
 
     it('with the right accessibility roles', () => {
-      expect(tableElement).toBeRole('grid');
+      expect(tableElement.getAttribute('role')).toBe('grid');
 
-      expect(getHeaderRow(tableElement)).toBeRole('row');
-      getHeaderCells(tableElement).forEach(cell => expect(cell).toBeRole('columnheader'));
+      expect(getHeaderRow(tableElement).getAttribute('role')).toBe('row');
+      getHeaderCells(tableElement).forEach(cell => {
+        expect(cell.getAttribute('role')).toBe('columnheader');
+      });
 
       getRows(tableElement).forEach(row => {
-        expect(row).toBeRole('row');
-        getCells(row).forEach(cell => expect(cell).toBeRole('gridcell'));
+        expect(row.getAttribute('role')).toBe('row');
+        getCells(row).forEach(cell => {
+          expect(cell.getAttribute('role')).toBe('gridcell');
+        });
       });
     });
   });
@@ -105,7 +105,7 @@ describe('CdkTable', () => {
     fixture = TestBed.createComponent(CustomRoleCdkTableApp);
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.querySelector('cdk-table')).toBeRole('treegrid');
+    expect(fixture.nativeElement.querySelector('cdk-table').getAttribute('role')).toBe('treegrid');
   });
 
   it('should re-render the rows when the data changes', () => {
@@ -271,7 +271,7 @@ describe('CdkTable', () => {
     expect(dataSource.data.length).toBe(3);
 
     let data = dataSource.data;
-    expect(tableElement).toMatchTableContent([
+    expectTableToMatchContent(tableElement, [
       ['Column A', 'Column B', 'Column C'],
       [data[0].a, data[0].b, data[0].c],
       [data[1].a, data[1].b, data[1].c],
@@ -284,7 +284,7 @@ describe('CdkTable', () => {
     fixture.detectChanges();
 
     data = dataSource.data;
-    expect(tableElement).toMatchTableContent([
+    expectTableToMatchContent(tableElement, [
       ['Column A', 'Column B', 'Column C'],
       [data[0].a, data[0].b, data[0].c],
       [data[1].a, data[1].b, data[1].c],
@@ -303,7 +303,7 @@ describe('CdkTable', () => {
 
     // Expect that the component has no data source and the table element reflects empty data.
     expect(component.dataSource).toBe(undefined);
-    expect(tableElement).toMatchTableContent([
+    expectTableToMatchContent(tableElement, [
       ['Column A']
     ]);
 
@@ -314,7 +314,7 @@ describe('CdkTable', () => {
     expect(dynamicDataSource.isConnected).toBe(true);
 
     let data = component.dataSource.data;
-    expect(tableElement).toMatchTableContent([
+    expectTableToMatchContent(tableElement, [
       ['Column A'],
       [data[0].a],
       [data[1].a],
@@ -327,7 +327,7 @@ describe('CdkTable', () => {
 
     // Expect that the old data source has been disconnected.
     expect(dynamicDataSource.isConnected).toBe(false);
-    expect(tableElement).toMatchTableContent([
+    expectTableToMatchContent(tableElement, [
       ['Column A']
     ]);
   });
@@ -418,7 +418,7 @@ describe('CdkTable', () => {
     expect(dataSource.data.length).toBe(3);
 
     let data = dataSource.data;
-    expect(tableElement).toMatchTableContent([
+    expectTableToMatchContent(tableElement, [
       ['Column A', 'Column B', 'Column C'],
       [data[0].a, data[0].b, data[0].c],
       [data[1].a, data[1].b, data[1].c],
@@ -433,7 +433,7 @@ describe('CdkTable', () => {
     dataSource.data.forEach(rowData => changedTableContent.push([rowData.c, rowData.b]));
 
     data = dataSource.data;
-    expect(tableElement).toMatchTableContent([
+    expectTableToMatchContent(tableElement, [
       ['Column C', 'Column B'],
       [data[0].c, data[0].b],
       [data[1].c, data[1].b],
@@ -646,50 +646,36 @@ function getHeaderCells(tableElement: Element): Element[] {
   return getElements(getHeaderRow(tableElement), '.cdk-header-cell');
 }
 
-const tableCustomMatchers: jasmine.CustomMatcherFactories = {
-  toMatchTableContent: () => {
-    return {
-      compare: function (tableElement: Element, expectedTableContent: any[]) {
-        const missedExpectations: string[] = [];
-        function checkCellContent(cell: Element, expectedTextContent: string) {
-          const actualTextContent = cell.textContent!.trim();
-          if (actualTextContent !== expectedTextContent) {
-            missedExpectations.push(
-                `Expected cell contents to be ${expectedTextContent} but was ${actualTextContent}`);
-          }
-        }
-
-        // Check header cells
-        const expectedHeaderContent = expectedTableContent.shift();
-        getHeaderCells(tableElement).forEach((cell, index) => {
-          const expected = expectedHeaderContent ?
-              expectedHeaderContent[index] :
-              null;
-          checkCellContent(cell, expected);
-        });
-
-        // Check data row cells
-        getRows(tableElement).forEach((row, rowIndex) => {
-          getCells(row).forEach((cell, cellIndex) => {
-            const expected = expectedHeaderContent ?
-                expectedTableContent[rowIndex][cellIndex] :
-                null;
-            checkCellContent(cell, expected);
-          });
-        });
-
-        if (missedExpectations.length) {
-          return {
-            pass: false,
-            message: missedExpectations.join('\n')
-          };
-        }
-
-        return {
-          pass: true,
-          message: 'Table contained the right content'
-        };
-      }
-    };
+function expectTableToMatchContent(tableElement: Element, expectedTableContent: any[]) {
+  const missedExpectations: string[] = [];
+  function checkCellContent(cell: Element, expectedTextContent: string) {
+    const actualTextContent = cell.textContent!.trim();
+    if (actualTextContent !== expectedTextContent) {
+      missedExpectations.push(
+          `Expected cell contents to be ${expectedTextContent} but was ${actualTextContent}`);
+    }
   }
-};
+
+  // Check header cells
+  const expectedHeaderContent = expectedTableContent.shift();
+  getHeaderCells(tableElement).forEach((cell, index) => {
+    const expected = expectedHeaderContent ?
+        expectedHeaderContent[index] :
+        null;
+    checkCellContent(cell, expected);
+  });
+
+  // Check data row cells
+  getRows(tableElement).forEach((row, rowIndex) => {
+    getCells(row).forEach((cell, cellIndex) => {
+      const expected = expectedHeaderContent ?
+          expectedTableContent[rowIndex][cellIndex] :
+          null;
+      checkCellContent(cell, expected);
+    });
+  });
+
+  if (missedExpectations.length) {
+    fail(missedExpectations.join('\n'));
+  }
+}

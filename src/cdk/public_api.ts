@@ -7,3 +7,4 @@
  */
 
 export * from './coercion/index';
+export * from './table/index';
