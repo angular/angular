@@ -277,7 +277,7 @@ export class AppComponent implements OnInit {
       this.tocMaxHeightOffset =
           el.querySelector('footer').clientHeight +
           el.querySelector('md-toolbar.app-toolbar').clientHeight +
-          44; //  margin
+          24; //  fudge margin
     }
 
     this.tocMaxHeight = (document.body.scrollHeight - window.pageYOffset - this.tocMaxHeightOffset).toFixed(2);

@@ -9,6 +9,7 @@ export class NavItemComponent implements OnChanges {
   @Input() isWide = false;
   @Input() level = 1;
   @Input() node: NavigationNode;
+  @Input() isParentExpanded = true;
   @Input() selectedNodes: NavigationNode[];
 
   isExpanded = false;
@@ -22,9 +23,10 @@ export class NavItemComponent implements OnChanges {
     if (this.selectedNodes) {
       const ix = this.selectedNodes.indexOf(this.node);
       this.isSelected = ix !== -1; // this node is the selected node or its ancestor
-      this.isExpanded = this.isSelected || // expand if selected or ...
+      this.isExpanded = this.isParentExpanded &&
+        (this.isSelected || // expand if selected or ...
         // preserve expanded state when display is wide; collapse in mobile.
-        (this.isWide && this.isExpanded);
+        (this.isWide && this.isExpanded));
     } else {
       this.isSelected = false;
     }
