@@ -2,7 +2,7 @@
 
 {% block details %}
   <code-example language="ts" hideCopy="true">
-  type {$ doc.name $} = {$ doc.typeDefinition $};
+  type {$ doc.name $}{% if doc.typeDefinition %} = {$ doc.typeDefinition | escape $}{% endif %};
   </code-example>
   {% include "includes/description.html" %}
 {% endblock %}

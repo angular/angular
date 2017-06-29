@@ -1,9 +1,10 @@
+{% import "lib/directiveHelpers.html" as directiveHelper -%}
 {% import "lib/paramList.html" as params -%}
 {% extends 'class.template.html' -%}
 
 {% block additional -%}
   {% include "includes/selectors.html" %}
-  {% include "includes/outputs.html" %}
-  {% include "includes/inputs.html" %}
+  {$ directiveHelper.renderBindings(doc.inputs, 'inputs', 'input', 'Inputs') $}
+  {$ directiveHelper.renderBindings(doc.outputs, 'outputs', 'output', 'Outputs') $}
   {% include "includes/export-as.html" %}
 {% endblock %}
