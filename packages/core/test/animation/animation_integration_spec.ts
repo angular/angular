@@ -1826,6 +1826,64 @@ export function main() {
               /only state\(\) and transition\(\) definitions can sit inside of a trigger\(\)/);
     });
 
+    it('should combine multiple errors together into one exception when an animation fails to be built',
+       () => {
+         @Component({
+           selector: 'if-cmp',
+           template: `
+          <div [@foo]="fooExp" [@bar]="barExp"></div>
+        `,
+           animations: [
+             trigger(
+                 'foo',
+                 [
+                   transition(':enter', []),
+                   transition(
+                       '* => *',
+                       [
+                         query('foo', animate(1000, style({background: 'red'}))),
+                       ]),
+                 ]),
+             trigger(
+                 'bar',
+                 [
+                   transition(':enter', []),
+                   transition(
+                       '* => *',
+                       [
+                         query('bar', animate(1000, style({background: 'blue'}))),
+                       ]),
+                 ]),
+           ]
+         })
+         class Cmp {
+           fooExp: any = false;
+           barExp: any = false;
+         }
+
+         TestBed.configureTestingModule({declarations: [Cmp]});
+
+         const engine = TestBed.get(ɵAnimationEngine);
+         const fixture = TestBed.createComponent(Cmp);
+         const cmp = fixture.componentInstance;
+         fixture.detectChanges();
+
+         cmp.fooExp = 'go';
+         cmp.barExp = 'go';
+
+         let errorMsg: string = '';
+         try {
+           fixture.detectChanges();
+         } catch (e) {
+           errorMsg = e.message;
+         }
+
+         expect(errorMsg).toMatch(/@foo has failed due to:/);
+         expect(errorMsg).toMatch(/`query\("foo"\)` returned zero elements/);
+         expect(errorMsg).toMatch(/@bar has failed due to:/);
+         expect(errorMsg).toMatch(/`query\("bar"\)` returned zero elements/);
+       });
+
     it('should not throw an error if styles overlap in separate transitions', () => {
       @Component({
         selector: 'if-cmp',

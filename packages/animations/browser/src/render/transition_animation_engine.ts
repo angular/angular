@@ -745,6 +745,7 @@ export class TransitionAnimationEngine {
     const queriedElements = new Map<any, TransitionAnimationPlayer[]>();
     const allPreStyleElements = new Map<any, Set<string>>();
     const allPostStyleElements = new Map<any, Set<string>>();
+    const cleanupFns: Function[] = [];
 
     const bodyNode = getBodyNode();
     const allEnterNodes: any[] = this.collectedEnterElements.length ?
@@ -772,10 +773,21 @@ export class TransitionAnimationEngine {
       }
     }
 
+    cleanupFns.push(() => {
+      allEnterNodes.forEach(element => removeClass(element, ENTER_CLASSNAME));
+      allLeaveNodes.forEach(element => {
+        removeClass(element, LEAVE_CLASSNAME);
+        this.processLeaveNode(element);
+      });
+    });
+
+    const allPlayers: TransitionAnimationPlayer[] = [];
+    const erroneousTransitions: AnimationTransitionInstruction[] = [];
     for (let i = this._namespaceList.length - 1; i >= 0; i--) {
       const ns = this._namespaceList[i];
       ns.drainQueuedTransitions(microtaskId).forEach(entry => {
         const player = entry.player;
+        allPlayers.push(player);
 
         const element = entry.element;
         if (!bodyNode || !this.driver.containsElement(bodyNode, element)) {
@@ -783,8 +795,11 @@ export class TransitionAnimationEngine {
           return;
         }
 
-        const instruction = this._buildInstruction(entry, subTimelines);
-        if (!instruction) return;
+        const instruction = this._buildInstruction(entry, subTimelines) !;
+        if (instruction.errors && instruction.errors.length) {
+          erroneousTransitions.push(instruction);
+          return;
+        }
 
         // if a unmatched transition is queued to go then it SHOULD NOT render
         // an animation and cancel the previously running animations.
@@ -831,6 +846,18 @@ export class TransitionAnimationEngine {
           props.forEach(prop => setVal.add(prop));
         });
       });
+    }
+
+    if (erroneousTransitions.length) {
+      let msg = `Unable to process animations due to the following failed trigger transitions\n`;
+      erroneousTransitions.forEach(instruction => {
+        msg += `@${instruction.triggerName} has failed due to:\n`;
+        instruction.errors !.forEach(error => { msg += `- ${error}\n`; });
+      });
+
+      cleanupFns.forEach(fn => fn());
+      allPlayers.forEach(player => player.destroy());
+      throw new Error(msg);
     }
 
     // these can only be detected here since we have a map of all the elements
@@ -937,6 +964,7 @@ export class TransitionAnimationEngine {
     for (let i = 0; i < allLeaveNodes.length; i++) {
       const element = allLeaveNodes[i];
       const details = element[REMOVAL_FLAG] as ElementAnimationState;
+      removeClass(element, LEAVE_CLASSNAME);
 
       // this means the element has a removal animation that is being
       // taken care of and therefore the inner elements will hang around
@@ -969,6 +997,9 @@ export class TransitionAnimationEngine {
       }
     }
 
+    // this is required so the cleanup method doesn't remove them
+    allLeaveNodes.length = 0;
+
     rootPlayers.forEach(player => {
       this.players.push(player);
       player.onDone(() => {
@@ -980,8 +1011,7 @@ export class TransitionAnimationEngine {
       player.play();
     });
 
-    allEnterNodes.forEach(element => removeClass(element, ENTER_CLASSNAME));
-
+    cleanupFns.forEach(fn => fn());
     return rootPlayers;
   }
 
