@@ -6,6 +6,7 @@
 @import '../../card/card-theme';
 @import '../../checkbox/checkbox-theme';
 @import '../../chips/chips-theme';
+@import '../../table/table-theme';
 @import '../../datepicker/datepicker-theme';
 @import '../../dialog/dialog-theme';
 @import '../../expansion/expansion-theme';
@@ -37,6 +38,7 @@
   @include mat-card-theme($theme);
   @include mat-checkbox-theme($theme);
   @include mat-chips-theme($theme);
+  @include mat-table-theme($theme);
   @include mat-datepicker-theme($theme);
   @include mat-dialog-theme($theme);
   @include mat-expansion-panel-theme($theme);

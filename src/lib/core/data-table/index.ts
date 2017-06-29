@@ -15,18 +15,26 @@ import {CdkColumnDef, CdkHeaderCellDef, CdkHeaderCell, CdkCell, CdkCellDef} from
 export * from './data-source';
 export * from './data-table';
 
+const EXPORTED_DECLARATIONS = [
+  CdkTable,
+  CdkRowDef,
+  CdkCellDef,
+  CdkCellOutlet,
+  CdkHeaderCellDef,
+  CdkColumnDef,
+  CdkCell,
+  CdkRow,
+  CdkHeaderCell,
+  CdkHeaderRow,
+  CdkHeaderRowDef,
+  RowPlaceholder,
+  HeaderRowPlaceholder,
+];
+
 @NgModule({
   imports: [CommonModule],
-  exports: [
-    CdkTable, CdkRowDef, CdkCellDef, CdkCellOutlet, CdkHeaderCellDef,
-    CdkColumnDef, CdkCell, CdkRow,
-    CdkHeaderCell, CdkHeaderRow, CdkHeaderRowDef],
-  declarations: [
-    CdkTable, CdkRowDef, CdkCellDef, CdkCellOutlet, CdkHeaderCellDef,
-    CdkColumnDef, CdkCell, CdkRow,
-    CdkHeaderCell, CdkHeaderRow, CdkHeaderRowDef,
-    RowPlaceholder, HeaderRowPlaceholder,
-  ]
+  exports: [EXPORTED_DECLARATIONS],
+  declarations: [EXPORTED_DECLARATIONS]
 
 })
 export class CdkDataTableModule { }

@@ -5,6 +5,11 @@
 
 @mixin mat-paginator-theme($theme) {
   $foreground: map-get($theme, foreground);
+  $background: map-get($theme, background);
+
+  .mat-paginator {
+    background: mat-color($background, 'card');
+  }
 
   .mat-paginator,
   .mat-paginator-page-size .mat-select-trigger {

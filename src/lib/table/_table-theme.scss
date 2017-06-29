@@ -1,0 +1,37 @@
+@import '../core/theming/palette';
+@import '../core/theming/theming';
+@import '../core/typography/typography-utils';
+
+@mixin mat-table-theme($theme) {
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+
+  .mat-table {
+    background: mat-color($background, 'card');
+  }
+
+  .mat-row, .mat-header-row {
+    border-bottom-color: mat-color($foreground, divider);
+  }
+
+  .mat-header-cell {
+    color: mat-color($foreground, secondary-text);
+  }
+
+  .mat-cell {
+    color: mat-color($foreground, text);
+  }
+}
+
+@mixin mat-table-typography($config) {
+  $font-family: mat-font-family($config);
+
+  .mat-header-cell {
+    font-size: mat-font-size($config, caption);
+    font-weight: mat-font-weight($config, body-2);
+  }
+
+  .mat-cell {
+    font-size: mat-font-size($config, body-1);
+  }
+}

@@ -1,0 +1,19 @@
+$mat-row-height: 48px;
+$mat-row-horizontal-padding: 24px;
+
+.mat-table {
+  display: block;
+}
+
+.mat-row, .mat-header-row {
+  display: flex;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  align-items: center;
+  height: $mat-row-height;
+  padding: 0 $mat-row-horizontal-padding;
+}
+
+.mat-cell, .mat-header-cell {
+  flex: 1;
+}

@@ -27,61 +27,57 @@
   </div>
 </div>
 
-<div class="demo-table-container mat-elevation-z4">
+<h3>CdkTable Example</h3>
 
-  <table-header-demo (shiftColumns)="propertiesToDisplay.push(propertiesToDisplay.shift())"
-                     (toggleColorColumn)="toggleColorColumn()">
-  </table-header-demo>
-
-  <cdk-table #table mdSort
+<cdk-table #table mdSort
              [dataSource]="dataSource"
              [trackBy]="userTrackBy">
 
-    <!-- Column Definition: ID -->
-    <ng-container cdkColumnDef="userId">
-      <cdk-header-cell *cdkHeaderCellDef
-                       md-sort-header arrowPosition="before">
+  <!-- Column Definition: ID -->
+  <ng-container cdkColumnDef="userId">
+    <cdk-header-cell *cdkHeaderCellDef
+                     md-sort-header arrowPosition="before">
         ID
       </cdk-header-cell>
-      <cdk-cell *cdkCellDef="let row"> {{row.id}} </cdk-cell>
-    </ng-container>
+    <cdk-cell *cdkCellDef="let row"> {{row.id}} </cdk-cell>
+  </ng-container>
 
-    <!-- Column Definition: Progress -->
-    <ng-container cdkColumnDef="progress">
-      <cdk-header-cell *cdkHeaderCellDef
+  <!-- Column Definition: Progress -->
+  <ng-container cdkColumnDef="progress">
+    <cdk-header-cell *cdkHeaderCellDef
                        md-sort-header start="desc">
         Progress
       </cdk-header-cell>
-      <cdk-cell *cdkCellDef="let row">
-        <div class="demo-progress-stat">{{row.progress}}%</div>
-        <div class="demo-progress-indicator-container">
-          <div class="demo-progress-indicator"
-               [style.background]="row.progress > 50 ? 'green' : 'red'"
-               [style.opacity]="getOpacity(row.progress)"
-               [style.width.%]="row.progress"></div>
-        </div>
-      </cdk-cell>
-    </ng-container>
+    <cdk-cell *cdkCellDef="let row">
+      <div class="demo-progress-stat">{{row.progress}}%</div>
+      <div class="demo-progress-indicator-container">
+        <div class="demo-progress-indicator"
+             [style.background]="row.progress > 50 ? 'green' : 'red'"
+             [style.opacity]="getOpacity(row.progress)"
+             [style.width.%]="row.progress"></div>
+      </div>
+    </cdk-cell>
+  </ng-container>
 
-    <!-- Column Definition: Name -->
-    <ng-container cdkColumnDef="userName">
-      <cdk-header-cell *cdkHeaderCellDef md-sort-header>
+  <!-- Column Definition: Name -->
+  <ng-container cdkColumnDef="userName">
+    <cdk-header-cell *cdkHeaderCellDef md-sort-header>
         Name
       </cdk-header-cell>
-      <cdk-cell *cdkCellDef="let row"> {{row.name}} </cdk-cell>
-    </ng-container>
+    <cdk-cell *cdkCellDef="let row"> {{row.name}} </cdk-cell>
+  </ng-container>
 
-    <!-- Column Definition: Color -->
-    <ng-container cdkColumnDef="color">
-      <cdk-header-cell *cdkHeaderCellDef
+  <!-- Column Definition: Color -->
+  <ng-container cdkColumnDef="color">
+    <cdk-header-cell *cdkHeaderCellDef
                        md-sort-header disableClear>
         Color
       </cdk-header-cell>
-      <cdk-cell *cdkCellDef="let row" [style.color]="row.color"> {{row.color}} </cdk-cell>
-    </ng-container>
+    <cdk-cell *cdkCellDef="let row" [style.color]="row.color"> {{row.color}} </cdk-cell>
+  </ng-container>
 
-    <cdk-header-row *cdkHeaderRowDef="propertiesToDisplay"></cdk-header-row>
-    <cdk-row *cdkRowDef="let row; columns: propertiesToDisplay;
+  <cdk-header-row *cdkHeaderRowDef="propertiesToDisplay"></cdk-header-row>
+  <cdk-row *cdkRowDef="let row; columns: propertiesToDisplay;
                          let first = first; let last = last; let even = even; let odd = odd"
              [ngClass]="{
                'demo-row-highlight-first': highlights.has('first') && first,
@@ -90,12 +86,57 @@
                'demo-row-highlight-odd': highlights.has('odd') && odd
              }">
     </cdk-row>
-  </cdk-table>
-  
+</cdk-table>
+
+<h3>MdTable Example</h3>
+
+<div class="demo-table-container demo-mat-table-example mat-elevation-z4">
+
+  <table-header-demo (shiftColumns)="propertiesToDisplay.push(propertiesToDisplay.shift())"
+                     (toggleColorColumn)="toggleColorColumn()">
+  </table-header-demo>
+
+  <md-table [dataSource]="dataSource" [trackBy]="userTrackBy">
+
+    <!-- Column Definition: ID -->
+    <ng-container cdkColumnDef="userId">
+      <md-header-cell *cdkHeaderCellDef> ID </md-header-cell>
+      <md-cell *cdkCellDef="let row"> {{row.id}} </md-cell>
+    </ng-container>
+
+    <!-- Column Definition: Progress -->
+    <ng-container cdkColumnDef="progress">
+      <md-header-cell *cdkHeaderCellDef> Progress </md-header-cell>
+      <md-cell *cdkCellDef="let row">
+        <div class="demo-progress-stat">{{row.progress}}%</div>
+        <div class="demo-progress-indicator-container">
+          <div class="demo-progress-indicator"
+               [style.background]="row.progress > 50 ? 'green' : 'red'"
+               [style.opacity]="getOpacity(row.progress)"
+               [style.width.%]="row.progress"></div>
+        </div>
+      </md-cell>
+    </ng-container>
+
+    <!-- Column Definition: Name -->
+    <ng-container cdkColumnDef="userName">
+      <md-header-cell *cdkHeaderCellDef> Name </md-header-cell>
+      <md-cell *cdkCellDef="let row"> {{row.name}} </md-cell>
+    </ng-container>
+
+    <!-- Column Definition: Color -->
+    <ng-container cdkColumnDef="color">
+      <md-header-cell *cdkHeaderCellDef>Color</md-header-cell>
+      <md-cell *cdkCellDef="let row" [style.color]="row.color"> {{row.color}} </md-cell>
+    </ng-container>
+
+    <md-header-row *cdkHeaderRowDef="propertiesToDisplay"></md-header-row>
+    <md-row *cdkRowDef="let row; columns: propertiesToDisplay"></md-row>
+
+  </md-table>
+
   <md-paginator #paginator
                 [length]="_peopleDatabase.data.length"
-                [pageIndex]="0"
-                [pageSize]="10"
                 [pageSizeOptions]="[5, 10, 25, 100]">
   </md-paginator>
 </div>

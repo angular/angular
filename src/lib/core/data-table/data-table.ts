@@ -66,15 +66,20 @@ export class HeaderRowPlaceholder {
 }
 
 /**
+ * The table template that can be used by the md-table. Should not be used outside of the
+ * material library.
+ */
+export const CDK_TABLE_TEMPLATE = `
+  <ng-container headerRowPlaceholder></ng-container>
+  <ng-container rowPlaceholder></ng-container>`;
+
+/**
  * A data table that connects with a data source to retrieve data of type T and renders
  * a header row and data rows. Updates the rows when new data is provided by the data source.
  */
 @Component({
   selector: 'cdk-table',
-  template: `
-    <ng-container headerRowPlaceholder></ng-container>
-    <ng-container rowPlaceholder></ng-container>
-  `,
+  template: CDK_TABLE_TEMPLATE,
   host: {
     'class': 'cdk-table',
   },
@@ -347,6 +352,7 @@ export class CdkTable<T> implements CollectionViewer {
    * as defined by its list of columns to display.
    */
   private _getHeaderCellTemplatesForRow(headerDef: CdkHeaderRowDef): CdkHeaderCellDef[] {
+    if (!headerDef.columns) { return []; }
     return headerDef.columns.map(columnId => {
       const column = this._columnDefinitionsByName.get(columnId);
 
@@ -363,6 +369,7 @@ export class CdkTable<T> implements CollectionViewer {
    * as defined by its list of columns to display.
    */
   private _getCellTemplatesForRow(rowDef: CdkRowDef): CdkCellDef[] {
+    if (!rowDef.columns) { return []; }
     return rowDef.columns.map(columnId => {
       const column = this._columnDefinitionsByName.get(columnId);
 
