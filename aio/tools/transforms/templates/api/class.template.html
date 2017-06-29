@@ -1,14 +1,14 @@
+{% import "lib/memberHelpers.html" as memberHelpers -%}
 {% import "lib/paramList.html" as params -%}
 {% extends 'export-base.template.html' -%}
 
 {% block details %}
-
 {% include "includes/class-overview.html" %}
 {% block additional %}{% endblock %}
 {% include "includes/description.html" %}
 {% include "includes/annotations.html" %}
-{% include "includes/statics.html" %}
+{$ memberHelpers.renderMemberDetails(doc.statics, 'static-members', 'static-member', 'Static Members') $}
 {% include "includes/constructor.html" %}
-{% include "includes/members.html" %}
+{$ memberHelpers.renderMemberDetails(doc.members, 'instance-members', 'instance-member', 'Members') $}
 
 {% endblock %}

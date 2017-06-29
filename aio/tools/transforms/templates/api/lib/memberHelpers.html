@@ -1,0 +1,42 @@
+{% import "lib/paramList.html" as params -%}
+
+{%- macro renderHeritage(exportDoc) -%}
+  {%- if exportDoc.extendsClauses.length %} extends {% for clause in exportDoc.extendsClauses -%}
+  {$ clause $}{% if not loop.last %}, {% endif -%}
+  {% endfor %}{% endif %}
+  {%- if exportDoc.implementsClauses.length %} implements {% for clause in exportDoc.implementsClauses -%}
+  {$ clause $}{% if not loop.last %}, {% endif -%}
+  {% endfor %}{% endif %}
+{%- endmacro -%}
+
+{%- macro renderMember(member) -%}
+    {%- if member.accessibility !== 'public' %}{$ member.accessibility $} {% endif -%}
+    {%- if member.isGetAccessor %}get {% endif -%}
+    {%- if member.isSetAccessor %}set {% endif -%}
+    {%- if member.isStatic  %}static {% endif -%}
+    {$ member.name $}{$ member.typeParameters | escape $}{$ params.paramList(member.parameters) | trim $}
+    {%- if member.isOptional  %}?{% endif -%}
+    {$ params.returnType(member.type) $}
+{%- endmacro -%}
+
+{%- macro renderMemberDetail(member, cssClass) -%}
+<div class="{$ cssClass $}">
+  <a id="{$ member.anchor $}"></a>
+  <code-example hideCopy="true">{$ renderMember(member) $}</code-example>
+  {%- if not member.notYetDocumented %}
+  {$ member.description | marked $}
+  {% endif -%}
+</div>
+{% endmacro -%}
+
+{% macro renderMemberDetails(members, containerClass, itemClass, titleText) %}
+{% if members.length %}
+<section class="{$ containerClass $}">
+  <h2>{$ titleText $}</h2>
+  {% for member in members %}{% if not member.internal %}
+    {$ renderMemberDetail(member, itemClass) $}
+    {% if not loop.last %}<hr>{% endif %}
+  {% endif %}{% endfor %}
+</section>
+{% endif %}
+{% endmacro %}
