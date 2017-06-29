@@ -68,6 +68,8 @@ class FakeDataSource extends DataSource<TestData> {
     return this._dataChange;
   }
 
+  disconnect() {}
+
   addData() {
     const nextIndex = this.data.length + 1;
 

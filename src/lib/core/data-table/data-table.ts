@@ -184,6 +184,9 @@ export class CdkTable<T> implements CollectionViewer {
   ngOnDestroy() {
     this._onDestroy.next();
     this._onDestroy.complete();
+    if (this.dataSource) {
+      this.dataSource.disconnect(this);
+    }
   }
 
   ngOnInit() {
@@ -237,6 +240,10 @@ export class CdkTable<T> implements CollectionViewer {
    */
   private _switchDataSource(dataSource: DataSource<T>) {
     this._data = [];
+
+    if (this._dataSource) {
+      this.dataSource.disconnect(this);
+    }
     this._dataSource = dataSource;
 
     if (this._isViewInitialized) {

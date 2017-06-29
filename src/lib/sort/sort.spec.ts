@@ -203,6 +203,7 @@ class FakeDataSource extends DataSource<any> {
   connect(collectionViewer: CollectionViewer): Observable<any[]> {
     return map.call(collectionViewer.viewChange, () => []);
   }
+  disconnect() {}
 }
 
 @Component({

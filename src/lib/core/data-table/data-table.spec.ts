@@ -94,6 +94,13 @@ describe('CdkTable', () => {
     });
   });
 
+  it('should disconnect the data source when table is destroyed', () => {
+    expect(dataSource.isConnected).toBe(true);
+
+    fixture.destroy();
+    expect(dataSource.isConnected).toBe(false);
+  });
+
   it('should not clobber an existing table role', () => {
     fixture = TestBed.createComponent(CustomRoleCdkTableApp);
     fixture.detectChanges();
@@ -301,8 +308,10 @@ describe('CdkTable', () => {
     ]);
 
     // Add a data source that has initialized data. Expect that the table shows this data.
-    component.dataSource = new FakeDataSource();
+    const dynamicDataSource = new FakeDataSource();
+    component.dataSource = dynamicDataSource;
     fixture.detectChanges();
+    expect(dynamicDataSource.isConnected).toBe(true);
 
     let data = component.dataSource.data;
     expect(tableElement).toMatchTableContent([
@@ -315,6 +324,9 @@ describe('CdkTable', () => {
     // Remove the data source and check to make sure the table is empty again.
     component.dataSource = null;
     fixture.detectChanges();
+
+    // Expect that the old data source has been disconnected.
+    expect(dynamicDataSource.isConnected).toBe(false);
     expect(tableElement).toMatchTableContent([
       ['Column A']
     ]);
@@ -452,6 +464,10 @@ class FakeDataSource extends DataSource<TestData> {
     this.isConnected = true;
     const streams = [this._dataChange, collectionViewer.viewChange];
     return map.call(combineLatest(streams), ([data]) => data);
+  }
+
+  disconnect() {
+    this.isConnected = false;
   }
 
   addData() {

@@ -13,7 +13,7 @@ export class PersonDataSource extends DataSource<any> {
 
   connect(): Observable<UserData[]> {
     const displayDataChanges = [
-        this._paginator.page,
+      this._paginator.page,
       this._sort.mdSortChange,
       this._peopleDatabase.dataChange
     ];
@@ -24,6 +24,10 @@ export class PersonDataSource extends DataSource<any> {
       const startIndex = this._paginator.pageIndex * this._paginator.pageSize;
       return data.splice(startIndex, this._paginator.pageSize);
     });
+  }
+
+  disconnect() {
+    // No-op
   }
 
   /** Returns a sorted copy of the database data. */
