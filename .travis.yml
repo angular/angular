@@ -76,4 +76,5 @@ script:
   - ./scripts/ci/angular.sh
   # all the scripts under this line will not quickly abort in case ${TRAVIS_TEST_RESULT} is 1 (job failure)
   - ./scripts/ci/cleanup.sh
-  - ./scripts/ci/print-logs.sh
+  # Disabled so we can debug Travis build failures on Master seeming to coming from printing logs
+  # - ./scripts/ci/print-logs.sh
