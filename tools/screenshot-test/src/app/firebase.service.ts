@@ -45,7 +45,7 @@ export class FirebaseService {
   /** Set pull request number. All test information and pull request information will be retrived
    * from database
    */
-  set prNumber(prNumber: string){
+  set prNumber(prNumber: string) {
     this.screenshotResultSummary = new ScreenshotResultSummary();
     this.screenshotResultSummary.prNumber = prNumber;
     this._readPullRequestScreenshotReport();
