@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# The script should immediately exit if any command in the script fails.
+set -e
+
 # This script deploys the Dashboard App and their Cloud Functions to Firebase.
 # Before the script installs all dependencies and builds the dashboard app in production.
 

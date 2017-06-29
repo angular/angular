@@ -3,7 +3,8 @@
 # Script to publish the build artifacts to a GitHub repository.
 # Builds will be automatically published once new changes are made to the repository.
 
-set -e -o pipefail
+# The script should immediately exit if any command in the script fails.
+set -e
 
 # Go to the project root directory
 cd $(dirname ${0})/../..

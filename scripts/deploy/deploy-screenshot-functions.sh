@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# The script should immediately exit if any command in the script fails.
+set -e
+
 # Go to the project root directory
 cd $(dirname ${0})/../..
 
