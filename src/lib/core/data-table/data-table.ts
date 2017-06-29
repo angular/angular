@@ -169,13 +169,6 @@ export class CdkTable<T> implements CollectionViewer {
               elementRef: ElementRef,
               renderer: Renderer2,
               @Attribute('role') role: string) {
-    // Show the stability warning of the data-table only if it doesn't run inside of jasmine.
-    // This is just temporary and should reduce warnings when running the tests.
-    if (!(typeof window !== 'undefined' && window['jasmine'])) {
-      console.warn('The data table is still in active development ' +
-          'and should be considered unstable.');
-    }
-
     if (!role) {
       renderer.setAttribute(elementRef.nativeElement, 'role', 'grid');
     }
