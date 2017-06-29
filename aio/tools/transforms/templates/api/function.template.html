@@ -2,8 +2,21 @@
 {% extends 'export-base.template.html' -%}
 
 {% block details %}
+{% if doc.overloads.length === 1 %}
   <code-example language="ts" hideCopy="true">
-  function {$ doc.name $}{$ params.paramList(doc.parameters) $}: {$ doc.returnType or 'any' $};
+  function {$ doc.overloads[0].name $}{$ params.paramList(doc.overloads[0].parameters) $}
+  {%- if doc.overloads[0].type %}: {$ doc.overloads[0].type | escape $}{% endif %};
   </code-example>
   {% include "includes/description.html" %}
+{% else %}
+  <h2>Overloads</h2>{% for overload in doc.overloads %}
+  <code-example language="ts" hideCopy="true">
+  function {$ overload.name $}{$ params.paramList(overload.parameters) $}
+  {%- if overload.type %}: {$ overload.type | escape $}{% endif %};
+  </code-example>
+  <section class="description">
+    {$ overload.description | trimBlankLines | marked $}
+  </section>
+{% endfor %}
+{% endif %}
 {% endblock %}
