@@ -9,7 +9,9 @@ readonly INPUT_DIR=dist/
 readonly OUTPUT_FILE=/tmp/snapshot.tar.gz
 readonly AIO_BUILDS_DOMAIN=ngbuilds.io
 readonly UPLOAD_URL=https://$AIO_BUILDS_DOMAIN/create-build/$TRAVIS_PULL_REQUEST/$TRAVIS_PULL_REQUEST_SHA
-readonly DEPLOYED_URL=https://pr$TRAVIS_PULL_REQUEST-$TRAVIS_PULL_REQUEST_SHA.$AIO_BUILDS_DOMAIN
+
+readonly SHORT_SHA=$(echo $TRAVIS_PULL_REQUEST_SHA | cut -c1-7)
+readonly DEPLOYED_URL=https://pr$TRAVIS_PULL_REQUEST-$SHORT_SHA.$AIO_BUILDS_DOMAIN
 
 readonly skipBuild=$([[ "$1" == "--skip-build" ]] && echo "true" || echo "");
 readonly relevantChangedFilesCount=$(git diff --name-only $TRAVIS_COMMIT_RANGE | grep -P "^(?:aio|packages)/(?!.*[._]spec\.[jt]s$)" | wc -l)
