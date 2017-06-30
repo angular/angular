@@ -4,11 +4,7 @@ set -eu -o pipefail
 
 readonly thisDir=$(cd $(dirname $0); pwd)
 readonly parentDir=$(dirname $thisDir)
-readonly TOKEN=${ANGULAR_PAYLOAD_FIREBASE_TOKEN:-}
 readonly PROJECT_NAME="angular-payload-size"
-
-# temporarily turn on debugging - we disable it later in the script to prevent token leak
-set -x
 
 source ${thisDir}/_payload-limits.sh
 
@@ -45,20 +41,21 @@ timestamp=$(date +%s)
 payloadData="$payloadData\"timestamp\": $timestamp, "
 
 # Add change source: application, dependencies, or 'application+dependencies'
-yarnChanged=false
-allChangedFiles=$(git diff --name-only $TRAVIS_COMMIT_RANGE $parentDir | wc -l)
-allChangedFileNames=$(git diff --name-only $TRAVIS_COMMIT_RANGE $parentDir)
-
-if [[ $allChangedFileNames == *"yarn.lock"* ]]; then
-  yarnChanged=true
+applicationChanged=false
+dependenciesChanged=false
+if [[ $(git diff --name-only $TRAVIS_COMMIT_RANGE $parentDir | grep -v aio/yarn.lock | grep -v content) ]]; then
+  applicationChanged=true
+fi
+if [[ $(git diff --name-only $TRAVIS_COMMIT_RANGE $parentDir/yarn.lock) ]]; then
+  dependenciesChanged=true
 fi
 
-if [[ $allChangedFiles -eq 1 ]] && [[ "$yarnChanged" = true ]]; then
+if $dependenciesChanged && $applicationChanged; then
+  change='application+dependencies'
+elif $dependenciesChanged; then
   # only yarn.lock changed
   change='dependencies'
-elif [[ $allChangedFiles -gt 1 ]] && [[ "$yarnChanged" = true ]]; then
-  change='application+dependencies'
-elif [[ $allChangedFiles -gt 0 ]]; then
+elif $applicationChanged; then
   change='application'
 else
   # Nothing changed in aio/
@@ -76,7 +73,7 @@ if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
 
   # WARNING: FIREBASE_TOKEN should NOT be printed.
   set +x
-  firebase database:update --data "$payloadData" --project $PROJECT_NAME --confirm --token "$TOKEN" $dbPath
+  firebase database:update --data "$payloadData" --project $PROJECT_NAME --confirm --token "$ANGULAR_PAYLOAD_FIREBASE_TOKEN" $dbPath
 fi
 
 if [[ $failed = true ]]; then
