@@ -1359,6 +1359,9 @@ function isTriggerEventValid(eventName: string): boolean {
 }
 
 function cloakElement(element: any, value?: string) {
+  if (!element.style) {
+    element.style = {};
+  }
   const oldValue = element.style.display;
   element.style.display = value != null ? value : 'none';
   return oldValue;
