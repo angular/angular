@@ -1,6 +1,6 @@
 `<md-paginator>` is a navigation for pages information, typically used with a table.
 
-<!-- example(pagination-overview) -->
+<!-- example(paginator-overview) -->
 
 ### Basic use
 Each paginator instance requires:
