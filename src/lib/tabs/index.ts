@@ -8,9 +8,9 @@
 
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
+import {ObserveContentModule} from '@angular/cdk';
 import {PortalModule} from '../core';
 import {MdRippleModule} from '../core/ripple/index';
-import {ObserveContentModule} from '../core/observe-content/observe-content';
 import {MdTab} from './tab';
 import {MdTabGroup} from './tab-group';
 import {MdTabLabel} from './tab-label';

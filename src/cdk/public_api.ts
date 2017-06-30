@@ -13,4 +13,5 @@ export * from './table/index';
 export * from './platform/index';
 export * from './portal/index';
 export * from './rxjs/index';
+export * from './observe-content/index';
 export * from './keyboard/keycodes';
