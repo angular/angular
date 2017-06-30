@@ -1000,8 +1000,9 @@ export function main() {
         }
       });
 
-      it('should properly cancel items that were queried into a former animation', () => {
-        @Component({
+      it('should properly cancel items that were queried into a former animation and pass in the associated styles into the follow-up players per element',
+         () => {
+           @Component({
           selector: 'ani-cmp',
           template: `
             <div [@myAnimation]="exp" class="parent">
@@ -1024,45 +1025,45 @@ export function main() {
             ])]
         })
         class Cmp {
-          public exp: any;
-          public items: any[];
-        }
+             public exp: any;
+             public items: any[];
+           }
 
-        TestBed.configureTestingModule({declarations: [Cmp]});
+           TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
-        const fixture = TestBed.createComponent(Cmp);
-        const cmp = fixture.componentInstance;
+           const engine = TestBed.get(ɵAnimationEngine);
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
 
-        cmp.exp = 'on';
-        cmp.items = [0, 1, 2, 3, 4];
-        fixture.detectChanges();
-        engine.flush();
+           cmp.exp = 'on';
+           cmp.items = [0, 1, 2, 3, 4];
+           fixture.detectChanges();
+           engine.flush();
 
-        const previousPlayers = getLog();
-        expect(previousPlayers.length).toEqual(10);
-        resetLog();
+           const previousPlayers = getLog();
+           expect(previousPlayers.length).toEqual(10);
+           resetLog();
 
-        cmp.exp = 'off';
-        cmp.items = [0, 1, 2];
-        fixture.detectChanges();
-        engine.flush();
+           cmp.exp = 'off';
+           cmp.items = [0, 1, 2];
+           fixture.detectChanges();
+           engine.flush();
 
-        const players = getLog();
-        expect(players.length).toEqual(4);
+           const players = getLog();
+           expect(players.length).toEqual(4);
 
-        const [p1, p2, p3, p4] = players;
-        const [p1p1, p1p2] = p1.previousPlayers;
-        const [p2p1, p2p2] = p2.previousPlayers;
+           const [p1, p2, p3, p4] = players;
 
-        expect(p1p1).toBe(previousPlayers[3]);
-        expect(p1p2).toBe(previousPlayers[8]);
-        expect(p2p1).toBe(previousPlayers[4]);
-        expect(p2p2).toBe(previousPlayers[9]);
+           // p1 && p2 are the starting players for item3 and item4
+           expect(p1.previousStyles)
+               .toEqual({opacity: AUTO_STYLE, width: AUTO_STYLE, height: AUTO_STYLE});
+           expect(p2.previousStyles)
+               .toEqual({opacity: AUTO_STYLE, width: AUTO_STYLE, height: AUTO_STYLE});
 
-        expect(p3.previousPlayers).toEqual([]);
-        expect(p4.previousPlayers).toEqual([]);
-      });
+           // p3 && p4 are the following players for item3 and item4
+           expect(p3.previousStyles).toEqual({});
+           expect(p4.previousStyles).toEqual({});
+         });
 
       it('should not remove a parent container if its contents are queried into by an ancestor element',
          () => {

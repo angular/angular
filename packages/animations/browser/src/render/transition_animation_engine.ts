@@ -18,7 +18,7 @@ import {ENTER_CLASSNAME, LEAVE_CLASSNAME, NG_ANIMATING_CLASSNAME, NG_ANIMATING_S
 import {AnimationDriver} from './animation_driver';
 import {getOrSetAsInMap, listenOnPlayer, makeAnimationEvent, normalizeKeyframes, optimizeGroupPlayer} from './shared';
 
-const EMPTY_PLAYER_ARRAY: AnimationPlayer[] = [];
+const EMPTY_PLAYER_ARRAY: TransitionAnimationPlayer[] = [];
 const NULL_REMOVAL_STATE: ElementAnimationState = {
   namespaceId: '',
   setForRemoval: null,
@@ -708,7 +708,14 @@ export class TransitionAnimationEngine {
 
     if (this._namespaceList.length &&
         (this.totalQueuedPlayers || this.collectedLeaveElements.length)) {
-      players = this._flushAnimations(microtaskId);
+      const cleanupFns: Function[] = [];
+      try {
+        players = this._flushAnimations(cleanupFns, microtaskId);
+      } finally {
+        for (let i = 0; i < cleanupFns.length; i++) {
+          cleanupFns[i]();
+        }
+      }
     } else {
       for (let i = 0; i < this.collectedLeaveElements.length; i++) {
         const element = this.collectedLeaveElements[i];
@@ -737,7 +744,8 @@ export class TransitionAnimationEngine {
     }
   }
 
-  private _flushAnimations(microtaskId: number): TransitionAnimationPlayer[] {
+  private _flushAnimations(cleanupFns: Function[], microtaskId: number):
+      TransitionAnimationPlayer[] {
     const subTimelines = new ElementInstructionMap();
     const skippedPlayers: TransitionAnimationPlayer[] = [];
     const skippedPlayersMap = new Map<any, AnimationPlayer[]>();
@@ -745,7 +753,6 @@ export class TransitionAnimationEngine {
     const queriedElements = new Map<any, TransitionAnimationPlayer[]>();
     const allPreStyleElements = new Map<any, Set<string>>();
     const allPostStyleElements = new Map<any, Set<string>>();
-    const cleanupFns: Function[] = [];
 
     const bodyNode = getBodyNode();
     const allEnterNodes: any[] = this.collectedEnterElements.length ?
@@ -855,7 +862,6 @@ export class TransitionAnimationEngine {
         instruction.errors !.forEach(error => { msg += `- ${error}\n`; });
       });
 
-      cleanupFns.forEach(fn => fn());
       allPlayers.forEach(player => player.destroy());
       throw new Error(msg);
     }
@@ -1011,7 +1017,6 @@ export class TransitionAnimationEngine {
       player.play();
     });
 
-    cleanupFns.forEach(fn => fn());
     return rootPlayers;
   }
 
@@ -1107,20 +1112,16 @@ export class TransitionAnimationEngine {
     const allSubElements = new Set<any>();
     const allNewPlayers = instruction.timelines.map(timelineInstruction => {
       const element = timelineInstruction.element;
+      allConsumedElements.add(element);
 
       // FIXME (matsko): make sure to-be-removed animations are removed properly
       const details = element[REMOVAL_FLAG];
       if (details && details.removedBeforeQueried) return new NoopAnimationPlayer();
 
       const isQueriedElement = element !== rootElement;
-      let previousPlayers: AnimationPlayer[] = EMPTY_PLAYER_ARRAY;
-      if (!allConsumedElements.has(element)) {
-        allConsumedElements.add(element);
-        const _previousPlayers = allPreviousPlayersMap.get(element);
-        if (_previousPlayers) {
-          previousPlayers = _previousPlayers.map(p => p.getRealPlayer());
-        }
-      }
+      const previousPlayers =
+          (allPreviousPlayersMap.get(element) || EMPTY_PLAYER_ARRAY).map(p => p.getRealPlayer());
+
       const preStyles = preStylesMap.get(element);
       const postStyles = postStylesMap.get(element);
       const keyframes = normalizeKeyframes(
