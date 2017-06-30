@@ -52,7 +52,7 @@ function standardEncoding(v: string): string {
  *   - appendAll()
  *   - replaceAll()
  *
- * This class accepts an optional second parameter of ${@link ɵHttpQueryEncoder},
+ * This class accepts an optional second parameter of `HttpQueryEncoder`,
  * which is used to serialize parameters before making a request. By default,
  * `QueryEncoder` encodes keys and values of parameters using `encodeURIComponent`,
  * and then un-encodes certain characters that are allowed to be part of the query

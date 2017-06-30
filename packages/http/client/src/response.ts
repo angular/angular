@@ -300,7 +300,7 @@ export class HttpResponse<T> extends HttpResponseBase {
  * non-successful HTTP status, an error while executing the request,
  * or some other failure which occurred during the parsing of the response.
  *
- * Any error returned on the {@link Observable} response stream will be
+ * Any error returned on the `Observable` response stream will be
  * wrapped in an {@link HttpErrorResponse} to provide additional context about
  * the state of the HTTP layer when the error occurred. The error property
  * will contain either a wrapped Error object or the error response returned

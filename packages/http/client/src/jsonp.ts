@@ -209,7 +209,7 @@ export class JsonpClientBackend implements HttpBackend {
 }
 
 /**
- * An {@Link HttpInterceptor} which identifies requests with the method JSONP and
+ * An {@link HttpInterceptor} which identifies requests with the method JSONP and
  * shifts them to the {@link JsonpClientBackend}.
  *
  * @experimental
