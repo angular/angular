@@ -45,7 +45,7 @@ export const JSONP_ERR_WRONG_RESPONSE_TYPE = 'JSONP requests must use Json respo
 export abstract class JsonpCallbackMap { [key: string]: (data: any) => void; }
 
 /**
- * {@link HttpBackend} that only processes {@link HttpRequest} with the JSONP method,
+ * `HttpBackend` that only processes `HttpRequest` with the JSONP method,
  * by performing JSONP style requests.
  *
  * @experimental
@@ -209,8 +209,8 @@ export class JsonpClientBackend implements HttpBackend {
 }
 
 /**
- * An {@link HttpInterceptor} which identifies requests with the method JSONP and
- * shifts them to the {@link JsonpClientBackend}.
+ * An `HttpInterceptor` which identifies requests with the method JSONP and
+ * shifts them to the `JsonpClientBackend`.
  *
  * @experimental
  */
