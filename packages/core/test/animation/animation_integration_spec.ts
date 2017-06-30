@@ -782,7 +782,7 @@ export function main() {
            expect(players.length).toEqual(3);
            const [p1, p2, p3] = players;
            expect(p1.previousStyles).toEqual({opacity: AUTO_STYLE});
-           expect(p2.previousStyles).toEqual({});
+           expect(p2.previousStyles).toEqual({opacity: AUTO_STYLE});
            expect(p3.previousStyles).toEqual({});
          });
 
