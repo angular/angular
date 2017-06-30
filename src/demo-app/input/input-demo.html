@@ -209,11 +209,13 @@
 
 <md-card class="demo-card demo-basic">
   <md-toolbar color="primary">
-    Hello&nbsp;
-    <md-input-container color="accent">
-      <input mdInput [(ngModel)]="name" type="text" placeholder="First name">
-    </md-input-container>,
-    how are you?
+    <span>
+      Hello&nbsp;
+      <md-input-container color="accent">
+        <input mdInput [(ngModel)]="name" type="text" placeholder="First name">
+      </md-input-container>,
+      how are you?
+    </span>
   </md-toolbar>
   <md-card-content>
     <p>
