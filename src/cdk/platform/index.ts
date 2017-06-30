@@ -6,14 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {
-  FocusTrap,
-  FocusTrapFactory,
-  FocusTrapDeprecatedDirective,
-  FocusTrapDirective
-} from '@angular/cdk';
+import {NgModule} from '@angular/core';
+import {Platform} from './platform';
 
 
+@NgModule({
+  providers: [Platform]
+})
+export class PlatformModule {}
 
 
-
+export * from './platform';
+export * from './features';

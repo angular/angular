@@ -288,7 +288,7 @@ export class FocusOriginMonitor {
    * @param event The blur event.
    * @param element The monitored element.
    */
-  private _onBlur(event: FocusEvent, element: HTMLElement) {
+  _onBlur(event: FocusEvent, element: HTMLElement) {
     // If we are counting child-element-focus as focused, make sure that we aren't just blurring in
     // order to focus another child of the monitored element.
     const elementInfo = this._elementInfo.get(element);

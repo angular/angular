@@ -6,4 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {isFakeMousedownFromScreenReader} from '@angular/cdk';
+export * from './portal';
+export * from './dom-portal-host';
+export * from './portal-directives';

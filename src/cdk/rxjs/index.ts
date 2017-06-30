@@ -6,4 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {isFakeMousedownFromScreenReader} from '@angular/cdk';
+export * from './rx-chain';
+export * from './rx-operators';

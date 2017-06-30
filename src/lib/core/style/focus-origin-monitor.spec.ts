@@ -209,7 +209,9 @@ describe('FocusOriginMonitor', () => {
           .toBe(2, 'button should have exactly 2 focus classes');
       expect(changeHandler).toHaveBeenCalledWith('program');
 
-      buttonElement.blur();
+      // Call `blur` directly because invoking `buttonElement.blur()` does not always trigger the
+      // handler on IE11 on SauceLabs.
+      focusOriginMonitor._onBlur({} as any, buttonElement);
       fixture.detectChanges();
 
       expect(buttonElement.classList.length)
@@ -238,6 +240,7 @@ describe('FocusOriginMonitor', () => {
 
 
 describe('cdkMonitorFocus', () => {
+  let focusOriginMonitor: FocusOriginMonitor;
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [StyleModule],
@@ -249,6 +252,10 @@ describe('cdkMonitorFocus', () => {
     });
 
     TestBed.compileComponents();
+  }));
+
+  beforeEach(inject([FocusOriginMonitor], (fom: FocusOriginMonitor) => {
+    focusOriginMonitor = fom;
   }));
 
   describe('button with cdkMonitorElementFocus', () => {
@@ -356,7 +363,9 @@ describe('cdkMonitorFocus', () => {
             .toBe(2, 'button should have exactly 2 focus classes');
         expect(fixture.componentInstance.focusChanged).toHaveBeenCalledWith('program');
 
-        buttonElement.blur();
+        // Call `blur` directly because invoking `buttonElement.blur()` does not always trigger the
+        // handler on IE11 on SauceLabs.
+        focusOriginMonitor._onBlur({} as any, buttonElement);
         fixture.detectChanges();
 
         expect(buttonElement.classList.length)
