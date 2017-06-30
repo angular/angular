@@ -43,6 +43,9 @@ export function createPackageBuildTasks(packageName: string, requiredPackages: s
   // Glob that matches every HTML file in the current package.
   const htmlGlob = join(packageRoot, '**/*.html');
 
+  // List of watch tasks that need run together with the watch task of the current package.
+  const dependentWatchTasks = requiredPackages.map(pkgName => `${pkgName}:watch`);
+
   /**
    * Main tasks for the package building. Tasks execute the different sub-tasks in the correct
    * order.
@@ -86,7 +89,9 @@ export function createPackageBuildTasks(packageName: string, requiredPackages: s
    * Asset tasks. Building SASS files and inlining CSS, HTML files into the ESM output.
    */
   task(`${packageName}:assets`, [
-    `${packageName}:assets:scss`, `${packageName}:assets:copy-styles`, `${packageName}:assets:html`
+    `${packageName}:assets:scss`,
+    `${packageName}:assets:copy-styles`,
+    `${packageName}:assets:html`
   ]);
 
   task(`${packageName}:assets:scss`, buildScssTask(packageOut, packageRoot, true));
@@ -102,7 +107,7 @@ export function createPackageBuildTasks(packageName: string, requiredPackages: s
   /**
    * Watch tasks, that will rebuild the package whenever TS, SCSS, or HTML files change.
    */
-  task(`${packageName}:watch`, () => {
+  task(`${packageName}:watch`, dependentWatchTasks, () => {
     watch(join(packageRoot, '**/*.+(ts|scss|html)'), [`${packageName}:build`, triggerLivereload]);
   });
 }
