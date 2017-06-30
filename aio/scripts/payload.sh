@@ -68,7 +68,9 @@ payloadData="{${payloadData}}"
 echo $payloadData
 
 if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
-  firebase database:update --data "$payloadData" --project $PROJECT_NAME --confirm --token "$TOKEN" /payload/aio/$TRAVIS_BRANCH/$TRAVIS_COMMIT
+  readonly safeBranchName=$(echo $TRAVIS_BRANCH | sed -e 's/\./_/g')
+  readonly dbPath=/payload/aio/$safeBranchName/$TRAVIS_COMMIT
+  firebase database:update --data "$payloadData" --project $PROJECT_NAME --confirm --token "$TOKEN" $dbPath
 fi
 
 if [[ $failed = true ]]; then
