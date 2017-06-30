@@ -140,7 +140,7 @@ This is the _root component_ and it is named `app-root`.
 You can find it in `./src/app/app.component.ts`.
 
 
-Open the component file and change the `title` property from _app works!_ to _My First Angular App_:
+Open the component file and change the `title` property from _Welcome to app!!_ to _Welcome to My First Angular App!!_:
 
 
 <code-example path="cli-quickstart/src/app/app.component.ts" region="title" title="src/app/app.component.ts" linenums="false"></code-example>

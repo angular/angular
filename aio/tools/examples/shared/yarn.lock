@@ -8,18 +8,18 @@
   dependencies:
     tslib "^1.7.1"
 
-"@angular/cli@^1.0.0":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@angular/cli/-/cli-1.1.1.tgz#ee5cf7637ad859c08e8a5e7a7f2161d0e74ce7a5"
+"@angular/cli@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@angular/cli/-/cli-1.2.0.tgz#dfd8b8983ec37c2b6d7f902ead60396d7b571597"
   dependencies:
     "@ngtools/json-schema" "1.1.0"
-    "@ngtools/webpack" "1.4.1"
+    "@ngtools/webpack" "1.5.0"
     autoprefixer "^6.5.3"
     chalk "^1.1.3"
     common-tags "^1.3.1"
+    core-object "^3.1.0"
     css-loader "^0.28.1"
     cssnano "^3.10.0"
-    debug "^2.1.3"
     denodeify "^1.2.1"
     diff "^3.1.0"
     ember-cli-normalize-entity-name "^1.0.0"
@@ -27,9 +27,11 @@
     exports-loader "^0.6.3"
     extract-text-webpack-plugin "^2.1.0"
     file-loader "^0.10.0"
-    fs-extra "^2.0.0"
+    fs-extra "^3.0.1"
     get-caller-file "^1.0.0"
     glob "^7.0.3"
+    heimdalljs "^0.2.4"
+    heimdalljs-logger "^0.1.9"
     html-webpack-plugin "^2.19.0"
     inflection "^1.7.0"
     inquirer "^3.0.0"
@@ -38,6 +40,7 @@
     json-loader "^0.5.4"
     less "^2.7.2"
     less-loader "^4.0.2"
+    license-webpack-plugin "^0.4.2"
     lodash "^4.11.1"
     memory-fs "^0.4.1"
     minimatch "^3.0.3"
@@ -49,7 +52,6 @@
     postcss-url "^5.1.2"
     raw-loader "^0.5.1"
     resolve "^1.1.7"
-    rimraf "^2.5.3"
     rsvp "^3.0.17"
     rxjs "^5.0.1"
     sass-loader "^6.0.3"
@@ -152,9 +154,9 @@
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@ngtools/json-schema/-/json-schema-1.1.0.tgz#c3a0c544d62392acc2813a42c8a0dc6f58f86922"
 
-"@ngtools/webpack@1.4.1":
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-1.4.1.tgz#6d498f21cd1afc027b8b746d8524a7f4e91e1dab"
+"@ngtools/webpack@1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-1.5.0.tgz#b6be58d857d41f8999751d6bbc3d21e84bc977ca"
   dependencies:
     enhanced-resolve "^3.1.0"
     loader-utils "^1.0.2"
@@ -355,10 +357,6 @@ ansi-styles@^1.1.0:
 ansi-styles@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/ansi-styles/-/ansi-styles-2.2.1.tgz#b432dd3358b634cf75e1e4664368240533c1ddbe"
-
-any-promise@^1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/any-promise/-/any-promise-1.3.0.tgz#abc6afeedcea52e809cdc0376aed3ce39635d17f"
 
 anymatch@^1.3.0:
   version "1.3.0"
@@ -1676,6 +1674,12 @@ core-js@^2.2.0, core-js@^2.4.0, core-js@^2.4.1:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.4.1.tgz#4de911e667b0eae9124e34254b53aea6fc618d3e"
 
+core-object@^3.1.0:
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/core-object/-/core-object-3.1.3.tgz#df399b3311bdb0c909e8aae8929fc3c1c4b25880"
+  dependencies:
+    chalk "^1.1.3"
+
 core-util-is@~1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
@@ -1888,7 +1892,7 @@ date-now@^0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/date-now/-/date-now-0.1.4.tgz#eaf439fd4d4848ad74e5cc7dbef200672b9e345b"
 
-debug@*, debug@2, debug@2.6.8, debug@^2.1.1, debug@^2.1.3, debug@^2.2.0, debug@^2.6.8:
+debug@*, debug@2, debug@2.6.8, debug@^2.1.1, debug@^2.2.0, debug@^2.6.8:
   version "2.6.8"
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.8.tgz#e731531ca2ede27d188222427da17821d68ff4fc"
   dependencies:
@@ -2586,7 +2590,7 @@ fs-access@^1.0.0:
   dependencies:
     null-check "^1.0.0"
 
-fs-extra@3.0.1:
+fs-extra@3.0.1, fs-extra@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-3.0.1.tgz#3794f378c58b342ea7dbbb23095109c4b3b62291"
   dependencies:
@@ -2602,13 +2606,6 @@ fs-extra@^0.23.1:
     jsonfile "^2.1.0"
     path-is-absolute "^1.0.0"
     rimraf "^2.2.8"
-
-fs-extra@^2.0.0:
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-2.1.2.tgz#046c70163cef9aad46b0e4a7fa467fb22d71de35"
-  dependencies:
-    graceful-fs "^4.1.2"
-    jsonfile "^2.1.0"
 
 fs-extra@~1.0.0:
   version "1.0.0"
@@ -2889,6 +2886,19 @@ he@1.1.x:
 he@^0.5.0:
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/he/-/he-0.5.0.tgz#2c05ffaef90b68e860f3fd2b54ef580989277ee2"
+
+heimdalljs-logger@^0.1.9:
+  version "0.1.9"
+  resolved "https://registry.yarnpkg.com/heimdalljs-logger/-/heimdalljs-logger-0.1.9.tgz#d76ada4e45b7bb6f786fc9c010a68eb2e2faf176"
+  dependencies:
+    debug "^2.2.0"
+    heimdalljs "^0.2.0"
+
+heimdalljs@^0.2.0, heimdalljs@^0.2.4:
+  version "0.2.5"
+  resolved "https://registry.yarnpkg.com/heimdalljs/-/heimdalljs-0.2.5.tgz#6aa54308eee793b642cff9cf94781445f37730ac"
+  dependencies:
+    rsvp "~3.2.1"
 
 hmac-drbg@^1.0.0:
   version "1.0.1"
@@ -3631,6 +3641,12 @@ less@^2.7.2:
     promise "^7.1.1"
     request "^2.72.0"
     source-map "^0.5.3"
+
+license-webpack-plugin@^0.4.2:
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/license-webpack-plugin/-/license-webpack-plugin-0.4.3.tgz#f9d88d4ebc04407a0061e8ccac26571f88e51a16"
+  dependencies:
+    object-assign "^4.1.0"
 
 limiter@^1.0.5:
   version "1.1.0"
@@ -4418,7 +4434,7 @@ pinkie-promise@^2.0.0:
   dependencies:
     pinkie "^2.0.0"
 
-pinkie@^2.0.0, pinkie@^2.0.4:
+pinkie@^2.0.0:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/pinkie/-/pinkie-2.0.4.tgz#72556b80cfa0d48a974e80e77248e80ed4f7f870"
 
@@ -5217,7 +5233,7 @@ right-align@^0.1.1:
   dependencies:
     align-text "^0.1.1"
 
-rimraf@2, rimraf@^2.2.8, rimraf@^2.5.1, rimraf@^2.5.2, rimraf@^2.5.3, rimraf@^2.5.4, rimraf@^2.6.0, rimraf@^2.6.1:
+rimraf@2, rimraf@^2.2.8, rimraf@^2.5.1, rimraf@^2.5.2, rimraf@^2.5.4, rimraf@^2.6.0, rimraf@^2.6.1:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/rimraf/-/rimraf-2.6.1.tgz#c2338ec643df7a1b7fe5c54fa86f57428a55f33d"
   dependencies:
@@ -5275,6 +5291,10 @@ rsvp@^3.0.17:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/rsvp/-/rsvp-3.5.0.tgz#a62c573a4ae4e1dfd0697ebc6242e79c681eaa34"
 
+rsvp@~3.2.1:
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/rsvp/-/rsvp-3.2.1.tgz#07cb4a5df25add9e826ebc67dcc9fd89db27d84a"
+
 run-async@^2.2.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/run-async/-/run-async-2.3.0.tgz#0371ab4ae0bdd720d4166d7dfda64ff7a445a6c0"
@@ -5299,9 +5319,9 @@ rx@4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/rx/-/rx-4.1.0.tgz#a5f13ff79ef3b740fe30aa803fb09f98805d4782"
 
-rxjs@5.0.1, rxjs@^5.0.1:
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-5.0.1.tgz#3a69bdf9f0ca0a986303370d4708f72bdfac8356"
+rxjs@^5.0.1, rxjs@^5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-5.1.0.tgz#0aa9018b7f440b505fa42bd742b6738be550e720"
   dependencies:
     symbol-observable "^1.0.1"
 
@@ -5844,6 +5864,10 @@ strip-bom@^2.0.0:
   dependencies:
     is-utf8 "^0.2.0"
 
+strip-bom@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/strip-bom/-/strip-bom-3.0.0.tgz#2334c18e9c759f7bdd56fdef7e9ae3d588e68ed3"
+
 strip-indent@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/strip-indent/-/strip-indent-1.0.1.tgz#0c7962a6adefa7bbd4ac366460a638552ae1a0a2"
@@ -6018,9 +6042,9 @@ trim-right@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/trim-right/-/trim-right-1.0.1.tgz#cb2e1203067e0c8de1f614094b9fe45704ea6003"
 
-ts-node@^1.3.0:
-  version "1.7.3"
-  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-1.7.3.tgz#dee7f8a84751732d3c2e497cac5a02fb117dfee7"
+ts-node@~3.0.4:
+  version "3.0.6"
+  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-3.0.6.tgz#55127ff790c7eebf6ba68c1e6dde94b09aaa21e0"
   dependencies:
     arrify "^1.0.0"
     chalk "^1.1.1"
@@ -6028,20 +6052,16 @@ ts-node@^1.3.0:
     make-error "^1.1.1"
     minimist "^1.2.0"
     mkdirp "^0.5.1"
-    pinkie "^2.0.4"
     source-map-support "^0.4.0"
-    tsconfig "^5.0.2"
+    tsconfig "^6.0.0"
     v8flags "^2.0.11"
-    xtend "^4.0.0"
-    yn "^1.2.0"
+    yn "^2.0.0"
 
-tsconfig@^5.0.2:
-  version "5.0.3"
-  resolved "https://registry.yarnpkg.com/tsconfig/-/tsconfig-5.0.3.tgz#5f4278e701800967a8fc383fd19648878f2a6e3a"
+tsconfig@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/tsconfig/-/tsconfig-6.0.0.tgz#6b0e8376003d7af1864f8df8f89dd0059ffcd032"
   dependencies:
-    any-promise "^1.3.0"
-    parse-json "^2.2.0"
-    strip-bom "^2.0.0"
+    strip-bom "^3.0.0"
     strip-json-comments "^2.0.0"
 
 tsickle@^0.21.0:
@@ -6724,11 +6744,9 @@ yeast@0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/yeast/-/yeast-0.1.2.tgz#008e06d8094320c372dbc2f8ed76a0ca6c8ac419"
 
-yn@^1.2.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/yn/-/yn-1.3.0.tgz#1b0812abb8d805d48966f8df385dc9dacc9a19d8"
-  dependencies:
-    object-assign "^4.1.1"
+yn@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/yn/-/yn-2.0.0.tgz#e5adabc8acf408f6385fc76495684c88e6af689a"
 
 zone.js@^0.8.4:
   version "0.8.12"
