@@ -18,6 +18,20 @@
 
 
 
+<a name="4.2.5"></a>
+## [4.2.5](https://github.com/angular/angular/compare/4.2.4...4.2.5) (2017-06-29)
+
+
+### Bug Fixes
+
+* **animations:** do not delay style() values before a stagger() runs ([7559b78](https://github.com/angular/angular/commit/7559b78)), closes [#17412](https://github.com/angular/angular/issues/17412)
+* **animations:** do not remove container nodes when children are queried by a parent animation ([ec4ae60](https://github.com/angular/angular/commit/ec4ae60)), closes [#17746](https://github.com/angular/angular/issues/17746)
+* **animations:** do not validate style overlap errors in different transitions ([6909171](https://github.com/angular/angular/commit/6909171))
+* **animations:** properly collect :enter nodes that exist within multi-level DOM trees ([79b6346](https://github.com/angular/angular/commit/79b6346)), closes [#17632](https://github.com/angular/angular/issues/17632)
+* **core:** add needed closure compiler warning suppression ([f31b0d6](https://github.com/angular/angular/commit/f31b0d6))
+
+
+
 <a name="4.3.0-beta.0"></a>
 # [4.3.0-beta.0](https://github.com/angular/angular/compare/4.2.1...4.3.0-beta.0) (2017-06-22)
 
