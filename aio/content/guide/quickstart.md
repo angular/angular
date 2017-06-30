@@ -331,7 +331,7 @@ Any files outside of this folder are meant to support building your app.
       The main HTML page that is served when someone visits your site.
       Most of the time you'll never need to edit it.
       The CLI automatically adds all `js` and `css` files when building your app so you
-      never need to add any `&lt;script&gt;` or `&lt;link&gt;` tags here manually.
+      never need to add any `<script>` or `<link>` tags here manually.
 
     </td>
   </tr>
