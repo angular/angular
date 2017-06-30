@@ -11,7 +11,7 @@ import {CdkHeaderRow, CdkRow, CDK_ROW_TEMPLATE} from '@angular/cdk';
 
 /** Workaround for https://github.com/angular/angular/issues/17849 */
 export const _MdHeaderRow = CdkHeaderRow;
-export const _MdRow = CdkHeaderRow;
+export const _MdRow = CdkRow;
 
 /** Header template container that contains the cell outlet. Adds the right class and role. */
 @Component({
