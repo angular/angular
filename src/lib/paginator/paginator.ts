@@ -23,8 +23,13 @@ import {MATERIAL_COMPATIBILITY_MODE} from '../core';
  * different page size or navigates to another page.
  */
 export class PageEvent {
+  /** The current page index. */
   pageIndex: number;
+
+  /** The current page size */
   pageSize: number;
+
+  /** The current total number of items being paged */
   length: number;
 }
 
@@ -87,26 +92,26 @@ export class MdPaginator implements OnInit {
     this._updateDisplayedPageSizeOptions();
   }
 
-  /** Increments the page index to the next page index if a next page exists. */
+  /** Advances to the next page if it exists. */
   nextPage() {
     if (!this.hasNextPage()) { return; }
     this.pageIndex++;
     this._emitPageEvent();
   }
 
-  /** Decrements the page index to the previous page index if a next page exists. */
+  /** Move back to the previous page if it exists. */
   previousPage() {
     if (!this.hasPreviousPage()) { return; }
     this.pageIndex--;
     this._emitPageEvent();
   }
 
-  /** Returns true if the user can go to the next page. */
+  /** Whether there is a previous page. */
   hasPreviousPage() {
     return this.pageIndex >= 1 && this.pageSize != 0;
   }
 
-  /** Returns true if the user can go to the next page. */
+  /** Whether there is a next page. */
   hasNextPage() {
     const numberOfPages = Math.ceil(this.length / this.pageSize) - 1;
     return this.pageIndex < numberOfPages && this.pageSize != 0;
