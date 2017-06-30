@@ -408,7 +408,7 @@
             "url": "https://leanpub.com/router"
           },
           "vsavkin-essential-angular": {
-            "desc": "The book is short, but at the same time, fairly complete overview of the key aspects of Angular written by its core contributors Victor Savkin and Jeff Cross. The book will give you a strong foundation. It will help you put all the concepts into right places. So you will get a good understanding of why the framework is the way it is.",
+            "desc": "This book by core contributors, Victor Savkin and Jeff Cross, is a short overview of the key aspects of Angular. You'll acquire a strong foundation in Angular concepts and gain insight into why the framework is the way it is.",
             "rev": true,
             "title": "Essential Angular",
             "url": "https://gumroad.com/l/essential_angular"
@@ -575,7 +575,7 @@
             "url": "http://ninja-squad.com/formations/formation-angular2"
           },
           "a2b": {
-            "desc": "Angular Boot Camp covers the introductory and intermediate content. It includes an extensive workshop session, with hands-on help from our experienced developer-trainers. At the end of this class, students are usually able to use AngularJS to make an end-to-end, working application.",
+            "desc": "Angular Boot Camp covers introductory and intermediate content. It includes an extensive workshop session, with hands-on help from our experienced developer-trainers. At the end of this class, students are usually able to use AngularJS to make an end-to-end, working application.",
             "logo": "",
             "rev": true,
             "title": "Angular Boot Camp",
