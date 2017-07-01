@@ -28,22 +28,20 @@ function microTask(fn: Function): void {
 @Injectable()
 class MockNgZone extends NgZone {
   /** @internal */
-  _onUnstableStream: EventEmitter<any>;
-  get onUnstable() { return this._onUnstableStream; }
+  onUnstable: EventEmitter<any>;
 
   /** @internal */
-  _onStableStream: EventEmitter<any>;
-  get onStable() { return this._onStableStream; }
+  onStable: EventEmitter<any>;
 
   constructor() {
     super({enableLongStackTrace: false});
-    this._onUnstableStream = new EventEmitter(false);
-    this._onStableStream = new EventEmitter(false);
+    this.onUnstable = new EventEmitter(false);
+    this.onStable = new EventEmitter(false);
   }
 
-  unstable(): void { this._onUnstableStream.emit(null); }
+  unstable(): void { this.onUnstable.emit(null); }
 
-  stable(): void { this._onStableStream.emit(null); }
+  stable(): void { this.onStable.emit(null); }
 }
 
 export function main() {
