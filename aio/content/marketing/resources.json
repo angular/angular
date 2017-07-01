@@ -233,10 +233,16 @@
             "title": "Clarity Design System",
             "url": "https://vmware.github.io/clarity/"
           },
-          "-KLIzI9BTvvP_hUwutXk": {
-            "desc": "UI components for Angular using Semantic UI",
+          "ng2semui": {
+            "desc": "Native Angular Semantic UI components, built from scratch in Typescript.",
             "rev": true,
-            "title": "Semantic UI",
+            "title": "ng2-semantic-ui",
+            "url": "https://edcarroll.github.io/ng2-semantic-ui/"
+          },
+          "-KLIzI9BTvvP_hUwutXk": {
+            "desc": "UI components for Angular using Semantic UI and jQuery",
+            "rev": true,
+            "title": "ngSemantic",
             "url": "https://github.com/vladotesanovic/ngSemantic"
           },
           "-KMVB8P4TDfht8c0L1AE": {
