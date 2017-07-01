@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import { UPGRADE_CHANGE_DETECT_PROVIDER } from '../common/util';
 import * as angular from '../common/angular1';
 
 // We have to do a little dance to get the ng1 injector into the module injector.

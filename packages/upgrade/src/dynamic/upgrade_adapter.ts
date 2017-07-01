@@ -13,7 +13,7 @@ import * as angular from '../common/angular1';
 import {$$TESTABILITY, $COMPILE, $INJECTOR, $ROOT_SCOPE, COMPILER_KEY, INJECTOR_KEY, NG_ZONE_KEY} from '../common/constants';
 import {downgradeComponent} from '../common/downgrade_component';
 import {downgradeInjectable} from '../common/downgrade_injectable';
-import {Deferred, controllerKey, onError} from '../common/util';
+import { Deferred, controllerKey, onError, UPGRADE_CHANGE_DETECT_PROVIDER } from '../common/util';
 
 import {UpgradeNg1ComponentAdapterBuilder} from './upgrade_ng1_adapter';
 
@@ -553,6 +553,7 @@ export class UpgradeAdapter {
                     providers: [
                       {provide: $INJECTOR, useFactory: () => ng1Injector},
                       {provide: $COMPILE, useFactory: () => ng1Injector.get($COMPILE)},
+                      UPGRADE_CHANGE_DETECT_PROVIDER,
                       this.upgradedProviders
                     ],
                     imports: [this.ng2AppModule],
@@ -561,9 +562,9 @@ export class UpgradeAdapter {
                     constructor: function DynamicNgUpgradeModule() {},
                     ngDoBootstrap: function() {}
                   });
-              (platformRef as any)
-                  ._bootstrapModuleWithZone(
-                      DynamicNgUpgradeModule, this.compilerOptions, this.ngZone)
+              platformRef
+                  .bootstrapModule(
+                      DynamicNgUpgradeModule, [this.compilerOptions, {ngZone: this.ngZone}])
                   .then((ref: NgModuleRef<any>) => {
                     this.moduleRef = ref;
                     this.ngZone.run(() => {
@@ -578,8 +579,9 @@ export class UpgradeAdapter {
                   })
                   .then(() => this.ng2BootstrapDeferred.resolve(ng1Injector), onError)
                   .then(() => {
+                    const changeDetect = this.moduleRef !.injector.get('UPGRADE_CHANGE_DETECT');
                     let subscription =
-                        this.ngZone.onMicrotaskEmpty.subscribe({next: () => rootScope.$digest()});
+                        this.ngZone.onMicrotaskEmpty.subscribe({next: changeDetect.bind(this, rootScope, this.ngZone)});
                     rootScope.$on('$destroy', () => { subscription.unsubscribe(); });
                   });
             })

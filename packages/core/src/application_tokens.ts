@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken} from './di';
+import {InjectionToken, Inject, Optional, SkipSelf} from './di';
 import {ComponentRef} from './linker/component_factory';
+import {ApplicationRef} from './application_ref';
+import {NgZone} from './zone/ng_zone';
 
 
 /**
@@ -68,3 +70,23 @@ export const APP_BOOTSTRAP_LISTENER =
  * @experimental
  */
 export const PACKAGE_ROOT_URL = new InjectionToken<string>('Application Packages Root URL');
+
+export type ChangeDetect = (ref: ApplicationRef, zone: NgZone) => void;
+
+export const APP_CHANGE_DETECT = new InjectionToken<ChangeDetect>('AppChangeDetect');
+
+export const defaultAppChangeDetect: ChangeDetect = (ref, zone) => { zone.run(() => { ref.tick(); }); }
+
+export function _changeDetectFactory(changeDetect?: ChangeDetect): ChangeDetect {
+  return changeDetect || defaultAppChangeDetect;
+}
+
+/**
+ * A callback used to change detect the application.
+ * @experimental
+ */
+export const APP_CHANGE_DETECT_PROVIDER = {
+  provide: APP_CHANGE_DETECT,
+  useFactory: _changeDetectFactory,
+  deps: [[new Inject(APP_CHANGE_DETECT), new Optional(), new SkipSelf()]]
+};

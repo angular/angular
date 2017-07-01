@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '@angular/core';
+import { Type, InjectionToken, Inject, Optional, SkipSelf, NgZone } from '@angular/core';
 import * as angular from './angular1';
 
 export function onError(e: any) {
@@ -82,3 +82,21 @@ export function hookupNgModel(ngModel: angular.INgModelController, component: an
 export function strictEquals(val1: any, val2: any): boolean {
   return val1 === val2 || (val1 !== val1 && val2 !== val2);
 }
+
+export type UpgradeChangeDetect = ($rootScope: angular.IRootScopeService, zone: NgZone) => void;
+
+export const defaultUpgradeChangeDetect: UpgradeChangeDetect = ($rootScope) => $rootScope.$digest()
+
+export function _upgradeChangeDetectFactory(changeDetect?: UpgradeChangeDetect): UpgradeChangeDetect {
+  return changeDetect || defaultUpgradeChangeDetect;
+}
+
+/**
+ * A callback used to change detect the application.
+ * @experimental
+ */
+export const UPGRADE_CHANGE_DETECT_PROVIDER = {
+  provide: 'UPGRADE_CHANGE_DETECT',
+  useFactory: _upgradeChangeDetectFactory,
+  deps: [[new Inject('UPGRADE_CHANGE_DETECT'), new Optional(), new SkipSelf()]]
+};

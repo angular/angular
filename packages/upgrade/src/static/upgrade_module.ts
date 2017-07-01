@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, NgModule, NgZone, Testability, ɵNOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR as NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from '@angular/core';
+import { Injector, NgModule, NgZone, Testability, ɵNOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR as NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR, Inject } from '@angular/core';
 
 import * as angular from '../common/angular1';
 import {$$TESTABILITY, $DELEGATE, $INJECTOR, $INTERVAL, $PROVIDE, INJECTOR_KEY, UPGRADE_MODULE_NAME} from '../common/constants';
-import {controllerKey} from '../common/util';
+import { controllerKey, UPGRADE_CHANGE_DETECT_PROVIDER, UpgradeChangeDetect } from '../common/util';
 
 import {angular1Providers, setTempInjectorRef} from './angular1_providers';
 
@@ -129,7 +129,7 @@ import {angular1Providers, setTempInjectorRef} from './angular1_providers';
  *
  * @experimental
  */
-@NgModule({providers: [angular1Providers]})
+@NgModule({providers: [angular1Providers, UPGRADE_CHANGE_DETECT_PROVIDER]})
 export class UpgradeModule {
   /**
    * The AngularJS `$injector` for the upgrade application.
@@ -237,8 +237,9 @@ export class UpgradeModule {
                 // stabilizing
                 setTimeout(() => {
                   const $rootScope = $injector.get('$rootScope');
+                  const changeDetect = this.injector.get('UPGRADE_CHANGE_DETECT');
                   const subscription =
-                      this.ngZone.onMicrotaskEmpty.subscribe(() => $rootScope.$digest());
+                      this.ngZone.onMicrotaskEmpty.subscribe(changeDetect.bind(this, $rootScope, this.ngZone));
                   $rootScope.$on('$destroy', () => { subscription.unsubscribe(); });
                 }, 0);
               }

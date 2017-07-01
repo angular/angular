@@ -8,7 +8,7 @@
 
 import {ApplicationInitStatus} from './application_init';
 import {ApplicationRef, ApplicationRef_} from './application_ref';
-import {APP_ID_RANDOM_PROVIDER} from './application_tokens';
+import { APP_ID_RANDOM_PROVIDER, APP_CHANGE_DETECT_PROVIDER } from './application_tokens';
 import {IterableDiffers, KeyValueDiffers, defaultIterableDiffers, defaultKeyValueDiffers} from './change_detection/change_detection';
 import {Inject, Optional, SkipSelf} from './di/metadata';
 import {LOCALE_ID} from './i18n/tokens';
@@ -47,6 +47,7 @@ export function _localeFactory(locale?: string): string {
       useFactory: _localeFactory,
       deps: [[new Inject(LOCALE_ID), new Optional(), new SkipSelf()]]
     },
+    APP_CHANGE_DETECT_PROVIDER,
   ]
 })
 export class ApplicationModule {
