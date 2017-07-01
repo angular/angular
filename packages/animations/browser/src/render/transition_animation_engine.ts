@@ -13,7 +13,7 @@ import {AnimationTransitionInstruction} from '../dsl/animation_transition_instru
 import {AnimationTrigger} from '../dsl/animation_trigger';
 import {ElementInstructionMap} from '../dsl/element_instruction_map';
 import {AnimationStyleNormalizer} from '../dsl/style_normalization/animation_style_normalizer';
-import {ENTER_CLASSNAME, LEAVE_CLASSNAME, NG_ANIMATING_CLASSNAME, NG_TRIGGER_CLASSNAME, NG_TRIGGER_SELECTOR, copyObj, eraseStyles, setStyles} from '../util';
+import {ENTER_CLASSNAME, LEAVE_CLASSNAME, NG_ANIMATING_CLASSNAME, NG_ANIMATING_SELECTOR, NG_TRIGGER_CLASSNAME, NG_TRIGGER_SELECTOR, copyObj, eraseStyles, setStyles} from '../util';
 
 import {AnimationDriver} from './animation_driver';
 import {getOrSetAsInMap, listenOnPlayer, makeAnimationEvent, normalizeKeyframes, optimizeGroupPlayer} from './shared';
@@ -93,9 +93,6 @@ export class StateValue {
 export const VOID_VALUE = 'void';
 export const DEFAULT_STATE_VALUE = new StateValue(VOID_VALUE);
 export const DELETED_STATE_VALUE = new StateValue('DELETED');
-
-const POTENTIAL_ENTER_CLASSNAME = ENTER_CLASSNAME + '-temp';
-const POTENTIAL_ENTER_SELECTOR = '.' + POTENTIAL_ENTER_CLASSNAME;
 
 export class AnimationTransitionNamespace {
   public players: TransitionAnimationPlayer[] = [];
@@ -642,7 +639,8 @@ export class TransitionAnimationEngine {
   }
 
   destroyInnerAnimations(containerElement: any) {
-    this.driver.query(containerElement, NG_TRIGGER_SELECTOR, true).forEach(element => {
+    let elements = this.driver.query(containerElement, NG_TRIGGER_SELECTOR, true);
+    elements.forEach(element => {
       const players = this.playersByElement.get(element);
       if (players) {
         players.forEach(player => {
@@ -661,6 +659,18 @@ export class TransitionAnimationEngine {
         Object.keys(stateMap).forEach(triggerName => stateMap[triggerName] = DELETED_STATE_VALUE);
       }
     });
+
+    if (this.playersByQueriedElement.size == 0) return;
+
+    elements = this.driver.query(containerElement, NG_ANIMATING_SELECTOR, true);
+    if (elements.length) {
+      elements.forEach(element => {
+        const players = this.playersByQueriedElement.get(element);
+        if (players) {
+          players.forEach(player => player.finish());
+        }
+      });
+    }
   }
 
   whenRenderingDone(): Promise<any> {
@@ -736,13 +746,17 @@ export class TransitionAnimationEngine {
     const allPreStyleElements = new Map<any, Set<string>>();
     const allPostStyleElements = new Map<any, Set<string>>();
 
+    const bodyNode = getBodyNode();
+    const allEnterNodes: any[] = this.collectedEnterElements.length ?
+        this.collectedEnterElements.filter(createIsRootFilterFn(this.collectedEnterElements)) :
+        [];
+
     // this must occur before the instructions are built below such that
     // the :enter queries match the elements (since the timeline queries
     // are fired during instruction building).
-    const bodyNode = getBodyNode();
-    const allEnterNodes: any[] = this.collectedEnterElements.length ?
-        collectEnterElements(this.driver, this.collectedEnterElements) :
-        [];
+    for (let i = 0; i < allEnterNodes.length; i++) {
+      addClass(allEnterNodes[i], ENTER_CLASSNAME);
+    }
 
     const allLeaveNodes: any[] = [];
     const leaveNodesWithoutAnimations: any[] = [];
@@ -922,14 +936,36 @@ export class TransitionAnimationEngine {
     // operation right away unless a parent animation is ongoing.
     for (let i = 0; i < allLeaveNodes.length; i++) {
       const element = allLeaveNodes[i];
-      const players = queriedElements.get(element);
-      if (players) {
+      const details = element[REMOVAL_FLAG] as ElementAnimationState;
+
+      // this means the element has a removal animation that is being
+      // taken care of and therefore the inner elements will hang around
+      // until that animation is over (or the parent queried animation)
+      if (details && details.hasAnimation) continue;
+
+      let players: AnimationPlayer[] = [];
+
+      // if this element is queried or if it contains queried children
+      // then we want for the element not to be removed from the page
+      // until the queried animations have finished
+      if (queriedElements.size) {
+        let queriedPlayerResults = queriedElements.get(element);
+        if (queriedPlayerResults && queriedPlayerResults.length) {
+          players.push(...queriedPlayerResults);
+        }
+
+        let queriedInnerElements = this.driver.query(element, NG_ANIMATING_SELECTOR, true);
+        for (let j = 0; j < queriedInnerElements.length; j++) {
+          let queriedPlayers = queriedElements.get(queriedInnerElements[j]);
+          if (queriedPlayers && queriedPlayers.length) {
+            players.push(...queriedPlayers);
+          }
+        }
+      }
+      if (players.length) {
         removeNodesAfterAnimationDone(this, element, players);
       } else {
-        const details = element[REMOVAL_FLAG] as ElementAnimationState;
-        if (details && !details.hasAnimation) {
-          this.processLeaveNode(element);
-        }
+        this.processLeaveNode(element);
       }
     }
 
@@ -1079,8 +1115,7 @@ export class TransitionAnimationEngine {
 
     allQueriedPlayers.forEach(player => {
       getOrSetAsInMap(this.playersByQueriedElement, player.element, []).push(player);
-      player.onDone(
-          () => { deleteOrUnsetInMap(this.playersByQueriedElement, player.element, player); });
+      player.onDone(() => deleteOrUnsetInMap(this.playersByQueriedElement, player.element, player));
     });
 
     allConsumedElements.forEach(element => addClass(element, NG_ANIMATING_CLASSNAME));
@@ -1249,78 +1284,6 @@ function cloakElement(element: any, value?: string) {
   return oldValue;
 }
 
-/*
-1. start from the root, find the first matching child
-  a) if not found then check to see if a previously stopped node was set in the stack
-    -> if so then use that as the nextCursor
-  b) if no queried item and no parent then stop completely
-  c) if no queried item and yes parent then jump to the parent and restart loop
-2. visit the next node, check if matches
-  a) if doesn't exist then set that as the cursor and repeat
-    -> add to the previous cursor stack when the inner queries return nothing
-  b) if matches then add it and continue
- */
-function filterNodeClasses(
-    driver: AnimationDriver, rootElement: any | null, selector: string): any[] {
-  const rootElements: any[] = [];
-  if (!rootElement) return rootElements;
-
-  let cursor: any = rootElement;
-  let nextCursor: any = {};
-  let potentialCursorStack: any[] = [];
-  do {
-    // 1. query from root
-    nextCursor = cursor ? driver.query(cursor, selector, false)[0] : null;
-
-    // this is used to avoid the extra matchesElement call when we
-    // know that the element does match based it on being queried
-    let justQueried = !!nextCursor;
-
-    if (!nextCursor) {
-      const nextPotentialCursor = potentialCursorStack.pop();
-      if (nextPotentialCursor) {
-        // 1a)
-        nextCursor = nextPotentialCursor;
-      } else {
-        cursor = cursor.parentElement;
-        // 1b)
-        if (!cursor) break;
-        // 1c)
-        nextCursor = cursor = cursor.nextElementSibling;
-        continue;
-      }
-    }
-
-    // 2. visit the next node
-    while (nextCursor) {
-      const matches = justQueried || driver.matchesElement(nextCursor, selector);
-      justQueried = false;
-
-      const nextPotentialCursor = nextCursor.nextElementSibling;
-
-      // 2a)
-      if (!matches) {
-        potentialCursorStack.push(nextPotentialCursor);
-        cursor = nextCursor;
-        break;
-      }
-
-      // 2b)
-      rootElements.push(nextCursor);
-      nextCursor = nextPotentialCursor;
-      if (nextCursor) {
-        cursor = nextCursor;
-      } else {
-        cursor = cursor.parentElement;
-        if (!cursor) break;
-        nextCursor = cursor = cursor.nextElementSibling;
-      }
-    }
-  } while (nextCursor && nextCursor !== rootElement);
-
-  return rootElements;
-}
-
 function cloakAndComputeStyles(
     driver: AnimationDriver, elements: any[], elementPropsMap: Map<any, Set<string>>,
     defaultStyle: string): Map<any, ɵStyleData> {
@@ -1345,12 +1308,36 @@ function cloakAndComputeStyles(
   return valuesMap;
 }
 
-function collectEnterElements(driver: AnimationDriver, allEnterNodes: any[]) {
-  allEnterNodes.forEach(element => addClass(element, POTENTIAL_ENTER_CLASSNAME));
-  const enterNodes = filterNodeClasses(driver, getBodyNode(), POTENTIAL_ENTER_SELECTOR);
-  enterNodes.forEach(element => addClass(element, ENTER_CLASSNAME));
-  allEnterNodes.forEach(element => removeClass(element, POTENTIAL_ENTER_CLASSNAME));
-  return enterNodes;
+/*
+Since the Angular renderer code will return a collection of inserted
+nodes in all areas of a DOM tree, it's up to this algorithm to figure
+out which nodes are roots.
+
+By placing all nodes into a set and traversing upwards to the edge,
+the recursive code can figure out if a clean path from the DOM node
+to the edge container is clear. If no other node is detected in the
+set then it is a root element.
+
+This algorithm also keeps track of all nodes along the path so that
+if other sibling nodes are also tracked then the lookup process can
+skip a lot of steps in between and avoid traversing the entire tree
+multiple times to the edge.
+ */
+function createIsRootFilterFn(nodes: any): (node: any) => boolean {
+  const nodeSet = new Set(nodes);
+  const knownRootContainer = new Set();
+  let isRoot: (node: any) => boolean;
+  isRoot = node => {
+    if (!node) return true;
+    if (nodeSet.has(node.parentNode)) return false;
+    if (knownRootContainer.has(node.parentNode)) return true;
+    if (isRoot(node.parentNode)) {
+      knownRootContainer.add(node);
+      return true;
+    }
+    return false;
+  };
+  return isRoot;
 }
 
 const CLASSES_CACHE_KEY = '$$classes';

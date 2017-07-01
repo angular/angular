@@ -4,8 +4,8 @@ import * as http from 'http';
 import * as supertest from 'supertest';
 import {GithubPullRequests} from '../../lib/common/github-pull-requests';
 import {BuildCreator} from '../../lib/upload-server/build-creator';
-import {CreatedBuildEvent} from '../../lib/upload-server/build-events';
-import {BuildVerifier} from '../../lib/upload-server/build-verifier';
+import {ChangedPrVisibilityEvent, CreatedBuildEvent} from '../../lib/upload-server/build-events';
+import {BUILD_VERIFICATION_STATUS, BuildVerifier} from '../../lib/upload-server/build-verifier';
 import {uploadServerFactory as usf} from '../../lib/upload-server/upload-server-factory';
 
 // Tests
@@ -18,11 +18,12 @@ describe('uploadServerFactory', () => {
     githubToken: '12345',
     repoSlug: 'repo/slug',
     secret: 'secret',
+    trustedPrLabel: 'trusted: pr-label',
   };
 
   // Helpers
   const createUploadServer = (partialConfig: Partial<typeof defaultConfig> = {}) =>
-    usf.create({...defaultConfig, ...partialConfig});
+    usf.create({...defaultConfig, ...partialConfig} as typeof defaultConfig);
 
 
   describe('create()', () => {
@@ -72,6 +73,12 @@ describe('uploadServerFactory', () => {
     it('should throw if \'secret\' is missing or empty', () => {
       expect(() => createUploadServer({secret: ''})).
         toThrowError('Missing or empty required parameter \'secret\'!');
+    });
+
+
+    it('should throw if \'trustedPrLabel\' is missing or empty', () => {
+      expect(() => createUploadServer({trustedPrLabel: ''})).
+        toThrowError('Missing or empty required parameter \'trustedPrLabel\'!');
     });
 
 
@@ -141,26 +148,71 @@ describe('uploadServerFactory', () => {
     });
 
 
-    it('should post a comment on GitHub on \'build.created\'', () => {
-      const prsAddCommentSpy = spyOn(GithubPullRequests.prototype, 'addComment');
-      const commentBody = 'The angular.io preview for 1234567890 is available [here][1].\n\n' +
-                          '[1]: https://pr42-1234567890.domain.name/';
+    describe('on \'build.created\'', () => {
+      let prsAddCommentSpy: jasmine.Spy;
 
-      buildCreator.emit(CreatedBuildEvent.type, {pr: 42, sha: '1234567890'});
+      beforeEach(() => prsAddCommentSpy = spyOn(GithubPullRequests.prototype, 'addComment'));
 
-      expect(prsAddCommentSpy).toHaveBeenCalledWith(42, commentBody);
+
+      it('should post a comment on GitHub for public previews', () => {
+        const commentBody = 'You can preview 1234567890 at https://pr42-1234567890.domain.name/.';
+
+        buildCreator.emit(CreatedBuildEvent.type, {pr: 42, sha: '1234567890', isPublic: true});
+        expect(prsAddCommentSpy).toHaveBeenCalledWith(42, commentBody);
+      });
+
+
+      it('should not post a comment on GitHub for non-public previews', () => {
+        buildCreator.emit(CreatedBuildEvent.type, {pr: 42, sha: '1234567890', isPublic: false});
+        expect(prsAddCommentSpy).not.toHaveBeenCalled();
+      });
+
+    });
+
+
+    describe('on \'pr.changedVisibility\'', () => {
+      let prsAddCommentSpy: jasmine.Spy;
+
+      beforeEach(() => prsAddCommentSpy = spyOn(GithubPullRequests.prototype, 'addComment'));
+
+
+      it('should post a comment on GitHub (for all SHAs) for PRs made public', () => {
+        const commentBody = 'You can preview 12345 at https://pr42-12345.domain.name/.\n' +
+                            'You can preview 67890 at https://pr42-67890.domain.name/.';
+
+        buildCreator.emit(ChangedPrVisibilityEvent.type, {pr: 42, shas: ['12345', '67890'], isPublic: true});
+        expect(prsAddCommentSpy).toHaveBeenCalledWith(42, commentBody);
+      });
+
+
+      it('should not post a comment on GitHub if no SHAs were affected', () => {
+        buildCreator.emit(ChangedPrVisibilityEvent.type, {pr: 42, shas: [], isPublic: true});
+        expect(prsAddCommentSpy).not.toHaveBeenCalled();
+      });
+
+
+      it('should not post a comment on GitHub for PRs made non-public', () => {
+        buildCreator.emit(ChangedPrVisibilityEvent.type, {pr: 42, shas: ['12345', '67890'], isPublic: false});
+        expect(prsAddCommentSpy).not.toHaveBeenCalled();
+      });
+
     });
 
 
     it('should pass the correct \'githubToken\' and \'repoSlug\' to GithubPullRequests', () => {
       const prsAddCommentSpy = spyOn(GithubPullRequests.prototype, 'addComment');
 
-      buildCreator.emit(CreatedBuildEvent.type, {pr: 42, sha: '1234567890'});
-      const prs = prsAddCommentSpy.calls.mostRecent().object;
+      buildCreator.emit(CreatedBuildEvent.type, {pr: 42, sha: '1234567890', isPublic: true});
+      buildCreator.emit(ChangedPrVisibilityEvent.type, {pr: 42, shas: ['12345', '67890'], isPublic: true});
 
+      const allCalls = prsAddCommentSpy.calls.all();
+      const prs = allCalls[0].object;
+
+      expect(prsAddCommentSpy).toHaveBeenCalledTimes(2);
+      expect(prs).toBe(allCalls[1].object);
       expect(prs).toEqual(jasmine.any(GithubPullRequests));
-      expect((prs as any).repoSlug).toBe('repo/slug');
-      expect((prs as any).requestHeaders.Authorization).toContain('12345');
+      expect(prs.repoSlug).toBe('repo/slug');
+      expect(prs.requestHeaders.Authorization).toContain('12345');
     });
 
   });
@@ -184,6 +236,7 @@ describe('uploadServerFactory', () => {
         defaultConfig.repoSlug,
         defaultConfig.githubOrganization,
         defaultConfig.githubTeamSlugs,
+        defaultConfig.trustedPrLabel,
       );
       buildCreator = new BuildCreator(defaultConfig.buildsDir);
       agent = supertest.agent((usf as any).createMiddleware(buildVerifier, buildCreator));
@@ -199,7 +252,8 @@ describe('uploadServerFactory', () => {
       let buildCreatorCreateSpy: jasmine.Spy;
 
       beforeEach(() => {
-        buildVerifierVerifySpy = spyOn(buildVerifier, 'verify').and.returnValue(Promise.resolve());
+        const verStatus = BUILD_VERIFICATION_STATUS.verifiedAndTrusted;
+        buildVerifierVerifySpy = spyOn(buildVerifier, 'verify').and.returnValue(Promise.resolve(verStatus));
         buildCreatorCreateSpy = spyOn(buildCreator, 'create').and.returnValue(Promise.resolve());
       });
 
@@ -284,14 +338,17 @@ describe('uploadServerFactory', () => {
 
 
       it('should call \'BuildCreator#create()\' with the correct arguments', done => {
-        const req = agent.
-          get(`/create-build/${pr}/${sha}`).
-          set('AUTHORIZATION', 'foo').
-          set('X-FILE', 'bar');
+        buildVerifierVerifySpy.and.returnValues(
+            Promise.resolve(BUILD_VERIFICATION_STATUS.verifiedAndTrusted),
+            Promise.resolve(BUILD_VERIFICATION_STATUS.verifiedNotTrusted));
 
-        promisifyRequest(req).
-          then(() => expect(buildCreatorCreateSpy).toHaveBeenCalledWith(pr, sha, 'bar')).
-          then(done, done.fail);
+        const req1 = agent.get(`/create-build/${pr}/${sha}`).set('AUTHORIZATION', 'foo').set('X-FILE', 'bar');
+        const req2 = agent.get(`/create-build/${pr}/${sha}`).set('AUTHORIZATION', 'foo').set('X-FILE', 'bar');
+
+        Promise.all([
+          promisifyRequest(req1).then(() => expect(buildCreatorCreateSpy).toHaveBeenCalledWith(pr, sha, 'bar', true)),
+          promisifyRequest(req2).then(() => expect(buildCreatorCreateSpy).toHaveBeenCalledWith(pr, sha, 'bar', false)),
+        ]).then(done, done.fail);
       });
 
 
@@ -307,12 +364,24 @@ describe('uploadServerFactory', () => {
       });
 
 
-      it('should respond with 201 on successful upload', done => {
+      it('should respond with 201 on successful upload (for public builds)', done => {
         const req = agent.
           get(`/create-build/${pr}/${sha}`).
           set('AUTHORIZATION', 'foo').
           set('X-FILE', 'bar').
           expect(201, http.STATUS_CODES[201]);
+
+        verifyRequests([req], done);
+      });
+
+
+      it('should respond with 202 on successful upload (for hidden builds)', done => {
+        buildVerifierVerifySpy.and.returnValue(Promise.resolve(BUILD_VERIFICATION_STATUS.verifiedNotTrusted));
+        const req = agent.
+          get(`/create-build/${pr}/${sha}`).
+          set('AUTHORIZATION', 'foo').
+          set('X-FILE', 'bar').
+          expect(202, http.STATUS_CODES[202]);
 
         verifyRequests([req], done);
       });

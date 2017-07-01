@@ -17,7 +17,7 @@ you don't need to specify values for those.
   The domain name of the server.
 
 - `AIO_GITHUB_ORGANIZATION`:
-  The GitHub organization whose teams arew whitelisted for accepting uploads.
+  The GitHub organization whose teams are whitelisted for accepting uploads.
   See also `AIO_GITHUB_TEAM_SLUGS`.
 
 - `AIO_GITHUB_TEAM_SLUGS`:
@@ -38,6 +38,11 @@ you don't need to specify values for those.
 
 - `AIO_REPO_SLUG`:
   The repository slug (in the form `<user>/<repo>`) for which PRs will be uploaded.
+
+- `AIO_TRUSTED_PR_LABEL`:
+  The PR whose presence indicates the PR has been manually verified and is allowed to have its
+  build artifacts publicly served. This is useful for enabling previews for any PR (not only those
+  from trusted authors).
 
 - `AIO_UPLOAD_HOSTNAME`:
   The internal hostname for accessing the Node.js upload-server. This is used by nginx for

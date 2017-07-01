@@ -60,6 +60,9 @@ More specifically, there are sub-folders that contain particular types of conten
 
 We use the [dgeni](https://github.com/angular/dgeni) tool to convert these files into docs that can be viewed in the doc-viewer.
 
+The [Authors Style Guide](https://angular.io/guide/docs-style-guide) prescribes guidelines for
+writing guide pages, explains how to use the documentation classes and components, and how to markup sample source code to produce code snippets.
+
 ### Generating the complete docs
 
 The main task for generating the docs is `yarn docs`. This will process all the source files (API and other),

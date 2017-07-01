@@ -129,7 +129,7 @@ export class TemplateParser {
 
     if (errors.length > 0) {
       const errorString = errors.join('\n');
-      throw syntaxError(`Template parse errors:\n${errorString}`);
+      throw syntaxError(`Template parse errors:\n${errorString}`, errors);
     }
 
     return {template: result.templateAst !, pipes: result.usedPipes !};

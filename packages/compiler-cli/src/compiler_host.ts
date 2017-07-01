@@ -21,7 +21,7 @@ const GENERATED_OR_DTS_FILES = /\.d\.ts$|\.ngfactory\.ts$|\.ngstyle\.ts$|\.ngsum
 const SHALLOW_IMPORT = /^((\w|-)+|(@(\w|-)+(\/(\w|-)+)+))$/;
 
 export interface CompilerHostContext extends ts.ModuleResolutionHost {
-  readResource(fileName: string): Promise<string>;
+  readResource?(fileName: string): Promise<string>|string;
   assumeFileExists(fileName: string): void;
 }
 
@@ -187,10 +187,11 @@ export class CompilerHost implements AotCompilerHost {
   getMetadataFor(filePath: string): ModuleMetadata[]|undefined {
     if (!this.context.fileExists(filePath)) {
       // If the file doesn't exists then we cannot return metadata for the file.
-      // This will occur if the user refernced a declared module for which no file
+      // This will occur if the user referenced a declared module for which no file
       // exists for the module (i.e. jQuery or angularjs).
       return;
     }
+
     if (DTS.test(filePath)) {
       const metadataPath = filePath.replace(DTS, '.metadata.json');
       if (this.context.fileExists(metadataPath)) {
@@ -202,11 +203,11 @@ export class CompilerHost implements AotCompilerHost {
         return [this.upgradeVersion1Metadata(
             {'__symbolic': 'module', 'version': 1, 'metadata': {}}, filePath)];
       }
-    } else {
-      const sf = this.getSourceFile(filePath);
-      const metadata = this.metadataCollector.getMetadata(sf);
-      return metadata ? [metadata] : [];
     }
+
+    const sf = this.getSourceFile(filePath);
+    const metadata = this.metadataCollector.getMetadata(sf);
+    return metadata ? [metadata] : [];
   }
 
   readMetadata(filePath: string, dtsFilePath: string): ModuleMetadata[] {
@@ -259,7 +260,8 @@ export class CompilerHost implements AotCompilerHost {
   }
 
   loadResource(filePath: string): Promise<string>|string {
-    return this.context.readResource(filePath);
+    if (this.context.readResource) return this.context.readResource(filePath);
+    return this.context.readFile(filePath);
   }
 
   loadSummary(filePath: string): string|null {

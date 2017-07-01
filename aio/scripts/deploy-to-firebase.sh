@@ -31,6 +31,9 @@ esac
   # Build the app
   yarn build -- --env=$buildEnv
 
+  # Check payload size
+  yarn payload-size
+
   # Deploy to Firebase
   firebase use "$projectId" --token "$firebaseToken"
   firebase deploy --message "Commit: $TRAVIS_COMMIT" --non-interactive --token "$firebaseToken"

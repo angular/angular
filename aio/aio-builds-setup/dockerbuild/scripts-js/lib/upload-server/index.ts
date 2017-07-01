@@ -10,6 +10,7 @@ const AIO_GITHUB_TEAM_SLUGS = getEnvVar('AIO_GITHUB_TEAM_SLUGS');
 const AIO_GITHUB_TOKEN = getEnvVar('AIO_GITHUB_TOKEN');
 const AIO_PREVIEW_DEPLOYMENT_TOKEN = getEnvVar('AIO_PREVIEW_DEPLOYMENT_TOKEN');
 const AIO_REPO_SLUG = getEnvVar('AIO_REPO_SLUG');
+const AIO_TRUSTED_PR_LABEL = getEnvVar('AIO_TRUSTED_PR_LABEL');
 const AIO_UPLOAD_HOSTNAME = getEnvVar('AIO_UPLOAD_HOSTNAME');
 const AIO_UPLOAD_PORT = +getEnvVar('AIO_UPLOAD_PORT');
 const AIO_WWW_USER = getEnvVar('AIO_WWW_USER');
@@ -29,6 +30,7 @@ function _main() {
       githubToken: AIO_GITHUB_TOKEN,
       repoSlug: AIO_REPO_SLUG,
       secret: AIO_PREVIEW_DEPLOYMENT_TOKEN,
+      trustedPrLabel: AIO_TRUSTED_PR_LABEL,
     }).
     listen(AIO_UPLOAD_PORT, AIO_UPLOAD_HOSTNAME);
 }

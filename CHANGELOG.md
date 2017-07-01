@@ -1,3 +1,37 @@
+<a name="4.3.0-beta.1"></a>
+# [4.3.0-beta.1](https://github.com/angular/angular/compare/4.3.0-beta.0...4.3.0-beta.1) (2017-06-29)
+
+
+### Bug Fixes
+
+* **animations:** do not delay style() values before a stagger() runs ([34f3832](https://github.com/angular/angular/commit/34f3832)), closes [#17412](https://github.com/angular/angular/issues/17412)
+* **animations:** do not remove container nodes when children are queried by a parent animation ([d699c35](https://github.com/angular/angular/commit/d699c35)), closes [#17746](https://github.com/angular/angular/issues/17746)
+* **animations:** do not validate style overlap errors in different transitions ([f2ee1dc](https://github.com/angular/angular/commit/f2ee1dc))
+* **animations:** properly collect :enter nodes that exist within multi-level DOM trees ([40f77cb](https://github.com/angular/angular/commit/40f77cb)), closes [#17632](https://github.com/angular/angular/issues/17632)
+* **core:** add needed closure compiler warning suppression ([e80851d](https://github.com/angular/angular/commit/e80851d))
+
+
+### Features
+
+* **compiler:** add support `::ng-deep` ([b754e60](https://github.com/angular/angular/commit/b754e60))
+* **compiler-cli:** new compiler api and command-line using TypeScript transformers ([3097083](https://github.com/angular/angular/commit/3097083))
+
+
+
+<a name="4.2.5"></a>
+## [4.2.5](https://github.com/angular/angular/compare/4.2.4...4.2.5) (2017-06-29)
+
+
+### Bug Fixes
+
+* **animations:** do not delay style() values before a stagger() runs ([7559b78](https://github.com/angular/angular/commit/7559b78)), closes [#17412](https://github.com/angular/angular/issues/17412)
+* **animations:** do not remove container nodes when children are queried by a parent animation ([ec4ae60](https://github.com/angular/angular/commit/ec4ae60)), closes [#17746](https://github.com/angular/angular/issues/17746)
+* **animations:** do not validate style overlap errors in different transitions ([6909171](https://github.com/angular/angular/commit/6909171))
+* **animations:** properly collect :enter nodes that exist within multi-level DOM trees ([79b6346](https://github.com/angular/angular/commit/79b6346)), closes [#17632](https://github.com/angular/angular/issues/17632)
+* **core:** add needed closure compiler warning suppression ([f31b0d6](https://github.com/angular/angular/commit/f31b0d6))
+
+
+
 <a name="4.3.0-beta.0"></a>
 # [4.3.0-beta.0](https://github.com/angular/angular/compare/4.2.1...4.3.0-beta.0) (2017-06-22)
 
@@ -694,7 +728,7 @@ Please give this RC a try and test it with your projects! We have spent a signif
 ## What’s New
 
 ### View Engine
-We’ve made changes under to hood to what AOT generated code looks like. These changes should reduce the size of the generated code for your components by more than half in some cases. Read the [Design Doc](https://docs.google.com/document/d/195L4WaDSoI_kkW094LlShH6gT3B7K1GZpSBnnLkQR-g/preview) for the View Engine updates.
+We’ve made changes under the hood to what AOT generated code looks like. These changes should reduce the size of the generated code for your components by more than half in some cases. Read the [Design Doc](https://docs.google.com/document/d/195L4WaDSoI_kkW094LlShH6gT3B7K1GZpSBnnLkQR-g/preview) for the View Engine updates.
 
 
 ### Enhanced `*ngIf` syntax
