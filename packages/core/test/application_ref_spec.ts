@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, Compiler, CompilerFactory, Component, NgModule, NgZone, PlatformRef, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, Compiler, CompilerFactory, Component, NgModule, NgZone, NoNgZone, PlatformRef, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {ApplicationRef, ApplicationRef_} from '@angular/core/src/application_ref';
 import {ErrorHandler} from '@angular/core/src/error_handler';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
@@ -287,6 +287,15 @@ export function main() {
       it('should add bootstrapped module into platform modules list', async(() => {
            defaultPlatform.bootstrapModule(createModule({bootstrap: [SomeComponent]}))
                .then(module => expect((<any>defaultPlatform)._modules).toContain(module));
+         }));
+
+      it('should bootstrap with NoNgZone', async(() => {
+           defaultPlatform
+               .bootstrapModule(createModule({bootstrap: [SomeComponent]}), {ngZone: false})
+               .then(module => {
+                 const ngZone = module.injector.get(NgZone);
+                 expect(ngZone instanceof NoNgZone).toBe(true);
+               });
          }));
     });
 
