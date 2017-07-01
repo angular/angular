@@ -11,7 +11,7 @@ import {ChangeDetectionStrategy, Component, Injectable, NgModule, NgModuleFactor
 import {ComponentFixture, TestBed, fakeAsync, inject, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, DetachedRouteHandle, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, ParamMap, Params, PreloadAllModules, PreloadingStrategy, Resolve, RouteConfigLoadEnd, RouteConfigLoadStart, RouteReuseStrategy, Router, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '@angular/router';
+import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, ParamMap, Params, PreloadAllModules, PreloadingStrategy, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RouteReuseStrategy, Router, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '@angular/router';
 import {Observable} from 'rxjs/Observable';
 import {map} from 'rxjs/operator/map';
 
@@ -422,9 +422,13 @@ describe('Integration', () => {
 
        expectEvents(recordedEvents, [
          [NavigationStart, '/team/22/user/victor'], [RoutesRecognized, '/team/22/user/victor'],
+         [GuardsCheckStart, '/team/22/user/victor'], [GuardsCheckEnd, '/team/22/user/victor'],
+         [ResolveStart, '/team/22/user/victor'], [ResolveEnd, '/team/22/user/victor'],
          [NavigationEnd, '/team/22/user/victor'],
 
          [NavigationStart, '/team/22/user/fedor'], [RoutesRecognized, '/team/22/user/fedor'],
+         [GuardsCheckStart, '/team/22/user/fedor'], [GuardsCheckEnd, '/team/22/user/fedor'],
+         [ResolveStart, '/team/22/user/fedor'], [ResolveEnd, '/team/22/user/fedor'],
          [NavigationEnd, '/team/22/user/fedor']
        ]);
      })));
@@ -681,11 +685,14 @@ describe('Integration', () => {
 
        expectEvents(recordedEvents, [
          [NavigationStart, '/user/init'], [RoutesRecognized, '/user/init'],
-         [NavigationEnd, '/user/init'],
+         [GuardsCheckStart, '/user/init'], [GuardsCheckEnd, '/user/init'],
+         [ResolveStart, '/user/init'], [ResolveEnd, '/user/init'], [NavigationEnd, '/user/init'],
 
          [NavigationStart, '/user/victor'], [NavigationCancel, '/user/victor'],
 
          [NavigationStart, '/user/fedor'], [RoutesRecognized, '/user/fedor'],
+         [GuardsCheckStart, '/user/fedor'], [GuardsCheckEnd, '/user/fedor'],
+         [ResolveStart, '/user/fedor'], [ResolveEnd, '/user/fedor'],
          [NavigationEnd, '/user/fedor']
        ]);
      })));
@@ -712,6 +719,8 @@ describe('Integration', () => {
          [NavigationStart, '/invalid'], [NavigationError, '/invalid'],
 
          [NavigationStart, '/user/fedor'], [RoutesRecognized, '/user/fedor'],
+         [GuardsCheckStart, '/user/fedor'], [GuardsCheckEnd, '/user/fedor'],
+         [ResolveStart, '/user/fedor'], [ResolveEnd, '/user/fedor'],
          [NavigationEnd, '/user/fedor']
        ]);
      })));
@@ -965,6 +974,7 @@ describe('Integration', () => {
 
          expectEvents(recordedEvents, [
            [NavigationStart, '/simple'], [RoutesRecognized, '/simple'],
+           [GuardsCheckStart, '/simple'], [GuardsCheckEnd, '/simple'], [ResolveStart, '/simple'],
            [NavigationError, '/simple']
          ]);
 
@@ -1382,8 +1392,10 @@ describe('Integration', () => {
              expect(location.path()).toEqual('/');
              expectEvents(recordedEvents, [
                [NavigationStart, '/team/22'], [RoutesRecognized, '/team/22'],
+               [GuardsCheckStart, '/team/22'], [GuardsCheckEnd, '/team/22'],
                [NavigationCancel, '/team/22']
              ]);
+             expect((recordedEvents[3] as GuardsCheckEnd).shouldActivate).toBe(false);
            })));
       });
 
@@ -2234,6 +2246,7 @@ describe('Integration', () => {
 
                expectEvents(recordedEvents, [
                  [NavigationStart, '/lazyFalse/loaded'],
+                 //  [GuardsCheckStart, '/lazyFalse/loaded'],
                  [NavigationCancel, '/lazyFalse/loaded'],
                ]);
 
@@ -2250,6 +2263,10 @@ describe('Integration', () => {
                  [RouteConfigLoadStart],
                  [RouteConfigLoadEnd],
                  [RoutesRecognized, '/lazyTrue/loaded'],
+                 [GuardsCheckStart, '/lazyTrue/loaded'],
+                 [GuardsCheckEnd, '/lazyTrue/loaded'],
+                 [ResolveStart, '/lazyTrue/loaded'],
+                 [ResolveEnd, '/lazyTrue/loaded'],
                  [NavigationEnd, '/lazyTrue/loaded'],
                ]);
              })));
@@ -2274,8 +2291,14 @@ describe('Integration', () => {
            expect(location.path()).toEqual('/blank');
 
            expectEvents(recordedEvents, [
-             [NavigationStart, '/lazyFalse/loaded'], [NavigationCancel, '/lazyFalse/loaded'],
-             [NavigationStart, '/blank'], [RoutesRecognized, '/blank'], [NavigationEnd, '/blank']
+             [NavigationStart, '/lazyFalse/loaded'],
+             // No GuardCheck events as `canLoad` is a special guard that's not actually part of the
+             // guard lifecycle.
+             [NavigationCancel, '/lazyFalse/loaded'],
+
+             [NavigationStart, '/blank'], [RoutesRecognized, '/blank'],
+             [GuardsCheckStart, '/blank'], [GuardsCheckEnd, '/blank'], [ResolveStart, '/blank'],
+             [ResolveEnd, '/blank'], [NavigationEnd, '/blank']
            ]);
          })));
 
@@ -3174,6 +3197,8 @@ describe('Integration', () => {
            expect(location.path()).toEqual('/include/user/kate');
            expectEvents(events, [
              [NavigationStart, '/include/user/kate'], [RoutesRecognized, '/include/user/kate'],
+             [GuardsCheckStart, '/include/user/kate'], [GuardsCheckEnd, '/include/user/kate'],
+             [ResolveStart, '/include/user/kate'], [ResolveEnd, '/include/user/kate'],
              [NavigationEnd, '/include/user/kate']
            ]);
            expect(fixture.nativeElement).toHaveText('team  [ user kate, right:  ]');
@@ -3186,8 +3211,10 @@ describe('Integration', () => {
            expect(location.path()).toEqual('/exclude/one');
            expect(Object.keys(router.routerState.root.children).length).toEqual(0);
            expect(fixture.nativeElement).toHaveText('');
-           expectEvents(
-               events, [[NavigationStart, '/exclude/one'], [NavigationEnd, '/exclude/one']]);
+           expectEvents(events, [
+             [NavigationStart, '/exclude/one'], [GuardsCheckStart, '/exclude/one'],
+             [GuardsCheckEnd, '/exclude/one'], [NavigationEnd, '/exclude/one']
+           ]);
            events.splice(0);
 
            // another unsupported URL
@@ -3206,6 +3233,8 @@ describe('Integration', () => {
 
            expectEvents(events, [
              [NavigationStart, '/include/simple'], [RoutesRecognized, '/include/simple'],
+             [GuardsCheckStart, '/include/simple'], [GuardsCheckEnd, '/include/simple'],
+             [ResolveStart, '/include/simple'], [ResolveEnd, '/include/simple'],
              [NavigationEnd, '/include/simple']
            ]);
          })));
@@ -3231,6 +3260,8 @@ describe('Integration', () => {
            expect(location.path()).toEqual('/include/user/kate(aux:excluded)');
            expectEvents(events, [
              [NavigationStart, '/include/user/kate'], [RoutesRecognized, '/include/user/kate'],
+             [GuardsCheckStart, '/include/user/kate'], [GuardsCheckEnd, '/include/user/kate'],
+             [ResolveStart, '/include/user/kate'], [ResolveEnd, '/include/user/kate'],
              [NavigationEnd, '/include/user/kate']
            ]);
            events.splice(0);
@@ -3245,6 +3276,8 @@ describe('Integration', () => {
            expect(location.path()).toEqual('/include/simple(aux:excluded2)');
            expectEvents(events, [
              [NavigationStart, '/include/simple'], [RoutesRecognized, '/include/simple'],
+             [GuardsCheckStart, '/include/simple'], [GuardsCheckEnd, '/include/simple'],
+             [ResolveStart, '/include/simple'], [ResolveEnd, '/include/simple'],
              [NavigationEnd, '/include/simple']
            ]);
          })));
