@@ -198,6 +198,10 @@ JSONStream@^1.2.1:
     jsonparse "^1.2.0"
     through ">=2.2.7 <3"
 
+a-sync-waterfall@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/a-sync-waterfall/-/a-sync-waterfall-1.0.0.tgz#38e8319d79379e24628845b53b96722b29e0e47c"
+
 abab@^1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/abab/-/abab-1.0.3.tgz#b81de5f7274ec4e756d797cd834f303642724e5d"
@@ -1900,14 +1904,14 @@ devtools-timeline-model@1.1.6:
     chrome-devtools-frontend "1.0.401423"
     resolve "1.1.7"
 
-dgeni-packages@^0.19.1:
-  version "0.19.1"
-  resolved "https://registry.yarnpkg.com/dgeni-packages/-/dgeni-packages-0.19.1.tgz#7b96545d0a35151c9c2b0a25133de081090c7ca0"
+dgeni-packages@^0.20.0-rc.1:
+  version "0.20.0-rc.1"
+  resolved "https://registry.yarnpkg.com/dgeni-packages/-/dgeni-packages-0.20.0-rc.1.tgz#dfe5647794d32e541e063edf625005993fd4a8da"
   dependencies:
     canonical-path "0.0.2"
     catharsis "^0.8.1"
     change-case "3.0.0"
-    dgeni "^0.4.7"
+    dgeni "^0.4.9"
     espree "^2.2.3"
     estraverse "^4.1.0"
     glob "^7.0.5"
@@ -1918,16 +1922,30 @@ dgeni-packages@^0.19.1:
     mkdirp "^0.5.1"
     mkdirp-promise "^5.0.0"
     node-html-encoder "0.0.2"
-    nunjucks "^2.4.2"
+    nunjucks "^3.0.1"
     semver "^5.2.0"
     shelljs "^0.7.0"
     spdx-license-list "^2.1.0"
     stringmap "^0.2.2"
-    typescript "^2.2.1"
+    typescript "^2.3.4"
 
 dgeni@^0.4.7:
   version "0.4.7"
   resolved "https://registry.yarnpkg.com/dgeni/-/dgeni-0.4.7.tgz#5070627dd28f88d48006e21f55afb18a9cb8be68"
+  dependencies:
+    canonical-path "~0.0.2"
+    dependency-graph "~0.4.1"
+    di "0.0.1"
+    lodash "^3.10.1"
+    objectdiff "^1.1.0"
+    optimist "~0.6.1"
+    q "~1.4.1"
+    validate.js "^0.9.0"
+    winston "^2.1.1"
+
+dgeni@^0.4.9:
+  version "0.4.9"
+  resolved "https://registry.yarnpkg.com/dgeni/-/dgeni-0.4.9.tgz#9e42775b1386ca5eb824753ac2cd169d8f61ced1"
   dependencies:
     canonical-path "~0.0.2"
     dependency-graph "~0.4.1"
@@ -4901,13 +4919,15 @@ number-is-nan@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/number-is-nan/-/number-is-nan-1.0.1.tgz#097b602b53422a522c1afb8790318336941a011d"
 
-nunjucks@^2.4.2:
-  version "2.5.2"
-  resolved "https://registry.yarnpkg.com/nunjucks/-/nunjucks-2.5.2.tgz#ea7d346e785b8a4874666c3cca9e18c577fba22c"
+nunjucks@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/nunjucks/-/nunjucks-3.0.1.tgz#4de74a3e550baf6fa3370323f3d1c7c2a86bdc4d"
   dependencies:
+    a-sync-waterfall "^1.0.0"
     asap "^2.0.3"
-    chokidar "^1.6.0"
     yargs "^3.32.0"
+  optionalDependencies:
+    chokidar "^1.6.0"
 
 "nwmatcher@>= 1.3.9 < 2.0.0":
   version "1.3.9"
@@ -7187,7 +7207,7 @@ typescript@2.3.2, "typescript@>=2.0.0 <2.4.0":
   version "2.3.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.3.2.tgz#f0f045e196f69a72f06b25fd3bd39d01c3ce9984"
 
-typescript@^2.2.1, typescript@^2.3.3:
+typescript@^2.3.3, typescript@^2.3.4:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.4.1.tgz#c3ccb16ddaa0b2314de031e7e6fee89e5ba346bc"
 
@@ -8041,10 +8061,6 @@ zip-stream@~0.6.0:
     lodash "~3.10.1"
     readable-stream "~1.0.26"
 
-zone.js@^0.8.12:
+zone.js@^0.8.12, zone.js@^0.8.4:
   version "0.8.12"
   resolved "https://registry.yarnpkg.com/zone.js/-/zone.js-0.8.12.tgz#86ff5053c98aec291a0bf4bbac501d694a05cfbb"
-
-zone.js@^0.8.4:
-  version "0.8.10"
-  resolved "https://registry.yarnpkg.com/zone.js/-/zone.js-0.8.10.tgz#6d1b696492c029cdbe808e59e87bbd9491b98aa8"
