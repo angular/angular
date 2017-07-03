@@ -238,7 +238,7 @@ export class UpgradeModule {
                 setTimeout(() => {
                   const $rootScope = $injector.get('$rootScope');
                   const subscription =
-                      this.ngZone.onMicrotaskEmpty.subscribe(() => $rootScope.$digest());
+                      this.ngZone.onMicrotaskEmpty.subscribe(() => $rootScope.$evalAsync());
                   $rootScope.$on('$destroy', () => { subscription.unsubscribe(); });
                 }, 0);
               }
