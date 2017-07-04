@@ -1076,7 +1076,7 @@ The Angular code is shown using TypeScript.
       * `imports`: specifies the list of other modules that this module depends upon
       * `declaration`: keeps track of your components, pipes, and directives.
 
-      For more information on modules, see [NgModules](guide/ngmodule).
+      For more information on modules, see [NgModules](guide/ngmodules).
     </td>
 
   </tr>

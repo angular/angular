@@ -181,7 +181,7 @@ The _Routing Module_ replaces the previous _routing object_ involving the `Modul
 
 All guided samples with routing use the _Routing Module_ and prose content has been updated,
 most conspicuously in the
-[NgModule](guide/ngmodule) guide and [NgModule FAQ](guide/ngmodule-faq) guide.
+[NgModule](guide/ngmodules) guide and [NgModule FAQ](guide/ngmodule-faq) guide.
 
 ## New "Internationalization" guide (2016-09-30)
 
