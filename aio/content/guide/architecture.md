@@ -34,7 +34,8 @@ You'll learn the details in the pages that follow. For now, focus on the big pic
 Angular apps are modular and Angular has its own modularity system called _NgModules_.
 
 NgModules are a big deal.
-This page introduces modules; the [NgModules](guide/ngmodule) page covers them in depth.
+This page introduces modules; the [NgModules](guide/ngmodules) pages 
+relating to NgModules covers them in detail.
 
 <br class="clear">
 
@@ -139,7 +140,7 @@ Hang in there. The confusion yields to clarity with time and experience.
 
 <div class="l-sub-section">
 
-  Learn more from the [NgModules](guide/ngmodule) page.
+  Learn more from the [NgModules](guide/ngmodules) page.
 
 </div>
 

@@ -270,7 +270,7 @@ The following are all in `src/`
 
 
       Compiles the application with the [JIT compiler](guide/glossary#jit) and
-      [bootstraps](guide/bootstrapping#main "bootstrap the application")
+      [bootstraps](guide/bootstrapping)
       the application's main module (`AppModule`) to run in the browser.
       The JIT compiler is a reasonable choice during the development of most projects and
       it's the only viable choice for a sample running in a _live-coding_ environment like Plunker.

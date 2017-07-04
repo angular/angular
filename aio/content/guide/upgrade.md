@@ -387,7 +387,7 @@ bootstrapping the AngularJS module.
 
 <div class="l-sub-section">
 
-Read more about [NgModules](guide/ngmodule).
+For more information, see [NgModules](guide/ngmodules).
 
 </div>
 
