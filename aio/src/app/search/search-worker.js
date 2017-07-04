@@ -18,7 +18,8 @@ self.onmessage = handleMessage;
 function createIndex(addFn) {
   return lunr(/** @this */function() {
     this.ref('path');
-    this.field('titleWords', {boost: 50});
+    this.field('titleWords', {boost: 100});
+    this.field('headingWords', {boost: 50});
     this.field('members', {boost: 40});
     this.field('keywords', {boost: 20});
     addFn(this);
