@@ -578,7 +578,7 @@ function; it can only contain a single `return` statement.
 
 The Angular [`RouterModule`](api/router/RouterModule) exports two macro static methods, `forRoot` and `forChild`, to help declare root and child routes.
 Review the [source code](https://github.com/angular/angular/blob/master/packages/router/src/router_module.ts#L139 "RouterModule.forRoot source code")
-for these methods to see how macros can simplify configuration of complex [NgModules](guide/ngmodule).
+for these methods to see how macros can simplify configuration of complex [NgModules](guide/ngmodules).
 
 {@ metadata-rewriting}
 ### Metadata rewriting

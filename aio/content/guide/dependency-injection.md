@@ -160,7 +160,7 @@ Providing the `UserService` with an Angular module is a good choice.
 <div class="l-sub-section">
 
 To be precise, Angular module providers are registered with the root injector
-_unless the module is_ [lazy loaded](guide/ngmodule#lazy-load-DI).
+_unless the module is_ [lazy loaded](guide/lazy-loading-ngmodules).
 In this sample, all modules are _eagerly loaded_ when the application starts,
 so all module providers are registered with the app's root injector.
 
