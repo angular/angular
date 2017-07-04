@@ -80,17 +80,7 @@ function loadIndex(searchInfo) {
 
 // Query the index and return the processed results
 function queryIndex(query) {
-  // The index requires the query to be lowercase
-  var terms = query.toLowerCase().split(/\s+/);
-  var results = index.query(function(qb) {
-    terms.forEach(function(term) {
-      // Only include terms that are longer than 2 characters, if there is more than one term
-      // Add trailing wildcard to each term so that it will match more results
-      if (terms.length === 1 || term.trim().length > 2) {
-        qb.term(term, { wildcard: lunr.Query.wildcard.TRAILING });
-      }
-    });
-  });
+  var results = index.search(query);
   // Only return the array of paths to pages
   return results.map(function(hit) { return pages[hit.ref]; });
 }
