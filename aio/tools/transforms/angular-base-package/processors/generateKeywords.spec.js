@@ -42,9 +42,9 @@ describe('generateKeywords processor', () => {
   it('should compute `doc.searchTitle` from the doc properties if not already provided', () => {
     const processor = processorFactory(mockLogger, mockReadFilesProcessor);
     const docs = [
-      { docType: 'class', name: 'A', searchTitle: 'searchTitle A', title: 'title A', vFile: { title: 'vFile A'} },
-      { docType: 'class', name: 'B', title: 'title B', vFile: { title: 'vFile B'} },
-      { docType: 'class', name: 'C', vFile: { title: 'vFile C'} },
+      { docType: 'class', name: 'A', searchTitle: 'searchTitle A', title: 'title A', vFile: { headings: { h1: ['vFile A'] } } },
+      { docType: 'class', name: 'B', title: 'title B', vFile: { headings: { h1: ['vFile B'] } } },
+      { docType: 'class', name: 'C', vFile: { title: 'vFile C', headings: { h1: ['vFile C'] } } },
       { docType: 'class', name: 'D' },
     ];
     processor.$process(docs);
@@ -62,19 +62,82 @@ describe('generateKeywords processor', () => {
       { docType: 'class', name: 'PublicExport', searchTitle: 'class PublicExport' },
     ];
     processor.$process(docs);
-    expect(docs[docs.length - 1].data).toEqual([
+    const keywordsDoc = docs[docs.length - 1];
+    expect(keywordsDoc.data).toEqual([
       jasmine.objectContaining({ title: 'class PublicExport', type: 'class'})
     ]);
+  });
+
+  it('should add title words to the search terms', () => {
+    const processor = processorFactory(mockLogger, mockReadFilesProcessor);
+    const docs = [
+      {
+        docType: 'class',
+        name: 'PublicExport',
+        searchTitle: 'class PublicExport',
+        vFile: { headings: { h2: ['heading A', 'heading B'] } }
+      },
+    ];
+    processor.$process(docs);
+    const keywordsDoc = docs[docs.length - 1];
+    expect(keywordsDoc.data[0].titleWords).toEqual('class PublicExport');
+  });
+
+  it('should add heading words to the search terms', () => {
+    const processor = processorFactory(mockLogger, mockReadFilesProcessor);
+    const docs = [
+      {
+        docType: 'class',
+        name: 'PublicExport',
+        searchTitle: 'class PublicExport',
+        vFile: { headings: { h2: ['Important heading', 'Secondary heading'] } }
+      },
+    ];
+    processor.$process(docs);
+    const keywordsDoc = docs[docs.length - 1];
+    expect(keywordsDoc.data[0].headingWords).toEqual('heading important secondary');
+  });
+
+  it('should process terms prefixed with "ng" to include the term stripped of "ng"', () => {
+    const processor = processorFactory(mockLogger, mockReadFilesProcessor);
+    const docs = [
+      {
+        docType: 'class',
+        name: 'PublicExport',
+        searchTitle: 'ngController',
+        vFile: { headings: { h2: ['ngModel'] } },
+        content: 'Some content with ngClass in it.'
+      },
+    ];
+    processor.$process(docs);
+    const keywordsDoc = docs[docs.length - 1];
+    expect(keywordsDoc.data[0].titleWords).toEqual('ngController Controller');
+    expect(keywordsDoc.data[0].headingWords).toEqual('model ngmodel');
+    expect(keywordsDoc.data[0].keywords).toContain('class');
+    expect(keywordsDoc.data[0].keywords).toContain('ngclass');
   });
 
   it('should generate renderedContent property', () => {
     const processor = processorFactory(mockLogger, mockReadFilesProcessor);
     const docs = [
-      { docType: 'class', name: 'SomeClass', description: 'The is the documentation for the SomeClass API.' },
+      {
+        docType: 'class',
+        name: 'SomeClass',
+        description: 'The is the documentation for the SomeClass API.',
+        vFile: { headings: { h1: ['SomeClass'], h2: ['Some heading'] } }
+      },
     ];
     processor.$process(docs);
-    expect(docs[docs.length - 1].renderedContent).toEqual(
-      '[{"title":"SomeClass","type":"class","titleWords":"SomeClass","keywords":"api class documentation for is someclass the","members":""}]'
+    const keywordsDoc = docs[docs.length - 1];
+    expect(JSON.parse(keywordsDoc.renderedContent)).toEqual(
+      [{
+        'title':'SomeClass',
+        'type':'class',
+        'titleWords':'SomeClass',
+        'headingWords':'heading some someclass',
+        'keywords':'api class documentation for is someclass the',
+        'members':''
+      }]
     );
   });
 });

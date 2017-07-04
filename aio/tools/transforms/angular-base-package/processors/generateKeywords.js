@@ -50,19 +50,14 @@ module.exports = function generateKeywordsProcessor(log, readFilesProcessor) {
 
       var ignoreWordsMap = convertToMap(wordsToIgnore);
 
-      // If the title contains a name starting with ng, e.g. "ngController", then add the module
-      // name
-      // without the ng to the title text, e.g. "controller".
-      function extractTitleWords(title) {
-        var match = /ng([A-Z]\w*)/.exec(title);
-        if (match) {
-          title = title + ' ' + match[1].toLowerCase();
-        }
-        return title;
+      // If the heading contains a name starting with ng, e.g. "ngController", then add the
+      // name without the ng to the text, e.g. "controller".
+      function preprocessText(text) {
+        return text.replace(/(^|\s)([nN]g([A-Z]\w*))/g, '$1$2 $3');
       }
 
       function extractWords(text, words, keywordMap) {
-        var tokens = text.toLowerCase().split(/[.\s,`'"#]+/mg);
+        var tokens = preprocessText(text).toLowerCase().split(/[.\s,`'"#]+/mg);
         tokens.forEach(function(token) {
           var match = token.match(KEYWORD_REGEX);
           if (match) {
@@ -82,13 +77,15 @@ module.exports = function generateKeywordsProcessor(log, readFilesProcessor) {
           // Ignore internals and private exports (indicated by the ɵ prefix)
           .filter(function(doc) { return !doc.internal && !doc.privateExport; });
 
-      filteredDocs.forEach(function(doc) {
 
+      filteredDocs.forEach(function(doc) {
 
         var words = [];
         var keywordMap = Object.assign({}, ignoreWordsMap);
         var members = [];
-        var membersMap = {};
+        var membersMap = Object.assign({}, ignoreWordsMap);
+        const headingWords = [];
+        const headingWordMap = Object.assign({}, ignoreWordsMap);
 
         // Search each top level property of the document for search terms
         Object.keys(doc).forEach(function(key) {
@@ -98,26 +95,44 @@ module.exports = function generateKeywordsProcessor(log, readFilesProcessor) {
             extractWords(value, words, keywordMap);
           }
 
+          // Special case properties that contain content relating to "members"
+          // of a doc that represents, say, a class or interface
           if (key === 'methods' || key === 'properties' || key === 'events') {
             value.forEach(function(member) { extractWords(member.name, members, membersMap); });
           }
         });
 
-        doc.searchTitle = doc.searchTitle || doc.title || doc.vFile && doc.vFile.title || doc.name;
+        // Extract all the keywords from the headings
+        if (doc.vFile && doc.vFile.headings) {
+          Object.keys(doc.vFile.headings).forEach(function(headingTag) {
+            doc.vFile.headings[headingTag].forEach(function(headingText) {
+              extractWords(headingText, headingWords, headingWordMap);
+            });
+          });
+        }
 
+        // Extract the title to use in searches
+        doc.searchTitle = doc.searchTitle || doc.title || doc.vFile && doc.vFile.title || doc.name || '';
+
+        // Attach all this search data to the document
         doc.searchTerms = {
-          titleWords: extractTitleWords(doc.searchTitle),
+          titleWords: preprocessText(doc.searchTitle),
+          headingWords: headingWords.sort().join(' '),
           keywords: words.sort().join(' '),
           members: members.sort().join(' ')
         };
 
       });
 
-      var searchData =
-          filteredDocs.filter(function(page) { return page.searchTerms; }).map(function(page) {
-            return Object.assign(
-                {path: page.path, title: page.searchTitle, type: page.docType}, page.searchTerms);
-          });
+      // Now process all the search data and collect it up to be used in creating a new document
+      var searchData = filteredDocs.map(function(page) {
+        // Copy the properties from the searchTerms object onto the search data object
+        return Object.assign({
+          path: page.path,
+          title: page.searchTitle,
+          type: page.docType
+        }, page.searchTerms);
+      });
 
       docs.push({
         docType: 'json-doc',
