@@ -2,5 +2,6 @@
 import { registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 
-registerLocaleData(localeFr);
+// the second parameter 'fr' is optional
+registerLocaleData(localeFr, 'fr');
 // #enddocregion import-locale
