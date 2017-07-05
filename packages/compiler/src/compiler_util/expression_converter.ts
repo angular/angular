@@ -170,7 +170,7 @@ class _BuiltinAstConverter extends cdAst.AstTransformer {
   visitLiteralMap(ast: cdAst.LiteralMap, context: any): any {
     const args = ast.values.map(ast => ast.visit(this, context));
     return new BuiltinFunctionCall(
-        ast.span, args, this._converterFactory.createLiteralMapConverter(ast.keys));
+        ast.span, args, this._converterFactory.createLiteralMapConverter(ast.keys.map(k => k.key)));
   }
 }
 
