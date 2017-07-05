@@ -25,7 +25,10 @@ const prerenderOutFile = join(outDir, 'prerender.js');
 task('universal:test-prerender', ['universal:build'], execTask(
   // Runs node with the tsconfig-paths module to alias the @angular/material dependency.
   'node', ['-r', 'tsconfig-paths/register', prerenderOutFile], {
-    env: {TS_NODE_PROJECT: tsconfigPrerenderPath}
+    env: {TS_NODE_PROJECT: tsconfigPrerenderPath},
+    // Errors in lifecycle hooks will write to STDERR, but won't exit the process with an
+    // error code, however we still want to catch those cases in the CI.
+    failOnStderr: true
   }
 ));
 

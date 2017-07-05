@@ -49,6 +49,8 @@ export interface ExecTaskOptions {
   errMessage?: string;
   // Environment variables being passed to the child process.
   env?: any;
+  // Whether the task should fail if the process writes to STDERR.
+  failOnStderr?: boolean;
 }
 
 /** Create a task that executes a binary as if from the command line. */
@@ -56,24 +58,23 @@ export function execTask(binPath: string, args: string[], options: ExecTaskOptio
   return (done: (err?: string) => void) => {
     const env = Object.assign({}, process.env, options.env);
     const childProcess = child_process.spawn(binPath, args, {env});
+    const stderrData: string[] = [];
 
     if (!options.silentStdout && !options.silent) {
       childProcess.stdout.on('data', (data: string) => process.stdout.write(data));
     }
 
-    if (!options.silent) {
-      childProcess.stderr.on('data', (data: string) => process.stderr.write(data));
+    if (!options.silent || options.failOnStderr) {
+      childProcess.stderr.on('data', (data: string) => {
+        options.failOnStderr ? stderrData.push(data) : process.stderr.write(data);
+      });
     }
 
     childProcess.on('close', (code: number) => {
-      if (code != 0) {
-        if (options.errMessage === undefined) {
-          done('Process failed with code ' + code);
-        } else {
-          done(options.errMessage);
-        }
+      if (options.failOnStderr && stderrData.length) {
+        done(stderrData.join('\n'));
       } else {
-        done();
+        code != 0 ? done(options.errMessage || `Process failed with code ${code}`) : done();
       }
     });
   };
