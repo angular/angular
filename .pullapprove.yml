@@ -93,6 +93,7 @@ groups:
         - "packages/core/*"
     users:
       - tbosch #primary
+      - chuckjaz
       - mhevery
       - vicb
       - IgorMinar #fallback
