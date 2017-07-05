@@ -28,6 +28,9 @@ $(npm bin)/gulp docs
 ./scripts/deploy/publish-build-artifacts.sh --no-build &
 ./scripts/deploy/publish-docs-content.sh --no-build &
 
+# Publish the build tools of Angular Material on GitHub.
+./scripts/deploy/publish-build-tools.sh &
+
 # Deploy the screenshot and dashboard functions for each push build.
 ./scripts/deploy/deploy-screenshot-functions.sh &
 ./scripts/deploy/deploy-dashboard.sh &
