@@ -188,7 +188,7 @@
 
 ### Bug Fixes
 
-* **animations:** make sure reuseable animation subtitutions work without default params ([#16875](https://github.com/angular/angular/issues/16875)) ([7d9f96a](https://github.com/angular/angular/commit/7d9f96a))
+* **animations:** make sure reusable animation substitutions work without default params ([#16875](https://github.com/angular/angular/issues/16875)) ([7d9f96a](https://github.com/angular/angular/commit/7d9f96a))
 * **animations:** only require one flushMicrotasks call when testing animations ([6cb93c1](https://github.com/angular/angular/commit/6cb93c1))
 * **compiler:** avoid a `...null` spread in extraction ([#16547](https://github.com/angular/angular/issues/16547)) ([e0a8376](https://github.com/angular/angular/commit/e0a8376))
 * **compiler-cli:** allow '==' to compare nullable types ([#16731](https://github.com/angular/angular/issues/16731)) ([d761059](https://github.com/angular/angular/commit/d761059))
@@ -203,7 +203,7 @@
 ### Features
 
 * **animations:** introduce a wave of new animation features ([16c8167](https://github.com/angular/angular/commit/16c8167))
-* **animations:** introduce routeable animation support ([f1a9e3c](https://github.com/angular/angular/commit/f1a9e3c))
+* **animations:** introduce routable animation support ([f1a9e3c](https://github.com/angular/angular/commit/f1a9e3c))
 * add .ngsummary.ts files to support AOT unit tests ([547c363](https://github.com/angular/angular/commit/547c363))
 * introduce `TestBed.overrideProvider` ([#16725](https://github.com/angular/angular/issues/16725)) ([39b92f7](https://github.com/angular/angular/commit/39b92f7))
 * **compiler:** support a non-null postfix assert ([#16672](https://github.com/angular/angular/issues/16672)) ([b9521b5](https://github.com/angular/angular/commit/b9521b5))
