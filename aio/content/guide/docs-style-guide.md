@@ -40,9 +40,9 @@ The flat folder approach allows us to shuffle the apparent navigation structure 
 
 The doc generation process consumes the markdown files in the `content/guide` directory and produces JSON files in the `src/generated/docs/guide` directory, which is also flat. Those JSON files contain a combination of document metadata and HTML content.
 
-The reader request a page by its Page URL. The doc viewer fetches the corresponding JSON file, interprets it, and renders it as fully-formed HTML page.
+The reader requests a page by its Page URL. The doc viewer fetches the corresponding JSON file, interprets it, and renders it as fully-formed HTML page.
 
-Page URLs mirror the `content` file structure. A guide page URL is in the form `guide/{page-name}`. _This_ guide page is located at `context/guide/docs-style-guide.md` and its URL is `guide/docs-style-guide`.
+Page URLs mirror the `content` file structure. The URL for the page of a guide is in the form `guide/{page-name}`. The page for _this_ "Authors Style Guide" is located at `content/guide/docs-style-guide.md` and its URL is `guide/docs-style-guide`.
 
 
 <div class="l-sub-section">
@@ -64,7 +64,7 @@ While documentation guide pages ultimately render as HTML, almost all of them ar
 
 Markdown is easier to read and to edit than HTML. Many editors (including Visual Studio Code) can render markdown as you type it.
 
-From time to time you'll have to step away from markdown and write a portion of the document in HTML. markdown allows you to mix HTML and markdown in the same document.
+From time to time you'll have to step away from markdown and write a portion of the document in HTML. Markdown allows you to mix HTML and markdown in the same document.
 
 Standard markdown processors don't allow you to put markdown _within_ HTML tags. But the Angular documentation markdown processor **supports markdown within HTML**, as long as you follow one rule:
 
@@ -77,14 +77,14 @@ Standard markdown processors don't allow you to put markdown _within_ HTML tags.
 ```html
 <div class="alert is-critical">
 
-  **Always** follow every opening and closing opening HTML tag with _a blank line_. 
+  **Always** follow every opening and closing HTML tag with _a blank line_. 
 
 </div>
 ```
 
 <div class="l-sub-section">
 
-  It is customary but not required to precede the _closing HTML_ tag with a blank tag as well.
+  It is customary but not required to _precede_ the _closing HTML_ tag with a blank line as well.
 
 </div>
 
@@ -101,7 +101,7 @@ Begin the title with the markdown `#` character. Alternatively, you can write th
 
 **Only one title (`<h1>`) per document!**
 
-Title text should be in "Title Case", which means that you use capital letters to start the first works and all _principal_. Use lower case letters for _secondary words such as "in", "of", and "the".
+Title text should be in "Title Case", which means that you use capital letters to start the first words and all _principal_ words. Use lower case letters for _secondary words such as "in", "of", and "the".
 
 ```html
   # The Meat of the Matter
@@ -113,7 +113,7 @@ Title text should be in "Title Case", which means that you use capital letters t
 
 A typical document is divided into sections. 
 
-All section heading text should be in "Sentence Case", which means the first word is capitalized and all other words are lower case.
+All section heading text should be in "Sentence case", which means the first word is capitalized and all other words are lower case.
 
 **Always follow the section heading with at least one blank line.**
 
@@ -313,7 +313,7 @@ In all other cases, code snippets should be generated automatically from tested 
 
 One of the documentation design goals is that guide page code snippets should be examples of real, working code.
 
-We meet this goal by displaying code snippets that are derived directly from standalone code samples, written specifically for these guide page.
+We meet this goal by displaying code snippets that are derived directly from standalone code samples, written specifically for these guide pages.
 
 The author of a guide page is responsible for the code sample that supports that page.
 The author must also write end-to-end tests for the sample.
@@ -343,10 +343,11 @@ Here's the brief markup that produced that lengthy snippet:
 ```html
 <code-example 
   path="docs-style-guide/src/app/app.module.ts" 
-  title="src/app/app.module.ts"></code-example>
+  title="src/app/app.module.ts">
+</code-example>
 ```
 
-You identified the snippet's source file by setting the `path` attribute to sample folder's location_within `content/examples`.
+You identified the snippet's source file by setting the `path` attribute to sample folder's location _within_ `content/examples`.
 In this example, that path is  `docs-style-guide/src/app/app.module.ts`.  
 
 You added a header to tell the reader where to find the file by setting the `title` attribute.
@@ -369,7 +370,7 @@ You control the _code-example_ output by setting one or more of its attributes:
 
 * `region`- displays the source file fragment with that region name; regions are identified by _docregion_ markup in the source file, as explained [below](#region "Displaying a code fragment").
 
-* `linenums`- value may be `true`, `false`, or a `number`. When not specified, line numbers are automatically displayed when there are 10 or more lines of code. The rarely used `number` option starts line numbering at the given value. `linenums=4` sets the starting line number to 4.
+* `linenums`- value may be `true`, `false`, or a `number`. When not specified, line numbers are automatically displayed when there are greater than 10 lines of code. The rarely used `number` option starts line numbering at the given value. `linenums=4` sets the starting line number to 4.
 
 * `class`- code snippets can be styled with the CSS classes `no-box`, `code-shell`, and `avoid`.
 
@@ -385,7 +386,8 @@ Often you want to focus on a fragment of code within a sample code file. In this
 
 <code-example 
   path="docs-style-guide/src/app/app.module.ts" 
-  region="class"></code-example>
+  region="class">
+</code-example>
 
 First you surround that fragment in the source file with a named _docregion_ as described [below](#source-code-markup).
 Then you reference that _docregion_ in the `region` attribute of the `<code-example>` like this
@@ -394,12 +396,13 @@ Then you reference that _docregion_ in the `region` attribute of the `<code-exam
 ```html
 <code-example 
   path="docs-style-guide/src/app/app.module.ts" 
-  region="class"></code-example>
+  region="class">
+</code-example>
 ```
 
 A couple of observations:
 
-1. The `region` value, `"class"`, is the name of the `#docregion` in the source file. Confirm that by looking at `content/examples/ocs-style-guide/src/app/app.module.ts`
+1. The `region` value, `"class"`, is the name of the `#docregion` in the source file. Confirm that by looking at `content/examples/docs-style-guide/src/app/app.module.ts`
 
 1. Omitting the `title` is fine when the source of the fragment is obvious. We just said that this is a fragment of the `app.module.ts` file which was displayed immediately above, in full, with a header.
 There's no need to repeat the header.
@@ -431,21 +434,20 @@ Here's the markup for an "avoid" example in the
 {@a code-tabs}
 ### Code Tabs
 
-Code tabs display code much like Code examples do.  The added advantage is that they can display mutiple code samples within a tabbed interface.  Each tab is displayed using Code-pane.
+Code tabs display code much like _code examples_ do.  The added advantage is that they can display mutiple code samples within a tabbed interface.  Each tab is displayed using _code pane_.
 
 #### Code-tabs attributes
 
-* `linenums`: The value can be `true`, `false` or a number indicating the starting line number. If not specified, line numbers are are enabled only when code for a tab pane has 10 or more lines.
+* `linenums`: The value can be `true`, `false` or a number indicating the starting line number. If not specified, line numbers are enabled only when code for a tab pane has greater than 10 lines of code.
 
 #### Code-pane attributes
 
 * `path` - a file in the content/examples folder
 * `title` - seen in the header of a tab
-* `linenums` - overrides the `linenums` property at the `code-tabs` level for this particular pane. The value can be `true`, `false` or a number indicating the starting line number. If not specified, line numbers are are enabled only when there are 10 or more lines.
+* `linenums` - overrides the `linenums` property at the `code-tabs` level for this particular pane. The value can be `true`, `false` or a number indicating the starting line number. If not specified, line numbers are enabled only when the number of lines of code are greater than 10.
 
 The next example displays multiple code tabs, each with its own title.
-Line numbers are explicitly disabled for all panes at the `<code-tabs>` level.
-The second pane adds line numbers back for itself. 
+It demonstrates control over display of line numbers at both the `<code-tabs>` and `<code-pane>` levels.
 
 <code-tabs linenums="false">
   <code-pane 
@@ -469,6 +471,9 @@ The second pane adds line numbers back for itself.
 </code-tabs>
 
 Here's the markup for that example.
+
+Note how the `linenums` attribute in the  `<code-tabs>` explicitly disables numbering for all panes.
+The `linenums` attribute in the second pane restores line numbering for _itself only_.
 
 ```html
 <code-tabs linenums="false">
@@ -763,7 +768,7 @@ To link to a plunker defined by a named `plnkr.json` file, set the `plnkr` attri
 
 <h3 class="no-toc">Live Example without download</h3> 
 
-To skip the download link, add the `noDownload` attribute
+To skip the download link, add the `noDownload` attribute.
 
 <live-example noDownload>Just the plunker</live-example>
 
@@ -781,7 +786,7 @@ To skip the live plunker link and only link to the download, add the `downloadOn
 <live-example downloadOnly>Download only</live-example>
 ```
 
-<h3 class="no-toc"Embedded live example></h3> 
+<h3 class="no-toc">Embedded live example</h3> 
 
 By default, a live example link opens a plunker in a separate browser tab. 
 You can embed the plunker within the guide page itself by adding the `embedded` attribute.
