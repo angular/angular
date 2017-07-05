@@ -2,11 +2,10 @@ import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as gulp from 'gulp';
 import * as path from 'path';
-import {buildConfig} from 'material2-build-tools';
+import {buildConfig, sequenceTask} from 'material2-build-tools';
 
 /* Those imports lack typings. */
 const gulpClean = require('gulp-clean');
-const gulpRunSequence = require('run-sequence');
 const gulpConnect = require('gulp-connect');
 
 // There are no type definitions available for these imports.
@@ -129,13 +128,10 @@ export function buildAppTask(appName: string) {
     .map(taskName => `:build:${appName}:${taskName}`)
     .filter(taskName => gulp.hasTask(taskName));
 
-  return (done: () => void) => {
-    gulpRunSequence(
-      'material:clean-build',
-      [...buildTasks],
-      done
-    );
-  };
+  return sequenceTask(
+    'material:clean-build',
+    [...buildTasks]
+  );
 }
 
 /**
