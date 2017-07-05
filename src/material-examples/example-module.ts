@@ -83,7 +83,7 @@ import {DatepickerMinMaxExample} from './datepicker-min-max/datepicker-min-max-e
 import {DatepickerFilterExample} from './datepicker-filter/datepicker-filter-example';
 import {DatepickerTouchExample} from './datepicker-touch/datepicker-touch-example';
 import {DatepickerApiExample} from './datepicker-api/datepicker-api-example';
-
+import {InputClearableExample} from './input-clearable/input-clearable-example';
 import {
   MdAutocompleteModule, MdButtonModule, MdButtonToggleModule, MdCardModule, MdCheckboxModule,
   MdChipsModule, MdDatepickerModule, MdDialogModule, MdGridListModule, MdIconModule, MdInputModule,
@@ -147,6 +147,7 @@ export const EXAMPLE_COMPONENTS = {
   'grid-list-overview': {title: 'Basic grid-list', component: GridListOverviewExample},
   'icon-overview': {title: 'Basic icons', component: IconOverviewExample},
   'icon-svg': {title: 'SVG icons', component: IconSvgExample},
+  'input-clearable': {title: 'Input with clear button', component: InputClearableExample},
   'input-form': {title: 'Inputs in a form', component: InputFormExample},
   'input-overview': {title: 'Basic inputs', component: InputOverviewExample},
   'input-errors': {title: 'Input Errors', component: InputErrorsExample},
@@ -267,6 +268,7 @@ export const EXAMPLE_LIST = [
   GridListOverviewExample,
   IconOverviewExample,
   IconSvgExample,
+  InputClearableExample,
   InputFormExample,
   InputOverviewExample,
   InputPrefixSuffixExample,

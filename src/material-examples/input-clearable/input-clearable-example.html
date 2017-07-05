@@ -1,0 +1,6 @@
+<md-input-container class="example-input-container">
+  <input mdInput type="text" placeholder="Clearable input" [(ngModel)]="value"/>
+  <md-button *ngIf="value" mdSuffix md-icon-button aria-label="Clear" (click)="value=''">
+    <md-icon>close</md-icon>
+  </md-button>
+</md-input-container>
