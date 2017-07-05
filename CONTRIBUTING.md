@@ -206,6 +206,7 @@ The scope should be the name of the npm package affected (as perceived by person
 
 The following is the list of supported scopes:
 
+* **animations**
 * **common**
 * **compiler**
 * **compiler-cli**
