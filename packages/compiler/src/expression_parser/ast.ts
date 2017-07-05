@@ -136,8 +136,12 @@ export class LiteralArray extends AST {
   }
 }
 
+export type LiteralMapKey = {
+  key: string; quoted: boolean;
+};
+
 export class LiteralMap extends AST {
-  constructor(span: ParseSpan, public keys: any[], public values: any[]) { super(span); }
+  constructor(span: ParseSpan, public keys: LiteralMapKey[], public values: any[]) { super(span); }
   visit(visitor: AstVisitor, context: any = null): any {
     return visitor.visitLiteralMap(this, context);
   }
