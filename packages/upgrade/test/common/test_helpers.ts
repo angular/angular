@@ -20,9 +20,10 @@ export function html(html: string): Element {
   return div;
 }
 
-export function multiTrim(text: string | null | undefined): string {
+export function multiTrim(text: string | null | undefined, allSpace = false): string {
   if (typeof text == 'string') {
-    return text.replace(/\n/g, '').replace(/\s\s+/g, ' ').trim();
+    const repl = allSpace ? '' : ' ';
+    return text.replace(/\n/g, '').replace(/\s+/g, repl).trim();
   }
   throw new Error('Argument can not be undefined.');
 }
