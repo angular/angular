@@ -57,8 +57,8 @@ export class MdRipple implements OnChanges, OnDestroy {
   @Input('mdRippleCentered') centered: boolean;
 
   /**
-   * Whether click events will not trigger the ripple. It can still be triggered by manually
-   * calling createRipple()
+   * Whether click events will not trigger the ripple. Ripples can be still launched manually
+   * by using the `launch()` method.
    */
   @Input('mdRippleDisabled') disabled: boolean;
 
