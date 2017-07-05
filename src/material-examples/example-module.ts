@@ -98,6 +98,7 @@ import {TableBasicExample} from './table-basic/table-basic-example';
 import {TableSortingExample} from './table-sorting/table-sorting-example';
 import {TableFilteringExample} from './table-filtering/table-filtering-example';
 import {CdkTableBasicExample} from './cdk-table-basic/cdk-table-basic-example';
+import {SortOverviewExample} from './sort-overview/sort-overview-example';
 
 export interface LiveExample {
   title: string;
@@ -197,6 +198,7 @@ export const EXAMPLE_COMPONENTS = {
   },
   'slide-toggle-forms': {title: 'Slide-toggle with forms', component: SlideToggleFormsExample},
   'slide-toggle-overview': {title: 'Basic slide-toggles', component: SlideToggleOverviewExample},
+  'sort-overview': {title: 'Sorting overview', component: SortOverviewExample},
   'snack-bar-component': {
     title: 'Snack-bar with a custom component',
     component: SnackBarComponentExample
@@ -312,6 +314,7 @@ export const EXAMPLE_LIST = [
   SlideToggleConfigurableExample,
   SlideToggleOverviewExample,
   SlideToggleFormsExample,
+  SortOverviewExample,
   SnackBarComponentExample,
   PizzaPartyComponent,
   SnackBarOverviewExample,

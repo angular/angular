@@ -1,0 +1,17 @@
+<table mdSort (mdSortChange)="sortData($event)">
+  <tr>
+    <th md-sort-header="name">Dessert (100g)</th>
+    <th md-sort-header="calories">Calories</th>
+    <th md-sort-header="fat">Fat (g)</th>
+    <th md-sort-header="carbs">Carbs (g)</th>
+    <th md-sort-header="protein">Protein (g)</th>
+  </tr>
+
+  <tr *ngFor="let dessert of sortedData">
+    <td>{{dessert.name}}</td>
+    <td>{{dessert.calories}}</td>
+    <td>{{dessert.fat}}</td>
+    <td>{{dessert.carbs}}</td>
+    <td>{{dessert.protein}}</td>
+  </tr>
+</table>
