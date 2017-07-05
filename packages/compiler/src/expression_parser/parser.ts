@@ -290,24 +290,24 @@ export class _ParseAST {
     this.error(`Missing expected operator ${operator}`);
   }
 
-  expectIdentifierOrKeyword(): string|null {
+  expectIdentifierOrKeyword(): string {
     const n = this.next;
     if (!n.isIdentifier() && !n.isKeyword()) {
       this.error(`Unexpected token ${n}, expected identifier or keyword`);
       return '';
     }
     this.advance();
-    return n.toString();
+    return n.toString() as string;
   }
 
-  expectIdentifierOrKeywordOrString(): string|null {
+  expectIdentifierOrKeywordOrString(): string {
     const n = this.next;
     if (!n.isIdentifier() && !n.isKeyword() && !n.isString()) {
       this.error(`Unexpected token ${n}, expected identifier, keyword, or string`);
       return '';
     }
     this.advance();
-    return n.toString();
+    return n.toString() as string;
   }
 
   parseChain(): AST {
@@ -340,7 +340,7 @@ export class _ParseAST {
       }
 
       do {
-        const name = this.expectIdentifierOrKeyword() !;
+        const name = this.expectIdentifierOrKeyword();
         const args: AST[] = [];
         while (this.optionalCharacter(chars.$COLON)) {
           args.push(this.parseExpression());
@@ -612,7 +612,7 @@ export class _ParseAST {
     if (!this.optionalCharacter(chars.$RBRACE)) {
       this.rbracesExpected++;
       do {
-        const key = this.expectIdentifierOrKeywordOrString() !;
+        const key = this.expectIdentifierOrKeywordOrString();
         keys.push(key);
         this.expectCharacter(chars.$COLON);
         values.push(this.parsePipe());
@@ -625,7 +625,7 @@ export class _ParseAST {
 
   parseAccessMemberOrMethodCall(receiver: AST, isSafe: boolean = false): AST {
     const start = receiver.span.start;
-    const id = this.expectIdentifierOrKeyword() !;
+    const id = this.expectIdentifierOrKeyword();
 
     if (this.optionalCharacter(chars.$LPAREN)) {
       this.rparensExpected++;
