@@ -298,7 +298,7 @@ class ForJitSerializer {
       }
       visitStringMap(map: {[key: string]: any}, context: any): any {
         return new o.LiteralMapExpr(Object.keys(map).map(
-            (key) => new o.LiteralMapEntry(key, visitValue(map[key], this, context))));
+            (key) => new o.LiteralMapEntry(key, visitValue(map[key], this, context), false)));
       }
       visitPrimitive(value: any, context: any): any { return o.literal(value); }
       visitOther(value: any, context: any): any {
