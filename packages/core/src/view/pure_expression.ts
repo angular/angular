@@ -18,7 +18,16 @@ export function pureArrayDef(argCount: number): NodeDef {
   return _pureExpressionDef(NodeFlags.TypePureArray, new Array(argCount));
 }
 
-export function pureObjectDef(propertyNames: string[]): NodeDef {
+export function pureObjectDef(propToIndex: {[p: string]: number}): NodeDef {
+  const keys = Object.keys(propToIndex);
+  const nbKeys = keys.length;
+  const propertyNames = new Array(nbKeys);
+  for (let i = 0; i < nbKeys; i++) {
+    const key = keys[i];
+    const index = propToIndex[key];
+    propertyNames[index] = key;
+  }
+
   return _pureExpressionDef(NodeFlags.TypePureObject, propertyNames);
 }
 

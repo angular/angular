@@ -50,7 +50,7 @@ class JitEmitterVisitor extends AbstractJsEmitterVisitor {
 
   createReturnStmt(ctx: EmitterVisitorContext) {
     const stmt = new o.ReturnStatement(new o.LiteralMapExpr(this._evalExportedVars.map(
-        resultVar => new o.LiteralMapEntry(resultVar, o.variable(resultVar)))));
+        resultVar => new o.LiteralMapEntry(resultVar, o.variable(resultVar), false))));
     stmt.visitStatement(this, ctx);
   }
 
