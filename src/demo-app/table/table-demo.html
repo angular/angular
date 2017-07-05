@@ -76,8 +76,8 @@
     <cdk-cell *cdkCellDef="let row" [style.color]="row.color"> {{row.color}} </cdk-cell>
   </ng-container>
 
-  <cdk-header-row *cdkHeaderRowDef="propertiesToDisplay"></cdk-header-row>
-  <cdk-row *cdkRowDef="let row; columns: propertiesToDisplay;
+  <cdk-header-row *cdkHeaderRowDef="displayedColumns"></cdk-header-row>
+  <cdk-row *cdkRowDef="let row; columns: displayedColumns;
                          let first = first; let last = last; let even = even; let odd = odd"
              [ngClass]="{
                'demo-row-highlight-first': highlights.has('first') && first,
@@ -92,7 +92,7 @@
 
 <div class="demo-table-container demo-mat-table-example mat-elevation-z4">
 
-  <table-header-demo (shiftColumns)="propertiesToDisplay.push(propertiesToDisplay.shift())"
+  <table-header-demo (shiftColumns)="displayedColumns.push(displayedColumns.shift())"
                      (toggleColorColumn)="toggleColorColumn()">
   </table-header-demo>
 
@@ -130,8 +130,8 @@
       <md-cell *cdkCellDef="let row" [style.color]="row.color"> {{row.color}} </md-cell>
     </ng-container>
 
-    <md-header-row *cdkHeaderRowDef="propertiesToDisplay"></md-header-row>
-    <md-row *cdkRowDef="let row; columns: propertiesToDisplay"></md-row>
+    <md-header-row *cdkHeaderRowDef="displayedColumns"></md-header-row>
+    <md-row *cdkRowDef="let row; columns: displayedColumns"></md-row>
 
   </md-table>
 

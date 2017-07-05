@@ -1,0 +1,57 @@
+/* Structure */
+.example-container {
+  display: flex;
+  flex-direction: column;
+  max-height: 500px;
+  background: white;
+  min-width: 300px;
+}
+
+.example-header {
+  min-height: 56px;
+  max-height: 56px;
+  display: flex;
+  align-items: center;
+  padding: 8px 24px 0;
+  font-size: 20px;
+  justify-content: space-between;
+  border-bottom: 1px solid transparent;
+}
+
+.mat-input-container {
+  font-size: 14px;
+  flex-grow: 1;
+  margin-left: 32px;
+  margin-top: 8px;
+}
+
+.example-no-results {
+  display: flex;
+  justify-content: center;
+  padding: 24px;
+  font-size: 12px;
+  font-style: italic;
+}
+
+/** Selection styles */
+.example-selection-header {
+  font-size: 18px;
+  background: rgba(255, 64, 129, 0.3);
+  border-bottom: 1px solid #d696ac;
+}
+
+.mat-column-select {
+  max-width: 54px;
+}
+
+.mat-row:hover, .example-selected-row {
+  background: #f5f5f5;
+}
+
+.mat-row:active, .mat-row.example-selected-row {
+  background: #eaeaea;
+}
+
+.mat-table {
+  overflow: auto;
+}

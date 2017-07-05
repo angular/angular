@@ -69,7 +69,7 @@ task('docs', [
 
 /** Generates html files from the markdown overviews and guides. */
 task('markdown-docs', () => {
-  return src(['src/lib/**/*.md', 'guides/*.md'])
+  return src(['src/lib/**/*.md', 'src/cdk/**/*.md', 'guides/*.md'])
       .pipe(markdown({
         // Add syntax highlight using highlight.js
         highlight: (code: string, language: string) => {

@@ -16,7 +16,7 @@ export type TrackByStrategy = 'id' | 'reference' | 'index';
 })
 export class TableDemo {
   dataSource: PersonDataSource | null;
-  propertiesToDisplay: UserProperties[] = [];
+  displayedColumns: UserProperties[] = [];
   trackByStrategy: TrackByStrategy = 'reference';
   changeReferences = false;
   highlights = new Set<string>();
@@ -32,7 +32,7 @@ export class TableDemo {
   }
 
   connect() {
-    this.propertiesToDisplay = ['userId', 'userName', 'progress', 'color'];
+    this.displayedColumns = ['userId', 'userName', 'progress', 'color'];
     this.dataSource = new PersonDataSource(this._peopleDatabase,
         this._paginator, this.sort);
     this._peopleDatabase.initialize();
@@ -40,7 +40,7 @@ export class TableDemo {
 
   disconnect() {
     this.dataSource = null;
-    this.propertiesToDisplay = [];
+    this.displayedColumns = [];
   }
 
   getOpacity(progress: number) {
@@ -57,11 +57,11 @@ export class TableDemo {
   }
 
   toggleColorColumn() {
-    let colorColumnIndex = this.propertiesToDisplay.indexOf('color');
+    let colorColumnIndex = this.displayedColumns.indexOf('color');
     if (colorColumnIndex == -1) {
-      this.propertiesToDisplay.push('color');
+      this.displayedColumns.push('color');
     } else {
-      this.propertiesToDisplay.splice(colorColumnIndex, 1);
+      this.displayedColumns.splice(colorColumnIndex, 1);
     }
   }
 

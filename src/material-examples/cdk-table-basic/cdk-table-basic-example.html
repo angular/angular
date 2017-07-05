@@ -1,0 +1,36 @@
+<div class="example-container mat-elevation-z8">
+  <cdk-table #table [dataSource]="dataSource" class="example-table">
+    <!--- Note that these columns can be defined in any order.
+          The actual rendered columns are set as a property on the row definition" -->
+
+    <!-- ID Column -->
+    <ng-container cdkColumnDef="userId">
+      <cdk-header-cell *cdkHeaderCellDef class="example-header-cell"> ID </cdk-header-cell>
+      <cdk-cell *cdkCellDef="let row" class="example-cell"> {{row.id}} </cdk-cell>
+    </ng-container>
+
+    <!-- Progress Column -->
+    <ng-container cdkColumnDef="progress">
+      <cdk-header-cell *cdkHeaderCellDef class="example-header-cell"> Progress </cdk-header-cell>
+      <cdk-cell *cdkCellDef="let row" class="example-cell"> {{row.progress}}% </cdk-cell>
+    </ng-container>
+
+    <!-- Name Column -->
+    <ng-container cdkColumnDef="userName">
+      <cdk-header-cell *cdkHeaderCellDef class="example-header-cell"> Name </cdk-header-cell>
+      <cdk-cell *cdkCellDef="let row" class="example-cell"> {{row.name}} </cdk-cell>
+    </ng-container>
+
+    <!-- Color Column -->
+    <ng-container cdkColumnDef="color">
+      <cdk-header-cell *cdkHeaderCellDef class="example-header-cell">Color</cdk-header-cell>
+      <cdk-cell *cdkCellDef="let row" class="example-cell"
+                [style.color]="row.color">
+        {{row.color}}
+      </cdk-cell>
+    </ng-container>
+
+    <cdk-header-row *cdkHeaderRowDef="displayedColumns" class="example-header-row"></cdk-header-row>
+    <cdk-row *cdkRowDef="let row; columns: displayedColumns;" class="example-row"></cdk-row>
+  </cdk-table>
+</div>
