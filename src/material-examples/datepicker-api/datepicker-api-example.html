@@ -1,0 +1,5 @@
+<md-input-container class="example-full-width">
+  <input mdInput [mdDatepicker]="picker" placeholder="Choose a date">
+</md-input-container>
+<md-datepicker #picker></md-datepicker>
+<button md-raised-button (click)="picker.open()">Open</button>

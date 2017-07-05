@@ -1,7 +1,7 @@
 The datepicker allows users to enter a date either through text input, or by choosing a date from
 the calendar. It is made up of several components and directives that work together:
 
-<!-- TODO: INSERT OVERVIEW EXAMPLE HERE -->
+<!-- example(datepicker-overview) -->
 
 ### Current state
 Currently the datepicker is in the beginning stages and supports basic date selection functionality.
@@ -51,14 +51,7 @@ open to the month or year containing today's date. This behavior can be overridd
 `startAt` property of `md-datepicker`. In this case the calendar will open to the month or year
 containing the `startAt` date.
 
-```ts
-startDate = new Date(1990, 0, 1);
-```
-
-```html
-...
-<md-datepicker startView="year" [startAt]="startDate"></md-datepicker>
-```
+<!-- example(datepicker-start-view) -->
 
 ### Date validation
 There are three properties that add date validation to the datepicker input. The first two are the
@@ -66,6 +59,8 @@ There are three properties that add date validation to the datepicker input. The
 disable all dates on the calendar popup before or after the respective values and prevent the user
 from advancing the calendar past the `month` or `year` (depending on current view) containing the
 `min` or `max` date.
+
+<!-- example(datepicker-min-max) -->
 
 The second way to add date validation is using the `mdDatepickerFilter` property of the datepicker
 input. This property accepts a function of `<D> => boolean` (where `<D>` is the date type used by
@@ -77,16 +72,7 @@ difference between using `mdDatepickerFilter` vs using `min` or `max` is that fi
 dates before or after a certain point, will not prevent the user from advancing the calendar past
 that point.
 
-```ts
-myFilter = (d: Date) => d.getFullYear() > 2005
-minDate = new Date(2000, 0, 1);
-maxDate = new Date(2020, 11, 31);
-```
-
-```html
-<input [mdDatepicker]="d" [mdDatepickerFilter]="myFilter" [min]="minDate" [max]="maxDate" ngModel>
-<md-datepicker #d></md-datepicker>
-```
+<!-- example(datepicker-filter) -->
 
 In this example the user can back past 2005, but all of the dates before then will be unselectable.
 They will not be able to go further back in the calendar than 2000. If they manually type in a date
@@ -103,20 +89,13 @@ devices that don't have as much screen real estate and need bigger click targets
 `md-datepicker` has a `touchUi` property that can be set to `true` in order to enable a more touch
 friendly UI where the calendar opens in a large dialog.
 
+<!-- example(datepicker-touch) -->
+
 ### Manually opening and closing the calendar
 The calendar popup can be programmatically controlled using the `open` and `close` methods on the
 `md-datepicker`. It also has an `opened` property that reflects the status of the popup.
 
-```ts
-@Component({...})
-export class MyComponent implements AfterViewInit {
-  @ViewChild(MdDatepicker) dp: MdDatepicker<Date>;
-
-  ngAfterViewInit() {
-    dp.open();
-  }
-}
-```
+<!-- example(datepicker-api) -->
 
 ### Internationalization
 In order to support internationalization, the datepicker supports customization of the following

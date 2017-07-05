@@ -78,6 +78,12 @@ import {InputErrorsExample} from './input-errors/input-errors-example';
 import {InputFormExample} from './input-form/input-form-example';
 import {InputPrefixSuffixExample} from './input-prefix-suffix/input-prefix-suffix-example';
 import {InputHintExample} from './input-hint/input-hint-example';
+import {DatepickerStartViewExample} from './datepicker-start-view/datepicker-start-view-example';
+import {DatepickerMinMaxExample} from './datepicker-min-max/datepicker-min-max-example';
+import {DatepickerFilterExample} from './datepicker-filter/datepicker-filter-example';
+import {DatepickerTouchExample} from './datepicker-touch/datepicker-touch-example';
+import {DatepickerApiExample} from './datepicker-api/datepicker-api-example';
+
 import {
   MdAutocompleteModule, MdButtonModule, MdButtonToggleModule, MdCardModule, MdCheckboxModule,
   MdChipsModule, MdDatepickerModule, MdDialogModule, MdGridListModule, MdIconModule, MdInputModule,
@@ -114,6 +120,11 @@ export const EXAMPLE_COMPONENTS = {
   'checkbox-configurable': {title: 'Configurable checkbox', component: CheckboxConfigurableExample},
   'checkbox-overview': {title: 'Basic checkboxes', component: CheckboxOverviewExample},
   'datepicker-overview': {title: 'Basic datepicker', component: DatepickerOverviewExample},
+  'datepicker-start-view': {title: 'Start View', component: DatepickerStartViewExample},
+  'datepicker-min-max': {title: 'Min/Max Validation', component: DatepickerMinMaxExample},
+  'datepicker-filter': {title: 'Filter Validation', component: DatepickerFilterExample},
+  'datepicker-touch': {title: 'Touch', component: DatepickerTouchExample},
+  'datepicker-api': {title: 'API', component: DatepickerApiExample},
   'dialog-overview': {
     title: 'Basic dialog',
     component: DialogOverviewExample,
@@ -241,6 +252,11 @@ export const EXAMPLE_LIST = [
   CheckboxConfigurableExample,
   CheckboxOverviewExample,
   DatepickerOverviewExample,
+  DatepickerStartViewExample,
+  DatepickerMinMaxExample,
+  DatepickerFilterExample,
+  DatepickerTouchExample,
+  DatepickerApiExample,
   DialogOverviewExample,
   DialogOverviewExampleDialog,
   DialogResultExample,
