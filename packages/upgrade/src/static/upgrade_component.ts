@@ -9,7 +9,7 @@
 import {DoCheck, ElementRef, EventEmitter, Injector, OnChanges, OnDestroy, OnInit, SimpleChanges, ɵlooseIdentical as looseIdentical} from '@angular/core';
 import * as angular from '../common/angular1';
 import {$COMPILE, $CONTROLLER, $HTTP_BACKEND, $INJECTOR, $SCOPE, $TEMPLATE_CACHE} from '../common/constants';
-import {controllerKey} from '../common/util';
+import {controllerKey, directiveNormalize} from '../common/util';
 
 const REQUIRE_PREFIX_RE = /^(\^\^?)?(\?)?(\^\^?)?/;
 const NOT_SUPPORTED: any = 'NOT_SUPPORTED';
@@ -144,7 +144,8 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
 
   ngOnInit() {
     // Collect contents, insert and compile template
-    const contentChildNodes = this.extractChildNodes(this.element);
+    const attachChildNodes: angular.ILinkFn|undefined =
+        this.prepareTransclusion(this.directive.transclude);
     const linkFn = this.compileTemplate(this.directive);
 
     // Instantiate controller
@@ -203,8 +204,6 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
       preLink(this.$componentScope, this.$element, attrs, requiredControllers, transcludeFn);
     }
 
-    const attachChildNodes: angular.ILinkFn = (scope, cloneAttach) =>
-        cloneAttach !(contentChildNodes);
     linkFn(this.$componentScope, null !, {parentBoundTranscludeFn: attachChildNodes});
 
     if (postLink) {
@@ -331,6 +330,66 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     }
 
     return bindings;
+  }
+
+  private prepareTransclusion(transclude: angular.DirectiveTranscludeProperty = false):
+      angular.ILinkFn|undefined {
+    const contentChildNodes = this.extractChildNodes(this.element);
+    let $template = contentChildNodes;
+    let attachChildrenFn: angular.ILinkFn|undefined = (scope, cloneAttach) =>
+        cloneAttach !($template, scope);
+
+    if (transclude) {
+      const slots = Object.create(null);
+
+      if (typeof transclude === 'object') {
+        $template = [];
+
+        const slotMap = Object.create(null);
+        const filledSlots = Object.create(null);
+
+        // Parse the element selectors.
+        Object.keys(transclude).forEach(slotName => {
+          let selector = transclude[slotName];
+          const optional = selector.charAt(0) === '?';
+          selector = optional ? selector.substring(1) : selector;
+
+          slotMap[selector] = slotName;
+          slots[slotName] = null;            // `null`: Defined but not yet filled.
+          filledSlots[slotName] = optional;  // Consider optional slots as filled.
+        });
+
+        // Add the matching elements into their slot.
+        contentChildNodes.forEach(node => {
+          const slotName = slotMap[directiveNormalize(node.nodeName.toLowerCase())];
+          if (slotName) {
+            filledSlots[slotName] = true;
+            slots[slotName] = slots[slotName] || [];
+            slots[slotName].push(node);
+          } else {
+            $template.push(node);
+          }
+        });
+
+        // Check for required slots that were not filled.
+        Object.keys(filledSlots).forEach(slotName => {
+          if (!filledSlots[slotName]) {
+            throw new Error(`Required transclusion slot '${slotName}' on directive: ${this.name}`);
+          }
+        });
+
+        Object.keys(slots).filter(slotName => slots[slotName]).forEach(slotName => {
+          const nodes = slots[slotName];
+          slots[slotName] = (scope: angular.IScope, cloneAttach: angular.ICloneAttachFunction) =>
+              cloneAttach !(nodes, scope);
+        });
+      }
+
+      // Attach `$$slots` to default slot transclude fn.
+      attachChildrenFn.$$slots = slots;
+    }
+
+    return attachChildrenFn;
   }
 
   private extractChildNodes(element: Element): Node[] {
@@ -464,7 +523,6 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     return this.$compile(this.element.childNodes);
   }
 }
-
 
 function getOrCall<T>(property: Function | T): T {
   return isFunction(property) ? property() : property;
