@@ -55,7 +55,6 @@
     "@types/minimist": "^1.2.0",
     "@types/node": "^7.0.21",
     "@types/run-sequence": "^0.0.29",
-    "@types/rx": "2.5.33",
     "autoprefixer": "^6.7.6",
     "axe-core": "^2.2.1",
     "axe-webdriverjs": "^1.1.1",
