@@ -32,9 +32,9 @@ module.exports = function componentGrouper() {
         let basePath = doc.fileInfo.basePath;
         let filePath = doc.fileInfo.filePath;
 
-        // All of the component documentation is under `src/lib`, which will be the basePath.
-        // We group the docs up by the directory immediately under `src/lib` (e.g., "button").
-        let groupName = path.relative(basePath, filePath).split(path.sep)[0];
+        // All of the component documentation is under either `src/lib` or `src/cdk`.
+        // We group the docs up by the directory immediately under that root.
+        let groupName = path.relative(basePath, filePath).split(path.sep)[1];
 
         // Get the group for this doc, or, if one does not exist, create it.
         let group;

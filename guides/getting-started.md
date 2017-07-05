@@ -3,10 +3,10 @@ For help getting started with a new Angular app, check out the
 
 For existing apps, follow these steps to begin using Angular Material.
 
-## Step 1: Install Angular Material
+## Step 1: Install Angular Material and Angular CDK
 
 ```bash
-npm install --save @angular/material
+npm install --save @angular/material @angular/cdk
 ```
 
 ## Step 2: Animations
@@ -79,13 +79,14 @@ Whichever approach you use, be sure to import the Angular Material modules _afte
 
 Including a theme is **required** to apply all of the core and theme styles to your application.
 
-To get started with a prebuilt theme, include the following in your app's index.html:
-
-```html
-<link href="../node_modules/@angular/material/prebuilt-themes/indigo-pink.css" rel="stylesheet">
+To get started with a prebuilt theme, include one of Angular Material's prebuilt themes globally
+in your application. If you're using the Angular CLI, you can add this to your `styles.css`:
+```css
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
 ```
 
-Note that your app's project structure may have a different relative location for your node_modules.
+If you are not using the Angular CLI, you can include a prebuilt theme via a `<link>` element in
+your `index.html`.
 
 For more information on theming and instructions on how to create a custom theme, see the
 [theming guide](./theming.md).
@@ -142,6 +143,6 @@ System.config({
 ```
 
 
-## Sample Angular Material projects
-- [Material Sample App](https://github.com/jelbourn/material2-app)
-- [Angular Connect 2016 Demo](https://github.com/kara/leashed-in)
+## Example Angular Material projects
+- [material.angular.io](https://material.angular.io) -
+We build our own documentation with Angular Material!

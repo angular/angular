@@ -1,15 +1,11 @@
-# Portals
-
-### Overview
-
+### Portals
 A `Portal `is a piece of UI that can be dynamically rendered to an open slot on the page.
 
-The "piece of UI" can be either a `Component` or a `TemplateRef`.
+The "piece of UI" can be either a `Component` or a `TemplateRef` and the "open slot" is 
+a `PortalHost`.
 
-The "open slot" is a `PortalHost`.
-
-Portals and PortalHosts are low-level building blocks that other concepts, such as overlays, can
-be built upon.
+Portals and PortalHosts are low-level building blocks that other concepts, such as overlays, are
+built upon.
 
 ##### `Portal<T>`
 | Method | Description |
@@ -27,14 +23,10 @@ be built upon.
 | `hasAttached: boolean` | Whether a portal is attached to the host. |
 
 
-
-
-### Using portals
-
-
+#### Portals in practice
 
 ##### `TemplatePortalDirective`
-Used to get a portal from a `<ng-template>`. `TemplatePortalDirectives` *is* a `Portal`.
+Used to get a portal from an `<ng-template>`. `TemplatePortalDirectives` *is* a `Portal`.
 
 Usage:
 ```html
@@ -45,7 +37,7 @@ Usage:
 <!-- OR -->
 
 <!-- This result here is identical to the syntax above -->
-<p *cdk-portal>
+<p *cdkPortal>
   The content of this template is captured by the portal.
 </p>
 ```
@@ -54,7 +46,8 @@ A component can use `@ViewChild` or `@ViewChildren` to get a reference to a
 `TemplatePortalDirective`.
 
 ##### `ComponentPortal`
-Used to create a portal from a component type.
+Used to create a portal from a component type. When a component is dynamically created using
+portals, it must be included in the `entryComponents` of its `NgModule`.
 
 Usage:
 ```ts
@@ -68,5 +61,5 @@ Used to add a portal host to a template. `PortalHostDirective` *is* a `PortalHos
 Usage:
 ```html
 <!-- Attaches the `userSettingsPortal` from the previous example. -->
-<ng-template [cdk-portalHost]="userSettingsPortal"></ng-template>
+<ng-template [cdkPortalHost]="userSettingsPortal"></ng-template>
 ```

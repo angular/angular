@@ -11,7 +11,7 @@ const typescriptPackage = require('dgeni-packages/typescript');
 
 // Project configuration.
 const projectRootDir = path.resolve(__dirname, '../..');
-const sourceDir = path.resolve(projectRootDir, 'src/lib');
+const sourceDir = path.resolve(projectRootDir, 'src');
 const outputDir = path.resolve(projectRootDir, 'dist/docs/api');
 const templateDir = path.resolve(__dirname, './templates');
 
@@ -82,33 +82,42 @@ let apiDocsPackage = new DgeniPackage('material2-api-docs', dgeniPackageDeps)
   // Entry points for docs generation. All publically exported symbols found through these
   // files will have docs generated.
   readTypeScriptModules.sourceFiles = [
-    'autocomplete/index.ts',
-    'button/index.ts',
-    'button-toggle/index.ts',
-    'card/index.ts',
-    'checkbox/index.ts',
-    'chips/index.ts',
-    'core/index.ts',
-    'datepicker/index.ts',
-    'dialog/index.ts',
-    'expansion/index.ts',
-    'grid-list/index.ts',
-    'icon/index.ts',
-    'input/index.ts',
-    'list/index.ts',
-    'menu/index.ts',
-    'paginator/index.ts',
-    'progress-bar/index.ts',
-    'progress-spinner/index.ts',
-    'radio/index.ts',
-    'select/index.ts',
-    'sidenav/index.ts',
-    'slide-toggle/index.ts',
-    'slider/index.ts',
-    'snack-bar/index.ts',
-    'tabs/index.ts',
-    'toolbar/index.ts',
-    'tooltip/index.ts',
+    // @angular/cdk
+    'cdk/a11y/index.ts',
+    'cdk/bidi/index.ts',
+    'cdk/coercion/index.ts',
+    'cdk/platform/index.ts',
+    'cdk/portal/index.ts',
+    'cdk/table/index.ts',
+
+    // @angular/material
+    'lib/autocomplete/index.ts',
+    'lib/button/index.ts',
+    'lib/button-toggle/index.ts',
+    'lib/card/index.ts',
+    'lib/checkbox/index.ts',
+    'lib/chips/index.ts',
+    'lib/core/index.ts',
+    'lib/datepicker/index.ts',
+    'lib/dialog/index.ts',
+    'lib/expansion/index.ts',
+    'lib/grid-list/index.ts',
+    'lib/icon/index.ts',
+    'lib/input/index.ts',
+    'lib/list/index.ts',
+    'lib/menu/index.ts',
+    'lib/paginator/index.ts',
+    'lib/progress-bar/index.ts',
+    'lib/progress-spinner/index.ts',
+    'lib/radio/index.ts',
+    'lib/select/index.ts',
+    'lib/sidenav/index.ts',
+    'lib/slide-toggle/index.ts',
+    'lib/slider/index.ts',
+    'lib/snack-bar/index.ts',
+    'lib/tabs/index.ts',
+    'lib/toolbar/index.ts',
+    'lib/tooltip/index.ts',
   ];
 })
 
@@ -145,3 +154,7 @@ let apiDocsPackage = new DgeniPackage('material2-api-docs', dgeniPackageDeps)
 
 
 module.exports = apiDocsPackage;
+
+
+  const docs = new Dgeni([apiDocsPackage]);
+  docs.generate();

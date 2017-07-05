@@ -26,7 +26,7 @@ export interface CanDisable {
 export class ListKeyManager<T extends CanDisable> {
   private _activeItemIndex: number = -1;
   private _activeItem: T;
-  private _tabOut = new Subject<null>();
+  private _tabOut = new Subject<void>();
   private _wrap: boolean = false;
 
   constructor(private _items: QueryList<T>) { }
@@ -66,7 +66,7 @@ export class ListKeyManager<T extends CanDisable> {
         break;
       case TAB:
         // Note that we shouldn't prevent the default action on tab.
-        this._tabOut.next(null);
+        this._tabOut.next();
         return;
       default:
         return;
@@ -75,12 +75,12 @@ export class ListKeyManager<T extends CanDisable> {
     event.preventDefault();
   }
 
-  /** Returns the index of the currently active item. */
+  /** Index of the currently active item. */
   get activeItemIndex(): number | null {
     return this._activeItemIndex;
   }
 
-  /** Returns the currently active item. */
+  /** The active item. */
   get activeItem(): T | null {
     return this._activeItem;
   }
@@ -118,7 +118,7 @@ export class ListKeyManager<T extends CanDisable> {
    * Observable that emits any time the TAB key is pressed, so components can react
    * when focus is shifted off of the list.
    */
-  get tabOut(): Observable<null> {
+  get tabOut(): Observable<void> {
     return this._tabOut.asObservable();
   }
 
