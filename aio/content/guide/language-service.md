@@ -104,10 +104,11 @@ yarn install
 
 ### Sublime Text
 
-In [Sublime Text](https://www.sublimetext.com/), you first need an extension to allow Typescript. Install the `@next` version of typescript in a local `node_modules` directory:
+In [Sublime Text](https://www.sublimetext.com/), you first need an extension to allow Typescript. 
+Install the latest version of typescript in a local `node_modules` directory:
 
 ```sh
-npm install --save-dev typescript@next
+npm install --save-dev typescript
 ```
 
 This installs the nightly TypeScript build. Starting with TypeScript 2.3, TypeScript has a language service plugin model that the language service can use. 
@@ -127,6 +128,18 @@ following `npm` command:
 ```sh
 npm install --save-dev @angular/language-service
 ```
+Additionally, add the following to the `"compilerOptions"` section of 
+your project's `tsconfig.json`.
+
+```json
+  "plugins": [
+      {"name": "@angular/language-service"}
+  ]
+```
+Note that this only provides diagnostics and completions in `.ts` 
+files. You need a custom sublime plugin (or modifications to the current plugin) 
+for completions in HTML files.
+
 
 ## How the Language Service works
 
@@ -138,55 +151,22 @@ track the state of your project. When you trigger a completion list within a tem
 what module the template is part of, the scope you're in, and the component selector. Then it figures out where in the template AST your cursor is. When it determines the 
 context, it can then determine what the children can be.
 
-It's a little more involved if you are in an interpolation. If you have an interpolation of `{{data.---}}` inside a `div` and need the completion list after `data.---`, the compiler can't use the HTML AST to find the answer. The HTML AST can only tell the compiler that there is some text with the characters "`{{data.---}}`". That's when the template parser produces an expression AST, which resides within the template AST. The Angular Language Service, which is within 
-the TypeScript Language Service, then looks at `data.---` within its context and determines 
-what the members of `data` are. TypeScript then returns the list of possibilities.
-
-### Integrate with your editor
-
-You can still use the language service if you prefer an editor not listed on this page.
-
-You'll need to implement the following `LanguageServiceHost` interface. 
-
-```typescript
-export interface LanguageServiceHost {
-  readonly resolver: CompileMetadataResolver;
-  getTemplateAt(filename: string, position: number): TemplateSource;
-  getTemplates(filename: string): TemplateSources;
-  getDeclarations(filename: string): Declarations;
-  getAnalyzedModules(): NgAnalyzedModules;
-  getTemplateReferences(): string[];
-}
-```
-
-The language service is divided into two parts&mdash;the actual language 
-service itself and its host. The host uses TypeScript to determine things 
-like what should go into a completion list. 
-If you create your own `TypeScriptServiceHost`, you also need to 
-create your Angular Language Service. Pass in the host that you're 
-using for the TypeScript service and the service 
-itself so you get back a language service host. 
-
-```typescript
-
-export class TypeScriptServiceHost implements LanguageServiceHost {
-...
-}
-const ngHost = new TypeScriptServiceHost(host, service);
-const ngService = createLanguageService(ngHost);
-...
-const diagnostics = ngService.getDiagnostics(...);
-
-```
+It's a little more involved if you are in an interpolation. If you have an interpolation of `{{data.---}}` inside a `div` and need the completion list after `data.---`, the compiler can't use the HTML AST to find the answer. The HTML AST can only tell the compiler that there is some text with the characters "`{{data.---}}`". That's when the template parser produces an expression AST, which resides within the template AST. The Angular Language Services then looks at `data.---` within its context and asks the TypeScript Language Service what the members of data are. TypeScript then returns the list of possibilities.
 
 
-If you do create an editor integration, the one thing that the Angular 
-Language Service does that Typscript doesn't is provide diagnostics 
-and completions inside of an HTML file. Once you have a `LanguageServiceHost`, 
-you can tell the host to return all of the HTML files that 
-are part of the project that are templates.
+For more in-depth information, see the 
+[Angular Language Service API](https://github.com/angular/angular/blob/master/packages/language-service/src/types.ts)
+
+
+
+
+
+
+
 
 <hr>
+
+## More on Information
 
 For more information, see [Chuck Jazdzewski's presentation](https://www.youtube.com/watch?v=ez3R0Gi4z5A&t=368s) on the Angular Language 
 Service from [ng-conf](https://www.ng-conf.org/) 2017.
