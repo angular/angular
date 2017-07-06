@@ -39,6 +39,7 @@ import {Subscription} from 'rxjs/Subscription';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdSortHeader implements MdSortable {
+  /** @docs-private  */
   sortSubscription: Subscription;
 
   /**

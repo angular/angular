@@ -6,8 +6,9 @@ The table provides a foundation upon which other features, such as sorting and p
 built. Because it enforces no opinions on these matters, developers have full control over the
 interaction patterns associated with the table.
 
-For a Material Design styled table, see the documentation for `<md-table>` which builds on top of
-the CDK data-table.
+For a Material Design styled table, see the
+[documentation for `<md-table>`](https://material.angular.io/components/table) which builds on
+top of the CDK data-table.
 
 <!-- example(cdk-table-basic) -->
 
@@ -117,12 +118,9 @@ sorting and pagination.
 
 ##### `trackBy`
 To improve performance, a trackBy function can be provided to the table similar to Angular’s
-(`ngFor` trackBy)[trackBy]. This informs the table how to uniquely identify rows to track how the
-data changes with each update.
+[`ngFor` trackBy](https://angular.io/api/common/NgForOf#change-propagation). This informs the
+table how to uniquely identify rows to track how the data changes with each update.
 
 ```html
 <cdk-table [dataSource]="dataSource" [trackBy]="myTrackById">
 ```
-
-
-[trackBy][https://angular.io/api/common/NgForOf#change-propagation]

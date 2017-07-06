@@ -10,7 +10,8 @@ instead of `cdk-`.
 Note that the column definition directives (`cdkColumnDef` and `cdkHeaderCellDef`) are still
 prefixed with `cdk-`.
 
-For more information on the interface and how it works, see the guide covering the CDK data-table.
+For more information on the interface and how it works, see the
+[guide covering the CDK data-table](https://material.angular.io/guides/cdk-table).
 
 ### Features
 

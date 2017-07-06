@@ -32,9 +32,13 @@ export class CdkHeaderCellDef {
  */
 @Directive({selector: '[cdkColumnDef]'})
 export class CdkColumnDef {
+  /** Unique name for this column. */
   @Input('cdkColumnDef') name: string;
 
+  /** @docs-private */
   @ContentChild(CdkCellDef) cell: CdkCellDef;
+
+  /** @docs-private */
   @ContentChild(CdkHeaderCellDef) headerCell: CdkHeaderCellDef;
 }
 

@@ -3,7 +3,6 @@
   display: flex;
   flex-direction: column;
   max-height: 500px;
-  background: white;
   min-width: 300px;
 }
 
