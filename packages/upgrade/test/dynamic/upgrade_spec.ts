@@ -478,9 +478,12 @@ export function main() {
            class Ng2 {
              private _value: any = '';
              private _onChangeCallback: (_: any) => void = () => {};
+             private _onTouchedCallback: () => void = () => {};
              constructor() { ng2Instance = this; }
              writeValue(value: any) { this._value = value; }
              registerOnChange(fn: any) { this._onChangeCallback = fn; }
+             registerOnTouched(fn: any) { this._onTouchedCallback = fn; }
+             doTouch() { this._onTouchedCallback(); }
              doChange(newValue: string) {
                this._value = newValue;
                this._onChangeCallback(newValue);
@@ -508,6 +511,13 @@ export function main() {
              ng2Instance.doChange('C');
              expect($rootScope.modelA).toBe('C');
              expect(multiTrim(document.body.textContent)).toEqual('C | C');
+
+             const downgradedElement = <Element>document.body.querySelector('ng2');
+             expect(downgradedElement.classList.contains('ng-touched')).toBe(false);
+
+             ng2Instance.doTouch();
+             $rootScope.$apply();
+             expect(downgradedElement.classList.contains('ng-touched')).toBe(true);
 
              ref.dispose();
            });
