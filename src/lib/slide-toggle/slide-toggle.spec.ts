@@ -1,6 +1,9 @@
 import {Component} from '@angular/core';
 import {By, HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
-import {async, ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
+import {
+  async, ComponentFixture, TestBed, fakeAsync, tick,
+  flushMicrotasks
+} from '@angular/core/testing';
 import {NgModel, FormsModule, ReactiveFormsModule, FormControl} from '@angular/forms';
 import {MdSlideToggle, MdSlideToggleChange, MdSlideToggleModule} from './index';
 import {TestGestureConfig} from '../slider/test-gesture-config';
@@ -56,17 +59,17 @@ describe('MdSlideToggle', () => {
       labelElement = fixture.debugElement.query(By.css('label')).nativeElement;
     }));
 
-    // TODO(kara); update when core/testing adds fix
-    it('should update the model correctly', async(() => {
+    it('should update the model correctly', fakeAsync(() => {
       expect(slideToggleElement.classList).not.toContain('mat-checked');
 
       testComponent.slideModel = true;
       fixture.detectChanges();
-      fixture.whenStable().then(() => {
-        fixture.detectChanges();
-        expect(slideToggleElement.classList).toContain('mat-checked');
-      });
 
+      // Flush the microtasks because the forms module updates the model state asynchronously.
+      flushMicrotasks();
+
+      fixture.detectChanges();
+      expect(slideToggleElement.classList).toContain('mat-checked');
     }));
 
     it('should apply class based on color attribute', () => {
@@ -333,19 +336,23 @@ describe('MdSlideToggle', () => {
       expect(slideToggleElement.classList).not.toContain('mat-checked');
     });
 
-    // TODO(kara): update when core/testing adds fix
-    it('should not set the control to touched when changing the model', async(() => {
+    it('should not set the control to touched when changing the model', fakeAsync(() => {
       // The control should start off with being untouched.
       expect(slideToggleModel.touched).toBe(false);
 
       testComponent.slideModel = true;
       fixture.detectChanges();
-      fixture.whenStable().then(() => {
-        fixture.detectChanges();
-        expect(slideToggleModel.touched).toBe(false);
-        expect(slideToggle.checked).toBe(true);
-        expect(slideToggleElement.classList).toContain('mat-checked');
-      });
+
+      // Flush the microtasks because the forms module updates the model state asynchronously.
+      flushMicrotasks();
+
+      // The checked property has been updated from the model and now the view needs
+      // to reflect the state change.
+      fixture.detectChanges();
+
+      expect(slideToggleModel.touched).toBe(false);
+      expect(slideToggle.checked).toBe(true);
+      expect(slideToggleElement.classList).toContain('mat-checked');
     }));
 
     it('should forward the required attribute', () => {

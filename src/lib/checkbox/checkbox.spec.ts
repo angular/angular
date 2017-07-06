@@ -102,7 +102,7 @@ describe('MdCheckbox', () => {
       expect(inputElement.indeterminate).toBe(false);
     });
 
-    it('should set indeterminate to false when input clicked', async(() => {
+    it('should set indeterminate to false when input clicked', fakeAsync(() => {
       testComponent.isIndeterminate = true;
       fixture.detectChanges();
 
@@ -113,33 +113,40 @@ describe('MdCheckbox', () => {
       inputElement.click();
       fixture.detectChanges();
 
-      fixture.whenStable().then(() => {
-        fixture.detectChanges();
-        expect(checkboxInstance.checked).toBe(true);
-        expect(inputElement.indeterminate).toBe(false);
-        expect(inputElement.checked).toBe(true);
-        expect(testComponent.isIndeterminate).toBe(false);
+      // Flush the microtasks because the forms module updates the model state asynchronously.
+      flushMicrotasks();
 
-        testComponent.isIndeterminate = true;
-        fixture.detectChanges();
+      // The checked property has been updated from the model and now the view needs
+      // to reflect the state change.
+      fixture.detectChanges();
 
-        expect(checkboxInstance.indeterminate).toBe(true);
-        expect(inputElement.indeterminate).toBe(true);
-        expect(inputElement.checked).toBe(true);
-        expect(testComponent.isIndeterminate).toBe(true);
+      expect(checkboxInstance.checked).toBe(true);
+      expect(inputElement.indeterminate).toBe(false);
+      expect(inputElement.checked).toBe(true);
+      expect(testComponent.isIndeterminate).toBe(false);
 
-        inputElement.click();
-        fixture.detectChanges();
+      testComponent.isIndeterminate = true;
+      fixture.detectChanges();
 
-        fixture.whenStable().then(() => {
-          fixture.detectChanges();
-          expect(checkboxInstance.checked).toBe(false);
-          expect(inputElement.indeterminate).toBe(false);
-          expect(inputElement.checked).toBe(false);
-          expect(testComponent.isIndeterminate).toBe(false);
-        });
-      });
+      expect(checkboxInstance.indeterminate).toBe(true);
+      expect(inputElement.indeterminate).toBe(true);
+      expect(inputElement.checked).toBe(true);
+      expect(testComponent.isIndeterminate).toBe(true);
 
+      inputElement.click();
+      fixture.detectChanges();
+
+      // Flush the microtasks because the forms module updates the model state asynchronously.
+      flushMicrotasks();
+
+      // The checked property has been updated from the model and now the view needs
+      // to reflect the state change.
+      fixture.detectChanges();
+
+      expect(checkboxInstance.checked).toBe(false);
+      expect(inputElement.indeterminate).toBe(false);
+      expect(inputElement.checked).toBe(false);
+      expect(testComponent.isIndeterminate).toBe(false);
     }));
 
     it('should not set indeterminate to false when checked is set programmatically', async(() => {
@@ -190,7 +197,7 @@ describe('MdCheckbox', () => {
       expect(checkboxInstance.checked).toBe(false);
     });
 
-    it('should change from indeterminate to checked on click', async(() => {
+    it('should change from indeterminate to checked on click', fakeAsync(() => {
       testComponent.isChecked = false;
       testComponent.isIndeterminate = true;
       fixture.detectChanges();
@@ -200,16 +207,17 @@ describe('MdCheckbox', () => {
 
       checkboxInstance._onInputClick(<Event>{stopPropagation: () => {}});
 
-      fixture.whenStable().then(() => {
-        expect(checkboxInstance.checked).toBe(true);
-        expect(checkboxInstance.indeterminate).toBe(false);
+      // Flush the microtasks because the indeterminate state will be updated in the next tick.
+      flushMicrotasks();
 
-        checkboxInstance._onInputClick(<Event>{stopPropagation: () => {}});
-        fixture.detectChanges();
+      expect(checkboxInstance.checked).toBe(true);
+      expect(checkboxInstance.indeterminate).toBe(false);
 
-        expect(checkboxInstance.checked).toBe(false);
-        expect(checkboxInstance.indeterminate).toBe(false);
-      });
+      checkboxInstance._onInputClick(<Event>{stopPropagation: () => {}});
+      fixture.detectChanges();
+
+      expect(checkboxInstance.checked).toBe(false);
+      expect(checkboxInstance.indeterminate).toBe(false);
     }));
 
     it('should add and remove disabled state', () => {
@@ -242,17 +250,18 @@ describe('MdCheckbox', () => {
       expect(checkboxInstance.checked).toBe(false);
     });
 
-    it('should overwrite indeterminate state when clicked', async(() => {
+    it('should overwrite indeterminate state when clicked', fakeAsync(() => {
       testComponent.isIndeterminate = true;
       fixture.detectChanges();
 
       inputElement.click();
       fixture.detectChanges();
 
-      fixture.whenStable().then(() => {
-        expect(checkboxInstance.checked).toBe(true);
-        expect(checkboxInstance.indeterminate).toBe(false);
-      });
+      // Flush the microtasks because the indeterminate state will be updated in the next tick.
+      flushMicrotasks();
+
+      expect(checkboxInstance.checked).toBe(true);
+      expect(checkboxInstance.indeterminate).toBe(false);
     }));
 
     it('should preserve the user-provided id', () => {
