@@ -3,7 +3,7 @@
 {% extends 'export-base.template.html' %}
 
 {% block details %}
-  {% include "includes/interface-overview.html" %}
+  {% include "includes/decorator-overview.html" %}
   {% include "includes/description.html" %}
   {$ memberHelper.renderMemberDetails(doc.members, 'metadata-members', 'metadata-member', 'Metadata Properties') $}
 {% endblock %}
