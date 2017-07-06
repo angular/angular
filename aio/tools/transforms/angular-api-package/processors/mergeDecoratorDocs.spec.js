@@ -26,12 +26,17 @@ describe('mergeDecoratorDocs processor', () => {
       name: 'ComponentDecorator',
       docType: 'interface',
       description: 'A description of the interface for the call signature for the Component decorator',
-      members: [{
-        isCallMember: true,
-        description: 'The actual description of the call signature',
-        whatItDoes: 'Does something cool...',
-        howToUse: 'Use it like this...'
-      }],
+      members: [
+        {
+          isCallMember: true,
+          description: 'The actual description of the call signature',
+          whatItDoes: 'Does something cool...',
+          howToUse: 'Use it like this...'
+        },
+        {
+          description: 'Some other member'
+        }
+      ],
       moduleDoc
     };
 
