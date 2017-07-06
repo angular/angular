@@ -156,7 +156,3 @@ let apiDocsPackage = new DgeniPackage('material2-api-docs', dgeniPackageDeps)
 
 
 module.exports = apiDocsPackage;
-
-
-  const docs = new Dgeni([apiDocsPackage]);
-  docs.generate();
