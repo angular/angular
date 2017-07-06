@@ -31,8 +31,14 @@ describe('example inline-tag-def', function() {
       };
     });
 
-    it('should return a <code-example> tag', () => {
-      expect(handler({}, 'example', 'some/uri')).toEqual('<code-example>\n\n</code-example>');
+    it('should throw an error if there is no matching example', () => {
+      expect(function() {
+        handler({}, 'example', 'missing/uri');
+      }).toThrowError();
+
+      expect(function() {
+        handler({}, 'example', 'test/url missing-region');
+      }).toThrowError();
     });
 
     it('should contain the whole contents from the example file if no region is specified', () => {
