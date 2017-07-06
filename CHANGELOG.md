@@ -1,3 +1,73 @@
+<a name="2.0.0-beta.8"></a>
+# [2.0.0-beta.8 plasma-abacus](https://github.com/angular/material2/compare/2.0.0-beta.7...2.0.0-beta.8) (2017-07-06)
+
+
+### Highlights
+* This version marks the release of `@angular/cdk` (component dev kit)! This package contains
+general building blocks for UI components decoupled from the visuals of Material Design. In the
+initial release, code from Angular Material's `core/` have been moved for `a11y/`, `bidi/`,
+`coercion/`, `observe-content/`, `platform/`, `portal/`. The `@angular/material` package now
+re-exports these symbols, marked as deprecated. The re-exports will be removed in a subsequent
+release.
+* Initial version of data-table component. There is both a `<cdk-table>` (the core) and the
+`<md-table>` (with Material Design styles). See the documentation on material.angular.io for more
+information.
+* Initial version of `<md-paginator>` and `<md-sort-header>` components, which can be used either
+with `<md-table>` or any other table.
+* Both `@angular/material` and `@angular/cdk` are now strict null compliant.
+
+
+### Breaking changes
+* `@angular/material` now depends on `@angular/cdk` as a peer dependency.
+* Some types have expanded to include `| null` or `| undefined` for strict null compatibility. If
+your application uses strict null checks, you may have to update the types in your app to match up
+with the more accurate types coming from Angular Material.
+* Angular Material no longer adds RxJS operators to the prototype of `Observable`. If your app
+depended on these operators being added by Angular Material, you will need to import them
+explicitly.
+
+
+### Bug Fixes
+
+* **autocomplete:** allow number zero as value ([#5364](https://github.com/angular/material2/issues/5364)) ([9137fd9](https://github.com/angular/material2/commit/9137fd9)), closes [#5363](https://github.com/angular/material2/issues/5363)
+* **autocomplete:** don't scroll panel when option is visible ([#4905](https://github.com/angular/material2/issues/4905)) ([d3af57d](https://github.com/angular/material2/commit/d3af57d))
+* **autocomplete:** not closing when tapping away on mobile ([#5260](https://github.com/angular/material2/issues/5260)) ([1dcaca7](https://github.com/angular/material2/commit/1dcaca7))
+* **autocomplete:** reopening when clicking an option in IE ([#5172](https://github.com/angular/material2/issues/5172)) ([fe31210](https://github.com/angular/material2/commit/fe31210)), closes [#5165](https://github.com/angular/material2/issues/5165)
+* **autosize:** resize when form value changes. Fixes [#4657](https://github.com/angular/material2/issues/4657) ([#5315](https://github.com/angular/material2/issues/5315)) ([8c9c11a](https://github.com/angular/material2/commit/8c9c11a))
+* **button-toggle:** fix standalone button toggle style ([#5121](https://github.com/angular/material2/issues/5121)) ([3d8c833](https://github.com/angular/material2/commit/3d8c833))
+* **datepicker:** pass layout direction to touchUi dialog ([#5052](https://github.com/angular/material2/issues/5052)) ([8b6efb1](https://github.com/angular/material2/commit/8b6efb1))
+* **datepicker:** use theme foreground color ([#5290](https://github.com/angular/material2/issues/5290)) ([51bf26e](https://github.com/angular/material2/commit/51bf26e))
+* **dialog:** set aria-labelledby based on the md-dialog-title ([#5178](https://github.com/angular/material2/issues/5178)) ([aee984a](https://github.com/angular/material2/commit/aee984a))
+* **directionality:** error on platform-server ([#5234](https://github.com/angular/material2/issues/5234)) ([49dfe60](https://github.com/angular/material2/commit/49dfe60))
+* **input:** theming mixin error ([#5254](https://github.com/angular/material2/issues/5254)) ([37efb54](https://github.com/angular/material2/commit/37efb54)), closes [#5232](https://github.com/angular/material2/issues/5232)
+* **input:** underline showing at end if text-align is set ([#5280](https://github.com/angular/material2/issues/5280)) ([5c9391d](https://github.com/angular/material2/commit/5c9391d)), closes [#5272](https://github.com/angular/material2/issues/5272)
+* **memory:** Unsubscribe event listeners when using Observable.fromEvent ([#5325](https://github.com/angular/material2/issues/5325)) ([1b351cd](https://github.com/angular/material2/commit/1b351cd))
+* **menu:** role being set on the wrong element ([#5191](https://github.com/angular/material2/issues/5191)) ([2239668](https://github.com/angular/material2/commit/2239668))
+* **overlay:** remove webkit tap highlight from backdrop ([#5258](https://github.com/angular/material2/issues/5258)) ([8feddd4](https://github.com/angular/material2/commit/8feddd4))
+* **select:** align first option to trigger when it is inside a group ([#5153](https://github.com/angular/material2/issues/5153)) ([d39cb12](https://github.com/angular/material2/commit/d39cb12))
+* **select:** expose focus method ([#5255](https://github.com/angular/material2/issues/5255)) ([7b2d4ae](https://github.com/angular/material2/commit/7b2d4ae)), closes [#5251](https://github.com/angular/material2/issues/5251)
+* **select:** md-optgroup not using typography styles ([#5193](https://github.com/angular/material2/issues/5193)) ([b5bf6f5](https://github.com/angular/material2/commit/b5bf6f5))
+* **select:** page scrolling down when selecting option with space ([#5192](https://github.com/angular/material2/issues/5192)) ([2361385](https://github.com/angular/material2/commit/2361385))
+* **snackbar:** clear timeout upon dismiss ([#4860](https://github.com/angular/material2/issues/4860)) ([146160c](https://github.com/angular/material2/commit/146160c))
+* **tabs:** server-side rendering error ([#5348](https://github.com/angular/material2/issues/5348)) ([0174377](https://github.com/angular/material2/commit/0174377))
+* **unique-selection-dispatcher:** remove listeners on destroy ([#5164](https://github.com/angular/material2/issues/5164)) ([f9bbbe7](https://github.com/angular/material2/commit/f9bbbe7))
+
+
+### Features
+
+* **data-table:** initial version. Too many commits to list.
+* **directionality:** a provider to get directionality ([#4044](https://github.com/angular/material2/issues/4044)) ([61d979e](https://github.com/angular/material2/commit/61d979e)), closes [#3600](https://github.com/angular/material2/issues/3600)
+* **input:** add custom error state matcher ([#4750](https://github.com/angular/material2/issues/4750)) ([f73cc97](https://github.com/angular/material2/commit/f73cc97))
+* **pagination:** initial pagination component ([#5156](https://github.com/angular/material2/issues/5156)) ([85fb00a](https://github.com/angular/material2/commit/85fb00a))
+* **sort:** add ability to manage and display sorting ([#5307](https://github.com/angular/material2/issues/5307)) ([b328d36](https://github.com/angular/material2/commit/b328d36))
+* **tab-nav-bar:** support disabling tab links ([#5257](https://github.com/angular/material2/issues/5257)) ([fc809ed](https://github.com/angular/material2/commit/fc809ed)), closes [#5208](https://github.com/angular/material2/issues/5208)
+* add support for strict null checks ([#5094](https://github.com/angular/material2/issues/5094)) ([2bf7024](https://github.com/angular/material2/commit/2bf7024))
+* remove uses of rxjs patch operators ([#5314](https://github.com/angular/material2/issues/5314)) ([e488e3f](https://github.com/angular/material2/commit/e488e3f)), closes [#2622](https://github.com/angular/material2/issues/2622)
+* move a11y, bidi, platform, rxjs, and portal to cdk ([#5386](https://github.com/angular/material2/issues/5386)) ([fde35e4](https://github.com/angular/material2/commit/fde35e4))
+* move observe-content to cdk ([#5438](https://github.com/angular/material2/issues/5438)) ([b00f838](https://github.com/angular/material2/commit/b00f838))
+
+
+
 <a name="2.0.0-beta.7"></a>
 # [2.0.0-beta.7 glass-delicatessen](https://github.com/angular/material2/compare/2.0.0-beta.6...2.0.0-beta.7) (2017-06-19)
 
