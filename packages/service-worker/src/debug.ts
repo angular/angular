@@ -34,11 +34,9 @@ export class NgswDebug {
 
   ping(): Promise<void> {
     const nonce = this.sw.generateNonce();
-    fetch('/ngsw-log', {body: `sending ping with nonce ${nonce}`, method: 'POST'});
-    const pongsWithNonce = op_filter.call(
-        this.sw.eventsOfType(EVENT_PONG), (pong: PongPayload) => pong.nonce === nonce)
-                               as Observable<PongPayload>;
-    const firstPongWithNonce = op_take.call(pongsWithNonce, 1) as Observable<PongPayload>;
+    const pongsWithNonce = <Observable<PongPayload>>(op_filter.call(
+        this.sw.eventsOfType(EVENT_PONG), (pong: PongPayload) => pong.nonce === nonce));
+    const firstPongWithNonce = (op_take.call(pongsWithNonce, 1) as Observable<PongPayload>);
     const recvPong =
         (op_toPromise.call(firstPongWithNonce) as Promise<PongPayload>).then(() => undefined);
     const sendPing = this.sw.postMessage(CMD_PING, {nonce});

@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {FetchInstruction, LOG, Operation, Plugin, PluginFactory, Verbosity, VersionWorker, cacheFromNetworkOp, copyExistingOrFetchOp, deleteCacheOp, fetchFromCacheInstruction} from '@angular/service-worker/sdk';
 
 interface UrlToHashMap {
@@ -12,12 +20,7 @@ interface StaticManifest {
 /**
  * @experimental
  */
-export interface StaticContentCacheOptions { manifestKey?: string; }
-
-/**
- * @experimental
- */
-export function StaticContentCache(options?: StaticContentCacheOptions):
+export function StaticContentCache(options?: {manifestKey?: string;}):
     PluginFactory<StaticContentCacheImpl> {
   const manifestKey = (options && options.manifestKey) || 'static';
   return (worker: VersionWorker) => new StaticContentCacheImpl(worker, manifestKey);

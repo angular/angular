@@ -56,17 +56,10 @@ class NgSwBrowserAdapter implements NgSwAdapter {
 /**
  * @experimental
  */
-export interface BootstrapOptions {
-  manifestUrl?: string;
-  plugins?: PluginFactory<any>[];
-  logLevel?: Verbosity;
+export function bootstrapServiceWorker(options?: {
+  manifestUrl?: string; plugins?: PluginFactory<any>[]; logLevel?: Verbosity;
   logHandlers?: LogHandler[];
-}
-
-/**
- * @experimental
- */
-export function bootstrapServiceWorker(options?: BootstrapOptions): Driver {
+}): Driver {
   const manifestUrl = (options && options.manifestUrl) || '/ngsw-manifest.json';
   const plugins = (options && options.plugins) || [];
 

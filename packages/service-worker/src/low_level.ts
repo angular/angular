@@ -86,32 +86,29 @@ export class NgswCommChannel {
       this.worker = this.events = errorObservable(ERR_SW_NOT_SUPPORTED);
     } else {
       const controllerChangeEvents =
-          obs_fromEvent(navigator.serviceWorker, 'controllerchange') as Observable<any>;
-      const controllerChanges =
-          op_startWith.call(controllerChangeEvents, navigator.serviceWorker.controller)
-              as Observable<ServiceWorker|null>;
+          <Observable<any>>(obs_fromEvent(navigator.serviceWorker, 'controllerchange'));
+      const controllerChanges = <Observable<ServiceWorker|null>>(
+          op_startWith.call(controllerChangeEvents, navigator.serviceWorker.controller));
 
-      const currentController = obs_defer(() => obs_of(navigator.serviceWorker.controller))
-          as Observable<ServiceWorker|null>;
+      const currentController = <Observable<ServiceWorker|null>>(
+          obs_defer(() => obs_of(navigator.serviceWorker.controller)));
 
-      const controllerWithChanges = obs_concat(currentController, controllerChanges)
-                                        as Observable<ServiceWorker|null>this.worker =
-          op_filter.call(controllerWithChanges, (c: ServiceWorker) => !!c)
-              as Observable<ServiceWorker>;
+      const controllerWithChanges =
+          <Observable<ServiceWorker|null>>(obs_concat(currentController, controllerChanges));
+      this.worker = <Observable<ServiceWorker>>(
+          op_filter.call(controllerWithChanges, (c: ServiceWorker) => !!c));
 
-      this.registration =
-          op_switchMap.call(this.worker, () => navigator.serviceWorker.getRegistration())
-              as Observable<ServiceWorkerRegistration>;
+      this.registration = <Observable<ServiceWorkerRegistration>>(
+          op_switchMap.call(this.worker, () => navigator.serviceWorker.getRegistration()));
 
       const channel = new BroadcastChannel('ngsw:broadcast');
 
-      const rawEvents = obs_fromEvent(channel, 'message') as Observable<MessageEvent>;
+      const rawEvents = <Observable<MessageEvent>>(obs_fromEvent(channel, 'message'));
       const rawEventPayload =
-          op_map.call(rawEvents, (event: MessageEvent) => event.data) as Observable<Object>;
-      const eventsUnconnected =
-          op_filter.call(rawEventPayload, (event: Object) => !!event && !!(event as any)['type'])
-              as Observable<FsaEvent<Object>>;
-      const events = op_publish.call(eventsUnconnected) as ConnectableObservable<FsaEvent<Object>>;
+          <Observable<Object>>(op_map.call(rawEvents, (event: MessageEvent) => event.data));
+      const eventsUnconnected = <Observable<FsaEvent<Object>>>(
+          op_filter.call(rawEventPayload, (event: Object) => !!event && !!(event as any)['type']));
+      const events = <ConnectableObservable<FsaEvent<Object>>>(op_publish.call(eventsUnconnected));
       console.log(events);
       this.events = events;
       events.connect();
@@ -129,7 +126,7 @@ export class NgswCommChannel {
         protocolVersion: 1, payload,
       });
     });
-    return op_toPromise.call(sideEffect).then(() => undefined) as Promise<void>;
+    return <Promise<void>>(op_toPromise.call(sideEffect).then(() => undefined));
   }
 
   /**
@@ -150,33 +147,32 @@ export class NgswCommChannel {
    * @internal
    */
   eventsOfType<T>(type: string): Observable<T> {
-    const matchingEvents =
-        op_filter.call(this.events, (event: FsaEvent<Object>) => event.type === 'NGSW_' + type)
-            as Observable<FsaEvent<T>>;
-    return op_map.call(matchingEvents, (event: FsaEvent<T>) => event.payload) as Observable<T>;
+    const matchingEvents = <Observable<FsaEvent<T>>>(
+        op_filter.call(this.events, (event: FsaEvent<Object>) => event.type === 'NGSW_' + type));
+    return <Observable<T>>(op_map.call(matchingEvents, (event: FsaEvent<T>) => event.payload));
   }
 
   /**
    * @internal
    */
   nextEventOfType<T>(type: string): Observable<T> {
-    return op_take.call(this.eventsOfType(type), 1) as Observable<T>;
+    return <Observable<T>>(op_take.call(this.eventsOfType(type), 1));
   }
 
   /**
    * @internal
    */
   waitForStatus(nonce: number): Promise<void> {
-    const statusEventsWithNonce = op_filter.call(
-        this.eventsOfType(EVENT_STATUS), (event: StatusEvent) => event.nonce === nonce)
-                                      as Observable<StatusEvent>;
-    const singleStatusEvent = op_take.call(statusEventsWithNonce, 1) as Observable<StatusEvent>;
-    const mapErrorAndValue = op_map.call(singleStatusEvent, (event: StatusEvent) => {
-      if (event.status) {
-        return undefined;
-      }
-      throw new Error(event.error !);
-    }) as Observable<void>;
+    const statusEventsWithNonce = <Observable<StatusEvent>>(op_filter.call(
+        this.eventsOfType(EVENT_STATUS), (event: StatusEvent) => event.nonce === nonce));
+    const singleStatusEvent = <Observable<StatusEvent>>(op_take.call(statusEventsWithNonce, 1));
+    const mapErrorAndValue =
+        <Observable<void>>(op_map.call(singleStatusEvent, (event: StatusEvent) => {
+          if (event.status) {
+            return undefined;
+          }
+          throw new Error(event.error !);
+        }));
     return op_toPromise.call(mapErrorAndValue);
   }
 }

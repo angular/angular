@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {Component} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {NgswModule, NgswPush, NgswUpdate, NgswDebug, NgswAppVersion} from '@angular/service-worker';
@@ -10,7 +18,7 @@ import 'rxjs/add/operator/startWith';
 import 'rxjs/add/operator/take';
 
 @Component({
-  selector: 'controller',
+  selector: 'test-controller',
   template: `
 <!-- Action selection -->
 <div>

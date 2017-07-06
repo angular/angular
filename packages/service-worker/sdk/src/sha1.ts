@@ -1,4 +1,12 @@
 /**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
  * Compute the SHA1 of the given string
  *
  * see http://csrc.nist.gov/publications/fips/fips180-4/fips-180-4.pdf

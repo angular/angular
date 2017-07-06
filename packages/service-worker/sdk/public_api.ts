@@ -1,5 +1,5 @@
 export {FetchDelegate, FetchInstruction, Operation, Plugin, PluginFactory, VersionWorker} from './src/api';
-export {BootstrapOptions, bootstrapServiceWorker} from './src/bootstrap';
+export {bootstrapServiceWorker} from './src/bootstrap';
 export {ScopedCache} from './src/cache';
 export {cacheFromNetworkOp, copyExistingCacheOp, copyExistingOrFetchOp, deleteCacheOp, fetchFromCacheInstruction, fetchFromNetworkInstruction, rewriteUrlInstruction} from './src/common';
 export {Driver, DriverState} from './src/driver';

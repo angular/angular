@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {FetchInstruction, Operation, Plugin, PluginFactory, VersionWorker, VersionWorkerImpl, cacheFromNetworkOp, fetchFromCacheInstruction,} from '@angular/service-worker/sdk';
 
 interface UrlConfig {
