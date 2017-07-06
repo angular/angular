@@ -90,6 +90,9 @@ export function hookupNgModel(ngModel: angular.INgModelController, component: an
   if (ngModel && supportsNgModel(component)) {
     ngModel.$render = () => { component.writeValue(ngModel.$viewValue); };
     component.registerOnChange(ngModel.$setViewValue.bind(ngModel));
+    if (typeof component.registerOnTouched === 'function') {
+      component.registerOnTouched(ngModel.$setTouched.bind(ngModel));
+    }
   }
 }
 
