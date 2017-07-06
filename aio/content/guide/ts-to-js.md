@@ -247,11 +247,9 @@ next to the original _ES5_ version for comparison:
   </code-pane>
 </code-tabs>
 
+{@a name-constructor}
+
 <div class="callout is-helpful">
-
-  {@a name-constructor}
-
-  ###  Name the constructor
 
   A **named** constructor displays clearly in the console log
   if the component throws a runtime error.
