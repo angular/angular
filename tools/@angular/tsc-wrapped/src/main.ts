@@ -16,7 +16,7 @@ import {CliOptions} from './cli_options';
 import {MetadataWriterHost, SyntheticIndexHost} from './compiler_host';
 import {privateEntriesToIndex} from './index_writer';
 import NgOptions from './options';
-import {check, tsc} from './tsc';
+import {check, Tsc} from './tsc';
 import {isVinylFile, VinylFile} from './vinyl_file';
 
 export {UserError} from './tsc';
@@ -83,6 +83,7 @@ export function main(
     const basePath = path.resolve(process.cwd(), cliOptions.basePath || projectDir);
 
     // read the configuration options from wherever you store them
+    const tsc = new Tsc();
     let {parsed, ngOptions} = tsc.readConfiguration(project, basePath, options);
     ngOptions.basePath = basePath;
     let rootFileNames: string[] = parsed.fileNames.slice(0);
