@@ -161,7 +161,7 @@
   <!-- #docregion property-binding-syntax-1 -->
   <img [src]="heroImageUrl">
   <hero-detail [hero]="currentHero"></hero-detail>
-  <div [ngClass]="{special: isSpecial}"></div>
+  <div [ngClass]="{'special': isSpecial}"></div>
   <!-- #enddocregion property-binding-syntax-1 -->
 </div>
 <br><br>
@@ -496,7 +496,7 @@ bindon-ngModel
 <div [ngClass]="isSpecial ? 'special' : ''">This div is special</div>
 
 <div class="bad curly special">Bad curly special</div>
-<div [ngClass]="{bad:false, curly:true, special:true}">Curly special</div>
+<div [ngClass]="{'bad':false, 'curly':true, 'special':true}">Curly special</div>
 
 <a class="to-toc" href="#toc">top</a>
 
