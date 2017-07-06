@@ -2647,6 +2647,115 @@ export function main() {
            ]);
          });
     });
+
+    describe('animation control flags', () => {
+      describe('[@.disabled]', () => {
+        it('should allow a parent animation to query and animate inner nodes that are in a disabled region',
+           () => {
+             @Component({
+               selector: 'some-cmp',
+               template: `
+              <div [@myAnimation]="exp">
+                <div [@.disabled]="disabledExp">
+                  <div class="header"></div>
+                  <div class="footer"></div>
+                </div>
+              </div>
+            `,
+               animations: [
+                 trigger(
+                     'myAnimation',
+                     [
+                       transition(
+                           '* => go',
+                           [
+                             query('.header', animate(750, style({opacity: 0}))),
+                             query('.footer', animate(250, style({opacity: 0}))),
+                           ]),
+                     ]),
+               ]
+             })
+             class Cmp {
+               exp: any = '';
+               disableExp = false;
+             }
+
+             TestBed.configureTestingModule({declarations: [Cmp]});
+
+             const fixture = TestBed.createComponent(Cmp);
+             const cmp = fixture.componentInstance;
+             cmp.disableExp = true;
+             fixture.detectChanges();
+             resetLog();
+
+             cmp.exp = 'go';
+             fixture.detectChanges();
+             const players = getLog();
+             expect(players.length).toEqual(2);
+
+             const [p1, p2] = players;
+             expect(p1.duration).toEqual(750);
+             expect(p1.element.classList.contains('header'));
+             expect(p2.duration).toEqual(250);
+             expect(p2.element.classList.contains('footer'));
+           });
+
+        it('should allow a parent animation to query and animate sub animations that are in a disabled region',
+           () => {
+             @Component({
+               selector: 'some-cmp',
+               template: `
+              <div class="parent" [@parentAnimation]="exp">
+                <div [@.disabled]="disabledExp">
+                  <div class="child" [@childAnimation]="exp"></div>
+                </div>
+              </div>
+            `,
+               animations: [
+                 trigger(
+                     'parentAnimation',
+                     [
+                       transition(
+                           '* => go',
+                           [
+                             query('@childAnimation', animateChild()),
+                             animate(1000, style({opacity: 0}))
+                           ]),
+                     ]),
+                 trigger(
+                     'childAnimation',
+                     [
+                       transition('* => go', [animate(500, style({opacity: 0}))]),
+                     ]),
+               ]
+             })
+             class Cmp {
+               exp: any = '';
+               disableExp = false;
+             }
+
+             TestBed.configureTestingModule({declarations: [Cmp]});
+
+             const fixture = TestBed.createComponent(Cmp);
+             const cmp = fixture.componentInstance;
+             cmp.disableExp = true;
+             fixture.detectChanges();
+             resetLog();
+
+             cmp.exp = 'go';
+             fixture.detectChanges();
+
+             const players = getLog();
+             expect(players.length).toEqual(2);
+
+             const [p1, p2] = players;
+             expect(p1.duration).toEqual(500);
+             expect(p1.element.classList.contains('child'));
+             expect(p2.duration).toEqual(1000);
+             expect(p2.element.classList.contains('parent'));
+           });
+      });
+    });
   });
 }
 

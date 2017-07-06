@@ -187,7 +187,7 @@ export class AnimationRenderer extends BaseAnimationRenderer implements Renderer
   setProperty(el: any, name: string, value: any): void {
     if (name.charAt(0) == '@') {
       name = name.substr(1);
-      this.engine.setProperty(this.namespaceId, el, name, value);
+      this.engine.process(this.namespaceId, el, name, value);
     } else {
       this.delegate.setProperty(el, name, value);
     }

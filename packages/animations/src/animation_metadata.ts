@@ -235,24 +235,25 @@ export interface AnimationStaggerMetadata extends AnimationMetadata {
 
 /**
  * `trigger` is an animation-specific function that is designed to be used inside of Angular's
- animation DSL language. If this information is new, please navigate to the {@link
- Component#animations component animations metadata page} to gain a better understanding of
- how animations in Angular are used.
+ * animation DSL language. If this information is new, please navigate to the
+ * {@link Component#animations component animations metadata page} to gain a better
+ * understanding of how animations in Angular are used.
  *
- * `trigger` Creates an animation trigger which will a list of {@link state state} and {@link
- transition transition} entries that will be evaluated when the expression bound to the trigger
- changes.
+ * `trigger` Creates an animation trigger which will a list of {@link state state} and
+ * {@link transition transition} entries that will be evaluated when the expression
+ * bound to the trigger changes.
  *
- * Triggers are registered within the component annotation data under the {@link
- Component#animations animations section}. An animation trigger can be placed on an element
- within a template by referencing the name of the trigger followed by the expression value that the
- trigger is bound to (in the form of `[@triggerName]="expression"`.
+ * Triggers are registered within the component annotation data under the
+ * {@link Component#animations animations section}. An animation trigger can be placed on an element
+ * within a template by referencing the name of the trigger followed by the expression value that
+ the
+ * trigger is bound to (in the form of `[@triggerName]="expression"`.
  *
  * ### Usage
  *
  * `trigger` will create an animation trigger reference based on the provided `name` value. The
- provided `animation` value is expected to be an array consisting of {@link state state} and {@link
- transition transition} declarations.
+ * provided `animation` value is expected to be an array consisting of {@link state state} and
+ * {@link transition transition} declarations.
  *
  * ```typescript
  * @Component({
@@ -278,9 +279,65 @@ export interface AnimationStaggerMetadata extends AnimationMetadata {
  * ```html
  * <!-- somewhere inside of my-component-tpl.html -->
  * <div [@myAnimationTrigger]="myStatusExp">...</div>
- tools/gulp-tasks/validate-commit-message.js ```
+ * ```
  *
- * {@example core/animation/ts/dsl/animation_example.ts region='Component'}
+ * ## Disable Child Animations
+ * A special animation control binding called `@.disabled` can be placed on an element which will
+ then disable animations for any inner animation triggers situated within the element.
+ *
+ * When true, the `@.disabled` binding will prevent inner animations from rendering. The example
+ below shows how to use this feature:
+ *
+ * ```ts
+ * @Component({
+ *   selector: 'my-component',
+ *   template: `
+ *     <div [@.disabled]="isDisabled">
+ *       <div [@childAnimation]="exp"></div>
+ *     </div>
+ *   `,
+ *   animations: [
+ *     trigger("childAnimation", [
+ *       // ...
+ *     ])
+ *   ]
+ * })
+ * class MyComponent {
+ *   isDisabled = true;
+ *   exp = '...';
+ * }
+ * ```
+ *
+ * The `@childAnimation` trigger will not animate because `@.disabled` prevents it from happening
+ (when true).
+ *
+ * Note that `@.disbled` will only disable inner animations (any animations running on the same
+ element will not be disabled).
+ *
+ * ### Disabling Animations Application-wide
+ * When an area of the template is set to have animations disabled, **all** inner components will
+ also have their animations disabled as well. This means that all animations for an angular
+ application can be disabled by placing a host binding set on `@.disabled` on the topmost Angular
+ component.
+ *
+ * ```ts
+ * import {Component, HostBinding} from '@angular/core';
+ *
+ * @Component({
+ *   selector: 'app-component',
+ *   templateUrl: 'app.component.html',
+ * })
+ * class AppComponent {
+ *   @HostBinding('@.disabled')
+ *   public animationsDisabled = true;
+ * }
+ * ```
+ *
+ * ### What about animations that us `query()` and `animateChild()`?
+ * Despite inner animations being disabled, a parent animation can {@link query query} for inner
+ elements located in disabled areas of the template and still animate them as it sees fit. This is
+ also the case for when a sub animation is queried by a parent and then later animated using {@link
+ animateChild animateChild}.
  *
  * @experimental Animation support is experimental.
  */
