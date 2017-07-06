@@ -87,8 +87,15 @@ module.exports = (config) => {
     browserConsoleLogOptions: {
       terminal: true,
       level: 'log'
-    }
+    },
 
+    client: {
+      jasmine: {
+        // Always execute the tests in a random order to ensure that tests don't depend
+        // accidentally on other tests.
+        random: true
+      }
+    }
   });
 
   if (process.env['TRAVIS']) {
