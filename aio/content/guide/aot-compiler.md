@@ -475,7 +475,7 @@ You'll need separate TypeScript configuration files such as these:
 <div class="callout is-helpful">
 
   <header>
-    @Types and node modules
+    `@types` and node modules
   </header>
 
   In the file structure of _this particular sample project_,
