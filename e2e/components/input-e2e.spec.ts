@@ -43,4 +43,14 @@ describe('input', () => {
       expect(input.getAttribute('value')).toBe('0');
     });
   });
+
+  describe('textarea', () => {
+    beforeEach(() => browser.get('/input'));
+
+    it('should update input value when user types', () => {
+      let input = element(by.id('text-area'));
+      input.sendKeys('abc123');
+      expect(input.getAttribute('value')).toBe('abc123');
+    });
+  });
 });
