@@ -1807,6 +1807,156 @@ export function main() {
              }));
     });
 
+    describe('animation control flags', () => {
+      describe('[@$disabled]', () => {
+        it('should disable child animations when set to true', () => {
+          @Component({
+            selector: 'if-cmp',
+            template: `
+              <div [@$disabled]="disableExp">
+                <div [@myAnimation]="exp"></div>
+              </div>
+            `,
+            animations: [
+              trigger(
+                  'myAnimation',
+                  [
+                    transition(
+                        '* => 1, * => 2',
+                        [
+                          animate(1234, style({width: '100px'})),
+                        ]),
+                  ]),
+            ]
+          })
+          class Cmp {
+            exp: any = false;
+            disableExp = false;
+          }
+
+          TestBed.configureTestingModule({declarations: [Cmp]});
+
+          const fixture = TestBed.createComponent(Cmp);
+          const cmp = fixture.componentInstance;
+          fixture.detectChanges();
+          resetLog();
+
+          cmp.disableExp = true;
+          cmp.exp = '1';
+          fixture.detectChanges();
+
+          let players = getLog();
+          expect(players.length).toEqual(0);
+
+          cmp.disableExp = false;
+          cmp.exp = '2';
+          fixture.detectChanges();
+
+          players = getLog();
+          expect(players.length).toEqual(1);
+          expect(players[0].totalTime).toEqual(1234);
+        });
+
+        it('should not disable animations for the element that they are disabled on', () => {
+          @Component({
+            selector: 'if-cmp',
+            template: `
+              <div [@$disabled]="disableExp" [@myAnimation]="exp"></div>
+            `,
+            animations: [
+              trigger(
+                  'myAnimation',
+                  [
+                    transition(
+                        '* => 1, * => 2',
+                        [
+                          animate(1234, style({width: '100px'})),
+                        ]),
+                  ]),
+            ]
+          })
+          class Cmp {
+            exp: any = false;
+            disableExp = false;
+          }
+
+          TestBed.configureTestingModule({declarations: [Cmp]});
+
+          const fixture = TestBed.createComponent(Cmp);
+          const cmp = fixture.componentInstance;
+          fixture.detectChanges();
+          resetLog();
+
+          cmp.disableExp = true;
+          cmp.exp = '1';
+          fixture.detectChanges();
+
+          let players = getLog();
+          expect(players.length).toEqual(1);
+          expect(players[0].totalTime).toEqual(1234);
+          resetLog();
+
+          cmp.disableExp = false;
+          cmp.exp = '2';
+          fixture.detectChanges();
+
+          players = getLog();
+          expect(players.length).toEqual(1);
+          expect(players[0].totalTime).toEqual(1234);
+        });
+
+        it('should respect inner disabled nodes once a parent becomes enabled', () => {
+          @Component({
+            selector: 'if-cmp',
+            template: `
+              <div [@$disabled]="disableParentExp">
+                <div [@$disabled]="disableChildExp">
+                  <div [@myAnimation]="exp"></div>
+                </div>
+              </div>
+            `,
+            animations: [trigger(
+                'myAnimation',
+                [transition('* => 1, * => 2, * => 3', [animate(1234, style({width: '100px'}))])])]
+          })
+          class Cmp {
+            disableParentExp = false;
+            disableChildExp = false;
+            exp = '';
+          }
+
+          TestBed.configureTestingModule({declarations: [Cmp]});
+
+          const fixture = TestBed.createComponent(Cmp);
+          const cmp = fixture.componentInstance;
+          fixture.detectChanges();
+          resetLog();
+
+          cmp.disableParentExp = true;
+          cmp.disableChildExp = true;
+          cmp.exp = '1';
+          fixture.detectChanges();
+
+          let players = getLog();
+          expect(players.length).toEqual(0);
+
+          cmp.disableParentExp = false;
+          cmp.exp = '2';
+          fixture.detectChanges();
+
+          players = getLog();
+          expect(players.length).toEqual(0);
+
+          cmp.disableChildExp = false;
+          cmp.exp = '3';
+          fixture.detectChanges();
+
+          players = getLog();
+          expect(players.length).toEqual(1);
+        });
+      });
+    });
+
     it('should throw neither state() or transition() are used inside of trigger()', () => {
       @Component({
         selector: 'if-cmp',

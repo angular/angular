@@ -20,6 +20,8 @@ import {getOrSetAsInMap, listenOnPlayer, makeAnimationEvent, normalizeKeyframes,
 
 const QUEUED_CLASSNAME = 'ng-animate-queued';
 const QUEUED_SELECTOR = '.ng-animate-queued';
+const DISABLED_CLASSNAME = 'ng-animate-disabled';
+const DISABLED_SELECTOR = '.ng-animate-disabled';
 
 const EMPTY_PLAYER_ARRAY: TransitionAnimationPlayer[] = [];
 const NULL_REMOVAL_STATE: ElementAnimationState = {
@@ -461,6 +463,8 @@ export class TransitionAnimationEngine {
   public playersByElement = new Map<any, TransitionAnimationPlayer[]>();
   public playersByQueriedElement = new Map<any, TransitionAnimationPlayer[]>();
   public statesByElement = new Map<any, {[triggerName: string]: StateValue}>();
+  public disabledNodes = new Set<any>();
+
   public totalAnimations = 0;
   public totalQueuedPlayers = 0;
 
@@ -602,6 +606,18 @@ export class TransitionAnimationEngine {
 
   collectEnterElement(element: any) { this.collectedEnterElements.push(element); }
 
+  markElementAsDisabled(element: any, value: boolean) {
+    if (value) {
+      if (!this.disabledNodes.has(element)) {
+        this.disabledNodes.add(element);
+        addClass(element, DISABLED_CLASSNAME);
+      }
+    } else if (this.disabledNodes.has(element)) {
+      this.disabledNodes.delete(element);
+      removeClass(element, DISABLED_CLASSNAME);
+    }
+  }
+
   removeNode(namespaceId: string, element: any, context: any, doNotRecurse?: boolean): void {
     if (!isElementNode(element)) {
       this._onRemovalComplete(element, context);
@@ -699,6 +715,14 @@ export class TransitionAnimationEngine {
       }
       this._onRemovalComplete(element, details.setForRemoval);
     }
+
+    if (this.driver.matchesElement(element, DISABLED_SELECTOR)) {
+      this.markElementAsDisabled(element, false);
+    }
+
+    this.driver.query(element, DISABLED_SELECTOR, true).forEach(node => {
+      this.markElementAsDisabled(element, false);
+    });
   }
 
   flush(microtaskId: number = -1) {
@@ -755,6 +779,14 @@ export class TransitionAnimationEngine {
     const queriedElements = new Map<any, TransitionAnimationPlayer[]>();
     const allPreStyleElements = new Map<any, Set<string>>();
     const allPostStyleElements = new Map<any, Set<string>>();
+
+    const disabledElementsSet = new Set<any>();
+    this.disabledNodes.forEach(node => {
+      const nodesThatAreDisabled = this.driver.query(node, QUEUED_SELECTOR, true);
+      for (let i = 0; i < nodesThatAreDisabled.length; i++) {
+        disabledElementsSet.add(nodesThatAreDisabled[i]);
+      }
+    });
 
     const bodyNode = getBodyNode();
     const allEnterNodes: any[] = this.collectedEnterElements.length ?
@@ -916,6 +948,11 @@ export class TransitionAnimationEngine {
       // this means that it was never consumed by a parent animation which
       // means that it is independent and therefore should be set for animation
       if (subTimelines.has(element)) {
+        if (disabledElementsSet.has(element)) {
+          skippedPlayersMap.set(element, [player]);
+          return;
+        }
+
         const innerPlayer = this._buildAnimation(
             player.namespaceId, instruction, allPreviousPlayersMap, skippedPlayersMap, preStylesMap,
             postStylesMap);
