@@ -108,6 +108,7 @@ groups:
         - "packages/platform-browser/animations/*"
     users:
       - matsko #primary
+      - chuckjaz #fallback
       - mhevery #fallback
       - IgorMinar #fallback
 
