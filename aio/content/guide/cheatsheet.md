@@ -136,7 +136,7 @@ is available to <code>declarations</code> of this module.</p>
 <td><p>Conditionally swaps the contents of the div by selecting one of the embedded templates based on the current value of <code>conditionExpression</code>.</p>
 </td>
 </tr><tr>
-<td><code>&lt;div&nbsp;<b>[ngClass]</b>="{active:&nbsp;isActive,&nbsp;disabled:&nbsp;isDisabled}"&gt;</code></td>
+<td><code>&lt;div&nbsp;<b>[ngClass]</b>="{'active':&nbsp;isActive,&nbsp;'disabled':&nbsp;isDisabled}"&gt;</code></td>
 <td><p>Binds the presence of CSS classes on the element to the truthiness of the associated map values. The right-hand expression should return {class-name: true/false} map.</p>
 </td>
 </tr>
