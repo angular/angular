@@ -31,6 +31,7 @@
     "docs-watch": "node tools/transforms/authors-package/watchr.js",
     "docs-lint": "eslint --ignore-path=\"tools/transforms/.eslintignore\" tools/transforms",
     "docs-test": "node tools/transforms/test.js",
+    "serve-and-sync": "concurrently --kill-others \"yarn docs-watch\" \"yarn start\"",
     "~~update-webdriver": "webdriver-manager update --standalone false --gecko false",
     "boilerplate:add": "node ./tools/examples/add-example-boilerplate add",
     "boilerplate:remove": "node ./tools/examples/add-example-boilerplate remove",
