@@ -66,7 +66,7 @@ function getBindingInfo(directiveBindings, members, bindingType) {
 }
 
 function stripQuotes(value) {
-  return (typeof(value) === 'string') ? value.replace(/^(['"])(.*)\1/, '$2') : value;
+  return (typeof(value) === 'string') ? value.trim().replace(/^(['"])(.*)\1$/, '$2') : value;
 }
 
 function parseBinding(option) {
