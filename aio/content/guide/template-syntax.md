@@ -1371,7 +1371,7 @@ _This_ section is an introduction to the common structural directives:
 ### NgIf
 
 You can add or remove an element from the DOM by applying an `NgIf` directive to
-that element (called the _host elment_).
+that element (called the _host element_).
 Bind the directive to a condition expression like `isActive` in this example.
 
 <code-example path="template-syntax/src/app/app.component.html" region="NgIf-1" title="src/app/app.component.html" linenums="false">
