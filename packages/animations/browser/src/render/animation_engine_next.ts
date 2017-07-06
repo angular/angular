@@ -67,15 +67,21 @@ export class AnimationEngine {
     this._transitionEngine.removeNode(namespaceId, element, context);
   }
 
-  setProperty(namespaceId: string, element: any, property: string, value: any): boolean {
-    // @@property
-    if (property.charAt(0) == '@') {
-      const [id, action] = parseTimelineCommand(property);
-      const args = value as any[];
-      this._timelineEngine.command(id, element, action, args);
-      return false;
+  process(namespaceId: string, element: any, property: string, value: any): boolean {
+    switch (property.charAt(0)) {
+      case '.':
+        if (property == '.disabled') {
+          this._transitionEngine.markElementAsDisabled(element, !!value);
+        }
+        return false;
+      case '@':
+        const [id, action] = parseTimelineCommand(property);
+        const args = value as any[];
+        this._timelineEngine.command(id, element, action, args);
+        return false;
+      default:
+        return this._transitionEngine.trigger(namespaceId, element, property, value);
     }
-    return this._transitionEngine.trigger(namespaceId, element, property, value);
   }
 
   listen(
