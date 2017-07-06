@@ -283,6 +283,11 @@
           "tooltip": "Translate the app's template text into multiple languages."
         },
         {
+          "url": "guide/language-service",
+          "title": "Language Service",
+          "tooltip": "Use Angular Language Service to speed up dev time."
+        },
+        {
           "url": "guide/security",
           "title": "Security",
           "tooltip": "Developing for content security in Angular applications."
