@@ -18,6 +18,9 @@ import {ENTER_CLASSNAME, LEAVE_CLASSNAME, NG_ANIMATING_CLASSNAME, NG_ANIMATING_S
 import {AnimationDriver} from './animation_driver';
 import {getOrSetAsInMap, listenOnPlayer, makeAnimationEvent, normalizeKeyframes, optimizeGroupPlayer} from './shared';
 
+const QUEUED_CLASSNAME = 'ng-animate-queued';
+const QUEUED_SELECTOR = '.ng-animate-queued';
+
 const EMPTY_PLAYER_ARRAY: TransitionAnimationPlayer[] = [];
 const NULL_REMOVAL_STATE: ElementAnimationState = {
   namespaceId: '',
@@ -235,12 +238,11 @@ export class AnimationTransitionNamespace {
         {element, triggerName, transition, fromState, toState, player, isFallbackTransition});
 
     if (!isFallbackTransition) {
-      addClass(element, NG_ANIMATING_CLASSNAME);
+      addClass(element, QUEUED_CLASSNAME);
+      player.onStart(() => { removeClass(element, QUEUED_CLASSNAME); });
     }
 
     player.onDone(() => {
-      removeClass(element, NG_ANIMATING_CLASSNAME);
-
       let index = this.players.indexOf(player);
       if (index >= 0) {
         this.players.splice(index, 1);
