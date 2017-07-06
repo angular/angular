@@ -227,6 +227,12 @@
       "UI Components": {
         "order": 4,
         "resources": {
+          "DevExtreme": {
+            "desc": "50+ UI components including data grid, pivot grid, scheduler, charts, editors, maps and other multi-purpose controls for creating highly responsive web applications for touch devices and traditional desktops.",
+            "rev": true,
+            "title": "DevExtreme",
+            "url": "https://js.devexpress.com/Overview/Angular/"
+          },
           "234237": {
             "desc": "UX guidelines, HTML/CSS framework, and Angular components working together to craft exceptional experiences",
             "rev": true,
