@@ -4,9 +4,7 @@ import {StyleModule} from './index';
 import {By} from '@angular/platform-browser';
 import {TAB} from '../keyboard/keycodes';
 import {FocusOrigin, FocusOriginMonitor, TOUCH_BUFFER_MS} from './focus-origin-monitor';
-import {
-  dispatchFakeEvent, dispatchKeyboardEvent, dispatchMouseEvent
-} from '../testing/dispatch-events';
+import {dispatchFakeEvent, dispatchKeyboardEvent, dispatchMouseEvent} from '@angular/cdk/testing';
 
 
 describe('FocusOriginMonitor', () => {

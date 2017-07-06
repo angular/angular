@@ -10,8 +10,7 @@ import {MdTabLabelWrapper} from './tab-label-wrapper';
 import {RIGHT_ARROW, LEFT_ARROW, ENTER} from '../core/keyboard/keycodes';
 import {FakeViewportRuler} from '../core/overlay/position/fake-viewport-ruler';
 import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
-import {dispatchKeyboardEvent} from '../core/testing/dispatch-events';
-import {dispatchFakeEvent} from '../core/testing/dispatch-events';
+import {dispatchFakeEvent, dispatchKeyboardEvent} from '@angular/cdk/testing';
 import {Subject} from 'rxjs/Subject';
 import {By} from '@angular/platform-browser';
 

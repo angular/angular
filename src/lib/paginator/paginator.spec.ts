@@ -4,8 +4,7 @@ import {MdPaginator, PageEvent} from './paginator';
 import {Component, ElementRef, ViewChild} from '@angular/core';
 import {MdPaginatorIntl} from './paginator-intl';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {customMatchers} from '../core/testing/jasmine-matchers';
-import {dispatchMouseEvent} from '../core/testing/dispatch-events';
+import {dispatchMouseEvent} from '@angular/cdk/testing';
 
 
 describe('MdPaginator', () => {
@@ -14,8 +13,6 @@ describe('MdPaginator', () => {
   let paginator: MdPaginator;
 
   beforeEach(async(() => {
-    jasmine.addMatchers(customMatchers);
-
     TestBed.configureTestingModule({
       imports: [
         MdPaginatorModule,

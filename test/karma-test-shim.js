@@ -49,6 +49,7 @@ System.config({
     // TODO(devversion): replace once the index.ts file for the Material package has been added.
     '@angular/material': 'dist/packages/material/public_api.js',
     '@angular/cdk': 'dist/packages/cdk/index.js',
+    '@angular/cdk/testing': 'dist/packages/cdk/testing/index.js',
   },
   packages: {
     // Thirdparty barrels.

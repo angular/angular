@@ -4,7 +4,7 @@ import {By} from '@angular/platform-browser';
 import {MdChip, MdChipList, MdChipsModule} from './index';
 import {FocusKeyManager} from '../core/a11y/focus-key-manager';
 import {SPACE, LEFT_ARROW, RIGHT_ARROW, TAB} from '../core/keyboard/keycodes';
-import {createKeyboardEvent} from '../core/testing/event-objects';
+import {createKeyboardEvent} from '@angular/cdk/testing';
 
 
 describe('MdChipList', () => {

@@ -26,9 +26,7 @@ import {MdOption} from '../core/option/option';
 import {MdInputContainer} from '../input/input-container';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
-import {dispatchFakeEvent} from '../core/testing/dispatch-events';
-import {createKeyboardEvent} from '../core/testing/event-objects';
-import {typeInElement} from '../core/testing/type-in-element';
+import {createKeyboardEvent, dispatchFakeEvent, typeInElement} from '@angular/cdk/testing';
 import {ScrollDispatcher} from '../core/overlay/scroll/scroll-dispatcher';
 import {RxChain, map, startWith, filter} from '../core/rxjs/index';
 

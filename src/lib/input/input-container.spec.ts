@@ -15,8 +15,7 @@ import {MdInputModule} from './index';
 import {MdInputContainer, MdInputDirective} from './input-container';
 import {Platform} from '../core/platform/platform';
 import {PlatformModule} from '../core/platform/index';
-import {wrappedErrorMessage} from '../core/testing/wrapped-error-message';
-import {dispatchFakeEvent} from '../core/testing/dispatch-events';
+import {wrappedErrorMessage, dispatchFakeEvent} from '@angular/cdk/testing';
 import {
   getMdInputContainerDuplicatedHintError,
   getMdInputContainerMissingMdInputError,

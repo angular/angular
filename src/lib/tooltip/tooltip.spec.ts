@@ -19,7 +19,7 @@ import {TooltipPosition, MdTooltip, MdTooltipModule, SCROLL_THROTTLE_MS} from '.
 import {Directionality, Direction} from '../core/bidi/index';
 import {OverlayModule, Scrollable, OverlayContainer} from '../core/overlay/index';
 import {Platform} from '../core/platform/platform';
-import {dispatchFakeEvent} from '../core/testing/dispatch-events';
+import {dispatchFakeEvent} from '@angular/cdk/testing';
 
 
 const initialTooltipMessage = 'initial tooltip message';

@@ -3,13 +3,13 @@ import {Component, ElementRef, ViewChild} from '@angular/core';
 import {MdSort, MdSortHeader, Sort, SortDirection, MdSortModule} from './index';
 import {CdkTableModule, DataSource, CollectionViewer} from '@angular/cdk';
 import {Observable} from 'rxjs/Observable';
-import {dispatchMouseEvent} from '../core/testing/dispatch-events';
+import {dispatchMouseEvent} from '@angular/cdk/testing';
 import {
   getMdSortDuplicateMdSortableIdError,
   getMdSortHeaderMissingIdError,
   getMdSortHeaderNotContainedWithinMdSortError
 } from './sort-errors';
-import {wrappedErrorMessage} from '../core/testing/wrapped-error-message';
+import {wrappedErrorMessage} from '@angular/cdk/testing';
 import {map} from '../core/rxjs/index';
 
 describe('MdSort', () => {

@@ -22,8 +22,7 @@ import {
 } from '@angular/forms';
 import {Subject} from 'rxjs/Subject';
 import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
-import {dispatchFakeEvent, dispatchKeyboardEvent} from '../core/testing/dispatch-events';
-import {wrappedErrorMessage} from '../core/testing/wrapped-error-message';
+import {dispatchFakeEvent, dispatchKeyboardEvent, wrappedErrorMessage} from '@angular/cdk/testing';
 import {ScrollDispatcher} from '../core/overlay/scroll/scroll-dispatcher';
 import {
   FloatPlaceholderType,

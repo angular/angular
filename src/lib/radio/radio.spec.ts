@@ -5,7 +5,7 @@ import {By} from '@angular/platform-browser';
 import {MdRadioGroup, MdRadioButton, MdRadioChange, MdRadioModule} from './index';
 import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
 import {FakeViewportRuler} from '../core/overlay/position/fake-viewport-ruler';
-import {dispatchFakeEvent} from '../core/testing/dispatch-events';
+import {dispatchFakeEvent} from '@angular/cdk/testing';
 import {RIPPLE_FADE_IN_DURATION, RIPPLE_FADE_OUT_DURATION} from '../core/ripple/ripple-renderer';
 
 

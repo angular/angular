@@ -7,7 +7,7 @@ import {
   MD_ELEMENTS_SELECTOR,
   getMdCompatibilityInvalidPrefixError,
 } from './compatibility';
-import {wrappedErrorMessage} from '../testing/wrapped-error-message';
+import {wrappedErrorMessage} from '@angular/cdk/testing';
 
 
 describe('Style compatibility', () => {

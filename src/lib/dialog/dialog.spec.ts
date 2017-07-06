@@ -25,7 +25,7 @@ import {MdDialog, MD_DIALOG_DATA} from './dialog';
 import {MdDialogContainer} from './dialog-container';
 import {OverlayContainer, ESCAPE} from '../core';
 import {MdDialogRef} from './dialog-ref';
-import {dispatchKeyboardEvent} from '../core/testing/dispatch-events';
+import {dispatchKeyboardEvent} from '@angular/cdk/testing';
 
 
 describe('MdDialog', () => {

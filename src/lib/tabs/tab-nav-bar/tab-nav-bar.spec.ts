@@ -5,7 +5,7 @@ import {Component, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {ViewportRuler} from '../../core/overlay/position/viewport-ruler';
 import {FakeViewportRuler} from '../../core/overlay/position/fake-viewport-ruler';
-import {dispatchFakeEvent, dispatchMouseEvent} from '../../core/testing/dispatch-events';
+import {dispatchFakeEvent, dispatchMouseEvent} from '@angular/cdk/testing';
 import {Direction, Directionality} from '../../core/bidi/index';
 import {Subject} from 'rxjs/Subject';
 

@@ -5,11 +5,7 @@ import {By} from '@angular/platform-browser';
 import {MdMonthView} from './month-view';
 import {MdYearView} from './year-view';
 import {MdCalendarBody} from './calendar-body';
-import {
-  dispatchFakeEvent,
-  dispatchKeyboardEvent,
-  dispatchMouseEvent
-} from '../core/testing/dispatch-events';
+import {dispatchFakeEvent, dispatchKeyboardEvent, dispatchMouseEvent} from '@angular/cdk/testing';
 import {
   DOWN_ARROW,
   END,

@@ -9,7 +9,11 @@
     "target": "es5",
     "types": ["jasmine"],
     "experimentalDecorators": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "paths": {
+      "@angular/cdk": ["../../dist/packages/cdk"],
+      "@angular/cdk/testing": ["../../dist/packages/cdk/testing"]
+    }
   },
   "include": [
     "**/*.spec.ts",

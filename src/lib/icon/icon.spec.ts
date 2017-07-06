@@ -6,7 +6,7 @@ import {Component} from '@angular/core';
 import {MdIconModule} from './index';
 import {MdIconRegistry, getMdIconNoHttpProviderError} from './icon-registry';
 import {getFakeSvgHttpResponse} from './fake-svgs';
-import {wrappedErrorMessage} from '../core/testing/wrapped-error-message';
+import {wrappedErrorMessage} from '@angular/cdk/testing';
 
 
 /** Returns the CSS classes assigned to an element as a sorted array. */

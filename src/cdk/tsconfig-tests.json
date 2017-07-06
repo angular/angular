@@ -10,8 +10,11 @@
     "types": ["jasmine"],
     "experimentalDecorators": true
   },
+  "files": [
+    "./index.ts",
+    "./testing/index.ts"
+  ],
   "include": [
-    "**/*.spec.ts",
-    "index.ts"
+    "**/*.spec.ts"
   ]
 }

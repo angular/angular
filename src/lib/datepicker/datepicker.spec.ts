@@ -9,11 +9,7 @@ import {MdDatepickerInput} from './datepicker-input';
 import {MdInputModule} from '../input/index';
 import {MdNativeDateModule, DateAdapter, NativeDateAdapter} from '../core/datetime/index';
 import {ESCAPE} from '../core';
-import {
-  dispatchFakeEvent,
-  dispatchMouseEvent,
-  dispatchKeyboardEvent,
-} from '../core/testing/dispatch-events';
+import {dispatchFakeEvent, dispatchMouseEvent, dispatchKeyboardEvent} from '@angular/cdk/testing';
 
 
 // When constructing a Date, the month is zero-based. This can be confusing, since people are

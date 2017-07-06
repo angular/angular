@@ -21,7 +21,7 @@ import {OverlayContainer} from '../core/overlay/overlay-container';
 import {Directionality, Direction} from '../core/bidi/index';
 import {extendObject} from '../core/util/object-extend';
 import {ESCAPE} from '../core/keyboard/keycodes';
-import {dispatchKeyboardEvent} from '../core/testing/dispatch-events';
+import {dispatchKeyboardEvent} from '@angular/cdk/testing';
 
 
 describe('MdMenu', () => {

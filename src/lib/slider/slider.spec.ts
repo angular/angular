@@ -15,7 +15,7 @@ import {
   RIGHT_ARROW,
   UP_ARROW
 } from '../core/keyboard/keycodes';
-import {dispatchKeyboardEvent, dispatchMouseEvent} from '../core/testing/dispatch-events';
+import {dispatchKeyboardEvent, dispatchMouseEvent} from '@angular/cdk/testing';
 
 
 describe('MdSlider', () => {
