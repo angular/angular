@@ -172,7 +172,6 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
 
   onDestroy() {}
 
-  // todo(vicb): optim for UnmodifiableListView (frozen arrays)
   check(collection: NgIterable<V>): boolean {
     this._reset();
 
@@ -281,12 +280,12 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
   _mismatch(record: IterableChangeRecord_<V>|null, item: V, itemTrackBy: any, index: number):
       IterableChangeRecord_<V> {
     // The previous record after which we will append the current one.
-    let previousRecord: IterableChangeRecord_<V>;
+    let previousRecord: IterableChangeRecord_<V>|null;
 
     if (record === null) {
-      previousRecord = this._itTail !;
+      previousRecord = this._itTail;
     } else {
-      previousRecord = record._prev !;
+      previousRecord = record._prev;
       // Remove the record from the collection since we know it does not match the item.
       this._remove(record);
     }
@@ -394,7 +393,7 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
 
   /** @internal */
   _reinsertAfter(
-      record: IterableChangeRecord_<V>, prevRecord: IterableChangeRecord_<V>,
+      record: IterableChangeRecord_<V>, prevRecord: IterableChangeRecord_<V>|null,
       index: number): IterableChangeRecord_<V> {
     if (this._unlinkedRecords !== null) {
       this._unlinkedRecords.remove(record);
@@ -419,8 +418,9 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
   }
 
   /** @internal */
-  _moveAfter(record: IterableChangeRecord_<V>, prevRecord: IterableChangeRecord_<V>, index: number):
-      IterableChangeRecord_<V> {
+  _moveAfter(
+      record: IterableChangeRecord_<V>, prevRecord: IterableChangeRecord_<V>|null,
+      index: number): IterableChangeRecord_<V> {
     this._unlink(record);
     this._insertAfter(record, prevRecord, index);
     this._addToMoves(record, index);
@@ -428,8 +428,9 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
   }
 
   /** @internal */
-  _addAfter(record: IterableChangeRecord_<V>, prevRecord: IterableChangeRecord_<V>, index: number):
-      IterableChangeRecord_<V> {
+  _addAfter(
+      record: IterableChangeRecord_<V>, prevRecord: IterableChangeRecord_<V>|null,
+      index: number): IterableChangeRecord_<V> {
     this._insertAfter(record, prevRecord, index);
 
     if (this._additionsTail === null) {
@@ -447,7 +448,7 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
 
   /** @internal */
   _insertAfter(
-      record: IterableChangeRecord_<V>, prevRecord: IterableChangeRecord_<V>,
+      record: IterableChangeRecord_<V>, prevRecord: IterableChangeRecord_<V>|null,
       index: number): IterableChangeRecord_<V> {
     // todo(vicb)
     // assert(record != prevRecord);
@@ -665,11 +666,11 @@ class _DuplicateItemRecordList<V> {
   }
 
   // Returns a IterableChangeRecord_ having IterableChangeRecord_.trackById == trackById and
-  // IterableChangeRecord_.currentIndex >= afterIndex
-  get(trackById: any, afterIndex: number|null): IterableChangeRecord_<V>|null {
+  // IterableChangeRecord_.currentIndex >= atOrAfterIndex
+  get(trackById: any, atOrAfterIndex: number|null): IterableChangeRecord_<V>|null {
     let record: IterableChangeRecord_<V>|null;
     for (record = this._head; record !== null; record = record._nextDup) {
-      if ((afterIndex === null || afterIndex < record.currentIndex !) &&
+      if ((atOrAfterIndex === null || atOrAfterIndex <= record.currentIndex !) &&
           looseIdentical(record.trackById, trackById)) {
         return record;
       }
@@ -724,15 +725,15 @@ class _DuplicateMap<V> {
 
   /**
    * Retrieve the `value` using key. Because the IterableChangeRecord_ value may be one which we
-   * have already iterated over, we use the afterIndex to pretend it is not there.
+   * have already iterated over, we use the `atOrAfterIndex` to pretend it is not there.
    *
    * Use case: `[a, b, c, a, a]` if we are at index `3` which is the second `a` then asking if we
-   * have any more `a`s needs to return the last `a` not the first or second.
+   * have any more `a`s needs to return the second `a`.
    */
-  get(trackById: any, afterIndex: number|null): IterableChangeRecord_<V>|null {
+  get(trackById: any, atOrAfterIndex: number|null): IterableChangeRecord_<V>|null {
     const key = trackById;
     const recordList = this.map.get(key);
-    return recordList ? recordList.get(trackById, afterIndex) : null;
+    return recordList ? recordList.get(trackById, atOrAfterIndex) : null;
   }
 
   /**

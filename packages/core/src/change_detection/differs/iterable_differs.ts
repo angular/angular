@@ -10,7 +10,7 @@ import {Optional, Provider, SkipSelf} from '../../di';
 import {ChangeDetectorRef} from '../change_detector_ref';
 
 /**
- * A type describing supported interable types.
+ * A type describing supported iterable types.
  *
  * @stable
  */
