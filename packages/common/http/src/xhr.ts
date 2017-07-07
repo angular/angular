@@ -83,7 +83,7 @@ export class HttpXhrBackend implements HttpBackend {
     return new Observable((observer: Observer<HttpEvent<any>>) => {
       // Start by setting up the XHR object with request method, URL, and withCredentials flag.
       const xhr = this.xhrFactory.build();
-      xhr.open(req.method, req.url);
+      xhr.open(req.method, req.urlWithParams);
       if (!!req.withCredentials) {
         xhr.withCredentials = true;
       }
