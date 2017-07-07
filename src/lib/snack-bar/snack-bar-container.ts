@@ -14,6 +14,7 @@ import {
   OnDestroy,
   Renderer2,
   ElementRef,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import {
   trigger,
@@ -52,6 +53,7 @@ export const HIDE_ANIMATION = '195ms cubic-bezier(0.0,0.0,0.2,1)';
   selector: 'snack-bar-container',
   templateUrl: 'snack-bar-container.html',
   styleUrls: ['snack-bar-container.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'role': 'alert',
     '[@state]': 'animationState',
@@ -59,6 +61,7 @@ export const HIDE_ANIMATION = '195ms cubic-bezier(0.0,0.0,0.2,1)';
   },
   animations: [
     trigger('state', [
+      state('void', style({transform: 'translateY(100%)'})),
       state('initial', style({transform: 'translateY(100%)'})),
       state('visible', style({transform: 'translateY(0%)'})),
       state('complete', style({transform: 'translateY(100%)'})),

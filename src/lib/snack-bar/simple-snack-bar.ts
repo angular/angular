@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ViewEncapsulation} from '@angular/core';
+import {Component, ViewEncapsulation, ChangeDetectionStrategy} from '@angular/core';
 import {MdSnackBarRef} from './snack-bar-ref';
 
 
@@ -20,6 +20,7 @@ import {MdSnackBarRef} from './snack-bar-ref';
   templateUrl: 'simple-snack-bar.html',
   styleUrls: ['simple-snack-bar.css'],
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'class': 'mat-simple-snackbar',
   }
