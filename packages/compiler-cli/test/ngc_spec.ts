@@ -9,6 +9,7 @@
 import {makeTempDir} from '@angular/tsc-wrapped/test/test_support';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as ts from 'typescript';
 
 import {main} from '../src/ngc';
 
@@ -40,6 +41,7 @@ describe('ngc command-line', () => {
     write('tsconfig-base.json', `{
       "compilerOptions": {
         "experimentalDecorators": true,
+        "skipLibCheck": true,     
         "types": [],
         "outDir": "built",
         "declaration": true,
@@ -68,6 +70,28 @@ describe('ngc command-line', () => {
     spyOn(mockConsole, 'error');
 
     const result = main(['-p', basePath], mockConsole.error);
+    expect(mockConsole.error).not.toHaveBeenCalled();
+    expect(result).toBe(0);
+  });
+
+  it('should be able to be called without a config file by passing options explicitly', () => {
+    write('test.ts', 'export const A = 1;');
+
+    const mockConsole = {error: (s: string) => {}};
+
+    spyOn(mockConsole, 'error');
+
+    const result = main(
+        ['-p', basePath], mockConsole.error, [path.join(basePath, 'test.ts')], {
+          experimentalDecorators: true,
+          skipLibCheck: true,
+          types: [],
+          outDir: path.join(basePath, 'built'),
+          declaration: true,
+          module: ts.ModuleKind.ES2015,
+          moduleResolution: ts.ModuleResolutionKind.NodeJs,
+        },
+        {});
     expect(mockConsole.error).not.toHaveBeenCalled();
     expect(result).toBe(0);
   });
@@ -360,6 +384,61 @@ describe('ngc command-line', () => {
         }`);
 
       const exitCode = main(['-p', path.join(basePath, 'tsconfig.json')]);
+      expect(exitCode).toEqual(0);
+      shouldExist('index.js');
+      shouldExist('index.metadata.json');
+    });
+
+    it('should be able to build a flat module passing explicit options', () => {
+      write('public-api.ts', `
+        export * from './src/flat.component';
+        export * from './src/flat.module';`);
+      write('src/flat.component.html', '<div>flat module component</div>');
+      write('src/flat.component.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'flat-comp',
+          templateUrl: 'flat.component.html',
+        })
+        export class FlatComponent {
+        }`);
+      write('src/flat.module.ts', `
+        import {NgModule} from '@angular/core';
+
+        import {FlatComponent} from './flat.component';
+
+        @NgModule({
+          declarations: [
+            FlatComponent,
+          ],
+          exports: [
+            FlatComponent,
+          ]
+        })
+        export class FlatModule {
+        }`);
+
+      const exitCode = main(
+          ['-p', path.join(basePath, 'tsconfig.json')], undefined,
+          [path.join(basePath, 'public-api.ts')], {
+            target: ts.ScriptTarget.ES5,
+            experimentalDecorators: true,
+            noImplicitAny: true,
+            moduleResolution: ts.ModuleResolutionKind.NodeJs,
+            rootDir: basePath,
+            declaration: true,
+            lib: ['lib.es2015.d.ts', 'lib.dom.d.ts'],
+            baseUrl: basePath,
+            outDir: path.join(basePath, 'built'),
+            typeRoots: [path.join(basePath, 'node_modules/@types')]
+          },
+          {
+            genDir: 'ng',
+            flatModuleId: 'flat_module',
+            flatModuleOutFile: 'index.js',
+            skipTemplateCodegen: true
+          });
       expect(exitCode).toEqual(0);
       shouldExist('index.js');
       shouldExist('index.metadata.json');
