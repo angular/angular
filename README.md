@@ -11,18 +11,6 @@ This is the home for the Angular team's Material Design components built for and
 [Contributing](https://github.com/angular/material2/blob/master/CONTRIBUTING.md) |
 [Plunker Template](http://plnkr.co/edit/o077B6uEiiIgkC0S06dd?p=preview)
 
-### Installation
-
-The latest release of Angular Material can be installed from npm
-
-`npm install @angular/material`
-
-A snapshot build with the latest changes from
-[master](https://github.com/angular/material2/tree/master) is also available.
-Note that this snapshot build should not be considered stable and may break between releases.
-
-`npm install --save angular/material2-builds angular/cdk-builds`
-
 ### Getting started
 
 See our [Getting Started Guide][getting-started]
