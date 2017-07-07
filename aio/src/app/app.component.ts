@@ -11,7 +11,6 @@ import { ScrollService } from 'app/shared/scroll.service';
 import { SearchResultsComponent } from 'app/search/search-results/search-results.component';
 import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
 import { SearchService } from 'app/search/search.service';
-import { SwUpdateNotificationsService } from 'app/sw-updates/sw-update-notifications.service';
 import { TocService } from 'app/shared/toc.service';
 
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
@@ -106,7 +105,6 @@ export class AppComponent implements OnInit {
     private navigationService: NavigationService,
     private scrollService: ScrollService,
     private searchService: SearchService,
-    private swUpdateNotifications: SwUpdateNotificationsService,
     private tocService: TocService
   ) { }
 
@@ -176,8 +174,6 @@ export class AppComponent implements OnInit {
     });
 
     this.navigationService.versionInfo.subscribe( vi => this.versionInfo = vi );
-
-    this.swUpdateNotifications.enable();
 
     const hasNonEmptyToc = this.tocService.tocList.map(tocList => tocList.length > 0);
     combineLatest(hasNonEmptyToc, this.showFloatingToc)

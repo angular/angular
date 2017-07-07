@@ -1,14 +1,17 @@
 import { ReflectiveInjector } from '@angular/core';
 import { Location, LocationStrategy, PlatformLocation } from '@angular/common';
 import { MockLocationStrategy } from '@angular/common/testing';
+import { Subject } from 'rxjs/Subject';
 
 import { GaService } from 'app/shared/ga.service';
+import { SwUpdatesService } from 'app/sw-updates/sw-updates.service';
 import { LocationService } from './location.service';
 
 describe('LocationService', () => {
   let injector: ReflectiveInjector;
   let location: MockLocationStrategy;
   let service: LocationService;
+  let swUpdates: MockSwUpdatesService;
 
   beforeEach(() => {
     injector = ReflectiveInjector.resolveAndCreate([
@@ -16,11 +19,13 @@ describe('LocationService', () => {
         Location,
         { provide: GaService, useClass: TestGaService },
         { provide: LocationStrategy, useClass: MockLocationStrategy },
-        { provide: PlatformLocation, useClass: MockPlatformLocation }
+        { provide: PlatformLocation, useClass: MockPlatformLocation },
+        { provide: SwUpdatesService, useClass: MockSwUpdatesService }
     ]);
 
     location  = injector.get(LocationStrategy);
     service  = injector.get(LocationService);
+    swUpdates  = injector.get(SwUpdatesService);
   });
 
   describe('currentUrl', () => {
@@ -287,6 +292,21 @@ describe('LocationService', () => {
       const externalUrl = 'http://some/far/away/land';
       service.go(externalUrl);
       expect(goExternalSpy).toHaveBeenCalledWith(externalUrl);
+    });
+
+    it('should do a "full page navigation" if a ServiceWorker update has been activated', () => {
+      const goExternalSpy = spyOn(service, 'goExternal');
+
+      // Internal URL - No ServiceWorker update
+      service.go('some-internal-url');
+      expect(goExternalSpy).not.toHaveBeenCalled();
+      expect(location.path(true)).toEqual('some-internal-url');
+
+      // Internal URL - ServiceWorker update
+      swUpdates.updateActivated.next('foo');
+      service.go('other-internal-url');
+      expect(goExternalSpy).toHaveBeenCalledWith('other-internal-url');
+      expect(location.path(true)).toEqual('some-internal-url');
     });
 
     it('should not update currentUrl for external url that starts with "http"', () => {
@@ -586,6 +606,10 @@ describe('LocationService', () => {
 class MockPlatformLocation {
   pathname = 'a/b/c';
   replaceState = jasmine.createSpy('PlatformLocation.replaceState');
+}
+
+class MockSwUpdatesService {
+  updateActivated = new Subject<string>();
 }
 
 class TestGaService {
