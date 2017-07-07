@@ -67,8 +67,9 @@ export class Extractor {
         serializer = new compiler.Xliff();
     }
     return bundle.write(
-        serializer,
-        (sourcePath: string) => sourcePath.replace(path.join(this.options.basePath, '/'), ''));
+        serializer, (sourcePath: string) => this.options.basePath ?
+            path.relative(this.options.basePath, sourcePath) :
+            sourcePath);
   }
 
   getExtension(formatName: string): string {
