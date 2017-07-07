@@ -13,6 +13,7 @@
 import * as compiler from '@angular/compiler';
 import {MissingTranslationStrategy} from '@angular/core';
 import {AngularCompilerOptions, NgcCliOptions} from '@angular/tsc-wrapped';
+import {readFileSync} from 'fs';
 import * as ts from 'typescript';
 
 import {CompilerHost, CompilerHostContext, ModuleResolutionHostAdapter} from './compiler_host';
@@ -75,7 +76,7 @@ export class CodeGenerator {
         throw new Error(
             `The translation file (${cliOptions.i18nFile}) locale must be provided. Use the --locale option.`);
       }
-      transContent = tsCompilerHost.readFile(cliOptions.i18nFile);
+      transContent = readFileSync(cliOptions.i18nFile, 'utf8');
     }
     let missingTranslation = MissingTranslationStrategy.Warning;
     if (cliOptions.missingTranslation) {
