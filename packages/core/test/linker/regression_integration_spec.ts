@@ -242,14 +242,14 @@ function declareTests({useJit}: {useJit: boolean}) {
         return MyComponent;
       }
       const HeroComponent = ComponentFactory('my-hero', 'my hero');
-      const VillianComponent = ComponentFactory('a-villian', 'a villian');
+      const VillainComponent = ComponentFactory('a-villain', 'a villain');
       const MainComponent = ComponentFactory(
-          'my-app', 'I was saved by <my-hero></my-hero> from <a-villian></a-villian>.');
+          'my-app', 'I was saved by <my-hero></my-hero> from <a-villain></a-villain>.');
 
       TestBed.configureTestingModule(
-          {declarations: [HeroComponent, VillianComponent, MainComponent]});
+          {declarations: [HeroComponent, VillainComponent, MainComponent]});
       const fixture = TestBed.createComponent(MainComponent);
-      expect(fixture.nativeElement).toHaveText('I was saved by my hero from a villian.');
+      expect(fixture.nativeElement).toHaveText('I was saved by my hero from a villain.');
     });
 
     it('should allow to use the renderer outside of views', () => {

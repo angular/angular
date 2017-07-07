@@ -920,7 +920,7 @@ const FILES: Directory = {
         }
 
         getHeroes() {
-          this._heroService.getHeroesSlowly().then(heros => this.heroes = heros);
+          this._heroService.getHeroesSlowly().then(heroes => this.heroes = heroes);
         }
       }`,
     'hero.ts': `

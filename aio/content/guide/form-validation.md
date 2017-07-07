@@ -168,9 +168,7 @@ on custom validation directives.
 
 * Binding to the new `formErrors.name` property is sufficient to display all name validation error messages.
 
-	
 {@a component-class}
-
 
 ### Component class
 The original component code for Template 1 stayed the same; however,

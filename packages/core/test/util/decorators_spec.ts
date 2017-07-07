@@ -123,7 +123,7 @@ export function main() {
         });
 
 
-        it('should ensure that we dont accidently patch native objects', () => {
+        it('should ensure that we dont accidentally patch native objects', () => {
           expect(() => {
             (<Function>Class)({constructor: Object});
           }).toThrowError('Can not use native Object as constructor');
