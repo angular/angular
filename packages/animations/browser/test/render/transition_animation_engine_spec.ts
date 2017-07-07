@@ -203,7 +203,7 @@ export function main() {
                 /Unable to listen on the animation trigger "myTrigger" because the provided event is undefined!/);
       });
 
-      it('should retain event listeners and call them for sucessive animation state changes',
+      it('should retain event listeners and call them for successive animation state changes',
          () => {
            const engine = makeEngine();
            const trig = trigger(
@@ -282,7 +282,7 @@ export function main() {
                   '* => *', [style({height: '0px'}), animate(1234, style({height: '100px'}))])
             ]));
 
-        // we do this so that the next transition has a starting value that isnt null
+        // we do this so that the next transition has a starting value that isn't null
         setProperty(element, engine, 'myTrigger', '123');
         engine.flush();
 

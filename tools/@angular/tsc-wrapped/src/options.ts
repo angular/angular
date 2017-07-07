@@ -28,7 +28,7 @@ interface Options extends ts.CompilerOptions {
   // Whether to generate a flat module index of the given name and the corresponding
   // flat module metadata. This option is intended to be used when creating flat
   // modules similar to how `@angular/core` and `@angular/common` are packaged.
-  // When this option is used the `package.json` for the library should refered to the
+  // When this option is used the `package.json` for the library should referred to the
   // generated flat module index instead of the library index file. When using this
   // option only one .metadata.json file is produced that contains all the metadata
   // necessary for symbols exported from the library index.

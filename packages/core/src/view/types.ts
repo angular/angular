@@ -89,7 +89,7 @@ export interface ViewHandleEventFn {
 }
 
 /**
- * Bitmask for ViewDefintion.flags.
+ * Bitmask for ViewDefinition.flags.
  */
 export const enum ViewFlags {
   None = 0,

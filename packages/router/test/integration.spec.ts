@@ -509,7 +509,7 @@ describe('Integration', () => {
        expect(fixture.nativeElement).toHaveText('team 22 [ user victor, right: simple ]');
      })));
 
-  it('should support secondary routes in seperate commands',
+  it('should support secondary routes in separate commands',
      fakeAsync(inject([Router], (router: Router) => {
        const fixture = createRoot(router, RootCmp);
 

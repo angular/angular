@@ -320,7 +320,7 @@ Read more about `ngIf` and `*` in the [ngIf section](guide/template-syntax#ngIf)
 
 
 The template expression inside the double quotes,
-`*ngIf="heros.length > 3"`, looks and behaves much like TypeScript.
+`*ngIf="heroes.length > 3"`, looks and behaves much like TypeScript.
 When the component's list of heroes has more than three items, Angular adds the paragraph
 to the DOM and the message appears. If there are three or fewer items, Angular omits the
 paragraph, so no message appears. For more information,

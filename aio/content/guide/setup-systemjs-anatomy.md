@@ -199,7 +199,7 @@ If you do, this page can help you understand their purpose.
 
 
       A list of files that you can delete if you want to purge your setup of the
-      original QuickStart Seed testing and git maintainence artifacts.
+      original QuickStart Seed testing and git maintenance artifacts.
       See instructions in the optional
       [_Deleting non-essential files_](guide/setup#non-essential "Setup: Deleting non-essential files") section.
       *Do this only in the beginning to avoid accidentally deleting your own tests and git setup!*

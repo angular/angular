@@ -142,7 +142,7 @@ describe('plugin', () => {
     it('should reference the component',
        () => { contains('app/parsing-cases.ts', 'test-comp-after-test', 'name'); });
     // TODO: Enable when we have a flag that indicates the project targets the DOM
-    // it('should refernce the element if no component', () => {
+    // it('should reference the element if no component', () => {
     //   contains('app/parsing-cases.ts', 'test-comp-after-div', 'innerText');
     // });
   });
@@ -163,7 +163,7 @@ describe('plugin', () => {
           'app/expression-cases.ts', 'myField',
           'Identifier \'myField\' refers to a private member of the component');
     });
-    it('should report numeric operator erros',
+    it('should report numeric operator errors',
        () => { expectSemanticError('app/expression-cases.ts', 'mod', 'Expected a numeric type'); });
     describe('in ngFor', () => {
       function expectError(locationMarker: string, message: string) {

@@ -142,7 +142,7 @@ export function main() {
                }),
        500);
 
-    it('should send messages immediatly when run outside the zone',
+    it('should send messages immediately when run outside the zone',
        inject([AsyncTestCompleter, NgZone], (async: AsyncTestCompleter, zone: MockNgZone) => {
          bus = createConnectedMessageBus();
          setup(false, zone);

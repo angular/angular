@@ -149,7 +149,7 @@ export class UrlSegmentGroup {
     forEach(children, (v: any, k: any) => v.parent = this);
   }
 
-  /** Wether the segment has child segments */
+  /** Whether the segment has child segments */
   hasChildren(): boolean { return this.numberOfChildren > 0; }
 
   /** Number of child segments */
