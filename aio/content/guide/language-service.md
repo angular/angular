@@ -111,7 +111,12 @@ Install the latest version of typescript in a local `node_modules` directory:
 npm install --save-dev typescript
 ```
 
-This installs the nightly TypeScript build. Starting with TypeScript 2.3, TypeScript has a language service plugin model that the language service can use. 
+Then install the Angular Language Service in the same location:
+```sh
+npm install --save-dev @angular/language-service
+```
+
+Starting with TypeScript 2.3, TypeScript has a language service plugin model that the language service can use. 
 
 Next, in your user preferences (`Cmd+,` or `Ctrl+,`), add:
 
