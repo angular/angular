@@ -417,7 +417,7 @@ export function main() {
           expect((ast.rootNodes[0] as html.Element).attrs[0].valueSpan).toBeUndefined();
         });
 
-        it('should report a value span for an attibute with a value', () => {
+        it('should report a value span for an attribute with a value', () => {
           const ast = parser.parse('<div bar="12"></div>', 'TestComp');
           const attr = (ast.rootNodes[0] as html.Element).attrs[0];
           expect(attr.valueSpan !.start.offset).toEqual(9);
