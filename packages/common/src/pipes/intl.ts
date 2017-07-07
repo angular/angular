@@ -172,7 +172,7 @@ function nameCondition(prop: string, len: number): Intl.DateTimeFormatOptions {
 }
 
 function combine(options: Intl.DateTimeFormatOptions[]): Intl.DateTimeFormatOptions {
-  return (<any>Object).assign({}, ...options);
+  return options.reduce((merged, opt) => ({...merged, ...opt}), {});
 }
 
 function datePartGetterFactory(ret: Intl.DateTimeFormatOptions): DateFormatterFn {
