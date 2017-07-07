@@ -1,4 +1,10 @@
-<div class="mat-select-trigger" cdk-overlay-origin (click)="toggle()" #origin="cdkOverlayOrigin" #trigger>
+<div
+  cdk-overlay-origin
+  class="mat-select-trigger"
+  aria-hidden="true"
+  (click)="toggle()"
+  #origin="cdkOverlayOrigin"
+  #trigger>
   <span
     class="mat-select-placeholder"
     [class.mat-floating-placeholder]="_selectionModel.hasValue()"

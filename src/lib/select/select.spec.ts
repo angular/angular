@@ -1728,6 +1728,15 @@ describe('MdSelect', () => {
         expect(document.activeElement).toBe(select, 'Expected select element to be focused.');
       });
 
+      // Having `aria-hidden` on the trigger avoids issues where
+      // screen readers read out the wrong amount of options.
+      it('should set aria-hidden on the trigger element', () => {
+        const trigger = fixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement;
+
+        expect(trigger.getAttribute('aria-hidden'))
+            .toBe('true', 'Expected aria-hidden to be true when the select is open.');
+      });
+
     });
 
     describe('for options', () => {
