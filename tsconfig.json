@@ -17,7 +17,7 @@
     "paths": {
       "@angular/material": ["./src/lib/public_api.ts"],
       "@angular/cdk": ["./src/cdk/public_api.ts"],
-      "@angular/cdk/testing": ["./cdk/testing"]
+      "@angular/cdk/testing": ["./src/cdk/testing"]
     }
   },
   "include": [
