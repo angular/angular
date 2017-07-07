@@ -159,10 +159,10 @@ class TypeScriptSymbolQuery implements SymbolQuery {
     }
   }
 
-  getTypeSymbol(type: StaticSymbol): Symbol {
+  getTypeSymbol(type: StaticSymbol): Symbol|undefined {
     const context: TypeContext = {node: this.source, program: this.program, checker: this.checker};
-    const typeSymbol = findClassSymbolInContext(type, context) !;
-    return new SymbolWrapper(typeSymbol, context);
+    const typeSymbol = findClassSymbolInContext(type, context);
+    return typeSymbol && new SymbolWrapper(typeSymbol, context);
   }
 
   createSymbolTable(symbols: SymbolDeclaration[]): SymbolTable {
