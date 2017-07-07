@@ -39,7 +39,7 @@ export function main() {
     });
 
     describe('query()', () => {
-      it('should be able to query all animation triggers via `@*`', () => {
+      it('should be able to query all elements that contain animation triggers via @*', () => {
         @Component({
           selector: 'ani-cmp',
           template: `
@@ -56,30 +56,40 @@ export function main() {
                 'parent',
                 [
                   transition(
-                      '* => *',
+                      '* => go',
                       [
                         query(
-                            '@*:animating',
+                            '@*',
                             [
-                              animate(1000, style({background: 'red'})),
+                              style({ backgroundColor: 'blue' }),
+                              animate(1000, style({backgroundColor: 'red'})),
                             ]),
                       ]),
                 ]),
             trigger(
                 'a',
                 [
-                  transition('* => *', []),
+                  transition('* => 1', [
+                    animate(1000, style({ opacity: 0 }))
+                  ]),
                 ]),
             trigger(
                 'b',
                 [
-                  transition('* => *', []),
+                  transition('* => 1', [
+                    animate(1000, style({ opacity: 0 })),
+                    query('.b-inner', [
+                      animate(1000, style({ opacity: 0 }))
+                    ]),
+                  ]),
                 ]),
             trigger(
                 'c',
                 [
-                  transition('* => *', []),
-                ])
+                  transition('* => 1', [
+                    animate(1000, style({ opacity: 0 }))
+                  ]),
+                ]),
           ]
         })
         class Cmp {
@@ -90,23 +100,117 @@ export function main() {
 
         TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
 
-        cmp.exp0 = 1;
+        cmp.exp0 = 'go';
+        fixture.detectChanges();
+
+        let players = getLog();
+        expect(players.length).toEqual(3);  // a,b,c
+        resetLog();
+
+        const [p1, p2, p3] = players;
+        expect(p1.element.classList.contains('a')).toBeTruthy();
+        expect(p2.element.classList.contains('b')).toBeTruthy();
+        expect(p3.element.classList.contains('c')).toBeTruthy();
+      });
+
+      it('should be able to query currently animating elements via :animating', () => {
+        @Component({
+          selector: 'ani-cmp',
+          template: `
+            <div [@parent]="exp0">
+              <div class="a" [@a]="exp1"></div>
+              <div class="b" [@b]="exp2">
+                <div class="b-inner"></div>
+              </div>
+              <div class="c" [@c]="exp3"></div>
+            </div>
+          `,
+          animations: [
+            trigger(
+                'parent',
+                [
+                  transition(
+                      '* => go',
+                      [
+                        query(
+                            ':animating',
+                            [
+                              style({ backgroundColor: 'blue' }),
+                              animate(1000, style({backgroundColor: 'red'})),
+                            ]),
+                      ]),
+                ]),
+            trigger(
+                'a',
+                [
+                  transition('* => 1', [
+                    animate(1000, style({ opacity: 0 }))
+                  ]),
+                ]),
+            trigger(
+                'b',
+                [
+                  transition('* => 1', [
+                    animate(1000, style({ opacity: 0 })),
+                    query('.b-inner', [
+                      animate(1000, style({ opacity: 0 }))
+                    ]),
+                  ]),
+                ]),
+            trigger(
+                'c',
+                [
+                  transition('* => 1', [
+                    animate(1000, style({ opacity: 0 }))
+                  ]),
+                ]),
+          ]
+        })
+        class Cmp {
+          public exp0: any;
+          public exp1: any;
+          public exp2: any;
+          public exp3: any;
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+
+        const fixture = TestBed.createComponent(Cmp);
+        const cmp = fixture.componentInstance;
+
+        cmp.exp0 = '';
         cmp.exp1 = 1;
         cmp.exp2 = 1;
+        // note that exp3 is skipped here
         fixture.detectChanges();
-        engine.flush();
 
-        const players = getLog();
+        let players = getLog();
+        expect(players.length).toEqual(3);  // a,b,b-inner and not c
+        resetLog();
+
+        cmp.exp0 = 'go';
+        fixture.detectChanges();
+
+        const expectedKeyframes = [
+          {backgroundColor: 'blue', offset: 0},
+          {backgroundColor: 'red', offset: 1},
+        ];
+
+        players = getLog();
         expect(players.length).toEqual(3);
         const [p1, p2, p3] = players;
 
         expect(p1.element.classList.contains('a')).toBeTruthy();
+        expect(p1.keyframes).toEqual(expectedKeyframes);
+
         expect(p2.element.classList.contains('b')).toBeTruthy();
-        expect(p3.element.classList.contains('c')).toBeTruthy();
+        expect(p2.keyframes).toEqual(expectedKeyframes);
+
+        expect(p3.element.classList.contains('b-inner')).toBeTruthy();
+        expect(p3.keyframes).toEqual(expectedKeyframes);
       });
 
       it('should be able to query triggers directly by name', () => {
@@ -2542,6 +2646,115 @@ export function main() {
              {offset: 0, width: '0px'}, {offset: .67, width: '0px'}, {offset: 1, width: '200px'}
            ]);
          });
+    });
+
+    describe('animation control flags', () => {
+      describe('[@$disabled]', () => {
+        it('should allow a parent animation to query and animate inner nodes that are in a disabled region',
+           () => {
+             @Component({
+               selector: 'some-cmp',
+               template: `
+              <div [@myAnimation]="exp">
+                <div [@$disabled]="disabledExp">
+                  <div class="header"></div>
+                  <div class="footer"></div>
+                </div>
+              </div>
+            `,
+               animations: [
+                 trigger(
+                     'myAnimation',
+                     [
+                       transition(
+                           '* => go',
+                           [
+                             query('.header', animate(750, style({opacity: 0}))),
+                             query('.footer', animate(250, style({opacity: 0}))),
+                           ]),
+                     ]),
+               ]
+             })
+             class Cmp {
+               exp: any = '';
+               disableExp = false;
+             }
+
+             TestBed.configureTestingModule({declarations: [Cmp]});
+
+             const fixture = TestBed.createComponent(Cmp);
+             const cmp = fixture.componentInstance;
+             cmp.disableExp = true;
+             fixture.detectChanges();
+             resetLog();
+
+             cmp.exp = 'go';
+             fixture.detectChanges();
+             const players = getLog();
+             expect(players.length).toEqual(2);
+
+             const [p1, p2] = players;
+             expect(p1.duration).toEqual(750);
+             expect(p1.element.classList.contains('header'));
+             expect(p2.duration).toEqual(250);
+             expect(p2.element.classList.contains('footer'));
+           });
+
+        it('should allow a parent animation to query and animate sub animations that are in a disabled region',
+           () => {
+             @Component({
+               selector: 'some-cmp',
+               template: `
+              <div class="parent" [@parentAnimation]="exp">
+                <div [@$disabled]="disabledExp">
+                  <div class="child" [@childAnimation]="exp"></div>
+                </div>
+              </div>
+            `,
+               animations: [
+                 trigger(
+                     'parentAnimation',
+                     [
+                       transition(
+                           '* => go',
+                           [
+                             query('@childAnimation', animateChild()),
+                             animate(1000, style({opacity: 0}))
+                           ]),
+                     ]),
+                 trigger(
+                     'childAnimation',
+                     [
+                       transition('* => go', [animate(500, style({opacity: 0}))]),
+                     ]),
+               ]
+             })
+             class Cmp {
+               exp: any = '';
+               disableExp = false;
+             }
+
+             TestBed.configureTestingModule({declarations: [Cmp]});
+
+             const fixture = TestBed.createComponent(Cmp);
+             const cmp = fixture.componentInstance;
+             cmp.disableExp = true;
+             fixture.detectChanges();
+             resetLog();
+
+             cmp.exp = 'go';
+             fixture.detectChanges();
+
+             const players = getLog();
+             expect(players.length).toEqual(2);
+
+             const [p1, p2] = players;
+             expect(p1.duration).toEqual(500);
+             expect(p1.element.classList.contains('child'));
+             expect(p2.duration).toEqual(1000);
+             expect(p2.element.classList.contains('parent'));
+           });
+      });
     });
   });
 }
