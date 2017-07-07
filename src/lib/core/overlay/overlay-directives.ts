@@ -26,11 +26,13 @@ import {TemplatePortal} from '../portal/portal';
 import {OverlayState} from './overlay-state';
 import {
     ConnectionPositionPair,
+    // This import is only used to define a generic type. The current TypeScript version incorrectly
+    // considers such imports as unused (https://github.com/Microsoft/TypeScript/issues/14953)
+    // tslint:disable-next-line:no-unused-variable
     ConnectedOverlayPositionChange
 } from './position/connected-position';
 import {ConnectedPositionStrategy} from './position/connected-position-strategy';
 import {Directionality, Direction} from '../bidi/index';
-import {Scrollable} from './scroll/scrollable';
 import {ScrollStrategy} from './scroll/scroll-strategy';
 import {coerceBooleanProperty} from '@angular/cdk';
 import {ESCAPE} from '../keyboard/keycodes';

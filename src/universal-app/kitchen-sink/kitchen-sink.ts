@@ -4,9 +4,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {
   MdAutocompleteModule,
   MdButtonModule,
-  MdButtonToggleModule,
   MdCardModule,
-  MdCheckboxModule,
   MdChipsModule,
   MdDatepickerModule,
   MdDialogModule,

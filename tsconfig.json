@@ -1,0 +1,36 @@
+// TypeScript config file that matches all source files in the project. This file is read by 
+// IDEs and TSLint. For IDEs it ensures that `experimentalDecorator` warnings are not showing up.
+{
+  "compilerOptions": {
+    "rootDir": ".",
+    "experimentalDecorators": true,
+    "module": "es2015",
+    "moduleResolution": "node",
+    "noUnusedParameters": true,
+    "strictNullChecks": true,
+    "skipLibCheck": true,
+    "outDir": "./dist/packages/all",
+    "target": "es2015",
+    "lib": ["es5", "es2015", "dom"],
+    "types": ["jasmine"],
+    "baseUrl": ".",
+    "paths": {
+      "@angular/material": ["./src/lib/public_api.ts"],
+      "@angular/cdk": ["./src/cdk/public_api.ts"],
+      "@angular/cdk/testing": ["./cdk/testing"]
+    }
+  },
+  "include": [
+    "src/**/*.ts",
+    "tools/**.ts"
+  ],
+  "exclude": [
+    // Exclude files that depend on Node APIs because those depend on the Node types and therefore
+    // cause ambiguous imports. For example `setTimeout()` will return a Timer instead of a number.
+    "./src/universal-app/prerender.ts",
+
+    // IDEs should not type-check the different node_modules directories of the different packages.
+    // This would cause the IDEs to be slower and also linters would check the node_modules.
+    "**/node_modules"
+  ]
+}

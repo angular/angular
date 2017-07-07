@@ -34,7 +34,6 @@ import {
 import {MdTabLabelWrapper} from './tab-label-wrapper';
 import {MdInkBar} from './ink-bar';
 import {Subscription} from 'rxjs/Subscription';
-import {applyCssTransform} from '../core/style/apply-transform';
 import {auditTime, startWith} from '../core/rxjs/index';
 import {of as observableOf} from 'rxjs/observable/of';
 import {merge} from 'rxjs/observable/merge';

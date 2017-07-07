@@ -9,9 +9,7 @@ import {
   OverlayContainer,
   Overlay,
   PositionStrategy,
-  ViewportRuler,
   ScrollStrategy,
-  ScrollDispatcher,
 } from './index';
 
 
@@ -336,7 +334,6 @@ describe('Overlay', () => {
       overlayRef.attach(componentPortal);
       viewContainerFixture.detectChanges();
 
-      let backdrop = overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
       let completeHandler = jasmine.createSpy('backdrop complete handler');
 
       overlayRef.backdropClick().subscribe(undefined, undefined, completeHandler);

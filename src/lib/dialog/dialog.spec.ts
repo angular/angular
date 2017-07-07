@@ -319,7 +319,7 @@ describe('MdDialog', () => {
   });
 
   it('should allow setting the layout direction', () => {
-    let dialogRef = dialog.open(PizzaMsg, { direction: 'rtl' });
+    dialog.open(PizzaMsg, { direction: 'rtl' });
 
     viewContainerFixture.detectChanges();
 

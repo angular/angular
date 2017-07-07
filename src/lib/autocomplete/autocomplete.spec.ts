@@ -28,7 +28,7 @@ import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {createKeyboardEvent, dispatchFakeEvent, typeInElement} from '@angular/cdk/testing';
 import {ScrollDispatcher} from '../core/overlay/scroll/scroll-dispatcher';
-import {RxChain, map, startWith, filter} from '../core/rxjs/index';
+import {RxChain, map, startWith} from '../core/rxjs/index';
 
 
 describe('MdAutocomplete', () => {

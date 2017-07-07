@@ -12,7 +12,6 @@ import {
   ViewChild,
   ViewEncapsulation,
   NgZone,
-  OnDestroy,
   ElementRef,
   EventEmitter,
   Inject,

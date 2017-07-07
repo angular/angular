@@ -10,7 +10,6 @@ describe('checkbox', () => {
     it('should be checked when clicked, and unchecked when clicked again', async () => {
       let checkboxEl = element(by.id('test-checkbox'));
       let inputEl = element(by.css('input[id=input-test-checkbox]'));
-      let checked: string;
 
       screenshot('start');
       checkboxEl.click();

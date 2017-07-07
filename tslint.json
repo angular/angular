@@ -29,6 +29,7 @@
     "no-var-keyword": true,
     "no-exposed-todo": true,
     "no-debugger": true,
+    "no-unused-variable": [true, {"ignore-pattern": "^_"}],
     "no-rxjs-patch-imports": [
       true,
       "src/lib",

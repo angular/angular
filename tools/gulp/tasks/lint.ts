@@ -7,9 +7,7 @@ import {buildConfig} from 'material2-build-tools';
 const stylesGlob = '+(tools|src)/**/*.+(css|scss)';
 
 /** List of flags that will passed to the different TSLint tasks. */
-const tsLintBaseFlags = [
-  '-c', 'tslint.json', '+(src|e2e|tools)/**/*.ts', '--exclude', '**/node_modules/**/*'
-];
+const tsLintBaseFlags = ['-c', 'tslint.json', '--project', './tsconfig.json'];
 
 /** Path to the output of the Material package. */
 const materialOutPath = join(buildConfig.outputDir, 'packages', 'material');

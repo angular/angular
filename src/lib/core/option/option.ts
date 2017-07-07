@@ -12,7 +12,6 @@ import {
   EventEmitter,
   Input,
   Output,
-  NgModule,
   ViewEncapsulation,
   Inject,
   Optional,

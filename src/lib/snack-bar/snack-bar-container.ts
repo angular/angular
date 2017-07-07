@@ -27,7 +27,6 @@ import {
 import {
   BasePortalHost,
   ComponentPortal,
-  TemplatePortal,
   PortalHostDirective,
 } from '../core';
 import {MdSnackBarConfig} from './snack-bar-config';

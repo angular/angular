@@ -28,15 +28,13 @@ export function setGithubStatus(commitSHA: string,
     'Content-Type': 'application/json'
   };
 
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     request({
       url: `https://api.github.com/repos/${repoSlug}/statuses/${commitSHA}`,
       method: 'POST',
       form: data,
       headers: headers
-    }, function (error: any, response: any) {
-      console.log(response.statusCode);
-      resolve(response.statusCode);
-    });
-  });
+    }, (error: any, response: any) => error ? reject(error) : resolve(response.statusCode));
+
+});
 }

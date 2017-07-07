@@ -10,13 +10,7 @@ import {MdInputModule} from '../input/index';
 import {MdNativeDateModule, DateAdapter, NativeDateAdapter} from '../core/datetime/index';
 import {ESCAPE} from '../core';
 import {dispatchFakeEvent, dispatchMouseEvent, dispatchKeyboardEvent} from '@angular/cdk/testing';
-
-
-// When constructing a Date, the month is zero-based. This can be confusing, since people are
-// used to seeing them one-based. So we create these aliases to make reading the tests easier.
-const JAN = 0, FEB = 1, MAR = 2, APR = 3, MAY = 4, JUN = 5, JUL = 6, AUG = 7, SEP = 8, OCT = 9,
-      NOV = 10, DEC = 11;
-
+import {DEC, JAN} from '../core/testing/month-constants';
 
 describe('MdDatepicker', () => {
   describe('with MdNativeDateModule', () => {

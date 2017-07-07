@@ -7,8 +7,6 @@
  */
 
 import {Injector} from '@angular/core';
-import {MdDialogRef} from './dialog-ref';
-import {MdDialogContainer} from './dialog-container';
 
 /** Custom injector type specifically for instantiating components with a dialog. */
 export class DialogInjector implements Injector {

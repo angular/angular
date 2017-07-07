@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {QueryList} from '@angular/core';
 import {ListKeyManager, CanDisable} from './list-key-manager';
 
 /**

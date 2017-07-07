@@ -1,4 +1,4 @@
-import {Key, protractor, browser, by, element, ElementFinder} from 'protractor';
+import {Key, protractor, browser, by, element} from 'protractor';
 import {screenshot} from '../screenshot';
 import {
   expectToExist,

@@ -51,10 +51,8 @@ export class CdkColumnDef {
   },
 })
 export class CdkHeaderCell {
-  constructor(private columnDef: CdkColumnDef,
-              private elementRef: ElementRef,
-              private renderer: Renderer2) {
-    this.renderer.addClass(elementRef.nativeElement, `cdk-column-${columnDef.name}`);
+  constructor(columnDef: CdkColumnDef, elementRef: ElementRef, renderer: Renderer2) {
+    renderer.addClass(elementRef.nativeElement, `cdk-column-${columnDef.name}`);
   }
 }
 
@@ -67,9 +65,7 @@ export class CdkHeaderCell {
   },
 })
 export class CdkCell {
-  constructor(private columnDef: CdkColumnDef,
-              private elementRef: ElementRef,
-              private renderer: Renderer2) {
-    this.renderer.addClass(elementRef.nativeElement, `cdk-column-${columnDef.name}`);
+  constructor(columnDef: CdkColumnDef, elementRef: ElementRef, renderer: Renderer2) {
+    renderer.addClass(elementRef.nativeElement, `cdk-column-${columnDef.name}`);
   }
 }

@@ -46,7 +46,7 @@ export class ViewerComponent {
   }
 
   approve() {
-    this._service.approvePullRequest().then((result) => {
+    this._service.approvePullRequest().then(() => {
       this.snackBar.open(`Approved`, '', this.messageDuration);
     }).catch((error) => {
       this.snackBar.open(`Error ${error}`, '', this.messageDuration);
@@ -54,7 +54,7 @@ export class ViewerComponent {
   }
 
   updateGithubStatus() {
-    this._service.updatePullRequestResult().then((result) => {
+    this._service.updatePullRequestResult().then(() => {
       this.snackBar.open(`Approved`, '', this.messageDuration);
     }).catch((error) => {
       this.snackBar.open(error.message, '', this.messageDuration);

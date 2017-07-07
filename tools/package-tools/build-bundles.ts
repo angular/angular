@@ -6,10 +6,6 @@ import {remapSourcemap} from './sourcemap-remap';
 import {transpileFile} from './typescript-transpile';
 import {buildConfig} from './build-config';
 
-// There are no type definitions available for these imports.
-const uglify = require('uglify-js');
-const sorcery = require('sorcery');
-
 /** Directory where all bundles will be created in. */
 const bundlesDir = join(buildConfig.outputDir, 'bundles');
 

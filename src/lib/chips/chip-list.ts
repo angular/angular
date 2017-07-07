@@ -19,9 +19,9 @@ import {
 
 import {MdChip} from './chip';
 import {FocusKeyManager} from '../core/a11y/focus-key-manager';
-import {SPACE, LEFT_ARROW, RIGHT_ARROW, TAB} from '../core/keyboard/keycodes';
-import {coerceBooleanProperty} from '@angular/cdk';
+import {SPACE, LEFT_ARROW, RIGHT_ARROW} from '../core/keyboard/keycodes';
 import {Subscription} from 'rxjs/Subscription';
+import {coerceBooleanProperty} from '@angular/cdk';
 
 /**
  * A material design chips component (named ChipList for it's similarity to the List component).

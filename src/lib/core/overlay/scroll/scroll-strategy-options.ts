@@ -7,7 +7,6 @@
  */
 
 import {Injectable} from '@angular/core';
-import {ScrollStrategy} from './scroll-strategy';
 import {CloseScrollStrategy} from './close-scroll-strategy';
 import {NoopScrollStrategy} from './noop-scroll-strategy';
 import {BlockScrollStrategy} from './block-scroll-strategy';

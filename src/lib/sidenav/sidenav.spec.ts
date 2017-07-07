@@ -1,7 +1,7 @@
 import {fakeAsync, async, tick, ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component, ElementRef, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {MdSidenav, MdSidenavModule, MdSidenavToggleResult, MdSidenavContainer} from './index';
+import {MdSidenav, MdSidenavModule, MdSidenavContainer} from './index';
 import {A11yModule} from '../core/a11y/index';
 import {PlatformModule} from '../core/platform/index';
 import {ESCAPE} from '../core/keyboard/keycodes';

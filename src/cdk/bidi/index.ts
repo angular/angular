@@ -9,7 +9,7 @@
 import {NgModule} from '@angular/core';
 import {DOCUMENT} from '@angular/platform-browser';
 import {Dir} from './dir';
-import {DIR_DOCUMENT, Directionality, DIRECTIONALITY_PROVIDER} from './directionality';
+import {DIR_DOCUMENT, Directionality} from './directionality';
 
 export {
   Directionality,

@@ -250,15 +250,6 @@ class MdPaginatorApp {
 
 @Component({
   template: `
-    <md-paginator [length]="100"></md-paginator>
-  `,
-})
-class MdPaginatorWithoutPageSizeOrOptionsApp {
-  @ViewChild(MdPaginator) mdPaginator: MdPaginator;
-}
-
-@Component({
-  template: `
     <md-paginator [pageSizeOptions]="[10, 20, 30]"></md-paginator>
   `,
 })

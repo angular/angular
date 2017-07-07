@@ -7,7 +7,7 @@
  */
 
 import {InjectionToken} from '@angular/core';
-import {FormControl, FormGroupDirective, Form, NgForm} from '@angular/forms';
+import {FormControl, FormGroupDirective, NgForm} from '@angular/forms';
 
 /** Injection token that can be used to specify the global error options. */
 export const MD_ERROR_GLOBAL_OPTIONS = new InjectionToken<ErrorOptions>('md-error-global-options');
