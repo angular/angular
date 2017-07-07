@@ -9,11 +9,11 @@
 /**
  * A codec for encoding and decoding parameters in URLs.
  *
- * Used by `HttpUrlEncodedBody`.
+ * Used by `HttpParams`.
  *
  *  @experimental
  **/
-export interface HttpUrlParameterCodec {
+export interface HttpParameterCodec {
   encodeKey(key: string): string;
   encodeValue(value: string): string;
 
@@ -22,12 +22,12 @@ export interface HttpUrlParameterCodec {
 }
 
 /**
- * A `HttpUrlParameterCodec` that uses `encodeURIComponent` and `decodeURIComponent` to
+ * A `HttpParameterCodec` that uses `encodeURIComponent` and `decodeURIComponent` to
  * serialize and parse URL parameter keys and values.
  *
  * @experimental
  */
-export class HttpStandardUrlParameterCodec implements HttpUrlParameterCodec {
+export class HttpUrlEncodingCodec implements HttpParameterCodec {
   encodeKey(k: string): string { return standardEncoding(k); }
 
   encodeValue(v: string): string { return standardEncoding(v); }
@@ -38,7 +38,7 @@ export class HttpStandardUrlParameterCodec implements HttpUrlParameterCodec {
 }
 
 
-function paramParser(rawParams: string, codec: HttpUrlParameterCodec): Map<string, string[]> {
+function paramParser(rawParams: string, codec: HttpParameterCodec): Map<string, string[]> {
   const map = new Map<string, string[]>();
   if (rawParams.length > 0) {
     const params: string[] = rawParams.split('&');
@@ -74,25 +74,24 @@ interface Update {
 }
 
 /**
- * An HTTP request/response body that represents serialized parameters in urlencoded form,
+ * An HTTP request/response body that represents serialized parameters,
  * per the MIME type `application/x-www-form-urlencoded`.
  *
  * This class is immuatable - all mutation operations return a new instance.
  *
  * @experimental
  */
-export class HttpUrlEncodedBody {
+export class HttpParams {
   private map: Map<string, string[]>|null;
-  private encoder: HttpUrlParameterCodec;
+  private encoder: HttpParameterCodec;
   private updates: Update[]|null = null;
-  private cloneFrom: HttpUrlEncodedBody|null = null;
+  private cloneFrom: HttpParams|null = null;
 
   constructor(options: {
     fromString?: string,
-    encoder?: HttpUrlParameterCodec,
+    encoder?: HttpParameterCodec,
   } = {}) {
-    (this as any)['__HttpUrlEncodedBody'] = true;
-    this.encoder = options.encoder || new HttpStandardUrlParameterCodec();
+    this.encoder = options.encoder || new HttpUrlEncodingCodec();
     this.map = !!options.fromString ? paramParser(options.fromString, this.encoder) : null;
   }
 
@@ -124,7 +123,7 @@ export class HttpUrlEncodedBody {
   /**
    * Get all the parameter names for this body.
    */
-  params(): string[] {
+  keys(): string[] {
     this.init();
     return Array.from(this.map !.keys());
   }
@@ -132,25 +131,19 @@ export class HttpUrlEncodedBody {
   /**
    * Construct a new body with an appended value for the given parameter name.
    */
-  append(param: string, value: string): HttpUrlEncodedBody {
-    return this.clone({param, value, op: 'a'});
-  }
+  append(param: string, value: string): HttpParams { return this.clone({param, value, op: 'a'}); }
 
   /**
    * Construct a new body with a new value for the given parameter name.
    */
-  set(param: string, value: string): HttpUrlEncodedBody {
-    return this.clone({param, value, op: 's'});
-  }
+  set(param: string, value: string): HttpParams { return this.clone({param, value, op: 's'}); }
 
   /**
    * Construct a new body with either the given value for the given parameter
    * removed, if a value is given, or all values for the given parameter removed
    * if not.
    */
-  delete (param: string, value?: string): HttpUrlEncodedBody {
-    return this.clone({param, value, op: 'd'});
-  }
+  delete (param: string, value?: string): HttpParams { return this.clone({param, value, op: 'd'}); }
 
   /**
    * Serialize the body to an encoded string, where key-value pairs (separated by `=`) are
@@ -158,7 +151,7 @@ export class HttpUrlEncodedBody {
    */
   toString(): string {
     this.init();
-    return this.params()
+    return this.keys()
         .map(key => {
           const eKey = this.encoder.encodeKey(key);
           return this.map !.get(key) !.map(value => eKey + '=' + this.encoder.encodeValue(value))
@@ -167,8 +160,8 @@ export class HttpUrlEncodedBody {
         .join('&');
   }
 
-  private clone(update: Update): HttpUrlEncodedBody {
-    const clone = new HttpUrlEncodedBody({encoder: this.encoder});
+  private clone(update: Update): HttpParams {
+    const clone = new HttpParams({encoder: this.encoder});
     clone.cloneFrom = this.cloneFrom || this;
     clone.updates = (this.updates || []).concat([update]);
     return clone;
@@ -180,8 +173,7 @@ export class HttpUrlEncodedBody {
     }
     if (this.cloneFrom !== null) {
       this.cloneFrom.init();
-      this.cloneFrom.params().forEach(
-          key => this.map !.set(key, this.cloneFrom !.map !.get(key) !));
+      this.cloneFrom.keys().forEach(key => this.map !.set(key, this.cloneFrom !.map !.get(key) !));
       this.updates !.forEach(update => {
         switch (update.op) {
           case 'a':
