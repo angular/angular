@@ -8,11 +8,11 @@
 
 import {Injectable} from '@angular/core';
 
+import {Headers, URLSearchParams} from './client';
 import {RequestMethod, ResponseContentType} from './enums';
-import {Headers} from './headers';
 import {normalizeMethodName} from './http_utils';
 import {RequestOptionsArgs} from './interfaces';
-import {URLSearchParams} from './url_search_params';
+
 
 
 /**

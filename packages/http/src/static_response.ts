@@ -6,12 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
-
 import {ResponseOptions} from './base_response_options';
 import {Body} from './body';
+import {Headers, URLSearchParams} from './client';
 import {ResponseType} from './enums';
-import {Headers} from './headers';
 
 
 /**

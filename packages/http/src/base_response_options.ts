@@ -8,9 +8,10 @@
 
 import {Injectable} from '@angular/core';
 
+import {Headers} from './client';
 import {ResponseType} from './enums';
-import {Headers} from './headers';
 import {ResponseOptionsArgs} from './interfaces';
+
 
 
 /**

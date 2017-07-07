@@ -1,0 +1,7 @@
+{
+  "name": "@angular/http/client",
+  "typings": "../client.d.ts",
+  "main": "../bundles/http-client.umd.js",
+  "module": "../@angular/http/client.es5.js",
+  "es2015": "../@angular/http/client.js"
+}

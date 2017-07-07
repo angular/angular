@@ -83,13 +83,14 @@ module.exports = function mergeDecoratorDocs(log) {
         if (docsToMerge[doc.name]) {
           // We have found an `XxxDecorator` document that will hold the call signature of the decorator
           var decoratorDoc = docsToMerge[doc.name];
+          var callMember = doc.members.filter(function(member) { return member.isCallMember; })[0];
           log.debug(
               'mergeDecoratorDocs: merging', doc.name, 'into', decoratorDoc.name,
-              doc.callMember.description.substring(0, 50));
+              callMember.description.substring(0, 50));
           // Merge the documentation found in this call signature into the original decorator
-          decoratorDoc.description = doc.callMember.description;
-          decoratorDoc.howToUse = doc.callMember.howToUse;
-          decoratorDoc.whatItDoes = doc.callMember.whatItDoes;
+          decoratorDoc.description = callMember.description;
+          decoratorDoc.howToUse = callMember.howToUse;
+          decoratorDoc.whatItDoes = callMember.whatItDoes;
 
           // remove doc from its module doc's exports
           doc.moduleDoc.exports =
@@ -108,8 +109,8 @@ module.exports = function mergeDecoratorDocs(log) {
 function getMakeDecoratorCall(doc, type) {
   var makeDecoratorFnName = 'make' + (type || '') + 'Decorator';
 
-  var initializer = doc.exportSymbol && doc.exportSymbol.valueDeclaration &&
-      doc.exportSymbol.valueDeclaration.initializer;
+  var initializer = doc.declaration &&
+      doc.declaration.initializer;
 
   if (initializer) {
     // There appear to be two forms of initializer:

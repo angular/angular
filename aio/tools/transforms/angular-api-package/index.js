@@ -20,7 +20,7 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
   .processor(require('./processors/mergeDecoratorDocs'))
   .processor(require('./processors/extractDecoratedClasses'))
   .processor(require('./processors/matchUpDirectiveDecorators'))
-  .processor(require('./processors/filterMemberDocs'))
+  .processor(require('./processors/filterContainedDocs'))
   .processor(require('./processors/markBarredODocsAsPrivate'))
   .processor(require('./processors/filterPrivateDocs'))
   .processor(require('./processors/computeSearchTitle'))
@@ -42,6 +42,8 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
       'core/testing/index.ts',
       'forms/index.ts',
       'http/index.ts',
+      'http/client/index.ts',
+      'http/client/testing/index.ts',
       'http/testing/index.ts',
       'platform-browser/index.ts',
       'platform-browser/animations/index.ts',

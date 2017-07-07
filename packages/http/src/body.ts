@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {URLSearchParams} from './client';
 import {stringToArrayBuffer} from './http_utils';
-import {URLSearchParams} from './url_search_params';
 
 
 /**

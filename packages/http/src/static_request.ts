@@ -7,11 +7,10 @@
  */
 
 import {Body} from './body';
+import {Headers, URLSearchParams} from './client';
 import {ContentType, RequestMethod, ResponseContentType} from './enums';
-import {Headers} from './headers';
 import {normalizeMethodName} from './http_utils';
 import {RequestArgs} from './interfaces';
-import {URLSearchParams} from './url_search_params';
 
 
 // TODO(jeffbcross): properly implement body accessors

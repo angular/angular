@@ -13,6 +13,7 @@ const globals = {
   '@angular/compiler': 'ng.compiler',
   '@angular/platform-browser': 'ng.platformBrowser',
   '@angular/http': 'ng.http',
+  '@angular/http/client': 'ng.httpClient',
   'rxjs/Observable': 'Rx',
   'rxjs/ReplaySubject': 'Rx',
   'rxjs/Subject': 'Rx',
