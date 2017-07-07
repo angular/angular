@@ -39,7 +39,7 @@ export class TestRequest {
     if (this.cancelled) {
       throw new Error(`Cannot flush a cancelled request.`);
     }
-    const url = this.request.url;
+    const url = this.request.urlWithParams;
     const headers =
         (opts.headers instanceof HttpHeaders) ? opts.headers : new HttpHeaders(opts.headers);
     body = _maybeConvertBody(this.request.responseType, body);
@@ -83,7 +83,7 @@ export class TestRequest {
       headers,
       status: opts.status || 0,
       statusText: opts.statusText || '',
-      url: this.request.url,
+      url: this.request.urlWithParams,
     }));
   }
 
