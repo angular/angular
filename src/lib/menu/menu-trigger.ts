@@ -238,13 +238,9 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
    * correct, even if a fallback position is used for the overlay.
    */
   private _subscribeToPositions(position: ConnectedPositionStrategy): void {
-    this._positionSubscription = position.onPositionChange.subscribe((change) => {
-      const posX: MenuPositionX = change.connectionPair.originX === 'start' ? 'after' : 'before';
-      let posY: MenuPositionY = change.connectionPair.originY === 'top' ? 'below' : 'above';
-
-      if (!this.menu.overlapTrigger) {
-        posY = posY === 'below' ? 'above' : 'below';
-      }
+    this._positionSubscription = position.onPositionChange.subscribe(change => {
+      const posX: MenuPositionX = change.connectionPair.overlayX === 'start' ? 'after' : 'before';
+      const posY: MenuPositionY = change.connectionPair.overlayY === 'top' ? 'below' : 'above';
 
       this.menu.setPositionClasses(posX, posY);
     });
