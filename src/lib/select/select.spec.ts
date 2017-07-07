@@ -635,6 +635,17 @@ describe('MdSelect', () => {
         .toEqual(true, `Expected the control to be touched as soon as focus left the select.`);
     });
 
+    it('should not set touched when a disabled select is touched', () => {
+      expect(fixture.componentInstance.control.touched)
+        .toBe(false, 'Expected the control to start off as untouched.');
+
+      fixture.componentInstance.control.disable();
+      dispatchFakeEvent(trigger, 'blur');
+
+      expect(fixture.componentInstance.control.touched)
+        .toBe(false, 'Expected the control to stay untouched.');
+    });
+
     it('should set the control to dirty when the select\'s value changes in the DOM', () => {
       expect(fixture.componentInstance.control.dirty)
         .toEqual(false, `Expected control to start out pristine.`);

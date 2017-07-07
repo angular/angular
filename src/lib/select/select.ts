@@ -534,7 +534,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
    * "blur" to the panel when it opens, causing a false positive.
    */
   _onBlur() {
-    if (!this.panelOpen) {
+    if (!this.disabled && !this.panelOpen) {
       this._onTouched();
     }
   }
