@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "4.2.0-beta.1",
+  "version": "4.3.0-beta.1",
   "dependencies": {
     "@types/angularjs": {
       "version": "1.5.13-alpha",
