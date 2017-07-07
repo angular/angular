@@ -95,6 +95,9 @@ export class CodeGenerator {
               `Unknown option for missingTranslation (${cliOptions.missingTranslation}). Use either error, warning or ignore.`);
       }
     }
+    if (!transContent) {
+      missingTranslation = MissingTranslationStrategy.Ignore
+    }
     const {compiler: aotCompiler} = compiler.createAotCompiler(ngCompilerHost, {
       translations: transContent,
       i18nFormat: cliOptions.i18nFormat,
