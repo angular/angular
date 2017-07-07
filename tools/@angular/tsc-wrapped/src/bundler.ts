@@ -9,7 +9,8 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import {MetadataCollector} from './collector';
-import {ClassMetadata, ConstructorMetadata, FunctionMetadata, MemberMetadata, MetadataEntry, MetadataError, MetadataImportedSymbolReferenceExpression, MetadataMap, MetadataObject, MetadataSymbolicExpression, MetadataSymbolicReferenceExpression, MetadataValue, MethodMetadata, ModuleMetadata, VERSION, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isInterfaceMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportedSymbolReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicExpression, isMethodMetadata} from './schema';
+import {ClassMetadata, ConstructorMetadata, FunctionMetadata, MemberMetadata, MetadataEntry, MetadataError, MetadataImportedSymbolReferenceExpression, MetadataMap, MetadataObject, MetadataSymbolicExpression, MetadataSymbolicReferenceExpression, MetadataValue, MethodMetadata, ModuleExportMetadata, ModuleMetadata, VERSION, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isInterfaceMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportedSymbolReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicExpression, isMethodMetadata} from './schema';
+
 
 
 // The character set used to produce private names.
@@ -43,6 +44,10 @@ interface Symbol {
   // A symbol is referenced if it is exported from index or referenced by the value of
   // a referenced symbol's value.
   referenced?: boolean;
+
+  // A symbol is marked as a re-export the symbol was rexported from a module that is
+  // not part of the flat module bundle.
+  reexport?: boolean;
 
   // Only valid for referenced canonical symbols. Produces by convertSymbols().
   value?: MetadataEntry;
@@ -98,14 +103,19 @@ export class MetadataBundler {
                                 module: s.declaration.module
                               }));
     const origins = Array.from(this.symbolMap.values())
-                        .filter(s => s.referenced)
+                        .filter(s => s.referenced && !s.reexport)
                         .reduce<{[name: string]: string}>((p, s) => {
                           p[s.isPrivate ? s.privateName : s.name] = s.declaration.module;
                           return p;
                         }, {});
+    const exports = this.getReExports(exportedSymbols);
     return {
-      metadata:
-          {__symbolic: 'module', version: VERSION, metadata, origins, importAs: this.importAs},
+      metadata: {
+        __symbolic: 'module',
+        version: VERSION,
+        exports: exports.length ? exports : undefined, metadata, origins,
+        importAs: this.importAs
+      },
       privates
     };
   }
@@ -165,12 +175,19 @@ export class MetadataBundler {
       for (const exportDeclaration of module.exports) {
         const exportFrom = resolveModule(exportDeclaration.from, moduleName);
         // Record all the exports from the module even if we don't use it directly.
-        this.exportAll(exportFrom);
+        const exportedSymbols = this.exportAll(exportFrom);
         if (exportDeclaration.export) {
           // Re-export all the named exports from a module.
           for (const exportItem of exportDeclaration.export) {
             const name = typeof exportItem == 'string' ? exportItem : exportItem.name;
             const exportAs = typeof exportItem == 'string' ? exportItem : exportItem.as;
+            const symbol = this.symbolOf(exportFrom, name);
+            if (exportedSymbols && exportedSymbols.length == 1 && exportedSymbols[0].reexport &&
+                exportedSymbols[0].name == '*') {
+              // This is a named export from a module we have no metadata about. Record the named
+              // export as a re-export.
+              symbol.reexport = true;
+            }
             exportSymbol(this.symbolOf(exportFrom, name), exportAs);
           }
         } else {
@@ -182,6 +199,15 @@ export class MetadataBundler {
           }
         }
       }
+    }
+
+    if (!module) {
+      // If no metadata is found for this import then it is considered external to the
+      // library and should be recorded as a re-export in the final metadata if it is
+      // eventually re-exported.
+      const symbol = this.symbolOf(moduleName, '*');
+      symbol.reexport = true;
+      result.push(symbol);
     }
     this.exports.set(moduleName, result);
 
@@ -207,6 +233,7 @@ export class MetadataBundler {
     symbol.isPrivate = isPrivate;
     symbol.declaration = declaration;
     symbol.canonicalSymbol = canonicalSymbol;
+    symbol.reexport = declaration.reexport;
   }
 
   private getEntries(exportedSymbols: Symbol[]): BundleEntries {
@@ -233,7 +260,7 @@ export class MetadataBundler {
     exportedSymbols.forEach(symbol => this.convertSymbol(symbol));
 
     Array.from(this.symbolMap.values()).forEach(symbol => {
-      if (symbol.referenced) {
+      if (symbol.referenced && !symbol.reexport) {
         let name = symbol.name;
         if (symbol.isPrivate && !symbol.privateName) {
           name = newPrivateName();
@@ -244,6 +271,36 @@ export class MetadataBundler {
     });
 
     return result;
+  }
+
+  private getReExports(exportedSymbols: Symbol[]): ModuleExportMetadata[] {
+    type ExportClause = {name: string, as: string}[];
+    const modules = new Map<string, ExportClause>();
+    const exportAlls = new Set<string>();
+    for (const symbol of exportedSymbols) {
+      if (symbol.reexport) {
+        const declaration = symbol.declaration;
+        const module = declaration.module;
+        if (declaration.name == '*') {
+          // Reexport all the symbols.
+          exportAlls.add(declaration.module);
+        } else {
+          // Re-export the symbol as the exported name.
+          let entry = modules.get(module);
+          if (!entry) {
+            entry = [];
+            modules.set(module, entry);
+          }
+          const as = symbol.name;
+          const name = declaration.name;
+          entry.push({name, as});
+        }
+      }
+    }
+    return [
+      ...Array.from(exportAlls.values()).map(from => ({from})),
+      ...Array.from(modules.entries()).map(([from, exports]) => ({export: exports, from}))
+    ];
   }
 
   private convertSymbol(symbol: Symbol) {
