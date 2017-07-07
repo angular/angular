@@ -172,7 +172,7 @@ export function main() {
               .toThrowError('No provider for Dep!');
         });
 
-        it('should inject from a parent elment in a parent view', () => {
+        it('should inject from a parent element in a parent view', () => {
           createAndGetRootNodes(compViewDef([
             elementDef(
                 NodeFlags.None, null !, null !, 1, 'div', null !, null !, null !, null !,

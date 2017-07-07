@@ -259,7 +259,7 @@
                     <path d="M15.1748197,2.88436401 L12.7958773,15.1229617" id="Line-Copy-9"></path>
                     <path d="M1.2029061,0.773628441 L0.767790904,13.2336973" id="Line-Copy-10"></path>
                 </g>
-                <g id="speed-guage" transform="translate(17.000000, 0.000000)">
+                <g id="speed-gauge" transform="translate(17.000000, 0.000000)">
                     <mask id="mask-29" fill="white">
                         <use xlink:href="#path-28"></use>
                     </mask>

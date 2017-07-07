@@ -244,7 +244,7 @@ You can limit the scope of an injected service to a *branch* of the application 
 by providing that service *at the sub-root component for that branch*.
 This example shows how similar providing a service to a sub-root component is
 to providing a service in the root `AppComponent`. The syntax is the same.
-Here, the `HeroService` is availble to the `HeroesBaseComponent` because it is in the `providers` array:
+Here, the `HeroService` is available to the `HeroesBaseComponent` because it is in the `providers` array:
 
 <code-example path="dependency-injection-in-action/src/app/sorted-heroes.component.ts" region="injection" title="src/app/sorted-heroes.component.ts (HeroesBaseComponent excerpt)">
 

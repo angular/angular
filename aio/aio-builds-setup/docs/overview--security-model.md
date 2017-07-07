@@ -96,7 +96,7 @@ This section describes how each of the aforementioned sub-tasks is accomplished:
 
 5. **Deploy the artifacts to the corresponding PR's directory.**
 
-   With the preceeding steps, we have verified that the uploaded artifacts have been uploaded by
+   With the preceding steps, we have verified that the uploaded artifacts have been uploaded by
    Travis. Additionally, we have determined whether the PR can be trusted to have its previews
    publicly accessible or whether further verification is necessary. The artifacts will be stored to
    the PR's directory, but will not be publicly accessible unless the PR has been verified.
