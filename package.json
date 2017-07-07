@@ -92,7 +92,7 @@
     "source-map": "^0.5.6",
     "source-map-support": "^0.4.2",
     "systemjs": "0.18.10",
-    "ts-api-guardian": "^0.2.1",
+    "ts-api-guardian": "^0.2.2",
     "tsickle": "^0.21.1",
     "tslint": "^4.1.1",
     "tslint-eslint-rules": "^3.1.0",
