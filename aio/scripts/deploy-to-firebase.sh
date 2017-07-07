@@ -25,6 +25,14 @@ case $deployEnv in
     ;;
 esac
 
+# Do not deploy if the current commit is not the latest on its branch.
+readonly LATEST_COMMIT=$(git ls-remote origin $TRAVIS_BRANCH | cut -c1-40)
+if [ $TRAVIS_COMMIT != $LATEST_COMMIT ]; then
+  echo "Skipping deploy because $TRAVIS_COMMIT is not the latest commit ($LATEST_COMMIT)."
+  exit 0
+fi
+
+# Deploy
 (
   cd "`dirname $0`/.."
 
