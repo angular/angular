@@ -200,6 +200,16 @@ export class AnimationTransitionNamespace {
       return player;
     }
 
+    const isRemoval = toState.value === VOID_VALUE;
+
+    // normally this isn't reached by here, however, if an object expression
+    // is passed in then it may be a new object each time. Comparing the value
+    // is important since that will stay the same despite there being a new object.
+    // The removal arc here is special cased because the same element is triggered
+    // twice in the event that it contains animations on the outer/inner portions
+    // of the host container
+    if (!isRemoval && fromState.value === toState.value) return;
+
     const playersOnElement: TransitionAnimationPlayer[] =
         getOrSetAsInMap(this._engine.playersByElement, element, []);
     playersOnElement.forEach(player => {

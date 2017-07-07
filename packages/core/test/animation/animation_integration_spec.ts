@@ -365,6 +365,14 @@ export function main() {
         const engine = TestBed.get(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
+
+        function resetState() {
+          cmp.exp2 = 'something';
+          fixture.detectChanges();
+          engine.flush();
+          resetLog();
+        }
+
         cmp.exp1 = true;
         cmp.exp2 = null;
 
@@ -375,6 +383,7 @@ export function main() {
           {offset: 0, width: '0px'}, {offset: 1, width: '100px'}
         ]);
 
+        resetState();
         cmp.exp2 = false;
 
         fixture.detectChanges();
@@ -384,6 +393,7 @@ export function main() {
           {offset: 0, height: '0px'}, {offset: 1, height: '100px'}
         ]);
 
+        resetState();
         cmp.exp2 = 0;
 
         fixture.detectChanges();
@@ -393,6 +403,7 @@ export function main() {
           {offset: 0, height: '0px'}, {offset: 1, height: '100px'}
         ]);
 
+        resetState();
         cmp.exp2 = '';
 
         fixture.detectChanges();
@@ -402,6 +413,7 @@ export function main() {
           {offset: 0, height: '0px'}, {offset: 1, height: '100px'}
         ]);
 
+        resetState();
         cmp.exp2 = undefined;
 
         fixture.detectChanges();
@@ -411,6 +423,7 @@ export function main() {
           {offset: 0, height: '0px'}, {offset: 1, height: '100px'}
         ]);
 
+        resetState();
         cmp.exp1 = false;
         cmp.exp2 = 'abc';
 
@@ -1277,6 +1290,90 @@ export function main() {
 
            expect(p.contains(c1)).toBeTruthy();
            expect(p.contains(c2)).toBeTruthy();
+         });
+
+      it('should detect trigger changes based on object.value properties', () => {
+        @Component({
+          selector: 'ani-cmp',
+          template: `
+            <div [@myAnimation]="{value:exp}"></div>
+          `,
+          animations: [
+            trigger(
+                'myAnimation',
+                [
+                  transition('* => 1', [animate(1234, style({opacity: 0}))]),
+                  transition('* => 2', [animate(5678, style({opacity: 0}))]),
+                ]),
+          ]
+        })
+        class Cmp {
+          public exp: any;
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+
+        const engine = TestBed.get(ɵAnimationEngine);
+        const fixture = TestBed.createComponent(Cmp);
+        const cmp = fixture.componentInstance;
+
+        cmp.exp = '1';
+        fixture.detectChanges();
+        engine.flush();
+        let players = getLog();
+        expect(players.length).toEqual(1);
+        expect(players[0].duration).toEqual(1234);
+        resetLog();
+
+        cmp.exp = '2';
+        fixture.detectChanges();
+        engine.flush();
+        players = getLog();
+        expect(players.length).toEqual(1);
+        expect(players[0].duration).toEqual(5678);
+      });
+
+      it('should not render animations when the object expression value is the same as it was previously',
+         () => {
+           @Component({
+             selector: 'ani-cmp',
+             template: `
+            <div [@myAnimation]="{value:exp,params:params}"></div>
+          `,
+             animations: [
+               trigger(
+                   'myAnimation',
+                   [
+                     transition('* => *', [animate(1234, style({opacity: 0}))]),
+                   ]),
+             ]
+           })
+           class Cmp {
+             public exp: any;
+             public params: any;
+           }
+
+           TestBed.configureTestingModule({declarations: [Cmp]});
+
+           const engine = TestBed.get(ɵAnimationEngine);
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
+
+           cmp.exp = '1';
+           cmp.params = {};
+           fixture.detectChanges();
+           engine.flush();
+           let players = getLog();
+           expect(players.length).toEqual(1);
+           expect(players[0].duration).toEqual(1234);
+           resetLog();
+
+           cmp.exp = '1';
+           cmp.params = {};
+           fixture.detectChanges();
+           engine.flush();
+           players = getLog();
+           expect(players.length).toEqual(0);
          });
 
       it('should substitute in values if the provided state match is an object with values', () => {

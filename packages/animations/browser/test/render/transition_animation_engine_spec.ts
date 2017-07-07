@@ -132,7 +132,7 @@ export function main() {
            engine.destroy(DEFAULT_NAMESPACE_ID, null);
 
            registerTrigger(element, engine, trig);
-           setProperty(element, engine, 'myTrigger', 'value');
+           setProperty(element, engine, 'myTrigger', 'value2');
            engine.flush();
            expect((engine.players[0].getRealPlayer() as MockAnimationPlayer).duration)
                .toEqual(1234);
