@@ -63,5 +63,8 @@ export class MdDialogConfig {
   /** Layout direction for the dialog's content. */
   direction?: Direction = 'ltr';
 
+  /** ID of the element that describes the dialog.  */
+  ariaDescribedBy?: string | null = null;
+
   // TODO(jelbourn): add configuration for lifecycle hooks, ARIA labelling.
 }

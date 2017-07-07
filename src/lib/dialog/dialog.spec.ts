@@ -117,6 +117,15 @@ describe('MdDialog', () => {
     expect(dialogContainerElement.getAttribute('role')).toBe('alertdialog');
   });
 
+  it('should apply the specified `aria-describedby`', () => {
+    dialog.open(PizzaMsg, { ariaDescribedBy: 'description-element' });
+
+    viewContainerFixture.detectChanges();
+
+    let dialogContainerElement = overlayContainerElement.querySelector('md-dialog-container')!;
+    expect(dialogContainerElement.getAttribute('aria-describedby')).toBe('description-element');
+  });
+
   it('should close a dialog and get back a result', async(() => {
     let dialogRef = dialog.open(PizzaMsg, { viewContainerRef: testViewContainerRef });
     let afterCloseCallback = jasmine.createSpy('afterClose callback');
@@ -666,7 +675,7 @@ describe('MdDialog', () => {
       });
     }));
 
-    it('should set the aria-labelled by attribute to the id of the title', async(() => {
+    it('should set the aria-labelledby attribute to the id of the title', async(() => {
       let title = overlayContainerElement.querySelector('[md-dialog-title]')!;
       let container = overlayContainerElement.querySelector('md-dialog-container')!;
 
