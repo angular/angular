@@ -163,13 +163,6 @@ button.vertical-menu-item {
  // margin: 4px;
 }
 
-.promo-img-container img {
-  max-width: 90%;
-  @include bp(small) {
-    max-width: 100%;
-  }
-}
-
 aio-nav-menu.top-menu {
   padding: 24px 0 0;
 

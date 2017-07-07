@@ -1,6 +1,3 @@
-$small-breakpoint-width: 840px;
-$unit: 8px;
-
 // TYPOGRAPHY
 $main-font: "Roboto","Helvetica Neue Light","Helvetica Neue",Helvetica,Arial,"Lucida Grande",sans-serif;
 $code-font: "Droid Sans Mono", monospace;
@@ -113,3 +110,8 @@ $api-symbols: (
     background: $purple-600
   )
 );
+
+// OTHER
+$small-breakpoint-width: 840px;
+$phone-breakpoint: 480px;
+$tablet-breakpoint: 800px;

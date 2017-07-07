@@ -4,6 +4,12 @@
   margin-right: 20px;
   top: 12px;
   height: 40px;
+
+  @media(max-width: 992px) {
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
 }
 
 aio-top-menu {
