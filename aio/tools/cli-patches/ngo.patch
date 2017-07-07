@@ -6,7 +6,7 @@
          entry: entryPoints,
 +        module: {
 +            rules: [
-+                {"test": /@angular\/.*\.js$/, "loader": "ngo-loader"},
++                {"test": /\.js$/, "use": {loader: "ngo/webpack-loader", options: { sourceMap: true }}},
 +            ]
 +        },
          plugins: [

@@ -5,6 +5,6 @@
              }),
              new webpack.HashedModuleIdsPlugin(),
 +            new webpack.optimize.ModuleConcatenationPlugin(),
-             new (require("purify/purify-webpack-plugin"))(),
+             new (require("ngo").PurifyPlugin)(),
              new webpack.optimize.UglifyJsPlugin({
                  mangle: true,

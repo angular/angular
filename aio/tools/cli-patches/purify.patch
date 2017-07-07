@@ -1,0 +1,10 @@
+--- node_modules/@angular/cli/models/webpack-configs/production.js	2017-05-11 12:10:46.000000000 -0700
++++ node_modules/@angular/cli/models/webpack-configs/production.js	2017-05-11 12:10:11.000000000 -0700
+@@ -73,6 +73,7 @@
+                 'NODE_ENV': 'production'
+             }),
+             new webpack.HashedModuleIdsPlugin(),
++            new (require("ngo").PurifyPlugin)(),
+             new webpack.optimize.UglifyJsPlugin({
+                 mangle: { screw_ie8: true },
+                 compress: { screw_ie8: true, warnings: buildOptions.verbose },
