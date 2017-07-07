@@ -23,6 +23,7 @@ PACKAGES=(core
   router
   compiler-cli
   language-service
+  service-worker
   benchpress)
 
 NODE_PACKAGES=(compiler-cli

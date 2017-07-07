@@ -1,0 +1,7 @@
+{
+  "name": "@angular/service-worker/sdk",
+  "typings": "../sdk.d.ts",
+  "main": "../bundles/service-worker-sdk.umd.js",
+  "module": "../@angular/service-worker/sdk.es5.js",
+  "es2015": "../@angular/service-worker/sdk.js"
+}

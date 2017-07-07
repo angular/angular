@@ -1,0 +1,7 @@
+{
+  "name": "@angular/service-worker/build/gulp",
+  "typings": "../build/gulp.d.ts",
+  "main": "../bundles/service-worker-build-gulp.umd.js",
+  "module": "../@angular/service-worker/build/gulp.es5.js",
+  "es2015": "../@angular/service-worker/build/gulp.js"
+}
