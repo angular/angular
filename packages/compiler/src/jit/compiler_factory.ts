@@ -59,10 +59,13 @@ export const COMPILER_PROVIDERS: Array<any|Type<any>|{[k: string]: any}|any[]> =
   },
   {
     provide: i18n.I18NHtmlParser,
-    useFactory: (parser: HtmlParser, translations: string, format: string, config: CompilerConfig,
-                 console: Console) =>
-                    new i18n.I18NHtmlParser(
-                        parser, translations, format, config.missingTranslation !, console),
+    useFactory: (parser: HtmlParser, translations: string | null, format: string,
+                 config: CompilerConfig, console: Console) => {
+      translations = translations || '';
+      const missingTranslation =
+          translations ? config.missingTranslation ! : MissingTranslationStrategy.Ignore;
+      return new i18n.I18NHtmlParser(parser, translations, format, missingTranslation, console);
+    },
     deps: [
       baseHtmlParser,
       [new Optional(), new Inject(TRANSLATIONS)],
