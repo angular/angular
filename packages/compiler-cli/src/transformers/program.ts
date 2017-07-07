@@ -385,6 +385,7 @@ function createProgramWithStubsHost(
     getCanonicalFileName = (fileName: string) => originalHost.getCanonicalFileName(fileName);
     useCaseSensitiveFileNames = () => originalHost.useCaseSensitiveFileNames();
     getNewLine = () => originalHost.getNewLine();
+    realPath = (p: string) => p;
     fileExists = (fileName: string) =>
         this.generatedFiles.has(fileName) || originalHost.fileExists(fileName);
   };
