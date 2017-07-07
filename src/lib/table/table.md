@@ -11,7 +11,7 @@ Note that the column definition directives (`cdkColumnDef` and `cdkHeaderCellDef
 prefixed with `cdk-`.
 
 For more information on the interface and how it works, see the
-[guide covering the CDK data-table](https://material.angular.io/guides/cdk-table).
+[guide covering the CDK data-table](https://material.angular.io/guide/cdk-table).
 
 ### Features
 
