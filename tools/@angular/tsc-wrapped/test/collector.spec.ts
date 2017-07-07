@@ -864,6 +864,28 @@ describe('Collector', () => {
       const metadata = collector.getMetadata(source);
       expect(metadata).toBeUndefined();
     });
+
+    it('should be able to collect an invalid access expression', () => {
+      const source = createSource(`
+        import {Component} from '@angular/core';
+
+        const value = [];
+        @Component({
+          provider: [{provide: 'some token', useValue: value[]}]
+        })
+        export class MyComponent {}
+      `);
+      const metadata = collector.getMetadata(source);
+      expect(metadata.metadata.MyComponent).toEqual({
+        __symbolic: 'class',
+        decorators: [{
+          __symbolic: 'error',
+          message: 'Expression form not supported',
+          line: 5,
+          character: 55
+        }]
+      });
+    });
   });
 
   function override(fileName: string, content: string) {

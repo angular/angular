@@ -388,6 +388,9 @@ export class Evaluator {
         if (isFoldableError(expression)) {
           return recordEntry(expression, node);
         }
+        if (!elementAccessExpression.argumentExpression) {
+          return recordEntry(errorSymbol('Expression form not supported', node), node);
+        }
         const index = this.evaluateNode(elementAccessExpression.argumentExpression);
         if (isFoldableError(expression)) {
           return recordEntry(expression, node);
