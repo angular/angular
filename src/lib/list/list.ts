@@ -17,7 +17,8 @@ import {
   Optional,
   QueryList,
   Renderer2,
-  ViewEncapsulation
+  ViewEncapsulation,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import {coerceBooleanProperty, MdLine, MdLineSetter} from '../core';
 
@@ -36,7 +37,8 @@ export class MdListDivider {}
   host: {'role': 'list'},
   template: '<ng-content></ng-content>',
   styleUrls: ['list.css'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdList {
   private _disableRipple: boolean = false;
@@ -120,7 +122,8 @@ export class MdListSubheaderCssMatStyler {}
     '(blur)': '_handleBlur()',
   },
   templateUrl: 'list-item.html',
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdListItem implements AfterContentInit {
   private _lineSetter: MdLineSetter;
