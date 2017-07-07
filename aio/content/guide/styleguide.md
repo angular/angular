@@ -3127,7 +3127,7 @@ that may need features from another common module; for example,
 
 
 
-**Why?** A lazy loaded feature module that imports that shared module will make its own copy of the service and likely have undesireable results.
+**Why?** A lazy loaded feature module that imports that shared module will make its own copy of the service and likely have undesirable results.
 
 
 </div>
@@ -3377,7 +3377,7 @@ Yet they're too big and messy to leave loose in the root folder.
 
 
 
-**Why?** A lazily loaded feature module that directly imports the `CoreModule` will make its own copy of services and likely have undesireable results.
+**Why?** A lazily loaded feature module that directly imports the `CoreModule` will make its own copy of services and likely have undesirable results.
 
 
 </div>

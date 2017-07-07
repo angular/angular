@@ -375,7 +375,7 @@ export class Evaluator {
         if (expression && this.isFoldable(propertyAccessExpression.expression))
           return (<any>expression)[<string>member];
         if (isMetadataModuleReferenceExpression(expression)) {
-          // A select into a module refrence and be converted into a reference to the symbol
+          // A select into a module reference and be converted into a reference to the symbol
           // in the module
           return recordEntry(
               {__symbolic: 'reference', module: expression.module, name: member}, node);
