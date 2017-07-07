@@ -1541,6 +1541,98 @@ export function main() {
         const players = getLog();
         expect(players.length).toEqual(2);
       });
+
+      describe('transition aliases', () => {
+        describe(':increment', () => {
+          it('should detect when a value has incremented', () => {
+            @Component({
+              selector: 'if-cmp',
+              template: `
+          <div [@myAnimation]="exp"></div>
+        `,
+              animations: [
+                trigger(
+                    'myAnimation',
+                    [
+                      transition(
+                          ':increment',
+                          [
+                            animate(1234, style({background: 'red'})),
+                          ]),
+                    ]),
+              ]
+            })
+            class Cmp {
+              exp: number = 0;
+            }
+
+            TestBed.configureTestingModule({declarations: [Cmp]});
+            const fixture = TestBed.createComponent(Cmp);
+            const cmp = fixture.componentInstance;
+            fixture.detectChanges();
+            let players = getLog();
+            expect(players.length).toEqual(0);
+
+            cmp.exp++;
+            fixture.detectChanges();
+            players = getLog();
+            expect(players.length).toEqual(1);
+            expect(players[0].duration).toEqual(1234);
+            resetLog();
+
+            cmp.exp = 5;
+            fixture.detectChanges();
+            players = getLog();
+            expect(players.length).toEqual(1);
+            expect(players[0].duration).toEqual(1234);
+          });
+        });
+
+        describe(':decrement', () => {
+          it('should detect when a value has decremented', () => {
+            @Component({
+              selector: 'if-cmp',
+              template: `
+          <div [@myAnimation]="exp"></div>
+        `,
+              animations: [
+                trigger(
+                    'myAnimation',
+                    [
+                      transition(
+                          ':decrement',
+                          [
+                            animate(1234, style({background: 'red'})),
+                          ]),
+                    ]),
+              ]
+            })
+            class Cmp {
+              exp: number = 5;
+            }
+
+            TestBed.configureTestingModule({declarations: [Cmp]});
+            const fixture = TestBed.createComponent(Cmp);
+            const cmp = fixture.componentInstance;
+            fixture.detectChanges();
+            let players = getLog();
+            expect(players.length).toEqual(0);
+
+            cmp.exp--;
+            fixture.detectChanges();
+            players = getLog();
+            expect(players.length).toEqual(1);
+            expect(players[0].duration).toEqual(1234);
+            resetLog();
+
+            cmp.exp = 0;
+            fixture.detectChanges();
+            players = getLog();
+            expect(players.length).toEqual(1);
+            expect(players[0].duration).toEqual(1234);
+          });
+        });
+      });
     });
 
     describe('animation listeners', () => {
