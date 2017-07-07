@@ -110,5 +110,12 @@ export function main() {
         testReq.flush('hello world');
       });
     });
+    describe('makes a JSONP request', () => {
+      it('with properly set method and callback', (done: DoneFn) => {
+        client.jsonp('/test', 'myCallback').subscribe(() => done());
+        backend.expectOne({method: 'JSONP', url: '/test?myCallback=JSONP_CALLBACK'})
+            .flush('hello world');
+      });
+    });
   });
 }

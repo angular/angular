@@ -73,7 +73,7 @@ export class JsonpClientBackend implements HttpBackend {
       // callback placeholder in the URL with the name. Care has to be taken here to ensure
       // a trailing &, if matched, gets inserted back into the URL in the correct place.
       const callback = this.nextCallback();
-      const url = req.url.replace(/=JSONP_CALLBACK(&|$)/, `=${callback}$1`);
+      const url = req.urlWithParams.replace(/=JSONP_CALLBACK(&|$)/, `=${callback}$1`);
 
       // Construct the <script> tag and point it at the URL.
       const node = this.document.createElement('script');

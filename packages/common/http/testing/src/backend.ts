@@ -51,13 +51,13 @@ export class HttpClientTestingBackend implements HttpBackend, HttpTestingControl
    */
   private _match(match: string|RequestMatch|((req: HttpRequest<any>) => boolean)): TestRequest[] {
     if (typeof match === 'string') {
-      return this.open.filter(testReq => testReq.request.url === match);
+      return this.open.filter(testReq => testReq.request.urlWithParams === match);
     } else if (typeof match === 'function') {
       return this.open.filter(testReq => match(testReq.request));
     } else {
       return this.open.filter(
           testReq => (!match.method || testReq.request.method === match.method.toUpperCase()) &&
-              (!match.url || testReq.request.url === match.url));
+              (!match.url || testReq.request.urlWithParams === match.url));
     }
   }
 
@@ -83,13 +83,14 @@ export class HttpClientTestingBackend implements HttpBackend, HttpTestingControl
    * Requests returned through this API will no longer be in the list of open requests,
    * and thus will not match twice.
    */
-  expectOne(match: string|RequestMatch|((req: HttpRequest<any>) => boolean)): TestRequest {
+  expectOne(match: string|RequestMatch|((req: HttpRequest<any>) => boolean), description?: string): TestRequest {
+    description = description || this.descriptionFromMatcher(match);
     const matches = this.match(match);
     if (matches.length > 1) {
-      throw new Error(`Expected one matching request, found ${matches.length} requests.`);
+      throw new Error(`Expected one matching request for criteria "${description}", found ${matches.length} requests.`);
     }
     if (matches.length === 0) {
-      throw new Error(`Expected one matching request, found none.`);
+      throw new Error(`Expected one matching request for criteria "${description}", found none.`);
     }
     return matches[0];
   }
@@ -98,10 +99,11 @@ export class HttpClientTestingBackend implements HttpBackend, HttpTestingControl
    * Expect that no outstanding requests match the given matcher, and throw an error
    * if any do.
    */
-  expectNone(match: string|RequestMatch|((req: HttpRequest<any>) => boolean)): void {
+  expectNone(match: string|RequestMatch|((req: HttpRequest<any>) => boolean), description?: string): void {
+    description = description || this.descriptionFromMatcher(match);
     const matches = this.match(match);
     if (matches.length > 0) {
-      throw new Error(`Expected zero matching requests, found ${matches.length}.`);
+      throw new Error(`Expected zero matching requests for criteria "${description}", found ${matches.length}.`);
     }
   }
 
@@ -116,9 +118,25 @@ export class HttpClientTestingBackend implements HttpBackend, HttpTestingControl
       open = open.filter(testReq => !testReq.cancelled);
     }
     if (open.length > 0) {
-      // Show the URLs of open requests in the error, for convenience.
-      const urls = open.map(testReq => testReq.request.url.split('?')[0]).join(', ');
-      throw new Error(`Expected no open requests, found ${open.length}: ${urls}`);
+      // Show the methods and URLs of open requests in the error, for convenience.
+      const requests = open.map(testReq => {
+        const url = testReq.request.urlWithParams.split('?')[0];
+        const method = testReq.request.method;
+        return `${method} ${url}`
+      }).join(', ');
+      throw new Error(`Expected no open requests, found ${open.length}: ${requests}`);
+    }
+  }
+
+  private descriptionFromMatcher(matcher: string|RequestMatch|((req: HttpRequest<any>) => boolean)): string {
+    if (typeof matcher === 'string') {
+      return `Match URL: ${matcher}`;
+    } else if (typeof matcher === 'object') {
+      const method = matcher.method || '(any)';
+      const url = matcher.url || '(any)';
+      return `Match method: ${method}, URL: ${url}`;
+    } else {
+      return `Match by function: ${matcher.name}`;
     }
   }
 }

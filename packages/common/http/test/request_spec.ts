@@ -9,6 +9,7 @@
 import {ddescribe, describe, it} from '@angular/core/testing/src/testing_internal';
 
 import {HttpHeaders} from '../src/headers';
+import {HttpParams} from '../src/params';
 import {HttpRequest} from '../src/request';
 
 const TEST_URL = 'http://angular.io';
@@ -130,6 +131,33 @@ export function main() {
       it('handles objects as json', () => {
         const req = baseReq.clone({body: {data: 'test data'}});
         expect(req.serializeBody()).toBe('{"data":"test data"}');
+      });
+      it('serializes parameters as urlencoded', () => {
+        const params = new HttpParams().append('first', 'value').append('second', 'other');
+        const withParams = baseReq.clone({body: params});
+        expect(withParams.serializeBody()).toEqual('first=value&second=other');
+        expect(withParams.detectContentTypeHeader())
+            .toEqual('application/x-www-form-urlencoded;charset=UTF-8');
+      });
+    });
+    describe('parameter handling', () => {
+      const baseReq = new HttpRequest('GET', '/test', null);
+      const params = new HttpParams({fromString: 'test=true'});
+      it('appends parameters to a base URL', () => {
+        const req = baseReq.clone({params});
+        expect(req.urlWithParams).toEqual('/test?test=true');
+      });
+      it('appends parameters to a URL with an empty query string', () => {
+        const req = baseReq.clone({params, url: '/test?'});
+        expect(req.urlWithParams).toEqual('/test?test=true');
+      });
+      it('appends parameters to a URL with a query string', () => {
+        const req = baseReq.clone({params, url: '/test?other=false'});
+        expect(req.urlWithParams).toEqual('/test?other=false&test=true');
+      });
+      it('sets parameters via setParams', () => {
+        const req = baseReq.clone({setParams: {'test': 'false'}});
+        expect(req.urlWithParams).toEqual('/test?test=false');
       });
     });
   });
