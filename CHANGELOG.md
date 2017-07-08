@@ -1,3 +1,34 @@
+<a name="4.2.6"></a>
+## [4.2.6](https://github.com/angular/angular/compare/4.2.5...4.2.6) (2017-07-08)
+
+
+### Bug Fixes
+
+* **animations:** ensure `:animating` queries collect previous animation elements properly ([d48b7d3](https://github.com/angular/angular/commit/d48b7d3))
+* **animations:** properly cleanup query artificats when animation construction fails ([00de9ff](https://github.com/angular/angular/commit/00de9ff))
+* **animations:** properly detect state transition changes for object literals ([00c9741](https://github.com/angular/angular/commit/00c9741))
+* **animations:** properly handle cancelled animation style application ([cf57527](https://github.com/angular/angular/commit/cf57527))
+* **compiler:** emits quoted keys only iff they are quoted in the original template ([45ae14c](https://github.com/angular/angular/commit/45ae14c)), closes [#14292](https://github.com/angular/angular/issues/14292)
+* **compiler:** fix merge error ([6307581](https://github.com/angular/angular/commit/6307581))
+* **compiler:** fix types ([5ea9b62](https://github.com/angular/angular/commit/5ea9b62))
+* **compiler:** remove i18n markup even if no translations ([#17999](https://github.com/angular/angular/issues/17999)) ([2763577](https://github.com/angular/angular/commit/2763577)), closes [#11042](https://github.com/angular/angular/issues/11042)
+* **compiler-cli:** fix relative source paths on windows for extracted msg ([#17915](https://github.com/angular/angular/issues/17915)) ([991f8ad](https://github.com/angular/angular/commit/991f8ad)), closes [#16639](https://github.com/angular/angular/issues/16639)
+* **core:** fix re-insertions in the iterable differ ([#17891](https://github.com/angular/angular/issues/17891)) ([a318093](https://github.com/angular/angular/commit/a318093)), closes [#17852](https://github.com/angular/angular/issues/17852)
+* **language-service:** do not crash when hovering over a label definitions ([#17974](https://github.com/angular/angular/issues/17974)) ([2ab9057](https://github.com/angular/angular/commit/2ab9057))
+* **language-service:** ignore hover of symbols not in the TypeScript program ([#17969](https://github.com/angular/angular/issues/17969)) ([fe09e10](https://github.com/angular/angular/commit/fe09e10))
+* **router:** encode URLs the same way AngularJS did (closer to spec) ([#17890](https://github.com/angular/angular/issues/17890)) ([8f7cce3](https://github.com/angular/angular/commit/8f7cce3)), closes [#16067](https://github.com/angular/angular/issues/16067)
+* **router:** export missing UrlMatcher and UrlMatchResult types ([12a2099](https://github.com/angular/angular/commit/12a2099)), closes [#15140](https://github.com/angular/angular/issues/15140)
+* **tsc-wrapped:** emit exports metadata in flat modules ([#17893](https://github.com/angular/angular/issues/17893)) ([ee7d134](https://github.com/angular/angular/commit/ee7d134))
+* **upgrade:** fix transclusion on upgraded components ([#17971](https://github.com/angular/angular/issues/17971)) ([5337874](https://github.com/angular/angular/commit/5337874)), closes [#13271](https://github.com/angular/angular/issues/13271)
+* **upgrade:** fix transclusion on upgraded components ([#17971](https://github.com/angular/angular/issues/17971)) ([30beb52](https://github.com/angular/angular/commit/30beb52)), closes [#13271](https://github.com/angular/angular/issues/13271)
+
+
+### Performance Improvements
+
+* **core:** refactor NgZone, decrease size by 1.2Kb ([#17773](https://github.com/angular/angular/issues/17773)) ([6d55a80](https://github.com/angular/angular/commit/6d55a80))
+
+
+
 <a name="4.3.0-beta.1"></a>
 # [4.3.0-beta.1](https://github.com/angular/angular/compare/4.3.0-beta.0...4.3.0-beta.1) (2017-06-29)
 
