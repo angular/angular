@@ -11,6 +11,14 @@ Angular Universal is a technology that lets Angular applications run outside of 
 
 ### How does it work? <a name="how-does-it-work"></a>
 
+An *Angular* application renders its output to the browser DOM.  The output state of the DOM is determined by the initial HTML index page, the route in the application that determines the component tree to render, and any internal state in the application.
+
+A *Universal* application renders its output to an HTML string.  The output HTML is determined by the initial HTML index page, the route in the application that determines the component tree to render, and any internal state in the application.
+
+A Universal server app is a wrapper around the Angular application.  The wrapper asks the Angular app to render to HTML.  It passes the initial HTML page, the route, and data providers that together specify the HTML output. 
+
+#### Implementation <a name="implementation"></a>
+
 A Universal app is a normal Angular application that is compiled against the `platform-server` package instead of `platform-browser`.  The `platform-server` package has implementations of the DOM, XMLHttpRequest, and other low-level features, without relying on a browser.
 
 To handle requests and return the output, the Universal app is wrapped in a server.  The server (NodeJS or ASP.NET Core) uses the `renderModuleFactory` function from `platform-server` to render the app's components into an internal DOM representation, which is then returned as a string.
@@ -26,7 +34,7 @@ Since it doesn't use an actual browser, a `platform-server` app has some limitat
  1. No mouse or keyboard events
  1. Any HTTP requests from the app must use fully-qualified URLs
 
-If you've followed the [guide](), your app should already avoid #1 and #2.  
+An Angular app should already avoid #1 and #2.  
 
 Limitation #3 means that, on the server, the app must determine what to render based only on the incoming request; you can't rely on a user clicking a button to show a component.  It's a good argument for making your app [routeable](./router).
 
@@ -44,7 +52,7 @@ An available tool called <a href="https://universal.angular.io/api/preboot/index
 
 ### Why do it? <a name="why-do-it"></a>
 
-Why would you want to create a static version of your app?  There are two main reasons:
+Why would you want to create a static version of your app?  There are three main reasons:
 
 1. SEO 
 1. No JavaScript / Low Performance Device 
@@ -65,51 +73,6 @@ Application startup time is critical for user engagement.  While [AOT](aot-compi
 With Angular Universal, you can generate landing pages for the app that look like the complete app.  The pages are pure HTML, and can display even if JavaScript is disabled.  The pages do not handle browser events, but they _do_ support navigation through the site using [routerLink](../guide/router.html#!#router-link).
 
 The recommended scenario is to serve a static version of the landing page, then load your Angular app behind it.  This gives the appearance of near-instant performance, and offers the full interactive experience once the full app is loaded.  Better than a "loading" spinner, it's a real screen that engages the user.
-
-##### Startup Comparison <a name="startup-comparison"></a>
-
-If startup time is important for your app, you should measure it.  One way is by using the [Timeline feature in Chrome DevTools](https://developers.google.com/web/tools/chrome-devtools/evaluate-performance/timeline-tool).  Timeline offers many ways to inspect the performance of your app.  If you are testing startup time, you should consider the effect of slow devices and slow network connections.  [CPU Throttling](https://developers.google.com/web/updates/2016/09/devtools-digest#cpu_throttling_for_a_mobile-first_world) and [Network Throttling](https://developers.google.com/web/tools/chrome-devtools/network-performance/reference#throttling) can help you test by simulating other environments.
-
-Below is a very rough comparison of the uncached startup performance of the [_Tour of Heroes_](../tutorial) app.  _Tour of Heroes_ is a simple demo app without much code or content, so it is smaller than the real apps you will build.  The DevTools settings simulated a **5x slower CPU** and **3G network** (750kb/s).
-
-The test was done by measuring the time from browser refresh until the Tour of Heroes Dashboard is fully displayed.  The numbers and bars below represent the time from the initial request until the Dashboard page is visible in the app, so lower numbers are better.
-
-<div class="alert is-important">
-Note that this is a single test with a single sample app, and does not represent expected results from other environments or applications.
-</div>
-
-<table class="perf">
-  <tr>
-    <th></th>
-    <th>Load Time</th>
-    <th>Time Allocation</th>
-  </tr>
-  <tr>
-    <th>JIT</th>
-    <td>37.3s</td>
-    <td><img src="generated/images/guide/universal/toh-jit-throttled-pie.png" alt="JIT 3G time allocation"></td>
-  </tr>
-  <tr>
-    <th>AOT</th>
-    <td>5.5s</td>
-    <td><img src="generated/images/guide/universal/toh-aot-throttled-pie.png" alt="AOT 3G time allocation"></td>
-  </tr>
-  <tr>
-    <th>Universal</th>
-    <td>0.4s</td>
-    <td><img src="generated/images/guide/universal/toh-uni-throttled-pie.png" alt="Universal 3G time allocation"></td>
-  </tr>
-</table>
-
-In this mobile scenario, the JIT app spends almost 30 seconds just waiting for its many files to load, followed by 6.5 seconds executing JavaScript.  The AOT-compiled app is much better, spending just 4 seconds to load the bundle and 1.3 seconds to execute it, but still much more than the 3-second limit.
-
-The Universal app displays the Dashboard page in just 0.4 seconds, since it displays without waiting for the JavaScript to load.  The app would not be fully functional until its JavaScript bundles have loaded, which would be comparable to the load time for the AOT app, but the user can view the first page immediately.
-
-<div class="alert is-important">
-Note that this is a single test with a single sample app, and does not represent expected results from other environments or applications.
-</div>
-
-If you want your app to be usable on slow networks, AOT is a must.  Universal should be considered if first impressions are important.
 
 ### The Example <a name="the-example"></a>
 
@@ -156,20 +119,22 @@ The files marked with * are new and not in the original Tour of Heroes demo.  Th
 
 ### Installing the Tools <a name="installing-the-tools"></a>
 
-To get started, you need to install the necessary modules for AOT and Webpack.
+To get started, you need to install the necessary modules for Universal and Webpack.
 
  * `@angular/compiler-cli` - The ngc compiler that compiles Angular applications 
  * `@angular/platform-server` - Server-side components needed for compilation
+ * `@angular/animations` - Used for transitions from server to browser
  * `webpack` - The Webpack JavaScript bundler
  * `@ngtools/webpack` - The Webpack loader and plugin for bundling compiled applications
  * `raw-loader` - The Webpack loader for text files
  * `express` - The web server for serving the Universal application
+ * `@types/express` - TypeScript type definitions for express
 
 You can install them with the following commands:
 
 <code-example format="." language="bash">
-npm install @angular/compiler-cli @angular/platform-server --save-dev
-npm install webpack @ngtools/webpack raw-loader express --save-dev
+npm install @angular/compiler-cli @angular/platform-server @angular/animations express --save
+npm install webpack @ngtools/webpack raw-loader @types/express --save-dev
 </code-example>
 
 ### Component-relative URLs <a name="component-relative-urls"></a>
@@ -179,7 +144,7 @@ That means that the value of @Component.templateUrl is a URL value relative to t
 For example, an `'./app.component.html'` URL means that the template file is a sibling of its companion app.component.ts file.
 (The leading `./` is needed by Webpack to recognize that the string represents a path and not a module name.)
 
-SystemJS allows both absolute and relative URLs (via [systemjs-angular-loader]()), so you could have both in your app.  Before building your app with AOT and Universal, you will need to convert them.
+SystemJS allows both absolute and relative URLs (via [systemjs-angular-loader](https://github.com/angular/quickstart/blob/master/src/systemjs-angular-loader.js)), so you *could* have both in your app.  Before building your app with AOT and Universal, you will need to convert them.
 
 From this:
 
@@ -201,9 +166,9 @@ To this:
 
 ### Server Transition <a name="server-transition"></a>
 
-When a client-side Angular app bootstraps into a Universal page, it replaces the HTML that was there with its own rendered components.  This transition is enabled by a shared id between the client and server apps.  The id is defined using `BrowserModule.withServerTransition` in the AppModule that is shared by the client and server.
+When a client-side Angular app bootstraps into a Universal page, it replaces the HTML that was there with its own rendered components, and removes any server-side styles.  This transition is enabled by a shared id between the client and server apps.  The id is added to styles that are rendered on the server, so that they can be identified and removed when the client app is initialized.  The id is defined using `BrowserModule.withServerTransition` in the AppModule that is shared by the client and server.
 
-Open file `src/app.module.ts` and find the `BrowserModule` import.  Then replace this:
+Open file `src/app/app.module.ts` and find the `BrowserModule` import.  Then replace this:
 
 <code-example format="." language="ts">
 @NgModule({
@@ -312,7 +277,7 @@ You configure it using a JSON file similar to `tsconfig.json`.  There are a few 
     * `entryModule` - the root module of the app, expressed as **path/to/file#ClassName**.
     * `skipMetadataEmit` - set to `true` because you don't need metadata in the bundled application
 
-Create a `tsconfig-uni.json` file in the project rood directory by copying your `tsconfig.json` and applying the changes described above.  It should look like this:
+Create a `tsconfig-uni.json` file in the project root directory by copying your `tsconfig.json` and applying the changes described above.  It should look like this:
 
 <code-example path="universal/tsconfig-uni.json" title="tsconfig-uni.json">
 </code-example>
@@ -333,13 +298,7 @@ For AOT, the **loader** to use for TypeScript files is `@ngtools/webpack`.
 This loads TypeScript files and interprets the Angular decorators to prepare for AOT compilation.
 Since it is used for TypeScript files, configure the loader for `*.ts`:
 
-<code-example format="." language="ts" linenums="false">
-module: {
-    rules: [
-        ...
-        { test: /\.ts$/, loader: '@ngtools/webpack' } // use ngtools loader for typescript
-    ]
-}
+<code-example path="universal/webpack.config.uni.js" region="rules" title="webpack.config.uni.js (rules)">
 </code-example>
 
 When CSS and HTML files are encountered while processing the TypeScript, the [raw-loader](https://webpack.js.org/loaders/raw-loader/) is used.
@@ -357,12 +316,7 @@ The plugin accepts [several options](https://www.npmjs.com/package/@ngtools/webp
 Despite the <a href="https://www.npmjs.com/package/@ngtools/webpack#options">ngtools documentation</a>, the `entryModule` option must be in the `tsconfig-uni.json`, not inside the Webpack config.
 </div>
 
-<code-example format="." language="ts" linenums="false">
-plugins: [
-    new ngtools.AotPlugin({
-        tsConfigPath: './tsconfig-uni.json'
-    })
-],
+<code-example path="universal/webpack.config.uni.js" region="plugins" title="webpack.config.uni.js (plugins)">
 </code-example>
 
 The `tsConfigPath` tells the plugin where to find the TypeScript configuration file to use when compiling.
@@ -379,10 +333,7 @@ It will pull in the Angular libraries used by the app, but it will *not* pull in
 
 This ensures that the code for both appears in the final bundle.
 
-<code-example format="." language="ts" linenums="false">
-entry: {
-    main: ['./src/uni/app.server.ts', './src/uni/server-aot.ts']
-},
+<code-example path="universal/webpack.config.uni.js" region="entry" title="webpack.config.uni.js (entry)">
 </code-example>
 
 The [Webpack Introduction](webpack.html#entries-outputs) describes how to create separate bundles for 
@@ -393,11 +344,7 @@ app code, vendor libraries, and polyfills.  For simplicity, this example shows a
 After the plugin compiles the app files, Webpack bundles them into one or more output bundles.
 The bundles contains the all the code necessary to run the web server and serve the app.
 
-<code-example format="." language="ts" linenums="false">
-output: {
-    path: 'src/dist',
-    filename: 'server.js'
-},
+<code-example path="universal/webpack.config.uni.js" region="output" title="webpack.config.uni.js (output)">
 </code-example>
 
 We put them in a `dist` directory under `src`.  We will run the server from this directory with a script.
