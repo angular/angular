@@ -1,3 +1,26 @@
+<a name="4.3.0-rc.0"></a>
+# [4.3.0-rc.0](https://github.com/angular/angular/compare/4.3.0-beta.1...4.3.0-rc.0) (2017-07-08)
+
+
+### Bug Fixes
+
+* **upgrade:** bring the dynamic version closer to the static one ([11db3bd](https://github.com/angular/angular/commit/11db3bd)), closes [#16627](https://github.com/angular/angular/issues/16627) [#11044](https://github.com/angular/angular/issues/11044)
+
+
+### Features
+
+* **animations:** support disabling animations for sub elements ([8e28382](https://github.com/angular/angular/commit/8e28382)), closes [#16483](https://github.com/angular/angular/issues/16483)
+* **common:** new HttpClient API ([37797e2](https://github.com/angular/angular/commit/37797e2))
+* **common:** two missing features in HttpClient ([#17996](https://github.com/angular/angular/issues/17996)) ([c81ad9d](https://github.com/angular/angular/commit/c81ad9d))
+* **compiler:** adds support for quoted object keys in the parser ([798947e](https://github.com/angular/angular/commit/798947e))
+* **compiler:** update the schema by extracting from latest chrome ([#17858](https://github.com/angular/angular/issues/17858)) ([dd7c113](https://github.com/angular/angular/commit/dd7c113))
+* **compiler-cli:** add parameters to ngc main needed by bazel rules ([#17885](https://github.com/angular/angular/issues/17885)) ([c1474f3](https://github.com/angular/angular/commit/c1474f3))
+* **router:** add router-level events for GuardsCheck and Resolve ([#17601](https://github.com/angular/angular/issues/17601)) ([8a1a989](https://github.com/angular/angular/commit/8a1a989))
+* **upgrade:** fix support for `directive.link` in upgraded components ([0193be7](https://github.com/angular/angular/commit/0193be7))
+
+
+
+
 <a name="4.2.6"></a>
 ## [4.2.6](https://github.com/angular/angular/compare/4.2.5...4.2.6) (2017-07-08)
 
