@@ -35,14 +35,18 @@ export abstract class HttpTestingController {
   // Expect that exactly one request matches the given parameter.
   abstract expectOne(url: string, description?: string): TestRequest;
   abstract expectOne(params: RequestMatch, description?: string): TestRequest;
-  abstract expectOne(matchFn: ((req: HttpRequest<any>) => boolean), description?: string): TestRequest;
-  abstract expectOne(match: string|RequestMatch|((req: HttpRequest<any>) => boolean), description?: string): TestRequest;
+  abstract expectOne(matchFn: ((req: HttpRequest<any>) => boolean), description?: string):
+      TestRequest;
+  abstract expectOne(
+      match: string|RequestMatch|((req: HttpRequest<any>) => boolean),
+      description?: string): TestRequest;
 
   // Assert that no requests match the given parameter.
   abstract expectNone(url: string, description?: string): void;
   abstract expectNone(params: RequestMatch, description?: string): void;
   abstract expectNone(matchFn: ((req: HttpRequest<any>) => boolean), description?: string): void;
-  abstract expectNone(match: string|RequestMatch|((req: HttpRequest<any>) => boolean), description?: string): void;
+  abstract expectNone(
+      match: string|RequestMatch|((req: HttpRequest<any>) => boolean), description?: string): void;
 
   // Validate that all requests which were issued were flushed.
   abstract verify(opts?: {ignoreCancelled?: boolean}): void;
