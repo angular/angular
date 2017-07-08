@@ -33,7 +33,6 @@ export interface ICompileService {
 }
 export interface ILinkFn {
   (scope: IScope, cloneAttachFn?: ICloneAttachFunction, options?: ILinkFnOptions): IAugmentedJQuery;
-  $$slots?: {[slotName: string]: ILinkFn};
 }
 export interface ILinkFnOptions {
   parentBoundTranscludeFn?: Function;
@@ -76,10 +75,9 @@ export interface IDirective {
   templateUrl?: string|Function;
   templateNamespace?: string;
   terminal?: boolean;
-  transclude?: DirectiveTranscludeProperty;
+  transclude?: boolean|'element'|{[key: string]: string};
 }
 export type DirectiveRequireProperty = SingleOrListOrMap<string>;
-export type DirectiveTranscludeProperty = boolean | 'element' | {[key: string]: string};
 export interface IDirectiveCompileFn {
   (templateElement: IAugmentedJQuery, templateAttributes: IAttributes,
    transclude: ITranscludeFunction): IDirectivePrePost;
@@ -99,7 +97,7 @@ export interface IComponent {
   require?: DirectiveRequireProperty;
   template?: string|Function;
   templateUrl?: string|Function;
-  transclude?: DirectiveTranscludeProperty;
+  transclude?: boolean;
 }
 export interface IAttributes { $observe(attr: string, fn: (v: string) => void): void; }
 export interface ITranscludeFunction {
