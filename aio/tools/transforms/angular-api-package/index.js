@@ -36,6 +36,8 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
       'animations/index.ts',
       'animations/browser/index.ts',
       'animations/browser/testing/index.ts',
+      'common/http/index.ts',
+      'common/http/testing/index.ts',
       'common/index.ts',
       'common/testing/index.ts',
       'core/index.ts',
