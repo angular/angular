@@ -57,8 +57,8 @@ export const EXPANSION_PANEL_ANIMATION_TIMING = '225ms cubic-bezier(0.4,0.0,0.2,
   ],
   animations: [
     trigger('bodyExpansion', [
-      state('collapsed', style({height: '0px'})),
-      state('expanded', style({height: '*'})),
+      state('collapsed', style({height: '0px', visibility: 'hidden'})),
+      state('expanded', style({height: '*', visibility: 'visible'})),
       transition('expanded <=> collapsed', animate(EXPANSION_PANEL_ANIMATION_TIMING)),
     ]),
     trigger('displayMode', [
