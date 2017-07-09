@@ -17,6 +17,7 @@ import {
   OnDestroy,
   Renderer2,
   ChangeDetectorRef,
+  ChangeDetectionStrategy,
   ViewEncapsulation,
 } from '@angular/core';
 import {
@@ -378,6 +379,7 @@ export type TooltipVisibility = 'initial' | 'visible' | 'hidden';
   templateUrl: 'tooltip.html',
   styleUrls: ['tooltip.css'],
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger('state', [
       state('void', style({transform: 'scale(0)'})),
