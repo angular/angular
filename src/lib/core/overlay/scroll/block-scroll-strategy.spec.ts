@@ -9,6 +9,7 @@ import {
   OverlayState,
   Overlay,
   OverlayRef,
+  OverlayContainer,
 } from '../../core';
 
 
@@ -26,24 +27,26 @@ describe('BlockScrollStrategy', () => {
   }));
 
   beforeEach(inject([Overlay, ViewportRuler], (overlay: Overlay, viewportRuler: ViewportRuler) => {
-      let overlayState = new OverlayState();
+    let overlayState = new OverlayState();
 
-      overlayState.scrollStrategy = overlay.scrollStrategies.block();
-      overlayRef = overlay.create(overlayState);
-      componentPortal = new ComponentPortal(FocacciaMsg);
+    overlayState.scrollStrategy = overlay.scrollStrategies.block();
+    overlayRef = overlay.create(overlayState);
+    componentPortal = new ComponentPortal(FocacciaMsg);
 
-      viewport = viewportRuler;
-      forceScrollElement = document.createElement('div');
-      document.body.appendChild(forceScrollElement);
-      forceScrollElement.style.width = '100px';
-      forceScrollElement.style.height = '3000px';
-    }));
+    viewport = viewportRuler;
+    forceScrollElement = document.createElement('div');
+    document.body.appendChild(forceScrollElement);
+    forceScrollElement.style.width = '100px';
+    forceScrollElement.style.height = '3000px';
+    forceScrollElement.style.background = 'rebeccapurple';
+  }));
 
-  afterEach(() => {
+  afterEach(inject([OverlayContainer], (container: OverlayContainer) => {
     overlayRef.dispose();
     document.body.removeChild(forceScrollElement);
     setScrollPosition(0, 0);
-  });
+    container.getContainerElement().parentNode!.removeChild(container.getContainerElement());
+  }));
 
   it('should toggle scroll blocking along the y axis', skipIOS(() => {
     setScrollPosition(0, 100);

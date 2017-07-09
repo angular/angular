@@ -9,6 +9,7 @@ import {
   OverlayRef,
   OverlayModule,
   ScrollDispatcher,
+  OverlayContainer,
 } from '../../core';
 
 
@@ -39,9 +40,10 @@ describe('CloseScrollStrategy', () => {
     componentPortal = new ComponentPortal(MozarellaMsg);
   }));
 
-  afterEach(() => {
+  afterEach(inject([OverlayContainer], (container: OverlayContainer) => {
     overlayRef.dispose();
-  });
+    container.getContainerElement().parentNode!.removeChild(container.getContainerElement());
+  }));
 
   it('should detach the overlay as soon as the user scrolls', () => {
     overlayRef.attach(componentPortal);

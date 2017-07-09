@@ -1,5 +1,5 @@
 import {Component, ViewChild} from '@angular/core';
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed, inject} from '@angular/core/testing';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {By} from '@angular/platform-browser';
@@ -8,11 +8,15 @@ import {MdDatepicker} from './datepicker';
 import {MdDatepickerInput} from './datepicker-input';
 import {MdInputModule} from '../input/index';
 import {MdNativeDateModule, DateAdapter, NativeDateAdapter} from '../core/datetime/index';
-import {ESCAPE} from '../core';
+import {ESCAPE, OverlayContainer} from '../core';
 import {dispatchFakeEvent, dispatchMouseEvent, dispatchKeyboardEvent} from '@angular/cdk/testing';
 import {DEC, JAN} from '../core/testing/month-constants';
 
 describe('MdDatepicker', () => {
+  afterEach(inject([OverlayContainer], (container: OverlayContainer) => {
+    container.getContainerElement().parentNode!.removeChild(container.getContainerElement());
+  }));
+
   describe('with MdNativeDateModule', () => {
     beforeEach(async(() => {
       TestBed.configureTestingModule({
