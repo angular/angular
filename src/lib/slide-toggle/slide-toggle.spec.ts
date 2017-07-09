@@ -26,6 +26,53 @@ describe('MdSlideToggle', () => {
     TestBed.compileComponents();
   }));
 
+  describe('without form modules', () => {
+    let fixture: ComponentFixture<SlideToggleWithoutForms>;
+    let slideToggleInstance: MdSlideToggle;
+    let labelElement: HTMLLabelElement;
+
+    beforeEach(async(() => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        imports: [MdSlideToggleModule],
+        declarations: [SlideToggleWithoutForms]
+      });
+    }));
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(SlideToggleWithoutForms);
+      fixture.detectChanges();
+
+      const slideToggleDebug = fixture.debugElement.query(By.directive(MdSlideToggle));
+
+      slideToggleInstance = slideToggleDebug.componentInstance;
+      labelElement = fixture.debugElement.query(By.css('label')).nativeElement;
+    });
+
+    it('should update the checked state on click', () => {
+      expect(slideToggleInstance.checked)
+        .toBe(false, 'Expected the slide-toggle not to be checked initially.');
+
+      labelElement.click();
+      fixture.detectChanges();
+
+      expect(slideToggleInstance.checked)
+        .toBe(true, 'Expected the slide-toggle to be checked after click.');
+    });
+
+    it('should update the checked state from binding', () => {
+      expect(slideToggleInstance.checked)
+        .toBe(false, 'Expected the slide-toggle not to be checked initially.');
+
+      fixture.componentInstance.isChecked = true;
+      fixture.detectChanges();
+
+      expect(slideToggleInstance.checked)
+        .toBe(true, 'Expected the slide-toggle to be checked after click.');
+    });
+
+  });
+
   describe('basic behavior', () => {
     let fixture: ComponentFixture<any>;
 
@@ -719,4 +766,11 @@ class SlideToggleFormsTestApp {
 })
 class SlideToggleWithFormControl {
   formControl = new FormControl();
+}
+
+@Component({
+  template: `<md-slide-toggle [checked]="isChecked"></md-slide-toggle>`
+})
+class SlideToggleWithoutForms {
+  isChecked = false;
 }

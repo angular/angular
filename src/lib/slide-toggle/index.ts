@@ -7,7 +7,6 @@
  */
 
 import {NgModule} from '@angular/core';
-import {FormsModule} from '@angular/forms';
 import {HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 import {MdSlideToggle} from './slide-toggle';
 import {
@@ -19,7 +18,7 @@ import {
 } from '../core';
 
 @NgModule({
-  imports: [FormsModule, MdRippleModule, MdCommonModule, PlatformModule],
+  imports: [MdRippleModule, MdCommonModule, PlatformModule],
   exports: [MdSlideToggle, MdCommonModule],
   declarations: [MdSlideToggle],
   providers: [
