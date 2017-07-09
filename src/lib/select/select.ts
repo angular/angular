@@ -548,6 +548,11 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
     this._setScrollTop();
   }
 
+  /** Whether the select has a value. */
+  _hasValue(): boolean {
+    return this._selectionModel && this._selectionModel.hasValue();
+  }
+
   /**
    * Sets the scroll position of the scroll container. This must be called after
    * the overlay pane is attached or the scroll container element will not yet be
@@ -772,7 +777,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
     // The farthest the panel can be scrolled before it hits the bottom
     const maxScroll = scrollContainerHeight - panelHeight;
 
-    if (this._selectionModel.hasValue()) {
+    if (this._hasValue()) {
       let selectedOptionOffset = this._getOptionIndex(this._selectionModel.selected[0])!;
 
       selectedOptionOffset += this._getLabelCountBeforeOption(selectedOptionOffset);
