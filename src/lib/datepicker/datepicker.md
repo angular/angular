@@ -104,6 +104,19 @@ three pieces via injection:
  2. The display and parse formats used by the datepicker.
  3. The message strings used in the datepicker's UI.
 
+#### Setting the locale code
+By default the datepicker will use the locale code from the `LOCALE_ID` injection token from
+`@angular/core`. If you want to override it, you can provide a new value for the token:
+
+```ts
+@NgModule({
+  providers: [
+    {provide: LOCALE_ID, useValue: 'en-GB'},
+  ],
+})
+export class MyApp {}
+```
+
 #### Choosing a date implementation and date format settings
 The datepicker was built to be date implementation agnostic. This means that it can be made to work
 with a variety of different date implementations. However it also means that developers need to make

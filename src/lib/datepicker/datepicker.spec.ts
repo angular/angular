@@ -24,13 +24,6 @@ describe('MdDatepicker', () => {
           NoopAnimationsModule,
           ReactiveFormsModule,
         ],
-        providers: [
-          {provide: DateAdapter, useFactory: () => {
-            let adapter = new NativeDateAdapter();
-            adapter.setLocale('en-US');
-            return adapter;
-          }},
-        ],
         declarations: [
           DatepickerWithFilterAndValidation,
           DatepickerWithFormControl,
