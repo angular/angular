@@ -6,7 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Output, EventEmitter, Input, Injectable, OnDestroy, Optional} from '@angular/core';
+import {
+  Output,
+  EventEmitter,
+  Input,
+  Injectable,
+  OnDestroy,
+  Optional,
+  ChangeDetectorRef,
+} from '@angular/core';
 import {UniqueSelectionDispatcher} from '../core';
 import {CdkAccordion} from './accordion';
 
@@ -44,6 +52,10 @@ export class AccordionItem implements OnDestroy {
       } else {
         this.closed.emit();
       }
+
+      // Ensures that the animation will run when the value is set outside of an `@Input`.
+      // This includes cases like the open, close and toggle methods.
+      this._changeDetectorRef.markForCheck();
     }
   }
   private _expanded: boolean;
@@ -52,6 +64,7 @@ export class AccordionItem implements OnDestroy {
   private _removeUniqueSelectionListener: () => void = () => {};
 
   constructor(@Optional() public accordion: CdkAccordion,
+              private _changeDetectorRef: ChangeDetectorRef,
               protected _expansionDispatcher: UniqueSelectionDispatcher) {
      this._removeUniqueSelectionListener =
        _expansionDispatcher.listen((id: string, accordionId: string) => {

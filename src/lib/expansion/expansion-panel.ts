@@ -14,6 +14,8 @@ import {
   ViewEncapsulation,
   Optional,
   forwardRef,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
 } from '@angular/core';
 import {
   trigger,
@@ -47,6 +49,7 @@ export const EXPANSION_PANEL_ANIMATION_TIMING = '225ms cubic-bezier(0.4,0.0,0.2,
   selector: 'md-expansion-panel, mat-expansion-panel',
   templateUrl: './expansion-panel.html',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'class': 'mat-expansion-panel',
     '[class.mat-expanded]': 'expanded',
@@ -75,8 +78,9 @@ export class MdExpansionPanel extends AccordionItem {
   @Input() hideToggle: boolean = false;
 
   constructor(@Optional() @Host() accordion: MdAccordion,
+              _changeDetectorRef: ChangeDetectorRef,
               _uniqueSelectionDispatcher: UniqueSelectionDispatcher) {
-    super(accordion, _uniqueSelectionDispatcher);
+    super(accordion, _changeDetectorRef, _uniqueSelectionDispatcher);
     this.accordion = accordion;
   }
 
