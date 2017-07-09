@@ -95,6 +95,7 @@ export class MdDatepickerContent<D> implements AfterContentInit {
   moduleId: module.id,
   selector: 'md-datepicker, mat-datepicker',
   template: '',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdDatepicker<D> implements OnDestroy {
   /** The date to open the calendar to initially. */
