@@ -287,18 +287,12 @@ export class MdProgressSpinner extends _MdProgressSpinnerMixinBase
   inputs: ['color'],
   templateUrl: 'progress-spinner.html',
   styleUrls: ['progress-spinner.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MdSpinner extends MdProgressSpinner implements OnDestroy {
-
+export class MdSpinner extends MdProgressSpinner {
   constructor(elementRef: ElementRef, ngZone: NgZone, renderer: Renderer2) {
     super(renderer, elementRef, ngZone);
     this.mode = 'indeterminate';
-  }
-
-  ngOnDestroy() {
-    // The `ngOnDestroy` from `MdProgressSpinner` should be called explicitly, because
-    // in certain cases Angular won't call it (e.g. when using AoT and in unit tests).
-    super.ngOnDestroy();
   }
 }
 

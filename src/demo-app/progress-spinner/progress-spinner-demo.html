@@ -4,13 +4,13 @@
   <p>Value: {{progressValue}}</p>
   <button md-raised-button (click)="step(10)">Increase</button>
   <button md-raised-button (click)="step(-10)">Decrease</button>
-  <md-checkbox [(ngModel)]="modeToggle">Is determinate</md-checkbox>
+  <md-checkbox [(ngModel)]="isDeterminate">Is determinate</md-checkbox>
 </div>
 
 <div class="demo-progress-spinner">
-  <md-progress-spinner [mode]="modeToggle ? 'indeterminate' : 'determinate'"
+  <md-progress-spinner [mode]="isDeterminate ? 'determinate' : 'indeterminate'"
       [value]="progressValue" color="primary" [strokeWidth]="1"></md-progress-spinner>
-  <md-progress-spinner [mode]="modeToggle ? 'indeterminate' : 'determinate'"
+  <md-progress-spinner [mode]="isDeterminate ? 'determinate' : 'indeterminate'"
       [value]="progressValue" color="accent"></md-progress-spinner>
 </div>
 
