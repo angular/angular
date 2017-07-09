@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ElementRef} from '@angular/core';
+import {Component, ElementRef, ChangeDetectionStrategy} from '@angular/core';
 import {Focusable} from '../core/a11y/focus-key-manager';
 import {CanDisable, mixinDisabled} from '../core/common-behaviors/disabled';
 
@@ -31,8 +31,9 @@ export const _MdMenuItemMixinBase = mixinDisabled(MdMenuItemBase);
     '[attr.disabled]': 'disabled || null',
     '(click)': '_checkDisabled($event)',
   },
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: 'menu-item.html',
-  exportAs: 'mdMenuItem'
+  exportAs: 'mdMenuItem',
 })
 export class MdMenuItem extends _MdMenuItemMixinBase implements Focusable, CanDisable {
 
