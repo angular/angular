@@ -7,6 +7,9 @@ import 'rxjs/add/operator/startWith';
 import 'rxjs/add/observable/merge';
 import 'rxjs/add/operator/map';
 
+/**
+ * @title Table with pagination
+ */
 @Component({
   selector: 'table-pagination-example',
   styleUrls: ['table-pagination-example.css'],

@@ -7,6 +7,9 @@ import 'rxjs/add/operator/startWith';
 import 'rxjs/add/observable/merge';
 import 'rxjs/add/operator/map';
 
+/**
+ * @title Table with sorting
+ */
 @Component({
   selector: 'table-sorting-example',
   styleUrls: ['table-sorting-example.css'],

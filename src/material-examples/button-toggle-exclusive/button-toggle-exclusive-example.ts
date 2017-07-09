@@ -1,6 +1,8 @@
 import {Component} from '@angular/core';
 
-
+/**
+ * @title Exclusive selection
+ */
 @Component({
   selector: 'button-toggle-exclusive-example',
   templateUrl: 'button-toggle-exclusive-example.html',

@@ -1,6 +1,9 @@
 import {Component} from '@angular/core';
 import {PageEvent} from '@angular/material';
 
+/**
+ * @title Configurable paginator
+ */
 @Component({
   selector: 'paginator-configurable-example',
   templateUrl: 'paginator-configurable-example.html',

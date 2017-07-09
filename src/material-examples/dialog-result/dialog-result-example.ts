@@ -1,7 +1,9 @@
 import {Component} from '@angular/core';
 import {MdDialog, MdDialogRef} from '@angular/material';
 
-
+/**
+ * @title Dialog with a result
+ */
 @Component({
   selector: 'dialog-result-example',
   templateUrl: 'dialog-result-example.html',

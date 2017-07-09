@@ -1,5 +1,8 @@
 import {Component} from '@angular/core';
 
+/**
+ * @title Datepicker Touch
+ */
 @Component({
   selector: 'datepicker-touch-example',
   templateUrl: 'datepicker-touch-example.html',

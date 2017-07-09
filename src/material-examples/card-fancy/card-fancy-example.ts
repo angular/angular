@@ -1,6 +1,8 @@
 import {Component} from '@angular/core';
 
-
+/**
+ * @title Card with multiple sections
+ */
 @Component({
   selector: 'card-fancy-example',
   templateUrl: 'card-fancy-example.html',

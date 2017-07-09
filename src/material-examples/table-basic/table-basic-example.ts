@@ -6,6 +6,9 @@ import 'rxjs/add/operator/startWith';
 import 'rxjs/add/observable/merge';
 import 'rxjs/add/operator/map';
 
+/**
+ * @title Basic table
+ */
 @Component({
   selector: 'table-basic-example',
   styleUrls: ['table-basic-example.css'],

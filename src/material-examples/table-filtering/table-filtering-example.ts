@@ -9,6 +9,9 @@ import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
 import 'rxjs/add/observable/fromEvent';
 
+/**
+ * @title Table with filtering
+ */
 @Component({
   selector: 'table-filtering-example',
   styleUrls: ['table-filtering-example.css'],

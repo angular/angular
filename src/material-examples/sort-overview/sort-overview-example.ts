@@ -1,7 +1,9 @@
 import {Component} from '@angular/core';
 import {Sort} from '@angular/material';
 
-
+/**
+ * @title Sorting overview
+ */
 @Component({
   selector: 'sort-overview-example',
   templateUrl: 'sort-overview-example.html',

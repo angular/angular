@@ -1,6 +1,8 @@
 import {Component} from '@angular/core';
 
-
+/**
+ * @title Multi-row toolbar
+ */
 @Component({
   selector: 'toolbar-multirow-example',
   templateUrl: 'toolbar-multirow-example.html',

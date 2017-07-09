@@ -1,6 +1,8 @@
 import {Component, ViewEncapsulation} from '@angular/core';
 
-
+/**
+ * @title Configurable slider
+ */
 @Component({
   selector: 'slider-configurable-example',
   templateUrl: 'slider-configurable-example.html',

@@ -1,6 +1,8 @@
 import {Component} from '@angular/core';
 
-
+/**
+ * @title Radios with ngModel
+ */
 @Component({
   selector: 'radio-ng-model-example',
   templateUrl: 'radio-ng-model-example.html',

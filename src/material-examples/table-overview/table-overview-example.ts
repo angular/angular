@@ -10,6 +10,9 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/distinctUntilChanged';
 import 'rxjs/add/operator/debounceTime';
 
+/**
+ * @title Feature-rich data table
+ */
 @Component({
   selector: 'table-overview-example',
   styleUrls: ['table-overview-example.css'],

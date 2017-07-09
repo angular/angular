@@ -1,6 +1,8 @@
 import {Component} from '@angular/core';
 
-
+/**
+ * @title Configurable progress-bar
+ */
 @Component({
   selector: 'progress-bar-configurable-example',
   templateUrl: 'progress-bar-configurable-example.html',

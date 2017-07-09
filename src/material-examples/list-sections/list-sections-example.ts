@@ -1,6 +1,8 @@
 import {Component} from '@angular/core';
 
-
+/**
+ * @title List with sections
+ */
 @Component({
   selector: 'list-sections-example',
   styleUrls: ['list-sections-example.css'],

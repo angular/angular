@@ -1,104 +1,10 @@
+
+/* tslint:disable */
+/** DO NOT MANUALLY EDIT THIS FILE, IT IS GENERATED VIA GULP 'build-examples-module' */
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
-import {AutocompleteOverviewExample} from './autocomplete-overview/autocomplete-overview-example';
-import {ButtonOverviewExample} from './button-overview/button-overview-example';
-import {ButtonTypesExample} from './button-types/button-types-example';
-import {CheckboxOverviewExample} from './checkbox-overview/checkbox-overview-example';
-import {SliderConfigurableExample} from './slider-configurable/slider-configurable-example';
-import {TabsOverviewExample} from './tabs-overview/tabs-overview-example';
-import {
-  PizzaPartyComponent,
-  SnackBarComponentExample
-} from './snack-bar-component/snack-bar-component-example';
-import {
-  ProgressBarConfigurableExample
-} from './progress-bar-configurable/progress-bar-configurable-example';
-import {
-  DialogOverviewExample,
-  DialogOverviewExampleDialog
-} from './dialog-overview/dialog-overview-example';
-import {RadioNgModelExample} from './radio-ng-model/radio-ng-model-example';
-import {CardFancyExample} from './card-fancy/card-fancy-example';
-import {ToolbarOverviewExample} from './toolbar-overview/toolbar-overview-example';
-import {ToolbarMultirowExample} from './toolbar-multirow/toolbar-multirow-example';
-import {MenuIconsExample} from './menu-icons/menu-icons-example';
-import {GridListDynamicExample} from './grid-list-dynamic/grid-list-dynamic-example';
-import {IconOverviewExample} from './icon-overview/icon-overview-example';
-import {ProgressBarOverviewExample} from './progress-bar-overview/progress-bar-overview-example';
-import {SlideToggleOverviewExample} from './slide-toggle-overview/slide-toggle-overview-example';
-import {SlideToggleFormsExample} from './slide-toggle-forms/slide-toggle-forms-example';
-import {MenuOverviewExample} from './menu-overview/menu-overview-example';
-import {CheckboxConfigurableExample} from './checkbox-configurable/checkbox-configurable-example';
-import {
-  ButtonToggleExclusiveExample
-} from './button-toggle-exclusive/button-toggle-exclusive-example';
-import {ListSectionsExample} from './list-sections/list-sections-example';
-import {SnackBarOverviewExample} from './snack-bar-overview/snack-bar-overview-example';
-import {
-  DialogResultExample,
-  DialogResultExampleDialog
-} from './dialog-result/dialog-result-example';
-import {
-  DialogElementsExample,
-  DialogElementsExampleDialog
-} from './dialog-elements/dialog-elements-example';
-import {TooltipOverviewExample} from './tooltip-overview/tooltip-overview-example';
-import {ButtonToggleOverviewExample} from './button-toggle-overview/button-toggle-overview-example';
-import {GridListOverviewExample} from './grid-list-overview/grid-list-overview-example';
-import {TooltipPositionExample} from './tooltip-position/tooltip-position-example';
-import {
-  ProgressSpinnerConfigurableExample
-} from './progress-spinner-configurable/progress-spinner-configurable-example';
-import {ListOverviewExample} from './list-overview/list-overview-example';
-import {SliderOverviewExample} from './slider-overview/slider-overview-example';
-import {
-  SlideToggleConfigurableExample
-} from './slide-toggle-configurable/slide-toggle-configurable-example';
-import {IconSvgExample} from './icon-svg-example/icon-svg-example';
-import {SidenavFabExample} from './sidenav-fab/sidenav-fab-example';
-import {CardOverviewExample} from './card-overview/card-overview-example';
-import {
-  ProgressSpinnerOverviewExample
-} from './progress-spinner-overview/progress-spinner-overview-example';
-import {TabsTemplateLabelExample} from './tabs-template-label/tabs-template-label-example';
-import {RadioOverviewExample} from './radio-overview/radio-overview-example';
-import {SidenavOverviewExample} from './sidenav-overview/sidenav-overview-example';
-import {SelectOverviewExample} from './select-overview/select-overview-example';
-import {ChipsOverviewExample} from './chips-overview/chips-overview-example';
-import {ChipsStackedExample} from './chips-stacked/chips-stacked-example';
-import {SelectFormExample} from './select-form/select-form-example';
-import {PaginatorOverviewExample} from './paginator-overview/paginator-overview-example';
-import {DatepickerOverviewExample} from './datepicker-overview/datepicker-overview-example';
-import {
-  PaginatorConfigurableExample
-} from './paginator-configurable/paginator-configurable-example';
-import {InputOverviewExample} from './input-overview/input-overview-example';
-import {InputErrorsExample} from './input-errors/input-errors-example';
-import {InputFormExample} from './input-form/input-form-example';
-import {InputPrefixSuffixExample} from './input-prefix-suffix/input-prefix-suffix-example';
-import {InputHintExample} from './input-hint/input-hint-example';
-import {DatepickerStartViewExample} from './datepicker-start-view/datepicker-start-view-example';
-import {DatepickerMinMaxExample} from './datepicker-min-max/datepicker-min-max-example';
-import {DatepickerFilterExample} from './datepicker-filter/datepicker-filter-example';
-import {DatepickerTouchExample} from './datepicker-touch/datepicker-touch-example';
-import {DatepickerApiExample} from './datepicker-api/datepicker-api-example';
-import {InputClearableExample} from './input-clearable/input-clearable-example';
-import {
-  MdAutocompleteModule, MdButtonModule, MdButtonToggleModule, MdCardModule, MdCheckboxModule,
-  MdChipsModule, MdDatepickerModule, MdDialogModule, MdGridListModule, MdIconModule, MdInputModule,
-  MdListModule, MdMenuModule, MdPaginatorModule, MdProgressBarModule, MdProgressSpinnerModule,
-  MdRadioModule, MdSelectModule, MdSidenavModule, MdSliderModule, MdSlideToggleModule,
-  MdSnackBarModule, MdSortModule, MdTableModule, MdTabsModule, MdToolbarModule, MdTooltipModule
-} from '@angular/material';
-import {CdkTableModule} from '@angular/cdk';
-import {TableOverviewExample} from './table-overview/table-overview-example';
-import {TablePaginationExample} from './table-pagination/table-pagination-example';
-import {TableBasicExample} from './table-basic/table-basic-example';
-import {TableSortingExample} from './table-sorting/table-sorting-example';
-import {TableFilteringExample} from './table-filtering/table-filtering-example';
-import {CdkTableBasicExample} from './cdk-table-basic/cdk-table-basic-example';
-import {SortOverviewExample} from './sort-overview/sort-overview-example';
+import {ExampleMaterialModule} from './material-module';
 
 export interface LiveExample {
   title: string;
@@ -107,157 +13,472 @@ export interface LiveExample {
   selectorName?: string;
 }
 
-/**
- * The list of example components.
- * Key is the example name which will be used in `material-docs-example="key"`.
- * Value is the component.
- */
+import {AutocompleteOverviewExample} from './autocomplete-overview/autocomplete-overview-example';
+import {ButtonOverviewExample} from './button-overview/button-overview-example';
+import {ButtonToggleExclusiveExample} from './button-toggle-exclusive/button-toggle-exclusive-example';
+import {ButtonToggleOverviewExample} from './button-toggle-overview/button-toggle-overview-example';
+import {ButtonTypesExample} from './button-types/button-types-example';
+import {CardFancyExample} from './card-fancy/card-fancy-example';
+import {CardOverviewExample} from './card-overview/card-overview-example';
+import {CdkTableBasicExample} from './cdk-table-basic/cdk-table-basic-example';
+import {CheckboxConfigurableExample} from './checkbox-configurable/checkbox-configurable-example';
+import {CheckboxOverviewExample} from './checkbox-overview/checkbox-overview-example';
+import {ChipsOverviewExample} from './chips-overview/chips-overview-example';
+import {ChipsStackedExample} from './chips-stacked/chips-stacked-example';
+import {DatepickerApiExample} from './datepicker-api/datepicker-api-example';
+import {DatepickerFilterExample} from './datepicker-filter/datepicker-filter-example';
+import {DatepickerMinMaxExample} from './datepicker-min-max/datepicker-min-max-example';
+import {DatepickerOverviewExample} from './datepicker-overview/datepicker-overview-example';
+import {DatepickerStartViewExample} from './datepicker-start-view/datepicker-start-view-example';
+import {DatepickerTouchExample} from './datepicker-touch/datepicker-touch-example';
+import {DialogElementsExampleDialog,DialogElementsExample} from './dialog-elements/dialog-elements-example';
+import {DialogOverviewExampleDialog,DialogOverviewExample} from './dialog-overview/dialog-overview-example';
+import {DialogResultExampleDialog,DialogResultExample} from './dialog-result/dialog-result-example';
+import {GridListDynamicExample} from './grid-list-dynamic/grid-list-dynamic-example';
+import {GridListOverviewExample} from './grid-list-overview/grid-list-overview-example';
+import {IconOverviewExample} from './icon-overview/icon-overview-example';
+import {IconSvgExample} from './icon-svg-example/icon-svg-example';
+import {InputClearableExample} from './input-clearable/input-clearable-example';
+import {InputErrorsExample} from './input-errors/input-errors-example';
+import {InputFormExample} from './input-form/input-form-example';
+import {InputHintExample} from './input-hint/input-hint-example';
+import {InputOverviewExample} from './input-overview/input-overview-example';
+import {InputPrefixSuffixExample} from './input-prefix-suffix/input-prefix-suffix-example';
+import {ListOverviewExample} from './list-overview/list-overview-example';
+import {ListSectionsExample} from './list-sections/list-sections-example';
+import {MenuIconsExample} from './menu-icons/menu-icons-example';
+import {MenuOverviewExample} from './menu-overview/menu-overview-example';
+import {PaginatorConfigurableExample} from './paginator-configurable/paginator-configurable-example';
+import {PaginatorOverviewExample} from './paginator-overview/paginator-overview-example';
+import {ProgressBarConfigurableExample} from './progress-bar-configurable/progress-bar-configurable-example';
+import {ProgressBarOverviewExample} from './progress-bar-overview/progress-bar-overview-example';
+import {ProgressSpinnerConfigurableExample} from './progress-spinner-configurable/progress-spinner-configurable-example';
+import {ProgressSpinnerOverviewExample} from './progress-spinner-overview/progress-spinner-overview-example';
+import {RadioNgModelExample} from './radio-ng-model/radio-ng-model-example';
+import {RadioOverviewExample} from './radio-overview/radio-overview-example';
+import {SelectFormExample} from './select-form/select-form-example';
+import {SelectOverviewExample} from './select-overview/select-overview-example';
+import {SidenavFabExample} from './sidenav-fab/sidenav-fab-example';
+import {SidenavOverviewExample} from './sidenav-overview/sidenav-overview-example';
+import {SlideToggleConfigurableExample} from './slide-toggle-configurable/slide-toggle-configurable-example';
+import {SlideToggleFormsExample} from './slide-toggle-forms/slide-toggle-forms-example';
+import {SlideToggleOverviewExample} from './slide-toggle-overview/slide-toggle-overview-example';
+import {SliderConfigurableExample} from './slider-configurable/slider-configurable-example';
+import {SliderOverviewExample} from './slider-overview/slider-overview-example';
+import {PizzaPartyComponent,SnackBarComponentExample} from './snack-bar-component/snack-bar-component-example';
+import {SnackBarOverviewExample} from './snack-bar-overview/snack-bar-overview-example';
+import {SortOverviewExample} from './sort-overview/sort-overview-example';
+import {TableBasicExample} from './table-basic/table-basic-example';
+import {TableFilteringExample} from './table-filtering/table-filtering-example';
+import {TableOverviewExample} from './table-overview/table-overview-example';
+import {TablePaginationExample} from './table-pagination/table-pagination-example';
+import {TableSortingExample} from './table-sorting/table-sorting-example';
+import {TabsOverviewExample} from './tabs-overview/tabs-overview-example';
+import {TabsTemplateLabelExample} from './tabs-template-label/tabs-template-label-example';
+import {ToolbarMultirowExample} from './toolbar-multirow/toolbar-multirow-example';
+import {ToolbarOverviewExample} from './toolbar-overview/toolbar-overview-example';
+import {TooltipOverviewExample} from './tooltip-overview/tooltip-overview-example';
+import {TooltipPositionExample} from './tooltip-position/tooltip-position-example';
+
 export const EXAMPLE_COMPONENTS = {
-  'autocomplete-overview': {title: 'Basic autocomplete', component: AutocompleteOverviewExample},
-  'button-overview': {title: 'Basic buttons', component: ButtonOverviewExample},
-  'button-types': {title: 'Button varieties', component: ButtonTypesExample},
+  'autocomplete-overview': {
+    title: 'Basic autocomplete',
+    component: AutocompleteOverviewExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'button-overview': {
+    title: 'Basic buttons',
+    component: ButtonOverviewExample,
+    additionalFiles: null,
+    selectorName: null
+  },
   'button-toggle-exclusive': {
     title: 'Exclusive selection',
-    component: ButtonToggleExclusiveExample
+    component: ButtonToggleExclusiveExample,
+    additionalFiles: null,
+    selectorName: null
   },
-  'button-toggle-overview': {title: 'Basic button-toggles', component: ButtonToggleOverviewExample},
-  'chips-overview': {title: 'Basic chips', component: ChipsOverviewExample},
-  'cdk-table-basic': {title: 'Basic CDK data-table', component: CdkTableBasicExample},
-  'chips-stacked': {title: 'Stacked chips', component: ChipsStackedExample},
-  'card-fancy': {title: 'Card with multiple sections', component: CardFancyExample},
-  'card-overview': {title: 'Basic cards', component: CardOverviewExample},
-  'checkbox-configurable': {title: 'Configurable checkbox', component: CheckboxConfigurableExample},
-  'checkbox-overview': {title: 'Basic checkboxes', component: CheckboxOverviewExample},
-  'datepicker-overview': {title: 'Basic datepicker', component: DatepickerOverviewExample},
-  'datepicker-start-view': {title: 'Start View', component: DatepickerStartViewExample},
-  'datepicker-min-max': {title: 'Min/Max Validation', component: DatepickerMinMaxExample},
-  'datepicker-filter': {title: 'Filter Validation', component: DatepickerFilterExample},
-  'datepicker-touch': {title: 'Touch', component: DatepickerTouchExample},
-  'datepicker-api': {title: 'API', component: DatepickerApiExample},
-  'dialog-overview': {
-    title: 'Basic dialog',
-    component: DialogOverviewExample,
-    additionalFiles: ['dialog-overview-example-dialog.html'],
-    selectorName: 'DialogOverviewExample, DialogOverviewExampleDialog',
+  'button-toggle-overview': {
+    title: 'Basic button-toggles',
+    component: ButtonToggleOverviewExample,
+    additionalFiles: null,
+    selectorName: null
   },
-  'dialog-result': {
-    title: 'Dialog with a result',
-    component: DialogResultExample,
-    additionalFiles: ['dialog-result-example-dialog.html'],
-    selectorName: 'DialogResultExample, DialogResultExampleDialog',
+  'button-types': {
+    title: 'Button varieties',
+    component: ButtonTypesExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'card-fancy': {
+    title: 'Card with multiple sections',
+    component: CardFancyExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'card-overview': {
+    title: 'Basic cards',
+    component: CardOverviewExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'cdk-table-basic': {
+    title: 'Basic CDK data-table',
+    component: CdkTableBasicExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'checkbox-configurable': {
+    title: 'Configurable checkbox',
+    component: CheckboxConfigurableExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'checkbox-overview': {
+    title: 'Basic checkboxes',
+    component: CheckboxOverviewExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'chips-overview': {
+    title: 'Basic chips',
+    component: ChipsOverviewExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'chips-stacked': {
+    title: 'Stacked chips',
+    component: ChipsStackedExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'datepicker-api': {
+    title: 'Datepicker API',
+    component: DatepickerApiExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'datepicker-filter': {
+    title: 'Datepicker Filter',
+    component: DatepickerFilterExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'datepicker-min-max': {
+    title: 'Datepicker Min Max',
+    component: DatepickerMinMaxExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'datepicker-overview': {
+    title: 'Basic datepicker',
+    component: DatepickerOverviewExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'datepicker-start-view': {
+    title: 'Datepicker start date',
+    component: DatepickerStartViewExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'datepicker-touch': {
+    title: 'Datepicker Touch',
+    component: DatepickerTouchExample,
+    additionalFiles: null,
+    selectorName: null
   },
   'dialog-elements': {
     title: 'Dialog elements',
     component: DialogElementsExample,
-    additionalFiles: ['dialog-elements-example-dialog.html'],
-    selectorName: 'DialogElementsExample, DialogElementsExampleDialog',
+    additionalFiles: ["dialog-elements-example-dialog.html"],
+    selectorName: 'DialogElementsExample, DialogElementsExampleDialog'
   },
-  'grid-list-dynamic': {title: 'Dynamic grid-list', component: GridListDynamicExample},
-  'grid-list-overview': {title: 'Basic grid-list', component: GridListOverviewExample},
-  'icon-overview': {title: 'Basic icons', component: IconOverviewExample},
-  'icon-svg': {title: 'SVG icons', component: IconSvgExample},
-  'input-clearable': {title: 'Input with clear button', component: InputClearableExample},
-  'input-form': {title: 'Inputs in a form', component: InputFormExample},
-  'input-overview': {title: 'Basic inputs', component: InputOverviewExample},
-  'input-errors': {title: 'Input Errors', component: InputErrorsExample},
-  'input-prefix-suffix': {title: 'Input Prefixes/Suffixes', component: InputPrefixSuffixExample},
-  'input-hint': {title: 'Input Hint', component: InputHintExample},
-  'list-overview': {title: 'Basic list', component: ListOverviewExample},
-  'list-sections': {title: 'List with sections', component: ListSectionsExample},
-  'menu-icons': {title: 'Menu with icons', component: MenuIconsExample},
-  'menu-overview': {title: 'Basic menu', component: MenuOverviewExample},
-  'paginator-overview': {title: 'Paginator', component: PaginatorOverviewExample},
+  'dialog-overview': {
+    title: 'Dialog Overview',
+    component: DialogOverviewExample,
+    additionalFiles: ["dialog-overview-example-dialog.html"],
+    selectorName: 'DialogOverviewExample, DialogOverviewExampleDialog'
+  },
+  'dialog-result': {
+    title: 'Dialog with a result',
+    component: DialogResultExample,
+    additionalFiles: ["dialog-result-example-dialog.html"],
+    selectorName: 'DialogResultExample, DialogResultExampleDialog'
+  },
+  'grid-list-dynamic': {
+    title: 'Dynamic grid-list',
+    component: GridListDynamicExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'grid-list-overview': {
+    title: 'Basic grid-list',
+    component: GridListOverviewExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'icon-overview': {
+    title: 'Basic icons',
+    component: IconOverviewExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'icon-svg': {
+    title: 'SVG icons',
+    component: IconSvgExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'input-clearable': {
+    title: 'Input Clearable',
+    component: InputClearableExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'input-errors': {
+    title: 'Input Errors',
+    component: InputErrorsExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'input-form': {
+    title: 'Inputs in a form',
+    component: InputFormExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'input-hint': {
+    title: 'Input hints',
+    component: InputHintExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'input-overview': {
+    title: 'Basic Inputs',
+    component: InputOverviewExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'input-prefix-suffix': {
+    title: 'Input Prefixes and Suffixes',
+    component: InputPrefixSuffixExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'list-overview': {
+    title: 'Basic list',
+    component: ListOverviewExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'list-sections': {
+    title: 'List with sections',
+    component: ListSectionsExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'menu-icons': {
+    title: 'Menu with icons',
+    component: MenuIconsExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'menu-overview': {
+    title: 'Basic menu',
+    component: MenuOverviewExample,
+    additionalFiles: null,
+    selectorName: null
+  },
   'paginator-configurable': {
     title: 'Configurable paginator',
-    component: PaginatorConfigurableExample
+    component: PaginatorConfigurableExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'paginator-overview': {
+    title: 'Paginator',
+    component: PaginatorOverviewExample,
+    additionalFiles: null,
+    selectorName: null
   },
   'progress-bar-configurable': {
     title: 'Configurable progress-bar',
-    component: ProgressBarConfigurableExample
+    component: ProgressBarConfigurableExample,
+    additionalFiles: null,
+    selectorName: null
   },
-  'progress-bar-overview': {title: 'Basic progress-bar', component: ProgressBarOverviewExample},
+  'progress-bar-overview': {
+    title: 'Basic progress-bar',
+    component: ProgressBarOverviewExample,
+    additionalFiles: null,
+    selectorName: null
+  },
   'progress-spinner-configurable': {
-    title: 'Configurable progress-bar',
-    component: ProgressSpinnerConfigurableExample
+    title: 'Configurable progress spinner',
+    component: ProgressSpinnerConfigurableExample,
+    additionalFiles: null,
+    selectorName: null
   },
   'progress-spinner-overview': {
     title: 'Basic progress-spinner',
-    component: ProgressSpinnerOverviewExample
+    component: ProgressSpinnerOverviewExample,
+    additionalFiles: null,
+    selectorName: null
   },
-  'radio-ng-model': {title: 'Radios with ngModel', component: RadioNgModelExample},
-  'radio-overview': {title: 'Basic radios', component: RadioOverviewExample},
-  'select-overview': {title: 'Basic select', component: SelectOverviewExample},
-  'select-form': {title: 'Select in a form', component: SelectFormExample},
-  'sidenav-fab': {title: 'Sidenav with a FAB', component: SidenavFabExample},
-  'sidenav-overview': {title: 'Basic sidenav', component: SidenavOverviewExample},
-  'slider-configurable': {title: 'Configurable slider', component: SliderConfigurableExample},
-  'slider-overview': {title: 'Basic slider', component: SliderOverviewExample},
+  'radio-ng-model': {
+    title: 'Radios with ngModel',
+    component: RadioNgModelExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'radio-overview': {
+    title: 'Basic radios',
+    component: RadioOverviewExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'select-form': {
+    title: 'Select in a form',
+    component: SelectFormExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'select-overview': {
+    title: 'Basic select',
+    component: SelectOverviewExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'sidenav-fab': {
+    title: 'Sidenav with a FAB',
+    component: SidenavFabExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'sidenav-overview': {
+    title: 'Basic sidenav',
+    component: SidenavOverviewExample,
+    additionalFiles: null,
+    selectorName: null
+  },
   'slide-toggle-configurable': {
     title: 'Configurable slide-toggle',
-    component: SlideToggleConfigurableExample
+    component: SlideToggleConfigurableExample,
+    additionalFiles: null,
+    selectorName: null
   },
-  'slide-toggle-forms': {title: 'Slide-toggle with forms', component: SlideToggleFormsExample},
-  'slide-toggle-overview': {title: 'Basic slide-toggles', component: SlideToggleOverviewExample},
-  'sort-overview': {title: 'Sorting overview', component: SortOverviewExample},
+  'slide-toggle-forms': {
+    title: 'Slide-toggle with forms',
+    component: SlideToggleFormsExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'slide-toggle-overview': {
+    title: 'Basic slide-toggles',
+    component: SlideToggleOverviewExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'slider-configurable': {
+    title: 'Configurable slider',
+    component: SliderConfigurableExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'slider-overview': {
+    title: 'Basic slider',
+    component: SliderOverviewExample,
+    additionalFiles: null,
+    selectorName: null
+  },
   'snack-bar-component': {
     title: 'Snack-bar with a custom component',
-    component: SnackBarComponentExample
+    component: SnackBarComponentExample,
+    additionalFiles: ["snack-bar-component-example-snack.html"],
+    selectorName: 'SnackBarComponentExample, PizzaPartyComponent'
   },
-  'snack-bar-overview': {title: 'Basic snack-bar', component: SnackBarOverviewExample},
-  'table-overview': {title: 'Feature-rich data table', component: TableOverviewExample},
-  'table-pagination': {title: 'Table with pagination', component: TablePaginationExample},
-  'table-sorting': {title: 'Table with sorting', component: TableSortingExample},
-  'table-filtering': {title: 'Table with filtering', component: TableFilteringExample},
-  'table-basic': {title: 'Basic table', component: TableBasicExample},
-  'tabs-overview': {title: 'Basic tabs', component: TabsOverviewExample},
-  'tabs-template-label': {title: 'Coming soon!', component: TabsTemplateLabelExample},
-  'toolbar-multirow': {title: 'Multi-row toolbar', component: ToolbarMultirowExample},
-  'toolbar-overview': {title: 'basic toolbar', component: ToolbarOverviewExample},
-  'tooltip-overview': {title: 'Basic tooltip', component: TooltipOverviewExample},
-  'tooltip-position': {title: 'Tooltip with custom position', component: TooltipPositionExample},
+  'snack-bar-overview': {
+    title: 'Basic snack-bar',
+    component: SnackBarOverviewExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'sort-overview': {
+    title: 'Sorting overview',
+    component: SortOverviewExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'table-basic': {
+    title: 'Basic table',
+    component: TableBasicExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'table-filtering': {
+    title: 'Table with filtering',
+    component: TableFilteringExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'table-overview': {
+    title: 'Feature-rich data table',
+    component: TableOverviewExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'table-pagination': {
+    title: 'Table with pagination',
+    component: TablePaginationExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'table-sorting': {
+    title: 'Table with sorting',
+    component: TableSortingExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'tabs-overview': {
+    title: 'Basic tabs',
+    component: TabsOverviewExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'tabs-template-label': {
+    title: 'Coming soon!',
+    component: TabsTemplateLabelExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'toolbar-multirow': {
+    title: 'Multi-row toolbar',
+    component: ToolbarMultirowExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'toolbar-overview': {
+    title: 'Basic toolbar',
+    component: ToolbarOverviewExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'tooltip-overview': {
+    title: 'Basic tooltip',
+    component: TooltipOverviewExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'tooltip-position': {
+    title: 'Tooltip with custom position',
+    component: TooltipPositionExample,
+    additionalFiles: null,
+    selectorName: null
+  },
 };
 
-/**
- * NgModule that includes all Material modules that are required to serve the examples.
- */
-@NgModule({
-  exports: [
-    CdkTableModule,
-    MdAutocompleteModule,
-    MdButtonModule,
-    MdButtonToggleModule,
-    MdCardModule,
-    MdCheckboxModule,
-    MdChipsModule,
-    MdDatepickerModule,
-    MdDialogModule,
-    MdGridListModule,
-    MdIconModule,
-    MdInputModule,
-    MdListModule,
-    MdMenuModule,
-    MdPaginatorModule,
-    MdProgressBarModule,
-    MdProgressSpinnerModule,
-    MdRadioModule,
-    MdSortModule,
-    MdSelectModule,
-    MdSlideToggleModule,
-    MdSliderModule,
-    MdSidenavModule,
-    MdSnackBarModule,
-    MdTableModule,
-    MdTabsModule,
-    MdToolbarModule,
-    MdTooltipModule
-  ]
-})
-export class ExampleMaterialModule {}
-
-/**
- * The list of all example components.
- * We need to put them in both `declarations` and `entryComponents` to make them work.
- */
 export const EXAMPLE_LIST = [
   AutocompleteOverviewExample,
   ButtonOverviewExample,
@@ -267,60 +488,56 @@ export const EXAMPLE_LIST = [
   CardFancyExample,
   CardOverviewExample,
   CdkTableBasicExample,
-  ChipsOverviewExample,
-  ChipsStackedExample,
   CheckboxConfigurableExample,
   CheckboxOverviewExample,
+  ChipsOverviewExample,
+  ChipsStackedExample,
+  DatepickerApiExample,
+  DatepickerFilterExample,
+  DatepickerMinMaxExample,
   DatepickerOverviewExample,
   DatepickerStartViewExample,
-  DatepickerMinMaxExample,
-  DatepickerFilterExample,
   DatepickerTouchExample,
-  DatepickerApiExample,
-  DialogOverviewExample,
-  DialogOverviewExampleDialog,
-  DialogResultExample,
-  DialogResultExampleDialog,
-  DialogElementsExample,
-  DialogElementsExampleDialog,
+  DialogElementsExampleDialog,DialogElementsExample,
+  DialogOverviewExampleDialog,DialogOverviewExample,
+  DialogResultExampleDialog,DialogResultExample,
   GridListDynamicExample,
   GridListOverviewExample,
   IconOverviewExample,
   IconSvgExample,
   InputClearableExample,
+  InputErrorsExample,
   InputFormExample,
+  InputHintExample,
   InputOverviewExample,
   InputPrefixSuffixExample,
-  InputHintExample,
-  InputErrorsExample,
   ListOverviewExample,
   ListSectionsExample,
   MenuIconsExample,
   MenuOverviewExample,
-  PaginatorOverviewExample,
   PaginatorConfigurableExample,
+  PaginatorOverviewExample,
   ProgressBarConfigurableExample,
   ProgressBarOverviewExample,
   ProgressSpinnerConfigurableExample,
   ProgressSpinnerOverviewExample,
   RadioNgModelExample,
   RadioOverviewExample,
-  SidenavFabExample,
-  SelectOverviewExample,
   SelectFormExample,
+  SelectOverviewExample,
+  SidenavFabExample,
   SidenavOverviewExample,
+  SlideToggleConfigurableExample,
+  SlideToggleFormsExample,
+  SlideToggleOverviewExample,
   SliderConfigurableExample,
   SliderOverviewExample,
-  SlideToggleConfigurableExample,
-  SlideToggleOverviewExample,
-  SlideToggleFormsExample,
-  SortOverviewExample,
-  SnackBarComponentExample,
-  PizzaPartyComponent,
+  PizzaPartyComponent,SnackBarComponentExample,
   SnackBarOverviewExample,
+  SortOverviewExample,
   TableBasicExample,
-  TableOverviewExample,
   TableFilteringExample,
+  TableOverviewExample,
   TablePaginationExample,
   TableSortingExample,
   TabsOverviewExample,
@@ -338,7 +555,7 @@ export const EXAMPLE_LIST = [
     ExampleMaterialModule,
     FormsModule,
     ReactiveFormsModule,
-    CommonModule,
+    CommonModule
   ]
 })
 export class ExampleModule { }

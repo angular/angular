@@ -2,7 +2,9 @@ import {Component} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {MdIconRegistry} from '@angular/material';
 
-
+/**
+ * @title SVG icons
+ */
 @Component({
   selector: 'icon-svg-example',
   templateUrl: 'icon-svg-example.html',

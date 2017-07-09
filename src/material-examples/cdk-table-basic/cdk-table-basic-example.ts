@@ -6,6 +6,9 @@ import 'rxjs/add/operator/startWith';
 import 'rxjs/add/observable/merge';
 import 'rxjs/add/operator/map';
 
+/**
+ * @title Basic CDK data-table
+ */
 @Component({
   selector: 'cdk-table-basic-example',
   styleUrls: ['cdk-table-basic-example.css'],
