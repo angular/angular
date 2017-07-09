@@ -13,7 +13,8 @@ import {
   PAGE_DOWN,
   PAGE_UP,
   RIGHT_ARROW,
-  UP_ARROW
+  UP_ARROW,
+  BACKSPACE
 } from '../core/keyboard/keycodes';
 import {dispatchKeyboardEvent, dispatchMouseEvent} from '@angular/cdk/testing';
 
@@ -895,18 +896,21 @@ describe('MdSlider', () => {
   });
 
   describe('keyboard support', () => {
-    let fixture: ComponentFixture<StandardSlider>;
+    let fixture: ComponentFixture<SliderWithChangeHandler>;
     let sliderDebugElement: DebugElement;
     let sliderNativeElement: HTMLElement;
     let sliderWrapperElement: HTMLElement;
-    let testComponent: StandardSlider;
+    let testComponent: SliderWithChangeHandler;
     let sliderInstance: MdSlider;
 
     beforeEach(() => {
-      fixture = TestBed.createComponent(StandardSlider);
+      fixture = TestBed.createComponent(SliderWithChangeHandler);
       fixture.detectChanges();
 
       testComponent = fixture.debugElement.componentInstance;
+      spyOn(testComponent, 'onInput');
+      spyOn(testComponent, 'onChange');
+
       sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
       sliderNativeElement = sliderDebugElement.nativeElement;
       sliderWrapperElement = <HTMLElement>sliderNativeElement.querySelector('.mat-slider-wrapper');
@@ -914,67 +918,121 @@ describe('MdSlider', () => {
     });
 
     it('should increment slider by 1 on up arrow pressed', () => {
+      expect(testComponent.onChange).not.toHaveBeenCalled();
+
       dispatchKeyboardEvent(sliderNativeElement, 'keydown', UP_ARROW);
       fixture.detectChanges();
 
+      // The `onInput` event should be emitted once due to a single keyboard press.
+      expect(testComponent.onInput).toHaveBeenCalledTimes(1);
+      expect(testComponent.onChange).toHaveBeenCalledTimes(1);
       expect(sliderInstance.value).toBe(1);
     });
 
     it('should increment slider by 1 on right arrow pressed', () => {
+      expect(testComponent.onChange).not.toHaveBeenCalled();
+
       dispatchKeyboardEvent(sliderNativeElement, 'keydown', RIGHT_ARROW);
       fixture.detectChanges();
 
+      // The `onInput` event should be emitted once due to a single keyboard press.
+      expect(testComponent.onInput).toHaveBeenCalledTimes(1);
+      expect(testComponent.onChange).toHaveBeenCalledTimes(1);
       expect(sliderInstance.value).toBe(1);
     });
 
     it('should decrement slider by 1 on down arrow pressed', () => {
       sliderInstance.value = 100;
 
+      expect(testComponent.onChange).not.toHaveBeenCalled();
+
       dispatchKeyboardEvent(sliderNativeElement, 'keydown', DOWN_ARROW);
       fixture.detectChanges();
 
+      // The `onInput` event should be emitted once due to a single keyboard press.
+      expect(testComponent.onInput).toHaveBeenCalledTimes(1);
+      expect(testComponent.onChange).toHaveBeenCalledTimes(1);
       expect(sliderInstance.value).toBe(99);
     });
 
     it('should decrement slider by 1 on left arrow pressed', () => {
       sliderInstance.value = 100;
 
+      expect(testComponent.onChange).not.toHaveBeenCalled();
+
       dispatchKeyboardEvent(sliderNativeElement, 'keydown', LEFT_ARROW);
       fixture.detectChanges();
 
+      // The `onInput` event should be emitted once due to a single keyboard press.
+      expect(testComponent.onInput).toHaveBeenCalledTimes(1);
+      expect(testComponent.onChange).toHaveBeenCalledTimes(1);
       expect(sliderInstance.value).toBe(99);
     });
 
     it('should increment slider by 10 on page up pressed', () => {
+      expect(testComponent.onChange).not.toHaveBeenCalled();
+
       dispatchKeyboardEvent(sliderNativeElement, 'keydown', PAGE_UP);
       fixture.detectChanges();
 
+      // The `onInput` event should be emitted once due to a single keyboard press.
+      expect(testComponent.onInput).toHaveBeenCalledTimes(1);
+      expect(testComponent.onChange).toHaveBeenCalledTimes(1);
       expect(sliderInstance.value).toBe(10);
     });
 
     it('should decrement slider by 10 on page down pressed', () => {
       sliderInstance.value = 100;
 
+      expect(testComponent.onChange).not.toHaveBeenCalled();
+
       dispatchKeyboardEvent(sliderNativeElement, 'keydown', PAGE_DOWN);
       fixture.detectChanges();
 
+      // The `onInput` event should be emitted once due to a single keyboard press.
+      expect(testComponent.onInput).toHaveBeenCalledTimes(1);
+      expect(testComponent.onChange).toHaveBeenCalledTimes(1);
       expect(sliderInstance.value).toBe(90);
     });
 
     it('should set slider to max on end pressed', () => {
+      expect(testComponent.onChange).not.toHaveBeenCalled();
+
       dispatchKeyboardEvent(sliderNativeElement, 'keydown', END);
       fixture.detectChanges();
 
+      // The `onInput` event should be emitted once due to a single keyboard press.
+      expect(testComponent.onInput).toHaveBeenCalledTimes(1);
+      expect(testComponent.onChange).toHaveBeenCalledTimes(1);
       expect(sliderInstance.value).toBe(100);
     });
 
     it('should set slider to min on home pressed', () => {
       sliderInstance.value = 100;
 
+      expect(testComponent.onChange).not.toHaveBeenCalled();
+
       dispatchKeyboardEvent(sliderNativeElement, 'keydown', HOME);
       fixture.detectChanges();
 
+      // The `onInput` event should be emitted once due to a single keyboard press.
+      expect(testComponent.onInput).toHaveBeenCalledTimes(1);
+      expect(testComponent.onChange).toHaveBeenCalledTimes(1);
       expect(sliderInstance.value).toBe(0);
+    });
+
+    it(`should take not action for presses of keys it doesn't care about`, () => {
+      sliderInstance.value = 50;
+
+      expect(testComponent.onChange).not.toHaveBeenCalled();
+
+      dispatchKeyboardEvent(sliderNativeElement, 'keydown', BACKSPACE);
+      fixture.detectChanges();
+
+      // The `onInput` event should be emitted once due to a single keyboard press.
+      expect(testComponent.onInput).not.toHaveBeenCalled();
+      expect(testComponent.onChange).not.toHaveBeenCalled();
+      expect(sliderInstance.value).toBe(50);
     });
   });
 

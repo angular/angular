@@ -512,6 +512,8 @@ export class MdSlider extends _MdSliderMixinBase
         // it.
         return;
     }
+    this._emitInputEvent();
+    this._emitValueIfChanged();
 
     this._isSliding = true;
     event.preventDefault();
@@ -524,8 +526,6 @@ export class MdSlider extends _MdSliderMixinBase
   /** Increments the slider by the given number of steps (negative number decrements). */
   private _increment(numSteps: number) {
     this.value = this._clamp((this.value || 0) + this.step * numSteps, this.min, this.max);
-    this._emitInputEvent();
-    this._emitValueIfChanged();
   }
 
   /** Calculate the new value from the new physical location. The value will always be snapped. */
