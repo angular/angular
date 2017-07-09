@@ -24,7 +24,7 @@ const ROLLUP_GLOBALS = {
   '@angular/material': 'ng.material',
   '@angular/cdk': 'ng.cdk',
 
-  // Rxjs dependencies
+  // RxJS dependencies
   'rxjs/BehaviorSubject': 'Rx',
   'rxjs/Observable': 'Rx',
   'rxjs/Subject': 'Rx',
@@ -49,6 +49,14 @@ const ROLLUP_GLOBALS = {
   'rxjs/operator/switchMap': 'Rx.Observable.prototype',
   'rxjs/operator/takeUntil': 'Rx.Observable.prototype',
   'rxjs/operator/toPromise': 'Rx.Observable.prototype',
+
+  // RxJS imports for the examples package
+  'rxjs/add/observable/merge': 'Rx.Observable',
+  'rxjs/add/observable/fromEvent': 'Rx.Observable',
+  'rxjs/add/operator/startWith': 'Rx.Observable.prototype',
+  'rxjs/add/operator/map': 'Rx.Observable.prototype',
+  'rxjs/add/operator/debounceTime': 'Rx.Observable.prototype',
+  'rxjs/add/operator/distinctUntilChanged': 'Rx.Observable.prototype',
 };
 
 export type BundleConfig = {
