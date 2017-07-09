@@ -17,6 +17,7 @@ import {
   ViewChild,
   ViewEncapsulation,
   ChangeDetectorRef,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import {MdOption} from '../core';
 import {ActiveDescendantKeyManager} from '../core/a11y/activedescendant-key-manager';
@@ -35,6 +36,7 @@ export type AutocompletePositionY = 'above' | 'below';
   templateUrl: 'autocomplete.html',
   styleUrls: ['autocomplete.css'],
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   exportAs: 'mdAutocomplete',
   host: {
     'class': 'mat-autocomplete'

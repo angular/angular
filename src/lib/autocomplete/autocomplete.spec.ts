@@ -763,17 +763,19 @@ describe('MdAutocomplete', () => {
           .toEqual(32, `Expected panel to reveal the sixth option.`);
     }));
 
-    it('should scroll to active options on UP arrow', fakeAsync(() => {
-      tick();
-      const scrollContainer =
-          document.querySelector('.cdk-overlay-pane .mat-autocomplete-panel')!;
+    it('should scroll to active options on UP arrow', async(() => {
+      fixture.whenStable().then(() => {
+        const scrollContainer =
+            document.querySelector('.cdk-overlay-pane .mat-autocomplete-panel')!;
 
-      fixture.componentInstance.trigger._handleKeydown(UP_ARROW_EVENT);
-      tick();
-      fixture.detectChanges();
+        fixture.componentInstance.trigger._handleKeydown(UP_ARROW_EVENT);
+        fixture.detectChanges();
 
-      // Expect option bottom minus the panel height (528 - 256 = 272)
-      expect(scrollContainer.scrollTop).toEqual(272, `Expected panel to reveal last option.`);
+        fixture.whenStable().then(() => {
+          // Expect option bottom minus the panel height (528 - 256 = 272)
+          expect(scrollContainer.scrollTop).toEqual(272, `Expected panel to reveal last option.`);
+        });
+      });
     }));
 
     it('should not scroll to active options that are fully in the panel', fakeAsync(() => {
