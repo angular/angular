@@ -65,16 +65,16 @@ describe('MdDatepicker', () => {
         fixture.detectChanges();
       }));
 
-      it('open non-touch should open popup', async(() => {
+      it('open non-touch should open popup', () => {
         expect(document.querySelector('.cdk-overlay-pane')).toBeNull();
 
         testComponent.datepicker.open();
         fixture.detectChanges();
 
         expect(document.querySelector('.cdk-overlay-pane')).not.toBeNull();
-      }));
+      });
 
-      it('open touch should open dialog', async(() => {
+      it('open touch should open dialog', () => {
         testComponent.touch = true;
         fixture.detectChanges();
 
@@ -84,9 +84,36 @@ describe('MdDatepicker', () => {
         fixture.detectChanges();
 
         expect(document.querySelector('md-dialog-container')).not.toBeNull();
-      }));
+      });
 
-      it('close should close popup', async(() => {
+      it('open in disabled mode should not open the calendar', () => {
+        testComponent.disabled = true;
+        fixture.detectChanges();
+
+        expect(document.querySelector('.cdk-overlay-pane')).toBeNull();
+        expect(document.querySelector('md-dialog-container')).toBeNull();
+
+        testComponent.datepicker.open();
+        fixture.detectChanges();
+
+        expect(document.querySelector('.cdk-overlay-pane')).toBeNull();
+        expect(document.querySelector('md-dialog-container')).toBeNull();
+      });
+
+      it('disabled datepicker input should open the calendar if datepicker is enabled', () => {
+        testComponent.datepicker.disabled = false;
+        testComponent.datepickerInput.disabled = true;
+        fixture.detectChanges();
+
+        expect(document.querySelector('.cdk-overlay-pane')).toBeNull();
+
+        testComponent.datepicker.open();
+        fixture.detectChanges();
+
+        expect(document.querySelector('.cdk-overlay-pane')).not.toBeNull();
+      });
+
+      it('close should close popup', () => {
         testComponent.datepicker.open();
         fixture.detectChanges();
 
@@ -100,7 +127,7 @@ describe('MdDatepicker', () => {
         fixture.whenStable().then(() => {
           expect(parseInt(getComputedStyle(popup).height as string)).toBe(0);
         });
-      }));
+      });
 
       it('should close the popup when pressing ESCAPE', () => {
         testComponent.datepicker.open();
@@ -119,7 +146,7 @@ describe('MdDatepicker', () => {
             .toBe(true, 'Expected default ESCAPE action to be prevented.');
       });
 
-      it('close should close dialog', async(() => {
+      it('close should close dialog', () => {
         testComponent.touch = true;
         fixture.detectChanges();
 
@@ -134,9 +161,9 @@ describe('MdDatepicker', () => {
         fixture.whenStable().then(() => {
           expect(document.querySelector('md-dialog-container')).toBeNull();
         });
-      }));
+      });
 
-      it('setting selected should update input and close calendar', async(() => {
+      it('setting selected should update input and close calendar', () => {
         testComponent.touch = true;
         fixture.detectChanges();
 
@@ -154,7 +181,7 @@ describe('MdDatepicker', () => {
           expect(document.querySelector('md-dialog-container')).toBeNull();
           expect(testComponent.datepickerInput.value).toEqual(new Date(2020, JAN, 2));
         });
-      }));
+      });
 
       it('startAt should fallback to input value', () => {
         expect(testComponent.datepicker.startAt).toEqual(new Date(2020, JAN, 1));
@@ -431,6 +458,19 @@ describe('MdDatepicker', () => {
         fixture.detectChanges();
 
         expect(document.querySelector('md-dialog-container')).not.toBeNull();
+      });
+
+      it('should not open calendar when toggle clicked if datepicker is disabled', () => {
+        testComponent.datepicker.disabled = true;
+        fixture.detectChanges();
+
+        expect(document.querySelector('md-dialog-container')).toBeNull();
+
+        let toggle = fixture.debugElement.query(By.css('button'));
+        dispatchMouseEvent(toggle.nativeElement, 'click');
+        fixture.detectChanges();
+
+        expect(document.querySelector('md-dialog-container')).toBeNull();
       });
 
       it('should set the `button` type on the trigger to prevent form submissions', () => {
@@ -724,11 +764,12 @@ describe('MdDatepicker', () => {
 @Component({
   template: `
     <input [mdDatepicker]="d" [value]="date">
-    <md-datepicker #d [touchUi]="touch"></md-datepicker>
+    <md-datepicker #d [touchUi]="touch" [disabled]="disabled"></md-datepicker>
   `,
 })
 class StandardDatepicker {
   touch = false;
+  disabled = false;
   date = new Date(2020, JAN, 1);
   @ViewChild('d') datepicker: MdDatepicker<Date>;
   @ViewChild(MdDatepickerInput) datepickerInput: MdDatepickerInput<Date>;

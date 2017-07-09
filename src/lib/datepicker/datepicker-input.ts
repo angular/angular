@@ -35,6 +35,7 @@ import {DOWN_ARROW} from '../core/keyboard/keycodes';
 import {DateAdapter} from '../core/datetime/index';
 import {createMissingDateImplError} from './datepicker-errors';
 import {MD_DATE_FORMATS, MdDateFormats} from '../core/datetime/date-formats';
+import {coerceBooleanProperty} from '@angular/cdk';
 
 
 export const MD_DATEPICKER_VALUE_ACCESSOR: any = {
@@ -61,6 +62,7 @@ export const MD_DATEPICKER_VALIDATORS: any = {
     '[attr.aria-owns]': '_datepicker?.id',
     '[attr.min]': 'min ? _dateAdapter.getISODateString(min) : null',
     '[attr.max]': 'max ? _dateAdapter.getISODateString(max) : null',
+    '[disabled]': 'disabled',
     '(input)': '_onInput($event.target.value)',
     '(blur)': '_onTouched()',
     '(keydown)': '_onKeydown($event)',
@@ -123,6 +125,14 @@ export class MdDatepickerInput<D> implements AfterContentInit, ControlValueAcces
     this._validatorOnChange();
   }
   private _max: D;
+
+  /** Whether the datepicker-input is disabled. */
+  @Input()
+  get disabled() { return this._disabled; }
+  set disabled(value: any) {
+    this._disabled = coerceBooleanProperty(value);
+  }
+  private _disabled: boolean;
 
   /** Emits when the value changes (either due to user input or programmatic change). */
   _valueChange = new EventEmitter<D|null>();
