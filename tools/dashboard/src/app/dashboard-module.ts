@@ -4,14 +4,16 @@ import {AngularFireDatabaseModule} from 'angularfire2/database';
 import {NgModule} from '@angular/core';
 import {DashboardApp} from './dashboard-app';
 import {environment} from '../environments/environment';
-import {MdToolbarModule} from '@angular/material';
+import {MdCardModule, MdProgressSpinnerModule, MdToolbarModule} from '@angular/material';
 import {NgxChartsModule} from '@swimlane/ngx-charts';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {PayloadChart} from './payload-chart/payload-chart';
 
 @NgModule({
   exports: [
-    MdToolbarModule
+    MdCardModule,
+    MdToolbarModule,
+    MdProgressSpinnerModule
   ]
 })
 export class DashboardMaterialModule {}

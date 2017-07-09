@@ -8,3 +8,5 @@ $dashboard-light-theme: mat-light-theme($dashboard-primary, $dashboard-accent);
 
 // Only include the theme of the components that are used.
 @include mat-toolbar-theme($dashboard-light-theme);
+@include mat-progress-spinner-theme($dashboard-light-theme);
+@include mat-card-theme($dashboard-light-theme);

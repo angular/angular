@@ -1,0 +1,20 @@
+$payload-chart-loading-size: 50px;
+
+:host {
+  display: block;
+  position: relative;
+
+  height: 400px;
+  width: 100%;
+  max-width: 700px;
+}
+
+.payload-chart-loading {
+  position: absolute;
+
+  top: calc(50% - #{$payload-chart-loading-size});
+  left: calc(50% - #{$payload-chart-loading-size});
+
+  height: $payload-chart-loading-size;
+  width: $payload-chart-loading-size;
+}

@@ -3,5 +3,10 @@
 </md-toolbar>
 
 <div class="dashboard-content">
-  <payload-chart [data]="payloads | async" *ngIf="payloads | async"></payload-chart>
+  <md-card class="payload-size-card">
+    <md-card-title>Payload Size Chart</md-card-title>
+    <md-card-content>
+      <payload-chart [data]="payloads | async"></payload-chart>
+    </md-card-content>
+  </md-card>
 </div>

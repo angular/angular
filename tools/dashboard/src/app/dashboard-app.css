@@ -1,3 +1,8 @@
 .dashboard-content {
-  margin: 16px;
+  padding: 16px;
+}
+
+.payload-size-card {
+  width: 100%;
+  max-width: 700px;
 }
