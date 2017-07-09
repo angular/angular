@@ -116,6 +116,9 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
     if (this._tabSubscription) {
       this._tabSubscription.unsubscribe();
     }
+
+    this._emitCloseEvent();
+    this.close.complete();
   }
 
   /** Handle a keyboard event from the menu, delegating to the appropriate action. */

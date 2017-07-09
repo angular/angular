@@ -15,7 +15,8 @@ import {
   MdMenuTrigger,
   MdMenuPanel,
   MenuPositionX,
-  MenuPositionY
+  MenuPositionY,
+  MdMenu
 } from './index';
 import {OverlayContainer} from '../core/overlay/overlay-container';
 import {Directionality, Direction} from '../core/bidi/index';
@@ -477,6 +478,17 @@ describe('MdMenu', () => {
 
       expect(fixture.componentInstance.closeCallback).toHaveBeenCalled();
     });
+
+    it('should complete the callback when the menu is destroyed', () => {
+      let emitCallback = jasmine.createSpy('emit callback');
+      let completeCallback = jasmine.createSpy('complete callback');
+
+      fixture.componentInstance.menu.close.subscribe(emitCallback, null, completeCallback);
+      fixture.destroy();
+
+      expect(emitCallback).toHaveBeenCalled();
+      expect(completeCallback).toHaveBeenCalled();
+    });
   });
 
   describe('destroy', () => {
@@ -499,6 +511,7 @@ describe('MdMenu', () => {
 class SimpleMenu {
   @ViewChild(MdMenuTrigger) trigger: MdMenuTrigger;
   @ViewChild('triggerEl') triggerEl: ElementRef;
+  @ViewChild(MdMenu) menu: MdMenu;
   closeCallback = jasmine.createSpy('menu closed callback');
 }
 
