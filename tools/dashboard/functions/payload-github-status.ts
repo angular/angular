@@ -6,10 +6,10 @@ export const payloadGithubStatus = https.onRequest(async (request, response) => 
   const authToken = request.header('auth-token');
   const commitSha = request.header('commit-sha');
   const packageName = request.header('package-name');
-  const packageSize = parseFloat(request.header('package-full-size'));
-  const packageDiff = parseFloat(request.header('package-size-diff'));
+  const packageSize = parseFloat(request.header('package-full-size') || '');
+  const packageDiff = parseFloat(request.header('package-size-diff') || '');
 
-  if (!verifyToken(authToken)) {
+  if (!authToken || !verifyToken(authToken)) {
     return response.status(403).json({message: 'Auth token is not valid'});
   }
 
