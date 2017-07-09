@@ -170,6 +170,10 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
 
   /** Closes the autocomplete suggestion panel. */
   closePanel(): void {
+    if (!this.panelOpen) {
+      return;
+    }
+
     if (this._overlayRef && this._overlayRef.hasAttached()) {
       this._overlayRef.detach();
       this._closingActionsSubscription.unsubscribe();

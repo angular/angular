@@ -221,17 +221,31 @@ describe('MdAutocomplete', () => {
       });
     }));
 
-    it('should close the panel programmatically', () => {
+    it('should close the panel programmatically', async(() => {
       fixture.componentInstance.trigger.openPanel();
       fixture.detectChanges();
 
-      fixture.componentInstance.trigger.closePanel();
-      fixture.detectChanges();
+      fixture.whenStable().then(() => {
+        fixture.componentInstance.trigger.closePanel();
+        fixture.detectChanges();
 
-      expect(fixture.componentInstance.trigger.panelOpen)
-          .toBe(false, `Expected closing programmatically to set the panel state to closed.`);
-      expect(overlayContainerElement.textContent)
-          .toEqual('', `Expected closing programmatically to close the panel.`);
+        fixture.whenStable().then(() => {
+          expect(fixture.componentInstance.trigger.panelOpen)
+              .toBe(false, `Expected closing programmatically to set the panel state to closed.`);
+          expect(overlayContainerElement.textContent)
+              .toEqual('', `Expected closing programmatically to close the panel.`);
+        });
+      });
+    }));
+
+    it('should not throw when attempting to close the panel of a destroyed autocomplete', () => {
+      const trigger = fixture.componentInstance.trigger;
+
+      trigger.openPanel();
+      fixture.detectChanges();
+      fixture.destroy();
+
+      expect(() => trigger.closePanel()).not.toThrow();
     });
 
     it('should hide the panel when the options list is empty', async(() => {
