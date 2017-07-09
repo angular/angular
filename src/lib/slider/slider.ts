@@ -16,7 +16,9 @@ import {
   Optional,
   Output,
   Renderer2,
-  ViewEncapsulation
+  ViewEncapsulation,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {coerceBooleanProperty, coerceNumberProperty, HammerInput} from '../core';
@@ -118,31 +120,33 @@ export const _MdSliderMixinBase = mixinDisabled(MdSliderBase);
   styleUrls: ['slider.css'],
   inputs: ['disabled'],
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdSlider extends _MdSliderMixinBase
     implements ControlValueAccessor, OnDestroy, CanDisable {
   /** Whether the slider is inverted. */
   @Input()
   get invert() { return this._invert; }
-  set invert(value: any) { this._invert = coerceBooleanProperty(value); }
+  set invert(value: any) {
+    this._invert = coerceBooleanProperty(value);
+  }
   private _invert = false;
 
   /** The maximum value that the slider can have. */
   @Input()
-  get max() {
-    return this._max;
-  }
+  get max() { return this._max; }
   set max(v: number) {
     this._max = coerceNumberProperty(v, this._max);
     this._percent = this._calculatePercentage(this._value);
+
+    // Since this also modifies the percentage, we need to let the change detection know.
+    this._changeDetectorRef.markForCheck();
   }
   private _max: number = 100;
 
   /** The minimum value that the slider can have. */
   @Input()
-  get min() {
-    return this._min;
-  }
+  get min() { return this._min; }
   set min(v: number) {
     this._min = coerceNumberProperty(v, this._min);
 
@@ -151,6 +155,9 @@ export class MdSlider extends _MdSliderMixinBase
       this.value = this._min;
     }
     this._percent = this._calculatePercentage(this._value);
+
+    // Since this also modifies the percentage, we need to let the change detection know.
+    this._changeDetectorRef.markForCheck();
   }
   private _min: number = 0;
 
@@ -163,6 +170,9 @@ export class MdSlider extends _MdSliderMixinBase
     if (this._step % 1 !== 0) {
       this._roundLabelTo = this._step.toString().split('.').pop()!.length;
     }
+
+    // Since this could modify the label, we need to notify the change detection.
+    this._changeDetectorRef.markForCheck();
   }
   private _step: number = 1;
 
@@ -209,15 +219,22 @@ export class MdSlider extends _MdSliderMixinBase
     return this._value;
   }
   set value(v: number | null) {
-    this._value = coerceNumberProperty(v, this._value || 0);
-    this._percent = this._calculatePercentage(this._value);
+    if (v !== this._value) {
+      this._value = coerceNumberProperty(v, this._value || 0);
+      this._percent = this._calculatePercentage(this._value);
+
+      // Since this also modifies the percentage, we need to let the change detection know.
+      this._changeDetectorRef.markForCheck();
+    }
   }
   private _value: number | null = null;
 
   /** Whether the slider is vertical. */
   @Input()
   get vertical() { return this._vertical; }
-  set vertical(value: any) { this._vertical = coerceBooleanProperty(value); }
+  set vertical(value: any) {
+    this._vertical = coerceBooleanProperty(value);
+  }
   private _vertical = false;
 
   @Input() color: 'primary' | 'accent' | 'warn' = 'accent';
@@ -392,9 +409,11 @@ export class MdSlider extends _MdSliderMixinBase
 
   constructor(renderer: Renderer2, private _elementRef: ElementRef,
               private _focusOriginMonitor: FocusOriginMonitor,
+              private _changeDetectorRef: ChangeDetectorRef,
               @Optional() private _dir: Directionality) {
     super();
-    this._focusOriginMonitor.monitor(this._elementRef.nativeElement, renderer, true)
+    this._focusOriginMonitor
+        .monitor(this._elementRef.nativeElement, renderer, true)
         .subscribe((origin: FocusOrigin) => this._isActive = !!origin && origin !== 'keyboard');
     this._renderer = new SliderRenderer(this._elementRef);
   }
