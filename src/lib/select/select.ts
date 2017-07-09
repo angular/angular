@@ -132,6 +132,7 @@ export const _MdSelectMixinBase = mixinColor(mixinDisabled(MdSelectBase), 'prima
     '[attr.aria-invalid]': '_control?.invalid || "false"',
     '[attr.aria-owns]': '_optionIds',
     '[class.mat-select-disabled]': 'disabled',
+    '[class.mat-select-required]': 'required',
     'class': 'mat-select',
     '(keydown)': '_handleClosedKeydown($event)',
     '(blur)': '_onBlur()',

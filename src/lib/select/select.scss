@@ -72,7 +72,7 @@ $mat-select-panel-max-height: 256px !default;
   }
 
   // TODO: Double-check accessibility of this style
-  [aria-required=true] &::after {
+  .mat-select-required &::after {
     content: '*';
   }
 }

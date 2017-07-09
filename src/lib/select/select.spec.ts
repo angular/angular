@@ -1572,6 +1572,17 @@ describe('MdSelect', () => {
           .toEqual('true', `Expected aria-required attr to be true for required selects.`);
       });
 
+      it('should set the mat-select-required class for required selects', () => {
+        expect(select.classList).not.toContain(
+            'mat-select-required', `Expected the mat-select-required class not to be set.`);
+
+        fixture.componentInstance.isRequired = true;
+        fixture.detectChanges();
+
+        expect(select.classList).toContain(
+          'mat-select-required', `Expected the mat-select-required class to be set.`);
+      });
+
       it('should set aria-invalid for selects that are invalid', () => {
         expect(select.getAttribute('aria-invalid'))
           .toEqual('false', `Expected aria-invalid attr to be false for valid selects.`);
