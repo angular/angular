@@ -7,7 +7,6 @@
  */
 
 import {NgModule} from '@angular/core';
-import {FormsModule} from '@angular/forms';
 import {MdButtonToggleGroup, MdButtonToggleGroupMultiple, MdButtonToggle} from './button-toggle';
 import {
   UNIQUE_SELECTION_DISPATCHER_PROVIDER,
@@ -17,7 +16,7 @@ import {
 
 
 @NgModule({
-  imports: [FormsModule, MdCommonModule, StyleModule],
+  imports: [MdCommonModule, StyleModule],
   exports: [
     MdButtonToggleGroup,
     MdButtonToggleGroupMultiple,
