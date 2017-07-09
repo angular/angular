@@ -23,9 +23,9 @@ describe('LiveAnnouncer', () => {
     })));
 
     afterEach(() => {
-      // In our tests we always remove the current live element, because otherwise we would have
-      // multiple live elements due multiple service instantiations.
-      announcer._removeLiveElement();
+      // In our tests we always remove the current live element, in
+      // order to avoid having multiple announcer elements in the DOM.
+      announcer.ngOnDestroy();
     });
 
     it('should correctly update the announce text', fakeAsync(() => {
@@ -58,13 +58,14 @@ describe('LiveAnnouncer', () => {
       expect(ariaLiveElement.getAttribute('aria-live')).toBe('polite');
     }));
 
-    it('should remove the aria-live element from the DOM', fakeAsync(() => {
+    it('should remove the aria-live element from the DOM on destroy', fakeAsync(() => {
       announcer.announce('Hey Google');
 
       // This flushes our 100ms timeout for the screenreaders.
       tick(100);
 
-      announcer._removeLiveElement();
+      // Call the lifecycle hook manually since Angular won't do it in tests.
+      announcer.ngOnDestroy();
 
       expect(document.body.querySelector('[aria-live]'))
           .toBeFalsy('Expected that the aria-live element was remove from the DOM.');
@@ -85,10 +86,9 @@ describe('LiveAnnouncer', () => {
     });
 
     beforeEach(inject([LiveAnnouncer], (la: LiveAnnouncer) => {
-        announcer = la;
-        ariaLiveElement = getLiveElement();
-      }));
-
+      announcer = la;
+      ariaLiveElement = getLiveElement();
+    }));
 
     it('should allow to use a custom live element', fakeAsync(() => {
       announcer.announce('Custom Element');

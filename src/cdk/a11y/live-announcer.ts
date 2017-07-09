@@ -12,6 +12,7 @@ import {
   Optional,
   Inject,
   SkipSelf,
+  OnDestroy,
 } from '@angular/core';
 import {Platform} from '../platform/platform';
 
@@ -22,8 +23,7 @@ export const LIVE_ANNOUNCER_ELEMENT_TOKEN = new InjectionToken<HTMLElement>('liv
 export type AriaLivePoliteness = 'off' | 'polite' | 'assertive';
 
 @Injectable()
-export class LiveAnnouncer {
-
+export class LiveAnnouncer implements OnDestroy {
   private _liveElement: Element;
 
   constructor(
@@ -57,8 +57,7 @@ export class LiveAnnouncer {
     setTimeout(() => this._liveElement.textContent = message, 100);
   }
 
-  /** Removes the aria-live element from the DOM. */
-  _removeLiveElement() {
+  ngOnDestroy() {
     if (this._liveElement && this._liveElement.parentNode) {
       this._liveElement.parentNode.removeChild(this._liveElement);
     }
