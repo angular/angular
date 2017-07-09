@@ -18,7 +18,6 @@ import {
 } from './input-container';
 import {MdTextareaAutosize} from './autosize';
 import {CommonModule} from '@angular/common';
-import {FormsModule} from '@angular/forms';
 import {PlatformModule} from '../core/platform/index';
 
 
@@ -35,7 +34,6 @@ import {PlatformModule} from '../core/platform/index';
   ],
   imports: [
     CommonModule,
-    FormsModule,
     PlatformModule,
   ],
   exports: [
