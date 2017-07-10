@@ -38,7 +38,7 @@ export function openScreenshotsBucket() {
     projectId: 'material2-screenshots',
     credentials: {
       client_email: 'firebase-adminsdk-t4209@material2-screenshots.iam.gserviceaccount.com',
-      private_key: decode(process.env['MATERIAL2_SCREENSHOT_FIREBASE_SERVICE_KEY'])
+      private_key: decode(process.env['MATERIAL2_SCREENSHOT_FIREBASE_KEY'])
     },
   });
 
