@@ -112,11 +112,6 @@ aio-code pre {
 }
 
 
-// REMOVE RIPPLE EFFECT FROM MATERIAL TABS
-code-tabs md-tab-group *.mat-ripple-element, code-tabs md-tab-group *.mat-tab-body-active, code-tabs md-tab-group *.mat-tab-body-content, code-tabs md-tab-group *.mat-tab-body-content {
-  transform: none !important;
-}
-
 [role="tabpanel"] {
     transition: none;
 }
