@@ -4,7 +4,7 @@ The Angular Language Service is a way to get completions, errors,
 hints, and navigation inside your Angular templates whether they 
 are external in an HTML file or embedded in annotations/decorators 
 in a string. The Angular Language Service autodetects that you are 
-opening an Angular file, reads your `ts.config` file, finds all the 
+opening an Angular file, reads your `tsconfig.json` file, finds all the 
 templates you have in your application, and then provides language 
 services for any templates that you open.
 
@@ -12,12 +12,12 @@ services for any templates that you open.
 ## Autocompletion
 
 Autocompletion can speed up your development time by providing you with 
-contextual possiblities and hints as you type. This example shows 
-autocomplete in an interpolations. As you type it out, 
+contextual possibilities and hints as you type. This example shows 
+autocomplete in an interpolation. As you type it out, 
 you can hit tab to complete.
 
 <figure>
-  <img src="generated/images/guide/language-service/language-completion.gif" alt="autocompletion" width="100%">
+  <img src="generated/images/guide/language-service/language-completion.gif" alt="autocompletion">
 </figure>
 
 There are also completions within 
@@ -30,7 +30,7 @@ The Angular Language Service can also forewarn you of mistakes in your code.
 In this example, Angular doesn't know what `orders` is or where it comes from. 
 
 <figure>
-  <img src="generated/images/guide/language-service/language-error.gif" alt="error checking" width="100%">
+  <img src="generated/images/guide/language-service/language-error.gif" alt="error checking">
 </figure>
 
 ## Navigation
@@ -40,8 +40,7 @@ see where a component, directive, module, etc. is from and then
 click and press F12 to go directly to its definition.
 
 <figure>
-  <img src="generated/images/guide/language-service/language-navigation.gif" alt="navigation"
-  width="100%">
+  <img src="generated/images/guide/language-service/language-navigation.gif" alt="navigation">
 </figure>
 
 
@@ -49,8 +48,6 @@ click and press F12 to go directly to its definition.
 
 Angular Language Service is currently available for [Visual Studio Code](https://code.visualstudio.com/) and 
 [WebStorm](https://www.jetbrains.com/webstorm). 
-You can also use Angular Language Service in your code editor of choice by 
-[configuring your language host manually](guide/language-service#integrate-with-your-editor).
 
 ### Visual Studio Code
 
@@ -152,7 +149,7 @@ When you use an editor with a language service, there's an
 editor process which starts a separate language process/service 
 to which it speaks through an [RPC](https://en.wikipedia.org/wiki/Remote_procedure_call). 
 Any time you type inside of the editor, it sends information to the other process to 
-track the state of your project. When you trigger a completion list within a template, the editor process first parses the template into an HTML AST, or [abstract syntax table](https://en.wikipedia.org/wiki/Abstract_syntax_tree). Then the Angular compiler interprets 
+track the state of your project. When you trigger a completion list within a template, the editor process first parses the template into an HTML AST, or [abstract syntax tree](https://en.wikipedia.org/wiki/Abstract_syntax_tree). Then the Angular compiler interprets 
 what module the template is part of, the scope you're in, and the component selector. Then it figures out where in the template AST your cursor is. When it determines the 
 context, it can then determine what the children can be.
 
