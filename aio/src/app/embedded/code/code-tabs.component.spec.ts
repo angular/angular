@@ -83,6 +83,13 @@ describe('CodeTabsComponent', () => {
 
       expect(classes).toEqual(['foo-class', 'bar-class']);
     });
+
+    it('should disable ripple effect on tab labels', () => {
+      createComponent();
+      const tabsGroupComponent = codeTabsDe.query(By.directive(MdTabGroup)).componentInstance;
+
+      expect(tabsGroupComponent.disableRipple).toBe(true);
+    });
   });
 
   describe('(tab content)', () => {

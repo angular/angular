@@ -21,7 +21,7 @@ export interface TabInfo {
 @Component({
   selector: 'code-tabs',
   template: `
-    <md-tab-group class="code-tab-group">
+    <md-tab-group class="code-tab-group" disableRipple>
       <md-tab style="overflow-y: hidden;" *ngFor="let tab of tabs">
         <ng-template md-tab-label>
           <span class="{{ tab.class }}">{{ tab.title }}</span>
@@ -66,8 +66,8 @@ export class CodeTabsComponent implements OnInit {
     for (let i = 0; i < codeExamples.length; i++) {
       const codeExample = codeExamples.item(i);
       const tab = {
-        code: codeExample.innerHTML,
         class: codeExample.getAttribute('class'),
+        code: codeExample.innerHTML,
         language: codeExample.getAttribute('language'),
         linenums: this.getLinenums(codeExample),
         path: codeExample.getAttribute('path') || '',
