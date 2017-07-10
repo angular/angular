@@ -1,16 +1,19 @@
 import {NgModule} from '@angular/core';
 
+import {CdkTableModule} from '@angular/cdk';
 import {
   MdAutocompleteModule, MdButtonModule, MdButtonToggleModule, MdPaginatorModule,
   MdCardModule, MdCheckboxModule, MdChipsModule, MdDatepickerModule,
   MdDialogModule, MdGridListModule, MdIconModule, MdInputModule,
   MdListModule, MdMenuModule, MdProgressBarModule, MdProgressSpinnerModule,
   MdRadioModule, MdSelectModule, MdSidenavModule, MdSliderModule, MdSortModule,
-  MdSlideToggleModule, MdSnackBarModule, MdTabsModule, MdToolbarModule, MdTooltipModule
+  MdSlideToggleModule, MdSnackBarModule, MdTableModule, MdTabsModule, MdToolbarModule,
+  MdTooltipModule
 } from '@angular/material';
 
 @NgModule({
   exports: [
+    CdkTableModule,
     MdAutocompleteModule,
     MdButtonModule,
     MdButtonToggleModule,
@@ -32,6 +35,7 @@ import {
     MdSliderModule,
     MdSidenavModule,
     MdSnackBarModule,
+    MdTableModule,
     MdTabsModule,
     MdToolbarModule,
     MdTooltipModule,
