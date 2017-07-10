@@ -64,7 +64,7 @@ This gives you a reference to the Angular `NgModel` directive
 associated with this control that you can use _in the template_
 to check for control states such as `valid` and `dirty`.
 
-* The `*ngIf` on the `<div>` element reveals a set of nested message `divs` 
+* The `*ngIf` on the `<div>` element reveals a set of nested message `divs`
 but only if there are `name` errors and
 the control is either `dirty` or `touched`.
 
@@ -321,7 +321,7 @@ This allows you to do the following:
 
 * Add, change, and remove validation functions on the fly.
 * Manipulate the control model dynamically from within the component.
-* [Test](guide/form-validation#testing) validation and control logic with isolated unit tests.
+* [Test](guide/form-validation#testing-considerations) validation and control logic with isolated unit tests.
 
 The following sample re-writes the hero form in Reactive Forms style.
 
@@ -386,7 +386,7 @@ but rather for css styling and accessibility.
 
 <div class="l-sub-section">
 
-Currently, Reactive Forms doesn't add the `required` or `aria-required` 
+Currently, Reactive Forms doesn't add the `required` or `aria-required`
 HTML validation attribute to the DOM element
 when the control has the `required` validator function.
 
@@ -455,12 +455,12 @@ to set error messages for the new control model.
 
 ## Built-in validators
 
-Angular forms include a number of built-in validator functions, which are functions 
-that help you check common user input in forms. In addition to the built-in 
-validators covered here of `minlength`, `maxlength`, 
-and `required`, there are others such as `email` and `pattern` 
-for Reactive Forms. 
-For a full list of built-in validators, 
+Angular forms include a number of built-in validator functions, which are functions
+that help you check common user input in forms. In addition to the built-in
+validators covered here of `minlength`, `maxlength`,
+and `required`, there are others such as `email` and `pattern`
+for Reactive Forms.
+For a full list of built-in validators,
 see the [Validators](api/forms/Validators) API reference.
 
 
@@ -486,7 +486,7 @@ Learn more about `FormBuilder` in the [Introduction to FormBuilder](guide/reacti
 #### Committing hero value changes
 
 In two-way data binding, the user's changes flow automatically from the controls back to the data model properties.
-A Reactive Forms component should not use data binding to 
+A Reactive Forms component should not use data binding to
 automatically update data model properties.
 The developer decides _when and how_ to update the data model from control values.
 
