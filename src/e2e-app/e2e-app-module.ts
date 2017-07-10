@@ -18,11 +18,13 @@ import {FullscreenE2E, TestDialog as TestDialogFullScreen} from './fullscreen/fu
 import {E2E_APP_ROUTES} from './e2e-app/routes';
 import {SlideToggleE2E} from './slide-toggle/slide-toggle-e2e';
 import {InputE2E} from './input/input-e2e';
+import {SidenavE2E} from './sidenav/sidenav-e2e';
 import {BlockScrollStrategyE2E} from './block-scroll-strategy/block-scroll-strategy-e2e';
 import {
   OverlayContainer, FullscreenOverlayContainer, MdGridListModule, MdProgressBarModule,
   MdProgressSpinnerModule, MdTabsModule, MdRadioModule, MdSlideToggleModule, MdMenuModule,
-  MdListModule, MdInputModule, MdIconModule, MdDialogModule, MdCheckboxModule, MdButtonModule
+  MdListModule, MdInputModule, MdIconModule, MdDialogModule, MdCheckboxModule, MdButtonModule,
+  MdSidenavModule
 } from '@angular/material';
 
 /**
@@ -38,10 +40,11 @@ import {
     MdInputModule,
     MdListModule,
     MdMenuModule,
-    MdSlideToggleModule,
-    MdRadioModule,
     MdProgressBarModule,
     MdProgressSpinnerModule,
+    MdRadioModule,
+    MdSidenavModule,
+    MdSlideToggleModule,
     MdTabsModule
   ]
 })
@@ -68,6 +71,7 @@ export class E2eMaterialModule {}
     MenuE2E,
     ProgressBarE2E,
     ProgressSpinnerE2E,
+    SidenavE2E,
     SimpleCheckboxes,
     SimpleRadioButtons,
     SlideToggleE2E,
