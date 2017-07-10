@@ -29,6 +29,17 @@ Components created via `MdDialog` can _inject_ `MdDialogRef` and use it to close
 in which they are contained. When closing, an optional result value can be provided. This result
 value is forwarded as the result of the `afterClosed` promise. 
 
+```ts
+@Component({/* ... */})
+export class YourDialog {
+  constructor(public dialogRef: MdDialogRef<YourDialog>) { }
+  
+  closeDialog() {
+    this.dialogRef.close('Pizza!');
+  }
+}
+```
+
 ### Sharing data with the Dialog component.
 If you want to share data with your dialog, you can use the `data` option to pass information to the dialog component.
 
