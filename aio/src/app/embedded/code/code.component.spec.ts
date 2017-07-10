@@ -1,8 +1,7 @@
-/* tslint:disable:no-unused-variable */
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
 import { Component, DebugElement } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MdSnackBarModule, MdSnackBar } from '@angular/material';
+import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { CodeComponent } from './code.component';
@@ -268,9 +267,9 @@ describe('CodeComponent', () => {
 @Component({
   selector: 'aio-host-comp',
   template: `
-      <aio-code md-no-ink [code]="code" [language]="language"
-      [linenums]="linenums" [path]="path" [region]="region"
-      [hideCopy]="hideCopy" [title]="title"></aio-code>
+    <aio-code md-no-ink [code]="code" [language]="language"
+    [linenums]="linenums" [path]="path" [region]="region"
+    [hideCopy]="hideCopy" [title]="title"></aio-code>
   `
 })
 class HostComponent {

@@ -1,7 +1,6 @@
-/* tslint:disable:no-unused-variable */
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { Component, DebugElement, Input } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { Component, DebugElement, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 
 import { CodeExampleComponent } from './code-example.component';
 
@@ -75,13 +74,12 @@ describe('CodeExampleComponent', () => {
 });
 
 //// Test helpers ////
-// tslint:disable:member-ordering
 @Component({
   selector: 'aio-code',
   template: `
-  <div>lang: {{language}}</div>
-  <div>linenums: {{linenums}}</div>
-  code: <pre>{{someCode}}</pre>
+    <div>lang: {{language}}</div>
+    <div>linenums: {{linenums}}</div>
+    code: <pre>{{someCode}}</pre>
   `
 })
 class TestCodeComponent {
