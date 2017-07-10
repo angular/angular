@@ -256,8 +256,6 @@ groups:
       files:
         include:
           - "aio/*"
-        exclude:
-          - "aio/content/*"
     users:
       - petebacondarwin #primary
       - IgorMinar
@@ -268,11 +266,11 @@ groups:
     conditions:
       files:
         include:
-          - "aio/content/examples/*"
-          - "aio/content/guide/*"
-          - "aio/content/images/*"
-          - "aio/content/tutorial/*"
-          - "aio/content/file-not-found.md"
+          - "aio/content/*"
+        exclude:
+          - "aio/content/marketing/*"
+          - "aio/content/navigation.json"
+          - "aio/content/license.md"
     users:
       - juleskremer #primary
       - Foxandxss
@@ -285,13 +283,9 @@ groups:
     conditions:
       files:
         include:
-          - "aio/content/*"
-        exclude:
-          - "aio/content/examples/*"
-          - "aio/content/guide/*"
-          - "aio/content/images/*"
-          - "aio/content/tutorial/*"
-          - "aio/content/file-not-found.md"
+          - "aio/content/marketing/*"
+          - "aio/content/navigation.json"
+          - "aio/content/license.md"
     users:
       - juleskremer #primary
       - stephenfluin
