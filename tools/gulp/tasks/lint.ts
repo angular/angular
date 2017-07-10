@@ -4,7 +4,7 @@ import {join} from 'path';
 import {buildConfig} from 'material2-build-tools';
 
 /** Glob that matches all SCSS or CSS files that should be linted. */
-const stylesGlob = '+(tools|src)/**/*.+(css|scss)';
+const stylesGlob = '+(tools|src)/**/!(*.bundle).+(css|scss)';
 
 /** List of flags that will passed to the different TSLint tasks. */
 const tsLintBaseFlags = ['-c', 'tslint.json', '--project', './tsconfig.json'];
