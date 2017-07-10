@@ -9,7 +9,8 @@ For existing apps, follow these steps to begin using Angular Material.
 npm install --save @angular/material @angular/cdk
 ```
 
-A snapshot build with the latest changes from master is also available. Note that this snapshot build should not be considered stable and may break between releases.
+A snapshot build with the latest changes from master is also available. Note that this snapshot
+build should not be considered stable and may break between releases.
 
 ```bash
 npm install --save angular/material2-builds angular/cdk-builds
@@ -134,8 +135,8 @@ Note that `md-icon` supports any font or svg icons; using Material Icons is one 
 
 ## Appendix: Configuring SystemJS
 
-If your project is using SystemJS for module loading, you will need to add `@angular/material`
-to the SystemJS configuration:
+If your project is using SystemJS for module loading, you will need to add `@angular/material` and
+`@angular/cdk` to the SystemJS configuration:
 
 ```js
 System.config({
@@ -143,6 +144,7 @@ System.config({
   map: {
     // ...
     '@angular/material': 'npm:@angular/material/bundles/material.umd.js',
+    '@angular/cdk': 'npm:@angular/cdk/bundles/cdk.umd.js'
     // ...
   }
 });
