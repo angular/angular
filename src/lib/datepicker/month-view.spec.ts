@@ -3,7 +3,7 @@ import {Component} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {MdMonthView} from './month-view';
 import {MdCalendarBody} from './calendar-body';
-import {MdNativeDateModule, DateAdapter, NativeDateAdapter} from '../core/datetime/index';
+import {MdNativeDateModule} from '../core/datetime/index';
 import {JAN, MAR} from '../core/testing/month-constants';
 
 describe('MdMonthView', () => {
