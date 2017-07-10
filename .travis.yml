@@ -28,9 +28,10 @@ jobs:
     - env: "MODE=browserstack_required"
     - env: "MODE=travis_required"
     - stage: Deploy
-      script: ./scripts/ci/publish-artifacts.sh
-      env: "MODE=release"
-
+      env: "DEPLOY_MODE=build-artifacts"
+    - env: "DEPLOY_MODE=docs-content"
+    - env: "DEPLOY_MODE=screenshot-tool"
+    - env: "DEPLOY_MODE=dashboard"
 env:
   global:
   - LOGS_DIR=/tmp/angular-material2-build/logs
@@ -51,7 +52,7 @@ before_script:
   - mkdir -p $LOGS_DIR
 
 script:
-  - ./scripts/ci/build-and-test.sh
+  - ./scripts/ci/travis-script.sh
 
 cache:
   directories:

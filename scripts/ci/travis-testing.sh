@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Script that runs in the testing build stage of Travis and is responsible for testing
+# the project in different Travis jobs of the current build stage.
+
 # The script should immediately exit if any command in the script fails.
 set -e
 
