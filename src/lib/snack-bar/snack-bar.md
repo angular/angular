@@ -15,9 +15,11 @@ let snackBarRef = snackBar.open('Message archived', 'Undo');
 let snackBarRef = snackbar.openFromComponent(MessageArchivedComponent);
 ```
 
-In either case, an `MdSnackBarRef` is returned. This can be used to dismiss the snack-bar or to 
-receive notification of when the snack-bar is dismissed. For simple messages with an action, the 
+In either case, a `MdSnackBarRef` is returned. This can be used to dismiss the snack-bar or to
+receive notification of when the snack-bar is dismissed. For simple messages with an action, the
 `MdSnackBarRef` exposes an observable for when the action is triggered.
+If you want to close a custom snack-bar that was opened via `openFromComponent`, from within the
+component itself, you can inject the `MdSnackBarRef`.
 
 ```ts
 snackBarRef.afterDismissed().subscribe(() => {
@@ -33,7 +35,7 @@ snackBarRef.dismiss();
 ```
 
 ### Dismissal
-A snack-bar can be dismissed manually by calling the `dismiss` method on the `MdSnackBarRef` 
+A snack-bar can be dismissed manually by calling the `dismiss` method on the `MdSnackBarRef`
 returned from the call to `open`.
 
 Only one snack-bar can ever be opened at one time. If a new snackbar is opened while a previous
@@ -44,4 +46,29 @@ A snack-bar can also be given a duration via the optional configuration object:
 snackbar.open('Message archived', 'Undo', {
   duration: 3000
 });
+```
+
+### Sharing data with a custom snack-bar.
+You can share data with the custom snack-bar, that you opened via the `openFromComponent` method,
+by passing it through the `data` property.
+
+```ts
+snackbar.openFromComponent(MessageArchivedComponent, {
+  data: 'some data'
+});
+```
+
+To access the data in your component, you have to use the `MD_SNACK_BAR_DATA` injection token:
+
+```ts
+import {Component, Inject} from '@angular/core';
+import {MD_SNACK_BAR_DATA} from '@angular/material';
+
+@Component({
+  selector: 'your-snack-bar',
+  template: 'passed in {{ data }}',
+})
+export class MessageArchivedComponent {
+  constructor(@Inject(MD_SNACK_BAR_DATA) public data: any) { }
+}
 ```

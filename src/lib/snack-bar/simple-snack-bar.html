@@ -1,2 +1,6 @@
-{{message}}
-<button class="mat-simple-snackbar-action" *ngIf="hasAction" (click)="dismiss()">{{action}}</button>
+{{data.message}}
+
+<button
+  class="mat-simple-snackbar-action"
+  *ngIf="hasAction"
+  (click)="dismiss()">{{data.action}}</button>

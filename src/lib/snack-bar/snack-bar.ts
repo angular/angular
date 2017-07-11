@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, ComponentRef, Optional, SkipSelf} from '@angular/core';
+import {
+  Injectable,
+  ComponentRef,
+  Optional,
+  SkipSelf,
+  Injector,
+} from '@angular/core';
 import {
   ComponentType,
   ComponentPortal,
@@ -15,11 +21,12 @@ import {
   OverlayState,
   LiveAnnouncer,
 } from '../core';
-import {MdSnackBarConfig} from './snack-bar-config';
+import {PortalInjector} from '../core/portal/portal-injector';
+import {extendObject} from '../core/util/object-extend';
+import {MdSnackBarConfig, MD_SNACK_BAR_DATA} from './snack-bar-config';
 import {MdSnackBarRef} from './snack-bar-ref';
 import {MdSnackBarContainer} from './snack-bar-container';
 import {SimpleSnackBar} from './simple-snack-bar';
-import {extendObject} from '../core/util/object-extend';
 
 
 /**
@@ -36,7 +43,7 @@ export class MdSnackBar {
 
   /** Reference to the currently opened snackbar at *any* level. */
   get _openedSnackBarRef(): MdSnackBarRef<any> | null {
-    let parent = this._parentSnackBar;
+    const parent = this._parentSnackBar;
     return parent ? parent._openedSnackBarRef : this._snackBarRefAtThisLevel;
   }
 
@@ -51,6 +58,7 @@ export class MdSnackBar {
   constructor(
       private _overlay: Overlay,
       private _live: LiveAnnouncer,
+      private _injector: Injector,
       @Optional() @SkipSelf() private _parentSnackBar: MdSnackBar) {}
 
   /**
@@ -61,10 +69,8 @@ export class MdSnackBar {
    * @param config Extra configuration for the snack bar.
    */
   openFromComponent<T>(component: ComponentType<T>, config?: MdSnackBarConfig): MdSnackBarRef<T> {
-    config = _applyConfigDefaults(config);
-    let overlayRef = this._createOverlay(config);
-    let snackBarContainer = this._attachSnackBarContainer(overlayRef, config);
-    let snackBarRef = this._attachSnackbarContent(component, snackBarContainer, overlayRef);
+    const _config = _applyConfigDefaults(config);
+    const snackBarRef = this._attach(component, _config);
 
     // When the snackbar is dismissed, clear the reference to it.
     snackBarRef.afterDismissed().subscribe(() => {
@@ -74,27 +80,25 @@ export class MdSnackBar {
       }
     });
 
-    // If a snack bar is already in view, dismiss it and enter the new snack bar after exit
-    // animation is complete.
     if (this._openedSnackBarRef) {
+      // If a snack bar is already in view, dismiss it and enter the
+      // new snack bar after exit animation is complete.
       this._openedSnackBarRef.afterDismissed().subscribe(() => {
         snackBarRef.containerInstance.enter();
       });
       this._openedSnackBarRef.dismiss();
-    // If no snack bar is in view, enter the new snack bar.
     } else {
+      // If no snack bar is in view, enter the new snack bar.
       snackBarRef.containerInstance.enter();
     }
 
     // If a dismiss timeout is provided, set up dismiss based on after the snackbar is opened.
-    if (config.duration && config.duration > 0) {
-      snackBarRef.afterOpened().subscribe(() => {
-        snackBarRef._dismissAfter(config!.duration!);
-      });
+    if (_config.duration && _config.duration > 0) {
+      snackBarRef.afterOpened().subscribe(() => snackBarRef._dismissAfter(_config!.duration!));
     }
 
-    if (config.announcementMessage) {
-      this._live.announce(config.announcementMessage, config.politeness);
+    if (_config.announcementMessage) {
+      this._live.announce(_config.announcementMessage, _config.politeness);
     }
 
     this._openedSnackBarRef = snackBarRef;
@@ -108,14 +112,14 @@ export class MdSnackBar {
    * @param config Additional configuration options for the snackbar.
    */
   open(message: string, action = '', config?: MdSnackBarConfig): MdSnackBarRef<SimpleSnackBar> {
-    let _config = _applyConfigDefaults(config);
+    const _config = _applyConfigDefaults(config);
+
+    // Since the user doesn't have access to the component, we can
+    // override the data to pass in our own message and action.
+    _config.data = {message, action};
     _config.announcementMessage = message;
 
-    let simpleSnackBarRef = this.openFromComponent(SimpleSnackBar, _config);
-    simpleSnackBarRef.instance.snackBarRef = simpleSnackBarRef;
-    simpleSnackBarRef.instance.message = message;
-    simpleSnackBarRef.instance.action = action;
-    return simpleSnackBarRef;
+    return this.openFromComponent(SimpleSnackBar, _config);
   }
 
   /**
@@ -132,8 +136,8 @@ export class MdSnackBar {
    */
   private _attachSnackBarContainer(overlayRef: OverlayRef,
                                    config: MdSnackBarConfig): MdSnackBarContainer {
-    let containerPortal = new ComponentPortal(MdSnackBarContainer, config.viewContainerRef);
-    let containerRef: ComponentRef<MdSnackBarContainer> = overlayRef.attach(containerPortal);
+    const containerPortal = new ComponentPortal(MdSnackBarContainer, config.viewContainerRef);
+    const containerRef: ComponentRef<MdSnackBarContainer> = overlayRef.attach(containerPortal);
     containerRef.instance.snackBarConfig = config;
     return containerRef.instance;
   }
@@ -141,12 +145,18 @@ export class MdSnackBar {
   /**
    * Places a new component as the content of the snack bar container.
    */
-  private _attachSnackbarContent<T>(component: ComponentType<T>,
-                                    container: MdSnackBarContainer,
-                                    overlayRef: OverlayRef): MdSnackBarRef<T> {
-    let portal = new ComponentPortal(component);
-    let contentRef = container.attachComponentPortal(portal);
-    return new MdSnackBarRef(contentRef.instance, container, overlayRef);
+  private _attach<T>(component: ComponentType<T>, config: MdSnackBarConfig): MdSnackBarRef<T> {
+    const overlayRef = this._createOverlay(config);
+    const container = this._attachSnackBarContainer(overlayRef, config);
+    const snackBarRef = new MdSnackBarRef<T>(container, overlayRef);
+    const injector = this._createInjector(config, snackBarRef);
+    const portal = new ComponentPortal(component, undefined, injector);
+    const contentRef = container.attachComponentPortal(portal);
+
+    // We can't pass this via the injector, because the injector is created earlier.
+    snackBarRef.instance = contentRef.instance;
+
+    return snackBarRef;
   }
 
   /**
@@ -154,10 +164,28 @@ export class MdSnackBar {
    * @param config The user-specified snack bar config.
    */
   private _createOverlay(config: MdSnackBarConfig): OverlayRef {
-    let state = new OverlayState();
+    const state = new OverlayState();
     state.direction = config.direction;
     state.positionStrategy = this._overlay.position().global().centerHorizontally().bottom('0');
     return this._overlay.create(state);
+  }
+
+  /**
+   * Creates an injector to be used inside of a snack bar component.
+   * @param config Config that was used to create the snack bar.
+   * @param snackBarRef Reference to the snack bar.
+   */
+  private _createInjector<T>(
+      config: MdSnackBarConfig,
+      snackBarRef: MdSnackBarRef<T>): PortalInjector {
+
+    const userInjector = config && config.viewContainerRef && config.viewContainerRef.injector;
+    const injectionTokens = new WeakMap();
+
+    injectionTokens.set(MdSnackBarRef, snackBarRef);
+    injectionTokens.set(MD_SNACK_BAR_DATA, config.data);
+
+    return new PortalInjector(userInjector || this._injector, injectionTokens);
   }
 }
 

@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ViewContainerRef} from '@angular/core';
+import {ViewContainerRef, InjectionToken} from '@angular/core';
 import {AriaLivePoliteness, Direction} from '../core';
+
+export const MD_SNACK_BAR_DATA = new InjectionToken<any>('MdSnackBarData');
 
 /**
  * Configuration used when opening a snack-bar.
@@ -30,4 +32,7 @@ export class MdSnackBarConfig {
 
   /** Text layout direction for the snack bar. */
   direction?: Direction = 'ltr';
+
+  /** Data being injected into the child component. */
+  data?: any = null;
 }

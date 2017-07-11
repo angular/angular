@@ -25,9 +25,9 @@ import {
   OverlayState,
   ComponentPortal,
 } from '../core';
+import {PortalInjector} from '../core/portal/portal-injector';
 import {extendObject} from '../core/util/object-extend';
 import {ESCAPE} from '../core/keyboard/keycodes';
-import {DialogInjector} from './dialog-injector';
 import {MdDialogConfig} from './dialog-config';
 import {MdDialogRef} from './dialog-ref';
 import {MdDialogContainer} from './dialog-container';
@@ -222,7 +222,7 @@ export class MdDialog {
   private _createInjector<T>(
       config: MdDialogConfig,
       dialogRef: MdDialogRef<T>,
-      dialogContainer: MdDialogContainer): DialogInjector {
+      dialogContainer: MdDialogContainer): PortalInjector {
 
     let userInjector = config && config.viewContainerRef && config.viewContainerRef.injector;
     let injectionTokens = new WeakMap();
@@ -231,7 +231,7 @@ export class MdDialog {
     injectionTokens.set(MdDialogContainer, dialogContainer);
     injectionTokens.set(MD_DIALOG_DATA, config.data);
 
-    return new DialogInjector(userInjector || this._injector, injectionTokens);
+    return new PortalInjector(userInjector || this._injector, injectionTokens);
   }
 
   /**

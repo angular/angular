@@ -11,18 +11,12 @@ import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {MdSnackBarContainer} from './snack-bar-container';
 
-// TODO(josephperrott): Implement onAction observable.
-
 /**
  * Reference to a snack bar dispatched from the snack bar service.
  */
 export class MdSnackBarRef<T> {
-  private _instance: T;
-
   /** The instance of the component making up the content of the snack bar. */
-  get instance(): T {
-    return this._instance;
-  }
+  instance: T;
 
   /**
    * The instance of the component making up the content of the snack bar.
@@ -45,11 +39,8 @@ export class MdSnackBarRef<T> {
    */
   private _durationTimeoutId: number;
 
-  constructor(instance: T,
-              containerInstance: MdSnackBarContainer,
+  constructor(containerInstance: MdSnackBarContainer,
               private _overlayRef: OverlayRef) {
-    // Sets the readonly instance of the snack bar content component.
-    this._instance = instance;
     this.containerInstance = containerInstance;
     // Dismiss snackbar on action.
     this.onAction().subscribe(() => this.dismiss());

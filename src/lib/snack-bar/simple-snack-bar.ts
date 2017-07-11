@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ViewEncapsulation, ChangeDetectionStrategy} from '@angular/core';
+import {Component, ViewEncapsulation, Inject, ChangeDetectionStrategy} from '@angular/core';
 import {MdSnackBarRef} from './snack-bar-ref';
+import {MD_SNACK_BAR_DATA} from './snack-bar-config';
 
 
 /**
@@ -26,14 +27,14 @@ import {MdSnackBarRef} from './snack-bar-ref';
   }
 })
 export class SimpleSnackBar {
-  /** The message to be shown in the snack bar. */
-  message: string;
+  /** Data that was injected into the snack bar. */
+  data: { message: string, action: string };
 
-  /** The label for the button in the snack bar. */
-  action: string;
-
-  /** The instance of the component making up the content of the snack bar. */
-  snackBarRef: MdSnackBarRef<SimpleSnackBar>;
+  constructor(
+    public snackBarRef: MdSnackBarRef<SimpleSnackBar>,
+    @Inject(MD_SNACK_BAR_DATA) data: any) {
+    this.data = data;
+  }
 
   /** Dismisses the snack bar. */
   dismiss(): void {
@@ -42,6 +43,6 @@ export class SimpleSnackBar {
 
   /** If the action button should be shown. */
   get hasAction(): boolean {
-    return !!this.action;
+    return !!this.data.action;
   }
 }

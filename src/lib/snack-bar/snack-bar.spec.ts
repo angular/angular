@@ -7,11 +7,18 @@ import {
   flushMicrotasks,
   tick
 } from '@angular/core/testing';
-import {NgModule, Component, Directive, ViewChild, ViewContainerRef} from '@angular/core';
+import {NgModule, Component, Directive, ViewChild, ViewContainerRef, Inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {MdSnackBarModule, MdSnackBar, MdSnackBarConfig, SimpleSnackBar} from './index';
 import {OverlayContainer, LiveAnnouncer} from '../core';
+import {
+  MdSnackBarModule,
+  MdSnackBar,
+  MdSnackBarConfig,
+  MdSnackBarRef,
+  SimpleSnackBar,
+  MD_SNACK_BAR_DATA,
+} from './index';
 
 
 // TODO(josephperrott): Update tests to mock waiting for time to complete for animations.
@@ -173,17 +180,6 @@ describe('MdSnackBar', () => {
           .toBe(0, 'Expected snack bar to be removed after the view container was destroyed');
     });
   }));
-
-  it('should open a custom component', () => {
-    let config = {viewContainerRef: testViewContainerRef};
-    let snackBarRef = snackBar.openFromComponent(BurritosNotification, config);
-
-    expect(snackBarRef.instance instanceof BurritosNotification)
-      .toBe(true, 'Expected the snack bar content component to be BurritosNotification');
-    expect(overlayContainerElement.textContent!.trim())
-        .toBe('Burritos are on the way.',
-              `Expected the overlay text content to be 'Burritos are on the way'`);
-  });
 
   it('should set the animation state to visible on entry', () => {
     let config = {viewContainerRef: testViewContainerRef};
@@ -361,6 +357,37 @@ describe('MdSnackBar', () => {
     expect(pane.getAttribute('dir')).toBe('rtl', 'Expected the pane to be in RTL mode.');
   });
 
+  describe('with custom component', () => {
+    it('should open a custom component', () => {
+      const snackBarRef = snackBar.openFromComponent(BurritosNotification);
+
+      expect(snackBarRef.instance instanceof BurritosNotification)
+        .toBe(true, 'Expected the snack bar content component to be BurritosNotification');
+      expect(overlayContainerElement.textContent!.trim())
+          .toBe('Burritos are on the way.', 'Expected component to have the proper text.');
+    });
+
+    it('should inject the snack bar reference into the component', () => {
+      const snackBarRef = snackBar.openFromComponent(BurritosNotification);
+
+      expect(snackBarRef.instance.snackBarRef)
+        .toBe(snackBarRef, 'Expected component to have an injected snack bar reference.');
+    });
+
+    it('should be able to inject arbitrary user data', () => {
+      const snackBarRef = snackBar.openFromComponent(BurritosNotification, {
+        data: {
+          burritoType: 'Chimichanga'
+        }
+      });
+
+      expect(snackBarRef.instance.data).toBeTruthy('Expected component to have a data object.');
+      expect(snackBarRef.instance.data.burritoType)
+        .toBe('Chimichanga', 'Expected the injected data object to be the one the user provided.');
+    });
+
+  });
+
 });
 
 describe('MdSnackBar with parent MdSnackBar', () => {
@@ -453,7 +480,11 @@ class ComponentWithChildViewContainer {
 
 /** Simple component for testing ComponentPortal. */
 @Component({template: '<p>Burritos are on the way.</p>'})
-class BurritosNotification {}
+class BurritosNotification {
+  constructor(
+    public snackBarRef: MdSnackBarRef<BurritosNotification>,
+    @Inject(MD_SNACK_BAR_DATA) public data: any) { }
+}
 
 
 @Component({

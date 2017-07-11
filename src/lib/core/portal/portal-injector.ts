@@ -8,8 +8,12 @@
 
 import {Injector} from '@angular/core';
 
-/** Custom injector type specifically for instantiating components with a dialog. */
-export class DialogInjector implements Injector {
+/**
+ * Custom injector to be used when providing custom
+ * injection tokens to components inside a portal.
+ * @docs-private
+ */
+export class PortalInjector implements Injector {
   constructor(
     private _parentInjector: Injector,
     private _customTokens: WeakMap<any, any>) { }
