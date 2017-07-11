@@ -9,6 +9,9 @@ import {AnimationTriggerMetadata} from '@angular/animations';
 import {ɵAnimationEngine as AnimationEngine} from '@angular/animations/browser';
 import {Injectable, NgZone, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2} from '@angular/core';
 
+const ANIMATION_PREFIX = '@';
+const DISABLE_ANIMATIONS_FLAG = '@.disabled';
+
 @Injectable()
 export class AnimationRendererFactory implements RendererFactory2 {
   private _currentId: number = 0;
@@ -174,13 +177,21 @@ export class BaseAnimationRenderer implements Renderer2 {
   }
 
   setProperty(el: any, name: string, value: any): void {
-    this.delegate.setProperty(el, name, value);
+    if (name.charAt(0) == ANIMATION_PREFIX && name == DISABLE_ANIMATIONS_FLAG) {
+      this.disableAnimations(el, !!value);
+    } else {
+      this.delegate.setProperty(el, name, value);
+    }
   }
 
   setValue(node: any, value: string): void { this.delegate.setValue(node, value); }
 
   listen(target: any, eventName: string, callback: (event: any) => boolean | void): () => void {
     return this.delegate.listen(target, eventName, callback);
+  }
+
+  protected disableAnimations(element: any, value: boolean) {
+    this.engine.disableAnimations(element, value);
   }
 }
 
@@ -193,9 +204,12 @@ export class AnimationRenderer extends BaseAnimationRenderer implements Renderer
   }
 
   setProperty(el: any, name: string, value: any): void {
-    if (name.charAt(0) == '@') {
-      name = name.substr(1);
-      this.engine.process(this.namespaceId, el, name, value);
+    if (name.charAt(0) == ANIMATION_PREFIX) {
+      if (name.charAt(1) == '.' && name == DISABLE_ANIMATIONS_FLAG) {
+        this.disableAnimations(el, !!value);
+      } else {
+        this.engine.process(this.namespaceId, el, name.substr(1), value);
+      }
     } else {
       this.delegate.setProperty(el, name, value);
     }
@@ -203,11 +217,13 @@ export class AnimationRenderer extends BaseAnimationRenderer implements Renderer
 
   listen(target: 'window'|'document'|'body'|any, eventName: string, callback: (event: any) => any):
       () => void {
-    if (eventName.charAt(0) == '@') {
+    if (eventName.charAt(0) == ANIMATION_PREFIX) {
       const element = resolveElementFromTarget(target);
       let name = eventName.substr(1);
       let phase = '';
-      if (name.charAt(0) != '@') {  // transition-specific
+      // @listener.phase is for trigger animation callbacks
+      // @@listener is for animation builder callbacks
+      if (name.charAt(0) != ANIMATION_PREFIX) {
         [name, phase] = parseTriggerCallbackName(name);
       }
       return this.engine.listen(this.namespaceId, element, name, phase, event => {
