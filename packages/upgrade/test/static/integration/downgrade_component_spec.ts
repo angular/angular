@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, Component, ComponentFactoryResolver, EventEmitter, Injector, Input, NgModule, NgModuleRef, OnChanges, OnDestroy, SimpleChanges, destroyPlatform} from '@angular/core';
+import {ChangeDetectorRef, Compiler, Component, ComponentFactoryResolver, EventEmitter, Injector, Input, NgModule, NgModuleRef, OnChanges, OnDestroy, SimpleChanges, destroyPlatform} from '@angular/core';
 import {async} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -145,6 +145,132 @@ export function main() {
                    'literal: Text; interpolate: Hello everyone; ' +
                    'oneWayA: A; oneWayB: B; twoWayA: newA; twoWayB: newB; (3) | ' +
                    'modelA: newA; modelB: newB; eventA: aFired; eventB: bFired;');
+         });
+       }));
+
+    it('should run change-detection on every digest (by default)', async(() => {
+         let ng2Component: Ng2Component;
+
+         @Component({selector: 'ng2', template: '{{ value1 }} | {{ value2 }}'})
+         class Ng2Component {
+           @Input() value1 = -1;
+           @Input() value2 = -1;
+
+           constructor() { ng2Component = this; }
+         }
+
+         @NgModule({
+           imports: [BrowserModule, UpgradeModule],
+           declarations: [Ng2Component],
+           entryComponents: [Ng2Component]
+         })
+         class Ng2Module {
+           ngDoBootstrap() {}
+         }
+
+         const ng1Module = angular.module('ng1', [])
+                               .directive('ng2', downgradeComponent({component: Ng2Component}))
+                               .run(($rootScope: angular.IRootScopeService) => {
+                                 $rootScope.value1 = 0;
+                                 $rootScope.value2 = 0;
+                               });
+
+         const element = html('<ng2 [value1]="value1" value2="{{ value2 }}"></ng2>');
+
+         bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(upgrade => {
+           const $rootScope = upgrade.$injector.get('$rootScope') as angular.IRootScopeService;
+
+           expect(element.textContent).toBe('0 | 0');
+
+           // Digest should invoke CD
+           $rootScope.$digest();
+           $rootScope.$digest();
+           expect(element.textContent).toBe('0 | 0');
+
+           // Internal changes should be detected on digest
+           ng2Component.value1 = 1;
+           ng2Component.value2 = 2;
+           $rootScope.$digest();
+           expect(element.textContent).toBe('1 | 2');
+
+           // Digest should propagate change in prop-bound input
+           $rootScope.$apply('value1 = 3');
+           expect(element.textContent).toBe('3 | 2');
+
+           // Digest should propagate change in attr-bound input
+           ng2Component.value1 = 4;
+           $rootScope.$apply('value2 = 5');
+           expect(element.textContent).toBe('4 | 5');
+
+           // Digest should propagate changes that happened before the digest
+           $rootScope.value1 = 6;
+           expect(element.textContent).toBe('4 | 5');
+
+           $rootScope.$digest();
+           expect(element.textContent).toBe('6 | 5');
+         });
+       }));
+
+    it('should not run change-detection on every digest when opted out', async(() => {
+         let ng2Component: Ng2Component;
+
+         @Component({selector: 'ng2', template: '{{ value1 }} | {{ value2 }}'})
+         class Ng2Component {
+           @Input() value1 = -1;
+           @Input() value2 = -1;
+
+           constructor() { ng2Component = this; }
+         }
+
+         @NgModule({
+           imports: [BrowserModule, UpgradeModule],
+           declarations: [Ng2Component],
+           entryComponents: [Ng2Component]
+         })
+         class Ng2Module {
+           ngDoBootstrap() {}
+         }
+
+         const ng1Module =
+             angular.module('ng1', [])
+                 .directive(
+                     'ng2', downgradeComponent({component: Ng2Component, propagateDigest: false}))
+                 .run(($rootScope: angular.IRootScopeService) => {
+                   $rootScope.value1 = 0;
+                   $rootScope.value2 = 0;
+                 });
+
+         const element = html('<ng2 [value1]="value1" value2="{{ value2 }}"></ng2>');
+
+         bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(upgrade => {
+           const $rootScope = upgrade.$injector.get('$rootScope') as angular.IRootScopeService;
+
+           expect(element.textContent).toBe('0 | 0');
+
+           // Digest should not invoke CD
+           $rootScope.$digest();
+           $rootScope.$digest();
+           expect(element.textContent).toBe('0 | 0');
+
+           // Digest should not invoke CD, even if component values have changed (internally)
+           ng2Component.value1 = 1;
+           ng2Component.value2 = 2;
+           $rootScope.$digest();
+           expect(element.textContent).toBe('0 | 0');
+
+           // Digest should invoke CD, if prop-bound input has changed
+           $rootScope.$apply('value1 = 3');
+           expect(element.textContent).toBe('3 | 2');
+
+           // Digest should invoke CD, if attr-bound input has changed
+           ng2Component.value1 = 4;
+           $rootScope.$apply('value2 = 5');
+           expect(element.textContent).toBe('4 | 5');
+
+           // Digest should invoke CD, if input has changed before the digest
+           $rootScope.value1 = 6;
+           $rootScope.$digest();
+           expect(element.textContent).toBe('6 | 5');
          });
        }));
 
