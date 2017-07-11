@@ -346,13 +346,13 @@ elements and their children.
 The [official JavaScript language specification](https://en.wikipedia.org/wiki/ECMAScript).
 
 The latest approved version of JavaScript is
-[ECMAScript 2016](http://www.ecma-international.org/ecma-262/7.0/)
-(also known as "ES2016" or "ES7"). Many Angular developers write their applications
-in ES7 or a dialect that strives to be
+[ECMAScript 2017](http://www.ecma-international.org/ecma-262/8.0/)
+(also known as "ES2017" or "ES8"). Many Angular developers write their applications
+in ES8 or a dialect that strives to be
 compatible with it, such as [TypeScript](guide/glossary#typescript).
 
 Most modern browsers only support the much older "ECMAScript 5" (also known as "ES5") standard.
-Applications written in ES2016, ES2015, or one of their dialects must be [transpiled](guide/glossary#transpile)
+Applications written in ES2017, ES2016, ES2015, or one of their dialects must be [transpiled](guide/glossary#transpile)
 to ES5 JavaScript.
 
 Angular developers can write in ES5 directly.
