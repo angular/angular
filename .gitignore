@@ -2,6 +2,7 @@
 
 /dist/
 bazel-*
+e2e_test.*
 node_modules
 bower_components
 
