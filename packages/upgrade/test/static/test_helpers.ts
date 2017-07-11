@@ -18,7 +18,7 @@ export function bootstrap(
   // We bootstrap the Angular module first; then when it is ready (async)
   // We bootstrap the AngularJS module on the bootstrap element
   return platform.bootstrapModule(Ng2Module).then(ref => {
-    const upgrade = ref.injector.get(UpgradeModule) as UpgradeModule;
+    const upgrade = ref.injector.get<UpgradeModule>(UpgradeModule);
     upgrade.bootstrap(element, [ng1Module.name]);
     return upgrade;
   });
