@@ -15,6 +15,8 @@ import {
   ViewEncapsulation,
   Inject,
   Optional,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
 } from '@angular/core';
 import {ENTER, SPACE} from '../keyboard/keycodes';
 import {coerceBooleanProperty} from '@angular/cdk';
@@ -54,11 +56,13 @@ export class MdOptionSelectionChange {
     'class': 'mat-option',
   },
   templateUrl: 'option.html',
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdOption {
   private _selected: boolean = false;
   private _active: boolean = false;
+  private _multiple: boolean = false;
 
   /** Whether the option is disabled.  */
   private _disabled: boolean = false;
@@ -66,7 +70,13 @@ export class MdOption {
   private _id: string = `md-option-${_uniqueIdCounter++}`;
 
   /** Whether the wrapping component is in multiple selection mode. */
-  multiple: boolean = false;
+  get multiple() { return this._multiple; }
+  set multiple(value: boolean) {
+    if (value !== this._multiple) {
+      this._multiple = value;
+      this._changeDetectorRef.markForCheck();
+    }
+  }
 
   /** The unique ID of the option. */
   get id() { return this._id; }
@@ -87,6 +97,7 @@ export class MdOption {
 
   constructor(
     private _element: ElementRef,
+    private _changeDetectorRef: ChangeDetectorRef,
     @Optional() public readonly group: MdOptgroup,
     @Optional() @Inject(MATERIAL_COMPATIBILITY_MODE) public _isCompatibilityMode: boolean) {}
 
@@ -112,12 +123,14 @@ export class MdOption {
   /** Selects the option. */
   select(): void {
     this._selected = true;
+    this._changeDetectorRef.markForCheck();
     this._emitSelectionChangeEvent();
   }
 
   /** Deselects the option. */
   deselect(): void {
     this._selected = false;
+    this._changeDetectorRef.markForCheck();
     this._emitSelectionChangeEvent();
   }
 
@@ -132,7 +145,10 @@ export class MdOption {
    * events will display the proper options as active on arrow key events.
    */
   setActiveStyles(): void {
-    this._active = true;
+    if (!this._active) {
+      this._active = true;
+      this._changeDetectorRef.markForCheck();
+    }
   }
 
   /**
@@ -141,7 +157,10 @@ export class MdOption {
    * events will display the proper options as active on arrow key events.
    */
   setInactiveStyles(): void {
-    this._active = false;
+    if (this._active) {
+      this._active = false;
+      this._changeDetectorRef.markForCheck();
+    }
   }
 
   /** Ensures the option is selected when activated from the keyboard. */
@@ -161,6 +180,7 @@ export class MdOption {
   _selectViaInteraction(): void {
     if (!this.disabled) {
       this._selected = this.multiple ? !this._selected : true;
+      this._changeDetectorRef.markForCheck();
       this._emitSelectionChangeEvent(true);
     }
   }

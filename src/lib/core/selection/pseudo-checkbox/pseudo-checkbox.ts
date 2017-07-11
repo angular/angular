@@ -12,6 +12,7 @@ import {
   Input,
   ElementRef,
   Renderer2,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import {CanColor, mixinColor} from '../../common-behaviors/color';
 
@@ -40,6 +41,7 @@ export const _MdPseudoCheckboxBase = mixinColor(MdPseudoCheckboxBase, 'accent');
 @Component({
   moduleId: module.id,
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'md-pseudo-checkbox, mat-pseudo-checkbox',
   styleUrls: ['pseudo-checkbox.css'],
   inputs: ['color'],

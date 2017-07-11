@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ViewEncapsulation, Input} from '@angular/core';
+import {Component, ViewEncapsulation, Input, ChangeDetectionStrategy} from '@angular/core';
 import {mixinDisabled, CanDisable} from '../common-behaviors/disabled';
 
 // Boilerplate for applying mixins to MdOptgroup.
@@ -25,6 +25,7 @@ let _uniqueOptgroupIdCounter = 0;
   selector: 'md-optgroup, mat-optgroup',
   templateUrl: 'optgroup.html',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   inputs: ['disabled'],
   host: {
     'class': 'mat-optgroup',
