@@ -249,7 +249,7 @@ Here's the complete `HeroDetailComponent`.
 
 
 ## Declare _HeroDetailComponent_ in the _AppModule_
-Every component must be declared in one&mdash;and only one&mdash;Angular module.
+Every component must be declared in one&mdash;and only one&mdash;NgModule.
 
 Open `app.module.ts` in your editor and import the `HeroDetailComponent` so you can refer to it.
 
@@ -276,7 +276,7 @@ This module declares only the two application components, `AppComponent` and `He
 
 
 
-Read more about Angular modules in the [NgModules](guide/ngmodule "Angular Modules") guide.
+Read more about NgModules in the [NgModules](guide/ngmodule "NgModules") guide.
 
 
 </div>
@@ -449,8 +449,8 @@ Here's what you achieved in this page:
 
 * You created a reusable component.
 * You learned how to make a component accept input.
-* You learned to declare the required application directives in an Angular module. You
-listed the directives in the `NgModule` decorator's `declarations` array.
+* You learned to declare the required application directives in an NgModule. You
+listed the directives in the `@NgModule` decorator's `declarations` array.
 * You learned to bind a parent component to a child component.
 
 Your app should look like this <live-example></live-example>.

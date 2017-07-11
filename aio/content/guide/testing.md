@@ -427,7 +427,7 @@ and re-attach it to a dynamically-constructed Angular test module
 tailored specifically for this battery of tests.
 
 The `configureTestingModule` method takes an `@NgModule`-like metadata object.
-The metadata object can have most of the properties of a normal [Angular module](guide/ngmodule).
+The metadata object can have most of the properties of a normal [NgModule](guide/ngmodule).
 
 _This metadata object_ simply declares the component to test, `BannerComponent`.
 The metadata lack `imports` because (a) the default testing module configuration already has what `BannerComponent` needs

@@ -199,7 +199,7 @@ The new "angular-in-memory-web-api" has new features.
 
 ## "Style Guide" with _NgModules_ (2016-09-27)
 
-[StyleGuide](guide/styleguide) explains recommended conventions for Angular modules (NgModule).
+[StyleGuide](guide/styleguide) explains recommended conventions for NgModules.
 Barrels now are far less useful and have been removed from the style guide;
 they remain valuable but are not a matter of Angular style.
 Also relaxed the rule that discouraged use of the `@Component.host` property.

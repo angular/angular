@@ -30,7 +30,7 @@ You can keep building the Tour of Heroes without pausing to recompile or refresh
 
 ## Providing HTTP Services
 
-The `HttpModule` is not a core Angular module.
+The `HttpModule` is not a core NgModule.
 `HttpModule` is Angular's optional approach to web access. It exists as a separate add-on module called `@angular/http`
 and is shipped in a separate script file as part of the Angular npm package.
 

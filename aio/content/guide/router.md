@@ -347,7 +347,7 @@ Here are the key `Router` terms and their meanings:
     </td>
 
     <td>
-      A separate Angular module that provides the necessary service providers
+      A separate NgModule that provides the necessary service providers
       and directives for navigating through application views.
     </td>
 
@@ -3794,7 +3794,7 @@ Take the final step and detach the admin feature set from the main application.
 The root `AppModule` must neither load nor reference the `AdminModule` or its files.
 
 In `app.module.ts`, remove the `AdminModule` import statement from the top of the file
-and remove the `AdminModule` from the Angular module's `imports` array.
+and remove the `AdminModule` from the NgModule's `imports` array.
 
 
 {@a can-load-guard}
