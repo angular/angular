@@ -62,7 +62,7 @@ There are a few rules in particular that will make it much easier to do
 * The [Folders-by-Feature Structure](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#folders-by-feature-structure)
   and [Modularity](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#modularity)
   rules define similar principles on a higher level of abstraction: Different parts of the
-  application should reside in different directories and Angular modules.
+  application should reside in different directories and NgModules.
 
 When an application is laid out feature per feature in this way, it can also be
 migrated one feature at a time. For applications that don't already look like
@@ -382,12 +382,12 @@ that describes Angular assets in metadata. The differences blossom from there.
 
 In a hybrid application you run both versions of Angular at the same time.
 That means that you need at least one module each from both AngularJS and Angular.
-You will import `UpgradeModule` inside the Angular module, and then use it for
+You will import `UpgradeModule` inside the NgModule, and then use it for
 bootstrapping the AngularJS module.
 
 <div class="l-sub-section">
 
-Learn more about Angular modules at the [NgModule guide](guide/ngmodule).
+Read more about [NgModules](guide/ngmodule).
 
 </div>
 
@@ -485,7 +485,7 @@ Because `HeroDetailComponent` is an Angular component, you must also add it to t
 
 And because this component is being used from the AngularJS module, and is an entry point into
 the Angular application, you must add it to the `entryComponents` for the
-Angular module.
+NgModule.
 
 <code-example path="upgrade-module/src/app/downgrade-static/app.module.ts" region="ngmodule" title="app.module.ts">
 </code-example>
