@@ -31,21 +31,21 @@ You'll learn the details in the pages that follow. For now, focus on the big pic
 <img src="generated/images/guide/architecture/module.png" alt="Component" class="left">
 
 
-Angular apps are modular and Angular has its own modularity system called _Angular modules_ or _NgModules_.
+Angular apps are modular and Angular has its own modularity system called _NgModules_.
 
-_Angular modules_ are a big deal.
-This page introduces modules; the [Angular modules](guide/ngmodule) page covers them in depth.
+NgModules are a big deal.
+This page introduces modules; the [NgModules](guide/ngmodule) page covers them in depth.
 
 <br class="clear">
 
-Every Angular app has at least one Angular module class, [the _root module_](guide/bootstrapping "AppModule: the root module"),
+Every Angular app has at least one NgModule class, [the _root module_](guide/bootstrapping "Bootstrapping"),
 conventionally named `AppModule`.
 
 While the _root module_ may be the only module in a small application, most apps have many more
 _feature modules_, each a cohesive block of code dedicated to an application domain,
 a workflow, or a closely related set of capabilities.
 
-An Angular module, whether a _root_ or _feature_, is a class with an `@NgModule` decorator.
+An NgModule, whether a _root_ or _feature_, is a class with an `@NgModule` decorator.
 
 <div class="l-sub-section">
 
@@ -87,12 +87,12 @@ During development you're likely to bootstrap the `AppModule` in a `main.ts` fil
 
 <code-example path="architecture/src/main.ts" title="src/main.ts" linenums="false"></code-example>
 
-### Angular modules vs. JavaScript modules
+### NgModules vs. JavaScript modules
 
-The Angular module &mdash; a class decorated with `@NgModule` &mdash; is a fundamental feature of Angular.
+The NgModule &mdash; a class decorated with `@NgModule` &mdash; is a fundamental feature of Angular.
 
 JavaScript also has its own module system for managing collections of JavaScript objects.
-It's completely different and unrelated to the Angular module system.
+It's completely different and unrelated to the NgModule system.
 
 In JavaScript each _file_ is a module and all objects defined in the file belong to that module.
 The module declares some objects to be public by marking them with the `export` key word.
@@ -124,7 +124,7 @@ For example, import Angular's `Component` decorator from the `@angular/core` lib
 
 <code-example path="architecture/src/app/app.component.ts" region="import" linenums="false"></code-example>
 
-You also import Angular _modules_ from Angular _libraries_ using JavaScript import statements:
+You also import NgModules_ from Angular _libraries_ using JavaScript import statements:
 
 <code-example path="architecture/src/app/mini-app.ts" region="import-browser-module" linenums="false"></code-example>
 
@@ -139,7 +139,7 @@ Hang in there. The confusion yields to clarity with time and experience.
 
 <div class="l-sub-section">
 
-  Learn more from the [Angular modules](guide/ngmodule) page.
+  Learn more from the [NgModules](guide/ngmodule) page.
 
 </div>
 

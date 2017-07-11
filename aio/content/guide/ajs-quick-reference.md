@@ -1000,7 +1000,7 @@ For more information on pipes, see [Pipes](guide/pipes).
 
 
 ## Modules/controllers/components
-In both AngularJS and Angular, Angular modules help you organize your application into cohesive blocks of functionality.
+In both AngularJS and Angular, modules help you organize your application into cohesive blocks of functionality.
 
 In AngularJS, you write the code that provides the model and the methods for the view in a **controller**.
 In Angular, you build a **component**.
@@ -1080,18 +1080,18 @@ The Angular code is shown using TypeScript.
     <td>
 
 
-      ### Angular modules
+      ### NgModules
       <code-example hideCopy path="ajs-quick-reference/src/app/app.module.1.ts" linenums="false">
 
       </code-example>
 
 
-      Angular modules, defined with the `NgModule` decorator, serve the same purpose:
+      NgModules, defined with the `NgModule` decorator, serve the same purpose:
 
       * `imports`: specifies the list of other modules that this module depends upon
       * `declaration`: keeps track of your components, pipes, and directives.
 
-      For more information on modules, see [Angular Modules (NgModule)](guide/ngmodule).
+      For more information on modules, see [NgModules](guide/ngmodule).
     </td>
 
   </tr>
