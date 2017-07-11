@@ -31,7 +31,7 @@
 * **animations:** properly cleanup query artificats when animation construction fails ([00de9ff](https://github.com/angular/angular/commit/00de9ff))
 * **animations:** properly detect state transition changes for object literals ([00c9741](https://github.com/angular/angular/commit/00c9741))
 * **animations:** properly handle cancelled animation style application ([cf57527](https://github.com/angular/angular/commit/cf57527))
-* **compiler:** emits quoted keys only iff they are quoted in the original template ([45ae14c](https://github.com/angular/angular/commit/45ae14c)), closes [#14292](https://github.com/angular/angular/issues/14292)
+* **compiler:** emits quoted keys only if they are quoted in the original template ([45ae14c](https://github.com/angular/angular/commit/45ae14c)), closes [#14292](https://github.com/angular/angular/issues/14292)
 * **compiler:** fix merge error ([6307581](https://github.com/angular/angular/commit/6307581))
 * **compiler:** fix types ([5ea9b62](https://github.com/angular/angular/commit/5ea9b62))
 * **compiler:** remove i18n markup even if no translations ([#17999](https://github.com/angular/angular/issues/17999)) ([2763577](https://github.com/angular/angular/commit/2763577)), closes [#11042](https://github.com/angular/angular/issues/11042)
