@@ -1,11 +1,11 @@
 $mat-calendar-padding: 8px !default;
 $mat-calendar-header-divider-width: 1px !default;
 $mat-calendar-controls-vertical-padding: 5%;
-// We want to indent to the middle of the first tile. There are 7 tiles, so 100% / 7 / 2.
-// Then we back up a little bit since the text in the cells is center-aligned.
-$mat-calendar-controls-start-padding: calc(100% / 14 - 22px);
-// Same as above, but on other side for arrows.
-$mat-calendar-controls-end-padding: calc(100% / 14 - 22px);
+// We use the same padding as the month / year label, but subtract 16px since there is padding
+// between the edge of the button and the text. This ensures that the button text lines up with
+// the month / year label text.
+$mat-calendar-controls-side-margin: calc(33% / 7 - 16px);
+
 $mat-calendar-arrow-size: 5px !default;
 $mat-calendar-arrow-disabled-opacity: 0.5 !default;
 
@@ -32,8 +32,7 @@ $mat-calendar-next-icon-transform: translateX(-2px) rotate(45deg);
 
 .mat-calendar-controls {
   display: flex;
-  padding: $mat-calendar-controls-vertical-padding $mat-calendar-controls-end-padding
-           $mat-calendar-controls-vertical-padding $mat-calendar-controls-start-padding;
+  margin: $mat-calendar-controls-vertical-padding $mat-calendar-controls-side-margin;
 }
 
 .mat-calendar-spacer {

@@ -3,18 +3,28 @@
   aria-hidden because we don't want it to be read out as one of the weeks in the month.
 -->
 <tr *ngIf="_firstRowOffset < labelMinRequiredCells" aria-hidden="true">
-  <td class="mat-calendar-body-label" [attr.colspan]="numCols" >{{label}}</td>
+  <td class="mat-calendar-body-label"
+      [attr.colspan]="numCols"
+      [style.paddingTop.%]="50 * cellAspectRatio / numCols"
+      [style.paddingBottom.%]="50 * cellAspectRatio / numCols">
+    {{label}}
+  </td>
 </tr>
 
 <!-- Create the first row separately so we can include a special spacer cell. -->
 <tr *ngFor="let row of rows; let rowIndex = index" role="row">
   <!--
     We mark this cell as aria-hidden so it doesn't get read out as one of the days in the week.
+    The aspect ratio of the table cells is maintained by setting the top and bottom padding as a
+    percentage of the width (a variant of the trick described here:
+    https://www.w3schools.com/howto/howto_css_aspect_ratio.asp).
   -->
   <td *ngIf="rowIndex === 0 && _firstRowOffset"
       aria-hidden="true"
       class="mat-calendar-body-label"
-      [attr.colspan]="_firstRowOffset">
+      [attr.colspan]="_firstRowOffset"
+      [style.paddingTop.%]="50 * cellAspectRatio / numCols"
+      [style.paddingBottom.%]="50 * cellAspectRatio / numCols">
     {{_firstRowOffset >= labelMinRequiredCells ? label : ''}}
   </td>
   <td *ngFor="let item of row; let colIndex = index"
@@ -25,7 +35,10 @@
       [class.mat-calendar-body-active]="_isActiveCell(rowIndex, colIndex)"
       [attr.aria-label]="item.ariaLabel"
       [attr.aria-disabled]="!item.enabled || null"
-      (click)="_cellClicked(item)">
+      (click)="_cellClicked(item)"
+      [style.width.%]="100 / numCols"
+      [style.paddingTop.%]="50 * cellAspectRatio / numCols"
+      [style.paddingBottom.%]="50 * cellAspectRatio / numCols">
     <div class="mat-calendar-body-cell-content"
          [class.mat-calendar-body-selected]="selectedValue === item.value"
          [class.mat-calendar-body-today]="todayValue === item.value">

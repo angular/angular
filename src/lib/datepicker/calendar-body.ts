@@ -68,6 +68,12 @@ export class MdCalendarBody {
   /** The cell number of the active cell in the table. */
   @Input() activeCell = 0;
 
+  /**
+   * The aspect ratio (width / height) to use for the cells in the table. This aspect ratio will be
+   * maintained even as the table resizes.
+   */
+  @Input() cellAspectRatio = 1;
+
   /** Emits when a new value is selected. */
   @Output() selectedValueChange = new EventEmitter<number>();
 

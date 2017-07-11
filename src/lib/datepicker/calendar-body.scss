@@ -1,12 +1,14 @@
 $mat-calendar-body-label-padding-start: 5% !default;
-$mat-calendar-body-label-translation: -6px !default;
+// We don't want the label to jump around when we switch between month and year views, so we use
+// the same amount of padding regardless of the number of columns. We align the header label with
+// the one third mark of the first cell, this was chosen somewhat arbitrarily to make it look
+// roughly like the mock. Half way is too far since the cell text is center aligned.
+$mat-calendar-body-label-side-padding: 33% / 7 !default;
 $mat-calendar-body-cell-min-size: 32px !default;
-$mat-calendar-body-cell-size: 100% / 7 !default;
 $mat-calendar-body-cell-content-margin: 5% !default;
 $mat-calendar-body-cell-content-border-width: 1px !default;
 
 $mat-calendar-body-min-size: 7 * $mat-calendar-body-cell-min-size !default;
-$mat-calendar-body-cell-padding: $mat-calendar-body-cell-size / 2 !default;
 $mat-calendar-body-cell-content-size: 100% - $mat-calendar-body-cell-content-margin * 2 !default;
 
 
@@ -15,20 +17,17 @@ $mat-calendar-body-cell-content-size: 100% - $mat-calendar-body-cell-content-mar
 }
 
 .mat-calendar-body-label {
-  padding: $mat-calendar-body-cell-padding 0
-           $mat-calendar-body-cell-padding $mat-calendar-body-cell-padding;
   height: 0;
   line-height: 0;
-  transform: translateX($mat-calendar-body-label-translation);
   text-align: left;
+  padding-left: $mat-calendar-body-label-side-padding;
+  padding-right: $mat-calendar-body-label-side-padding;
 }
 
 .mat-calendar-body-cell {
   position: relative;
-  width: $mat-calendar-body-cell-size;
   height: 0;
   line-height: 0;
-  padding: $mat-calendar-body-cell-padding 0;
   text-align: center;
   outline: none;
   cursor: pointer;
@@ -53,13 +52,13 @@ $mat-calendar-body-cell-content-size: 100% - $mat-calendar-body-cell-content-mar
 
   border-width: $mat-calendar-body-cell-content-border-width;
   border-style: solid;
-  border-radius: 50%;
+
+  // Choosing a value clearly larger than the height ensures we get the correct capsule shape.
+  border-radius: 999px;
 }
 
 [dir='rtl'] {
   .mat-calendar-body-label {
-    padding: 0 $mat-calendar-body-cell-padding 0 0;
-    transform: translateX(-$mat-calendar-body-label-translation);
     text-align: right;
   }
 }
