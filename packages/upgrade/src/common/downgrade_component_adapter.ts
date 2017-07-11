@@ -64,7 +64,7 @@ export class DowngradeComponentAdapter {
     hookupNgModel(this.ngModel, this.component);
   }
 
-  setupInputs(): void {
+  setupInputs(propagateDigest = true): void {
     const attrs = this.attrs;
     const inputs = this.componentFactory.inputs || [];
     for (let i = 0; i < inputs.length; i++) {
@@ -124,7 +124,11 @@ export class DowngradeComponentAdapter {
         (<OnChanges>this.component).ngOnChanges(inputChanges !);
       });
     }
-    this.componentScope.$watch(() => this.changeDetector && this.changeDetector.detectChanges());
+
+    // Unless opted-out, wire up the change detectors.
+    if (propagateDigest) {
+      this.componentScope.$watch(() => this.changeDetector && this.changeDetector.detectChanges());
+    }
   }
 
   setupOutputs() {
