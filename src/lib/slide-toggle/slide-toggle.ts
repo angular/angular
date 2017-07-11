@@ -35,6 +35,8 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {mixinDisabled, CanDisable} from '../core/common-behaviors/disabled';
 import {CanColor, mixinColor} from '../core/common-behaviors/color';
 
+// Increasing integer for generating unique ids for slide-toggle components.
+let nextUniqueId = 0;
 
 export const MD_SLIDE_TOGGLE_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
@@ -47,11 +49,6 @@ export class MdSlideToggleChange {
   source: MdSlideToggle;
   checked: boolean;
 }
-
-// Increasing integer for generating unique ids for slide-toggle components.
-let nextId = 0;
-
-
 
 // Boilerplate for applying mixins to MdSlideToggle.
 /** @docs-private */
@@ -66,6 +63,7 @@ export const _MdSlideToggleMixinBase = mixinColor(mixinDisabled(MdSlideToggleBas
   selector: 'md-slide-toggle, mat-slide-toggle',
   host: {
     'class': 'mat-slide-toggle',
+    '[id]': 'id',
     '[class.mat-checked]': 'checked',
     '[class.mat-disabled]': 'disabled',
     '[class.mat-slide-toggle-label-before]': 'labelPosition == "before"',
@@ -82,8 +80,7 @@ export class MdSlideToggle extends _MdSlideToggleMixinBase
   private onChange = (_: any) => {};
   private onTouched = () => {};
 
-  // A unique id for the slide-toggle. By default the id is auto-generated.
-  private _uniqueId = `md-slide-toggle-${++nextId}`;
+  private _uniqueId: string = `md-slide-toggle-${++nextUniqueId}`;
   private _checked: boolean = false;
   private _slideRenderer: SlideToggleRenderer;
   private _required: boolean = false;

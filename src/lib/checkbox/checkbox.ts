@@ -27,9 +27,8 @@ import {FocusOrigin, FocusOriginMonitor, MdRipple, RippleRef} from '../core';
 import {mixinDisabled, CanDisable} from '../core/common-behaviors/disabled';
 import {CanColor, mixinColor} from '../core/common-behaviors/color';
 
-
-/** Monotonically increasing integer used to auto-generate unique ids for checkbox components. */
-let nextId = 0;
+// Increasing integer for generating unique ids for checkbox components.
+let nextUniqueId = 0;
 
 /**
  * Provider Expression that allows md-checkbox to register as a ControlValueAccessor.
@@ -88,6 +87,7 @@ export const _MdCheckboxMixinBase = mixinColor(mixinDisabled(MdCheckboxBase), 'a
   styleUrls: ['checkbox.css'],
   host: {
     'class': 'mat-checkbox',
+    '[id]': 'id',
     '[class.mat-checkbox-indeterminate]': 'indeterminate',
     '[class.mat-checkbox-checked]': 'checked',
     '[class.mat-checkbox-disabled]': 'disabled',
@@ -111,8 +111,13 @@ export class MdCheckbox extends _MdCheckboxMixinBase
    */
   @Input('aria-labelledby') ariaLabelledby: string | null = null;
 
-  /** A unique id for the checkbox. If one is not supplied, it is auto-generated. */
-  @Input() id: string = `md-checkbox-${++nextId}`;
+  private _uniqueId: string = `md-checkbox-${++nextUniqueId}`;
+
+  /** A unique id for the checkbox input. If none is supplied, it will be auto-generated. */
+  @Input() id: string = this._uniqueId;
+
+  /** Returns the unique id for the visual hidden input. */
+  get inputId(): string { return `${this.id || this._uniqueId}-input`; }
 
   /** Whether the ripple effect on click should be disabled. */
   private _disableRipple: boolean;
@@ -121,11 +126,6 @@ export class MdCheckbox extends _MdCheckboxMixinBase
   @Input()
   get disableRipple(): boolean { return this._disableRipple; }
   set disableRipple(value) { this._disableRipple = coerceBooleanProperty(value); }
-
-  /** ID of the native input element inside `<md-checkbox>` */
-  get inputId(): string {
-    return `input-${this.id}`;
-  }
 
   private _required: boolean;
 

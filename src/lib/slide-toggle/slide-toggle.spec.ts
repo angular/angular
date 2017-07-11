@@ -163,18 +163,20 @@ describe('MdSlideToggle without forms', () => {
       testComponent.slideId = 'myId';
       fixture.detectChanges();
 
-      expect(inputElement.id).toBe('myId-input');
+      expect(slideToggleElement.id).toBe('myId');
+      expect(inputElement.id).toBe(`${slideToggleElement.id}-input`);
 
       testComponent.slideId = 'nextId';
       fixture.detectChanges();
 
-      expect(inputElement.id).toBe('nextId-input');
+      expect(slideToggleElement.id).toBe('nextId');
+      expect(inputElement.id).toBe(`${slideToggleElement.id}-input`);
 
       testComponent.slideId = null;
       fixture.detectChanges();
 
-      // Once the id input is falsy, we use a default prefix with a incrementing unique number.
-      expect(inputElement.id).toMatch(/md-slide-toggle-[0-9]+-input/g);
+      // Once the id binding is set to null, the id property should auto-generate a unique id.
+      expect(inputElement.id).toMatch(/md-slide-toggle-\d+-input/);
     });
 
     it('should forward the tabIndex to the underlying input', () => {

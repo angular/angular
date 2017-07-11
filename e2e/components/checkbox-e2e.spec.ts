@@ -9,7 +9,7 @@ describe('checkbox', () => {
 
     it('should be checked when clicked, and unchecked when clicked again', async () => {
       let checkboxEl = element(by.id('test-checkbox'));
-      let inputEl = element(by.css('input[id=input-test-checkbox]'));
+      let inputEl = element(by.css('input[id=test-checkbox-input]'));
 
       screenshot('start');
       checkboxEl.click();
@@ -32,7 +32,7 @@ describe('checkbox', () => {
     });
 
     it('should toggle the checkbox when pressing space', () => {
-      let inputEl = element(by.css('input[id=input-test-checkbox]'));
+      let inputEl = element(by.css('input[id=test-checkbox-input]'));
 
       expect(inputEl.getAttribute('checked'))
           .toBeFalsy('Expect checkbox "checked" property to be false');

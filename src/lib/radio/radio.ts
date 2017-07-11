@@ -39,6 +39,8 @@ import {coerceBooleanProperty} from '@angular/cdk';
 import {mixinDisabled, CanDisable} from '../core/common-behaviors/disabled';
 import {CanColor, mixinColor} from '../core/common-behaviors/color';
 
+// Increasing integer for generating unique ids for radio components.
+let nextUniqueId = 0;
 
 /**
  * Provider Expression that allows md-radio-group to register as a ControlValueAccessor. This
@@ -50,8 +52,6 @@ export const MD_RADIO_GROUP_CONTROL_VALUE_ACCESSOR: any = {
   useExisting: forwardRef(() => MdRadioGroup),
   multi: true
 };
-
-let _uniqueIdCounter = 0;
 
 /** Change event object emitted by MdRadio and MdRadioGroup. */
 export class MdRadioChange {
@@ -90,7 +90,7 @@ export class MdRadioGroup extends _MdRadioGroupMixinBase
   private _value: any = null;
 
   /** The HTML name attribute applied to radio buttons in this group. */
-  private _name: string = `md-radio-group-${_uniqueIdCounter++}`;
+  private _name: string = `md-radio-group-${nextUniqueId++}`;
 
   /** The currently selected radio button. Should match value. */
   private _selected: MdRadioButton | null = null;
@@ -326,8 +326,10 @@ export const _MdRadioButtonMixinBase = mixinColor(MdRadioButtonBase, 'accent');
 export class MdRadioButton extends _MdRadioButtonMixinBase
     implements OnInit, AfterViewInit, OnDestroy, CanColor {
 
+  private _uniqueId: string = `md-radio-${++nextUniqueId}`;
+
   /** The unique ID for the radio button. */
-  @Input() id: string = `md-radio-${_uniqueIdCounter++}`;
+  @Input() id: string = this._uniqueId;
 
   /** Analog to HTML 'name' attribute used to group radios for unique selection. */
   @Input() name: string;
@@ -437,9 +439,7 @@ export class MdRadioButton extends _MdRadioButtonMixinBase
   radioGroup: MdRadioGroup;
 
   /** ID of the native input element inside `<md-radio-button>` */
-  get inputId(): string {
-    return `${this.id}-input`;
-  }
+  get inputId(): string { return `${this.id || this._uniqueId}-input`; }
 
   /** Whether this radio is checked. */
   private _checked: boolean = false;

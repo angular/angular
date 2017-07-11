@@ -266,6 +266,15 @@ describe('MdCheckbox', () => {
 
     it('should preserve the user-provided id', () => {
       expect(checkboxNativeElement.id).toBe('simple-check');
+      expect(inputElement.id).toBe('simple-check-input');
+    });
+
+    it('should generate a unique id for the checkbox input if no id is set', () => {
+      testComponent.checkboxId = null;
+      fixture.detectChanges();
+
+      expect(checkboxInstance.inputId).toMatch(/md-checkbox-\d+/);
+      expect(inputElement.id).toBe(checkboxInstance.inputId);
     });
 
     it('should project the checkbox content into the label element', () => {
@@ -675,8 +684,8 @@ describe('MdCheckbox', () => {
           fixture.debugElement.queryAll(By.directive(MdCheckbox))
           .map(debugElement => debugElement.nativeElement.querySelector('input').id);
 
-      expect(firstId).toBeTruthy();
-      expect(secondId).toBeTruthy();
+      expect(firstId).toMatch(/md-checkbox-\d+-input/);
+      expect(secondId).toMatch(/md-checkbox-\d+-input/);
       expect(firstId).not.toEqual(secondId);
     });
   });
@@ -833,7 +842,7 @@ describe('MdCheckbox', () => {
   template: `
   <div (click)="parentElementClicked = true" (keyup)="parentElementKeyedUp = true">
     <md-checkbox
-        id="simple-check"
+        [id]="checkboxId"
         [required]="isRequired"
         [labelPosition]="labelPos"
         [checked]="isChecked"
@@ -857,6 +866,7 @@ class SingleCheckbox {
   disableRipple: boolean = false;
   parentElementClicked: boolean = false;
   parentElementKeyedUp: boolean = false;
+  checkboxId: string | null = 'simple-check';
   checkboxColor: string = 'primary';
   checkboxValue: string = 'single_checkbox';
 
