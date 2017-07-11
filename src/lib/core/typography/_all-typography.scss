@@ -30,7 +30,11 @@
 
 
 // Includes all of the typographic styles.
-@mixin angular-material-typography($config: mat-typography-config()) {
+@mixin angular-material-typography($config: null) {
+  @if $config == null {
+    $config: mat-typography-config();
+  }
+
   @include mat-base-typography($config);
   @include mat-autocomplete-typography($config);
   @include mat-button-typography($config);

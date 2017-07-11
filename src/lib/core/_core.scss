@@ -11,7 +11,7 @@
 @import 'typography/all-typography';
 
 // Mixin that renders all of the core styles that are not theme-dependent.
-@mixin mat-core() {
+@mixin mat-core($typography-config: null) {
   // Provides external CSS classes for each elevation value. Each CSS class is formatted as
   // `mat-elevation-z$zValue` where `$zValue` corresponds to the z-space to which the element is
   // elevated.
@@ -21,7 +21,7 @@
     }
   }
 
-  @include angular-material-typography();
+  @include angular-material-typography($typography-config);
   @include mat-ripple();
   @include mat-option();
   @include mat-optgroup();

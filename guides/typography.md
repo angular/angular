@@ -84,6 +84,14 @@ different SASS mixins.
 @include angular-material-typography($custom-typography);
 ```
 
+If you're using Material's theming, you can also pass in your typography config to the
+`mat-core` mixin:
+
+```scss
+// Override the typography in the core CSS.
+@include mat-core($custom-typography);
+```
+
 For more details about the typography functions and default config, see the
 [source](https://github.com/angular/material2/blob/master/src/lib/core/typography/_typography.scss).
 
