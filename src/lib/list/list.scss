@@ -110,7 +110,12 @@ $mat-dense-list-icon-size: 20px;
   display: block;
   box-sizing: border-box;
   padding: $mat-list-side-padding;
-  margin: 0;
+
+  // This needs slightly more specificity, because it
+  // can be overwritten by the typography styles.
+  .mat-list & {
+    margin: 0;
+  }
 }
 
 // This mixin adjusts the heights and padding based on whether the list is in dense mode.
