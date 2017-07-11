@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '@angular/core';
+import {Injector, Type} from '@angular/core';
 import * as angular from './angular1';
 
 const DIRECTIVE_PREFIX_REGEXP = /^(?:x|data)[:\-_]/i;
@@ -65,6 +65,11 @@ export class Deferred<R> {
       this.reject = rej;
     });
   }
+}
+
+export interface LazyModuleRef {
+  injector?: Injector;
+  promise: Promise<Injector>;
 }
 
 /**

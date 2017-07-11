@@ -10,7 +10,7 @@ import {Compiler, CompilerOptions, Directive, Injector, NgModule, NgModuleRef, N
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import * as angular from '../common/angular1';
-import {$$TESTABILITY, $COMPILE, $INJECTOR, $ROOT_SCOPE, COMPILER_KEY, INJECTOR_KEY, NG_ZONE_KEY} from '../common/constants';
+import {$$TESTABILITY, $COMPILE, $INJECTOR, $ROOT_SCOPE, COMPILER_KEY, INJECTOR_KEY, LAZY_MODULE_REF, NG_ZONE_KEY} from '../common/constants';
 import {downgradeComponent} from '../common/downgrade_component';
 import {downgradeInjectable} from '../common/downgrade_injectable';
 import {Deferred, controllerKey, onError} from '../common/util';
@@ -495,6 +495,12 @@ export class UpgradeAdapter {
     this.ngZone = new NgZone({enableLongStackTrace: Zone.hasOwnProperty('longStackTraceZoneSpec')});
     this.ng2BootstrapDeferred = new Deferred();
     ng1Module.factory(INJECTOR_KEY, () => this.moduleRef !.injector.get(Injector))
+        .factory(
+            LAZY_MODULE_REF,
+            [
+              INJECTOR_KEY,
+              (injector: Injector) => ({injector, promise: Promise.resolve(injector)})
+            ])
         .constant(NG_ZONE_KEY, this.ngZone)
         .factory(COMPILER_KEY, () => this.moduleRef !.injector.get(Compiler))
         .config([
