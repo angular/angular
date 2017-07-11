@@ -18,8 +18,9 @@ const INITIAL_VALUE = {
 };
 
 export class DowngradeComponentAdapter {
+  private implementsOnChanges = false;
   private inputChangeCount: number = 0;
-  private inputChanges: SimpleChanges|null = null;
+  private inputChanges: SimpleChanges = {};
   private componentScope: angular.IScope;
   private componentRef: ComponentRef<any>|null = null;
   private component: any = null;
@@ -64,7 +65,7 @@ export class DowngradeComponentAdapter {
     hookupNgModel(this.ngModel, this.component);
   }
 
-  setupInputs(): void {
+  setupInputs(propagateDigest = true): void {
     const attrs = this.attrs;
     const inputs = this.componentFactory.inputs || [];
     for (let i = 0; i < inputs.length; i++) {
@@ -114,17 +115,29 @@ export class DowngradeComponentAdapter {
       }
     }
 
+    // Invoke `ngOnChanges()` and Change Detection (when necessary)
+    const detectChanges = () => this.changeDetector && this.changeDetector.detectChanges();
     const prototype = this.componentFactory.componentType.prototype;
-    if (prototype && (<OnChanges>prototype).ngOnChanges) {
-      // Detect: OnChanges interface
-      this.inputChanges = {};
-      this.componentScope.$watch(() => this.inputChangeCount, () => {
+    this.implementsOnChanges = !!(prototype && (<OnChanges>prototype).ngOnChanges);
+
+    this.componentScope.$watch(() => this.inputChangeCount, () => {
+      // Invoke `ngOnChanges()`
+      if (this.implementsOnChanges) {
         const inputChanges = this.inputChanges;
         this.inputChanges = {};
         (<OnChanges>this.component).ngOnChanges(inputChanges !);
-      });
+      }
+
+      // If opted out of propagating digests, invoke change detection when inputs change
+      if (!propagateDigest) {
+        detectChanges();
+      }
+    });
+
+    // If not opted out of propagating digests, invoke change detection on every digest
+    if (propagateDigest) {
+      this.componentScope.$watch(detectChanges);
     }
-    this.componentScope.$watch(() => this.changeDetector && this.changeDetector.detectChanges());
   }
 
   setupOutputs() {
@@ -181,11 +194,11 @@ export class DowngradeComponentAdapter {
   getInjector(): Injector { return this.componentRef ! && this.componentRef !.injector; }
 
   private updateInput(prop: string, prevValue: any, currValue: any) {
-    if (this.inputChanges) {
-      this.inputChangeCount++;
+    if (this.implementsOnChanges) {
       this.inputChanges[prop] = new SimpleChange(prevValue, currValue, prevValue === currValue);
     }
 
+    this.inputChangeCount++;
     this.component[prop] = currValue;
   }
 
