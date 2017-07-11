@@ -8,6 +8,7 @@
 
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
+import {MdCommonModule} from '../core';
 import {ObserveContentModule} from '@angular/cdk';
 import {PortalModule} from '../core';
 import {MdRippleModule} from '../core/ripple/index';
@@ -26,6 +27,7 @@ import {ScrollDispatchModule} from '../core/overlay/scroll/index';
 @NgModule({
   imports: [
     CommonModule,
+    MdCommonModule,
     PortalModule,
     MdRippleModule,
     ObserveContentModule,
@@ -33,6 +35,7 @@ import {ScrollDispatchModule} from '../core/overlay/scroll/index';
   ],
   // Don't export all components because some are only to be used internally.
   exports: [
+    MdCommonModule,
     MdTabGroup,
     MdTabLabel,
     MdTab,
