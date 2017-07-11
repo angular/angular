@@ -508,12 +508,6 @@
             "title": "Learn Angular (francais)",
             "url": "http://www.learn-angular.fr/"
           },
-          "sad200": {
-            "desc": "Free Angular training delivered by SFEIR in France",
-            "rev": true,
-            "title": "SFEIR School (French)",
-            "url": "https://school.sfeir.com/project/sad-200/"
-          },
           "toddmotto-ultimateangular": {
             "desc": "Online courses providing in-depth coverage of the Angular ecosystem, AngularJS, Angular and TypeScript, with functional code samples and a full-featured seed environment. Get a deep understanding of Angular and TypeScript from foundation to functional application, then move on to advanced topics with Todd Motto and collaborators.",
             "rev": true,
@@ -600,6 +594,12 @@
             "rev": true,
             "title": "Learn Javascript (Russian)",
             "url": "https://learn.javascript.ru/courses/angular"
+          },
+          "sa200": {
+            "desc": "Free Angular training delivered by SFEIR in France",
+            "rev": true,
+            "title": "SFEIR School (French)",
+            "url": "https://school.sfeir.com/project/sa200/"
           }
         }
       }
