@@ -2281,6 +2281,57 @@ export function main() {
              expect(cmp.startEvent.totalTime).toEqual(9876);
              // the done event isn't fired because it's an actual animation
            }));
+
+        it('should work when there are no animations on the component handling the disable/enable flag',
+           () => {
+             @Component({
+               selector: 'parent-cmp',
+               template: `
+              <div [@.disabled]="disableExp">
+                <child-cmp #child></child-cmp>
+              </div>
+                `
+             })
+             class ParentCmp {
+               @ViewChild('child') public child: ChildCmp|null = null;
+               disableExp = false;
+             }
+
+             @Component({
+               selector: 'child-cmp',
+               template: `
+                <div [@myAnimation]="exp"></div>
+                `,
+               animations: [trigger(
+                   'myAnimation',
+                   [transition(
+                       '* => go, * => goAgain',
+                       [style({opacity: 0}), animate('1s', style({opacity: 1}))])])]
+             })
+             class ChildCmp {
+               public exp = '';
+             }
+
+             TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
+
+             const fixture = TestBed.createComponent(ParentCmp);
+             const cmp = fixture.componentInstance;
+             cmp.disableExp = true;
+             fixture.detectChanges();
+             resetLog();
+
+             const child = cmp.child !;
+             child.exp = 'go';
+             fixture.detectChanges();
+
+             expect(getLog().length).toEqual(0);
+             resetLog();
+
+             cmp.disableExp = false;
+             child.exp = 'goAgain';
+             fixture.detectChanges();
+             expect(getLog().length).toEqual(1);
+           });
       });
     });
 
