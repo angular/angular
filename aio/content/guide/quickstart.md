@@ -464,7 +464,7 @@ These files go in the root folder next to `src/`.
     </td>
     <td>
 
-      Inside `e2e/` live the End-to-End tests.
+      Inside `e2e/` live the end-to-end tests.
       They shouldn't be inside `src/` because e2e tests are really a separate app that
       just so happens to test your main app.
       That's also why they have their own `tsconfig.e2e.json`.
@@ -493,7 +493,7 @@ These files go in the root folder next to `src/`.
 
       Configuration for Angular CLI.
       In this file you can set several defaults and also configure what files are included
-      when your project is build.
+      when your project is built.
       Check out the official documentation if you want to know more.
 
     </td>
