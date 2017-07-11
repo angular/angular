@@ -16,11 +16,19 @@ import {
   ContentChildren,
   ElementRef,
   Renderer2,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  AfterViewChecked,
+  AfterContentInit,
+  AfterContentChecked,
+  OnDestroy,
 } from '@angular/core';
 import {coerceBooleanProperty} from '../core';
 import {Observable} from 'rxjs/Observable';
+import {Subscription} from 'rxjs/Subscription';
 import {MdTab} from './tab';
 import {map} from '../core/rxjs/index';
+import {merge} from 'rxjs/observable/merge';
 
 
 /** Used to generate unique ID's for each tab component */
@@ -45,13 +53,16 @@ export type MdTabHeaderPosition = 'above' | 'below';
   selector: 'md-tab-group, mat-tab-group',
   templateUrl: 'tab-group.html',
   styleUrls: ['tab-group.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'class': 'mat-tab-group',
     '[class.mat-tab-group-dynamic-height]': 'dynamicHeight',
     '[class.mat-tab-group-inverted-header]': 'headerPosition === "below"',
   }
 })
-export class MdTabGroup {
+export class MdTabGroup implements AfterContentInit, AfterContentChecked,
+  AfterViewChecked, OnDestroy {
+
   @ContentChildren(MdTab) _tabs: QueryList<MdTab>;
 
   @ViewChild('tabBodyWrapper') _tabBodyWrapper: ElementRef;
@@ -64,6 +75,12 @@ export class MdTabGroup {
 
   /** Snapshot of the height of the tab body wrapper before another tab is activated. */
   private _tabBodyWrapperHeight: number = 0;
+
+  /** Subscription to tabs being added/removed. */
+  private _tabsSubscription: Subscription;
+
+  /** Subscription to changes in the tab labels. */
+  private _tabLabelSubscription: Subscription;
 
   /** Whether the tab group should grow to the size of the active tab. */
   @Input()
@@ -82,17 +99,14 @@ export class MdTabGroup {
   set disableRipple(value) { this._disableRipple = coerceBooleanProperty(value); }
   private _disableRipple: boolean = false;
 
-
-  private _selectedIndex: number | null = null;
-
   /** The index of the active tab. */
   @Input()
   set selectedIndex(value: number | null) { this._indexToSelect = value; }
   get selectedIndex(): number | null { return this._selectedIndex; }
+  private _selectedIndex: number | null = null;
 
   /** Position of the tab header. */
-  @Input()
-  headerPosition: MdTabHeaderPosition = 'above';
+  @Input() headerPosition: MdTabHeaderPosition = 'above';
 
   /** Output to enable support for two-way binding on `[(selectedIndex)]` */
   @Output() get selectedIndexChange(): Observable<number> {
@@ -107,7 +121,7 @@ export class MdTabGroup {
 
   private _groupId: number;
 
-  constructor(private _renderer: Renderer2) {
+  constructor(private _renderer: Renderer2, private _changeDetectorRef: ChangeDetectorRef) {
     this._groupId = nextId++;
   }
 
@@ -141,7 +155,31 @@ export class MdTabGroup {
       }
     });
 
-    this._selectedIndex = indexToSelect;
+    if (this._selectedIndex !== indexToSelect) {
+      this._selectedIndex = indexToSelect;
+      this._changeDetectorRef.markForCheck();
+    }
+  }
+
+  ngAfterContentInit() {
+    this._subscribeToTabLabels();
+
+    // Subscribe to changes in the amount of tabs, in order to be
+    // able to re-render the content as new tabs are added or removed.
+    this._tabsSubscription = this._tabs.changes.subscribe(() => {
+      this._subscribeToTabLabels();
+      this._changeDetectorRef.markForCheck();
+    });
+  }
+
+  ngOnDestroy() {
+    if (this._tabsSubscription) {
+      this._tabsSubscription.unsubscribe();
+    }
+
+    if (this._tabLabelSubscription) {
+      this._tabLabelSubscription.unsubscribe();
+    }
   }
 
   /**
@@ -163,6 +201,22 @@ export class MdTabGroup {
       event.tab = this._tabs.toArray()[index];
     }
     return event;
+  }
+
+  /**
+   * Subscribes to changes in the tab labels. This is needed, because the @Input for the label is
+   * on the MdTab component, whereas the data binding is inside the MdTabGroup. In order for the
+   * binding to be updated, we need to subscribe to changes in it and trigger change detection
+   * manually.
+   */
+  private _subscribeToTabLabels() {
+    if (this._tabLabelSubscription) {
+      this._tabLabelSubscription.unsubscribe();
+    }
+
+    this._tabLabelSubscription = merge(...this._tabs.map(tab => tab._labelChange)).subscribe(() => {
+      this._changeDetectorRef.markForCheck();
+    });
   }
 
   /** Returns a unique id for each tab label element */

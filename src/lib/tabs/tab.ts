@@ -9,10 +9,11 @@
 import {TemplatePortal} from '../core/portal/portal';
 import {
   ViewContainerRef, Input, TemplateRef, ViewChild, OnInit, ContentChild,
-  Component
+  Component, ChangeDetectionStrategy, OnDestroy, OnChanges, SimpleChanges,
 } from '@angular/core';
 import {CanDisable, mixinDisabled} from '../core/common-behaviors/disabled';
 import {MdTabLabel} from './tab-label';
+import {Subject} from 'rxjs/Subject';
 
 // Boilerplate for applying mixins to MdTab.
 /** @docs-private */
@@ -23,9 +24,10 @@ export const _MdTabMixinBase = mixinDisabled(MdTabBase);
   moduleId: module.id,
   selector: 'md-tab, mat-tab',
   templateUrl: 'tab.html',
-  inputs: ['disabled']
+  inputs: ['disabled'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MdTab extends _MdTabMixinBase implements OnInit, CanDisable {
+export class MdTab extends _MdTabMixinBase implements OnInit, CanDisable, OnChanges, OnDestroy {
   /** Content for the tab label given by <ng-template md-tab-label>. */
   @ContentChild(MdTabLabel) templateLabel: MdTabLabel;
 
@@ -38,6 +40,9 @@ export class MdTab extends _MdTabMixinBase implements OnInit, CanDisable {
   /** The portal that will be the hosted content of the tab */
   private _contentPortal: TemplatePortal | null = null;
   get content(): TemplatePortal | null { return this._contentPortal; }
+
+  /** Emits whenever the label changes. */
+  _labelChange = new Subject<void>();
 
   /**
    * The relatively indexed position where 0 represents the center, negative is left, and positive
@@ -53,6 +58,16 @@ export class MdTab extends _MdTabMixinBase implements OnInit, CanDisable {
 
   constructor(private _viewContainerRef: ViewContainerRef) {
     super();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.hasOwnProperty('textLabel')) {
+      this._labelChange.next();
+    }
+  }
+
+  ngOnDestroy() {
+    this._labelChange.complete();
   }
 
   ngOnInit() {

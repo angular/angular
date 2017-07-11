@@ -22,6 +22,8 @@ import {
   OnDestroy,
   NgZone,
   Renderer2,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
 } from '@angular/core';
 import {
   RIGHT_ARROW,
@@ -66,6 +68,7 @@ const EXAGGERATED_OVERSCROLL = 60;
   templateUrl: 'tab-header.html',
   styleUrls: ['tab-header.css'],
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'class': 'mat-tab-header',
     '[class.mat-tab-header-pagination-controls-enabled]': '_showPaginationControls',
@@ -74,7 +77,6 @@ const EXAGGERATED_OVERSCROLL = 60;
 })
 export class MdTabHeader implements AfterContentChecked, AfterContentInit, OnDestroy {
   @ContentChildren(MdTabLabelWrapper) _labelWrappers: QueryList<MdTabLabelWrapper>;
-
   @ViewChild(MdInkBar) _inkBar: MdInkBar;
   @ViewChild('tabListContainer') _tabListContainer: ElementRef;
   @ViewChild('tabList') _tabList: ElementRef;
@@ -137,6 +139,7 @@ export class MdTabHeader implements AfterContentChecked, AfterContentInit, OnDes
     private _elementRef: ElementRef,
     private _ngZone: NgZone,
     private _renderer: Renderer2,
+    private _changeDetectorRef: ChangeDetectorRef,
     @Optional() private _dir: Directionality) { }
 
   ngAfterContentChecked(): void {
@@ -144,6 +147,7 @@ export class MdTabHeader implements AfterContentChecked, AfterContentInit, OnDes
     if (this._tabLabelCount != this._labelWrappers.length) {
       this._updatePagination();
       this._tabLabelCount = this._labelWrappers.length;
+      this._changeDetectorRef.markForCheck();
     }
 
     // If the selected index has changed, scroll to the label and check if the scrolling controls
@@ -153,6 +157,7 @@ export class MdTabHeader implements AfterContentChecked, AfterContentInit, OnDes
       this._checkScrollingControls();
       this._alignInkBarToSelectedTab();
       this._selectedIndexChanged = false;
+      this._changeDetectorRef.markForCheck();
     }
 
     // If the scroll distance has been changed (tab selected, focused, scroll controls activated),
@@ -160,6 +165,7 @@ export class MdTabHeader implements AfterContentChecked, AfterContentInit, OnDes
     if (this._scrollDistanceChanged) {
       this._updateTabScrollPosition();
       this._scrollDistanceChanged = false;
+      this._changeDetectorRef.markForCheck();
     }
   }
 
@@ -207,6 +213,7 @@ export class MdTabHeader implements AfterContentChecked, AfterContentInit, OnDes
   _onContentChanges() {
     this._updatePagination();
     this._alignInkBarToSelectedTab();
+    this._changeDetectorRef.markForCheck();
   }
 
   /**
@@ -224,7 +231,6 @@ export class MdTabHeader implements AfterContentChecked, AfterContentInit, OnDes
 
     this._focusIndex = value;
     this.indexFocused.emit(value);
-
     this._setTabFocus(value);
   }
 
@@ -259,6 +265,7 @@ export class MdTabHeader implements AfterContentChecked, AfterContentInit, OnDes
       // should be the full width minus the offset width.
       const containerEl = this._tabListContainer.nativeElement;
       const dir = this._getLayoutDirection();
+
       if (dir == 'ltr') {
         containerEl.scrollLeft = 0;
       } else {
@@ -274,6 +281,7 @@ export class MdTabHeader implements AfterContentChecked, AfterContentInit, OnDes
   _moveFocus(offset: number) {
     if (this._labelWrappers) {
       const tabs: MdTabLabelWrapper[] = this._labelWrappers.toArray();
+
       for (let i = this.focusIndex + offset; i < tabs.length && i >= 0; i += offset) {
         if (this._isValidIndex(i)) {
           this.focusIndex = i;
@@ -314,7 +322,6 @@ export class MdTabHeader implements AfterContentChecked, AfterContentInit, OnDes
     // Mark that the scroll distance has changed so that after the view is checked, the CSS
     // transformation can move the header.
     this._scrollDistanceChanged = true;
-
     this._checkScrollingControls();
   }
   get scrollDistance(): number { return this._scrollDistance; }
@@ -341,9 +348,7 @@ export class MdTabHeader implements AfterContentChecked, AfterContentInit, OnDes
    * should be called sparingly.
    */
   _scrollToLabel(labelIndex: number) {
-    const selectedLabel = this._labelWrappers
-        ? this._labelWrappers.toArray()[labelIndex]
-        :  null;
+    const selectedLabel = this._labelWrappers ? this._labelWrappers.toArray()[labelIndex] : null;
 
     if (!selectedLabel) { return; }
 
@@ -386,6 +391,8 @@ export class MdTabHeader implements AfterContentChecked, AfterContentInit, OnDes
     if (!this._showPaginationControls) {
       this.scrollDistance = 0;
     }
+
+    this._changeDetectorRef.markForCheck();
   }
 
   /**
@@ -401,6 +408,7 @@ export class MdTabHeader implements AfterContentChecked, AfterContentInit, OnDes
     // Check if the pagination arrows should be activated.
     this._disableScrollBefore = this.scrollDistance == 0;
     this._disableScrollAfter = this.scrollDistance == this._getMaxScrollDistance();
+    this._changeDetectorRef.markForCheck();
   }
 
   /**

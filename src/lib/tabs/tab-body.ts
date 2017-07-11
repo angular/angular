@@ -17,6 +17,7 @@ import {
   Optional,
   AfterViewChecked,
   ViewEncapsulation,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import {
   trigger,
@@ -59,6 +60,7 @@ export type MdTabBodyOriginState = 'left' | 'right';
   templateUrl: 'tab-body.html',
   styleUrls: ['tab-body.css'],
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'class': 'mat-tab-body',
   },

@@ -18,7 +18,9 @@ import {
   OnDestroy,
   Optional,
   ViewChild,
-  ViewEncapsulation
+  ViewEncapsulation,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
 } from '@angular/core';
 import {MdInkBar} from '../ink-bar';
 import {CanDisable, mixinDisabled} from '../../core/common-behaviors/disabled';
@@ -43,6 +45,7 @@ import {fromEvent} from 'rxjs/observable/fromEvent';
   styleUrls: ['tab-nav-bar.css'],
   host: {'class': 'mat-tab-nav-bar'},
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdTabNav implements AfterContentInit, OnDestroy {
   /** Subject that emits when the component has been destroyed. */
@@ -56,12 +59,19 @@ export class MdTabNav implements AfterContentInit, OnDestroy {
   /** Subscription for window.resize event **/
   private _resizeSubscription: Subscription;
 
-  constructor(@Optional() private _dir: Directionality, private _ngZone: NgZone) { }
+  constructor(
+    @Optional() private _dir: Directionality,
+    private _ngZone: NgZone,
+    private _changeDetectorRef: ChangeDetectorRef) { }
 
   /** Notifies the component that the active link has been changed. */
   updateActiveLink(element: ElementRef) {
     this._activeLinkChanged = this._activeLinkElement != element;
     this._activeLinkElement = element;
+
+    if (this._activeLinkChanged) {
+      this._changeDetectorRef.markForCheck();
+    }
   }
 
   ngAfterContentInit(): void {
