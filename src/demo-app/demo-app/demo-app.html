@@ -40,7 +40,7 @@
       </div>
     </md-toolbar>
 
-    <div #root="$implicit" dir="ltr" class="demo-content" [ngSwitch]="changeDetectionStrategy">
+    <div #root="dir" dir="ltr" class="demo-content" [ngSwitch]="changeDetectionStrategy">
       <div *ngSwitchDefault>
         <router-outlet></router-outlet>
       </div>

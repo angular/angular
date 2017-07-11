@@ -8,7 +8,6 @@
 
 import {
   Directive,
-  HostBinding,
   Output,
   Input,
   EventEmitter
@@ -23,11 +22,9 @@ import {Direction, Directionality} from './directionality';
  */
 @Directive({
   selector: '[dir]',
-  // TODO(hansl): maybe `$implicit` isn't the best option here, but for now that's the best we got.
-  exportAs: '$implicit',
-  providers: [
-    {provide: Directionality, useExisting: Dir}
-  ]
+  providers: [{provide: Directionality, useExisting: Dir}],
+  host: {'[dir]': 'dir'},
+  exportAs: 'dir',
 })
 export class Dir implements Directionality {
   /** Layout direction of the element. */
@@ -40,7 +37,6 @@ export class Dir implements Directionality {
   @Output('dirChange') change = new EventEmitter<void>();
 
   /** @docs-private */
-  @HostBinding('attr.dir')
   @Input('dir')
   get dir(): Direction {
     return this._dir;
@@ -56,7 +52,6 @@ export class Dir implements Directionality {
 
   /** Current layout direction of the element. */
   get value(): Direction { return this.dir; }
-  set value(v: Direction) { this.dir = v; }
 
   /** Initialize once default value has been set. */
   ngAfterContentInit() {

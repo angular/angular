@@ -210,10 +210,10 @@ describe('MdTabHeader', () => {
       beforeEach(() => {
         dir = 'rtl';
         fixture = TestBed.createComponent(SimpleTabHeaderApp);
-        fixture.detectChanges();
-
         appComponent = fixture.componentInstance;
         appComponent.dir = 'rtl';
+
+        fixture.detectChanges();
       });
 
       it('should scroll to show the focused tab label', () => {

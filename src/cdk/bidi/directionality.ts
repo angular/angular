@@ -37,8 +37,8 @@ export const DIR_DOCUMENT = new InjectionToken<Document>('md-dir-doc');
  */
 @Injectable()
 export class Directionality {
-  value: Direction = 'ltr';
-  change = new EventEmitter<void>();
+  readonly value: Direction = 'ltr';
+  readonly change = new EventEmitter<void>();
 
   constructor(@Optional() @Inject(DIR_DOCUMENT) _document?: any) {
     if (_document) {
