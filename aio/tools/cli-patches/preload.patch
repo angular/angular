@@ -1,0 +1,36 @@
+--- node_modules/@angular/cli/models/webpack-configs/browser.js	2017-07-12 14:33:17.501145700 +0100
++++ node_modules/@angular/cli/models/webpack-configs/browser.js	2017-07-12 14:36:15.710000000 +0100
+@@ -4,6 +4,7 @@
+ const webpack = require("webpack");
+ const path = require("path");
+ const HtmlWebpackPlugin = require('html-webpack-plugin');
++const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
+ const package_chunk_sort_1 = require("../../utilities/package-chunk-sort");
+ const base_href_webpack_1 = require("../../lib/base-href-webpack");
+ const utils_1 = require("./utils");
+@@ -34,6 +35,14 @@
+             }
+         }));
+     }
++
++    let deferBundles;
++    let preloadBundles;
++    deferBundles = appConfig.scripts.length > 0 ?
++        ['vendor', 'main'] :
++        ['inline', 'polyfills', 'vendor', 'main'];
++    preloadBundles = ['inline', 'polyfills', 'vendor', 'main'];
++
+     return {
+         plugins: [
+             new HtmlWebpackPlugin({
+@@ -43,6 +52,10 @@
+                 excludeChunks: lazyChunks,
+                 xhtml: true
+             }),
++            new ScriptExtHtmlWebpackPlugin({
++                defer: deferBundles || [],
++                    preload: preloadBundles || []
++            }),
+             new base_href_webpack_1.BaseHrefWebpackPlugin({
+                 baseHref: buildOptions.baseHref
+             }),
