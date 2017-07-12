@@ -5,9 +5,9 @@
   <code-example language="ts" hideCopy="true">
   {$ doc.docType $} {$ doc.name $}{$ doc.typeParams | escape $}{$ memberHelper.renderHeritage(doc) $} {
   {%- if doc.statics.length %}{% for member in doc.statics %}{% if not member.internal %}
-    <a class="code-anchor" href="#{$ member.anchor $}">{$ memberHelper.renderMember(member) $}</a>{% endif %}{% endfor %}{% endif %}
+    <a class="code-anchor" href="#{$ member.anchor $}">{$ memberHelper.renderMember(member, true) $}</a>{% endif %}{% endfor %}{% endif %}
   {%- if doc.members.length %}{% for member in doc.members %}{% if not member.internal %}
-    <a class="code-anchor" href="#{$ member.anchor $}">{$ memberHelper.renderMember(member) $}</a>{% endif %}{% endfor %}{% endif %}
+    <a class="code-anchor" href="#{$ member.anchor $}">{$ memberHelper.renderMember(member, true) $}</a>{% endif %}{% endfor %}{% endif %}
   }
   </code-example>
 </section>
