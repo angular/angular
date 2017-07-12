@@ -9,14 +9,14 @@
   {% endfor %}{% endif %}
 {%- endmacro -%}
 
-{%- macro renderMember(member) -%}
+{%- macro renderMember(member, truncate) -%}
     {%- if member.accessibility !== 'public' %}{$ member.accessibility $} {% endif -%}
     {%- if member.isGetAccessor %}get {% endif -%}
     {%- if member.isSetAccessor %}set {% endif -%}
     {%- if member.isStatic  %}static {% endif -%}
-    {$ member.name $}{$ member.typeParameters | escape $}{$ params.paramList(member.parameters) | trim $}
+    {$ member.name $}{$ member.typeParameters | escape $}{$ params.paramList(member.parameters, truncate) | trim $}
     {%- if member.isOptional  %}?{% endif -%}
-    {$ params.returnType(member.type) $}
+    {$ params.returnType(member.type) | trim | truncateFirstLine $}
 {%- endmacro -%}
 
 {%- macro renderMemberDetail(member, cssClass) -%}
