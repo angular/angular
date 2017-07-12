@@ -321,7 +321,7 @@ To safely make changes within an interceptor, make use of `HttpRequest`'s `.clon
 Since requests are immutable, they cannot be modified directly. To mutate them, use `.clone()`:
 
 ```javascript
-function intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpError<any>> {
+intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpError<any>> {
   // This is a duplicate - exactly the same as the original.
   const dupReq = req.clone();
   
@@ -512,4 +512,92 @@ http.request(req).subscribe(event => {
     console.log('File is completely uploaded!');
   }
 });
+```
+
+## Testing HTTP requests
+
+Like any external dependency, HTTP backends need to be mocked as part of good testing practice. `@angular/common/http` provides a testing library `@angular/common/http/testing` that makes setting up such mocking straightforward.
+
+### Mocking philosophy
+
+Angular's HTTP testing library is designed for a pattern of testing where code is executed and requests made first. After that, tests expect that certain requests have (or have not) been made, perform assertions against those requests, and finally provide responses by "flushing" each expected request (which may trigger more new requests, etc). At the end, tests can optionally verify that no unexpected requests have been made.
+
+### Setup
+
+To begin testing requests made through `HttpClient`, import `HttpClientTestingModule` and add it to your `TestBed` setup, like so:
+
+```javascript
+
+import {HttpClientTestingModule} from '@angular/common/http/testing';
+
+beforeEach(() => {
+  TestBed.configureTestingModule({
+    ...,
+    imports: [
+      HttpClientTestingModule,
+    ],
+  })
+});
+```
+
+That's it. Now requests made in the course of your tests will hit the testing backend instead of the normal backend.
+
+### Expecting and answering requests
+
+With the mock installed via the module, you can write a test that expects a GET Request to occur and provides a mock response. The following example does this by injecting both the `HttpClient` into the test and a class called `HttpTestingController`
+
+```javascript
+it('expects a GET request', inject([HttpClient, HttpTestingController], (http: HttpClient, httpMock: HttpTestingController) => {
+  // Make an HTTP GET request, and expect that it returns an object
+  // of the form {name: 'Test Data'}.
+  http
+    .get('/data')
+    .subscribe(data => expect(data['name']).toEqual('Test Data'));
+    
+  // At this point, the request is pending, and no response has been
+  // sent. The next step is to expect that the request happened.
+  const req = httpMock.expectOne('/test');
+  
+  // If no request with that URL was made, or if multiple requests match,
+  // expectOne() would throw. However this test makes only one request to
+  // this URL, so it will match and return a mock request. The mock request
+  // can be used to deliver a response or make assertions against the
+  // request. In this case, the test asserts that the request is a GET.
+  expect(req.request.method).toEqual('GET');
+  
+  // Next, fulfill the request by transmitting a response.
+  req.flush({name: 'Test Data'});
+  
+  // Finally, assert that there are no outstanding requests.
+  mockHttp.verify();
+}));
+```
+
+The last step, verifying that no requests remain outstanding, is common enough to be moved into an `afterEach()` step:
+
+```javascript
+afterEach(inject([HttpTestingController], (httpMock: HttpTestingController) => {
+  mockHttp.verify();
+}));
+```
+
+#### Custom request expectations
+
+If matching by URL isn't sufficient,  it's possible to implement your own matching function. For example, you could look for an outgoing request that has an Authorization header:
+
+```javascript
+const req = mockHttp.expectOne((req) => req.headers.has('Authorization'));
+```
+
+Just as with the `.expectOne()` by URL in the test above, if 0 or 2+ requests match this expectation, it will throw.
+
+#### Handling more than one request
+
+If you need to respond to duplicate requests in your test, use the `.match()` API instead of `.expectOne()`, which takes the same arguments but returns an array of matching requests. Once returned, these requests are removed from future matching and are your responsibility to verify and flush.
+
+```javascript
+// Expect that 5 pings have been made, and flush them.
+const reqs = mockHttp.match('/ping');
+expect(reqs.length).toBe(5);
+reqs.forEach(req => req.flush());
 ```
