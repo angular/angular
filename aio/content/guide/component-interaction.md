@@ -1,22 +1,9 @@
 # Component Interaction
 
-{@a top}
 
 This cookbook contains recipes for common component communication scenarios
 in which two or more components share information.
-{@a toc}
 
-<!--
-
-# Contents
-
-* [Pass data from parent to child with input binding](guide/component-interaction#parent-to-child)
-* [Intercept input property changes with a setter](guide/component-interaction#parent-to-child-setter)
-* [Intercept input property changes with `ngOnChanges()`](guide/component-interaction#parent-to-child-on-changes)
-* [Parent calls an `@ViewChild()`](guide/component-interaction#parent-to-view-child)
-* [Parent and children communicate via a service](guide/component-interaction#bidirectional-service)
-
--->
 
 **See the <live-example name="component-interaction"></live-example>**.
 
@@ -25,7 +12,7 @@ in which two or more components share information.
 ## Pass data from parent to child with input binding
 
 `HeroChildComponent` has two ***input properties***,
-typically adorned with [@Input decorations](guide/template-syntax#inputs-outputs).
+adorned with [@Input decorations](guide/template-syntax#inputs-outputs).
 
 
 <code-example path="component-interaction/src/app/hero-child.component.ts" title="component-interaction/src/app/hero-child.component.ts">
@@ -33,7 +20,7 @@ typically adorned with [@Input decorations](guide/template-syntax#inputs-outputs
 </code-example>
 
 
-
+<!-- KW-- This is covered in template syntax -->
 The second `@Input` aliases the child component property name `masterName` as `'master'`.
 
 The `HeroParentComponent` nests the child `HeroChildComponent` inside an `*ngFor` repeater,

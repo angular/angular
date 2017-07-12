@@ -12,7 +12,6 @@ that provide visibility into these key life moments and the ability to act when 
 
 A directive has the same set of lifecycle hooks, minus the hooks that are specific to component content and views.
 
-{@a hooks-overview}
 
 ## Component lifecycle hooks overview
 
@@ -24,13 +23,12 @@ one or more of the *lifecycle hook* interfaces in the Angular `core` library.
 Each interface has a single hook method whose name is the interface name prefixed with `ng`.
 For example, the `OnInit` interface has a hook method named `ngOnInit()`
 that Angular calls shortly after creating the component:
-
+<!-- 
+KW--The following example gets complex for a new person. Can we drop the logIt() part? -->
 <code-example path="lifecycle-hooks/src/app/peek-a-boo.component.ts" region="ngOnInit" title="peek-a-boo.component.ts (excerpt)" linenums="false"></code-example>
 
 No directive or component will implement all of the lifecycle hooks and some of the hooks only make sense for components.
 Angular only calls a directive/component hook method *if it is defined*.
-
-{@a hooks-purpose-timing}
 
 ## Lifecycle sequence
 
@@ -170,7 +168,6 @@ Angular finds and calls methods like `ngOnInit()`, with or without the interface
 Nonetheless, it's good practice to add interfaces to TypeScript directive classes
 in order to benefit from strong typing and editor tooling.
 
-{@a other-lifecycle-hooks}
 
 ## Other Angular lifecycle hooks
 
@@ -615,7 +612,6 @@ which can only be reached by querying for them via the property decorated with
 
 <code-example path="lifecycle-hooks/src/app/after-content.component.ts" region="hooks" title="AfterContentComponent (class excerpts)" linenums="false"></code-example>
 
-{@a no-unidirectional-flow-worries}
 
 ### No unidirectional flow worries with _AfterContent_
 
@@ -625,3 +621,5 @@ There's no [need to wait](guide/lifecycle-hooks#wait-a-tick).
 Recall that Angular calls both *AfterContent* hooks before calling either of the *AfterView* hooks.
 Angular completes composition of the projected content *before* finishing the composition of this component's view.
 There is a small window between the `AfterContent...` and `AfterView...` hooks to modify the host view.
+
+<!-- KW--Is there an explanation for the "Counter Spy" exaple? -->

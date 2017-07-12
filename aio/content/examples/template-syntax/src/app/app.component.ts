@@ -74,7 +74,9 @@ export class AppComponent implements AfterViewInit, OnInit {
   evilTitle = 'Template <script>alert("evil never sleeps")</script>Syntax';
   // #enddocregion evil-title
 
+  // #docregion font-size
   fontSizePx = 16;
+  // #enddocregion font-size
 
   title = 'Template Syntax';
 

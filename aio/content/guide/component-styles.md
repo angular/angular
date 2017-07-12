@@ -9,18 +9,6 @@ with components, enabling a more modular design than regular stylesheets.
 
 This page describes how to load and apply these component styles.
 
-<!--
-
-## Table Of Contents
-
-* [Using component styles](guide/component-styles#using-component-styles)
-* [Special selectors](guide/component-styles#special-selectors)
-* [Loading styles into components](guide/component-styles#loading-styles)
-* [Controlling view encapsulation: native, emulated, and none](guide/component-styles#view-encapsulation)
-* [Appendix 1: Inspecting the CSS generated in emulated view encapsulation](guide/component-styles#inspect-generated-css)
-* [Appendix 2: Loading styles with relative URLs](guide/component-styles#relative-urls)
-
--->
 
 You can run the <live-example></live-example> in Plunker and download the code from there.
 
@@ -60,16 +48,150 @@ This is a big improvement in modularity compared to how CSS traditionally works.
   whole application to find where else the code is used.
 
 
-{@a special-selectors}
+## Loading component styles
 
+There are several ways to add styles to a component: 
+
+* By setting `styles` or `styleUrls` metadata.
+* Inline in the template HTML.
+* With CSS imports.
+
+### Styles in metadata
+
+You can add a `styles` array property to the `@Component` decorator.
+Each string in the array (usually just one string) defines the CSS.
+
+
+<code-example path="component-styles/src/app/hero-app.component.ts" title="src/app/hero-app.component.ts">
+
+</code-example>
+
+
+
+### Style URLs in metadata
+
+You can load styles from external CSS files by adding a `styleUrls` attribute
+into a component's `@Component` decorator and using a relative path:
+
+<!-- KW--Thiscode needs to be updated in the example to use a relative path: ./ -->
+```typescript
+@Component({
+  selector: 'item-details',
+  template: `
+    <h2>{{item.name}}</h2>
+    <item-sale [item]=item></item-sale>
+    <ng-content></ng-content>
+  `,
+  styleUrls: ['./item-details.component.css']
+})
+export class ItemDetailsComponent {
+/* . . . */
+}
+```
+
+<!-- <code-example path="component-styles/src/app/hero-details.component.ts" region="styleurls" title="src/app/hero-details.component.ts">
+
+</code-example> -->
+
+This example assumes the styles are in the same folder as the `ItemDetailsComponent`. It's common practice to split a component's code, HTML, and CSS into three separate files in the same directory:
+
+<code-example format="nocode">
+  customer-list.component.ts
+  customer-list.component.html
+  customer-list.component.css
+
+</code-example>
+
+
+You include the template and CSS files by setting the `templateUrl` and `styleUrls` metadata properties respectively.
+Because these files are co-located with the component,
+you can refer to them by name without also having to specify a path back to the root of the application.
+
+You can use a relative URL by prefixing your filenames with `./`:
+
+```typescript
+@Component({
+  selector: 'customer-list',
+  templateUrl: './customer-list.component.html',
+  styleUrls:  ['./customer-list.component.css']
+})
+export class CustomerListComponent { }
+```
+
+<!-- <code-example path="component-styles/src/app/quest-summary.component.ts" title="src/app/quest-summary.component.ts"> -->
+
+<!-- </code-example> -->
+
+<div class="l-sub-section">
+
+If you use module bundlers like Webpack, you can also use the `styles` attribute
+to load styles from external files at build time. You could write:
+
+`styles: [require('my.component.css')]`
+
+Set the `styles` property, not the `styleUrls` property. The module 
+bundler loads the CSS strings, not Angular. 
+Angular sees the CSS strings only after the bundler loads them. 
+To Angular, it's as if you wrote the `styles` array by hand. 
+For information on loading CSS in this manner, refer to the module bundler's documentation.
+
+</div>
+
+
+
+### Template inline styles
+
+You can embed styles directly into the HTML template by putting them
+inside `<style>` tags.
+
+
+<code-example path="component-styles/src/app/hero-controls.component.ts" region="inlinestyles" title="src/app/hero-controls.component.ts">
+
+</code-example>
+
+
+
+### Template link tags
+
+You can also embed `<link>` tags into the component's HTML template. 
+
+As with `styleUrls`, the link tag's `href` URL is relative to the 
+application root, not the component file.
+
+
+<code-example path="component-styles/src/app/hero-team.component.ts" region="stylelink" title="src/app/hero-team.component.ts">
+
+</code-example>
+
+
+
+### CSS @imports
+
+You can also import CSS files into the CSS files using the standard CSS `@import` rule.
+For details, see [`@import`](https://developer.mozilla.org/en/docs/Web/CSS/@import)
+on the [MDN](https://developer.mozilla.org) site.
+
+
+In this case, the URL is relative to the CSS file into which you're importing.
+
+
+<code-example path="component-styles/src/app/hero-details.component.css" region="import" title="src/app/hero-details.component.css (excerpt)">
+
+</code-example>
+
+The scoping rules outlined in the 
+[Special selectors](guide/component-styles#special-selectors) section 
+apply to each of the above loading patterns.
 
 
 ## Special selectors
 
-Component styles have a few special *selectors* from the world of shadow DOM style scoping
-(described in the [CSS Scoping Module Level 1](https://www.w3.org/TR/css-scoping-1) page on the 
-[W3C](https://www.w3.org) site).
+Component styles have a few special *selectors* from 
+the world of shadow DOM style scoping.
 The following sections describe these selectors.
+
+For more information, see the [CSS Scoping Module Level 1](https://www.w3.org/TR/css-scoping-1) page at 
+[W3C](https://www.w3.org).
 
 ### :host
 
@@ -153,126 +275,11 @@ Until then `::ng-deep` should be preferred for a broader compatibility with the 
 
 </div>
 
-{@a loading-styles}
-
-## Loading component styles
-
-There are several ways to add styles to a component: 
-
-* By setting `styles` or `styleUrls` metadata.
-* Inline in the template HTML.
-* With CSS imports.
-
-The scoping rules outlined earlier apply to each of these loading patterns.
-
-### Styles in metadata
-
-You can add a `styles` array property to the `@Component` decorator.
-Each string in the array (usually just one string) defines the CSS.
-
-
-<code-example path="component-styles/src/app/hero-app.component.ts" title="src/app/hero-app.component.ts">
-
-</code-example>
-
-
-
-### Style URLs in metadata
-
-You can load styles from external CSS files by adding a `styleUrls` attribute
-into a component's `@Component` decorator:
-
-
-<code-example path="component-styles/src/app/hero-details.component.ts" region="styleurls" title="src/app/hero-details.component.ts">
-
-</code-example>
-
-
-
-<div class="alert is-important">
-
-
-
-The URL is relative to the *application root*, which is usually the
-location of the `index.html` web page that hosts the application. 
-The style file URL is *not* relative to the component file.
-That's why the example URL begins `src/app/`.
-To specify a URL relative to the component file, see [Appendix 2](guide/component-styles#relative-urls).
-
-
-</div>
-
-
-
-<div class="l-sub-section">
-
-
-
-If you use module bundlers like Webpack, you can also use the `styles` attribute
-to load styles from external files at build time. You could write:
-
-`styles: [require('my.component.css')]`
-
-Set the `styles` property, not the `styleUrls` property. The module 
-bundler loads the CSS strings, not Angular. 
-Angular sees the CSS strings only after the bundler loads them. 
-To Angular, it's as if you wrote the `styles` array by hand. 
-For information on loading CSS in this manner, refer to the module bundler's documentation.
-
-
-</div>
-
-
-
-### Template inline styles
-
-You can embed styles directly into the HTML template by putting them
-inside `<style>` tags.
-
-
-<code-example path="component-styles/src/app/hero-controls.component.ts" region="inlinestyles" title="src/app/hero-controls.component.ts">
-
-</code-example>
-
-
-
-### Template link tags
-
-You can also embed `<link>` tags into the component's HTML template. 
-
-As with `styleUrls`, the link tag's `href` URL is relative to the 
-application root, not the component file.
-
-
-<code-example path="component-styles/src/app/hero-team.component.ts" region="stylelink" title="src/app/hero-team.component.ts">
-
-</code-example>
-
-
-
-### CSS @imports
-
-You can also import CSS files into the CSS files using the standard CSS `@import` rule.
-For details, see [`@import`](https://developer.mozilla.org/en/docs/Web/CSS/@import)
-on the [MDN](https://developer.mozilla.org) site.
-
-
-In this case, the URL is relative to the CSS file into which you're importing.
-
-
-<code-example path="component-styles/src/app/hero-details.component.css" region="import" title="src/app/hero-details.component.css (excerpt)">
-
-</code-example>
-
-
-
-{@a view-encapsulation}
-
 
 
 ## View encapsulation
 
-As discussed earlier, component CSS styles are encapsulated into the component's view and don't
+Component CSS styles are encapsulated into the component's view and don't
 affect the rest of the application.
 
 To control how this encapsulation happens on a *per
@@ -310,9 +317,6 @@ which is why `Emulated` view encapsulation is the default mode and recommended
 in most cases.
 
 
-{@a inspect-generated-css}
-
-
 
 ## Appendix: Inspecting generated CSS
 
@@ -325,12 +329,12 @@ attached to it:
 
 
 <code-example format="">
-  &lt;hero-details _nghost-pmm-5>
-    &lt;h2 _ngcontent-pmm-5>Mister Fantastic&lt;/h2>
-    &lt;hero-team _ngcontent-pmm-5 _nghost-pmm-6>
-      &lt;h3 _ngcontent-pmm-6>Team&lt;/h3>
-    &lt;/hero-team>
-  &lt;/hero-detail>
+  &lt;item-detail _nghost-pmm-5>
+    &lt;h2 _ngcontent-pmm-5>Featured Item&lt;/h2>
+    &lt;item-sale _ngcontent-pmm-5 _nghost-pmm-6>
+      &lt;h3 _ngcontent-pmm-6>Sale&lt;/h3>
+    &lt;/item-sale>
+  &lt;/item-detail>
 
 </code-example>
 
@@ -344,8 +348,9 @@ There are two kinds of generated attributes:
 that identifies to which host's emulated shadow DOM this element belongs.
 
 The exact values of these attributes aren't important. They are automatically
-generated and you never refer to them in application code. But they are targeted
-by the generated component styles, which are in the `<head>` section of the DOM:
+generated and you never refer to them in application code. But the 
+generated component styles target them, which are in the `<head>` 
+section of the DOM:
 
 
 <code-example format="">
@@ -368,32 +373,4 @@ with `_nghost` or `_ngcontent` attribute selectors.
 These extra selectors enable the scoping rules described in this page.
 
 
-{@a relative-urls}
-
-
-
-## Appendix: Loading with relative URLs
-
-It's common practice to split a component's code, HTML, and CSS into three separate files in the same directory:
-
-<code-example format="nocode">
-  quest-summary.component.ts
-  quest-summary.component.html
-  quest-summary.component.css
-
-</code-example>
-
-
-
-You include the template and CSS files by setting the `templateUrl` and `styleUrls` metadata properties respectively.
-Because these files are co-located with the component,
-it would be nice to refer to them by name without also having to specify a path back to the root of the application.
-
-
-You can use a relative URL by prefixing your filenames with `./`:
-
-
-<code-example path="component-styles/src/app/quest-summary.component.ts" title="src/app/quest-summary.component.ts">
-
-</code-example>
 
