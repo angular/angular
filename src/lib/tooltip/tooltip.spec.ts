@@ -415,17 +415,21 @@ describe('MdTooltip', () => {
       tick(0);
 
       // Expect that the tooltip is displayed
-      expect(tooltipDirective._isTooltipVisible()).toBe(true);
+      expect(tooltipDirective._isTooltipVisible())
+          .toBe(true, 'Expected tooltip to be initially visible');
 
       // Scroll the page but tick just before the default throttle should update.
       fixture.componentInstance.scrollDown();
       tick(SCROLL_THROTTLE_MS - 1);
-      expect(tooltipDirective._isTooltipVisible()).toBe(true);
+      expect(tooltipDirective._isTooltipVisible())
+          .toBe(true, 'Expected tooltip to be visible when scrolling, before throttle limit');
 
       // Finish ticking to the throttle's limit and check that the scroll event notified the
       // tooltip and it was hidden.
-      tick(1);
-      expect(tooltipDirective._isTooltipVisible()).toBe(false);
+      tick(100);
+      fixture.detectChanges();
+      expect(tooltipDirective._isTooltipVisible())
+          .toBe(false, 'Expected tooltip hidden when scrolled out of view, after throttle limit');
     }));
   });
 

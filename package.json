@@ -114,6 +114,7 @@
     "ts-node": "^3.0.4",
     "tsconfig-paths": "^2.2.0",
     "tslint": "~5.4.3",
+    "tsutils": "^2.6.0",
     "typescript": "~2.2.1",
     "uglify-js": "^2.8.14",
     "web-animations-js": "^2.2.5"

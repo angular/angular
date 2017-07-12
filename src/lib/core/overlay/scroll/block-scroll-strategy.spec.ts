@@ -21,6 +21,9 @@ describe('BlockScrollStrategy', () => {
   let forceScrollElement: HTMLElement;
 
   beforeEach(async(() => {
+    // Ensure a clean state for every test.
+    document.documentElement.classList.remove('cdk-global-scrollblock');
+
     TestBed.configureTestingModule({
       imports: [OverlayModule, PortalModule, OverlayTestModule]
     }).compileComponents();
