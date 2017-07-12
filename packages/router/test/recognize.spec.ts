@@ -112,16 +112,22 @@ describe('recognize', () => {
   });
 
   it('should match routes in the depth first order', () => {
+    let recognized:any = [];
     checkRecognize(
         [
           {path: 'a', component: ComponentA, children: [{path: ':id', component: ComponentB}]},
           {path: 'a/:id', component: ComponentC}
         ],
         'a/paramA', (s: RouterStateSnapshot) => {
-          checkActivatedRoute(s.root, '', {}, RootComponent);
-          checkActivatedRoute(s.firstChild(s.root) !, 'a', {}, ComponentA);
-          checkActivatedRoute(
+          //to support cascading routes (when route guard=>false) recognize( ) sends back all
+          //matches but obeys the depth-first-order which is still verified for the first result in this test.
+          if( recognized.length == 0 ) {
+            recognized.push(s);
+            checkActivatedRoute(s.root, '', {}, RootComponent);
+            checkActivatedRoute(s.firstChild(s.root) !, 'a', {}, ComponentA);
+            checkActivatedRoute(
               s.firstChild(<any>s.firstChild(s.root)) !, 'paramA', {id: 'paramA'}, ComponentB);
+          }
         });
 
     checkRecognize(
