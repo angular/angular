@@ -113,6 +113,7 @@ export const HTML = `
     
     <div id="i18n-3"><p i18n><i>with placeholders</i></p></div>
     <div id="i18n-3b"><p i18n><i class="preserved-on-placeholders">with placeholders</i></p></div>
+    <div id="i18n-3c"><div i18n><div>with <div>nested</div> placeholders</div></div></div>
     
     <div>
         <p id="i18n-4" i18n-title title="on not translatable node"></p>
