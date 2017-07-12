@@ -35,7 +35,6 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
     <body>
       <trans-unit id="983775b9a51ce14b036be72d4cfd65d68d64e231" datatype="html">
         <source>translatable attribute</source>
-        <target/>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">2</context>
@@ -43,7 +42,6 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
       </trans-unit>
       <trans-unit id="ec1d033f2436133c14ab038286c4f5df4697484a" datatype="html">
         <source>translatable element <x id="START_BOLD_TEXT" ctype="x-b"/>with placeholders<x id="CLOSE_BOLD_TEXT" ctype="x-b"/> <x id="INTERPOLATION"/></source>
-        <target/>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">3</context>
@@ -51,7 +49,6 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
       </trans-unit>
       <trans-unit id="e2ccf3d131b15f54aa1fcf1314b1ca77c14bfcc2" datatype="html">
         <source>{VAR_PLURAL, plural, =0 {<x id="START_PARAGRAPH" ctype="x-p"/>test<x id="CLOSE_PARAGRAPH" ctype="x-p"/>} }</source>
-        <target/>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">4</context>
@@ -59,7 +56,6 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
       </trans-unit>
       <trans-unit id="db3e0a6a5a96481f60aec61d98c3eecddef5ac23" datatype="html">
         <source>foo</source>
-        <target/>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">5</context>
@@ -73,7 +69,6 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
       </trans-unit>
       <trans-unit id="i" datatype="html">
         <source>foo</source>
-        <target/>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">7</context>
@@ -83,7 +78,6 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
       </trans-unit>
       <trans-unit id="bar" datatype="html">
         <source>foo</source>
-        <target/>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">8</context>
@@ -91,7 +85,6 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
       </trans-unit>
       <trans-unit id="d7fa2d59aaedcaa5309f13028c59af8c85b8c49d" datatype="html">
         <source><x id="LINE_BREAK" ctype="lb"/><x id="TAG_IMG" ctype="image"/><x id="START_TAG_DIV" ctype="x-div"/><x id="CLOSE_TAG_DIV" ctype="x-div"/></source>
-        <target/>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">9</context>
@@ -100,7 +93,6 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
       </trans-unit>
       <trans-unit id="baz" datatype="html">
         <source>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<x id="START_PARAGRAPH" ctype="x-p"/>deeply nested<x id="CLOSE_PARAGRAPH" ctype="x-p"/>} } } }</source>
-        <target/>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">10</context>
@@ -108,7 +100,6 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
       </trans-unit>
       <trans-unit id="0e16a673a5a7a135c9f7b957ec2c5c6f6ee6e2c4" datatype="html">
         <source>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<x id="START_PARAGRAPH" ctype="x-p"/>deeply nested<x id="CLOSE_PARAGRAPH" ctype="x-p"/>} } } }</source>
-        <target/>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">11</context>
@@ -117,7 +108,6 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
       <trans-unit id="fcfa109b0e152d4c217dbc02530be0bcb8123ad1" datatype="html">
         <source>multi
 lines</source>
-        <target/>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">12</context>

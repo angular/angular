@@ -53,7 +53,7 @@ export class Xliff extends Serializer {
       const transUnit = new xml.Tag(_UNIT_TAG, {id: message.id, datatype: 'html'});
       transUnit.children.push(
           new xml.CR(8), new xml.Tag(_SOURCE_TAG, {}, visitor.serialize(message.nodes)),
-          new xml.CR(8), new xml.Tag(_TARGET_TAG), ...contextTags);
+          ...contextTags);
 
       if (message.description) {
         transUnit.children.push(
