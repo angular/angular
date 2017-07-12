@@ -2,15 +2,14 @@
 {% extends 'export-base.template.html' -%}
 
 {% block details %}
-{% if doc.overloads.length === 1 %}
-  <code-example language="ts" hideCopy="true">
-  function {$ doc.overloads[0].name $}{$ params.paramList(doc.overloads[0].parameters) $}
-  {%- if doc.overloads[0].type %}: {$ doc.overloads[0].type | escape $}{% endif %};
-  </code-example>
-  {% include "includes/description.html" %}
-{% else %}
+<code-example language="ts" hideCopy="true" class="no-box api-heading">
+function {$ doc.name $}{$ params.paramList(doc.parameters) $}
+{%- if doc.type %}: {$ doc.type | escape $}{% endif %};
+</code-example>
+{% include "includes/description.html" %}
+{% if doc.overloads.length %}
   <h2>Overloads</h2>{% for overload in doc.overloads %}
-  <code-example language="ts" hideCopy="true">
+  <code-example language="ts" hideCopy="true" class="no-box api-heading">
   function {$ overload.name $}{$ params.paramList(overload.parameters) $}
   {%- if overload.type %}: {$ overload.type | escape $}{% endif %};
   </code-example>
