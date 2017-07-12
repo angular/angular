@@ -11,7 +11,7 @@ import {ChangeDetectionStrategy, Component, Injectable, NgModule, NgModuleFactor
 import {ComponentFixture, TestBed, fakeAsync, inject, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, DetachedRouteHandle, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, ParamMap, Params, PreloadAllModules, PreloadingStrategy, Resolve, RouteConfigLoadEnd, RouteConfigLoadStart, RouteReuseStrategy, Router, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '@angular/router';
+import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanActivateChild, CanLoad, CanDeactivate, DetachedRouteHandle, Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, ParamMap, Params, PreloadAllModules, PreloadingStrategy, Resolve, RouteConfigLoadEnd, RouteConfigLoadStart, RouteReuseStrategy, Router, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '@angular/router';
 import {Observable} from 'rxjs/Observable';
 import {map} from 'rxjs/operator/map';
 
@@ -3356,6 +3356,140 @@ describe('Integration', () => {
        })));
   });
 });
+
+describe('guarded route flow', () => {
+  beforeEach(() => {
+
+    @Component({selector: 'static', template: 'static'})
+    class AccessibleComponent {
+      constructor(private route: ActivatedRoute) {
+        expect(route.toString()).toContain(':allow_access');
+      }
+    }
+
+    @Component({selector: 'default', template: 'default'})
+    class DefaultComponent {
+      constructor(private route: ActivatedRoute) {
+        expect(route.toString()).toContain('**');
+      }
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [RootCmp, AccessibleComponent, DefaultComponent],
+      imports: [
+        RouterTestingModule.withRoutes(
+          [
+            {path: '', redirectTo: '/default/component', pathMatch: 'full'},
+            //try a series of defaults
+            {
+              path: ':prevent_access', pathMatch: 'full', component: AccessibleComponent,
+              canActivate: ['PreventActivationPreventLoading']
+            },
+            {path: 'admin', loadChildren: 'lazy', canActivate: ['AllowActivationAllowLoading']},
+            {
+              path: ':allow_loading', component: AccessibleComponent,
+              canActivate: ['PreventActivationAllowLoading']
+            },
+            {
+              path: ':prevent_activation', component: AccessibleComponent,
+              canActivate: ['PreventActivationAllowLoading']
+            },
+            {
+              path: ':allow_access', pathMatch: 'full', component: AccessibleComponent,
+              canActivate: ['AllowActivationAllowLoading']
+            },
+
+            {path: '**', component: DefaultComponent},
+          ]
+        ),
+      ],
+      providers: [
+        {provide: 'AllowActivationAllowLoading', useClass: AllowActivationAllowLoading},
+        {provide: 'PreventActivationAllowLoading', useClass: PreventActivationAllowLoading},
+        {provide: 'PreventActivationPreventLoading', useClass: PreventActivationPreventLoading},
+        {provide: 'AllowActivationPreventLoading', useClass: AllowActivationPreventLoading},
+      ]
+    });
+  });
+
+  it('should fall-through to a different route when a route guard prevents navigation',
+    fakeAsync(inject(
+      [Router, ActivatedRoute, Location, NgModuleFactoryLoader],
+      (router: Router, route: ActivatedRoute, location: Location, loader: SpyNgModuleFactoryLoader) => {
+
+        @Component({selector: 'admin', template: '<router-outlet></router-outlet>'})
+        class AdminComponent {
+          constructor(private route: ActivatedRoute) {
+          }
+        }
+
+        @Component({selector: 'lazy', template: 'lazy-loaded'})
+        class LazyLoadedComponent {
+          constructor(private route: ActivatedRoute) {
+          }
+        }
+
+        @NgModule({
+          declarations: [AdminComponent, LazyLoadedComponent],
+          imports: [RouterModule.forChild([{
+            path: '',
+            component: AdminComponent,
+            children: [{
+              path: '',
+              children: [{path: '', pathMatch: 'full', component: LazyLoadedComponent}]
+            }]
+          }])]
+        })
+        class LazyLoadedModule {
+        }
+
+        loader.stubbedModules = {lazy: LazyLoadedModule};
+        const fixture = createRoot(router, RootCmp);
+
+        router.navigateByUrl('/admin');
+        advance(fixture);
+        expect(fixture.nativeElement).toHaveText('lazy-loaded');
+
+        router.navigateByUrl('/var/test/far');
+        advance(fixture);
+        expect(fixture.nativeElement).toHaveText('default');
+
+        router.navigateByUrl('/var')
+        advance(fixture);
+        expect(fixture.nativeElement).toHaveText('static');
+
+      }))
+  );
+});
+
+
+class AllowActivationAllowLoading implements CanActivate, CanActivateChild, CanLoad {
+  constructor() { }
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) { return true; }
+  canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) { return true; }
+  canLoad(route:any):boolean{ return true; }
+}
+
+class PreventActivationAllowLoading implements CanActivate, CanActivateChild, CanLoad {
+  constructor() { }
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) { return false; }
+  canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) { return false; }
+  canLoad(route:any):boolean{ return true; }
+}
+
+class PreventActivationPreventLoading implements CanActivate, CanActivateChild, CanLoad {
+  constructor() { }
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) { return false; }
+  canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) { return false; }
+  canLoad(route:any):boolean{ return false; }
+}
+
+class AllowActivationPreventLoading implements CanActivate, CanActivateChild, CanLoad {
+  constructor() { }
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) { return true; }
+  canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) { return true; }
+  canLoad(route:any):boolean{ return false; }
+}
 
 function expectEvents(events: Event[], pairs: any[]) {
   expect(events.length).toEqual(pairs.length);
