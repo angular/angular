@@ -22,7 +22,7 @@
 {%- macro renderMemberDetail(member, cssClass) -%}
 <div class="{$ cssClass $}">
   <a id="{$ member.anchor $}"></a>
-  <code-example hideCopy="true">{$ renderMember(member) $}</code-example>
+  <code-example hideCopy="true" class="no-box api-heading">{$ renderMember(member) $}</code-example>
   {%- if not member.notYetDocumented %}
   {$ member.description | marked $}
   {% endif -%}
@@ -35,7 +35,17 @@
   <h2>{$ titleText $}</h2>
   {% for member in members %}{% if not member.internal %}
     {$ renderMemberDetail(member, itemClass) $}
-    {% if not loop.last %}<hr>{% endif %}
+    {% if member.overloads.length %}
+    <details class="overloads">
+      <summary>Overloads</summary>
+      <div class="detail-contents">
+        {% for overload in member.overloads %}
+        {$ renderMemberDetail(overload, itemClass + '-overload') $}
+        {% endfor %}
+      </div>
+    </details>
+    {% endif %}
+    {% if not loop.last %}<hr class="hr-margin">{% endif %}
   {% endif %}{% endfor %}
 </section>
 {% endif %}

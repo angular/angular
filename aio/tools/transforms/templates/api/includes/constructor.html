@@ -2,7 +2,7 @@
 <section class="constructor">
   <a id="{$ doc.constructorDoc.name $}"></a>
   <h2>Constructor</h2>
-  <code-example hideCopy="true">{$ doc.constructorDoc.name $}{$ params.paramList(doc.constructorDoc.parameters) $}</code-example>
+  <code-example hideCopy="true" class="no-box api-heading">{$ doc.constructorDoc.name $}{$ params.paramList(doc.constructorDoc.parameters) $}</code-example>
   {% if not doc.constructorDoc.notYetDocumented %}{$ doc.constructorDoc.description | marked $}{% endif %}
 </section>
 {% endif %}
