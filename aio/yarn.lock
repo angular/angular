@@ -1904,9 +1904,9 @@ devtools-timeline-model@1.1.6:
     chrome-devtools-frontend "1.0.401423"
     resolve "1.1.7"
 
-dgeni-packages@^0.20.0-rc.1:
-  version "0.20.0-rc.1"
-  resolved "https://registry.yarnpkg.com/dgeni-packages/-/dgeni-packages-0.20.0-rc.1.tgz#dfe5647794d32e541e063edf625005993fd4a8da"
+dgeni-packages@^0.20.0-rc.5:
+  version "0.20.0-rc.5"
+  resolved "https://registry.yarnpkg.com/dgeni-packages/-/dgeni-packages-0.20.0-rc.5.tgz#09dd8134a3d79595578d6c0192ec0d82c78354be"
   dependencies:
     canonical-path "0.0.2"
     catharsis "^0.8.1"
@@ -1925,6 +1925,7 @@ dgeni-packages@^0.20.0-rc.1:
     nunjucks "^3.0.1"
     semver "^5.2.0"
     shelljs "^0.7.0"
+    source-map-support "^0.4.15"
     spdx-license-list "^2.1.0"
     stringmap "^0.2.2"
     typescript "^2.3.4"
@@ -6536,7 +6537,7 @@ source-map-loader@^0.2.0:
     loader-utils "~0.2.2"
     source-map "~0.1.33"
 
-source-map-support@^0.4.0, source-map-support@^0.4.2, source-map-support@~0.4.0:
+source-map-support@^0.4.0, source-map-support@^0.4.15, source-map-support@^0.4.2, source-map-support@~0.4.0:
   version "0.4.15"
   resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.4.15.tgz#03202df65c06d2bd8c7ec2362a193056fef8d3b1"
   dependencies:
