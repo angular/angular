@@ -76,6 +76,12 @@ export function main() {
         });
         backend.expectOne('/test').flush({'data': 'hello world'});
       });
+      it('with progress events enabled', (done: DoneFn) => {
+        client.get('/test', {reportProgress: true}).subscribe(() => done());
+        const req = backend.expectOne('/test');
+        expect(req.request.reportProgress).toEqual(true);
+        req.flush({});
+      });
     });
     describe('makes a POST request', () => {
       it('with text data', (done: DoneFn) => {
