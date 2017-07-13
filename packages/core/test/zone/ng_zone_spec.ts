@@ -220,6 +220,13 @@ function commonTests() {
          macroTask(() => { async.done(); });
        }), testTimeout);
 
+    it('should return the body return value from runTask',
+       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+         macroTask(() => { expect(_zone.runTask(() => 6)).toEqual(6); });
+
+         macroTask(() => { async.done(); });
+       }), testTimeout);
+
     it('should call onUnstable and onMicrotaskEmpty',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          runNgZoneNoLog(() => macroTask(_log.fn('run')));

@@ -138,14 +138,7 @@ export function createDirectiveInstance(view: ViewData, def: NodeDef): any {
 }
 
 function eventHandlerClosure(view: ViewData, index: number, eventName: string) {
-  return (event: any) => {
-    try {
-      return dispatchEvent(view, index, eventName, event);
-    } catch (e) {
-      // Attention: Don't rethrow, as it would cancel Observable subscriptions!
-      view.root.errorHandler.handleError(e);
-    }
-  }
+  return (event: any) => dispatchEvent(view, index, eventName, event);
 }
 
 export function checkAndUpdateDirectiveInline(
