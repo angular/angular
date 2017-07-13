@@ -30,7 +30,12 @@ export class TestRequest {
 
   constructor(public request: HttpRequest<any>, private observer: Observer<HttpEvent<any>>) {}
 
-
+  /**
+   * Resolve the request by returning a body plus additional HTTP information (such as response
+   * headers) if provided.
+   *
+   * Both successful and unsuccessful responses can be delivered via `flush()`.
+   */
   flush(body: ArrayBuffer|Blob|string|number|Object|(string|number|Object|null)[]|null, opts: {
     headers?: HttpHeaders | {[name: string]: string | string[]},
     status?: number,
@@ -65,6 +70,9 @@ export class TestRequest {
     }
   }
 
+  /**
+   * Resolve the request by returning an `ErrorEvent` (e.g. simulating a network failure).
+   */
   error(error: ErrorEvent, opts: {
     headers?: HttpHeaders | {[name: string]: string | string[]},
     status?: number,
@@ -87,6 +95,10 @@ export class TestRequest {
     }));
   }
 
+  /**
+   * Deliver an arbitrary `HttpEvent` (such as a progress event) on the response stream for this
+   * request.
+   */
   event(event: HttpEvent<any>): void {
     if (this.cancelled) {
       throw new Error(`Cannot send events to a cancelled request.`);
