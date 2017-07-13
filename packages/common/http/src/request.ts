@@ -266,9 +266,9 @@ export class HttpRequest<T> {
     if (this.body === null) {
       return null;
     }
-    // FormData instances are URL encoded on the wire.
+    // FormData bodies rely on the browser's content type assignment.
     if (isFormData(this.body)) {
-      return 'multipart/form-data';
+      return null;
     }
     // Blobs usually have their own content type. If it doesn't, then
     // no type can be inferred.
