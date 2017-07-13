@@ -17,6 +17,7 @@ import {TypeChecker} from '../diagnostics/check_types';
 
 import {CompilerHost, CompilerOptions, DiagnosticCategory} from './api';
 import {Diagnostic, EmitFlags, Program} from './api';
+import {LowerMetadataCache, getExpressionLoweringTransformFactory} from './lower_expressions';
 import {getAngularEmitterTransformFactory} from './node_emitter_transform';
 
 const GENERATED_FILES = /\.ngfactory\.js$|\.ngstyle\.js$|\.ngsummary\.js$/;
@@ -35,7 +36,7 @@ class AngularCompilerProgram implements Program {
   private aotCompilerHost: AotCompilerHost;
   private compiler: AotCompiler;
   private srcNames: string[];
-  private collector: MetadataCollector;
+  private metadataCache: LowerMetadataCache;
   // Lazily initialized fields
   private _analyzedModules: NgAnalyzedModules|undefined;
   private _structuralDiagnostics: Diagnostic[] = [];
@@ -55,13 +56,14 @@ class AngularCompilerProgram implements Program {
 
     this.tsProgram = ts.createProgram(rootNames, options, host, this.oldTsProgram);
     this.srcNames = this.tsProgram.getSourceFiles().map(sf => sf.fileName);
-    this.aotCompilerHost = new AotCompilerHost(this.tsProgram, options, host);
+    this.metadataCache = new LowerMetadataCache({quotedNames: true}, !!options.strictMetadataEmit);
+    this.aotCompilerHost = new AotCompilerHost(
+        this.tsProgram, options, host, /* collectorOptions */ undefined, this.metadataCache);
     if (host.readResource) {
       this.aotCompilerHost.loadResource = host.readResource.bind(host);
     }
     const {compiler} = createAotCompiler(this.aotCompilerHost, options);
     this.compiler = compiler;
-    this.collector = new MetadataCollector({quotedNames: true});
   }
 
   // Program implementation
@@ -118,11 +120,9 @@ class AngularCompilerProgram implements Program {
     const emitMap = new Map<string, string>();
     const result = this.programWithStubs.emit(
         /* targetSourceFile */ undefined,
-        createWriteFileCallback(emitFlags, this.host, this.collector, this.options, emitMap),
-        cancellationToken, (emitFlags & (EmitFlags.DTS | EmitFlags.JS)) == EmitFlags.DTS, {
-          after: this.options.skipTemplateCodegen ? [] : [getAngularEmitterTransformFactory(
-                                                             this.generatedFiles)]
-        });
+        createWriteFileCallback(emitFlags, this.host, this.metadataCache, emitMap),
+        cancellationToken, (emitFlags & (EmitFlags.DTS | EmitFlags.JS)) == EmitFlags.DTS,
+        this.calculateTransforms());
 
     this.generatedFiles.forEach(file => {
       if (file.source && file.source.length && SUMMARY_JSON_FILES.test(file.genFileUrl)) {
@@ -182,6 +182,21 @@ class AngularCompilerProgram implements Program {
 
   private get generatedFileDiagnostics(): Diagnostic[]|undefined {
     return this.generatedFiles && this._generatedFileDiagnostics !;
+  }
+
+  private calculateTransforms(): ts.CustomTransformers {
+    const before: ts.TransformerFactory<ts.SourceFile>[] = [];
+    const after: ts.TransformerFactory<ts.SourceFile>[] = [];
+    if (!this.options.disableExpressionLowering) {
+      before.push(getExpressionLoweringTransformFactory(this.metadataCache));
+    }
+    if (!this.options.skipTemplateCodegen) {
+      after.push(getAngularEmitterTransformFactory(this.generatedFiles));
+    }
+    const result: ts.CustomTransformers = {};
+    if (before.length) result.before = before;
+    if (after.length) result.after = after;
+    return result;
   }
 
   private catchAnalysisError(e: any): NgAnalyzedModules {
@@ -257,8 +272,7 @@ export function createProgram(
 }
 
 function writeMetadata(
-    emitFilePath: string, sourceFile: ts.SourceFile, collector: MetadataCollector,
-    ngOptions: CompilerOptions) {
+    emitFilePath: string, sourceFile: ts.SourceFile, metadataCache: LowerMetadataCache) {
   if (/\.js$/.test(emitFilePath)) {
     const path = emitFilePath.replace(/\.js$/, '.metadata.json');
 
@@ -271,7 +285,7 @@ function writeMetadata(
       collectableFile = (collectableFile as any).original;
     }
 
-    const metadata = collector.getMetadata(collectableFile, !!ngOptions.strictMetadataEmit);
+    const metadata = metadataCache.getMetadata(collectableFile);
     if (metadata) {
       const metadataText = JSON.stringify([metadata]);
       writeFileSync(path, metadataText, {encoding: 'utf-8'});
@@ -280,8 +294,8 @@ function writeMetadata(
 }
 
 function createWriteFileCallback(
-    emitFlags: EmitFlags, host: ts.CompilerHost, collector: MetadataCollector,
-    ngOptions: CompilerOptions, emitMap: Map<string, string>) {
+    emitFlags: EmitFlags, host: ts.CompilerHost, metadataCache: LowerMetadataCache,
+    emitMap: Map<string, string>) {
   const withMetadata =
       (fileName: string, data: string, writeByteOrderMark: boolean,
        onError?: (message: string) => void, sourceFiles?: ts.SourceFile[]) => {
@@ -291,7 +305,7 @@ function createWriteFileCallback(
         }
         if (!generatedFile && sourceFiles && sourceFiles.length == 1) {
           emitMap.set(sourceFiles[0].fileName, fileName);
-          writeMetadata(fileName, sourceFiles[0], collector, ngOptions);
+          writeMetadata(fileName, sourceFiles[0], metadataCache);
         }
       };
   const withoutMetadata =

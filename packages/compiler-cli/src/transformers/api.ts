@@ -91,6 +91,10 @@ export interface CompilerOptions extends ts.CompilerOptions {
 
   // Whether to enable support for <template> and the template attribute (true by default)
   enableLegacyTemplate?: boolean;
+
+  // Whether to enable lowering expressions lambdas and expressions in a reference value
+  // position.
+  disableExpressionLowering?: boolean;
 }
 
 export interface ModuleFilenameResolver {

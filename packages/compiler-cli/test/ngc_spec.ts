@@ -308,12 +308,128 @@ describe('ngc command-line', () => {
 
       const exitCode = main(['-p', path.join(basePath, 'tsconfig.json')]);
       expect(exitCode).toEqual(0);
-
       expect(fs.existsSync(path.resolve(outDir, 'mymodule.ngfactory.js'))).toBe(true);
       expect(fs.existsSync(path.resolve(
                  outDir, 'node_modules', '@angular', 'core', 'src',
                  'application_module.ngfactory.js')))
           .toBe(true);
+    });
+
+    describe('expression lowering', () => {
+      beforeEach(() => {
+        writeConfig(`{
+            "extends": "./tsconfig-base.json",
+            "files": ["mymodule.ts"]
+          }`);
+      });
+
+      function compile(): number {
+        const errors: string[] = [];
+        const result = main(['-p', path.join(basePath, 'tsconfig.json')], s => errors.push(s));
+        expect(errors).toEqual([]);
+        return result;
+      }
+
+      it('should be able to lower a lambda expression in a provider', () => {
+        write('mymodule.ts', `
+          import {CommonModule} from '@angular/common';
+          import {NgModule} from '@angular/core';
+
+          class Foo {}
+
+          @NgModule({
+            imports: [CommonModule],
+            providers: [{provide: 'someToken', useFactory: () => new Foo()}]
+          })
+          export class MyModule {}
+        `);
+        expect(compile()).toEqual(0);
+
+        const mymodulejs = path.resolve(outDir, 'mymodule.js');
+        const mymoduleSource = fs.readFileSync(mymodulejs, 'utf8');
+        expect(mymoduleSource).toContain('var ɵ0 = function () { return new Foo(); }');
+        expect(mymoduleSource).toContain('export { ɵ0');
+
+        const mymodulefactory = path.resolve(outDir, 'mymodule.ngfactory.js');
+        const mymodulefactorySource = fs.readFileSync(mymodulefactory, 'utf8');
+        expect(mymodulefactorySource).toContain('"someToken", i1.ɵ0');
+      });
+
+      it('should be able to lower a function expression in a provider', () => {
+        write('mymodule.ts', `
+          import {CommonModule} from '@angular/common';
+          import {NgModule} from '@angular/core';
+
+          class Foo {}
+
+          @NgModule({
+            imports: [CommonModule],
+            providers: [{provide: 'someToken', useFactory: function() {return new Foo();}}]
+          })
+          export class MyModule {}
+        `);
+        expect(compile()).toEqual(0);
+
+        const mymodulejs = path.resolve(outDir, 'mymodule.js');
+        const mymoduleSource = fs.readFileSync(mymodulejs, 'utf8');
+        expect(mymoduleSource).toContain('var ɵ0 = function () { return new Foo(); }');
+        expect(mymoduleSource).toContain('export { ɵ0');
+
+        const mymodulefactory = path.resolve(outDir, 'mymodule.ngfactory.js');
+        const mymodulefactorySource = fs.readFileSync(mymodulefactory, 'utf8');
+        expect(mymodulefactorySource).toContain('"someToken", i1.ɵ0');
+      });
+
+      it('should able to lower multiple expressions', () => {
+        write('mymodule.ts', `
+          import {CommonModule} from '@angular/common';
+          import {NgModule} from '@angular/core';
+
+          class Foo {}
+
+          @NgModule({
+            imports: [CommonModule],
+            providers: [
+              {provide: 'someToken', useFactory: () => new Foo()},
+              {provide: 'someToken', useFactory: () => new Foo()},
+              {provide: 'someToken', useFactory: () => new Foo()},
+              {provide: 'someToken', useFactory: () => new Foo()}
+            ]
+          })
+          export class MyModule {}
+        `);
+        expect(compile()).toEqual(0);
+        const mymodulejs = path.resolve(outDir, 'mymodule.js');
+        const mymoduleSource = fs.readFileSync(mymodulejs, 'utf8');
+        expect(mymoduleSource).toContain('ɵ0 = function () { return new Foo(); }');
+        expect(mymoduleSource).toContain('ɵ1 = function () { return new Foo(); }');
+        expect(mymoduleSource).toContain('ɵ2 = function () { return new Foo(); }');
+        expect(mymoduleSource).toContain('ɵ3 = function () { return new Foo(); }');
+        expect(mymoduleSource).toContain('export { ɵ0, ɵ1, ɵ2, ɵ3');
+      });
+
+      it('should be able to lower an indirect expression', () => {
+        write('mymodule.ts', `
+          import {CommonModule} from '@angular/common';
+          import {NgModule} from '@angular/core';
+
+          class Foo {}
+
+          const factory = () => new Foo();
+
+          @NgModule({
+            imports: [CommonModule],
+            providers: [{provide: 'someToken', useFactory: factory}]
+          })
+          export class MyModule {}
+        `);
+        expect(compile()).toEqual(0);
+
+        const mymodulejs = path.resolve(outDir, 'mymodule.js');
+        const mymoduleSource = fs.readFileSync(mymodulejs, 'utf8');
+        expect(mymoduleSource).toContain('var ɵ0 = function () { return new Foo(); }');
+        expect(mymoduleSource).toContain('export { ɵ0');
+      });
     });
 
     const shouldExist = (fileName: string) => {
