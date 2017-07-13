@@ -647,6 +647,11 @@ export class Evaluator {
             return result;
           }, this.evaluateNode(templateExpression.head));
         }
+      case ts.SyntaxKind.AsExpression:
+        const asExpression = <ts.AsExpression>node;
+        return this.evaluateNode(asExpression.expression);
+      case ts.SyntaxKind.ClassExpression:
+        return {__symbolic: 'class'};
     }
     return recordEntry(errorSymbol('Expression form not supported', node), node);
   }
