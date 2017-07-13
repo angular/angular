@@ -76,7 +76,7 @@ High level stuff planned for Q3 2017 (July - September):
 | textarea         |                                                        |   [Docs][5]  |
 | toolbar          |                                                        |   [Docs][7]  |
 | tooltip          |                                                        |   [Docs][18] |
-|                                                                                          |
+| ---------------- | ------------------------------------------------------ | ------------ | 
 | theming          |                                                        |  [Guide][20] |
 | typography       |                                                        |  [Guide][27] |
 | layout           |                      See [angular/flex-layout][lay_rp] |  [Wiki][0]   |
