@@ -85,15 +85,15 @@ const XLIFF_TOMERGE = `
         <source>{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<x id="START_BOLD_TEXT" ctype="x-b"/>many<x id="CLOSE_BOLD_TEXT" ctype="x-b"/>} }</source>
         <target>{VAR_PLURAL, plural, =0 {zero} =1 {un} =2 {deux} other {<x id="START_BOLD_TEXT" ctype="x-b"/>beaucoup<x id="CLOSE_BOLD_TEXT" ctype="x-b"/>} }</target>
       </trans-unit>
-      <trans-unit id="85ef51de59fe5a8d13fba977b6689f164420c8ca" datatype="html">
+      <trans-unit id="ba9106fca6e4e33a9b703a8c1927e2d1794dd9ff" datatype="html">
         <source>
         <x id="ICU"/>
     </source>
         <target><x id="ICU"/></target>
       </trans-unit>
-      <trans-unit id="c0ca5e58fe954d528bbfa516007a5a11690a7e99" datatype="html">
-        <source>{VAR_SELECT, select, m {male} f {female} }</source>
-        <target>{VAR_SELECT, select, m {homme} f {femme} }</target>
+      <trans-unit id="7b7916d063ebaafcd2e9dcdf697b5e184fcb8099" datatype="html">
+        <source>{VAR_SELECT, select, 0 {other} m {male} f {female} }</source>
+        <target>{VAR_SELECT, select, 0 {autre} m {homme} f {femme}}</target>
       </trans-unit>
       <trans-unit id="078b7089573c5f66a2f78dce0adaa55e6715beb1" datatype="html">
         <source>
@@ -123,12 +123,12 @@ const XLIFF_TOMERGE = `
       </trans-unit>
       <trans-unit id="eee74a5be8a75881a4785905bd8302a71f7d9f75" datatype="html">
         <source>
-    <x id="START_HEADING_LEVEL1" ctype="x-h1"/>Markers in html comments<x id="CLOSE_HEADING_LEVEL1" ctype="x-h1"/>   
+    <x id="START_HEADING_LEVEL1" ctype="x-h1"/>Markers in html comments<x id="CLOSE_HEADING_LEVEL1" ctype="x-h1"/>
     <x id="START_TAG_DIV" ctype="x-div"/><x id="CLOSE_TAG_DIV" ctype="x-div"/>
     <x id="START_TAG_DIV_1" ctype="x-div"/><x id="ICU"/><x id="CLOSE_TAG_DIV" ctype="x-div"/>
 </source>
         <target>
-    <x id="START_HEADING_LEVEL1" ctype="x-h1"/>Balises dans les commentaires html<x id="CLOSE_HEADING_LEVEL1" ctype="x-h1"/>   
+    <x id="START_HEADING_LEVEL1" ctype="x-h1"/>Balises dans les commentaires html<x id="CLOSE_HEADING_LEVEL1" ctype="x-h1"/>
     <x id="START_TAG_DIV" ctype="x-div"/><x id="CLOSE_TAG_DIV" ctype="x-div"/>
     <x id="START_TAG_DIV_1" ctype="x-div"/><x id="ICU"/><x id="CLOSE_TAG_DIV" ctype="x-div"/>
 </target>
@@ -218,7 +218,7 @@ const XLIFF_EXTRACTED = `
           <context context-type="linenumber">36</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="85ef51de59fe5a8d13fba977b6689f164420c8ca" datatype="html">
+      <trans-unit id="ba9106fca6e4e33a9b703a8c1927e2d1794dd9ff" datatype="html">
         <source>
         <x id="ICU"/>
     </source>
@@ -227,8 +227,8 @@ const XLIFF_EXTRACTED = `
           <context context-type="linenumber">21</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="c0ca5e58fe954d528bbfa516007a5a11690a7e99" datatype="html">
-        <source>{VAR_SELECT, select, m {male} f {female} }</source>
+      <trans-unit id="7b7916d063ebaafcd2e9dcdf697b5e184fcb8099" datatype="html">
+        <source>{VAR_SELECT, select, 0 {other} m {male} f {female} }</source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">22</context>
@@ -284,7 +284,7 @@ const XLIFF_EXTRACTED = `
       </trans-unit>
       <trans-unit id="eee74a5be8a75881a4785905bd8302a71f7d9f75" datatype="html">
         <source>
-    <x id="START_HEADING_LEVEL1" ctype="x-h1"/>Markers in html comments<x id="CLOSE_HEADING_LEVEL1" ctype="x-h1"/>   
+    <x id="START_HEADING_LEVEL1" ctype="x-h1"/>Markers in html comments<x id="CLOSE_HEADING_LEVEL1" ctype="x-h1"/>
     <x id="START_TAG_DIV" ctype="x-div"/><x id="CLOSE_TAG_DIV" ctype="x-div"/>
     <x id="START_TAG_DIV_1" ctype="x-div"/><x id="ICU"/><x id="CLOSE_TAG_DIV" ctype="x-div"/>
 </source>

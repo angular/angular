@@ -363,6 +363,11 @@ export function main() {
           ]);
         });
 
+        it('should support ICU expressions with cases that contain numbers', () => {
+          const p = parser.parse(`{sex, select, male {m} female {f} 0 {other}}`, 'TestComp', true);
+          expect(p.errors.length).toEqual(0);
+        });
+
         it('should error when expansion case is not closed', () => {
           const p = parser.parse(`{messages.length, plural, =0 {one`, 'TestComp', true);
           expect(humanizeErrors(p.errors)).toEqual([

@@ -64,6 +64,8 @@ const XTB = `
   <translation id="5525133077318024839">sur des balises non traductibles</translation>
   <translation id="8670732454866344690">sur des balises traductibles</translation>
   <translation id="4593805537723189714">{VAR_PLURAL, plural, =0 {zero} =1 {un} =2 {deux} other {<ph name="START_BOLD_TEXT"/>beaucoup<ph name="CLOSE_BOLD_TEXT"/>}}</translation>
+  <translation id="4360321700965841752"><ph name="ICU"/></translation>
+  <translation id="5460933846928880074">{VAR_SELECT, select, 0 {autre} m {homme} f {femme} }</translation>
   <translation id="1746565782635215"><ph name="ICU"/></translation>
   <translation id="5868084092545682515">{VAR_SELECT, select, m {homme} f {femme}}</translation>
   <translation id="4851788426695310455"><ph name="INTERPOLATION"/></translation>
@@ -84,17 +86,21 @@ const XTB = `
   <translation id="5339604010413301604"><ph name="MAP_NAME"><ex>MAP_NAME</ex></ph></translation>
 </translationbundle>`;
 
-const XMB = ` <msg id="615790887472569365"><source>file.ts:3</source>i18n attribute on tags</msg>
+const XMB = `<msg id="615790887472569365"><source>file.ts:3</source>i18n attribute on tags</msg>
   <msg id="3707494640264351337"><source>file.ts:5</source>nested</msg>
   <msg id="5539162898278769904" meaning="different meaning"><source>file.ts:7</source>nested</msg>
   <msg id="3780349238193953556"><source>file.ts:9</source><source>file.ts:10</source><ph name="START_ITALIC_TEXT"><ex>&lt;i&gt;</ex></ph>with placeholders<ph name="CLOSE_ITALIC_TEXT"><ex>&lt;/i&gt;</ex></ph></msg>
   <msg id="5525133077318024839"><source>file.ts:13</source>on not translatable node</msg>
   <msg id="8670732454866344690"><source>file.ts:14</source>on translatable node</msg>
   <msg id="4593805537723189714"><source>file.ts:19</source><source>file.ts:36</source>{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>many<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph>} }</msg>
-  <msg id="1746565782635215"><source>file.ts:21,23</source><source>file.ts:24,26</source>
+  <msg id="4360321700965841752"><source>file.ts:21,23</source>
         <ph name="ICU"><ex>ICU</ex></ph>
     </msg>
-  <msg id="5868084092545682515"><source>file.ts:22</source><source>file.ts:25</source>{VAR_SELECT, select, m {male} f {female} }</msg>
+  <msg id="5460933846928880074"><source>file.ts:22</source>{VAR_SELECT, select, 0 {other} m {male} f {female} }</msg>
+  <msg id="1746565782635215"><source>file.ts:24,26</source>
+        <ph name="ICU"><ex>ICU</ex></ph>
+    </msg>
+  <msg id="5868084092545682515"><source>file.ts:25</source>{VAR_SELECT, select, m {male} f {female} }</msg>
   <msg id="4851788426695310455"><source>file.ts:28</source><ph name="INTERPOLATION"><ex>INTERPOLATION</ex></ph></msg>
   <msg id="9013357158046221374"><source>file.ts:29</source>sex = <ph name="INTERPOLATION"><ex>INTERPOLATION</ex></ph></msg>
   <msg id="8324617391167353662"><source>file.ts:30</source><ph name="CUSTOM_NAME"><ex>CUSTOM_NAME</ex></ph></msg>
