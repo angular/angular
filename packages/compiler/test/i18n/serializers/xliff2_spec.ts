@@ -23,7 +23,7 @@ const HTML = `
 <p i18n="ph names"><br><img src="1.jpg"><img src="2.jpg"></p>
 <p i18n="empty element">hello <span></span></p>
 <p i18n="@@baz">{ count, plural, =0 { { sex, select, other {<p>deeply nested</p>}} }}</p>
-<p i18n>{ count, plural, =0 { { sex, select, other {<p>deeply nested</p>}} }}</p>
+<p i18n>Test: { count, plural, =0 { { sex, select, other {<p>deeply nested</p>}} } =other {a lot}}</p>
 <p i18n>multi
 lines</p>
 `;
@@ -100,12 +100,20 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
         <source>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<pc id="0" equivStart="START_PARAGRAPH" equivEnd="CLOSE_PARAGRAPH" type="other" dispStart="&lt;p&gt;" dispEnd="&lt;/p&gt;">deeply nested</pc>} } } }</source>
       </segment>
     </unit>
-    <unit id="2015957479576096115">
+    <unit id="6997386649824869937">
       <notes>
         <note category="location">file.ts:10</note>
       </notes>
       <segment>
-        <source>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<pc id="0" equivStart="START_PARAGRAPH" equivEnd="CLOSE_PARAGRAPH" type="other" dispStart="&lt;p&gt;" dispEnd="&lt;/p&gt;">deeply nested</pc>} } } }</source>
+        <source>Test: <ph id="0" equiv="ICU" disp="{ count, plural, =0 {...} =other {...}}"/></source>
+      </segment>
+    </unit>
+    <unit id="5229984852258993423">
+      <notes>
+        <note category="location">file.ts:10</note>
+      </notes>
+      <segment>
+        <source>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<pc id="0" equivStart="START_PARAGRAPH" equivEnd="CLOSE_PARAGRAPH" type="other" dispStart="&lt;p&gt;" dispEnd="&lt;/p&gt;">deeply nested</pc>} } } =other {a lot} }</source>
       </segment>
     </unit>
     <unit id="2340165783990709777">
@@ -201,13 +209,22 @@ const LOAD_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
         <target>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<pc id="0" equivStart="START_PARAGRAPH" equivEnd="CLOSE_PARAGRAPH" type="other" dispStart="&lt;p&gt;" dispEnd="&lt;/p&gt;">profondément imbriqué</pc>} } } }</target>
       </segment>
     </unit>
-    <unit id="2015957479576096115">
+    <unit id="6997386649824869937">
       <notes>
         <note category="location">file.ts:10</note>
       </notes>
       <segment>
-        <source>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<pc id="0" equivStart="START_PARAGRAPH" equivEnd="CLOSE_PARAGRAPH" type="other" dispStart="&lt;p&gt;" dispEnd="&lt;/p&gt;">deeply nested</pc>} } } }</source>
-        <target>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<pc id="0" equivStart="START_PARAGRAPH" equivEnd="CLOSE_PARAGRAPH" type="other" dispStart="&lt;p&gt;" dispEnd="&lt;/p&gt;">profondément imbriqué</pc>} } } }</target>
+        <source>Test: <ph id="0" equiv="ICU" disp="{ count, plural, =0 {...} =other {...}}"/></source>
+        <target>Test: <ph id="0" equiv="ICU" disp="{ count, plural, =0 {...} =other {...}}"/></target>
+      </segment>
+    </unit>
+    <unit id="5229984852258993423">
+      <notes>
+        <note category="location">file.ts:10</note>
+      </notes>
+      <segment>
+        <source>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<pc id="0" equivStart="START_PARAGRAPH" equivEnd="CLOSE_PARAGRAPH" type="other" dispStart="&lt;p&gt;" dispEnd="&lt;/p&gt;">deeply nested</pc>} } } =other {a lot} }</source>
+        <target>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<pc id="0" equivStart="START_PARAGRAPH" equivEnd="CLOSE_PARAGRAPH" type="other" dispStart="&lt;p&gt;" dispEnd="&lt;/p&gt;">profondément imbriqué</pc>} } } =other {beaucoup} }</target>
       </segment>
     </unit>
     <unit id="2340165783990709777">
@@ -268,8 +285,9 @@ export function main(): void {
           '6536355551500405293': '<ph name="START_TAG_SPAN"/><ph name="CLOSE_TAG_SPAN"/> olleh',
           'baz':
               '{VAR_PLURAL, plural, =0 {[{VAR_SELECT, select, other {[<ph name="START_PARAGRAPH"/>, profondément imbriqué, <ph name="CLOSE_PARAGRAPH"/>]}},  ]}}',
-          '2015957479576096115': '{VAR_PLURAL, plural, =0 {[{VAR_SELECT, select, other {[<ph' +
-              ' name="START_PARAGRAPH"/>, profondément imbriqué, <ph name="CLOSE_PARAGRAPH"/>]}},  ]}}',
+          '6997386649824869937': 'Test: <ph name="ICU"/>',
+          '5229984852258993423': '{VAR_PLURAL, plural, =0 {[{VAR_SELECT, select, other {[<ph' +
+              ' name="START_PARAGRAPH"/>, profondément imbriqué, <ph name="CLOSE_PARAGRAPH"/>]}},  ]}, =other {[beaucoup]}}',
           '2340165783990709777': `multi
 lignes`
         });

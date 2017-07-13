@@ -73,6 +73,14 @@ const XLIFF_TOMERGE = `
         <source><x id="START_ITALIC_TEXT" ctype="x-i"/>with placeholders<x id="CLOSE_ITALIC_TEXT" ctype="x-i"/></source>
         <target><x id="START_ITALIC_TEXT" ctype="x-i"/>avec des espaces réservés<x id="CLOSE_ITALIC_TEXT" ctype="x-i"/></target>
       </trans-unit>
+      <trans-unit id="651d7249d3a225037eb66f3433d98ad4a86f0a22" datatype="html">
+        <source><x id="START_TAG_DIV" ctype="x-div"/>with <x id="START_TAG_DIV" ctype="x-div"/>nested<x id="CLOSE_TAG_DIV" ctype="x-div"/> placeholders<x id="CLOSE_TAG_DIV" ctype="x-div"/></source>
+        <target><x id="START_TAG_DIV" ctype="x-div"/>with <x id="START_TAG_DIV" ctype="x-div"/>nested<x id="CLOSE_TAG_DIV" ctype="x-div"/> placeholders<x id="CLOSE_TAG_DIV" ctype="x-div"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="1fe4616cce80a57c7707bac1c97054aa8e244a67" datatype="html">
         <source>on not translatable node</source>
         <target>sur des balises non traductibles</target>
@@ -193,29 +201,37 @@ const XLIFF_EXTRACTED = `
           <context context-type="linenumber">10</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="651d7249d3a225037eb66f3433d98ad4a86f0a22" datatype="html">
+        <source><x id="START_TAG_DIV" ctype="x-div"/>with <x id="START_TAG_DIV" ctype="x-div"/>nested<x id="CLOSE_TAG_DIV" ctype="x-div"/> placeholders<x id="CLOSE_TAG_DIV" ctype="x-div"/></source>
+        <target/>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="1fe4616cce80a57c7707bac1c97054aa8e244a67" datatype="html">
         <source>on not translatable node</source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
-          <context context-type="linenumber">13</context>
+          <context context-type="linenumber">14</context>
         </context-group>
       </trans-unit>
       <trans-unit id="67162b5af5f15fd0eb6480c88688dafdf952b93a" datatype="html">
         <source>on translatable node</source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
-          <context context-type="linenumber">14</context>
+          <context context-type="linenumber">15</context>
         </context-group>
       </trans-unit>
       <trans-unit id="dc5536bb9e0e07291c185a0d306601a2ecd4813f" datatype="html">
         <source>{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<x id="START_BOLD_TEXT" ctype="x-b"/>many<x id="CLOSE_BOLD_TEXT" ctype="x-b"/>} }</source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
-          <context context-type="linenumber">19</context>
+          <context context-type="linenumber">20</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
-          <context context-type="linenumber">36</context>
+          <context context-type="linenumber">37</context>
         </context-group>
       </trans-unit>
       <trans-unit id="85ef51de59fe5a8d13fba977b6689f164420c8ca" datatype="html">
@@ -224,14 +240,14 @@ const XLIFF_EXTRACTED = `
     </source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
-          <context context-type="linenumber">21</context>
+          <context context-type="linenumber">22</context>
         </context-group>
       </trans-unit>
       <trans-unit id="c0ca5e58fe954d528bbfa516007a5a11690a7e99" datatype="html">
         <source>{VAR_SELECT, select, m {male} f {female} }</source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
-          <context context-type="linenumber">22</context>
+          <context context-type="linenumber">23</context>
         </context-group>
       </trans-unit>
       <trans-unit id="078b7089573c5f66a2f78dce0adaa55e6715beb1" datatype="html">
@@ -240,46 +256,46 @@ const XLIFF_EXTRACTED = `
     </source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
-          <context context-type="linenumber">24</context>
+          <context context-type="linenumber">25</context>
         </context-group>
       </trans-unit>
       <trans-unit id="a25cf2e21a299f30be1392e731163825233edc61" datatype="html">
         <source>{VAR_SELECT, select, m {male} f {female} }</source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
-          <context context-type="linenumber">25</context>
+          <context context-type="linenumber">26</context>
         </context-group>
       </trans-unit>
       <trans-unit id="d9879678f727b244bc7c7e20f22b63d98cb14890" datatype="html">
         <source><x id="INTERPOLATION"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
-          <context context-type="linenumber">28</context>
+          <context context-type="linenumber">29</context>
         </context-group>
       </trans-unit>
       <trans-unit id="50dac33dc6fc0578884baac79d875785ed77c928" datatype="html">
         <source>sex = <x id="INTERPOLATION"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
-          <context context-type="linenumber">29</context>
+          <context context-type="linenumber">30</context>
         </context-group>
       </trans-unit>
       <trans-unit id="a46f833b1fe6ca49e8b97c18f4b7ea0b930c9383" datatype="html">
         <source><x id="CUSTOM_NAME"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
-          <context context-type="linenumber">30</context>
+          <context context-type="linenumber">31</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2ec983b4893bcd5b24af33bebe3ecba63868453c" datatype="html">
         <source>in a translatable section</source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
-          <context context-type="linenumber">35</context>
+          <context context-type="linenumber">36</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
-          <context context-type="linenumber">53</context>
+          <context context-type="linenumber">54</context>
         </context-group>
       </trans-unit>
       <trans-unit id="eee74a5be8a75881a4785905bd8302a71f7d9f75" datatype="html">
@@ -290,35 +306,35 @@ const XLIFF_EXTRACTED = `
 </source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
-          <context context-type="linenumber">33</context>
+          <context context-type="linenumber">34</context>
         </context-group>
       </trans-unit>
       <trans-unit id="93a30c67d4e6c9b37aecfe2ac0f2b5d366d7b520" datatype="html">
         <source>it <x id="START_BOLD_TEXT" ctype="x-b"/>should<x id="CLOSE_BOLD_TEXT" ctype="x-b"/> work</source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
-          <context context-type="linenumber">39</context>
+          <context context-type="linenumber">40</context>
         </context-group>
       </trans-unit>
       <trans-unit id="i18n16" datatype="html">
         <source>with an explicit ID</source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
-          <context context-type="linenumber">41</context>
+          <context context-type="linenumber">42</context>
         </context-group>
       </trans-unit>
       <trans-unit id="i18n17" datatype="html">
         <source>{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<x id="START_BOLD_TEXT" ctype="x-b"/>many<x id="CLOSE_BOLD_TEXT" ctype="x-b"/>} }</source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
-          <context context-type="linenumber">42</context>
+          <context context-type="linenumber">43</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2370d995bdcc1e7496baa32df20654aff65c2d10" datatype="html">
         <source>{VAR_PLURAL, plural, =0 {Found no results} =1 {Found one result} other {Found <x id="INTERPOLATION"/> results} }</source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
-          <context context-type="linenumber">45</context>
+          <context context-type="linenumber">46</context>
         </context-group>
         <note priority="1" from="description">desc</note>
       </trans-unit>
@@ -326,13 +342,13 @@ const XLIFF_EXTRACTED = `
         <source>foo<x id="START_LINK" ctype="x-a"/>bar<x id="CLOSE_LINK" ctype="x-a"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
-          <context context-type="linenumber">53</context>
+          <context context-type="linenumber">54</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2e013b311caa0916478941a985887e091d8288b6" datatype="html">
         <source><x id="MAP NAME"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
-          <context context-type="linenumber">55</context>
+          <context context-type="linenumber">56</context>
         </context-group>
       </trans-unit>`;
