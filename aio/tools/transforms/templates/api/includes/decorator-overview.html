@@ -2,9 +2,9 @@
 
 <section class="decorator-overview">
   <h2>Metadata Overview</h2>
-  <code-example language="ts" hideCopy="true">
-  @{$ doc.name $}{$ doc.typeParams | escape $}({ {% if doc.members.length %}{% for member in doc.members %}{% if not member.internal %}
-    <a class="code-anchor" href="#{$ member.anchor $}">{$ memberHelper.renderMember(member) $}</a>{% endif %}{% endfor %}{% endif %}
-  })
-  </code-example>
+<code-example language="ts" hideCopy="true">
+@{$ doc.name $}{$ doc.typeParams | escape $}({ {% if doc.members.length %}{% for member in doc.members %}{% if not member.internal %}
+  <a class="code-anchor" href="#{$ member.anchor $}">{$ memberHelper.renderMember(member, 1) $}</a>{% endif %}{% endfor %}{% endif %}
+})
+</code-example>
 </section>
