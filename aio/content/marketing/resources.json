@@ -316,7 +316,7 @@
             "desc": "Angular UI Components including Grids, Charts, Scheduling and more.",
             "rev": true,
             "title": "jQWidgets",
-            "url": "https://www.jqwidgets.com/angular/"
+            "url": "http://www.jqwidgets.com/angular/"
           },
           "amexio": {
             "desc": "Amexio (Angular MetaMagic EXtensions for Inputs and Outputs)  is a rich set of Angular components powered by Bootstrap for Responsive Design. UI Components include Standard Form Components, Data Grids, Tree Grids, Tabs etc. Open Source (Apache 2 License) & Free and backed by MetaMagic Global Inc",
