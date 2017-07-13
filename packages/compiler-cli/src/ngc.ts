@@ -122,30 +122,14 @@ function getProjectDirectory(project: string): string {
   return isFile ? path.dirname(project) : project;
 }
 
-export function main(
-    args: string[], consoleError: (s: string) => void = console.error, files?: string[],
-    options?: ts.CompilerOptions, ngOptions?: any): number {
+export function performCompilation(
+    basePath: string, files: string[], options: ts.CompilerOptions, ngOptions: any,
+    consoleError: (s: string) => void = console.error, tsCompilerHost?: ts.CompilerHost) {
   try {
-    const parsedArgs = require('minimist')(args);
-    const project = parsedArgs.p || parsedArgs.project || '.';
-
-    const projectDir = getProjectDirectory(project);
-
-    // file names in tsconfig are resolved relative to this absolute path
-    const basePath = path.resolve(process.cwd(), projectDir);
-
-    if (!files || !options || !ngOptions) {
-      const {parsed, ngOptions: readNgOptions} = readConfiguration(project, basePath);
-      if (!files) files = parsed.fileNames;
-      if (!options) options = parsed.options;
-      if (!ngOptions) ngOptions = readNgOptions;
-    }
-
-    // Ignore what the tsconfig.json for baseDir and genDir
     ngOptions.basePath = basePath;
     ngOptions.genDir = basePath;
 
-    let host = ts.createCompilerHost(options, true);
+    let host = tsCompilerHost || ts.createCompilerHost(options, true);
     host.realpath = p => p;
 
     const rootFileNames = files.map(f => path.normalize(f));
@@ -189,16 +173,32 @@ export function main(
     });
   } catch (e) {
     if (isSyntaxError(e)) {
+      console.error(e.message);
       consoleError(e.message);
       return 1;
-    } else {
-      consoleError(e.stack);
-      consoleError('Compilation failed');
-      return 2;
     }
   }
 
   return 0;
+}
+
+
+export function main(args: string[], consoleError: (s: string) => void = console.error): number {
+  try {
+    const parsedArgs = require('minimist')(args);
+    const project = parsedArgs.p || parsedArgs.project || '.';
+
+    const projectDir = fs.lstatSync(project).isFile() ? path.dirname(project) : project;
+
+    // file names in tsconfig are resolved relative to this absolute path
+    const basePath = path.resolve(process.cwd(), projectDir);
+    const {parsed, ngOptions} = readConfiguration(project, basePath);
+    return performCompilation(basePath, parsed.fileNames, parsed.options, ngOptions, consoleError);
+  } catch (e) {
+    consoleError(e.stack);
+    consoleError('Compilation failed');
+    return 2;
+  }
 }
 
 // CLI entry point

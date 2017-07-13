@@ -11,7 +11,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {main} from '../src/ngc';
+import {main, performCompilation} from '../src/ngc';
 
 function getNgRootDir() {
   const moduleFilename = module.filename.replace(/\\/g, '/');
@@ -41,7 +41,7 @@ describe('ngc command-line', () => {
     write('tsconfig-base.json', `{
       "compilerOptions": {
         "experimentalDecorators": true,
-        "skipLibCheck": true,     
+        "skipLibCheck": true,
         "types": [],
         "outDir": "built",
         "declaration": true,
@@ -81,8 +81,8 @@ describe('ngc command-line', () => {
 
     spyOn(mockConsole, 'error');
 
-    const result = main(
-        ['-p', basePath], mockConsole.error, [path.join(basePath, 'test.ts')], {
+    const result = performCompilation(
+        basePath, [path.join(basePath, 'test.ts')], {
           experimentalDecorators: true,
           skipLibCheck: true,
           types: [],
@@ -91,7 +91,7 @@ describe('ngc command-line', () => {
           module: ts.ModuleKind.ES2015,
           moduleResolution: ts.ModuleResolutionKind.NodeJs,
         },
-        {});
+        {}, mockConsole.error);
     expect(mockConsole.error).not.toHaveBeenCalled();
     expect(result).toBe(0);
   });
@@ -419,9 +419,8 @@ describe('ngc command-line', () => {
         export class FlatModule {
         }`);
 
-      const exitCode = main(
-          ['-p', path.join(basePath, 'tsconfig.json')], undefined,
-          [path.join(basePath, 'public-api.ts')], {
+      const exitCode = performCompilation(
+          basePath, [path.join(basePath, 'public-api.ts')], {
             target: ts.ScriptTarget.ES5,
             experimentalDecorators: true,
             noImplicitAny: true,
@@ -439,6 +438,8 @@ describe('ngc command-line', () => {
             flatModuleOutFile: 'index.js',
             skipTemplateCodegen: true
           });
+
+
       expect(exitCode).toEqual(0);
       shouldExist('index.js');
       shouldExist('index.metadata.json');
