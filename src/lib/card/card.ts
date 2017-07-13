@@ -32,7 +32,7 @@ export class MdCardContent {}
   selector: 'md-card-title, mat-card-title, [md-card-title], [mat-card-title],' +
   '[mdCardTitle], [matCardTitle]',
   host: {
-    'class': 'mat-card-title '
+    'class': 'mat-card-title'
   }
 })
 export class MdCardTitle {}
@@ -45,7 +45,7 @@ export class MdCardTitle {}
   selector: 'md-card-subtitle, mat-card-subtitle, [md-card-subtitle], [mat-card-subtitle],' +
   '[mdCardSubtitle], [matCardSubtitle]',
   host: {
-    'class': 'mat-card-subtitle '
+    'class': 'mat-card-subtitle'
   }
 })
 export class MdCardSubtitle {}
