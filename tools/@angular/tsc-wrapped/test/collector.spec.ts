@@ -635,8 +635,7 @@ describe('Collector', () => {
 
   describe('with interpolations', () => {
     function e(expr: string, prefix?: string) {
-      const source = createSource(`${prefix || ''} export let value = ${expr};`);
-      const metadata = collector.getMetadata(source);
+      const metadata = collectSource(`${prefix || ''} export let value = ${expr};`);
       return expect(metadata.metadata['value']);
     }
 
@@ -704,15 +703,12 @@ describe('Collector', () => {
   });
 
   it('should ignore |null or |undefined in type expressions', () => {
-    const source = ts.createSourceFile(
-        'somefile.ts', `
+    const metadata = collectSource(`
       import {Foo} from './foo';
       export class SomeClass {
         constructor (a: Foo, b: Foo | null, c: Foo | undefined, d: Foo | undefined | null, e: Foo | undefined | null | Foo) {}
       }
-    `,
-        ts.ScriptTarget.Latest, true);
-    const metadata = collector.getMetadata(source);
+    `);
     expect((metadata.metadata['SomeClass'] as ClassMetadata).members).toEqual({
       __ctor__: [{
         __symbolic: 'constructor',
@@ -832,19 +828,18 @@ describe('Collector', () => {
 
   describe('regerssion', () => {
     it('should be able to collect a short-hand property value', () => {
-      const source = createSource(`
+      const metadata = collectSource(`
         const children = { f1: 1 };
         export const r = [
           {path: ':locale', children}
         ];
       `);
-      const metadata = collector.getMetadata(source);
       expect(metadata.metadata).toEqual({r: [{path: ':locale', children: {f1: 1}}]});
     });
 
     // #17518
     it('should skip a default function', () => {
-      const source = createSource(`
+      const metadata = collectSource(`
         export default function () {
 
           const mainRoutes = [
@@ -856,12 +851,11 @@ describe('Collector', () => {
           return mainRoutes;
 
         }`);
-      const metadata = collector.getMetadata(source);
       expect(metadata).toBeUndefined();
     });
 
     it('should skip a named default export', () => {
-      const source = createSource(`
+      const metadata = collectSource(`
         function mainRoutes() {
 
           const mainRoutes = [
@@ -876,7 +870,6 @@ describe('Collector', () => {
 
         exports = foo;
         `);
-      const metadata = collector.getMetadata(source);
       expect(metadata).toBeUndefined();
     });
 
@@ -903,10 +896,58 @@ describe('Collector', () => {
     });
   });
 
+  describe('references', () => {
+    beforeEach(() => { collector = new MetadataCollector({quotedNames: true}); });
+
+    it('should record a reference to an exported field of a useValue', () => {
+      const metadata = collectSource(`
+        export var someValue = 1;
+        export const v = {
+          useValue: someValue
+        };
+      `);
+      expect(metadata.metadata['someValue']).toEqual(1);
+      expect(metadata.metadata['v']).toEqual({
+        useValue: {__symbolic: 'reference', name: 'someValue'}
+      });
+    });
+
+    it('should leave external references in place in an object literal', () => {
+      const metadata = collectSource(`
+        export const myLambda = () => [1, 2, 3];
+        const indirect = [{a: 1, b: 3: c: myLambda}];
+        export const v = {
+          v: {i: indirect}
+        }
+      `);
+      expect(metadata.metadata['v']).toEqual({
+        v: {i: [{a: 1, b: 3, c: {__symbolic: 'reference', name: 'myLambda'}}]}
+      });
+    });
+
+    it('should leave an external reference in place in an array literal', () => {
+      const metadata = collectSource(`
+        export const myLambda = () => [1, 2, 3];
+        const indirect = [1, 3, myLambda}];
+        export const v = {
+          v: {i: indirect}
+        }
+      `);
+      expect(metadata.metadata['v']).toEqual({
+        v: {i: [1, 3, {__symbolic: 'reference', name: 'myLambda'}]}
+      });
+    });
+  });
+
   function override(fileName: string, content: string) {
     host.overrideFile(fileName, content);
     host.addFile(fileName);
     program = service.getProgram();
+  }
+
+  function collectSource(content: string): ModuleMetadata {
+    const sourceFile = createSource(content);
+    return collector.getMetadata(sourceFile);
   }
 });
 

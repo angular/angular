@@ -306,6 +306,93 @@ describe('compiler (unbundled Angular)', () => {
     expect(genSource.startsWith(genFilePreamble)).toBe(true);
   });
 
+  it('should be able to use animation macro methods', () => {
+    const FILES = {
+      app: {
+        'app.ts': `
+      import {Component, NgModule} from '@angular/core';
+      import {trigger, state, style, transition, animate} from '@angular/animations';
+
+      export const EXPANSION_PANEL_ANIMATION_TIMING = '225ms cubic-bezier(0.4,0.0,0.2,1)';
+
+      @Component({
+        selector: 'app-component',
+        template: '<div></div>',
+        animations: [
+          trigger('bodyExpansion', [
+            state('collapsed', style({height: '0px'})),
+            state('expanded', style({height: '*'})),
+            transition('expanded <=> collapsed', animate(EXPANSION_PANEL_ANIMATION_TIMING)),
+          ]),
+          trigger('displayMode', [
+            state('collapsed', style({margin: '0'})),
+            state('default', style({margin: '16px 0'})),
+            state('flat', style({margin: '0'})),
+            transition('flat <=> collapsed, default <=> collapsed, flat <=> default',
+                      animate(EXPANSION_PANEL_ANIMATION_TIMING)),
+          ]),
+        ],
+      })
+      export class AppComponent { }
+
+      @NgModule({ declarations: [ AppComponent ] })
+      export class AppModule { }
+    `
+      }
+    };
+    compile([FILES, angularFiles]);
+  });
+
+  it('should detect an entry component via an indirection', () => {
+    const FILES = {
+      app: {
+        'app.ts': `
+          import {NgModule, ANALYZE_FOR_ENTRY_COMPONENTS} from '@angular/core';
+          import {AppComponent} from './app.component';
+          import {COMPONENT_VALUE, MyComponent} from './my-component';
+
+          @NgModule({
+            declarations: [ AppComponent, MyComponent ],
+            bootstrap: [ AppComponent ],
+            providers: [{
+              provide: ANALYZE_FOR_ENTRY_COMPONENTS,
+              multi: true,
+              useValue: COMPONENT_VALUE
+            }],
+          })
+          export class AppModule { }
+        `,
+        'app.component.ts': `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'app-component',
+            template: '<div></div>',
+          })
+          export class AppComponent { }
+        `,
+        'my-component.ts': `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'my-component',
+            template: '<div></div>',
+          })
+          export class MyComponent {}
+
+          export const COMPONENT_VALUE = [{a: 'b', component: MyComponent}];
+        `
+      }
+    };
+    const result = compile([FILES, angularFiles]);
+    const appModuleFactory =
+        result.genFiles.find(f => /my-component\.ngfactory/.test(f.genFileUrl));
+    expect(appModuleFactory).toBeDefined();
+    if (appModuleFactory) {
+      expect(toTypeScript(appModuleFactory)).toContain('MyComponentNgFactory');
+    }
+  });
+
   describe('ComponentFactories', () => {
     it('should include inputs, outputs and ng-content selectors in the component factory', () => {
       const FILES: MockDirectory = {
@@ -624,7 +711,7 @@ describe('compiler (unbundled Angular)', () => {
 });
 
 describe('compiler (bundled Angular)', () => {
-  setup({compileAngular: false});
+  setup({compileAngular: false, compileAnimations: false});
 
   let angularFiles: Map<string, string>;
 
