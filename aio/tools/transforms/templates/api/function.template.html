@@ -1,11 +1,14 @@
 {% import "lib/paramList.html" as params -%}
 {% extends 'export-base.template.html' -%}
 
-{% block details %}
+{% block overview %}
 <code-example language="ts" hideCopy="true" class="no-box api-heading">
 function {$ doc.name $}{$ params.paramList(doc.parameters) $}
 {%- if doc.type %}: {$ doc.type | escape $}{% endif %};
 </code-example>
+{% endblock %}
+
+{% block details %}
 {% include "includes/description.html" %}
 {% if doc.overloads.length %}
   <h2>Overloads</h2>{% for overload in doc.overloads %}

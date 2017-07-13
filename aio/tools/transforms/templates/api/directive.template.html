@@ -2,6 +2,7 @@
 {% import "lib/paramList.html" as params -%}
 {% extends 'class.template.html' -%}
 
+{% block overview %}{% include "includes/directive-overview.html" %}{% endblock %}
 {% block additional -%}
   {% include "includes/selectors.html" %}
   {$ directiveHelper.renderBindings(doc.inputs, 'inputs', 'input', 'Inputs') $}
