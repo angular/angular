@@ -252,7 +252,7 @@
 
         {
           "url": "guide/http",
-          "title": "Server Communication",
+          "title": "HTTP",
           "tooltip": "Use HTTP to talk to a remote server."
         },
         {
