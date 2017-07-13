@@ -727,6 +727,21 @@ describe('Collector', () => {
     });
   });
 
+  it('should treat exported class expressions as a class', () => {
+    const source = ts.createSourceFile(
+        '', `
+    export const InjectionToken: {new<T>(desc: string): InjectionToken<T>;} = class extends OpaqueToken {
+      constructor(desc: string) {
+        super(desc);
+      }
+
+      toString(): string { return \`InjectionToken ${this._desc}\`; }
+    } as any;`,
+        ts.ScriptTarget.Latest, true);
+    const metadata = collector.getMetadata(source);
+    expect(metadata.metadata).toEqual({InjectionToken: {__symbolic: 'class'}});
+  });
+
   describe('in strict mode', () => {
     it('should throw if an error symbol is collecting a reference to a non-exported symbol', () => {
       const source = program.getSourceFile('/local-symbol-ref.ts');
