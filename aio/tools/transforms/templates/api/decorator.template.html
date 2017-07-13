@@ -2,8 +2,8 @@
 {% import "lib/paramList.html" as params -%}
 {% extends 'export-base.template.html' %}
 
+{% block overview %}{% include "includes/decorator-overview.html" %}{% endblock %}
 {% block details %}
-  {% include "includes/decorator-overview.html" %}
   {% include "includes/description.html" %}
   {$ memberHelper.renderMemberDetails(doc.members, 'metadata-members', 'metadata-member', 'Metadata Properties') $}
 {% endblock %}
