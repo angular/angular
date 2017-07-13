@@ -12,6 +12,12 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {createRootView, isBrowser, recordNodeToRemove} from './helper';
 
+/**
+ * We map addEventListener to the Zones internal name. This is because we want to be fast
+ * and bypass the zone bookkeeping. We know that we can do the bookkeeping faster.
+ */
+const addEventListener = '__zone_symbol__addEventListener';
+
 export function main() {
   describe(`Component Views`, () => {
     function compViewDef(
@@ -180,7 +186,7 @@ export function main() {
 
           const update = jasmine.createSpy('updater');
 
-          const addListenerSpy = spyOn(HTMLElement.prototype, 'addEventListener').and.callThrough();
+          const addListenerSpy = spyOn(HTMLElement.prototype, addEventListener).and.callThrough();
 
           const {view} = createAndGetRootNodes(compViewDef(
               [
