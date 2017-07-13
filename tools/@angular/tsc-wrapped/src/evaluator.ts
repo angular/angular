@@ -227,7 +227,7 @@ export class Evaluator {
    * Produce a JSON serialiable object representing `node`. The foldable values in the expression
    * tree are folded. For example, a node representing `1 + 2` is folded into `3`.
    */
-  public evaluateNode(node: ts.Node): MetadataValue {
+  public evaluateNode(node: ts.Node, preferReference?: boolean): MetadataValue {
     const t = this;
     let error: MetadataError|undefined;
 
@@ -240,8 +240,8 @@ export class Evaluator {
       return !t.options.verboseInvalidExpression && isMetadataError(value);
     }
 
-    const resolveName = (name: string): MetadataValue => {
-      const reference = this.symbols.resolve(name);
+    const resolveName = (name: string, preferReference?: boolean): MetadataValue => {
+      const reference = this.symbols.resolve(name, preferReference);
       if (reference === undefined) {
         // Encode as a global reference. StaticReflector will check the reference.
         return recordEntry({__symbolic: 'reference', name}, node);
@@ -268,8 +268,8 @@ export class Evaluator {
                 return true;
               }
               const propertyValue = isPropertyAssignment(assignment) ?
-                  this.evaluateNode(assignment.initializer) :
-                  resolveName(propertyName);
+                  this.evaluateNode(assignment.initializer, /* preferReference */ true) :
+                  resolveName(propertyName, /* preferReference */ true);
               if (isFoldableError(propertyValue)) {
                 error = propertyValue;
                 return true;  // Stop the forEachChild.
@@ -286,7 +286,7 @@ export class Evaluator {
       case ts.SyntaxKind.ArrayLiteralExpression:
         let arr: MetadataValue[] = [];
         ts.forEachChild(node, child => {
-          const value = this.evaluateNode(child);
+          const value = this.evaluateNode(child, /* preferReference */ true);
 
           // Check for error
           if (isFoldableError(value)) {
@@ -403,7 +403,7 @@ export class Evaluator {
       case ts.SyntaxKind.Identifier:
         const identifier = <ts.Identifier>node;
         const name = identifier.text;
-        return resolveName(name);
+        return resolveName(name, preferReference);
       case ts.SyntaxKind.TypeReference:
         const typeReferenceNode = <ts.TypeReferenceNode>node;
         const typeNameNode = typeReferenceNode.typeName;

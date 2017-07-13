@@ -845,6 +845,33 @@ describe('StaticReflector', () => {
     });
   });
 
+  describe('expression lowering', () => {
+    it('should be able to accept a lambda in a reference location', () => {
+      const data = Object.create(DEFAULT_TEST_DATA);
+      const file = '/tmp/src/my_component.ts';
+      data[file] = `
+        import {Component, InjectionToken} from '@angular/core';
+
+        export const myLambda = () => [1, 2, 3];
+        export const NUMBERS = new InjectionToken<number[]>();
+
+        @Component({
+          template: '<div>{{name}}</div>',
+          providers: [{provide: NUMBERS, useFactory: myLambda}]
+        })
+        export class MyComponent {
+          name = 'Some name';
+        }
+      `;
+      init(data);
+
+      expect(reflector.annotations(reflector.getStaticSymbol(file, 'MyComponent'))[0]
+                 .providers[0]
+                 .useFactory)
+          .toBe(reflector.getStaticSymbol(file, 'myLambda'));
+    });
+  });
+
 });
 
 const DEFAULT_TEST_DATA: {[key: string]: any} = {

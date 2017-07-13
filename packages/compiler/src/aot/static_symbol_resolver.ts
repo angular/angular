@@ -191,6 +191,17 @@ export class StaticSymbolResolver {
     }
   }
 
+  /* @internal */
+  ignoreErrorsFor<T>(cb: () => T) {
+    const recorder = this.errorRecorder;
+    this.errorRecorder = () => {};
+    try {
+      return cb();
+    } finally {
+      this.errorRecorder = recorder;
+    }
+  }
+
   private _resolveSymbolMembers(staticSymbol: StaticSymbol): ResolvedStaticSymbol|null {
     const members = staticSymbol.members;
     const baseResolvedSymbol =
@@ -445,6 +456,7 @@ export class StaticSymbolResolver {
     }
     return moduleMetadata;
   }
+
 
   getSymbolByModule(module: string, symbolName: string, containingFile?: string): StaticSymbol {
     const filePath = this.resolveModule(module, containingFile);
