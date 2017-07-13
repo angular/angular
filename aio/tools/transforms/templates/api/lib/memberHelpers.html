@@ -41,6 +41,7 @@
       <div class="detail-contents">
         {% for overload in member.overloads %}
         {$ renderMemberDetail(overload, itemClass + '-overload') $}
+        {% if not loop.last %}<hr>{% endif %}
         {% endfor %}
       </div>
     </details>
