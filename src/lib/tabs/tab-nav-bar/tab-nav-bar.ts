@@ -96,7 +96,10 @@ export class MdTabNav implements AfterContentInit, OnDestroy {
 
   ngOnDestroy() {
     this._onDestroy.next();
-    this._resizeSubscription.unsubscribe();
+
+    if (this._resizeSubscription) {
+      this._resizeSubscription.unsubscribe();
+    }
   }
 
   /** Aligns the ink bar to the active link. */
