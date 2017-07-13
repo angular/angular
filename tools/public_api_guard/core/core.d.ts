@@ -650,9 +650,10 @@ export declare class NgZone {
     constructor({enableLongStackTrace}: {
         enableLongStackTrace?: boolean;
     });
-    run(fn: () => any): any;
-    runGuarded(fn: () => any): any;
-    runOutsideAngular(fn: () => any): any;
+    run<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T;
+    runGuarded<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T;
+    runOutsideAngular<T>(fn: (...args: any[]) => T): T;
+    runTask<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[], name?: string): T;
     static assertInAngularZone(): void;
     static assertNotInAngularZone(): void;
     static isInAngularZone(): boolean;

@@ -172,7 +172,8 @@ class DefaultServerRenderer2 implements Renderer2 {
     const el =
         typeof target === 'string' ? getDOM().getGlobalEventTarget(this.document, target) : target;
     const outsideHandler = (event: any) => this.ngZone.runGuarded(() => callback(event));
-    return this.ngZone.runOutsideAngular(() => getDOM().onAndCancel(el, eventName, outsideHandler));
+    return this.ngZone.runOutsideAngular(
+        () => getDOM().onAndCancel(el, eventName, outsideHandler) as any);
   }
 }
 
