@@ -38,10 +38,10 @@ export class HttpClientTestingBackend implements HttpBackend, HttpTestingControl
    * Handle an incoming request by queueing it in the list of open requests.
    */
   handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
-    return new Observable((observer: Observer<HttpEvent<any>>) => {
+    return new Observable((observer: Observer<any>) => {
       const testReq = new TestRequest(req, observer);
       this.open.push(testReq);
-      observer.next({type: HttpEventType.Sent});
+      observer.next({ type: HttpEventType.Sent } as HttpEvent<any>);
       return () => { testReq._cancelled = true; };
     });
   }
