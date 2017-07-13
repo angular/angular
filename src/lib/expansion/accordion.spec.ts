@@ -20,8 +20,8 @@ describe('CdkAccordion', () => {
   }));
 
   it('should ensure only one item is expanded at a time', () => {
-    let fixture = TestBed.createComponent(SetOfItems);
-    let items = fixture.debugElement.queryAll(By.css('.mat-expansion-panel'));
+    const fixture = TestBed.createComponent(SetOfItems);
+    const items = fixture.debugElement.queryAll(By.css('.mat-expansion-panel'));
 
     fixture.componentInstance.firstPanelExpanded = true;
     fixture.detectChanges();
@@ -35,8 +35,8 @@ describe('CdkAccordion', () => {
   });
 
   it('should allow multiple items to be expanded simultaneously', () => {
-    let fixture = TestBed.createComponent(SetOfItems);
-    let panels = fixture.debugElement.queryAll(By.css('.mat-expansion-panel'));
+    const fixture = TestBed.createComponent(SetOfItems);
+    const panels = fixture.debugElement.queryAll(By.css('.mat-expansion-panel'));
 
     fixture.componentInstance.multi = true;
     fixture.componentInstance.firstPanelExpanded = true;

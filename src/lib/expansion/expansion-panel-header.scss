@@ -14,7 +14,7 @@ $mat-expansion-panel-header-height-expanded: 64px;
     line-height: $mat-expansion-panel-header-height-expanded;
   }
 
-  &:focus, 
+  &:focus,
   &:hover {
     outline: none;
   }
@@ -46,7 +46,7 @@ $mat-expansion-panel-header-height-expanded: 64px;
   margin-right: 16px;
 }
 
-/** 
+/**
  * Creates the expansion indicator arrow. Done using ::after rather than having
  * additional nodes in the template.
  */

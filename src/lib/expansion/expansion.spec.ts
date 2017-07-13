@@ -19,7 +19,7 @@ describe('MdExpansionPanel', () => {
     TestBed.compileComponents();
   }));
 
-  it('should expanded and collapse the panel', () => {
+  it('should expand and collapse the panel', () => {
     const fixture = TestBed.createComponent(PanelWithContent);
     const contentEl = fixture.debugElement.query(By.css('.mat-expansion-panel-content'));
     const headerEl = fixture.debugElement.query(By.css('.mat-expansion-panel-header'));
