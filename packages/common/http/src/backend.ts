@@ -11,6 +11,15 @@ import {HttpRequest} from './request';
 import {HttpEvent} from './response';
 
 /**
+ * Transforms an `HttpRequest` into a stream of `HttpEvent`s, one of which will likely be a
+ * `HttpResponse`.
+ *
+ * `HttpHandler` is injectable. When injected, the handler instance dispatches requests to the
+ * first interceptor in the chain, which dispatches to the second, etc, eventually reaching the
+ * `HttpBackend`.
+ *
+ * In an `HttpInterceptor`, the `HttpHandler` parameter is the next interceptor in the chain.
+ *
  * @experimental
  */
 export abstract class HttpHandler {
@@ -18,6 +27,13 @@ export abstract class HttpHandler {
 }
 
 /**
+ * A final `HttpHandler` which will dispatch the request via browser HTTP APIs to a backend.
+ *
+ * Interceptors sit between the `HttpClient` interface and the `HttpBackend`.
+ *
+ * When injected, `HttpBackend` dispatches requests directly to the backend, without going
+ * through the interceptor chain.
+ *
  * @experimental
  */
 export abstract class HttpBackend implements HttpHandler {
