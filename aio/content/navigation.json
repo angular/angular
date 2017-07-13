@@ -470,6 +470,8 @@
   ],
 
   "docVersions": [
-    { "title": "v2", "url": "https://v2.angular.io" }
+    { "title": "v2", "url": "https://v2.angular.io" },
+    { "title": "AngularDart", "url": "https://webdev.dartlang.org/angular" }
+
   ]
 }
