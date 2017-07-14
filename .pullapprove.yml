@@ -256,6 +256,8 @@ groups:
       files:
         include:
           - "aio/*"
+        exclude:
+          - "aio/content/*"
     users:
       - petebacondarwin #primary
       - IgorMinar
@@ -276,6 +278,8 @@ groups:
       - Foxandxss
       - stephenfluin
       - wardbell
+      - petebacondarwin
+      - gkalpak
       - IgorMinar #fallback
       - mhevery #fallback
 
@@ -289,5 +293,7 @@ groups:
     users:
       - juleskremer #primary
       - stephenfluin
+      - petebacondarwin
+      - gkalpak
       - IgorMinar #fallback
       - mhevery #fallback
