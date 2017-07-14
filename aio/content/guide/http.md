@@ -611,7 +611,7 @@ it('expects a GET request', inject([HttpClient, HttpTestingController], (http: H
   req.flush({name: 'Test Data'});
   
   // Finally, assert that there are no outstanding requests.
-  mockHttp.verify();
+  httpMock.verify();
 }));
 ```
 
@@ -619,7 +619,7 @@ The last step, verifying that no requests remain outstanding, is common enough f
 
 ```javascript
 afterEach(inject([HttpTestingController], (httpMock: HttpTestingController) => {
-  mockHttp.verify();
+  httpMock.verify();
 }));
 ```
 
@@ -628,7 +628,7 @@ afterEach(inject([HttpTestingController], (httpMock: HttpTestingController) => {
 If matching by URL isn't sufficient, it's possible to implement your own matching function. For example, you could look for an outgoing request that has an Authorization header:
 
 ```javascript
-const req = mockHttp.expectOne((req) => req.headers.has('Authorization'));
+const req = httpMock.expectOne((req) => req.headers.has('Authorization'));
 ```
 
 Just as with the `expectOne()` by URL in the test above, if 0 or 2+ requests match this expectation, it will throw.
@@ -639,7 +639,7 @@ If you need to respond to duplicate requests in your test, use the `match()` API
 
 ```javascript
 // Expect that 5 pings have been made and flush them.
-const reqs = mockHttp.match('/ping');
+const reqs = httpMock.match('/ping');
 expect(reqs.length).toBe(5);
 reqs.forEach(req => req.flush());
 ```
