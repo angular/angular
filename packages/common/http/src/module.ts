@@ -70,13 +70,13 @@ export function jsonpCallbackContext(): Object {
     {provide: XSRF_HEADER_NAME, useValue: 'X-XSRF-TOKEN'},
   ],
 })
-export class HttpXsrfModule {
+export class HttpClientXsrfModule {
   /**
    * Disable the default XSRF protection.
    */
   static disable(): ModuleWithProviders {
     return {
-      ngModule: HttpXsrfModule,
+      ngModule: HttpClientXsrfModule,
       providers: [
         {provide: HttpXsrfInterceptor, useClass: NoopInterceptor},
       ],
@@ -92,7 +92,7 @@ export class HttpXsrfModule {
     headerName?: string,
   } = {}): ModuleWithProviders {
     return {
-      ngModule: HttpXsrfModule,
+      ngModule: HttpClientXsrfModule,
       providers: [
         options.cookieName ? {provide: XSRF_COOKIE_NAME, useValue: options.cookieName} : [],
         options.headerName ? {provide: XSRF_HEADER_NAME, useValue: options.headerName} : [],
@@ -111,7 +111,7 @@ export class HttpXsrfModule {
  */
 @NgModule({
   imports: [
-    HttpXsrfModule.withOptions({
+    HttpClientXsrfModule.withOptions({
       cookieName: 'XSRF-TOKEN',
       headerName: 'X-XSRF-TOKEN',
     }),

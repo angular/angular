@@ -1005,6 +1005,15 @@ export declare class HttpClientModule {
 }
 
 /** @experimental */
+export declare class HttpClientXsrfModule {
+    static disable(): ModuleWithProviders;
+    static withOptions(options?: {
+        cookieName?: string;
+        headerName?: string;
+    }): ModuleWithProviders;
+}
+
+/** @experimental */
 export interface HttpDownloadProgressEvent extends HttpProgressEvent {
     partialText?: string;
     type: HttpEventType.DownloadProgress;
@@ -1244,15 +1253,6 @@ export interface HttpUserEvent<T> {
 export declare class HttpXhrBackend implements HttpBackend {
     constructor(xhrFactory: XhrFactory);
     handle(req: HttpRequest<any>): Observable<HttpEvent<any>>;
-}
-
-/** @experimental */
-export declare class HttpXsrfModule {
-    static disable(): ModuleWithProviders;
-    static withOptions(options?: {
-        cookieName?: string;
-        headerName?: string;
-    }): ModuleWithProviders;
 }
 
 /** @experimental */
