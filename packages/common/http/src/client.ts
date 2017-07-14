@@ -17,7 +17,7 @@ import {HttpHandler} from './backend';
 import {HttpHeaders} from './headers';
 import {HttpParams} from './params';
 import {HttpRequest} from './request';
-import {HttpEvent, HttpEventType, HttpResponse} from './response';
+import {HttpEvent, HttpResponse} from './response';
 
 
 /**
@@ -1024,14 +1024,14 @@ export class HttpClient {
 
   /**
    * Construct a JSONP request for the given URL and name of the callback parameter.
-   * 
+   *
    * @return an `Observable` of the response object as an `Object`
    */
   jsonp(url: string, callbackParam: string): Observable<Object>;
 
   /**
    * Construct a JSONP request for the given URL and name of the callback parameter.
-   * 
+   *
    * @return an `Observable` of the response object as type `T`.
    */
   jsonp<T>(url: string, callbackParam: string): Observable<T>;
