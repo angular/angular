@@ -48,7 +48,7 @@ export class AppComponent implements OnInit {
    * the styling of individual pages.
    * You will get three classes:
    *
-   * * `page-...`: computed from the current document id (e.g. news, guide-security, tutorial-toh-pt2)
+   * * `page-...`: computed from the current document id (e.g. events, guide-security, tutorial-toh-pt2)
    * * `folder-...`: computed from the top level folder for an id (e.g. guide, tutorial, etc)
    * * `view-...`: computef from the navigation view (e.g. SideNav, TopBar, etc)
    */
