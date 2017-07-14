@@ -3470,10 +3470,10 @@ describe('Integration', () => {
                declarations: [LazyLoadedComponent],
                imports: [RouterModule.forChild([{path: '', component: LazyLoadedComponent}])],
              })
-             class LoadedModule {
+             class LazyLoadedModule {
              }
 
-             loader.stubbedModules = {lazy: LoadedModule};
+             loader.stubbedModules = {lazy: LazyLoadedModule};
              const fixture = createRoot(router, RootCmp);
 
              router.resetConfig([{path: '**', loadChildren: 'lazy'}]);
@@ -3482,6 +3482,7 @@ describe('Integration', () => {
              advance(fixture);
 
              expect(location.path()).toEqual('/lazy');
+             expect(fixture.nativeElement).toHaveText('lazy-loaded');
            })));
 
     describe('preloading', () => {
