@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, ModuleWithProviders, NgModule, Optional, forwardRef} from '@angular/core';
+import {Inject, ModuleWithProviders, NgModule, Optional} from '@angular/core';
 
 import {HttpBackend, HttpHandler} from './backend';
 import {HttpClient} from './client';

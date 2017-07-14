@@ -12,7 +12,6 @@ import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
 
 import {HttpBackend, HttpHandler} from './backend';
-import {HttpInterceptor} from './interceptor';
 import {HttpRequest} from './request';
 import {HttpErrorResponse, HttpEvent, HttpEventType, HttpResponse} from './response';
 
