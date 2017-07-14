@@ -45,15 +45,20 @@ timestamp=$(date +%s)
 payloadData="$payloadData\"timestamp\": $timestamp, "
 
 # Add change source: application, dependencies, or 'application+dependencies'
-applicationChanges=$(git diff --name-only $TRAVIS_COMMIT_RANGE $parentDir | grep -v ${parentDir}/content | grep -v ${parentDir}/yarn.lock | wc -l)
-dependencyChanges=$(git diff --name-only $TRAVIS_COMMIT_RANGE ${parentDir}/yarn.lock | wc -l)
+yarnChanged=false
+allChangedFiles=$(git diff --name-only $TRAVIS_COMMIT_RANGE $parentDir | wc -l)
+allChangedFileNames=$(git diff --name-only $TRAVIS_COMMIT_RANGE $parentDir)
 
-if [[ $dependencyChanges -eq 1 ]] && [[ $applicationChanges -eq 0 ]]; then
+if [[ $allChangedFileNames == *"yarn.lock"* ]]; then
+  yarnChanged=true
+fi
+
+if [[ $allChangedFiles -eq 1 ]] && [[ "$yarnChanged" = true ]]; then
   # only yarn.lock changed
   change='dependencies'
-elif [[ $dependencyChanges -eq 1 ]] && [[ $applicationChanges -gt 0 ]]; then
+elif [[ $allChangedFiles -gt 1 ]] && [[ "$yarnChanged" = true ]]; then
   change='application+dependencies'
-elif [[ $applicationChanges -gt 0 ]]; then
+elif [[ $allChangedFiles -gt 0 ]]; then
   change='application'
 else
   # Nothing changed in aio/
