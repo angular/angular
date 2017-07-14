@@ -24,7 +24,9 @@
 }
 
 @mixin mat-table-typography($config) {
-  $font-family: mat-font-family($config);
+  .mat-table {
+    font-family: mat-font-family($config);
+  }
 
   .mat-header-cell {
     font-size: mat-font-size($config, caption);
