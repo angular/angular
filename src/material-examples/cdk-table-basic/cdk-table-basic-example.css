@@ -2,7 +2,6 @@
 .example-container {
   display: flex;
   flex-direction: column;
-  max-height: 500px;
   min-width: 300px;
 }
 
@@ -13,6 +12,7 @@
 .example-table {
   flex: 1 1 auto;
   overflow: auto;
+  max-height: 500px;
 }
 
 .example-header-row, .example-row {
