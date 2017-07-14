@@ -23,11 +23,14 @@
 
       <md-chip-list selectable="false">
         <md-chip color="accent" selected="true">Selected/Colored</md-chip>
+
         <md-chip color="warn" selected="true" *ngIf="visible"
-                 (destroy)="alert('chip destroyed')" (click)="toggleVisible()">
+                 (destroy)="displayMessage('chip destroyed')" (remove)="toggleVisible()">
           With Events
+          <md-icon mdChipRemove>cancel</md-icon>
         </md-chip>
       </md-chip-list>
+      <div>{{message}}</div>
     </md-card-content>
   </md-card>
 
@@ -37,15 +40,60 @@
     <md-card-content>
       <h4>Input Container</h4>
 
-      <md-chip-list>
-        <md-chip *ngFor="let person of people" [color]="color">
-          {{person.name}}
-        </md-chip>
-      </md-chip-list>
+      <p>
+        You can easily put the the <code>&lt;md-chip-list&gt;</code> inside of an
+        <code>&lt;md-input-container&gt;</code>.
+      </p>
+
 
       <md-input-container>
-        <input mdInput #input (keyup.enter)="add(input)" placeholder="New Contributor..."/>
+        <md-chip-list mdPrefix #chipList1>
+          <md-chip *ngFor="let person of people" [color]="color" [selectable]="selectable"
+                   [removable]="removable" (remove)="remove(person)">
+            {{person.name}}
+            <md-icon mdChipRemove *ngIf="removable">cancel</md-icon>
+          </md-chip>
+        </md-chip-list>
+        <input mdInput placeholder="New Contributor..."
+               [mdChipInputFor]="chipList1"
+               [mdChipInputSeparatorKeyCodes]="separatorKeysCodes"
+               [mdChipInputAddOnBlur]="addOnBlur"
+               (mdChipInputTokenEnd)="add($event)" />
       </md-input-container>
+
+
+
+      <p>
+        You can also put <code>&lt;md-input-container&gt;</code> outside of an <code>md-chip-list</code>.
+        With <code>mdChipInput</code> the input work with chip-list
+      </p>
+
+      <md-chip-list #chipList2>
+        <md-chip *ngFor="let person of people" [color]="color" [selectable]="selectable"
+                 [removable]="removable" (remove)="remove(person)">
+          {{person.name}}
+          <md-icon mdChipRemove *ngIf="removable">cancel</md-icon>
+        </md-chip>
+      </md-chip-list>
+      <md-input-container>
+        <input mdInput placeholder="New Contributor..."
+               [mdChipInputFor]="chipList2"
+               [mdChipInputSeparatorKeyCodes]="separatorKeysCodes"
+               [mdChipInputAddOnBlur]="addOnBlur"
+               (mdChipInputTokenEnd)="add($event)" />
+      </md-input-container>
+
+      <p>
+        The example above has overridden the <code>[separatorKeys]</code> input to allow for
+        <code>ENTER</code>, <code>COMMA</code> and <code>SEMI COLON</code> keys.
+      </p>
+
+      <h4>Options</h4>
+      <p>
+        <md-checkbox name="selectable" [(ngModel)]="selectable">Selectable</md-checkbox>
+        <md-checkbox name="removable" [(ngModel)]="removable">Removable</md-checkbox>
+        <md-checkbox name="addOnBlur" [(ngModel)]="addOnBlur">Add on Blur</md-checkbox>
+      </p>
 
       <h4>Stacked Chips</h4>
 

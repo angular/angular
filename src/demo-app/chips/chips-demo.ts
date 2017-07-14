@@ -1,4 +1,7 @@
 import {Component} from '@angular/core';
+import {MdChipInputEvent, ENTER} from '@angular/material';
+
+const COMMA = 188;
 
 export interface Person {
   name: string;
@@ -18,6 +21,13 @@ export interface DemoColor {
 export class ChipsDemo {
   visible: boolean = true;
   color: string = '';
+  selectable: boolean = true;
+  removable: boolean = true;
+  addOnBlur: boolean = true;
+  message: string = '';
+
+  // Enter, comma, semi-colon
+  separatorKeysCodes = [ENTER, COMMA, 186];
 
   people: Person[] = [
     { name: 'Kara' },
@@ -35,14 +45,30 @@ export class ChipsDemo {
     { name: 'Warn', color: 'warn' }
   ];
 
-  alert(message: string): void {
-    alert(message);
+  displayMessage(message: string): void {
+    this.message = message;
   }
 
-  add(input: HTMLInputElement): void {
-    if (input.value && input.value.trim() != '') {
-      this.people.push({ name: input.value.trim() });
+  add(event: MdChipInputEvent): void {
+    let input = event.input;
+    let value = event.value;
+
+    // Add our person
+    if ((value || '').trim()) {
+      this.people.push({ name: value.trim() });
+    }
+
+    // Reset the input value
+    if (input) {
       input.value = '';
+    }
+  }
+
+  remove(person: Person): void {
+    let index = this.people.indexOf(person);
+
+    if (index >= 0) {
+      this.people.splice(index, 1);
     }
   }
 

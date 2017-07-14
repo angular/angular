@@ -2,6 +2,7 @@
 
 $mat-chip-vertical-padding: 8px;
 $mat-chip-horizontal-padding: 12px;
+$mat-chip-remove-margin: -4px;
 
 $mat-chips-chip-margin: $mat-chip-horizontal-padding / 4;
 
@@ -23,6 +24,16 @@ $mat-chips-chip-margin: $mat-chip-horizontal-padding / 4;
 
     [dir='rtl'] & {
       margin: 0 $mat-chips-chip-margin 0 0;
+    }
+
+    .mat-input-prefix & {
+      &:last-child {
+        margin-right: $mat-chips-chip-margin;
+      }
+
+      [dir='rtl'] &:last-child {
+        margin-left: $mat-chips-chip-margin;
+      }
     }
   }
 
@@ -48,4 +59,12 @@ $mat-chips-chip-margin: $mat-chip-horizontal-padding / 4;
       margin-bottom: 0;
     }
   }
+}
+
+.mat-input-prefix .mat-chip-list-wrapper {
+  margin-bottom: $mat-chip-vertical-padding;
+}
+
+.mat-chip-remove {
+  margin: 0 $mat-chip-remove-margin 0 0;
 }

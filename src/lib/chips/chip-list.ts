@@ -15,13 +15,16 @@ import {
   QueryList,
   ViewEncapsulation,
   OnDestroy,
+  Optional,
+  ElementRef,
+  Renderer2,
 } from '@angular/core';
 
 import {MdChip} from './chip';
 import {FocusKeyManager} from '../core/a11y/focus-key-manager';
-import {SPACE, LEFT_ARROW, RIGHT_ARROW} from '../core/keyboard/keycodes';
+import {BACKSPACE, DELETE, LEFT_ARROW, RIGHT_ARROW, UP_ARROW} from '../core/keyboard/keycodes';
+import {coerceBooleanProperty, Directionality} from '@angular/cdk';
 import {Subscription} from 'rxjs/Subscription';
-import {coerceBooleanProperty} from '@angular/cdk';
 
 /**
  * A material design chips component (named ChipList for it's similarity to the List component).
@@ -38,12 +41,10 @@ import {coerceBooleanProperty} from '@angular/cdk';
   selector: 'md-chip-list, mat-chip-list',
   template: `<div class="mat-chip-list-wrapper"><ng-content></ng-content></div>`,
   host: {
-    // Properties
     '[attr.tabindex]': '_tabIndex',
     'role': 'listbox',
     'class': 'mat-chip-list',
 
-    // Events
     '(focus)': 'focus()',
     '(keydown)': '_keydown($event)'
   },
@@ -56,8 +57,11 @@ import {coerceBooleanProperty} from '@angular/cdk';
 })
 export class MdChipList implements AfterContentInit, OnDestroy {
 
+  /** When a chip is destroyed, we track the index so we can focus the appropriate next chip. */
+  protected _lastDestroyedIndex: number|null = null;
+
   /** Track which chips we're listening to for focus/destruction. */
-  private _subscribed: WeakMap<MdChip, boolean> = new WeakMap();
+  protected _chipSet: WeakMap<MdChip, boolean> = new WeakMap();
 
   /** Subscription to tabbing out from the chip list. */
   private _tabOutSubscription: Subscription;
@@ -65,14 +69,20 @@ export class MdChipList implements AfterContentInit, OnDestroy {
   /** Whether or not the chip is selectable. */
   protected _selectable: boolean = true;
 
+  protected _inputElement: HTMLInputElement;
+
+  /** Tab index for the chip list. */
+  _tabIndex = 0;
+
   /** The FocusKeyManager which handles focus. */
   _keyManager: FocusKeyManager;
 
   /** The chip components contained within this chip list. */
   chips: QueryList<MdChip>;
 
-  /** Tab index for the chip list. */
-  _tabIndex = 0;
+  constructor(protected _renderer: Renderer2, protected _elementRef: ElementRef,
+              @Optional() private _dir: Directionality) {
+  }
 
   ngAfterContentInit(): void {
     this._keyManager = new FocusKeyManager(this.chips).withWrap();
@@ -87,9 +97,23 @@ export class MdChipList implements AfterContentInit, OnDestroy {
     // Go ahead and subscribe all of the initial chips
     this._subscribeChips(this.chips);
 
+    // Make sure we set our tab index at the start
+    this._updateTabIndex();
+
     // When the list changes, re-subscribe
     this.chips.changes.subscribe((chips: QueryList<MdChip>) => {
       this._subscribeChips(chips);
+
+      // If we have 0 chips, attempt to focus an input (if available)
+      if (chips.length === 0) {
+        this._focusInput();
+      }
+
+      // Check to see if we need to update our tab index
+      this._updateTabIndex();
+
+      // Check to see if we have a destroyed chip and need to refocus
+      this._updateFocusForDestroyedChips();
     });
   }
 
@@ -104,64 +128,69 @@ export class MdChipList implements AfterContentInit, OnDestroy {
    * it's selected state is always ignored.
    */
   @Input()
-  get selectable(): boolean { return this._selectable; }
+  get selectable(): boolean {
+    return this._selectable;
+  }
+
   set selectable(value: boolean) {
     this._selectable = coerceBooleanProperty(value);
   }
 
-  /**
-   * Programmatically focus the chip list. This in turn focuses the first
-   * non-disabled chip in this chip list.
-   */
-  focus() {
-    // TODO: ARIA says this should focus the first `selected` chip.
-    this._keyManager.setFirstItemActive();
+  /** Associates an HTML input element with this chip list. */
+  registerInput(inputElement: HTMLInputElement) {
+    this._inputElement = inputElement;
   }
 
-  /** Passes relevant key presses to our key manager. */
-  _keydown(event: KeyboardEvent) {
-    let target = event.target as HTMLElement;
-
-    // If they are on a chip, check for space/left/right, otherwise pass to our key manager
-    if (target && target.classList.contains('mat-chip')) {
-      switch (event.keyCode) {
-        case SPACE:
-          // If we are selectable, toggle the focused chip
-          if (this.selectable) {
-            this._toggleSelectOnFocusedChip();
-          }
-
-          // Always prevent space from scrolling the page since the list has focus
-          event.preventDefault();
-          break;
-        case LEFT_ARROW:
-          this._keyManager.setPreviousItemActive();
-          event.preventDefault();
-          break;
-        case RIGHT_ARROW:
-          this._keyManager.setNextItemActive();
-          event.preventDefault();
-          break;
-        default:
-          this._keyManager.onKeydown(event);
-      }
+  /**
+   * Focuses the the first non-disabled chip in this chip list, or the associated input when there
+   * are no eligible chips.
+   */
+  focus() {
+    // TODO: ARIA says this should focus the first `selected` chip if any are selected.
+    if (this.chips.length > 0) {
+      this._keyManager.setFirstItemActive();
+    } else {
+      this._focusInput();
     }
   }
 
-  /** Toggles the selected state of the currently focused chip. */
-  protected _toggleSelectOnFocusedChip(): void {
-    // Allow disabling of chip selection
-    if (!this.selectable) {
+  /** Attempt to focus an input if we have one. */
+  _focusInput() {
+    if (this._inputElement) {
+      this._inputElement.focus();
+    }
+  }
+
+  /**
+   * Pass events to the keyboard manager. Available here for tests.
+   */
+  _keydown(event: KeyboardEvent) {
+    let code = event.keyCode;
+    let target = event.target as HTMLElement;
+    let isInputEmpty = this._isInputEmpty(target);
+    let isRtl = this._dir && this._dir.value == 'rtl';
+
+    let isPrevKey = (code === (isRtl ? RIGHT_ARROW : LEFT_ARROW));
+    let isNextKey = (code === (isRtl ? LEFT_ARROW : RIGHT_ARROW));
+    let isBackKey = (code === BACKSPACE || code == DELETE || code == UP_ARROW || isPrevKey);
+    // If they are on an empty input and hit backspace/delete/left arrow, focus the last chip
+    if (isInputEmpty && isBackKey) {
+      this._keyManager.setLastItemActive();
+      event.preventDefault();
       return;
     }
 
-    let focusedIndex = this._keyManager.activeItemIndex;
-
-    if (typeof focusedIndex === 'number' && this._isValidIndex(focusedIndex)) {
-      let focusedChip: MdChip = this.chips.toArray()[focusedIndex];
-
-      if (focusedChip) {
-        focusedChip.toggleSelected();
+    // If they are on a chip, check for space/left/right, otherwise pass to our key manager (like
+    // up/down keys)
+    if (target && target.classList.contains('mat-chip')) {
+      if (isPrevKey) {
+        this._keyManager.setPreviousItemActive();
+        event.preventDefault();
+      } else if (isNextKey) {
+        this._keyManager.setNextItemActive();
+        event.preventDefault();
+      } else {
+        this._keyManager.onKeydown(event);
       }
     }
   }
@@ -177,6 +206,14 @@ export class MdChipList implements AfterContentInit, OnDestroy {
   }
 
   /**
+   * Check the tab index as you should not be allowed to focus an empty list.
+   */
+  protected _updateTabIndex(): void {
+    // If we have 0 chips, we should not allow keyboard focus
+    this._tabIndex = (this.chips.length === 0 ? -1 : 0);
+  }
+
+  /**
    * Add a specific chip to our subscribed list. If the chip has
    * already been subscribed, this ensures it is only subscribed
    * once.
@@ -186,7 +223,7 @@ export class MdChipList implements AfterContentInit, OnDestroy {
    */
   protected _addChip(chip: MdChip) {
     // If we've already been subscribed to a parent, do nothing
-    if (this._subscribed.has(chip)) {
+    if (this._chipSet.has(chip)) {
       return;
     }
 
@@ -199,24 +236,52 @@ export class MdChipList implements AfterContentInit, OnDestroy {
       }
     });
 
-    // On destroy, remove the item from our list, and check focus
+    // On destroy, remove the item from our list, and setup our destroyed focus check
     chip.destroy.subscribe(() => {
       let chipIndex: number = this.chips.toArray().indexOf(chip);
-
-      if (this._isValidIndex(chipIndex) && chip._hasFocus) {
-        // Check whether the chip is the last item
-        if (chipIndex < this.chips.length - 1) {
-          this._keyManager.setActiveItem(chipIndex);
-        } else if (chipIndex - 1 >= 0) {
-          this._keyManager.setActiveItem(chipIndex - 1);
+      if (this._isValidIndex(chipIndex)) {
+        if (chip._hasFocus) {
+          // Check whether the chip is the last item
+          if (chipIndex < this.chips.length - 1) {
+            this._keyManager.setActiveItem(chipIndex);
+          } else if (chipIndex - 1 >= 0) {
+            this._keyManager.setActiveItem(chipIndex - 1);
+          }
         }
+        if (this._keyManager.activeItemIndex === chipIndex) {
+          this._lastDestroyedIndex = chipIndex;
+        }
+
       }
 
-      this._subscribed.delete(chip);
+      this._chipSet.delete(chip);
       chip.destroy.unsubscribe();
     });
 
-    this._subscribed.set(chip, true);
+    this._chipSet.set(chip, true);
+  }
+
+  /**
+   * Checks to see if a focus chip was recently destroyed so that we can refocus the next closest
+   * one.
+   */
+  protected _updateFocusForDestroyedChips() {
+    let chipsArray = this.chips;
+
+    if (this._lastDestroyedIndex != null && chipsArray.length > 0) {
+      // Check whether the destroyed chip was the last item
+      const newFocusIndex = Math.min(this._lastDestroyedIndex, chipsArray.length - 1);
+      this._keyManager.setActiveItem(newFocusIndex);
+      let focusChip = this._keyManager.activeItem;
+
+      // Focus the chip
+      if (focusChip) {
+        focusChip.focus();
+      }
+    }
+
+    // Reset our destroyed index
+    this._lastDestroyedIndex = null;
   }
 
   /**
@@ -229,4 +294,13 @@ export class MdChipList implements AfterContentInit, OnDestroy {
     return index >= 0 && index < this.chips.length;
   }
 
+  private _isInputEmpty(element: HTMLElement): boolean {
+    if (element && element.nodeName.toLowerCase() === 'input') {
+      let input = element as HTMLInputElement;
+
+      return !input.value;
+    }
+
+    return false;
+  }
 }

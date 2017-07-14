@@ -511,7 +511,7 @@ export class MdInputContainer implements AfterViewInit, AfterContentInit, AfterC
   /**
    * Throws an error if the container's input child was removed.
    */
-  private _validateInputChild() {
+  protected _validateInputChild() {
     if (!this._mdInputChild) {
       throw getMdInputContainerMissingMdInputError();
     }

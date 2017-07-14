@@ -20,4 +20,16 @@
   .mat-basic-chip {
     margin: auto 10px;
   }
+
+  md-chip-list input {
+    width: 150px;
+  }
+
+  .mat-chip-remove.mat-icon {
+    font-size: 16px;
+    width: 1em;
+    height: 1em;
+    vertical-align: middle;
+    cursor: pointer;
+  }
 }
