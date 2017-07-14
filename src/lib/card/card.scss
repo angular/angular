@@ -43,11 +43,11 @@ $mat-card-header-size: 40px !default;
   margin-left: -16px;
   margin-right: -16px;
   padding: 8px 0;
+}
 
-  &[align='end'] {
-    display: flex;
-    justify-content: flex-end;
-  }
+.mat-card-actions-align-end {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .mat-card-image {
