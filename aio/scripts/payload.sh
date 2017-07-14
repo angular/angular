@@ -1,12 +1,14 @@
 #!/bin/bash
 
-# WARNING: FIREBASE_TOKEN should NOT be printed.
-set +x -eu -o pipefail
+set -eu -o pipefail
 
 readonly thisDir=$(cd $(dirname $0); pwd)
 readonly parentDir=$(dirname $thisDir)
 readonly TOKEN=${ANGULAR_PAYLOAD_FIREBASE_TOKEN:-}
 readonly PROJECT_NAME="angular-payload-size"
+
+# temporarily turn on debugging - we disable it later in the script to prevent token leak
+set -x
 
 source ${thisDir}/_payload-limits.sh
 
@@ -66,6 +68,9 @@ echo $payloadData
 if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
   readonly safeBranchName=$(echo $TRAVIS_BRANCH | sed -e 's/\./_/g')
   readonly dbPath=/payload/aio/$safeBranchName/$TRAVIS_COMMIT
+
+  # WARNING: FIREBASE_TOKEN should NOT be printed.
+  set +x
   firebase database:update --data "$payloadData" --project $PROJECT_NAME --confirm --token "$TOKEN" $dbPath
 fi
 
