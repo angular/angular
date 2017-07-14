@@ -54,8 +54,11 @@ $mat-radio-ripple-size: $mat-radio-size * 0.75;
   position: absolute;
   top: 0;
   transition: transform ease 280ms, background-color ease 280ms;
-  transform: scale(0);
   width: $mat-radio-size;
+
+  // Note: This starts from 0.001 instead of 0, because transitioning from 0 to 0.5 causes
+  // IE to flash the entire circle for a couple of frames, throwing off the entire animation.
+  transform: scale(0.001);
 
   .mat-radio-checked & {
     transform: scale(0.5);
