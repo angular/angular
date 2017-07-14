@@ -21,6 +21,7 @@ import {
   ElementRef,
   ChangeDetectionStrategy,
 } from '@angular/core';
+import {AnimationEvent} from '@angular/animations';
 import {MenuPositionX, MenuPositionY} from './menu-positions';
 import {throwMdMenuInvalidPositionX, throwMdMenuInvalidPositionY} from './menu-errors';
 import {MdMenuItem} from './menu-item';
@@ -54,6 +55,9 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
 
   /** Config object to be passed into the menu's ngClass */
   _classList: any = {};
+
+  /** Current state of the panel animation. */
+  _panelAnimationState: 'void' | 'enter-start' | 'enter' = 'void';
 
   /** Position of the menu in the X axis. */
   @Input()
@@ -161,4 +165,21 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
     this._classList['mat-menu-below'] = posY === 'below';
   }
 
+  /** Starts the enter animation. */
+  _startAnimation() {
+    this._panelAnimationState = 'enter-start';
+  }
+
+  /** Resets the panel animation to its initial state. */
+  _resetAnimation() {
+    this._panelAnimationState = 'void';
+  }
+
+  /** Callback that is invoked when the panel animation completes. */
+  _onAnimationDone(event: AnimationEvent) {
+    // After the initial expansion is done, trigger the second phase of the enter animation.
+    if (event.toState === 'enter-start') {
+      this._panelAnimationState = 'enter';
+    }
+  }
 }

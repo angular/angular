@@ -7,7 +7,7 @@
   $background: map-get($theme, background);
   $foreground: map-get($theme, foreground);
 
-  .mat-menu-content {
+  .mat-menu-panel {
     background: mat-color($background, 'card');
   }
 

@@ -7,11 +7,13 @@
 @import '../core/a11y/a11y';
 
 $mat-menu-vertical-padding: 8px !default;
+$mat-menu-border-radius: 2px !default;
 
 .mat-menu-panel {
-  @include mat-menu-base();
+  @include mat-menu-base(2);
   @include mat-menu-positions();
   max-height: calc(100vh - #{$mat-menu-item-height});
+  border-radius: $mat-menu-border-radius;
 
   @include cdk-high-contrast {
     outline: solid 1px;

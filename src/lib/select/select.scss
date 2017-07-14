@@ -123,7 +123,7 @@ $mat-select-trigger-underline-height: 1px !default;
 }
 
 .mat-select-panel {
-  @include mat-menu-base();
+  @include mat-menu-base(8);
   padding-top: 0;
   padding-bottom: 0;
   max-height: $mat-select-panel-max-height;

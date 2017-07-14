@@ -13,8 +13,8 @@ $mat-menu-side-padding: 16px !default;
 $mat-menu-icon-margin: 16px !default;
 
 
-@mixin mat-menu-base() {
-  @include mat-elevation(8);
+@mixin mat-menu-base($elevation) {
+  @include mat-elevation($elevation);
   min-width: $mat-menu-overlay-min-width;
   max-width: $mat-menu-overlay-max-width;
 
