@@ -73,7 +73,7 @@ You can, however, tell `HttpClient` what type the response will be, which is rec
 To do so, first you define an interface with the correct shape:
 
 ```javascript
-interface DevelopersResponse {
+interface ItemsResponse {
   results: string[];
 }
 ```
