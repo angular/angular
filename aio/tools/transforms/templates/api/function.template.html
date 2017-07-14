@@ -3,7 +3,7 @@
 
 {% block overview %}
 <code-example language="ts" hideCopy="true" class="no-box api-heading">
-function {$ doc.name $}{$ params.paramList(doc.parameters) $}
+function {$ doc.name $}{$ doc.typeParameters | escape $}{$ params.paramList(doc.parameters) $}
 {%- if doc.type %}: {$ doc.type | escape $}{% endif %};
 </code-example>
 {% endblock %}
@@ -13,7 +13,7 @@ function {$ doc.name $}{$ params.paramList(doc.parameters) $}
 {% if doc.overloads.length %}
   <h2>Overloads</h2>{% for overload in doc.overloads %}
   <code-example language="ts" hideCopy="true" class="no-box api-heading">
-  function {$ overload.name $}{$ params.paramList(overload.parameters) $}
+  function {$ overload.name $}{$ doc.typeParameters | escape $}{$ params.paramList(overload.parameters) $}
   {%- if overload.type %}: {$ overload.type | escape $}{% endif %};
   </code-example>
   <section class="description">
