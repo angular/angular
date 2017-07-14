@@ -62,11 +62,12 @@ $mat-card-header-size: 40px !default;
 }
 
 .mat-card-footer {
-  position: absolute;
-  width: 100%;
-  min-height: 5px;
-  bottom: 0;
-  left: 0;
+  // The negative margins pulls out the element, countering the padding
+  // to get the footer to be flush against the side of the card.
+  $margin: -$mat-card-default-padding;
+
+  display: block;
+  margin: 0 $margin $margin $margin;
 }
 
 .mat-card-actions {
@@ -154,6 +155,11 @@ $mat-card-header-size: 40px !default;
     margin: -8px 0 0 0;
   }
 
+  .mat-card-footer {
+    margin-left: -16px;
+    margin-right: -16px;
+  }
+
 }
 
 // FIRST/LAST CHILD ADJUSTMENTS
@@ -166,7 +172,8 @@ $mat-card-header-size: 40px !default;
 
 // last els in mat-card-content and mat-card can't have their default margin-bottoms (e.g. <p> tags)
 // or they'll incorrectly add to card's bottom padding
-.mat-card > :last-child, .mat-card-content > :last-child {
+.mat-card > :last-child:not(.mat-card-footer),
+.mat-card-content > :last-child:not(.mat-card-footer) {
   margin-bottom: 0;
 }
 
