@@ -410,6 +410,12 @@ export class MdInputContainer implements AfterViewInit, AfterContentInit, AfterC
     // Re-validate when things change.
     this._hintChildren.changes.subscribe(() => this._processHints());
     this._mdInputChild._placeholderChange.subscribe(() => this._validatePlaceholders());
+
+    // Mark for check when the input's value changes to recalculate whether input is empty
+    const control = this._mdInputChild._ngControl;
+    if (control && control.valueChanges) {
+      control.valueChanges.subscribe(() => this._changeDetectorRef.markForCheck());
+    }
   }
 
   ngAfterContentChecked() {

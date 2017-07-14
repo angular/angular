@@ -1,5 +1,5 @@
 import {async, ComponentFixture, inject, TestBed} from '@angular/core/testing';
-import {Component, ViewChild} from '@angular/core';
+import {Component, ViewChild, ChangeDetectionStrategy} from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -61,6 +61,7 @@ describe('MdInputContainer without forms', function () {
         MdInputContainerWithValueBinding,
         MdTextareaWithBindings,
         MdInputContainerWithNgIf,
+        MdInputContainerOnPush,
       ],
     });
 
@@ -586,6 +587,22 @@ describe('MdInputContainer without forms', function () {
     expect(suffixEl).not.toBeNull();
     expect(prefixEl.nativeElement.innerText.trim()).toEqual('Prefix');
     expect(suffixEl.nativeElement.innerText.trim()).toEqual('Suffix');
+  });
+
+  it('should update empty class when value changes programmatically and OnPush', () => {
+    let fixture = TestBed.createComponent(MdInputContainerOnPush);
+    fixture.detectChanges();
+
+    let component = fixture.componentInstance;
+    let placeholder = fixture.debugElement
+        .query(By.css('.mat-input-placeholder')).nativeElement;
+
+    expect(placeholder.classList).toContain('mat-empty', 'Input initially empty');
+
+    component.formControl.setValue('something');
+    fixture.detectChanges();
+
+    expect(placeholder.classList).not.toContain('mat-empty', 'Input no longer empty');
   });
 });
 
@@ -1200,4 +1217,16 @@ class MdInputContainerWithPrefixAndSuffix {}
 })
 class MdInputContainerWithNgIf {
   renderInput = true;
+}
+
+@Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <md-input-container>
+      <input mdInput placeholder="Label" [formControl]="formControl">
+    </md-input-container>
+  `
+})
+class MdInputContainerOnPush {
+  formControl = new FormControl('');
 }
