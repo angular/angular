@@ -10,6 +10,7 @@ $mat-select-trigger-min-width: 112px !default;
 $mat-select-arrow-size: 5px !default;
 $mat-select-arrow-margin: 4px !default;
 $mat-select-panel-max-height: 256px !default;
+$mat-select-trigger-underline-height: 1px !default;
 
 .mat-select {
   display: inline-block;
@@ -25,7 +26,7 @@ $mat-select-panel-max-height: 256px !default;
   position: relative;
   box-sizing: border-box;
 
-  [aria-disabled='true'] & {
+  .mat-select-disabled & {
     @include user-select(none);
     cursor: default;
   }
@@ -36,9 +37,13 @@ $mat-select-panel-max-height: 256px !default;
   bottom: 0;
   left: 0;
   right: 0;
-  height: 1px;
+  height: $mat-select-trigger-underline-height;
 
-  [aria-disabled='true'] & {
+  .mat-select:focus & {
+    height: $mat-select-trigger-underline-height * 2;
+  }
+
+  .mat-select-disabled & {
     @include mat-control-disabled-underline();
     background-color: transparent;
     background-position: 0 bottom;
