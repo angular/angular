@@ -91,9 +91,8 @@ module.exports = (config) => {
 
     client: {
       jasmine: {
-        // Always execute the tests in a random order to ensure that tests don't depend
-        // accidentally on other tests.
-        random: true
+        // TODO(jelbourn): re-enable random test order once we can de-flake existing issues.
+        random: false
       }
     }
   });
