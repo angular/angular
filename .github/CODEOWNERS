@@ -1,0 +1,64 @@
+# Angular Material components
+lib/list                    @jelbourn @crisbeto
+lib/tooltip                 @andrewseguin
+lib/button-toggle           @tinayuangao
+lib/snack-bar               @jelbourn @crisbeto @josephperrott
+lib/radio                   @tinayuangao
+lib/card                    @jelbourn
+lib/input                   @mmalerba
+lib/progress-spinner        @jelbourn @crisbeto @josephperrott
+lib/datepicker              @mmalerba
+lib/sort                    @andrewseguin
+lib/autocomplete            @kara @crisbeto
+lib/chips                   @tinayuangao
+lib/icon                    @jelbourn
+lib/dialog                  @jelbourn @crisbeto
+lib/progress-bar            @jelbourn @crisbeto @josephperrott
+lib/grid-list               @kara @jelbourn
+lib/select                  @kara @crisbeto
+lib/expansion               @josephperrott @jelbourn
+lib/slide-toggle            @devversion
+lib/toolbar                 @devversion
+lib/button                  @tinayuangao
+lib/checkbox                @tinayuangao
+lib/table                   @andrewseguin
+lib/slider                  @mmalerba
+lib/sidenav                 @mmalerba
+lib/menu                    @kara @crisbeto
+lib/paginator               @andrewseguin
+lib/tabs                    @andrewseguin
+
+# Angular Material core
+lib/core/selection          @tinayuangao @jelbourn
+lib/core/selection/pseudo*  @crisbeto @jelbourn
+lib/core/theming            @jelbourn
+lib/core/option             @kara @crisbeto
+lib/core/rxjs               @jelbourn
+lib/core/ripple             @devversion
+lib/core/a11y               @jelbourn
+lib/core/compatibility      @jelbourn
+lib/core/overlay            @jelbourn @crisbeto
+lib/core/overlay/scroll     @andrewseguin @crisbeto
+lib/core/platform           @jelbourn
+lib/core/bidi               @jelbourn
+lib/core/placeholder        @kara @mmalerba
+lib/core/portal             @jelbourn
+lib/core/typography         @crisbeto
+lib/core/datetime           @mmalerba
+
+# CDK
+cdk/coercion                @jelbourn
+cdk/rxjs                    @jelbourn
+cdk/observe-content         @crisbeto @jelbourn
+cdk/a11y                    @jelbourn
+cdk/platform                @jelbourn
+cdk/bidi                    @jelbourn
+cdk/table                   @andrewseguin
+cdk/portal                  @jelbourn
+
+# Tooling
+src/tools                   @devversion @jelbourn
+test/                       @devversion @jelbourn
+
+# Docs examples
+material-examples/          @amcdnl @jelbourn
