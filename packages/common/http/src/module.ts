@@ -6,13 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, NgModule, Optional} from '@angular/core';
+import {Inject, ModuleWithProviders, NgModule, Optional, forwardRef} from '@angular/core';
 
 import {HttpBackend, HttpHandler} from './backend';
 import {HttpClient} from './client';
-import {HTTP_INTERCEPTORS, HttpInterceptor, HttpInterceptorHandler} from './interceptor';
+import {HTTP_INTERCEPTORS, HttpInterceptor, HttpInterceptorHandler, NoopInterceptor} from './interceptor';
 import {JsonpCallbackContext, JsonpClientBackend, JsonpInterceptor} from './jsonp';
 import {BrowserXhr, HttpXhrBackend, XhrFactory} from './xhr';
+import {HttpXsrfCookieExtractor, HttpXsrfInterceptor, HttpXsrfTokenExtractor, XSRF_COOKIE_NAME, XSRF_HEADER_NAME} from './xsrf';
+
 
 
 /**
@@ -48,6 +50,58 @@ export function jsonpCallbackContext(): Object {
 }
 
 /**
+ * `NgModule` which adds XSRF protection support to outgoing requests.
+ *
+ * Provided the server supports a cookie-based XSRF protection system, this
+ * module can be used directly to configure XSRF protection with the correct
+ * cookie and header names.
+ *
+ * If no such names are provided, the default is to use `X-XSRF-TOKEN` for
+ * the header name and `XSRF-TOKEN` for the cookie name.
+ *
+ * @experimental
+ */
+@NgModule({
+  providers: [
+    HttpXsrfInterceptor,
+    {provide: HTTP_INTERCEPTORS, useExisting: HttpXsrfInterceptor, multi: true},
+    {provide: HttpXsrfTokenExtractor, useClass: HttpXsrfCookieExtractor},
+    {provide: XSRF_COOKIE_NAME, useValue: 'XSRF-TOKEN'},
+    {provide: XSRF_HEADER_NAME, useValue: 'X-XSRF-TOKEN'},
+  ],
+})
+export class HttpXsrfModule {
+  /**
+   * Disable the default XSRF protection.
+   */
+  static disable(): ModuleWithProviders {
+    return {
+      ngModule: HttpXsrfModule,
+      providers: [
+        {provide: HttpXsrfInterceptor, useClass: NoopInterceptor},
+      ],
+    };
+  }
+
+  /**
+   * Configure XSRF protection to use the given cookie name or header name,
+   * or the default names (as described above) if not provided.
+   */
+  static withOptions(options: {
+    cookieName?: string,
+    headerName?: string,
+  } = {}): ModuleWithProviders {
+    return {
+      ngModule: HttpXsrfModule,
+      providers: [
+        options.cookieName ? {provide: XSRF_COOKIE_NAME, useValue: options.cookieName} : [],
+        options.headerName ? {provide: XSRF_HEADER_NAME, useValue: options.headerName} : [],
+      ],
+    };
+  }
+}
+
+/**
  * `NgModule` which provides the `HttpClient` and associated services.
  *
  * Interceptors can be added to the chain behind `HttpClient` by binding them
@@ -56,6 +110,12 @@ export function jsonpCallbackContext(): Object {
  * @experimental
  */
 @NgModule({
+  imports: [
+    HttpXsrfModule.withOptions({
+      cookieName: 'XSRF-TOKEN',
+      headerName: 'X-XSRF-TOKEN',
+    }),
+  ],
   providers: [
     HttpClient,
     // HttpHandler is the backend + interceptors and is constructed

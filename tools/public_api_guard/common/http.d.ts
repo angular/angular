@@ -1247,6 +1247,20 @@ export declare class HttpXhrBackend implements HttpBackend {
 }
 
 /** @experimental */
+export declare class HttpXsrfModule {
+    static disable(): ModuleWithProviders;
+    static withOptions(options?: {
+        cookieName?: string;
+        headerName?: string;
+    }): ModuleWithProviders;
+}
+
+/** @experimental */
+export declare abstract class HttpXsrfTokenExtractor {
+    abstract getToken(): string | null;
+}
+
+/** @experimental */
 export declare class JsonpClientBackend implements HttpBackend {
     constructor(callbackMap: JsonpCallbackContext, document: any);
     handle(req: HttpRequest<never>): Observable<HttpEvent<any>>;

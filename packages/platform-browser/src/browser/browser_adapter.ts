@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵparseCookieValue as parseCookieValue} from '@angular/common';
 import {ɵglobal as global} from '@angular/core';
+
 import {setRootDomAdapter} from '../dom/dom_adapter';
 
 import {GenericBrowserDomAdapter} from './generic_browser_adapter';
@@ -404,17 +406,4 @@ function relativePath(url: any): string {
   urlParsingNode.setAttribute('href', url);
   return (urlParsingNode.pathname.charAt(0) === '/') ? urlParsingNode.pathname :
                                                        '/' + urlParsingNode.pathname;
-}
-
-export function parseCookieValue(cookieStr: string, name: string): string|null {
-  name = encodeURIComponent(name);
-  for (const cookie of cookieStr.split(';')) {
-    const eqIndex = cookie.indexOf('=');
-    const [cookieName, cookieValue]: string[] =
-        eqIndex == -1 ? [cookie, ''] : [cookie.slice(0, eqIndex), cookie.slice(eqIndex + 1)];
-    if (cookieName.trim() === name) {
-      return decodeURIComponent(cookieValue);
-    }
-  }
-  return null;
 }
