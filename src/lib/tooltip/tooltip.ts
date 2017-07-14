@@ -52,6 +52,9 @@ export const TOUCHEND_HIDE_DELAY = 1500;
 /** Time in ms to throttle repositioning after scroll events. */
 export const SCROLL_THROTTLE_MS = 20;
 
+/** CSS class that will be attached to the overlay panel. */
+export const TOOLTIP_PANEL_CLASS = 'mat-tooltip-panel';
+
 /** Creates an error to be thrown if the user supplied an invalid tooltip position. */
 export function getMdTooltipInvalidPositionError(position: string) {
   return Error(`Tooltip position "${position}" is invalid.`);
@@ -275,6 +278,7 @@ export class MdTooltip implements OnDestroy {
 
     config.direction = this._dir ? this._dir.value : 'ltr';
     config.positionStrategy = strategy;
+    config.panelClass = TOOLTIP_PANEL_CLASS;
     config.scrollStrategy = this._overlay.scrollStrategies.reposition({
       scrollThrottle: SCROLL_THROTTLE_MS
     });
