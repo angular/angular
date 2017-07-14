@@ -6,9 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Observable} from 'rxjs/Observable';
-import {empty} from 'rxjs/observable/empty';
-
 import {HttpHeaders} from './headers';
 
 /**
