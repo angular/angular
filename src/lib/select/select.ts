@@ -24,7 +24,8 @@ import {
   ChangeDetectorRef,
   Attribute,
   OnInit,
-  Inject
+  Inject,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import {MdOption, MdOptionSelectionChange, MdOptgroup} from '../core/option/index';
 import {ENTER, SPACE, UP_ARROW, DOWN_ARROW, HOME, END} from '../core/keyboard/keycodes';
@@ -122,6 +123,7 @@ export const _MdSelectMixinBase = mixinColor(mixinDisabled(MdSelectBase), 'prima
   styleUrls: ['select.css'],
   inputs: ['color', 'disabled'],
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'role': 'listbox',
     '[attr.tabindex]': 'tabIndex',
@@ -386,6 +388,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
     this._calculateOverlayPosition();
     this._placeholderState = this._floatPlaceholderState();
     this._panelOpen = true;
+    this._changeDetectorRef.markForCheck();
   }
 
   /** Closes the overlay panel and focuses the host element. */
@@ -397,6 +400,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
         this._placeholderState = '';
       }
 
+      this._changeDetectorRef.markForCheck();
       this.focus();
     }
   }
@@ -443,6 +447,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
    */
   setDisabledState(isDisabled: boolean): void {
     this.disabled = isDisabled;
+    this._changeDetectorRef.markForCheck();
   }
 
   /** Whether or not the overlay panel is open. */
@@ -482,6 +487,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
    */
   private _setTriggerWidth(): void {
     this._triggerWidth = this._getTriggerRect().width;
+    this._changeDetectorRef.markForCheck();
   }
 
   /** Handles the keyboard interactions of a closed select. */
@@ -519,6 +525,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
       this.onClose.emit();
       this._panelDoneAnimating = false;
       this.overlayDir.offsetX = 0;
+      this._changeDetectorRef.markForCheck();
     }
   }
 
@@ -528,6 +535,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
    */
   _onFadeInDone(): void {
     this._panelDoneAnimating = this.panelOpen;
+    this._changeDetectorRef.markForCheck();
   }
 
   /**
@@ -537,6 +545,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
   _onBlur() {
     if (!this.disabled && !this.panelOpen) {
       this._onTouched();
+      this._changeDetectorRef.markForCheck();
     }
   }
 
@@ -741,7 +750,8 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
    * overflow. The selection arrow is 9px wide, add 4px of padding = 13
    */
   private _setValueWidth() {
-    this._selectedValueWidth =  this._triggerWidth - 13;
+    this._selectedValueWidth = this._triggerWidth - 13;
+    this._changeDetectorRef.markForCheck();
   }
 
   /**
@@ -838,8 +848,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
    * Determines the CSS `opacity` of the placeholder element.
    */
   _getPlaceholderOpacity(): string {
-    return (this.floatPlaceholder !== 'never' || this._selectionModel.isEmpty()) ?
-        '1' : '0';
+    return (this.floatPlaceholder !== 'never' || this._selectionModel.isEmpty()) ? '1' : '0';
   }
 
   /** Returns the aria-label of the select component. */
