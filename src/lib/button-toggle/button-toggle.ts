@@ -24,6 +24,8 @@ import {
   ViewEncapsulation,
   forwardRef,
   AfterViewInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {UniqueSelectionDispatcher, coerceBooleanProperty, FocusOriginMonitor} from '../core';
@@ -268,6 +270,7 @@ export class MdButtonToggleGroupMultiple extends _MdButtonToggleGroupMixinBase
   templateUrl: 'button-toggle.html',
   styleUrls: ['button-toggle.css'],
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class.mat-button-toggle-standalone]': '!buttonToggleGroup && !buttonToggleGroupMultiple',
     'class': 'mat-button-toggle'
@@ -322,11 +325,10 @@ export class MdButtonToggle implements OnInit, OnDestroy {
   }
 
   set checked(newCheckedState: boolean) {
-    if (this._isSingleSelector) {
-      if (newCheckedState) {
-        // Notify all button toggles with the same name (in the same group) to un-check.
-        this._buttonToggleDispatcher.notify(this.id, this.name);
-      }
+    if (this._isSingleSelector && newCheckedState) {
+      // Notify all button toggles with the same name (in the same group) to un-check.
+      this._buttonToggleDispatcher.notify(this.id, this.name);
+      this._changeDetectorRef.markForCheck();
     }
 
     this._checked = newCheckedState;
@@ -368,12 +370,13 @@ export class MdButtonToggle implements OnInit, OnDestroy {
 
   constructor(@Optional() toggleGroup: MdButtonToggleGroup,
               @Optional() toggleGroupMultiple: MdButtonToggleGroupMultiple,
+              private _changeDetectorRef: ChangeDetectorRef,
               private _buttonToggleDispatcher: UniqueSelectionDispatcher,
               private _renderer: Renderer2,
               private _elementRef: ElementRef,
               private _focusOriginMonitor: FocusOriginMonitor) {
-    this.buttonToggleGroup = toggleGroup;
 
+    this.buttonToggleGroup = toggleGroup;
     this.buttonToggleGroupMultiple = toggleGroupMultiple;
 
     if (this.buttonToggleGroup) {
@@ -381,6 +384,7 @@ export class MdButtonToggle implements OnInit, OnDestroy {
         _buttonToggleDispatcher.listen((id: string, name: string) => {
           if (id != this.id && name == this.name) {
             this.checked = false;
+            this._changeDetectorRef.markForCheck();
           }
         });
 
