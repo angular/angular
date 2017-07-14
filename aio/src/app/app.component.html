@@ -9,7 +9,7 @@
     (click)="sidenav.toggle()" title="Docs menu">
     <md-icon [ngClass]="{'sidenav-open': !isSideBySide }" svgIcon="menu"></md-icon>
   </button>
-  <a class="nav-link home" href="/"><img src="{{ homeImageUrl }}" title="Home" alt="Home"></a>
+  <a class="nav-link home" href="/"><img [src]="homeImageUrl" title="Home" alt="Home">{{ isSideBySide }}</a>
   <aio-top-menu *ngIf="isSideBySide" [nodes]="topMenuNodes"></aio-top-menu>
   <aio-search-box class="search-container" #searchBox (onSearch)="doSearch($event)" (onFocus)="doSearch($event)"></aio-search-box>
 </md-toolbar>
