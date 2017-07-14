@@ -1,5 +1,6 @@
 @import '../core/theming/palette';
 @import '../core/theming/theming';
+@import '../core/typography/typography-utils';
 
 @mixin mat-expansion-panel-theme($theme) {
   $background: map-get($theme, background);
@@ -29,5 +30,19 @@
 
   .mat-expansion-indicator::after {
     color: mat-color($foreground, secondary-text);
+  }
+}
+
+@mixin mat-expansion-panel-typography($config) {
+  .mat-expansion-panel-header {
+    font: {
+      family: mat-font-family($config);
+      size: mat-font-size($config, subheading-1);
+      weight: mat-font-weight($config, subheading-1);
+    }
+  }
+
+  .mat-expansion-panel-content {
+    @include mat-typography-level-to-styles($config, body-1);
   }
 }

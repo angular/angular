@@ -8,6 +8,7 @@
 @import '../../table/table-theme';
 @import '../../datepicker/datepicker-theme';
 @import '../../dialog/dialog-theme';
+@import '../../expansion/expansion-theme';
 @import '../../grid-list/grid-list-theme';
 @import '../../icon/icon-theme';
 @import '../../input/input-theme';
@@ -45,6 +46,7 @@
   @include mat-table-typography($config);
   @include mat-datepicker-typography($config);
   @include mat-dialog-typography($config);
+  @include mat-expansion-panel-typography($config);
   @include mat-grid-list-typography($config);
   @include mat-icon-typography($config);
   @include mat-input-typography($config);
