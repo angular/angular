@@ -104,14 +104,14 @@ export class MdErrorDirective { }
 
 /** Prefix to be placed the the front of the input. */
 @Directive({
-  selector: '[mdPrefix], [matPrefix], [md-prefix]'
+  selector: '[mdPrefix], [matPrefix]'
 })
 export class MdPrefix {}
 
 
 /** Suffix to be placed at the end of the input. */
 @Directive({
-  selector: '[mdSuffix], [matSuffix], [md-suffix]'
+  selector: '[mdSuffix], [matSuffix]'
 })
 export class MdSuffix {}
 
