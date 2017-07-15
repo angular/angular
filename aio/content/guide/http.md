@@ -50,7 +50,10 @@ The `get()` method on `HttpClient` makes accessing this data straightforward.
 
 ```javascript
 @Component(...)
-export class MyComponent implements NgOnInit {
+export class MyComponent implements OnInit {
+
+  results: string[];
+
   // Inject HttpClient into your component or service.
   constructor(private http: HttpClient) {}
   
