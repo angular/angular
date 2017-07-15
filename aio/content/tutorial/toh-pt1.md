@@ -91,7 +91,7 @@ Enter the following command in the terminal window:
 
 
 <code-example language="sh" class="code-shell">
-  npm start
+  ng serve -o
 
 </code-example>
 
