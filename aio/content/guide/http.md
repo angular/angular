@@ -389,12 +389,12 @@ export class TimingInterceptor implements HttpInterceptor {
   constructor(private auth: AuthService) {}
  
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-  	const elapsed = Date.now();
+  	const started = Date.now();
     return next
       .handle(req)
       .do(event => {
         if (event instanceof HttpResponse) {
-          const time = Date.now() - started;
+          const elapsed = Date.now() - started;
           console.log(`Request for ${req.urlWithParams} took ${elapsed} ms.`); 
         }
       });
