@@ -60,7 +60,7 @@ table {
         background-color: $lightgray;
       }
     }
-      
+
     }
 
     th {
@@ -80,6 +80,35 @@ table {
   }
 }
 
-#cheatsheet table tbody td {
-  overflow: auto;
+#cheatsheet {
+
+  table tbody td {
+    overflow: auto;
+  }
+
+  @media only screen and (max-width: 990px) {
+
+    /* Force table to not be like tables anymore */
+    table, thead, tbody, tfoot, tr, th, td {
+      display: block;
+      position: relative;
+      max-width: 100%;
+
+      code {
+        padding: 0;
+        background-color: inherit;
+      }
+    }
+
+    th {
+      border-right: none;
+    }
+
+    th, td {
+      &:not(:last-child) {
+        border-bottom: none;
+        padding-bottom: 0px;
+      }
+    }
+  }
 }
