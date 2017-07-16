@@ -582,5 +582,14 @@
     "website": "https://amcdnl.com",
     "bio": "Austin is an software architect with a passion for JavaScript and Angular. Austin loves to share his experiences with other like-minded developers by giving talks, blogging, podcasting and open-sourcing.",
     "group": "Angular"
+  },
+
+  "nirkaufman": {
+    "name": "Nir Kaufman",
+    "picture": "nirkaufman.jpg",
+    "twitter": "nirkaufman",
+    "website": "http://ngnir.life/",
+    "bio": "Nir is a Principal Frontend Consultant & Head of the Angular department at 500Tech, Google Developer Expert and community leader. He organizes the largest Angular meetup group in Israel (Angular-IL), talks and teaches about front-end technologies around the world. He is also the author of two books about Angular and the founder of the 'Frontend Band'.",
+    "group": "GDE"
   }
 }
