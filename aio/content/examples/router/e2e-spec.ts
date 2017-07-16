@@ -12,13 +12,13 @@ describe('Router', () => {
   beforeAll(() => browser.get(''));
 
   function getPageStruct() {
-    const hrefEles = element.all(by.css('my-app a'));
+    const hrefEles = element.all(by.css('my-app > nav a'));
     const crisisDetail = element.all(by.css('my-app > ng-component > ng-component > ng-component > div')).first();
     const heroDetail = element(by.css('my-app > ng-component > div'));
 
     return {
       hrefs: hrefEles,
-      activeHref: element(by.css('my-app a.active')),
+      activeHref: element(by.css('my-app > nav a.active')),
 
       crisisHref: hrefEles.get(0),
       crisisList: element.all(by.css('my-app > ng-component > ng-component li')),

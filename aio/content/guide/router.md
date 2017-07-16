@@ -204,6 +204,149 @@ application using the `Router` service and the `routerState` property.
 Each `ActivatedRoute` in the `RouterState` provides methods to traverse up and down the route tree
 to get information from parent, child and sibling routes.
 
+{@a activated-route}
+
+
+### Activated route
+
+The route path and parameters are available through an injected router service called the
+[ActivatedRoute](api/router/ActivatedRoute).
+It has a great deal of useful information including:
+
+<table>
+  <tr>
+    <th>
+      Property
+    </th>
+
+    <th>
+      Description
+    </th>
+  </tr>
+
+  <tr>
+    <td>
+      <code>url</code>
+    </td>
+    <td>
+
+    An `Observable` of the route path(s), represented as an array of strings for each part of the route path.
+
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <code>data</code>
+    </td>
+    <td>
+
+    An `Observable` that contains the `data` object provided for the route. Also contains any resolved values from the [resolve guard](#resolve-guard).
+
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <code>paramMap</code>
+    </td>
+    <td>
+
+    An `Observable` that contains a [map](api/router/ParamMap) of the required and [optional parameters](#optional-route-parameters) specific to the route. The map supports retrieving single and multiple values from the same parameter.
+
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <code>queryParamMap</code>
+    </td>
+    <td>
+
+    An `Observable` that contains a [map](api/router/ParamMap) of the [query parameters](#query-parameters) available to all routes.
+    The map supports retrieving single and multiple values from the query parameter.
+
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <code>fragment</code>
+    </td>
+    <td>
+
+    An `Observable` of the URL [fragment](#fragment) available to all routes.
+
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <code>outlet</code>
+    </td>
+    <td>
+
+    The name of the `RouterOutlet` used to render the route. For an unnamed outlet, the outlet name is _primary_.
+
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <code>routeConfig</code>
+    </td>
+    <td>
+
+    The route configuration used for the route that contains the origin path.
+
+    </td>
+  </tr>
+
+    <tr>
+    <td>
+      <code>parent</code>
+    </td>
+    <td>
+
+    The route's parent `ActivatedRoute` when this route is a [child route](#child-routing-component).
+
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <code>firstChild</code>
+    </td>
+    <td>
+
+    Contains the first `ActivatedRoute` in the list of this route's child routes.
+
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <code>children</code>
+    </td>
+    <td>
+
+    Contains all the [child routes](#child-routing-component) activated under the current route.
+
+    </td>
+  </tr>
+</table>
+
+<div class="l-sub-section">
+
+Two older properties are still available. They are less capable than their replacements, discouraged, and may be deprecated in a future Angular version.
+
+**`params`** &mdash; An `Observable` that contains the required and [optional parameters](#optional-route-parameters) specific to the route. Use `paramMap` instead.
+
+**`queryParams`** &mdash; An `Observable` that contains the [query parameters](#query-parameters) available to all routes.
+Use `queryParamMap` instead.
+
+</div>
+
 ### Router events
 
 During each navigation, the `Router` emits navigation events through the `Router.events` property. These events range from when the navigation starts and ends to many points in between. The full list of navigation events is displayed in the table below.
@@ -247,7 +390,7 @@ During each navigation, the `Router` emits navigation events through the `Router
     </td>
     <td>
 
-      An [event](api/router/RouteConfigLoadStart) triggered before the `Router` 
+      An [event](api/router/RouteConfigLoadStart) triggered before the `Router`
       [lazy loads](#asynchronous-routing) a route configuration.
 
     </td>
@@ -281,7 +424,7 @@ During each navigation, the `Router` emits navigation events through the `Router
     </td>
     <td>
 
-      An [event](api/router/NavigationCancel) triggered when navigation is canceled. 
+      An [event](api/router/NavigationCancel) triggered when navigation is canceled.
       This is due to a [Route Guard](#guards) returning false during navigation.
 
     </td>
@@ -924,7 +1067,7 @@ When the application launches, the initial URL in the browser bar is something l
   localhost:3000
 </code-example>
 
-That doesn't match any of the concrete configured routes which means 
+That doesn't match any of the concrete configured routes which means
 the router falls through to the wildcard route and displays the `PageNotFoundComponent`.
 
 The application needs a **default route** to a valid page.
@@ -1333,7 +1476,7 @@ Create a new `heroes-routing.module.ts` in the `heroes` folder
 using the same techniques you learned while creating the `AppRoutingModule`.
 
 
-<code-example path="router/src/app/heroes/heroes-routing.module.ts" title="src/app/heroes/heroes-routing.module.ts">
+<code-example path="router/src/app/heroes/heroes-routing.module.1.ts" title="src/app/heroes/heroes-routing.module.ts">
 
 </code-example>
 
@@ -1503,7 +1646,7 @@ Return to the `HeroesRoutingModule` and look at the route definitions again.
 The route to `HeroDetailComponent` has a twist.
 
 
-<code-example path="router/src/app/heroes/heroes-routing.module.ts" linenums="false" title="src/app/heroes/heroes-routing.module.ts (excerpt)" region="hero-detail-route">
+<code-example path="router/src/app/heroes/heroes-routing.module.1.ts" linenums="false" title="src/app/heroes/heroes-routing.module.ts (excerpt)" region="hero-detail-route">
 
 </code-example>
 
@@ -1547,52 +1690,6 @@ a route for some other hero.
 </div>
 
 
-
-{@a navigate}
-
-
-### Navigate to hero detail imperatively
-
-Users *will not* navigate to the detail component by clicking a link
-so you won't add a new `RouterLink` anchor tag to the shell.
-
-Instead, when the user *clicks* a hero in the list, you'll ask the router
-to navigate to the hero detail view for the selected hero.
-
-Start in the `HeroListComponent`.
-Revise its constructor so that it acquires the `Router` and the `HeroService` by dependency injection:
-
-
-<code-example path="router/src/app/heroes/hero-list.component.1.ts" linenums="false" title="src/app/heroes/hero-list.component.ts (constructor)" region="ctor">
-
-</code-example>
-
-
-
-Make the following few changes to the component's template:
-
-
-<code-example path="router/src/app/heroes/hero-list.component.1.ts" linenums="false" title="src/app/heroes/hero-list.component.ts (template)" region="template">
-
-</code-example>
-
-
-
-The template defines an `*ngFor` repeater such as [you've seen before](guide/displaying-data#ngFor).
-There's a `(click)` [event binding](guide/template-syntax#event-binding) to the component's
-`onSelect` method which you implement as follows:
-
-
-<code-example path="router/src/app/heroes/hero-list.component.1.ts" linenums="false" title="src/app/heroes/hero-list.component.ts (select)" region="select">
-
-</code-example>
-
-
-
-The component's `onSelect` calls the router's **`navigate`** method with a _link parameters array_.
-You can use this same syntax in a `RouterLink` if you decide later to navigate in HTML template rather than in component code.
-
-
 {@a route-parameters}
 
 
@@ -1629,152 +1726,9 @@ the `HeroDetailComponent` via the `ActivatedRoute` service.
 
 </div>
 
-
-
 {@a activated-route}
 
-
-### ActivatedRoute: the one-stop-shop for route information
-
-The route path and parameters are available through an injected router service called the
-[ActivatedRoute](api/router/ActivatedRoute).
-It has a great deal of useful information including:
-
-<table>
-  <tr>
-    <th>
-      Property
-    </th>
-
-    <th>
-      Description
-    </th>
-  </tr>
-
-  <tr>
-    <td>
-      <code>url</code>
-    </td>
-    <td>
-
-    An `Observable` of the route path(s), represented as an array of strings for each part of the route path.
-
-    </td>
-  </tr>
-
-  <tr>
-    <td>
-      <code>data</code>
-    </td>
-    <td>
-
-    An `Observable` that contains the `data` object provided for the route. Also contains any resolved values from the [resolve guard](#resolve-guard).
-
-    </td>
-  </tr>
-
-  <tr>
-    <td>
-      <code>paramMap</code>
-    </td>
-    <td>
-
-    An `Observable` that contains a [map](api/router/ParamMap) of the required and [optional parameters](#optional-route-parameters) specific to the route. The map supports retrieving single and multiple values from the same parameter.
-
-    </td>
-  </tr>
-
-  <tr>
-    <td>
-      <code>queryParamMap</code>
-    </td>
-    <td>
-
-    An `Observable` that contains a [map](api/router/ParamMap) of the [query parameters](#query-parameters) available to all routes. 
-    The map supports retrieving single and multiple values from the query parameter.
-
-    </td>
-  </tr>
-
-  <tr>
-    <td>
-      <code>fragment</code>
-    </td>
-    <td>
-
-    An `Observable` of the URL [fragment](#fragment) available to all routes.
-
-    </td>
-  </tr>
-
-  <tr>
-    <td>
-      <code>outlet</code>
-    </td>
-    <td>
-
-    The name of the `RouterOutlet` used to render the route. For an unnamed outlet, the outlet name is _primary_.
-
-    </td>
-  </tr>
-
-  <tr>
-    <td>
-      <code>routeConfig</code>
-    </td>
-    <td>
-
-    The route configuration used for the route that contains the origin path.
-
-    </td>
-  </tr>
-
-    <tr>
-    <td>
-      <code>parent</code>
-    </td>
-    <td>
-
-    The route's parent `ActivatedRoute` when this route is a [child route](#child-routing-component).
-
-    </td>
-  </tr>
-
-  <tr>
-    <td>
-      <code>firstChild</code>
-    </td>
-    <td>
-
-    Contains the first `ActivatedRoute` in the list of this route's child routes.
-
-    </td>
-  </tr>
-
-  <tr>
-    <td>
-      <code>children</code>
-    </td>
-    <td>
-
-    Contains all the [child routes](#child-routing-component) activated under the current route.
-
-    </td>
-  </tr>
-</table>
-
-<div class="l-sub-section">
-
-Two older properties are still available. They are less capable than their replacements, discouraged, and may be deprecated in a future Angular version.
-
-**`params`** &mdash; An `Observable` that contains the required and [optional parameters](#optional-route-parameters) specific to the route. Use `paramMap` instead.
-
-**`queryParams`** &mdash; An `Observable` that contains the [query parameters](#query-parameters) available to all routes. 
-Use `queryParamMap` instead.
-
-</div>
-
-#### _Activated Route_ in action
+### _Activated Route_ in action
 
 Import the `Router`, `ActivatedRoute`, and `ParamMap` tokens from the router package.
 
@@ -1813,20 +1767,19 @@ pull the hero `id` from the parameters and retrieve the hero to display.
 
 </code-example>
 
-The `paramMap` processing is a bit tricky. When the map changes, you `get()` 
+The `paramMap` processing is a bit tricky. When the map changes, you `get()`
 the `id` parameter from the changed parameters.
 
-Then you tell the `HeroService` to fetch the hero with that `id` and return the result of the `HeroService` request. 
+Then you tell the `HeroService` to fetch the hero with that `id` and return the result of the `HeroService` request.
 
 You might think to use the RxJS `map` operator.
 But the `HeroService` returns an `Observable<Hero>`.
-Your subscription wants the `Hero`, not an `Observable<Hero>`.
 So you flatten the `Observable` with the `switchMap` operator instead.
 
 The `switchMap` operator also cancels previous in-flight requests. If the user re-navigates to this route
 with a new `id` while the `HeroService` is still retrieving the old `id`, `switchMap` discards that old request and returns the hero for the new `id`.
 
-Finally, you activate the observable with `subscribe` method and (re)set the component's `hero` property with the retrieved hero.
+The observable `Subscription` will be handled by the `AsyncPipe` and the component's `hero` property will be (re)set with the retrieved hero.
 
 #### _ParamMap_ API
 
@@ -1861,7 +1814,7 @@ to handle parameter access for both route parameters (`paramMap`) and query para
     </td>
     <td>
 
-    Returns the parameter name value (a `string`) if present, or `null` if the parameter name is not in the map. Returns the _first_ element if the parameter value is actually an array of values. 
+    Returns the parameter name value (a `string`) if present, or `null` if the parameter name is not in the map. Returns the _first_ element if the parameter value is actually an array of values.
 
     </td>
   </tr>
@@ -2054,7 +2007,7 @@ The router embedded the `id` value in the navigation URL because you had defined
 as a route parameter with an `:id` placeholder token in the route `path`:
 
 
-<code-example path="router/src/app/heroes/heroes-routing.module.ts" linenums="false" title="src/app/heroes/heroes-routing.module.ts (hero-detail-route)" region="hero-detail-route">
+<code-example path="router/src/app/heroes/heroes-routing.module.1.ts" linenums="false" title="src/app/heroes/heroes-routing.module.ts (hero-detail-route)" region="hero-detail-route">
 
 </code-example>
 
@@ -2190,17 +2143,9 @@ Then you inject the `ActivatedRoute` in the `HeroListComponent` constructor.
 The `ActivatedRoute.paramMap` property is an `Observable` map of route parameters. The `paramMap` emits a new map of values that includes `id`
 when the user navigates to the component. In `ngOnInit` you subscribe to those values, set the `selectedId`, and get the heroes.
 
-Add an `isSelected` method that returns `true` when a hero's `id` matches the selected `id`.
 
-
-<code-example path="router/src/app/heroes/hero-list.component.ts" linenums="false" title="src/app/heroes/hero-list.component.ts (isSelected)" region="isSelected">
-
-</code-example>
-
-
-
-Finally, update the template with a [class binding](guide/template-syntax#class-binding) to that `isSelected` method.
-The binding adds the `selected` CSS class when the method returns `true` and removes it when `false`.
+Update the template with a [class binding](guide/template-syntax#class-binding).
+The binding adds the `selected` CSS class when the comparison returns `true` and removes it when `false`.
 Look for it within the repeated `<li>` tag as shown here:
 
 
@@ -2439,7 +2384,7 @@ Here are the relevant files for this version of the sample application.
 
   </code-pane>
 
-  <code-pane title="heroes-routing.module.ts" path="router/src/app/heroes/heroes-routing.module.ts">
+  <code-pane title="heroes-routing.module.ts" path="router/src/app/heroes/heroes-routing.module.1.ts">
 
   </code-pane>
 
@@ -2693,38 +2638,13 @@ The router then calculates the target URL based on the active route's location.
 {@a nav-to-crisis}
 
 
-### Navigate to crisis detail with a relative URL
-
-Update the *Crisis List* `onSelect` method to use relative navigation so you don't have
-to start from the top of the route configuration.
+### Navigate to crisis list with a relative URL
 
 You've already injected the `ActivatedRoute` that you need to compose the relative navigation path.
 
-<code-example path="router/src/app/crisis-center/crisis-list.component.ts" linenums="false" title="src/app/crisis-center/crisis-list.component.ts (constructor)" region="ctor">
-
-</code-example>
-
-
-
-When you visit the *Crisis Center*, the ancestor path is `/crisis-center`,
-so you only need to add the `id` of the *Crisis Center* to the existing path.
-
-
-<code-example path="router/src/app/crisis-center/crisis-list.component.ts" linenums="false" title="src/app/crisis-center/crisis-list.component.ts (relative navigation)" region="onSelect">
-
-</code-example>
-
-
-
-If you were using a `RouterLink` to navigate instead of the `Router` service, you'd use the _same_
+When using a `RouterLink` to navigate instead of the `Router` service, you'd use the _same_
 link parameters array, but you wouldn't provide the object with the `relativeTo` property.
 The `ActivatedRoute` is implicit in a `RouterLink` directive.
-
-
-<code-example path="router/src/app/crisis-center/crisis-list.component.1.ts" linenums="false" title="src/app/crisis-center/crisis-list.component.ts (relative routerLink)" region="relative-navigation-router-link">
-
-</code-example>
-
 
 
 Update the `gotoCrises` method of the `CrisisDetailComponent` to navigate back to the *Crisis Center* list using relative path navigation.
@@ -2733,7 +2653,6 @@ Update the `gotoCrises` method of the `CrisisDetailComponent` to navigate back t
 <code-example path="router/src/app/crisis-center/crisis-detail.component.ts" linenums="false" title="src/app/crisis-center/crisis-detail.component.ts (relative navigation)" region="gotoCrises-navigate">
 
 </code-example>
-
 
 
 Notice that the path goes up a level using the `../` syntax.
@@ -3415,8 +3334,7 @@ is like waiting for the server asynchronously.
 
 The `DialogService`, provided in the `AppModule` for app-wide use, does the asking.
 
-It returns a [promise](http://exploringjs.com/es6/ch_promises.html) that
-*resolves* when the user eventually decides what to do: either
+It returns an `Observable` that *resolves* when the user eventually decides what to do: either
 to discard changes and navigate away (`true`) or to preserve the pending changes and stay in the crisis editor (`false`).
 
 
@@ -3541,8 +3459,12 @@ Be explicit. Implement the `Resolve` interface with a type of `Crisis`.
 Inject the `CrisisService` and `Router` and implement the `resolve()` method.
 That method could return a `Promise`, an `Observable`, or a synchronous return value.
 
-The `CrisisService.getCrisis` method returns a promise.
-Return that promise to prevent the route from loading until the data is fetched.
+The `CrisisService.getCrisis` method returns an Observable.
+Return that observable to prevent the route from loading until the data is fetched.
+The `Router` guards require an Observable to `complete`, meaning it has emitted all
+of its values. You use the `take` operator with an argument of `1` to ensure that the
+Observable completes after retrieving the first value from the Observable returned by the
+`getCrisis` method.
 If it doesn't return a valid `Crisis`, navigate the user back to the `CrisisListComponent`,
 canceling the previous in-flight navigation to the `CrisisDetailComponent`.
 
@@ -3580,12 +3502,15 @@ The router looks for that method and calls it if found.
 Don't worry about all the ways that the user  could navigate away.
 That's the router's job. Write this class and let the router take it from there.
 
+1. The Observable provided to the Router _must_ complete.
+If the Observable does not complete, the navigation will not continue.
+
 The relevant *Crisis Center* code for this milestone follows.
 
 
 <code-tabs>
 
-  <code-pane title="app.component.ts" path="router/src/app/app.component.ts">
+  <code-pane title="app.component.ts" path="router/src/app/app.component.6.ts">
 
   </code-pane>
 
@@ -4039,6 +3964,52 @@ When you're done it looks like this.
 Once the application loads the initial route, the `CrisisCenterModule` is preloaded.
 Verify this by logging in to the `Admin` feature area and noting that the `crisis-center` is listed in the `Preloaded Modules`.
 It's also logged to the browser's console.
+
+
+{@a redirect-advanced}
+
+## Migrating URLs with Redirects
+
+You've setup the routes for navigating around your application. You've used navigation imperatively and declaratively to many different routes. But like any application, requirements change over time. You've setup links and navigation to `/heroes` and `/hero/:id` from the `HeroListComponent` and `HeroDetailComponent` components. If there was a requirement that links to `heroes` become `superheroes`, you still want the previous URLs to navigate correctly. You also don't want to go and update every link in your application, so redirects makes refactoring routes trivial.
+
+
+{@a url-refactor}
+
+### Changing /heroes to /superheroes
+
+Let's take the `Hero` routes and migrate them to new URLs. The `Router` checks for redirects in your configuration before navigating, so each redirect is triggered when needed. To support this change, you'll add redirects from the old routes to the new routes in the `heroes-routing.module`.
+
+<code-example path="router/src/app/heroes/heroes-routing.module.ts" linenums="false" title="src/app/heroes/heroes-routing.module.ts (heroes redirects)">
+
+</code-example>
+
+
+You'll notice two different types of redirects. The first change is from  `/heroes` to `/superheroes` without any parameters. This is a straightforward redirect, unlike the change from `/hero/:id` to `/superhero/:id`, which includes the `:id` route parameter. Router redirects also use powerful pattern matching, so the `Router` inspects the URL and replaces route parameters in the `path` with their appropriate destination. Previously, you navigated to a URL such as `/hero/15` with a route parameter `id` of `15`.
+
+<div class="l-sub-section">
+
+The `Router` also supports [query parameters](#query-parameters) and the [fragment](#fragment) when using redirects.
+
+* When using absolute redirects, the `Router` will use the query parameters and the fragment from the redirectTo in the route config.
+* When using relative redirects, the `Router` use the query params and the fragment from the source URL.
+
+</div>
+
+Before updating the `app-routing.module.ts`, you'll need to consider an important rule. Currently, our empty path route redirects to `/heroes`, which redirects to `/superheroes`. This _won't_ work and is by design as the `Router` handles redirects once at each level of routing configuration. This prevents chaining of redirects, which can lead to endless redirect loops.
+
+So instead, you'll update the empty path route in `app-routing.module.ts` to redirect to `/superheroes`.
+
+<code-example path="router/src/app/app-routing.module.ts" linenums="false" title="src/app/app-routing.module.ts (superheroes redirect)">
+
+</code-example>
+
+Since `RouterLink`s aren't tied to route configuration, you'll need to update the associated router links so they remain active when the new route is active. You'll update the `app.component.ts` template for the `/heroes` routerLink.
+
+<code-example path="router/src/app/app.component.ts" linenums="false" title="src/app/app.component.ts (superheroes active routerLink)">
+
+</code-example>
+
+With the redirects setup, all previous routes now point to their new destinations and both URLs still function as intended.
 
 
 {@a inspect-config}
