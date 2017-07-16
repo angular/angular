@@ -24,6 +24,9 @@
       "es6",
       "dom"
     ],
+    "types": [
+      "node"
+    ],
     "skipLibCheck": true
   },
   "exclude": [

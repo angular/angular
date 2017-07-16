@@ -15,8 +15,9 @@
     "sourceRoot": ".",
     "declaration": true,
     "skipLibCheck": true,
-    // don't auto-discover @types/node, it results in a ///<reference in the .d.ts output
-    "types": []
+    "types": [
+      "node"
+    ]
   },
   "files": [
     "index.ts",

@@ -14,5 +14,7 @@ filegroup(
         "node_modules/zone.js/**/*.d.ts",
         "node_modules/rxjs/**/*.d.ts",
         "node_modules/@types/**/*.d.ts",
+        "node_modules/tsickle/**/*.d.ts",
+        "node_modules/hammerjs/**/*.d.ts",
     ]),
 )

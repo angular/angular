@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+
 const xhr2: any = require('xhr2');
 
 import {Injectable, Optional, Provider} from '@angular/core';
