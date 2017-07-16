@@ -1,8 +1,8 @@
 # Bootstrapping
 
 An NgModule class describes how the application parts fit together.
-Every application has at least one NgModule, the _root_ module 
-that you [bootstrap](guide/appmodule#main) to launch the application.
+Every application has at least one NgModule, the _root_ module
+that you [bootstrap](#main) to launch the application.
 You can call it anything you want. The conventional name is `AppModule`.
 
 The [setup](guide/setup) instructions produce a new project with the following minimal `AppModule`.
@@ -25,7 +25,7 @@ The `@NgModule` decorator identifies `AppModule` as an `NgModule` class.
 * **_bootstrap_** &mdash; the _root_ component that Angular creates and inserts into the `index.html` host web page.
 
 The [NgModules](guide/ngmodule) guide dives deeply into the details of NgModules.
-All you need to know at the moment is a few basics about these three properties.  
+All you need to know at the moment is a few basics about these three properties.
 
 
 {@a imports}
@@ -34,7 +34,7 @@ All you need to know at the moment is a few basics about these three properties.
 ### The _imports_ array
 
 NgModules are a way to consolidate features that belong together into discrete units.
-Many features of Angular itself are organized as NgModules. 
+Many features of Angular itself are organized as NgModules.
 HTTP services are in the `HttpModule`. The router is in the `RouterModule`.
 Eventually you may create a feature module.
 
@@ -70,7 +70,7 @@ You add `import` statements to almost every application file.
 They have nothing to do with Angular and Angular knows nothing about them.
 
 The _module's_ `imports` array appears _exclusively_ in the `@NgModule` metadata object.
-It tells Angular about specific _other_ NgModules&mdash;all of them classes decorated 
+It tells Angular about specific _other_ NgModules&mdash;all of them classes decorated
 with `@NgModule`&mdash;that the application needs to function properly.
 
 </div>
@@ -110,7 +110,7 @@ Do not put any other kind of class in `declarations`; _not_ `NgModule` classes, 
 
 ### The _bootstrap_ array
 
-You launch the application by [_bootstrapping_](guide/bootstrapping#main) the root `AppModule`.
+You launch the application by [_bootstrapping_](#main) the root `AppModule`.
 Among other things, the _bootstrapping_ process creates the component(s) listed in the `bootstrap` array
 and inserts each one into the browser DOM.
 
@@ -126,13 +126,6 @@ Which brings us to the _bootstrapping_ process itself.
 
 
 {@a main}
-
-
-<l-main-section>
-
-</l-main-section>
-
-
 
 ## Bootstrap in _main.ts_
 
