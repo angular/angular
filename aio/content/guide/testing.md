@@ -178,7 +178,7 @@ For a discussion of the unit testing setup files, [see below](guide/testing#setu
 {@a isolated-v-testing-utilities}
 
 
-### Isolated unit tests vs. the Angular testing utilites
+### Isolated unit tests vs. the Angular testing utilities
 
 [Isolated unit tests](guide/testing#isolated-unit-tests "Unit testing without the Angular testing utilities")
 examine an instance of a class all by itself without any dependence on Angular or any injected values.
