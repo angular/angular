@@ -7,7 +7,7 @@ import { Observable } from 'rxjs/Observable';
 // #enddocregion rxjs-imports
 import { Component, OnInit } from '@angular/core';
 // #docregion import-router
-import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 // #enddocregion import-router
 
 import { Hero, HeroService }  from './hero.service';
@@ -17,10 +17,11 @@ import { Hero, HeroService }  from './hero.service';
   template: `
     <h2>HEROES</h2>
     <ul class="items">
-      <li *ngFor="let hero of heroes | async"
-        [class.selected]="isSelected(hero)"
-        (click)="onSelect(hero)">
-        <span class="badge">{{ hero.id }}</span> {{ hero.name }}
+      <li *ngFor="let hero of heroes$ | async"
+        [class.selected]="hero.id === selectedId">
+        <a [routerLink]="['/hero', hero.id]">
+          <span class="badge">{{ hero.id }}</span>{{ hero.name }}
+        </a>
       </li>
     </ul>
 
@@ -30,18 +31,17 @@ import { Hero, HeroService }  from './hero.service';
 })
 // #docregion ctor
 export class HeroListComponent implements OnInit {
-  heroes: Observable<Hero[]>;
+  heroes$: Observable<Hero[]>;
 
   private selectedId: number;
 
   constructor(
     private service: HeroService,
-    private route: ActivatedRoute,
-    private router: Router
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
-    this.heroes = this.route.paramMap
+    this.heroes$ = this.route.paramMap
       .switchMap((params: ParamMap) => {
         // (+) before `params.get()` turns the string into a number
         this.selectedId = +params.get('id');
@@ -49,16 +49,6 @@ export class HeroListComponent implements OnInit {
       });
   }
   // #enddocregion ctor
-
-  // #docregion isSelected
-  isSelected(hero: Hero) { return hero.id === this.selectedId; }
-  // #enddocregion isSelected
-
-  // #docregion select
-  onSelect(hero: Hero) {
-    this.router.navigate(['/hero', hero.id]);
-  }
-  // #enddocregion select
 // #docregion ctor
 }
 // #enddocregion
