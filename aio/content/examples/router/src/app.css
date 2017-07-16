@@ -15,6 +15,10 @@
   height: 1.6em;
   border-radius: 4px;
 }
+.items li a {
+  display: block;
+  text-decoration: none;
+}
 .items li:hover {
   color: #607D8B;
   background-color: #DDD;
