@@ -16,7 +16,7 @@ var tslibLocation = normalize('../../node_modules/tslib');
 var esm = 'esm/';
 
 var locations = {
-  'tsc-wrapped': normalize('../../dist/tools/@angular') + '/',
+  'tsc-wrapped': normalize('../../dist/packages-dist') + '/',
   'compiler-cli': normalize('../../dist/packages') + '/'
 };
 
