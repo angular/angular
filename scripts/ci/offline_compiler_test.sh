@@ -5,8 +5,7 @@ set -u -e -o pipefail
 
 # These ones can be `npm link`ed for fast development
 LINKABLE_PKGS=(
-  $(pwd)/dist/packages-dist/{common,forms,core,compiler,compiler-cli,platform-{browser,server},platform-browser-dynamic,router,http,animations}
-  $(pwd)/dist/tools/@angular/tsc-wrapped
+  $(pwd)/dist/packages-dist/{common,forms,core,compiler,compiler-cli,platform-{browser,server},platform-browser-dynamic,router,http,animations,tsc-wrapped}
 )
 
 TYPESCRIPT_2_1=typescript@2.1.5

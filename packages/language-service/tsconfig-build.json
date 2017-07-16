@@ -20,8 +20,8 @@
       "@angular/http": ["../../dist/packages/http"],
       "@angular/platform-server": ["../../dist/packages/platform-server"],
       "@angular/platform-browser": ["../../dist/packages/platform-browser"],
-      "@angular/tsc-wrapped": ["../../dist/tools/@angular/tsc-wrapped"],
-      "@angular/tsc-wrapped/*": ["../../dist/tools/@angular/tsc-wrapped/*"]
+      "@angular/tsc-wrapped": ["../../dist/packages-dist/tsc-wrapped"],
+      "@angular/tsc-wrapped/*": ["../../dist/packages-dist/tsc-wrapped/*"]
     },
     "rootDir": ".",
     "sourceMap": true,
