@@ -333,7 +333,7 @@ echo "====== BUILDING: Version ${VERSION}"
 N="
 "
 TSC=`pwd`/node_modules/.bin/tsc
-NGC="node --max-old-space-size=3000 dist/tools/@angular/tsc-wrapped/src/main"
+NGC="node --max-old-space-size=3000 dist/packages-dist/tsc-wrapped/src/main"
 MAP_SOURCES="node `pwd`/scripts/build/map_sources.js "
 UGLIFYJS=`pwd`/node_modules/.bin/uglifyjs
 TSCONFIG=./tools/tsconfig.json
@@ -345,8 +345,6 @@ if [[ ${BUILD_TOOLS} == true ]]; then
     rm -rf ./dist/tools/
     mkdir -p ./dist/tools/
     $(npm bin)/tsc -p ${TSCONFIG}
-
-    cp ./tools/@angular/tsc-wrapped/package.json ./dist/tools/@angular/tsc-wrapped
   travisFoldEnd "build tools"
 fi
 
@@ -398,11 +396,11 @@ if [[ ${BUILD_ALL} == true && ${TYPECHECK_ALL} == true ]]; then
 
   TSCONFIG="packages/tsconfig.json"
   travisFoldStart "tsc -p ${TSCONFIG}" "no-xtrace"
-    $NGC -p ${TSCONFIG}
+    $TSC -p ${TSCONFIG}
   travisFoldEnd "tsc -p ${TSCONFIG}"
   TSCONFIG="modules/tsconfig.json"
   travisFoldStart "tsc -p ${TSCONFIG}" "no-xtrace"
-    $NGC -p ${TSCONFIG}
+    $TSC -p ${TSCONFIG}
   travisFoldEnd "tsc -p ${TSCONFIG}"
 
 fi
@@ -412,6 +410,15 @@ if [[ ${BUILD_ALL} == true ]]; then
   if [[ ${BUNDLE} == true ]]; then
     rm -rf ./dist/packages-dist
   fi
+fi
+
+if [[ ${BUILD_TOOLS} == true || ${BUILD_ALL} == true ]]; then
+  echo "====== (tsc-wrapped)COMPILING: \$(npm bin)/tsc -p packages/tsc-wrapped/tsconfig.json ====="
+  $(npm bin)/tsc -p packages/tsc-wrapped/tsconfig.json
+  echo "====== (tsc-wrapped)COMPILING: \$(npm bin)/tsc -p packages/tsc-wrapped/tsconfig-build.json ====="
+  $(npm bin)/tsc -p packages/tsc-wrapped/tsconfig-build.json
+  cp ./packages/tsc-wrapped/package.json ./dist/packages-dist/tsc-wrapped
+  cp ./packages/tsc-wrapped/README.md ./dist/packages-dist/tsc-wrapped
 fi
 
 for PACKAGE in ${PACKAGES[@]}

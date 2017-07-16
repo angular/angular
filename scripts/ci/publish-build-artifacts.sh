@@ -101,7 +101,7 @@ function publishPackages {
   PKGS_DIST=$2
   BRANCH=$3
 
-  for dir in $PKGS_DIST/*/ dist/tools/@angular/tsc-wrapped
+  for dir in $PKGS_DIST/*/ 
   do
     COMPONENT="$(basename ${dir})"
 

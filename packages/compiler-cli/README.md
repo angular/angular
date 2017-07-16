@@ -121,9 +121,6 @@ At a high level, this program
 # Build Angular and the compiler
 ./build.sh
 
-# Copy over the package so we can test the compiler tests
-$ cp tools/@angular/tsc-wrapped/package.json dist/tools/@angular/tsc-wrapped
-
 # Run the test once
 # (First edit the LINKABLE_PKGS to use npm link instead of npm install)
 $ ./scripts/ci/offline_compiler_test.sh

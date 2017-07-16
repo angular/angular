@@ -13,8 +13,8 @@
       "selenium-webdriver": ["../node_modules/@types/selenium-webdriver/index.d.ts"],
       "rxjs/*": ["../node_modules/rxjs/*"],
       "@angular/*": ["../dist/all/@angular/*"],
-      "@angular/tsc-wrapped": ["../dist/tools/@angular/tsc-wrapped"],
-      "@angular/tsc-wrapped/*": ["../dist/tools/@angular/tsc-wrapped/*"]
+      "@angular/tsc-wrapped": ["../dist/packages-dist/tsc-wrapped"],
+      "@angular/tsc-wrapped/*": ["../dist/packages-dist/tsc-wrapped/*"]
     },
     "rootDir": ".",
     "inlineSourceMap": true,
