@@ -35,7 +35,9 @@ const globals = {
   'rxjs/operator/catch': 'Rx.Observable.prototype',
   'rxjs/operator/last': 'Rx.Observable.prototype',
   'rxjs/operator/filter': 'Rx.Observable.prototype',
-  'rxjs/operator/concatMap': 'Rx.Observable.prototype'
+  'rxjs/operator/concatMap': 'Rx.Observable.prototype',
+  'rxjs/operator/mergeMapTo': 'Rx.Observable.prototype',
+  'rxjs/operator/takeUntil': 'Rx.Observable.prototype'
 };
 
 export default {
