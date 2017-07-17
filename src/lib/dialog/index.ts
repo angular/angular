@@ -14,7 +14,7 @@ import {
   A11yModule,
   MdCommonModule,
 } from '../core';
-import {MdDialog} from './dialog';
+import {MdDialog, MD_DIALOG_SCROLL_STRATEGY_PROVIDER} from './dialog';
 import {MdDialogContainer} from './dialog-container';
 import {
   MdDialogClose,
@@ -49,6 +49,7 @@ import {
   ],
   providers: [
     MdDialog,
+    MD_DIALOG_SCROLL_STRATEGY_PROVIDER,
   ],
   entryComponents: [MdDialogContainer],
 })

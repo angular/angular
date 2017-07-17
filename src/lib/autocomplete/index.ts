@@ -10,12 +10,16 @@ import {NgModule} from '@angular/core';
 import {MdOptionModule, OverlayModule, MdCommonModule} from '../core';
 import {CommonModule} from '@angular/common';
 import {MdAutocomplete} from './autocomplete';
-import {MdAutocompleteTrigger} from './autocomplete-trigger';
+import {
+  MdAutocompleteTrigger,
+  MD_AUTOCOMPLETE_SCROLL_STRATEGY_PROVIDER,
+} from './autocomplete-trigger';
 
 @NgModule({
   imports: [MdOptionModule, OverlayModule, MdCommonModule, CommonModule],
   exports: [MdAutocomplete, MdOptionModule, MdAutocompleteTrigger, MdCommonModule],
   declarations: [MdAutocomplete, MdAutocompleteTrigger],
+  providers: [MD_AUTOCOMPLETE_SCROLL_STRATEGY_PROVIDER],
 })
 export class MdAutocompleteModule {}
 

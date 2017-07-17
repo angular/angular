@@ -8,12 +8,13 @@
 
 import {
   Injector,
-  InjectionToken,
   ComponentRef,
   Injectable,
   Optional,
   SkipSelf,
   TemplateRef,
+  Inject,
+  InjectionToken,
 } from '@angular/core';
 import {Location} from '@angular/common';
 import {Observable} from 'rxjs/Observable';
@@ -24,6 +25,11 @@ import {
   ComponentType,
   OverlayState,
   ComponentPortal,
+  BlockScrollStrategy,
+  // This import is only used to define a generic type. The current TypeScript version incorrectly
+  // considers such imports as unused (https://github.com/Microsoft/TypeScript/issues/14953)
+  // tslint:disable-next-line:no-unused-variable
+  ScrollStrategy,
 } from '../core';
 import {PortalInjector} from '../core/portal/portal-injector';
 import {extendObject} from '../core/util/object-extend';
@@ -34,6 +40,23 @@ import {MdDialogContainer} from './dialog-container';
 import {TemplatePortal} from '../core/portal/portal';
 
 export const MD_DIALOG_DATA = new InjectionToken<any>('MdDialogData');
+
+
+/** Injection token that determines the scroll handling while the dialog is open. */
+export const MD_DIALOG_SCROLL_STRATEGY =
+    new InjectionToken<() => ScrollStrategy>('md-dialog-scroll-strategy');
+
+/** @docs-private */
+export function MD_DIALOG_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay) {
+  return () => overlay.scrollStrategies.block();
+}
+
+/** @docs-private */
+export const MD_DIALOG_SCROLL_STRATEGY_PROVIDER = {
+  provide: MD_DIALOG_SCROLL_STRATEGY,
+  deps: [Overlay],
+  useFactory: MD_DIALOG_SCROLL_STRATEGY_PROVIDER_FACTORY,
+};
 
 
 /**
@@ -71,6 +94,7 @@ export class MdDialog {
   constructor(
       private _overlay: Overlay,
       private _injector: Injector,
+      @Inject(MD_DIALOG_SCROLL_STRATEGY) private _scrollStrategy,
       @Optional() private _location: Location,
       @Optional() @SkipSelf() private _parentDialog: MdDialog) {
 
@@ -143,7 +167,7 @@ export class MdDialog {
     let overlayState = new OverlayState();
     overlayState.panelClass = dialogConfig.panelClass;
     overlayState.hasBackdrop = dialogConfig.hasBackdrop;
-    overlayState.scrollStrategy = this._overlay.scrollStrategies.block();
+    overlayState.scrollStrategy = this._scrollStrategy();
     overlayState.direction = dialogConfig.direction;
     if (dialogConfig.backdropClass) {
       overlayState.backdropClass = dialogConfig.backdropClass;

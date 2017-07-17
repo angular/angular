@@ -9,7 +9,11 @@ import {NgModule, Provider} from '@angular/core';
 import {Overlay} from './overlay';
 import {ScrollDispatchModule} from './scroll/index';
 import {PortalModule} from '../portal/portal-directives';
-import {ConnectedOverlayDirective, OverlayOrigin} from './overlay-directives';
+import {
+  ConnectedOverlayDirective,
+  OverlayOrigin,
+  MD_CONNECTED_OVERLAY_SCROLL_STRATEGY_PROVIDER,
+} from './overlay-directives';
 import {OverlayPositionBuilder} from './position/overlay-position-builder';
 import {VIEWPORT_RULER_PROVIDER} from './position/viewport-ruler';
 import {OVERLAY_CONTAINER_PROVIDER} from './overlay-container';
@@ -20,6 +24,7 @@ export const OVERLAY_PROVIDERS: Provider[] = [
   OverlayPositionBuilder,
   VIEWPORT_RULER_PROVIDER,
   OVERLAY_CONTAINER_PROVIDER,
+  MD_CONNECTED_OVERLAY_SCROLL_STRATEGY_PROVIDER,
 ];
 
 @NgModule({

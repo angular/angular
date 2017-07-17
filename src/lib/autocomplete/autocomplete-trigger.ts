@@ -18,10 +18,21 @@ import {
   ViewContainerRef,
   Inject,
   ChangeDetectorRef,
+  InjectionToken,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {DOCUMENT} from '@angular/platform-browser';
-import {Overlay, OverlayRef, OverlayState, TemplatePortal} from '../core';
+import {
+  Overlay,
+  OverlayRef,
+  OverlayState,
+  TemplatePortal,
+  RepositionScrollStrategy,
+  // This import is only used to define a generic type. The current TypeScript version incorrectly
+  // considers such imports as unused (https://github.com/Microsoft/TypeScript/issues/14953)
+  // tslint:disable-next-line:no-unused-variable
+  ScrollStrategy,
+} from '../core';
 import {MdAutocomplete} from './autocomplete';
 import {PositionStrategy} from '../core/overlay/position/position-strategy';
 import {ConnectedPositionStrategy} from '../core/overlay/position/connected-position-strategy';
@@ -47,6 +58,22 @@ export const AUTOCOMPLETE_OPTION_HEIGHT = 48;
 
 /** The total height of the autocomplete panel. */
 export const AUTOCOMPLETE_PANEL_HEIGHT = 256;
+
+/** Injection token that determines the scroll handling while the autocomplete panel is open. */
+export const MD_AUTOCOMPLETE_SCROLL_STRATEGY =
+    new InjectionToken<() => ScrollStrategy>('md-autocomplete-scroll-strategy');
+
+/** @docs-private */
+export function MD_AUTOCOMPLETE_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay) {
+  return () => overlay.scrollStrategies.reposition();
+}
+
+/** @docs-private */
+export const MD_AUTOCOMPLETE_SCROLL_STRATEGY_PROVIDER = {
+  provide: MD_AUTOCOMPLETE_SCROLL_STRATEGY,
+  deps: [Overlay],
+  useFactory: MD_AUTOCOMPLETE_SCROLL_STRATEGY_PROVIDER_FACTORY,
+};
 
 /**
  * Provider that allows the autocomplete to register as a ControlValueAccessor.
@@ -127,6 +154,7 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
               private _viewContainerRef: ViewContainerRef,
               private _zone: NgZone,
               private _changeDetectorRef: ChangeDetectorRef,
+              @Inject(MD_AUTOCOMPLETE_SCROLL_STRATEGY) private _scrollStrategy,
               @Optional() private _dir: Directionality,
               @Optional() @Host() private _inputContainer: MdInputContainer,
               @Optional() @Inject(DOCUMENT) private _document: any) {}
@@ -419,7 +447,7 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
     overlayState.positionStrategy = this._getOverlayPosition();
     overlayState.width = this._getHostWidth();
     overlayState.direction = this._dir ? this._dir.value : 'ltr';
-    overlayState.scrollStrategy = this._overlay.scrollStrategies.reposition();
+    overlayState.scrollStrategy = this._scrollStrategy();
     return overlayState;
   }
 

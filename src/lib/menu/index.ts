@@ -11,7 +11,7 @@ import {CommonModule} from '@angular/common';
 import {OverlayModule, MdCommonModule} from '../core';
 import {MdMenu} from './menu-directive';
 import {MdMenuItem} from './menu-item';
-import {MdMenuTrigger} from './menu-trigger';
+import {MdMenuTrigger, MD_MENU_SCROLL_STRATEGY_PROVIDER} from './menu-trigger';
 import {MdRippleModule} from '../core/ripple/index';
 
 
@@ -24,6 +24,7 @@ import {MdRippleModule} from '../core/ripple/index';
   ],
   exports: [MdMenu, MdMenuItem, MdMenuTrigger, MdCommonModule],
   declarations: [MdMenu, MdMenuItem, MdMenuTrigger],
+  providers: [MD_MENU_SCROLL_STRATEGY_PROVIDER],
 })
 export class MdMenuModule {}
 

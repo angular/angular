@@ -12,7 +12,11 @@ import {CommonModule} from '@angular/common';
 import {A11yModule, OverlayModule, StyleModule} from '../core';
 import {MdCalendarBody} from './calendar-body';
 import {MdYearView} from './year-view';
-import {MdDatepicker, MdDatepickerContent} from './datepicker';
+import {
+  MdDatepicker,
+  MdDatepickerContent,
+  MD_DATEPICKER_SCROLL_STRATEGY_PROVIDER,
+} from './datepicker';
 import {MdDatepickerInput} from './datepicker-input';
 import {MdDialogModule} from '../dialog/index';
 import {MdCalendar} from './calendar';
@@ -58,6 +62,7 @@ export * from './year-view';
   ],
   providers: [
     MdDatepickerIntl,
+    MD_DATEPICKER_SCROLL_STRATEGY_PROVIDER,
   ],
   entryComponents: [
     MdDatepickerContent,

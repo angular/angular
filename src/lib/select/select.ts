@@ -26,6 +26,7 @@ import {
   OnInit,
   Inject,
   ChangeDetectionStrategy,
+  InjectionToken,
 } from '@angular/core';
 import {MdOption, MdOptionSelectionChange, MdOptgroup} from '../core/option/index';
 import {ENTER, SPACE, UP_ARROW, DOWN_ARROW, HOME, END} from '../core/keyboard/keycodes';
@@ -39,6 +40,7 @@ import {coerceBooleanProperty} from '@angular/cdk';
 import {ConnectedOverlayDirective} from '../core/overlay/overlay-directives';
 import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
 import {SelectionModel} from '../core/selection/selection';
+import {Overlay} from '../core/overlay/overlay';
 import {getMdSelectDynamicMultipleError, getMdSelectNonArrayValueError} from './select-errors';
 import {startWith, filter} from '../core/rxjs/index';
 import {merge} from 'rxjs/observable/merge';
@@ -49,6 +51,10 @@ import {
   PlaceholderOptions,
   MD_PLACEHOLDER_GLOBAL_OPTIONS
 } from '../core/placeholder/placeholder-options';
+// This import is only used to define a generic type. The current TypeScript version incorrectly
+// considers such imports as unused (https://github.com/Microsoft/TypeScript/issues/14953)
+// tslint:disable-next-line:no-unused-variable
+import {ScrollStrategy, RepositionScrollStrategy} from '../core/overlay/scroll';
 
 /**
  * The following style constants are necessary to save here in order
@@ -103,6 +109,22 @@ export const SELECT_PANEL_PADDING_Y = 16;
  * this value or more away from the viewport boundary.
  */
 export const SELECT_PANEL_VIEWPORT_PADDING = 8;
+
+/** Injection token that determines the scroll handling while a select is open. */
+export const MD_SELECT_SCROLL_STRATEGY =
+    new InjectionToken<() => ScrollStrategy>('md-select-scroll-strategy');
+
+/** @docs-private */
+export function MD_SELECT_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay) {
+  return () => overlay.scrollStrategies.reposition();
+}
+
+/** @docs-private */
+export const MD_SELECT_SCROLL_STRATEGY_PROVIDER = {
+  provide: MD_SELECT_SCROLL_STRATEGY,
+  deps: [Overlay],
+  useFactory: MD_SELECT_SCROLL_STRATEGY_PROVIDER_FACTORY,
+};
 
 /** Change event object that is emitted when the select value has changed. */
 export class MdSelectChange {
@@ -214,6 +236,9 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
   /** Whether the panel's animation is done. */
   _panelDoneAnimating: boolean = false;
 
+  /** Strategy that will be used to handle scrolling while the select panel is open. */
+  _scrollStrategy = this._scrollStrategyFactory();
+
   /**
    * The y-offset of the overlay panel in relation to the trigger's top start corner.
    * This must be adjusted to align the selected option text over the trigger text.
@@ -323,12 +348,14 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
   constructor(
     private _viewportRuler: ViewportRuler,
     private _changeDetectorRef: ChangeDetectorRef,
+    private _overlay: Overlay,
     renderer: Renderer2,
     elementRef: ElementRef,
     @Optional() private _dir: Directionality,
     @Self() @Optional() public _control: NgControl,
     @Attribute('tabindex') tabIndex: string,
-    @Optional() @Inject(MD_PLACEHOLDER_GLOBAL_OPTIONS) placeholderOptions: PlaceholderOptions) {
+    @Optional() @Inject(MD_PLACEHOLDER_GLOBAL_OPTIONS) placeholderOptions: PlaceholderOptions,
+    @Inject(MD_SELECT_SCROLL_STRATEGY) private _scrollStrategyFactory) {
     super(renderer, elementRef);
 
     if (this._control) {
