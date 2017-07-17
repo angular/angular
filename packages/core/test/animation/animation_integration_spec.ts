@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimationEvent, AnimationOptions, animate, animateChild, group, keyframes, query, state, style, transition, trigger} from '@angular/animations';
+import {AUTO_STYLE, AnimationEvent, AnimationOptions, animate, animateChild, group, keyframes, query, state, style, transition, trigger, ɵPRE_STYLE as PRE_STYLE} from '@angular/animations';
 import {AnimationDriver, ɵAnimationEngine, ɵNoopAnimationDriver} from '@angular/animations/browser';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {Component, HostBinding, HostListener, RendererFactory2, ViewChild} from '@angular/core';
@@ -2223,6 +2223,87 @@ export function main() {
              // the done event isn't fired because it's an actual animation
            }));
       });
+    });
+
+    describe('animation normalization', () => {
+      it('should convert hyphenated properties to camelcase by default', () => {
+        @Component({
+          selector: 'cmp',
+          template: `
+               <div [@myAnimation]="exp"></div>
+             `,
+          animations: [
+            trigger(
+                'myAnimation',
+                [
+                  transition(
+                      '* => go',
+                      [
+                        style({'background-color': 'red', height: '100px', fontSize: '100px'}),
+                        animate(
+                            '1s',
+                            style(
+                                {'background-color': 'blue', height: '200px', fontSize: '200px'})),
+                      ]),
+                ]),
+          ]
+        })
+        class Cmp {
+          exp: any = false;
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+        const fixture = TestBed.createComponent(Cmp);
+        const cmp = fixture.componentInstance;
+        cmp.exp = 'go';
+        fixture.detectChanges();
+
+        const players = getLog();
+        expect(players.length).toEqual(1);
+        expect(players[0].keyframes).toEqual([
+          {backgroundColor: 'red', height: '100px', fontSize: '100px', offset: 0},
+          {backgroundColor: 'blue', height: '200px', fontSize: '200px', offset: 1},
+        ]);
+      });
+
+      it('should convert hyphenated properties to camelcase by default that are auto/pre style properties',
+         () => {
+           @Component({
+             selector: 'cmp',
+             template: `
+               <div [@myAnimation]="exp"></div>
+             `,
+             animations: [
+               trigger(
+                   'myAnimation',
+                   [
+                     transition(
+                         '* => go',
+                         [
+                           style({'background-color': AUTO_STYLE, 'font-size': '100px'}),
+                           animate(
+                               '1s', style({'background-color': 'blue', 'font-size': PRE_STYLE})),
+                         ]),
+                   ]),
+             ]
+           })
+           class Cmp {
+             exp: any = false;
+           }
+
+           TestBed.configureTestingModule({declarations: [Cmp]});
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
+           cmp.exp = 'go';
+           fixture.detectChanges();
+
+           const players = getLog();
+           expect(players.length).toEqual(1);
+           expect(players[0].keyframes).toEqual([
+             {backgroundColor: AUTO_STYLE, fontSize: '100px', offset: 0},
+             {backgroundColor: 'blue', fontSize: PRE_STYLE, offset: 1},
+           ]);
+         });
     });
 
     it('should throw neither state() or transition() are used inside of trigger()', () => {

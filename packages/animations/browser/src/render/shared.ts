@@ -36,13 +36,22 @@ export function normalizeKeyframes(
     Object.keys(kf).forEach(prop => {
       let normalizedProp = prop;
       let normalizedValue = kf[prop];
-      if (normalizedValue == PRE_STYLE) {
-        normalizedValue = preStyles[prop];
-      } else if (normalizedValue == AUTO_STYLE) {
-        normalizedValue = postStyles[prop];
-      } else if (prop != 'offset') {
-        normalizedProp = normalizer.normalizePropertyName(prop, errors);
-        normalizedValue = normalizer.normalizeStyleValue(prop, normalizedProp, kf[prop], errors);
+      if (prop !== 'offset') {
+        normalizedProp = normalizer.normalizePropertyName(normalizedProp, errors);
+        switch (normalizedValue) {
+          case PRE_STYLE:
+            normalizedValue = preStyles[prop];
+            break;
+
+          case AUTO_STYLE:
+            normalizedValue = postStyles[prop];
+            break;
+
+          default:
+            normalizedValue =
+                normalizer.normalizeStyleValue(prop, normalizedProp, normalizedValue, errors);
+            break;
+        }
       }
       normalizedKeyframe[normalizedProp] = normalizedValue;
     });
