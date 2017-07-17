@@ -1,8 +1,8 @@
-import {task, watch} from 'gulp';
+import {task} from 'gulp';
 import {join} from 'path';
 import {ngcBuildTask, copyTask, execNodeTask, serverTask} from '../util/task_helpers';
 import {copySync} from 'fs-extra';
-import {buildConfig, sequenceTask} from 'material2-build-tools';
+import {buildConfig, sequenceTask, watchFiles} from 'material2-build-tools';
 
 // There are no type definitions available for these imports.
 const gulpConnect = require('gulp-connect');
@@ -46,8 +46,8 @@ task('e2e-app:copy-assets', copyTask(assetsGlob, outDir));
 task('e2e-app:build-ts', ngcBuildTask(tsconfigPath));
 
 task(':watch:e2eapp', () => {
-  watch(join(appDir, '**/*.ts'), ['e2e-app:build']);
-  watch(join(appDir, '**/*.html'), ['e2e-app:copy-assets']);
+  watchFiles(join(appDir, '**/*.ts'), ['e2e-app:build'], false);
+  watchFiles(join(appDir, '**/*.html'), ['e2e-app:copy-assets'], false);
 });
 
 /** Ensures that protractor and webdriver are set up to run. */

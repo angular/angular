@@ -1,4 +1,4 @@
-import {task, watch, src, dest} from 'gulp';
+import {task, src, dest} from 'gulp';
 import {join} from 'path';
 import {main as tsc} from '@angular/tsc-wrapped';
 import {buildConfig} from '../build-config';
@@ -7,7 +7,7 @@ import {buildPackageBundles} from '../build-bundles';
 import {inlineResourcesForDirectory} from '../inline-resources';
 import {buildScssTask} from './build-scss-task';
 import {sequenceTask} from './sequence-task';
-import {triggerLivereload} from './trigger-livereload';
+import {watchFiles} from './watch-files';
 
 // There are no type definitions available for these imports.
 const htmlmin = require('gulp-htmlmin');
@@ -108,6 +108,6 @@ export function createPackageBuildTasks(packageName: string, requiredPackages: s
    * Watch tasks, that will rebuild the package whenever TS, SCSS, or HTML files change.
    */
   task(`${packageName}:watch`, dependentWatchTasks, () => {
-    watch(join(packageRoot, '**/*.+(ts|scss|html)'), [`${packageName}:build`, triggerLivereload]);
+    watchFiles(join(packageRoot, '**/*.+(ts|scss|html)'), [`${packageName}:build`]);
   });
 }

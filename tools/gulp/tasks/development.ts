@@ -1,8 +1,8 @@
-import {task, watch} from 'gulp';
+import {task} from 'gulp';
 import {tsBuildTask, copyTask, buildAppTask, serverTask} from '../util/task_helpers';
 import {join} from 'path';
 import {
-  buildConfig, copyFiles, buildScssTask, triggerLivereload, sequenceTask
+  buildConfig, copyFiles, buildScssTask, sequenceTask, watchFiles
 } from 'material2-build-tools';
 
 // These imports don't have any typings provided.
@@ -28,14 +28,14 @@ const appVendors = [
 const vendorGlob = `+(${appVendors.join('|')})/**/*.+(html|css|js|map)`;
 
 task(':watch:devapp', () => {
-  watch(join(appDir, '**/*.ts'), [':build:devapp:ts', triggerLivereload]);
-  watch(join(appDir, '**/*.scss'), [':build:devapp:scss', triggerLivereload]);
-  watch(join(appDir, '**/*.html'), [':build:devapp:assets', triggerLivereload]);
+  watchFiles(join(appDir, '**/*.ts'), [':build:devapp:ts']);
+  watchFiles(join(appDir, '**/*.scss'), [':build:devapp:scss']);
+  watchFiles(join(appDir, '**/*.html'), [':build:devapp:assets']);
 
   // The themes for the demo-app are built by the demo-app using the SCSS mixins from Material.
   // Therefore when the CSS files have been changed the SCSS mixins have been refreshed and
   // copied over. Rebuilt the theme CSS using the updated SCSS mixins.
-  watch(join(materialOutPath, '**/*.css'), [':build:devapp:scss', triggerLivereload]);
+  watchFiles(join(materialOutPath, '**/*.css'), [':build:devapp:scss']);
 });
 
 /** Path to the demo-app tsconfig file. */
