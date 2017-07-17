@@ -44,6 +44,17 @@
         "source": "**/!(*.*)",
         "destination": "/index.html"
       }
+    ],
+    "headers": [
+      {
+        "source": "/",
+        "headers": [
+          {
+            "key": "Link",
+            "value": "</generated/navigation.json>;rel=preload;as=fetch,</generated/docs/index.json>;rel=preload;as=fetch"
+          }
+        ]
+      }
     ]
   }
 }
