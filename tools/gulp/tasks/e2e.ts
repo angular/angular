@@ -34,7 +34,7 @@ task('e2e', sequenceTask(
 /** Task that builds the e2e-app in AOT mode. */
 task('e2e-app:build', sequenceTask(
   'clean',
-  ['material:build-release', 'cdk:build-release'],
+  ['material:build-release', 'cdk:build-release', 'material-examples:build-release'],
   ['e2e-app:copy-release', 'e2e-app:copy-assets'],
   'e2e-app:build-ts'
 ));
@@ -76,5 +76,6 @@ task('serve:e2eapp:watch', ['serve:e2eapp', 'material:watch', ':watch:e2eapp']);
 task('e2e-app:copy-release', () => {
   copySync(join(releasesDir, 'material'), join(outDir, 'material'));
   copySync(join(releasesDir, 'cdk'), join(outDir, 'cdk'));
+  copySync(join(releasesDir, 'material-examples'), join(outDir, 'material-examples'));
 });
 

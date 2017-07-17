@@ -24,8 +24,9 @@ import {
   OverlayContainer, FullscreenOverlayContainer, MdGridListModule, MdProgressBarModule,
   MdProgressSpinnerModule, MdTabsModule, MdRadioModule, MdSlideToggleModule, MdMenuModule,
   MdListModule, MdInputModule, MdIconModule, MdDialogModule, MdCheckboxModule, MdButtonModule,
-  MdSidenavModule
+  MdSidenavModule, MdNativeDateModule,
 } from '@angular/material';
+import {ExampleModule} from '@angular/material-examples';
 
 /**
  * NgModule that contains all Material modules that are required to serve the e2e-app.
@@ -45,7 +46,8 @@ import {
     MdRadioModule,
     MdSidenavModule,
     MdSlideToggleModule,
-    MdTabsModule
+    MdTabsModule,
+    MdNativeDateModule,
   ]
 })
 export class E2eMaterialModule {}
@@ -56,6 +58,7 @@ export class E2eMaterialModule {}
     RouterModule.forRoot(E2E_APP_ROUTES),
     E2eMaterialModule,
     NoopAnimationsModule,
+    ExampleModule,
   ],
   declarations: [
     BasicTabs,

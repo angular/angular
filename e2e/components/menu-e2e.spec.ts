@@ -1,4 +1,4 @@
-import {Key, protractor, browser, by, element} from 'protractor';
+import {Key, protractor, browser, by, element, ExpectedConditions} from 'protractor';
 import {screenshot} from '../screenshot';
 import {
   expectToExist,
@@ -7,6 +7,9 @@ import {
   expectLocation,
   pressKeys,
 } from '../util/index';
+
+const presenceOf = ExpectedConditions.presenceOf;
+const not = ExpectedConditions.not;
 
 
 describe('menu', () => {
@@ -50,14 +53,15 @@ describe('menu', () => {
     screenshot();
   });
 
-  it('should support multiple triggers opening the same menu', () => {
+  it('should support multiple triggers opening the same menu', async () => {
     page.triggerTwo().click();
 
     expect(page.menu().getText()).toEqual('One\nTwo\nThree\nFour');
     expectAlignedWith(page.menu(), '#trigger-two');
 
     page.backdrop().click();
-    expectToExist(menuSelector, false);
+    await browser.wait(not(presenceOf(element(by.css(menuSelector)))));
+    await browser.wait(not(presenceOf(element(by.css('.cdk-overlay-backdrop')))));
 
     page.trigger().click();
 
@@ -65,7 +69,9 @@ describe('menu', () => {
     expectAlignedWith(page.menu(), '#trigger');
 
     page.backdrop().click();
-    expectToExist(menuSelector, false);
+
+    await browser.wait(not(presenceOf(element(by.css(menuSelector)))));
+    await browser.wait(not(presenceOf(element(by.css('.cdk-overlay-backdrop')))));
   });
 
   it('should mirror classes on host to menu template in overlay', () => {

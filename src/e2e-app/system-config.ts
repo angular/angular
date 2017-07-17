@@ -26,7 +26,8 @@ System.config({
       'node:@angular/platform-browser-dynamic/bundles/platform-browser-dynamic.umd.js',
 
     '@angular/material': 'dist/bundles/material.umd.js',
-    '@angular/cdk': 'dist/bundles/cdk.umd.js'
+    '@angular/cdk': 'dist/bundles/cdk.umd.js',
+    '@angular/material-examples': 'dist/bundles/material-examples.umd.js'
   },
   packages: {
     // Thirdparty barrels.

@@ -1,4 +1,6 @@
 import {Routes} from '@angular/router';
+import {CardFancyExample} from '@angular/material-examples';
+
 import {Home} from './e2e-app';
 import {ButtonE2E} from '../button/button-e2e';
 import {BasicTabs} from '../tabs/tabs-e2e';
@@ -35,4 +37,5 @@ export const E2E_APP_ROUTES: Routes = [
   {path: 'sidenav', component: SidenavE2E},
   {path: 'slide-toggle', component: SlideToggleE2E},
   {path: 'tabs', component: BasicTabs},
+  {path: 'card-fancy', component: CardFancyExample},
 ];
