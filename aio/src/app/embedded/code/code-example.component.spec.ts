@@ -65,6 +65,13 @@ describe('CodeExampleComponent', () => {
     expect(actual).toBe('Great Example');
   });
 
+  it('should remove the `title` attribute after initialisation', () => {
+    TestBed.overrideComponent(HostComponent, {
+      set: {template: '<code-example title="Great Example"></code-example>'}});
+    createComponent(oneLineCode);
+    expect(codeExampleDe.nativeElement.getAttribute('title')).toEqual(null);
+  });
+
   it('should pass hideCopy to CodeComonent', () => {
     TestBed.overrideComponent(HostComponent, {
       set: {template: '<code-example hideCopy="true"></code-example>'}});
