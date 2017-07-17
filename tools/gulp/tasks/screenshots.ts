@@ -167,9 +167,9 @@ function uploadGoldenScreenshots() {
 
   return Promise.all(getLocalScreenshotFiles(SCREENSHOT_DIR).map(fileName => {
     const filePath = path.join(SCREENSHOT_DIR, fileName);
-    const storageDestination = `${FIREBASE_STORAGE_GOLDENS}/${filePath}`;
+    const storageDestination = `${FIREBASE_STORAGE_GOLDENS}/${fileName}`;
 
-    return bucket.upload(fileName, { destination: storageDestination });
+    return bucket.upload(filePath, { destination: storageDestination });
   }));
 }
 
