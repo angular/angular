@@ -12,7 +12,7 @@ import 'rxjs/add/operator/toPromise';
 import {ddescribe, describe, iit, it} from '@angular/core/testing/src/testing_internal';
 
 import {HttpClient} from '../src/client';
-import {HttpEventType, HttpResponse} from '../src/response';
+import {HttpErrorResponse, HttpEventType, HttpResponse} from '../src/response';
 import {HttpClientTestingBackend} from '../testing/src/backend';
 
 export function main() {
@@ -121,6 +121,16 @@ export function main() {
         client.jsonp('/test', 'myCallback').subscribe(() => done());
         backend.expectOne({method: 'JSONP', url: '/test?myCallback=JSONP_CALLBACK'})
             .flush('hello world');
+      });
+    });
+    describe('makes a request for an error response', () => {
+      it('with a JSON body', (done: DoneFn) => {
+        client.get('/test').subscribe(() => {}, (res: HttpErrorResponse) => {
+          expect(res.error.data).toEqual('hello world');
+          done();
+        });
+        backend.expectOne('/test').flush(
+            {'data': 'hello world'}, {status: 500, statusText: 'Server error'});
       });
     });
   });
