@@ -4,7 +4,7 @@
   "description": "Angular Material Component Development Kit",
   "main": "./bundles/cdk.umd.js",
   "module": "./@angular/cdk.es5.js",
-  "es2015": "./@angular/cdkjs",
+  "es2015": "./@angular/cdk.js",
   "typings": "./cdk.d.ts",
   "repository": {
     "type": "git",
