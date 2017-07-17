@@ -1,1 +1,1 @@
-See [cdk/portal](../../../cdk/portal/README.md)
+See [cdk/portal](../../../cdk/portal/portal.md)
