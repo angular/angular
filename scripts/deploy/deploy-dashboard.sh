@@ -34,4 +34,5 @@ wait
 
 # Deploy the dashboard to Firebase. Based on the current configuration hosting and functions
 # will be deployed.
-$(npm bin)/firebase deploy --token ${MATERIAL2_BOARD_FIREBASE_DEPLOY_KEY} --project material2-board
+$(npm bin)/firebase deploy --token ${MATERIAL2_BOARD_FIREBASE_DEPLOY_KEY} \
+  --non-interactive --project material2-board
