@@ -799,6 +799,75 @@ export function main() {
            expect(p3.previousStyles).toEqual({});
          });
 
+      it('should provide the styling of previous players that are grouped', () => {
+        @Component({
+          selector: 'ani-cmp',
+          template: `
+          <div [@myAnimation]="exp"></div>
+        `,
+          animations: [trigger(
+              'myAnimation',
+              [
+                transition(
+                    '1 => 2',
+                    [
+                      group([
+                        animate(500, style({'width': '100px'})),
+                        animate(500, style({'height': '100px'})),
+                      ]),
+                      animate(500, keyframes([
+                        style({'opacity': '0'}),
+                        style({'opacity': '1'})
+                      ]))
+                    ]),
+                transition(
+                    '2 => 3',
+                    [
+                      style({'opacity': '0'}),
+                      animate(500, style({'opacity': '1'})),
+                    ]),
+              ])],
+        })
+        class Cmp {
+          exp: any = false;
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+
+        const engine = TestBed.get(ɵAnimationEngine);
+        const fixture = TestBed.createComponent(Cmp);
+        const cmp = fixture.componentInstance;
+
+        fixture.detectChanges();
+        engine.flush();
+
+        cmp.exp = '1';
+        fixture.detectChanges();
+        engine.flush();
+        expect(getLog().length).toEqual(0);
+        resetLog();
+
+        cmp.exp = '2';
+        fixture.detectChanges();
+        engine.flush();
+        expect(getLog().length).toEqual(3);
+        resetLog();
+
+        cmp.exp = '3';
+        fixture.detectChanges();
+        engine.flush();
+
+        const players = getLog();
+        expect(players.length).toEqual(1);
+        const player = players[0] as MockAnimationPlayer;
+        const pp = player.previousPlayers as MockAnimationPlayer[];
+
+        expect(pp.length).toEqual(3);
+        expect(pp[0].currentSnapshot).toEqual({width: AUTO_STYLE});
+        expect(pp[1].currentSnapshot).toEqual({height: AUTO_STYLE});
+        expect(pp[2].currentSnapshot).toEqual({opacity: AUTO_STYLE});
+      });
+
       it('should properly balance styles between states even if there are no destination state styles',
          () => {
            @Component({
@@ -1815,12 +1884,12 @@ export function main() {
           selector: 'my-cmp',
           template: `
               <div class="parent" [@parent]="exp" (@parent.done)="cb('all','done', $event)">
-                <div *ngFor="let item of items" 
+                <div *ngFor="let item of items"
                      class="item item-{{ item }}"
                      @child
                      (@child.start)="cb('c-' + item, 'start', $event)"
                      (@child.done)="cb('c-' + item, 'done', $event)">
-                  {{ item }} 
+                  {{ item }}
                 </div>
               </div>
             `,
