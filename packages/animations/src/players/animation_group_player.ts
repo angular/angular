@@ -132,4 +132,12 @@ export class AnimationGroupPlayer implements AnimationPlayer {
   }
 
   get players(): AnimationPlayer[] { return this._players; }
+
+  beforeDestroy(): void {
+    this.players.forEach(player => {
+      if (player.beforeDestroy) {
+        player.beforeDestroy();
+      }
+    });
+  }
 }
