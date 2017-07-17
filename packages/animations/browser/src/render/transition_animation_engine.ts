@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimationOptions, AnimationPlayer, NoopAnimationPlayer, ɵPRE_STYLE as PRE_STYLE, ɵStyleData} from '@angular/animations';
+import {AUTO_STYLE, AnimationOptions, AnimationPlayer, NoopAnimationPlayer, ɵAnimationGroupPlayer as AnimationGroupPlayer, ɵPRE_STYLE as PRE_STYLE, ɵStyleData} from '@angular/animations';
 
 import {AnimationTimelineInstruction} from '../dsl/animation_timeline_instruction';
 import {AnimationTransitionFactory} from '../dsl/animation_transition_factory';
@@ -1168,8 +1168,8 @@ export class TransitionAnimationEngine {
       if (details && details.removedBeforeQueried) return new NoopAnimationPlayer();
 
       const isQueriedElement = element !== rootElement;
-      const previousPlayers =
-          (allPreviousPlayersMap.get(element) || EMPTY_PLAYER_ARRAY).map(p => p.getRealPlayer());
+      const previousPlayers = flattenGroupPlayers(
+          (allPreviousPlayersMap.get(element) || EMPTY_PLAYER_ARRAY).map(p => p.getRealPlayer()));
 
       const preStyles = preStylesMap.get(element);
       const postStyles = postStylesMap.get(element);
@@ -1463,4 +1463,21 @@ function getBodyNode(): any|null {
 function removeNodesAfterAnimationDone(
     engine: TransitionAnimationEngine, element: any, players: AnimationPlayer[]) {
   optimizeGroupPlayer(players).onDone(() => engine.processLeaveNode(element));
+}
+
+function flattenGroupPlayers(players: AnimationPlayer[]): AnimationPlayer[] {
+  const finalPlayers: AnimationPlayer[] = [];
+  _flattenGroupPlayersRecur(players, finalPlayers);
+  return finalPlayers;
+}
+
+function _flattenGroupPlayersRecur(players: AnimationPlayer[], finalPlayers: AnimationPlayer[]) {
+  for (let i = 0; i < players.length; i++) {
+    const player = players[i];
+    if (player instanceof AnimationGroupPlayer) {
+      _flattenGroupPlayersRecur(player.players, finalPlayers);
+    } else {
+      finalPlayers.push(player as AnimationPlayer);
+    }
+  }
 }
