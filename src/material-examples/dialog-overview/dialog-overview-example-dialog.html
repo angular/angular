@@ -1,1 +1,11 @@
-<p> Hi, I'm a dialog! </p>
+<h1 md-dialog-title>Hi {{data.name}}</h1>
+<div md-dialog-content>
+  <p>What's your favorite animal?</p>
+  <md-input-container>
+    <input mdInput tabindex="1" [(ngModel)]="data.animal">
+  </md-input-container>
+</div>
+<div md-dialog-actions>
+  <button md-button [md-dialog-close]="data.animal" tabindex="2">Ok</button>
+  <button md-button (click)="onNoClick()" tabindex="-1">No Thanks</button>
+</div>

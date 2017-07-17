@@ -31,9 +31,10 @@ import {DatepickerMinMaxExample} from './datepicker-min-max/datepicker-min-max-e
 import {DatepickerOverviewExample} from './datepicker-overview/datepicker-overview-example';
 import {DatepickerStartViewExample} from './datepicker-start-view/datepicker-start-view-example';
 import {DatepickerTouchExample} from './datepicker-touch/datepicker-touch-example';
+import {DialogContentExampleDialog,DialogContentExample} from './dialog-content/dialog-content-example';
+import {DialogDataExampleDialog,DialogDataExample} from './dialog-data/dialog-data-example';
 import {DialogElementsExampleDialog,DialogElementsExample} from './dialog-elements/dialog-elements-example';
 import {DialogOverviewExampleDialog,DialogOverviewExample} from './dialog-overview/dialog-overview-example';
-import {DialogResultExampleDialog,DialogResultExample} from './dialog-result/dialog-result-example';
 import {GridListDynamicExample} from './grid-list-dynamic/grid-list-dynamic-example';
 import {GridListOverviewExample} from './grid-list-overview/grid-list-overview-example';
 import {IconOverviewExample} from './icon-overview/icon-overview-example';
@@ -189,6 +190,18 @@ export const EXAMPLE_COMPONENTS = {
     additionalFiles: null,
     selectorName: null
   },
+  'dialog-content': {
+    title: 'Dialog with header, scrollable content and actions',
+    component: DialogContentExample,
+    additionalFiles: ["dialog-content-example-dialog.html"],
+    selectorName: 'DialogContentExample, DialogContentExampleDialog'
+  },
+  'dialog-data': {
+    title: 'Injecting data when opening a dialog',
+    component: DialogDataExample,
+    additionalFiles: ["dialog-data-example-dialog.html"],
+    selectorName: 'DialogDataExample, DialogDataExampleDialog'
+  },
   'dialog-elements': {
     title: 'Dialog elements',
     component: DialogElementsExample,
@@ -200,12 +213,6 @@ export const EXAMPLE_COMPONENTS = {
     component: DialogOverviewExample,
     additionalFiles: ["dialog-overview-example-dialog.html"],
     selectorName: 'DialogOverviewExample, DialogOverviewExampleDialog'
-  },
-  'dialog-result': {
-    title: 'Dialog with a result',
-    component: DialogResultExample,
-    additionalFiles: ["dialog-result-example-dialog.html"],
-    selectorName: 'DialogResultExample, DialogResultExampleDialog'
   },
   'grid-list-dynamic': {
     title: 'Dynamic grid-list',
@@ -498,9 +505,10 @@ export const EXAMPLE_LIST = [
   DatepickerOverviewExample,
   DatepickerStartViewExample,
   DatepickerTouchExample,
+  DialogContentExampleDialog,DialogContentExample,
+  DialogDataExampleDialog,DialogDataExample,
   DialogElementsExampleDialog,DialogElementsExample,
   DialogOverviewExampleDialog,DialogOverviewExample,
-  DialogResultExampleDialog,DialogResultExample,
   GridListDynamicExample,
   GridListOverviewExample,
   IconOverviewExample,

@@ -35,12 +35,12 @@ import {
     MdSliderModule,
     MdSidenavModule,
     MdSnackBarModule,
-    MdTableModule,
     MdTabsModule,
     MdToolbarModule,
     MdTooltipModule,
     MdPaginatorModule,
-    MdSortModule
+    MdSortModule,
+    MdTableModule
   ]
 })
 export class ExampleMaterialModule {}
