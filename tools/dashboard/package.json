@@ -35,7 +35,6 @@
     "@angular/language-service": "^4.2.6",
     "@types/jasmine": "2.5.45",
     "@types/node": "~6.0.60",
-    "firebase-tools": "^3.9.1",
     "ts-node": "~3.0.4",
     "typescript": "^2.4.1"
   }
