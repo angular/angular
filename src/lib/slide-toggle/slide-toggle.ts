@@ -44,7 +44,7 @@ export const MD_SLIDE_TOGGLE_VALUE_ACCESSOR: any = {
   multi: true
 };
 
-// A simple change event emitted by the MdSlideToggle component.
+/** Change event object emitted by a MdSlideToggle. */
 export class MdSlideToggleChange {
   source: MdSlideToggle;
   checked: boolean;
