@@ -18,7 +18,11 @@ task('coverage:upload', () => {
     throw new Error('Coverage results will be only uploaded inside of Travis Push builds.');
   }
 
-  let results = require(coverageResultFile)['total'];
+  const results = require(coverageResultFile)['total'];
+
+  // Add a timestamp to the coverage result that will be uploaded to Firebase.
+  // This is necessary for visual representation which should be displayed chronologically.
+  results.timestamp = Date.now();
 
   // To reduce database payload, the covered lines won't be pushed to the Firebase database.
   delete results['linesCovered'];
@@ -36,6 +40,3 @@ function uploadResults(results: any): Promise<void> {
     .catch((err: any) => console.error(err))
     .then(() => dashboardApp.delete());
 }
-
-// TODO(devversion): In the future we might have a big database where we can store full summaries.
-// TODO(devversion): We could also move the coverage to a bot and reply with the results on PRs.
