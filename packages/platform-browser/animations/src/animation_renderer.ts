@@ -15,6 +15,7 @@ export class AnimationRendererFactory implements RendererFactory2 {
   private _microtaskId: number = 1;
   private _animationCallbacksBuffer: [(e: any) => any, any][] = [];
   private _rendererCache = new Map<Renderer2, BaseAnimationRenderer>();
+  private _cdRecurDepth = 0;
 
   constructor(
       private delegate: RendererFactory2, private engine: AnimationEngine, private _zone: NgZone) {
@@ -58,6 +59,7 @@ export class AnimationRendererFactory implements RendererFactory2 {
   }
 
   begin() {
+    this._cdRecurDepth++;
     if (this.delegate.begin) {
       this.delegate.begin();
     }
@@ -90,10 +92,16 @@ export class AnimationRendererFactory implements RendererFactory2 {
   }
 
   end() {
-    this._zone.runOutsideAngular(() => {
-      this._scheduleCountTask();
-      this.engine.flush(this._microtaskId);
-    });
+    this._cdRecurDepth--;
+
+    // this is to prevent animations from running twice when an inner
+    // component does CD when a parent component insted has inserted it
+    if (this._cdRecurDepth == 0) {
+      this._zone.runOutsideAngular(() => {
+        this._scheduleCountTask();
+        this.engine.flush(this._microtaskId);
+      });
+    }
     if (this.delegate.end) {
       this.delegate.end();
     }
