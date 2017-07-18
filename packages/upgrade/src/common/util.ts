@@ -68,8 +68,11 @@ export class Deferred<R> {
 }
 
 export interface LazyModuleRef {
+  // Whether the AngularJS app has been bootstrapped outside the Angular zone
+  // (in which case calls to Angular APIs need to be brought back in).
+  needsNgZone: boolean;
   injector?: Injector;
-  promise: Promise<Injector>;
+  promise?: Promise<Injector>;
 }
 
 /**
