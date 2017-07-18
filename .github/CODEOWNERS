@@ -3,7 +3,7 @@ lib/list/**                    @jelbourn @crisbeto
 lib/tooltip/**                 @andrewseguin
 lib/button-toggle/**           @tinayuangao
 lib/snack-bar/**               @jelbourn @crisbeto @josephperrott
-lib/radio/**                   @tinayuangao
+lib/radio/**                   @tinayuangao @devversion
 lib/card/**                    @jelbourn
 lib/input/**                   @mmalerba
 lib/progress-spinner/**        @jelbourn @crisbeto @josephperrott
@@ -20,7 +20,7 @@ lib/expansion/**               @josephperrott @jelbourn
 lib/slide-toggle/**            @devversion
 lib/toolbar/**                 @devversion
 lib/button/**                  @tinayuangao
-lib/checkbox/**                @tinayuangao
+lib/checkbox/**                @tinayuangao @devversion
 lib/table/**                   @andrewseguin
 lib/slider/**                  @mmalerba
 lib/sidenav/**                 @mmalerba
@@ -35,11 +35,11 @@ lib/core/theming/**            @jelbourn
 lib/core/option/**             @kara @crisbeto
 lib/core/rxjs/**               @jelbourn
 lib/core/ripple/**             @devversion
-lib/core/a11y/**               @jelbourn
+lib/core/a11y/**               @jelbourn @devversion
 lib/core/compatibility/**      @jelbourn
 lib/core/overlay/**            @jelbourn @crisbeto
 lib/core/overlay/scroll/**     @andrewseguin @crisbeto
-lib/core/platform/**           @jelbourn
+lib/core/platform/**           @jelbourn @devversion
 lib/core/bidi/**               @jelbourn
 lib/core/placeholder/**        @kara @mmalerba
 lib/core/portal/**             @jelbourn
@@ -50,15 +50,16 @@ lib/core/datetime/**           @mmalerba
 cdk/coercion/**                @jelbourn
 cdk/rxjs/**                    @jelbourn
 cdk/observe-content/**         @crisbeto @jelbourn
-cdk/a11y/**                    @jelbourn
-cdk/platform/**                @jelbourn
+cdk/a11y/**                    @jelbourn @devversion
+cdk/platform/**                @jelbourn @devversion
 cdk/bidi/**                    @jelbourn
 cdk/table/**                   @andrewseguin
 cdk/portal/**                  @jelbourn
 
 # Tooling
-src/tools/**                   @devversion @jelbourn
+tools/**                       @devversion @jelbourn
 test/**                        @devversion @jelbourn
+scripts/**                     @devversion @jelbourn
 
 # Docs examples
 material-examples/**           @amcdnl @jelbourn
