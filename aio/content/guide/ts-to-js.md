@@ -247,11 +247,9 @@ next to the original _ES5_ version for comparison:
   </code-pane>
 </code-tabs>
 
+{@a name-constructor}
+
 <div class="callout is-helpful">
-
-  {@a name-constructor}
-
-  ###  Name the constructor
 
   A **named** constructor displays clearly in the console log
   if the component throws a runtime error.
@@ -431,7 +429,7 @@ by calling the `@Inject()` decorator with the injection token.
 In the following example, the token is the string `'heroName'`.
 
 The other JavaScript dialects add a `parameters` array to the class constructor function.
-Each item constrains a new instance of `Inject`:
+Each item contains a new instance of `Inject`:
 
 * _Plain ES6_&mdash;each item is a new instance of `Inject(token)` in a sub-array.
 * _ES5_&mdash;simply list the string tokens.

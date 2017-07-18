@@ -4,7 +4,6 @@ import { MockBackend } from '@angular/http/testing';
 import { CurrentNodes, NavigationService, NavigationViews, NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
 import { LocationService } from 'app/shared/location.service';
 import { MockLocationService } from 'testing/location.service';
-import { Logger } from 'app/shared/logger.service';
 
 describe('NavigationService', () => {
 
@@ -22,8 +21,7 @@ describe('NavigationService', () => {
         { provide: LocationService, useFactory: () => new MockLocationService('a') },
         { provide: ConnectionBackend, useClass: MockBackend },
         { provide: RequestOptions, useClass: BaseRequestOptions },
-        Http,
-        Logger
+        Http
     ]);
   });
 

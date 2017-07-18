@@ -2,7 +2,7 @@ const testPackage = require('../../helpers/test-package');
 const processorFactory = require('./markBarredODocsAsPrivate');
 const Dgeni = require('dgeni');
 
-describe('generateApiListDoc processor', () => {
+describe('markBarredODocsAsPrivate processor', () => {
 
   it('should be available on the injector', () => {
     const dgeni = new Dgeni([testPackage('angular-api-package')]);

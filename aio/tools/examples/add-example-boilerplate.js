@@ -30,7 +30,6 @@ const files = {
 
 // requires admin access because it adds symlinks
 function add() {
-  remove();
   const realPath = path.join(SHARED_PATH, '/node_modules');
   const nodeModulesPaths = getNodeModulesPaths(EXAMPLES_PATH);
 

@@ -4,6 +4,12 @@
   margin-right: 20px;
   top: 12px;
   height: 40px;
+
+  @media(max-width: 992px) {
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
 }
 
 aio-top-menu {
@@ -42,12 +48,10 @@ aio-top-menu {
     cursor: pointer;
 
     &:focus {
+      background: rgba($white, 0.15);
+      border-radius: 4px;
       outline: none;
-      // Temporarily remove the focus styling until we update to an @angular/material version that
-      // includes https://github.com/angular/material2/commit/3bc82f6dc.
-      // background: rgba($white, 0.15);
-      // border-radius: 4px;
-      // padding: 8px 16px;
+      padding: 8px 16px;
     }
   }
 }

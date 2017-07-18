@@ -25,15 +25,8 @@ to a module factory, meaning you don't need to include the Angular compiler in y
 Ahead-of-time compiled applications also benefit from decreased load time and increased performance.
 
 
-## Angular module
 
-Helps you organize an application into cohesive blocks of functionality.
-An Angular module identifies the components, directives, and pipes that the application uses along with the list of external Angular modules that the application needs, such as `FormsModule`.
-
-Every Angular application has an application root-module class. By convention, the class is
-called `AppModule` and resides in a file named `app.module.ts`.
-
-For details and examples, see the [Angular Modules (NgModule)](guide/ngmodule) page.
+</div>
 
 
 ## Annotation
@@ -115,7 +108,7 @@ The Angular [scoped packages](guide/glossary#scoped-package) each have a barrel 
 
 
 
-You can often achieve the same result using [Angular modules](guide/glossary#angular-module) instead.
+You can often achieve the same result using [NgModules](guide/glossary#ngmodule) instead.
 
 
 </div>
@@ -132,7 +125,11 @@ between a "token"&mdash;also referred to as a "key"&mdash;and a dependency [prov
 
 ## Bootstrap
 
-You launch an Angular application by "bootstrapping" it using the application root Angular module (`AppModule`).
+
+<div class="l-sub-section">
+
+You launch an Angular application by "bootstrapping" it using the application root NgModule (`AppModule`).
+
 Bootstrapping identifies an application's top level "root" [component](guide/glossary#component),
 which is the first component that is loaded for the application.
 For more information, see the [Setup](guide/setup) page.
@@ -346,13 +343,13 @@ elements and their children.
 The [official JavaScript language specification](https://en.wikipedia.org/wiki/ECMAScript).
 
 The latest approved version of JavaScript is
-[ECMAScript 2016](http://www.ecma-international.org/ecma-262/7.0/)
-(also known as "ES2016" or "ES7"). Many Angular developers write their applications
-in ES7 or a dialect that strives to be
+[ECMAScript 2017](http://www.ecma-international.org/ecma-262/8.0/)
+(also known as "ES2017" or "ES8"). Many Angular developers write their applications
+in ES8 or a dialect that strives to be
 compatible with it, such as [TypeScript](guide/glossary#typescript).
 
 Most modern browsers only support the much older "ECMAScript 5" (also known as "ES5") standard.
-Applications written in ES2016, ES2015, or one of their dialects must be [transpiled](guide/glossary#transpile)
+Applications written in ES2017, ES2016, ES2015, or one of their dialects must be [transpiled](guide/glossary#transpile)
 to ES5 JavaScript.
 
 Angular developers can write in ES5 directly.
@@ -475,8 +472,8 @@ Read more in the [Lifecycle Hooks](guide/lifecycle-hooks) page.
 
 Angular has the following types of modules:
 
-* [Angular modules](guide/glossary#angular-module).
-For details and examples, see the [Angular Modules](guide/ngmodule) page.
+* [NgModules](guide/glossary#ngmodule).
+For details and examples, see the [NgModules](guide/ngmodule) page.
 * ES2015 modules, as described in this section.
 
 
@@ -493,7 +490,7 @@ In general, you assemble an application from many modules, both the ones you wri
 A module *exports* something of value in that code, typically one thing such as a class;
 a module that needs that class *imports* it.
 
-The structure of Angular modules and the import/export syntax
+The structure of NgModules and the import/export syntax
 is based on the [ES2015 module standard](http://www.2ality.com/2014/09/es6-modules-final.html).
 
 An application that adheres to this standard requires a module loader to
@@ -510,6 +507,24 @@ You rarely access Angular feature modules directly. You usually import them from
 
 
 {@a N}
+
+
+## NgModule
+
+<div class="l-sub-section">
+
+
+
+Helps you organize an application into cohesive blocks of functionality.
+An NgModule identifies the components, directives, and pipes that the application uses along with the list of external NgModules that the application needs, such as `FormsModule`.
+
+Every Angular application has an application root-module class. By convention, the class is
+called `AppModule` and resides in a file named `app.module.ts`.
+
+For details and examples, see [NgModules](guide/ngmodule).
+
+
+</div>
 
 {@a O}
 
@@ -614,7 +629,9 @@ For more information, see the [Routing & Navigation](guide/router) page.
 
 ## Router module
 
-A separate [Angular module](guide/glossary#angular-module) that provides the necessary service providers and directives for navigating through application views.
+<div class="l-sub-section">
+
+A separate [NgModule](guide/glossary#ngmodule) that provides the necessary service providers and directives for navigating through application views.
 
 For more information, see the [Routing & Navigation](guide/router) page.
 
@@ -633,7 +650,7 @@ For more information, see the [Routing & Navigation](guide/router) page.
 A way to group related *npm* packages.
 Read more at the [npm-scope](https://docs.npmjs.com/misc/scope) page.
 
-Angular modules are delivered within *scoped packages* such as `@angular/core`,
+NgModules are delivered within *scoped packages* such as `@angular/core`,
 `@angular/common`, `@angular/platform-browser-dynamic`, `@angular/http`, and `@angular/router`.
 
 Import a scoped package the same way that you import a normal package.

@@ -8,16 +8,22 @@
 
 import * as ts from 'typescript';
 
-import {MetadataValue} from './schema';
+import {MetadataSymbolicReferenceExpression, MetadataValue} from './schema';
 
 export class Symbols {
   private _symbols: Map<string, MetadataValue>;
+  private references = new Map<string, MetadataSymbolicReferenceExpression>();
 
   constructor(private sourceFile: ts.SourceFile) {}
 
-  resolve(name: string): MetadataValue|undefined { return this.symbols.get(name); }
+  resolve(name: string, preferReference?: boolean): MetadataValue|undefined {
+    return (preferReference && this.references.get(name)) || this.symbols.get(name);
+  }
 
   define(name: string, value: MetadataValue) { this.symbols.set(name, value); }
+  defineReference(name: string, value: MetadataSymbolicReferenceExpression) {
+    this.references.set(name, value);
+  }
 
   has(name: string): boolean { return this.symbols.has(name); }
 

@@ -149,7 +149,7 @@ export class UrlSegmentGroup {
     forEach(children, (v: any, k: any) => v.parent = this);
   }
 
-  /** Wether the segment has child segments */
+  /** Whether the segment has child segments */
   hasChildren(): boolean { return this.numberOfChildren > 0; }
 
   /** Number of child segments */
@@ -325,8 +325,24 @@ function serializeSegment(segment: UrlSegmentGroup, root: boolean): string {
   }
 }
 
+/**
+ * This method is intended for encoding *key* or *value* parts of query component. We need a custom
+ * method because encodeURIComponent is too aggressive and encodes stuff that doesn't have to be
+ * encoded per http://tools.ietf.org/html/rfc3986:
+ *    query         = *( pchar / "/" / "?" )
+ *    pchar         = unreserved / pct-encoded / sub-delims / ":" / "@"
+ *    unreserved    = ALPHA / DIGIT / "-" / "." / "_" / "~"
+ *    pct-encoded   = "%" HEXDIG HEXDIG
+ *    sub-delims    = "!" / "$" / "&" / "'" / "(" / ")"
+ *                     / "*" / "+" / "," / ";" / "="
+ */
 export function encode(s: string): string {
-  return encodeURIComponent(s);
+  return encodeURIComponent(s)
+      .replace(/%40/g, '@')
+      .replace(/%3A/gi, ':')
+      .replace(/%24/g, '$')
+      .replace(/%2C/gi, ',')
+      .replace(/%3B/gi, ';');
 }
 
 export function decode(s: string): string {

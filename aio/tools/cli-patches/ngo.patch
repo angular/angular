@@ -1,0 +1,14 @@
+--- node_modules/@angular/cli/models/webpack-configs/production.js	2017-05-12 14:30:22.000000000 -0700
++++ node_modules/@angular/cli/models/webpack-configs/production.js	2017-05-12 14:32:23.000000000 -0700
+@@ -68,6 +68,11 @@
+     }
+     return {
+         entry: entryPoints,
++        module: {
++            rules: [
++                {"test": /\.js$/, "use": {loader: "ngo/webpack-loader", options: { sourceMap: true }}},
++            ]
++        },
+         plugins: [
+             new webpack.EnvironmentPlugin({
+                 'NODE_ENV': 'production'

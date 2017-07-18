@@ -12,8 +12,8 @@ component class instance (the *component*) and its user-facing template.
 You may be familiar with the component/template duality from your experience with model-view-controller (MVC) or model-view-viewmodel (MVVM).
 In Angular, the component plays the part of the controller/viewmodel, and the template represents the view.
 
-This page is a comprehensive technical reference to the Angular template language. 
-It explains basic principles of the template language and describes most of the syntax that you'll encounter elsewhere in the documentation. 
+This page is a comprehensive technical reference to the Angular template language.
+It explains basic principles of the template language and describes most of the syntax that you'll encounter elsewhere in the documentation.
 
 Many code snippets illustrate the points and concepts, all of them available
 in the <live-example title="Template Syntax Live Code"></live-example>.
@@ -1155,7 +1155,7 @@ other HTML elements, attributes, properties, and components.
 They are usually applied to elements as if they were HTML attributes, hence the name.
 
 Many details are covered in the [_Attribute Directives_](guide/attribute-directives) guide.
-Many Angular modules such as the [`RouterModule`](guide/router "Routing and Navigation")
+Many NgMdules such as the [`RouterModule`](guide/router "Routing and Navigation")
 and the [`FormsModule`](guide/forms "Forms") define their own attribute directives.
 This section is an introduction to the most commonly used attribute directives:
 
@@ -1260,7 +1260,7 @@ Two-way data binding with the `NgModel` directive makes that easy. Here's an exa
 #### _FormsModule_ is required to use _ngModel_
 
 Before using the `ngModel` directive in a two-way data binding,
-you must import the `FormsModule` and add it to the Angular module's `imports` list.
+you must import the `FormsModule` and add it to the NgModule's `imports` list.
 Learn more about the `FormsModule` and `ngModel` in the
 [Forms](guide/forms#ngModel) guide.
 
@@ -1371,7 +1371,7 @@ _This_ section is an introduction to the common structural directives:
 ### NgIf
 
 You can add or remove an element from the DOM by applying an `NgIf` directive to
-that element (called the _host elment_).
+that element (called the _host element_).
 Bind the directive to a condition expression like `isActive` in this example.
 
 <code-example path="template-syntax/src/app/app.component.html" region="NgIf-1" title="src/app/app.component.html" linenums="false">
@@ -1947,12 +1947,12 @@ As of Typescript 2.0, you can enforce [strict null checking](http://www.typescri
 
 In this mode, typed variables disallow null and undefined by default. The type checker throws an error if you leave a variable unassigned or try to assign null or undefined to a variable whose type disallows null and undefined.
 
-The type checker also throws an error if it can't determine whether a variable will be null or undefined at runtime. 
-You may know that can't happen but the type checker doesn't know. 
+The type checker also throws an error if it can't determine whether a variable will be null or undefined at runtime.
+You may know that can't happen but the type checker doesn't know.
 You tell the type checker that it can't happen by applying the post-fix
-[_non-null assertion operator (!)_]((http://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html#non-null-assertion-operator "Non-null assertion operator").
+[_non-null assertion operator (!)_](http://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html#non-null-assertion-operator "Non-null assertion operator").
 
-The _Angular_ **non-null assertion operator (`!`)** serves the same purpose in an Angular template. 
+The _Angular_ **non-null assertion operator (`!`)** serves the same purpose in an Angular template.
 
 For example, after you use [*ngIf](guide/template-syntax#ngIf) to check that `hero` is defined, you can assert that
 `hero` properties are also defined.

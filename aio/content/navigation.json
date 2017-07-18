@@ -55,6 +55,13 @@
     },
 
     {
+      "url": "guide/docs-style-guide",
+      "title": "Doc authors style guide",
+      "tooltip": "Style guide for documentation authors",
+      "hidden": true
+    },
+
+    {
       "url": "guide/quickstart",
       "title": "Getting Started",
       "tooltip": "A gentle introduction to Angular."
@@ -134,6 +141,11 @@
               "url": "guide/component-interaction",
               "title": "Component Interaction",
               "tooltip": "Share information between different directives and components."
+            },
+            {
+              "url": "guide/component-styles",
+              "title": "Component Styles",
+              "tooltip": "Add CSS styles that are specific to a component."
             },
             {
               "url": "guide/dynamic-component-loader",
@@ -240,7 +252,7 @@
 
         {
           "url": "guide/http",
-          "title": "Server Communication",
+          "title": "HttpClient",
           "tooltip": "Use HTTP to talk to a remote server."
         },
         {
@@ -269,6 +281,11 @@
           "url": "guide/i18n",
           "title": "Internationalization (i18n)",
           "tooltip": "Translate the app's template text into multiple languages."
+        },
+        {
+          "url": "guide/language-service",
+          "title": "Language Service",
+          "tooltip": "Use Angular Language Service to speed up dev time."
         },
         {
           "url": "guide/security",
@@ -462,6 +479,8 @@
   ],
 
   "docVersions": [
-    { "title": "v2", "url": "https://v2.angular.io" }
+    { "title": "v2", "url": "https://v2.angular.io" },
+    { "title": "AngularDart", "url": "https://webdev.dartlang.org/angular" }
+
   ]
 }

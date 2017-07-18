@@ -1327,7 +1327,7 @@ Here's an _NgModule_ class with imports, exports, and declarations.
 
 
 
-Of course you use _JavaScript_ modules to write _Angular_ modules as seen in the complete `contact.module.ts` file:
+Of course you use _JavaScript_ modules to write NgModules as seen in the complete `contact.module.ts` file:
 
 <code-example path="ngmodule/src/app/contact/contact.module.2.ts" title="src/app/contact/contact.module.ts" linenums="false">
 

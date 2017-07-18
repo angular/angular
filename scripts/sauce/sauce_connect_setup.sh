@@ -22,9 +22,14 @@ CONNECT_URL="https://saucelabs.com/downloads/sc-${SAUCE_CONNECT_VERSION}-linux.t
 CONNECT_DIR="/tmp/sauce-connect-$RANDOM"
 CONNECT_DOWNLOAD="sc-latest-linux.tar.gz"
 
-CONNECT_LOG="$LOGS_DIR/sauce-connect"
-CONNECT_STDOUT="$LOGS_DIR/sauce-connect.stdout"
-CONNECT_STDERR="$LOGS_DIR/sauce-connect.stderr"
+# logging disabled because it's seems to be overwhelming travis and causing flakes
+# when we are cat-ing the log in print-logs.sh
+# CONNECT_LOG="$LOGS_DIR/sauce-connect"
+# CONNECT_STDOUT="$LOGS_DIR/sauce-connect.stdout"
+# CONNECT_STDERR="$LOGS_DIR/sauce-connect.stderr"
+CONNECT_LOG="/dev/null"
+CONNECT_STDOUT="/dev/null"
+CONNECT_STDERR="/dev/null"
 
 # Get Connect and start it
 mkdir -p $CONNECT_DIR

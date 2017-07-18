@@ -18,14 +18,12 @@ import { Logger } from 'app/shared/logger.service';
 import { MockLocationService } from 'testing/location.service';
 import { MockLogger } from 'testing/logger.service';
 import { MockSearchService } from 'testing/search.service';
-import { MockSwUpdateNotificationsService } from 'testing/sw-update-notifications.service';
 import { NavigationNode } from 'app/navigation/navigation.service';
 import { ScrollService } from 'app/shared/scroll.service';
 import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
 import { SearchResultsComponent } from 'app/search/search-results/search-results.component';
 import { SearchService } from 'app/search/search.service';
 import { SelectComponent, Option } from 'app/shared/select/select.component';
-import { SwUpdateNotificationsService } from 'app/sw-updates/sw-update-notifications.service';
 import { TocComponent } from 'app/embedded/toc/toc.component';
 import { TocItem, TocService } from 'app/shared/toc.service';
 
@@ -66,13 +64,6 @@ describe('AppComponent', () => {
 
     it('should create', () => {
       expect(component).toBeDefined();
-    });
-
-    describe('ServiceWorker update notifications', () => {
-      it('should be enabled', () => {
-        const swUpdateNotifications = TestBed.get(SwUpdateNotificationsService) as SwUpdateNotificationsService;
-        expect(swUpdateNotifications.enable).toHaveBeenCalled();
-      });
     });
 
     describe('hasFloatingToc', () => {
@@ -398,19 +389,19 @@ describe('AppComponent', () => {
       it('should display a guide page (guide/pipes)', () => {
         locationService.go('guide/pipes');
         fixture.detectChanges();
-        expect(docViewer.innerText).toMatch(/Pipes/i);
+        expect(docViewer.textContent).toMatch(/Pipes/i);
       });
 
       it('should display the api page', () => {
         locationService.go('api');
         fixture.detectChanges();
-        expect(docViewer.innerText).toMatch(/API/i);
+        expect(docViewer.textContent).toMatch(/API/i);
       });
 
       it('should display a marketing page', () => {
         locationService.go('features');
         fixture.detectChanges();
-        expect(docViewer.innerText).toMatch(/Features/i);
+        expect(docViewer.textContent).toMatch(/Features/i);
       });
 
       it('should update the document title', () => {
@@ -632,7 +623,7 @@ describe('AppComponent', () => {
     describe('footer', () => {
       it('should have version number', () => {
         const versionEl: HTMLElement = fixture.debugElement.query(By.css('aio-footer')).nativeElement;
-        expect(versionEl.innerText).toContain(TestHttp.versionFull);
+        expect(versionEl.textContent).toContain(TestHttp.versionFull);
       });
     });
 
@@ -904,7 +895,6 @@ function createTestingModule(initialUrl: string) {
       { provide: LocationService, useFactory: () => new MockLocationService(initialUrl) },
       { provide: Logger, useClass: MockLogger },
       { provide: SearchService, useClass: MockSearchService },
-      { provide: SwUpdateNotificationsService, useClass: MockSwUpdateNotificationsService },
     ]
   });
 }

@@ -140,7 +140,7 @@ This is the _root component_ and it is named `app-root`.
 You can find it in `./src/app/app.component.ts`.
 
 
-Open the component file and change the `title` property from _app works!_ to _My First Angular App_:
+Open the component file and change the `title` property from _Welcome to app!!_ to _Welcome to My First Angular App!!_:
 
 
 <code-example path="cli-quickstart/src/app/app.component.ts" region="title" title="src/app/app.component.ts" linenums="false"></code-example>
@@ -331,7 +331,7 @@ Any files outside of this folder are meant to support building your app.
       The main HTML page that is served when someone visits your site.
       Most of the time you'll never need to edit it.
       The CLI automatically adds all `js` and `css` files when building your app so you
-      never need to add any `&lt;script&gt;` or `&lt;link&gt;` tags here manually.
+      never need to add any `<script>` or `<link>` tags here manually.
 
     </td>
   </tr>
@@ -464,7 +464,7 @@ These files go in the root folder next to `src/`.
     </td>
     <td>
 
-      Inside `e2e/` live the End-to-End tests.
+      Inside `e2e/` live the end-to-end tests.
       They shouldn't be inside `src/` because e2e tests are really a separate app that
       just so happens to test your main app.
       That's also why they have their own `tsconfig.e2e.json`.
@@ -493,7 +493,7 @@ These files go in the root folder next to `src/`.
 
       Configuration for Angular CLI.
       In this file you can set several defaults and also configure what files are included
-      when your project is build.
+      when your project is built.
       Check out the official documentation if you want to know more.
 
     </td>

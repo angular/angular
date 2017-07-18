@@ -21,6 +21,7 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
 
   private resultsSubscription: Subscription;
   readonly defaultArea = 'other';
+  notFoundMessage = 'Searching ...';
   readonly topLevelFolders = ['guide', 'tutorial'];
 
   /**
@@ -45,12 +46,16 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
     this.resultsSubscription.unsubscribe();
   }
 
-  onResultSelected(page: SearchResult) {
-    this.resultSelected.emit(page);
+  onResultSelected(page: SearchResult, event: MouseEvent) {
+    // Emit a `resultSelected` event if the result is to be displayed on this page.
+    if (event.button === 0 && !event.ctrlKey && !event.metaKey) {
+      this.resultSelected.emit(page);
+    }
   }
 
   // Map the search results into groups by area
   private processSearchResults(search: SearchResults) {
+    this.notFoundMessage = 'No results found.';
     const searchAreaMap = {};
     search.results.forEach(result => {
       if (!result.title) { return; } // bad data; should fix

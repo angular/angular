@@ -111,7 +111,7 @@ export class AppComponent implements AfterViewInit, OnInit {
   }
 
   onSave(event: KeyboardEvent) {
-    let evtMsg = event ? ' Event target is ' + (<HTMLElement>event.target).innerText : '';
+    let evtMsg = event ? ' Event target is ' + (<HTMLElement>event.target).textContent : '';
     this.alert('Saved.' + evtMsg);
     if (event) { event.stopPropagation(); }
   }
@@ -140,9 +140,9 @@ export class AppComponent implements AfterViewInit, OnInit {
   setCurrentClasses() {
     // CSS classes: added/removed per current state of component properties
     this.currentClasses =  {
-      saveable: this.canSave,
-      modified: !this.isUnchanged,
-      special:  this.isSpecial
+      'saveable': this.canSave,
+      'modified': !this.isUnchanged,
+      'special':  this.isSpecial
     };
   }
   // #enddocregion setClasses

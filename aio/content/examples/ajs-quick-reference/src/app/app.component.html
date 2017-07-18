@@ -14,13 +14,13 @@
 <h1>Example Snippets</h1>
 
 <!-- #docregion ngClass -->
-<div [ngClass]="{active: isActive}">
+<div [ngClass]="{'active': isActive}">
 <!-- #enddocregion ngClass -->
   [ngClass] active
 </div>
 <!-- #docregion ngClass -->
-<div [ngClass]="{active: isActive,
-                 shazam: isImportant}">
+<div [ngClass]="{'active': isActive,
+                 'shazam': isImportant}">
 <!-- #enddocregion ngClass -->
   [ngClass] active and boldly important
 </div>
@@ -57,7 +57,7 @@
 
 <p></p>
 <!-- #docregion ngStyle -->
-<div [ngStyle]="{color: colorPreference}">
+<div [ngStyle]="{'color': colorPreference}">
 <!-- #enddocregion ngStyle -->
   color preference #1
 </div>

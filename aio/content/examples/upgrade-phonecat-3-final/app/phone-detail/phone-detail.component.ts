@@ -14,7 +14,7 @@ export class PhoneDetailComponent {
   mainImageUrl: string;
 
   constructor(activatedRoute: ActivatedRoute, phone: Phone) {
-    phone.get(activatedRoute.snapshot.params['phoneId'])
+    phone.get(activatedRoute.snapshot.paramMap.get('phoneId'))
       .subscribe((p: PhoneData) => {
         this.phone = p;
         this.setImage(p.images[0]);

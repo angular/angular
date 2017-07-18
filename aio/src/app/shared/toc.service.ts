@@ -37,7 +37,7 @@ export class TocService {
       content: this.extractHeadingSafeHtml(heading),
       href: `${docId}#${this.getId(heading, idMap)}`,
       level: heading.tagName.toLowerCase(),
-      title: heading.innerText.trim(),
+      title: heading.textContent.trim(),
     }));
 
     this.tocList.next(tocList);
@@ -87,7 +87,7 @@ export class TocService {
     if (id) {
       addToMap(id);
     } else {
-      id = h.innerText.toLowerCase().replace(/\W+/g, '-');
+      id = h.textContent.trim().toLowerCase().replace(/\W+/g, '-');
       id = addToMap(id);
       h.id = id;
     }

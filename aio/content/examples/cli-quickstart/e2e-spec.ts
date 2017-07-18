@@ -9,6 +9,6 @@ describe('cli-quickstart App', () => {
 
   it('should display message saying app works', () => {
     let pageTitle = element(by.css('app-root h1')).getText();
-    expect(pageTitle).toEqual('My First Angular App');
+    expect(pageTitle).toEqual('Welcome to My First Angular App!!');
   });
 });
