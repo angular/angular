@@ -12,7 +12,7 @@
   }
 }
 
-// Only flat buttons (not raised, fabs or icon buttons) have a hover style.
+// Only flat buttons (not raised, FABs or icon buttons) have a hover style.
 // Use the same visual treatment for hover as for focus.
 .mat-button:hover .mat-button-focus-overlay {
   opacity: 1;

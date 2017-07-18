@@ -68,5 +68,5 @@ html, body, material-app, md-sidenav-container, .my-content {
 ```
 
 ### FABs inside sidenav
-For a sidenav with a FAB (or other floating element), the recommended approach is to place the FAB
+For a sidenav with a FAB (Floating Action Button) or other floating element, the recommended approach is to place the FAB
 outside of the scrollable region and absolutely position it.

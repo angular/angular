@@ -21,8 +21,9 @@ There are five button variants, each applied as an attribute:
 
 ### Theming
 Buttons can be colored in terms of the current theme using the `color` property to set the
-background color to `primary`, `accent`, or `warn`. By default, only FABs are colored; the default
-background color for `md-button` and `md-raised-button` matches the theme's background color.
+background color to `primary`, `accent`, or `warn`. By default, only FABs (Floating Action Button) 
+are colored; the default background color for `md-button` and `md-raised-button` matches the theme's 
+background color.
 
 ### Capitalization
 According to the Material design spec button text has to be capitalized, however we have opted not
