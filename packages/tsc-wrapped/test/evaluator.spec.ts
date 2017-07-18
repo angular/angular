@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 import {Evaluator} from '../src/evaluator';
 import {Symbols} from '../src/symbols';
 
-import {Directory, Host, expectNoDiagnostics, findVar} from './typescript.mocks';
+import {Directory, Host, expectNoDiagnostics, findVar, findVarInitializer} from './typescript.mocks';
 
 describe('Evaluator', () => {
   const documentRegistry = ts.createDocumentRegistry();
@@ -31,7 +31,7 @@ describe('Evaluator', () => {
     service = ts.createLanguageService(host, documentRegistry);
     program = service.getProgram();
     typeChecker = program.getTypeChecker();
-    symbols = new Symbols(null);
+    symbols = new Symbols(null as any as ts.SourceFile);
     evaluator = new Evaluator(symbols, new Map());
   });
 
@@ -48,10 +48,10 @@ describe('Evaluator', () => {
 
   it('should be able to fold literal expressions', () => {
     const consts = program.getSourceFile('consts.ts');
-    expect(evaluator.isFoldable(findVar(consts, 'someName').initializer)).toBeTruthy();
-    expect(evaluator.isFoldable(findVar(consts, 'someBool').initializer)).toBeTruthy();
-    expect(evaluator.isFoldable(findVar(consts, 'one').initializer)).toBeTruthy();
-    expect(evaluator.isFoldable(findVar(consts, 'two').initializer)).toBeTruthy();
+    expect(evaluator.isFoldable(findVarInitializer(consts, 'someName'))).toBeTruthy();
+    expect(evaluator.isFoldable(findVarInitializer(consts, 'someBool'))).toBeTruthy();
+    expect(evaluator.isFoldable(findVarInitializer(consts, 'one'))).toBeTruthy();
+    expect(evaluator.isFoldable(findVarInitializer(consts, 'two'))).toBeTruthy();
   });
 
   it('should be able to fold expressions with foldable references', () => {
@@ -60,20 +60,20 @@ describe('Evaluator', () => {
     symbols.define('someBool', true);
     symbols.define('one', 1);
     symbols.define('two', 2);
-    expect(evaluator.isFoldable(findVar(expressions, 'three').initializer)).toBeTruthy();
-    expect(evaluator.isFoldable(findVar(expressions, 'four').initializer)).toBeTruthy();
+    expect(evaluator.isFoldable(findVarInitializer(expressions, 'three'))).toBeTruthy();
+    expect(evaluator.isFoldable(findVarInitializer(expressions, 'four'))).toBeTruthy();
     symbols.define('three', 3);
     symbols.define('four', 4);
-    expect(evaluator.isFoldable(findVar(expressions, 'obj').initializer)).toBeTruthy();
-    expect(evaluator.isFoldable(findVar(expressions, 'arr').initializer)).toBeTruthy();
+    expect(evaluator.isFoldable(findVarInitializer(expressions, 'obj'))).toBeTruthy();
+    expect(evaluator.isFoldable(findVarInitializer(expressions, 'arr'))).toBeTruthy();
   });
 
   it('should be able to evaluate literal expressions', () => {
     const consts = program.getSourceFile('consts.ts');
-    expect(evaluator.evaluateNode(findVar(consts, 'someName').initializer)).toBe('some-name');
-    expect(evaluator.evaluateNode(findVar(consts, 'someBool').initializer)).toBe(true);
-    expect(evaluator.evaluateNode(findVar(consts, 'one').initializer)).toBe(1);
-    expect(evaluator.evaluateNode(findVar(consts, 'two').initializer)).toBe(2);
+    expect(evaluator.evaluateNode(findVarInitializer(consts, 'someName'))).toBe('some-name');
+    expect(evaluator.evaluateNode(findVarInitializer(consts, 'someBool'))).toBe(true);
+    expect(evaluator.evaluateNode(findVarInitializer(consts, 'one'))).toBe(1);
+    expect(evaluator.evaluateNode(findVarInitializer(consts, 'two'))).toBe(2);
   });
 
   it('should be able to evaluate expressions', () => {
@@ -82,78 +82,77 @@ describe('Evaluator', () => {
     symbols.define('someBool', true);
     symbols.define('one', 1);
     symbols.define('two', 2);
-    expect(evaluator.evaluateNode(findVar(expressions, 'three').initializer)).toBe(3);
+    expect(evaluator.evaluateNode(findVarInitializer(expressions, 'three'))).toBe(3);
     symbols.define('three', 3);
-    expect(evaluator.evaluateNode(findVar(expressions, 'four').initializer)).toBe(4);
+    expect(evaluator.evaluateNode(findVarInitializer(expressions, 'four'))).toBe(4);
     symbols.define('four', 4);
-    expect(evaluator.evaluateNode(findVar(expressions, 'obj').initializer))
+    expect(evaluator.evaluateNode(findVarInitializer(expressions, 'obj')))
         .toEqual({one: 1, two: 2, three: 3, four: 4});
-    expect(evaluator.evaluateNode(findVar(expressions, 'arr').initializer)).toEqual([1, 2, 3, 4]);
-    expect(evaluator.evaluateNode(findVar(expressions, 'bTrue').initializer)).toEqual(true);
-    expect(evaluator.evaluateNode(findVar(expressions, 'bFalse').initializer)).toEqual(false);
-    expect(evaluator.evaluateNode(findVar(expressions, 'bAnd').initializer)).toEqual(true);
-    expect(evaluator.evaluateNode(findVar(expressions, 'bOr').initializer)).toEqual(true);
-    expect(evaluator.evaluateNode(findVar(expressions, 'nDiv').initializer)).toEqual(2);
-    expect(evaluator.evaluateNode(findVar(expressions, 'nMod').initializer)).toEqual(1);
+    expect(evaluator.evaluateNode(findVarInitializer(expressions, 'arr'))).toEqual([1, 2, 3, 4]);
+    expect(evaluator.evaluateNode(findVarInitializer(expressions, 'bTrue'))).toEqual(true);
+    expect(evaluator.evaluateNode(findVarInitializer(expressions, 'bFalse'))).toEqual(false);
+    expect(evaluator.evaluateNode(findVarInitializer(expressions, 'bAnd'))).toEqual(true);
+    expect(evaluator.evaluateNode(findVarInitializer(expressions, 'bOr'))).toEqual(true);
+    expect(evaluator.evaluateNode(findVarInitializer(expressions, 'nDiv'))).toEqual(2);
+    expect(evaluator.evaluateNode(findVarInitializer(expressions, 'nMod'))).toEqual(1);
 
 
-    expect(evaluator.evaluateNode(findVar(expressions, 'bLOr').initializer)).toEqual(false || true);
-    expect(evaluator.evaluateNode(findVar(expressions, 'bLAnd').initializer)).toEqual(true && true);
-    expect(evaluator.evaluateNode(findVar(expressions, 'bBOr').initializer)).toEqual(0x11 | 0x22);
-    expect(evaluator.evaluateNode(findVar(expressions, 'bBAnd').initializer)).toEqual(0x11 & 0x03);
-    expect(evaluator.evaluateNode(findVar(expressions, 'bXor').initializer)).toEqual(0x11 ^ 0x21);
-    expect(evaluator.evaluateNode(findVar(expressions, 'bEqual').initializer))
+    expect(evaluator.evaluateNode(findVarInitializer(expressions, 'bLOr'))).toEqual(false || true);
+    expect(evaluator.evaluateNode(findVarInitializer(expressions, 'bLAnd'))).toEqual(true && true);
+    expect(evaluator.evaluateNode(findVarInitializer(expressions, 'bBOr'))).toEqual(0x11 | 0x22);
+    expect(evaluator.evaluateNode(findVarInitializer(expressions, 'bBAnd'))).toEqual(0x11 & 0x03);
+    expect(evaluator.evaluateNode(findVarInitializer(expressions, 'bXor'))).toEqual(0x11 ^ 0x21);
+    expect(evaluator.evaluateNode(findVarInitializer(expressions, 'bEqual')))
         .toEqual(1 == <any>'1');
-    expect(evaluator.evaluateNode(findVar(expressions, 'bNotEqual').initializer))
+    expect(evaluator.evaluateNode(findVarInitializer(expressions, 'bNotEqual')))
         .toEqual(1 != <any>'1');
-    expect(evaluator.evaluateNode(findVar(expressions, 'bIdentical').initializer))
+    expect(evaluator.evaluateNode(findVarInitializer(expressions, 'bIdentical')))
         .toEqual(1 === <any>'1');
-    expect(evaluator.evaluateNode(findVar(expressions, 'bNotIdentical').initializer))
+    expect(evaluator.evaluateNode(findVarInitializer(expressions, 'bNotIdentical')))
         .toEqual(1 !== <any>'1');
-    expect(evaluator.evaluateNode(findVar(expressions, 'bLessThan').initializer)).toEqual(1 < 2);
-    expect(evaluator.evaluateNode(findVar(expressions, 'bGreaterThan').initializer)).toEqual(1 > 2);
-    expect(evaluator.evaluateNode(findVar(expressions, 'bLessThanEqual').initializer))
+    expect(evaluator.evaluateNode(findVarInitializer(expressions, 'bLessThan'))).toEqual(1 < 2);
+    expect(evaluator.evaluateNode(findVarInitializer(expressions, 'bGreaterThan'))).toEqual(1 > 2);
+    expect(evaluator.evaluateNode(findVarInitializer(expressions, 'bLessThanEqual')))
         .toEqual(1 <= 2);
-    expect(evaluator.evaluateNode(findVar(expressions, 'bGreaterThanEqual').initializer))
+    expect(evaluator.evaluateNode(findVarInitializer(expressions, 'bGreaterThanEqual')))
         .toEqual(1 >= 2);
-    expect(evaluator.evaluateNode(findVar(expressions, 'bShiftLeft').initializer)).toEqual(1 << 2);
-    expect(evaluator.evaluateNode(findVar(expressions, 'bShiftRight').initializer))
-        .toEqual(-1 >> 2);
-    expect(evaluator.evaluateNode(findVar(expressions, 'bShiftRightU').initializer))
+    expect(evaluator.evaluateNode(findVarInitializer(expressions, 'bShiftLeft'))).toEqual(1 << 2);
+    expect(evaluator.evaluateNode(findVarInitializer(expressions, 'bShiftRight'))).toEqual(-1 >> 2);
+    expect(evaluator.evaluateNode(findVarInitializer(expressions, 'bShiftRightU')))
         .toEqual(-1 >>> 2);
 
   });
 
   it('should report recursive references as symbolic', () => {
     const expressions = program.getSourceFile('expressions.ts');
-    expect(evaluator.evaluateNode(findVar(expressions, 'recursiveA').initializer))
+    expect(evaluator.evaluateNode(findVarInitializer(expressions, 'recursiveA')))
         .toEqual({__symbolic: 'reference', name: 'recursiveB'});
-    expect(evaluator.evaluateNode(findVar(expressions, 'recursiveB').initializer))
+    expect(evaluator.evaluateNode(findVarInitializer(expressions, 'recursiveB')))
         .toEqual({__symbolic: 'reference', name: 'recursiveA'});
   });
 
   it('should correctly handle special cases for CONST_EXPR', () => {
     const const_expr = program.getSourceFile('const_expr.ts');
-    expect(evaluator.evaluateNode(findVar(const_expr, 'bTrue').initializer)).toEqual(true);
-    expect(evaluator.evaluateNode(findVar(const_expr, 'bFalse').initializer)).toEqual(false);
+    expect(evaluator.evaluateNode(findVarInitializer(const_expr, 'bTrue'))).toEqual(true);
+    expect(evaluator.evaluateNode(findVarInitializer(const_expr, 'bFalse'))).toEqual(false);
   });
 
   it('should resolve a forwardRef', () => {
     const forwardRef = program.getSourceFile('forwardRef.ts');
-    expect(evaluator.evaluateNode(findVar(forwardRef, 'bTrue').initializer)).toEqual(true);
-    expect(evaluator.evaluateNode(findVar(forwardRef, 'bFalse').initializer)).toEqual(false);
+    expect(evaluator.evaluateNode(findVarInitializer(forwardRef, 'bTrue'))).toEqual(true);
+    expect(evaluator.evaluateNode(findVarInitializer(forwardRef, 'bFalse'))).toEqual(false);
   });
 
   it('should return new expressions', () => {
     symbols.define('Value', {__symbolic: 'reference', module: './classes', name: 'Value'});
     evaluator = new Evaluator(symbols, new Map());
     const newExpression = program.getSourceFile('newExpression.ts');
-    expect(evaluator.evaluateNode(findVar(newExpression, 'someValue').initializer)).toEqual({
+    expect(evaluator.evaluateNode(findVarInitializer(newExpression, 'someValue'))).toEqual({
       __symbolic: 'new',
       expression: {__symbolic: 'reference', name: 'Value', module: './classes'},
       arguments: ['name', 12]
     });
-    expect(evaluator.evaluateNode(findVar(newExpression, 'complex').initializer)).toEqual({
+    expect(evaluator.evaluateNode(findVarInitializer(newExpression, 'complex'))).toEqual({
       __symbolic: 'new',
       expression: {__symbolic: 'reference', name: 'Value', module: './classes'},
       arguments: ['name', 12]
@@ -162,8 +161,8 @@ describe('Evaluator', () => {
 
   it('should support referene to a declared module type', () => {
     const declared = program.getSourceFile('declared.ts');
-    const aDecl = findVar(declared, 'a');
-    expect(evaluator.evaluateNode(aDecl.type)).toEqual({
+    const aDecl = findVar(declared, 'a') !;
+    expect(evaluator.evaluateNode(aDecl.type !)).toEqual({
       __symbolic: 'select',
       expression: {__symbolic: 'reference', name: 'Foo'},
       member: 'A'
@@ -172,28 +171,28 @@ describe('Evaluator', () => {
 
   it('should return errors for unsupported expressions', () => {
     const errors = program.getSourceFile('errors.ts');
-    const fDecl = findVar(errors, 'f');
-    expect(evaluator.evaluateNode(fDecl.initializer))
+    const fDecl = findVar(errors, 'f') !;
+    expect(evaluator.evaluateNode(fDecl.initializer !))
         .toEqual(
             {__symbolic: 'error', message: 'Function call not supported', line: 1, character: 12});
-    const eDecl = findVar(errors, 'e');
-    expect(evaluator.evaluateNode(eDecl.type)).toEqual({
+    const eDecl = findVar(errors, 'e') !;
+    expect(evaluator.evaluateNode(eDecl.type !)).toEqual({
       __symbolic: 'error',
       message: 'Could not resolve type',
       line: 2,
       character: 11,
       context: {typeName: 'NotFound'}
     });
-    const sDecl = findVar(errors, 's');
-    expect(evaluator.evaluateNode(sDecl.initializer)).toEqual({
+    const sDecl = findVar(errors, 's') !;
+    expect(evaluator.evaluateNode(sDecl.initializer !)).toEqual({
       __symbolic: 'error',
       message: 'Name expected',
       line: 3,
       character: 14,
       context: {received: '1'}
     });
-    const tDecl = findVar(errors, 't');
-    expect(evaluator.evaluateNode(tDecl.initializer)).toEqual({
+    const tDecl = findVar(errors, 't') !;
+    expect(evaluator.evaluateNode(tDecl.initializer !)).toEqual({
       __symbolic: 'error',
       message: 'Expression form not supported',
       line: 4,
@@ -204,14 +203,14 @@ describe('Evaluator', () => {
   it('should be able to fold an array spread', () => {
     const expressions = program.getSourceFile('expressions.ts');
     symbols.define('arr', [1, 2, 3, 4]);
-    const arrSpread = findVar(expressions, 'arrSpread');
-    expect(evaluator.evaluateNode(arrSpread.initializer)).toEqual([0, 1, 2, 3, 4, 5]);
+    const arrSpread = findVar(expressions, 'arrSpread') !;
+    expect(evaluator.evaluateNode(arrSpread.initializer !)).toEqual([0, 1, 2, 3, 4, 5]);
   });
 
   it('should be able to produce a spread expression', () => {
     const expressions = program.getSourceFile('expressions.ts');
-    const arrSpreadRef = findVar(expressions, 'arrSpreadRef');
-    expect(evaluator.evaluateNode(arrSpreadRef.initializer)).toEqual([
+    const arrSpreadRef = findVar(expressions, 'arrSpreadRef') !;
+    expect(evaluator.evaluateNode(arrSpreadRef.initializer !)).toEqual([
       0, {__symbolic: 'spread', expression: {__symbolic: 'reference', name: 'arrImport'}}, 5
     ]);
   });
@@ -220,8 +219,8 @@ describe('Evaluator', () => {
     const source = sourceFileOf(`
       export var a = new f;
     `);
-    const expr = findVar(source, 'a');
-    expect(evaluator.evaluateNode(expr.initializer))
+    const expr = findVar(source, 'a') !;
+    expect(evaluator.evaluateNode(expr.initializer !))
         .toEqual({__symbolic: 'new', expression: {__symbolic: 'reference', name: 'f'}});
   });
 });

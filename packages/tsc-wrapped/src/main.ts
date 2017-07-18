@@ -41,9 +41,9 @@ export function createBundleIndexHost(
     return {
       host,
       errors: [{
-        file: null,
-        start: null,
-        length: null,
+        file: null as any as ts.SourceFile,
+        start: null as any as number,
+        length: null as any as number,
         messageText:
             'Angular compiler option "flatModuleIndex" requires one and only one .ts file in the "files" field.',
         category: ts.DiagnosticCategory.Error,
@@ -58,7 +58,7 @@ export function createBundleIndexHost(
   const metadataBundle = bundler.getMetadataBundle();
   const metadata = JSON.stringify(metadataBundle.metadata);
   const name =
-      path.join(path.dirname(indexModule), ngOptions.flatModuleOutFile.replace(JS_EXT, '.ts'));
+      path.join(path.dirname(indexModule), ngOptions.flatModuleOutFile !.replace(JS_EXT, '.ts'));
   const libraryIndex = `./${path.basename(indexModule)}`;
   const content = privateEntriesToIndex(libraryIndex, metadataBundle.privates);
   host = new SyntheticIndexHost(host, {name, content, metadata});
@@ -201,7 +201,7 @@ if (require.main === module) {
   const project = options.project || '.';
   // TODO(alexeagle): command line should be TSC-compatible, remove "CliOptions" here
   const cliOptions = new CliOptions(require('minimist')(args));
-  main(project, cliOptions, null, options)
+  main(project, cliOptions, undefined, options)
       .then((exitCode: any) => process.exit(exitCode))
       .catch((e: any) => {
         console.error(e.stack);

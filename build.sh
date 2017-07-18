@@ -419,6 +419,11 @@ if [[ ${BUILD_TOOLS} == true || ${BUILD_ALL} == true ]]; then
   $(npm bin)/tsc -p packages/tsc-wrapped/tsconfig-build.json
   cp ./packages/tsc-wrapped/package.json ./dist/packages-dist/tsc-wrapped
   cp ./packages/tsc-wrapped/README.md ./dist/packages-dist/tsc-wrapped
+  (
+    cd dist/packages-dist/tsc-wrapped
+    echo "======       EXECUTE: perl -p -i -e \"s/0\.0\.0\-PLACEHOLDER/${VERSION}/g\" $""(grep -ril 0\.0\.0\-PLACEHOLDER .)"
+    perl -p -i -e "s/0\.0\.0\-PLACEHOLDER/${VERSION}/g" $(grep -ril 0\.0\.0\-PLACEHOLDER .) < /dev/null 2> /dev/null
+  )
 fi
 
 for PACKAGE in ${PACKAGES[@]}
