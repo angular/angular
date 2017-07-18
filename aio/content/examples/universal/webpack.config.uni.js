@@ -1,4 +1,3 @@
-// #docplaster
 const ngtools = require('@ngtools/webpack');
 const webpack = require('webpack');
 
