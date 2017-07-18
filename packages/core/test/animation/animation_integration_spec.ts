@@ -8,7 +8,7 @@
 import {AUTO_STYLE, AnimationEvent, AnimationOptions, animate, animateChild, group, keyframes, query, state, style, transition, trigger, ɵPRE_STYLE as PRE_STYLE} from '@angular/animations';
 import {AnimationDriver, ɵAnimationEngine, ɵNoopAnimationDriver} from '@angular/animations/browser';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
-import {Component, HostBinding, HostListener, RendererFactory2, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, HostBinding, HostListener, RendererFactory2, ViewChild} from '@angular/core';
 import {ɵDomRendererFactory2} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -1482,6 +1482,65 @@ export function main() {
         ]);
       });
 
+      it('should not flush animations twice when an inner component runs change detection', () => {
+        @Component({
+          selector: 'outer-cmp',
+          template: `
+            <div *ngIf="exp" @outer></div>
+            <inner-cmp #inner></inner-cmp>
+          `,
+          animations: [trigger(
+              'outer',
+              [transition(':enter', [style({opacity: 0}), animate('1s', style({opacity: 1}))])])]
+        })
+        class OuterCmp {
+          @ViewChild('inner') public inner: any;
+          public exp: any = null;
+
+          update() { this.exp = 'go'; }
+
+          ngDoCheck() {
+            if (this.exp == 'go') {
+              this.inner.update();
+            }
+          }
+        }
+
+        @Component({
+          selector: 'inner-cmp',
+          template: `
+            <div *ngIf="exp" @inner></div>
+          `,
+          animations: [trigger('inner', [transition(
+                                            ':enter',
+                                            [
+                                              style({opacity: 0}),
+                                              animate('1s', style({opacity: 1})),
+                                            ])])]
+        })
+        class InnerCmp {
+          public exp: any;
+          constructor(private _ref: ChangeDetectorRef) {}
+          update() {
+            this.exp = 'go';
+            this._ref.detectChanges();
+          }
+        }
+
+        TestBed.configureTestingModule({declarations: [OuterCmp, InnerCmp]});
+
+        const engine = TestBed.get(ɵAnimationEngine);
+        const fixture = TestBed.createComponent(OuterCmp);
+        const cmp = fixture.componentInstance;
+        fixture.detectChanges();
+        expect(getLog()).toEqual([]);
+
+        cmp.update();
+        fixture.detectChanges();
+
+        const players = getLog();
+        expect(players.length).toEqual(2);
+      });
     });
 
     describe('animation listeners', () => {
