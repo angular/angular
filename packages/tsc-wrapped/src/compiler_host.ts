@@ -33,10 +33,10 @@ export abstract class DelegatingHost implements ts.CompilerHost {
       (fileName: string, languageVersion: ts.ScriptTarget, onError?: (message: string) => void) =>
           this.delegate.getSourceFile(fileName, languageVersion, onError);
 
-  getCancellationToken = () => this.delegate.getCancellationToken();
+  getCancellationToken = () => this.delegate.getCancellationToken !();
   getDefaultLibFileName = (options: ts.CompilerOptions) =>
       this.delegate.getDefaultLibFileName(options);
-  getDefaultLibLocation = () => this.delegate.getDefaultLibLocation();
+  getDefaultLibLocation = () => this.delegate.getDefaultLibLocation !();
   writeFile: ts.WriteFileCallback = this.delegate.writeFile;
   getCurrentDirectory = () => this.delegate.getCurrentDirectory();
   getDirectories = (path: string): string[] =>
@@ -46,8 +46,8 @@ export abstract class DelegatingHost implements ts.CompilerHost {
   getNewLine = () => this.delegate.getNewLine();
   fileExists = (fileName: string) => this.delegate.fileExists(fileName);
   readFile = (fileName: string) => this.delegate.readFile(fileName);
-  trace = (s: string) => this.delegate.trace(s);
-  directoryExists = (directoryName: string) => this.delegate.directoryExists(directoryName);
+  trace = (s: string) => this.delegate.trace !(s);
+  directoryExists = (directoryName: string) => this.delegate.directoryExists !(directoryName);
 }
 
 const IGNORED_FILES = /\.ngfactory\.js$|\.ngstyle\.js$/;
@@ -79,7 +79,8 @@ export class MetadataWriterHost extends DelegatingHost {
       const metadata =
           this.metadataCollector.getMetadata(collectableFile, !!this.ngOptions.strictMetadataEmit);
       const metadata1 = this.metadataCollector1.getMetadata(collectableFile, false);
-      const metadatas: ModuleMetadata[] = [metadata, metadata1].filter(e => !!e);
+      const metadatas: ModuleMetadata[] =
+          [metadata, metadata1].filter(e => !!e) as ModuleMetadata[];
       if (metadatas.length) {
         const metadataText = JSON.stringify(metadatas);
         writeFileSync(path, metadataText, {encoding: 'utf-8'});
@@ -163,7 +164,7 @@ export class SyntheticIndexHost extends DelegatingHost {
                 normalize(sourceFiles[0].fileName) == this.normalSyntheticIndexName) {
               // If we are writing the synthetic index, write the metadata along side.
               const metadataName = fileName.replace(DTS, '.metadata.json');
-              writeFileSync(metadataName, this.indexMetadata, 'utf8');
+              writeFileSync(metadataName, this.indexMetadata, {encoding: 'utf8'});
             }
           }
 }

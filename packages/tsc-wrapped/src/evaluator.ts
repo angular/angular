@@ -68,7 +68,7 @@ export interface ImportMetadata {
 }
 
 
-function getSourceFileOfNode(node: ts.Node): ts.SourceFile {
+function getSourceFileOfNode(node: ts.Node | undefined): ts.SourceFile {
   while (node && node.kind != ts.SyntaxKind.SourceFile) {
     node = node.parent;
   }
@@ -79,7 +79,7 @@ function getSourceFileOfNode(node: ts.Node): ts.SourceFile {
 export function errorSymbol(
     message: string, node?: ts.Node, context?: {[name: string]: string},
     sourceFile?: ts.SourceFile): MetadataError {
-  let result: MetadataError;
+  let result: MetadataError|undefined = undefined;
   if (node) {
     sourceFile = sourceFile || getSourceFileOfNode(node);
     if (sourceFile) {
@@ -106,15 +106,16 @@ export class Evaluator {
       private symbols: Symbols, private nodeMap: Map<MetadataEntry, ts.Node>,
       private options: CollectorOptions = {}) {}
 
-  nameOf(node: ts.Node): string|MetadataError {
-    if (node.kind == ts.SyntaxKind.Identifier) {
+  nameOf(node: ts.Node|undefined): string|MetadataError {
+    if (node && node.kind == ts.SyntaxKind.Identifier) {
       return (<ts.Identifier>node).text;
     }
-    const result = this.evaluateNode(node);
+    const result = node && this.evaluateNode(node);
     if (isMetadataError(result) || typeof result === 'string') {
       return result;
     } else {
-      return errorSymbol('Name expected', node, {received: node.getText()});
+      return errorSymbol(
+          'Name expected', node, {received: (node && node.getText()) || '<missing>'});
     }
   }
 
@@ -138,7 +139,7 @@ export class Evaluator {
     return this.isFoldableWorker(node, new Map<ts.Node, boolean>());
   }
 
-  private isFoldableWorker(node: ts.Node, folding: Map<ts.Node, boolean>): boolean {
+  private isFoldableWorker(node: ts.Node|undefined, folding: Map<ts.Node, boolean>): boolean {
     if (node) {
       switch (node.kind) {
         case ts.SyntaxKind.ObjectLiteralExpression:
@@ -518,11 +519,11 @@ export class Evaluator {
         if (isDefined(operand) && isPrimitive(operand)) {
           switch (prefixUnaryExpression.operator) {
             case ts.SyntaxKind.PlusToken:
-              return +operand;
+              return +(operand as any);
             case ts.SyntaxKind.MinusToken:
-              return -operand;
+              return -(operand as any);
             case ts.SyntaxKind.TildeToken:
-              return ~operand;
+              return ~(operand as any);
             case ts.SyntaxKind.ExclamationToken:
               return !operand;
           }
@@ -661,8 +662,8 @@ function isPropertyAssignment(node: ts.Node): node is ts.PropertyAssignment {
   return node.kind == ts.SyntaxKind.PropertyAssignment;
 }
 
-const empty = [] as ts.NodeArray<any>;
+const empty = ts.createNodeArray<any>();
 
-function arrayOrEmpty<T extends ts.Node>(v: ts.NodeArray<T>): ts.NodeArray<T> {
+function arrayOrEmpty<T extends ts.Node>(v: ts.NodeArray<T>| undefined): ts.NodeArray<T> {
   return v || empty;
 }

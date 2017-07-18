@@ -17,7 +17,7 @@ describe('Symbols', () => {
   let symbols: Symbols;
   const someValue = 'some-value';
 
-  beforeEach(() => symbols = new Symbols(null));
+  beforeEach(() => symbols = new Symbols(null as any as ts.SourceFile));
 
   it('should be able to add a symbol', () => symbols.define('someSymbol', someValue));
 
@@ -110,7 +110,7 @@ describe('Symbols', () => {
       }
       return false;
     };
-    ts.forEachChild(core, visit);
+    ts.forEachChild(core !, visit);
   });
 });
 

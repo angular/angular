@@ -196,13 +196,13 @@ describe('Collector', () => {
 
   beforeEach(() => {
     casesFile = program.getSourceFile('/app/cases-data.ts');
-    casesMetadata = collector.getMetadata(casesFile);
+    casesMetadata = collector.getMetadata(casesFile) !;
   });
 
   it('should provide any reference for an any ctor parameter type', () => {
     const casesAny = <ClassMetadata>casesMetadata.metadata['CaseAny'];
     expect(casesAny).toBeTruthy();
-    const ctorData = casesAny.members['__ctor__'];
+    const ctorData = casesAny.members !['__ctor__'];
     expect(ctorData).toEqual(
         [{__symbolic: 'constructor', parameters: [{__symbolic: 'reference', name: 'any'}]}]);
   });
@@ -265,10 +265,10 @@ describe('Collector', () => {
 
   it('should report an error for references to unexpected types', () => {
     const unsupported1 = program.getSourceFile('/unsupported-2.ts');
-    const metadata = collector.getMetadata(unsupported1);
+    const metadata = collector.getMetadata(unsupported1) !;
     const barClass = <ClassMetadata>metadata.metadata['Bar'];
-    const ctor = <ConstructorMetadata>barClass.members['__ctor__'][0];
-    const parameter = ctor.parameters[0];
+    const ctor = <ConstructorMetadata>barClass.members !['__ctor__'][0];
+    const parameter = ctor.parameters ![0];
     expect(parameter).toEqual({
       __symbolic: 'error',
       message: 'Reference to non-exported class',
@@ -280,9 +280,9 @@ describe('Collector', () => {
 
   it('should be able to handle import star type references', () => {
     const importStar = program.getSourceFile('/import-star.ts');
-    const metadata = collector.getMetadata(importStar);
+    const metadata = collector.getMetadata(importStar) !;
     const someClass = <ClassMetadata>metadata.metadata['SomeClass'];
-    const ctor = <ConstructorMetadata>someClass.members['__ctor__'][0];
+    const ctor = <ConstructorMetadata>someClass.members !['__ctor__'][0];
     const parameters = ctor.parameters;
     expect(parameters).toEqual([
       {__symbolic: 'reference', module: 'angular2/common', name: 'NgFor'}
@@ -365,9 +365,9 @@ describe('Collector', () => {
 
   it('should be able to handle import star type references', () => {
     const importStar = program.getSourceFile('/import-star.ts');
-    const metadata = collector.getMetadata(importStar);
+    const metadata = collector.getMetadata(importStar) !;
     const someClass = <ClassMetadata>metadata.metadata['SomeClass'];
-    const ctor = <ConstructorMetadata>someClass.members['__ctor__'][0];
+    const ctor = <ConstructorMetadata>someClass.members !['__ctor__'][0];
     const parameters = ctor.parameters;
     expect(parameters).toEqual([
       {__symbolic: 'reference', module: 'angular2/common', name: 'NgFor'}
@@ -376,14 +376,14 @@ describe('Collector', () => {
 
   it('should be able to collect the value of an enum', () => {
     const enumSource = program.getSourceFile('/exported-enum.ts');
-    const metadata = collector.getMetadata(enumSource);
+    const metadata = collector.getMetadata(enumSource) !;
     const someEnum: any = metadata.metadata['SomeEnum'];
     expect(someEnum).toEqual({A: 0, B: 1, C: 100, D: 101});
   });
 
   it('should ignore a non-export enum', () => {
     const enumSource = program.getSourceFile('/private-enum.ts');
-    const metadata = collector.getMetadata(enumSource);
+    const metadata = collector.getMetadata(enumSource) !;
     const publicEnum: any = metadata.metadata['PublicEnum'];
     const privateEnum: any = metadata.metadata['PrivateEnum'];
     expect(publicEnum).toEqual({a: 0, b: 1, c: 2});
@@ -392,7 +392,7 @@ describe('Collector', () => {
 
   it('should be able to collect enums initialized from consts', () => {
     const enumSource = program.getSourceFile('/exported-enum.ts');
-    const metadata = collector.getMetadata(enumSource);
+    const metadata = collector.getMetadata(enumSource) !;
     const complexEnum: any = metadata.metadata['ComplexEnum'];
     expect(complexEnum).toEqual({
       A: 0,
@@ -405,7 +405,7 @@ describe('Collector', () => {
 
   it('should be able to collect a simple static method', () => {
     const staticSource = program.getSourceFile('/static-method.ts');
-    const metadata = collector.getMetadata(staticSource);
+    const metadata = collector.getMetadata(staticSource) !;
     expect(metadata).toBeDefined();
     const classData = <ClassMetadata>metadata.metadata['MyModule'];
     expect(classData).toBeDefined();
@@ -423,7 +423,7 @@ describe('Collector', () => {
 
   it('should be able to collect a call to a static method', () => {
     const staticSource = program.getSourceFile('/static-method-call.ts');
-    const metadata = collector.getMetadata(staticSource);
+    const metadata = collector.getMetadata(staticSource) !;
     expect(metadata).toBeDefined();
     const classData = <ClassMetadata>metadata.metadata['Foo'];
     expect(classData).toBeDefined();
@@ -446,7 +446,7 @@ describe('Collector', () => {
 
   it('should be able to collect a static field', () => {
     const staticSource = program.getSourceFile('/static-field.ts');
-    const metadata = collector.getMetadata(staticSource);
+    const metadata = collector.getMetadata(staticSource) !;
     expect(metadata).toBeDefined();
     const classData = <ClassMetadata>metadata.metadata['MyModule'];
     expect(classData).toBeDefined();
@@ -455,7 +455,7 @@ describe('Collector', () => {
 
   it('should be able to collect a reference to a static field', () => {
     const staticSource = program.getSourceFile('/static-field-reference.ts');
-    const metadata = collector.getMetadata(staticSource);
+    const metadata = collector.getMetadata(staticSource) !;
     expect(metadata).toBeDefined();
     const classData = <ClassMetadata>metadata.metadata['Foo'];
     expect(classData).toBeDefined();
@@ -477,7 +477,7 @@ describe('Collector', () => {
 
   it('should be able to collect a method with a conditional expression', () => {
     const source = program.getSourceFile('/static-method-with-if.ts');
-    const metadata = collector.getMetadata(source);
+    const metadata = collector.getMetadata(source) !;
     expect(metadata).toBeDefined();
     const classData = <ClassMetadata>metadata.metadata['MyModule'];
     expect(classData).toBeDefined();
@@ -502,7 +502,7 @@ describe('Collector', () => {
 
   it('should be able to collect a method with a default parameter', () => {
     const source = program.getSourceFile('/static-method-with-default.ts');
-    const metadata = collector.getMetadata(source);
+    const metadata = collector.getMetadata(source) !;
     expect(metadata).toBeDefined();
     const classData = <ClassMetadata>metadata.metadata['MyModule'];
     expect(classData).toBeDefined();
@@ -531,7 +531,7 @@ describe('Collector', () => {
 
   it('should be able to collect re-exported symbols', () => {
     const source = program.getSourceFile('/re-exports.ts');
-    const metadata = collector.getMetadata(source);
+    const metadata = collector.getMetadata(source) !;
     expect(metadata.exports).toEqual([
       {from: './static-field', export: ['MyModule']},
       {from: './static-field-reference', export: [{name: 'Foo', as: 'OtherModule'}]},
@@ -541,13 +541,13 @@ describe('Collector', () => {
 
   it('should be able to collect a export as symbol', () => {
     const source = program.getSourceFile('export-as.d.ts');
-    const metadata = collector.getMetadata(source);
+    const metadata = collector.getMetadata(source) !;
     expect(metadata.metadata).toEqual({SomeFunction: {__symbolic: 'function'}});
   });
 
   it('should be able to collect exports with no module specifier', () => {
     const source = program.getSourceFile('/re-exports-2.ts');
-    const metadata = collector.getMetadata(source);
+    const metadata = collector.getMetadata(source) !;
     expect(metadata.metadata).toEqual({
       MyClass: Object({__symbolic: 'class'}),
       OtherModule: {__symbolic: 'reference', module: './static-field-reference', name: 'Foo'},
@@ -557,7 +557,7 @@ describe('Collector', () => {
 
   it('should collect an error symbol if collecting a reference to a non-exported symbol', () => {
     const source = program.getSourceFile('/local-symbol-ref.ts');
-    const metadata = collector.getMetadata(source);
+    const metadata = collector.getMetadata(source) !;
     expect(metadata.metadata).toEqual({
       REQUIRED_VALIDATOR: {
         __symbolic: 'error',
@@ -579,7 +579,7 @@ describe('Collector', () => {
 
   it('should collect an error symbol if collecting a reference to a non-exported function', () => {
     const source = program.getSourceFile('/local-function-ref.ts');
-    const metadata = collector.getMetadata(source);
+    const metadata = collector.getMetadata(source) !;
     expect(metadata.metadata).toEqual({
       REQUIRED_VALIDATOR: {
         __symbolic: 'error',
@@ -601,7 +601,7 @@ describe('Collector', () => {
 
   it('should collect an error for a simple function that references a local variable', () => {
     const source = program.getSourceFile('/local-symbol-ref-func.ts');
-    const metadata = collector.getMetadata(source);
+    const metadata = collector.getMetadata(source) !;
     expect(metadata.metadata).toEqual({
       foo: {
         __symbolic: 'function',
@@ -619,7 +619,7 @@ describe('Collector', () => {
 
   it('should collect any for interface parameter reference', () => {
     const source = program.getSourceFile('/interface-reference.ts');
-    const metadata = collector.getMetadata(source);
+    const metadata = collector.getMetadata(source) !;
     expect((metadata.metadata['SomeClass'] as ClassMetadata).members).toEqual({
       __ctor__: [{
         __symbolic: 'constructor',
@@ -734,7 +734,7 @@ describe('Collector', () => {
       toString(): string { return \`InjectionToken ${this._desc}\`; }
     } as any;`,
         ts.ScriptTarget.Latest, true);
-    const metadata = collector.getMetadata(source);
+    const metadata = collector.getMetadata(source) !;
     expect(metadata.metadata).toEqual({InjectionToken: {__symbolic: 'class'}});
   });
 
@@ -781,19 +781,19 @@ describe('Collector', () => {
 
   describe('inheritance', () => {
     it('should record `extends` clauses for declared classes', () => {
-      const metadata = collector.getMetadata(program.getSourceFile('/class-inheritance.ts'));
+      const metadata = collector.getMetadata(program.getSourceFile('/class-inheritance.ts')) !;
       expect(metadata.metadata['DeclaredChildClass'])
           .toEqual({__symbolic: 'class', extends: {__symbolic: 'reference', name: 'ParentClass'}});
     });
 
     it('should record `extends` clauses for classes in the same file', () => {
-      const metadata = collector.getMetadata(program.getSourceFile('/class-inheritance.ts'));
+      const metadata = collector.getMetadata(program.getSourceFile('/class-inheritance.ts')) !;
       expect(metadata.metadata['ChildClassSameFile'])
           .toEqual({__symbolic: 'class', extends: {__symbolic: 'reference', name: 'ParentClass'}});
     });
 
     it('should record `extends` clauses for classes in a different file', () => {
-      const metadata = collector.getMetadata(program.getSourceFile('/class-inheritance.ts'));
+      const metadata = collector.getMetadata(program.getSourceFile('/class-inheritance.ts')) !;
       expect(metadata.metadata['ChildClassOtherFile']).toEqual({
         __symbolic: 'class',
         extends: {
@@ -811,7 +811,7 @@ describe('Collector', () => {
     }
 
     it('should collect the correct arity for a class', () => {
-      const metadata = collector.getMetadata(program.getSourceFile('/class-arity.ts'));
+      const metadata = collector.getMetadata(program.getSourceFile('/class-arity.ts')) !;
 
       const zero = metadata.metadata['Zero'];
       if (expectClass(zero)) expect(zero.arity).toBeUndefined();
@@ -883,7 +883,7 @@ describe('Collector', () => {
         })
         export class MyComponent {}
       `);
-      const metadata = collector.getMetadata(source);
+      const metadata = collector.getMetadata(source) !;
       expect(metadata.metadata.MyComponent).toEqual({
         __symbolic: 'class',
         decorators: [{
@@ -947,7 +947,7 @@ describe('Collector', () => {
 
   function collectSource(content: string): ModuleMetadata {
     const sourceFile = createSource(content);
-    return collector.getMetadata(sourceFile);
+    return collector.getMetadata(sourceFile) !;
   }
 });
 

@@ -405,7 +405,7 @@ export class MockMetadataBundlerHost implements MetadataBundlerHost {
 
   constructor(private host: ts.CompilerHost) {}
 
-  getMetadataFor(moduleName: string): ModuleMetadata {
+  getMetadataFor(moduleName: string): ModuleMetadata|undefined {
     const source = this.host.getSourceFile(moduleName + '.ts', ts.ScriptTarget.Latest);
     return this.collector.getMetadata(source);
   }
