@@ -106,7 +106,11 @@ aio-code pre {
   }
 }
 
-.code-tab-group div.mat-tab-body-content {
+.code-tab-group .mat-tab-label {
+  white-space: nowrap;
+}
+
+.code-tab-group .mat-tab-body-content {
   height: auto;
   transform: none;
 }
