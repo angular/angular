@@ -497,10 +497,7 @@ export class UpgradeAdapter {
     ng1Module.factory(INJECTOR_KEY, () => this.moduleRef !.injector.get(Injector))
         .factory(
             LAZY_MODULE_REF,
-            [
-              INJECTOR_KEY,
-              (injector: Injector) => ({injector, promise: Promise.resolve(injector)})
-            ])
+            [INJECTOR_KEY, (injector: Injector) => ({injector, needsInNgZone: false})])
         .constant(NG_ZONE_KEY, this.ngZone)
         .factory(COMPILER_KEY, () => this.moduleRef !.injector.get(Compiler))
         .config([

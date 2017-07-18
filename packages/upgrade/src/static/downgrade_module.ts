@@ -35,7 +35,8 @@ export function downgradeModule<T>(
           INJECTOR_KEY,
           () => {
             if (!injector) {
-              throw new Error('The Angular module has not been bootstrapped yet.');
+              throw new Error(
+                  'Trying to get the Angular injector before bootstrapping an Angular module.');
             }
             return injector;
           })
@@ -44,6 +45,7 @@ export function downgradeModule<T>(
         ($injector: angular.IInjectorService) => {
           setTempInjectorRef($injector);
           const result: LazyModuleRef = {
+            needsNgZone: true,
             promise: bootstrapFn(angular1Providers).then(ref => {
               injector = result.injector = new NgAdapterInjector(ref.injector);
               injector.get($INJECTOR);
