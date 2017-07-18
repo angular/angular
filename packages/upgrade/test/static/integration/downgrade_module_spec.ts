@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Inject, Input, NgModule, Provider, destroyPlatform} from '@angular/core';
+import {Component, Inject, Injector, Input, NgModule, Provider, destroyPlatform} from '@angular/core';
 import {async} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -131,6 +131,42 @@ export function main() {
            // Wait for `$evalAsync()` to propagate inputs.
            setTimeout(() => expect(element.textContent).toBe('foo-bar'));
          });
+       }));
+
+    it('should give access to both injectors in the Angular module\'s constructor', async(() => {
+         let $injectorFromNg2: angular.IInjectorService|null = null;
+
+         @Component({selector: 'ng2', template: ''})
+         class Ng2Component {
+         }
+
+         @NgModule({
+           declarations: [Ng2Component],
+           entryComponents: [Ng2Component],
+           imports: [BrowserModule],
+         })
+         class Ng2Module {
+           constructor(injector: Injector) {
+             $injectorFromNg2 = injector.get<angular.IInjectorService>('$injector' as any);
+           }
+
+           ngDoBootstrap() {}
+         }
+
+         const bootstrapFn = (extraProviders: Provider[]) =>
+             platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
+         const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
+         const ng1Module =
+             angular.module('ng1', [lazyModuleName])
+                 .directive(
+                     'ng2', downgradeComponent({component: Ng2Component, propagateDigest: false}))
+                 .value('ng1Value', 'foo');
+
+         const element = html('<ng2></ng2>');
+         const $injectorFromNg1 = angular.bootstrap(element, [ng1Module.name]);
+
+         // Wait for the module to be bootstrapped.
+         setTimeout(() => expect($injectorFromNg2).toBe($injectorFromNg1));
        }));
   });
 }
