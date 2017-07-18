@@ -33,7 +33,7 @@ export class UserError extends Error {
     super(message);
     // Required for TS 2.1, see
     // https://github.com/Microsoft/TypeScript/wiki/Breaking-Changes#extending-built-ins-like-error-array-and-map-may-no-longer-work
-    Object.setPrototypeOf(this, UserError.prototype);
+    (Object as any).setPrototypeOf(this, UserError.prototype);
 
     const nativeError = new Error(message) as any as Error;
     this._nativeError = nativeError;
@@ -76,13 +76,14 @@ export function formatDiagnostics(diags: ts.Diagnostic[]): string {
       .join('\n');
 }
 
-export function check(diags: ts.Diagnostic[]) {
+export function check(diags: ts.Diagnostic[] | undefined) {
   if (diags && diags.length && diags[0]) {
     throw new UserError(formatDiagnostics(diags));
   }
 }
 
-export function validateAngularCompilerOptions(options: AngularCompilerOptions): ts.Diagnostic[] {
+export function validateAngularCompilerOptions(options: AngularCompilerOptions): ts.Diagnostic[]|
+    undefined {
   if (options.annotationsAs) {
     switch (options.annotationsAs) {
       case 'decorators':
@@ -90,9 +91,9 @@ export function validateAngularCompilerOptions(options: AngularCompilerOptions):
         break;
       default:
         return [{
-          file: null,
-          start: null,
-          length: null,
+          file: null as any as ts.SourceFile,
+          start: null as any as number,
+          length: null as any as number,
           messageText:
               'Angular compiler options "annotationsAs" only supports "static fields" and "decorators"',
           category: ts.DiagnosticCategory.Error,
@@ -136,7 +137,7 @@ export class Tsc implements CompilerInterface {
         return ts.readConfigFile(project, this.readFile);
       }
     })();
-    check([error]);
+    check([error !]);
 
     const parsed =
         ts.parseJsonConfigFileContent(config, this.parseConfigHost, basePath, existingOptions);

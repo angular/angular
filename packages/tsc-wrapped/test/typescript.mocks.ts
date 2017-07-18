@@ -21,7 +21,7 @@ export class Host implements ts.LanguageServiceHost {
 
   getScriptVersion(fileName: string): string { return this.version.toString(); }
 
-  getScriptSnapshot(fileName: string): ts.IScriptSnapshot {
+  getScriptSnapshot(fileName: string): ts.IScriptSnapshot|undefined {
     const content = this.getFileContent(fileName);
     if (content) return ts.ScriptSnapshot.fromString(content);
   }
@@ -40,7 +40,7 @@ export class Host implements ts.LanguageServiceHost {
     this.version++;
   }
 
-  private getFileContent(fileName: string): string {
+  private getFileContent(fileName: string): string|undefined {
     if (this.overrides.has(fileName)) {
       return this.overrides.get(fileName);
     }
@@ -69,9 +69,9 @@ export class MockNode implements ts.Node {
   constructor(
       public kind: ts.SyntaxKind = ts.SyntaxKind.Identifier, public flags: ts.NodeFlags = 0,
       public pos: number = 0, public end: number = 0) {}
-  getSourceFile(): ts.SourceFile { return null; }
+  getSourceFile(): ts.SourceFile { return null as any as ts.SourceFile; }
   getChildCount(sourceFile?: ts.SourceFile): number { return 0 }
-  getChildAt(index: number, sourceFile?: ts.SourceFile): ts.Node { return null; }
+  getChildAt(index: number, sourceFile?: ts.SourceFile): ts.Node { return null as any as ts.Node; }
   getChildren(sourceFile?: ts.SourceFile): ts.Node[] { return []; }
   getStart(sourceFile?: ts.SourceFile): number { return 0; }
   getFullStart(): number { return 0; }
@@ -81,10 +81,10 @@ export class MockNode implements ts.Node {
   getLeadingTriviaWidth(sourceFile?: ts.SourceFile): number { return 0; }
   getFullText(sourceFile?: ts.SourceFile): string { return ''; }
   getText(sourceFile?: ts.SourceFile): string { return ''; }
-  getFirstToken(sourceFile?: ts.SourceFile): ts.Node { return null; }
-  getLastToken(sourceFile?: ts.SourceFile): ts.Node { return null; }
+  getFirstToken(sourceFile?: ts.SourceFile): ts.Node { return null as any as ts.Node; }
+  getLastToken(sourceFile?: ts.SourceFile): ts.Node { return null as any as ts.Node; }
   forEachChild<T>(cbNode: (node: ts.Node) => T, cbNodeArray?: (nodes: ts.Node[]) => T): T {
-    return null;
+    return null as any as T;
   }
 }
 
@@ -162,22 +162,28 @@ export function allChildren<T>(node: ts.Node, cb: (node: ts.Node) => T): T {
   })
 }
 
-export function findClass(sourceFile: ts.SourceFile, name: string): ts.ClassDeclaration {
+export function findClass(sourceFile: ts.SourceFile, name: string): ts.ClassDeclaration|undefined {
   return ts.forEachChild(
       sourceFile, node => isClass(node) && isNamed(node.name, name) ? node : undefined);
 }
 
-export function findVar(sourceFile: ts.SourceFile, name: string): ts.VariableDeclaration {
+export function findVar(sourceFile: ts.SourceFile, name: string): ts.VariableDeclaration|undefined {
   return allChildren(
       sourceFile, node => isVar(node) && isNamed(node.name, name) ? node : undefined);
+}
+
+export function findVarInitializer(sourceFile: ts.SourceFile, name: string): ts.Expression {
+  const v = findVar(sourceFile, name);
+  expect(v && v.initializer).toBeDefined();
+  return v !.initializer !;
 }
 
 export function isClass(node: ts.Node): node is ts.ClassDeclaration {
   return node.kind === ts.SyntaxKind.ClassDeclaration;
 }
 
-export function isNamed(node: ts.Node, name: string): node is ts.Identifier {
-  return node.kind === ts.SyntaxKind.Identifier && (<ts.Identifier>node).text === name;
+export function isNamed(node: ts.Node | undefined, name: string): node is ts.Identifier {
+  return !!node && node.kind === ts.SyntaxKind.Identifier && (<ts.Identifier>node).text === name;
 }
 
 export function isVar(node: ts.Node): node is ts.VariableDeclaration {

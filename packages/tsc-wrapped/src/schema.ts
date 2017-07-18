@@ -73,7 +73,7 @@ export function isMemberMetadata(value: any): value is MemberMetadata {
 
 export interface MethodMetadata extends MemberMetadata {
   __symbolic: 'constructor'|'method';
-  parameterDecorators?: (MetadataSymbolicExpression|MetadataError)[][];
+  parameterDecorators?: ((MetadataSymbolicExpression | MetadataError)[]|undefined)[];
 }
 export function isMethodMetadata(value: any): value is MethodMetadata {
   return value && (value.__symbolic === 'constructor' || value.__symbolic === 'method');
@@ -81,7 +81,7 @@ export function isMethodMetadata(value: any): value is MethodMetadata {
 
 export interface ConstructorMetadata extends MethodMetadata {
   __symbolic: 'constructor';
-  parameters?: (MetadataSymbolicExpression|MetadataError|null)[];
+  parameters?: (MetadataSymbolicExpression|MetadataError|null|undefined)[];
 }
 export function isConstructorMetadata(value: any): value is ConstructorMetadata {
   return value && value.__symbolic === 'constructor';
@@ -97,8 +97,8 @@ export function isFunctionMetadata(value: any): value is FunctionMetadata {
   return value && value.__symbolic === 'function';
 }
 
-export type MetadataValue = string | number | boolean | MetadataObject | MetadataArray |
-    MetadataSymbolicExpression | MetadataError;
+export type MetadataValue = string | number | boolean | undefined | null | MetadataObject |
+    MetadataArray | MetadataSymbolicExpression | MetadataError;
 
 export interface MetadataObject { [name: string]: MetadataValue; }
 
