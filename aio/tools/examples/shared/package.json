@@ -34,7 +34,6 @@
   "devDependencies": {
     "@angular/cli": "^1.2.0",
     "@ngtools/webpack": "^1.2.11",
-    "@angular/cli": "^1.2.0",
     "@types/angular": "^1.5.16",
     "@types/angular-animate": "^1.5.5",
     "@types/angular-cookies": "^1.4.2",
