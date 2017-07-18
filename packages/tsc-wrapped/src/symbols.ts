@@ -49,23 +49,26 @@ export class Symbols {
               ts.SyntaxKind.ExternalModuleReference) {
             const externalReference =
                 <ts.ExternalModuleReference>importEqualsDeclaration.moduleReference;
-            // An `import <identifier> = require(<module-specifier>);
-            if (!externalReference.expression.parent) {
-              // The `parent` field of a node is set by the TypeScript binder (run as
-              // part of the type checker). Setting it here allows us to call `getText()`
-              // even if the `SourceFile` was not type checked (which looks for `SourceFile`
-              // in the parent chain). This doesn't damage the node as the binder unconditionally
-              // sets the parent.
-              externalReference.expression.parent = externalReference;
-              externalReference.parent = this.sourceFile as any;
+            if (externalReference.expression) {
+              // An `import <identifier> = require(<module-specifier>);
+              if (!externalReference.expression.parent) {
+                // The `parent` field of a node is set by the TypeScript binder (run as
+                // part of the type checker). Setting it here allows us to call `getText()`
+                // even if the `SourceFile` was not type checked (which looks for `SourceFile`
+                // in the parent chain). This doesn't damage the node as the binder unconditionally
+                // sets the parent.
+                externalReference.expression.parent = externalReference;
+                externalReference.parent = this.sourceFile as any;
+              }
+              const from = stripQuotes(externalReference.expression.getText());
+              symbols.set(
+                  importEqualsDeclaration.name.text, {__symbolic: 'reference', module: from});
+              break;
             }
-            const from = stripQuotes(externalReference.expression.getText());
-            symbols.set(importEqualsDeclaration.name.text, {__symbolic: 'reference', module: from});
-          } else {
-            symbols.set(
-                importEqualsDeclaration.name.text,
-                {__symbolic: 'error', message: `Unsupported import syntax`});
           }
+          symbols.set(
+              importEqualsDeclaration.name.text,
+              {__symbolic: 'error', message: `Unsupported import syntax`});
           break;
         case ts.SyntaxKind.ImportDeclaration:
           const importDecl = <ts.ImportDeclaration>node;

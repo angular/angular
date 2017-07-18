@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 export class CliOptions {
-  public basePath: string;
-  constructor({basePath = null}: {basePath?: string}) { this.basePath = basePath; }
+  public basePath: string|null;
+  constructor({basePath = null}: {basePath?: string | null}) { this.basePath = basePath; }
 }
 
 export class I18nExtractionCliOptions extends CliOptions {
@@ -28,18 +28,18 @@ export class I18nExtractionCliOptions extends CliOptions {
 }
 
 export class NgcCliOptions extends CliOptions {
-  public i18nFormat: string;
-  public i18nFile: string;
-  public locale: string;
-  public missingTranslation: string;
+  public i18nFormat: string|null;
+  public i18nFile: string|null;
+  public locale: string|null;
+  public missingTranslation: string|null;
 
   constructor({i18nFormat = null, i18nFile = null, locale = null, missingTranslation = null,
                basePath = null}: {
-    i18nFormat?: string,
-    i18nFile?: string,
-    locale?: string,
-    missingTranslation?: string,
-    basePath?: string
+    i18nFormat?: string | null,
+    i18nFile?: string|null,
+    locale?: string|null,
+    missingTranslation?: string|null,
+    basePath?: string|null
   }) {
     super({basePath: basePath});
     this.i18nFormat = i18nFormat;
