@@ -60,6 +60,8 @@ publishPackage() {
   cd ${repoDir}
 
   # Update the package.json version to include the current commit SHA.
+  # Normally this "sed" call would just replace the version placeholder, but the version in the
+  # package.json file is already replaced by the release task of the current package.
   sed -i "s/${buildVersion}/${buildVersion}-${commitSha}/g" package.json
 
   # For build artifacts the different Angular packages that refer to the 0.0.0-PLACEHOLDER should
@@ -74,7 +76,7 @@ publishPackage() {
   echo "https://${MATERIAL2_BUILDS_TOKEN}:@github.com" > .git/credentials
 
   git add -A
-  git commit -m "${commitMessage}"
+  git commit --allow-empty -m "${commitMessage}"
   git tag "${buildVersion}-${commitSha}"
   git push origin master --tags
 

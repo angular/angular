@@ -90,6 +90,6 @@ git config credential.helper "store --file=.git/credentials"
 echo "https://${MATERIAL2_DOCS_CONTENT_TOKEN}:@github.com" > .git/credentials
 
 git add -A
-git commit -m "$commitMessage"
+git commit --allow-empty -m "$commitMessage"
 git tag "$commitSha"
 git push origin master --tags
