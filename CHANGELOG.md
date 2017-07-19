@@ -1,3 +1,24 @@
+<a name="4.3.1"></a>
+## [4.3.1](https://github.com/angular/angular/compare/4.3.0...4.3.1) (2017-07-19)
+
+
+### Bug Fixes
+
+* **animations:** always camelcase style property names that contain auto styles ([383d896](https://github.com/angular/angular/commit/383d896)), closes [#17938](https://github.com/angular/angular/issues/17938)
+* **animations:** capture cancelled animation styles within grouped animations ([333ffd8](https://github.com/angular/angular/commit/333ffd8)), closes [#17170](https://github.com/angular/angular/issues/17170)
+* **animations:** do not crash animations if a nested component fires CD during CD ([4c1f32b](https://github.com/angular/angular/commit/4c1f32b)), closes [#18193](https://github.com/angular/angular/issues/18193)
+* **animations:** make sure @.disabled works in non-animation components ([a5c4bb5](https://github.com/angular/angular/commit/a5c4bb5))
+* **common:** send flushed body as error instead of null ([17b7bc3](https://github.com/angular/angular/commit/17b7bc3)), closes [#18181](https://github.com/angular/angular/issues/18181)
+* **compiler:** ensure jit external id arguments names are unique ([4671168](https://github.com/angular/angular/commit/4671168))
+* **compiler-cli:** don't generate empty <target/> when extracting xliff ([f0476fc](https://github.com/angular/angular/commit/f0476fc)), closes [#15754](https://github.com/angular/angular/issues/15754)
+* **platform-server:** provide XhrFactory for HttpClient ([4ce29f3](https://github.com/angular/angular/commit/4ce29f3))
+* **router:** canDeactivate guards should run from bottom to top ([1ac78bf](https://github.com/angular/angular/commit/1ac78bf)), closes [#15657](https://github.com/angular/angular/issues/15657)
+* **router:** should navigate to the same url when config changes ([4340bea](https://github.com/angular/angular/commit/4340bea)), closes [#15535](https://github.com/angular/angular/issues/15535)
+* **router:** should run resolvers for the same route concurrently ([ec89f37](https://github.com/angular/angular/commit/ec89f37)), closes [#14279](https://github.com/angular/angular/issues/14279)
+* **router:** terminal route in custom matcher ([5d275e9](https://github.com/angular/angular/commit/5d275e9))
+
+
+
 <a name="4.3.0"></a>
 # [4.3.0](https://github.com/angular/angular/compare/4.3.0-rc.0...4.3.0) (2017-07-14)
 
