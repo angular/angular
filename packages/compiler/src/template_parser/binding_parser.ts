@@ -401,7 +401,6 @@ export class BindingParser {
    * @param propName the name of the property / attribute
    * @param sourceSpan
    * @param isAttr true when binding to an attribute
-   * @private
    */
   private _validatePropertyOrAttributeName(
       propName: string, sourceSpan: ParseSourceSpan, isAttr: boolean): void {

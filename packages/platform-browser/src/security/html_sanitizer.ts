@@ -215,7 +215,6 @@ const NON_ALPHANUMERIC_REGEXP = /([^\#-~ |!])/g;
  * resulting string can be safely inserted into attribute or
  * element text.
  * @param value
- * @returns {string} escaped text
  */
 function encodeEntities(value: string) {
   return value.replace(/&/g, '&amp;')

@@ -202,7 +202,6 @@ function _buildFromEncodedParts(
  *    $6 = <undefined>       query without ?
  *    $7 = Related           fragment without #
  * </pre>
- * @type {!RegExp}
  * @internal
  */
 const _splitRe = new RegExp(
