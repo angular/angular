@@ -47,8 +47,8 @@ To handle those exceptions, we have the `embeddedPlunker.js` and the `regularPlu
 
 Where? at `src/generated/live-examples/`.
 
-Then the `<live-example>` embedded component will look at this folder to get the plunker it needs for the example
+Then the `<live-example>` embedded component will look at this folder to get the plunker it needs for the example.
 
 ## Appendix: Why not generating plunkers on runtime?
 
-At AngularJS, all the plunkers were generated a runtime. The downside is that all the example codes would need to be deployed as well and they won't be no longer useful after the plunker is generated. This tool takes a few seconds to run, and the end result is only 3mb~
+At AngularJS, all the plunkers were generated a runtime. The downside is that all the example codes would need to be deployed as well and they won't be no longer useful after the plunker is generated. This tool takes a few seconds to run, and the end result is only 3mb~.
