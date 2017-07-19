@@ -72,7 +72,7 @@ export interface CanDeactivate<T> {
 
 /** @stable */
 export interface CanLoad {
-    canLoad(route: Route): Observable<boolean> | Promise<boolean> | boolean;
+    canLoad(route: Route, segments: UrlSegment[]): Observable<boolean> | Promise<boolean> | boolean;
 }
 
 /** @experimental */
