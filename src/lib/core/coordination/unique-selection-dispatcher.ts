@@ -50,11 +50,13 @@ export class UniqueSelectionDispatcher {
   }
 }
 
+/** @docs-private */
 export function UNIQUE_SELECTION_DISPATCHER_PROVIDER_FACTORY(
     parentDispatcher: UniqueSelectionDispatcher) {
   return parentDispatcher || new UniqueSelectionDispatcher();
 }
 
+/** @docs-private */
 export const UNIQUE_SELECTION_DISPATCHER_PROVIDER = {
   // If there is already a dispatcher available, use that. Otherwise, provide a new one.
   provide: UniqueSelectionDispatcher,

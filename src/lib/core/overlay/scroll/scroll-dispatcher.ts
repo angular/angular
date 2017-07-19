@@ -143,11 +143,13 @@ export class ScrollDispatcher {
   }
 }
 
+/** @docs-private */
 export function SCROLL_DISPATCHER_PROVIDER_FACTORY(
     parentDispatcher: ScrollDispatcher, ngZone: NgZone, platform: Platform) {
   return parentDispatcher || new ScrollDispatcher(ngZone, platform);
 }
 
+/** @docs-private */
 export const SCROLL_DISPATCHER_PROVIDER = {
   // If there is already a ScrollDispatcher available, use that. Otherwise, provide a new one.
   provide: ScrollDispatcher,

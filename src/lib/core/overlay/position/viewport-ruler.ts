@@ -90,11 +90,13 @@ export class ViewportRuler {
 
 }
 
+/** @docs-private */
 export function VIEWPORT_RULER_PROVIDER_FACTORY(parentRuler: ViewportRuler,
                                                 scrollDispatcher: ScrollDispatcher) {
   return parentRuler || new ViewportRuler(scrollDispatcher);
 }
 
+/** @docs-private */
 export const VIEWPORT_RULER_PROVIDER = {
   // If there is already a ViewportRuler available, use that. Otherwise, provide a new one.
   provide: ViewportRuler,

@@ -473,11 +473,13 @@ export class MdIconRegistry {
   }
 }
 
+/** @docs-private */
 export function ICON_REGISTRY_PROVIDER_FACTORY(
     parentRegistry: MdIconRegistry, http: Http, sanitizer: DomSanitizer) {
   return parentRegistry || new MdIconRegistry(http, sanitizer);
 }
 
+/** @docs-private */
 export const ICON_REGISTRY_PROVIDER = {
   // If there is already an MdIconRegistry available, use that. Otherwise, provide a new one.
   provide: MdIconRegistry,

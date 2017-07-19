@@ -53,10 +53,12 @@ export class Directionality {
   }
 }
 
+/** @docs-private */
 export function DIRECTIONALITY_PROVIDER_FACTORY(parentDirectionality, _document) {
   return parentDirectionality || new Directionality(_document);
 }
 
+/** @docs-private */
 export const DIRECTIONALITY_PROVIDER = {
   // If there is already a Directionality available, use that. Otherwise, provide a new one.
   provide: Directionality,

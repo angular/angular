@@ -77,11 +77,13 @@ export class LiveAnnouncer implements OnDestroy {
 
 }
 
+/** @docs-private */
 export function LIVE_ANNOUNCER_PROVIDER_FACTORY(
     parentDispatcher: LiveAnnouncer, liveElement: any, platform: Platform) {
   return parentDispatcher || new LiveAnnouncer(liveElement, platform);
 }
 
+/** @docs-private */
 export const LIVE_ANNOUNCER_PROVIDER = {
   // If there is already a LiveAnnouncer available, use that. Otherwise, provide a new one.
   provide: LiveAnnouncer,
