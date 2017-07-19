@@ -255,11 +255,11 @@ During each navigation, the `Router` emits navigation events through the `Router
 
   <tr>
     <td>
-      <code>RouteConfigLoadStart</code>
+      <code>RouteConfigLoadEnd</code>
     </td>
     <td>
 
-      An [event](api/router/RouteConfigLoadStart) triggered after a route has been lazy loaded.
+      An [event](api/router/RouteConfigLoadEnd) triggered after a route has been lazy loaded.
 
     </td>
   </tr>
