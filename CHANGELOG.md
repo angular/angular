@@ -1,3 +1,32 @@
+<a name="5.0.0-beta.0"></a>
+# [5.0.0-beta.0](https://github.com/angular/angular/compare/4.3.0...5.0.0-beta.0) (2017-07-19)
+
+
+### Bug Fixes
+
+* **animations:** always camelcase style property names that contain auto styles ([d22f8f5](https://github.com/angular/angular/commit/d22f8f5)), closes [#17938](https://github.com/angular/angular/issues/17938)
+* **animations:** capture cancelled animation styles within grouped animations ([23146c9](https://github.com/angular/angular/commit/23146c9)), closes [#17170](https://github.com/angular/angular/issues/17170)
+* **animations:** do not crash animations if a nested component fires CD during CD ([5db6f38](https://github.com/angular/angular/commit/5db6f38)), closes [#18193](https://github.com/angular/angular/issues/18193)
+* **animations:** make sure @.disabled works in non-animation components ([5344be5](https://github.com/angular/angular/commit/5344be5))
+* **common:** send flushed body as error instead of null ([5c62e30](https://github.com/angular/angular/commit/5c62e30)), closes [#18181](https://github.com/angular/angular/issues/18181)
+* **compiler:** ensure jit external id arguments names are unique ([95635c1](https://github.com/angular/angular/commit/95635c1))
+* **compiler-cli:** don't generate empty <target/> when extracting xliff ([65c9e13](https://github.com/angular/angular/commit/65c9e13)), closes [#15754](https://github.com/angular/angular/issues/15754)
+* **platform-server:** provide XhrFactory for HttpClient ([8076482](https://github.com/angular/angular/commit/8076482))
+* **router:** canDeactivate guards should run from bottom to top ([e20cfe1](https://github.com/angular/angular/commit/e20cfe1)), closes [#15657](https://github.com/angular/angular/issues/15657)
+* **router:** should navigate to the same url when config changes ([eb6fb5f](https://github.com/angular/angular/commit/eb6fb5f)), closes [#15535](https://github.com/angular/angular/issues/15535)
+* **router:** should run resolvers for the same route concurrently ([ad3029e](https://github.com/angular/angular/commit/ad3029e)), closes [#14279](https://github.com/angular/angular/issues/14279)
+* **router:** terminal route in custom matcher ([b399cb2](https://github.com/angular/angular/commit/b399cb2))
+* **upgrade:** allow accessing AngularJS injector from downgraded module ([a5205c6](https://github.com/angular/angular/commit/a5205c6))
+
+
+### Features
+
+* **animations:** support :increment and :decrement transition aliases ([6f45519](https://github.com/angular/angular/commit/6f45519))
+* **upgrade:** propagate touched state of NgModelController ([59c23c7](https://github.com/angular/angular/commit/59c23c7))
+* **upgrade:** support lazy-loading Angular module into AngularJS app ([30e76fc](https://github.com/angular/angular/commit/30e76fc))
+
+
+
 <a name="4.3.1"></a>
 ## [4.3.1](https://github.com/angular/angular/compare/4.3.0...4.3.1) (2017-07-19)
 
