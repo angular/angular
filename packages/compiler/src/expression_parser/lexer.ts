@@ -231,7 +231,6 @@ class _Scanner {
    * @param two second symbol (part of the operator when the second code point matches)
    * @param threeCode code point for the third symbol
    * @param three third symbol (part of the operator when provided and matches source expression)
-   * @returns {Token}
    */
   scanComplexOperator(
       start: number, one: string, twoCode: number, two: string, threeCode?: number,
