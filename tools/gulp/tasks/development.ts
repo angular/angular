@@ -33,9 +33,8 @@ task(':watch:devapp', () => {
   watchFiles(join(appDir, '**/*.html'), [':build:devapp:assets']);
 
   // The themes for the demo-app are built by the demo-app using the SCSS mixins from Material.
-  // Therefore when the CSS files have been changed the SCSS mixins have been refreshed and
-  // copied over. Rebuilt the theme CSS using the updated SCSS mixins.
-  watchFiles(join(materialOutPath, '**/*.css'), [':build:devapp:scss']);
+  // Therefore when SCSS files have been changed, the custom theme needs to be rebuilt.
+  watchFiles(join(materialOutPath, '**/*.scss'), [':build:devapp:scss']);
 });
 
 /** Path to the demo-app tsconfig file. */
