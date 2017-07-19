@@ -36,7 +36,7 @@ describe('Router', () => {
   describe('setUpLocationChangeListener', () => {
     beforeEach(() => { TestBed.configureTestingModule({imports: [RouterTestingModule]}); });
 
-    it('should be indempotent', inject([Router, Location], (r: Router, location: Location) => {
+    it('should be idempotent', inject([Router, Location], (r: Router, location: Location) => {
          r.setUpLocationChangeListener();
          const a = (<any>r).locationSubscription;
          r.setUpLocationChangeListener();
