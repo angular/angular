@@ -151,7 +151,7 @@ export interface Injectable {}
  * @stable
  * @Annotation
  */
-export const Injectable: InjectableDecorator = <InjectableDecorator>makeDecorator('Injectable');
+export const Injectable: InjectableDecorator = makeDecorator('Injectable');
 
 /**
  * Type of the Self decorator / constructor function.
