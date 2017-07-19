@@ -103,7 +103,8 @@ function declareTests({useJit}: {useJit: boolean}) {
         fixture.componentInstance.ctxProp = 'Hello World!';
         fixture.detectChanges();
 
-        expect(fixture.debugElement.children[0].nativeElement.id).toEqual('Hello World!');
+        expect(getDOM().getProperty(fixture.debugElement.children[0].nativeElement, 'id'))
+            .toEqual('Hello World!');
       });
 
       it('should consume binding to aria-* attributes', () => {
@@ -165,11 +166,13 @@ function declareTests({useJit}: {useJit: boolean}) {
            const fixture = TestBed.createComponent(MyComp);
 
            fixture.detectChanges();
-           expect(fixture.debugElement.children[0].nativeElement.tabIndex).toEqual(0);
+           expect(getDOM().getProperty(fixture.debugElement.children[0].nativeElement, 'tabIndex'))
+               .toEqual(0);
 
            fixture.componentInstance.ctxNumProp = 5;
            fixture.detectChanges();
-           expect(fixture.debugElement.children[0].nativeElement.tabIndex).toEqual(5);
+           expect(getDOM().getProperty(fixture.debugElement.children[0].nativeElement, 'tabIndex'))
+               .toEqual(5);
          });
 
       it('should consume binding to camel-cased properties', () => {
@@ -179,11 +182,13 @@ function declareTests({useJit}: {useJit: boolean}) {
         const fixture = TestBed.createComponent(MyComp);
 
         fixture.detectChanges();
-        expect(fixture.debugElement.children[0].nativeElement.readOnly).toBeFalsy();
+        expect(getDOM().getProperty(fixture.debugElement.children[0].nativeElement, 'readOnly'))
+            .toBeFalsy();
 
         fixture.componentInstance.ctxBoolProp = true;
         fixture.detectChanges();
-        expect(fixture.debugElement.children[0].nativeElement.readOnly).toBeTruthy();
+        expect(getDOM().getProperty(fixture.debugElement.children[0].nativeElement, 'readOnly'))
+            .toBeTruthy();
       });
 
       it('should consume binding to innerHtml', () => {
@@ -228,7 +233,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         fixture.debugElement.componentInstance.ctxProp = 'foo';
         fixture.detectChanges();
 
-        expect(nativeEl.htmlFor).toBe('foo');
+        expect(getDOM().getProperty(nativeEl, 'htmlFor')).toBe('foo');
       });
 
       it('should consume directive watch expression change.', () => {
@@ -897,7 +902,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
         fixture.detectChanges();
 
-        expect(tc.nativeElement.id).toEqual('newId');
+        expect(getDOM().getProperty(tc.nativeElement, 'id')).toEqual('newId');
       });
 
       it('should not use template variables for expressions in hostProperties', () => {
@@ -1573,7 +1578,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         fixture.detectChanges();
 
         const el = getDOM().querySelector(fixture.nativeElement, 'span');
-        expect(el.title).toEqual('TITLE');
+        expect(getDOM().getProperty(el, 'title')).toEqual('TITLE');
       });
     });
 

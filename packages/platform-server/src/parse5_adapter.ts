@@ -85,12 +85,17 @@ export class Parse5DomAdapter extends DomAdapter {
     } else if (name === 'className') {
       el.attribs['class'] = el.className = value;
     } else {
-      el[name] = value;
+      // Store the property in a separate property bag so that it doesn't clobber
+      // actual parse5 properties on the Element.
+      el.properties = el.properties || {};
+      el.properties[name] = value;
     }
   }
   // TODO(tbosch): don't even call this method when we run the tests on server side
   // by not using the DomRenderer in tests. Keeping this for now to make tests happy...
-  getProperty(el: any, name: string): any { return el[name]; }
+  getProperty(el: any, name: string): any {
+    return el.properties ? el.properties[name] : undefined;
+  }
 
   logError(error: string) { console.error(error); }
 
