@@ -42,8 +42,9 @@ export class PercentPipeComponent {
 @Component({
   selector: 'currency-pipe',
   template: `<div>
-    <p>A: {{a | currency:'USD':false}}</p>
-    <p>B: {{b | currency:'USD':true:'4.2-2'}}</p>
+    <p>A: {{a | currency:'CAD'}}</p>
+    <p>B: {{b | currency:'CAD':'symbol':'4.2-2'}}</p>
+    <p>B: {{b | currency:'CAD':'symbol-narrow':'4.2-2'}}</p>
   </div>`
 })
 export class CurrencyPipeComponent {

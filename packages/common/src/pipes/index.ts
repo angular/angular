@@ -35,9 +35,13 @@ export {
   UpperCasePipe
 };
 
+/**
+ * A collection of i18n pipes that are likely to be used in each and every application.
+ */
+export const COMMON_I18N_PIPES = [DecimalPipe, PercentPipe, CurrencyPipe, DatePipe];
 
 /**
- * A collection of Angular pipes that are likely to be used in each and every application.
+ * A collection of pipes that are likely to be used in each and every application.
  */
 export const COMMON_PIPES = [
   AsyncPipe,
@@ -45,11 +49,7 @@ export const COMMON_PIPES = [
   LowerCasePipe,
   JsonPipe,
   SlicePipe,
-  DecimalPipe,
-  PercentPipe,
   TitleCasePipe,
-  CurrencyPipe,
-  DatePipe,
   I18nPluralPipe,
   I18nSelectPipe,
 ];

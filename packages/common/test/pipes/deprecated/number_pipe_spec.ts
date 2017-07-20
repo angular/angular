@@ -6,19 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CurrencyPipe, DecimalPipe, PercentPipe} from '@angular/common';
+import {DeprecatedCurrencyPipe, DeprecatedDecimalPipe, DeprecatedPercentPipe} from '@angular/common';
 import {isNumeric} from '@angular/common/src/pipes/number_pipe';
 import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
-import {NgLocaleEn} from '../../src/i18n/data/locale_en';
-import {NgLocaleEsUS} from '../../src/i18n/data/locale_es-US';
+import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 
 export function main() {
   describe('Number pipes', () => {
-    describe('DecimalPipe', () => {
-      describe('transform', () => {
-        let pipe: DecimalPipe;
-        beforeEach(() => { pipe = new DecimalPipe('en-US', [NgLocaleEn]); });
+    describe('DeprecatedDecimalPipe', () => {
+      let pipe: DeprecatedDecimalPipe;
 
+      beforeEach(() => { pipe = new DeprecatedDecimalPipe('en-US'); });
+
+      describe('transform', () => {
         it('should return correct value for numbers', () => {
           expect(pipe.transform(12345)).toEqual('12,345');
           expect(pipe.transform(123, '.2')).toEqual('123.00');
@@ -38,60 +38,47 @@ export function main() {
         });
 
         it('should not support other objects', () => {
-          expect(() => pipe.transform({})).toThrowError();
+          expect(() => pipe.transform(new Object())).toThrowError();
           expect(() => pipe.transform('123abc')).toThrowError();
         });
       });
-
-      describe('transform with custom locales', () => {
-        it('should return the correct format for es-US in IE11', () => {
-          const pipe = new DecimalPipe('es-US', [NgLocaleEsUS]);
-          expect(pipe.transform('9999999.99', '1.2-2')).toEqual('9,999,999.99');
-        });
-      })
     });
 
-    describe('PercentPipe', () => {
-      let pipe: PercentPipe;
+    describe('DeprecatedPercentPipe', () => {
+      let pipe: DeprecatedPercentPipe;
 
-      beforeEach(() => { pipe = new PercentPipe('en-US', [NgLocaleEn]); });
+      beforeEach(() => { pipe = new DeprecatedPercentPipe('en-US'); });
 
       describe('transform', () => {
         it('should return correct value for numbers', () => {
-          expect(pipe.transform(1.23)).toEqual('123%');
-          expect(pipe.transform(1.2, '.2')).toEqual('120.00%');
+          expect(normalize(pipe.transform(1.23) !)).toEqual('123%');
+          expect(normalize(pipe.transform(1.2, '.2') !)).toEqual('120.00%');
         });
 
         it('should not support other objects',
-           () => { expect(() => pipe.transform({})).toThrowError(); });
+           () => { expect(() => pipe.transform(new Object())).toThrowError(); });
       });
     });
 
-    describe('CurrencyPipe', () => {
-      let pipe: CurrencyPipe;
+    describe('DeprecatedCurrencyPipe', () => {
+      let pipe: DeprecatedCurrencyPipe;
 
-      beforeEach(() => { pipe = new CurrencyPipe('en-US', [NgLocaleEn]); });
+      beforeEach(() => { pipe = new DeprecatedCurrencyPipe('en-US'); });
 
       describe('transform', () => {
         it('should return correct value for numbers', () => {
-          expect(pipe.transform(123)).toEqual('US Dollar123.00');
-          expect(pipe.transform(12, 'EUR', 'code', '.1')).toEqual('EUR12.0');
-          expect(pipe.transform(5.1234, 'USD', 'code', '.0-3')).toEqual('USD5.123');
-          expect(pipe.transform(5.1234, 'USD', 'code')).toEqual('USD5.12');
-          expect(pipe.transform(5.1234, 'USD', 'symbol')).toEqual('$5.12');
-          expect(pipe.transform(5.1234, 'CAD', 'symbol')).toEqual('CA$5.12');
-          expect(pipe.transform(5.1234, 'CAD', 'symbol-narrow')).toEqual('$5.12');
+          // In old Chrome, default formatiing for USD is different
+          if (browserDetection.isOldChrome) {
+            expect(normalize(pipe.transform(123) !)).toEqual('USD123');
+          } else {
+            expect(normalize(pipe.transform(123) !)).toEqual('USD123.00');
+          }
+          expect(normalize(pipe.transform(12, 'EUR', false, '.1') !)).toEqual('EUR12.0');
+          expect(normalize(pipe.transform(5.1234, 'USD', false, '.0-3') !)).toEqual('USD5.123');
         });
 
         it('should not support other objects',
-           () => { expect(() => pipe.transform({})).toThrowError(); });
-
-        it('should warn if you are using the v4 signature', () => {
-          const warnSpy = spyOn(console, 'warn');
-          pipe.transform(123, 'USD', <any>true);
-          expect(warnSpy).toHaveBeenCalledWith(
-              `Warning: the currency pipe has been changed in Angular v5. The symbolDisplay option (third parameter) is now a string instead of a boolean. The accepted values are "code", "symbol" or "symbol-narrow".`);
-        })
+           () => { expect(() => pipe.transform(new Object())).toThrowError(); });
       });
     });
 
@@ -115,4 +102,9 @@ export function main() {
          () => { expect(isNumeric('2a')).toBe(false); });
     });
   });
+}
+
+// Between the symbol and the number, Edge adds a no breaking space and IE11 adds a standard space
+function normalize(s: string): string {
+  return s.replace(/\u00A0| /g, '');
 }

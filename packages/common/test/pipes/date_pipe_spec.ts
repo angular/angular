@@ -9,7 +9,12 @@
 import {DatePipe} from '@angular/common';
 import {JitReflector} from '@angular/compiler';
 import {PipeResolver} from '@angular/compiler/src/pipe_resolver';
-import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
+
+import {NgLocaleDe} from '../../src/i18n/data/locale_de';
+import {NgLocaleEn} from '../../src/i18n/data/locale_en';
+import {NgLocaleHu} from '../../src/i18n/data/locale_hu';
+import {NgLocaleSr} from '../../src/i18n/data/locale_sr';
+import {NgLocaleTh} from '../../src/i18n/data/locale_th';
 
 export function main() {
   describe('DatePipe', () => {
@@ -22,17 +27,9 @@ export function main() {
       expect(pipe.transform(date, pattern)).toEqual(output);
     }
 
-    // TODO: reactivate the disabled expectations once emulators are fixed in SauceLabs
-    // In some old versions of Chrome in Android emulators, time formatting returns dates in the
-    // timezone of the VM host,
-    // instead of the device timezone. Same symptoms as
-    // https://bugs.chromium.org/p/chromium/issues/detail?id=406382
-    // This happens locally and in SauceLabs, so some checks are disabled to avoid failures.
-    // Tracking issue: https://github.com/angular/angular/issues/11187
-
     beforeEach(() => {
-      date = new Date(2015, 5, 15, 9, 3, 1);
-      pipe = new DatePipe('en-US');
+      date = new Date(2015, 5, 15, 9, 3, 1, 550);
+      pipe = new DatePipe('en-US', [NgLocaleEn]);
     });
 
     it('should be marked as pure', () => {
@@ -67,58 +64,121 @@ export function main() {
     describe('transform', () => {
       it('should format each component correctly', () => {
         const dateFixtures: any = {
-          'y': '2015',
-          'yy': '15',
-          'M': '6',
-          'MM': '06',
-          'MMM': 'Jun',
-          'MMMM': 'June',
-          'd': '15',
-          'dd': '15',
-          'EEE': 'Mon',
-          'EEEE': 'Monday'
+          G: 'AD',
+          GG: 'AD',
+          GGG: 'AD',
+          GGGG: 'Anno Domini',
+          GGGGG: 'A',
+          y: '2015',
+          yy: '15',
+          yyy: '2015',
+          yyyy: '2015',
+          M: '6',
+          MM: '06',
+          MMM: 'Jun',
+          MMMM: 'June',
+          MMMMM: 'J',
+          L: '6',
+          LL: '06',
+          LLL: 'Jun',
+          LLLL: 'June',
+          LLLLL: 'J',
+          w: '25',
+          ww: '25',
+          W: '3',
+          d: '15',
+          dd: '15',
+          E: 'Mon',
+          EE: 'Mon',
+          EEE: 'Mon',
+          EEEE: 'Monday',
+          EEEEEE: 'Mo',
+          h: '9',
+          hh: '09',
+          H: '9',
+          HH: '09',
+          m: '3',
+          mm: '03',
+          s: '1',
+          ss: '01',
+          S: '6',
+          SS: '55',
+          SSS: '550',
+          a: 'AM',
+          aa: 'AM',
+          aaa: 'AM',
+          aaaa: 'AM',
+          aaaaa: 'a',
+          b: 'morning',
+          bb: 'morning',
+          bbb: 'morning',
+          bbbb: 'morning',
+          bbbbb: 'morning',
+          B: 'in the morning',
+          BB: 'in the morning',
+          BBB: 'in the morning',
+          BBBB: 'in the morning',
+          BBBBB: 'in the morning',
         };
 
         const isoStringWithoutTimeFixtures: any = {
-          'y': '2015',
-          'yy': '15',
-          'M': '1',
-          'MM': '01',
-          'MMM': 'Jan',
-          'MMMM': 'January',
-          'd': '1',
-          'dd': '01',
-          'EEE': 'Thu',
-          'EEEE': 'Thursday'
+          G: 'AD',
+          GG: 'AD',
+          GGG: 'AD',
+          GGGG: 'Anno Domini',
+          GGGGG: 'A',
+          y: '2015',
+          yy: '15',
+          yyy: '2015',
+          yyyy: '2015',
+          M: '1',
+          MM: '01',
+          MMM: 'Jan',
+          MMMM: 'January',
+          MMMMM: 'J',
+          L: '1',
+          LL: '01',
+          LLL: 'Jan',
+          LLLL: 'January',
+          LLLLL: 'J',
+          w: '1',
+          ww: '01',
+          W: '1',
+          d: '1',
+          dd: '01',
+          E: 'Thu',
+          EE: 'Thu',
+          EEE: 'Thu',
+          EEEE: 'Thursday',
+          EEEEE: 'T',
+          EEEEEE: 'Th',
+          h: '12',
+          hh: '12',
+          H: '0',
+          HH: '00',
+          m: '0',
+          mm: '00',
+          s: '0',
+          ss: '00',
+          S: '0',
+          SS: '00',
+          SSS: '000',
+          a: 'AM',
+          aa: 'AM',
+          aaa: 'AM',
+          aaaa: 'AM',
+          aaaaa: 'a',
+          b: 'midnight',
+          bb: 'midnight',
+          bbb: 'midnight',
+          bbbb: 'midnight',
+          bbbbb: 'midnight',
+          B: 'midnight',
+          BB: 'midnight',
+          BBB: 'midnight',
+          BBBB: 'midnight',
+          BBBBB: 'mi',
         };
-
-        if (!browserDetection.isOldChrome) {
-          dateFixtures['h'] = '9';
-          dateFixtures['hh'] = '09';
-          dateFixtures['j'] = '9 AM';
-          isoStringWithoutTimeFixtures['h'] = '12';
-          isoStringWithoutTimeFixtures['hh'] = '12';
-          isoStringWithoutTimeFixtures['j'] = '12 AM';
-        }
-
-        // IE and Edge can't format a date to minutes and seconds without hours
-        if (!browserDetection.isEdge && !browserDetection.isIE ||
-            !browserDetection.supportsNativeIntlApi) {
-          if (!browserDetection.isOldChrome) {
-            dateFixtures['HH'] = '09';
-            isoStringWithoutTimeFixtures['HH'] = '00';
-          }
-          dateFixtures['E'] = 'M';
-          dateFixtures['L'] = 'J';
-          dateFixtures['m'] = '3';
-          dateFixtures['s'] = '1';
-          dateFixtures['mm'] = '03';
-          dateFixtures['ss'] = '01';
-          isoStringWithoutTimeFixtures['m'] = '0';
-          isoStringWithoutTimeFixtures['s'] = '0';
-          isoStringWithoutTimeFixtures['mm'] = '00';
-          isoStringWithoutTimeFixtures['ss'] = '00';
-        }
 
         Object.keys(dateFixtures).forEach((pattern: string) => {
           expectDateFormatAs(date, pattern, dateFixtures[pattern]);
@@ -127,8 +187,26 @@ export function main() {
         Object.keys(isoStringWithoutTimeFixtures).forEach((pattern: string) => {
           expectDateFormatAs(isoStringWithoutTime, pattern, isoStringWithoutTimeFixtures[pattern]);
         });
+      });
 
-        expect(pipe.transform(date, 'Z')).toBeDefined();
+      it('should format with timezones', () => {
+        const dateFixtures: any = {
+          z: /GMT(\+|-)\d/,
+          zz: /GMT(\+|-)\d/,
+          zzz: /GMT(\+|-)\d/,
+          zzzz: /GMT(\+|-)\d{2}\:30/,
+          Z: /(\+|-)\d{2}30/,
+          ZZ: /(\+|-)\d{2}30/,
+          ZZZ: /(\+|-)\d{2}30/,
+          ZZZZ: /GMT(\+|-)\d{2}\:30/,
+          ZZZZZ: /(\+|-)\d{2}\:30/,
+          O: /GMT(\+|-)\d/,
+          OOOO: /GMT(\+|-)\d{2}\:30/,
+        };
+
+        Object.keys(dateFixtures).forEach((pattern: string) => {
+          expect(pipe.transform(date, pattern, '+0430')).toMatch(dateFixtures[pattern]);
+        });
       });
 
       it('should format common multi component patterns', () => {
@@ -141,18 +219,12 @@ export function main() {
           'yMEEEd': '20156Mon15',
           'MEEEd': '6Mon15',
           'MMMd': 'Jun15',
-          'yMMMMEEEEd': 'Monday, June 15, 2015'
+          'EEEE, MMMM d, y': 'Monday, June 15, 2015',
+          'H:mm a': '9:03 AM',
+          'ms': '31',
+          'MM/dd/yy hh:mm': '06/15/15 09:03',
+          'MM/dd/y': '06/15/2015'
         };
-
-        // IE and Edge can't format a date to minutes and seconds without hours
-        if (!browserDetection.isEdge && !browserDetection.isIE ||
-            !browserDetection.supportsNativeIntlApi) {
-          dateFixtures['ms'] = '31';
-        }
-
-        if (!browserDetection.isOldChrome) {
-          dateFixtures['jm'] = '9:03 AM';
-        }
 
         Object.keys(dateFixtures).forEach((pattern: string) => {
           expectDateFormatAs(date, pattern, dateFixtures[pattern]);
@@ -163,33 +235,23 @@ export function main() {
       it('should format with pattern aliases', () => {
         const dateFixtures: any = {
           'MM/dd/yyyy': '06/15/2015',
-          'fullDate': 'Monday, June 15, 2015',
-          'longDate': 'June 15, 2015',
-          'mediumDate': 'Jun 15, 2015',
-          'shortDate': '6/15/2015'
+          shortDate: '6/15/15',
+          mediumDate: 'Jun 15, 2015',
+          longDate: 'June 15, 2015',
+          fullDate: 'Monday, June 15, 2015',
+          short: '6/15/15, 9:03 AM',
+          medium: 'Jun 15, 2015, 9:03:01 AM',
+          long: /June 15, 2015 at 9:03:01 AM GMT(\+|-)\d/,
+          full: /Monday, June 15, 2015 at 9:03:01 AM GMT(\+|-)\d{2}:\d{2}/,
+          shortTime: '9:03 AM',
+          mediumTime: '9:03:01 AM',
+          longTime: /9:03:01 AM GMT(\+|-)\d/,
+          fullTime: /9:03:01 AM GMT(\+|-)\d{2}:\d{2}/,
         };
 
-        if (!browserDetection.isOldChrome) {
-          // IE and Edge do not add a coma after the year in these 2 cases
-          if ((browserDetection.isEdge || browserDetection.isIE) &&
-              browserDetection.supportsNativeIntlApi) {
-            dateFixtures['medium'] = 'Jun 15, 2015 9:03:01 AM';
-            dateFixtures['short'] = '6/15/2015 9:03 AM';
-          } else {
-            dateFixtures['medium'] = 'Jun 15, 2015, 9:03:01 AM';
-            dateFixtures['short'] = '6/15/2015, 9:03 AM';
-          }
-        }
-
-        if (!browserDetection.isOldChrome) {
-          dateFixtures['mediumTime'] = '9:03:01 AM';
-          dateFixtures['shortTime'] = '9:03 AM';
-        }
-
         Object.keys(dateFixtures).forEach((pattern: string) => {
-          expectDateFormatAs(date, pattern, dateFixtures[pattern]);
+          expect(pipe.transform(date, pattern)).toMatch(dateFixtures[pattern]);
         });
-
       });
 
       it('should format invalid in IE ISO date',
@@ -198,8 +260,28 @@ export function main() {
       it('should format invalid in Safari ISO date',
          () => expect(pipe.transform('2017-01-20T19:00:00+0000')).toEqual('Jan 20, 2017'));
 
+      it('should format correctly in IE11',
+         () => expect(pipe.transform('2017-05-07T22:14:39', 'dd-MM-yyyy HH:mm', '+00:00'))
+                   .toEqual('07-05-2017 22:14'));
+
+      it('should show the correct time in Safari with shortTime and custom format', () => {
+        expect(pipe.transform('2017-06-13T10:14:39', 'shortTime', '+00:00')).toEqual('10:14 AM');
+        expect(pipe.transform('2017-06-13T10:14:39', 'h:mm a', '+00:00')).toEqual('10:14 AM');
+      });
+
       it('should remove bidi control characters',
          () => expect(pipe.transform(date, 'MM/dd/yyyy') !.length).toEqual(10));
+
+      it(`should format the date correctly in various locales`, () => {
+        expect(new DatePipe('de', [NgLocaleDe]).transform(date, 'short'))
+            .toEqual('15.06.15, 09:03');
+        expect(new DatePipe('th', [NgLocaleTh]).transform(date, 'dd-MM-yy')).toEqual('15-06-15');
+        expect(new DatePipe('hu', [NgLocaleHu]).transform(date, 'a')).toEqual('de.');
+        expect(new DatePipe('sr', [NgLocaleSr]).transform(date, 'a')).toEqual('пре подне');
+
+        // todo(ocombe): activate this test when we support local numbers
+        // expect(new DatePipe('mr', [NgLocaleMr]).transform(date, 'hh')).toEqual('०९');
+      });
     });
   });
 }
