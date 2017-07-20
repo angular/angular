@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eu -o pipefail
+set -e -o pipefail
 
 logFile=/var/log/aio/verify-setup.log
 uploadServerLogFile=/var/log/aio/upload-server-verify-setup.log

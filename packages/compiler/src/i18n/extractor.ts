@@ -29,6 +29,8 @@ import {ParseError} from '../parse_util';
 import {PipeResolver} from '../pipe_resolver';
 import {DomElementSchemaRegistry} from '../schema/dom_element_schema_registry';
 import {createOfflineCompileUrlResolver} from '../url_resolver';
+
+import {I18NHtmlParser} from './i18n_html_parser';
 import {MessageBundle} from './message_bundle';
 
 /**
@@ -85,7 +87,7 @@ export class Extractor {
 
   static create(host: ExtractorHost, locale: string|null):
       {extractor: Extractor, staticReflector: StaticReflector} {
-    const htmlParser = new HtmlParser();
+    const htmlParser = new I18NHtmlParser(new HtmlParser());
 
     const urlResolver = createOfflineCompileUrlResolver();
     const symbolCache = new StaticSymbolCache();

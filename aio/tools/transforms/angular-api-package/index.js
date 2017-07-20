@@ -20,11 +20,10 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
   .processor(require('./processors/mergeDecoratorDocs'))
   .processor(require('./processors/extractDecoratedClasses'))
   .processor(require('./processors/matchUpDirectiveDecorators'))
-  .processor(require('./processors/filterContainedDocs'))
+  .processor(require('./processors/filterMemberDocs'))
   .processor(require('./processors/markBarredODocsAsPrivate'))
   .processor(require('./processors/filterPrivateDocs'))
   .processor(require('./processors/computeSearchTitle'))
-  .processor(require('./processors/simplifyMemberAnchors'))
 
   // Where do we get the source files?
   .config(function(readTypeScriptModules, readFilesProcessor, collectExamples) {
@@ -37,8 +36,6 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
       'animations/index.ts',
       'animations/browser/index.ts',
       'animations/browser/testing/index.ts',
-      'common/http/index.ts',
-      'common/http/testing/index.ts',
       'common/index.ts',
       'common/testing/index.ts',
       'core/index.ts',

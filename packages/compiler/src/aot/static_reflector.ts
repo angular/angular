@@ -18,17 +18,12 @@ import {StaticSymbol} from './static_symbol';
 import {StaticSymbolResolver} from './static_symbol_resolver';
 
 const ANGULAR_CORE = '@angular/core';
-const ANGULAR_ROUTER = '@angular/router';
 
 const HIDDEN_KEY = /^\$.*\$$/;
 
 const IGNORE = {
   __symbolic: 'ignore'
 };
-
-const USE_VALUE = 'useValue';
-const PROVIDE = 'provide';
-const REFERENCE_SET = new Set([USE_VALUE, 'useFactory', 'data']);
 
 function shouldIgnore(value: any): boolean {
   return value && value.__symbolic == 'ignore';
@@ -46,8 +41,6 @@ export class StaticReflector implements CompileReflector {
   private conversionMap = new Map<StaticSymbol, (context: StaticSymbol, args: any[]) => any>();
   private injectionToken: StaticSymbol;
   private opaqueToken: StaticSymbol;
-  private ROUTES: StaticSymbol;
-  private ANALYZE_FOR_ENTRY_COMPONENTS: StaticSymbol;
   private annotationForParentClassWithSummaryKind = new Map<CompileSummaryKind, any[]>();
   private annotationNames = new Map<any, string>();
 
@@ -93,10 +86,6 @@ export class StaticReflector implements CompileReflector {
   findDeclaration(moduleUrl: string, name: string, containingFile?: string): StaticSymbol {
     return this.findSymbolDeclaration(
         this.symbolResolver.getSymbolByModule(moduleUrl, name, containingFile));
-  }
-
-  tryFindDeclaration(moduleUrl: string, name: string): StaticSymbol {
-    return this.symbolResolver.ignoreErrorsFor(() => this.findDeclaration(moduleUrl, name));
   }
 
   findSymbolDeclaration(symbol: StaticSymbol): StaticSymbol {
@@ -278,9 +267,6 @@ export class StaticReflector implements CompileReflector {
   private initializeConversionMap(): void {
     this.injectionToken = this.findDeclaration(ANGULAR_CORE, 'InjectionToken');
     this.opaqueToken = this.findDeclaration(ANGULAR_CORE, 'OpaqueToken');
-    this.ROUTES = this.tryFindDeclaration(ANGULAR_ROUTER, 'ROUTES');
-    this.ANALYZE_FOR_ENTRY_COMPONENTS =
-        this.findDeclaration(ANGULAR_CORE, 'ANALYZE_FOR_ENTRY_COMPONENTS');
 
     this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Host'), Host);
     this._registerDecoratorOrConstructor(
@@ -364,8 +350,7 @@ export class StaticReflector implements CompileReflector {
     let scope = BindingScope.empty;
     const calling = new Map<StaticSymbol, boolean>();
 
-    function simplifyInContext(
-        context: StaticSymbol, value: any, depth: number, references: number): any {
+    function simplifyInContext(context: StaticSymbol, value: any, depth: number): any {
       function resolveReferenceValue(staticSymbol: StaticSymbol): any {
         const resolvedSymbol = self.symbolResolver.resolveSymbol(staticSymbol);
         return resolvedSymbol ? resolvedSymbol.metadata : null;
@@ -382,7 +367,7 @@ export class StaticReflector implements CompileReflector {
             if (value && (depth != 0 || value.__symbolic != 'error')) {
               const parameters: string[] = targetFunction['parameters'];
               const defaults: any[] = targetFunction.defaults;
-              args = args.map(arg => simplifyInContext(context, arg, depth + 1, references))
+              args = args.map(arg => simplifyInContext(context, arg, depth + 1))
                          .map(arg => shouldIgnore(arg) ? undefined : arg);
               if (defaults && defaults.length > args.length) {
                 args.push(...defaults.slice(args.length).map((value: any) => simplify(value)));
@@ -395,7 +380,7 @@ export class StaticReflector implements CompileReflector {
               let result: any;
               try {
                 scope = functionScope.done();
-                result = simplifyInContext(functionSymbol, value, depth + 1, references);
+                result = simplifyInContext(functionSymbol, value, depth + 1);
               } finally {
                 scope = oldScope;
               }
@@ -442,15 +427,15 @@ export class StaticReflector implements CompileReflector {
           return result;
         }
         if (expression instanceof StaticSymbol) {
-          // Stop simplification at builtin symbols or if we are in a reference context
+          // Stop simplification at builtin symbols
           if (expression === self.injectionToken || expression === self.opaqueToken ||
-              self.conversionMap.has(expression) || references > 0) {
+              self.conversionMap.has(expression)) {
             return expression;
           } else {
             const staticSymbol = expression;
             const declarationValue = resolveReferenceValue(staticSymbol);
             if (declarationValue) {
-              return simplifyInContext(staticSymbol, declarationValue, depth + 1, references);
+              return simplifyInContext(staticSymbol, declarationValue, depth + 1);
             } else {
               return staticSymbol;
             }
@@ -541,15 +526,13 @@ export class StaticReflector implements CompileReflector {
                       self.getStaticSymbol(selectTarget.filePath, selectTarget.name, members);
                   const declarationValue = resolveReferenceValue(selectContext);
                   if (declarationValue) {
-                    return simplifyInContext(
-                        selectContext, declarationValue, depth + 1, references);
+                    return simplifyInContext(selectContext, declarationValue, depth + 1);
                   } else {
                     return selectContext;
                   }
                 }
                 if (selectTarget && isPrimitive(member))
-                  return simplifyInContext(
-                      selectContext, selectTarget[member], depth + 1, references);
+                  return simplifyInContext(selectContext, selectTarget[member], depth + 1);
                 return null;
               case 'reference':
                 // Note: This only has to deal with variable references,
@@ -568,8 +551,7 @@ export class StaticReflector implements CompileReflector {
               case 'new':
               case 'call':
                 // Determine if the function is a built-in conversion
-                staticSymbol = simplifyInContext(
-                    context, expression['expression'], depth + 1, /* references */ 0);
+                staticSymbol = simplifyInContext(context, expression['expression'], depth + 1);
                 if (staticSymbol instanceof StaticSymbol) {
                   if (staticSymbol === self.injectionToken || staticSymbol === self.opaqueToken) {
                     // if somebody calls new InjectionToken, don't create an InjectionToken,
@@ -580,8 +562,7 @@ export class StaticReflector implements CompileReflector {
                   let converter = self.conversionMap.get(staticSymbol);
                   if (converter) {
                     const args =
-                        argExpressions
-                            .map(arg => simplifyInContext(context, arg, depth + 1, references))
+                        argExpressions.map(arg => simplifyInContext(context, arg, depth + 1))
                             .map(arg => shouldIgnore(arg) ? undefined : arg);
                     return converter(context, args);
                   } else {
@@ -609,20 +590,7 @@ export class StaticReflector implements CompileReflector {
             }
             return null;
           }
-          return mapStringMap(expression, (value, name) => {
-            if (REFERENCE_SET.has(name)) {
-              if (name === USE_VALUE && PROVIDE in expression) {
-                // If this is a provider expression, check for special tokens that need the value
-                // during analysis.
-                const provide = simplify(expression.provide);
-                if (provide === self.ROUTES || provide == self.ANALYZE_FOR_ENTRY_COMPONENTS) {
-                  return simplify(value);
-                }
-              }
-              return simplifyInContext(context, value, depth, references + 1);
-            }
-            return simplify(value)
-          });
+          return mapStringMap(expression, (value, name) => simplify(value));
         }
         return IGNORE;
       }
@@ -640,16 +608,16 @@ export class StaticReflector implements CompileReflector {
       }
     }
 
-    const recordedSimplifyInContext = (context: StaticSymbol, value: any) => {
+    const recordedSimplifyInContext = (context: StaticSymbol, value: any, depth: number) => {
       try {
-        return simplifyInContext(context, value, 0, 0);
+        return simplifyInContext(context, value, depth);
       } catch (e) {
         this.reportError(e, context);
       }
     };
 
-    const result = this.errorRecorder ? recordedSimplifyInContext(context, value) :
-                                        simplifyInContext(context, value, 0, 0);
+    const result = this.errorRecorder ? recordedSimplifyInContext(context, value, 0) :
+                                        simplifyInContext(context, value, 0);
     if (shouldIgnore(result)) {
       return undefined;
     }

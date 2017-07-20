@@ -148,7 +148,6 @@ export class TemplateReference {
     id: 1,
     name: 'Windstorm'
   };
-  anyValue: any;
   myClick(event: any) {
 
   }

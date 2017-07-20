@@ -1,0 +1,7 @@
+**/*.ngfactory.ts
+**/*.ngsummary.json
+**/*.shim.ngstyle.ts
+**/*.metadata.json
+dist
+!app/tsconfig.json
+!rollup-config.js

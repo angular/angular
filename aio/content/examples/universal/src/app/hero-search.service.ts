@@ -14,7 +14,7 @@ export class HeroSearchService {
 
   search(term: string): Observable<Hero[]> {
     return this.http
-               .get(`api/heroes/?name=${term}`)
+               .get(`app/heroes/?name=${term}`)
                .map(response => response.json().data as Hero[]);
   }
 }

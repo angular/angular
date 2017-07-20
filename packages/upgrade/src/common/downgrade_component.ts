@@ -9,14 +9,9 @@
 import {ComponentFactory, ComponentFactoryResolver, Injector, Type} from '@angular/core';
 
 import * as angular from './angular1';
-import {$COMPILE, $INJECTOR, $PARSE, INJECTOR_KEY, LAZY_MODULE_REF, REQUIRE_INJECTOR, REQUIRE_NG_MODEL} from './constants';
+import {$COMPILE, $INJECTOR, $PARSE, INJECTOR_KEY, REQUIRE_INJECTOR, REQUIRE_NG_MODEL} from './constants';
 import {DowngradeComponentAdapter} from './downgrade_component_adapter';
-import {LazyModuleRef, controllerKey, getComponentName, isFunction} from './util';
-
-
-interface Thenable<T> {
-  then(callback: (value: T) => any): any;
-}
+import {controllerKey, getComponentName} from './util';
 
 let downgradeCount = 0;
 
@@ -55,8 +50,6 @@ let downgradeCount = 0;
  */
 export function downgradeComponent(info: {
   component: Type<any>;
-  /** @experimental */
-  propagateDigest?: boolean;
   /** @deprecated since v4. This parameter is no longer used */
   inputs?: string[];
   /** @deprecated since v4. This parameter is no longer used */
@@ -83,14 +76,9 @@ export function downgradeComponent(info: {
         // triggered by `UpgradeNg1ComponentAdapterBuilder`, before the Angular templates have
         // been compiled.
 
+        const parentInjector: Injector|ParentInjectorPromise =
+            required[0] || $injector.get(INJECTOR_KEY);
         const ngModel: angular.INgModelController = required[1];
-        let parentInjector: Injector|Thenable<Injector>|undefined = required[0];
-        let ranAsync = false;
-
-        if (!parentInjector) {
-          const lazyModuleRef = $injector.get(LAZY_MODULE_REF) as LazyModuleRef;
-          parentInjector = lazyModuleRef.injector || lazyModuleRef.promise;
-        }
 
         const downgradeFn = (injector: Injector) => {
           const componentFactoryResolver: ComponentFactoryResolver =
@@ -110,26 +98,18 @@ export function downgradeComponent(info: {
 
           const projectableNodes = facade.compileContents();
           facade.createComponent(projectableNodes);
-          facade.setupInputs(info.propagateDigest);
+          facade.setupInputs();
           facade.setupOutputs();
           facade.registerCleanup();
 
           injectorPromise.resolve(facade.getInjector());
-
-          if (ranAsync) {
-            // If this is run async, it is possible that it is not run inside a
-            // digest and initial input values will not be detected.
-            scope.$evalAsync(() => {});
-          }
         };
 
-        if (isThenable<Injector>(parentInjector)) {
+        if (parentInjector instanceof ParentInjectorPromise) {
           parentInjector.then(downgradeFn);
         } else {
           downgradeFn(parentInjector);
         }
-
-        ranAsync = true;
       }
     };
   };
@@ -174,8 +154,4 @@ class ParentInjectorPromise {
     this.callbacks.forEach(callback => callback(injector));
     this.callbacks.length = 0;
   }
-}
-
-function isThenable<T>(obj: object): obj is Thenable<T> {
-  return isFunction((obj as any).then);
 }

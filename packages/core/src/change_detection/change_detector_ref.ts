@@ -26,7 +26,7 @@ export abstract class ChangeDetectorRef {
    * class Cmp {
    *   numberOfTicks = 0;
    *
-   *   constructor(private ref: ChangeDetectorRef) {
+   *   constructor(ref: ChangeDetectorRef) {
    *     setInterval(() => {
    *       this.numberOfTicks ++
    *       // the following is required, otherwise the view will not be updated

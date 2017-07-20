@@ -1,5 +1,12 @@
+@title
+Tutorial: Tour of Heroes
 
-# Tutorial: Tour of Heroes
+@intro
+The Tour of Heroes tutorial takes you through the steps of creating an Angular application in TypeScript.
+
+@description
+
+
 
 The grand plan for this tutorial is to build an app that helps a staffing agency manage its stable of heroes.
 
@@ -27,7 +34,7 @@ When you're done with this tutorial, the app will look like this <live-example n
 
 
 
-## What you'll build
+## The end game
 
 Here's a visual idea of where this tutorial leads, beginning with the "Dashboard"
 view and the most heroic heroes:

@@ -1,4 +1,3 @@
-import { DebugElement } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Observable } from 'rxjs/Observable';
@@ -13,7 +12,7 @@ describe('SearchResultsComponent', () => {
   let searchResults: Subject<SearchResults>;
 
   /** Get all text from component element */
-  function getText() { return fixture.debugElement.nativeElement.textContent; }
+  function getText() { return fixture.debugElement.nativeElement.innerText; }
 
   /** Get a full set of test results. "Take" what you need */
   function getTestResults(take?: number) {
@@ -33,11 +32,6 @@ describe('SearchResultsComponent', () => {
 
     return take === undefined ? results : results.slice(0, take);
   }
-
-  function compareTitle(l: {title: string}, r: {title: string}) {
-    return l.title.toUpperCase() > r.title.toUpperCase() ? 1 : -1;
-  }
-
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -60,13 +54,13 @@ describe('SearchResultsComponent', () => {
 
     searchResults.next({ query: '', results: results});
     expect(component.searchAreas).toEqual([
-      { name: 'api', priorityPages: [
+      { name: 'api', pages: [
         { path: 'api/d', title: 'API D', type: '', keywords: '', titleWords: '' }
-      ], pages: [] },
-      { name: 'guide', priorityPages: [
+      ], priorityPages: [] },
+      { name: 'guide', pages: [
         { path: 'guide/a', title: 'Guide A', type: '', keywords: '', titleWords: '' },
         { path: 'guide/b', title: 'Guide B', type: '', keywords: '', titleWords: '' },
-      ], pages: [] }
+      ], priorityPages: [] }
     ]);
   });
 
@@ -76,35 +70,48 @@ describe('SearchResultsComponent', () => {
       { path: 'tutorial/toh-pt1', title: 'Tutorial - part 1', type: '', keywords: '', titleWords: '' },
     ]});
     expect(component.searchAreas).toEqual([
-      { name: 'tutorial', priorityPages: [
-        { path: 'tutorial', title: 'Tutorial index', type: '', keywords: '', titleWords: '' },
+      { name: 'tutorial', pages: [
         { path: 'tutorial/toh-pt1', title: 'Tutorial - part 1', type: '', keywords: '', titleWords: '' },
-      ], pages: [] }
+        { path: 'tutorial', title: 'Tutorial index', type: '', keywords: '', titleWords: '' },
+      ], priorityPages: [] }
     ]);
   });
 
-  it('should put first 5 results for each area into priorityPages', () => {
-    const results = getTestResults();
+  it('should sort by title within sorted area', () => {
+    const results = getTestResults(5);
     searchResults.next({ query: '', results: results });
-    expect(component.searchAreas[0].priorityPages).toEqual(results.filter(p => p.path.startsWith('api')).slice(0, 5));
-    expect(component.searchAreas[1].priorityPages).toEqual(results.filter(p => p.path.startsWith('guide')).slice(0, 5));
+
+    expect(component.searchAreas).toEqual([
+      { name: 'api', pages: [
+        { path: 'api/c', title: 'API C', type: '', keywords: '', titleWords: '' },
+        { path: 'api/d', title: 'API D', type: '', keywords: '', titleWords: '' },
+      ], priorityPages: [] },
+      { name: 'guide', pages: [
+        { path: 'guide/a', title: 'Guide A',       type: '', keywords: '', titleWords: '' },
+        { path: 'guide/a/c', title: 'Guide A - C', type: '', keywords: '', titleWords: '' },
+        { path: 'guide/b', title: 'Guide B',       type: '', keywords: '', titleWords: '' },
+      ], priorityPages: [] }
+    ]);
   });
 
-  it('should put the nonPriorityPages into the pages array, sorted by title', () => {
+  it('should put first 5 area results into priorityPages when more than 10 pages', () => {
     const results = getTestResults();
-    searchResults.next({ query: '', results: results });
-    expect(component.searchAreas[0].pages).toEqual([]);
-    expect(component.searchAreas[1].pages).toEqual(results.filter(p => p.path.startsWith('guide')).slice(5).sort(compareTitle));
-  });
+    const sorted = results.slice().sort((l, r) => l.title > r.title ? 1 : -1);
+    const expected = [
+      {
+        name: 'api',
+        pages: sorted.filter(p => p.path.startsWith('api')),
+        priorityPages: []
+      },
+      {
+        name: 'guide',
+        pages: sorted.filter(p => p.path.startsWith('guide')),
+        priorityPages: results.filter(p => p.path.startsWith('guide')).slice(0, 5)
+      }
+    ];
 
-  it('should put a total count in the header of each area of search results', () => {
-    const results = getTestResults();
     searchResults.next({ query: '', results: results });
-    fixture.detectChanges();
-    const headers = fixture.debugElement.queryAll(By.css('h3'));
-    expect(headers.length).toEqual(2);
-    expect(headers[0].nativeElement.textContent).toContain('(2)');
-    expect(headers[1].nativeElement.textContent).toContain('(13)');
+    expect(component.searchAreas).toEqual(expected);
   });
 
   it('should put search results with no containing folder into the default area (other)', () => {
@@ -114,9 +121,9 @@ describe('SearchResultsComponent', () => {
 
     searchResults.next({ query: '', results: results });
     expect(component.searchAreas).toEqual([
-      { name: 'other', priorityPages: [
+      { name: 'other', pages: [
         { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '' }
-      ], pages: [] }
+      ], priorityPages: [] }
     ]);
   });
 
@@ -129,52 +136,19 @@ describe('SearchResultsComponent', () => {
     expect(component.searchAreas).toEqual([]);
   });
 
-  it('should display "Searching ..." while waiting for search results', () => {
-    fixture.detectChanges();
-    expect(getText()).toContain('Searching ...');
-  });
-
-  describe('when a search result anchor is clicked', () => {
-    let searchResult: SearchResult;
+  it('should emit a "resultSelected" event when a search result anchor is clicked', () => {
+    const searchResult = { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '' };
     let selected: SearchResult;
-    let anchor: DebugElement;
+    component.resultSelected.subscribe(result => selected = result);
 
-    beforeEach(() => {
-      component.resultSelected.subscribe(result => selected = result);
+    searchResults.next({ query: 'something', results: [searchResult] });
+    fixture.detectChanges();
+    expect(selected).toBeUndefined();
 
-      selected = null;
-      searchResult = { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '' };
-      searchResults.next({ query: 'something', results: [searchResult] });
-
-      fixture.detectChanges();
-      anchor = fixture.debugElement.query(By.css('a'));
-
-      expect(selected).toBeNull();
-    });
-
-    it('should emit a "resultSelected" event', () => {
-      anchor.triggerEventHandler('click', {button: 0, ctrlKey: false, metaKey: false});
-      fixture.detectChanges();
-      expect(selected).toBe(searchResult);
-    });
-
-    it('should not emit an event if mouse button is not zero (middle or right)', () => {
-      anchor.triggerEventHandler('click', {button: 1, ctrlKey: false, metaKey: false});
-      fixture.detectChanges();
-      expect(selected).toBeNull();
-    });
-
-    it('should not emit an event if the `ctrl` key is pressed', () => {
-      anchor.triggerEventHandler('click', {button: 0, ctrlKey: true, metaKey: false});
-      fixture.detectChanges();
-      expect(selected).toBeNull();
-    });
-
-    it('should not emit an event if the `meta` key is pressed', () => {
-      anchor.triggerEventHandler('click', {button: 0, ctrlKey: false, metaKey: true});
-      fixture.detectChanges();
-      expect(selected).toBeNull();
-    });
+    const anchor = fixture.debugElement.query(By.css('a'));
+    anchor.triggerEventHandler('click', {});
+    fixture.detectChanges();
+    expect(selected).toEqual(searchResult);
   });
 
   describe('when no query results', () => {
@@ -184,5 +158,4 @@ describe('SearchResultsComponent', () => {
       expect(getText()).toContain('No results');
     });
   });
-
 });

@@ -30,7 +30,7 @@ You can keep building the Tour of Heroes without pausing to recompile or refresh
 
 ## Providing HTTP Services
 
-The `HttpModule` is not a core NgModule.
+The `HttpModule` is not a core Angular module.
 `HttpModule` is Angular's optional approach to web access. It exists as a separate add-on module called `@angular/http`
 and is shipped in a separate script file as part of the Angular npm package.
 
@@ -83,7 +83,11 @@ Added hero "Zero" to confirm that the data service can handle a hero with `id==0
   Don't worry about the details of this backend substitution; you can
   skip it when you have a real web API server.
 
-div>
+  Read more about the in-memory web API in the
+  [Appendix: Tour of Heroes in-memory web api](guide/http#in-mem-web-api)
+  section of the [HTTP Client](guide/http#in-mem-web-api) page.
+
+</div>
 
 ## Heroes and HTTP
 

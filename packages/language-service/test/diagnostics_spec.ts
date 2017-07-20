@@ -59,10 +59,6 @@ describe('diagnostics', () => {
         (ngHost as any)._reflector = null;
         ngService.getDiagnostics(fileName);
       });
-
-      // #17611
-      it('should not report diagnostic on iteration of any',
-         () => { accept('<div *ngFor="let value of anyValue">{{value.someField}}</div>'); });
     });
 
     describe('with $event', () => {

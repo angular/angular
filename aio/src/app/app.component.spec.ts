@@ -3,7 +3,7 @@ import { async, inject, ComponentFixture, TestBed, fakeAsync, tick } from '@angu
 import { Title } from '@angular/platform-browser';
 import { APP_BASE_HREF } from '@angular/common';
 import { Http } from '@angular/http';
-import { MdProgressBar, MdSidenav } from '@angular/material';
+import { MdProgressBar } from '@angular/material';
 import { By } from '@angular/platform-browser';
 
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
@@ -18,14 +18,15 @@ import { Logger } from 'app/shared/logger.service';
 import { MockLocationService } from 'testing/location.service';
 import { MockLogger } from 'testing/logger.service';
 import { MockSearchService } from 'testing/search.service';
+import { MockSwUpdateNotificationsService } from 'testing/sw-update-notifications.service';
 import { NavigationNode } from 'app/navigation/navigation.service';
 import { ScrollService } from 'app/shared/scroll.service';
 import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
 import { SearchResultsComponent } from 'app/search/search-results/search-results.component';
 import { SearchService } from 'app/search/search.service';
-import { SelectComponent, Option } from 'app/shared/select/select.component';
+import { SwUpdateNotificationsService } from 'app/sw-updates/sw-update-notifications.service';
 import { TocComponent } from 'app/embedded/toc/toc.component';
-import { TocItem, TocService } from 'app/shared/toc.service';
+import { MdSidenav } from '@angular/material';
 
 const sideBySideBreakPoint = 992;
 const hideToCBreakPoint = 800;
@@ -38,7 +39,6 @@ describe('AppComponent', () => {
   let hamburger: HTMLButtonElement;
   let locationService: MockLocationService;
   let sidenav: HTMLElement;
-  let tocService: TocService;
 
   const initializeTest = () => {
     fixture = TestBed.createComponent(AppComponent);
@@ -47,12 +47,10 @@ describe('AppComponent', () => {
     fixture.detectChanges();
     component.onResize(sideBySideBreakPoint + 1); // wide by default
 
-    const de = fixture.debugElement;
-    docViewer = de.query(By.css('aio-doc-viewer')).nativeElement;
-    hamburger = de.query(By.css('.hamburger')).nativeElement;
-    locationService = de.injector.get(LocationService) as any as MockLocationService;
-    sidenav = de.query(By.css('md-sidenav')).nativeElement;
-    tocService = de.injector.get(TocService);
+    docViewer = fixture.debugElement.query(By.css('aio-doc-viewer')).nativeElement;
+    hamburger = fixture.debugElement.query(By.css('.hamburger')).nativeElement;
+    locationService = fixture.debugElement.injector.get(LocationService) as any;
+    sidenav = fixture.debugElement.query(By.css('md-sidenav')).nativeElement;
   };
 
   describe('with proper DocViewer', () => {
@@ -66,74 +64,26 @@ describe('AppComponent', () => {
       expect(component).toBeDefined();
     });
 
-    describe('hasFloatingToc', () => {
-      it('should initially be true', () => {
-        const fixture2 = TestBed.createComponent(AppComponent);
-        const component2 = fixture2.componentInstance;
-
-        expect(component2.hasFloatingToc).toBe(true);
-      });
-
-      it('should be false on narrow screens', () => {
-        component.onResize(hideToCBreakPoint - 1);
-
-        tocService.tocList.next([{}, {}, {}] as TocItem[]);
-        expect(component.hasFloatingToc).toBe(false);
-
-        tocService.tocList.next([]);
-        expect(component.hasFloatingToc).toBe(false);
-
-        tocService.tocList.next([{}, {}, {}] as TocItem[]);
-        expect(component.hasFloatingToc).toBe(false);
-      });
-
-      it('should be true on wide screens unless the toc is empty', () => {
-        component.onResize(hideToCBreakPoint + 1);
-
-        tocService.tocList.next([{}, {}, {}] as TocItem[]);
-        expect(component.hasFloatingToc).toBe(true);
-
-        tocService.tocList.next([]);
-        expect(component.hasFloatingToc).toBe(false);
-
-        tocService.tocList.next([{}, {}, {}] as TocItem[]);
-        expect(component.hasFloatingToc).toBe(true);
-      });
-
-      it('should be false when toc is empty', () => {
-        tocService.tocList.next([]);
-
-        component.onResize(hideToCBreakPoint + 1);
-        expect(component.hasFloatingToc).toBe(false);
-
-        component.onResize(hideToCBreakPoint - 1);
-        expect(component.hasFloatingToc).toBe(false);
-
-        component.onResize(hideToCBreakPoint + 1);
-        expect(component.hasFloatingToc).toBe(false);
-      });
-
-      it('should be true when toc is not empty unless the screen is narrow', () => {
-        tocService.tocList.next([{}, {}, {}] as TocItem[]);
-
-        component.onResize(hideToCBreakPoint + 1);
-        expect(component.hasFloatingToc).toBe(true);
-
-        component.onResize(hideToCBreakPoint - 1);
-        expect(component.hasFloatingToc).toBe(false);
-
-        component.onResize(hideToCBreakPoint + 1);
-        expect(component.hasFloatingToc).toBe(true);
+    describe('ServiceWorker update notifications', () => {
+      it('should be enabled', () => {
+        const swUpdateNotifications = TestBed.get(SwUpdateNotificationsService) as SwUpdateNotificationsService;
+        expect(swUpdateNotifications.enable).toHaveBeenCalled();
       });
     });
 
-    describe('isSideBySide', () => {
-      it('should be updated on resize', () => {
-        component.onResize(sideBySideBreakPoint - 1);
-        expect(component.isSideBySide).toBe(false);
-
+    describe('onResize', () => {
+      it('should update `isSideBySide` accordingly', () => {
         component.onResize(sideBySideBreakPoint + 1);
         expect(component.isSideBySide).toBe(true);
+        component.onResize(sideBySideBreakPoint - 1);
+        expect(component.isSideBySide).toBe(false);
+      });
+
+      it('should update `showFloatingToc` accordingly', () => {
+        component.onResize(hideToCBreakPoint + 1);
+        expect(component.showFloatingToc).toBe(true);
+        component.onResize(hideToCBreakPoint - 1);
+        expect(component.showFloatingToc).toBe(false);
       });
     });
 
@@ -271,28 +221,26 @@ describe('AppComponent', () => {
     });
 
     describe('SideNav version selector', () => {
-      let selectElement: DebugElement;
-      let selectComponent: SelectComponent;
       beforeEach(() => {
         component.onResize(sideBySideBreakPoint + 1); // side-by-side
-        selectElement = fixture.debugElement.query(By.directive(SelectComponent));
-        selectComponent = selectElement.componentInstance;
       });
 
       it('should pick first (current) version by default', () => {
-        expect(selectComponent.selected.title).toEqual(component.versionInfo.raw);
+        const versionSelector = sidenav.querySelector('select');
+        expect(versionSelector.value).toEqual(component.versionInfo.raw);
+        expect(versionSelector.selectedIndex).toEqual(0);
       });
 
       // Older docs versions have an href
       it('should navigate when change to a version with an href', () => {
-        selectElement.triggerEventHandler('change', { option: component.docVersions[1] as Option, index: 1});
+        component.onDocVersionChange(1);
         expect(locationService.go).toHaveBeenCalledWith(TestHttp.docVersions[0].url);
       });
 
       // The current docs version should not have an href
       // This may change when we perfect our docs versioning approach
       it('should not navigate when change to a version without an href', () => {
-        selectElement.triggerEventHandler('change', { option: component.docVersions[0] as Option, index: 0});
+        component.onDocVersionChange(0);
         expect(locationService.go).not.toHaveBeenCalled();
       });
     });
@@ -389,19 +337,19 @@ describe('AppComponent', () => {
       it('should display a guide page (guide/pipes)', () => {
         locationService.go('guide/pipes');
         fixture.detectChanges();
-        expect(docViewer.textContent).toMatch(/Pipes/i);
+        expect(docViewer.innerText).toMatch(/Pipes/i);
       });
 
       it('should display the api page', () => {
         locationService.go('api');
         fixture.detectChanges();
-        expect(docViewer.textContent).toMatch(/API/i);
+        expect(docViewer.innerText).toMatch(/API/i);
       });
 
       it('should display a marketing page', () => {
         locationService.go('features');
         fixture.detectChanges();
-        expect(docViewer.textContent).toMatch(/Features/i);
+        expect(docViewer.innerText).toMatch(/Features/i);
       });
 
       it('should update the document title', () => {
@@ -521,82 +469,18 @@ describe('AppComponent', () => {
       }));
     });
 
-    describe('restrainScrolling()', () => {
-      const preventedScrolling = (currentTarget: object, deltaY: number) => {
-        const evt = {
-          deltaY,
-          currentTarget,
-          defaultPrevented: false,
-          preventDefault() { this.defaultPrevented = true; }
-        } as any as WheelEvent;
-
-        component.restrainScrolling(evt);
-
-        return evt.defaultPrevented;
-      };
-
-      it('should prevent scrolling up if already at the top', () => {
-        const elem = {scrollTop: 0};
-
-        expect(preventedScrolling(elem, -100)).toBe(true);
-        expect(preventedScrolling(elem, +100)).toBe(false);
-        expect(preventedScrolling(elem, -10)).toBe(true);
-      });
-
-      it('should prevent scrolling down if already at the bottom', () => {
-        const elem = {scrollTop: 100, scrollHeight: 150, clientHeight: 50};
-
-        expect(preventedScrolling(elem, +10)).toBe(true);
-        expect(preventedScrolling(elem, -10)).toBe(false);
-        expect(preventedScrolling(elem, +5)).toBe(true);
-
-        elem.clientHeight -= 10;
-        expect(preventedScrolling(elem, +5)).toBe(false);
-
-        elem.scrollHeight -= 20;
-        expect(preventedScrolling(elem, +5)).toBe(true);
-
-        elem.scrollTop -= 30;
-        expect(preventedScrolling(elem, +5)).toBe(false);
-      });
-
-      it('should not prevent scrolling if neither at the top nor at the bottom', () => {
-        const elem = {scrollTop: 50, scrollHeight: 150, clientHeight: 50};
-
-        expect(preventedScrolling(elem, +100)).toBe(false);
-        expect(preventedScrolling(elem, -100)).toBe(false);
-      });
-    });
-
     describe('aio-toc', () => {
       let tocDebugElement: DebugElement;
       let tocContainer: DebugElement;
 
-      const setHasFloatingToc = hasFloatingToc => {
-        component.hasFloatingToc = hasFloatingToc;
-        fixture.detectChanges();
-
+      beforeEach(() => {
         tocDebugElement = fixture.debugElement.query(By.directive(TocComponent));
-        tocContainer = tocDebugElement && tocDebugElement.parent;
-      };
-
-      beforeEach(() => setHasFloatingToc(true));
-
-
-      it('should show/hide `<aio-toc>` based on `hasFloatingToc`', () => {
-        expect(tocDebugElement).toBeTruthy();
-        expect(tocContainer).toBeTruthy();
-
-        setHasFloatingToc(false);
-        expect(tocDebugElement).toBeFalsy();
-        expect(tocContainer).toBeFalsy();
-
-        setHasFloatingToc(true);
-        expect(tocDebugElement).toBeTruthy();
-        expect(tocContainer).toBeTruthy();
+        tocContainer = tocDebugElement.parent;
       });
 
+
       it('should have a non-embedded `<aio-toc>` element', () => {
+        expect(tocDebugElement).toBeDefined();
         expect(tocDebugElement.classes['embedded']).toBeFalsy();
       });
 
@@ -608,22 +492,12 @@ describe('AppComponent', () => {
 
         expect(tocContainer.styles['max-height']).toBe('100px');
       });
-
-      it('should restrain scrolling inside the ToC container', () => {
-        const restrainScrolling = spyOn(component, 'restrainScrolling');
-        const evt = {};
-
-        expect(restrainScrolling).not.toHaveBeenCalled();
-
-        tocContainer.triggerEventHandler('mousewheel', evt);
-        expect(restrainScrolling).toHaveBeenCalledWith(evt);
-      });
     });
 
     describe('footer', () => {
       it('should have version number', () => {
         const versionEl: HTMLElement = fixture.debugElement.query(By.css('aio-footer')).nativeElement;
-        expect(versionEl.textContent).toContain(TestHttp.versionFull);
+        expect(versionEl.innerText).toContain(TestHttp.versionFull);
       });
     });
 
@@ -710,13 +584,6 @@ describe('AppComponent', () => {
           searchResultsComponent.triggerEventHandler('resultSelected', {});
           fixture.detectChanges();
           expect(component.showSearchResults).toBe(false);
-        });
-
-        it('should re-run the search when the search box regains focus', () => {
-          const doSearchSpy = spyOn(component, 'doSearch');
-          const searchBox = fixture.debugElement.query(By.directive(SearchBoxComponent));
-          searchBox.triggerEventHandler('onFocus', 'some query');
-          expect(doSearchSpy).toHaveBeenCalledWith('some query');
         });
       });
     });
@@ -895,6 +762,7 @@ function createTestingModule(initialUrl: string) {
       { provide: LocationService, useFactory: () => new MockLocationService(initialUrl) },
       { provide: Logger, useClass: MockLogger },
       { provide: SearchService, useClass: MockSearchService },
+      { provide: SwUpdateNotificationsService, useClass: MockSwUpdateNotificationsService },
     ]
   });
 }

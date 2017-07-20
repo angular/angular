@@ -8,12 +8,12 @@
 
 import {GeneratedFile, toTypeScript} from '@angular/compiler';
 import {NodeFlags} from '@angular/core/src/view/index';
-import {MetadataBundler, privateEntriesToIndex} from '@angular/tsc-wrapped';
+import {MetadataBundler, MetadataCollector, ModuleMetadata, privateEntriesToIndex} from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
 
 import {extractSourceMap, originalPositionFor} from '../output/source_map_util';
 
-import {EmittingCompilerHost, MockDirectory, MockMetadataBundlerHost, arrayToMockDir, compile, expectNoDiagnostics, settings, setup, toMockFileArray} from './test_util';
+import {EmittingCompilerHost, MockData, MockDirectory, MockMetadataBundlerHost, arrayToMockDir, arrayToMockMap, compile, expectNoDiagnostics, settings, setup, toMockFileArray} from './test_util';
 
 describe('compiler (unbundled Angular)', () => {
   let angularFiles = setup();
@@ -208,7 +208,7 @@ describe('compiler (unbundled Angular)', () => {
 
     });
 
-    it('should be able to suppress a null access', () => {
+    it('should be able to supress a null access', () => {
       const FILES: MockDirectory = {
         app: {
           'app.ts': `
@@ -233,55 +233,6 @@ describe('compiler (unbundled Angular)', () => {
       };
       compile([FILES, angularFiles], {postCompile: expectNoDiagnostics});
     });
-
-    it('should not contain a self import in factory', () => {
-      const FILES: MockDirectory = {
-        app: {
-          'app.ts': `
-                import {Component, NgModule} from '@angular/core';
-
-                interface Person { name: string; }
-
-                @Component({
-                  selector: 'my-comp',
-                  template: '{{person.name}}'
-                })
-                export class MyComp {
-                  person: Person;
-                }
-
-                @NgModule({
-                  declarations: [MyComp]
-                })
-                export class MyModule {}
-              `
-        }
-      };
-      compile([FILES, angularFiles], {
-        postCompile: program => {
-          const factorySource = program.getSourceFile('/app/app.ngfactory.ts');
-          expect(factorySource.text).not.toContain('\'/app/app.ngfactory\'');
-        }
-      });
-    });
-  });
-
-  it('should report when a component is declared in any module', () => {
-    const FILES: MockDirectory = {
-      app: {
-        'app.ts': `
-          import {Component, NgModule} from '@angular/core';
-
-          @Component({selector: 'my-comp', template: ''})
-          export class MyComp {}
-
-          @NgModule({})
-          export class MyModule {}
-        `
-      }
-    };
-    expect(() => compile([FILES, angularFiles]))
-        .toThrowError(/Cannot determine the module for class MyComp/);
   });
 
   it('should add the preamble to generated files', () => {
@@ -304,93 +255,6 @@ describe('compiler (unbundled Angular)', () => {
         genFiles.find(gf => gf.srcFileUrl === '/app/app.ts' && gf.genFileUrl.endsWith('.ts'));
     const genSource = toTypeScript(genFile, genFilePreamble);
     expect(genSource.startsWith(genFilePreamble)).toBe(true);
-  });
-
-  it('should be able to use animation macro methods', () => {
-    const FILES = {
-      app: {
-        'app.ts': `
-      import {Component, NgModule} from '@angular/core';
-      import {trigger, state, style, transition, animate} from '@angular/animations';
-
-      export const EXPANSION_PANEL_ANIMATION_TIMING = '225ms cubic-bezier(0.4,0.0,0.2,1)';
-
-      @Component({
-        selector: 'app-component',
-        template: '<div></div>',
-        animations: [
-          trigger('bodyExpansion', [
-            state('collapsed', style({height: '0px'})),
-            state('expanded', style({height: '*'})),
-            transition('expanded <=> collapsed', animate(EXPANSION_PANEL_ANIMATION_TIMING)),
-          ]),
-          trigger('displayMode', [
-            state('collapsed', style({margin: '0'})),
-            state('default', style({margin: '16px 0'})),
-            state('flat', style({margin: '0'})),
-            transition('flat <=> collapsed, default <=> collapsed, flat <=> default',
-                      animate(EXPANSION_PANEL_ANIMATION_TIMING)),
-          ]),
-        ],
-      })
-      export class AppComponent { }
-
-      @NgModule({ declarations: [ AppComponent ] })
-      export class AppModule { }
-    `
-      }
-    };
-    compile([FILES, angularFiles]);
-  });
-
-  it('should detect an entry component via an indirection', () => {
-    const FILES = {
-      app: {
-        'app.ts': `
-          import {NgModule, ANALYZE_FOR_ENTRY_COMPONENTS} from '@angular/core';
-          import {AppComponent} from './app.component';
-          import {COMPONENT_VALUE, MyComponent} from './my-component';
-
-          @NgModule({
-            declarations: [ AppComponent, MyComponent ],
-            bootstrap: [ AppComponent ],
-            providers: [{
-              provide: ANALYZE_FOR_ENTRY_COMPONENTS,
-              multi: true,
-              useValue: COMPONENT_VALUE
-            }],
-          })
-          export class AppModule { }
-        `,
-        'app.component.ts': `
-          import {Component} from '@angular/core';
-
-          @Component({
-            selector: 'app-component',
-            template: '<div></div>',
-          })
-          export class AppComponent { }
-        `,
-        'my-component.ts': `
-          import {Component} from '@angular/core';
-
-          @Component({
-            selector: 'my-component',
-            template: '<div></div>',
-          })
-          export class MyComponent {}
-
-          export const COMPONENT_VALUE = [{a: 'b', component: MyComponent}];
-        `
-      }
-    };
-    const result = compile([FILES, angularFiles]);
-    const appModuleFactory =
-        result.genFiles.find(f => /my-component\.ngfactory/.test(f.genFileUrl));
-    expect(appModuleFactory).toBeDefined();
-    if (appModuleFactory) {
-      expect(toTypeScript(appModuleFactory)).toContain('MyComponentNgFactory');
-    }
   });
 
   describe('ComponentFactories', () => {
@@ -711,7 +575,7 @@ describe('compiler (unbundled Angular)', () => {
 });
 
 describe('compiler (bundled Angular)', () => {
-  setup({compileAngular: false, compileAnimations: false});
+  setup({compileAngular: false});
 
   let angularFiles: Map<string, string>;
 
@@ -851,6 +715,7 @@ const LIBRARY: MockDirectory = {
   }
 };
 
+const LIBRARY_USING_APP_MODULE = ['/lib-user/app/app.module.ts'];
 const LIBRARY_USING_APP: MockDirectory = {
   'lib-user': {
     app: {

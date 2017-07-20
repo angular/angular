@@ -10,7 +10,7 @@ import {Compiler, CompilerOptions, Directive, Injector, NgModule, NgModuleRef, N
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import * as angular from '../common/angular1';
-import {$$TESTABILITY, $COMPILE, $INJECTOR, $ROOT_SCOPE, COMPILER_KEY, INJECTOR_KEY, LAZY_MODULE_REF, NG_ZONE_KEY} from '../common/constants';
+import {$$TESTABILITY, $COMPILE, $INJECTOR, $ROOT_SCOPE, COMPILER_KEY, INJECTOR_KEY, NG_ZONE_KEY} from '../common/constants';
 import {downgradeComponent} from '../common/downgrade_component';
 import {downgradeInjectable} from '../common/downgrade_injectable';
 import {Deferred, controllerKey, onError} from '../common/util';
@@ -495,12 +495,6 @@ export class UpgradeAdapter {
     this.ngZone = new NgZone({enableLongStackTrace: Zone.hasOwnProperty('longStackTraceZoneSpec')});
     this.ng2BootstrapDeferred = new Deferred();
     ng1Module.factory(INJECTOR_KEY, () => this.moduleRef !.injector.get(Injector))
-        .factory(
-            LAZY_MODULE_REF,
-            [
-              INJECTOR_KEY,
-              (injector: Injector) => ({injector, promise: Promise.resolve(injector)})
-            ])
         .constant(NG_ZONE_KEY, this.ngZone)
         .factory(COMPILER_KEY, () => this.moduleRef !.injector.get(Compiler))
         .config([
@@ -552,8 +546,8 @@ export class UpgradeAdapter {
       (ng1Injector: angular.IInjectorService, rootScope: angular.IRootScopeService) => {
         UpgradeNg1ComponentAdapterBuilder.resolve(this.ng1ComponentsToBeUpgraded, ng1Injector)
             .then(() => {
-              // At this point we have ng1 injector and we have prepared
-              // ng1 components to be upgraded, we now can bootstrap ng2.
+              // At this point we have ng1 injector and we have lifted ng1 components into ng2, we
+              // now can bootstrap ng2.
               const DynamicNgUpgradeModule =
                   NgModule({
                     providers: [

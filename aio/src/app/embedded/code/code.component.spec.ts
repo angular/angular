@@ -1,7 +1,8 @@
-import { Component, DebugElement } from '@angular/core';
+/* tslint:disable:no-unused-variable */
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MdSnackBarModule, MdSnackBar } from '@angular/material';
 import { By } from '@angular/platform-browser';
+import { Component, DebugElement } from '@angular/core';
+import { MdSnackBarModule, MdSnackBar } from '@angular/material';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { CodeComponent } from './code.component';
@@ -115,7 +116,7 @@ describe('CodeComponent', () => {
       hostComponent.linenums = false;
       hostComponent.code = '  abc\n   let x = text.split(\'\\n\');\n  ghi\n\n  jkl\n';
       fixture.detectChanges();
-      const codeContent = codeComponentDe.nativeElement.querySelector('code').textContent;
+      const codeContent = codeComponentDe.nativeElement.querySelector('code').innerText;
       expect(codeContent).toEqual('abc\n let x = text.split(\'\\n\');\nghi\n\njkl');
     });
 
@@ -123,7 +124,7 @@ describe('CodeComponent', () => {
       hostComponent.linenums = false;
       hostComponent.code = '\n\n\n' + smallMultiLineCode + '\n\n\n';
       fixture.detectChanges();
-      const codeContent = codeComponentDe.nativeElement.querySelector('code').textContent;
+      const codeContent = codeComponentDe.nativeElement.querySelector('code').innerText;
       expect(codeContent).toEqual(codeContent.trim());
     });
 
@@ -140,7 +141,7 @@ describe('CodeComponent', () => {
 
     function getErrorMessage() {
       const missing: HTMLElement = codeComponentDe.nativeElement.querySelector('.code-missing');
-      return missing ? missing.textContent : null;
+      return missing ? missing.innerText : null;
     }
 
     it('should not display "code-missing" class when there is some code', () => {
@@ -217,29 +218,7 @@ describe('CodeComponent', () => {
       const copierService: CopierService = TestBed.get(CopierService);
       const spy = spyOn(copierService, 'copyText');
       getButton().click();
-      expect(spy.calls.argsFor(0)[0]).toBe(oneLineCode, 'after click');
-    });
-
-    it('should preserve newlines in the copied code', () => {
-      const copierService: CopierService = TestBed.get(CopierService);
-      const spy = spyOn(copierService, 'copyText');
-      const expectedCode = smallMultiLineCode.trim().replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-      let actualCode;
-
-      hostComponent.code = smallMultiLineCode;
-
-      [false, true, 42].forEach(linenums => {
-        hostComponent.linenums = linenums;
-        fixture.detectChanges();
-        codeComponent.ngOnChanges();
-        getButton().click();
-        actualCode = spy.calls.mostRecent().args[0];
-
-        expect(actualCode).toBe(expectedCode, `when linenums=${linenums}`);
-        expect(actualCode.match(/\r?\n/g).length).toBe(5);
-
-        spy.calls.reset();
-      });
+      expect(spy.calls.argsFor(0)[0]).toEqual(oneLineCode, 'after click');
     });
 
     it('should display a message when copy succeeds', () => {
@@ -267,9 +246,9 @@ describe('CodeComponent', () => {
 @Component({
   selector: 'aio-host-comp',
   template: `
-    <aio-code md-no-ink [code]="code" [language]="language"
-    [linenums]="linenums" [path]="path" [region]="region"
-    [hideCopy]="hideCopy" [title]="title"></aio-code>
+      <aio-code md-no-ink [code]="code" [language]="language"
+      [linenums]="linenums" [path]="path" [region]="region"
+      [hideCopy]="hideCopy" [title]="title"></aio-code>
   `
 })
 class HostComponent {

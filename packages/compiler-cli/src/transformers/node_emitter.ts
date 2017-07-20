@@ -16,8 +16,9 @@ const CATCH_ERROR_NAME = 'error';
 const CATCH_STACK_NAME = 'stack';
 
 export class TypeScriptNodeEmitter {
-  updateSourceFile(sourceFile: ts.SourceFile, stmts: Statement[], preamble?: string):
-      [ts.SourceFile, Map<ts.Node, Node>] {
+  updateSourceFile(
+      sourceFile: ts.SourceFile, srcFilePath: string, genFilePath: string, stmts: Statement[],
+      exportedVars: string[], preamble?: string): [ts.SourceFile, Map<ts.Node, Node>] {
     const converter = new _NodeEmitterVisitor();
     const statements =
         stmts.map(stmt => stmt.visitStatement(converter, null)).filter(stmt => stmt != null);
@@ -98,6 +99,9 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
     if (stmt.hasModifier(StmtModifier.Exported)) {
       modifiers.push(ts.createToken(ts.SyntaxKind.ExportKeyword));
     }
+    if (stmt.hasModifier(StmtModifier.Final)) {
+      modifiers.push(ts.createToken(ts.SyntaxKind.ConstKeyword));
+    }
     return modifiers;
   }
 
@@ -136,7 +140,7 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
                       p => ts.createParameter(
                           /* decorators */ undefined, /* modifiers */ undefined,
                           /* dotDotDotToken */ undefined, p.name)),
-                  /* type */ undefined, this._visitStatements(stmt.statements)));
+                  undefined, this._visitStatements(stmt.statements)));
   }
 
   visitExpressionStmt(stmt: ExpressionStatement) {
@@ -183,7 +187,7 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
                                     p => ts.createParameter(
                                         /* decorators */ undefined, /* modifiers */ undefined,
                                         /* dotDotDotToken */ undefined, p.name)),
-                                /* type */ undefined, this._visitStatements(method.body)));
+                                undefined, this._visitStatements(method.body)));
     return this.record(
         stmt, ts.createClassDeclaration(
                   /* decorators */ undefined, modifiers, stmt.name, /* typeParameters*/ undefined,
@@ -217,7 +221,7 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
                                                         ts.createIdentifier(CATCH_ERROR_NAME),
                                                         ts.createIdentifier(CATCH_STACK_NAME)))])],
                                             stmt.catchStmts)),
-                  /* finallyBlock */ undefined));
+                  undefined));
   }
 
   visitThrowStmt(stmt: ThrowStmt) {

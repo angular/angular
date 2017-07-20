@@ -10,6 +10,7 @@
 
 aio-nav-menu {
   display: block;
+  padding: 16px 0 0;
   margin: 0 auto;
   font-size: 13px;
   ul, a {
@@ -17,40 +18,34 @@ aio-nav-menu {
     margin: 0;
   }
 
-  &:first-child {
-    margin-top: 16px;
-  }
-
   aio-nav-item div a {
-    padding-left: 6px;
+    padding-left: 16px;
   }
 }
 
 md-sidenav.mat-sidenav.sidenav {
   position: fixed;
-  top: 64px;
   bottom: 0;
   left: 0;
-  padding: 0;
+  padding: 80px 0px 0px;
   min-width: 260px;
   background-color: $offwhite;
   box-shadow: 6px 0 6px rgba(0,0,0,0.10);
-  height: calc(100vh - 64px);
 
   &.collapsed {
-    top: 56px;
+    padding-top: 64px;
   }
 }
 
 md-sidenav-container.sidenav-container {
     min-height: 100%;
     height: auto !important;
-    max-width: 100%;
+    max-width: 82%;
     margin: 0;
     transform: none;
 
-    &.has-floating-toc {
-      max-width: 82%;
+    @media (max-width: 800px) {
+      max-width: 100%;
     }
 }
 
@@ -67,26 +62,27 @@ md-sidenav-container div.mat-sidenav-content {
   overflow-wrap: break-word;
   padding-top: 4px;
   padding-bottom: 4px;
+  padding-left: 16px;
   text-decoration: none;
   text-align: left;
-  width: 93%;
+  transition-duration: 180ms;
+  transition-property: background-color, color;
+  transition-timing-function: ease-in-out;
+  width: 100%;
   word-wrap: break-word;
+  outline: none;
+  transition: all 0.3s ease-in-out;
 
   &:hover {
-    background-color: $lightgray;
-    color: $blue;
     text-shadow: 0 0 5px #ffffff;
-  }
-
-  &:focus {
-    outline: $accentblue auto 2px;
+    color: $blue;
   }
 
   //icons _within_ nav
   .mat-icon {
     position: absolute;
     top: 0;
-    right: 0;
+    right: 8px;
     margin: 4px;
   }
 }
@@ -98,17 +94,19 @@ md-sidenav-container div.mat-sidenav-content {
 button.vertical-menu-item {
   border: none;
   background-color: transparent;
-  margin-right: 0;
-  padding-left: 6px;
-  padding-top: 8px;
-  padding-bottom: 10px;
+  padding: 8px 0 8px 20px;
+
+  &:focus {
+    color: $black;
+  }
 }
 
 .heading {
-  color: $darkgray;
+  color: $blue-grey-700;
   cursor: pointer;
   position: relative;
   text-transform: uppercase;
+  width: 100%;
 }
 
 .heading-children.expanded {
@@ -133,25 +131,24 @@ button.vertical-menu-item {
   font-family: $main-font;
   font-size: 14px;
   font-weight: 400;
-  margin-left: 14px;
+  padding-left: 20px;
   transition: background-color 0.2s;
-  text-transform: uppercase;
 }
 
 .level-2 {
-  color: $mediumgray;
   font-family: $main-font;
   font-size: 14px;
+  color: $mediumgray;
   font-weight: 400;
-  margin-left: 12px;
+  padding-left: 20px;
   text-transform: none;
 }
 
 .level-3 {
-  color: $mediumgray;
   font-family: $main-font;
   font-size: 14px;
-  margin-left: 10px;
+  color: $mediumgray;
+  padding-left: 8px;
 }
 
 .level-1.expanded .mat-icon, .level-2.expanded .mat-icon {
@@ -160,7 +157,14 @@ button.vertical-menu-item {
 
 .level-1:not(.expanded) .mat-icon, .level-2:not(.expanded) .mat-icon {
   @include rotate(0deg);
- // margin: 4px;
+  margin: 4px;
+}
+
+.promo-img-container img {
+  max-width: 90%;
+  @include bp(small) {
+    max-width: 100%;
+  }
 }
 
 aio-nav-menu.top-menu {

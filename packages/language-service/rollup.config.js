@@ -12,7 +12,6 @@ import * as path from 'path';
 var m = /^\@angular\/((\w|\-)+)(\/(\w|\d|\/|\-)+)?$/;
 var location = normalize('../../dist/packages-dist') + '/';
 var rxjsLocation = normalize('../../node_modules/rxjs');
-var tslibLocation = normalize('../../node_modules/tslib');
 var esm = 'esm/';
 
 var locations = {
@@ -46,9 +45,6 @@ function resolve(id, from) {
   if (id && id.startsWith('rxjs/')) {
     const resolved = `${rxjsLocation}${id.replace('rxjs', '')}.js`;
     return resolved;
-  }
-  if (id == 'tslib') {
-    return tslibLocation + '/tslib.es6.js';
   }
 }
 

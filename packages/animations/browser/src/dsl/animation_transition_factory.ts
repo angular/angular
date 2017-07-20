@@ -29,16 +29,12 @@ export class AnimationTransitionFactory {
   build(
       driver: AnimationDriver, element: any, currentState: any, nextState: any,
       options?: AnimationOptions,
-      subInstructions?: ElementInstructionMap): AnimationTransitionInstruction {
+      subInstructions?: ElementInstructionMap): AnimationTransitionInstruction|undefined {
     const animationOptions = mergeAnimationOptions(this.ast.options || {}, options || {});
 
     const backupStateStyles = this._stateStyles['*'] || {};
     const currentStateStyles = this._stateStyles[currentState] || backupStateStyles;
     const nextStateStyles = this._stateStyles[nextState] || backupStateStyles;
-    const queriedElements = new Set<any>();
-    const preStyleMap = new Map<any, {[prop: string]: boolean}>();
-    const postStyleMap = new Map<any, {[prop: string]: boolean}>();
-    const isRemoval = nextState === 'void';
 
     const errors: any[] = [];
     const timelines = buildAnimationTimelines(
@@ -46,11 +42,13 @@ export class AnimationTransitionFactory {
         subInstructions, errors);
 
     if (errors.length) {
-      return createTransitionInstruction(
-          element, this._triggerName, currentState, nextState, isRemoval, currentStateStyles,
-          nextStateStyles, [], [], preStyleMap, postStyleMap, errors);
+      const errorMessage = `animation building failed:\n${errors.join("\n")}`;
+      throw new Error(errorMessage);
     }
 
+    const preStyleMap = new Map<any, {[prop: string]: boolean}>();
+    const postStyleMap = new Map<any, {[prop: string]: boolean}>();
+    const queriedElements = new Set<any>();
     timelines.forEach(tl => {
       const elm = tl.element;
       const preProps = getOrSetAsInMap(preStyleMap, elm, {});
@@ -66,8 +64,9 @@ export class AnimationTransitionFactory {
 
     const queriedElementsList = iteratorToArray(queriedElements.values());
     return createTransitionInstruction(
-        element, this._triggerName, currentState, nextState, isRemoval, currentStateStyles,
-        nextStateStyles, timelines, queriedElementsList, preStyleMap, postStyleMap);
+        element, this._triggerName, currentState, nextState, nextState === 'void',
+        currentStateStyles, nextStateStyles, timelines, queriedElementsList, preStyleMap,
+        postStyleMap);
   }
 }
 

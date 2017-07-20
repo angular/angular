@@ -8,11 +8,9 @@
 # alexeagle - Alex Eagle
 # alxhub - Alex Rickabaugh
 # chuckjaz - Chuck Jazdzewski
-# Foxandxss - Jesús Rodríguez
 # gkalpak - George Kalpakas
 # IgorMinar - Igor Minar
 # jasonaden - Jason Aden
-# juleskremer - Jules Kremer
 # kara - Kara Erickson
 # matsko - Matias Niemelä
 # mhevery - Misko Hevery
@@ -20,11 +18,10 @@
 # pkozlowski-opensource - Pawel Kozlowski
 # robwormald - Rob Wormald
 # tbosch - Tobias Bosch
-# tinayuangao - Tina Gao
 # vicb - Victor Berchet
 # vikerman - Vikram Subramanian
 # wardbell - Ward Bell
-
+# tinayuangao - Tina Gao
 
 version: 2
 
@@ -96,7 +93,6 @@ groups:
         - "packages/core/*"
     users:
       - tbosch #primary
-      - chuckjaz
       - mhevery
       - vicb
       - IgorMinar #fallback
@@ -108,7 +104,6 @@ groups:
         - "packages/platform-browser/animations/*"
     users:
       - matsko #primary
-      - chuckjaz #fallback
       - mhevery #fallback
       - IgorMinar #fallback
 
@@ -254,46 +249,10 @@ groups:
   angular.io:
     conditions:
       files:
-        include:
-          - "aio/*"
-        exclude:
-          - "aio/content/*"
+        - "aio/*"
     users:
-      - petebacondarwin #primary
-      - IgorMinar
+      - IgorMinar #primary
+      - petebacondarwin #secondary
       - gkalpak
-      - mhevery #fallback
-
-  angular.io-guide-and-tutorial:
-    conditions:
-      files:
-        include:
-          - "aio/content/*"
-        exclude:
-          - "aio/content/marketing/*"
-          - "aio/content/navigation.json"
-          - "aio/content/license.md"
-    users:
-      - juleskremer #primary
-      - Foxandxss
-      - stephenfluin
       - wardbell
-      - petebacondarwin
-      - gkalpak
-      - IgorMinar #fallback
-      - mhevery #fallback
-
-  angular.io-marketing:
-    conditions:
-      files:
-        include:
-          - "aio/content/marketing/*"
-          - "aio/content/navigation.json"
-          - "aio/content/license.md"
-    users:
-      - juleskremer #primary
-      - stephenfluin
-      - petebacondarwin
-      - gkalpak
-      - IgorMinar #fallback
       - mhevery #fallback

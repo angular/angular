@@ -1,0 +1,2 @@
+*.js
+!systemjs.custom.js

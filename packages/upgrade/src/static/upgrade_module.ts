@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, NgModule, NgZone, Testability} from '@angular/core';
+import {Injector, NgModule, NgZone, Testability, ɵNOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR as NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from '@angular/core';
 
 import * as angular from '../common/angular1';
-import {$$TESTABILITY, $DELEGATE, $INJECTOR, $INTERVAL, $PROVIDE, INJECTOR_KEY, LAZY_MODULE_REF, UPGRADE_MODULE_NAME} from '../common/constants';
+import {$$TESTABILITY, $DELEGATE, $INJECTOR, $INTERVAL, $PROVIDE, INJECTOR_KEY, UPGRADE_MODULE_NAME} from '../common/constants';
 import {controllerKey} from '../common/util';
 
 import {angular1Providers, setTempInjectorRef} from './angular1_providers';
-import {NgAdapterInjector} from './util';
 
 
 /**
@@ -164,13 +163,6 @@ export class UpgradeModule {
 
             .value(INJECTOR_KEY, this.injector)
 
-            .factory(
-                LAZY_MODULE_REF,
-                [
-                  INJECTOR_KEY,
-                  (injector: Injector) => ({injector, promise: Promise.resolve(injector)})
-                ])
-
             .config([
               $PROVIDE, $INJECTOR,
               ($provide: angular.IProvideService, $injector: angular.IInjectorService) => {
@@ -255,7 +247,7 @@ export class UpgradeModule {
     const upgradeModule = angular.module(UPGRADE_MODULE_NAME, [INIT_MODULE_NAME].concat(modules));
 
     // Make sure resumeBootstrap() only exists if the current bootstrap is deferred
-    const windowAngular = (window as any)['angular'];
+    const windowAngular = (window as any /** TODO #???? */)['angular'];
     windowAngular.resumeBootstrap = undefined;
 
     // Bootstrap the AngularJS application inside our zone
@@ -271,5 +263,21 @@ export class UpgradeModule {
         ngZone.run(() => { windowAngular.resumeBootstrap.apply(this, args); });
       };
     }
+  }
+}
+
+class NgAdapterInjector implements Injector {
+  constructor(private modInjector: Injector) {}
+
+  // When Angular locate a service in the component injector tree, the not found value is set to
+  // `NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR`. In such a case we should not walk up to the module
+  // injector.
+  // AngularJS only supports a single tree and should always check the module injector.
+  get(token: any, notFoundValue?: any): any {
+    if (notFoundValue === NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR) {
+      return notFoundValue;
+    }
+
+    return this.modInjector.get(token, notFoundValue);
   }
 }

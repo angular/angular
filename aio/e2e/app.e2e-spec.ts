@@ -27,7 +27,9 @@ describe('site App', function() {
     // Show the menu
     page.docsMenuLink.click();
 
-    // Tutorial folder should still be expanded because this test runs in wide mode
+    // Open the tutorial header
+    page.getNavItem(/tutorial/i).click();
+
     // Navigate to the tutorial introduction via a link in the sidenav
     page.getNavItem(/introduction/i).click();
     expect(page.getDocViewerText()).toMatch(/Tutorial: Tour of Heroes/i);
@@ -56,6 +58,14 @@ describe('site App', function() {
 
       page.navigateTo('guide/docs');
       page.getScrollTop().then(scrollTop => expect(scrollTop).toBe(0));
+    });
+  });
+
+  describe('api-docs', () => {
+    it('should show a link to github', () => {
+      page.navigateTo('api/common/NgClass');
+      expect(page.ghLink.getAttribute('href'))
+          .toMatch(/https:\/\/github.com\/angular\/angular\/tree\/.+\/packages\/common\/src\/directives\/ng_class\.ts/);
     });
   });
 

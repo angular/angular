@@ -6,23 +6,21 @@
 var SEARCH_TERMS_URL = '/generated/docs/app/search-data.json';
 
 // NOTE: This needs to be kept in sync with `ngsw-manifest.json`.
-importScripts('/assets/js/lunr.min.js');
+importScripts('https://unpkg.com/lunr@0.7.2/lunr.min.js');
 
-var index;
+var index = createIndex();
 var pages = {};
 
 self.onmessage = handleMessage;
 
 // Create the lunr index - the docs should be an array of objects, each object containing
 // the path and search terms for a page
-function createIndex(addFn) {
+function createIndex() {
   return lunr(/** @this */function() {
     this.ref('path');
-    this.field('titleWords', {boost: 100});
-    this.field('headingWords', {boost: 50});
+    this.field('titleWords', {boost: 50});
     this.field('members', {boost: 40});
     this.field('keywords', {boost: 20});
-    addFn(this);
   });
 }
 
@@ -34,7 +32,7 @@ function handleMessage(message) {
   switch(type) {
     case 'load-index':
       makeRequest(SEARCH_TERMS_URL, function(searchInfo) {
-        index = createIndex(loadIndex(searchInfo));
+        loadIndex(searchInfo);
         self.postMessage({type: type, id: id, payload: true});
       });
       break;
@@ -69,19 +67,16 @@ function makeRequest(url, callback) {
 
 // Create the search index from the searchInfo which contains the information about each page to be indexed
 function loadIndex(searchInfo) {
-  return function(index) {
-    // Store the pages data to be used in mapping query results back to pages
-    // Add search terms from each page to the search index
-    searchInfo.forEach(function(page) {
-      index.add(page);
-      pages[page.path] = page;
-    });
-  };
+  // Store the pages data to be used in mapping query results back to pages
+  // Add search terms from each page to the search index
+  searchInfo.forEach(function(page) {
+    index.add(page);
+    pages[page.path] = page;
+  });
 }
 
 // Query the index and return the processed results
 function queryIndex(query) {
-  var results = index.search(query);
   // Only return the array of paths to pages
-  return results.map(function(hit) { return pages[hit.ref]; });
+  return index.search(query).map(function(hit) { return pages[hit.ref]; });
 }

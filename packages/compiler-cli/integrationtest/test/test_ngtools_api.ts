@@ -15,7 +15,7 @@ import * as path from 'path';
 import * as ts from 'typescript';
 import * as assert from 'assert';
 import {tsc} from '@angular/tsc-wrapped/src/tsc';
-import {__NGTOOLS_PRIVATE_API_2} from '@angular/compiler-cli';
+import {NodeCompilerHostContext, __NGTOOLS_PRIVATE_API_2} from '@angular/compiler-cli';
 
 const glob = require('glob');
 
@@ -51,6 +51,7 @@ function codeGenTest(forceError = false) {
   const wroteFiles: string[] = [];
 
   const config = tsc.readConfiguration(project, basePath);
+  const hostContext = new NodeCompilerHostContext();
   const delegateHost = ts.createCompilerHost(config.parsed.options, true);
   const host: ts.CompilerHost = Object.assign(
       {}, delegateHost,
@@ -78,10 +79,7 @@ function codeGenTest(forceError = false) {
 
         readResource: (fileName: string) => {
           readResources.push(fileName);
-          if (!host.fileExists(fileName)) {
-            throw new Error(`Compilation failed. Resource file not found: ${fileName}`);
-          }
-          return Promise.resolve(host.readFile(fileName));
+          return hostContext.readResource(fileName);
         }
       })
       .then(() => {
@@ -130,6 +128,7 @@ function i18nTest() {
   const wroteFiles: string[] = [];
 
   const config = tsc.readConfiguration(project, basePath);
+  const hostContext = new NodeCompilerHostContext();
   const delegateHost = ts.createCompilerHost(config.parsed.options, true);
   const host: ts.CompilerHost = Object.assign(
       {}, delegateHost,
@@ -149,10 +148,7 @@ function i18nTest() {
         outFile: undefined,
         readResource: (fileName: string) => {
           readResources.push(fileName);
-          if (!host.fileExists(fileName)) {
-            throw new Error(`Compilation failed. Resource file not found: ${fileName}`);
-          }
-          return Promise.resolve(host.readFile(fileName));
+          return hostContext.readResource(fileName);
         },
       })
       .then(() => {

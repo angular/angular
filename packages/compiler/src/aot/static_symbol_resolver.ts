@@ -162,6 +162,9 @@ export class StaticSymbolResolver {
    * Converts a file path to a module name that can be used as an `import`.
    */
   fileNameToModuleName(importedFilePath: string, containingFilePath: string): string|null {
+    if (importedFilePath === containingFilePath) {
+      return null;
+    }
     return this.knownFileNameToModuleNames.get(importedFilePath) ||
         this.host.fileNameToModuleName(importedFilePath, containingFilePath);
   }
@@ -188,17 +191,6 @@ export class StaticSymbolResolver {
         this.importAs.delete(symbol);
         this.symbolResourcePaths.delete(symbol);
       }
-    }
-  }
-
-  /* @internal */
-  ignoreErrorsFor<T>(cb: () => T) {
-    const recorder = this.errorRecorder;
-    this.errorRecorder = () => {};
-    try {
-      return cb();
-    } finally {
-      this.errorRecorder = recorder;
     }
   }
 
@@ -456,7 +448,6 @@ export class StaticSymbolResolver {
     }
     return moduleMetadata;
   }
-
 
   getSymbolByModule(module: string, symbolName: string, containingFile?: string): StaticSymbol {
     const filePath = this.resolveModule(module, containingFile);

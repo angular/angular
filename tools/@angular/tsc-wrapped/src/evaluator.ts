@@ -227,7 +227,7 @@ export class Evaluator {
    * Produce a JSON serialiable object representing `node`. The foldable values in the expression
    * tree are folded. For example, a node representing `1 + 2` is folded into `3`.
    */
-  public evaluateNode(node: ts.Node, preferReference?: boolean): MetadataValue {
+  public evaluateNode(node: ts.Node): MetadataValue {
     const t = this;
     let error: MetadataError|undefined;
 
@@ -240,8 +240,8 @@ export class Evaluator {
       return !t.options.verboseInvalidExpression && isMetadataError(value);
     }
 
-    const resolveName = (name: string, preferReference?: boolean): MetadataValue => {
-      const reference = this.symbols.resolve(name, preferReference);
+    const resolveName = (name: string): MetadataValue => {
+      const reference = this.symbols.resolve(name);
       if (reference === undefined) {
         // Encode as a global reference. StaticReflector will check the reference.
         return recordEntry({__symbolic: 'reference', name}, node);
@@ -268,8 +268,8 @@ export class Evaluator {
                 return true;
               }
               const propertyValue = isPropertyAssignment(assignment) ?
-                  this.evaluateNode(assignment.initializer, /* preferReference */ true) :
-                  resolveName(propertyName, /* preferReference */ true);
+                  this.evaluateNode(assignment.initializer) :
+                  resolveName(propertyName);
               if (isFoldableError(propertyValue)) {
                 error = propertyValue;
                 return true;  // Stop the forEachChild.
@@ -286,7 +286,7 @@ export class Evaluator {
       case ts.SyntaxKind.ArrayLiteralExpression:
         let arr: MetadataValue[] = [];
         ts.forEachChild(node, child => {
-          const value = this.evaluateNode(child, /* preferReference */ true);
+          const value = this.evaluateNode(child);
 
           // Check for error
           if (isFoldableError(value)) {
@@ -375,7 +375,7 @@ export class Evaluator {
         if (expression && this.isFoldable(propertyAccessExpression.expression))
           return (<any>expression)[<string>member];
         if (isMetadataModuleReferenceExpression(expression)) {
-          // A select into a module reference and be converted into a reference to the symbol
+          // A select into a module refrence and be converted into a reference to the symbol
           // in the module
           return recordEntry(
               {__symbolic: 'reference', module: expression.module, name: member}, node);
@@ -387,9 +387,6 @@ export class Evaluator {
         const expression = this.evaluateNode(elementAccessExpression.expression);
         if (isFoldableError(expression)) {
           return recordEntry(expression, node);
-        }
-        if (!elementAccessExpression.argumentExpression) {
-          return recordEntry(errorSymbol('Expression form not supported', node), node);
         }
         const index = this.evaluateNode(elementAccessExpression.argumentExpression);
         if (isFoldableError(expression)) {
@@ -403,7 +400,7 @@ export class Evaluator {
       case ts.SyntaxKind.Identifier:
         const identifier = <ts.Identifier>node;
         const name = identifier.text;
-        return resolveName(name, preferReference);
+        return resolveName(name);
       case ts.SyntaxKind.TypeReference:
         const typeReferenceNode = <ts.TypeReferenceNode>node;
         const typeNameNode = typeReferenceNode.typeName;
@@ -647,11 +644,6 @@ export class Evaluator {
             return result;
           }, this.evaluateNode(templateExpression.head));
         }
-      case ts.SyntaxKind.AsExpression:
-        const asExpression = <ts.AsExpression>node;
-        return this.evaluateNode(asExpression.expression);
-      case ts.SyntaxKind.ClassExpression:
-        return {__symbolic: 'class'};
     }
     return recordEntry(errorSymbol('Expression form not supported', node), node);
   }

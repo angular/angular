@@ -3,7 +3,7 @@ const {resolve} = require('canonical-path');
 const {generateDocs} = require('./index.js');
 const { DOCS_OUTPUT_PATH } = require('../config');
 
-describe('authors-package (integration tests)', () => {
+describe('authors-package', () => {
   let files;
 
   beforeEach(() => {
@@ -71,7 +71,7 @@ describe('authors-package (integration tests)', () => {
       expect(files).toContain(resolve(DOCS_OUTPUT_PATH, 'api/forms/FormBuilder.json'));
       done();
     });
-  }, 16000);
+  }, 8000);
 
   it('should generate API doc if the "fileChanged" is an API example', (done) => {
     generateDocs('packages/examples/forms/ts/formBuilder/form_builder_example.ts', { silent: true }).then(() => {
@@ -79,5 +79,5 @@ describe('authors-package (integration tests)', () => {
       expect(files).toContain(resolve(DOCS_OUTPUT_PATH, 'api/forms/FormBuilder.json'));
       done();
     });
-  }, 16000);
+  }, 8000);
 });

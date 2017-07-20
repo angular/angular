@@ -7,7 +7,7 @@ import { Observable } from 'rxjs/Observable';
 // #enddocregion rxjs-imports
 import { Component, OnInit } from '@angular/core';
 // #docregion import-router
-import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { Router, ActivatedRoute, Params } from '@angular/router';
 // #enddocregion import-router
 
 import { Hero, HeroService }  from './hero.service';
@@ -41,10 +41,9 @@ export class HeroListComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.heroes = this.route.paramMap
-      .switchMap((params: ParamMap) => {
-        // (+) before `params.get()` turns the string into a number
-        this.selectedId = +params.get('id');
+    this.heroes = this.route.params
+      .switchMap((params: Params) => {
+        this.selectedId = +params['id'];
         return this.service.getHeroes();
       });
   }

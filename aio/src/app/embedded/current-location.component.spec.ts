@@ -25,11 +25,11 @@ describe('CurrentLocationComponent', () => {
 
   it('should render the current location', () => {
     fixture.detectChanges();
-    expect(element.textContent).toEqual('initial/url');
+    expect(element.innerText).toEqual('initial/url');
 
     locationService.urlSubject.next('next/url');
 
     fixture.detectChanges();
-    expect(element.textContent).toEqual('next/url');
+    expect(element.innerText).toEqual('next/url');
   });
 });

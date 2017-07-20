@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PipeTransform} from '@angular/core';
-import {NodeDef, NodeFlags, Services, ViewData, ViewDefinition, ViewFlags, ViewUpdateFn, asProviderData, directiveDef, elementDef, nodeValue, pipeDef, pureArrayDef, pureObjectDef, purePipeDef, rootRenderNodes, viewDef} from '@angular/core/src/view/index';
+import {Injector, PipeTransform, RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation, WrappedValue} from '@angular/core';
+import {ArgumentType, NodeDef, NodeFlags, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asProviderData, asPureExpressionData, directiveDef, elementDef, nodeValue, pipeDef, pureArrayDef, pureObjectDef, purePipeDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
+import {inject} from '@angular/core/testing';
 
 import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView} from './helper';
 
@@ -37,9 +38,8 @@ export function main() {
 
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
               [
-                elementDef(NodeFlags.None, null !, null !, 2, 'span'),
-                pureArrayDef(2),
-                directiveDef(NodeFlags.None, null !, 0, Service, [], {data: [0, 'data']}),
+                elementDef(NodeFlags.None, null !, null !, 2, 'span'), pureArrayDef(2),
+                directiveDef(NodeFlags.None, null !, 0, Service, [], {data: [0, 'data']})
               ],
               (check, view) => {
                 const pureValue = checkNodeInlineOrDynamic(check, view, 1, inlineDynamic, values);
@@ -75,7 +75,7 @@ export function main() {
 
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
               [
-                elementDef(NodeFlags.None, null !, null !, 2, 'span'), pureObjectDef({a: 0, b: 1}),
+                elementDef(NodeFlags.None, null !, null !, 2, 'span'), pureObjectDef(['a', 'b']),
                 directiveDef(NodeFlags.None, null !, 0, Service, [], {data: [0, 'data']})
               ],
               (check, view) => {
@@ -116,9 +116,8 @@ export function main() {
           const {view, rootNodes} = createAndGetRootNodes(compViewDef(
               [
                 elementDef(NodeFlags.None, null !, null !, 3, 'span'),
-                pipeDef(NodeFlags.None, SomePipe, []),
-                purePipeDef(2),
-                directiveDef(NodeFlags.None, null !, 0, Service, [], {data: [0, 'data']}),
+                pipeDef(NodeFlags.None, SomePipe, []), purePipeDef(2),
+                directiveDef(NodeFlags.None, null !, 0, Service, [], {data: [0, 'data']})
               ],
               (check, view) => {
                 const pureValue = checkNodeInlineOrDynamic(

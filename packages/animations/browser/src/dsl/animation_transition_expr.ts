@@ -24,14 +24,8 @@ export function parseTransitionExpr(
 function parseInnerTransitionStr(
     eventStr: string, expressions: TransitionMatcherFn[], errors: string[]) {
   if (eventStr[0] == ':') {
-    const result = parseAnimationAlias(eventStr, errors);
-    if (typeof result == 'function') {
-      expressions.push(result);
-      return;
-    }
-    eventStr = result as string;
+    eventStr = parseAnimationAlias(eventStr, errors);
   }
-
   const match = eventStr.match(/^(\*|[-\w]+)\s*(<?[=-]>)\s*(\*|[-\w]+)$/);
   if (match == null || match.length < 4) {
     errors.push(`The provided transition expression "${eventStr}" is not supported`);
@@ -49,16 +43,12 @@ function parseInnerTransitionStr(
   }
 }
 
-function parseAnimationAlias(alias: string, errors: string[]): string|TransitionMatcherFn {
+function parseAnimationAlias(alias: string, errors: string[]): string {
   switch (alias) {
     case ':enter':
       return 'void => *';
     case ':leave':
       return '* => void';
-    case ':increment':
-      return (fromState: any, toState: any): boolean => parseFloat(toState) > parseFloat(fromState);
-    case ':decrement':
-      return (fromState: any, toState: any): boolean => parseFloat(toState) < parseFloat(fromState);
     default:
       errors.push(`The transition alias value "${alias}" is not supported`);
       return '* => *';

@@ -1,0 +1,6 @@
+**/*.ngfactory.ts
+**/*.metadata.json
+dist
+!app/tsconfig.json
+!rollup.js
+!src/systemjs-text-plugin.js

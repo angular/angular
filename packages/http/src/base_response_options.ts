@@ -65,8 +65,7 @@ export class ResponseOptions {
    */
   type: ResponseType|null;
   url: string|null;
-  constructor(opts: ResponseOptionsArgs = {}) {
-    const {body, status, headers, statusText, type, url} = opts;
+  constructor({body, status, headers, statusText, type, url}: ResponseOptionsArgs = {}) {
     this.body = body != null ? body : null;
     this.status = status != null ? status : null;
     this.headers = headers != null ? headers : null;

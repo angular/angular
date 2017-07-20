@@ -329,7 +329,7 @@ class MockAnimationEngine extends InjectableAnimationEngine {
     this._capture('onRemove', [element]);
   }
 
-  process(namespaceId: string, element: any, property: string, value: any): boolean {
+  setProperty(namespaceId: string, element: any, property: string, value: any): boolean {
     this._capture('setProperty', [element, property, value]);
     return true;
   }

@@ -73,7 +73,6 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
 
   private _resetContextStyleTimingState(context: AnimationAstBuilderContext) {
     context.currentQuerySelector = ROOT_SELECTOR;
-    context.collectedStyles = {};
     context.collectedStyles[ROOT_SELECTOR] = {};
     context.currentTime = 0;
   }

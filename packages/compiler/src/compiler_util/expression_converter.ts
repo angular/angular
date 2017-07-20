@@ -35,16 +35,10 @@ export function convertActionBinding(
           // Note: no caching for literal arrays in actions.
           return (args: o.Expression[]) => o.literalArr(args);
         },
-        createLiteralMapConverter: (keys: {key: string, quoted: boolean}[]) => {
+        createLiteralMapConverter: (keys: string[]) => {
           // Note: no caching for literal maps in actions.
-          return (values: o.Expression[]) => {
-            const entries = keys.map((k, i) => ({
-                                       key: k.key,
-                                       value: values[i],
-                                       quoted: k.quoted,
-                                     }));
-            return o.literalMap(entries);
-          };
+          return (args: o.Expression[]) =>
+                     o.literalMap(<[string, o.Expression][]>keys.map((key, i) => [key, args[i]]));
         },
         createPipeConverter: (name: string) => {
           throw new Error(`Illegal State: Actions are not allowed to contain pipes. Pipe: ${name}`);
@@ -77,7 +71,7 @@ export interface BuiltinConverter { (args: o.Expression[]): o.Expression; }
 
 export interface BuiltinConverterFactory {
   createLiteralArrayConverter(argCount: number): BuiltinConverter;
-  createLiteralMapConverter(keys: {key: string, quoted: boolean}[]): BuiltinConverter;
+  createLiteralMapConverter(keys: string[]): BuiltinConverter;
   createPipeConverter(name: string, argCount: number): BuiltinConverter;
 }
 
@@ -175,7 +169,6 @@ class _BuiltinAstConverter extends cdAst.AstTransformer {
   }
   visitLiteralMap(ast: cdAst.LiteralMap, context: any): any {
     const args = ast.values.map(ast => ast.visit(this, context));
-
     return new BuiltinFunctionCall(
         ast.span, args, this._converterFactory.createLiteralMapConverter(ast.keys));
   }

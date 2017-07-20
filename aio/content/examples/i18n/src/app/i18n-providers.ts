@@ -1,7 +1,5 @@
-// #docplaster
-// #docregion without-missing-translation
-import { TRANSLATIONS, TRANSLATIONS_FORMAT, LOCALE_ID, MissingTranslationStrategy } from '@angular/core';
-import { CompilerConfig } from '@angular/compiler';
+// #docregion
+import { TRANSLATIONS, TRANSLATIONS_FORMAT, LOCALE_ID } from '@angular/core';
 
 export function getTranslationProviders(): Promise<Object[]> {
 
@@ -19,18 +17,13 @@ export function getTranslationProviders(): Promise<Object[]> {
   // Ex: 'locale/messages.es.xlf`
   const translationFile = `./locale/messages.${locale}.xlf`;
 
-  // #docregion missing-translation
   return getTranslationsWithSystemJs(translationFile)
     .then( (translations: string ) => [
       { provide: TRANSLATIONS, useValue: translations },
       { provide: TRANSLATIONS_FORMAT, useValue: 'xlf' },
-      { provide: LOCALE_ID, useValue: locale },
-      // #enddocregion without-missing-translation
-      { provide: CompilerConfig, useValue: new CompilerConfig({ missingTranslation: MissingTranslationStrategy.Error }) }
-      // #docregion without-missing-translation
+      { provide: LOCALE_ID, useValue: locale }
     ])
     .catch(() => noProviders); // ignore if file not found
-    // #enddocregion missing-translation
 }
 
 declare var System: any;
@@ -38,4 +31,3 @@ declare var System: any;
 function getTranslationsWithSystemJs(file: string) {
   return System.import(file + '!text'); // relies on text plugin
 }
-// #enddocregion without-missing-translation

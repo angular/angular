@@ -2091,6 +2091,11 @@ The pipe 'test' could not be found ("{{[ERROR ->]a | test}}"): TestComp@0:2`);
         [AttrAst, 'template', 'ngFor'],
       ]);
     });
+
+    it('should throw invalid ngFor syntax error for *ngFor', () => {
+      expect(() => parse('<p *ngFor="object of objects">{{object}}</p>', []))
+          .toThrowError(/missing the let keyword/);
+    });
   });
 }
 

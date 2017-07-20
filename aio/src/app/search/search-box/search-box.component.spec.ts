@@ -7,11 +7,10 @@ import { LocationService } from 'app/shared/location.service';
 import { MockLocationService } from 'testing/location.service';
 
 @Component({
-  template: '<aio-search-box (onSearch)="searchHandler($event)" (onFocus)="focusHandler($event)"></aio-search-box>'
+  template: '<aio-search-box (search)="doSearch($event)"></aio-search-box>'
 })
 class HostComponent {
-  searchHandler = jasmine.createSpy('searchHandler');
-  focusHandler = jasmine.createSpy('focusHandler');
+  doSearch = jasmine.createSpy('doSearch');
 }
 
 describe('SearchBoxComponent', () => {
@@ -40,61 +39,40 @@ describe('SearchBoxComponent', () => {
       location.search.and.returnValue({ search: 'initial search' });
       component.ngOnInit();
       expect(location.search).toHaveBeenCalled();
-      expect(host.searchHandler).toHaveBeenCalledWith('initial search');
+      expect(host.doSearch).toHaveBeenCalledWith('initial search');
       expect(component.searchBox.nativeElement.value).toEqual('initial search');
     }));
   });
 
   describe('on input', () => {
-    it('should trigger the onSearch event', () => {
+    it('should trigger the search event', () => {
       const input = fixture.debugElement.query(By.css('input'));
-      input.nativeElement.value = 'some query (input)';
-      input.triggerEventHandler('input', { });
-      expect(host.searchHandler).toHaveBeenCalledWith('some query (input)');
+      input.triggerEventHandler('input', { target: { value: 'some query' } });
+      expect(host.doSearch).toHaveBeenCalledWith('some query');
     });
   });
 
   describe('on keyup', () => {
-    it('should trigger the onSearch event', () => {
+    it('should trigger the search event', () => {
       const input = fixture.debugElement.query(By.css('input'));
-      input.nativeElement.value = 'some query (keyup)';
-      input.triggerEventHandler('keyup', { });
-      expect(host.searchHandler).toHaveBeenCalledWith('some query (keyup)');
+      input.triggerEventHandler('keyup', { target: { value: 'some query' } });
+      expect(host.doSearch).toHaveBeenCalledWith('some query');
     });
   });
 
   describe('on focus', () => {
-    it('should trigger the onFocus event', () => {
+    it('should trigger the search event', () => {
       const input = fixture.debugElement.query(By.css('input'));
-      input.nativeElement.value = 'some query (focus)';
-      input.triggerEventHandler('focus', { });
-      expect(host.focusHandler).toHaveBeenCalledWith('some query (focus)');
+      input.triggerEventHandler('focus', { target: { value: 'some query' } });
+      expect(host.doSearch).toHaveBeenCalledWith('some query');
     });
   });
 
   describe('on click', () => {
     it('should trigger the search event', () => {
       const input = fixture.debugElement.query(By.css('input'));
-      input.nativeElement.value = 'some query (click)';
-      input.triggerEventHandler('click', { });
-      expect(host.searchHandler).toHaveBeenCalledWith('some query (click)');
-    });
-  });
-
-  describe('event filtering', () => {
-    it('should only send events if the search value has changed', () => {
-      const input = fixture.debugElement.query(By.css('input'));
-
-      input.nativeElement.value = 'some query';
-      input.triggerEventHandler('input', { });
-      expect(host.searchHandler).toHaveBeenCalledTimes(1);
-
-      input.triggerEventHandler('input', { });
-      expect(host.searchHandler).toHaveBeenCalledTimes(1);
-
-      input.nativeElement.value = 'some other query';
-      input.triggerEventHandler('input', { });
-      expect(host.searchHandler).toHaveBeenCalledTimes(2);
+      input.triggerEventHandler('click', { target: { value: 'some query'}});
+      expect(host.doSearch).toHaveBeenCalledWith('some query');
     });
   });
 
