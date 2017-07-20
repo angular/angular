@@ -57,7 +57,7 @@ import {MdExpansionPanel, EXPANSION_PANEL_ANIMATION_TIMING} from './expansion-pa
     ]),
     trigger('expansionHeight', [
       state('collapsed', style({height: '48px', 'line-height': '48px'})),
-      state('expanded', style({height: '64px', 'line-height': '68px'})),
+      state('expanded', style({height: '64px', 'line-height': '64px'})),
       transition('expanded <=> collapsed', animate(EXPANSION_PANEL_ANIMATION_TIMING)),
     ]),
   ],
