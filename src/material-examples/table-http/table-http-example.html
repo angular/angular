@@ -1,0 +1,46 @@
+<div class="example-container mat-elevation-z8">
+  <div class="example-loading-shade"
+       *ngIf="dataSource.isLoadingResults || dataSource.isRateLimitReached">
+    <md-spinner *ngIf="dataSource.isLoadingResults"></md-spinner>
+    <div class="example-rate-limit-reached" *ngIf="dataSource.isRateLimitReached">
+      GitHub's API rate limit has been reached. It will be reset in one minute.
+    </div>
+  </div>
+
+  <md-table #table [dataSource]="dataSource" class="example-table"
+            mdSort mdSortActive="created" mdSortDisableClear mdSortDirection="asc">
+
+    <!--- Note that these columns can be defined in any order.
+          The actual rendered columns are set as a property on the row definition" -->
+
+    <!-- Number Column -->
+    <ng-container cdkColumnDef="number">
+      <md-header-cell *cdkHeaderCellDef> Number </md-header-cell>
+      <md-cell *cdkCellDef="let row"> {{row.number}} </md-cell>
+    </ng-container>
+
+    <!-- Title Column -->
+    <ng-container cdkColumnDef="title">
+      <md-header-cell *cdkHeaderCellDef> Title </md-header-cell>
+      <md-cell *cdkCellDef="let row"> {{row.title}} </md-cell>
+    </ng-container>
+
+    <!-- State Column -->
+    <ng-container cdkColumnDef="state">
+      <md-header-cell *cdkHeaderCellDef> State </md-header-cell>
+      <md-cell *cdkCellDef="let row"> {{row.state}} </md-cell>
+    </ng-container>
+
+    <!-- Created Column -->
+    <ng-container cdkColumnDef="created">
+      <md-header-cell *cdkHeaderCellDef md-sort-header disableClear="true"> Created </md-header-cell>
+      <md-cell *cdkCellDef="let row"> {{row.created.toDateString()}} </md-cell>
+    </ng-container>
+
+    <md-header-row *cdkHeaderRowDef="displayedColumns"></md-header-row>
+    <md-row *cdkRowDef="let row; columns: displayedColumns;"></md-row>
+  </md-table>
+  <md-paginator [length]="dataSource.resultsLength"
+                [pageSize]="30">
+  </md-paginator>
+</div>
