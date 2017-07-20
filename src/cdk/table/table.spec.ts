@@ -155,6 +155,19 @@ describe('CdkTable', () => {
     expect(changedRows[2].getAttribute('initialIndex')).toBe(null);
   });
 
+  it('should clear the row view containers on destroy', () => {
+    const rowPlaceholder = fixture.componentInstance.table._rowPlaceholder.viewContainer;
+    const headerPlaceholder = fixture.componentInstance.table._headerRowPlaceholder.viewContainer;
+
+    spyOn(rowPlaceholder, 'clear').and.callThrough();
+    spyOn(headerPlaceholder, 'clear').and.callThrough();
+
+    fixture.destroy();
+
+    expect(rowPlaceholder.clear).toHaveBeenCalled();
+    expect(headerPlaceholder.clear).toHaveBeenCalled();
+  });
+
   describe('with trackBy', () => {
 
     let trackByComponent: TrackByCdkTableApp;
