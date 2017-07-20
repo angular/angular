@@ -17,6 +17,10 @@ export function setTempInjectorRef(injector: angular.IInjectorService) {
   tempInjectorRef = injector;
 }
 export function injectorFactory() {
+  if (!tempInjectorRef) {
+    throw new Error('Trying to get the AngularJS injector before it being set.');
+  }
+
   const injector: angular.IInjectorService|null = tempInjectorRef;
   tempInjectorRef = null;  // clear the value to prevent memory leaks
   return injector;
