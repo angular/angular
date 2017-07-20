@@ -25,6 +25,10 @@ const IGNORED_EXAMPLES = [
  *  --setup run yarn install, copy boilerplate and update webdriver
  *    e.g. --setup
  *
+ *  --local to use the locally built Angular packages, rather than versions from npm
+ *    Must be used in conjunction with --setup as this is when the packages are copied.
+ *    e.g. --setup --local
+ *
  *  --shard to shard the specs into groups to allow you to run them in parallel
  *    e.g. --shard=0/2 // the even specs: 0, 2, 4, etc
  *    e.g. --shard=1/2 // the odd specs: 1, 3, 5, etc
@@ -35,7 +39,7 @@ function runE2e() {
   if (argv.setup) {
     // Run setup.
     console.log('runE2e: copy boilerplate');
-    const spawnInfo = spawnExt('yarn', ['boilerplate:add'], { cwd: AIO_PATH });
+    const spawnInfo = spawnExt('yarn', ['boilerplate:add', argv.local ? '-- --local': ''], { cwd: AIO_PATH });
     promise = spawnInfo.promise
       .then(() => {
         console.log('runE2e: update webdriver');
