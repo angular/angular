@@ -32,16 +32,20 @@ $mat-expansion-panel-header-height-expanded: 64px;
   overflow: hidden;
 }
 
-.mat-expansion-panel-header-title {
+.mat-expansion-panel-header-title,
+.mat-expansion-panel-header-description {
   display: flex;
   flex-grow: 1;
   margin-right: 16px;
+
+  [dir='rtl'] & {
+    margin-right: 0;
+    margin-left: 16px;
+  }
 }
 
 .mat-expansion-panel-header-description {
-  display: flex;
   flex-grow: 2;
-  margin-right: 16px;
 }
 
 /**
