@@ -67,11 +67,24 @@ describe('MdRadio', () => {
       }
     });
 
+    it('should coerce the disabled binding on the radio group', () => {
+      (groupInstance as any).disabled = '';
+      fixture.detectChanges();
+
+      radioLabelElements[0].click();
+      fixture.detectChanges();
+
+      expect(radioInstances[0].checked).toBe(false);
+      expect(groupInstance.disabled).toBe(true);
+    });
+
     it('should disable click interaction when the group is disabled', () => {
       testComponent.isGroupDisabled = true;
       fixture.detectChanges();
 
       radioLabelElements[0].click();
+      fixture.detectChanges();
+
       expect(radioInstances[0].checked).toBe(false);
     });
 

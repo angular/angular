@@ -186,11 +186,11 @@ export class MdRadioGroup extends _MdRadioGroupMixinBase
     this._checkSelectedRadioButton();
   }
 
-  /** Whether the radio group is diabled */
+  /** Whether the radio group is disabled */
   @Input()
   get disabled() { return this._disabled; }
   set disabled(value) {
-    this._disabled = value;
+    this._disabled = coerceBooleanProperty(value);
     this._markRadiosForCheck();
   }
 
