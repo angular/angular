@@ -21,10 +21,18 @@ export declare class PlatformState {
 }
 
 /** @experimental */
-export declare function renderModule<T>(module: Type<T>, options: PlatformOptions): Promise<string>;
+export declare function renderModule<T>(module: Type<T>, options: {
+    document?: string;
+    url?: string;
+    extraProviders?: Provider[];
+}): Promise<string>;
 
 /** @experimental */
-export declare function renderModuleFactory<T>(moduleFactory: NgModuleFactory<T>, options: PlatformOptions): Promise<string>;
+export declare function renderModuleFactory<T>(moduleFactory: NgModuleFactory<T>, options: {
+    document?: string;
+    url?: string;
+    extraProviders?: Provider[];
+}): Promise<string>;
 
 /** @experimental */
 export declare class ServerModule {
