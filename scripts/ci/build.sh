@@ -14,6 +14,9 @@ if [[ ${TRAVIS_TEST_RESULT=0} == 1 ]]; then
   exit 1;
 fi
 
+if [[ ${CI_MODE:-} == "bazel" ]]; then
+  exit 0;
+fi
 
 travisFoldStart "tsc tools"
   $(npm bin)/tsc -p tools

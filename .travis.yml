@@ -53,6 +53,7 @@ env:
     - CI_MODE=docs_test
     - CI_MODE=aio
     - CI_MODE=aio_e2e
+    - CI_MODE=bazel
 
 matrix:
   fast_finish: true
