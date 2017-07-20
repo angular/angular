@@ -29,7 +29,7 @@ import {HttpClientModule} from '@angular/common/http';
 export class MyAppModule {}
 ```
 
-Once you import `HttpClientModule` into your app module, you can inject `HttpClient` 
+Once you import `HttpClientModule` into your app module, you can inject `HttpClient`
 into your components and services.
 
 ## Making a request for JSON data
@@ -56,7 +56,7 @@ export class MyComponent implements OnInit {
 
   // Inject HttpClient into your component or service.
   constructor(private http: HttpClient) {}
-  
+
   ngOnInit(): void {
     // Make the HTTP request:
     this.http.get('/api/items').subscribe(data => {
@@ -72,7 +72,7 @@ export class MyComponent implements OnInit {
 
 In the above example, the `data['results']` field access stands out because you use bracket notation to access the results field. If you tried to write `data.results`, TypeScript would correctly complain that the `Object` coming back from HTTP does not have a `results` property. That's because while `HttpClient` parsed the JSON response into an `Object`, it doesn't know what shape that object is.
 
-You can, however, tell `HttpClient` what type the response will be, which is recommended. 
+You can, however, tell `HttpClient` what type the response will be, which is recommended.
 To do so, first you define an interface with the correct shape:
 
 ```javascript
@@ -163,7 +163,7 @@ RxJS has a useful operator called `.retry()`, which automatically resubscribes t
 
 First, import it:
 
-```js 
+```js
 import 'rxjs/add/operator/retry';
 ```
 
@@ -197,7 +197,7 @@ In addition to fetching data from the server, `HttpClient` supports mutating req
 
 ### Making a POST request
 
-One common operation is to POST data to a server; for example when submitting a form. The code for 
+One common operation is to POST data to a server; for example when submitting a form. The code for
 sending a POST request is very similar to the code for GET:
 
 ```javascript
@@ -261,12 +261,12 @@ The above sections detail how to use the basic HTTP functionality in `@angular/c
 
 ### Intercepting all requests or responses
 
-A major feature of `@angular/common/http` is _interception_, the ability to declare interceptors which sit in between your application and the backend. When your application makes a request, interceptors transform it 
+A major feature of `@angular/common/http` is _interception_, the ability to declare interceptors which sit in between your application and the backend. When your application makes a request, interceptors transform it
 before sending it to the server, and the interceptors can transform the response on its way back before your application sees it. This is useful for everything from authentication to logging.
 
 #### Writing an interceptor
 
-To implement an interceptor, you declare a class that implements `HttpInterceptor`, which 
+To implement an interceptor, you declare a class that implements `HttpInterceptor`, which
 has a single `intercept()` method. Here is a simple interceptor which does nothing but forward the request through without altering it:
 
 ```javascript
@@ -319,7 +319,7 @@ An interceptor must pass through all events that it does not understand or inten
 
 ##### Ordering
 
-When you provide multiple interceptors in an application, Angular applies them in the order that you 
+When you provide multiple interceptors in an application, Angular applies them in the order that you
 provided them.
 
 ##### Immutability
@@ -335,10 +335,10 @@ If you have a need to mutate the request body, you need to copy the request body
 Since requests are immutable, they cannot be modified directly. To mutate them, use `clone()`:
 
 ```javascript
-intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpError<any>> {
+intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
   // This is a duplicate. It is exactly the same as the original.
   const dupReq = req.clone();
-  
+
   // Change the URL and replace 'http://' with 'https://'
   const secureReq = req.clone({url: req.url.replace('http://', 'https://')});
 }
@@ -357,7 +357,7 @@ import {HttpEvent, HttpInterceptor, HttpHandler, HttpRequest} from '@angular/com
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   constructor(private auth: AuthService) {}
- 
+
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     // Get the auth header from the service.
     const authHeader = this.auth.getAuthorizationHeader();
@@ -390,7 +390,7 @@ import 'rxjs/add/operator/do';
 
 export class TimingInterceptor implements HttpInterceptor {
   constructor(private auth: AuthService) {}
- 
+
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
   	const started = Date.now();
     return next
@@ -398,7 +398,7 @@ export class TimingInterceptor implements HttpInterceptor {
       .do(event => {
         if (event instanceof HttpResponse) {
           const elapsed = Date.now() - started;
-          console.log(`Request for ${req.urlWithParams} took ${elapsed} ms.`); 
+          console.log(`Request for ${req.urlWithParams} took ${elapsed} ms.`);
         }
       });
   }
@@ -416,7 +416,7 @@ abstract class HttpCache {
    * Returns a cached response, if any, or null if not present.
    */
   abstract get(req: HttpRequest<any>): HttpResponse<any>|null;
-  
+
   /**
    * Adds or updates the response in the cache.
    */
@@ -430,14 +430,14 @@ An interceptor can apply this cache to outgoing requests.
 @Injectable()
 export class CachingInterceptor implements HttpInterceptor {
   constructor(private cache: HttpCache) {}
- 
+
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
   	// Before doing anything, it's important to only cache GET requests.
     // Skip this interceptor if the request method isn't GET.
     if (req.method !== 'GET') {
       return next.handle(req);
     }
-  
+
     // First, check the cache to see if this request exists.
     const cachedResponse = this.cache.get(req);
     if (cachedResponse) {
@@ -445,7 +445,7 @@ export class CachingInterceptor implements HttpInterceptor {
       // the request to the next handler.
       return Observable.of(cachedResponse);
     }
-    
+
     // No cached response exists. Go to the network, and cache
     // the response when it arrives.
     return next.handle(req).do(event => {
@@ -469,17 +469,17 @@ intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> 
   if (req.method !== 'GET') {
     return next.handle(req);
   }
-  
+
   // This will be an Observable of the cached value if there is one,
   // or an empty Observable otherwise. It starts out empty.
   let maybeCachedResponse: Observable<HttpEvent<any>> = Observable.empty();
-  
+
   // Check the cache.
   const cachedResponse = this.cache.get(req);
   if (cachedResponse) {
     maybeCachedResponse = Observable.of(cachedResponse);
   }
-  
+
   // Create an Observable (but don't subscribe) that represents making
   // the network request and caching the value.
   const networkResponse = next.handle(req).do(event => {
@@ -488,7 +488,7 @@ intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> 
       this.cache.put(req, event);
     }
   });
-  
+
   // Now, combine the two and send the cached response first (if there is
   // one), and the network response second.
   return Observable.concat(maybeCachedResponse, networkResponse);
@@ -509,7 +509,7 @@ const req = new HttpRequest('POST', '/upload/file', file, {
 });
 ```
 
-This option enables tracking of progress events. Remember, every progress event triggers 
+This option enables tracking of progress events. Remember, every progress event triggers
 change detection, so only turn them on if you intend to actually update the UI on each event.
 
 Next, make the request through the `request()` method of `HttpClient`. The result will be an Observable of events, just like with interceptors:
@@ -532,11 +532,11 @@ http.request(req).subscribe(event => {
 
 [Cross-Site Request Forgery (XSRF)](https://en.wikipedia.org/wiki/Cross-site_request_forgery) is an attack technique by which the attacker can trick an authenticated user into unknowingly executing actions on your website. `HttpClient` supports a [common mechanism](https://en.wikipedia.org/wiki/Cross-site_request_forgery#Cookie-to-Header_Token) used to prevent XSRF attacks. When performing HTTP requests, an interceptor reads a token from a cookie, by default `XSRF-TOKEN`, and sets it as an HTTP header, `X-XSRF-TOKEN`. Since only code that runs on your domain could read the cookie, the backend can be certain that the HTTP request came from your client application and not an attacker.
 
-By default, an interceptor sends this cookie on all mutating requests (POST, etc.) 
-to relative URLs but not on GET/HEAD requests or 
+By default, an interceptor sends this cookie on all mutating requests (POST, etc.)
+to relative URLs but not on GET/HEAD requests or
 on requests with an absolute URL.
 
-To take advantage of this, your server needs to set a token in a JavaScript readable session cookie called `XSRF-TOKEN` on either the page load or the first GET request. On subsequent requests the server can verify that the cookie matches the `X-XSRF-TOKEN` HTTP header, and therefore be sure that only code running on your domain could have sent the request. The token must be unique for each user and must be verifiable by the server; this prevents the client from making up its own tokens. Set the token to a digest of your site's authentication 
+To take advantage of this, your server needs to set a token in a JavaScript readable session cookie called `XSRF-TOKEN` on either the page load or the first GET request. On subsequent requests the server can verify that the cookie matches the `X-XSRF-TOKEN` HTTP header, and therefore be sure that only code running on your domain could have sent the request. The token must be unique for each user and must be verifiable by the server; this prevents the client from making up its own tokens. Set the token to a digest of your site's authentication
 cookie with a salt for added security.
 
 In order to prevent collisions in environments where multiple Angular apps share the same domain or subdomain, give each application a unique cookie name.
@@ -598,21 +598,21 @@ it('expects a GET request', inject([HttpClient, HttpTestingController], (http: H
   http
     .get('/data')
     .subscribe(data => expect(data['name']).toEqual('Test Data'));
-    
+
   // At this point, the request is pending, and no response has been
   // sent. The next step is to expect that the request happened.
   const req = httpMock.expectOne('/data');
-  
+
   // If no request with that URL was made, or if multiple requests match,
   // expectOne() would throw. However this test makes only one request to
   // this URL, so it will match and return a mock request. The mock request
   // can be used to deliver a response or make assertions against the
   // request. In this case, the test asserts that the request is a GET.
   expect(req.request.method).toEqual('GET');
-  
+
   // Next, fulfill the request by transmitting a response.
   req.flush({name: 'Test Data'});
-  
+
   // Finally, assert that there are no outstanding requests.
   httpMock.verify();
 }));
