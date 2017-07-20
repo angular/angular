@@ -213,10 +213,10 @@
 <h2 id="myUnless">UnlessDirective</h2>
 <p>
   The condition is currently
-  <span [ngClass]="{ a: !condition, b: condition, unless: true }">{{condition}}</span>.
+  <span [ngClass]="{ 'a': !condition, 'b': condition, 'unless': true }">{{condition}}</span>.
   <button
     (click)="condition = !condition"
-    [ngClass] = "{ a: condition, b: !condition }" >
+    [ngClass] = "{ 'a': condition, 'b': !condition }" >
     Toggle condition to {{condition ? 'false' : 'true'}}
   </button>
 </p>

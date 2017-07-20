@@ -87,7 +87,7 @@ export declare class DefaultUrlSerializer implements UrlSerializer {
 export declare type DetachedRouteHandle = {};
 
 /** @stable */
-export declare type Event = NavigationStart | NavigationEnd | NavigationCancel | NavigationError | RoutesRecognized | RouteConfigLoadStart | RouteConfigLoadEnd;
+export declare type Event = NavigationStart | NavigationEnd | NavigationCancel | NavigationError | RoutesRecognized | RouteConfigLoadStart | RouteConfigLoadEnd | GuardsCheckStart | GuardsCheckEnd | ResolveStart | ResolveEnd;
 
 /** @stable */
 export interface ExtraOptions {
@@ -96,6 +96,36 @@ export interface ExtraOptions {
     initialNavigation?: InitialNavigation;
     preloadingStrategy?: any;
     useHash?: boolean;
+}
+
+/** @experimental */
+export declare class GuardsCheckEnd {
+    id: number;
+    shouldActivate: boolean;
+    state: RouterStateSnapshot;
+    url: string;
+    urlAfterRedirects: string;
+    constructor(
+        id: number,
+        url: string,
+        urlAfterRedirects: string,
+        state: RouterStateSnapshot,
+        shouldActivate: boolean);
+    toString(): string;
+}
+
+/** @experimental */
+export declare class GuardsCheckStart {
+    id: number;
+    state: RouterStateSnapshot;
+    url: string;
+    urlAfterRedirects: string;
+    constructor(
+        id: number,
+        url: string,
+        urlAfterRedirects: string,
+        state: RouterStateSnapshot);
+    toString(): string;
 }
 
 /** @stable */
@@ -215,6 +245,34 @@ export declare type ResolveData = {
     [name: string]: any;
 };
 
+/** @experimental */
+export declare class ResolveEnd {
+    id: number;
+    state: RouterStateSnapshot;
+    url: string;
+    urlAfterRedirects: string;
+    constructor(
+        id: number,
+        url: string,
+        urlAfterRedirects: string,
+        state: RouterStateSnapshot);
+    toString(): string;
+}
+
+/** @experimental */
+export declare class ResolveStart {
+    id: number;
+    state: RouterStateSnapshot;
+    url: string;
+    urlAfterRedirects: string;
+    constructor(
+        id: number,
+        url: string,
+        urlAfterRedirects: string,
+        state: RouterStateSnapshot);
+    toString(): string;
+}
+
 /** @stable */
 export interface Route {
     canActivate?: any[];
@@ -259,7 +317,7 @@ export declare class Router {
     readonly url: string;
     urlHandlingStrategy: UrlHandlingStrategy;
     constructor(rootComponentType: Type<any> | null, urlSerializer: UrlSerializer, rootContexts: ChildrenOutletContexts, location: Location, injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler, config: Routes);
-    createUrlTree(commands: any[], {relativeTo, queryParams, fragment, preserveQueryParams, queryParamsHandling, preserveFragment}?: NavigationExtras): UrlTree;
+    createUrlTree(commands: any[], navigationExtras?: NavigationExtras): UrlTree;
     dispose(): void;
     initialNavigation(): void;
     isActive(url: string | UrlTree, exact: boolean): boolean;
@@ -300,7 +358,7 @@ export declare class RouterLink {
     routerLink: any[] | string;
     skipLocationChange: boolean;
     readonly urlTree: UrlTree;
-    constructor(router: Router, route: ActivatedRoute, tabIndex: string, renderer: Renderer, el: ElementRef);
+    constructor(router: Router, route: ActivatedRoute, tabIndex: string, renderer: Renderer2, el: ElementRef);
     onClick(): boolean;
 }
 
@@ -313,7 +371,7 @@ export declare class RouterLinkActive implements OnChanges, OnDestroy, AfterCont
     routerLinkActiveOptions: {
         exact: boolean;
     };
-    constructor(router: Router, element: ElementRef, renderer: Renderer, cdr: ChangeDetectorRef);
+    constructor(router: Router, element: ElementRef, renderer: Renderer2, cdr: ChangeDetectorRef);
     ngAfterContentInit(): void;
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
@@ -417,6 +475,17 @@ export declare abstract class UrlHandlingStrategy {
     abstract merge(newUrlPart: UrlTree, rawUrl: UrlTree): UrlTree;
     abstract shouldProcessUrl(url: UrlTree): boolean;
 }
+
+/** @experimental */
+export declare type UrlMatcher = (segments: UrlSegment[], group: UrlSegmentGroup, route: Route) => UrlMatchResult;
+
+/** @experimental */
+export declare type UrlMatchResult = {
+    consumed: UrlSegment[];
+    posParams?: {
+        [name: string]: UrlSegment;
+    };
+};
 
 /** @stable */
 export declare class UrlSegment {

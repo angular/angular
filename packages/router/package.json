@@ -19,7 +19,7 @@
   "bugs": {
     "url": "https://github.com/angular/angular/issues"
   },
-  "homepage": "https://github.com/angular/angular/blob/master/modules/%40angular/router/README.md",
+  "homepage": "https://github.com/angular/angular/tree/master/packages/router",
   "dependencies": {
     "tslib": "^1.7.1"
   },

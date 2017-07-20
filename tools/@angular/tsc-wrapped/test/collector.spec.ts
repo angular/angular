@@ -634,13 +634,8 @@ describe('Collector', () => {
   });
 
   describe('with interpolations', () => {
-    function createSource(text: string): ts.SourceFile {
-      return ts.createSourceFile('', text, ts.ScriptTarget.Latest, true);
-    }
-
     function e(expr: string, prefix?: string) {
-      const source = createSource(`${prefix || ''} export let value = ${expr};`);
-      const metadata = collector.getMetadata(source);
+      const metadata = collectSource(`${prefix || ''} export let value = ${expr};`);
       return expect(metadata.metadata['value']);
     }
 
@@ -708,15 +703,12 @@ describe('Collector', () => {
   });
 
   it('should ignore |null or |undefined in type expressions', () => {
-    const source = ts.createSourceFile(
-        'somefile.ts', `
+    const metadata = collectSource(`
       import {Foo} from './foo';
       export class SomeClass {
         constructor (a: Foo, b: Foo | null, c: Foo | undefined, d: Foo | undefined | null, e: Foo | undefined | null | Foo) {}
       }
-    `,
-        ts.ScriptTarget.Latest, true);
-    const metadata = collector.getMetadata(source);
+    `);
     expect((metadata.metadata['SomeClass'] as ClassMetadata).members).toEqual({
       __ctor__: [{
         __symbolic: 'constructor',
@@ -729,6 +721,21 @@ describe('Collector', () => {
         ]
       }]
     });
+  });
+
+  it('should treat exported class expressions as a class', () => {
+    const source = ts.createSourceFile(
+        '', `
+    export const InjectionToken: {new<T>(desc: string): InjectionToken<T>;} = class extends OpaqueToken {
+      constructor(desc: string) {
+        super(desc);
+      }
+
+      toString(): string { return \`InjectionToken ${this._desc}\`; }
+    } as any;`,
+        ts.ScriptTarget.Latest, true);
+    const metadata = collector.getMetadata(source);
+    expect(metadata.metadata).toEqual({InjectionToken: {__symbolic: 'class'}});
   });
 
   describe('in strict mode', () => {
@@ -821,16 +828,114 @@ describe('Collector', () => {
 
   describe('regerssion', () => {
     it('should be able to collect a short-hand property value', () => {
-      const source = ts.createSourceFile(
-          '', `
+      const metadata = collectSource(`
         const children = { f1: 1 };
         export const r = [
           {path: ':locale', children}
         ];
-      `,
-          ts.ScriptTarget.Latest, true);
-      const metadata = collector.getMetadata(source);
+      `);
       expect(metadata.metadata).toEqual({r: [{path: ':locale', children: {f1: 1}}]});
+    });
+
+    // #17518
+    it('should skip a default function', () => {
+      const metadata = collectSource(`
+        export default function () {
+
+          const mainRoutes = [
+            {name: 'a', abstract: true, component: 'main'},
+
+            {name: 'a.welcome', url: '/welcome', component: 'welcome'}
+          ];
+
+          return mainRoutes;
+
+        }`);
+      expect(metadata).toBeUndefined();
+    });
+
+    it('should skip a named default export', () => {
+      const metadata = collectSource(`
+        function mainRoutes() {
+
+          const mainRoutes = [
+            {name: 'a', abstract: true, component: 'main'},
+
+            {name: 'a.welcome', url: '/welcome', component: 'welcome'}
+          ];
+
+          return mainRoutes;
+
+        }
+
+        exports = foo;
+        `);
+      expect(metadata).toBeUndefined();
+    });
+
+    it('should be able to collect an invalid access expression', () => {
+      const source = createSource(`
+        import {Component} from '@angular/core';
+
+        const value = [];
+        @Component({
+          provider: [{provide: 'some token', useValue: value[]}]
+        })
+        export class MyComponent {}
+      `);
+      const metadata = collector.getMetadata(source);
+      expect(metadata.metadata.MyComponent).toEqual({
+        __symbolic: 'class',
+        decorators: [{
+          __symbolic: 'error',
+          message: 'Expression form not supported',
+          line: 5,
+          character: 55
+        }]
+      });
+    });
+  });
+
+  describe('references', () => {
+    beforeEach(() => { collector = new MetadataCollector({quotedNames: true}); });
+
+    it('should record a reference to an exported field of a useValue', () => {
+      const metadata = collectSource(`
+        export var someValue = 1;
+        export const v = {
+          useValue: someValue
+        };
+      `);
+      expect(metadata.metadata['someValue']).toEqual(1);
+      expect(metadata.metadata['v']).toEqual({
+        useValue: {__symbolic: 'reference', name: 'someValue'}
+      });
+    });
+
+    it('should leave external references in place in an object literal', () => {
+      const metadata = collectSource(`
+        export const myLambda = () => [1, 2, 3];
+        const indirect = [{a: 1, b: 3: c: myLambda}];
+        export const v = {
+          v: {i: indirect}
+        }
+      `);
+      expect(metadata.metadata['v']).toEqual({
+        v: {i: [{a: 1, b: 3, c: {__symbolic: 'reference', name: 'myLambda'}}]}
+      });
+    });
+
+    it('should leave an external reference in place in an array literal', () => {
+      const metadata = collectSource(`
+        export const myLambda = () => [1, 2, 3];
+        const indirect = [1, 3, myLambda}];
+        export const v = {
+          v: {i: indirect}
+        }
+      `);
+      expect(metadata.metadata['v']).toEqual({
+        v: {i: [1, 3, {__symbolic: 'reference', name: 'myLambda'}]}
+      });
     });
   });
 
@@ -838,6 +943,11 @@ describe('Collector', () => {
     host.overrideFile(fileName, content);
     host.addFile(fileName);
     program = service.getProgram();
+  }
+
+  function collectSource(content: string): ModuleMetadata {
+    const sourceFile = createSource(content);
+    return collector.getMetadata(sourceFile);
   }
 });
 
@@ -888,7 +998,7 @@ const FILES: Directory = {
         }
 
         getHeroes() {
-          this._heroService.getHeroesSlowly().then(heros => this.heroes = heros);
+          this._heroService.getHeroesSlowly().then(heroes => this.heroes = heroes);
         }
       }`,
     'hero.ts': `
@@ -1321,3 +1431,7 @@ const FILES: Directory = {
     }
   }
 };
+
+function createSource(text: string): ts.SourceFile {
+  return ts.createSourceFile('', text, ts.ScriptTarget.Latest, true);
+}

@@ -4,7 +4,6 @@ import { MockBackend } from '@angular/http/testing';
 
 import { ContributorService } from './contributor.service';
 import { Contributor, ContributorGroup } from './contributors.model';
-import { Logger } from 'app/shared/logger.service';
 
 describe('ContributorService', () => {
 
@@ -21,8 +20,7 @@ describe('ContributorService', () => {
         ContributorService,
         { provide: ConnectionBackend, useClass: MockBackend },
         { provide: RequestOptions, useClass: BaseRequestOptions },
-        Http,
-        Logger
+        Http
     ]);
 
     backend = injector.get(ConnectionBackend);
@@ -57,12 +55,12 @@ describe('ContributorService', () => {
 
     it('should reshape the contributor json to expected result', () => {
       const groupNames = contribs.map(g => g.name).join(',');
-      expect(groupNames).toEqual('Angular,Community');
+      expect(groupNames).toEqual('Angular,GDE');
     });
 
-    it('should have expected "Community" contribs in order', () => {
-      const community = contribs[1];
-      const actualAngularNames = community.contributors.map(l => l.name).join(',');
+    it('should have expected "GDE" contribs in order', () => {
+      const gde = contribs[1];
+      const actualAngularNames = gde.contributors.map(l => l.name).join(',');
       const expectedAngularNames = [testData.jeffcross, testData.kapunahelewong].map(l => l.name).join(',');
       expect(actualAngularNames).toEqual(expectedAngularNames);
     });
@@ -80,7 +78,7 @@ function getTestContribs() {
       "website": " https://github.com/kapunahelewong",
       "twitter": "kapunahele",
       "bio": "Kapunahele is a front-end developer and contributor to angular.io",
-      "group": "Community"
+      "group": "GDE"
     },
     "misko": {
       "name": "Miško Hevery",
@@ -112,7 +110,7 @@ function getTestContribs() {
       "twitter": "jeffbcross",
       "website": "https://twitter.com/jeffbcross",
       "bio": "Jeff was one of the earliest core team members on AngularJS.",
-      "group": "Community"
+      "group": "GDE"
     },
     "naomi": {
       "name": "Naomi Black",

@@ -8,15 +8,14 @@
 
 import {ReflectiveInjector} from '@angular/core';
 import {IterableDiffers} from '@angular/core/src/change_detection/differs/iterable_differs';
-import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 
 import {SpyIterableDifferFactory} from '../../spies';
 
 export function main() {
   describe('IterableDiffers', function() {
-    let factory1: any /** TODO #9100 */;
-    let factory2: any /** TODO #9100 */;
-    let factory3: any /** TODO #9100 */;
+    let factory1: any;
+    let factory2: any;
+    let factory3: any;
 
     beforeEach(() => {
       factory1 = new SpyIterableDifferFactory();
@@ -57,7 +56,7 @@ export function main() {
             .toThrowError(/Cannot extend IterableDiffers without a parent injector/);
       });
 
-      it('should extend di-inherited diffesr', () => {
+      it('should extend di-inherited differs', () => {
         const parent = new IterableDiffers([factory1]);
         const injector =
             ReflectiveInjector.resolveAndCreate([{provide: IterableDiffers, useValue: parent}]);

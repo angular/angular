@@ -475,7 +475,7 @@ You'll need separate TypeScript configuration files such as these:
 <div class="callout is-helpful">
 
   <header>
-    @Types and node modules
+    `@types` and node modules
   </header>
 
   In the file structure of _this particular sample project_,
@@ -568,7 +568,7 @@ Run the following command to generate the map.
 </code-example>
 
 The `source-map-explorer` analyzes the source map generated with the bundle and draws a map of all dependencies,
-showing exactly which application and Angular modules and classes are included in the bundle.
+showing exactly which application and NgModules and classes are included in the bundle.
 
 Here's the map for _Tour of Heroes_.
 

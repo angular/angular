@@ -76,22 +76,21 @@ export class ViewMetadata {
   /** {@link Component#interpolation} */
   interpolation: [string, string]|undefined;
 
-  constructor(
-      {templateUrl, template, encapsulation, styles, styleUrls, animations, interpolation}: {
-        templateUrl?: string,
-        template?: string,
-        encapsulation?: ViewEncapsulation,
-        styles?: string[],
-        styleUrls?: string[],
-        animations?: any[],
-        interpolation?: [string, string]
-      } = {}) {
-    this.templateUrl = templateUrl;
-    this.template = template;
-    this.styleUrls = styleUrls;
-    this.styles = styles;
-    this.encapsulation = encapsulation;
-    this.animations = animations;
-    this.interpolation = interpolation;
+  constructor(opts: {
+    templateUrl?: string,
+    template?: string,
+    encapsulation?: ViewEncapsulation,
+    styles?: string[],
+    styleUrls?: string[],
+    animations?: any[],
+    interpolation?: [string, string]
+  } = {}) {
+    this.templateUrl = opts.templateUrl;
+    this.template = opts.template;
+    this.styleUrls = opts.styleUrls;
+    this.styles = opts.styles;
+    this.encapsulation = opts.encapsulation;
+    this.animations = opts.animations;
+    this.interpolation = opts.interpolation;
   }
 }

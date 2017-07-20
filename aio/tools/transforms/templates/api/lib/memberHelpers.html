@@ -1,0 +1,53 @@
+{% import "lib/paramList.html" as params -%}
+
+{%- macro renderHeritage(exportDoc) -%}
+  {%- if exportDoc.extendsClauses.length %} extends {% for clause in exportDoc.extendsClauses -%}
+  {$ clause $}{% if not loop.last %}, {% endif -%}
+  {% endfor %}{% endif %}
+  {%- if exportDoc.implementsClauses.length %} implements {% for clause in exportDoc.implementsClauses -%}
+  {$ clause $}{% if not loop.last %}, {% endif -%}
+  {% endfor %}{% endif %}
+{%- endmacro -%}
+
+{%- macro renderMember(member, truncateLines) -%}
+    {%- if member.accessibility !== 'public' %}{$ member.accessibility $} {% endif -%}
+    {%- if member.isGetAccessor %}get {% endif -%}
+    {%- if member.isSetAccessor %}set {% endif -%}
+    {%- if member.isStatic  %}static {% endif -%}
+    {$ member.name $}{$ member.typeParameters | escape $}{$ params.paramList(member.parameters, truncateLines) | trim $}
+    {%- if member.isOptional  %}?{% endif -%}
+    {$ params.returnType(member.type) | trim | truncateCode(truncateLines) $}
+{%- endmacro -%}
+
+{%- macro renderMemberDetail(member, cssClass) -%}
+<div class="{$ cssClass $}">
+  <a id="{$ member.anchor $}"></a>
+  <code-example hideCopy="true" class="no-box api-heading">{$ renderMember(member) $}</code-example>
+  {%- if not member.notYetDocumented %}
+  {$ member.description | marked $}
+  {% endif -%}
+</div>
+{% endmacro -%}
+
+{% macro renderMemberDetails(members, containerClass, itemClass, titleText) %}
+{% if members.length %}
+<section class="{$ containerClass $}">
+  <h2>{$ titleText $}</h2>
+  {% for member in members %}{% if not member.internal %}
+    {$ renderMemberDetail(member, itemClass) $}
+    {% if member.overloads.length %}
+    <details class="overloads">
+      <summary>Overloads</summary>
+      <div class="detail-contents">
+        {% for overload in member.overloads %}
+        {$ renderMemberDetail(overload, itemClass + '-overload') $}
+        {% if not loop.last %}<hr>{% endif %}
+        {% endfor %}
+      </div>
+    </details>
+    {% endif %}
+    {% if not loop.last %}<hr class="hr-margin">{% endif %}
+  {% endif %}{% endfor %}
+</section>
+{% endif %}
+{% endmacro %}

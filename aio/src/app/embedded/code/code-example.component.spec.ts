@@ -1,7 +1,6 @@
-/* tslint:disable:no-unused-variable */
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { Component, DebugElement, Input } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { Component, DebugElement, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 
 import { CodeExampleComponent } from './code-example.component';
 
@@ -62,8 +61,15 @@ describe('CodeExampleComponent', () => {
     TestBed.overrideComponent(HostComponent, {
       set: {template: '<code-example title="Great Example"></code-example>'}});
     createComponent(oneLineCode);
-    const actual = codeExampleDe.query(By.css('header')).nativeElement.innerText;
+    const actual = codeExampleDe.query(By.css('header')).nativeElement.textContent;
     expect(actual).toBe('Great Example');
+  });
+
+  it('should remove the `title` attribute after initialisation', () => {
+    TestBed.overrideComponent(HostComponent, {
+      set: {template: '<code-example title="Great Example"></code-example>'}});
+    createComponent(oneLineCode);
+    expect(codeExampleDe.nativeElement.getAttribute('title')).toEqual(null);
   });
 
   it('should pass hideCopy to CodeComonent', () => {
@@ -75,13 +81,12 @@ describe('CodeExampleComponent', () => {
 });
 
 //// Test helpers ////
-// tslint:disable:member-ordering
 @Component({
   selector: 'aio-code',
   template: `
-  <div>lang: {{language}}</div>
-  <div>linenums: {{linenums}}</div>
-  code: <pre>{{someCode}}</pre>
+    <div>lang: {{language}}</div>
+    <div>linenums: {{linenums}}</div>
+    code: <pre>{{someCode}}</pre>
   `
 })
 class TestCodeComponent {

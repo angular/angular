@@ -16,6 +16,7 @@ Here are the most important tasks you might need to use:
 * `yarn setup` - Install all the dependencies, boilerplate, plunkers, zips and runs dgeni on the docs.
 
 * `yarn start` - run a development web server that watches the files; then builds the doc-viewer and reloads the page, as necessary.
+* `yarn serve-and-sync` - run both the `docs-watch` and `start` in the same console.
 * `yarn lint` - check that the doc-viewer code follows our style rules.
 * `yarn test` - watch all the source files, for the doc-viewer, and run all the unit tests when any change.
 * `yarn e2e` - run all the e2e tests for the doc-viewer.
@@ -29,6 +30,10 @@ Here are the most important tasks you might need to use:
 * `yarn boilerplate:remove` - remove all the boilerplate code that was added via `yarn boilerplate:add`.
 * `yarn generate-plunkers` - generate the plunker files that are used by the `live-example` tags in the docs.
 * `yarn generate-zips` - generate the zip files from the examples. Zip available via the `live-example` tags in the docs.
+
+* `yarn example-e2e` - run all e2e tests for examples
+  - `yarn example-e2e -- --setup` - force webdriver update & other setup, then run tests
+  - `yarn example-e2e -- --filter=foo` - limit e2e tests to those containing the word "foo"
 
 * `yarn build-ie-polyfills` - generates a js file of polyfills that can be loaded in Internet Explorer.
 
@@ -59,6 +64,9 @@ All other content is written using markdown in text files, located in the `angul
 More specifically, there are sub-folders that contain particular types of content: guides, tutorial and marketing.
 
 We use the [dgeni](https://github.com/angular/dgeni) tool to convert these files into docs that can be viewed in the doc-viewer.
+
+The [Authors Style Guide](https://angular.io/guide/docs-style-guide) prescribes guidelines for
+writing guide pages, explains how to use the documentation classes and components, and how to markup sample source code to produce code snippets.
 
 ### Generating the complete docs
 

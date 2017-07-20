@@ -106,16 +106,15 @@ aio-code pre {
   }
 }
 
-.code-tab-group div.mat-tab-body-content {
+.code-tab-group .mat-tab-label {
+  white-space: nowrap;
+}
+
+.code-tab-group .mat-tab-body-content {
   height: auto;
   transform: none;
 }
 
-
-// REMOVE RIPPLE EFFECT FROM MATERIAL TABS
-code-tabs md-tab-group *.mat-ripple-element, code-tabs md-tab-group *.mat-tab-body-active, code-tabs md-tab-group *.mat-tab-body-content, code-tabs md-tab-group *.mat-tab-body-content {
-  transform: none !important;
-}
 
 [role="tabpanel"] {
     transition: none;

@@ -17,15 +17,15 @@ Help us keep Angular open and inclusive. Please read and follow our [Code of Con
 
 ## <a name="question"></a> Got a Question or Problem?
 
-Please, do not open issues for the general support questions as we want to keep GitHub issues for bug reports and feature requests. You've got much better chances of getting your question answered on [StackOverflow](https://stackoverflow.com/questions/tagged/angular) where the questions should be tagged with tag `angular`.
+Do not open issues for general support questions as we want to keep GitHub issues for bug reports and feature requests. You've got much better chances of getting your question answered on [Stack Overflow](https://stackoverflow.com/questions/tagged/angular) where the questions should be tagged with tag `angular`.
 
-StackOverflow is a much better place to ask questions since:
+Stack Overflow is a much better place to ask questions since:
 
-- there are thousands of people willing to help on StackOverflow
+- there are thousands of people willing to help on Stack Overflow
 - questions and answers stay available for public viewing so your question / answer might help someone else
-- StackOverflow's voting system assures that the best answers are prominently visible.
+- Stack Overflow's voting system assures that the best answers are prominently visible.
 
-To save your and our time we will be systematically closing all the issues that are requests for general support and redirecting people to StackOverflow.
+To save your and our time, we will systematically close all issues that are requests for general support and redirect people to Stack Overflow.
 
 If you would like to chat about the question in real-time, you can reach out via [our gitter channel][gitter].
 
@@ -198,8 +198,7 @@ Must be one of the following:
 * **fix**: A bug fix
 * **perf**: A code change that improves performance
 * **refactor**: A code change that neither fixes a bug nor adds a feature
-* **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing
-  semi-colons, etc)
+* **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
 * **test**: Adding missing tests or correcting existing tests
 
 ### Scope
@@ -207,6 +206,7 @@ The scope should be the name of the npm package affected (as perceived by person
 
 The following is the list of supported scopes:
 
+* **animations**
 * **common**
 * **compiler**
 * **compiler-cli**
@@ -223,7 +223,7 @@ The following is the list of supported scopes:
 * **upgrade**
 * **tsc-wrapped**
 
-There is currently few exception to the "use package name" rule:
+There are currently a few exceptions to the "use package name" rule:
 
 * **packaging**: used for changes that change the npm package layout in all of our packages, e.g. public path changes, package.json changes done to all packages, d.ts file/format changes, changes to bundles, etc.
 * **changelog**: used for updating the release notes in CHANGELOG.md

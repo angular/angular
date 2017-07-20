@@ -43,14 +43,14 @@ export function jitStatements(sourceUrl: string, statements: o.Statement[]): {[k
   return evalExpression(sourceUrl, ctx, converter.getArgs());
 }
 
-class JitEmitterVisitor extends AbstractJsEmitterVisitor {
+export class JitEmitterVisitor extends AbstractJsEmitterVisitor {
   private _evalArgNames: string[] = [];
   private _evalArgValues: any[] = [];
   private _evalExportedVars: string[] = [];
 
   createReturnStmt(ctx: EmitterVisitorContext) {
     const stmt = new o.ReturnStatement(new o.LiteralMapExpr(this._evalExportedVars.map(
-        resultVar => new o.LiteralMapEntry(resultVar, o.variable(resultVar)))));
+        resultVar => new o.LiteralMapEntry(resultVar, o.variable(resultVar), false))));
     stmt.visitStatement(this, ctx);
   }
 
@@ -69,7 +69,7 @@ class JitEmitterVisitor extends AbstractJsEmitterVisitor {
       id = this._evalArgValues.length;
       this._evalArgValues.push(value);
       const name = identifierName({reference: ast.value.runtime}) || 'val';
-      this._evalArgNames.push(`jit_${name}${id}`);
+      this._evalArgNames.push(`jit_${name}_${id}`);
     }
     ctx.print(ast, this._evalArgNames[id]);
     return null;
