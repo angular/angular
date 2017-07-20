@@ -189,6 +189,39 @@ describe('MdDatepicker', () => {
         expect(attachToRef.nativeElement.tagName.toLowerCase())
             .toBe('input', 'popup should be attached to native input');
       });
+
+      it('input should aria-owns calendar after opened in non-touch mode', () => {
+        let inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
+        expect(inputEl.getAttribute('aria-owns')).toBeNull();
+
+        testComponent.datepicker.open();
+        fixture.detectChanges();
+
+        let ownedElementId = inputEl.getAttribute('aria-owns');
+        expect(ownedElementId).not.toBeNull();
+
+        let ownedElement = document.getElementById(ownedElementId);
+        expect(ownedElement).not.toBeNull();
+        expect((ownedElement as Element).tagName.toLowerCase()).toBe('md-calendar');
+      });
+
+      it('input should aria-owns calendar after opened in touch mode', () => {
+        testComponent.touch = true;
+        fixture.detectChanges();
+
+        let inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
+        expect(inputEl.getAttribute('aria-owns')).toBeNull();
+
+        testComponent.datepicker.open();
+        fixture.detectChanges();
+
+        let ownedElementId = inputEl.getAttribute('aria-owns');
+        expect(ownedElementId).not.toBeNull();
+
+        let ownedElement = document.getElementById(ownedElementId);
+        expect(ownedElement).not.toBeNull();
+        expect((ownedElement as Element).tagName.toLowerCase()).toBe('md-calendar');
+      });
     });
 
     describe('datepicker with too many inputs', () => {

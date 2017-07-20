@@ -57,9 +57,8 @@ export const MD_DATEPICKER_VALIDATORS: any = {
   selector: 'input[mdDatepicker], input[matDatepicker]',
   providers: [MD_DATEPICKER_VALUE_ACCESSOR, MD_DATEPICKER_VALIDATORS],
   host: {
-    '[attr.aria-expanded]': '_datepicker?.opened || "false"',
     '[attr.aria-haspopup]': 'true',
-    '[attr.aria-owns]': '_datepicker?.id',
+    '[attr.aria-owns]': '(_datepicker?.opened && _datepicker.id) || null',
     '[attr.min]': 'min ? _dateAdapter.getISODateString(min) : null',
     '[attr.max]': 'max ? _dateAdapter.getISODateString(max) : null',
     '[disabled]': 'disabled',
