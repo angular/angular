@@ -18,7 +18,7 @@ import {DomPortalHost} from '../portal/dom-portal-host';
 import {OverlayRef} from './overlay-ref';
 import {OverlayPositionBuilder} from './position/overlay-position-builder';
 import {OverlayContainer} from './overlay-container';
-import {ScrollStrategy, ScrollStrategyOptions} from './scroll/index';
+import {ScrollStrategyOptions} from './scroll/index';
 
 
 /** Next overlay unique ID. */
@@ -52,7 +52,9 @@ export class Overlay {
    * @returns Reference to the created overlay.
    */
   create(state: OverlayState = defaultState): OverlayRef {
-    return this._createOverlayRef(this._createPaneElement(), state);
+    const pane = this._createPaneElement();
+    const portalHost = this._createPortalHost(pane);
+    return new OverlayRef(portalHost, pane, state, this._ngZone);
   }
 
   /**
@@ -84,16 +86,5 @@ export class Overlay {
    */
   private _createPortalHost(pane: HTMLElement): DomPortalHost {
     return new DomPortalHost(pane, this._componentFactoryResolver, this._appRef, this._injector);
-  }
-
-  /**
-   * Creates an OverlayRef for an overlay in the given DOM element.
-   * @param pane DOM element for the overlay
-   * @param state
-   */
-  private _createOverlayRef(pane: HTMLElement, state: OverlayState): OverlayRef {
-    let scrollStrategy = state.scrollStrategy || this.scrollStrategies.noop();
-    let portalHost = this._createPortalHost(pane);
-    return new OverlayRef(portalHost, pane, state, scrollStrategy, this._ngZone);
   }
 }
