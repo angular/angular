@@ -132,6 +132,7 @@
 @mixin mat-slider-typography($config) {
   .mat-slider-thumb-label-text {
     font: {
+      family: mat-font-family($config);
       size: mat-font-size($config, caption);
       weight: mat-font-weight($config, body-2);
     }
