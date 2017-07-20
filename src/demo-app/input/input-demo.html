@@ -394,13 +394,14 @@
   <md-toolbar color="primary">Textarea Autosize</md-toolbar>
   <md-card-content>
     <h3>Regular &lt;textarea&gt;</h3>
-    <textarea mdTextareaAutosize class="demo-textarea"></textarea>
+    <textarea class="demo-textarea" mdTextareaAutosize mdAutosizeMaxRows="10"></textarea>
 
     <h3>&lt;textarea&gt; with md-input-container</h3>
     <div>
       <md-input-container>
         <textarea mdInput
                   mdTextareaAutosize
+                  mdAutosizeMaxRows="10"
                   placeholder="Autosized textarea"></textarea>
       </md-input-container>
     </div>

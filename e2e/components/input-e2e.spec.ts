@@ -1,4 +1,5 @@
 import {browser, by, element} from 'protractor';
+import {screenshot} from '../screenshot';
 
 
 describe('input', () => {
@@ -51,6 +52,26 @@ describe('input', () => {
       let input = element(by.id('text-area'));
       input.sendKeys('abc123');
       expect(input.getAttribute('value')).toBe('abc123');
+    });
+  });
+
+  describe('autosize-textarea', () => {
+    beforeEach(() => browser.get('/input'));
+
+    it('should resize correctly', () => {
+      let input = element(by.id('autosize-text-area'));
+      input.sendKeys('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+      screenshot('autosize multiple rows');
+    });
+
+    it('should enfore max rows', () => {
+      let input = element(by.id('autosize-text-area'));
+      input.sendKeys(
+          'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
+          'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
+          'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
+          'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+      screenshot('autosize more than max rows');
     });
   });
 });

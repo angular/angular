@@ -136,10 +136,13 @@ export class MdTextareaAutosize implements AfterViewInit {
     }
 
     // Reset the textarea height to auto in order to shrink back to its default size.
+    // Also temporarily force overflow:hidden, so scroll bars do not interfere with calculations.
     textarea.style.height = 'auto';
+    textarea.style.overflow = 'hidden';
 
     // Use the scrollHeight to know how large the textarea *would* be if fit its entire value.
     textarea.style.height = `${textarea.scrollHeight}px`;
+    textarea.style.overflow = '';
 
     this._previousValue = textarea.value;
   }
