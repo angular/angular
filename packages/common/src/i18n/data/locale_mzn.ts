@@ -1,0 +1,103 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+// This is generated code DO NOT MODIFY
+// see angular/tools/gulp-tasks/cldr/extract.js
+
+import {NgLocale, Plural} from '@angular/core';
+
+/** @experimental */
+export function getPluralCase(n: number): Plural {
+  return Plural.Other;
+}
+
+/** @experimental */
+export const NgLocaleMzn: NgLocale = {
+  localeId: 'mzn',
+  dateTimeTranslations: {
+    dayPeriods: {
+      format: {
+        abbreviated: {am: 'AM', pm: 'PM'},
+        narrow: {am: 'AM', pm: 'PM'},
+        wide: {am: 'AM', pm: 'PM'}
+      },
+      standalone: {
+        abbreviated: {am: 'AM', pm: 'PM'},
+        narrow: {am: 'AM', pm: 'PM'},
+        wide: {am: 'AM', pm: 'PM'}
+      }
+    },
+    days: {
+      format: {
+        narrow: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+        short: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        abbreviated: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        wide: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+      },
+      standalone: {
+        narrow: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+        short: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        abbreviated: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        wide: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+      }
+    },
+    months: {
+      format: {
+        narrow: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+        abbreviated: [
+          'ژانویه', 'فوریه', 'مارس', 'آوریل', 'مه', 'ژوئن', 'ژوئیه', 'اوت', 'سپتامبر', 'اکتبر',
+          'نوامبر', 'دسامبر'
+        ],
+        wide: [
+          'ژانویه', 'فوریه', 'مارس', 'آوریل', 'مه', 'ژوئن', 'ژوئیه', 'اوت', 'سپتامبر', 'اکتبر',
+          'نوامبر', 'دسامبر'
+        ]
+      },
+      standalone: {
+        narrow: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+        abbreviated: [
+          'ژانویه', 'فوریه', 'مارس', 'آوریل', 'مه', 'ژوئن', 'ژوئیه', 'اوت', 'سپتامبر', 'اکتبر',
+          'نوامبر', 'دسامبر'
+        ],
+        wide: [
+          'ژانویه', 'فوریه', 'مارس', 'آوریل', 'مه', 'ژوئن', 'ژوئیه', 'اوت', 'سپتامبر', 'اکتبر',
+          'نوامبر', 'دسامبر'
+        ]
+      }
+    },
+    eras: {abbreviated: ['پ.م', 'م.'], narrow: ['پ.م', 'م.'], wide: ['قبل میلاد', 'بعد میلاد']}
+  },
+  dateTimeSettings: {
+    firstDayOfWeek: 6,
+    weekendRange: [5, 5],
+    formats: {
+      date: {full: 'y MMMM d, EEEE', long: 'y MMMM d', medium: 'y MMM d', short: 'y-MM-dd'},
+      time: {full: 'HH:mm:ss zzzz', long: 'HH:mm:ss z', medium: 'HH:mm:ss', short: 'HH:mm'},
+      dateTime: {full: '{1} {0}', long: '{1} {0}', medium: '{1} {0}', short: '{1} {0}'}
+    }
+  },
+  numberSettings: {
+    symbols: {
+      decimal: '.',
+      group: ',',
+      list: ';',
+      percentSign: '%',
+      plusSign: '+',
+      minusSign: '-',
+      exponential: 'E',
+      superscriptingExponent: '×',
+      perMille: '‰',
+      infinity: '∞',
+      nan: 'NaN',
+      timeSeparator: ':'
+    },
+    formats: {currency: '¤ #,##0.00', decimal: '#,##0.###', percent: '#,##0%', scientific: '#E0'}
+  },
+  currencySettings: {symbol: 'IRR', name: 'ایران ریال'},
+  getPluralCase: getPluralCase
+};
