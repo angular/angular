@@ -18,6 +18,7 @@ import {DiagnosticContext, MockLanguageServiceHost, getDiagnosticTemplateInfo} f
 describe('expression diagnostics', () => {
   let registry: ts.DocumentRegistry;
   let host: MockLanguageServiceHost;
+  let compilerHost: CompilerHost;
   let service: ts.LanguageService;
   let context: DiagnosticContext;
   let aotHost: CompilerHost;

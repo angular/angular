@@ -29,7 +29,7 @@ export class HeroDetailComponent implements OnInit {
   // #docregion ng-on-init
   ngOnInit(): void {
     // get hero when `id` param changes
-    this.route.paramMap.subscribe(p => this.getHero(p.has('id') && p.get('id')));
+    this.route.params.subscribe(p => this.getHero(p && p['id']));
   }
   // #enddocregion ng-on-init
 

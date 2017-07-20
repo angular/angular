@@ -4,7 +4,6 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { ApiListComponent } from './api-list.component';
 import { ApiItem, ApiSection, ApiService } from './api.service';
 import { LocationService } from 'app/shared/location.service';
-import { SharedModule } from 'app/shared/shared.module';
 
 describe('ApiListComponent', () => {
   let component: ApiListComponent;
@@ -13,7 +12,6 @@ describe('ApiListComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [ SharedModule ],
       declarations: [ ApiListComponent ],
       providers: [
         { provide: ApiService, useClass: TestApiService },
@@ -77,17 +75,17 @@ describe('ApiListComponent', () => {
     });
 
     it('item.show should be true for items with selected status', () => {
-      component.setStatus({value: 'stable', title: 'Stable'});
+      component.setStatus({name: 'stable', title: 'Stable'});
       expectFilteredResult('status: stable', item => item.stability === 'stable');
     });
 
     it('item.show should be true for items with "security-risk" status when selected', () => {
-      component.setStatus({value: 'security-risk', title: 'Security Risk'});
+      component.setStatus({name: 'security-risk', title: 'Security Risk'});
       expectFilteredResult('status: security-risk', item => item.securityRisk);
     });
 
     it('item.show should be true for items of selected type', () => {
-      component.setType({value: 'class', title: 'Class'});
+      component.setType({name: 'class', title: 'Class'});
       expectFilteredResult('type: class', item => item.docType === 'class');
     });
 
@@ -191,8 +189,8 @@ describe('ApiListComponent', () => {
 
     it('should have query, status, and type', () => {
       component.setQuery('foo');
-      component.setStatus({value: 'stable', title: 'Stable'});
-      component.setType({value: 'class', title: 'Class'});
+      component.setStatus({name: 'stable', title: 'Stable'});
+      component.setType({name: 'class', title: 'Class'});
 
       const search = locationService.setSearch.calls.mostRecent().args[1];
       expect(search.query).toBe('foo');

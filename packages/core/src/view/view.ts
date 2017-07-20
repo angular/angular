@@ -487,10 +487,6 @@ function checkNoChangesNodeDynamic(view: ViewData, nodeDef: NodeDef, values: any
   }
 }
 
-/**
- * Workaround https://github.com/angular/tsickle/issues/497
- * @suppress {misplacedTypeAnnotation}
- */
 function checkNoChangesQuery(view: ViewData, nodeDef: NodeDef) {
   const queryList = asQueryList(view, nodeDef.index);
   if (queryList.dirty) {

@@ -35,8 +35,7 @@ export class AotCompiler {
       private _viewCompiler: ViewCompiler, private _ngModuleCompiler: NgModuleCompiler,
       private _outputEmitter: OutputEmitter,
       private _summaryResolver: SummaryResolver<StaticSymbol>, private _localeId: string|null,
-      private _translationFormat: string|null, private _enableSummariesForJit: boolean|null,
-      private _symbolResolver: StaticSymbolResolver) {}
+      private _translationFormat: string|null, private _symbolResolver: StaticSymbolResolver) {}
 
   clearCache() { this._metadataResolver.clearCache(); }
 
@@ -63,17 +62,8 @@ export class AotCompiler {
 
   emitAllStubs(analyzeResult: NgAnalyzedModules): GeneratedFile[] {
     const {files} = analyzeResult;
-    const sourceModules = files.map(
-        file =>
-            this._compileStubFile(file.srcUrl, file.directives, file.pipes, file.ngModules, false));
-    return flatten(sourceModules);
-  }
-
-  emitPartialStubs(analyzeResult: NgAnalyzedModules): GeneratedFile[] {
-    const {files} = analyzeResult;
-    const sourceModules = files.map(
-        file =>
-            this._compileStubFile(file.srcUrl, file.directives, file.pipes, file.ngModules, true));
+    const sourceModules =
+        files.map(file => this._compileStubFile(file.srcUrl, file.directives, file.ngModules));
     return flatten(sourceModules);
   }
 
@@ -87,21 +77,12 @@ export class AotCompiler {
   }
 
   private _compileStubFile(
-      srcFileUrl: string, directives: StaticSymbol[], pipes: StaticSymbol[],
-      ngModules: StaticSymbol[], partial: boolean): GeneratedFile[] {
-    // partial is true when we only need the files we are certain will produce a factory and/or
-    // summary.
-    // This is the normal case for `ngc` but if we assume libraryies are generating their own
-    // factories
-    // then we might need a factory for a file that re-exports a module or factory which we cannot
-    // know
-    // ahead of time so we need a stub generate for all non-.d.ts files. The .d.ts files do not need
-    // to
-    // be excluded here because they are excluded when the modules are analyzed. If a factory ends
-    // up
-    // not being needed, the factory file is not written in writeFile callback.
+      srcFileUrl: string, directives: StaticSymbol[], ngModules: StaticSymbol[]): GeneratedFile[] {
     const fileSuffix = splitTypescriptSuffix(srcFileUrl, true)[1];
     const generatedFiles: GeneratedFile[] = [];
+
+    const jitSummaryStmts: o.Statement[] = [];
+    const ngFactoryStms: o.Statement[] = [];
 
     const ngFactoryOutputCtx = this._createOutputContext(ngfactoryFilePath(srcFileUrl, true));
     const jitSummaryOutputCtx = this._createOutputContext(summaryForJitFileName(srcFileUrl, true));
@@ -111,50 +92,29 @@ export class AotCompiler {
       this._ngModuleCompiler.createStub(ngFactoryOutputCtx, ngModuleReference);
       createForJitStub(jitSummaryOutputCtx, ngModuleReference);
     });
-
-    let partialJitStubRequired = false;
-    let partialFactoryStubRequired = false;
+    // Note: we are creating stub ngfactory/ngsummary for all source files,
+    // as the real calculation requires almost the same logic as producing the real content for
+    // them.
+    // Our pipeline will filter out empty ones at the end.
+    generatedFiles.push(this._codegenSourceModule(srcFileUrl, ngFactoryOutputCtx));
+    generatedFiles.push(this._codegenSourceModule(srcFileUrl, jitSummaryOutputCtx));
 
     // create stubs for external stylesheets (always empty, as users should not import anything from
     // the generated code)
     directives.forEach((dirType) => {
       const compMeta = this._metadataResolver.getDirectiveMetadata(<any>dirType);
-
-      partialJitStubRequired = true;
-
       if (!compMeta.isComponent) {
         return;
       }
       // Note: compMeta is a component and therefore template is non null.
       compMeta.template !.externalStylesheets.forEach((stylesheetMeta) => {
-        const styleContext = this._createOutputContext(_stylesModuleUrl(
-            stylesheetMeta.moduleUrl !, this._styleCompiler.needsStyleShim(compMeta), fileSuffix));
-        _createTypeReferenceStub(styleContext, Identifiers.ComponentFactory);
-        generatedFiles.push(this._codegenSourceModule(stylesheetMeta.moduleUrl !, styleContext));
+        generatedFiles.push(this._codegenSourceModule(
+            stylesheetMeta.moduleUrl !,
+            this._createOutputContext(_stylesModuleUrl(
+                stylesheetMeta.moduleUrl !, this._styleCompiler.needsStyleShim(compMeta),
+                fileSuffix))));
       });
-
-      partialFactoryStubRequired = true;
     });
-
-    // If we need all the stubs to be generated then insert an arbitrary reference into the stub
-    if ((partialFactoryStubRequired || !partial) && ngFactoryOutputCtx.statements.length <= 0) {
-      _createTypeReferenceStub(ngFactoryOutputCtx, Identifiers.ComponentFactory);
-    }
-    if ((partialJitStubRequired || !partial || (pipes && pipes.length > 0)) &&
-        jitSummaryOutputCtx.statements.length <= 0) {
-      _createTypeReferenceStub(jitSummaryOutputCtx, Identifiers.ComponentFactory);
-    }
-
-    // Note: we are creating stub ngfactory/ngsummary for all source files,
-    // as the real calculation requires almost the same logic as producing the real content for
-    // them. Our pipeline will filter out empty ones at the end. Because of this filter, however,
-    // stub references to the reference type needs to be generated even if the user cannot
-    // refer to type from the `.d.ts` file to prevent the file being elided from the emit.
-    generatedFiles.push(this._codegenSourceModule(srcFileUrl, ngFactoryOutputCtx));
-    if (this._enableSummariesForJit) {
-      generatedFiles.push(this._codegenSourceModule(srcFileUrl, jitSummaryOutputCtx));
-    }
-
     return generatedFiles;
   }
 
@@ -244,12 +204,10 @@ export class AotCompiler {
             o.StmtModifier.Exported
           ]));
     });
-    const summaryJson = new GeneratedFile(srcFileUrl, summaryFileName(srcFileUrl), json);
-    if (this._enableSummariesForJit) {
-      return [summaryJson, this._codegenSourceModule(srcFileUrl, forJitOutputCtx)];
-    };
-
-    return [summaryJson];
+    return [
+      new GeneratedFile(srcFileUrl, summaryFileName(srcFileUrl), json),
+      this._codegenSourceModule(srcFileUrl, forJitOutputCtx)
+    ];
   }
 
   private _compileModule(outputCtx: OutputContext, ngModuleType: StaticSymbol): void {
@@ -343,15 +301,7 @@ export class AotCompiler {
       }
       const arity = this._symbolResolver.getTypeArity(symbol) || 0;
       const {filePath, name, members} = this._symbolResolver.getImportAs(symbol) || symbol;
-      const importModule = this._symbolResolver.fileNameToModuleName(filePath, genFilePath);
-
-      // It should be good enough to compare filePath to genFilePath and if they are equal
-      // there is a self reference. However, ngfactory files generate to .ts but their
-      // symbols have .d.ts so a simple compare is insufficient. They should be canonical
-      // and is tracked by #17705.
-      const selfReference = this._symbolResolver.fileNameToModuleName(genFilePath, genFilePath);
-      const moduleName = importModule === selfReference ? null : importModule;
-
+      const moduleName = this._symbolResolver.fileNameToModuleName(filePath, genFilePath);
       // If we are in a type expression that refers to a generic type then supply
       // the required type parameters. If there were not enough type parameters
       // supplied, supply any as the type. Outside a type expression the reference
@@ -386,10 +336,6 @@ export class AotCompiler {
   private _codegenSourceModule(srcFileUrl: string, ctx: OutputContext): GeneratedFile {
     return new GeneratedFile(srcFileUrl, ctx.genFilePath, ctx.statements);
   }
-}
-
-function _createTypeReferenceStub(outputCtx: OutputContext, reference: o.ExternalReference) {
-  outputCtx.statements.push(o.importExpr(reference).toStmt());
 }
 
 function _resolveStyleStatements(

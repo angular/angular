@@ -5,6 +5,7 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/publishLast';
 
+import { Logger } from 'app/shared/logger.service';
 import { Category, Resource, SubCategory } from './resource.model';
 import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
 
@@ -14,7 +15,7 @@ const resourcesPath = CONTENT_URL_PREFIX + 'resources.json';
 export class ResourceService {
   categories: Observable<Category[]>;
 
-  constructor(private http: Http) {
+  constructor(private http: Http, private logger: Logger) {
     this.categories = this.getCategories();
   }
 

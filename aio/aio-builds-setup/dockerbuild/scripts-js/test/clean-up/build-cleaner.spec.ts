@@ -1,9 +1,7 @@
 // Imports
 import * as fs from 'fs';
-import * as path from 'path';
 import * as shell from 'shelljs';
 import {BuildCleaner} from '../../lib/clean-up/build-cleaner';
-import {HIDDEN_DIR_PREFIX} from '../../lib/common/constants';
 import {GithubPullRequests} from '../../lib/common/github-pull-requests';
 
 // Tests
@@ -116,7 +114,7 @@ describe('BuildCleaner', () => {
 
     it('should resolve with the value returned by \'removeUnnecessaryBuilds()\'', done => {
       promise.then(result => {
-        expect(result as any).toBe('Test');
+        expect(result).toBe('Test');
         done();
       });
 
@@ -169,16 +167,6 @@ describe('BuildCleaner', () => {
       });
 
       readdirCb(null, ['12', '34', '56']);
-    });
-
-
-    it('should remove `HIDDEN_DIR_PREFIX` from the filenames', done => {
-      promise.then(result => {
-        expect(result).toEqual([12, 34, 56]);
-        done();
-      });
-
-      readdirCb(null, [`${HIDDEN_DIR_PREFIX}12`, '34', `${HIDDEN_DIR_PREFIX}56`]);
     });
 
 
@@ -242,22 +230,10 @@ describe('BuildCleaner', () => {
   describe('removeDir()', () => {
     let shellChmodSpy: jasmine.Spy;
     let shellRmSpy: jasmine.Spy;
-    let shellTestSpy: jasmine.Spy;
 
     beforeEach(() => {
       shellChmodSpy = spyOn(shell, 'chmod');
       shellRmSpy = spyOn(shell, 'rm');
-      shellTestSpy = spyOn(shell, 'test').and.returnValue(true);
-    });
-
-
-    it('should test if the directory exists (and return if is does not)', () => {
-      shellTestSpy.and.returnValue(false);
-      (cleaner as any).removeDir('/foo/bar');
-
-      expect(shellTestSpy).toHaveBeenCalledWith('-d', '/foo/bar');
-      expect(shellChmodSpy).not.toHaveBeenCalled();
-      expect(shellRmSpy).not.toHaveBeenCalled();
     });
 
 
@@ -311,28 +287,17 @@ describe('BuildCleaner', () => {
     it('should construct full paths to directories (by prepending \'buildsDir\')', () => {
       (cleaner as any).removeUnnecessaryBuilds([1, 2, 3], []);
 
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(path.normalize('/foo/bar/1'));
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(path.normalize('/foo/bar/2'));
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(path.normalize('/foo/bar/3'));
-    });
-
-
-    it('should try removing hidden directories as well', () => {
-      (cleaner as any).removeUnnecessaryBuilds([1, 2, 3], []);
-
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(path.normalize(`/foo/bar/${HIDDEN_DIR_PREFIX}1`));
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(path.normalize(`/foo/bar/${HIDDEN_DIR_PREFIX}2`));
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(path.normalize(`/foo/bar/${HIDDEN_DIR_PREFIX}3`));
+      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith('/foo/bar/1');
+      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith('/foo/bar/2');
+      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith('/foo/bar/3');
     });
 
 
     it('should remove the builds that do not correspond to open PRs', () => {
       (cleaner as any).removeUnnecessaryBuilds([1, 2, 3, 4], [2, 4]);
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledTimes(4);
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(path.normalize('/foo/bar/1'));
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(path.normalize('/foo/bar/3'));
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(path.normalize(`/foo/bar/${HIDDEN_DIR_PREFIX}1`));
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(path.normalize(`/foo/bar/${HIDDEN_DIR_PREFIX}3`));
+      expect(cleanerRemoveDirSpy).toHaveBeenCalledTimes(2);
+      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith('/foo/bar/1');
+      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith('/foo/bar/3');
       cleanerRemoveDirSpy.calls.reset();
 
       (cleaner as any).removeUnnecessaryBuilds([1, 2, 3, 4], [1, 2, 3, 4]);
@@ -340,15 +305,11 @@ describe('BuildCleaner', () => {
       cleanerRemoveDirSpy.calls.reset();
 
       (cleaner as any).removeUnnecessaryBuilds([1, 2, 3, 4], []);
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledTimes(8);
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(path.normalize('/foo/bar/1'));
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(path.normalize('/foo/bar/2'));
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(path.normalize('/foo/bar/3'));
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(path.normalize('/foo/bar/4'));
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(path.normalize(`/foo/bar/${HIDDEN_DIR_PREFIX}1`));
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(path.normalize(`/foo/bar/${HIDDEN_DIR_PREFIX}2`));
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(path.normalize(`/foo/bar/${HIDDEN_DIR_PREFIX}3`));
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(path.normalize(`/foo/bar/${HIDDEN_DIR_PREFIX}4`));
+      expect(cleanerRemoveDirSpy).toHaveBeenCalledTimes(4);
+      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith('/foo/bar/1');
+      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith('/foo/bar/2');
+      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith('/foo/bar/3');
+      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith('/foo/bar/4');
       cleanerRemoveDirSpy.calls.reset();
     });
 

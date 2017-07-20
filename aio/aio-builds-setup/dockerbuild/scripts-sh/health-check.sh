@@ -1,6 +1,5 @@
 #!/bin/bash
-# Using `+e` so that all checks are run and we get a complete report (even if some checks failed).
-set +e -u -o pipefail
+set +e -o pipefail
 
 
 # Variables

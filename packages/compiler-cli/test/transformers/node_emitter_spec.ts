@@ -21,7 +21,7 @@ const sameModuleIdentifier = new o.ExternalReference(null, 'someLocalId', null);
 
 const externalModuleIdentifier = new o.ExternalReference(anotherModuleUrl, 'someExternalId', null);
 
-describe('TypeScriptNodeEmitter', () => {
+describe('TypeScriptEmitter', () => {
   let context: MockAotContext;
   let host: MockCompilerHost;
   let emitter: TypeScriptNodeEmitter;
@@ -43,7 +43,8 @@ describe('TypeScriptNodeEmitter', () => {
     const transformers: ts.CustomTransformers = {
       before: [context => {
         return sourceFile => {
-          const [newSourceFile] = emitter.updateSourceFile(sourceFile, stmts, preamble);
+          const [newSourceFile] = emitter.updateSourceFile(
+              sourceFile, someGenFileName, someGenFilePath, stmts, [], preamble);
           return newSourceFile;
         };
       }]
@@ -166,13 +167,15 @@ describe('TypeScriptNodeEmitter', () => {
     expect(emitStmt(o.literal(true).toStmt())).toEqual('true;');
     expect(emitStmt(o.literal('someStr').toStmt())).toEqual(`"someStr";`);
     expect(emitStmt(o.literalArr([o.literal(1)]).toStmt())).toEqual(`[1];`);
-    expect(emitStmt(o.literalMap([
-                       {key: 'someKey', value: o.literal(1), quoted: false},
-                       {key: 'a', value: o.literal('a'), quoted: false},
-                       {key: '*', value: o.literal('star'), quoted: true},
-                     ]).toStmt())
+    expect(emitStmt(o.literalMap([['someKey', o.literal(1)]]).toStmt()))
+        .toEqual(`({ someKey: 1 });`);
+  });
+
+  it('should apply quotes to each entry within a map produced with literalMap when true', () => {
+    expect(emitStmt(
+               o.literalMap([['a', o.literal('a')], ['*', o.literal('star')]], null, true).toStmt())
                .replace(/\s+/gm, ''))
-        .toEqual(`({someKey:1,a:"a","*":"star"});`);
+        .toEqual(`({"a":"a","*":"star"});`);
   });
 
   it('should support blank literals', () => {

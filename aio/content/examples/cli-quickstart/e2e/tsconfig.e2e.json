@@ -1,12 +1,18 @@
 {
-  "extends": "../tsconfig.json",
   "compilerOptions": {
-    "outDir": "../out-tsc/e2e",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "lib": [
+      "es2016"
+    ],
+    "outDir": "../dist/out-tsc-e2e",
     "module": "commonjs",
-    "target": "es5",
-    "types": [
+    "target": "es6",
+    "types":[
       "jasmine",
-      "jasminewd2",
       "node"
     ]
   }

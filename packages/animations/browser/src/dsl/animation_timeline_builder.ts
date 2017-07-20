@@ -199,35 +199,34 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
 
   visitSequence(ast: SequenceAst, context: AnimationTimelineContext) {
     const subContextCount = context.subContextCount;
-    let ctx = context;
     const options = ast.options;
 
     if (options && (options.params || options.delay)) {
-      ctx = context.createSubContext(options);
-      ctx.transformIntoNewTimeline();
+      context.createSubContext(options);
+      context.transformIntoNewTimeline();
 
       if (options.delay != null) {
-        if (ctx.previousNode instanceof StyleAst) {
-          ctx.currentTimeline.snapshotCurrentStyles();
-          ctx.previousNode = DEFAULT_NOOP_PREVIOUS_NODE;
+        if (context.previousNode instanceof StyleAst) {
+          context.currentTimeline.snapshotCurrentStyles();
+          context.previousNode = DEFAULT_NOOP_PREVIOUS_NODE;
         }
 
         const delay = resolveTimingValue(options.delay);
-        ctx.delayNextStep(delay);
+        context.delayNextStep(delay);
       }
     }
 
     if (ast.steps.length) {
-      ast.steps.forEach(s => s.visit(this, ctx));
+      ast.steps.forEach(s => s.visit(this, context));
 
       // this is here just incase the inner steps only contain or end with a style() call
-      ctx.currentTimeline.applyStylesToKeyframe();
+      context.currentTimeline.applyStylesToKeyframe();
 
       // this means that some animation function within the sequence
       // ended up creating a sub timeline (which means the current
       // timeline cannot overlap with the contents of the sequence)
-      if (ctx.subContextCount > subContextCount) {
-        ctx.transformIntoNewTimeline();
+      if (context.subContextCount > subContextCount) {
+        context.transformIntoNewTimeline();
       }
     }
 
@@ -409,12 +408,11 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
         break;
     }
 
-    const timeline = context.currentTimeline;
     if (delay) {
-      timeline.delayNextStep(delay);
+      context.currentTimeline.delayNextStep(delay);
     }
 
-    const startingTime = timeline.currentTime;
+    const startingTime = context.currentTimeline.currentTime;
     ast.animation.visit(this, context);
     context.previousNode = ast;
 
@@ -477,7 +475,7 @@ export class AnimationTimelineContext {
 
       Object.keys(newParams).forEach(name => {
         if (!skipIfExists || !paramsToUpdate.hasOwnProperty(name)) {
-          paramsToUpdate[name] = interpolateParams(newParams[name], paramsToUpdate, this.errors);
+          paramsToUpdate[name] = newParams[name];
         }
       });
     }
@@ -613,19 +611,10 @@ export class TimelineBuilder {
   get currentTime() { return this.startTime + this.duration; }
 
   delayNextStep(delay: number) {
-    // in the event that a style() step is placed right before a stagger()
-    // and that style() step is the very first style() value in the animation
-    // then we need to make a copy of the keyframe [0, copy, 1] so that the delay
-    // properly applies the style() values to work with the stagger...
-    const hasPreStyleStep = this._keyframes.size == 1 && Object.keys(this._pendingStyles).length;
-
-    if (this.duration || hasPreStyleStep) {
-      this.forwardTime(this.currentTime + delay);
-      if (hasPreStyleStep) {
-        this.snapshotCurrentStyles();
-      }
-    } else {
+    if (this.duration == 0) {
       this.startTime += delay;
+    } else {
+      this.forwardTime(this.currentTime + delay);
     }
   }
 

@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimationOptions, AnimationPlayer, NoopAnimationPlayer, ɵAnimationGroupPlayer as AnimationGroupPlayer, ɵPRE_STYLE as PRE_STYLE, ɵStyleData} from '@angular/animations';
+import {AUTO_STYLE, AnimationOptions, AnimationPlayer, NoopAnimationPlayer, ɵPRE_STYLE as PRE_STYLE, ɵStyleData} from '@angular/animations';
 
 import {AnimationTimelineInstruction} from '../dsl/animation_timeline_instruction';
 import {AnimationTransitionFactory} from '../dsl/animation_transition_factory';
@@ -13,29 +13,13 @@ import {AnimationTransitionInstruction} from '../dsl/animation_transition_instru
 import {AnimationTrigger} from '../dsl/animation_trigger';
 import {ElementInstructionMap} from '../dsl/element_instruction_map';
 import {AnimationStyleNormalizer} from '../dsl/style_normalization/animation_style_normalizer';
-import {ENTER_CLASSNAME, LEAVE_CLASSNAME, NG_ANIMATING_CLASSNAME, NG_ANIMATING_SELECTOR, NG_TRIGGER_CLASSNAME, NG_TRIGGER_SELECTOR, copyObj, eraseStyles, setStyles} from '../util';
+import {ENTER_CLASSNAME, LEAVE_CLASSNAME, LEAVE_SELECTOR, NG_ANIMATING_CLASSNAME, NG_TRIGGER_CLASSNAME, NG_TRIGGER_SELECTOR, copyObj, eraseStyles, setStyles} from '../util';
 
 import {AnimationDriver} from './animation_driver';
 import {getOrSetAsInMap, listenOnPlayer, makeAnimationEvent, normalizeKeyframes, optimizeGroupPlayer} from './shared';
 
-const QUEUED_CLASSNAME = 'ng-animate-queued';
-const QUEUED_SELECTOR = '.ng-animate-queued';
-const DISABLED_CLASSNAME = 'ng-animate-disabled';
-const DISABLED_SELECTOR = '.ng-animate-disabled';
-
-const EMPTY_PLAYER_ARRAY: TransitionAnimationPlayer[] = [];
-const NULL_REMOVAL_STATE: ElementAnimationState = {
-  namespaceId: '',
-  setForRemoval: null,
-  hasAnimation: false,
-  removedBeforeQueried: false
-};
-const NULL_REMOVED_QUERIED_STATE: ElementAnimationState = {
-  namespaceId: '',
-  setForRemoval: null,
-  hasAnimation: false,
-  removedBeforeQueried: true
-};
+const EMPTY_PLAYER_ARRAY: AnimationPlayer[] = [];
+const NOOP_FN = () => {};
 
 interface TriggerListener {
   name: string;
@@ -51,15 +35,6 @@ export interface QueueInstruction {
   transition: AnimationTransitionFactory;
   player: TransitionAnimationPlayer;
   isFallbackTransition: boolean;
-}
-
-export const REMOVAL_FLAG = '__ng_removed';
-
-export interface ElementAnimationState {
-  setForRemoval: any;
-  hasAnimation: boolean;
-  namespaceId: string;
-  removedBeforeQueried: boolean;
 }
 
 export class StateValue {
@@ -98,6 +73,9 @@ export class StateValue {
 export const VOID_VALUE = 'void';
 export const DEFAULT_STATE_VALUE = new StateValue(VOID_VALUE);
 export const DELETED_STATE_VALUE = new StateValue('DELETED');
+
+const POTENTIAL_ENTER_CLASSNAME = ENTER_CLASSNAME + '-temp';
+const POTENTIAL_ENTER_SELECTOR = '.' + POTENTIAL_ENTER_CLASSNAME;
 
 export class AnimationTransitionNamespace {
   public players: TransitionAnimationPlayer[] = [];
@@ -205,16 +183,6 @@ export class AnimationTransitionNamespace {
       return player;
     }
 
-    const isRemoval = toState.value === VOID_VALUE;
-
-    // normally this isn't reached by here, however, if an object expression
-    // is passed in then it may be a new object each time. Comparing the value
-    // is important since that will stay the same despite there being a new object.
-    // The removal arc here is special cased because the same element is triggered
-    // twice in the event that it contains animations on the outer/inner portions
-    // of the host container
-    if (!isRemoval && fromState.value === toState.value) return;
-
     const playersOnElement: TransitionAnimationPlayer[] =
         getOrSetAsInMap(this._engine.playersByElement, element, []);
     playersOnElement.forEach(player => {
@@ -240,11 +208,12 @@ export class AnimationTransitionNamespace {
         {element, triggerName, transition, fromState, toState, player, isFallbackTransition});
 
     if (!isFallbackTransition) {
-      addClass(element, QUEUED_CLASSNAME);
-      player.onStart(() => { removeClass(element, QUEUED_CLASSNAME); });
+      addClass(element, NG_ANIMATING_CLASSNAME);
     }
 
     player.onDone(() => {
+      removeClass(element, NG_ANIMATING_CLASSNAME);
+
       let index = this.players.indexOf(player);
       if (index >= 0) {
         this.players.splice(index, 1);
@@ -276,7 +245,7 @@ export class AnimationTransitionNamespace {
     });
   }
 
-  clearElementCache(element: any) {
+  private _onElementDestroy(element: any) {
     this._engine.statesByElement.delete(element);
     this._elementListeners.delete(element);
     const elementPlayers = this._engine.playersByElement.get(element);
@@ -298,13 +267,14 @@ export class AnimationTransitionNamespace {
 
         this.removeNode(elm, context, true);
       } else {
-        this.clearElementCache(elm);
+        this._onElementDestroy(elm);
       }
     });
   }
 
   removeNode(element: any, context: any, doNotRecurse?: boolean): void {
     const engine = this._engine;
+    engine.markElementAsRemoved(element);
 
     if (!doNotRecurse && element.childElementCount) {
       this._destroyInnerNodes(element, context, true);
@@ -325,8 +295,12 @@ export class AnimationTransitionNamespace {
       });
 
       if (players.length) {
-        engine.markElementAsRemoved(this.id, element, true, context);
-        optimizeGroupPlayer(players).onDone(() => engine.processLeaveNode(element));
+        optimizeGroupPlayer(players).onDone(() => {
+          engine.destroyInnerAnimations(element);
+          this._onElementDestroy(element);
+          engine._onRemovalComplete(element, context);
+        });
+
         return;
       }
     }
@@ -391,11 +365,15 @@ export class AnimationTransitionNamespace {
     // whether or not a parent has an animation we need to delay the deferral of the leave
     // operation until we have more information (which we do after flush() has been called)
     if (containsPotentialParentTransition) {
-      engine.markElementAsRemoved(this.id, element, false, context);
+      engine.queuedRemovals.set(element, () => {
+        engine.destroyInnerAnimations(element);
+        this._onElementDestroy(element);
+        engine._onRemovalComplete(element, context);
+      });
     } else {
       // we do this after the flush has occurred such
       // that the callbacks can be fired
-      engine.afterFlush(() => this.clearElementCache(element));
+      engine.afterFlush(() => this._onElementDestroy(element));
       engine.destroyInnerAnimations(element);
       engine._onRemovalComplete(element, context);
     }
@@ -469,12 +447,11 @@ export interface QueuedTransition {
 
 export class TransitionAnimationEngine {
   public players: TransitionAnimationPlayer[] = [];
+  public queuedRemovals = new Map<any, () => any>();
   public newHostElements = new Map<any, AnimationTransitionNamespace>();
   public playersByElement = new Map<any, TransitionAnimationPlayer[]>();
   public playersByQueriedElement = new Map<any, TransitionAnimationPlayer[]>();
   public statesByElement = new Map<any, {[triggerName: string]: StateValue}>();
-  public disabledNodes = new Set<any>();
-
   public totalAnimations = 0;
   public totalQueuedPlayers = 0;
 
@@ -485,7 +462,6 @@ export class TransitionAnimationEngine {
 
   public namespacesByHostElement = new Map<any, AnimationTransitionNamespace>();
   public collectedEnterElements: any[] = [];
-  public collectedLeaveElements: any[] = [];
 
   // this method is designed to be overridden by the code that uses this engine
   public onRemovalComplete = (element: any, context: any) => {};
@@ -596,9 +572,8 @@ export class TransitionAnimationEngine {
 
     // special case for when an element is removed and reinserted (move operation)
     // when this occurs we do not want to use the element for deletion later
-    const details = element[REMOVAL_FLAG] as ElementAnimationState;
-    if (details && details.setForRemoval) {
-      details.setForRemoval = false;
+    if (this.queuedRemovals.has(element)) {
+      this.queuedRemovals.delete(element);
     }
 
     // in the event that the namespaceId is blank then the caller
@@ -616,40 +591,20 @@ export class TransitionAnimationEngine {
 
   collectEnterElement(element: any) { this.collectedEnterElements.push(element); }
 
-  markElementAsDisabled(element: any, value: boolean) {
-    if (value) {
-      if (!this.disabledNodes.has(element)) {
-        this.disabledNodes.add(element);
-        addClass(element, DISABLED_CLASSNAME);
-      }
-    } else if (this.disabledNodes.has(element)) {
-      this.disabledNodes.delete(element);
-      removeClass(element, DISABLED_CLASSNAME);
-    }
-  }
-
   removeNode(namespaceId: string, element: any, context: any, doNotRecurse?: boolean): void {
-    if (!isElementNode(element)) {
-      this._onRemovalComplete(element, context);
-      return;
-    }
-
-    const ns = namespaceId ? this._fetchNamespace(namespaceId) : null;
-    if (ns) {
-      ns.removeNode(element, context, doNotRecurse);
+    if (namespaceId) {
+      const ns = this._fetchNamespace(namespaceId);
+      if (!isElementNode(element) || !ns) {
+        this._onRemovalComplete(element, context);
+      } else {
+        ns.removeNode(element, context, doNotRecurse);
+      }
     } else {
-      this.markElementAsRemoved(namespaceId, element, false, context);
+      this.queuedRemovals.set(element, () => this._onRemovalComplete(element, context));
     }
   }
 
-  markElementAsRemoved(namespaceId: string, element: any, hasAnimation?: boolean, context?: any) {
-    this.collectedLeaveElements.push(element);
-    element[REMOVAL_FLAG] = {
-      namespaceId,
-      setForRemoval: context, hasAnimation,
-      removedBeforeQueried: false
-    };
-  }
+  markElementAsRemoved(element: any) { this.queuedRemovals.set(element, NOOP_FN); }
 
   listen(
       namespaceId: string, element: any, name: string, phase: string,
@@ -667,8 +622,7 @@ export class TransitionAnimationEngine {
   }
 
   destroyInnerAnimations(containerElement: any) {
-    let elements = this.driver.query(containerElement, NG_TRIGGER_SELECTOR, true);
-    elements.forEach(element => {
+    this.driver.query(containerElement, NG_TRIGGER_SELECTOR, true).forEach(element => {
       const players = this.playersByElement.get(element);
       if (players) {
         players.forEach(player => {
@@ -687,18 +641,6 @@ export class TransitionAnimationEngine {
         Object.keys(stateMap).forEach(triggerName => stateMap[triggerName] = DELETED_STATE_VALUE);
       }
     });
-
-    if (this.playersByQueriedElement.size == 0) return;
-
-    elements = this.driver.query(containerElement, NG_ANIMATING_SELECTOR, true);
-    if (elements.length) {
-      elements.forEach(element => {
-        const players = this.playersByQueriedElement.get(element);
-        if (players) {
-          players.forEach(player => player.finish());
-        }
-      });
-    }
   }
 
   whenRenderingDone(): Promise<any> {
@@ -711,30 +653,6 @@ export class TransitionAnimationEngine {
     });
   }
 
-  processLeaveNode(element: any) {
-    const details = element[REMOVAL_FLAG] as ElementAnimationState;
-    if (details && details.setForRemoval) {
-      // this will prevent it from removing it twice
-      element[REMOVAL_FLAG] = NULL_REMOVAL_STATE;
-      if (details.namespaceId) {
-        this.destroyInnerAnimations(element);
-        const ns = this._fetchNamespace(details.namespaceId);
-        if (ns) {
-          ns.clearElementCache(element);
-        }
-      }
-      this._onRemovalComplete(element, details.setForRemoval);
-    }
-
-    if (this.driver.matchesElement(element, DISABLED_SELECTOR)) {
-      this.markElementAsDisabled(element, false);
-    }
-
-    this.driver.query(element, DISABLED_SELECTOR, true).forEach(node => {
-      this.markElementAsDisabled(element, false);
-    });
-  }
-
   flush(microtaskId: number = -1) {
     let players: AnimationPlayer[] = [];
     if (this.newHostElements.size) {
@@ -742,26 +660,15 @@ export class TransitionAnimationEngine {
       this.newHostElements.clear();
     }
 
-    if (this._namespaceList.length &&
-        (this.totalQueuedPlayers || this.collectedLeaveElements.length)) {
-      const cleanupFns: Function[] = [];
-      try {
-        players = this._flushAnimations(cleanupFns, microtaskId);
-      } finally {
-        for (let i = 0; i < cleanupFns.length; i++) {
-          cleanupFns[i]();
-        }
-      }
+    if (this._namespaceList.length && (this.totalQueuedPlayers || this.queuedRemovals.size)) {
+      players = this._flushAnimations(microtaskId);
     } else {
-      for (let i = 0; i < this.collectedLeaveElements.length; i++) {
-        const element = this.collectedLeaveElements[i];
-        this.processLeaveNode(element);
-      }
+      this.queuedRemovals.forEach(fn => fn());
     }
 
     this.totalQueuedPlayers = 0;
     this.collectedEnterElements.length = 0;
-    this.collectedLeaveElements.length = 0;
+    this.queuedRemovals.clear();
     this._flushFns.forEach(fn => fn());
     this._flushFns = [];
 
@@ -780,8 +687,7 @@ export class TransitionAnimationEngine {
     }
   }
 
-  private _flushAnimations(cleanupFns: Function[], microtaskId: number):
-      TransitionAnimationPlayer[] {
+  private _flushAnimations(microtaskId: number): TransitionAnimationPlayer[] {
     const subTimelines = new ElementInstructionMap();
     const skippedPlayers: TransitionAnimationPlayer[] = [];
     const skippedPlayersMap = new Map<any, AnimationPlayer[]>();
@@ -790,55 +696,20 @@ export class TransitionAnimationEngine {
     const allPreStyleElements = new Map<any, Set<string>>();
     const allPostStyleElements = new Map<any, Set<string>>();
 
-    const disabledElementsSet = new Set<any>();
-    this.disabledNodes.forEach(node => {
-      const nodesThatAreDisabled = this.driver.query(node, QUEUED_SELECTOR, true);
-      for (let i = 0; i < nodesThatAreDisabled.length; i++) {
-        disabledElementsSet.add(nodesThatAreDisabled[i]);
-      }
-    });
-
-    const bodyNode = getBodyNode();
-    const allEnterNodes: any[] = this.collectedEnterElements.length ?
-        this.collectedEnterElements.filter(createIsRootFilterFn(this.collectedEnterElements)) :
-        [];
-
     // this must occur before the instructions are built below such that
     // the :enter queries match the elements (since the timeline queries
     // are fired during instruction building).
-    for (let i = 0; i < allEnterNodes.length; i++) {
-      addClass(allEnterNodes[i], ENTER_CLASSNAME);
-    }
+    const bodyNode = getBodyNode();
+    const allEnterNodes: any[] = this.collectedEnterElements;
+    const enterNodes: any[] =
+        allEnterNodes.length ? collectEnterElements(this.driver, allEnterNodes) : [];
 
-    const allLeaveNodes: any[] = [];
-    const leaveNodesWithoutAnimations: any[] = [];
-    for (let i = 0; i < this.collectedLeaveElements.length; i++) {
-      const element = this.collectedLeaveElements[i];
-      const details = element[REMOVAL_FLAG] as ElementAnimationState;
-      if (details && details.setForRemoval) {
-        addClass(element, LEAVE_CLASSNAME);
-        allLeaveNodes.push(element);
-        if (!details.hasAnimation) {
-          leaveNodesWithoutAnimations.push(element);
-        }
-      }
-    }
+    this.queuedRemovals.forEach((fn, element) => addClass(element, LEAVE_CLASSNAME));
 
-    cleanupFns.push(() => {
-      allEnterNodes.forEach(element => removeClass(element, ENTER_CLASSNAME));
-      allLeaveNodes.forEach(element => {
-        removeClass(element, LEAVE_CLASSNAME);
-        this.processLeaveNode(element);
-      });
-    });
-
-    const allPlayers: TransitionAnimationPlayer[] = [];
-    const erroneousTransitions: AnimationTransitionInstruction[] = [];
     for (let i = this._namespaceList.length - 1; i >= 0; i--) {
       const ns = this._namespaceList[i];
       ns.drainQueuedTransitions(microtaskId).forEach(entry => {
         const player = entry.player;
-        allPlayers.push(player);
 
         const element = entry.element;
         if (!bodyNode || !this.driver.containsElement(bodyNode, element)) {
@@ -846,11 +717,8 @@ export class TransitionAnimationEngine {
           return;
         }
 
-        const instruction = this._buildInstruction(entry, subTimelines) !;
-        if (instruction.errors && instruction.errors.length) {
-          erroneousTransitions.push(instruction);
-          return;
-        }
+        const instruction = this._buildInstruction(entry, subTimelines);
+        if (!instruction) return;
 
         // if a unmatched transition is queued to go then it SHOULD NOT render
         // an animation and cancel the previously running animations.
@@ -899,27 +767,6 @@ export class TransitionAnimationEngine {
       });
     }
 
-    if (erroneousTransitions.length) {
-      let msg = `Unable to process animations due to the following failed trigger transitions\n`;
-      erroneousTransitions.forEach(instruction => {
-        msg += `@${instruction.triggerName} has failed due to:\n`;
-        instruction.errors !.forEach(error => { msg += `- ${error}\n`; });
-      });
-
-      allPlayers.forEach(player => player.destroy());
-      throw new Error(msg);
-    }
-
-    // these can only be detected here since we have a map of all the elements
-    // that have animations attached to them...
-    const enterNodesWithoutAnimations: any[] = [];
-    for (let i = 0; i < allEnterNodes.length; i++) {
-      const element = allEnterNodes[i];
-      if (!subTimelines.has(element)) {
-        enterNodesWithoutAnimations.push(element);
-      }
-    }
-
     const allPreviousPlayersMap = new Map<any, TransitionAnimationPlayer[]>();
     let sortedParentElements: any[] = [];
     queuedInstructions.forEach(entry => {
@@ -941,15 +788,18 @@ export class TransitionAnimationEngine {
 
     allPreviousPlayersMap.forEach(players => players.forEach(player => player.destroy()));
 
+    const leaveNodes: any[] = bodyNode && allPostStyleElements.size ?
+        this.driver.query(bodyNode, LEAVE_SELECTOR, true) :
+        [];
+
     // PRE STAGE: fill the ! styles
     const preStylesMap = allPreStyleElements.size ?
-        cloakAndComputeStyles(
-            this.driver, enterNodesWithoutAnimations, allPreStyleElements, PRE_STYLE) :
+        cloakAndComputeStyles(this.driver, enterNodes, allPreStyleElements, PRE_STYLE) :
         new Map<any, ɵStyleData>();
 
     // POST STAGE: fill the * styles
-    const postStylesMap = cloakAndComputeStyles(
-        this.driver, leaveNodesWithoutAnimations, allPostStyleElements, AUTO_STYLE);
+    const postStylesMap =
+        cloakAndComputeStyles(this.driver, leaveNodes, allPostStyleElements, AUTO_STYLE);
 
     const rootPlayers: TransitionAnimationPlayer[] = [];
     const subPlayers: TransitionAnimationPlayer[] = [];
@@ -958,11 +808,6 @@ export class TransitionAnimationEngine {
       // this means that it was never consumed by a parent animation which
       // means that it is independent and therefore should be set for animation
       if (subTimelines.has(element)) {
-        if (disabledElementsSet.has(element)) {
-          skippedPlayers.push(player);
-          return;
-        }
-
         const innerPlayer = this._buildAnimation(
             player.namespaceId, instruction, allPreviousPlayersMap, skippedPlayersMap, preStylesMap,
             postStylesMap);
@@ -1016,44 +861,14 @@ export class TransitionAnimationEngine {
     // run through all of the queued removals and see if they
     // were picked up by a query. If not then perform the removal
     // operation right away unless a parent animation is ongoing.
-    for (let i = 0; i < allLeaveNodes.length; i++) {
-      const element = allLeaveNodes[i];
-      const details = element[REMOVAL_FLAG] as ElementAnimationState;
-      removeClass(element, LEAVE_CLASSNAME);
-
-      // this means the element has a removal animation that is being
-      // taken care of and therefore the inner elements will hang around
-      // until that animation is over (or the parent queried animation)
-      if (details && details.hasAnimation) continue;
-
-      let players: AnimationPlayer[] = [];
-
-      // if this element is queried or if it contains queried children
-      // then we want for the element not to be removed from the page
-      // until the queried animations have finished
-      if (queriedElements.size) {
-        let queriedPlayerResults = queriedElements.get(element);
-        if (queriedPlayerResults && queriedPlayerResults.length) {
-          players.push(...queriedPlayerResults);
-        }
-
-        let queriedInnerElements = this.driver.query(element, NG_ANIMATING_SELECTOR, true);
-        for (let j = 0; j < queriedInnerElements.length; j++) {
-          let queriedPlayers = queriedElements.get(queriedInnerElements[j]);
-          if (queriedPlayers && queriedPlayers.length) {
-            players.push(...queriedPlayers);
-          }
-        }
-      }
-      if (players.length) {
-        removeNodesAfterAnimationDone(this, element, players);
+    this.queuedRemovals.forEach((fn, element) => {
+      const players = queriedElements.get(element);
+      if (players) {
+        optimizeGroupPlayer(players).onDone(fn);
       } else {
-        this.processLeaveNode(element);
+        fn();
       }
-    }
-
-    // this is required so the cleanup method doesn't remove them
-    allLeaveNodes.length = 0;
+    });
 
     rootPlayers.forEach(player => {
       this.players.push(player);
@@ -1066,13 +881,14 @@ export class TransitionAnimationEngine {
       player.play();
     });
 
+    enterNodes.forEach(element => removeClass(element, ENTER_CLASSNAME));
+
     return rootPlayers;
   }
 
   elementContainsData(namespaceId: string, element: any) {
     let containsData = false;
-    const details = element[REMOVAL_FLAG] as ElementAnimationState;
-    if (details && details.setForRemoval) containsData = true;
+    if (this.queuedRemovals.has(element)) containsData = true;
     if (this.playersByElement.has(element)) containsData = true;
     if (this.playersByQueriedElement.has(element)) containsData = true;
     if (this.statesByElement.has(element)) containsData = true;
@@ -1161,16 +977,19 @@ export class TransitionAnimationEngine {
     const allSubElements = new Set<any>();
     const allNewPlayers = instruction.timelines.map(timelineInstruction => {
       const element = timelineInstruction.element;
-      allConsumedElements.add(element);
 
       // FIXME (matsko): make sure to-be-removed animations are removed properly
-      const details = element[REMOVAL_FLAG];
-      if (details && details.removedBeforeQueried) return new NoopAnimationPlayer();
+      if (element['REMOVED']) return new NoopAnimationPlayer();
 
       const isQueriedElement = element !== rootElement;
-      const previousPlayers = flattenGroupPlayers(
-          (allPreviousPlayersMap.get(element) || EMPTY_PLAYER_ARRAY).map(p => p.getRealPlayer()));
-
+      let previousPlayers: AnimationPlayer[] = EMPTY_PLAYER_ARRAY;
+      if (!allConsumedElements.has(element)) {
+        allConsumedElements.add(element);
+        const _previousPlayers = allPreviousPlayersMap.get(element);
+        if (_previousPlayers) {
+          previousPlayers = _previousPlayers.map(p => p.getRealPlayer());
+        }
+      }
       const preStyles = preStylesMap.get(element);
       const postStyles = postStylesMap.get(element);
       const keyframes = normalizeKeyframes(
@@ -1195,7 +1014,8 @@ export class TransitionAnimationEngine {
 
     allQueriedPlayers.forEach(player => {
       getOrSetAsInMap(this.playersByQueriedElement, player.element, []).push(player);
-      player.onDone(() => deleteOrUnsetInMap(this.playersByQueriedElement, player.element, player));
+      player.onDone(
+          () => { deleteOrUnsetInMap(this.playersByQueriedElement, player.element, player); });
     });
 
     allConsumedElements.forEach(element => addClass(element, NG_ANIMATING_CLASSNAME));
@@ -1346,7 +1166,7 @@ function normalizeTriggerValue(value: any): string {
     case 'boolean':
       return value ? '1' : '0';
     default:
-      return value != null ? value.toString() : null;
+      return value ? value.toString() : null;
   }
 }
 
@@ -1364,6 +1184,37 @@ function cloakElement(element: any, value?: string) {
   return oldValue;
 }
 
+function filterNodeClasses(
+    driver: AnimationDriver, rootElement: any | null, selector: string): any[] {
+  const rootElements: any[] = [];
+  if (!rootElement) return rootElements;
+
+  let cursor: any = rootElement;
+  let nextCursor: any = {};
+  do {
+    nextCursor = driver.query(cursor, selector, false)[0];
+    if (!nextCursor) {
+      cursor = cursor.parentElement;
+      if (!cursor) break;
+      nextCursor = cursor = cursor.nextElementSibling;
+    } else {
+      while (nextCursor && driver.matchesElement(nextCursor, selector)) {
+        rootElements.push(nextCursor);
+        nextCursor = nextCursor.nextElementSibling;
+        if (nextCursor) {
+          cursor = nextCursor;
+        } else {
+          cursor = cursor.parentElement;
+          if (!cursor) break;
+          nextCursor = cursor = cursor.nextElementSibling;
+        }
+      }
+    }
+  } while (nextCursor && nextCursor !== rootElement);
+
+  return rootElements;
+}
+
 function cloakAndComputeStyles(
     driver: AnimationDriver, elements: any[], elementPropsMap: Map<any, Set<string>>,
     defaultStyle: string): Map<any, ɵStyleData> {
@@ -1378,7 +1229,7 @@ function cloakAndComputeStyles(
       // there is no easy way to detect this because a sub element could be removed
       // by a parent animation element being detached.
       if (!value || value.length == 0) {
-        element[REMOVAL_FLAG] = NULL_REMOVED_QUERIED_STATE;
+        element['REMOVED'] = true;
       }
     });
     valuesMap.set(element, styles);
@@ -1388,36 +1239,12 @@ function cloakAndComputeStyles(
   return valuesMap;
 }
 
-/*
-Since the Angular renderer code will return a collection of inserted
-nodes in all areas of a DOM tree, it's up to this algorithm to figure
-out which nodes are roots.
-
-By placing all nodes into a set and traversing upwards to the edge,
-the recursive code can figure out if a clean path from the DOM node
-to the edge container is clear. If no other node is detected in the
-set then it is a root element.
-
-This algorithm also keeps track of all nodes along the path so that
-if other sibling nodes are also tracked then the lookup process can
-skip a lot of steps in between and avoid traversing the entire tree
-multiple times to the edge.
- */
-function createIsRootFilterFn(nodes: any): (node: any) => boolean {
-  const nodeSet = new Set(nodes);
-  const knownRootContainer = new Set();
-  let isRoot: (node: any) => boolean;
-  isRoot = node => {
-    if (!node) return true;
-    if (nodeSet.has(node.parentNode)) return false;
-    if (knownRootContainer.has(node.parentNode)) return true;
-    if (isRoot(node.parentNode)) {
-      knownRootContainer.add(node);
-      return true;
-    }
-    return false;
-  };
-  return isRoot;
+function collectEnterElements(driver: AnimationDriver, allEnterNodes: any[]) {
+  allEnterNodes.forEach(element => addClass(element, POTENTIAL_ENTER_CLASSNAME));
+  const enterNodes = filterNodeClasses(driver, getBodyNode(), POTENTIAL_ENTER_SELECTOR);
+  enterNodes.forEach(element => addClass(element, ENTER_CLASSNAME));
+  allEnterNodes.forEach(element => removeClass(element, POTENTIAL_ENTER_CLASSNAME));
+  return enterNodes;
 }
 
 const CLASSES_CACHE_KEY = '$$classes';
@@ -1453,31 +1280,17 @@ function removeClass(element: any, className: string) {
   }
 }
 
+function setAttribute(element: any, attr: string, value: any) {
+  if (element.setAttribute) {
+    element.setAttribute(attr, value);
+  } else {
+    element[attr] = value;
+  }
+}
+
 function getBodyNode(): any|null {
   if (typeof document != 'undefined') {
     return document.body;
   }
   return null;
-}
-
-function removeNodesAfterAnimationDone(
-    engine: TransitionAnimationEngine, element: any, players: AnimationPlayer[]) {
-  optimizeGroupPlayer(players).onDone(() => engine.processLeaveNode(element));
-}
-
-function flattenGroupPlayers(players: AnimationPlayer[]): AnimationPlayer[] {
-  const finalPlayers: AnimationPlayer[] = [];
-  _flattenGroupPlayersRecur(players, finalPlayers);
-  return finalPlayers;
-}
-
-function _flattenGroupPlayersRecur(players: AnimationPlayer[], finalPlayers: AnimationPlayer[]) {
-  for (let i = 0; i < players.length; i++) {
-    const player = players[i];
-    if (player instanceof AnimationGroupPlayer) {
-      _flattenGroupPlayersRecur(player.players, finalPlayers);
-    } else {
-      finalPlayers.push(player as AnimationPlayer);
-    }
-  }
 }

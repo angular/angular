@@ -21,8 +21,8 @@ export function main() {
     afterEach(() => destroyPlatform());
 
     it('should interleave scope and component expressions', async(() => {
-         const log: string[] = [];
-         const l = (value: string) => {
+         const log: any[] /** TODO #9100 */ = [];
+         const l = (value: any /** TODO #9100 */) => {
            log.push(value);
            return value + ';';
          };
@@ -46,7 +46,8 @@ export function main() {
            template: `{{l('2A')}}<ng1a></ng1a>{{l('2B')}}<ng1b></ng1b>{{l('2C')}}`
          })
          class Ng2Component {
-           l = l;
+           l: (value: any) => string;
+           constructor() { this.l = l; }
          }
 
          @NgModule({
@@ -62,7 +63,7 @@ export function main() {
                                .directive('ng1a', () => ({template: '{{ l(\'ng1a\') }}'}))
                                .directive('ng1b', () => ({template: '{{ l(\'ng1b\') }}'}))
                                .directive('ng2', downgradeComponent({component: Ng2Component}))
-                               .run(($rootScope: angular.IRootScopeService) => {
+                               .run(($rootScope: any /** TODO #9100 */) => {
                                  $rootScope.l = l;
                                  $rootScope.reset = () => log.length = 0;
                                });
@@ -71,6 +72,7 @@ export function main() {
              html('<div>{{reset(); l(\'1A\');}}<ng2>{{l(\'1B\')}}</ng2>{{l(\'1C\')}}</div>');
          bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
            expect(document.body.textContent).toEqual('1A;2A;ng1a;2B;ng1b;2C;1C;');
+           // https://github.com/angular/angular.js/issues/12983
            expect(log).toEqual(['1A', '1C', '2A', '2B', '2C', 'ng1a', 'ng1b']);
          });
        }));
@@ -86,7 +88,7 @@ export function main() {
 
          @Component({
            selector: 'my-child',
-           template: '<div>{{ valueFromPromise }}</div>',
+           template: '<div>{{valueFromPromise}}',
          })
          class ChildComponent {
            valueFromPromise: number;

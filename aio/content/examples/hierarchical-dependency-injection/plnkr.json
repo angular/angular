@@ -1,5 +1,5 @@
 {
-  "description": "Hierarchical Dependency Injection",
+  "description": "Hierachical Dependency Injection",
   "basePath": "src/",
   "files":[
     "!**/*.d.ts",

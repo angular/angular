@@ -15,7 +15,10 @@ import { combineLatest } from 'rxjs/observable/combineLatest';
 import { LocationService } from 'app/shared/location.service';
 import { ApiItem, ApiSection, ApiService } from './api.service';
 
-import { Option } from 'app/shared/select/select.component';
+interface MenuItem {
+  name: string;
+  title: string;
+}
 
 class SearchCriteria {
   query? = '';
@@ -37,29 +40,29 @@ export class ApiListComponent implements OnInit {
   private criteriaSubject = new ReplaySubject<SearchCriteria>(1);
   private searchCriteria = new SearchCriteria();
 
-  status: Option;
-  type: Option;
+  status: MenuItem;
+  type: MenuItem;
 
   // API types
-  types: Option[] = [
-    { value: 'all', title: 'All' },
-    { value: 'directive', title: 'Directive' },
-    { value: 'pipe', title: 'Pipe'},
-    { value: 'decorator', title: 'Decorator' },
-    { value: 'class', title: 'Class' },
-    { value: 'interface', title: 'Interface' },
-    { value: 'function', title: 'Function' },
-    { value: 'enum', title: 'Enum' },
-    { value: 'type-alias', title: 'Type Alias' },
-    { value: 'const', title: 'Const'}
+  types: MenuItem[] = [
+    { name: 'all', title: 'All' },
+    { name: 'directive', title: 'Directive' },
+    { name: 'pipe', title: 'Pipe'},
+    { name: 'decorator', title: 'Decorator' },
+    { name: 'class', title: 'Class' },
+    { name: 'interface', title: 'Interface' },
+    { name: 'function', title: 'Function' },
+    { name: 'enum', title: 'Enum' },
+    { name: 'type-alias', title: 'Type Alias' },
+    { name: 'const', title: 'Const'}
   ];
 
-  statuses: Option[] = [
-    { value: 'all', title: 'All' },
-    { value: 'stable', title: 'Stable' },
-    { value: 'deprecated', title: 'Deprecated' },
-    { value: 'experimental', title: 'Experimental' },
-    { value: 'security-risk', title: 'Security Risk' }
+  statuses: MenuItem[] = [
+    { name: 'all', title: 'All' },
+    { name: 'stable', title: 'Stable' },
+    { name: 'deprecated', title: 'Deprecated' },
+    { name: 'experimental', title: 'Experimental' },
+    { name: 'security-risk', title: 'Security Risk' }
   ];
 
   @ViewChild('filter') queryEl: ElementRef;
@@ -87,16 +90,16 @@ export class ApiListComponent implements OnInit {
     this.setSearchCriteria({query: (query || '').toLowerCase().trim() });
   }
 
-  setStatus(status: Option) {
+  setStatus(status: MenuItem) {
     this.toggleStatusMenu();
     this.status = status;
-    this.setSearchCriteria({status: status.value});
+    this.setSearchCriteria({status: status.name});
   }
 
-  setType(type: Option) {
+  setType(type: MenuItem) {
     this.toggleTypeMenu();
     this.type = type;
-    this.setSearchCriteria({type: type.value});
+    this.setSearchCriteria({type: type.name});
   }
 
   toggleStatusMenu() {
@@ -147,13 +150,13 @@ export class ApiListComponent implements OnInit {
     // Hack: can't bind to query because input cursor always forced to end-of-line.
     this.queryEl.nativeElement.value = q;
 
-    this.status = this.statuses.find(x => x.value === status) || this.statuses[0];
-    this.type = this.types.find(x => x.value === type) || this.types[0];
+    this.status = this.statuses.find(x => x.name === status) || this.statuses[0];
+    this.type = this.types.find(x => x.name === type) || this.types[0];
 
     this.searchCriteria = {
       query: q,
-      status: this.status.value,
-      type: this.type.value
+      status: this.status.name,
+      type: this.type.name
     };
 
     this.criteriaSubject.next(this.searchCriteria);

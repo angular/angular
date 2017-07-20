@@ -183,13 +183,13 @@ export function main() {
           ]);
         });
 
-        it('should support explicit namespace', () => {
+        it('should support explicit mamespace', () => {
           expect(humanizeDom(parser.parse('<myns:div></myns:div>', 'TestComp'))).toEqual([
             [html.Element, ':myns:div', 0]
           ]);
         });
 
-        it('should support implicit namespace', () => {
+        it('should support implicit mamespace', () => {
           expect(humanizeDom(parser.parse('<svg></svg>', 'TestComp'))).toEqual([
             [html.Element, ':svg:svg', 0]
           ]);
@@ -417,7 +417,7 @@ export function main() {
           expect((ast.rootNodes[0] as html.Element).attrs[0].valueSpan).toBeUndefined();
         });
 
-        it('should report a value span for an attribute with a value', () => {
+        it('should report a value span for an attibute with a value', () => {
           const ast = parser.parse('<div bar="12"></div>', 'TestComp');
           const attr = (ast.rootNodes[0] as html.Element).attrs[0];
           expect(attr.valueSpan !.start.offset).toEqual(9);

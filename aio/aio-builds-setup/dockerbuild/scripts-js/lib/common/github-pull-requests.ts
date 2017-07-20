@@ -6,7 +6,6 @@ import {GithubApi} from './github-api';
 export interface PullRequest  {
   number: number;
   user: {login: string};
-  labels: {name: string}[];
 }
 
 export type PullRequestState = 'all' | 'closed' | 'open';
@@ -31,8 +30,7 @@ export class GithubPullRequests extends GithubApi {
   }
 
   public fetch(pr: number): Promise<PullRequest> {
-    // Using the `/issues/` URL, because the `/pulls/` one does not provide labels.
-    return this.get<PullRequest>(`/repos/${this.repoSlug}/issues/${pr}`);
+    return this.get<PullRequest>(`/repos/${this.repoSlug}/pulls/${pr}`);
   }
 
   public fetchAll(state: PullRequestState = 'all'): Promise<PullRequest[]> {

@@ -30,29 +30,28 @@ export class RouterStub {
 }
 
 
-// Only implements params and part of snapshot.paramMap
+// Only implements params and part of snapshot.params
 // #docregion activated-route-stub
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { convertToParamMap, ParamMap } from '@angular/router';
 
 @Injectable()
 export class ActivatedRouteStub {
 
-  // ActivatedRoute.paramMap is Observable
-  private subject = new BehaviorSubject(convertToParamMap(this.testParamMap));
-  paramMap = this.subject.asObservable();
+  // ActivatedRoute.params is Observable
+  private subject = new BehaviorSubject(this.testParams);
+  params = this.subject.asObservable();
 
   // Test parameters
-  private _testParamMap: ParamMap;
-  get testParamMap() { return this._testParamMap; }
-  set testParamMap(params: {}) {
-    this._testParamMap = convertToParamMap(params);
-    this.subject.next(this._testParamMap);
+  private _testParams: {};
+  get testParams() { return this._testParams; }
+  set testParams(params: {}) {
+    this._testParams = params;
+    this.subject.next(params);
   }
 
-  // ActivatedRoute.snapshot.paramMap
+  // ActivatedRoute.snapshot.params
   get snapshot() {
-    return { paramMap: this.testParamMap };
+    return { params: this.testParams };
   }
 }
 // #enddocregion activated-route-stub

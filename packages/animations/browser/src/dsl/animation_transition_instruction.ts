@@ -21,7 +21,6 @@ export interface AnimationTransitionInstruction extends AnimationEngineInstructi
   queriedElements: any[];
   preStyleProps: Map<any, {[prop: string]: boolean}>;
   postStyleProps: Map<any, {[prop: string]: boolean}>;
-  errors?: any[];
 }
 
 export function createTransitionInstruction(
@@ -29,8 +28,7 @@ export function createTransitionInstruction(
     isRemovalTransition: boolean, fromStyles: ɵStyleData, toStyles: ɵStyleData,
     timelines: AnimationTimelineInstruction[], queriedElements: any[],
     preStyleProps: Map<any, {[prop: string]: boolean}>,
-    postStyleProps: Map<any, {[prop: string]: boolean}>,
-    errors?: any[]): AnimationTransitionInstruction {
+    postStyleProps: Map<any, {[prop: string]: boolean}>): AnimationTransitionInstruction {
   return {
     type: AnimationTransitionInstructionType.TransitionAnimation,
     element,
@@ -43,7 +41,6 @@ export function createTransitionInstruction(
     timelines,
     queriedElements,
     preStyleProps,
-    postStyleProps,
-    errors
+    postStyleProps
   };
 }

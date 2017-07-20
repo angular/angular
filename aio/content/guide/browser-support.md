@@ -68,7 +68,7 @@ Angular supports most recent browsers. This includes the following specific vers
     </td>
 
     <td>
-      Nougat (7.0)<br>Marshmallow (6.0)
+      Marshmallow (6.0)
     </td>
 
     <td>

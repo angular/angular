@@ -9,7 +9,7 @@ import {AUTO_STYLE, AnimationPlayer, NoopAnimationPlayer, ɵStyleData} from '@an
 
 import {AnimationDriver} from '../../src/render/animation_driver';
 import {containsElement, invokeQuery, matchesElement} from '../../src/render/shared';
-import {allowPreviousPlayerStylesMerge} from '../../src/util';
+
 
 /**
  * @experimental Animation support is experimental.
@@ -56,15 +56,12 @@ export class MockAnimationPlayer extends NoopAnimationPlayer {
       public duration: number, public delay: number, public easing: string,
       public previousPlayers: any[]) {
     super();
-
-    if (allowPreviousPlayerStylesMerge(duration, delay)) {
-      previousPlayers.forEach(player => {
-        if (player instanceof MockAnimationPlayer) {
-          const styles = player.currentSnapshot;
-          Object.keys(styles).forEach(prop => this.previousStyles[prop] = styles[prop]);
-        }
-      });
-    }
+    previousPlayers.forEach(player => {
+      if (player instanceof MockAnimationPlayer) {
+        const styles = player.currentSnapshot;
+        Object.keys(styles).forEach(prop => this.previousStyles[prop] = styles[prop]);
+      }
+    });
 
     this.totalTime = delay + duration;
   }

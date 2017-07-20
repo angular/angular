@@ -377,7 +377,7 @@ export class MetadataCollector {
           // Record functions that return a single value. Record the parameter
           // names substitution will be performed by the StaticReflector.
           const functionDeclaration = <ts.FunctionDeclaration>node;
-          if (isExported(functionDeclaration) && functionDeclaration.name) {
+          if (isExported(functionDeclaration)) {
             if (!metadata) metadata = {};
             const name = exportedName(functionDeclaration);
             const maybeFunc = maybeGetSimpleFunction(functionDeclaration);
@@ -451,10 +451,6 @@ export class MetadataCollector {
               if (typeof varValue == 'string' || typeof varValue == 'number' ||
                   typeof varValue == 'boolean') {
                 locals.define(nameNode.text, varValue);
-                if (exported) {
-                  locals.defineReference(
-                      nameNode.text, {__symbolic: 'reference', name: nameNode.text});
-                }
               } else if (!exported) {
                 if (varValue && !isMetadataError(varValue)) {
                   locals.define(nameNode.text, recordEntry(varValue, node));

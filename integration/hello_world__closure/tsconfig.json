@@ -1,8 +1,7 @@
 {
   "angularCompilerOptions": {
     "annotationsAs": "static fields",
-    "annotateForClosureCompiler": true,
-    "alwaysCompileGeneratedCode": true
+    "annotateForClosureCompiler": true
   },
 
   "compilerOptions": {

@@ -4,7 +4,6 @@ import * as fs from 'fs';
 import * as http from 'http';
 import * as path from 'path';
 import * as shell from 'shelljs';
-import {HIDDEN_DIR_PREFIX, SHORT_SHA_LEN} from '../common/constants';
 import {getEnvVar} from '../common/utils';
 
 // Constans
@@ -32,10 +31,10 @@ class Helper {
   public get nginxHostname() { return TEST_AIO_NGINX_HOSTNAME; }
   public get nginxPortHttp() { return TEST_AIO_NGINX_PORT_HTTP; }
   public get nginxPortHttps() { return TEST_AIO_NGINX_PORT_HTTPS; }
+  public get wwwUser() { return WWW_USER; }
   public get uploadHostname() { return TEST_AIO_UPLOAD_HOSTNAME; }
   public get uploadPort() { return TEST_AIO_UPLOAD_PORT; }
   public get uploadMaxSize() { return TEST_AIO_UPLOAD_MAX_SIZE; }
-  public get wwwUser() { return WWW_USER; }
 
   // Properties - Protected
   protected cleanUpFns: CleanUpFn[] = [];
@@ -51,12 +50,6 @@ class Helper {
   }
 
   // Methods - Public
-  public buildExists(pr: string, sha = '', isPublic = true, legacy = false): boolean {
-    const prDir = this.getPrDir(pr, isPublic);
-    const dir = !sha ? prDir : this.getShaDir(prDir, sha, legacy);
-    return fs.existsSync(dir);
-  }
-
   public cleanUp() {
     while (this.cleanUpFns.length) {
       // Clean-up fns remove themselves from the list.
@@ -69,11 +62,11 @@ class Helper {
   }
 
   public createDummyArchive(pr: string, sha: string, archivePath: string): CleanUpFn {
-    const inputDir = this.getShaDir(this.getPrDir(`uploaded/${pr}`, true), sha);
+    const inputDir = path.join(this.buildsDir, 'uploaded', pr, sha);
     const cmd1 = `tar --create --gzip --directory "${inputDir}" --file "${archivePath}" .`;
     const cmd2 = `chown ${this.wwwUser} ${archivePath}`;
 
-    const cleanUpTemp = this.createDummyBuild(`uploaded/${pr}`, sha, true, true);
+    const cleanUpTemp = this.createDummyBuild(`uploaded/${pr}`, sha, true);
     shell.exec(cmd1);
     shell.exec(cmd2);
     cleanUpTemp();
@@ -81,9 +74,9 @@ class Helper {
     return this.createCleanUpFn(() => shell.rm('-rf', archivePath));
   }
 
-  public createDummyBuild(pr: string, sha: string, isPublic = true, force = false, legacy = false): CleanUpFn {
-    const prDir = this.getPrDir(pr, isPublic);
-    const shaDir = this.getShaDir(prDir, sha, legacy);
+  public createDummyBuild(pr: string, sha: string, force = false): CleanUpFn {
+    const prDir = path.join(this.buildsDir, pr);
+    const shaDir = path.join(prDir, sha);
     const idxPath = path.join(shaDir, 'index.html');
     const barPath = path.join(shaDir, 'foo', 'bar.js');
 
@@ -94,8 +87,8 @@ class Helper {
     return this.createCleanUpFn(() => shell.rm('-rf', prDir));
   }
 
-  public deletePrDir(pr: string, isPublic = true) {
-    const prDir = this.getPrDir(pr, isPublic);
+  public deletePrDir(pr: string) {
+    const prDir = path.join(this.buildsDir, pr);
 
     if (fs.existsSync(prDir)) {
       // Undocumented signature (see https://github.com/shelljs/shelljs/pull/663).
@@ -104,22 +97,8 @@ class Helper {
     }
   }
 
-  public getPrDir(pr: string, isPublic: boolean): string {
-    const prDirName = isPublic ? pr : HIDDEN_DIR_PREFIX + pr;
-    return path.join(this.buildsDir, prDirName);
-  }
-
-  public getShaDir(prDir: string, sha: string, legacy = false): string {
-    return path.join(prDir, legacy ? sha : this.getShordSha(sha));
-  }
-
-  public getShordSha(sha: string): string {
-    return sha.substr(0, SHORT_SHA_LEN);
-  }
-
-  public readBuildFile(pr: string, sha: string, relFilePath: string, isPublic = true, legacy = false): string {
-    const shaDir = this.getShaDir(this.getPrDir(pr, isPublic), sha, legacy);
-    const absFilePath = path.join(shaDir, relFilePath);
+  public readBuildFile(pr: string, sha: string, relFilePath: string): string {
+    const absFilePath = path.join(this.buildsDir, pr, sha, relFilePath);
     return fs.readFileSync(absFilePath, 'utf8');
   }
 
@@ -150,8 +129,7 @@ class Helper {
       const [headers, body] = result.stdout.
         split(/(?:\r?\n){2,}/).
         map(s => s.trim()).
-        slice(-2);   // In case of redirect, discard the previous headers.
-                     // Only keep the last to sections (final headers and body).
+        slice(-2);
 
       if (!result.success) {
         console.log('Stdout:', result.stdout);
@@ -165,10 +143,8 @@ class Helper {
     };
   }
 
-  public writeBuildFile(pr: string, sha: string, relFilePath: string, content: string, isPublic = true,
-                        legacy = false): CleanUpFn {
-    const shaDir = this.getShaDir(this.getPrDir(pr, isPublic), sha, legacy);
-    const absFilePath = path.join(shaDir, relFilePath);
+  public writeBuildFile(pr: string, sha: string, relFilePath: string, content: string): CleanUpFn {
+    const absFilePath = path.join(this.buildsDir, pr, sha, relFilePath);
     return this.writeFile(absFilePath, {content}, true);
   }
 

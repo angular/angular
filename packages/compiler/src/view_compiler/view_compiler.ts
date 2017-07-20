@@ -61,9 +61,9 @@ export class ViewCompiler {
       outputCtx.statements.push(
           renderComponentVar
               .set(o.importExpr(Identifiers.createRendererType2).callFn([new o.LiteralMapExpr([
-                new o.LiteralMapEntry('encapsulation', o.literal(template.encapsulation), false),
-                new o.LiteralMapEntry('styles', styles, false),
-                new o.LiteralMapEntry('data', new o.LiteralMapExpr(customRenderData), false)
+                new o.LiteralMapEntry('encapsulation', o.literal(template.encapsulation)),
+                new o.LiteralMapEntry('styles', styles),
+                new o.LiteralMapEntry('data', new o.LiteralMapExpr(customRenderData))
               ])]))
               .toDeclStmt(
                   o.importType(Identifiers.RendererType2),
@@ -160,8 +160,8 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
                           nodeFlags: flags,
                           nodeDef: o.importExpr(Identifiers.queryDef).callFn([
                             o.literal(flags), o.literal(queryId),
-                            new o.LiteralMapExpr([new o.LiteralMapEntry(
-                                query.propertyName, o.literal(bindingType), false)])
+                            new o.LiteralMapExpr(
+                                [new o.LiteralMapEntry(query.propertyName, o.literal(bindingType))])
                           ])
                         }));
       });
@@ -504,8 +504,8 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
                         nodeFlags: flags,
                         nodeDef: o.importExpr(Identifiers.queryDef).callFn([
                           o.literal(flags), o.literal(queryId),
-                          new o.LiteralMapExpr([new o.LiteralMapEntry(
-                              query.propertyName, o.literal(bindingType), false)])
+                          new o.LiteralMapExpr(
+                              [new o.LiteralMapEntry(query.propertyName, o.literal(bindingType))])
                         ]),
                       }));
     });
@@ -705,26 +705,23 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
 
     return (args: o.Expression[]) => callCheckStmt(nodeIndex, args);
   }
-
-  createLiteralMapConverter(sourceSpan: ParseSourceSpan, keys: {key: string, quoted: boolean}[]):
-      BuiltinConverter {
+  createLiteralMapConverter(sourceSpan: ParseSourceSpan, keys: string[]): BuiltinConverter {
     if (keys.length === 0) {
       const valueExpr = o.importExpr(Identifiers.EMPTY_MAP);
       return () => valueExpr;
     }
 
-    // function pureObjectDef(propToIndex: {[p: string]: number}): NodeDef
-    const map = o.literalMap(keys.map((e, i) => ({...e, value: o.literal(i)})));
     const nodeIndex = this.nodes.length;
+    // function pureObjectDef(propertyNames: string[]): NodeDef
     this.nodes.push(() => ({
                       sourceSpan,
                       nodeFlags: NodeFlags.TypePureObject,
-                      nodeDef: o.importExpr(Identifiers.pureObjectDef).callFn([map])
+                      nodeDef: o.importExpr(Identifiers.pureObjectDef).callFn([o.literalArr(
+                          keys.map(key => o.literal(key)))])
                     }));
 
     return (args: o.Expression[]) => callCheckStmt(nodeIndex, args);
   }
-
   createPipeConverter(expression: UpdateExpression, name: string, argCount: number):
       BuiltinConverter {
     const pipe = this.usedPipes.find((pipeSummary) => pipeSummary.name === name) !;
@@ -798,8 +795,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
             createLiteralArrayConverter: (argCount: number) => this.createLiteralArrayConverter(
                                              expression.sourceSpan, argCount),
             createLiteralMapConverter:
-                (keys: {key: string, quoted: boolean}[]) =>
-                    this.createLiteralMapConverter(expression.sourceSpan, keys),
+                (keys: string[]) => this.createLiteralMapConverter(expression.sourceSpan, keys),
             createPipeConverter: (name: string, argCount: number) =>
                                      this.createPipeConverter(expression, name, argCount)
           },

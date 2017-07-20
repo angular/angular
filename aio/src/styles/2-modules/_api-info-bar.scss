@@ -1,0 +1,13 @@
+.api-info-bar {
+    max-width: 800px;
+    text-align: center;
+
+    span {
+        margin: 0 16px;
+
+        @media screen and (max-width: 600px) {
+            display: block;
+        }
+
+    }
+}

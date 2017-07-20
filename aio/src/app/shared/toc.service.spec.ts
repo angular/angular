@@ -258,10 +258,10 @@ describe('TocService', () => {
       expect(tocItem.level).toEqual('h3');
     });
 
-    it('should have title which is heading\'s textContent ', () => {
+    it('should have title which is heading\'s innerText ', () => {
       const heading = headings[3];
       const tocItem = lastTocList[3];
-      expect(heading.textContent).toEqual(tocItem.title);
+      expect(heading.innerText).toEqual(tocItem.title);
     });
 
     it('should have "SafeHtml" content which is heading\'s innerHTML ', () => {

@@ -1,43 +1,15 @@
 // Imports
-import {ChangedPrVisibilityEvent, CreatedBuildEvent} from '../../lib/upload-server/build-events';
+import {BuildEvent, CreatedBuildEvent} from '../../lib/upload-server/build-events';
 
 // Tests
-describe('ChangedPrVisibilityEvent', () => {
-  let evt: ChangedPrVisibilityEvent;
+describe('BuildEvent', () => {
+  let evt: BuildEvent;
 
-  beforeEach(() => evt = new ChangedPrVisibilityEvent(42, ['foo', 'bar'], true));
-
-
-  it('should have a static \'type\' property', () => {
-    expect(ChangedPrVisibilityEvent.type).toBe('pr.changedVisibility');
-  });
+  beforeEach(() => evt = new BuildEvent('foo', 42, 'bar'));
 
 
-  it('should have a \'pr\' property', () => {
-    expect(evt.pr).toBe(42);
-  });
-
-
-  it('should have a \'shas\' property', () => {
-    expect(evt.shas).toEqual(['foo', 'bar']);
-  });
-
-
-  it('should have an \'isPublic\' property', () => {
-    expect(evt.isPublic).toBe(true);
-  });
-
-});
-
-
-describe('CreatedBuildEvent', () => {
-  let evt: CreatedBuildEvent;
-
-  beforeEach(() => evt = new CreatedBuildEvent(42, 'bar', true));
-
-
-  it('should have a static \'type\' property', () => {
-    expect(CreatedBuildEvent.type).toBe('build.created');
+  it('should have a \'type\' property', () => {
+    expect(evt.type).toBe('foo');
   });
 
 
@@ -50,9 +22,40 @@ describe('CreatedBuildEvent', () => {
     expect(evt.sha).toBe('bar');
   });
 
+});
 
-  it('should have an \'isPublic\' property', () => {
-    expect(evt.isPublic).toBe(true);
+
+describe('CreatedBuildEvent', () => {
+  let evt: CreatedBuildEvent;
+
+  beforeEach(() => evt = new CreatedBuildEvent(42, 'bar'));
+
+
+  it('should have a static \'type\' property', () => {
+    expect(CreatedBuildEvent.type).toBe('build.created');
+  });
+
+
+  it('should extend BuildEvent', () => {
+    expect(evt).toEqual(jasmine.any(CreatedBuildEvent));
+    expect(evt).toEqual(jasmine.any(BuildEvent));
+
+    expect(Object.getPrototypeOf(evt)).toBe(CreatedBuildEvent.prototype);
+  });
+
+
+  it('should automatically set the \'type\'', () => {
+    expect(evt.type).toBe(CreatedBuildEvent.type);
+  });
+
+
+  it('should have a \'pr\' property', () => {
+    expect(evt.pr).toBe(42);
+  });
+
+
+  it('should have a \'sha\' property', () => {
+    expect(evt.sha).toBe('bar');
   });
 
 });

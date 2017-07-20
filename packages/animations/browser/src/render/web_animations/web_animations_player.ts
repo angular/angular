@@ -7,7 +7,7 @@
  */
 import {AnimationPlayer} from '@angular/animations';
 
-import {allowPreviousPlayerStylesMerge, copyStyles} from '../../util';
+import {copyStyles, eraseStyles, setStyles} from '../../util';
 
 import {DOMAnimation} from './dom_animation';
 
@@ -26,7 +26,7 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   public time = 0;
 
   public parentPlayer: AnimationPlayer|null = null;
-  public previousStyles: {[styleName: string]: string | number} = {};
+  public previousStyles: {[styleName: string]: string | number};
   public currentSnapshot: {[styleName: string]: string | number} = {};
 
   constructor(
@@ -37,12 +37,11 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     this._delay = <number>options['delay'] || 0;
     this.time = this._duration + this._delay;
 
-    if (allowPreviousPlayerStylesMerge(this._duration, this._delay)) {
-      previousPlayers.forEach(player => {
-        let styles = player.currentSnapshot;
-        Object.keys(styles).forEach(prop => this.previousStyles[prop] = styles[prop]);
-      });
-    }
+    this.previousStyles = {};
+    previousPlayers.forEach(player => {
+      let styles = player.currentSnapshot;
+      Object.keys(styles).forEach(prop => this.previousStyles[prop] = styles[prop]);
+    });
   }
 
   private _onFinish() {

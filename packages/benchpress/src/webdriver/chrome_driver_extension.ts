@@ -110,7 +110,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
                    categories, name, ['benchmark'],
                    'BenchmarkInstrumentation::ImplThreadRenderingStats')) {
       // TODO(goderbauer): Instead of BenchmarkInstrumentation::ImplThreadRenderingStats the
-      // following events should be used (if available) for more accurate measurements:
+      // following events should be used (if available) for more accurate measurments:
       //   1st choice: vsync_before - ground truth on Android
       //   2nd choice: BenchmarkInstrumentation::DisplayRenderingStats - available on systems with
       //               new surfaces framework (not broadly enabled yet)

@@ -84,7 +84,7 @@ export interface MessageBusSink {
    * Sets up a new channel on the MessageBusSink.
    * MUST be called before calling to on the channel.
    * If runInZone is true the sink will buffer messages and send only once the zone exits.
-   * if runInZone is false the sink will send messages immediately.
+   * if runInZone is false the sink will send messages immediatly.
    */
   initChannel(channel: string, runInZone: boolean): void;
 

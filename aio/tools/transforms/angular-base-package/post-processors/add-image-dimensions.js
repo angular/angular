@@ -20,16 +20,14 @@ module.exports = function addImageDimensions(getImageDimensions) {
           const src = props.src;
           if (!src) {
             file.message('Missing src in image tag `' + source(node, file) + '`');
-          } else {
+          } else if (props.width === undefined && props.height === undefined) {
             try {
               const dimensions = getImageDimensions(addImageDimensionsImpl.basePath, src);
-              if (props.width === undefined && props.height === undefined) {
-                props.width = '' + dimensions.width;
-                props.height = '' + dimensions.height;
-              }
+              props.width = '' + dimensions.width;
+              props.height = '' + dimensions.height;
             } catch(e) {
               if (e.code === 'ENOENT') {
-                file.fail('Unable to load src in image tag `' + source(node, file) + '`');
+                file.message('Unable to load src in image tag `' + source(node, file) + '`');
               } else {
                 file.fail(e.message);
               }

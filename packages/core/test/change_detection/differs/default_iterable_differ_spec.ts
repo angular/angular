@@ -7,6 +7,7 @@
  */
 
 import {DefaultIterableDiffer, DefaultIterableDifferFactory} from '@angular/core/src/change_detection/differs/default_iterable_differ';
+import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 
 import {TestIterable} from '../../change_detection/iterable';
 import {iterableChangesAsString} from '../../change_detection/util';
@@ -27,7 +28,7 @@ class ComplexItem {
 export function main() {
   describe('iterable differ', function() {
     describe('DefaultIterableDiffer', function() {
-      let differ: DefaultIterableDiffer<any>;
+      let differ: any /** TODO #9100 */;
 
       beforeEach(() => { differ = new DefaultIterableDiffer(); });
 
@@ -40,7 +41,7 @@ export function main() {
       });
 
       it('should support iterables', () => {
-        const l: any = new TestIterable();
+        const l = new TestIterable();
 
         differ.check(l);
         expect(differ.toString()).toEqual(iterableChangesAsString({collection: []}));
@@ -63,7 +64,7 @@ export function main() {
       });
 
       it('should detect additions', () => {
-        const l: any[] = [];
+        const l: any[] /** TODO #9100 */ = [];
         differ.check(l);
         expect(differ.toString()).toEqual(iterableChangesAsString({collection: []}));
 
@@ -143,7 +144,7 @@ export function main() {
       });
 
       it('should detect changes in list', () => {
-        const l: any[] = [];
+        const l: any[] /** TODO #9100 */ = [];
         differ.check(l);
 
         l.push('a');
@@ -191,7 +192,19 @@ export function main() {
         }));
       });
 
-      it('should ignore [NaN] != [NaN]', () => {
+      it('should test string by value rather than by reference (Dart)', () => {
+        const l = ['a', 'boo'];
+        differ.check(l);
+
+        const b = 'b';
+        const oo = 'oo';
+        l[1] = b + oo;
+        differ.check(l);
+        expect(differ.toString())
+            .toEqual(iterableChangesAsString({collection: ['a', 'boo'], previous: ['a', 'boo']}));
+      });
+
+      it('should ignore [NaN] != [NaN] (JS)', () => {
         const l = [NaN];
         differ.check(l);
         differ.check(l);
@@ -281,22 +294,6 @@ export function main() {
         }));
       });
 
-      // https://github.com/angular/angular/issues/17852
-      it('support re-insertion', () => {
-        const l = ['a', '*', '*', 'd', '-', '-', '-', 'e'];
-        differ.check(l);
-        l[1] = 'b';
-        l[5] = 'c';
-        differ.check(l);
-        expect(differ.toString()).toEqual(iterableChangesAsString({
-          collection: ['a', 'b[null->1]', '*[1->2]', 'd', '-', 'c[null->5]', '-[5->6]', 'e'],
-          previous: ['a', '*[1->2]', '*[2->null]', 'd', '-', '-[5->6]', '-[6->null]', 'e'],
-          additions: ['b[null->1]', 'c[null->5]'],
-          moves: ['*[1->2]', '-[5->6]'],
-          removals: ['*[2->null]', '-[6->null]'],
-        }));
-      });
-
       describe('forEachOperation', () => {
         function stringifyItemChange(record: any, p: number, c: number, originalIndex: number) {
           const suffix = originalIndex == null ? '' : ' [o=' + originalIndex + ']';
@@ -332,8 +329,8 @@ export function main() {
              const startData = [0, 1, 2, 3, 4, 5];
              const endData = [6, 2, 7, 0, 4, 8];
 
-             differ = differ.diff(startData) !;
-             differ = differ.diff(endData) !;
+             differ = differ.diff(startData);
+             differ = differ.diff(endData);
 
              const operations: string[] = [];
              differ.forEachOperation((item: any, prev: number, next: number) => {
@@ -355,12 +352,12 @@ export function main() {
              const startData = [0, 1, 2, 3];
              const endData = [2, 1];
 
-             differ = differ.diff(startData) !;
-             differ = differ.diff(endData) !;
+             differ = differ.diff(startData);
+             differ = differ.diff(endData);
 
              const operations: string[] = [];
              differ.forEachOperation((item: any, prev: number, next: number) => {
-               modifyArrayUsingOperation(startData, endData, prev, next);
+               const value = modifyArrayUsingOperation(startData, endData, prev, next);
                operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
              });
 
@@ -375,12 +372,12 @@ export function main() {
           const startData = [1, 2, 3, 4, 5, 6];
           const endData = [3, 6, 4, 9, 1, 2];
 
-          differ = differ.diff(startData) !;
-          differ = differ.diff(endData) !;
+          differ = differ.diff(startData);
+          differ = differ.diff(endData);
 
           const operations: string[] = [];
           differ.forEachOperation((item: any, prev: number, next: number) => {
-            modifyArrayUsingOperation(startData, endData, prev, next);
+            const value = modifyArrayUsingOperation(startData, endData, prev, next);
             operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
           });
 
@@ -396,12 +393,12 @@ export function main() {
           const startData = [0, 1, 2, 3, 4];
           const endData = [4, 1, 2, 3, 0, 5];
 
-          differ = differ.diff(startData) !;
-          differ = differ.diff(endData) !;
+          differ = differ.diff(startData);
+          differ = differ.diff(endData);
 
           const operations: string[] = [];
           differ.forEachOperation((item: any, prev: number, next: number) => {
-            modifyArrayUsingOperation(startData, endData, prev, next);
+            const value = modifyArrayUsingOperation(startData, endData, prev, next);
             operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
           });
 
@@ -417,12 +414,12 @@ export function main() {
           const startData = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
           const endData = [10, 11, 1, 5, 7, 8, 0, 5, 3, 6];
 
-          differ = differ.diff(startData) !;
-          differ = differ.diff(endData) !;
+          differ = differ.diff(startData);
+          differ = differ.diff(endData);
 
           const operations: string[] = [];
           differ.forEachOperation((item: any, prev: number, next: number) => {
-            modifyArrayUsingOperation(startData, endData, prev, next);
+            const value = modifyArrayUsingOperation(startData, endData, prev, next);
             operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
           });
 
@@ -443,8 +440,8 @@ export function main() {
              const startData = [1, 2, 3, 4];
              const endData = [5, 6, 7, 8];
 
-             differ = differ.diff(startData) !;
-             differ = differ.diff(endData) !;
+             differ = differ.diff(startData);
+             differ = differ.diff(endData);
 
              const operations: string[] = [];
              differ.forEachOperation((item: any, prev: number, next: number) => {
@@ -468,7 +465,7 @@ export function main() {
 
         it('should treat null as an empty list', () => {
           differ.diff(['a', 'b']);
-          expect(differ.diff(null !) !.toString()).toEqual(iterableChangesAsString({
+          expect(differ.diff(null).toString()).toEqual(iterableChangesAsString({
             previous: ['a[0->null]', 'b[1->null]'],
             removals: ['a[0->null]', 'b[1->null]']
           }));
@@ -481,7 +478,7 @@ export function main() {
     });
 
     describe('trackBy function by id', function() {
-      let differ: any;
+      let differ: any /** TODO #9100 */;
 
       const trackByItemId = (index: number, item: any): any => item.id;
 
@@ -568,9 +565,8 @@ export function main() {
         }));
       });
     });
-
     describe('trackBy function by index', function() {
-      let differ: DefaultIterableDiffer<string>;
+      let differ: any /** TODO #9100 */;
 
       const trackByIndex = (index: number, item: any): number => index;
 
@@ -588,6 +584,9 @@ export function main() {
           identityChanges: ['h']
         }));
       });
+
     });
+
+
   });
 }

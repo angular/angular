@@ -79,6 +79,7 @@ class CustomLoaderModuleResolutionHostAdapter extends ModuleResolutionHostAdapte
   readResource(path: string) { return this._readResource(path); }
 }
 
+
 /**
  * @internal
  * @private
@@ -91,7 +92,6 @@ export class NgTools_InternalApi_NG_2 {
   static codeGen(options: NgTools_InternalApi_NG2_CodeGen_Options): Promise<any> {
     const hostContext: CompilerHostContext =
         new CustomLoaderModuleResolutionHostAdapter(options.readResource, options.host);
-
     const cliOptions: NgcCliOptions = {
       i18nFormat: options.i18nFormat !,
       i18nFile: options.i18nFile !,
@@ -99,15 +99,10 @@ export class NgTools_InternalApi_NG_2 {
       missingTranslation: options.missingTranslation !,
       basePath: options.basePath
     };
-    const ngOptions = options.angularCompilerOptions;
-    if (ngOptions.enableSummariesForJit === undefined) {
-      // default to false
-      ngOptions.enableSummariesForJit = false;
-    }
 
     // Create the Code Generator.
-    const codeGenerator =
-        CodeGenerator.create(ngOptions, cliOptions, options.program, options.host, hostContext);
+    const codeGenerator = CodeGenerator.create(
+        options.angularCompilerOptions, cliOptions, options.program, options.host, hostContext);
 
     return codeGenerator.codegen();
   }

@@ -8,6 +8,7 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/publishLast';
 import 'rxjs/add/operator/publishReplay';
 
+import { Logger } from 'app/shared/logger.service';
 import { LocationService } from 'app/shared/location.service';
 import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
 
@@ -36,7 +37,7 @@ export class NavigationService {
    */
   currentNodes: Observable<CurrentNodes>;
 
-  constructor(private http: Http, private location: LocationService) {
+  constructor(private http: Http, private location: LocationService, private logger: Logger) {
     const navigationInfo = this.fetchNavigationInfo();
     this.navigationViews = this.getNavigationViews(navigationInfo);
 

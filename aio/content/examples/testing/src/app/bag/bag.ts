@@ -273,7 +273,7 @@ export class InnerCompWithExternalTemplateComponent { }
 
 @Component({
   selector: 'bad-template-comp',
-  templateUrl: './non-existent.html'
+  templateUrl: './non-existant.html'
 })
 export class BadTemplateUrlComponent { }
 

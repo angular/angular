@@ -292,7 +292,7 @@ describe('GithubApi', () => {
 
 
     describe('onResponse', () => {
-      let promise: Promise<Object>;
+      let promise: Promise<void>;
       let respond: (statusCode: number) => IncomingMessage;
 
       beforeEach(() => {

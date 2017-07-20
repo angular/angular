@@ -1,16 +1,15 @@
 // Classes
-export class ChangedPrVisibilityEvent {
-  // Properties - Public, Static
-  public static type = 'pr.changedVisibility';
-
+export class BuildEvent {
   // Constructor
-  constructor(public pr: number, public shas: string[], public isPublic: boolean) {}
+  constructor(public type: string, public pr: number, public sha: string) {}
 }
 
-export class CreatedBuildEvent {
+export class CreatedBuildEvent extends BuildEvent {
   // Properties - Public, Static
   public static type = 'build.created';
 
   // Constructor
-  constructor(public pr: number, public sha: string, public isPublic: boolean) {}
+  constructor(pr: number, sha: string) {
+    super(CreatedBuildEvent.type, pr, sha);
+  }
 }

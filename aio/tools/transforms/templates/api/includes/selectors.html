@@ -1,7 +1,7 @@
-{%- if doc.selector %}
+{%- if doc.directiveOptions.selector.split(',').length %}
 <section class="selectors">
   <h2>Selectors</h2>
-  {% for selector in doc.selector.split(',') %}
+  {% for selector in doc.directiveOptions.selector.split(',') %}
   <div class="selector">
     <code>{$ selector $}</code>
   </div>

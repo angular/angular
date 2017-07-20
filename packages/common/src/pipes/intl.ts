@@ -13,15 +13,16 @@ export enum NumberFormatStyle {
 }
 
 export class NumberFormatter {
-  static format(num: number, locale: string, style: NumberFormatStyle, opts: {
-    minimumIntegerDigits?: number,
-    minimumFractionDigits?: number,
-    maximumFractionDigits?: number,
-    currency?: string|null,
-    currencyAsSymbol?: boolean
-  } = {}): string {
-    const {minimumIntegerDigits, minimumFractionDigits, maximumFractionDigits, currency,
-           currencyAsSymbol = false} = opts;
+  static format(
+      num: number, locale: string, style: NumberFormatStyle,
+      {minimumIntegerDigits, minimumFractionDigits, maximumFractionDigits, currency,
+       currencyAsSymbol = false}: {
+        minimumIntegerDigits?: number,
+        minimumFractionDigits?: number,
+        maximumFractionDigits?: number,
+        currency?: string|null,
+        currencyAsSymbol?: boolean
+      } = {}): string {
     const options: Intl.NumberFormatOptions = {
       minimumIntegerDigits,
       minimumFractionDigits,
@@ -172,7 +173,7 @@ function nameCondition(prop: string, len: number): Intl.DateTimeFormatOptions {
 }
 
 function combine(options: Intl.DateTimeFormatOptions[]): Intl.DateTimeFormatOptions {
-  return options.reduce((merged, opt) => ({...merged, ...opt}), {});
+  return (<any>Object).assign({}, ...options);
 }
 
 function datePartGetterFactory(ret: Intl.DateTimeFormatOptions): DateFormatterFn {
