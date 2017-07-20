@@ -29,7 +29,10 @@ import {FocusKeyManager} from '../core/a11y/focus-key-manager';
 import {MdMenuPanel} from './menu-panel';
 import {Subscription} from 'rxjs/Subscription';
 import {transformMenu, fadeInItems} from './menu-animations';
-import {ESCAPE} from '../core/keyboard/keycodes';
+import {ESCAPE, LEFT_ARROW, RIGHT_ARROW} from '../core/keyboard/keycodes';
+import {merge} from 'rxjs/observable/merge';
+import {Observable} from 'rxjs/Observable';
+import {Direction} from '../core';
 
 
 @Component({
@@ -58,6 +61,12 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
 
   /** Current state of the panel animation. */
   _panelAnimationState: 'void' | 'enter-start' | 'enter' = 'void';
+
+  /** Whether the menu is a sub-menu or a top-level menu. */
+  isSubmenu: boolean = false;
+
+  /** Layout direction of the menu. */
+  direction: Direction;
 
   /** Position of the menu in the X axis. */
   @Input()
@@ -109,13 +118,13 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
   }
 
   /** Event emitted when the menu is closed. */
-  @Output() close = new EventEmitter<void>();
+  @Output() close = new EventEmitter<void | 'click' | 'keydown'>();
 
   constructor(private _elementRef: ElementRef) { }
 
   ngAfterContentInit() {
     this._keyManager = new FocusKeyManager(this.items).withWrap();
-    this._tabSubscription = this._keyManager.tabOut.subscribe(() => this._emitCloseEvent());
+    this._tabSubscription = this._keyManager.tabOut.subscribe(() => this.close.emit('keydown'));
   }
 
   ngOnDestroy() {
@@ -123,16 +132,31 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
       this._tabSubscription.unsubscribe();
     }
 
-    this._emitCloseEvent();
+    this.close.emit();
     this.close.complete();
+  }
+
+  /** Stream that emits whenever the hovered menu item changes. */
+  hover(): Observable<MdMenuItem> {
+    return merge(...this.items.map(item => item.hover));
   }
 
   /** Handle a keyboard event from the menu, delegating to the appropriate action. */
   _handleKeydown(event: KeyboardEvent) {
     switch (event.keyCode) {
       case ESCAPE:
-        this._emitCloseEvent();
-        return;
+        this.close.emit('keydown');
+      break;
+      case LEFT_ARROW:
+        if (this.isSubmenu && this.direction === 'ltr') {
+          this.close.emit('keydown');
+        }
+      break;
+      case RIGHT_ARROW:
+        if (this.isSubmenu && this.direction === 'rtl') {
+          this.close.emit('keydown');
+        }
+      break;
       default:
         this._keyManager.onKeydown(event);
     }
@@ -144,14 +168,6 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
    */
   focusFirstItem() {
     this._keyManager.setFirstItemActive();
-  }
-
-  /**
-   * This emits a close event to which the trigger is subscribed. When emitted, the
-   * trigger will close the menu.
-   */
-  _emitCloseEvent(): void {
-    this.close.emit();
   }
 
   /**

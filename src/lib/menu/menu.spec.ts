@@ -11,18 +11,24 @@ import {
   ViewChild
 } from '@angular/core';
 import {
+  OverlayContainer,
+  Directionality,
+  Direction,
+  ESCAPE,
+  RIGHT_ARROW,
+  LEFT_ARROW,
+} from '../core';
+import {
   MdMenuModule,
   MdMenuTrigger,
   MdMenuPanel,
   MenuPositionX,
   MenuPositionY,
-  MdMenu
+  MdMenu,
 } from './index';
-import {OverlayContainer} from '../core/overlay/overlay-container';
-import {Directionality, Direction} from '../core/bidi/index';
+import {MENU_PANEL_TOP_PADDING} from './menu-trigger';
 import {extendObject} from '../core/util/object-extend';
-import {ESCAPE} from '../core/keyboard/keycodes';
-import {dispatchKeyboardEvent} from '@angular/cdk/testing';
+import {dispatchKeyboardEvent, dispatchMouseEvent} from '@angular/cdk/testing';
 
 
 describe('MdMenu', () => {
@@ -33,7 +39,14 @@ describe('MdMenu', () => {
     dir = 'ltr';
     TestBed.configureTestingModule({
       imports: [MdMenuModule, NoopAnimationsModule],
-      declarations: [SimpleMenu, PositionedMenu, OverlapMenu, CustomMenuPanel, CustomMenu],
+      declarations: [
+        SimpleMenu,
+        PositionedMenu,
+        OverlapMenu,
+        CustomMenuPanel,
+        CustomMenu,
+        NestedMenu
+      ],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
           overlayContainerElement = document.createElement('div');
@@ -145,6 +158,11 @@ describe('MdMenu', () => {
 
     const role = menuPanel ? menuPanel.getAttribute('role') : '';
     expect(role).toBe('menu', 'Expected panel to have the "menu" role.');
+  });
+
+  it('should not throw an error on destroy', () => {
+    const fixture = TestBed.createComponent(SimpleMenu);
+    expect(fixture.destroy.bind(fixture)).not.toThrow();
   });
 
   describe('positions', () => {
@@ -491,12 +509,370 @@ describe('MdMenu', () => {
     });
   });
 
-  describe('destroy', () => {
-    it('does not throw an error on destroy', () => {
-      const fixture = TestBed.createComponent(SimpleMenu);
-      expect(fixture.destroy.bind(fixture)).not.toThrow();
+  describe('nested menu', () => {
+    let fixture: ComponentFixture<NestedMenu>;
+    let instance: NestedMenu;
+    let overlay: HTMLElement;
+    let compileTestComponent = () => {
+      fixture = TestBed.createComponent(NestedMenu);
+      fixture.detectChanges();
+      instance = fixture.componentInstance;
+      overlay = overlayContainerElement;
+    };
+
+    it('should set the `triggersSubmenu` flags on the triggers', () => {
+      compileTestComponent();
+      expect(instance.rootTrigger.triggersSubmenu()).toBe(false);
+      expect(instance.levelOneTrigger.triggersSubmenu()).toBe(true);
+      expect(instance.levelTwoTrigger.triggersSubmenu()).toBe(true);
     });
+
+    it('should set the `isSubmenu` flag on the menu instances', () => {
+      compileTestComponent();
+      instance.rootTriggerEl.nativeElement.click();
+      fixture.detectChanges();
+
+      instance.levelOneTrigger.openMenu();
+      fixture.detectChanges();
+
+      instance.levelTwoTrigger.openMenu();
+      fixture.detectChanges();
+
+      expect(instance.rootMenu.isSubmenu).toBe(false);
+      expect(instance.levelOneMenu.isSubmenu).toBe(true);
+      expect(instance.levelTwoMenu.isSubmenu).toBe(true);
+    });
+
+    it('should pass the layout direction the nested menus', () => {
+      dir = 'rtl';
+      compileTestComponent();
+      instance.rootTriggerEl.nativeElement.click();
+      fixture.detectChanges();
+
+      instance.levelOneTrigger.openMenu();
+      fixture.detectChanges();
+
+      instance.levelTwoTrigger.openMenu();
+      fixture.detectChanges();
+
+      expect(instance.rootMenu.direction).toBe('rtl');
+      expect(instance.levelOneMenu.direction).toBe('rtl');
+      expect(instance.levelTwoMenu.direction).toBe('rtl');
+    });
+
+    it('should emit an event when the hover state of the menu items changes', () => {
+      compileTestComponent();
+      instance.rootTrigger.openMenu();
+      fixture.detectChanges();
+
+      const spy = jasmine.createSpy('hover spy');
+      const subscription = instance.rootMenu.hover().subscribe(spy);
+      const menuItems = overlay.querySelectorAll('[md-menu-item]');
+
+      dispatchMouseEvent(menuItems[0], 'mouseenter');
+      fixture.detectChanges();
+
+      expect(spy).toHaveBeenCalledTimes(1);
+
+      dispatchMouseEvent(menuItems[1], 'mouseenter');
+      fixture.detectChanges();
+
+      expect(spy).toHaveBeenCalledTimes(2);
+
+      subscription.unsubscribe();
+    });
+
+    it('should toggle a nested menu when its trigger is hovered', () => {
+      compileTestComponent();
+      instance.rootTriggerEl.nativeElement.click();
+      fixture.detectChanges();
+      expect(overlay.querySelectorAll('.mat-menu-panel').length).toBe(1, 'Expected one open menu');
+
+      const items = Array.from(overlay.querySelectorAll('.mat-menu-panel [md-menu-item]'));
+      const levelOneTrigger = overlay.querySelector('#level-one-trigger')!;
+
+      dispatchMouseEvent(levelOneTrigger, 'mouseenter');
+      fixture.detectChanges();
+      expect(levelOneTrigger.classList)
+          .toContain('mat-menu-item-highlighted', 'Expected the trigger to be highlighted');
+      expect(overlay.querySelectorAll('.mat-menu-panel').length).toBe(2, 'Expected two open menus');
+
+      dispatchMouseEvent(items[items.indexOf(levelOneTrigger) + 1], 'mouseenter');
+      fixture.detectChanges();
+      expect(overlay.querySelectorAll('.mat-menu-panel').length).toBe(1, 'Expected one open menu');
+      expect(levelOneTrigger.classList)
+          .not.toContain('mat-menu-item-highlighted', 'Expected the trigger to not be highlighted');
+    });
+
+    it('should close all the open sub-menus when the hover state is changed at the root', () => {
+      compileTestComponent();
+      instance.rootTriggerEl.nativeElement.click();
+      fixture.detectChanges();
+
+      const items = Array.from(overlay.querySelectorAll('.mat-menu-panel [md-menu-item]'));
+      const levelOneTrigger = overlay.querySelector('#level-one-trigger')!;
+
+      dispatchMouseEvent(levelOneTrigger, 'mouseenter');
+      fixture.detectChanges();
+
+      const levelTwoTrigger = overlay.querySelector('#level-two-trigger')! as HTMLElement;
+      dispatchMouseEvent(levelTwoTrigger, 'mouseenter');
+      fixture.detectChanges();
+
+      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+          .toBe(3, 'Expected three open menus');
+
+      dispatchMouseEvent(items[items.indexOf(levelOneTrigger) + 1], 'mouseenter');
+      fixture.detectChanges();
+      expect(overlay.querySelectorAll('.mat-menu-panel').length).toBe(1, 'Expected one open menu');
+    });
+
+    it('should open a nested menu when its trigger is clicked', () => {
+      compileTestComponent();
+      instance.rootTriggerEl.nativeElement.click();
+      fixture.detectChanges();
+      expect(overlay.querySelectorAll('.mat-menu-panel').length).toBe(1, 'Expected one open menu');
+
+      const levelOneTrigger = overlay.querySelector('#level-one-trigger')! as HTMLElement;
+
+      levelOneTrigger.click();
+      fixture.detectChanges();
+      expect(overlay.querySelectorAll('.mat-menu-panel').length).toBe(2, 'Expected two open menus');
+
+      levelOneTrigger.click();
+      fixture.detectChanges();
+      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+          .toBe(2, 'Expected repeat clicks not to close the menu.');
+    });
+
+    it('should open and close a nested menu with arrow keys in ltr', () => {
+      compileTestComponent();
+      instance.rootTriggerEl.nativeElement.click();
+      fixture.detectChanges();
+      expect(overlay.querySelectorAll('.mat-menu-panel').length).toBe(1, 'Expected one open menu');
+
+      const levelOneTrigger = overlay.querySelector('#level-one-trigger')! as HTMLElement;
+
+      dispatchKeyboardEvent(levelOneTrigger, 'keydown', RIGHT_ARROW);
+      fixture.detectChanges();
+
+      const panels = overlay.querySelectorAll('.mat-menu-panel');
+
+      expect(panels.length).toBe(2, 'Expected two open menus');
+      dispatchKeyboardEvent(panels[1], 'keydown', LEFT_ARROW);
+      fixture.detectChanges();
+
+      expect(overlay.querySelectorAll('.mat-menu-panel').length).toBe(1);
+    });
+
+    it('should open and close a nested menu with the arrow keys in rtl', () => {
+      dir = 'rtl';
+      fixture.destroy();
+      compileTestComponent();
+      instance.rootTriggerEl.nativeElement.click();
+      fixture.detectChanges();
+      expect(overlay.querySelectorAll('.mat-menu-panel').length).toBe(1, 'Expected one open menu');
+
+      const levelOneTrigger = overlay.querySelector('#level-one-trigger')! as HTMLElement;
+
+      dispatchKeyboardEvent(levelOneTrigger, 'keydown', LEFT_ARROW);
+      fixture.detectChanges();
+
+      const panels = overlay.querySelectorAll('.mat-menu-panel');
+
+      expect(panels.length).toBe(2, 'Expected two open menus');
+      dispatchKeyboardEvent(panels[1], 'keydown', RIGHT_ARROW);
+      fixture.detectChanges();
+
+      expect(overlay.querySelectorAll('.mat-menu-panel').length).toBe(1);
+    });
+
+    it('should not do anything with the arrow keys for a top-level menu', () => {
+      compileTestComponent();
+      instance.rootTriggerEl.nativeElement.click();
+      fixture.detectChanges();
+
+      const menu = overlay.querySelector('.mat-menu-panel')!;
+
+      dispatchKeyboardEvent(menu, 'keydown', RIGHT_ARROW);
+      fixture.detectChanges();
+      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+          .toBe(1, 'Expected one menu to remain open');
+
+      dispatchKeyboardEvent(menu, 'keydown', LEFT_ARROW);
+      fixture.detectChanges();
+      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+          .toBe(1, 'Expected one menu to remain open');
+    });
+
+    it('should close all of the menus when the backdrop is clicked', () => {
+      compileTestComponent();
+      instance.rootTriggerEl.nativeElement.click();
+      fixture.detectChanges();
+
+      instance.levelOneTrigger.openMenu();
+      fixture.detectChanges();
+
+      instance.levelTwoTrigger.openMenu();
+      fixture.detectChanges();
+
+      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+          .toBe(3, 'Expected three open menus');
+      expect(overlay.querySelectorAll('.cdk-overlay-backdrop').length)
+          .toBe(1, 'Expected one backdrop element');
+      expect(overlay.querySelectorAll('.mat-menu-panel, .cdk-overlay-backdrop')[0].classList)
+          .toContain('cdk-overlay-backdrop', 'Expected backdrop to be beneath all of the menus');
+
+      (overlay.querySelector('.cdk-overlay-backdrop')! as HTMLElement).click();
+      fixture.detectChanges();
+
+      expect(overlay.querySelectorAll('.mat-menu-panel').length).toBe(0, 'Expected no open menus');
+    });
+
+    it('should shift focus between the sub-menus', () => {
+      compileTestComponent();
+      instance.rootTrigger.openMenu();
+      fixture.detectChanges();
+
+      expect(overlay.querySelector('.mat-menu-panel')!.contains(document.activeElement))
+          .toBe(true, 'Expected focus to be inside the root menu');
+
+      instance.levelOneTrigger.openMenu();
+      fixture.detectChanges();
+
+      expect(overlay.querySelectorAll('.mat-menu-panel')[1].contains(document.activeElement))
+          .toBe(true, 'Expected focus to be inside the first nested menu');
+
+      instance.levelTwoTrigger.openMenu();
+      fixture.detectChanges();
+
+      expect(overlay.querySelectorAll('.mat-menu-panel')[2].contains(document.activeElement))
+          .toBe(true, 'Expected focus to be inside the second nested menu');
+
+      instance.levelTwoTrigger.closeMenu();
+      fixture.detectChanges();
+
+      expect(overlay.querySelectorAll('.mat-menu-panel')[1].contains(document.activeElement))
+          .toBe(true, 'Expected focus to be back inside the first nested menu');
+
+      instance.levelOneTrigger.closeMenu();
+      fixture.detectChanges();
+
+      expect(overlay.querySelector('.mat-menu-panel')!.contains(document.activeElement))
+          .toBe(true, 'Expected focus to be back inside the root menu');
+    });
+
+    it('should not shift focus to the sub-menu when it was opened by hover', () => {
+      compileTestComponent();
+      instance.rootTriggerEl.nativeElement.click();
+      fixture.detectChanges();
+
+      const levelOneTrigger = overlay.querySelector('#level-one-trigger')! as HTMLElement;
+
+      dispatchMouseEvent(levelOneTrigger, 'mouseenter');
+      fixture.detectChanges();
+
+      expect(overlay.querySelectorAll('.mat-menu-panel')[1].contains(document.activeElement))
+          .toBe(false, 'Expected focus to not be inside the nested menu');
+    });
+
+    it('should position the sub-menu to the right edge of the trigger in ltr', () => {
+      compileTestComponent();
+      instance.rootTriggerEl.nativeElement.style.position = 'fixed';
+      instance.rootTriggerEl.nativeElement.style.left = '50px';
+      instance.rootTriggerEl.nativeElement.style.top = '50px';
+      instance.rootTrigger.openMenu();
+      fixture.detectChanges();
+
+      instance.levelOneTrigger.openMenu();
+      fixture.detectChanges();
+
+      const triggerRect = overlay.querySelector('#level-one-trigger')!.getBoundingClientRect();
+      const panelRect = overlay.querySelectorAll('.mat-menu-panel')[1].getBoundingClientRect();
+
+      expect(Math.round(triggerRect.right)).toBe(Math.round(panelRect.left));
+      expect(Math.round(triggerRect.top)).toBe(Math.round(panelRect.top) + MENU_PANEL_TOP_PADDING);
+    });
+
+    it('should fall back to aligning to the left edge of the trigger in ltr', () => {
+      compileTestComponent();
+      instance.rootTriggerEl.nativeElement.style.position = 'fixed';
+      instance.rootTriggerEl.nativeElement.style.right = '10px';
+      instance.rootTriggerEl.nativeElement.style.top = '50%';
+      instance.rootTrigger.openMenu();
+      fixture.detectChanges();
+
+      instance.levelOneTrigger.openMenu();
+      fixture.detectChanges();
+
+      const triggerRect = overlay.querySelector('#level-one-trigger')!.getBoundingClientRect();
+      const panelRect = overlay.querySelectorAll('.mat-menu-panel')[1].getBoundingClientRect();
+
+      expect(Math.round(triggerRect.left)).toBe(Math.round(panelRect.right));
+      expect(Math.round(triggerRect.top)).toBe(Math.round(panelRect.top) + MENU_PANEL_TOP_PADDING);
+    });
+
+    it('should position the sub-menu to the left edge of the trigger in rtl', () => {
+      dir = 'rtl';
+      compileTestComponent();
+      instance.rootTriggerEl.nativeElement.style.position = 'fixed';
+      instance.rootTriggerEl.nativeElement.style.left = '50%';
+      instance.rootTriggerEl.nativeElement.style.top = '50%';
+      instance.rootTrigger.openMenu();
+      fixture.detectChanges();
+
+      instance.levelOneTrigger.openMenu();
+      fixture.detectChanges();
+
+      const triggerRect = overlay.querySelector('#level-one-trigger')!.getBoundingClientRect();
+      const panelRect = overlay.querySelectorAll('.mat-menu-panel')[1].getBoundingClientRect();
+
+      expect(Math.round(triggerRect.left)).toBe(Math.round(panelRect.right));
+      expect(Math.round(triggerRect.top)).toBe(Math.round(panelRect.top) + MENU_PANEL_TOP_PADDING);
+    });
+
+    it('should fall back to aligning to the right edge of the trigger in rtl', () => {
+      dir = 'rtl';
+      compileTestComponent();
+      instance.rootTriggerEl.nativeElement.style.position = 'fixed';
+      instance.rootTriggerEl.nativeElement.style.left = '10px';
+      instance.rootTriggerEl.nativeElement.style.top = '50%';
+      instance.rootTrigger.openMenu();
+      fixture.detectChanges();
+
+      instance.levelOneTrigger.openMenu();
+      fixture.detectChanges();
+
+      const triggerRect = overlay.querySelector('#level-one-trigger')!.getBoundingClientRect();
+      const panelRect = overlay.querySelectorAll('.mat-menu-panel')[1].getBoundingClientRect();
+
+      expect(Math.round(triggerRect.right)).toBe(Math.round(panelRect.left));
+      expect(Math.round(triggerRect.top)).toBe(Math.round(panelRect.top) + MENU_PANEL_TOP_PADDING);
+    });
+
+    it('should close all of the menus when an item is clicked', () => {
+      compileTestComponent();
+      instance.rootTriggerEl.nativeElement.click();
+      fixture.detectChanges();
+
+      instance.levelOneTrigger.openMenu();
+      fixture.detectChanges();
+
+      instance.levelTwoTrigger.openMenu();
+      fixture.detectChanges();
+
+      const menus = overlay.querySelectorAll('.mat-menu-panel');
+
+      expect(menus.length).toBe(3, 'Expected three open menus');
+
+      (menus[2].querySelector('.mat-menu-item')! as HTMLElement).click();
+      fixture.detectChanges();
+
+      expect(overlay.querySelectorAll('.mat-menu-panel').length).toBe(0, 'Expected no open menus');
+    });
+
   });
+
 });
 
 @Component({
@@ -559,17 +935,16 @@ class OverlapMenu implements TestableMenu {
   exportAs: 'mdCustomMenu'
 })
 class CustomMenuPanel implements MdMenuPanel {
+  direction: Direction;
   xPosition: MenuPositionX = 'after';
   yPosition: MenuPositionY = 'below';
-  overlapTrigger: true;
+  overlapTrigger = true;
+  isSubmenu = false;
 
   @ViewChild(TemplateRef) templateRef: TemplateRef<any>;
-  @Output() close = new EventEmitter<void>();
+  @Output() close = new EventEmitter<void | 'click' | 'keydown'>();
   focusFirstItem = () => {};
   setPositionClasses = () => {};
-  _emitCloseEvent() {
-    this.close.emit();
-  }
 }
 
 @Component({
@@ -582,4 +957,49 @@ class CustomMenuPanel implements MdMenuPanel {
 })
 class CustomMenu {
   @ViewChild(MdMenuTrigger) trigger: MdMenuTrigger;
+}
+
+
+@Component({
+  template: `
+    <button
+      [mdMenuTriggerFor]="root"
+      #rootTrigger="mdMenuTrigger"
+      #rootTriggerEl>Toggle menu</button>
+
+    <md-menu #root="mdMenu">
+      <button md-menu-item
+        id="level-one-trigger"
+        [mdMenuTriggerFor]="levelOne"
+        #levelOneTrigger="mdMenuTrigger">One</button>
+      <button md-menu-item>Two</button>
+      <button md-menu-item>Three</button>
+    </md-menu>
+
+    <md-menu #levelOne="mdMenu">
+      <button md-menu-item>Four</button>
+      <button md-menu-item
+        id="level-two-trigger"
+        [mdMenuTriggerFor]="levelTwo"
+        #levelTwoTrigger="mdMenuTrigger">Five</button>
+      <button md-menu-item>Six</button>
+    </md-menu>
+
+    <md-menu #levelTwo="mdMenu">
+      <button md-menu-item>Seven</button>
+      <button md-menu-item>Eight</button>
+      <button md-menu-item>Nine</button>
+    </md-menu>
+  `
+})
+class NestedMenu {
+  @ViewChild('root') rootMenu: MdMenu;
+  @ViewChild('rootTrigger') rootTrigger: MdMenuTrigger;
+  @ViewChild('rootTriggerEl') rootTriggerEl: ElementRef;
+
+  @ViewChild('levelOne') levelOneMenu: MdMenu;
+  @ViewChild('levelOneTrigger') levelOneTrigger: MdMenuTrigger;
+
+  @ViewChild('levelTwo') levelTwoMenu: MdMenu;
+  @ViewChild('levelTwoTrigger') levelTwoTrigger: MdMenuTrigger;
 }

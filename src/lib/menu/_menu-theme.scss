@@ -24,7 +24,12 @@
       vertical-align: middle;
     }
 
-    &:hover:not([disabled]), &:focus:not([disabled]) {
+  }
+
+  .mat-menu-item:hover,
+  .mat-menu-item:focus,
+  .mat-menu-item-highlighted {
+    &:not([disabled]) {
       background: mat-color($background, 'hover');
     }
   }

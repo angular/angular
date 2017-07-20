@@ -15,7 +15,61 @@
     </md-menu>
   </div>
   <div class="menu-section">
-    <p> Clicking these will navigate:</p>
+    <p>Nested menu</p>
+
+    <md-toolbar>
+      <button md-icon-button [mdMenuTriggerFor]="animals">
+        <md-icon>more_vert</md-icon>
+      </button>
+    </md-toolbar>
+
+    <md-menu #animals="mdMenu">
+      <button md-menu-item [mdMenuTriggerFor]="vertebrates">Vertebrates</button>
+      <button md-menu-item [mdMenuTriggerFor]="invertebrates">Invertebrates</button>
+    </md-menu>
+
+    <md-menu #vertebrates="mdMenu">
+      <button md-menu-item [mdMenuTriggerFor]="fish">Fishes</button>
+      <button md-menu-item [mdMenuTriggerFor]="amphibians">Amphibians</button>
+      <button md-menu-item [mdMenuTriggerFor]="reptiles">Reptiles</button>
+      <button md-menu-item>Birds</button>
+      <button md-menu-item>Mammals</button>
+    </md-menu>
+
+    <md-menu #invertebrates="mdMenu">
+      <button md-menu-item>Insects</button>
+      <button md-menu-item>Molluscs</button>
+      <button md-menu-item>Crustaceans</button>
+      <button md-menu-item>Corals</button>
+      <button md-menu-item>Arachnids</button>
+      <button md-menu-item>Velvet worms</button>
+      <button md-menu-item>Horseshoe crabs</button>
+    </md-menu>
+
+    <md-menu #fish="mdMenu">
+      <button md-menu-item>Baikal oilfish</button>
+      <button md-menu-item>Bala shark</button>
+      <button md-menu-item>Ballan wrasse</button>
+      <button md-menu-item>Bamboo shark</button>
+      <button md-menu-item>Banded killifish</button>
+    </md-menu>
+
+    <md-menu #amphibians="mdMenu">
+      <button md-menu-item>Sonoran desert toad</button>
+      <button md-menu-item>Western toad</button>
+      <button md-menu-item>Arroyo toad</button>
+      <button md-menu-item>Yosemite toad</button>
+    </md-menu>
+
+    <md-menu #reptiles="mdMenu">
+      <button md-menu-item>Banded Day Gecko</button>
+      <button md-menu-item>Banded Gila Monster</button>
+      <button md-menu-item>Black Tree Monitor</button>
+      <button md-menu-item>Blue Spiny Lizard</button>
+    </md-menu>
+  </div>
+  <div class="menu-section">
+    <p>Clicking these will navigate:</p>
     <md-toolbar>
       <button md-icon-button [mdMenuTriggerFor]="anchorMenu" aria-label="Open anchor menu">
         <md-icon>more_vert</md-icon>
