@@ -18,9 +18,26 @@ import {INITIAL_CONFIG} from './tokens';
 
 const parse5 = require('parse5');
 
+/**
+ * Options used to configure the server Platform instance that is created in {@link renderModule}
+ * and {@link renderModuleFactory}.
+ *
+ * @experimental
+ */
 export interface PlatformOptions {
+  /**
+   * The full document HTML of the page to render as a string.
+   */
   document?: string;
+
+  /**
+   * The URL for the current render request.
+   */
   url?: string;
+
+  /**
+   * Platform level providers for the current render request.
+   */
   extraProviders?: Provider[];
 }
 

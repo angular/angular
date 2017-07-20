@@ -47,7 +47,6 @@ const EXPECTED_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
     <body>
       <trans-unit id="76e1eccb1b772fa9f294ef9c146ea6d0efa8a2d4" datatype="html">
         <source>translate me</source>
-        <target/>
         <context-group purpose="location">
           <context context-type="sourcefile">src/basic.ts</context>
           <context context-type="linenumber">1</context>
@@ -57,7 +56,6 @@ const EXPECTED_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
       </trans-unit>
       <trans-unit id="65cc4ab3b4c438e07c89be2b677d08369fb62da2" datatype="html">
         <source>Welcome</source>
-        <target/>
         <context-group purpose="location">
           <context context-type="sourcefile">src/basic.ts</context>
           <context context-type="linenumber">5</context>
@@ -70,7 +68,6 @@ const EXPECTED_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
       <trans-unit id="b0a17f08a4bd742b2acf39780c257c2f519d33ed" datatype="html">
         <source>other-3rdP-component
 multi-lines</source>
-        <target/>
         <context-group purpose="location">
           <context context-type="sourcefile">node_modules/third_party/other_comp.d.ts</context>
           <context context-type="linenumber">1</context>

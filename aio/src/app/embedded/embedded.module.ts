@@ -9,8 +9,9 @@ import { PrettyPrinter } from './code/pretty-printer.service';
 // It is not enough just to import them inside the AppModule
 
 // Reusable components (used inside embedded components)
-import { MdIconModule, MdTabsModule } from '@angular/material';
+import { MdIconModule, MdSnackBarModule, MdTabsModule } from '@angular/material';
 import { CodeComponent } from './code/code.component';
+import { SharedModule } from 'app/shared/shared.module';
 
 // Embedded Components
 import { ApiListComponent } from './api/api-list.component';
@@ -41,7 +42,9 @@ export class EmbeddedComponents {
   imports: [
     CommonModule,
     MdIconModule,
-    MdTabsModule
+    MdSnackBarModule,
+    MdTabsModule,
+    SharedModule
   ],
   declarations: [
     embeddedComponents,

@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimationMetadata, AnimationMetadataType, animate, animation, group, keyframes, query, sequence, style, useAnimation, ɵStyleData} from '@angular/animations';
+import {AUTO_STYLE, AnimationMetadata, AnimationMetadataType, animate, animation, group, keyframes, query, sequence, style, transition, trigger, useAnimation, ɵStyleData} from '@angular/animations';
 import {AnimationOptions} from '@angular/core/src/animation/dsl';
 
 import {Animation} from '../../src/dsl/animation';
@@ -101,6 +101,23 @@ export function main() {
             .toThrowError(
                 /The CSS property "opacity" that exists between the times of "0ms" and "2000ms" is also being animated in a parallel animation between the times of "0ms" and "1500ms"/);
       });
+
+      it('should not throw an error if animations overlap in different query levels within different transitions',
+         () => {
+           const steps = trigger('myAnimation', [
+             transition('a => b', group([
+                          query('h1', animate('1s', style({opacity: 0}))),
+                          query('h2', animate('1s', style({opacity: 1}))),
+                        ])),
+
+             transition('b => a', group([
+                          query('h1', animate('1s', style({opacity: 0}))),
+                          query('h2', animate('1s', style({opacity: 1}))),
+                        ])),
+           ]);
+
+           expect(() => validateAndThrowAnimationSequence(steps)).not.toThrow();
+         });
 
       it('should throw an error if an animation time is invalid', () => {
         const steps = [animate('500xs', style({opacity: 1}))];
@@ -357,6 +374,56 @@ export function main() {
             {offset: 1, transform: 'translateX(200px) translateY(400px)'}
           ]);
         });
+
+        it('should substitute in values that are defined as parameters for inner areas of a sequence',
+           () => {
+             const steps = sequence(
+                 [
+                   sequence(
+                       [
+                         sequence(
+                             [
+                               style({height: '{{ x0 }}px'}),
+                               animate(1000, style({height: '{{ x2 }}px'})),
+                             ],
+                             buildParams({x2: '{{ x1 }}3'})),
+                       ],
+                       buildParams({x1: '{{ x0 }}2'})),
+                 ],
+                 buildParams({x0: '1'}));
+
+             const players = invokeAnimationSequence(rootElement, steps);
+             expect(players.length).toEqual(1);
+             const [player] = players;
+             expect(player.keyframes).toEqual([
+               {offset: 0, height: '1px'}, {offset: 1, height: '123px'}
+             ]);
+           });
+
+        it('should substitute in values that are defined as parameters for reusable animations',
+           () => {
+             const anim = animation([
+               style({height: '{{ start }}'}),
+               animate(1000, style({height: '{{ end }}'})),
+             ]);
+
+             const steps = sequence(
+                 [
+                   sequence(
+                       [
+                         useAnimation(anim, buildParams({start: '{{ a }}', end: '{{ b }}'})),
+                       ],
+                       buildParams({a: '100px', b: '200px'})),
+                 ],
+                 buildParams({a: '0px'}));
+
+             const players = invokeAnimationSequence(rootElement, steps);
+             expect(players.length).toEqual(1);
+             const [player] = players;
+             expect(player.keyframes).toEqual([
+               {offset: 0, height: '100px'}, {offset: 1, height: '200px'}
+             ]);
+           });
 
         it('should throw an error when an input variable is not provided when invoked and is not a default value',
            () => {

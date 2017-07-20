@@ -24,6 +24,7 @@ export const $$TESTABILITY = '$$testability';
 export const COMPILER_KEY = '$$angularCompiler';
 export const GROUP_PROJECTABLE_NODES_KEY = '$$angularGroupProjectableNodes';
 export const INJECTOR_KEY = '$$angularInjector';
+export const LAZY_MODULE_REF = '$$angularLazyModuleRef';
 export const NG_ZONE_KEY = '$$angularNgZone';
 
 export const REQUIRE_INJECTOR = '?^^' + INJECTOR_KEY;

@@ -9,6 +9,8 @@
 import {AotCompiler, AotCompilerHost, AotCompilerOptions, EmitterVisitorContext, GeneratedFile, NgAnalyzedModules, ParseSourceSpan, Statement, StaticReflector, TypeScriptEmitter, createAotCompiler} from '@angular/compiler';
 import * as ts from 'typescript';
 
+import {Diagnostic, DiagnosticCategory} from '../transformers/api';
+
 interface FactoryInfo {
   source: ts.SourceFile;
   context: EmitterVisitorContext;
@@ -16,17 +18,10 @@ interface FactoryInfo {
 
 type FactoryInfoMap = Map<string, FactoryInfo>;
 
-export enum DiagnosticKind {
-  Message,
-  Warning,
-  Error,
-}
-
-export interface Diagnostic {
-  message: string;
-  kind: DiagnosticKind;
-  span: ParseSourceSpan;
-}
+const stubCancellationToken: ts.CancellationToken = {
+  isCancellationRequested(): boolean{return false;},
+  throwIfCancellationRequested(): void{}
+};
 
 export class TypeChecker {
   private _aotCompiler: AotCompiler|undefined;
@@ -35,6 +30,8 @@ export class TypeChecker {
   private _factoryNames: string[]|undefined;
   private _diagnosticProgram: ts.Program|undefined;
   private _diagnosticsByFile: Map<string, Diagnostic[]>|undefined;
+  private _currentCancellationToken: ts.CancellationToken = stubCancellationToken;
+  private _partial: boolean = false;
 
   constructor(
       private program: ts.Program, private tsOptions: ts.CompilerOptions,
@@ -42,11 +39,18 @@ export class TypeChecker {
       private aotOptions: AotCompilerOptions, private _analyzedModules?: NgAnalyzedModules,
       private _generatedFiles?: GeneratedFile[]) {}
 
-  getDiagnostics(fileName?: string): Diagnostic[] {
-    return fileName ?
-        this.diagnosticsByFileName.get(fileName) || [] :
-        ([] as Diagnostic[]).concat(...Array.from(this.diagnosticsByFileName.values()));
+  getDiagnostics(fileName?: string, cancellationToken?: ts.CancellationToken): Diagnostic[] {
+    this._currentCancellationToken = cancellationToken || stubCancellationToken;
+    try {
+      return fileName ?
+          this.diagnosticsByFileName.get(fileName) || [] :
+          ([] as Diagnostic[]).concat(...Array.from(this.diagnosticsByFileName.values()));
+    } finally {
+      this._currentCancellationToken = stubCancellationToken;
+    }
   }
+
+  get partialResults(): boolean { return this._partial; }
 
   private get analyzedModules(): NgAnalyzedModules {
     return this._analyzedModules || (this._analyzedModules = this.aotCompiler.analyzeModulesSync(
@@ -130,6 +134,7 @@ export class TypeChecker {
     };
     const program = this.diagnosticProgram;
     for (const factoryName of this.factoryNames) {
+      if (this._currentCancellationToken.isCancellationRequested()) return result;
       const sourceFile = program.getSourceFile(factoryName);
       for (const diagnostic of this.diagnosticProgram.getSemanticDiagnostics(sourceFile)) {
         const span = this.sourceSpanOf(diagnostic.file, diagnostic.start, diagnostic.length);
@@ -138,7 +143,7 @@ export class TypeChecker {
           const diagnosticsList = diagnosticsFor(fileName);
           diagnosticsList.push({
             message: diagnosticMessageToString(diagnostic.messageText),
-            kind: diagnosticKindConverter(diagnostic.category), span
+            category: diagnosticCategoryConverter(diagnostic.category), span
           });
         }
       }
@@ -158,12 +163,12 @@ export class TypeChecker {
 }
 
 function diagnosticMessageToString(message: ts.DiagnosticMessageChain | string): string {
-  return typeof message === 'string' ? message : diagnosticMessageToString(message.messageText);
+  return ts.flattenDiagnosticMessageText(message, '\n');
 }
 
-function diagnosticKindConverter(kind: ts.DiagnosticCategory) {
+function diagnosticCategoryConverter(kind: ts.DiagnosticCategory) {
   // The diagnostics kind matches ts.DiagnosticCategory. Review this code if this changes.
-  return kind as any as DiagnosticKind;
+  return kind as any as DiagnosticCategory;
 }
 
 function createFactoryInfo(emitter: TypeScriptEmitter, file: GeneratedFile): FactoryInfo {

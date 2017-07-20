@@ -322,7 +322,7 @@ export interface SymbolQuery {
   /**
    * Return the type symbol for the given static symbol.
    */
-  getTypeSymbol(type: StaticSymbol): Symbol;
+  getTypeSymbol(type: StaticSymbol): Symbol|undefined;
 
   /**
    * Return the members that are in the context of a type's template reference.

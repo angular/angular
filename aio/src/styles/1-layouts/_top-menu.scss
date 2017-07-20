@@ -4,6 +4,12 @@
   margin-right: 20px;
   top: 12px;
   height: 40px;
+
+  @media(max-width: 992px) {
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
 }
 
 aio-top-menu {
@@ -42,9 +48,9 @@ aio-top-menu {
     cursor: pointer;
 
     &:focus {
-      outline: none;
       background: rgba($white, 0.15);
       border-radius: 4px;
+      outline: none;
       padding: 8px 16px;
     }
   }
@@ -53,6 +59,7 @@ aio-top-menu {
 // HOME PAGE OVERRIDE: TOPNAV TOOLBAR HAMBURGER MENU
 aio-shell.page-home md-toolbar.app-toolbar.mat-toolbar {
   background-color: transparent;
+  transition: background-color .2s linear .3s;
 
   @media (max-width: 480px) {
     background-color: $blue;
@@ -85,10 +92,8 @@ aio-shell.page-resources md-toolbar.mat-toolbar {
   }
 
   @media (min-width: 992px) {
-    padding-left: 24px;
-
     button.hamburger {
-      display: none;
+      margin: 0 24px 0 -88px;
     }
   }
 }
@@ -120,6 +125,10 @@ aio-search-box.search-container {
     width: 180px;
     max-width: 240px;
     height: 50%;
+
+    &:focus {
+        outline: none;
+    }
 
     @include bp(big) {
       transition: width 0.4s ease-in-out;

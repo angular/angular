@@ -5,18 +5,17 @@
 <ng-template #searchResults>
   <h2 class="visually-hidden">Search Results</h2>
   <div class="search-area" *ngFor="let area of searchAreas">
-    <h3>{{area.name}} ({{area.pages.length}})</h3>
+    <h3>{{area.name}} ({{area.pages.length + area.priorityPages.length}})</h3>
     <ul class="priority-pages" >
       <li class="search-page" *ngFor="let page of area.priorityPages">
-        <a class="search-result-item" href="{{ page.path }}" (click)="onResultSelected(page)">
+        <a class="search-result-item" href="{{ page.path }}" (click)="onResultSelected(page, $event)">
           <span class="symbol {{page.type}}" *ngIf="area.name === 'api'"></span>{{ page.title }}
         </a>
       </li>
     </ul>
-    <div class="more-items material-icons" *ngIf="area.priorityPages.length > 0">more_horiz</div>
     <ul>
       <li class="search-page" *ngFor="let page of area.pages">
-        <a class="search-result-item" href="{{ page.path }}" (click)="onResultSelected(page)">
+        <a class="search-result-item" href="{{ page.path }}" (click)="onResultSelected(page, $event)">
           <span class="symbol {{page.type}}" *ngIf="area.name === 'api'"></span>{{ page.title }}
         </a>
       </li>
@@ -25,5 +24,5 @@
 </ng-template>
 
 <ng-template #notFound>
-  <p>No results found.</p>
+  <p>{{notFoundMessage}}</p>
 </ng-template>

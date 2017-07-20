@@ -36,6 +36,7 @@
 <a href="#inputs-and-outputs">Inputs and outputs</a><br>
 <a href="#pipes">Pipes</a><br>
 <a href="#safe-navigation-operator">Safe navigation operator <i>?.</i></a><br>
+<a href="#non-null-assertion-operator">Non-null assertion operator <i>!.</i></a><br>
 <a href="#enums">Enums</a><br>
 
 <!-- Interpolation and expressions -->
@@ -160,7 +161,7 @@
   <!-- #docregion property-binding-syntax-1 -->
   <img [src]="heroImageUrl">
   <hero-detail [hero]="currentHero"></hero-detail>
-  <div [ngClass]="{special: isSpecial}"></div>
+  <div [ngClass]="{'special': isSpecial}"></div>
   <!-- #enddocregion property-binding-syntax-1 -->
 </div>
 <br><br>
@@ -495,7 +496,7 @@ bindon-ngModel
 <div [ngClass]="isSpecial ? 'special' : ''">This div is special</div>
 
 <div class="bad curly special">Bad curly special</div>
-<div [ngClass]="{bad:false, curly:true, special:true}">Curly special</div>
+<div [ngClass]="{'bad':false, 'curly':true, 'special':true}">Curly special</div>
 
 <a class="to-toc" href="#toc">top</a>
 
@@ -801,6 +802,21 @@ The null hero's name is {{nullHero && nullHero.name}}
   <!-- No hero, no problem! -->
   The null hero's name is {{nullHero?.name}}
   <!-- #enddocregion safe-6 -->
+</div>
+
+
+<a class="to-toc" href="#toc">top</a>
+
+<!-- non-null assertion operator -->
+<hr><h2 id="non-null-assertion-operator">Non-null assertion operator <i>!.</i></h2>
+
+<div>
+  <!-- #docregion non-null-assertion-1 -->
+  <!--No hero, no text -->
+  <div *ngIf="hero">
+    The hero's name is {{hero!.name}}
+  </div>
+  <!-- #enddocregion non-null-assertion-1 -->
 </div>
 
 <a class="to-toc" href="#toc">top</a>

@@ -4,7 +4,7 @@
 import 'rxjs/add/operator/switchMap';
 // #enddocregion rxjs-operator-import
 import { Component, OnInit, HostBinding } from '@angular/core';
-import { Router, ActivatedRoute, Params } from '@angular/router';
+import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 
 import { slideInDownAnimation } from '../animations';
 
@@ -47,9 +47,9 @@ export class HeroDetailComponent implements OnInit {
 
   // #docregion ngOnInit
   ngOnInit() {
-    this.route.params
-      // (+) converts string 'id' to a number
-      .switchMap((params: Params) => this.service.getHero(+params['id']))
+    this.route.paramMap
+      .switchMap((params: ParamMap) =>
+        this.service.getHero(params.get('id')))
       .subscribe((hero: Hero) => this.hero = hero);
   }
   // #enddocregion ngOnInit

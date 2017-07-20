@@ -1,0 +1,14 @@
+{% import "lib/memberHelpers.html" as memberHelper -%}
+
+<section class="{$ doc.docType $}-overview">
+  <h2>Overview</h2>
+<code-example language="ts" hideCopy="true">{% for decorator in doc.decorators %}
+<a href="#annotations">@{$ decorator.name $}{$ params.paramList(decorator.arguments) $}</a>{% endfor %}
+class {$ doc.name $}{$ doc.typeParams | escape $}{$ memberHelper.renderHeritage(doc) $} {
+{%- if doc.statics.length %}{% for member in doc.statics %}{% if not member.internal %}
+  <a class="code-anchor" href="#{$ member.anchor $}">{$ memberHelper.renderMember(member, 1) $}</a>{% endif %}{% endfor %}{% endif %}
+{%- if doc.members.length %}{% for member in doc.members %}{% if not member.internal %}
+  <a class="code-anchor" href="#{$ member.anchor $}">{$ memberHelper.renderMember(member, 1) $}</a>{% endif %}{% endfor %}{% endif %}
+}
+</code-example>
+</section>

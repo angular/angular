@@ -456,8 +456,13 @@ export class MockStaticSymbolResolverHost implements StaticSymbolResolverHost {
             filePath, this.data[filePath], ts.ScriptTarget.ES5, /* setParentNodes */ true);
         const diagnostics: ts.Diagnostic[] = (<any>sf).parseDiagnostics;
         if (diagnostics && diagnostics.length) {
-          const errors = diagnostics.map(d => `(${d.start}-${d.start+d.length}): ${d.messageText}`)
-                             .join('\n   ');
+          const errors =
+              diagnostics
+                  .map(d => {
+                    const {line, character} = ts.getLineAndCharacterOfPosition(d.file, d.start);
+                    return `(${line}:${character}): ${d.messageText}`;
+                  })
+                  .join('\n');
           throw Error(`Error encountered during parse of file ${filePath}\n${errors}`);
         }
         return [this.collector.getMetadata(sf)];

@@ -14,6 +14,7 @@
     "sourceMap": false,
     "experimentalDecorators": true,
     "outDir": "built",
+    "rootDir": ".",
     "declaration": true,
     "typeRoots": ["node_modules/@types"]
   },

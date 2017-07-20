@@ -70,6 +70,7 @@ export function createAotCompiler(compilerHost: AotCompilerHost, options: AotCom
   const compiler = new AotCompiler(
       config, compilerHost, staticReflector, resolver, tmplParser, new StyleCompiler(urlResolver),
       viewCompiler, new NgModuleCompiler(staticReflector), new TypeScriptEmitter(), summaryResolver,
-      options.locale || null, options.i18nFormat || null, symbolResolver);
+      options.locale || null, options.i18nFormat || null, options.enableSummariesForJit || null,
+      symbolResolver);
   return {compiler, reflector: staticReflector};
 }

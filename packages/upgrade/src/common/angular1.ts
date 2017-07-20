@@ -33,6 +33,7 @@ export interface ICompileService {
 }
 export interface ILinkFn {
   (scope: IScope, cloneAttachFn?: ICloneAttachFunction, options?: ILinkFnOptions): IAugmentedJQuery;
+  $$slots?: {[slotName: string]: ILinkFn};
 }
 export interface ILinkFnOptions {
   parentBoundTranscludeFn?: Function;
@@ -49,7 +50,7 @@ export interface IRootScopeService {
   $destroy(): any;
   $apply(exp?: Ng1Expression): any;
   $digest(): any;
-  $evalAsync(): any;
+  $evalAsync(exp: Ng1Expression, locals?: any): void;
   $on(event: string, fn?: (event?: any, ...args: any[]) => void): Function;
   $$childTail: IScope;
   $$childHead: IScope;
@@ -75,9 +76,10 @@ export interface IDirective {
   templateUrl?: string|Function;
   templateNamespace?: string;
   terminal?: boolean;
-  transclude?: boolean|'element'|{[key: string]: string};
+  transclude?: DirectiveTranscludeProperty;
 }
 export type DirectiveRequireProperty = SingleOrListOrMap<string>;
+export type DirectiveTranscludeProperty = boolean | 'element' | {[key: string]: string};
 export interface IDirectiveCompileFn {
   (templateElement: IAugmentedJQuery, templateAttributes: IAttributes,
    transclude: ITranscludeFunction): IDirectivePrePost;
@@ -97,9 +99,12 @@ export interface IComponent {
   require?: DirectiveRequireProperty;
   template?: string|Function;
   templateUrl?: string|Function;
-  transclude?: boolean;
+  transclude?: DirectiveTranscludeProperty;
 }
-export interface IAttributes { $observe(attr: string, fn: (v: string) => void): void; }
+export interface IAttributes {
+  $observe(attr: string, fn: (v: string) => void): void;
+  [key: string]: any;
+}
 export interface ITranscludeFunction {
   // If the scope is provided, then the cloneAttachFn must be as well.
   (scope: IScope, cloneAttachFn: ICloneAttachFunction): IAugmentedJQuery;
@@ -133,7 +138,10 @@ export interface IProvideService {
   decorator(token: Ng1Token, factory: IInjectable): void;
 }
 export interface IParseService { (expression: string): ICompiledExpression; }
-export interface ICompiledExpression { assign(context: any, value: any): any; }
+export interface ICompiledExpression {
+  (context: any, locals: any): any;
+  assign?: (context: any, value: any) => any;
+}
 export interface IHttpBackendService {
   (method: string, url: string, post?: any, callback?: Function, headers?: any, timeout?: number,
    withCredentials?: boolean): void;
@@ -209,8 +217,8 @@ function noNg() {
 
 
 let angular: {
-  bootstrap: (e: Element, modules: (string | IInjectable)[], config: IAngularBootstrapConfig) =>
-                 void,
+  bootstrap: (e: Element, modules: (string | IInjectable)[], config?: IAngularBootstrapConfig) =>
+                 IInjectorService,
   module: (prefix: string, dependencies?: string[]) => IModule,
   element: (e: Element | string) => IAugmentedJQuery,
   version: {major: number},
@@ -254,16 +262,16 @@ export function getAngularLib(): any {
 }
 
 export const bootstrap =
-    (e: Element, modules: (string | IInjectable)[], config: IAngularBootstrapConfig): void =>
+    (e: Element, modules: (string | IInjectable)[], config?: IAngularBootstrapConfig) =>
         angular.bootstrap(e, modules, config);
 
-export const module = (prefix: string, dependencies?: string[]): IModule =>
+export const module = (prefix: string, dependencies?: string[]) =>
     angular.module(prefix, dependencies);
 
-export const element = (e: Element | string): IAugmentedJQuery => angular.element(e);
+export const element = (e: Element | string) => angular.element(e);
 
-export const resumeBootstrap = (): void => angular.resumeBootstrap();
+export const resumeBootstrap = () => angular.resumeBootstrap();
 
-export const getTestability = (e: Element): ITestabilityService => angular.getTestability(e);
+export const getTestability = (e: Element) => angular.getTestability(e);
 
 export const version = angular.version;

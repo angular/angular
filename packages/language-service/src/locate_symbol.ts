@@ -68,7 +68,7 @@ export function locateSymbol(info: TemplateInfo): SymbolInfo|undefined {
             }
           },
           visitReference(ast) {
-            symbol = info.template.query.getTypeSymbol(tokenReference(ast.value));
+            symbol = ast.value && info.template.query.getTypeSymbol(tokenReference(ast.value));
             span = spanOf(ast);
           },
           visitVariable(ast) {},

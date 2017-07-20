@@ -21,9 +21,9 @@ following products on your development machine:
   [Windows](http://windows.github.com)); [GitHub's Guide to Installing
   Git](https://help.github.com/articles/set-up-git) is a good source of information.
 
-* [Node.js](http://nodejs.org), (version `>=5.4.1 <6`) which is used to run a development web server,
+* [Node.js](http://nodejs.org), (version `>=6.9.5 <7.0.0`) which is used to run a development web server,
   run tests, and generate distributable files. We also use Node's Package Manager, `npm`
-  (version `>=3.5.3 <4.0`), which comes with Node. Depending on your system, you can install Node either from
+  (version `>=3.10.7 <4.0.0`), which comes with Node. Depending on your system, you can install Node either from
   source or as a pre-packaged bundle.
 
 * [Java Development Kit](http://www.oracle.com/technetwork/es/java/javase/downloads/index.html) which is used
@@ -78,7 +78,7 @@ package scripts by invoking: e.g., `npm-run gulp build`
 
 
 *Option 3*: defining a bash alias like `alias nbin='PATH=$(npm bin):$PATH'` as detailed in this
-[Stackoverflow answer](http://stackoverflow.com/questions/9679932/how-to-use-package-installed-locally-in-node-modules/15157360#15157360) and used like this: e.g., `nbin gulp build`.
+[Stack Overflow answer](http://stackoverflow.com/questions/9679932/how-to-use-package-installed-locally-in-node-modules/15157360#15157360) and used like this: e.g., `nbin gulp build`.
 
 ## Installing Bower Modules
 

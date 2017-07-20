@@ -160,6 +160,7 @@ This guide describes specific choices that are known to work well.
 ### Setup
 
 There are two fast paths to getting started with unit testing.
+
 1. Start a new project following the instructions in [Setup](guide/setup "Setup").
 
 1. Start a new project with the
@@ -177,7 +178,7 @@ For a discussion of the unit testing setup files, [see below](guide/testing#setu
 {@a isolated-v-testing-utilities}
 
 
-### Isolated unit tests vs. the Angular testing utilites
+### Isolated unit tests vs. the Angular testing utilities
 
 [Isolated unit tests](guide/testing#isolated-unit-tests "Unit testing without the Angular testing utilities")
 examine an instance of a class all by itself without any dependence on Angular or any injected values.
@@ -426,7 +427,7 @@ and re-attach it to a dynamically-constructed Angular test module
 tailored specifically for this battery of tests.
 
 The `configureTestingModule` method takes an `@NgModule`-like metadata object.
-The metadata object can have most of the properties of a normal [Angular module](guide/ngmodule).
+The metadata object can have most of the properties of a normal [NgModule](guide/ngmodule).
 
 _This metadata object_ simply declares the component to test, `BannerComponent`.
 The metadata lack `imports` because (a) the default testing module configuration already has what `BannerComponent` needs
@@ -741,7 +742,7 @@ before calling `TestBed.createComponent` to instantiate the _component-under-tes
 
 
 
-Calling `compileComponents` closes the current `TestBed` instance is further configuration.
+Calling `compileComponents` closes the current `TestBed` instance to further configuration.
 You cannot call any more `TestBed` configuration methods, not `configureTestingModule`
 nor any of the `override...` methods. The `TestBed` throws an error if you try.
 

@@ -658,6 +658,26 @@ describe('recognize', () => {
             checkActivatedRoute(a.firstChild !, 'b', {}, ComponentB);
           });
     });
+
+    it('should work with terminal route', () => {
+      const matcher = (s: any, g: any, r: any) => s.length === 0 ? ({consumed: s}) : null;
+
+      checkRecognize([{matcher, component: ComponentA}] as any, '', (s: RouterStateSnapshot) => {
+        const a = s.root.firstChild !;
+        checkActivatedRoute(a, '', {}, ComponentA);
+      });
+    });
+
+    it('should work with child terminal route', () => {
+      const matcher = (s: any, g: any, r: any) => s.length === 0 ? ({consumed: s}) : null;
+
+      checkRecognize(
+          [{path: 'a', component: ComponentA, children: [{matcher, component: ComponentB}]}] as any,
+          'a', (s: RouterStateSnapshot) => {
+            const a = s.root.firstChild !;
+            checkActivatedRoute(a, 'a', {}, ComponentA);
+          });
+    });
   });
 
   describe('query parameters', () => {

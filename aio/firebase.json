@@ -6,12 +6,14 @@
     "public": "dist",
     "cleanUrls": true,
     "redirects": [
-      // cli-quickstart.html glossary.html, quickstart.html, http.html, style-guide.html
-      {"type": 301, "source": "/docs/ts/latest/cli-quickstart.html",             "destination": "/guide/cli-quickstart"},
+      // cli-quickstart.html glossary.html, quickstart.html, http.html, style-guide.html, styleguide
+      {"type": 301, "source": "/docs/ts/latest/cli-quickstart.html",             "destination": "/guide/quickstart"},
+      {"type": 301, "source": "/guide/cli-quickstart",                           "destination": "/guide/quickstart"},
       {"type": 301, "source": "/docs/ts/latest/glossary.html",                   "destination": "/guide/glossary"},
       {"type": 301, "source": "/docs/ts/latest/quickstart.html",                 "destination": "/guide/quickstart"},
       {"type": 301, "source": "/docs/ts/latest/guide/server-communication.html", "destination": "/guide/http"},
-      {"type": 301, "source": "/docs/ts/latest/guide/style-guide.html", "destination": "/guide/styleguide"},
+      {"type": 301, "source": "/docs/ts/latest/guide/style-guide.html",          "destination": "/guide/styleguide"},
+      {"type": 301, "source": "/styleguide",                                     "destination": "/guide/styleguide"},
 
       // cookbook/component-communication.html
       {"type": 301, "source": "/docs/ts/latest/cookbook/component-communication.html", "destination": "/guide/component-interaction"},
@@ -29,6 +31,9 @@
 
       // docs/ts/latest/api/*/index/*-type.html
       {"type": 301, "source": "/docs/ts/latest/api/:package/index/:api-*.html", "destination": "/api/:package/:api"},
+
+      // docs/ts/latest
+      {"type": 301, "source": "/docs/ts/latest", "destination": "/docs"},
 
       // guide/*, tutorial/*, **/*
       {"type": 301, "source": "/docs/ts/latest/:any*", "destination": "/:any*"}

@@ -17,6 +17,7 @@ import {of } from 'rxjs/observable/of';
 import {concatMap} from 'rxjs/operator/concatMap';
 import {every} from 'rxjs/operator/every';
 import {first} from 'rxjs/operator/first';
+import {last} from 'rxjs/operator/last';
 import {map} from 'rxjs/operator/map';
 import {mergeMap} from 'rxjs/operator/mergeMap';
 import {reduce} from 'rxjs/operator/reduce';
@@ -25,7 +26,7 @@ import {applyRedirects} from './apply_redirects';
 import {LoadedRouterConfig, QueryParamsHandling, ResolveData, Route, Routes, RunGuardsAndResolvers, validateConfig} from './config';
 import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
-import {Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
+import {Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
 import {recognize} from './recognize';
 import {DefaultRouteReuseStrategy, DetachedRouteHandleInternal, RouteReuseStrategy} from './route_reuse_strategy';
 import {RouterConfigLoader} from './router_config_loader';
@@ -312,7 +313,7 @@ export class Router {
   get events(): Observable<Event> { return this.routerEvents; }
 
   /** @internal */
-  triggerEvent(e: Event) { this.routerEvents.next(e); }
+  triggerEvent(e: Event): void { this.routerEvents.next(e); }
 
   /**
    * Resets the configuration used for navigation and generating links.
@@ -331,10 +332,11 @@ export class Router {
   resetConfig(config: Routes): void {
     validateConfig(config);
     this.config = config;
+    this.navigated = false;
   }
 
   /** @docsNotRequired */
-  ngOnDestroy() { this.dispose(); }
+  ngOnDestroy(): void { this.dispose(); }
 
   /** Disposes of the router */
   dispose(): void {
@@ -385,9 +387,9 @@ export class Router {
    * router.createUrlTree(['../../team/44/user/22'], {relativeTo: route});
    * ```
    */
-  createUrlTree(
-      commands: any[], {relativeTo, queryParams, fragment, preserveQueryParams, queryParamsHandling,
-                        preserveFragment}: NavigationExtras = {}): UrlTree {
+  createUrlTree(commands: any[], navigationExtras: NavigationExtras = {}): UrlTree {
+    const {relativeTo,          queryParams,         fragment,
+           preserveQueryParams, queryParamsHandling, preserveFragment} = navigationExtras;
     if (isDevMode() && preserveQueryParams && <any>console && <any>console.warn) {
       console.warn('preserveQueryParams is deprecated, use queryParamsHandling instead.');
     }
@@ -639,20 +641,33 @@ export class Router {
           ({appliedUrl, snapshot}: {appliedUrl: string, snapshot: RouterStateSnapshot}) => {
             if (this.navigationId !== id) return of (false);
 
+            this.triggerEvent(
+                new GuardsCheckStart(id, this.serializeUrl(url), appliedUrl, snapshot));
+
             return map.call(preActivation.checkGuards(), (shouldActivate: boolean) => {
+              this.triggerEvent(new GuardsCheckEnd(
+                  id, this.serializeUrl(url), appliedUrl, snapshot, shouldActivate));
               return {appliedUrl: appliedUrl, snapshot: snapshot, shouldActivate: shouldActivate};
             });
           });
 
-      const preactivationResolveData$ = mergeMap.call(preactivationCheckGuards$, (p: any) => {
-        if (this.navigationId !== id) return of (false);
+      const preactivationResolveData$ = mergeMap.call(
+          preactivationCheckGuards$,
+          (p: {appliedUrl: string, snapshot: RouterStateSnapshot, shouldActivate: boolean}) => {
+            if (this.navigationId !== id) return of (false);
 
-        if (p.shouldActivate) {
-          return map.call(preActivation.resolveData(), () => p);
-        } else {
-          return of (p);
-        }
-      });
+            if (p.shouldActivate && preActivation.isActivating()) {
+              this.triggerEvent(
+                  new ResolveStart(id, this.serializeUrl(url), p.appliedUrl, p.snapshot));
+              return map.call(preActivation.resolveData(), () => {
+                this.triggerEvent(
+                    new ResolveEnd(id, this.serializeUrl(url), p.appliedUrl, p.snapshot));
+                return p;
+              });
+            } else {
+              return of (p);
+            }
+          });
 
       const preactivationDone$ = mergeMap.call(preactivationResolveData$, (p: any) => {
         return map.call(this.hooks.afterPreactivation(p.snapshot), () => p);
@@ -772,8 +787,12 @@ export class PreActivation {
     this.traverseChildRoutes(futureRoot, currRoot, parentContexts, [futureRoot.value]);
   }
 
+  // TODO(jasonaden): Refactor checkGuards and resolveData so they can collect the checks
+  // and guards before mapping into the observable. Likely remove the observable completely
+  // and make these pure functions so they are more predictable and don't rely on so much
+  // external state.
   checkGuards(): Observable<boolean> {
-    if (this.canDeactivateChecks.length === 0 && this.canActivateChecks.length === 0) {
+    if (!this.isDeactivating() && !this.isActivating()) {
       return of (true);
     }
     const canDeactivate$ = this.runCanDeactivateChecks();
@@ -783,12 +802,16 @@ export class PreActivation {
   }
 
   resolveData(): Observable<any> {
-    if (this.canActivateChecks.length === 0) return of (null);
+    if (!this.isActivating()) return of (null);
     const checks$ = from(this.canActivateChecks);
     const runningChecks$ =
         concatMap.call(checks$, (check: CanActivate) => this.runResolve(check.route));
     return reduce.call(runningChecks$, (_: any, __: any) => _);
   }
+
+  isDeactivating(): boolean { return this.canDeactivateChecks.length !== 0; }
+
+  isActivating(): boolean { return this.canActivateChecks.length !== 0; }
 
   private traverseChildRoutes(
       futureNode: TreeNode<ActivatedRouteSnapshot>, currNode: TreeNode<ActivatedRouteSnapshot>|null,
@@ -816,11 +839,10 @@ export class PreActivation {
 
     // reusing the node
     if (curr && future._routeConfig === curr._routeConfig) {
-      if (this.shouldRunGuardsAndResolvers(
-              curr, future, future._routeConfig !.runGuardsAndResolvers)) {
+      const shouldRunGuardsAndResolvers = this.shouldRunGuardsAndResolvers(
+          curr, future, future._routeConfig !.runGuardsAndResolvers);
+      if (shouldRunGuardsAndResolvers) {
         this.canActivateChecks.push(new CanActivate(futurePath));
-        const outlet = context !.outlet !;
-        this.canDeactivateChecks.push(new CanDeactivate(outlet.component, curr));
       } else {
         // we need to set the data
         future.data = curr.data;
@@ -835,6 +857,11 @@ export class PreActivation {
         // if we have a componentless route, we recurse but keep the same outlet map.
       } else {
         this.traverseChildRoutes(futureNode, currNode, parentContexts, futurePath);
+      }
+
+      if (shouldRunGuardsAndResolvers) {
+        const outlet = context !.outlet !;
+        this.canDeactivateChecks.push(new CanDeactivate(outlet.component, curr));
       }
     } else {
       if (curr) {
@@ -983,11 +1010,29 @@ export class PreActivation {
   }
 
   private resolveNode(resolve: ResolveData, future: ActivatedRouteSnapshot): Observable<any> {
-    return waitForMap(resolve, (k, v) => {
-      const resolver = this.getToken(v, future);
-      return resolver.resolve ? wrapIntoObservable(resolver.resolve(future, this.future)) :
-                                wrapIntoObservable(resolver(future, this.future));
+    const keys = Object.keys(resolve);
+    if (keys.length === 0) {
+      return of ({});
+    }
+    if (keys.length === 1) {
+      const key = keys[0];
+      return map.call(
+          this.getResolver(resolve[key], future), (value: any) => { return {[key]: value}; });
+    }
+    const data: {[k: string]: any} = {};
+    const runningResolvers$ = mergeMap.call(from(keys), (key: string) => {
+      return map.call(this.getResolver(resolve[key], future), (value: any) => {
+        data[key] = value;
+        return value;
+      });
     });
+    return map.call(last.call(runningResolvers$), () => data);
+  }
+
+  private getResolver(injectionToken: any, future: ActivatedRouteSnapshot): Observable<any> {
+    const resolver = this.getToken(injectionToken, future);
+    return resolver.resolve ? wrapIntoObservable(resolver.resolve(future, this.future)) :
+                              wrapIntoObservable(resolver(future, this.future));
   }
 
   private getToken(token: any, snapshot: ActivatedRouteSnapshot): any {

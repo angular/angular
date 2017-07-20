@@ -44,7 +44,7 @@ import { Heroes } from './hero.service';
         animate('0.2s ease-in')
       ]),
       transition('* => void', [
-        animate('0.2s 10 ease-out', style({
+        animate('0.2s 0.1s ease-out', style({
           opacity: 0,
           transform: 'translateX(100%)'
         }))

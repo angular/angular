@@ -14,6 +14,6 @@ export class CrisisDetailComponent implements OnInit {
   constructor(private route: ActivatedRoute) {  }
 
   ngOnInit() {
-    this.id = parseInt(this.route.snapshot.params['id'], 10);
+    this.id = parseInt(this.route.snapshot.paramMap.get('id'), 10);
   }
 }
