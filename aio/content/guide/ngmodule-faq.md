@@ -615,7 +615,7 @@ Once the application begins, the app root injector is closed to new providers.
 
 Time passes and application logic triggers lazy loading of a module.
 Angular must add the lazy-loaded module's providers to an injector somewhere.
-It can't added them to the app root injector because that injector is closed to new providers.
+It can't add them to the app root injector because that injector is closed to new providers.
 So Angular creates a new child injector for the lazy-loaded module context.
 
 
