@@ -197,6 +197,20 @@ class MyHostComponent {
 class FalseAttributesModule {
 }
 
+@Component({selector: 'app', template: '<input [name]="name">'})
+class MyInputComponent {
+  @Input()
+  name = '';
+}
+
+@NgModule({
+  declarations: [MyInputComponent],
+  bootstrap: [MyInputComponent],
+  imports: [ServerModule, BrowserModule.withServerTransition({appId: 'name-attributes'})]
+})
+class NameModule {
+}
+
 export function main() {
   if (getDOM().supportsDOMEvents()) return;  // NODE only
 
@@ -439,10 +453,19 @@ export function main() {
          }));
 
       it('should handle false values on attributes', async(() => {
-           renderModule(FalseAttributesModule, {document: doc}).then((output) => {
+           renderModule(FalseAttributesModule, {document: doc}).then(output => {
              expect(output).toBe(
                  '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
                  '<my-child ng-reflect-attr="false">Works!</my-child></app></body></html>');
+             called = true;
+           });
+         }));
+
+      it('should handle element property "name"', async(() => {
+           renderModule(NameModule, {document: doc}).then(output => {
+             expect(output).toBe(
+                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
+                 '<input name=""></app></body></html>');
              called = true;
            });
          }));
