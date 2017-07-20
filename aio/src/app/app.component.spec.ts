@@ -632,7 +632,6 @@ describe('AppComponent', () => {
         it('should initialize the search worker', inject([SearchService], (searchService: SearchService) => {
           fixture.detectChanges(); // triggers ngOnInit
           expect(searchService.initWorker).toHaveBeenCalled();
-          expect(searchService.loadIndex).toHaveBeenCalled();
         }));
       });
 

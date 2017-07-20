@@ -16,7 +16,11 @@ export interface WebWorkerMessage {
 export class WebWorkerClient {
   private nextId = 0;
 
-  constructor(private worker: Worker, private zone: NgZone) {
+  static create(workerUrl: string, zone: NgZone) {
+    return new WebWorkerClient(new Worker(workerUrl), zone);
+  }
+
+  private constructor(private worker: Worker, private zone: NgZone) {
   }
 
   sendMessage<T>(type: string, payload?: any): Observable<T> {
