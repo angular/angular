@@ -9,7 +9,7 @@ describe('PhoneCat Application', function() {
 
   it('should redirect `index.html` to `index.html#!/phones', function() {
     browser.get('index.html');
-    expect(browser.getLocationAbsUrl()).toBe('/phones');
+    expect(browser.getCurrentUrl()).toMatch(/\/phones$/);
   });
 
   describe('View: Phone list', function() {
@@ -65,7 +65,7 @@ describe('PhoneCat Application', function() {
 
       element.all(by.css('.phones li a')).first().click();
       browser.sleep(1000); // Not sure why this is needed but it is. The route change works fine.
-      expect(browser.getLocationAbsUrl()).toBe('/phones/nexus-s');
+      expect(browser.getCurrentUrl()).toMatch(/\/phones\/nexus-s$/);
     });
 
   });
