@@ -37,7 +37,9 @@
            [min]="minDate"
            [max]="maxDate"
            [mdDatepickerFilter]="filterOdd ? dateFilter : null"
-           placeholder="Pick a date">
+           placeholder="Pick a date"
+           (dateInput)="onDateInput($event)"
+           (dateChange)="onDateChange($event)">
     <md-error *ngIf="resultPickerModel.hasError('mdDatepickerMin')">Too early!</md-error>
     <md-error *ngIf="resultPickerModel.hasError('mdDatepickerMax')">Too late!</md-error>
     <md-error *ngIf="resultPickerModel.hasError('mdDatepickerFilter')">Date unavailable!</md-error>
@@ -50,6 +52,9 @@
       [startView]="yearView ? 'year' : 'month'">
   </md-datepicker>
 </p>
+<p>Last input: {{lastDateInput}}</p>
+<p>Last change: {{lastDateChange}}</p>
+<br>
 <p>
   <input #resultPickerModel2
          [mdDatepicker]="resultPicker2"

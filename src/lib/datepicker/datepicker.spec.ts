@@ -29,6 +29,7 @@ describe('MdDatepicker', () => {
           ReactiveFormsModule,
         ],
         declarations: [
+          DatepickerWithChangeAndInputEvents,
           DatepickerWithFilterAndValidation,
           DatepickerWithFormControl,
           DatepickerWithMinAndMaxValidation,
@@ -689,6 +690,81 @@ describe('MdDatepicker', () => {
         expect(cells[1].classList).not.toContain('mat-calendar-body-disabled');
       });
     });
+
+    describe('datepicker with change and input events', () => {
+      let fixture: ComponentFixture<DatepickerWithChangeAndInputEvents>;
+      let testComponent: DatepickerWithChangeAndInputEvents;
+      let inputEl: HTMLInputElement;
+
+      beforeEach(async(() => {
+        fixture = TestBed.createComponent(DatepickerWithChangeAndInputEvents);
+        fixture.detectChanges();
+
+        testComponent = fixture.componentInstance;
+        inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
+
+        spyOn(testComponent, 'onChange');
+        spyOn(testComponent, 'onInput');
+        spyOn(testComponent, 'onDateChange');
+        spyOn(testComponent, 'onDateInput');
+      }));
+
+      afterEach(async(() => {
+        testComponent.datepicker.close();
+        fixture.detectChanges();
+      }));
+
+      it('should fire input and dateInput events when user types input', () => {
+        expect(testComponent.onChange).not.toHaveBeenCalled();
+        expect(testComponent.onDateChange).not.toHaveBeenCalled();
+        expect(testComponent.onInput).not.toHaveBeenCalled();
+        expect(testComponent.onDateInput).not.toHaveBeenCalled();
+
+        dispatchFakeEvent(inputEl, 'input');
+        fixture.detectChanges();
+
+        expect(testComponent.onChange).not.toHaveBeenCalled();
+        expect(testComponent.onDateChange).not.toHaveBeenCalled();
+        expect(testComponent.onInput).toHaveBeenCalled();
+        expect(testComponent.onDateInput).toHaveBeenCalled();
+      });
+
+      it('should fire change and dateChange events when user commits typed input', () => {
+        expect(testComponent.onChange).not.toHaveBeenCalled();
+        expect(testComponent.onDateChange).not.toHaveBeenCalled();
+        expect(testComponent.onInput).not.toHaveBeenCalled();
+        expect(testComponent.onDateInput).not.toHaveBeenCalled();
+
+        dispatchFakeEvent(inputEl, 'change');
+        fixture.detectChanges();
+
+        expect(testComponent.onChange).toHaveBeenCalled();
+        expect(testComponent.onDateChange).toHaveBeenCalled();
+        expect(testComponent.onInput).not.toHaveBeenCalled();
+        expect(testComponent.onDateInput).not.toHaveBeenCalled();
+      });
+
+      it('should fire dateChange and dateInput events when user selects calendar date', () => {
+        expect(testComponent.onChange).not.toHaveBeenCalled();
+        expect(testComponent.onDateChange).not.toHaveBeenCalled();
+        expect(testComponent.onInput).not.toHaveBeenCalled();
+        expect(testComponent.onDateInput).not.toHaveBeenCalled();
+
+        testComponent.datepicker.open();
+        fixture.detectChanges();
+
+        expect(document.querySelector('md-dialog-container')).not.toBeNull();
+
+        let cells = document.querySelectorAll('.mat-calendar-body-cell');
+        dispatchMouseEvent(cells[0], 'click');
+        fixture.detectChanges();
+
+        expect(testComponent.onChange).not.toHaveBeenCalled();
+        expect(testComponent.onDateChange).toHaveBeenCalled();
+        expect(testComponent.onInput).not.toHaveBeenCalled();
+        expect(testComponent.onDateInput).toHaveBeenCalled();
+      });
+    });
   });
 
   describe('with missing DateAdapter and MD_DATE_FORMATS', () => {
@@ -923,4 +999,24 @@ class DatepickerWithFilterAndValidation {
   @ViewChild('d') datepicker: MdDatepicker<Date>;
   date: Date;
   filter = (date: Date) => date.getDate() != 1;
+}
+
+
+@Component({
+  template: `
+    <input [mdDatepicker]="d" (change)="onChange()" (input)="onInput()"
+           (dateChange)="onDateChange()" (dateInput)="onDateInput()">
+    <md-datepicker #d [touchUi]="true"></md-datepicker>
+  `
+})
+class DatepickerWithChangeAndInputEvents {
+  @ViewChild('d') datepicker: MdDatepicker<Date>;
+
+  onChange() {}
+
+  onInput() {}
+
+  onDateChange() {}
+
+  onDateInput() {}
 }
