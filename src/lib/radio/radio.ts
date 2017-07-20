@@ -38,6 +38,7 @@ import {
 import {coerceBooleanProperty} from '@angular/cdk';
 import {mixinDisabled, CanDisable} from '../core/common-behaviors/disabled';
 import {CanColor, mixinColor} from '../core/common-behaviors/color';
+import {CanDisableRipple, mixinDisableRipple} from '../core/common-behaviors/disable-ripple';
 
 // Increasing integer for generating unique ids for radio components.
 let nextUniqueId = 0;
@@ -303,7 +304,7 @@ export class MdRadioButtonBase {
 }
 // As per Material design specifications the selection control radio should use the accent color
 // palette by default. https://material.io/guidelines/components/selection-controls.html
-export const _MdRadioButtonMixinBase = mixinColor(MdRadioButtonBase, 'accent');
+export const _MdRadioButtonMixinBase = mixinColor(mixinDisableRipple(MdRadioButtonBase), 'accent');
 
 /**
  * A radio-button. May be inside of
@@ -313,7 +314,7 @@ export const _MdRadioButtonMixinBase = mixinColor(MdRadioButtonBase, 'accent');
   selector: 'md-radio-button, mat-radio-button',
   templateUrl: 'radio.html',
   styleUrls: ['radio.css'],
-  inputs: ['color'],
+  inputs: ['color', 'disableRipple'],
   encapsulation: ViewEncapsulation.None,
   host: {
     'class': 'mat-radio-button',
@@ -324,7 +325,7 @@ export const _MdRadioButtonMixinBase = mixinColor(MdRadioButtonBase, 'accent');
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdRadioButton extends _MdRadioButtonMixinBase
-    implements OnInit, AfterViewInit, OnDestroy, CanColor {
+    implements OnInit, AfterViewInit, OnDestroy, CanColor, CanDisableRipple {
 
   private _uniqueId: string = `md-radio-${++nextUniqueId}`;
 
@@ -339,11 +340,6 @@ export class MdRadioButton extends _MdRadioButtonMixinBase
 
   /** The 'aria-labelledby' attribute takes precedence as the element's text alternative. */
   @Input('aria-labelledby') ariaLabelledby: string;
-
-  /** Whether the ripple effect for this radio button is disabled. */
-  @Input()
-  get disableRipple(): boolean { return this._disableRipple; }
-  set disableRipple(value) { this._disableRipple = coerceBooleanProperty(value); }
 
   /** Whether this radio button is checked. */
   @Input()
@@ -449,9 +445,6 @@ export class MdRadioButton extends _MdRadioButtonMixinBase
 
   /** Value assigned to this radio.*/
   private _value: any = null;
-
-  /** Whether the ripple effect on click should be disabled. */
-  private _disableRipple: boolean;
 
   /** The child ripple instance. */
   @ViewChild(MdRipple) _ripple: MdRipple;

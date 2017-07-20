@@ -29,6 +29,7 @@ import {Subscription} from 'rxjs/Subscription';
 import {MdTab} from './tab';
 import {map} from '../core/rxjs/index';
 import {merge} from 'rxjs/observable/merge';
+import {CanDisableRipple, mixinDisableRipple} from '../core/common-behaviors/disable-ripple';
 
 
 /** Used to generate unique ID's for each tab component */
@@ -43,6 +44,11 @@ export class MdTabChangeEvent {
 /** Possible positions for the tab header. */
 export type MdTabHeaderPosition = 'above' | 'below';
 
+// Boilerplate for applying mixins to MdTabGroup.
+/** @docs-private */
+export class MdTabGroupBase {}
+export const _MdTabGroupMixinBase = mixinDisableRipple(MdTabGroupBase);
+
 /**
  * Material design tab-group component.  Supports basic tab pairs (label + content) and includes
  * animated ink-bar, keyboard navigation, and screen reader.
@@ -54,14 +60,15 @@ export type MdTabHeaderPosition = 'above' | 'below';
   templateUrl: 'tab-group.html',
   styleUrls: ['tab-group.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  inputs: ['disableRipple'],
   host: {
     'class': 'mat-tab-group',
     '[class.mat-tab-group-dynamic-height]': 'dynamicHeight',
     '[class.mat-tab-group-inverted-header]': 'headerPosition === "below"',
   }
 })
-export class MdTabGroup implements AfterContentInit, AfterContentChecked,
-  AfterViewChecked, OnDestroy {
+export class MdTabGroup extends _MdTabGroupMixinBase implements AfterContentInit,
+    AfterContentChecked, AfterViewChecked, OnDestroy, CanDisableRipple {
 
   @ContentChildren(MdTab) _tabs: QueryList<MdTab>;
 
@@ -93,12 +100,6 @@ export class MdTabGroup implements AfterContentInit, AfterContentChecked,
   get _dynamicHeightDeprecated(): boolean { return this._dynamicHeight; }
   set _dynamicHeightDeprecated(value: boolean) { this._dynamicHeight = value; }
 
-  /** Whether ripples for the tab-group should be disabled or not. */
-  @Input()
-  get disableRipple(): boolean { return this._disableRipple; }
-  set disableRipple(value) { this._disableRipple = coerceBooleanProperty(value); }
-  private _disableRipple: boolean = false;
-
   /** The index of the active tab. */
   @Input()
   set selectedIndex(value: number | null) { this._indexToSelect = value; }
@@ -122,6 +123,7 @@ export class MdTabGroup implements AfterContentInit, AfterContentChecked,
   private _groupId: number;
 
   constructor(private _renderer: Renderer2, private _changeDetectorRef: ChangeDetectorRef) {
+    super();
     this._groupId = nextId++;
   }
 

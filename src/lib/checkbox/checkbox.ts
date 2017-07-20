@@ -26,6 +26,7 @@ import {coerceBooleanProperty} from '@angular/cdk';
 import {FocusOrigin, FocusOriginMonitor, MdRipple, RippleRef} from '../core';
 import {mixinDisabled, CanDisable} from '../core/common-behaviors/disabled';
 import {CanColor, mixinColor} from '../core/common-behaviors/color';
+import {CanDisableRipple, mixinDisableRipple} from '../core/common-behaviors/disable-ripple';
 
 // Increasing integer for generating unique ids for checkbox components.
 let nextUniqueId = 0;
@@ -69,7 +70,8 @@ export class MdCheckboxChange {
 export class MdCheckboxBase {
   constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
 }
-export const _MdCheckboxMixinBase = mixinColor(mixinDisabled(MdCheckboxBase), 'accent');
+export const _MdCheckboxMixinBase =
+  mixinColor(mixinDisableRipple(mixinDisabled(MdCheckboxBase)), 'accent');
 
 
 /**
@@ -94,12 +96,13 @@ export const _MdCheckboxMixinBase = mixinColor(mixinDisabled(MdCheckboxBase), 'a
     '[class.mat-checkbox-label-before]': 'labelPosition == "before"',
   },
   providers: [MD_CHECKBOX_CONTROL_VALUE_ACCESSOR],
-  inputs: ['disabled', 'color'],
+  inputs: ['disabled', 'disableRipple', 'color'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MdCheckbox extends _MdCheckboxMixinBase
-    implements ControlValueAccessor, AfterViewInit, OnDestroy, CanColor, CanDisable {
+export class MdCheckbox extends _MdCheckboxMixinBase implements ControlValueAccessor, AfterViewInit,
+    OnDestroy, CanColor, CanDisable, CanDisableRipple {
+
   /**
    * Attached to the aria-label attribute of the host element. In most cases, arial-labelledby will
    * take precedence so this may be omitted.
@@ -118,14 +121,6 @@ export class MdCheckbox extends _MdCheckboxMixinBase
 
   /** Returns the unique id for the visual hidden input. */
   get inputId(): string { return `${this.id || this._uniqueId}-input`; }
-
-  /** Whether the ripple effect on click should be disabled. */
-  private _disableRipple: boolean;
-
-  /** Whether the ripple effect for this checkbox is disabled. */
-  @Input()
-  get disableRipple(): boolean { return this._disableRipple; }
-  set disableRipple(value) { this._disableRipple = coerceBooleanProperty(value); }
 
   private _required: boolean;
 

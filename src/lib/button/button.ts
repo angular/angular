@@ -12,7 +12,6 @@ import {
   Directive,
   ElementRef,
   forwardRef,
-  Input,
   OnDestroy,
   Optional,
   Renderer2,
@@ -20,9 +19,10 @@ import {
   ViewEncapsulation,
   Inject,
 } from '@angular/core';
-import {coerceBooleanProperty, FocusOriginMonitor, Platform} from '../core';
+import {FocusOriginMonitor, Platform} from '../core';
 import {mixinDisabled, CanDisable} from '../core/common-behaviors/disabled';
 import {CanColor, mixinColor} from '../core/common-behaviors/color';
+import {CanDisableRipple, mixinDisableRipple} from '../core/common-behaviors/disable-ripple';
 
 
 // TODO(kara): Convert attribute selectors to classes when attr maps become available
@@ -103,7 +103,7 @@ export class MdMiniFab {
 export class MdButtonBase {
   constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
 }
-export const _MdButtonMixinBase = mixinColor(mixinDisabled(MdButtonBase));
+export const _MdButtonMixinBase = mixinColor(mixinDisabled(mixinDisableRipple(MdButtonBase)));
 
 
 /**
@@ -120,24 +120,18 @@ export const _MdButtonMixinBase = mixinColor(mixinDisabled(MdButtonBase));
   },
   templateUrl: 'button.html',
   styleUrls: ['button.css'],
-  inputs: ['disabled', 'color'],
+  inputs: ['disabled', 'disableRipple', 'color'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MdButton extends _MdButtonMixinBase implements OnDestroy, CanDisable, CanColor {
+export class MdButton extends _MdButtonMixinBase
+    implements OnDestroy, CanDisable, CanColor, CanDisableRipple {
+
   /** Whether the button is round. */
   _isRoundButton: boolean = this._hasAttributeWithPrefix('fab', 'mini-fab');
 
   /** Whether the button is icon button. */
   _isIconButton: boolean = this._hasAttributeWithPrefix('icon-button');
-
-  /** Whether the ripple effect on click should be disabled. */
-  private _disableRipple: boolean = false;
-
-  /** Whether the ripple effect for this button is disabled. */
-  @Input()
-  get disableRipple() { return this._disableRipple; }
-  set disableRipple(v) { this._disableRipple = coerceBooleanProperty(v); }
 
   constructor(renderer: Renderer2,
               elementRef: ElementRef,
@@ -197,7 +191,7 @@ export class MdButton extends _MdButtonMixinBase implements OnDestroy, CanDisabl
     '[attr.aria-disabled]': 'disabled.toString()',
     '(click)': '_haltDisabledEvents($event)',
   },
-  inputs: ['disabled', 'color'],
+  inputs: ['disabled', 'disableRipple', 'color'],
   templateUrl: 'button.html',
   styleUrls: ['button.css'],
   encapsulation: ViewEncapsulation.None,

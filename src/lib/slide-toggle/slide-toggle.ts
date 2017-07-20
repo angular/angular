@@ -34,6 +34,7 @@ import {
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {mixinDisabled, CanDisable} from '../core/common-behaviors/disabled';
 import {CanColor, mixinColor} from '../core/common-behaviors/color';
+import {CanDisableRipple, mixinDisableRipple} from '../core/common-behaviors/disable-ripple';
 
 // Increasing integer for generating unique ids for slide-toggle components.
 let nextUniqueId = 0;
@@ -55,7 +56,8 @@ export class MdSlideToggleChange {
 export class MdSlideToggleBase {
   constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
 }
-export const _MdSlideToggleMixinBase = mixinColor(mixinDisabled(MdSlideToggleBase), 'accent');
+export const _MdSlideToggleMixinBase =
+  mixinColor(mixinDisableRipple(mixinDisabled(MdSlideToggleBase)), 'accent');
 
 /** Represents a slidable "switch" toggle that can be moved between on and off. */
 @Component({
@@ -71,12 +73,13 @@ export const _MdSlideToggleMixinBase = mixinColor(mixinDisabled(MdSlideToggleBas
   templateUrl: 'slide-toggle.html',
   styleUrls: ['slide-toggle.css'],
   providers: [MD_SLIDE_TOGGLE_VALUE_ACCESSOR],
-  inputs: ['disabled', 'color'],
+  inputs: ['disabled', 'disableRipple', 'color'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MdSlideToggle extends _MdSlideToggleMixinBase
-    implements OnDestroy, AfterContentInit, ControlValueAccessor, CanDisable, CanColor {
+export class MdSlideToggle extends _MdSlideToggleMixinBase implements OnDestroy, AfterContentInit,
+    ControlValueAccessor, CanDisable, CanColor, CanDisableRipple {
+
   private onChange = (_: any) => {};
   private onTouched = () => {};
 
@@ -84,7 +87,6 @@ export class MdSlideToggle extends _MdSlideToggleMixinBase
   private _checked: boolean = false;
   private _slideRenderer: SlideToggleRenderer;
   private _required: boolean = false;
-  private _disableRipple: boolean = false;
 
   /** Reference to the focus state ripple. */
   private _focusRipple: RippleRef | null;
@@ -111,11 +113,6 @@ export class MdSlideToggle extends _MdSlideToggleMixinBase
   @Input()
   get required(): boolean { return this._required; }
   set required(value) { this._required = coerceBooleanProperty(value); }
-
-  /** Whether the ripple effect for this slide-toggle is disabled. */
-  @Input()
-  get disableRipple(): boolean { return this._disableRipple; }
-  set disableRipple(value) { this._disableRipple = coerceBooleanProperty(value); }
 
   /** An event will be dispatched each time the slide-toggle changes its value. */
   @Output() change: EventEmitter<MdSlideToggleChange> = new EventEmitter<MdSlideToggleChange>();

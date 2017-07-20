@@ -31,7 +31,6 @@ import {
   ENTER,
   Directionality,
   Direction,
-  coerceBooleanProperty
 } from '../core';
 import {MdTabLabelWrapper} from './tab-label-wrapper';
 import {MdInkBar} from './ink-bar';
@@ -40,6 +39,7 @@ import {auditTime, startWith} from '../core/rxjs/index';
 import {of as observableOf} from 'rxjs/observable/of';
 import {merge} from 'rxjs/observable/merge';
 import {fromEvent} from 'rxjs/observable/fromEvent';
+import {CanDisableRipple, mixinDisableRipple} from '../core/common-behaviors/disable-ripple';
 
 
 /**
@@ -55,6 +55,11 @@ export type ScrollDirection = 'after' | 'before';
  */
 const EXAGGERATED_OVERSCROLL = 60;
 
+// Boilerplate for applying mixins to MdTabHeader.
+/** @docs-private */
+export class MdTabHeaderBase {}
+export const _MdTabHeaderMixinBase = mixinDisableRipple(MdTabHeaderBase);
+
 /**
  * The header of the tab group which displays a list of all the tabs in the tab group. Includes
  * an ink bar that follows the currently selected tab. When the tabs list's width exceeds the
@@ -67,6 +72,7 @@ const EXAGGERATED_OVERSCROLL = 60;
   selector: 'md-tab-header, mat-tab-header',
   templateUrl: 'tab-header.html',
   styleUrls: ['tab-header.css'],
+  inputs: ['disableRipple'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
@@ -75,7 +81,9 @@ const EXAGGERATED_OVERSCROLL = 60;
     '[class.mat-tab-header-rtl]': "_getLayoutDirection() == 'rtl'",
   }
 })
-export class MdTabHeader implements AfterContentChecked, AfterContentInit, OnDestroy {
+export class MdTabHeader extends _MdTabHeaderMixinBase
+    implements AfterContentChecked, AfterContentInit, OnDestroy, CanDisableRipple {
+
   @ContentChildren(MdTabLabelWrapper) _labelWrappers: QueryList<MdTabLabelWrapper>;
   @ViewChild(MdInkBar) _inkBar: MdInkBar;
   @ViewChild('tabListContainer') _tabListContainer: ElementRef;
@@ -123,24 +131,19 @@ export class MdTabHeader implements AfterContentChecked, AfterContentInit, OnDes
     this._focusIndex = value;
   }
 
-  /** Whether ripples for the tab-header labels should be disabled or not. */
-  @Input()
-  get disableRipple(): boolean { return this._disableRipple; }
-  set disableRipple(value) { this._disableRipple = coerceBooleanProperty(value); }
-  private _disableRipple: boolean = false;
-
   /** Event emitted when the option is selected. */
   @Output() selectFocusedIndex = new EventEmitter();
 
   /** Event emitted when a label is focused. */
   @Output() indexFocused = new EventEmitter();
 
-  constructor(
-    private _elementRef: ElementRef,
-    private _ngZone: NgZone,
-    private _renderer: Renderer2,
-    private _changeDetectorRef: ChangeDetectorRef,
-    @Optional() private _dir: Directionality) { }
+  constructor(private _elementRef: ElementRef,
+              private _ngZone: NgZone,
+              private _renderer: Renderer2,
+              private _changeDetectorRef: ChangeDetectorRef,
+              @Optional() private _dir: Directionality) {
+    super();
+  }
 
   ngAfterContentChecked(): void {
     // If the number of tab labels have changed, check if scrolling should be enabled
