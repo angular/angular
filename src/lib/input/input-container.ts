@@ -141,6 +141,7 @@ export class MdInputDirective {
   private _placeholder: string = '';
   private _disabled = false;
   private _required = false;
+  private _readonly = false;
   private _id: string;
   private _cachedUid: string;
   private _errorOptions: ErrorOptions;
@@ -196,6 +197,11 @@ export class MdInputDirective {
     }
   }
 
+  /** Whether the element is readonly. */
+  @Input()
+  get readonly() { return this._readonly; }
+  set readonly(value: any) { this._readonly = coerceBooleanProperty(value); }
+
   /** A function used to control when error messages are shown. */
   @Input() errorStateMatcher: ErrorStateMatcher;
 
@@ -247,7 +253,11 @@ export class MdInputDirective {
   /** Focuses the input element. */
   focus() { this._elementRef.nativeElement.focus(); }
 
-  _onFocus() { this.focused = true; }
+  _onFocus() {
+    if (!this._readonly) {
+      this.focused = true;
+    }
+  }
 
   _onBlur() { this.focused = false; }
 

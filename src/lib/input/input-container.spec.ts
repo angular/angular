@@ -62,6 +62,7 @@ describe('MdInputContainer without forms', function () {
         MdTextareaWithBindings,
         MdInputContainerWithNgIf,
         MdInputContainerOnPush,
+        MdInputContainerWithReadonlyInput,
       ],
     });
 
@@ -603,6 +604,39 @@ describe('MdInputContainer without forms', function () {
     fixture.detectChanges();
 
     expect(placeholder.classList).not.toContain('mat-empty', 'Input no longer empty');
+  });
+
+  it('should set the focused class when the input is focused', () => {
+    let fixture = TestBed.createComponent(MdInputContainerTextTestController);
+    fixture.detectChanges();
+
+    let input = fixture.debugElement.query(By.directive(MdInputDirective))
+      .injector.get<MdInputDirective>(MdInputDirective);
+    let container = fixture.debugElement.query(By.css('md-input-container')).nativeElement;
+
+    // Call the focus handler directly to avoid flakyness where
+    // browsers don't focus elements if the window is minimized.
+    input._onFocus();
+    fixture.detectChanges();
+
+    expect(container.classList).toContain('mat-focused');
+  });
+
+  it('should not highlight when focusing a readonly input', () => {
+    let fixture = TestBed.createComponent(MdInputContainerWithReadonlyInput);
+    fixture.detectChanges();
+
+    let input = fixture.debugElement.query(By.directive(MdInputDirective))
+      .injector.get<MdInputDirective>(MdInputDirective);
+    let container = fixture.debugElement.query(By.css('md-input-container')).nativeElement;
+
+    // Call the focus handler directly to avoid flakyness where
+    // browsers don't focus elements if the window is minimized.
+    input._onFocus();
+    fixture.detectChanges();
+
+    expect(input.focused).toBe(false);
+    expect(container.classList).not.toContain('mat-focused');
   });
 });
 
@@ -1230,3 +1264,12 @@ class MdInputContainerWithNgIf {
 class MdInputContainerOnPush {
   formControl = new FormControl('');
 }
+
+@Component({
+  template: `
+    <md-input-container>
+      <input mdInput readonly value="Only for reading">
+    </md-input-container>
+  `
+})
+class MdInputContainerWithReadonlyInput {}
