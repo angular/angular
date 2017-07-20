@@ -334,7 +334,6 @@ export class MdSidenav implements AfterContentInit, OnDestroy {
   ],
   host: {
     'class': 'mat-sidenav-container',
-    '[class.mat-sidenav-transition]': '_enableTransitions',
   },
   encapsulation: ViewEncapsulation.None,
 })
@@ -363,9 +362,6 @@ export class MdSidenavContainer implements AfterContentInit {
   private _left: MdSidenav | null;
   private _right: MdSidenav | null;
 
-  /** Whether to enable open/close trantions. */
-  _enableTransitions = false;
-
   constructor(@Optional() private _dir: Directionality, private _element: ElementRef,
               private _renderer: Renderer2, private _ngZone: NgZone) {
     // If a `Dir` directive exists up the tree, listen direction changes and update the left/right
@@ -384,8 +380,12 @@ export class MdSidenavContainer implements AfterContentInit {
     });
     this._validateDrawers();
 
-    // Give the view a chance to render the initial state, then enable transitions.
-    first.call(this._ngZone.onMicrotaskEmpty).subscribe(() => this._enableTransitions = true);
+    // Give the view a chance to render the initial state, then enable transitions. Note that we
+    // don't use data binding, because we're not guaranteed that newer version of Angular will
+    // re-evaluate them after we set the flag here.
+    first.call(this._ngZone.onMicrotaskEmpty).subscribe(() => {
+      this._renderer.addClass(this._element.nativeElement, 'mat-sidenav-transition');
+    });
   }
 
   /** Calls `open` of both start and end sidenavs */
