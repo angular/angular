@@ -72,3 +72,6 @@ ts-to-js/js*/**/system*.js
 
 # plunkers
 *plnkr.no-link.html
+
+# universal
+!universal/**/webpack.config.uni.js

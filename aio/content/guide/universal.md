@@ -42,7 +42,7 @@ Since it doesn't use an actual browser, a `platform-server` app has some limitat
 
 An Angular app should already avoid #1 and #2.  
 
-Limitation #3 means that, on the server, the app must determine what to render based only on the incoming request; you can't rely on a user clicking a button to show a component.  It's a good argument for making your app [routeable](./router).
+Limitation #3 means that, on the server, the app must determine what to render based only on the incoming request; you can't rely on a user clicking a button to show a component.  It's a good argument for making your app [routeable](guide/router).
 
 Limitation #4 occurs because there is no "current location" for a server-side app as there is in the browser.  You can pass the origin into your app using a [Provider](), as we'll show in the example later. 
 
@@ -84,9 +84,9 @@ Some devices don't support JavaScript, or have very slow performance.  For these
 
 #### Startup Performance
 
-Application startup time is critical for user engagement.  While [AOT](aot-compiler) compilation speeds up application start times, it may not be enough, especially on mobile devices with slow connections.  [53% of mobile site visits are abandoned](https://www.doubleclickbygoogle.com/articles/mobile-speed-matters/) if pages take longer than 3 seconds to load.  Your app needs to load quickly, to engage users before they decide to do something else.
+Application startup time is critical for user engagement.  While [AOT](guide/aot-compiler) compilation speeds up application start times, it may not be enough, especially on mobile devices with slow connections.  [53% of mobile site visits are abandoned](https://www.doubleclickbygoogle.com/articles/mobile-speed-matters/) if pages take longer than 3 seconds to load.  Your app needs to load quickly, to engage users before they decide to do something else.
 
-With Angular Universal, you can generate landing pages for the app that look like the complete app.  The pages are pure HTML, and can display even if JavaScript is disabled.  The pages do not handle browser events, but they _do_ support navigation through the site using [routerLink](../guide/router.html#!#router-link).
+With Angular Universal, you can generate landing pages for the app that look like the complete app.  The pages are pure HTML, and can display even if JavaScript is disabled.  The pages do not handle browser events, but they _do_ support navigation through the site using [routerLink](guide/router.html#router-link).
 
 The recommended scenario is to serve a static version of the landing page, then load your Angular app behind it.  This gives the appearance of near-instant performance, and offers the full interactive experience once the full app is loaded.  Better than a "loading" spinner, it's a real screen that engages the user.
 
@@ -325,8 +325,8 @@ Create a `tsconfig-uni.json` file in the project root directory by copying your 
 
 ### Webpack Configuration
 
-The [Webpack Introduction](webpack.html) explains how to configure Webpack to bundle your Angular application.
-Using Webpack for Universal AOT compilation is similar, but uses different [loaders](webpack.html#loaders) and [plugins](webpack.html#plugins).  
+The [Webpack Introduction](guide/webpack) explains how to configure Webpack to bundle your Angular application.
+Using Webpack for Universal AOT compilation is similar, but uses different [loaders](guide/webpack#loaders) and [plugins](guide/webpack#plugins).  
 
 Create a `webpack.config.uni.js` file in the project root directory, and add the content shown below.  The salient parts are explained in the following sections.
 
@@ -347,7 +347,7 @@ Since it is used for TypeScript files, configure the loader for `*.ts`:
 When CSS and HTML files are encountered while processing the TypeScript, the [raw-loader](https://webpack.js.org/loaders/raw-loader/) is used.
 It simply loads the file as a string, allowing Webpack to include it in the bundle.
 
-For more complex loading scenarios, see the [Webpack Introduction](https://angular.io/docs/ts/latest/guide/webpack.html#loaders).
+For more complex loading scenarios, see the [Webpack Introduction](guide/webpack#loaders).
 
 {@a plugin}
 
@@ -372,7 +372,7 @@ This should be the Universal-specific `tsconfig-uni.json` described above.
 #### Input
 
 Webpack's inputs are the source files for your application.
-You just need to give it the [entry point(s)](webpack.html#entries-outputs), and
+You just need to give it the [entry point(s)](guide/webpack#entries-outputs), and
 Webpack follows the dependency graph to find what files it needs to bundle.
 
 For Universal, we name two entry points: the app server module and the web server.  Using these starting points, Webpack will pull in the app code and imported dependencies.
@@ -383,7 +383,7 @@ This ensures that the code for both appears in the final bundle.
 <code-example path="universal/webpack.config.uni.js" region="entry" title="webpack.config.uni.js (entry)">
 </code-example>
 
-The [Webpack Introduction](webpack.html#entries-outputs) describes how to create separate bundles for 
+The [Webpack Introduction](guide/webpack#entries-outputs) describes how to create separate bundles for 
 app code, vendor libraries, and polyfills.  For simplicity, this example shows a single-bundle scenario.
 
 {@a output}

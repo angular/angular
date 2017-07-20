@@ -1,4 +1,3 @@
-// #docregion
 const ngtools = require('@ngtools/webpack');
 const webpack = require('webpack');
 
@@ -36,4 +35,3 @@ module.exports = {
 	}
 // #enddocregion rules
 }
-// #enddocregion
