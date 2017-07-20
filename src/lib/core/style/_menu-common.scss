@@ -13,10 +13,14 @@ $mat-menu-side-padding: 16px !default;
 $mat-menu-icon-margin: 16px !default;
 
 
-@mixin mat-menu-base($elevation) {
-  @include mat-elevation($elevation);
+@mixin mat-menu-base($default-elevation) {
   min-width: $mat-menu-overlay-min-width;
   max-width: $mat-menu-overlay-max-width;
+
+  // Allow elevation to be overwritten.
+  &:not([class*='mat-elevation-z']) {
+    @include mat-elevation($default-elevation);
+  }
 
   overflow: auto;
   -webkit-overflow-scrolling: touch;   // for momentum scroll on mobile
