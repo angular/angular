@@ -83,7 +83,7 @@ Added hero "Zero" to confirm that the data service can handle a hero with `id==0
   Don't worry about the details of this backend substitution; you can
   skip it when you have a real web API server.
 
-div>
+</div>
 
 ## Heroes and HTTP
 
