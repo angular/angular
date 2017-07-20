@@ -148,12 +148,17 @@ export function serverTask(packagePath: string, livereload = true) {
       root: projectDir,
       livereload: livereload,
       port: 4200,
-      fallback: path.join(packagePath, 'index.html'),
       middleware: () => {
         return [httpRewrite.getMiddleware([
+          // Rewrite the node_modules/ and dist/ folder to the real paths. This is a trick to
+          // avoid that those folders will be rewritten to the specified package path.
           { from: '^/node_modules/(.*)$', to: '/node_modules/$1' },
           { from: '^/dist/(.*)$', to: '/dist/$1' },
-          { from: '^(.*)$', to: `/${relativePath}/$1` }
+          // Rewrite every path that doesn't point to a specific file to the index.html file.
+          // This is necessary for Angular's routing using the HTML5 History API.
+          { from: '^/[^.]+$', to: `/${relativePath}/index.html`},
+          // Rewrite any path that didn't match a pattern before to the specified package path.
+          { from: '^(.*)$', to: `/${relativePath}/$1` },
         ])];
       }
     });
