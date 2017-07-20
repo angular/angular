@@ -124,7 +124,7 @@ For example, import Angular's `Component` decorator from the `@angular/core` lib
 
 <code-example path="architecture/src/app/app.component.ts" region="import" linenums="false"></code-example>
 
-You also import NgModules_ from Angular _libraries_ using JavaScript import statements:
+You also import NgModules from Angular _libraries_ using JavaScript import statements:
 
 <code-example path="architecture/src/app/mini-app.ts" region="import-browser-module" linenums="false"></code-example>
 
