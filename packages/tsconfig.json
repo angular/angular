@@ -27,6 +27,7 @@
   "exclude": [
     "compiler-cli/integrationtest",
     "platform-server/integrationtest",
-    "tsc-wrapped"
+    "tsc-wrapped",
+    "common/i18n_data"
   ]
 }

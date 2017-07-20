@@ -86,7 +86,7 @@ done
 #######################################
 isIgnoredDirectory() {
   name=$(basename ${1})
-  if [[ -f "${1}" || "${name}" == "src" || "${name}" == "test" || "${name}" == "integrationtest" ]]; then
+  if [[ -f "${1}" || "${name}" == "src" || "${name}" == "test" || "${name}" == "integrationtest" || "${name}" == "i18n_data" ]]; then
     return 0
   else
     return 1
@@ -470,6 +470,11 @@ do
         minify ${BUNDLES_DIR}
 
       ) 2>&1 | grep -v "as external dependency"
+
+      if [[ ${PACKAGE} == "common" ]]; then
+        echo "======      Copy i18n locale data"
+        rsync -a --exclude=*.d.ts --exclude=*.metadata.json ${OUT_DIR}/i18n_data/ ${NPM_DIR}/i18n_data
+      fi
     else
       echo "======        Copy ${PACKAGE} node tool"
       rsync -a ${OUT_DIR}/ ${NPM_DIR}
