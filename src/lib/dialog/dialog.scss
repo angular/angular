@@ -6,6 +6,7 @@ $mat-dialog-padding: 24px !default;
 $mat-dialog-border-radius: 2px !default;
 $mat-dialog-max-width: 80vw !default;
 $mat-dialog-max-height: 65vh !default;
+$mat-dialog-button-margin: 8px !default;
 
 .mat-dialog-container {
   @include mat-elevation(24);
@@ -58,5 +59,17 @@ $mat-dialog-max-height: 65vh !default;
 
   &[align='center'] {
     justify-content: center;
+  }
+
+  .mat-button + .mat-button,
+  .mat-raised-button + .mat-raised-button,
+  .mat-button + .mat-raised-button,
+  .mat-raised-button + .mat-button {
+    margin-left: $mat-dialog-button-margin;
+
+    [dir='rtl'] & {
+      margin-left: 0;
+      margin-right: $mat-dialog-button-margin;
+    }
   }
 }
