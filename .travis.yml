@@ -1,5 +1,7 @@
 language: node_js
 sudo: false
+# force precise to avoid a timeout in karma
+dist: precise
 node_js:
   - '6.9.5'
 
