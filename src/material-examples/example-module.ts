@@ -552,6 +552,7 @@ export const EXAMPLE_LIST = [
   SortOverviewExample,
   TableBasicExample,
   TableFilteringExample,
+  TableHttpExample,
   TableOverviewExample,
   TablePaginationExample,
   TableSortingExample,
