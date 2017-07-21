@@ -104,8 +104,9 @@ $mat-mini-fab-padding: 8px !default;
     @include mat-elevation(12);
   }
 
-  i, .mat-icon {
+  .mat-button-wrapper {
     padding: $padding 0;
+    display: inline-block;
     line-height: $mat-icon-button-line-height;
   }
 }

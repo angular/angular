@@ -107,7 +107,7 @@
 }
 
 @mixin mat-button-typography($config) {
-  .mat-button, .mat-raised-button, .mat-icon-button {
+  .mat-button, .mat-raised-button, .mat-icon-button, .mat-fab, .mat-mini-fab {
     font: {
       family: mat-font-family($config, button);
       size: mat-font-size($config, button);
