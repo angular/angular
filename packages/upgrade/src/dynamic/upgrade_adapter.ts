@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, CompilerOptions, Directive, Injector, NgModule, NgModuleRef, NgZone, Provider, Testability, Type} from '@angular/core';
+import {Compiler, CompilerOptions, Directive, ForwardRefFn, Injector, NgModule, NgModuleRef, NgZone, Provider, Testability, Type} from '@angular/core';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import * as angular from '../common/angular1';
@@ -116,7 +116,9 @@ export class UpgradeAdapter {
   private moduleRef: NgModuleRef<any>|null = null;
   private ng2BootstrapDeferred: Deferred<angular.IInjectorService>;
 
-  constructor(private ng2AppModule: Type<any>, private compilerOptions?: CompilerOptions) {
+  constructor(
+      private ng2AppModule: Type<any>|ForwardRefFn<Type<any>>,
+      private compilerOptions?: CompilerOptions) {
     if (!ng2AppModule) {
       throw new Error(
           'UpgradeAdapter cannot be instantiated without an NgModule of the Angular app.');

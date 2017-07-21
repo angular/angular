@@ -7,6 +7,7 @@
  */
 
 import {Type} from '../type';
+import {ForwardRefFn} from './forward_ref';
 
 /**
  * @whatItDoes Configures the {@link Injector} to return an instance of `Type` when `Type' is used
@@ -103,7 +104,7 @@ export interface ClassProvider {
   /**
    * Class to instantiate for the `token`.
    */
-  useClass: Type<any>;
+  useClass: Type<any>|ForwardRefFn<any>;
 
   /**
    * If true, then injector returns an array of instances. This is useful to allow multiple
@@ -216,5 +217,5 @@ export interface FactoryProvider {
  *
  * @stable
  */
-export type Provider =
-    TypeProvider | ValueProvider | ClassProvider | ExistingProvider | FactoryProvider | any[];
+export type Provider = TypeProvider | ValueProvider | ClassProvider | ExistingProvider |
+    FactoryProvider | ForwardRefFn<any>| any[];

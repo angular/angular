@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Provider} from '../di';
+import {ForwardRefFn, Provider} from '../di';
 import {Type} from '../type';
 import {TypeDecorator, makeDecorator} from '../util/decorators';
+
 
 /**
  * A wrapper around a module that also includes the providers.
@@ -112,7 +113,7 @@ export interface NgModule {
    * }
    * ```
    */
-  declarations?: Array<Type<any>|any[]>;
+  declarations?: Array<Type<any>|ForwardRefFn<any>|any[]>;
 
   /**
    * Specifies a list of modules whose exported directives/pipes
@@ -129,7 +130,7 @@ export interface NgModule {
    * }
    * ```
    */
-  imports?: Array<Type<any>|ModuleWithProviders|any[]>;
+  imports?: Array<Type<any>|ModuleWithProviders|ForwardRefFn<any>|any[]>;
 
   /**
    * Specifies a list of directives/pipes/modules that can be used within the template
@@ -146,7 +147,7 @@ export interface NgModule {
    * }
    * ```
    */
-  exports?: Array<Type<any>|any[]>;
+  exports?: Array<Type<any>|ForwardRefFn<any>|any[]>;
 
   /**
    * Specifies a list of components that should be compiled when this module is defined.
