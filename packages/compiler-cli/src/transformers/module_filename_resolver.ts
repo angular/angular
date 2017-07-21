@@ -27,8 +27,8 @@ class SingleRootDirModuleFilenameResolver implements ModuleFilenameResolver {
 
   constructor(private host: ModuleFilenameResolutionHost, private options: CompilerOptions) {
     // normalize the path so that it never ends with '/'.
-    this.basePath = path.normalize(path.join(options.basePath, '.')).replace(/\\/g, '/');
-    this.genDir = path.normalize(path.join(options.genDir, '.')).replace(/\\/g, '/');
+    this.basePath = path.normalize(path.join(options.basePath !, '.')).replace(/\\/g, '/');
+    this.genDir = path.normalize(path.join(options.genDir !, '.')).replace(/\\/g, '/');
 
     const genPath: string = path.relative(this.basePath, this.genDir);
     this.isGenDirChildOfRootDir = genPath === '' || !genPath.startsWith('..');
@@ -153,7 +153,7 @@ class MultipleRootDirModuleFilenameResolver implements ModuleFilenameResolver {
 
   constructor(private host: ModuleFilenameResolutionHost, private options: CompilerOptions) {
     // normalize the path so that it never ends with '/'.
-    this.basePath = path.normalize(path.join(options.basePath, '.')).replace(/\\/g, '/');
+    this.basePath = path.normalize(path.join(options.basePath !, '.')).replace(/\\/g, '/');
   }
 
   getNgCanonicalFileName(fileName: string): string {

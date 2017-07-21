@@ -36,7 +36,7 @@ export class Extractor {
     return promiseBundle.then(bundle => {
       const content = this.serialize(bundle, formatName);
       const dstFile = outFile || `messages.${ext}`;
-      const dstPath = path.join(this.options.genDir, dstFile);
+      const dstPath = path.join(this.options.genDir !, dstFile);
       this.host.writeFile(dstPath, content, false);
       return [dstPath];
     });

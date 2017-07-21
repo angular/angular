@@ -41,8 +41,8 @@ export class CompilerHost implements AotCompilerHost {
       protected program: ts.Program, protected options: AngularCompilerOptions,
       protected context: CompilerHostContext, collectorOptions?: CollectorOptions) {
     // normalize the path so that it never ends with '/'.
-    this.basePath = path.normalize(path.join(this.options.basePath, '.')).replace(/\\/g, '/');
-    this.genDir = path.normalize(path.join(this.options.genDir, '.')).replace(/\\/g, '/');
+    this.basePath = path.normalize(path.join(this.options.basePath !, '.')).replace(/\\/g, '/');
+    this.genDir = path.normalize(path.join(this.options.genDir !, '.')).replace(/\\/g, '/');
 
     const genPath: string = path.relative(this.basePath, this.genDir);
     this.isGenDirChildOfRootDir = genPath === '' || !genPath.startsWith('..');
@@ -312,7 +312,7 @@ export class CompilerHost implements AotCompilerHost {
       relativePath = relativePath.substr(3);
     }
 
-    return path.join(this.options.genDir, relativePath);
+    return path.join(this.options.genDir !, relativePath);
   }
 
   private hasBundleIndex(filePath: string): boolean {

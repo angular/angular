@@ -9,17 +9,20 @@
     "outDir": "../dist/tools/",
     "noImplicitAny": true,
     "noFallthroughCasesInSwitch": true,
-    "paths": {
-    },
+    "paths": {},
     "rootDir": ".",
     "sourceMap": true,
     "inlineSources": true,
-    "lib": ["es6", "dom"],
+    "lib": [
+      "es6",
+      "dom"
+    ],
     "target": "es5",
     "skipLibCheck": true
   },
   "exclude": [
     "node_modules",
+    "ngc-wrapped",
     "typings-test",
     "public_api_guard",
     "docs"

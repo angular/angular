@@ -11,3 +11,18 @@ ts_library(
     deps = [],
     tsconfig = ":tsconfig-build.json",
 )
+
+load("@build_bazel_rules_angular//:defs.bzl", "ng_module")
+
+ng_module(
+  name = "core_ng_module",
+  srcs = glob(["**/*.ts"], exclude=[
+      "test/**",
+      "testing/**",
+  ]),
+  # Needed to allow (ts_library,ng_module) pair
+  write_ng_outputs_only = True,
+  module_name = "@angular/core",
+  tsconfig = ":tsconfig-build.json",
+  compiler = "//tools/ngc-wrapped"
+)

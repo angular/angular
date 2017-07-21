@@ -1,0 +1,17 @@
+package(default_visibility=["//visibility:public"])
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
+
+ts_library(
+    name = "compiler-cli",
+    srcs = glob(["**/*.ts"], exclude=[
+        "integrationtest/**",
+        "test/**",
+    ]),
+    module_name = "@angular/compiler-cli",
+    deps = [
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/tsc-wrapped",
+    ],
+    tsconfig = ":tsconfig-build.json",
+)
