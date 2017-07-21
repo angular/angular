@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "4.3.0",
+  "version": "5.0.0-beta.0",
   "dependencies": {
     "@types/angularjs": {
       "version": "1.5.13-alpha"
@@ -21,7 +21,7 @@
       "version": "1.10.21-alpha"
     },
     "@types/node": {
-      "version": "4.0.22-alpha"
+      "version": "6.0.84"
     },
     "@types/q": {
       "version": "0.0.32"
@@ -176,6 +176,9 @@
     },
     "asap": {
       "version": "2.0.3"
+    },
+    "ascli": {
+      "version": "1.0.1"
     },
     "asn1": {
       "version": "0.2.3"
@@ -1479,6 +1482,9 @@
     "builtin-modules": {
       "version": "1.1.1"
     },
+    "bytebuffer": {
+      "version": "5.0.1"
+    },
     "bytes": {
       "version": "2.1.0"
     },
@@ -1596,6 +1602,9 @@
     },
     "colors": {
       "version": "1.1.2"
+    },
+    "colour": {
+      "version": "0.7.1"
     },
     "combined-stream": {
       "version": "1.0.5"
@@ -3500,6 +3509,9 @@
         }
       }
     },
+    "long": {
+      "version": "3.2.0"
+    },
     "longest": {
       "version": "1.0.1"
     },
@@ -3925,6 +3937,9 @@
     "options": {
       "version": "0.0.6"
     },
+    "optjs": {
+      "version": "3.2.2"
+    },
     "orchestrator": {
       "version": "0.3.7",
       "dependencies": {
@@ -4077,6 +4092,14 @@
       "dependencies": {
         "graceful-fs": {
           "version": "4.1.11"
+        }
+      }
+    },
+    "protobufjs": {
+      "version": "5.0.0",
+      "dependencies": {
+        "glob": {
+          "version": "5.0.15"
         }
       }
     },

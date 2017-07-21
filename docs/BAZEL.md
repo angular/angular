@@ -21,7 +21,7 @@ you run the first build.
 
 The `WORKSPACE` file indicates that our root directory is a
 Bazel project. It contains the version of the Bazel rules we
-use to execute build steps, from `io_bazel_rules_typescript`.
+use to execute build steps, from `build_bazel_rules_typescript`.
 The sources on [GitHub] are published from Google's internal
 repository (google3).
 
@@ -29,7 +29,7 @@ That repository defines dependencies on specific versions of
 all the tools. You can run the tools Bazel installed, for
 example rather than `npm install` (which depends on whatever
 version you have installed on your machine), you can
-`bazel run @io_bazel_rules_typescript_node//:bin/npm install`.
+`bazel run @build_bazel_rules_typescript_node//:bin/npm install`.
 
 Bazel accepts a lot of options. We check in some options in the
 `.bazelrc` file. See the [bazelrc doc]. For example, if you don't
