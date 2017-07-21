@@ -4,10 +4,11 @@
 
 // TODO(crisbeto): these values don't correspond to any of the typography breakpoints.
 $mat-chip-font-size: 13px;
-$mat-chip-line-height: 16px;
+$mat-chip-line-height: 18px;
+$mat-chip-remove-font-size: 18px;
 
 @mixin mat-chips-theme-color($color) {
-  @include mat-chips-color(mat-contrast($color, 500), mat-color($color, 500));
+  @include mat-chips-color(mat-color($color, default-contrast), mat-color($color));
 }
 
 @mixin mat-chips-color($foreground, $background) {
@@ -32,25 +33,15 @@ $mat-chip-line-height: 16px;
   $background: map-get($theme, background);
   $foreground: map-get($theme, foreground);
 
-  // Use spec-recommended color for regular foreground, and utilise contrast color for a grey very
-  // close to the selected spec since no guidance is provided and to ensure palette consistency.
-  $light-foreground: rgba(0, 0, 0, 0.87);
-  $light-selected-foreground: mat-contrast($mat-grey, 600);
+  $unselected-background: mat-color($background, unselected-chip);
+  $unselected-foreground: mat-color($foreground, text);
 
-  // The spec only provides guidance for light-themed chips. When inside of a dark theme, fall back
-  // to standard background and foreground colors.
-  $unselected-background: if($is-dark-theme, mat-color($background, card), #e0e0e0);
-  $unselected-foreground: if($is-dark-theme, mat-color($foreground, text), $light-foreground);
-
-  $selected-background: if($is-dark-theme, mat-color($background, app-bar), #808080);
-  $selected-foreground: if($is-dark-theme, mat-color($foreground, text), $light-selected-foreground);
 
   .mat-chip:not(.mat-basic-chip) {
     @include mat-chips-color($unselected-foreground, $unselected-background);
   }
 
   .mat-chip.mat-chip-selected {
-    @include mat-chips-color($selected-foreground, $selected-background);
 
     &.mat-primary {
       @include mat-chips-theme-color($primary);
@@ -70,5 +61,9 @@ $mat-chip-line-height: 16px;
   .mat-chip {
     font-size: $mat-chip-font-size;
     line-height: $mat-chip-line-height;
+
+    .mat-chip-remove.mat-icon {
+      font-size: $mat-chip-remove-font-size;
+    }
   }
 }

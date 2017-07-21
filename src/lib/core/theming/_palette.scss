@@ -659,6 +659,7 @@ $mat-light-theme-background: (
   selected-button: map_get($mat-grey, 300),
   selected-disabled-button: map_get($mat-grey, 400),
   disabled-button-toggle: map_get($mat-grey, 200),
+  unselected-chip: map_get($mat-grey, 300),
 );
 
 // Background palette for dark themes.
@@ -675,6 +676,7 @@ $mat-dark-theme-background: (
   selected-button: map_get($mat-grey, 900),
   selected-disabled-button: map_get($mat-grey, 800),
   disabled-button-toggle: map_get($mat-grey, 1000),
+  unselected-chip: map_get($mat-grey, 700),
 );
 
 // Foreground palette for light themes.

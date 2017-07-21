@@ -1,10 +1,12 @@
 @import '../core/a11y/a11y';
+@import '../core/style/elevation';
 
-$mat-chip-vertical-padding: 8px;
+$mat-chip-vertical-padding: 7px;
 $mat-chip-horizontal-padding: 12px;
-$mat-chip-remove-margin: -4px;
+$mat-chip-remove-margin-before: 6px;
+$mat-chip-remove-margin-after: -4px;
 
-$mat-chips-chip-margin: $mat-chip-horizontal-padding / 4;
+$mat-chips-chip-margin: 8px;
 
 .mat-chip-list-wrapper {
   display: flex;
@@ -14,9 +16,11 @@ $mat-chips-chip-margin: $mat-chip-horizontal-padding / 4;
 }
 
 .mat-chip:not(.mat-basic-chip) {
-  display: inline-block;
+  display: inline-flex;
   padding: $mat-chip-vertical-padding $mat-chip-horizontal-padding $mat-chip-vertical-padding $mat-chip-horizontal-padding;
   border-radius: $mat-chip-horizontal-padding * 2;
+  align-items: center;
+  cursor: default;
 
   // Apply a margin to adjacent sibling chips.
   & + & {
@@ -25,16 +29,26 @@ $mat-chips-chip-margin: $mat-chip-horizontal-padding / 4;
     [dir='rtl'] & {
       margin: 0 $mat-chips-chip-margin 0 0;
     }
+  }
 
-    .mat-input-prefix & {
-      &:last-child {
-        margin-right: $mat-chips-chip-margin;
-      }
-
-      [dir='rtl'] &:last-child {
-        margin-left: $mat-chips-chip-margin;
-      }
+  .mat-input-prefix & {
+    &:last-child {
+      margin-right: $mat-chips-chip-margin;
     }
+
+    [dir='rtl'] &:last-child {
+      margin-left: $mat-chips-chip-margin;
+    }
+  }
+
+  .mat-chip-remove.mat-icon {
+    width: 1em;
+    height: 1em;
+  }
+
+  &:focus {
+    @include mat-elevation(3);
+    outline: none;
   }
 
   @include cdk-high-contrast {
@@ -48,11 +62,11 @@ $mat-chips-chip-margin: $mat-chip-horizontal-padding / 4;
   .mat-chip:not(.mat-basic-chip) {
     display: block;
     margin: 0;
-    margin-bottom: $mat-chip-vertical-padding;
+    margin-bottom: $mat-chips-chip-margin;
 
     [dir='rtl'] & {
       margin: 0;
-      margin-bottom: $mat-chip-vertical-padding;
+      margin-bottom: $mat-chips-chip-margin;
     }
 
     &:last-child, [dir='rtl'] &:last-child {
@@ -62,9 +76,15 @@ $mat-chips-chip-margin: $mat-chip-horizontal-padding / 4;
 }
 
 .mat-input-prefix .mat-chip-list-wrapper {
-  margin-bottom: $mat-chip-vertical-padding;
+  margin-bottom: $mat-chips-chip-margin;
 }
 
 .mat-chip-remove {
-  margin: 0 $mat-chip-remove-margin 0 0;
+  margin-right: $mat-chip-remove-margin-after;
+  margin-left: $mat-chip-remove-margin-before;
+
+  [dir='rtl'] & {
+    margin-right: $mat-chip-remove-margin-before;
+    margin-left: $mat-chip-remove-margin-after;
+  }
 }
