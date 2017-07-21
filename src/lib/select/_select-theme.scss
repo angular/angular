@@ -1,5 +1,6 @@
 @import '../core/theming/palette';
 @import '../core/theming/theming';
+@import '../core/style/form-common';
 @import '../core/typography/typography-utils';
 
 @mixin _mat-select-inner-content-theme($palette) {
@@ -20,20 +21,27 @@
   $primary: map-get($theme, primary);
   $accent: map-get($theme, accent);
   $warn: map-get($theme, warn);
+  $is-dark-theme: map-get($theme, is-dark);
+  $underline-color: mat-color($foreground, divider, if($is-dark-theme, 0.7, 0.42));
 
   .mat-select-trigger,
   .mat-select-arrow {
-    color: mat-color($foreground, hint-text);
+    color: mat-color($foreground, secondary-text);
   }
 
   .mat-select-underline {
-    background-color: mat-color($foreground, divider);
+    background-color: $underline-color;
+  }
+
+  [aria-disabled='true'] .mat-select-underline {
+    // Since this is a dotted line, we need to make it slightly darker to get it to stand out.
+    @include mat-control-disabled-underline($underline-color);
   }
 
   .mat-select-disabled .mat-select-value,
   .mat-select-arrow,
   .mat-select-trigger {
-    color: mat-color($foreground, hint-text);
+    color: mat-color($foreground, secondary-text);
   }
 
   .mat-select-content, .mat-select-panel-done-animating {

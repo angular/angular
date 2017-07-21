@@ -1,6 +1,5 @@
 @import '../core/style/variables';
 @import '../core/style/vendor-prefixes';
-@import '../core/style/form-common';
 
 
 // Min amount of space between start and end hint.
@@ -201,7 +200,6 @@ textarea.mat-input-element {
   width: 100%;
 
   &.mat-disabled {
-    @include mat-control-disabled-underline();
     background-position: 0;
     background-color: transparent;
   }

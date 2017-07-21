@@ -1,5 +1,6 @@
 @import '../core/theming/palette';
 @import '../core/theming/theming';
+@import '../core/style/form-common';
 @import '../core/typography/typography-utils';
 
 
@@ -9,20 +10,25 @@
   $warn: map-get($theme, warn);
   $background: map-get($theme, background);
   $foreground: map-get($theme, foreground);
+  $is-dark-theme: map-get($theme, is-dark);
 
   // Placeholder colors. Required is used for the `*` star shown in the placeholder.
-  $input-placeholder-color: mat-color($foreground, hint-text);
+  $input-placeholder-color: mat-color($foreground, secondary-text);
   $input-floating-placeholder-color: mat-color($primary);
   $input-required-placeholder-color: mat-color($accent);
 
   // Underline colors.
-  $input-underline-color: mat-color($foreground, divider);
+  $input-underline-color: mat-color($foreground, divider, if($is-dark-theme, 0.7, 0.42));
   $input-underline-color-accent: mat-color($accent);
   $input-underline-color-warn: mat-color($warn);
   $input-underline-focused-color: mat-color($primary);
 
   .mat-input-placeholder {
     color: $input-placeholder-color;
+  }
+
+  .mat-hint {
+    color: mat-color($foreground, secondary-text);
   }
 
   // :focus is applied to the input, but we apply mat-focused to the other elements
@@ -40,7 +46,7 @@
   }
 
   .mat-input-element:disabled {
-    color: mat-color($foreground, disabled-text);
+    color: mat-color($foreground, secondary-text, if($is-dark-theme, 0.7, 0.42));
   }
 
   // See _mat-input-placeholder-floating mixin in input-container.scss
@@ -53,6 +59,10 @@
 
   .mat-input-underline {
     background-color: $input-underline-color;
+
+    &.mat-disabled {
+      @include mat-control-disabled-underline($input-underline-color);
+    }
   }
 
   .mat-input-ripple {

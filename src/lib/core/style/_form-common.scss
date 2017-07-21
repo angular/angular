@@ -1,12 +1,8 @@
-
-// Gradient for showing the dashed line when the input is disabled.
+// Renders a gradient for showing the dashed line when the input is disabled.
 // Unlike using a border, a gradient allows us to adjust the spacing of the dotted line
 // to match the Material Design spec.
-$mat-underline-disabled-background-image:
-        linear-gradient(to right, rgba(0, 0, 0, 0.26) 0%, rgba(0, 0, 0, 0.26) 33%, transparent 0%);
-
-@mixin mat-control-disabled-underline {
-  background-image: $mat-underline-disabled-background-image;
+@mixin mat-control-disabled-underline($color) {
+  background-image: linear-gradient(to right, $color 0%, $color 33%, transparent 0%);
   background-size: 4px 1px;
   background-repeat: repeat-x;
 }

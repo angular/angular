@@ -1,6 +1,5 @@
 @import '../core/style/menu-common';
 @import '../core/style/list-common';
-@import '../core/style/form-common';
 @import '../core/style/variables';
 @import '../core/style/vendor-prefixes';
 @import '../core/a11y/a11y';
@@ -44,7 +43,6 @@ $mat-select-trigger-underline-height: 1px !default;
   }
 
   .mat-select-disabled & {
-    @include mat-control-disabled-underline();
     background-color: transparent;
     background-position: 0 bottom;
   }
