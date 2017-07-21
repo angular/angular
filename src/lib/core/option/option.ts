@@ -22,6 +22,7 @@ import {ENTER, SPACE} from '../keyboard/keycodes';
 import {coerceBooleanProperty} from '@angular/cdk';
 import {MATERIAL_COMPATIBILITY_MODE} from '../../core/compatibility/compatibility';
 import {MdOptgroup} from './optgroup';
+import {CanDisableRipple, mixinDisableRipple} from '../common-behaviors/disable-ripple';
 
 /**
  * Option IDs need to be unique across components, so this counter exists outside of
@@ -34,6 +35,11 @@ export class MdOptionSelectionChange {
   constructor(public source: MdOption, public isUserInput = false) { }
 }
 
+// Boilerplate for applying mixins to MdOption.
+/** @docs-private */
+export class MdOptionBase {}
+export const _MdOptionMixinBase = mixinDisableRipple(MdOptionBase);
+
 
 /**
  * Single option inside of a `<md-select>` element.
@@ -41,6 +47,7 @@ export class MdOptionSelectionChange {
 @Component({
   moduleId: module.id,
   selector: 'md-option, mat-option',
+  inputs: ['disableRipple'],
   host: {
     'role': 'option',
     '[attr.tabindex]': '_getTabIndex()',
@@ -59,7 +66,7 @@ export class MdOptionSelectionChange {
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MdOption {
+export class MdOption extends _MdOptionMixinBase implements CanDisableRipple {
   private _selected: boolean = false;
   private _active: boolean = false;
   private _multiple: boolean = false;
@@ -99,7 +106,10 @@ export class MdOption {
     private _element: ElementRef,
     private _changeDetectorRef: ChangeDetectorRef,
     @Optional() public readonly group: MdOptgroup,
-    @Optional() @Inject(MATERIAL_COMPATIBILITY_MODE) public _isCompatibilityMode: boolean) {}
+    @Optional() @Inject(MATERIAL_COMPATIBILITY_MODE) public _isCompatibilityMode: boolean
+  ) {
+    super();
+  }
 
   /**
    * Whether or not the option is currently active and ready to be selected.
