@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EmbeddedViewRef, Input, OnChanges, SimpleChanges, TemplateRef, ViewContainerRef} from '@angular/core';
+import {Directive, EmbeddedViewRef, Input, OnChanges, SimpleChange, SimpleChanges, TemplateRef, ViewContainerRef} from '@angular/core';
 
 /**
  * @ngModule CommonModule
@@ -49,13 +49,58 @@ export class NgTemplateOutlet implements OnChanges {
   set ngOutletContext(context: Object) { this.ngTemplateOutletContext = context; }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (this._viewRef) {
-      this._viewContainerRef.remove(this._viewContainerRef.indexOf(this._viewRef));
-    }
+    const recreateView = this._shouldRecreateView(changes);
 
-    if (this.ngTemplateOutlet) {
-      this._viewRef = this._viewContainerRef.createEmbeddedView(
-          this.ngTemplateOutlet, this.ngTemplateOutletContext);
+    if (recreateView) {
+      if (this._viewRef) {
+        this._viewContainerRef.remove(this._viewContainerRef.indexOf(this._viewRef));
+      }
+
+      if (this.ngTemplateOutlet) {
+        this._viewRef = this._viewContainerRef.createEmbeddedView(
+            this.ngTemplateOutlet, this.ngTemplateOutletContext);
+      }
+    } else {
+      if (this._viewRef && this.ngTemplateOutletContext) {
+        this._updateExistingContext(this.ngTemplateOutletContext);
+      }
+    }
+  }
+
+  /**
+   * We need to re-create existing embedded view if:
+   * - templateRef has changed
+   * - context has changes
+   *
+   * To mark context object as changed when the corresponding object
+   * shape changes (new properties are added or existing properties are removed).
+   * In other words we consider context with the same properties as "the same" even
+   * if object reference changes (see https://github.com/angular/angular/issues/13407).
+   */
+  private _shouldRecreateView(changes: SimpleChanges): boolean {
+    const ctxChange = changes['ngTemplateOutletContext'];
+    return !!changes['ngTemplateOutlet'] || (ctxChange && this._hasContextShapeChanged(ctxChange));
+  }
+
+  private _hasContextShapeChanged(ctxChange: SimpleChange): boolean {
+    const prevCtxKeys = Object.keys(ctxChange.previousValue || {});
+    const currCtxKeys = Object.keys(ctxChange.currentValue || {});
+
+    if (prevCtxKeys.length === currCtxKeys.length) {
+      for (let propName of currCtxKeys) {
+        if (prevCtxKeys.indexOf(propName) === -1) {
+          return true;
+        }
+      }
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  private _updateExistingContext(ctx: Object): void {
+    for (let propName of Object.keys(ctx)) {
+      (<any>this._viewRef.context)[propName] = (<any>this.ngTemplateOutletContext)[propName];
     }
   }
 }
