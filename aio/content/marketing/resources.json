@@ -221,7 +221,14 @@
             "rev": true,
             "title": "Compodoc",
             "url": "https://github.com/compodoc/compodoc"
-          }
+          },
+          "amexiovsc": {
+            "desc": "This extension will help the developers of Visual Studio Code with quick code snippet for the Amexio Angular Extension Markup as well as Amexio TypeScript.",
+            "rev": true,
+            "title": "Amexio Angular Extensions for Visual Studio Code",
+            "url": "https://www.amexio.tech/features",
+            "logo": "https://github.com/meta-magic/Amexio-VSC-Extension/blob/master/images/Amexio-VSC-Icon-3.png"
+          }          
         }
       },
       "UI Components": {
