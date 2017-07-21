@@ -327,7 +327,7 @@ describe('tsc-wrapped', () => {
     main(basePath, {basePath})
         .then(() => {
           const out = readOut('js.map');
-          expect(out).toContain('"sources":["other_test.ts"]');
+          expect(out).toContain('"sources":["other_test.ts","../test.ts"]');
           done();
         })
         .catch(e => done.fail(e));
@@ -361,7 +361,7 @@ describe('tsc-wrapped', () => {
     main(basePath, {basePath})
         .then(() => {
           const out = readOut('js.map');
-          expect(out).toContain('"sources":["other_test.ts"]');
+          expect(out).toContain('"sources":["other_test.ts","../test.ts"]');
           done();
         })
         .catch(e => done.fail(e));

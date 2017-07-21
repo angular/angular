@@ -263,7 +263,8 @@ export function Class(clsDef: ClassDefinition): Type<any> {
  */
 export function makeDecorator(
     name: string, props?: (...args: any[]) => any, parentClass?: any,
-    chainFn?: (fn: Function) => void): (...args: any[]) => (cls: any) => any {
+    chainFn?: (fn: Function) => void):
+    {new (...args: any[]): any; (...args: any[]): any; (...args: any[]): (cls: any) => any;} {
   const metaCtor = makeMetadataCtor(props);
 
   function DecoratorFactory(objOrType: any): (cls: any) => any {
@@ -298,7 +299,7 @@ export function makeDecorator(
 
   DecoratorFactory.prototype.toString = () => `@${name}`;
   (<any>DecoratorFactory).annotationCls = DecoratorFactory;
-  return DecoratorFactory;
+  return DecoratorFactory as any;
 }
 
 function makeMetadataCtor(props?: (...args: any[]) => any): any {

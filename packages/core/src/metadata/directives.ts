@@ -400,7 +400,7 @@ export interface Directive {
  * @Annotation
  */
 export const Directive: DirectiveDecorator =
-    <DirectiveDecorator>makeDecorator('Directive', (dir: Directive = {}) => dir);
+    makeDecorator('Directive', (dir: Directive = {}) => dir);
 
 /**
  * Type of the Component decorator / constructor function.
@@ -683,7 +683,7 @@ export interface Component extends Directive {
  * @stable
  * @Annotation
  */
-export const Component: ComponentDecorator = <ComponentDecorator>makeDecorator(
+export const Component: ComponentDecorator = makeDecorator(
     'Component', (c: Component = {}) => ({changeDetection: ChangeDetectionStrategy.Default, ...c}),
     Directive);
 
@@ -724,8 +724,7 @@ export interface Pipe {
  * @stable
  * @Annotation
  */
-export const Pipe: PipeDecorator =
-    <PipeDecorator>makeDecorator('Pipe', (p: Pipe) => ({pure: true, ...p}));
+export const Pipe: PipeDecorator = makeDecorator('Pipe', (p: Pipe) => ({pure: true, ...p}));
 
 
 /**
