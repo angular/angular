@@ -5,6 +5,8 @@
          [checked]="checked"
          [disabled]="disabled || null"
          [name]="name"
+         [attr.aria-label]="ariaLabel"
+         [attr.aria-labelledby]="ariaLabelledby"
          (change)="_onInputChange($event)"
          (click)="_onInputClick($event)">
 

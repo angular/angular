@@ -277,6 +277,17 @@ export class MdButtonToggleGroupMultiple extends _MdButtonToggleGroupMixinBase
   }
 })
 export class MdButtonToggle implements OnInit, OnDestroy {
+  /**
+   * Attached to the aria-label attribute of the host element. In most cases, arial-labelledby will
+   * take precedence so this may be omitted.
+   */
+  @Input('aria-label') ariaLabel: string = '';
+
+  /**
+   * Users can specify the `aria-labelledby` attribute which will be forwarded to the input element
+   */
+  @Input('aria-labelledby') ariaLabelledby: string | null = null;
+
   /** Whether or not this button toggle is checked. */
   private _checked: boolean = false;
 

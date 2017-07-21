@@ -218,6 +218,8 @@ describe('MdButtonToggle without forms', () => {
         ButtonTogglesInsideButtonToggleGroupMultiple,
         ButtonToggleGroupWithInitialValue,
         StandaloneButtonToggle,
+        ButtonToggleWithAriaLabel,
+        ButtonToggleWithAriaLabelledby,
       ],
     });
 
@@ -592,8 +594,49 @@ describe('MdButtonToggle without forms', () => {
     });
 
   });
-});
 
+  describe('with provided aria-label ', () => {
+    let checkboxDebugElement: DebugElement;
+    let checkboxNativeElement: HTMLElement;
+    let inputElement: HTMLInputElement;
+
+    it('should use the provided aria-label', () => {
+      let fixture = TestBed.createComponent(ButtonToggleWithAriaLabel);
+      checkboxDebugElement = fixture.debugElement.query(By.directive(MdButtonToggle));
+      checkboxNativeElement = checkboxDebugElement.nativeElement;
+      inputElement = checkboxNativeElement.querySelector('input') as HTMLInputElement;
+
+      fixture.detectChanges();
+      expect(inputElement.getAttribute('aria-label')).toBe('Super effective');
+    });
+  });
+
+  describe('with provided aria-labelledby ', () => {
+    let checkboxDebugElement: DebugElement;
+    let checkboxNativeElement: HTMLElement;
+    let inputElement: HTMLInputElement;
+
+    it('should use the provided aria-labelledby', () => {
+      let fixture = TestBed.createComponent(ButtonToggleWithAriaLabelledby);
+      checkboxDebugElement = fixture.debugElement.query(By.directive(MdButtonToggle));
+      checkboxNativeElement = checkboxDebugElement.nativeElement;
+      inputElement = checkboxNativeElement.querySelector('input') as HTMLInputElement;
+
+      fixture.detectChanges();
+      expect(inputElement.getAttribute('aria-labelledby')).toBe('some-id');
+    });
+
+    it('should not assign aria-labelledby if none is provided', () => {
+      let fixture = TestBed.createComponent(StandaloneButtonToggle);
+      checkboxDebugElement = fixture.debugElement.query(By.directive(MdButtonToggle));
+      checkboxNativeElement = checkboxDebugElement.nativeElement;
+      inputElement = checkboxNativeElement.querySelector('input') as HTMLInputElement;
+
+      fixture.detectChanges();
+      expect(inputElement.getAttribute('aria-labelledby')).toBe(null);
+    });
+  });
+});
 
 @Component({
   template: `
@@ -674,3 +717,15 @@ class ButtonToggleGroupWithInitialValue {
 class ButtonToggleGroupWithFormControl {
   control = new FormControl();
 }
+
+/** Simple test component with an aria-label set. */
+@Component({
+  template: `<md-button-toggle aria-label="Super effective"></md-button-toggle>`
+})
+class ButtonToggleWithAriaLabel { }
+
+/** Simple test component with an aria-label set. */
+@Component({
+  template: `<md-button-toggle aria-labelledby="some-id"></md-button-toggle>`
+})
+class ButtonToggleWithAriaLabelledby {}
