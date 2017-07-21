@@ -11,8 +11,15 @@ filegroup(
         # This won't scale in the general case.
         # TODO(alexeagle): figure out what to do
         "node_modules/typescript/**",
-        "node_modules/zone.js/**/*.d.ts",
+        "node_modules/zone.js/**",
         "node_modules/rxjs/**/*.d.ts",
+        "node_modules/rxjs/**/*.js",
         "node_modules/@types/**/*.d.ts",
+        "node_modules/tsickle/**",
+        "node_modules/hammerjs/**/*.d.ts",
+        "node_modules/protobufjs/**",
+        "node_modules/bytebuffer/**",
+        "node_modules/reflect-metadata/**",
+        "node_modules/minimist/**/*.js",
     ]),
 )
