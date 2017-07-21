@@ -165,15 +165,20 @@ class _WriteVisitor implements i18n.Visitor {
   }
 
   visitPlaceholder(ph: i18n.Placeholder, context?: any): xml.Node[] {
+    const idStr = (this._nextPlaceholderId++).toString();
     return [new xml.Tag(_PLACEHOLDER_TAG, {
-      id: (this._nextPlaceholderId++).toString(),
+      id: idStr,
       equiv: ph.name,
       disp: `{{${ph.value}}}`,
     })];
   }
 
   visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): xml.Node[] {
-    return [new xml.Tag(_PLACEHOLDER_TAG, {id: (this._nextPlaceholderId++).toString()})];
+    const cases = Object.keys(ph.value.cases).map((value: string) => value + ' {...}').join(' ');
+    const idStr = (this._nextPlaceholderId++).toString();
+    return [new xml.Tag(
+        _PLACEHOLDER_TAG,
+        {id: idStr, equiv: ph.name, disp: `{${ph.value.expression}, ${ph.value.type}, ${cases}}`})];
   }
 
   serialize(nodes: i18n.Node[]): xml.Node[] {
