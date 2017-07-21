@@ -31,16 +31,10 @@
 }
 
 @mixin mat-paginator-typography($config) {
-  .mat-paginator {
-    font: {
-      family: mat-font-family($config);
-      size: mat-font-size($config, caption);
-    }
-  }
-
+  .mat-paginator,
   .mat-paginator-page-size .mat-select-trigger {
     font: {
-      family: mat-font-family($config);
+      family: mat-font-family($config, caption);
       size: mat-font-size($config, caption);
     }
   }

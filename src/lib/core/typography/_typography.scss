@@ -1,11 +1,17 @@
 @import 'typography-utils';
 
 // Represents a typography level from the Material design spec.
-@function mat-typography-level($font-size, $line-height: $font-size, $font-weight: 400) {
+@function mat-typography-level(
+  $font-size,
+  $line-height: $font-size,
+  $font-weight: 400,
+  $font-family: null) {
+
   @return (
     font-size: $font-size,
     line-height: $line-height,
-    font-weight: $font-weight
+    font-weight: $font-weight,
+    font-family: $font-family
   );
 }
 
@@ -28,8 +34,9 @@
   // Line-height must be unit-less fraction of the font-size.
   $input:         mat-typography-level(inherit, 1.125, 400)
 ) {
-  @return (
-    font-family:    $font-family,
+
+  // Declare an initial map with all of the levels.
+  $config: (
     display-4:      $display-4,
     display-3:      $display-3,
     display-2:      $display-2,
@@ -44,6 +51,18 @@
     button:         $button,
     input:          $input,
   );
+
+  // Loop through the levels and set the `font-family` of the ones that don't have one to the base.
+  // Note that SASS can't modify maps in place, which means that we need to merge and re-assign.
+  @each $key, $level in $config {
+    @if map-get($level, font-family) == null {
+      $new-level: map-merge($level, (font-family: $font-family));
+      $config: map-merge($config, ($key: $new-level));
+    }
+  }
+
+  // Add the base font family to the config.
+  @return map-merge($config, (font-family: $font-family));
 }
 
 // Adds the base typography styles, based on a config.
@@ -74,7 +93,7 @@
   .mat-h5, #{$selector} h5 {
     font-size: mat-font-size($config, body-1) * 0.83;
     font-weight: mat-font-weight($config, body-1);
-    font-family: mat-font-family($config);
+    font-family: mat-font-family($config, body-1);
     line-height: mat-line-height($config, body-1);
     margin: 0 0 12px;
   }
@@ -82,7 +101,7 @@
   .mat-h6, #{$selector} h6 {
     font-size: mat-font-size($config, body-1) * 0.67;
     font-weight: mat-font-weight($config, body-1);
-    font-family: mat-font-family($config);
+    font-family: mat-font-family($config, body-1);
     line-height: mat-line-height($config, body-1);
     margin: 0 0 12px;
   }

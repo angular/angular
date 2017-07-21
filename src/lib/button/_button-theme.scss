@@ -109,7 +109,7 @@
 @mixin mat-button-typography($config) {
   .mat-button, .mat-raised-button, .mat-icon-button {
     font: {
-      family: mat-font-family($config);
+      family: mat-font-family($config, button);
       size: mat-font-size($config, button);
       weight: mat-font-weight($config, button);
     }

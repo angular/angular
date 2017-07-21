@@ -5,7 +5,7 @@
 @mixin mat-simple-snack-bar-typography($config) {
   .mat-simple-snackbar {
     font: {
-      family: mat-font-family($config);
+      family: mat-font-family($config, body-1);
       size: mat-font-size($config, body-1);
     }
   }

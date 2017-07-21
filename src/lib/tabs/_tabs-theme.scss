@@ -47,7 +47,7 @@
 
   .mat-tab-label, .mat-tab-link {
     font: {
-      family: mat-font-family($config);
+      family: mat-font-family($config, button);
       size: mat-font-size($config, button);
       weight: mat-font-weight($config, button);
     }

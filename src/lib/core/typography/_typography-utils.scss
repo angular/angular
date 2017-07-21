@@ -19,8 +19,14 @@
 }
 
 // Gets the font-family from a typography config and removes the quotes around it.
-@function mat-font-family($config) {
-  @return unquote(map-get($config, font-family));
+@function mat-font-family($config, $level: null) {
+  $font-family: map-get($config, font-family);
+
+  @if $level != null {
+    $font-family: _mat-get-type-value($config, $level, font-family);
+  }
+
+  @return unquote($font-family);
 }
 
 // Converts a typography level into CSS styles.
@@ -28,7 +34,7 @@
   $font-size: mat-font-size($config, $level);
   $font-weight: mat-font-weight($config, $level);
   $line-height: mat-line-height($config, $level);
-  $font-family: mat-font-family($config);
+  $font-family: mat-font-family($config, $level);
 
   // Use the shorthand `font` to represent a typography level, because it's the shortest. Notes that
   // we need to use interpolation for `font-size/line-height` in order to prevent SASS from dividing

@@ -38,7 +38,7 @@
 @mixin mat-menu-typography($config) {
   .mat-menu-item {
     font: {
-      family: mat-font-family($config);
+      family: mat-font-family($config, subheading-2);
       size: mat-font-size($config, subheading-2);
     }
   }
