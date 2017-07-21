@@ -11,18 +11,40 @@
     "noImplicitAny": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "selenium-webdriver": ["../node_modules/@types/selenium-webdriver/index.d.ts"],
-      "rxjs/*": ["../node_modules/rxjs/*"],
-      "@angular/*": ["./*"],
-      "e2e_util/*": ["../modules/e2e_util/*"]
+      "selenium-webdriver": [
+        "../node_modules/@types/selenium-webdriver/index.d.ts"
+      ],
+      "rxjs/*": [
+        "../node_modules/rxjs/*"
+      ],
+      "@angular/*": [
+        "./*"
+      ],
+      "@angular/tsc-wrapped": [
+        "../dist/packages-dist/tsc-wrapped"
+      ],
+      "@angular/tsc-wrapped/*": [
+        "../dist/packages-dist/tsc-wrapped/*"
+      ],
+      "e2e_util/*": [
+        "../modules/e2e_util/*"
+      ]
     },
     "rootDir": ".",
     "inlineSourceMap": true,
-    "lib": ["es5", "dom", "es2015.promise", "es2015.collection", "es2015.iterable"],
+    "lib": [
+      "es5",
+      "dom",
+      "es2015.promise",
+      "es2015.collection",
+      "es2015.iterable"
+    ],
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "target": "es5",
-    "types": ["angularjs"]
+    "types": [
+      "angularjs"
+    ]
   },
   "exclude": [
     "compiler-cli/integrationtest",
