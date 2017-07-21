@@ -31,6 +31,8 @@ const resolvedPromise = Promise.resolve(null);
 function logOnError() {
   _zone.onError.subscribe({
     next: (error: any) => {
+      // Error handler should run outside of the Angular zone.
+      NgZone.assertNotInAngularZone();
       _errors.push(error);
       _traces.push(error.stack);
     }

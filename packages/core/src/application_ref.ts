@@ -231,12 +231,13 @@ export abstract class PlatformRef {
   abstract get destroyed(): boolean;
 }
 
-function _callAndReportToErrorHandler(errorHandler: ErrorHandler, callback: () => any): any {
+function _callAndReportToErrorHandler(
+    errorHandler: ErrorHandler, ngZone: NgZone, callback: () => any): any {
   try {
     const result = callback();
     if (isPromise(result)) {
       return result.catch((e: any) => {
-        errorHandler.handleError(e);
+        ngZone.runOutsideAngular(() => errorHandler.handleError(e));
         // rethrow as the exception handler might not do it
         throw e;
       });
@@ -244,7 +245,7 @@ function _callAndReportToErrorHandler(errorHandler: ErrorHandler, callback: () =
 
     return result;
   } catch (e) {
-    errorHandler.handleError(e);
+    ngZone.runOutsideAngular(() => errorHandler.handleError(e));
     // rethrow as the exception handler might not do it
     throw e;
   }
@@ -299,8 +300,10 @@ export class PlatformRef_ extends PlatformRef {
         throw new Error('No ErrorHandler. Is platform module (BrowserModule) included?');
       }
       moduleRef.onDestroy(() => remove(this._modules, moduleRef));
-      ngZone !.onError.subscribe({next: (error: any) => { exceptionHandler.handleError(error); }});
-      return _callAndReportToErrorHandler(exceptionHandler, () => {
+      ngZone !.runOutsideAngular(
+          () => ngZone !.onError.subscribe(
+              {next: (error: any) => { exceptionHandler.handleError(error); }}));
+      return _callAndReportToErrorHandler(exceptionHandler, ngZone !, () => {
         const initStatus: ApplicationInitStatus = moduleRef.injector.get(ApplicationInitStatus);
         initStatus.runInitializers();
         return initStatus.donePromise.then(() => {
@@ -561,7 +564,7 @@ export class ApplicationRef_ extends ApplicationRef {
       }
     } catch (e) {
       // Attention: Don't rethrow as it could cancel subscriptions to Observables!
-      this._exceptionHandler.handleError(e);
+      this._zone.runOutsideAngular(() => this._exceptionHandler.handleError(e));
     } finally {
       this._runningTick = false;
       wtfLeave(scope);

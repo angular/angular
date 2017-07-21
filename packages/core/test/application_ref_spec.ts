@@ -575,6 +575,14 @@ export function main() {
 
 class MockConsole {
   res: any[][] = [];
-  log(...args: any[]): void { this.res.push(args); }
-  error(...args: any[]): void { this.res.push(args); }
+  log(...args: any[]): void {
+    // Logging from ErrorHandler should run outside of the Angular Zone.
+    NgZone.assertNotInAngularZone();
+    this.res.push(args);
+  }
+  error(...args: any[]): void {
+    // Logging from ErrorHandler should run outside of the Angular Zone.
+    NgZone.assertNotInAngularZone();
+    this.res.push(args);
+  }
 }

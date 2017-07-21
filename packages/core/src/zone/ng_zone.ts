@@ -258,7 +258,7 @@ function forkInnerZoneWithAngularBehavior(zone: NgZonePrivate) {
 
     onHandleError: (delegate: ZoneDelegate, current: Zone, target: Zone, error: any): boolean => {
       delegate.handleError(target, error);
-      zone.onError.emit(error);
+      zone.runOutsideAngular(() => zone.onError.emit(error));
       return false;
     }
   });
