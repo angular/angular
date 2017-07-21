@@ -43,7 +43,7 @@ env:
 
 before_install:
   - source ./scripts/ci/env.sh
-  - npm i -g npm@^5.0.1
+  - npm i -g npm@^5.3.0
 
 install:
   - npm install

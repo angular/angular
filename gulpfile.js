@@ -17,7 +17,7 @@ require('ts-node').register({
 // The gulp tsconfig file maps specific imports to relative paths. In combination with ts-node
 // this doesn't work because the JavaScript output will still refer to the imports instead of
 // to the relative path. Tsconfig-paths can be used to support path mapping inside of Node.
-require("tsconfig-paths").register({
+require('tsconfig-paths').register({
   baseUrl: path.dirname(tsconfigPath),
   paths: tsconfig.compilerOptions.paths
 });
