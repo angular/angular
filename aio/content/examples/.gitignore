@@ -43,13 +43,9 @@ dist/
 **/app/**/*.ajs.js
 
 # aot
-**/*.ngfactory.ts
-**/*.ngsummary.json
-**/*.ngsummary.ts
-**/*.shim.ngstyle.ts
-**/*.metadata.json
-!aot/bs-config.json
-!aot/index.html
+*/aot/**/*
+!*/aot/bs-config.json
+!*/aot/index.html
 !rollup-config.js
 
 # i18n
