@@ -164,6 +164,15 @@ describe('Chips', () => {
           expect(testComponent.chipDeselect).toHaveBeenCalledTimes(1);
           expect(testComponent.chipDeselect).toHaveBeenCalledWith(CHIP_EVENT);
         });
+
+        it('should have correct aria-selected', () => {
+          expect(chipNativeElement.getAttribute('aria-selected')).toBe('false');
+
+          testComponent.selected = true;
+          fixture.detectChanges();
+
+          expect(chipNativeElement.getAttribute('aria-selected')).toBe('true');
+        });
       });
 
       describe('when selectable is false', () => {
@@ -183,6 +192,15 @@ describe('Chips', () => {
 
           expect(chipInstance.selected).toBeFalsy();
           expect(testComponent.chipSelect).not.toHaveBeenCalled();
+        });
+
+        it('should have empty aria-selected', () => {
+          expect(chipNativeElement.getAttribute('aria-selected')).toBeFalsy();
+
+          testComponent.selectable = true;
+          fixture.detectChanges();
+
+          expect(chipNativeElement.getAttribute('aria-selected')).toBe('false');
         });
       });
 

@@ -60,6 +60,7 @@ export class MdBasicChip { }
     '[class.mat-chip-selected]': 'selected',
     '[attr.disabled]': 'disabled || null',
     '[attr.aria-disabled]': 'disabled.toString()',
+    '[attr.aria-selected]': 'ariaSelected',
     '(click)': '_handleClick($event)',
     '(keydown)': '_handleKeydown($event)',
     '(focus)': '_hasFocus = true',
@@ -117,6 +118,10 @@ export class MdChip extends _MdChipMixinBase implements Focusable, OnDestroy, Ca
 
   /** Emitted when the chip is destroyed. */
   @Output() destroy = new EventEmitter<MdChipEvent>();
+
+  get ariaSelected(): string {
+    return this.selectable ? this.selected.toString() : '';
+  }
 
   constructor(renderer: Renderer2, elementRef: ElementRef) {
     super(renderer, elementRef);
