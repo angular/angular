@@ -284,7 +284,7 @@ const XLIFF_EXTRACTED = `
       </trans-unit>
       <trans-unit id="eee74a5be8a75881a4785905bd8302a71f7d9f75" datatype="html">
         <source>
-    <x id="START_HEADING_LEVEL1" ctype="x-h1"/>Markers in html comments<x id="CLOSE_HEADING_LEVEL1" ctype="x-h1"/>
+    <x id="START_HEADING_LEVEL1" ctype="x-h1"/>Markers in html comments<x id="CLOSE_HEADING_LEVEL1" ctype="x-h1"/>   
     <x id="START_TAG_DIV" ctype="x-div"/><x id="CLOSE_TAG_DIV" ctype="x-div"/>
     <x id="START_TAG_DIV_1" ctype="x-div"/><x id="ICU"/><x id="CLOSE_TAG_DIV" ctype="x-div"/>
 </source>
