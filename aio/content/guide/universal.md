@@ -7,7 +7,7 @@
 
 <b>Server-side Rendering for your Angular application</b>
 
-Angular Universal is a technology that lets Angular applications run outside of the browser.  Using Universal, you can run your Angular application on any [Node.js](https://nodejs.org/en/) or  [ASP.NET Core](https://github.com/MarkPieszak/aspnetcore-angular2-universal) server.  You can use it to generate HTML output from your app on-demand, or generate HTML files ahead of time.  A Universal application is a server that generates HTML using your Angular application.
+Angular Universal is a technology that lets Angular applications run outside of the browser.  Using Universal, you can run your Angular application on any [Node.js](https://nodejs.org/en/) or  [ASP.NET Core](https://github.com/MarkPieszak/aspnetcore-angular2-universal) server.  You can use it to generate HTML output from your app on-demand, or generate HTML files to publish.  A Universal application is a server that generates HTML using your Angular application.
 
 {@a how-does-it-work}
 
@@ -44,7 +44,7 @@ An Angular app should already avoid #1 and #2.
 
 Limitation #3 means that, on the server, the app must determine what to render based only on the incoming request; you can't rely on a user clicking a button to show a component.  It's a good argument for making your app [routeable](guide/router).
 
-Limitation #4 occurs because there is no "current location" for a server-side app as there is in the browser.  You can pass the origin into your app using a [Provider](), as we'll show in the example later. 
+Limitation #4 occurs because there is no "current location" for a server-side app as there is in the browser.  You can pass the origin into your app using a [Provider](guide/dependency-injection#injector-providers), as we'll show in the example later. 
 
 {@a transition}
 
@@ -232,7 +232,7 @@ In the client version of the app, the `APP_BASE_HREF` is not provided, so the `h
 
 ## Server Code
 
-To run an Angular Universal application on the server, you need a server program that accepts the requests and returns the results.  That's not part of the core Angular app, so you need to add those pieces.
+To run an Angular Universal application on the server, you need a server program that accepts the requests and returns the results.  That's not part of the client-side Angular app, so you need to add those pieces.
 
 The code specific to Universal is in three files:
 
@@ -476,7 +476,7 @@ Now you can see the limitations of the Universal app.  Navigation using `routerL
 
 #### Client Transition
 
-Now build the client-side version of the app described in the [Tour of Heroes tutorial](https://angular.io/docs/ts/latest/tutorial/).
+Now build the client-side version of the app described in the [Tour of Heroes tutorial](tutorial/).
 
 <code-example format="." language="bash" linenums="false">
 npm run build
