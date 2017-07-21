@@ -6,10 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LOCALE_ID} from '@angular/core';
+import {LOCALE_DATA, LOCALE_ID} from '@angular/core';
 import {TestBed, inject} from '@angular/core/testing';
 
-import {NgLocaleLocalization, NgLocalization, getPluralCategory} from '../src/localization';
+import {NgLocaleEn} from '../src/i18n/data/locale_en';
+import {NgLocaleFr} from '../src/i18n/data/locale_fr';
+import {NgLocaleRo} from '../src/i18n/data/locale_ro';
+import {NgLocaleSr} from '../src/i18n/data/locale_sr';
+import {NgLocaleZgh} from '../src/i18n/data/locale_zgh';
+import {NgLocaleLocalization, NgLocalization, findNgLocale, getPluralCategory} from '../src/i18n/localization';
 
 export function main() {
   describe('l10n', () => {
@@ -18,7 +23,10 @@ export function main() {
       describe('ro', () => {
         beforeEach(() => {
           TestBed.configureTestingModule({
-            providers: [{provide: LOCALE_ID, useValue: 'ro'}],
+            providers: [
+              {provide: LOCALE_ID, useValue: 'ro'},
+              {provide: LOCALE_DATA, useValue: NgLocaleRo, multi: true}
+            ],
           });
         });
 
@@ -34,7 +42,10 @@ export function main() {
       describe('sr', () => {
         beforeEach(() => {
           TestBed.configureTestingModule({
-            providers: [{provide: LOCALE_ID, useValue: 'sr'}],
+            providers: [
+              {provide: LOCALE_ID, useValue: 'sr'},
+              {provide: LOCALE_DATA, useValue: NgLocaleSr, multi: true}
+            ],
           });
         });
 
@@ -54,7 +65,7 @@ export function main() {
 
     describe('NgLocaleLocalization', () => {
       it('should return the correct values for the "en" locale', () => {
-        const l10n = new NgLocaleLocalization('en-US');
+        const l10n = new NgLocaleLocalization('en-US', [NgLocaleEn]);
 
         expect(l10n.getPluralCategory(0)).toEqual('other');
         expect(l10n.getPluralCategory(1)).toEqual('one');
@@ -62,7 +73,7 @@ export function main() {
       });
 
       it('should return the correct values for the "ro" locale', () => {
-        const l10n = new NgLocaleLocalization('ro');
+        const l10n = new NgLocaleLocalization('ro', [NgLocaleRo]);
 
         expect(l10n.getPluralCategory(0)).toEqual('few');
         expect(l10n.getPluralCategory(1)).toEqual('one');
@@ -74,7 +85,7 @@ export function main() {
       });
 
       it('should return the correct values for the "sr" locale', () => {
-        const l10n = new NgLocaleLocalization('sr');
+        const l10n = new NgLocaleLocalization('sr', [NgLocaleSr]);
 
         expect(l10n.getPluralCategory(1)).toEqual('one');
         expect(l10n.getPluralCategory(31)).toEqual('one');
@@ -121,7 +132,7 @@ export function main() {
       });
 
       it('should return the default value for a locale with no rule', () => {
-        const l10n = new NgLocaleLocalization('zgh');
+        const l10n = new NgLocaleLocalization('zgh', [NgLocaleZgh]);
 
         expect(l10n.getPluralCategory(0)).toEqual('other');
         expect(l10n.getPluralCategory(1)).toEqual('other');
@@ -133,7 +144,7 @@ export function main() {
 
     describe('getPluralCategory', () => {
       it('should return plural category', () => {
-        const l10n = new NgLocaleLocalization('fr');
+        const l10n = new NgLocaleLocalization('fr', [NgLocaleFr]);
 
         expect(getPluralCategory(0, ['one', 'other'], l10n)).toEqual('one');
         expect(getPluralCategory(1, ['one', 'other'], l10n)).toEqual('one');
@@ -141,7 +152,7 @@ export function main() {
       });
 
       it('should return discrete cases', () => {
-        const l10n = new NgLocaleLocalization('fr');
+        const l10n = new NgLocaleLocalization('fr', [NgLocaleFr]);
 
         expect(getPluralCategory(0, ['one', 'other', '=0'], l10n)).toEqual('=0');
         expect(getPluralCategory(1, ['one', 'other'], l10n)).toEqual('one');
@@ -150,7 +161,7 @@ export function main() {
       });
 
       it('should fallback to other when the case is not present', () => {
-        const l10n = new NgLocaleLocalization('ro');
+        const l10n = new NgLocaleLocalization('ro', [NgLocaleRo]);
         expect(getPluralCategory(1, ['one', 'other'], l10n)).toEqual('one');
         // 2 -> 'few'
         expect(getPluralCategory(2, ['one', 'other'], l10n)).toEqual('other');
@@ -159,12 +170,31 @@ export function main() {
       describe('errors', () => {
         it('should report an error when the "other" category is not present', () => {
           expect(() => {
-            const l10n = new NgLocaleLocalization('ro');
+            const l10n = new NgLocaleLocalization('ro', [NgLocaleRo]);
             // 2 -> 'few'
             getPluralCategory(2, ['one'], l10n);
           }).toThrowError('No plural message found for value "2"');
         });
       });
     });
+
+    describe('findNgLocale', () => {
+      it('should throw if the locale provided is not a valid LOCALE_ID', () => {
+        expect(() => findNgLocale('invalid', null))
+            .toThrow(new Error(
+                `"invalid" is not a valid LOCALE_ID value. See https://github.com/unicode-cldr/cldr-core/blob/master/availableLocales.json for a list of valid locales`));
+      });
+
+      it('should throw if the LOCALE_DATA for the chosen locale if not available', () => {
+        expect(() => findNgLocale('fr-FR', null))
+            .toThrow(new Error(`Missing NgLocale data for the locale "fr-FR"`));
+      });
+
+      it('should return english data if the locale is en-US',
+         () => { expect(findNgLocale('en-US', null)).toEqual(NgLocaleEn); });
+
+      it('should return the LOCALE_DATA if it is available',
+         () => { expect(findNgLocale('fr-FR', [NgLocaleFr])).toEqual(NgLocaleFr); });
+    })
   });
 }

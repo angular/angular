@@ -583,6 +583,9 @@ export declare class KeyValueDiffers {
 }
 
 /** @experimental */
+export declare const LOCALE_DATA: InjectionToken<NgLocale>;
+
+/** @experimental */
 export declare const LOCALE_ID: InjectionToken<string>;
 
 /** @experimental */
@@ -607,6 +610,16 @@ export interface ModuleWithProviders {
 
 /** @stable */
 export declare type NgIterable<T> = Array<T> | Iterable<T>;
+
+/** @experimental */
+export interface NgLocale {
+    currencySettings: CurrencySettings;
+    dateTimeSettings: DateTimeSettings;
+    dateTimeTranslations: DateTimeTranslations;
+    getPluralCase: (value: number) => Plural;
+    localeId: string;
+    numberSettings: NumberSettings;
+}
 
 /** @stable */
 export declare const NgModule: NgModuleDecorator;
@@ -723,6 +736,16 @@ export declare abstract class PlatformRef {
     /** @experimental */ abstract bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>): Promise<NgModuleRef<M>>;
     abstract destroy(): void;
     abstract onDestroy(callback: () => void): void;
+}
+
+/** @experimental */
+export declare enum Plural {
+    Zero = 0,
+    One = 1,
+    Two = 2,
+    Few = 3,
+    Many = 4,
+    Other = 5,
 }
 
 /** @experimental */

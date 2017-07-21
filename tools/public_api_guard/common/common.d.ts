@@ -11,24 +11,62 @@ export declare class AsyncPipe implements OnDestroy, PipeTransform {
     transform<T>(obj: null): null;
 }
 
+/** @experimental */
+export declare const AVAILABLE_LOCALES: string[];
+
 /** @stable */
 export declare class CommonModule {
 }
 
+/** @experimental */
+export declare const CURRENCIES: {
+    [code: string]: {
+        [key: string]: string;
+    };
+};
+
 /** @stable */
 export declare class CurrencyPipe implements PipeTransform {
+    constructor(locale: string, localeData: NgLocale[]);
+    transform(value: any, currencyCode?: string, symbolDisplay?: 'code' | 'symbol' | 'symbol-narrow', digits?: string, locale?: string): string | null;
+}
+
+/** @stable */
+export declare class DatePipe implements PipeTransform {
+    constructor(locale: string, localeData: NgLocale[]);
+    transform(value: any, pattern?: string, timezone?: string, locale?: string): string | null;
+}
+
+/** @stable */
+export declare class DecimalPipe implements PipeTransform {
+    constructor(locale: string, localeData: NgLocale[]);
+    transform(value: any, digits?: string, locale?: string): string | null;
+}
+
+/** @stable */
+export declare class DeprecatedCommonModule {
+}
+
+/** @stable */
+export declare class DeprecatedCurrencyPipe implements PipeTransform {
     constructor(_locale: string);
     transform(value: any, currencyCode?: string, symbolDisplay?: boolean, digits?: string): string | null;
 }
 
 /** @stable */
-export declare class DatePipe implements PipeTransform {
+export declare class DeprecatedDatePipe implements PipeTransform {
     constructor(_locale: string);
     transform(value: any, pattern?: string): string | null;
 }
 
 /** @stable */
-export declare class DecimalPipe implements PipeTransform {
+export declare class DeprecatedDecimalPipe implements PipeTransform {
+    constructor(_locale: string);
+    transform(value: any, digits?: string): string | null;
+}
+
+/** @stable */
+export declare class DeprecatedPercentPipe implements PipeTransform {
     constructor(_locale: string);
     transform(value: any, digits?: string): string | null;
 }
@@ -51,10 +89,10 @@ export declare class HashLocationStrategy extends LocationStrategy {
 
 /** @experimental */
 export declare class I18nPluralPipe implements PipeTransform {
-    constructor(_localization: NgLocalization);
+    constructor(localization: NgLocalization);
     transform(value: number, pluralMap: {
         [count: string]: string;
-    }): string;
+    }, locale?: string): string;
 }
 
 /** @experimental */
@@ -192,13 +230,14 @@ export declare class NgIfContext {
 /** @experimental */
 export declare class NgLocaleLocalization extends NgLocalization {
     protected locale: string;
-    constructor(locale: string);
-    getPluralCategory(value: any): string;
+    protected localeData: NgLocale[];
+    constructor(locale: string, localeData: NgLocale[]);
+    getPluralCategory(value: any, locale?: string): string;
 }
 
 /** @experimental */
 export declare abstract class NgLocalization {
-    abstract getPluralCategory(value: any): string;
+    abstract getPluralCategory(value: any, locale?: string): string;
 }
 
 /** @experimental */
@@ -264,8 +303,8 @@ export declare class PathLocationStrategy extends LocationStrategy {
 
 /** @stable */
 export declare class PercentPipe implements PipeTransform {
-    constructor(_locale: string);
-    transform(value: any, digits?: string): string | null;
+    constructor(locale: string, localeData: NgLocale[]);
+    transform(value: any, digits?: string, locale?: string): string | null;
 }
 
 /** @stable */

@@ -234,7 +234,6 @@ export function main() {
         expect(bd.isIOS7).toBe(browser['isIOS7']);
         expect(bd.isSlow).toBe(browser['isSlow']);
         expect(bd.isChromeDesktop).toBe(browser['isChromeDesktop']);
-        expect(bd.isOldChrome).toBe(browser['isOldChrome']);
       });
     });
   });

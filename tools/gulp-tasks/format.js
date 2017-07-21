@@ -8,6 +8,11 @@ const srcsToFmt = [
   '!tools/public_api_guard/**/*.d.ts',
   './*.{js,ts}',
   '!shims_for_IE.js',
+  '!packages/common/src/i18n/data/**/*.{js,ts}',
+  '!packages/common/src/i18n/available_locales.ts',
+  '!packages/common/src/i18n/index.ts',
+  '!packages/common/src/i18n/currencies.ts',
+  '!tools/gulp-tasks/cldr/extract.js',
 ];
 
 module.exports = {

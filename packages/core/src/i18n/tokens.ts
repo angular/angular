@@ -7,11 +7,17 @@
  */
 
 import {InjectionToken} from '../di/injection_token';
+import {NgLocale} from './ng_locale';
 
 /**
  * @experimental i18n support is experimental.
  */
 export const LOCALE_ID = new InjectionToken<string>('LocaleId');
+
+/**
+ * @experimental i18n support is experimental.
+ */
+export const LOCALE_DATA = new InjectionToken<NgLocale>('LocaleData');
 
 /**
  * @experimental i18n support is experimental.
