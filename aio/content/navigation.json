@@ -100,11 +100,6 @@
           "url": "tutorial/toh-pt5",
           "title": "6. Routing",
           "tooltip": "Part 6: Add the Angular router and navigate among the views."
-        },
-        {
-          "url": "tutorial/toh-pt6",
-          "title": "7. HTTP",
-          "tooltip": "Part 7: Use HTTP to retrieve and save hero data."
         }
       ]
     },
