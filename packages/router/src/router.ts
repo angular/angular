@@ -955,10 +955,8 @@ export class PreActivation {
   private runCanActivateChild(path: ActivatedRouteSnapshot[]): Observable<boolean> {
     const future = path[path.length - 1];
 
-    const canActivateChildGuards = path.slice(0, path.length - 1)
-                                       .reverse()
-                                       .map(p => this.extractCanActivateChild(p))
-                                       .filter(_ => _ !== null);
+    const canActivateChildGuards =
+        path.slice(-2, -1).map(p => this.extractCanActivateChild(p)).filter(_ => _ !== null);
 
     return andObservables(map.call(from(canActivateChildGuards), (d: any) => {
       const obs = map.call(from(d.guards), (c: any) => {
