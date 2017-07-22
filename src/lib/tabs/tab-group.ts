@@ -30,6 +30,7 @@ import {MdTab} from './tab';
 import {map} from '../core/rxjs/index';
 import {merge} from 'rxjs/observable/merge';
 import {CanDisableRipple, mixinDisableRipple} from '../core/common-behaviors/disable-ripple';
+import {CanColor, mixinColor, ThemePalette} from '../core/common-behaviors/color';
 
 
 /** Used to generate unique ID's for each tab component */
@@ -46,8 +47,10 @@ export type MdTabHeaderPosition = 'above' | 'below';
 
 // Boilerplate for applying mixins to MdTabGroup.
 /** @docs-private */
-export class MdTabGroupBase {}
-export const _MdTabGroupMixinBase = mixinDisableRipple(MdTabGroupBase);
+export class MdTabGroupBase {
+  constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
+}
+export const _MdTabGroupMixinBase = mixinColor(mixinDisableRipple(MdTabGroupBase), 'primary');
 
 /**
  * Material design tab-group component.  Supports basic tab pairs (label + content) and includes
@@ -60,7 +63,7 @@ export const _MdTabGroupMixinBase = mixinDisableRipple(MdTabGroupBase);
   templateUrl: 'tab-group.html',
   styleUrls: ['tab-group.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  inputs: ['disableRipple'],
+  inputs: ['color', 'disableRipple'],
   host: {
     'class': 'mat-tab-group',
     '[class.mat-tab-group-dynamic-height]': 'dynamicHeight',
@@ -68,7 +71,7 @@ export const _MdTabGroupMixinBase = mixinDisableRipple(MdTabGroupBase);
   }
 })
 export class MdTabGroup extends _MdTabGroupMixinBase implements AfterContentInit,
-    AfterContentChecked, AfterViewChecked, OnDestroy, CanDisableRipple {
+    AfterContentChecked, AfterViewChecked, OnDestroy, CanColor, CanDisableRipple {
 
   @ContentChildren(MdTab) _tabs: QueryList<MdTab>;
 
@@ -109,6 +112,22 @@ export class MdTabGroup extends _MdTabGroupMixinBase implements AfterContentInit
   /** Position of the tab header. */
   @Input() headerPosition: MdTabHeaderPosition = 'above';
 
+  /** Background color of the tab group. */
+  @Input()
+  get backgroundColor(): ThemePalette { return this._backgroundColor; }
+  set backgroundColor(value: ThemePalette) {
+    let nativeElement = this._elementRef.nativeElement;
+
+    this._renderer.removeClass(nativeElement, `mat-background-${this.backgroundColor}`);
+
+    if (value) {
+      this._renderer.addClass(nativeElement, `mat-background-${value}`);
+    }
+
+    this._backgroundColor = value;
+  }
+  private _backgroundColor: ThemePalette;
+
   /** Output to enable support for two-way binding on `[(selectedIndex)]` */
   @Output() get selectedIndexChange(): Observable<number> {
     return map.call(this.selectChange, event => event.index);
@@ -122,8 +141,10 @@ export class MdTabGroup extends _MdTabGroupMixinBase implements AfterContentInit
 
   private _groupId: number;
 
-  constructor(private _renderer: Renderer2, private _changeDetectorRef: ChangeDetectorRef) {
-    super();
+  constructor(_renderer: Renderer2,
+              elementRef: ElementRef,
+              private _changeDetectorRef: ChangeDetectorRef) {
+    super(_renderer, elementRef);
     this._groupId = nextId++;
   }
 

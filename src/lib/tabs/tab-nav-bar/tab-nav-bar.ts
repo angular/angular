@@ -17,6 +17,7 @@ import {
   NgZone,
   OnDestroy,
   Optional,
+  Renderer2,
   ViewChild,
   ViewEncapsulation,
   ChangeDetectionStrategy,
@@ -27,12 +28,20 @@ import {CanDisable, mixinDisabled} from '../../core/common-behaviors/disabled';
 import {MdRipple} from '../../core';
 import {ViewportRuler} from '../../core/overlay/position/viewport-ruler';
 import {Directionality, MD_RIPPLE_GLOBAL_OPTIONS, Platform, RippleGlobalOptions} from '../../core';
+import {CanColor, mixinColor, ThemePalette} from '../../core/common-behaviors/color';
 import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
 import {takeUntil, auditTime} from '../../core/rxjs/index';
 import {of as observableOf} from 'rxjs/observable/of';
 import {merge} from 'rxjs/observable/merge';
 import {fromEvent} from 'rxjs/observable/fromEvent';
+
+// Boilerplate for applying mixins to MdTabNav.
+/** @docs-private */
+export class MdTabNavBase {
+  constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
+}
+export const _MdTabNavMixinBase = mixinColor(MdTabNavBase, 'primary');
 
 /**
  * Navigation component matching the styles of the tab group header.
@@ -41,13 +50,14 @@ import {fromEvent} from 'rxjs/observable/fromEvent';
 @Component({
   moduleId: module.id,
   selector: '[md-tab-nav-bar], [mat-tab-nav-bar]',
+  inputs: ['color'],
   templateUrl: 'tab-nav-bar.html',
   styleUrls: ['tab-nav-bar.css'],
   host: {'class': 'mat-tab-nav-bar'},
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MdTabNav implements AfterContentInit, OnDestroy {
+export class MdTabNav extends _MdTabNavMixinBase implements AfterContentInit, CanColor, OnDestroy {
   /** Subject that emits when the component has been destroyed. */
   private _onDestroy = new Subject<void>();
 
@@ -59,10 +69,29 @@ export class MdTabNav implements AfterContentInit, OnDestroy {
   /** Subscription for window.resize event **/
   private _resizeSubscription: Subscription;
 
-  constructor(
-    @Optional() private _dir: Directionality,
-    private _ngZone: NgZone,
-    private _changeDetectorRef: ChangeDetectorRef) { }
+  /** Background color of the tab nav. */
+  @Input()
+  get backgroundColor(): ThemePalette { return this._backgroundColor; }
+  set backgroundColor(value: ThemePalette) {
+    let nativeElement = this._elementRef.nativeElement;
+
+    this._renderer.removeClass(nativeElement, `mat-background-${this.backgroundColor}`);
+
+    if (value) {
+      this._renderer.addClass(nativeElement, `mat-background-${value}`);
+    }
+
+    this._backgroundColor = value;
+  }
+  private _backgroundColor: ThemePalette;
+
+  constructor(renderer: Renderer2,
+              elementRef: ElementRef,
+              @Optional() private _dir: Directionality,
+              private _ngZone: NgZone,
+              private _changeDetectorRef: ChangeDetectorRef) {
+    super(renderer, elementRef);
+  }
 
   /** Notifies the component that the active link has been changed. */
   updateActiveLink(element: ElementRef) {
