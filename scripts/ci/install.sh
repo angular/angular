@@ -28,17 +28,18 @@ mkdir -p ${LOGS_DIR}
 # Install node
 #nvm install ${NODE_VERSION}
 
+if [[ ${CI_MODE} != "aio" && ${CI_MODE} != 'docs_test' ]]; then
+  # Install version of npm that we are locked against
+  travisFoldStart "install-npm"
+    npm install -g npm@${NPM_VERSION}
+  travisFoldEnd "install-npm"
 
-# Install version of npm that we are locked against
-travisFoldStart "install-npm"
-  npm install -g npm@${NPM_VERSION}
-travisFoldEnd "install-npm"
 
-
-# Install all npm dependencies according to shrinkwrap.json
-travisFoldStart "npm-install"
-  node tools/npm/check-node-modules --purge || npm install
-travisFoldEnd "npm-install"
+  # Install all npm dependencies according to shrinkwrap.json
+  travisFoldStart "npm-install"
+    node tools/npm/check-node-modules --purge || npm install
+  travisFoldEnd "npm-install"
+fi
 
 
 if [[ ${TRAVIS} && (${CI_MODE} == "e2e" || ${CI_MODE} == "e2e_2" || ${CI_MODE} == "aio" || ${CI_MODE} == "aio_e2e" || ${CI_MODE} == "docs_test") ]]; then
