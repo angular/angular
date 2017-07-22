@@ -9,6 +9,7 @@ describe('PhoneCat Application', function() {
 
   it('should redirect `index.html` to `index.html#!/phones', function() {
     browser.get('index.html');
+    browser.sleep(1000); // Not sure why this is needed but it is. The route change works fine.
     expect(browser.getCurrentUrl()).toMatch(/\/phones$/);
   });
 
