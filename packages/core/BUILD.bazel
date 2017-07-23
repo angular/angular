@@ -15,14 +15,29 @@ ts_library(
 load("@build_bazel_rules_angular//:defs.bzl", "ng_module")
 
 ng_module(
-  name = "core_ng_module",
-  srcs = glob(["**/*.ts"], exclude=[
-      "test/**",
-      "testing/**",
-  ]),
-  # Needed to allow (ts_library,ng_module) pair
-  write_ng_outputs_only = True,
-  module_name = "@angular/core",
-  tsconfig = ":tsconfig-build.json",
-  compiler = "//tools/ngc-wrapped"
+    name = "core_ng_module",
+    srcs = glob(["**/*.ts"], exclude=[
+        "test/**",
+        "testing/**",
+    ]),
+    # Needed to allow (ts_library,ng_module) pair
+    write_ng_outputs_only = True,
+    module_name = "@angular/core",
+    tsconfig = ":tsconfig-build.json",
+    compiler = "//tools/ngc-wrapped",
+)
+
+load("//tools/build:rollup.bzl", "rollup_bundle")
+rollup_bundle(
+    name = "rollup",
+    entry_point = "bazel-out/local-fastbuild/bin/packages/core/index.js",
+    srcs = [":core"],
+    globals = {
+        'rxjs/Observable': 'Rx',
+        'rxjs/Subject': 'Rx',
+        'rxjs/Observer': 'Rx',
+        'rxjs/Subscription': 'Rx',
+        'rxjs/observable/merge': 'Rx.Observable',
+        'rxjs/operator/share': 'Rx.Observable.prototype'
+    }
 )

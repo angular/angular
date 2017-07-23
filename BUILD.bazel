@@ -21,5 +21,6 @@ filegroup(
         "node_modules/bytebuffer/**",
         "node_modules/reflect-metadata/**",
         "node_modules/minimist/**/*.js",
+        "node_modules/rollup/**",
     ]),
 )
