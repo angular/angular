@@ -1,12 +1,10 @@
 @import '../core/style/variables';
 
 $mat-tab-bar-height: 48px !default;
-
 $mat-tab-animation-duration: 500ms !default;
 
 // Mixin styles for labels that are contained within the tab header.
 @mixin tab-label {
-  line-height: $mat-tab-bar-height;
   height: $mat-tab-bar-height;
   padding: 0 12px;
   cursor: pointer;
@@ -14,6 +12,10 @@ $mat-tab-animation-duration: 500ms !default;
   opacity: 0.6;
   min-width: 160px;
   text-align: center;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  white-space: nowrap;
 
   &:focus {
     outline: none;

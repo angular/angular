@@ -13,7 +13,6 @@
 // Wraps each link in the header
 .mat-tab-link {
   @include tab-label;
-  display: inline-block;
   vertical-align: top;
   text-decoration: none;  // Removes anchor underline styling
   position: relative;
