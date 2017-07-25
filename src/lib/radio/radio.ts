@@ -105,6 +105,9 @@ export class MdRadioGroup extends _MdRadioGroupMixinBase
   /** Whether the radio group is disabled. */
   private _disabled: boolean = false;
 
+  /** Whether the radio group is required. */
+  private _required: boolean = false;
+
   /** The method to be called in order to update ngModel */
   _controlValueAccessorChangeFn: (value: any) => void = () => {};
 
@@ -189,9 +192,17 @@ export class MdRadioGroup extends _MdRadioGroupMixinBase
 
   /** Whether the radio group is disabled */
   @Input()
-  get disabled() { return this._disabled; }
+  get disabled(): boolean { return this._disabled; }
   set disabled(value) {
     this._disabled = coerceBooleanProperty(value);
+    this._markRadiosForCheck();
+  }
+
+  /** Whether the radio group is required */
+  @Input()
+  get required(): boolean { return this._required; }
+  set required(value: boolean) {
+    this._required = coerceBooleanProperty(value);
     this._markRadiosForCheck();
   }
 
@@ -231,7 +242,7 @@ export class MdRadioGroup extends _MdRadioGroupMixinBase
   /** Updates the `selected` radio button from the internal _value state. */
   private _updateSelectedRadioFromValue(): void {
     // If the value already matches the selected radio, do nothing.
-    let isAlreadySelected = this._selected != null && this._selected.value == this._value;
+    const isAlreadySelected = this._selected != null && this._selected.value == this._value;
 
     if (this._radios != null && !isAlreadySelected) {
       this._selected = null;
@@ -247,7 +258,7 @@ export class MdRadioGroup extends _MdRadioGroupMixinBase
   /** Dispatch change event with current selection and group value. */
   _emitChangeEvent(): void {
     if (this._isInitialized) {
-      let event = new MdRadioChange();
+      const event = new MdRadioChange();
       event.source = this._selected;
       event.value = this._value;
       this.change.emit(event);
@@ -424,6 +435,15 @@ export class MdRadioButton extends _MdRadioButtonMixinBase
     this._disabled = coerceBooleanProperty(value);
   }
 
+  /** Whether the radio button is required. */
+  @Input()
+  get required(): boolean {
+    return this._required || (this.radioGroup && this.radioGroup.required);
+  }
+  set required(value: boolean) {
+    this._required = coerceBooleanProperty(value);
+  }
+
   /**
    * Event emitted when the checked state of this radio button changes.
    * Change events are only emitted when the value changes due to user interaction with
@@ -442,6 +462,9 @@ export class MdRadioButton extends _MdRadioButtonMixinBase
 
   /** Whether this radio is disabled. */
   private _disabled: boolean;
+
+  /** Whether this radio is required. */
+  private _required: boolean;
 
   /** Value assigned to this radio.*/
   private _value: any = null;
@@ -516,7 +539,7 @@ export class MdRadioButton extends _MdRadioButtonMixinBase
 
   /** Dispatch change event with current value. */
   private _emitChangeEvent(): void {
-    let event = new MdRadioChange();
+    const event = new MdRadioChange();
     event.source = this;
     event.value = this._value;
     this.change.emit(event);
@@ -547,7 +570,7 @@ export class MdRadioButton extends _MdRadioButtonMixinBase
     // emit its event object to the `change` output.
     event.stopPropagation();
 
-    let groupValueChanged = this.radioGroup && this.value != this.radioGroup.value;
+    const groupValueChanged = this.radioGroup && this.value != this.radioGroup.value;
     this.checked = true;
     this._emitChangeEvent();
 

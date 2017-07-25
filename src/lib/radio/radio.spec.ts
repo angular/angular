@@ -62,7 +62,7 @@ describe('MdRadio', () => {
 
     it('should set individual radio names based on the group name', () => {
       expect(groupInstance.name).toBeTruthy();
-      for (let radio of radioInstances) {
+      for (const radio of radioInstances) {
         expect(radio.name).toBe(groupInstance.name);
       }
     });
@@ -92,14 +92,14 @@ describe('MdRadio', () => {
       testComponent.labelPos = 'before';
       fixture.detectChanges();
 
-      for (let radio of radioInstances) {
+      for (const radio of radioInstances) {
         expect(radio.labelPosition).toBe('before');
       }
 
       testComponent.labelPos = 'after';
       fixture.detectChanges();
 
-      for (let radio of radioInstances) {
+      for (const radio of radioInstances) {
         expect(radio.labelPosition).toBe('after');
       }
     });
@@ -108,8 +108,17 @@ describe('MdRadio', () => {
       testComponent.isGroupDisabled = true;
       fixture.detectChanges();
 
-      for (let radio of radioInstances) {
+      for (const radio of radioInstances) {
         expect(radio.disabled).toBe(true);
+      }
+    });
+
+    it('should set required to each radio button when the group is required', () => {
+      testComponent.isGroupRequired = true;
+      fixture.detectChanges();
+
+      for (const radio of radioInstances) {
+        expect(radio.required).toBe(true);
       }
     });
 
@@ -155,7 +164,7 @@ describe('MdRadio', () => {
     it('should emit a change event from radio buttons', () => {
       expect(radioInstances[0].checked).toBe(false);
 
-      let spies = radioInstances
+      const spies = radioInstances
         .map((radio, index) => jasmine.createSpy(`onChangeSpy ${index} for ${radio.name}`));
 
       spies.forEach((spy, index) => radioInstances[index].change.subscribe(spy));
@@ -178,7 +187,7 @@ describe('MdRadio', () => {
         programmatically`, () => {
       expect(groupInstance.value).toBeFalsy();
 
-      let changeSpy = jasmine.createSpy('radio-group change listener');
+      const changeSpy = jasmine.createSpy('radio-group change listener');
       groupInstance.change.subscribe(changeSpy);
 
       radioLabelElements[0].click();
@@ -265,7 +274,7 @@ describe('MdRadio', () => {
       testComponent.disableRipple = true;
       fixture.detectChanges();
 
-      for (let radioLabel of radioLabelElements) {
+      for (const radioLabel of radioLabelElements) {
         dispatchFakeEvent(radioLabel, 'mousedown');
         dispatchFakeEvent(radioLabel, 'mouseup');
 
@@ -275,7 +284,7 @@ describe('MdRadio', () => {
       testComponent.disableRipple = false;
       fixture.detectChanges();
 
-      for (let radioLabel of radioLabelElements) {
+      for (const radioLabel of radioLabelElements) {
         dispatchFakeEvent(radioLabel, 'mousedown');
         dispatchFakeEvent(radioLabel, 'mouseup');
 
@@ -285,7 +294,7 @@ describe('MdRadio', () => {
 
     it(`should update the group's selected radio to null when unchecking that radio
         programmatically`, () => {
-      let changeSpy = jasmine.createSpy('radio-group change listener');
+      const changeSpy = jasmine.createSpy('radio-group change listener');
       groupInstance.change.subscribe(changeSpy);
       radioInstances[0].checked = true;
 
@@ -305,7 +314,7 @@ describe('MdRadio', () => {
     });
 
     it('should not fire a change event from the group when a radio checked state changes', () => {
-      let changeSpy = jasmine.createSpy('radio-group change listener');
+      const changeSpy = jasmine.createSpy('radio-group change listener');
       groupInstance.change.subscribe(changeSpy);
       radioInstances[0].checked = true;
 
@@ -324,7 +333,7 @@ describe('MdRadio', () => {
     });
 
     it(`should update checked status if changed value to radio group's value`, () => {
-      let changeSpy = jasmine.createSpy('radio-group change listener');
+      const changeSpy = jasmine.createSpy('radio-group change listener');
       groupInstance.change.subscribe(changeSpy);
       groupInstance.value = 'apple';
 
@@ -403,25 +412,25 @@ describe('MdRadio', () => {
 
     it('should set individual radio names based on the group name', () => {
       expect(groupInstance.name).toBeTruthy();
-      for (let radio of radioInstances) {
+      for (const radio of radioInstances) {
         expect(radio.name).toBe(groupInstance.name);
       }
 
       groupInstance.name = 'new name';
 
-      for (let radio of radioInstances) {
+      for (const radio of radioInstances) {
         expect(radio.name).toBe(groupInstance.name);
       }
     });
 
     it('should check the corresponding radio button on group value change', () => {
       expect(groupInstance.value).toBeFalsy();
-      for (let radio of radioInstances) {
+      for (const radio of radioInstances) {
         expect(radio.checked).toBeFalsy();
       }
 
       groupInstance.value = 'vanilla';
-      for (let radio of radioInstances) {
+      for (const radio of radioInstances) {
         expect(radio.checked).toBe(groupInstance.value === radio.value);
       }
       expect(groupInstance.selected!.value).toBe(groupInstance.value);
@@ -539,12 +548,12 @@ describe('MdRadio', () => {
           .filter(debugEl => debugEl.componentInstance.name == 'fruit')
           .map(debugEl => debugEl.componentInstance);
 
-      let fruitRadioNativeElements = radioDebugElements
+      const fruitRadioNativeElements = radioDebugElements
           .filter(debugEl => debugEl.componentInstance.name == 'fruit')
           .map(debugEl => debugEl.nativeElement);
 
       fruitRadioNativeInputs = [];
-      for (let element of fruitRadioNativeElements) {
+      for (const element of fruitRadioNativeElements) {
         fruitRadioNativeInputs.push(<HTMLElement> element.querySelector('input'));
       }
     });
@@ -577,6 +586,14 @@ describe('MdRadio', () => {
       expect(weatherRadioInstances[0].checked).toBe(false);
       expect(weatherRadioInstances[1].checked).toBe(false);
       expect(weatherRadioInstances[2].checked).toBe(true);
+    });
+
+    it('should add required attribute to the underlying input element if defined', () => {
+      const radioInstance = seasonRadioInstances[0];
+      radioInstance.required = true;
+      fixture.detectChanges();
+
+      expect(radioInstance.required).toBe(true);
     });
 
     it('should add aria-label attribute to the underlying input element if defined', () => {
@@ -630,6 +647,7 @@ describe('MdRadio', () => {
   template: `
   <md-radio-group [disabled]="isGroupDisabled"
                   [labelPosition]="labelPos"
+                  [required]="isGroupRequired"
                   [value]="groupValue"
                   name="test-name">
     <md-radio-button value="fire" [disableRipple]="disableRipple" [disabled]="isFirstDisabled"
@@ -647,8 +665,9 @@ describe('MdRadio', () => {
 })
 class RadiosInsideRadioGroup {
   labelPos: 'before' | 'after';
-  isGroupDisabled: boolean = false;
   isFirstDisabled: boolean = false;
+  isGroupDisabled: boolean = false;
+  isGroupRequired: boolean = false;
   groupValue: string | null = null;
   disableRipple: boolean = false;
   color: string | null;
