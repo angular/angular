@@ -88,3 +88,14 @@ export class TreeNode<T> {
 
   toString(): string { return `TreeNode(${this.value})`; }
 }
+
+// Return the list of T indexed by outlet name
+export function nodeChildrenAsMap<T extends{outlet: string}>(node: TreeNode<T>| null) {
+  const map: {[outlet: string]: TreeNode<T>} = {};
+
+  if (node) {
+    node.children.forEach(child => map[child.value.outlet] = child);
+  }
+
+  return map;
+}
