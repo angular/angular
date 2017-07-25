@@ -55,15 +55,40 @@ function _find(control: AbstractControl, path: Array<string|number>| string, del
   }, control);
 }
 
-function coerceToValidator(validator?: ValidatorFn | ValidatorFn[] | null): ValidatorFn|null {
+function coerceToValidator(
+    validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null): ValidatorFn|
+    null {
+  const validator =
+      (isOptionsObj(validatorOrOpts) ? (validatorOrOpts as AbstractControlOptions).validators :
+                                       validatorOrOpts) as ValidatorFn |
+      ValidatorFn[] | null;
+
   return Array.isArray(validator) ? composeValidators(validator) : validator || null;
 }
 
-function coerceToAsyncValidator(asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null):
-    AsyncValidatorFn|null {
-  return Array.isArray(asyncValidator) ? composeAsyncValidators(asyncValidator) :
-                                         asyncValidator || null;
+function coerceToAsyncValidator(
+    asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null, validatorOrOpts?: ValidatorFn |
+        ValidatorFn[] | AbstractControlOptions | null): AsyncValidatorFn|null {
+  const origAsyncValidator =
+      (isOptionsObj(validatorOrOpts) ? (validatorOrOpts as AbstractControlOptions).asyncValidators :
+                                       asyncValidator) as AsyncValidatorFn |
+      AsyncValidatorFn | null;
+
+  return Array.isArray(origAsyncValidator) ? composeAsyncValidators(origAsyncValidator) :
+                                             origAsyncValidator || null;
 }
+
+export interface AbstractControlOptions {
+  validators?: ValidatorFn|ValidatorFn[]|null;
+  asyncValidators?: AsyncValidatorFn|AsyncValidatorFn[]|null;
+}
+
+function isOptionsObj(
+    validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null): boolean {
+  return validatorOrOpts != null && !Array.isArray(validatorOrOpts) &&
+      typeof validatorOrOpts === 'object';
+}
+
 
 /**
  * @whatItDoes This is the base class for {@link FormControl}, {@link FormGroup}, and
@@ -612,14 +637,26 @@ export abstract class AbstractControl {
  * console.log(ctrl.status);   // 'DISABLED'
  * ```
  *
- * To include a sync validator (or an array of sync validators) with the control,
- * pass it in as the second argument. Async validators are also supported, but
- * have to be passed in separately as the third arg.
+ * The second {@link FormControl} argument can accept one of three things:
+ * * a sync validator function
+ * * an array of sync validator functions
+ * * an options object containing validator and/or async validator functions
+ *
+ * Example of a single sync validator function:
  *
  * ```ts
  * const ctrl = new FormControl('', Validators.required);
  * console.log(ctrl.value);     // ''
  * console.log(ctrl.status);   // 'INVALID'
+ * ```
+ *
+ * Example using options object:
+ *
+ * ```ts
+ * const ctrl = new FormControl('', {
+ *    validators: Validators.required,
+ *    asyncValidators: myAsyncValidator
+ * });
  * ```
  *
  * See its superclass, {@link AbstractControl}, for more properties and methods.
@@ -633,9 +670,12 @@ export class FormControl extends AbstractControl {
   _onChange: Function[] = [];
 
   constructor(
-      formState: any = null, validator?: ValidatorFn|ValidatorFn[]|null,
+      formState: any = null,
+      validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
       asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null) {
-    super(coerceToValidator(validator), coerceToAsyncValidator(asyncValidator));
+    super(
+        coerceToValidator(validatorOrOpts),
+        coerceToAsyncValidator(asyncValidator, validatorOrOpts));
     this._applyFormState(formState);
     this.updateValueAndValidity({onlySelf: true, emitEvent: false});
     this._initObservables();
@@ -823,15 +863,28 @@ export class FormControl extends AbstractControl {
  * }
  * ```
  *
+ * Like {@link FormControl} instances, you can alternatively choose to pass in
+ * validators and async validators as part of an options object.
+ *
+ * ```
+ * const form = new FormGroup({
+ *   password: new FormControl('')
+ *   passwordConfirm: new FormControl('')
+ * }, {validators: passwordMatchValidator, asyncValidators: otherValidator});
+ * ```
+ *
  * * **npm package**: `@angular/forms`
  *
  * @stable
  */
 export class FormGroup extends AbstractControl {
   constructor(
-      public controls: {[key: string]: AbstractControl}, validator?: ValidatorFn|null,
-      asyncValidator?: AsyncValidatorFn|null) {
-    super(validator || null, asyncValidator || null);
+      public controls: {[key: string]: AbstractControl},
+      validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
+      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null) {
+    super(
+        coerceToValidator(validatorOrOpts),
+        coerceToAsyncValidator(asyncValidator, validatorOrOpts));
     this._initObservables();
     this._setUpControls();
     this.updateValueAndValidity({onlySelf: true, emitEvent: false});
@@ -1114,9 +1167,19 @@ export class FormGroup extends AbstractControl {
  * console.log(arr.status);  // 'VALID'
  * ```
  *
- * You can also include array-level validators as the second arg, or array-level async
- * validators as the third arg. These come in handy when you want to perform validation
- * that considers the value of more than one child control.
+ * You can also include array-level validators and async validators. These come in handy
+ * when you want to perform validation that considers the value of more than one child
+ * control.
+ *
+ * The two types of validators can be passed in separately as the second and third arg
+ * respectively, or together as part of an options object.
+ *
+ * ```
+ * const arr = new FormArray([
+ *   new FormControl('Nancy'),
+ *   new FormControl('Drew')
+ * ], {validators: myValidator, asyncValidators: myAsyncValidator});
+ * ```
  *
  * ### Adding or removing controls
  *
@@ -1132,9 +1195,12 @@ export class FormGroup extends AbstractControl {
  */
 export class FormArray extends AbstractControl {
   constructor(
-      public controls: AbstractControl[], validator?: ValidatorFn|null,
-      asyncValidator?: AsyncValidatorFn|null) {
-    super(validator || null, asyncValidator || null);
+      public controls: AbstractControl[],
+      validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
+      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null) {
+    super(
+        coerceToValidator(validatorOrOpts),
+        coerceToAsyncValidator(asyncValidator, validatorOrOpts));
     this._initObservables();
     this._setUpControls();
     this.updateValueAndValidity({onlySelf: true, emitEvent: false});
