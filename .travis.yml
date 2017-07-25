@@ -1,11 +1,12 @@
 language: node_js
 sudo: false
-# force precise to avoid a timeout in karma
-dist: precise
+# force trusty as Google Chrome addon is not supported on Precise
+dist: trusty
 node_js:
   - '6.9.5'
 
 addons:
+  chrome: stable
 #  firefox: "38.0"
   apt:
     sources:
