@@ -40,7 +40,13 @@ var CIconfiguration = {
 var customLaunchers = {
   'DartiumWithWebPlatform':
       {base: 'Dartium', flags: ['--enable-experimental-web-platform-features']},
-  'ChromeNoSandbox': {base: 'Chrome', flags: ['--no-sandbox']},
+  // --no-sandbox is needed when using Chrome (instead of Chromium).
+  // Travis auto-adds it somewhere, but CircleCI does not.
+  // --headless is supported in OSX and Linux only right now.
+  // When --headless is released for Windows (in Chrome 60 final) this should be changed to
+  // always use --headless.
+  'ChromeNoSandbox':
+      {base: process.env['TRAVIS'] ? 'ChromeHeadless' : 'Chrome', flags: ['--no-sandbox']},
   'SL_CHROME': {base: 'SauceLabs', browserName: 'chrome', version: '54'},
   'SL_CHROMEBETA': {base: 'SauceLabs', browserName: 'chrome', version: 'beta'},
   'SL_CHROMEDEV': {base: 'SauceLabs', browserName: 'chrome', version: 'dev'},
@@ -158,10 +164,28 @@ var browserstackAliases = {
   'CI_OPTIONAL': buildConfiguration('unitTest', 'BS', false)
 };
 
+// There's a race condition happening in Chrome. Enabling logging in chrome used by
+// protractor actually fixes it. Logging is piped to a file so it doesn't affect our setup.
+// --no-sandbox is needed when using Chrome (instead of Chromium).
+// Travis auto-adds it somewhere, but CircleCI does not.
+// --headless is supported in OSX and Linux only right now.
+// When --headless is released for Windows (in Chrome 60 final) this should be changed to
+// always use --headless.
+// --disable-gpu is needed for --headless.
+var protractorCapabilities = {
+  browserName: 'chrome',
+  chromeOptions: {
+    args: process.env['TRAVIS'] ?
+        ['--enable-logging', '--no-sandbox', '--headless', '--disable-gpu'] :
+        []
+  }
+};
+
 module.exports = {
   customLaunchers: customLaunchers,
   sauceAliases: sauceAliases,
-  browserstackAliases: browserstackAliases
+  browserstackAliases: browserstackAliases,
+  protractorCapabilities: protractorCapabilities
 };
 
 function buildConfiguration(type, target, required) {

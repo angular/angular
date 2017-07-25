@@ -6,15 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+const browserProvidersConf = require('../../../../browser-providers.conf.js');
+
 exports.config = {
   specs: ['../built/e2e/*-spec.js'],
-  capabilities: {
-    browserName: 'chrome',
-    chromeOptions: {
-      args: ['--no-sandbox'],
-      binary: process.env.CHROME_BIN,
-    }
-  },
+  capabilities: browserProvidersConf.protractorCapabilities,
   directConnect: true,
   baseUrl: 'http://localhost:9876/',
   framework: 'jasmine',

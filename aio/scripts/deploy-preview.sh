@@ -51,6 +51,8 @@ readonly relevantChangedFilesCount=$(git diff --name-only $TRAVIS_COMMIT_RANGE |
   # Run PWA-score tests (unless the deployment is not public yet;
   # i.e. it could not be automatically verified).
   if [ $httpCode -ne 202 ]; then
+    # Lighthouse needs Chrome with a screen otherwise the score suffers.
+    sh -e /etc/init.d/xvfb start
     yarn test-pwa-score -- "$DEPLOYED_URL" "$MIN_PWA_SCORE"
   fi
 )

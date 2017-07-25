@@ -14,11 +14,6 @@ export class SitePage {
     .first();
   gaReady: promise.Promise<any>;
 
-  static setWindowWidth(newWidth: number) {
-    const win = browser.driver.manage().window();
-    return win.getSize().then(oldSize => win.setSize(newWidth, oldSize.height));
-  }
-
   getNavItem(pattern: RegExp) {
     return element.all(by.css('aio-nav-item .vertical-menu-item'))
                   .filter(element => element.getText().then(text => pattern.test(text)))

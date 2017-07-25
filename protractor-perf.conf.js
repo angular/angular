@@ -9,32 +9,19 @@
 // Make sure that the command line is read as the first thing
 // as this could exit node if the help script should be printed.
 require('./dist/all/e2e_util/perf_util').readCommandLine();
+const protractorCapabilities = require('./browser-providers.conf.js').protractorCapabilities;
 
-var CHROME_OPTIONS = {
-  'args': ['--js-flags=--expose-gc', '--no-sandbox'],
-  'perfLoggingPrefs': {
-    'traceCategories': 'v8,blink.console,devtools.timeline,disabled-by-default-devtools.timeline'
-  }
-};
-
-var BROWSER_CAPS = {
-  LocalChrome: {
-    'browserName': 'chrome',
-    chromeOptions: CHROME_OPTIONS,
-    loggingPrefs: {
-      performance: 'ALL',
-      browser: 'ALL',
+var loggingCapabilities = {
+  browserName: protractorCapabilities.browserName,
+  chromeOptions: {
+    args: ['--js-flags=--expose-gc'].concat(protractorCapabilities.chromeOptions.args),
+    perfLoggingPrefs: {
+      'traceCategories': 'v8,blink.console,devtools.timeline,disabled-by-default-devtools.timeline'
     }
   },
-  ChromeOnTravis: {
-    browserName: 'chrome',
-    chromeOptions: mergeInto(CHROME_OPTIONS, {
-      'binary': process.env.CHROME_BIN,
-    }),
-    loggingPrefs: {
-      performance: 'ALL',
-      browser: 'ALL',
-    }
+  loggingPrefs: {
+    performance: 'ALL',
+    browser: 'ALL',
   }
 };
 
@@ -43,7 +30,7 @@ exports.config = {
   restartBrowserBetweenTests: true,
   allScriptsTimeout: 11000,
   specs: ['dist/all/**/e2e_test/**/*_perf.js'],
-  capabilities: process.env.TRAVIS ? BROWSER_CAPS.ChromeOnTravis : BROWSER_CAPS.LocalChrome,
+  capabilities: loggingCapabilities,
   directConnect: true,
   baseUrl: 'http://localhost:8000/',
   framework: 'jasmine2',

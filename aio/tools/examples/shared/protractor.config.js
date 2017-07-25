@@ -14,14 +14,13 @@ var fs = require('fs');
 var path = require('canonical-path');
 var _ = require('lodash');
 
+const protractorCapabilities = require('../../../protractor.conf.js').protractorCapabilities;
 
 exports.config = {
   directConnect: true,
 
   // Capabilities to be passed to the webdriver instance.
-  capabilities: {
-    'browserName': 'chrome'
-  },
+  capabilities: protractorCapabilities,
 
   // Framework to use. Jasmine is recommended.
   framework: 'jasmine',

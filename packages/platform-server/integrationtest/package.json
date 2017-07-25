@@ -36,7 +36,7 @@
     "build": "./build.sh",
     "test": "npm run build && concurrently \"npm run serve\" \"npm run protractor\" --kill-others --success first",
     "serve": "node built/server-bundle.js",
-    "preprotractor": "tsc -p e2e",
+    "preprotractor": "tsc -p e2e && webdriver-manager update",
     "protractor": "protractor e2e/protractor.config.js"
   }
 }

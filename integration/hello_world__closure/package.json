@@ -26,7 +26,7 @@
     "closure": "java -jar node_modules/google-closure-compiler/compiler.jar --flagfile closure.conf",
     "test": "ngc && yarn run closure && concurrently \"yarn run serve\" \"yarn run protractor\" --kill-others --success first",
     "serve": "lite-server -c e2e/browser.config.json",
-    "preprotractor": "tsc -p e2e",
+    "preprotractor": "tsc -p e2e && webdriver-manager update",
     "protractor": "protractor e2e/protractor.config.js"
   }
 }

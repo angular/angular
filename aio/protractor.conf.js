@@ -3,18 +3,35 @@
 
 const { SpecReporter } = require('jasmine-spec-reporter');
 
+
+// There's a race condition happening in Chrome. Enabling logging in chrome used by
+// protractor actually fixes it. Logging is piped to a file so it doesn't affect our setup.
+// --no-sandbox is needed when using Chrome (instead of Chromium).
+// Travis auto-adds it somewhere, but CircleCI does not.
+// --headless is supported in OSX and Linux only right now.
+// When --headless is released for Windows (in Chrome 60 final) this should be changed to
+// always use --headless.
+// --disable-gpu is needed for --headless.
+// The window needs to be wide enough to show the SideNav side-by-side, and can't be changed 
+// at runtime.
+// https://github.com/angular/protractor/blob/master/docs/browser-setup.md#using-headless-chrome
+var protractorCapabilities = {
+  browserName: 'chrome',
+  chromeOptions: {
+    args: process.env['TRAVIS'] ?
+      ['--enable-logging', '--no-sandbox', '--headless', '--disable-gpu', '--window-size=1280,1280'] :
+      ['--window-size=1280,1280']
+  }
+};
+
+exports.protractorCapabilities = protractorCapabilities;
+
 exports.config = {
   allScriptsTimeout: 11000,
   specs: [
     './e2e/**/*.e2e-spec.ts'
   ],
-  capabilities: {
-    browserName: 'chrome',
-    // For Travis
-    chromeOptions: {
-      binary: process.env.CHROME_BIN
-    }
-  },
+  capabilities: protractorCapabilities,
   directConnect: true,
   baseUrl: 'http://localhost:4200/',
   framework: 'jasmine',
