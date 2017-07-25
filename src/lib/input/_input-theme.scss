@@ -147,7 +147,7 @@
   // The padding applied to the input-wrapper to reserve space for the subscript, since it's
   // absolutely positioned. This is a combination of the subscript's margin and line-height, but we
   // need to multiply by the subscript font scale factor since the wrapper has a larger font size.
-  $wrapper-padding-bottom: ($subscript-margin-top + $line-height) * $subscript-font-scale;
+  $wrapper-padding-bottom: 0.5em + ($line-height * $subscript-font-scale);
 
   .mat-input-container {
     @include mat-typography-level-to-styles($config, input);
