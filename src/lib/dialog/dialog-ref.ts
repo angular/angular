@@ -97,6 +97,11 @@ export class MdDialogRef<T> {
     return this;
   }
 
+  /** Returns whether the dialog is animating. */
+  _isAnimating(): boolean {
+    return this._containerInstance._isAnimating;
+  }
+
   /** Fetches the position strategy object from the overlay ref. */
   private _getPositionStrategy(): GlobalPositionStrategy {
     return this._overlayRef.getState().positionStrategy as GlobalPositionStrategy;

@@ -115,11 +115,19 @@ export class MdDialog {
    */
   open<T>(componentOrTemplateRef: ComponentType<T> | TemplateRef<T>,
           config?: MdDialogConfig): MdDialogRef<T> {
+
+    const inProgressDialog = this._openDialogs.find(dialog => dialog._isAnimating());
+
+    // If there's a dialog that is in the process of being opened, return it instead.
+    if (inProgressDialog) {
+      return inProgressDialog;
+    }
+
     config = _applyConfigDefaults(config);
 
-    let overlayRef = this._createOverlay(config);
-    let dialogContainer = this._attachDialogContainer(overlayRef, config);
-    let dialogRef =
+    const overlayRef = this._createOverlay(config);
+    const dialogContainer = this._attachDialogContainer(overlayRef, config);
+    const dialogRef =
         this._attachDialogContent(componentOrTemplateRef, dialogContainer, overlayRef, config);
 
     if (!this._openDialogs.length) {

@@ -68,6 +68,7 @@ export function throwMdDialogContentAlreadyAttachedError() {
     '[attr.aria-labelledby]': '_ariaLabelledBy',
     '[attr.aria-describedby]': '_config?.ariaDescribedBy || null',
     '[@slideDialog]': '_state',
+    '(@slideDialog.start)': 'this._isAnimating = true',
     '(@slideDialog.done)': '_onAnimationDone($event)',
   },
 })
@@ -95,6 +96,9 @@ export class MdDialogContainer extends BasePortalHost {
 
   /** ID of the element that should be considered as the dialog's label. */
   _ariaLabelledBy: string | null = null;
+
+  /** Whether the container is currently mid-animation. */
+  _isAnimating = false;
 
   constructor(
     private _ngZone: NgZone,
@@ -175,5 +179,7 @@ export class MdDialogContainer extends BasePortalHost {
       this._restoreFocus();
       this._onAnimationStateChange.complete();
     }
+
+    this._isAnimating = false;
   }
 }
