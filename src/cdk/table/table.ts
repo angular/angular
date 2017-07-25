@@ -90,14 +90,11 @@ export class CdkTable<T> implements CollectionViewer {
   /** Subject that emits when the component has been destroyed. */
   private _onDestroy = new Subject<void>();
 
-  /** Flag set to true after the component has been initialized. */
-  private _isViewInitialized = false;
-
   /** Latest data provided by the data source through the connect interface. */
   private _data: NgIterable<T> = [];
 
   /** Subscription that listens for the data provided by the data source. */
-  private _renderChangeSubscription: Subscription;
+  private _renderChangeSubscription: Subscription | null;
 
   /**
    * Map of all the user's defined columns identified by name.
@@ -188,6 +185,7 @@ export class CdkTable<T> implements CollectionViewer {
   ngOnInit() {
     // TODO(andrewseguin): Setup a listener for scroll events
     //   and emit the calculated view to this.viewChange
+    this._dataDiffer = this._differs.find([]).create(this._trackByFn);
   }
 
   ngAfterContentInit() {
@@ -212,20 +210,13 @@ export class CdkTable<T> implements CollectionViewer {
       this._headerRowPlaceholder.viewContainer.clear();
       this._renderHeaderRow();
     });
+
+    this._renderHeaderRow();
   }
 
-  ngAfterViewInit() {
-    // Find and construct an iterable differ that can be used to find the diff in an array.
-    this._dataDiffer = this._differs.find([]).create(this._trackByFn);
-    this._isViewInitialized = true;
-  }
-
-  ngDoCheck() {
-    if (this._isViewInitialized && this.dataSource && !this._renderChangeSubscription) {
-      this._renderHeaderRow();
-      if (this.dataSource && !this._renderChangeSubscription) {
-        this._observeRenderChanges();
-      }
+  ngAfterContentChecked() {
+    if (this.dataSource && !this._renderChangeSubscription) {
+      this._observeRenderChanges();
     }
   }
 
@@ -237,22 +228,22 @@ export class CdkTable<T> implements CollectionViewer {
   private _switchDataSource(dataSource: DataSource<T>) {
     this._data = [];
 
-    if (this._dataSource) {
+    if (this.dataSource) {
       this.dataSource.disconnect(this);
     }
-    this._dataSource = dataSource;
 
-    if (this._isViewInitialized) {
-      if (this._renderChangeSubscription) {
-        this._renderChangeSubscription.unsubscribe();
-      }
-
-      if (this._dataSource) {
-        this._observeRenderChanges();
-      } else {
-        this._rowPlaceholder.viewContainer.clear();
-      }
+    // Stop listening for data from the previous data source.
+    if (this._renderChangeSubscription) {
+      this._renderChangeSubscription.unsubscribe();
+      this._renderChangeSubscription = null;
     }
+
+    // Remove the table's rows if there is now no data source
+    if (!dataSource) {
+      this._rowPlaceholder.viewContainer.clear();
+    }
+
+    this._dataSource = dataSource;
   }
 
   /** Set up a subscription for the data provided by the data source. */

@@ -37,8 +37,7 @@ describe('CdkTable', () => {
     table = component.table;
     tableElement = fixture.nativeElement.querySelector('cdk-table');
 
-    fixture.detectChanges();  // Let the component and table create embedded views
-    fixture.detectChanges();  // Let the cells render
+    fixture.detectChanges();
   });
 
   describe('should initialize', () => {
@@ -120,8 +119,6 @@ describe('CdkTable', () => {
     });
   });
 
-  // TODO(andrewseguin): Add test for dynamic classes on header/rows
-
   it('should use differ to add/remove/move rows', () => {
     // Each row receives an attribute 'initialIndex' the element's original place
     getRows(tableElement).forEach((row: Element, index: number) => {
@@ -182,9 +179,7 @@ describe('CdkTable', () => {
       dataSource = trackByComponent.dataSource as FakeDataSource;
       table = trackByComponent.table;
       tableElement = trackByFixture.nativeElement.querySelector('cdk-table');
-
-      trackByFixture.detectChanges();  // Let the component and table create embedded views
-      trackByFixture.detectChanges();  // Let the cells render
+      trackByFixture.detectChanges();
 
       // Each row receives an attribute 'initialIndex' the element's original place
       getRows(tableElement).forEach((row: Element, index: number) => {
@@ -307,12 +302,10 @@ describe('CdkTable', () => {
   });
 
   it('should match the right table content with dynamic data source', () => {
-    fixture = TestBed.createComponent(DynamicDataSourceCdkTableApp);
-    component = fixture.componentInstance;
-    tableElement = fixture.nativeElement.querySelector('cdk-table');
-
-    fixture.detectChanges();  // Let the table render the rows
-    fixture.detectChanges();  // Let the rows render their cells
+    const dynamicDataSourceFixture = TestBed.createComponent(DynamicDataSourceCdkTableApp);
+    component = dynamicDataSourceFixture.componentInstance;
+    tableElement = dynamicDataSourceFixture.nativeElement.querySelector('cdk-table');
+    dynamicDataSourceFixture.detectChanges();
 
     // Expect that the component has no data source and the table element reflects empty data.
     expect(component.dataSource).toBe(undefined);
@@ -323,10 +316,10 @@ describe('CdkTable', () => {
     // Add a data source that has initialized data. Expect that the table shows this data.
     const dynamicDataSource = new FakeDataSource();
     component.dataSource = dynamicDataSource;
-    fixture.detectChanges();
+    dynamicDataSourceFixture.detectChanges();
     expect(dynamicDataSource.isConnected).toBe(true);
 
-    let data = component.dataSource.data;
+    const data = component.dataSource.data;
     expectTableToMatchContent(tableElement, [
       ['Column A'],
       [data[0].a],
@@ -336,12 +329,26 @@ describe('CdkTable', () => {
 
     // Remove the data source and check to make sure the table is empty again.
     component.dataSource = null;
-    fixture.detectChanges();
+    dynamicDataSourceFixture.detectChanges();
 
     // Expect that the old data source has been disconnected.
     expect(dynamicDataSource.isConnected).toBe(false);
     expectTableToMatchContent(tableElement, [
       ['Column A']
+    ]);
+
+    // Reconnect a data source and check that the table is populated
+    const newDynamicDataSource = new FakeDataSource();
+    component.dataSource = newDynamicDataSource;
+    dynamicDataSourceFixture.detectChanges();
+    expect(newDynamicDataSource.isConnected).toBe(true);
+
+    const newData = component.dataSource.data;
+    expectTableToMatchContent(tableElement, [
+      ['Column A'],
+      [newData[0].a],
+      [newData[1].a],
+      [newData[2].a],
     ]);
   });
 
@@ -349,11 +356,9 @@ describe('CdkTable', () => {
     const contextFixture = TestBed.createComponent(RowContextCdkTableApp);
     const contextComponent = contextFixture.componentInstance;
     tableElement = contextFixture.nativeElement.querySelector('cdk-table');
+    contextFixture.detectChanges();
 
-    contextFixture.detectChanges();  // Let the table initialize its view
-    contextFixture.detectChanges();  // Let the table render the rows and cells
-
-    const rowElements = contextFixture.nativeElement.querySelectorAll('cdk-row');
+    let rowElements = contextFixture.nativeElement.querySelectorAll('cdk-row');
 
     // Rows should not have any context classes
     for (let i = 0; i < rowElements.length; i++) {
@@ -387,9 +392,7 @@ describe('CdkTable', () => {
     const contextFixture = TestBed.createComponent(RowContextCdkTableApp);
     const contextComponent = contextFixture.componentInstance;
     tableElement = contextFixture.nativeElement.querySelector('cdk-table');
-
-    contextFixture.detectChanges();  // Let the table initialize its view
-    contextFixture.detectChanges();  // Let the table render the rows and cells
+    contextFixture.detectChanges();
 
     const rowElements = contextFixture.nativeElement.querySelectorAll('cdk-row');
 
@@ -681,7 +684,7 @@ function expectTableToMatchContent(tableElement: Element, expectedTableContent: 
   // Check data row cells
   getRows(tableElement).forEach((row, rowIndex) => {
     getCells(row).forEach((cell, cellIndex) => {
-      const expected = expectedHeaderContent ?
+      const expected = expectedTableContent.length ?
           expectedTableContent[rowIndex][cellIndex] :
           null;
       checkCellContent(cell, expected);
