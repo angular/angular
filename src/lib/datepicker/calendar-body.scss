@@ -50,6 +50,9 @@ $mat-calendar-body-cell-content-size: 100% - $mat-calendar-body-cell-content-mar
   width: $mat-calendar-body-cell-content-size;
   height: $mat-calendar-body-cell-content-size;
 
+  // Prevents text being off-center on Android.
+  line-height: 1;
+
   border-width: $mat-calendar-body-cell-content-border-width;
   border-style: solid;
 
