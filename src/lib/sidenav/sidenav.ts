@@ -22,12 +22,14 @@ import {
   NgZone,
   OnDestroy,
   Inject,
+  ChangeDetectorRef,
 } from '@angular/core';
 import {Directionality, coerceBooleanProperty} from '../core';
 import {FocusTrapFactory, FocusTrap} from '../core/a11y/focus-trap';
 import {ESCAPE} from '../core/keyboard/keycodes';
 import {first} from '../core/rxjs/index';
 import {DOCUMENT} from '@angular/platform-browser';
+import {merge} from 'rxjs/observable/merge';
 
 
 /** Throws an exception when two MdSidenav are matching the same side. */
@@ -52,7 +54,6 @@ export class MdSidenavToggleResult {
 @Component({
   moduleId: module.id,
   selector: 'md-sidenav, mat-sidenav',
-  // TODO(mmalerba): move template to separate file.
   templateUrl: 'sidenav.html',
   host: {
     'class': 'mat-sidenav',
@@ -324,9 +325,6 @@ export class MdSidenav implements AfterContentInit, OnDestroy {
 @Component({
   moduleId: module.id,
   selector: 'md-sidenav-container, mat-sidenav-container',
-  // Do not use ChangeDetectionStrategy.OnPush. It does not work for this component because
-  // technically it is a sibling of MdSidenav (on the content tree) and isn't updated when MdSidenav
-  // changes its state.
   templateUrl: 'sidenav-container.html',
   styleUrls: [
     'sidenav.css',
@@ -335,6 +333,7 @@ export class MdSidenav implements AfterContentInit, OnDestroy {
   host: {
     'class': 'mat-sidenav-container',
   },
+  changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
 export class MdSidenavContainer implements AfterContentInit {
@@ -363,7 +362,8 @@ export class MdSidenavContainer implements AfterContentInit {
   private _right: MdSidenav | null;
 
   constructor(@Optional() private _dir: Directionality, private _element: ElementRef,
-              private _renderer: Renderer2, private _ngZone: NgZone) {
+              private _renderer: Renderer2, private _ngZone: NgZone,
+              private _changeDetectorRef: ChangeDetectorRef) {
     // If a `Dir` directive exists up the tree, listen direction changes and update the left/right
     // properties to point to the proper start/end.
     if (_dir != null) {
@@ -408,9 +408,14 @@ export class MdSidenavContainer implements AfterContentInit {
    * is properly hidden.
    */
   private _watchSidenavToggle(sidenav: MdSidenav): void {
-    if (!sidenav || sidenav.mode === 'side') { return; }
-    sidenav.onOpen.subscribe(() => this._setContainerClass(true));
-    sidenav.onClose.subscribe(() => this._setContainerClass(false));
+    merge(sidenav.onOpenStart, sidenav.onCloseStart).subscribe(() => {
+      this._changeDetectorRef.markForCheck();
+    });
+
+    if (sidenav.mode !== 'side') {
+      sidenav.onOpen.subscribe(() => this._setContainerClass(true));
+      sidenav.onClose.subscribe(() => this._setContainerClass(false));
+    }
   }
 
   /**

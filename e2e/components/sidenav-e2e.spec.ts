@@ -1,5 +1,4 @@
 import {browser, by, element, ExpectedConditions} from 'protractor';
-const EC = ExpectedConditions;
 
 describe('sidenav', () => {
   describe('opening and closing', () => {
@@ -20,7 +19,7 @@ describe('sidenav', () => {
     it('should close again', () => {
       element(by.buttonText('Open sidenav')).click();
       element(by.buttonText('Open sidenav')).click();
-      browser.wait(EC.presenceOf(element(by.className('mat-sidenav-closed'))), 1000);
+      browser.wait(ExpectedConditions.presenceOf(element(by.className('mat-sidenav-closed'))), 999);
       expect(input.isDisplayed()).toBeFalsy();
     });
   });
