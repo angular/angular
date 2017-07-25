@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 
-import {CdkTableModule} from '@angular/cdk';
+import {CdkTableModule} from '@angular/cdk/table';
 import {
   MdAutocompleteModule, MdButtonModule, MdButtonToggleModule, MdPaginatorModule,
   MdCardModule, MdCheckboxModule, MdChipsModule, MdDatepickerModule,

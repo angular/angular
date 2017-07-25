@@ -6,5 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './rx-chain';
-export * from './rx-operators';
+
+
+export * from './public_api';

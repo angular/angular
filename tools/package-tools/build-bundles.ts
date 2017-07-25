@@ -1,36 +1,69 @@
 import {join} from 'path';
+import {readdirSync, lstatSync} from 'fs';
 import {ScriptTarget, ModuleKind, NewLineKind} from 'typescript';
 import {uglifyJsFile} from './minify-sources';
 import {createRollupBundle} from './rollup-helpers';
 import {remapSourcemap} from './sourcemap-remap';
 import {transpileFile} from './typescript-transpile';
 import {buildConfig} from './build-config';
+import {getSecondaryEntryPointsForPackage} from './secondary-entry-points';
 
 /** Directory where all bundles will be created in. */
 const bundlesDir = join(buildConfig.outputDir, 'bundles');
 
-/** Builds the bundles for the specified package. */
-export async function buildPackageBundles(entryFile: string, packageName: string) {
-  const moduleName = `ng.${packageName}`;
 
-  // List of paths to the package bundles.
-  const fesm2015File = join(bundlesDir, `${packageName}.js`);
-  const fesm2014File = join(bundlesDir, `${packageName}.es5.js`);
-  const umdFile = join(bundlesDir, `${packageName}.umd.js`);
-  const umdMinFile = join(bundlesDir, `${packageName}.umd.min.js`);
+/** Builds bundles for the primary entry-point w/ given entry file, e.g. @angular/cdk */
+export async function buildPrimaryEntryPointBundles(entryFile: string, packageName: string) {
+  return createBundlesForEntryPoint({
+    entryFile,
+    moduleName: `ng.${packageName}`,
+    fesm2015Dest: join(bundlesDir, `${packageName}.js`),
+    fesm2014Dest: join(bundlesDir, `${packageName}.es5.js`),
+    umdDest: join(bundlesDir, `${packageName}.umd.js`),
+    umdMinDest: join(bundlesDir, `${packageName}.umd.min.js`),
+  });
+}
 
+/** Builds bundles for all secondary entry-points for a given package, e.g. 'cdk' */
+export async function buildAllSecondaryEntryPointBundles(packageName: string) {
+  const rootPackageDir = join(buildConfig.outputDir, 'packages', packageName);
+
+  return Promise.all(getSecondaryEntryPointsForPackage(packageName)
+      .map(entryPointName => buildSecondaryEntryPointBundles(
+          join(rootPackageDir, entryPointName, `index.js`), packageName, entryPointName)));
+}
+
+/** Builds bundles for a single secondary entry-point w/ given entry file, e.g. @angular/cdk/a11y */
+export async function buildSecondaryEntryPointBundles(
+    entryFile: string, packageName: string, entryPointName: string) {
+  return createBundlesForEntryPoint({
+    entryFile,
+    moduleName: `ng.${packageName}.${entryPointName}`,
+    fesm2015Dest: join(bundlesDir, `${packageName}`, `${entryPointName}.js`),
+    fesm2014Dest: join(bundlesDir, `${packageName}`, `${entryPointName}.es5.js`),
+    umdDest: join(bundlesDir, `${packageName}-${entryPointName}.umd.js`),
+    umdMinDest: join(bundlesDir, `${packageName}-${entryPointName}.umd.min.js`),
+  });
+}
+
+/**
+ * Creates the ES5, ES2015, and UMD bundles for the specified entry-point.
+ * @param config Configuration that specifies the entry-point, module name, and output
+ *     bundle paths.
+ */
+async function createBundlesForEntryPoint(config: BundlesConfig) {
   // Build FESM-2015 bundle file.
   await createRollupBundle({
-    moduleName: moduleName,
-    entry: entryFile,
-    dest: fesm2015File,
+    moduleName: config.moduleName,
+    entry: config.entryFile,
+    dest: config.fesm2015Dest,
     format: 'es',
   });
 
-  await remapSourcemap(fesm2015File);
+  await remapSourcemap(config.fesm2015Dest);
 
   // Downlevel FESM-2015 file to ES5.
-  transpileFile(fesm2015File, fesm2014File, {
+  transpileFile(config.fesm2015Dest, config.fesm2014Dest, {
     importHelpers: true,
     target: ScriptTarget.ES5,
     module: ModuleKind.ES2015,
@@ -38,20 +71,31 @@ export async function buildPackageBundles(entryFile: string, packageName: string
     newLine: NewLineKind.LineFeed
   });
 
-  await remapSourcemap(fesm2014File);
+  await remapSourcemap(config.fesm2014Dest);
 
   // Create UMD bundle of FESM-2014 output.
   await createRollupBundle({
-    moduleName: moduleName,
-    entry: fesm2014File,
-    dest: umdFile,
+    moduleName: config.moduleName,
+    entry: config.fesm2014Dest,
+    dest: config.umdDest,
     format: 'umd'
   });
 
-  await remapSourcemap(umdFile);
+  await remapSourcemap(config.umdDest);
 
   // Create a minified UMD bundle using UglifyJS
-  uglifyJsFile(umdFile, umdMinFile);
+  uglifyJsFile(config.umdDest, config.umdMinDest);
 
-  await remapSourcemap(umdMinFile);
+  await remapSourcemap(config.umdMinDest);
+}
+
+
+/** Configuration for creating library bundles. */
+interface BundlesConfig {
+  entryFile: string;
+  moduleName: string;
+  fesm2015Dest: string;
+  fesm2014Dest: string;
+  umdDest: string;
+  umdMinDest: string;
 }

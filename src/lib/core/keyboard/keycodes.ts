@@ -22,4 +22,4 @@ export {
   ESCAPE,
   BACKSPACE,
   DELETE
-} from '@angular/cdk';
+} from '@angular/cdk/keyboard';

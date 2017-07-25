@@ -12,4 +12,4 @@ export {
   LiveAnnouncer,
   LIVE_ANNOUNCER_PROVIDER_FACTORY,
   LIVE_ANNOUNCER_PROVIDER
-} from '@angular/cdk';
+} from '@angular/cdk/a11y';

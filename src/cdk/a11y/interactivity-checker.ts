@@ -7,7 +7,7 @@
  */
 
 import {Injectable} from '@angular/core';
-import {Platform} from '../platform/platform';
+import {Platform} from '@angular/cdk/platform';
 
 /**
  * The InteractivityChecker leans heavily on the ally.js accessibility utilities.

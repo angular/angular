@@ -6,4 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {RxChain} from '@angular/cdk';
+export {RxChain} from '@angular/cdk/rxjs';

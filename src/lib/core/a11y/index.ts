@@ -6,4 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {A11yModule} from '@angular/cdk';
+export {A11yModule} from '@angular/cdk/a11y';

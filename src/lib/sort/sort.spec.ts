@@ -1,7 +1,7 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component, ElementRef, ViewChild} from '@angular/core';
 import {MdSort, MdSortHeader, Sort, SortDirection, MdSortModule} from './index';
-import {CdkTableModule, DataSource, CollectionViewer} from '@angular/cdk';
+import {CdkTableModule, DataSource, CollectionViewer} from '@angular/cdk/table';
 import {Observable} from 'rxjs/Observable';
 import {dispatchMouseEvent} from '@angular/cdk/testing';
 import {

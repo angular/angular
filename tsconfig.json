@@ -16,8 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@angular/material": ["./src/lib/public_api.ts"],
-      "@angular/cdk": ["./src/cdk/public_api.ts"],
-      "@angular/cdk/testing": ["./src/cdk/testing"],
+      "@angular/cdk*": ["./src/cdk/*"],
       "@angular/material-examples": ["./src/material-examples"]
     }
   },

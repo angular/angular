@@ -6,7 +6,7 @@ import {dispatchMouseEvent} from '@angular/cdk/testing';
 import {
   MdRipple, MdRippleModule, MD_RIPPLE_GLOBAL_OPTIONS, RippleState, RippleGlobalOptions
 } from './index';
-import {Platform} from '@angular/cdk';
+import {Platform} from '@angular/cdk/platform';
 
 
 describe('MdRipple', () => {

@@ -1,0 +1,20 @@
+{
+  "extends": "../tsconfig-build",
+  "compilerOptions": {
+    "outDir": "../../../dist/packages/cdk",
+    "baseUrl": ".",
+    "paths": {
+      "@angular/cdk/rxjs": ["../../../dist/packages/cdk/rxjs/public_api"]
+    }
+  },
+  "files": [
+    "public_api.ts"
+  ],
+  "angularCompilerOptions": {
+    "annotateForClosureCompiler": true,
+    "strictMetadataEmit": true,
+    "flatModuleOutFile": "index.js",
+    "flatModuleId": "@angular/cdk/observe-content",
+    "skipTemplateCodegen": true
+  }
+}

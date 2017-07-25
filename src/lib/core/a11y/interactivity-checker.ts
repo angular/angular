@@ -6,4 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {InteractivityChecker} from '@angular/cdk';
+export {InteractivityChecker} from '@angular/cdk/a11y';

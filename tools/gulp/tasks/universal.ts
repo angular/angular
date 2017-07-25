@@ -22,7 +22,7 @@ const tsconfigPrerenderPath = join(outDir, 'tsconfig-prerender.json');
 const prerenderOutFile = join(outDir, 'prerender.js');
 
 /** Task that builds the universal-app and runs the prerender script. */
-task('universal:test-prerender', ['universal:build'], execTask(
+task('prerender', ['universal:build'], execTask(
   // Runs node with the tsconfig-paths module to alias the @angular/material dependency.
   'node', ['-r', 'tsconfig-paths/register', prerenderOutFile], {
     env: {TS_NODE_PROJECT: tsconfigPrerenderPath},

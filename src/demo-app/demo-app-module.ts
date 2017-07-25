@@ -78,7 +78,7 @@ import {
   OverlayContainer,
   StyleModule
 } from '@angular/material';
-import {CdkTableModule} from '@angular/cdk';
+import {CdkTableModule} from '@angular/cdk/table';
 import {TableHeaderDemo} from './table/table-header-demo';
 
 /**

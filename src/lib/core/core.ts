@@ -7,7 +7,7 @@
  */
 
 import {NgModule} from '@angular/core';
-import {ObserveContentModule} from '@angular/cdk';
+import {ObserveContentModule} from '@angular/cdk/observe-content';
 import {MdLineModule} from './line/line';
 import {BidiModule} from './bidi/index';
 import {MdOptionModule} from './option/index';
@@ -21,9 +21,12 @@ import {MdRippleModule} from './ripple/index';
 export {
   coerceBooleanProperty,
   coerceNumberProperty,
+} from '@angular/cdk/coercion';
+
+export {
   ObserveContentModule,
-  ObserveContent
-} from '@angular/cdk';
+  ObserveContent,
+} from '@angular/cdk/observe-content';
 
 // RTL
 export {Dir, Direction, Directionality, BidiModule} from './bidi/index';

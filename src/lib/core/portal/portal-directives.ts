@@ -6,4 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {TemplatePortalDirective, PortalHostDirective, PortalModule} from '@angular/cdk';
+export {TemplatePortalDirective, PortalHostDirective, PortalModule} from '@angular/cdk/portal';

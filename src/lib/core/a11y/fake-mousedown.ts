@@ -6,4 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {isFakeMousedownFromScreenReader} from '@angular/cdk';
+export {isFakeMousedownFromScreenReader} from '@angular/cdk/a11y';

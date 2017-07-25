@@ -14,7 +14,7 @@ import {
   SkipSelf,
   OnDestroy,
 } from '@angular/core';
-import {Platform} from '../platform/platform';
+import {Platform} from '@angular/cdk/platform';
 
 
 export const LIVE_ANNOUNCER_ELEMENT_TOKEN = new InjectionToken<HTMLElement>('liveAnnouncerElement');

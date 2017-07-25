@@ -11,7 +11,7 @@
     "outDir": ".",
     "paths": {
       "@angular/material": ["./material"],
-      "@angular/cdk": ["./cdk"]
+      "@angular/cdk/*": ["./cdk/*"]
     }
   },
   "files": [

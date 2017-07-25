@@ -9,7 +9,7 @@
 import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@angular/core';
 import {MdDatepicker} from './datepicker';
 import {MdDatepickerIntl} from './datepicker-intl';
-import {coerceBooleanProperty} from '@angular/cdk';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
 
 
 @Component({

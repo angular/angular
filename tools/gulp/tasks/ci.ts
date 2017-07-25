@@ -18,4 +18,4 @@ task('ci:payload', ['payload']);
 task('ci:coverage', ['coverage:upload']);
 
 /** Task that verifies if all Material components are working with platform-server.*/
-task('ci:prerender', ['universal:test-prerender']);
+task('ci:prerender', ['prerender']);

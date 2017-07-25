@@ -13,4 +13,4 @@ export {
   Direction,
   Dir,
   BidiModule,
-} from '@angular/cdk';
+} from '@angular/cdk/bidi';

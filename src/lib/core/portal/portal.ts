@@ -6,4 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {Portal, PortalHost, BasePortalHost, ComponentPortal, TemplatePortal} from '@angular/cdk';
+export {
+  Portal,
+  PortalHost,
+  BasePortalHost,
+  ComponentPortal,
+  TemplatePortal
+} from '@angular/cdk/portal';

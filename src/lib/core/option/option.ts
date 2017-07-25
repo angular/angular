@@ -19,7 +19,7 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import {ENTER, SPACE} from '../keyboard/keycodes';
-import {coerceBooleanProperty} from '@angular/cdk';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {MATERIAL_COMPATIBILITY_MODE} from '../../core/compatibility/compatibility';
 import {MdOptgroup} from './optgroup';
 import {CanDisableRipple, mixinDisableRipple} from '../common-behaviors/disable-ripple';

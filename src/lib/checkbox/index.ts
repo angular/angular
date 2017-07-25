@@ -8,7 +8,7 @@
 
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {ObserveContentModule} from '@angular/cdk';
+import {ObserveContentModule} from '@angular/cdk/observe-content';
 import {MdRippleModule, MdCommonModule, FocusOriginMonitor} from '../core';
 import {MdCheckbox} from './checkbox';
 

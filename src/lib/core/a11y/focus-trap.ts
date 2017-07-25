@@ -11,7 +11,7 @@ export {
   FocusTrapFactory,
   FocusTrapDeprecatedDirective,
   FocusTrapDirective
-} from '@angular/cdk';
+} from '@angular/cdk/a11y';
 
 
 

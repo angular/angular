@@ -6,4 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {getSupportedInputTypes} from '@angular/cdk';
+export {getSupportedInputTypes} from '@angular/cdk/platform';

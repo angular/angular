@@ -1,0 +1,23 @@
+{
+  "extends": "../tsconfig-build",
+  "compilerOptions": {
+    "outDir": "../../../dist/packages/cdk",
+    "baseUrl": ".",
+    "paths": {
+      "@angular/cdk/coercion": ["../../../dist/packages/cdk/coercion/public_api"],
+      "@angular/cdk/keyboard": ["../../../dist/packages/cdk/keyboard/public_api"],
+      "@angular/cdk/platform": ["../../../dist/packages/cdk/platform/public_api"],
+      "@angular/cdk/rxjs": ["../../../dist/packages/cdk/rxjs/public_api"]
+    }
+  },
+  "files": [
+    "public_api.ts"
+  ],
+  "angularCompilerOptions": {
+    "annotateForClosureCompiler": true,
+    "strictMetadataEmit": true,
+    "flatModuleOutFile": "index.js",
+    "flatModuleId": "@angular/cdk/a11y",
+    "skipTemplateCodegen": true
+  }
+}

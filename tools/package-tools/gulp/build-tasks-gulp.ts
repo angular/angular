@@ -1,13 +1,15 @@
-import {task, src, dest} from 'gulp';
+import {dest, src, task} from 'gulp';
 import {join} from 'path';
+import {readFileSync, unlink, writeFileSync} from 'fs';
 import {main as tsc} from '@angular/tsc-wrapped';
 import {buildConfig} from '../build-config';
 import {composeRelease} from '../build-release';
-import {buildPackageBundles} from '../build-bundles';
+import {buildAllSecondaryEntryPointBundles, buildPrimaryEntryPointBundles} from '../build-bundles';
 import {inlineResourcesForDirectory} from '../inline-resources';
 import {buildScssTask} from './build-scss-task';
 import {sequenceTask} from './sequence-task';
 import {watchFiles} from './watch-files';
+import {getSecondaryEntryPointsForPackage} from '../secondary-entry-points';
 
 // There are no type definitions available for these imports.
 const htmlmin = require('gulp-htmlmin');
@@ -24,9 +26,9 @@ const htmlMinifierOptions = {
 /**
  * Creates a set of gulp tasks that can build the specified package.
  * @param packageName Name of the package. Needs to be similar to the directory name in `src/`.
- * @param requiredPackages Required packages that will be built before building the current package.
+ * @param dependencies Required packages that will be built before building the current package.
  */
-export function createPackageBuildTasks(packageName: string, requiredPackages: string[] = []) {
+export function createPackageBuildTasks(packageName: string, dependencies: string[] = [], options: PackageTaskOptions = {}) {
   // To avoid refactoring of the project the package material will map to the source path `lib/`.
   const packageRoot = join(packagesDir, packageName === 'material' ? 'lib' : packageName);
   const packageOut = join(outputDir, 'packages', packageName);
@@ -44,7 +46,7 @@ export function createPackageBuildTasks(packageName: string, requiredPackages: s
   const htmlGlob = join(packageRoot, '**/*.html');
 
   // List of watch tasks that need run together with the watch task of the current package.
-  const dependentWatchTasks = requiredPackages.map(pkgName => `${pkgName}:watch`);
+  const dependentWatchTasks = dependencies.map(pkgName => `${pkgName}:watch`);
 
   /**
    * Main tasks for the package building. Tasks execute the different sub-tasks in the correct
@@ -54,7 +56,7 @@ export function createPackageBuildTasks(packageName: string, requiredPackages: s
 
   task(`${packageName}:build`, sequenceTask(
     // Build all required packages before building.
-    ...requiredPackages.map(pkgName => `${pkgName}:build`),
+    ...dependencies.map(pkgName => `${pkgName}:build`),
     // Build ESM and assets output.
     [`${packageName}:build:esm`, `${packageName}:assets`],
     // Inline assets into ESM output.
@@ -65,7 +67,7 @@ export function createPackageBuildTasks(packageName: string, requiredPackages: s
 
   task(`${packageName}:build-tests`, sequenceTask(
     // Build all required tests before building.
-    ...requiredPackages.map(pkgName => `${pkgName}:build-tests`),
+    ...dependencies.map(pkgName => `${pkgName}:build-tests`),
     // Build the ESM output that includes all test files. Also build assets for the package.
     [`${packageName}:build:esm:tests`, `${packageName}:assets`],
     // Inline assets into ESM output.
@@ -75,15 +77,37 @@ export function createPackageBuildTasks(packageName: string, requiredPackages: s
   /**
    * Release tasks for the package. Tasks compose the release output for the package.
    */
+
   task(`${packageName}:build-release:clean`, sequenceTask('clean', `${packageName}:build-release`));
-  task(`${packageName}:build-release`, [`${packageName}:build`], () => composeRelease(packageName));
+  task(`${packageName}:build-release`, [`${packageName}:build`], () => {
+    return composeRelease(packageName, {useSecondaryEntryPoints: options.useSecondaryEntryPoints});
+  });
+
   /**
    * TypeScript compilation tasks. Tasks are creating ESM, FESM, UMD bundles for releases.
    */
-  task(`${packageName}:build:esm`, () => tsc(tsconfigBuild, {basePath: packageRoot}));
+
+  task(`${packageName}:build:esm`, () => {
+    const primaryEntryPointResult = tsc(tsconfigBuild, {basePath: packageRoot});
+
+    if (options.useSecondaryEntryPoints) {
+      return Promise.all([
+        compileSecondaryEntryPointsEsm(packageName, packageRoot),
+        primaryEntryPointResult
+      ]);
+    }
+
+    return primaryEntryPointResult;
+  });
   task(`${packageName}:build:esm:tests`, () => tsc(tsconfigTests, {basePath: packageRoot}));
 
-  task(`${packageName}:build:bundles`, () => buildPackageBundles(esmMainFile, packageName));
+  task(`${packageName}:build:bundles`, () => {
+    const primaryBundlePromise = buildPrimaryEntryPointBundles(esmMainFile, packageName);
+
+    return options.useSecondaryEntryPoints ?
+        Promise.all([primaryBundlePromise, buildAllSecondaryEntryPointBundles('cdk')]) :
+        primaryBundlePromise;
+  });
 
   /**
    * Asset tasks. Building SASS files and inlining CSS, HTML files into the ESM output.
@@ -110,4 +134,16 @@ export function createPackageBuildTasks(packageName: string, requiredPackages: s
   task(`${packageName}:watch`, dependentWatchTasks, () => {
     watchFiles(join(packageRoot, '**/*.+(ts|scss|html)'), [`${packageName}:build`]);
   });
+}
+
+
+interface PackageTaskOptions {
+  useSecondaryEntryPoints?: boolean;
+}
+
+/** Sequentially runs tsc for all secondary entry-points for a package. */
+async function compileSecondaryEntryPointsEsm(packageName: string, packageRoot: string) {
+  for (const p of getSecondaryEntryPointsForPackage(packageName)) {
+    await tsc(join(packageRoot, p, 'tsconfig-build.json'), {basePath: join(packageRoot, p)});
+  }
 }

@@ -44,4 +44,4 @@ export {
   debounceTime,
   auditTime,
   takeUntil,
-} from '@angular/cdk';
+} from '@angular/cdk/rxjs';

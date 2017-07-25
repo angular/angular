@@ -7,9 +7,9 @@
  */
 
 import {QueryList} from '@angular/core';
-import {UP_ARROW, DOWN_ARROW, TAB} from '../keyboard/keycodes';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
+import {UP_ARROW, DOWN_ARROW, TAB} from '@angular/cdk/keyboard';
 
 /**
  * This interface is for items that can be disabled. The type passed into

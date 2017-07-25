@@ -11,8 +11,7 @@
     "experimentalDecorators": true,
     "strictNullChecks": true,
     "paths": {
-      "@angular/cdk": ["../../dist/packages/cdk"],
-      "@angular/cdk/testing": ["../../dist/packages/cdk/testing"]
+      "@angular/cdk/*": ["../../dist/packages/cdk/*"]
     }
   },
   "include": [

@@ -49,6 +49,15 @@ System.config({
     // TODO(devversion): replace once the index.ts file for the Material package has been added.
     '@angular/material': 'dist/packages/material/public_api.js',
     '@angular/cdk': 'dist/packages/cdk/index.js',
+    '@angular/cdk/a11y': 'dist/packages/cdk/a11y/index.js',
+    '@angular/cdk/bidi': 'dist/packages/cdk/bidi/index.js',
+    '@angular/cdk/coercion': 'dist/packages/cdk/coercion/index.js',
+    '@angular/cdk/keyboard': 'dist/packages/cdk/keyboard/index.js',
+    '@angular/cdk/observe-content': 'dist/packages/cdk/observe-content/index.js',
+    '@angular/cdk/platform': 'dist/packages/cdk/platform/index.js',
+    '@angular/cdk/portal': 'dist/packages/cdk/portal/index.js',
+    '@angular/cdk/rxjs': 'dist/packages/cdk/rxjs/index.js',
+    '@angular/cdk/table': 'dist/packages/cdk/table/index.js',
     '@angular/cdk/testing': 'dist/packages/cdk/testing/index.js',
   },
   packages: {

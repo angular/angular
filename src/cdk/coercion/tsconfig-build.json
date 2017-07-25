@@ -1,0 +1,17 @@
+{
+  "extends": "../tsconfig-build",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "../../../dist/packages/cdk"
+  },
+  "files": [
+    "public_api.ts"
+  ],
+  "angularCompilerOptions": {
+    "annotateForClosureCompiler": true,
+    "strictMetadataEmit": true,
+    "flatModuleOutFile": "index.js",
+    "flatModuleId": "@angular/cdk/coercion",
+    "skipTemplateCodegen": true
+  }
+}

@@ -6,6 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {PlatformModule} from '@angular/cdk';
+export {PlatformModule} from '@angular/cdk/platform';
 export * from './platform';
 export * from './features';

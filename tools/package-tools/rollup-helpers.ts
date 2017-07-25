@@ -22,6 +22,17 @@ const ROLLUP_GLOBALS = {
 
   // Local Angular packages inside of Material.
   '@angular/material': 'ng.material',
+
+  // TODO(jelbourn): don't hard-code these
+  '@angular/cdk/a11y': 'ng.cdk.a11y',
+  '@angular/cdk/bidi': 'ng.cdk.bidi',
+  '@angular/cdk/coercion': 'ng.cdk.coercion',
+  '@angular/cdk/keyboard': 'ng.cdk.keyboard',
+  '@angular/cdk/observe-content': 'ng.cdk.observeContent',
+  '@angular/cdk/platform': 'ng.cdk.platform',
+  '@angular/cdk/portal': 'ng.cdk.portal',
+  '@angular/cdk/rxjs': 'ng.cdk.rxjs',
+  '@angular/cdk/table': 'ng.cdk.table',
   '@angular/cdk': 'ng.cdk',
 
   // RxJS dependencies

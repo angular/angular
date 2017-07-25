@@ -15,10 +15,10 @@ import {
   AfterContentInit,
   Injectable,
 } from '@angular/core';
-import {coerceBooleanProperty} from '../coercion/boolean-property';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {Platform} from '@angular/cdk/platform';
+import {first} from '@angular/cdk/rxjs';
 import {InteractivityChecker} from './interactivity-checker';
-import {Platform} from '../platform/platform';
-import {first} from '../rxjs/index';
 
 
 /**

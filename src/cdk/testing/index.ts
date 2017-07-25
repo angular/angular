@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './dispatch-events';
-export * from './event-objects';
-export * from './type-in-element';
-export * from './wrapped-error-message';
+
+
+export * from './public_api';

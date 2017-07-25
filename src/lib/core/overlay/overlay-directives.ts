@@ -35,7 +35,7 @@ import {
 } from './position/connected-position';
 import {ConnectedPositionStrategy} from './position/connected-position-strategy';
 import {Directionality, Direction} from '../bidi/index';
-import {coerceBooleanProperty} from '@angular/cdk';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {ScrollStrategy, RepositionScrollStrategy} from './scroll/index';
 import {ESCAPE} from '../keyboard/keycodes';
 import {Subscription} from 'rxjs/Subscription';

@@ -1,5 +1,5 @@
 import {MdPaginator, MdSort} from '@angular/material';
-import {DataSource} from '@angular/cdk';
+import {DataSource} from '@angular/cdk/table';
 import {Observable} from 'rxjs/Observable';
 import {PeopleDatabase, UserData} from './people-database';
 import 'rxjs/add/observable/merge';

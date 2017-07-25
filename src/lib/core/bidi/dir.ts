@@ -6,5 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {Dir} from '@angular/cdk';
+export {Dir} from '@angular/cdk/bidi';
 
