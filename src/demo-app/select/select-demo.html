@@ -66,6 +66,22 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
   </md-card>
 
   <md-card>
+    <md-card-subtitle>Without Angular forms</md-card-subtitle>
+
+    <md-select placeholder="Digimon" [(value)]="currentDigimon">
+      <md-option>None</md-option>
+      <md-option *ngFor="let creature of digimon" [value]="creature.value">
+        {{ creature.viewValue }}
+      </md-option>
+    </md-select>
+
+    <p>Value: {{ currentDigimon }}</p>
+
+    <button md-button (click)="currentDigimon='pajiramon-3'">SET VALUE</button>
+    <button md-button (click)="currentDigimon=null">RESET</button>
+  </md-card>
+
+  <md-card>
     <md-card-subtitle>Option groups</md-card-subtitle>
 
     <md-card-content>

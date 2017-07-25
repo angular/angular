@@ -17,6 +17,7 @@ export class SelectDemo {
   currentDrink: string;
   currentPokemon: string[];
   currentPokemonFromGroup: string;
+  currentDigimon: string;
   latestChangeEvent: MdSelectChange;
   floatPlaceholder: string = 'auto';
   foodControl = new FormControl('pizza-1');
@@ -92,6 +93,15 @@ export class SelectDemo {
         { value: 'mewtwo-10', viewValue: 'Mewtwo' },
       ]
     }
+  ];
+
+  digimon = [
+    { value: 'mihiramon-0', viewValue: 'Mihiramon' },
+    { value: 'sandiramon-1', viewValue: 'Sandiramon' },
+    { value: 'sinduramon-2', viewValue: 'Sinduramon' },
+    { value: 'pajiramon-3', viewValue: 'Pajiramon' },
+    { value: 'vajiramon-4', viewValue: 'Vajiramon' },
+    { value: 'indramon-5', viewValue: 'Indramon' }
   ];
 
   toggleDisabled() {

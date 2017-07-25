@@ -325,6 +325,15 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
     }
   }
 
+  /** Value of the select control. */
+  @Input()
+  get value() { return this._value; }
+  set value(newValue: any) {
+    this.writeValue(newValue);
+    this._value = newValue;
+  }
+  private _value: any;
+
   /** Aria label of the select. If not specified, the placeholder will be used as label. */
   @Input('aria-label') ariaLabel: string = '';
 
@@ -344,6 +353,13 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
 
   /** Event emitted when the selected value has been changed by the user. */
   @Output() change: EventEmitter<MdSelectChange> = new EventEmitter<MdSelectChange>();
+
+  /**
+   * Event that emits whenever the raw value of the select changes. This is here primarily
+   * to facilitate the two-way binding for the `value` input.
+   * @docs-private
+   */
+  @Output() valueChange = new EventEmitter<any>();
 
   constructor(
     private _viewportRuler: ViewportRuler,
@@ -377,11 +393,11 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
     this._changeSubscription = startWith.call(this.options.changes, null).subscribe(() => {
       this._resetOptions();
 
-      if (this._control) {
-        // Defer setting the value in order to avoid the "Expression
-        // has changed after it was checked" errors from Angular.
-        Promise.resolve(null).then(() => this._setSelectionByValue(this._control.value));
-      }
+      // Defer setting the value in order to avoid the "Expression
+      // has changed after it was checked" errors from Angular.
+      Promise.resolve().then(() => {
+        this._setSelectionByValue(this._control ? this._control.value : this._value);
+      });
     });
   }
 
@@ -750,8 +766,10 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
       valueToEmit = this.selected ? this.selected.value : fallbackValue;
     }
 
+    this._value = valueToEmit;
     this._onChange(valueToEmit);
     this.change.emit(new MdSelectChange(this, valueToEmit));
+    this.valueChange.emit(valueToEmit);
   }
 
   /** Records option IDs to pass to the aria-owns property. */
