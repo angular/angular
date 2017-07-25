@@ -41,14 +41,23 @@ export function shallowEqual(a: {[x: string]: any}, b: {[x: string]: any}): bool
   return true;
 }
 
+/**
+ * Flattens single-level nested arrays.
+ */
 export function flatten<T>(arr: T[][]): T[] {
   return Array.prototype.concat.apply([], arr);
 }
 
+/**
+ * Return the last element of an array.
+ */
 export function last<T>(a: T[]): T|null {
   return a.length > 0 ? a[a.length - 1] : null;
 }
 
+/**
+ * Verifys all booleans in an array are `true`.
+ */
 export function and(bools: boolean[]): boolean {
   return !bools.some(v => !v);
 }
@@ -85,6 +94,10 @@ export function waitForMap<A, B>(
   return map.call(last$, () => res);
 }
 
+/**
+ * ANDs Observables by merging all input observables, reducing to an Observable verifying all
+ * input Observables return `true`.
+ */
 export function andObservables(observables: Observable<Observable<any>>): Observable<boolean> {
   const merged$ = mergeAll.call(observables);
   return every.call(merged$, (result: any) => result === true);

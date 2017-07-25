@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 import {Route, UrlMatchResult} from './config';
 import {UrlSegment, UrlSegmentGroup} from './url_tree';
 
