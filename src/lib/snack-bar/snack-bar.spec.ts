@@ -305,6 +305,29 @@ describe('MdSnackBar', () => {
       tick(500);
     }));
 
+  it('should allow manually closing with an action', fakeAsync(() => {
+    let dismissObservableCompleted = false;
+    let actionObservableCompleted = false;
+    let snackBarRef = snackBar.open('Some content');
+    viewContainerFixture.detectChanges();
+
+    snackBarRef.afterDismissed().subscribe(undefined, undefined, () => {
+      dismissObservableCompleted = true;
+    });
+    snackBarRef.onAction().subscribe(undefined, undefined, () => {
+      actionObservableCompleted = true;
+    });
+
+    snackBarRef.closeWithAction();
+    viewContainerFixture.detectChanges();
+    flushMicrotasks();
+
+    expect(dismissObservableCompleted).toBeTruthy('Expected the snack bar to be dismissed');
+    expect(actionObservableCompleted).toBeTruthy('Expected the snack bar to notify of action');
+
+    tick(500);
+  }));
+
   it('should dismiss automatically after a specified timeout', fakeAsync(() => {
     let dismissObservableCompleted = false;
     let config = new MdSnackBarConfig();
@@ -385,6 +408,29 @@ describe('MdSnackBar', () => {
       expect(snackBarRef.instance.data.burritoType)
         .toBe('Chimichanga', 'Expected the injected data object to be the one the user provided.');
     });
+
+    it('should allow manually closing with an action', fakeAsync(() => {
+      let dismissObservableCompleted = false;
+      let actionObservableCompleted = false;
+      const snackBarRef = snackBar.openFromComponent(BurritosNotification);
+      viewContainerFixture.detectChanges();
+
+      snackBarRef.afterDismissed().subscribe(undefined, undefined, () => {
+        dismissObservableCompleted = true;
+      });
+      snackBarRef.onAction().subscribe(undefined, undefined, () => {
+        actionObservableCompleted = true;
+      });
+
+      snackBarRef.closeWithAction();
+      viewContainerFixture.detectChanges();
+      flushMicrotasks();
+
+      expect(dismissObservableCompleted).toBeTruthy('Expected the snack bar to be dismissed');
+      expect(actionObservableCompleted).toBeTruthy('Expected the snack bar to notify of action');
+
+      tick(500);
+    }));
 
   });
 

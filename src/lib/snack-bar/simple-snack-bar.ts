@@ -36,9 +36,9 @@ export class SimpleSnackBar {
     this.data = data;
   }
 
-  /** Dismisses the snack bar. */
-  dismiss(): void {
-    this.snackBarRef._action();
+  /** Performs the action on the snack bar. */
+  action(): void {
+    this.snackBarRef.closeWithAction();
   }
 
   /** If the action button should be shown. */

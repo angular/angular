@@ -25,13 +25,13 @@ export class MdSnackBarRef<T> {
   containerInstance: MdSnackBarContainer;
 
   /** Subject for notifying the user that the snack bar has closed. */
-  private _afterClosed: Subject<any> = new Subject();
+  private _afterClosed = new Subject<void>();
 
   /** Subject for notifying the user that the snack bar has opened and appeared. */
-  private _afterOpened: Subject<any>;
+  private _afterOpened = new Subject<void>();
 
   /** Subject for notifying the user that the snack bar action was called. */
-  private _onAction: Subject<any> = new Subject();
+  private _onAction = new Subject<void>();
 
   /**
    * Timeout ID for the duration setTimeout call. Used to clear the timeout if the snackbar is
@@ -55,17 +55,17 @@ export class MdSnackBarRef<T> {
     clearTimeout(this._durationTimeoutId);
   }
 
-  /** Dismisses the snack bar after some duration */
-  _dismissAfter(duration: number): void {
-    this._durationTimeoutId = setTimeout(() => this.dismiss(), duration);
-  }
-
   /** Marks the snackbar action clicked. */
-  _action(): void {
+  closeWithAction(): void {
     if (!this._onAction.closed) {
       this._onAction.next();
       this._onAction.complete();
     }
+  }
+
+  /** Dismisses the snack bar after some duration */
+  _dismissAfter(duration: number): void {
+    this._durationTimeoutId = setTimeout(() => this.dismiss(), duration);
   }
 
   /** Marks the snackbar as opened */
