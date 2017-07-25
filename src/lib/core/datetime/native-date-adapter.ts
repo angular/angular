@@ -8,6 +8,7 @@
 
 import {Inject, Injectable, Optional, LOCALE_ID} from '@angular/core';
 import {DateAdapter} from './date-adapter';
+import {extendObject} from '../util/object-extend';
 
 
 // TODO(mmalerba): Remove when we no longer support safari 9.
@@ -55,6 +56,14 @@ export class NativeDateAdapter extends DateAdapter<Date> {
     super();
     super.setLocale(localeId);
   }
+
+  /**
+   * Whether to use `timeZone: 'utc'` with `Intl.DateTimeFormat` when formatting dates.
+   * Without this `Intl.DateTimeFormat` sometimes chooses the wrong timeZone, which can throw off
+   * the result. (e.g. in the en-US locale `new Date(1800, 7, 14).toLocaleDateString()`
+   * will produce `'8/13/1800'`.
+   */
+  useUtcForDisplay = true;
 
   getYear(date: Date): number {
     return date.getFullYear();
@@ -154,6 +163,12 @@ export class NativeDateAdapter extends DateAdapter<Date> {
 
   format(date: Date, displayFormat: Object): string {
     if (SUPPORTS_INTL_API) {
+      if (this.useUtcForDisplay) {
+        date = new Date(Date.UTC(
+            date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(),
+            date.getMinutes(), date.getSeconds(), date.getMilliseconds()));
+        displayFormat = extendObject({}, displayFormat, {timeZone: 'utc'});
+      }
       let dtf = new Intl.DateTimeFormat(this.locale, displayFormat);
       return this._stripDirectionalityCharacters(dtf.format(date));
     }

@@ -296,6 +296,14 @@ describe('NativeDateAdapter', () => {
         new Date(2018, FEB, 1), new Date(2018, JAN, 1), new Date(2019, JAN, 1)))
         .toEqual(new Date(2018, FEB, 1));
   });
+
+  it('should use UTC for formatting by default', () => {
+    if (SUPPORTS_INTL) {
+      expect(adapter.format(new Date(1800, 7, 14), {day: 'numeric'})).toBe('14');
+    } else {
+      expect(adapter.format(new Date(1800, 7, 14), {day: 'numeric'})).toBe('Thu Aug 14 1800');
+    }
+  });
 });
 
 
