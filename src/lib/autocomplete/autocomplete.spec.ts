@@ -344,6 +344,37 @@ describe('MdAutocomplete', () => {
       });
     }));
 
+    it('should toggle the visibility when typing and closing the panel', fakeAsync(() => {
+      fixture.componentInstance.trigger.openPanel();
+      tick();
+      fixture.detectChanges();
+
+      expect(overlayContainerElement.querySelector('.mat-autocomplete-panel')!.classList)
+          .toContain('mat-autocomplete-visible', 'Expected panel to be visible.');
+
+      typeInElement('x', input);
+      fixture.detectChanges();
+      tick();
+      fixture.detectChanges();
+
+      expect(overlayContainerElement.querySelector('.mat-autocomplete-panel')!.classList)
+          .toContain('mat-autocomplete-hidden', 'Expected panel to be hidden.');
+
+      fixture.componentInstance.trigger.closePanel();
+      fixture.detectChanges();
+
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      typeInElement('al', input);
+      fixture.detectChanges();
+      tick();
+      fixture.detectChanges();
+
+      expect(overlayContainerElement.querySelector('.mat-autocomplete-panel')!.classList)
+          .toContain('mat-autocomplete-visible', 'Expected panel to be visible.');
+    }));
+
   });
 
   it('should have the correct text direction in RTL', () => {

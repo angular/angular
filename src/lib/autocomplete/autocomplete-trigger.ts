@@ -198,23 +198,22 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
 
   /** Closes the autocomplete suggestion panel. */
   closePanel(): void {
-    if (!this.panelOpen) {
-      return;
-    }
-
     if (this._overlayRef && this._overlayRef.hasAttached()) {
       this._overlayRef.detach();
       this._closingActionsSubscription.unsubscribe();
     }
 
-    this._panelOpen = false;
     this._resetPlaceholder();
 
-    // We need to trigger change detection manually, because
-    // `fromEvent` doesn't seem to do it at the proper time.
-    // This ensures that the placeholder is reset when the
-    // user clicks outside.
-    this._changeDetectorRef.detectChanges();
+    if (this._panelOpen) {
+      this._panelOpen = false;
+
+      // We need to trigger change detection manually, because
+      // `fromEvent` doesn't seem to do it at the proper time.
+      // This ensures that the placeholder is reset when the
+      // user clicks outside.
+      this._changeDetectorRef.detectChanges();
+    }
   }
 
   /**
