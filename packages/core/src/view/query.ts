@@ -138,8 +138,13 @@ function calcQueryValues(
     if (nodeDef.flags & NodeFlags.TypeElement && nodeDef.element !.template &&
         (nodeDef.element !.template !.nodeMatchedQueries & queryDef.filterId) ===
             queryDef.filterId) {
-      // check embedded views that were attached at the place of their template.
       const elementData = asElementData(view, i);
+      // check embedded views that were attached at the place of their template,
+      // but process child nodes first if some match the query (see issue #16568)
+      if ((nodeDef.childMatchedQueries & queryDef.filterId) === queryDef.filterId) {
+        calcQueryValues(view, i + 1, i + nodeDef.childCount, queryDef, values);
+        i += nodeDef.childCount;
+      }
       if (nodeDef.flags & NodeFlags.EmbeddedViews) {
         const embeddedViews = elementData.viewContainer !._embeddedViews;
         for (let k = 0; k < embeddedViews.length; k++) {
