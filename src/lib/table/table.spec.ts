@@ -1,16 +1,17 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component, ViewChild} from '@angular/core';
-import {CdkTable, DataSource, CdkTableModule} from '@angular/cdk/table';
+import {DataSource} from '@angular/cdk/table';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {Observable} from 'rxjs/Observable';
 import {MdTableModule} from './index';
+import {MdTable} from './table';
 
 describe('MdTable', () => {
   let fixture: ComponentFixture<SimpleMdTableApp>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdTableModule, CdkTableModule],
+      imports: [MdTableModule],
       declarations: [SimpleMdTableApp],
     }).compileComponents();
   }));
@@ -85,23 +86,23 @@ class FakeDataSource extends DataSource<TestData> {
 @Component({
   template: `
     <md-table [dataSource]="dataSource">
-      <ng-container cdkColumnDef="column_a">
-        <md-header-cell *cdkHeaderCellDef> Column A</md-header-cell>
-        <md-cell *cdkCellDef="let row"> {{row.a}}</md-cell>
+      <ng-container mdColumnDef="column_a">
+        <md-header-cell *mdHeaderCellDef> Column A</md-header-cell>
+        <md-cell *mdCellDef="let row"> {{row.a}}</md-cell>
       </ng-container>
 
-      <ng-container cdkColumnDef="column_b">
-        <md-header-cell *cdkHeaderCellDef> Column B</md-header-cell>
-        <md-cell *cdkCellDef="let row"> {{row.b}}</md-cell>
+      <ng-container mdColumnDef="column_b">
+        <md-header-cell *mdHeaderCellDef> Column B</md-header-cell>
+        <md-cell *mdCellDef="let row"> {{row.b}}</md-cell>
       </ng-container>
 
-      <ng-container cdkColumnDef="column_c">
-        <md-header-cell *cdkHeaderCellDef> Column C</md-header-cell>
-        <md-cell *cdkCellDef="let row"> {{row.c}}</md-cell>
+      <ng-container mdColumnDef="column_c">
+        <md-header-cell *mdHeaderCellDef> Column C</md-header-cell>
+        <md-cell *mdCellDef="let row"> {{row.c}}</md-cell>
       </ng-container>
 
-      <md-header-row *cdkHeaderRowDef="columnsToRender"></md-header-row>
-      <md-row *cdkRowDef="let row; columns: columnsToRender"></md-row>
+      <md-header-row *mdHeaderRowDef="columnsToRender"></md-header-row>
+      <md-row *mdRowDef="let row; columns: columnsToRender"></md-row>
     </md-table>
   `
 })
@@ -109,6 +110,6 @@ class SimpleMdTableApp {
   dataSource: FakeDataSource | null = new FakeDataSource();
   columnsToRender = ['column_a', 'column_b', 'column_c'];
 
-  @ViewChild(CdkTable) table: CdkTable<TestData>;
+  @ViewChild(MdTable) table: MdTable<TestData>;
 }
 

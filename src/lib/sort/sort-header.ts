@@ -7,8 +7,12 @@
  */
 
 import {
-  ChangeDetectionStrategy, ChangeDetectorRef, Component, Input,
-  Optional, ViewEncapsulation
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Input,
+  Optional,
+  ViewEncapsulation
 } from '@angular/core';
 import {MdSort, MdSortable} from './sort';
 import {MdSortHeaderIntl} from './sort-header-intl';

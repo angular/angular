@@ -100,14 +100,14 @@
 
     <!-- Column Definition: ID -->
     <ng-container cdkColumnDef="userId">
-      <md-header-cell *cdkHeaderCellDef> ID </md-header-cell>
-      <md-cell *cdkCellDef="let row"> {{row.id}} </md-cell>
+      <md-header-cell *mdHeaderCellDef> ID </md-header-cell>
+      <md-cell *mdCellDef="let row"> {{row.id}} </md-cell>
     </ng-container>
 
     <!-- Column Definition: Progress -->
-    <ng-container cdkColumnDef="progress">
-      <md-header-cell *cdkHeaderCellDef> Progress </md-header-cell>
-      <md-cell *cdkCellDef="let row">
+    <ng-container mdColumnDef="progress">
+      <md-header-cell *mdHeaderCellDef> Progress </md-header-cell>
+      <md-cell *mdCellDef="let row">
         <div class="demo-progress-stat">{{row.progress}}%</div>
         <div class="demo-progress-indicator-container">
           <div class="demo-progress-indicator"
@@ -119,19 +119,19 @@
     </ng-container>
 
     <!-- Column Definition: Name -->
-    <ng-container cdkColumnDef="userName">
-      <md-header-cell *cdkHeaderCellDef> Name </md-header-cell>
-      <md-cell *cdkCellDef="let row"> {{row.name}} </md-cell>
+    <ng-container mdColumnDef="userName">
+      <md-header-cell *mdHeaderCellDef> Name </md-header-cell>
+      <md-cell *mdCellDef="let row"> {{row.name}} </md-cell>
     </ng-container>
 
     <!-- Column Definition: Color -->
-    <ng-container cdkColumnDef="color">
-      <md-header-cell *cdkHeaderCellDef>Color</md-header-cell>
-      <md-cell *cdkCellDef="let row" [style.color]="row.color"> {{row.color}} </md-cell>
+    <ng-container mdColumnDef="color">
+      <md-header-cell *mdHeaderCellDef>Color</md-header-cell>
+      <md-cell *mdCellDef="let row" [style.color]="row.color"> {{row.color}} </md-cell>
     </ng-container>
 
-    <md-header-row *cdkHeaderRowDef="displayedColumns"></md-header-row>
-    <md-row *cdkRowDef="let row; columns: displayedColumns"></md-row>
+    <md-header-row *mdHeaderRowDef="displayedColumns"></md-header-row>
+    <md-row *mdRowDef="let row; columns: displayedColumns"></md-row>
 
   </md-table>
 

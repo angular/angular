@@ -6,12 +6,48 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Renderer2} from '@angular/core';
-import {CdkCell, CdkColumnDef, CdkHeaderCell} from '@angular/cdk/table';
+import {Directive, ElementRef, Input, Renderer2} from '@angular/core';
+import {CdkCell, CdkCellDef, CdkColumnDef, CdkHeaderCell, CdkHeaderCellDef} from '@angular/cdk/table';
 
 /** Workaround for https://github.com/angular/angular/issues/17849 */
-export const _MdHeaderCellBase = CdkHeaderCell;
+export const _MdCellDef = CdkCellDef;
+export const _MdHeaderCellDef = CdkHeaderCellDef;
+export const _MdColumnDef = CdkColumnDef;
+export const _MdHeaderCell = CdkHeaderCell;
 export const _MdCell = CdkCell;
+
+/**
+ * Cell definition for the md-table.
+ * Captures the template of a column's data row cell as well as cell-specific properties.
+ */
+@Directive({
+  selector: '[mdCellDef], [matCellDef]',
+  providers: [{provide: CdkCellDef, useExisting: MdCellDef}]
+})
+export class MdCellDef extends _MdCellDef { }
+
+/**
+ * Header cell definition for the md-table.
+ * Captures the template of a column's header cell and as well as cell-specific properties.
+ */
+@Directive({
+  selector: '[mdHeaderCellDef], [matHeaderCellDef]',
+  providers: [{provide: CdkHeaderCellDef, useExisting: MdHeaderCellDef}]
+})
+export class MdHeaderCellDef extends _MdHeaderCellDef { }
+
+/**
+ * Column definition for the md-table.
+ * Defines a set of cells available for a table column.
+ */
+@Directive({
+  selector: '[mdColumnDef], [matColumnDef]',
+  providers: [{provide: CdkColumnDef, useExisting: MdColumnDef}],
+})
+export class MdColumnDef extends _MdColumnDef {
+  /** Unique name for this column. */
+  @Input('mdColumnDef') name: string;
+}
 
 /** Header cell template container that adds the right classes and role. */
 @Directive({
@@ -21,7 +57,7 @@ export const _MdCell = CdkCell;
     'role': 'columnheader',
   },
 })
-export class MdHeaderCell extends _MdHeaderCellBase {
+export class MdHeaderCell extends _MdHeaderCell {
   constructor(columnDef: CdkColumnDef,
               elementRef: ElementRef,
               renderer: Renderer2) {

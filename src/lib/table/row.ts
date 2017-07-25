@@ -6,12 +6,36 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {CdkHeaderRow, CdkRow, CDK_ROW_TEMPLATE} from '@angular/cdk/table';
+import {ChangeDetectionStrategy, Component, Directive} from '@angular/core';
+import {CdkHeaderRow, CdkRow, CDK_ROW_TEMPLATE, CdkRowDef, CdkHeaderRowDef} from '@angular/cdk/table';
 
 /** Workaround for https://github.com/angular/angular/issues/17849 */
+export const _MdHeaderRowDef = CdkHeaderRowDef;
+export const _MdCdkRowDef = CdkRowDef;
 export const _MdHeaderRow = CdkHeaderRow;
 export const _MdRow = CdkRow;
+
+/**
+ * Header row definition for the md-table.
+ * Captures the header row's template and other header properties such as the columns to display.
+ */
+@Directive({
+  selector: '[mdHeaderRowDef], [matHeaderRowDef]',
+  providers: [{provide: CdkHeaderRowDef, useExisting: MdHeaderRowDef}],
+  inputs: ['columns: mdHeaderRowDef'],
+})
+export class MdHeaderRowDef extends _MdHeaderRowDef { }
+
+/**
+ * Data row definition for the md-table.
+ * Captures the header row's template and other row properties such as the columns to display.
+ */
+@Directive({
+  selector: '[mdRowDef], [matRowDef]',
+  providers: [{provide: CdkRowDef, useExisting: MdRowDef}],
+  inputs: ['columns: mdRowDefColumns'],
+})
+export class MdRowDef extends _MdCdkRowDef { }
 
 /** Header template container that contains the cell outlet. Adds the right class and role. */
 @Component({
