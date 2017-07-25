@@ -334,7 +334,7 @@ export type QueryParamsHandling = 'merge' | 'preserve' | '';
  * See {@link Routes} for more details.
  * @experimental
  */
-export type RunGuardsAndResolvers = 'paramsChange' | 'paramsOrQueryParamsChange' | 'always';
+export type RunGuardsAndResolvers = 'paramsChange' | 'paramsOrQueryParamsChange' | 'always' | 'never';
 
 /**
  * See {@link Routes} for more details.
