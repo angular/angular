@@ -17,7 +17,8 @@ import{
 
 /**
  * Below are all the animations for the md-menu component.
- * Animation duration and timing values are based on AngularJS Material.
+ * Animation duration and timing values are based on:
+ * https://material.io/guidelines/components/menus.html#menus-usage
  */
 
 
@@ -34,11 +35,13 @@ import{
 export const transformMenu: AnimationTriggerMetadata = trigger('transformMenu', [
   state('void', style({
     opacity: 0,
-    transform: 'scale(0, 0)'
+    // This starts off from 0.01, instead of 0, because there's an issue in the Angular animations
+    // as of 4.2, which causes the animation to be skipped if it starts from 0.
+    transform: 'scale(0.01, 0.01)'
   })),
   state('enter-start', style({
     opacity: 1,
-    transform: `scale(1, 0.5)`
+    transform: 'scale(1, 0.5)'
   })),
   state('enter', style({
     transform: 'scale(1, 1)'
@@ -57,6 +60,6 @@ export const fadeInItems: AnimationTriggerMetadata = trigger('fadeInItems', [
   state('showing', style({opacity: 1})),
   transition('void => *', [
     style({opacity: 0}),
-    animate(`400ms 100ms cubic-bezier(0.55, 0, 0.55, 0.2)`)
+    animate('400ms 100ms cubic-bezier(0.55, 0, 0.55, 0.2)')
   ])
 ]);
