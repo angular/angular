@@ -164,13 +164,39 @@ export class NgZone {
    *
    * If a synchronous error happens it will be rethrown and not reported via `onError`.
    */
-  run(fn: () => any): any { return (this as any as NgZonePrivate)._inner.run(fn); }
+  run<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T {
+    return (this as any as NgZonePrivate)._inner.run(fn, applyThis, applyArgs) as T;
+  }
+
+  /**
+   * Executes the `fn` function synchronously within the Angular zone as a task and returns value
+   * returned by the function.
+   *
+   * Running functions via `run` allows you to reenter Angular zone from a task that was executed
+   * outside of the Angular zone (typically started via {@link #runOutsideAngular}).
+   *
+   * Any future tasks or microtasks scheduled from within this function will continue executing from
+   * within the Angular zone.
+   *
+   * If a synchronous error happens it will be rethrown and not reported via `onError`.
+   */
+  runTask<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[], name?: string): T {
+    const zone = (this as any as NgZonePrivate)._inner;
+    const task = zone.scheduleEventTask('NgZoneEvent: ' + name, fn, EMPTY_PAYLOAD, noop, noop);
+    try {
+      return zone.runTask(task, applyThis, applyArgs) as T;
+    } finally {
+      zone.cancelTask(task);
+    }
+  }
 
   /**
    * Same as `run`, except that synchronous errors are caught and forwarded via `onError` and not
    * rethrown.
    */
-  runGuarded(fn: () => any): any { return (this as any as NgZonePrivate)._inner.runGuarded(fn); }
+  runGuarded<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T {
+    return (this as any as NgZonePrivate)._inner.runGuarded(fn, applyThis, applyArgs) as T;
+  }
 
   /**
    * Executes the `fn` function synchronously in Angular's parent zone and returns value returned by
@@ -185,8 +211,14 @@ export class NgZone {
    *
    * Use {@link #run} to reenter the Angular zone and do work that updates the application model.
    */
-  runOutsideAngular(fn: () => any): any { return (this as any as NgZonePrivate)._outer.run(fn); }
+  runOutsideAngular<T>(fn: (...args: any[]) => T): T {
+    return (this as any as NgZonePrivate)._outer.run(fn) as T;
+  }
 }
+
+function noop(){};
+const EMPTY_PAYLOAD = {};
+
 
 interface NgZonePrivate extends NgZone {
   _outer: Zone;
