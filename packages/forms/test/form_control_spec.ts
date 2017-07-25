@@ -97,6 +97,39 @@ export function main() {
         expect(c.valid).toEqual(true);
       });
 
+      it('should support single validator from options obj', () => {
+        const c = new FormControl(null, {validators: Validators.required});
+        expect(c.valid).toEqual(false);
+        expect(c.errors).toEqual({required: true});
+
+        c.setValue('value');
+        expect(c.valid).toEqual(true);
+      });
+
+      it('should support multiple validators from options obj', () => {
+        const c =
+            new FormControl(null, {validators: [Validators.required, Validators.minLength(3)]});
+        expect(c.valid).toEqual(false);
+        expect(c.errors).toEqual({required: true});
+
+        c.setValue('aa');
+        expect(c.valid).toEqual(false);
+        expect(c.errors).toEqual({minlength: {requiredLength: 3, actualLength: 2}});
+
+        c.setValue('aaa');
+        expect(c.valid).toEqual(true);
+      });
+
+      it('should support a null validators value', () => {
+        const c = new FormControl(null, {validators: null});
+        expect(c.valid).toEqual(true);
+      });
+
+      it('should support an empty options obj', () => {
+        const c = new FormControl(null, {});
+        expect(c.valid).toEqual(true);
+      });
+
       it('should return errors', () => {
         const c = new FormControl(null, Validators.required);
         expect(c.errors).toEqual({'required': true});
@@ -220,6 +253,40 @@ export function main() {
            tick();
 
            expect(c.errors).toEqual({'async': true, 'other': true});
+         }));
+
+
+      it('should support a single async validator from options obj', fakeAsync(() => {
+           const c = new FormControl('value', {asyncValidators: asyncValidator('expected')});
+           expect(c.pending).toEqual(true);
+           tick();
+
+           expect(c.valid).toEqual(false);
+           expect(c.errors).toEqual({'async': true});
+         }));
+
+      it('should support multiple async validators from options obj', fakeAsync(() => {
+           const c = new FormControl(
+               'value', {asyncValidators: [asyncValidator('expected'), otherAsyncValidator]});
+           expect(c.pending).toEqual(true);
+           tick();
+
+           expect(c.valid).toEqual(false);
+           expect(c.errors).toEqual({'async': true, 'other': true});
+         }));
+
+      it('should support a mix of validators from options obj', fakeAsync(() => {
+           const c = new FormControl(
+               '', {validators: Validators.required, asyncValidators: asyncValidator('expected')});
+           tick();
+           expect(c.errors).toEqual({required: true});
+
+           c.setValue('value');
+           expect(c.pending).toBe(true);
+
+           tick();
+           expect(c.valid).toEqual(false);
+           expect(c.errors).toEqual({'async': true});
          }));
 
       it('should add single async validator', fakeAsync(() => {
