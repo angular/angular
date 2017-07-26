@@ -223,6 +223,45 @@ describe('Evaluator', () => {
     expect(evaluator.evaluateNode(expr.initializer !))
         .toEqual({__symbolic: 'new', expression: {__symbolic: 'reference', name: 'f'}});
   });
+
+  describe('with substitution', () => {
+    let evaluator: Evaluator;
+    const lambdaTemp = 'lambdaTemp';
+
+    beforeEach(() => {
+      evaluator = new Evaluator(symbols, new Map(), {
+        substituteExpression: (value, node) => {
+          if (node.kind == ts.SyntaxKind.ArrowFunction) {
+            return {__symbolic: 'reference', name: lambdaTemp};
+          }
+          return value;
+        }
+      });
+    });
+
+    it('should be able to substitute a lambda with a reference', () => {
+      const source = sourceFileOf(`
+        var b = 1;
+        export var a = () => b;
+      `);
+      const expr = findVar(source, 'a');
+      expect(evaluator.evaluateNode(expr !.initializer !))
+          .toEqual({__symbolic: 'reference', name: lambdaTemp});
+    });
+
+    it('should be able to substitute a lambda in an expression', () => {
+      const source = sourceFileOf(`
+        var b = 1;
+        export var a = [
+          { provide: 'someValue': useFactory: () => b }
+        ];
+      `);
+      const expr = findVar(source, 'a');
+      expect(evaluator.evaluateNode(expr !.initializer !)).toEqual([
+        {provide: 'someValue', useFactory: {__symbolic: 'reference', name: lambdaTemp}}
+      ])
+    });
+  })
 });
 
 function sourceFileOf(text: string): ts.SourceFile {
