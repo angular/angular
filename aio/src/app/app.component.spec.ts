@@ -765,6 +765,97 @@ describe('AppComponent', () => {
       });
     });
 
+    describe('archive redirection', () => {
+      it('should redirect to `docs` if deployment mode is `archive` and not at a docs page', () => {
+        createTestingModule('', 'archive');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).toHaveBeenCalledWith('docs');
+
+        createTestingModule('resources', 'archive');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).toHaveBeenCalledWith('docs');
+
+        createTestingModule('guide/aot-compiler', 'archive');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+
+        createTestingModule('tutorial', 'archive');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+
+        createTestingModule('tutorial/toh-pt1', 'archive');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+
+        createTestingModule('docs', 'archive');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+
+        createTestingModule('api', 'archive');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+      });
+
+      it('should redirect to `docs` if deployment mode is `next` and not at a docs page', () => {
+        createTestingModule('', 'next');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).toHaveBeenCalledWith('docs');
+
+        createTestingModule('resources', 'next');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).toHaveBeenCalledWith('docs');
+
+        createTestingModule('guide/aot-compiler', 'next');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+
+        createTestingModule('tutorial', 'next');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+
+        createTestingModule('tutorial/toh-pt1', 'next');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+
+        createTestingModule('docs', 'next');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+
+        createTestingModule('api', 'next');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+      });
+
+      it('should not redirect to `docs` if deployment mode is `stable` and not at a docs page', () => {
+        createTestingModule('', 'stable');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+
+        createTestingModule('resources', 'stable');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+
+        createTestingModule('guide/aot-compiler', 'stable');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+
+        createTestingModule('tutorial', 'stable');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+
+        createTestingModule('tutorial/toh-pt1', 'stable');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+
+        createTestingModule('docs', 'stable');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+
+        createTestingModule('api', 'stable');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+      });
+    });
   });
 
   describe('with mocked DocViewer', () => {
