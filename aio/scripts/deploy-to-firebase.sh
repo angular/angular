@@ -78,6 +78,9 @@ echo "Deployment URL    : $deployedUrl"
   # Build the app
   yarn build -- --env=$deployEnv
 
+  # Include any mode-specific files
+  cp -rf src/extra-files/$deployEnv/. dist/
+
   # Check payload size
   yarn payload-size
 
