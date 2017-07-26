@@ -129,6 +129,11 @@ export class AppComponent implements OnInit {
     });
 
     this.locationService.currentPath.subscribe(path => {
+      // Redirect to docs if we are in not in stable mode and are not hitting a docs page
+      // (i.e. we have arrived at a marketing page)
+      if (this.deployment.mode !== 'stable' && !/^(docs$|api$|guide|tutorial)/.test(path)) {
+        this.locationService.replace('docs');
+      }
       if (path === this.currentPath) {
         // scroll only if on same page (most likely a change to the hash)
         this.autoScroll();
