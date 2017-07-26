@@ -274,26 +274,49 @@ describe('AppComponent', () => {
     describe('SideNav version selector', () => {
       let selectElement: DebugElement;
       let selectComponent: SelectComponent;
-      beforeEach(() => {
+
+      function setupSelectorForTesting(mode?: string) {
+        createTestingModule('a/b', mode);
+        initializeTest();
         component.onResize(sideBySideBreakPoint + 1); // side-by-side
         selectElement = fixture.debugElement.query(By.directive(SelectComponent));
         selectComponent = selectElement.componentInstance;
+      }
+
+      it('should select the version that matches the deploy mode', () => {
+        setupSelectorForTesting();
+        expect(selectComponent.selected.title).toContain('stable');
+        setupSelectorForTesting('next');
+        expect(selectComponent.selected.title).toContain('next');
+        setupSelectorForTesting('archive');
+        expect(selectComponent.selected.title).toContain('v4');
       });
 
-      it('should pick first (current) version by default', () => {
-        expect(selectComponent.selected.title).toEqual(component.versionInfo.raw);
+      it('should add the current raw version string to the selected version', () => {
+        setupSelectorForTesting();
+        expect(selectComponent.selected.title).toContain(`(v${component.versionInfo.raw})`);
+        setupSelectorForTesting('next');
+        expect(selectComponent.selected.title).toContain(`(v${component.versionInfo.raw})`);
+        setupSelectorForTesting('archive');
+        expect(selectComponent.selected.title).toContain(`(v${component.versionInfo.raw})`);
       });
 
       // Older docs versions have an href
-      it('should navigate when change to a version with an href', () => {
-        selectElement.triggerEventHandler('change', { option: component.docVersions[1] as Option, index: 1});
-        expect(locationService.go).toHaveBeenCalledWith(TestHttp.docVersions[0].url);
+      it('should navigate when change to a version with a url', () => {
+        setupSelectorForTesting();
+        const versionWithUrlIndex = component.docVersions.findIndex(v => !!v.url);
+        const versionWithUrl = component.docVersions[versionWithUrlIndex];
+        selectElement.triggerEventHandler('change', { option: versionWithUrl, index: versionWithUrlIndex});
+        expect(locationService.go).toHaveBeenCalledWith(versionWithUrl.url);
       });
 
       // The current docs version should not have an href
       // This may change when we perfect our docs versioning approach
-      it('should not navigate when change to a version without an href', () => {
-        selectElement.triggerEventHandler('change', { option: component.docVersions[0] as Option, index: 0});
+      it('should not navigate when change to a version without a url', () => {
+        setupSelectorForTesting();
+        const versionWithoutUrlIndex = component.docVersions.findIndex(v => !v.url);
+        const versionWithoutUrl = component.docVersions[versionWithoutUrlIndex];
+        selectElement.triggerEventHandler('change', { option: versionWithoutUrl, index: versionWithoutUrlIndex});
         expect(locationService.go).not.toHaveBeenCalled();
       });
     });
@@ -627,7 +650,7 @@ describe('AppComponent', () => {
     describe('footer', () => {
       it('should have version number', () => {
         const versionEl: HTMLElement = fixture.debugElement.query(By.css('aio-footer')).nativeElement;
-        expect(versionEl.textContent).toContain(TestHttp.versionFull);
+        expect(versionEl.textContent).toContain(TestHttp.versionInfo.full);
       });
     });
 
@@ -936,7 +959,21 @@ class TestSearchService {
 }
 
 class TestHttp {
-  static versionFull = '4.0.0-local+sha.73808dd';
+
+  static versionInfo = {
+    raw: '4.0.0-rc.6',
+    major: 4,
+    minor: 0,
+    patch: 0,
+    prerelease: [ 'local' ],
+    build: 'sha.73808dd',
+    version: '4.0.0-local',
+    codeName: 'snapshot',
+    isSnapshot: true,
+    full: '4.0.0-local+sha.73808dd',
+    branch: 'master',
+    commitSHA: '73808dd38b5ccd729404936834d1568bd066de81'
+  };
 
   static docVersions: NavigationNode[] = [
     { title: 'v2', url: 'https://v2.angular.io' }
@@ -979,22 +1016,7 @@ class TestHttp {
     ],
     "docVersions": TestHttp.docVersions,
 
-    "__versionInfo": {
-      "raw": "4.0.0-rc.6",
-      "major": 4,
-      "minor": 0,
-      "patch": 0,
-      "prerelease": [
-        "local"
-      ],
-      "build": "sha.73808dd",
-      "version": "4.0.0-local",
-      "codeName": "snapshot",
-      "isSnapshot": true,
-      "full": TestHttp.versionFull,
-      "branch": "master",
-      "commitSHA": "73808dd38b5ccd729404936834d1568bd066de81"
-    }
+    "__versionInfo": TestHttp.versionInfo,
   };
 
   get(url: string) {

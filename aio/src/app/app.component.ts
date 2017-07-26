@@ -160,12 +160,24 @@ export class AppComponent implements OnInit {
 
     // Compute the version picker list from the current version and the versions in the navigation map
     combineLatest(
-      this.navigationService.versionInfo.map(versionInfo => ({ title: versionInfo.raw, url: null })),
-      this.navigationService.navigationViews.map(views => views['docVersions']),
-      (currentVersion, otherVersions) => [currentVersion, ...otherVersions])
-      .subscribe(versions => {
-        this.docVersions = versions;
-        this.currentDocVersion = this.docVersions[0];
+      this.navigationService.versionInfo,
+      this.navigationService.navigationViews.map(views => views['docVersions']))
+      .subscribe(([versionInfo, versions]) => {
+        // TODO(pbd): consider whether we can lookup the stable and next versions from the internet
+        const computedVersions = [
+          { title: 'next', url: 'https://next.angular.io' },
+          { title: 'stable', url: 'https://angular.io' },
+        ];
+        if (this.deployment.mode === 'archive') {
+          computedVersions.push({ title: `v${versionInfo.major}`, url: null });
+        }
+        this.docVersions = [...computedVersions, ...versions];
+
+        // Find the current version - eithers title matches the current deployment mode
+        // or its title matches the major version of the current version info
+        this.currentDocVersion = this.docVersions.find(version =>
+          version.title === this.deployment.mode || version.title === `v${versionInfo.major}`);
+        this.currentDocVersion.title += ` (v${versionInfo.raw})`;
       });
 
     this.navigationService.navigationViews.subscribe(views => {
