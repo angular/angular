@@ -193,8 +193,8 @@ Angular supports most recent browsers. This includes the following specific vers
 
 
 
-Angular's continuous integration process runs unit tests of the framework on all of these browsers for every pull request, 
-using <a href="https://saucelabs.com/">SauceLabs</a> and 
+Angular's continuous integration process runs unit tests of the framework on all of these browsers for every pull request,
+using <a href="https://saucelabs.com/">SauceLabs</a> and
 <a href="https://www.browserstack.com">Browserstack</a>.
 
 
@@ -215,7 +215,7 @@ that implement missing features in JavaScript.
 
 
 
-A particular browser may require at least one polyfill to run _any_ Angular application. 
+A particular browser may require at least one polyfill to run _any_ Angular application.
 You may need additional polyfills for specific features.
 
 The tables below can help you determine which polyfills to load, depending on the browsers you target and the features you use.
@@ -241,7 +241,7 @@ These are the polyfills required to run an Angular application on each supported
 <table>
 
   <tr style="vertical-align: top">
- 
+
     <th>
       Browsers (Desktop & Mobile)
     </th>
@@ -253,7 +253,7 @@ These are the polyfills required to run an Angular application on each supported
   </tr>
 
   <tr style="vertical-align: top">
- 
+
     <td>
       Chrome, Firefox, Edge, Safari 9+
     </td>
@@ -265,7 +265,7 @@ These are the polyfills required to run an Angular application on each supported
   </tr>
 
   <tr style="vertical-align: top">
- 
+
     <td>
       Safari 7 & 8, IE10 & 11, Android 4.1+
     </td>
@@ -279,7 +279,7 @@ These are the polyfills required to run an Angular application on each supported
   </tr>
 
   <tr style="vertical-align: top">
- 
+
     <td>
       IE9
     </td>
@@ -309,7 +309,7 @@ Here are the features which may require additional polyfills:
 <table>
 
   <tr style="vertical-align: top">
- 
+
     <th>
       Feature
     </th>
@@ -325,7 +325,7 @@ Here are the features which may require additional polyfills:
   </tr>
 
   <tr style="vertical-align: top">
- 
+
     <td>
 
       [Animations](guide/animations)
@@ -363,14 +363,14 @@ Here are the features which may require additional polyfills:
   </tr>
 
   <tr style="vertical-align: top">
- 
+
     <td>
 
        [NgClass](api/common/NgClass) on SVG elements
     </td>
 
     <td>
- 
+
 
       [classList](guide/browser-support#classlist)
     </td>
@@ -382,16 +382,17 @@ Here are the features which may require additional polyfills:
   </tr>
 
   <tr style="vertical-align: top">
- 
+
     <td>
-    
+
       [Http](guide/http) when sending and receiving binary data
     </td>
 
     <td>
- 
 
-      [Typed&nbsp;Array](guide/browser-support#typedarray) <br>[Blob](guide/browser-support#blob)<br>[FormData](guide/browser-support#formdata)
+      [Typed&nbsp;Array](guide/browser-support#typedarray)<br>
+      [Blob](guide/browser-support#blob)<br>
+      [FormData](guide/browser-support#formdata)
     </td>
 
     <td>
@@ -405,7 +406,7 @@ Here are the features which may require additional polyfills:
 
 
 ### Suggested polyfills ##
-Below are the polyfills which are used to test the framework itself. They are a good starting point for an application. 
+Below are the polyfills which are used to test the framework itself. They are a good starting point for an application.
 
 
 <table>
@@ -542,5 +543,5 @@ Below are the polyfills which are used to test the framework itself. They are a 
 
 
 
-\* Figures are for minified and gzipped code, 
+\* Figures are for minified and gzipped code,
 computed with the <a href="http://closure-compiler.appspot.com/home">closure compiler</a>.
