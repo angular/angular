@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 
 import {MetadataCollector} from '../src/collector';
-import {ClassMetadata, ConstructorMetadata, MetadataEntry, ModuleMetadata, isClassMetadata} from '../src/schema';
+import {ClassMetadata, ConstructorMetadata, MetadataEntry, ModuleMetadata, isClassMetadata, isMetadataGlobalReferenceExpression} from '../src/schema';
 
 import {Directory, Host, expectValidSources} from './typescript.mocks';
 
@@ -936,6 +936,44 @@ describe('Collector', () => {
       expect(metadata.metadata['v']).toEqual({
         v: {i: [1, 3, {__symbolic: 'reference', name: 'myLambda'}]}
       });
+    });
+  });
+
+  describe('substitutions', () => {
+    const lambdaTemp = 'lambdaTemp';
+
+    it('should be able to substitute a lambda', () => {
+      const source = createSource(`
+        const b = 1;
+        export const a = () => b; 
+      `);
+      const metadata = collector.getMetadata(source, /* strict */ false, (value, node) => {
+        if (node.kind === ts.SyntaxKind.ArrowFunction) {
+          return {__symbolic: 'reference', name: lambdaTemp};
+        }
+        return value;
+      });
+      expect(metadata !.metadata['a']).toEqual({__symbolic: 'reference', name: lambdaTemp});
+    });
+
+    it('should compose substitution functions', () => {
+      const collector = new MetadataCollector({
+        substituteExpression: (value, node) => isMetadataGlobalReferenceExpression(value) &&
+                value.name == lambdaTemp ?
+            {__symbolic: 'reference', name: value.name + '2'} :
+            value
+      });
+      const source = createSource(`
+        const b = 1;
+        export const a = () => b; 
+      `);
+      const metadata = collector.getMetadata(source, /* strict */ false, (value, node) => {
+        if (node.kind === ts.SyntaxKind.ArrowFunction) {
+          return {__symbolic: 'reference', name: lambdaTemp};
+        }
+        return value;
+      });
+      expect(metadata !.metadata['a']).toEqual({__symbolic: 'reference', name: lambdaTemp + '2'});
     });
   });
 
