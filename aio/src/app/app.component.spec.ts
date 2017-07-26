@@ -12,6 +12,7 @@ import { of } from 'rxjs/observable/of';
 import { AppComponent } from './app.component';
 import { AppModule } from './app.module';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
+import { Deployment } from 'app/shared/deployment.service';
 import { GaService } from 'app/shared/ga.service';
 import { LocationService } from 'app/shared/location.service';
 import { Logger } from 'app/shared/logger.service';
@@ -332,10 +333,6 @@ describe('AppComponent', () => {
     });
 
     describe('hostClasses', () => {
-      let host: DebugElement;
-      beforeEach(() => {
-        host = fixture.debugElement;
-      });
 
       it('should set the css classes of the host container based on the current doc and navigation view', () => {
         locationService.go('guide/pipes');
@@ -359,7 +356,7 @@ describe('AppComponent', () => {
       });
 
       it('should set the css class of the host container based on the open/closed state of the side nav', () => {
-        const sideNav = host.query(By.directive(MdSidenav));
+        const sideNav = fixture.debugElement.query(By.directive(MdSidenav));
 
         locationService.go('guide/pipes');
         fixture.detectChanges();
@@ -376,7 +373,14 @@ describe('AppComponent', () => {
         checkHostClass('sidenav', 'open');
       });
 
+      it('should set the css class of the host container based on the initial deployment mode', () => {
+        createTestingModule('a/b', 'archive');
+        initializeTest();
+        checkHostClass('mode', 'archive');
+      });
+
       function checkHostClass(type, value) {
+        const host = fixture.debugElement;
         const classes = host.properties['className'];
         const classArray = classes.split(' ').filter(c => c.indexOf(`${type}-`) === 0);
         expect(classArray.length).toBeLessThanOrEqual(1, `"${classes}" should have only one class matching ${type}-*`);
@@ -624,6 +628,24 @@ describe('AppComponent', () => {
       it('should have version number', () => {
         const versionEl: HTMLElement = fixture.debugElement.query(By.css('aio-footer')).nativeElement;
         expect(versionEl.textContent).toContain(TestHttp.versionFull);
+      });
+    });
+
+    describe('deployment banner', () => {
+      it('should show a message if the deployment mode is "archive"', () => {
+        createTestingModule('a/b', 'archive');
+        initializeTest();
+        fixture.detectChanges();
+        const banner: HTMLElement = fixture.debugElement.query(By.css('aio-mode-banner')).nativeElement;
+        expect(banner.textContent).toContain('archived documentation for Angular v4');
+      });
+
+      it('should show no message if the deployment mode is not "archive"', () => {
+        createTestingModule('a/b', 'stable');
+        initializeTest();
+        fixture.detectChanges();
+        const banner: HTMLElement = fixture.debugElement.query(By.css('aio-mode-banner')).nativeElement;
+        expect(banner.textContent.trim()).toEqual('');
       });
     });
 
@@ -883,7 +905,7 @@ describe('AppComponent', () => {
 
 //// test helpers ////
 
-function createTestingModule(initialUrl: string) {
+function createTestingModule(initialUrl: string, mode: string = 'stable') {
   TestBed.resetTestingModule();
   TestBed.configureTestingModule({
     imports: [ AppModule ],
@@ -894,6 +916,11 @@ function createTestingModule(initialUrl: string) {
       { provide: LocationService, useFactory: () => new MockLocationService(initialUrl) },
       { provide: Logger, useClass: MockLogger },
       { provide: SearchService, useClass: MockSearchService },
+      { provide: Deployment, useFactory: () => {
+        const deployment = new Deployment();
+        deployment.mode = mode;
+        return deployment;
+      }},
     ]
   });
 }

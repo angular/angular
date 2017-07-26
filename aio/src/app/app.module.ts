@@ -26,8 +26,10 @@ import { SwUpdatesModule } from 'app/sw-updates/sw-updates.module';
 import { AppComponent } from 'app/app.component';
 import { ApiService } from 'app/embedded/api/api.service';
 import { CustomMdIconRegistry, SVG_ICONS } from 'app/shared/custom-md-icon-registry';
+import { Deployment } from 'app/shared/deployment.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { DtComponent } from 'app/layout/doc-viewer/dt.component';
+import { ModeBannerComponent } from 'app/layout/mode-banner/mode-banner.component';
 import { EmbeddedModule } from 'app/embedded/embedded.module';
 import { GaService } from 'app/shared/ga.service';
 import { Logger } from 'app/shared/logger.service';
@@ -90,14 +92,16 @@ export const svgIconProviders = [
     DocViewerComponent,
     DtComponent,
     FooterComponent,
-    TopMenuComponent,
+    ModeBannerComponent,
     NavMenuComponent,
     NavItemComponent,
     SearchResultsComponent,
     SearchBoxComponent,
+    TopMenuComponent,
   ],
   providers: [
     ApiService,
+    Deployment,
     DocumentService,
     GaService,
     Logger,

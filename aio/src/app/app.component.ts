@@ -5,6 +5,7 @@ import { MdSidenav } from '@angular/material';
 import { CurrentNodes, NavigationService, NavigationViews, NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
 import { DocumentService, DocumentContents } from 'app/documents/document.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
+import { Deployment } from 'app/shared/deployment.service';
 import { LocationService } from 'app/shared/location.service';
 import { NavMenuComponent } from 'app/layout/nav-menu/nav-menu.component';
 import { ScrollService } from 'app/shared/scroll.service';
@@ -99,6 +100,7 @@ export class AppComponent implements OnInit {
   sidenav: MdSidenav;
 
   constructor(
+    public deployment: Deployment,
     private documentService: DocumentService,
     private hostElement: ElementRef,
     private locationService: LocationService,
@@ -256,12 +258,13 @@ export class AppComponent implements OnInit {
   }
 
   updateHostClasses() {
+    const mode = `mode-${this.deployment.mode}`;
     const sideNavOpen = `sidenav-${this.sidenav.opened ? 'open' : 'closed'}`;
     const pageClass = `page-${this.pageId}`;
     const folderClass = `folder-${this.folderId}`;
     const viewClasses = Object.keys(this.currentNodes || {}).map(view => `view-${view}`).join(' ');
 
-    this.hostClasses = `${sideNavOpen} ${pageClass} ${folderClass} ${viewClasses}`;
+    this.hostClasses = `${mode} ${sideNavOpen} ${pageClass} ${folderClass} ${viewClasses}`;
   }
 
   // Dynamically change height of table of contents container
