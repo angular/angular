@@ -6,26 +6,37 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {I18nVersion} from '@angular/core';
+
 import * as ml from '../../ml_parser/ast';
 import {XmlParser} from '../../ml_parser/xml_parser';
+import {decimalDigest, decimalDigestDeprecated} from '../digest';
 import * as i18n from '../i18n_ast';
 import {I18nError} from '../parse_util';
 
 import {PlaceholderMapper, Serializer, SimplePlaceholderMapper} from './serializer';
-import {digest, toPublicName} from './xmb';
+import {toPublicName} from './xmb';
 
 const _TRANSLATIONS_TAG = 'translationbundle';
 const _TRANSLATION_TAG = 'translation';
 const _PLACEHOLDER_TAG = 'ph';
 
+/** @internal */
+export function getXtbMsgTextById(content: string, url: string): {[id: string]: string} {
+  const {msgIdToXml, errors} = new XtbParser().parse(content, url);
+  return errors.length ? {} : msgIdToXml;
+}
+
 export class Xtb extends Serializer {
+  constructor(private version: I18nVersion) { super(); }
+
   write(messages: i18n.Message[], locale: string|null): string { throw new Error('Unsupported'); }
 
   load(content: string, url: string):
-      {locale: string, i18nNodesByMsgId: {[msgId: string]: i18n.Node[]}} {
-    // xtb to xml nodes
+      {locale: string | null, i18nNodesByMsgId: {[msgId: string]: i18n.Node[]}} {
+    // xtb to xml text
     const xtbParser = new XtbParser();
-    const {locale, msgIdToHtml, errors} = xtbParser.parse(content, url);
+    const {locale, msgIdToXml, errors} = xtbParser.parse(content, url);
 
     // xml nodes to i18n nodes
     const i18nNodesByMsgId: {[msgId: string]: i18n.Node[]} = {};
@@ -34,9 +45,9 @@ export class Xtb extends Serializer {
     // Because we should be able to load xtb files that rely on features not supported by angular,
     // we need to delay the conversion of html to i18n nodes so that non angular messages are not
     // converted
-    Object.keys(msgIdToHtml).forEach(msgId => {
+    Object.keys(msgIdToXml).forEach(msgId => {
       const valueFn = function() {
-        const {i18nNodes, errors} = converter.convert(msgIdToHtml[msgId], url);
+        const {i18nNodes, errors} = converter.convert(msgIdToXml[msgId], url);
         if (errors.length) {
           throw new Error(`xtb parse errors:\n${errors.join('\n')}`);
         }
@@ -49,10 +60,15 @@ export class Xtb extends Serializer {
       throw new Error(`xtb parse errors:\n${errors.join('\n')}`);
     }
 
-    return {locale: locale !, i18nNodesByMsgId};
+    return {locale, i18nNodesByMsgId};
   }
 
-  digest(message: i18n.Message): string { return digest(message); }
+  digest(message: i18n.Message): string {
+    if (this.version === I18nVersion.V0) {
+      return decimalDigestDeprecated(message);
+    }
+    return decimalDigest(message);
+  }
 
   createNameMapper(message: i18n.Message): PlaceholderMapper {
     return new SimplePlaceholderMapper(message, toPublicName);
@@ -72,16 +88,16 @@ function createLazyProperty(messages: any, id: string, valueFn: () => any) {
   });
 }
 
-// Extract messages as xml nodes from the xtb file
+// Extract messages as xml text from the xtb file
 class XtbParser implements ml.Visitor {
   private _bundleDepth: number;
   private _errors: I18nError[];
-  private _msgIdToHtml: {[msgId: string]: string};
+  private _msgIdToXml: {[msgId: string]: string};
   private _locale: string|null = null;
 
   parse(xtb: string, url: string) {
     this._bundleDepth = 0;
-    this._msgIdToHtml = {};
+    this._msgIdToXml = {};
 
     // We can not parse the ICU messages at this point as some messages might not originate
     // from Angular that could not be lex'd.
@@ -91,7 +107,7 @@ class XtbParser implements ml.Visitor {
     ml.visitAll(this, xml.rootNodes);
 
     return {
-      msgIdToHtml: this._msgIdToHtml,
+      msgIdToXml: this._msgIdToXml,
       errors: this._errors,
       locale: this._locale,
     };
@@ -118,14 +134,14 @@ class XtbParser implements ml.Visitor {
           this._addError(element, `<${_TRANSLATION_TAG}> misses the "id" attribute`);
         } else {
           const id = idAttr.value;
-          if (this._msgIdToHtml.hasOwnProperty(id)) {
+          if (this._msgIdToXml.hasOwnProperty(id)) {
             this._addError(element, `Duplicated translations for msg ${id}`);
           } else {
             const innerTextStart = element.startSourceSpan !.end.offset;
             const innerTextEnd = element.endSourceSpan !.start.offset;
             const content = element.startSourceSpan !.start.file.content;
             const innerText = content.slice(innerTextStart !, innerTextEnd !);
-            this._msgIdToHtml[id] = innerText;
+            this._msgIdToXml[id] = innerText;
           }
         }
         break;
@@ -150,7 +166,7 @@ class XtbParser implements ml.Visitor {
   }
 }
 
-// Convert ml nodes (xtb syntax) to i18n nodes
+// Convert xtb text (xml text) to i18n nodes
 class XmlToI18n implements ml.Visitor {
   private _errors: I18nError[];
 

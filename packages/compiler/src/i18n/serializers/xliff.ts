@@ -6,9 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {I18nVersion} from '@angular/core';
+
 import * as ml from '../../ml_parser/ast';
 import {XmlParser} from '../../ml_parser/xml_parser';
-import {digest} from '../digest';
+import {ParseError} from '../../parse_util';
+import {decimalDigest, sha1Digest} from '../digest';
 import * as i18n from '../i18n_ast';
 import {I18nError} from '../parse_util';
 
@@ -28,9 +31,17 @@ const _UNIT_TAG = 'trans-unit';
 const _CONTEXT_GROUP_TAG = 'context-group';
 const _CONTEXT_TAG = 'context';
 
+/** @internal */
+export function getXliffMsgTextById(content: string, url: string): {[id: string]: string} {
+  const {msgIdToXml, errors} = new XliffParser().parse(content, url);
+  return errors.length ? {} : msgIdToXml;
+}
+
 // http://docs.oasis-open.org/xliff/v1.2/os/xliff-core.html
 // http://docs.oasis-open.org/xliff/v1.2/xliff-profile-html/xliff-profile-html-1.2.html
 export class Xliff extends Serializer {
+  constructor(private version: I18nVersion) { super(); }
+
   write(messages: i18n.Message[], locale: string|null): string {
     const visitor = new _WriteVisitor();
     const transUnits: xml.Node[] = [];
@@ -90,17 +101,17 @@ export class Xliff extends Serializer {
   }
 
   load(content: string, url: string):
-      {locale: string, i18nNodesByMsgId: {[msgId: string]: i18n.Node[]}} {
-    // xliff to xml nodes
+      {locale: string | null, i18nNodesByMsgId: {[msgId: string]: i18n.Node[]}} {
+    // xliff to xml text
     const xliffParser = new XliffParser();
-    const {locale, msgIdToHtml, errors} = xliffParser.parse(content, url);
+    const {locale, msgIdToXml, errors} = xliffParser.parse(content, url);
 
     // xml nodes to i18n nodes
     const i18nNodesByMsgId: {[msgId: string]: i18n.Node[]} = {};
     const converter = new XmlToI18n();
 
-    Object.keys(msgIdToHtml).forEach(msgId => {
-      const {i18nNodes, errors: e} = converter.convert(msgIdToHtml[msgId], url);
+    Object.keys(msgIdToXml).forEach(msgId => {
+      const {i18nNodes, errors: e} = converter.convert(msgIdToXml[msgId], url);
       errors.push(...e);
       i18nNodesByMsgId[msgId] = i18nNodes;
     });
@@ -109,10 +120,15 @@ export class Xliff extends Serializer {
       throw new Error(`xliff parse errors:\n${errors.join('\n')}`);
     }
 
-    return {locale: locale !, i18nNodesByMsgId};
+    return {locale, i18nNodesByMsgId};
   }
 
-  digest(message: i18n.Message): string { return digest(message); }
+  digest(message: i18n.Message): string {
+    if (this.version === I18nVersion.V0) {
+      return sha1Digest(message);
+    }
+    return decimalDigest(message);
+  }
 }
 
 class _WriteVisitor implements i18n.Visitor {
@@ -169,16 +185,17 @@ class _WriteVisitor implements i18n.Visitor {
 }
 
 // TODO(vicb): add error management (structure)
-// Extract messages as xml nodes from the xliff file
+// Extract messages as xml text from the xliff file
 class XliffParser implements ml.Visitor {
   private _unitMlString: string|null;
   private _errors: I18nError[];
-  private _msgIdToHtml: {[msgId: string]: string};
+  private _msgIdToXml: {[msgId: string]: string};
   private _locale: string|null = null;
 
-  parse(xliff: string, url: string) {
+  parse(xliff: string, url: string):
+      {msgIdToXml: {[id: string]: string}, errors: ParseError[], locale: string|null} {
     this._unitMlString = null;
-    this._msgIdToHtml = {};
+    this._msgIdToXml = {};
 
     const xml = new XmlParser().parse(xliff, url, false);
 
@@ -186,7 +203,7 @@ class XliffParser implements ml.Visitor {
     ml.visitAll(this, xml.rootNodes, null);
 
     return {
-      msgIdToHtml: this._msgIdToHtml,
+      msgIdToXml: this._msgIdToXml,
       errors: this._errors,
       locale: this._locale,
     };
@@ -201,12 +218,12 @@ class XliffParser implements ml.Visitor {
           this._addError(element, `<${_UNIT_TAG}> misses the "id" attribute`);
         } else {
           const id = idAttr.value;
-          if (this._msgIdToHtml.hasOwnProperty(id)) {
+          if (this._msgIdToXml.hasOwnProperty(id)) {
             this._addError(element, `Duplicated translations for msg ${id}`);
           } else {
             ml.visitAll(this, element.children, null);
             if (typeof this._unitMlString === 'string') {
-              this._msgIdToHtml[id] = this._unitMlString;
+              this._msgIdToXml[id] = this._unitMlString;
             } else {
               this._addError(element, `Message ${id} misses a translation`);
             }
@@ -238,6 +255,8 @@ class XliffParser implements ml.Visitor {
         // TODO(vicb): assert file structure, xliff version
         // For now only recurse on unhandled nodes
         ml.visitAll(this, element.children, null);
+
+        return element;
     }
   }
 
@@ -256,7 +275,7 @@ class XliffParser implements ml.Visitor {
   }
 }
 
-// Convert ml nodes (xliff syntax) to i18n nodes
+// Convert xliff nodes (xml text) to i18n nodes
 class XmlToI18n implements ml.Visitor {
   private _errors: I18nError[];
 

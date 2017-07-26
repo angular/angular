@@ -12,7 +12,7 @@ import {MessageBundle} from '@angular/compiler/src/i18n/message_bundle';
 import {Xmb} from '@angular/compiler/src/i18n/serializers/xmb';
 import {HtmlParser} from '@angular/compiler/src/ml_parser/html_parser';
 import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/interpolation_config';
-import {DebugElement, TRANSLATIONS, TRANSLATIONS_FORMAT} from '@angular/core';
+import {DebugElement, I18nVersion, TRANSLATIONS, TRANSLATIONS_FORMAT} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -22,14 +22,14 @@ import {FrLocalization, HTML, I18nComponent, validateHtml} from './integration_c
 
 export function main() {
   describe('i18n XMB/XTB integration spec', () => {
-
     beforeEach(async(() => {
       TestBed.configureCompiler({
         providers: [
           {provide: ResourceLoader, useClass: SpyResourceLoader},
           {provide: NgLocalization, useClass: FrLocalization},
-          {provide: TRANSLATIONS, useValue: XTB},
-          {provide: TRANSLATIONS_FORMAT, useValue: 'xtb'},
+          {provide: TRANSLATIONS, useValue: XTB}, {provide: TRANSLATIONS_FORMAT, useValue: 'xtb'},
+          // TODO(ocombe) uncomment this for v5
+          // {provide: I18N_VERSION, useValue: '1'},
         ]
       });
 
@@ -38,7 +38,7 @@ export function main() {
 
     it('should extract from templates', () => {
       const catalog = new MessageBundle(new HtmlParser, [], {});
-      const serializer = new Xmb();
+      const serializer = new Xmb(I18nVersion.V0);
       catalog.updateFromTemplate(HTML, 'file.ts', DEFAULT_INTERPOLATION_CONFIG);
 
       expect(catalog.write(serializer)).toContain(XMB);
