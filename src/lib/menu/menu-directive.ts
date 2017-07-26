@@ -20,6 +20,8 @@ import {
   ViewEncapsulation,
   ElementRef,
   ChangeDetectionStrategy,
+  InjectionToken,
+  Inject,
 } from '@angular/core';
 import {AnimationEvent} from '@angular/animations';
 import {MenuPositionX, MenuPositionY} from './menu-positions';
@@ -34,6 +36,16 @@ import {merge} from 'rxjs/observable/merge';
 import {Observable} from 'rxjs/Observable';
 import {Direction} from '../core';
 
+/** Default `md-menu` options that can be overridden. */
+export interface MdMenuDefaultOptions {
+  xPosition: MenuPositionX;
+  yPosition: MenuPositionY;
+  overlapTrigger: boolean;
+}
+
+/** Injection token to be used to override the default options for `md-menu`. */
+export const MD_MENU_DEFAULT_OPTIONS =
+    new InjectionToken<MdMenuDefaultOptions>('md-menu-default-options');
 
 @Component({
   moduleId: module.id,
@@ -50,8 +62,8 @@ import {Direction} from '../core';
 })
 export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
   private _keyManager: FocusKeyManager;
-  private _xPosition: MenuPositionX = 'after';
-  private _yPosition: MenuPositionY = 'below';
+  private _xPosition: MenuPositionX = this._defaultOptions.xPosition;
+  private _yPosition: MenuPositionY = this._defaultOptions.yPosition;
 
   /** Subscription to tab events on the menu panel */
   private _tabSubscription: Subscription;
@@ -96,7 +108,7 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
   @ContentChildren(MdMenuItem) items: QueryList<MdMenuItem>;
 
   /** Whether the menu should overlap its trigger. */
-  @Input() overlapTrigger = true;
+  @Input() overlapTrigger = this._defaultOptions.overlapTrigger;
 
   /**
    * This method takes classes set on the host md-menu element and applies them on the
@@ -120,7 +132,9 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
   /** Event emitted when the menu is closed. */
   @Output() close = new EventEmitter<void | 'click' | 'keydown'>();
 
-  constructor(private _elementRef: ElementRef) { }
+  constructor(
+    private _elementRef: ElementRef,
+    @Inject(MD_MENU_DEFAULT_OPTIONS) private _defaultOptions: MdMenuDefaultOptions) { }
 
   ngAfterContentInit() {
     this._keyManager = new FocusKeyManager(this.items).withWrap();
