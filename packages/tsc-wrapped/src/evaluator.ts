@@ -9,8 +9,9 @@
 import * as ts from 'typescript';
 
 import {CollectorOptions} from './collector';
-import {MetadataEntry, MetadataError, MetadataImportedSymbolReferenceExpression, MetadataSymbolicCallExpression, MetadataValue, isMetadataError, isMetadataModuleReferenceExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSpreadExpression} from './schema';
+import {MetadataEntry, MetadataError, MetadataImportedSymbolReferenceExpression, MetadataSymbolicCallExpression, MetadataValue, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSpreadExpression} from './schema';
 import {Symbols} from './symbols';
+
 
 // In TypeScript 2.1 the spread element kind was renamed.
 const spreadElementSyntaxKind: ts.SyntaxKind =
@@ -104,7 +105,8 @@ export function errorSymbol(
 export class Evaluator {
   constructor(
       private symbols: Symbols, private nodeMap: Map<MetadataEntry, ts.Node>,
-      private options: CollectorOptions = {}) {}
+      private options: CollectorOptions = {},
+      private recordExport?: (name: string, value: MetadataValue) => void) {}
 
   nameOf(node: ts.Node|undefined): string|MetadataError {
     if (node && node.kind == ts.SyntaxKind.Identifier) {
@@ -232,7 +234,14 @@ export class Evaluator {
     const t = this;
     let error: MetadataError|undefined;
 
-    function recordEntry<T extends MetadataEntry>(entry: T, node: ts.Node): T {
+    function recordEntry(entry: MetadataValue, node: ts.Node): MetadataValue {
+      if (t.options.substituteExpression) {
+        const newEntry = t.options.substituteExpression(entry, node);
+        if (t.recordExport && newEntry != entry && isMetadataGlobalReferenceExpression(newEntry)) {
+          t.recordExport(newEntry.name, entry);
+        }
+        entry = newEntry;
+      }
       t.nodeMap.set(entry, node);
       return entry;
     }
@@ -283,7 +292,7 @@ export class Evaluator {
         if (this.options.quotedNames && quoted.length) {
           obj['$quoted$'] = quoted;
         }
-        return obj;
+        return recordEntry(obj, node);
       case ts.SyntaxKind.ArrayLiteralExpression:
         let arr: MetadataValue[] = [];
         ts.forEachChild(node, child => {
@@ -308,7 +317,7 @@ export class Evaluator {
           arr.push(value);
         });
         if (error) return error;
-        return arr;
+        return recordEntry(arr, node);
       case spreadElementSyntaxKind:
         let spreadExpression = this.evaluateNode((node as any).expression);
         return recordEntry({__symbolic: 'spread', expression: spreadExpression}, node);
