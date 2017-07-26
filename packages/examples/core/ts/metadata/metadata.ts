@@ -8,7 +8,7 @@
 
 import {Attribute, Component, Directive, Pipe} from '@angular/core';
 
-class CustomDirective {};
+class CustomDirective {}
 
 // #docregion component
 @Component({selector: 'greet', template: 'Hello {{name}}!'})

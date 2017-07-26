@@ -147,6 +147,8 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
       return fs.existsSync(effectiveName);
   }
 
+  fileExists(fileName: string): boolean { return this.getRawFileContent(fileName) != null; }
+
   getMarkerLocations(fileName: string): {[name: string]: number}|undefined {
     let content = this.getRawFileContent(fileName);
     if (content) {

@@ -13,8 +13,13 @@
  * something else.
  */
 
+/**
+ *********************************************************************
+ * Changes to this file need to be approved by the Angular CLI team. *
+ *********************************************************************
+ */
+
 import {AotCompilerHost, AotSummaryResolver, StaticReflector, StaticSymbolCache, StaticSymbolResolver} from '@angular/compiler';
-import {AngularCompilerOptions, NgcCliOptions} from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
 
 import {CodeGenerator} from './codegen';
@@ -22,6 +27,7 @@ import {CompilerHost, CompilerHostContext, ModuleResolutionHostAdapter} from './
 import {Extractor} from './extractor';
 import {listLazyRoutesOfModule} from './ngtools_impl';
 import {PathMappedCompilerHost} from './path_mapped_compiler_host';
+import {CompilerOptions} from './transformers/api';
 
 export interface NgTools_InternalApi_NG2_CodeGen_Options {
   basePath: string;
@@ -29,7 +35,7 @@ export interface NgTools_InternalApi_NG2_CodeGen_Options {
   program: ts.Program;
   host: ts.CompilerHost;
 
-  angularCompilerOptions: AngularCompilerOptions;
+  angularCompilerOptions: CompilerOptions;
 
   // i18n options.
   i18nFormat?: string;
@@ -45,7 +51,7 @@ export interface NgTools_InternalApi_NG2_CodeGen_Options {
 export interface NgTools_InternalApi_NG2_ListLazyRoutes_Options {
   program: ts.Program;
   host: ts.CompilerHost;
-  angularCompilerOptions: AngularCompilerOptions;
+  angularCompilerOptions: CompilerOptions;
   entryModule: string;
 
   // Every new property under this line should be optional.
@@ -58,7 +64,7 @@ export interface NgTools_InternalApi_NG2_ExtractI18n_Options {
   compilerOptions: ts.CompilerOptions;
   program: ts.Program;
   host: ts.CompilerHost;
-  angularCompilerOptions: AngularCompilerOptions;
+  angularCompilerOptions: CompilerOptions;
   i18nFormat?: string;
   readResource: (fileName: string) => Promise<string>;
   // Every new property under this line should be optional.
@@ -90,12 +96,11 @@ export class NgTools_InternalApi_NG_2 {
     const hostContext: CompilerHostContext =
         new CustomLoaderModuleResolutionHostAdapter(options.readResource, options.host);
 
-    const cliOptions: NgcCliOptions = {
+    const i18nOptions = {
       i18nFormat: options.i18nFormat !,
       i18nFile: options.i18nFile !,
       locale: options.locale !,
       missingTranslation: options.missingTranslation !,
-      basePath: options.basePath
     };
     const ngOptions = options.angularCompilerOptions;
     if (ngOptions.enableSummariesForJit === undefined) {
@@ -105,7 +110,7 @@ export class NgTools_InternalApi_NG_2 {
 
     // Create the Code Generator.
     const codeGenerator =
-        CodeGenerator.create(ngOptions, cliOptions, options.program, options.host, hostContext);
+        CodeGenerator.create(ngOptions, i18nOptions, options.program, options.host, hostContext);
 
     return codeGenerator.codegen();
   }

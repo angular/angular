@@ -7,9 +7,12 @@
 #
 # alexeagle - Alex Eagle
 # alxhub - Alex Rickabaugh
+# brocco - Mike Brocchi
 # chuckjaz - Chuck Jazdzewski
+# filipesilva - Filipe Silva
 # Foxandxss - Jesús Rodríguez
 # gkalpak - George Kalpakas
+# hansl - Hans Larsen
 # IgorMinar - Igor Minar
 # jasonaden - Jason Aden
 # juleskremer - Jules Kremer
@@ -60,6 +63,19 @@ groups:
       - IgorMinar
       - mhevery
 
+  bazel:
+    conditions:
+      files:
+        include:
+          - "WORKSPACE"
+          - "*.bazel"
+          - "*.bzl"
+          - "packages/bazel/*"
+    users:
+      - alexeagle #primary
+      - chuckjaz
+      - vikerman #fallback
+
   build-and-ci:
     conditions:
       files:
@@ -88,7 +104,6 @@ groups:
       - vicb
       - IgorMinar #fallback
 
-
   core:
     conditions:
       files:
@@ -103,7 +118,7 @@ groups:
   animations:
     conditions:
       files:
-        - "packages/animation/*"
+        - "packages/animations/*"
         - "packages/platform-browser/animations/*"
     users:
       - matsko #primary
@@ -132,11 +147,23 @@ groups:
       - mhevery
       - IgorMinar #fallback
 
+  compiler-cli/ngtools:
+    conditions:
+      files:
+        - "packages/compiler-cli/src/ngtools*"
+    users:
+      - hansl
+      - filipesilva #fallback
+      - brocco #fallback
+
   compiler-cli:
     conditions:
       files:
-        - "packages/tsc-wrapped/*"
-        - "packages/compiler-cli/*"
+        include:
+          - "packages/compiler-cli/*"
+          - "packages/bazel/*"
+        exclude:
+          - "packages/compiler-cli/src/ngtools*"   
     users:
       - alexeagle
       - chuckjaz
@@ -148,7 +175,10 @@ groups:
   common:
     conditions:
       files:
-        - "packages/common/*"
+        include:
+          - "packages/common/*"
+        exclude:
+          - "packages/common/http/*"
     users:
       - pkozlowski-opensource #primary
       - vicb
@@ -168,6 +198,7 @@ groups:
   http:
     conditions:
       files:
+        - "packages/common/http/*"
         - "packages/http/*"
     users:
       - vikerman #primary
@@ -238,7 +269,15 @@ groups:
       - IgorMinar #fallback
       - mhevery #fallback
 
-
+  service-worker:
+    conditions:
+      files:
+        - "packages/service-worker/*"
+    users:
+      - alxhub #primary
+      - gkalpak
+      - IgorMinar #fallback
+      - mhevery #fallback
 
   benchpress:
     conditions:

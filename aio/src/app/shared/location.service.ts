@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Location, PlatformLocation } from '@angular/common';
 
-import { Observable } from 'rxjs/Observable';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 import 'rxjs/add/operator/do';
 
@@ -53,6 +52,10 @@ export class LocationService {
 
   goExternal(url: string) {
     window.location.assign(url);
+  }
+
+  replace(url: string) {
+    window.location.replace(url);
   }
 
   private stripSlashes(url: string) {

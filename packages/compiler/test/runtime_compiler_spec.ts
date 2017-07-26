@@ -7,7 +7,7 @@
  */
 
 import {DirectiveResolver, ResourceLoader} from '@angular/compiler';
-import {Compiler, Component, Injector, NgModule, NgModuleFactory, ɵViewMetadata as ViewMetadata, ɵstringify as stringify} from '@angular/core';
+import {Compiler, Component, Injector, NgModule, NgModuleFactory, ɵstringify as stringify} from '@angular/core';
 import {TestBed, async, fakeAsync, inject, tick} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {MockDirectiveResolver} from '../testing';
@@ -36,7 +36,7 @@ export function main() {
 
         beforeEach(() => {
           TestBed.configureCompiler(
-              {providers: [{provide: ResourceLoader, useClass: StubResourceLoader}]});
+              {providers: [{provide: ResourceLoader, useClass: StubResourceLoader, deps: []}]});
         });
 
         it('should throw when using a templateUrl that has not been compiled before', async(() => {
@@ -68,7 +68,7 @@ export function main() {
 
         beforeEach(() => {
           TestBed.configureCompiler(
-              {providers: [{provide: ResourceLoader, useClass: StubResourceLoader}]});
+              {providers: [{provide: ResourceLoader, useClass: StubResourceLoader, deps: []}]});
         });
 
         it('should allow to use templateUrl components that have been loaded before', async(() => {
@@ -88,10 +88,7 @@ export function main() {
     let dirResolver: MockDirectiveResolver;
     let injector: Injector;
 
-    beforeEach(() => {
-      TestBed.configureCompiler(
-          {providers: [{provide: ResourceLoader, useClass: SpyResourceLoader}]});
-    });
+    beforeEach(() => { TestBed.configureCompiler({providers: [SpyResourceLoader.PROVIDE]}); });
 
     beforeEach(fakeAsync(inject(
         [Compiler, ResourceLoader, DirectiveResolver, Injector],
@@ -140,8 +137,9 @@ export function main() {
            }
 
            resourceLoader.spy('get').and.callFake(() => Promise.resolve(''));
-           dirResolver.setView(SomeComp, new ViewMetadata({template: ''}));
-           dirResolver.setView(ChildComp, new ViewMetadata({templateUrl: '/someTpl.html'}));
+           dirResolver.setDirective(SomeComp, new Component({selector: 'some-cmp', template: ''}));
+           dirResolver.setDirective(
+               ChildComp, new Component({selector: 'child-cmp', templateUrl: '/someTpl.html'}));
            expect(() => compiler.compileModuleSync(SomeModule))
                .toThrowError(
                    `Can't compile synchronously as ${stringify(ChildComp)} is still being loaded!`);

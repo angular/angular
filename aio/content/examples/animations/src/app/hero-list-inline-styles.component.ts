@@ -12,10 +12,10 @@ import {
 } from '@angular/animations';
 // #enddocregion imports
 
-import { Heroes } from './hero.service';
+import { Hero } from './hero.service';
 
 @Component({
- selector: 'hero-list-inline-styles',
+ selector: 'app-hero-list-inline-styles',
  // #docregion template
  template: `
    <ul>
@@ -56,5 +56,5 @@ import { Heroes } from './hero.service';
  // #enddocregion animationdef
 })
 export class HeroListInlineStylesComponent {
- @Input() heroes: Heroes;
+  @Input() heroes: Hero[];
 }

@@ -3,10 +3,10 @@ import { Component } from '@angular/core';
 // #enddocregion import
 
 @Component({
-  selector: 'my-app',
+  selector: 'app-root',
   template: `
-    <hero-list></hero-list>
-    <sales-tax></sales-tax>
+    <app-hero-list></app-hero-list>
+    <app-sales-tax></app-sales-tax>
   `
 })
 // #docregion export

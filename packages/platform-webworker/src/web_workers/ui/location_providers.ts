@@ -6,9 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, NgZone, PLATFORM_INITIALIZER, Provider} from '@angular/core';
-
+import {DOCUMENT} from '@angular/common';
+import {Injector, NgZone, PLATFORM_INITIALIZER, StaticProvider} from '@angular/core';
 import {ɵBrowserPlatformLocation as BrowserPlatformLocation} from '@angular/platform-browser';
+
+import {MessageBus} from '../shared/message_bus';
+import {Serializer} from '../shared/serializer';
+import {ServiceMessageBrokerFactory} from '../shared/service_message_broker';
+
 import {MessageBasedPlatformLocation} from './platform_location';
 
 
@@ -18,8 +23,10 @@ import {MessageBasedPlatformLocation} from './platform_location';
  * include these providers when setting up the render thread.
  * @experimental
  */
-export const WORKER_UI_LOCATION_PROVIDERS: Provider[] = [
-  MessageBasedPlatformLocation, BrowserPlatformLocation,
+export const WORKER_UI_LOCATION_PROVIDERS = <StaticProvider[]>[
+  {provide: MessageBasedPlatformLocation, deps: [ServiceMessageBrokerFactory,
+    BrowserPlatformLocation, MessageBus, Serializer]},
+  {provide: BrowserPlatformLocation, deps: [DOCUMENT]},
   {provide: PLATFORM_INITIALIZER, useFactory: initUiLocation, multi: true, deps: [Injector]}
 ];
 

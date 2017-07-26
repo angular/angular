@@ -34,14 +34,14 @@ function getResponseUrl(xhr: any): string|null {
 /**
  * A wrapper around the `XMLHttpRequest` constructor.
  *
- * @experimental
+ * @stable
  */
 export abstract class XhrFactory { abstract build(): XMLHttpRequest; }
 
 /**
  * A factory for @{link HttpXhrBackend} that uses the `XMLHttpRequest` browser API.
  *
- * @experimental
+ * @stable
  */
 @Injectable()
 export class BrowserXhr implements XhrFactory {
@@ -63,7 +63,7 @@ interface PartialResponse {
  * An `HttpBackend` which uses the XMLHttpRequest API to send
  * requests to a backend server.
  *
- * @experimental
+ * @stable
  */
 @Injectable()
 export class HttpXhrBackend implements HttpBackend {
@@ -107,7 +107,14 @@ export class HttpXhrBackend implements HttpBackend {
 
       // Set the responseType if one was requested.
       if (req.responseType) {
-        xhr.responseType = req.responseType.toLowerCase() as any;
+        const responseType = req.responseType.toLowerCase();
+
+        // JSON responses need to be processed as text. This is because if the server
+        // returns an XSSI-prefixed JSON response, the browser will fail to parse it,
+        // xhr.response will be null, and xhr.responseText cannot be accessed to
+        // retrieve the prefixed JSON data in order to strip the prefix. Thus, all JSON
+        // is parsed by first requesting text and then applying JSON.parse.
+        xhr.responseType = ((responseType !== 'json') ? responseType : 'text') as any;
       }
 
       // Serialize the request body if one is present. If not, this will be set to null.
@@ -158,12 +165,6 @@ export class HttpXhrBackend implements HttpBackend {
         if (status !== 204) {
           // Use XMLHttpRequest.response if set, responseText otherwise.
           body = (typeof xhr.response === 'undefined') ? xhr.responseText : xhr.response;
-
-          // Strip a common XSSI prefix from string responses.
-          // TODO: determine if this behavior should be optional and moved to an interceptor.
-          if (typeof body === 'string') {
-            body = body.replace(XSSI_PREFIX, '');
-          }
         }
 
         // Normalize another potential bug (this one comes from CORS).
@@ -179,8 +180,9 @@ export class HttpXhrBackend implements HttpBackend {
 
         // Check whether the body needs to be parsed as JSON (in many cases the browser
         // will have done that already).
-        if (ok && typeof body === 'string' && req.responseType === 'json') {
+        if (ok && req.responseType === 'json' && typeof body === 'string') {
           // Attempt the parse. If it fails, a parse error should be delivered to the user.
+          body = body.replace(XSSI_PREFIX, '');
           try {
             body = JSON.parse(body);
           } catch (error) {
@@ -188,6 +190,14 @@ export class HttpXhrBackend implements HttpBackend {
             ok = false;
             // The parse error contains the text of the body that failed to parse.
             body = { error, text: body } as HttpJsonParseError;
+          }
+        } else if (!ok && req.responseType === 'json' && typeof body === 'string') {
+          try {
+            // Attempt to parse the body as JSON.
+            body = JSON.parse(body);
+          } catch (error) {
+            // Cannot be certain that the body was meant to be parsed as JSON.
+            // Leave the body as a string.
           }
         }
 
@@ -268,27 +278,26 @@ export class HttpXhrBackend implements HttpBackend {
 
       // The upload progress event handler, which is only registered if
       // progress events are enabled.
-      const onUpProgress =
-          (event: ProgressEvent) => {
-            // Upload progress events are simpler. Begin building the progress
-            // event.
-            let progress: HttpUploadProgressEvent = {
-              type: HttpEventType.UploadProgress,
-              loaded: event.loaded,
-            };
+      const onUpProgress = (event: ProgressEvent) => {
+        // Upload progress events are simpler. Begin building the progress
+        // event.
+        let progress: HttpUploadProgressEvent = {
+          type: HttpEventType.UploadProgress,
+          loaded: event.loaded,
+        };
 
-            // If the total number of bytes being uploaded is available, include
-            // it.
-            if (event.lengthComputable) {
-              progress.total = event.total;
-            }
+        // If the total number of bytes being uploaded is available, include
+        // it.
+        if (event.lengthComputable) {
+          progress.total = event.total;
+        }
 
-            // Send the event.
-            observer.next(progress);
-          }
+        // Send the event.
+        observer.next(progress);
+      };
 
-                                    // By default, register for load and error events.
-                                    xhr.addEventListener('load', onLoad);
+      // By default, register for load and error events.
+      xhr.addEventListener('load', onLoad);
       xhr.addEventListener('error', onError);
 
       // Progress events are only enabled if requested.

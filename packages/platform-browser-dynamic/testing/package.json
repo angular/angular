@@ -1,7 +1,7 @@
 {
   "name": "@angular/platform-browser-dynamic/testing",
-  "typings": "../testing.d.ts",
+  "typings": "./testing.d.ts",
   "main": "../bundles/platform-browser-dynamic-testing.umd.js",
-  "module": "../@angular/platform-browser-dynamic/testing.es5.js",
-  "es2015": "../@angular/platform-browser-dynamic/testing.js"
+  "module": "../esm5/testing.js",
+  "es2015": "../esm2015/testing.js"
 }

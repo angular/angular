@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationInitStatus, CompilerOptions, Component, Directive, InjectionToken, Injector, ModuleWithComponentFactories, NgModule, NgModuleFactory, NgModuleRef, NgZone, Optional, Pipe, PlatformRef, Provider, ReflectiveInjector, SchemaMetadata, SkipSelf, Type, ɵDepFlags as DepFlags, ɵERROR_COMPONENT_TYPE, ɵNodeFlags as NodeFlags, ɵclearProviderOverrides as clearProviderOverrides, ɵoverrideProvider as overrideProvider, ɵstringify as stringify} from '@angular/core';
+import {ApplicationInitStatus, CompilerOptions, Component, Directive, InjectionToken, Injector, ModuleWithComponentFactories, NgModule, NgModuleFactory, NgModuleRef, NgZone, Optional, Pipe, PlatformRef, Provider, SchemaMetadata, SkipSelf, Type, ɵDepFlags as DepFlags, ɵNodeFlags as NodeFlags, ɵclearProviderOverrides as clearProviderOverrides, ɵoverrideProvider as overrideProvider, ɵstringify as stringify} from '@angular/core';
 
 import {AsyncTestCompleter} from './async_test_completer';
 import {ComponentFixture} from './component_fixture';
@@ -159,6 +159,25 @@ export class TestBed implements Injector {
     return TestBed;
   }
 
+  /**
+   * Overwrites all providers for the given token with the given provider definition.
+   *
+   * @deprecated as it makes all NgModules lazy. Introduced only for migrating off of it.
+   */
+  static deprecatedOverrideProvider(token: any, provider: {
+    useFactory: Function,
+    deps: any[],
+  }): void;
+  static deprecatedOverrideProvider(token: any, provider: {useValue: any;}): void;
+  static deprecatedOverrideProvider(token: any, provider: {
+    useFactory?: Function,
+    useValue?: any,
+    deps?: any[],
+  }): typeof TestBed {
+    getTestBed().deprecatedOverrideProvider(token, provider as any);
+    return TestBed;
+  }
+
   static get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND) {
     return getTestBed().get(token, notFoundValue);
   }
@@ -298,9 +317,10 @@ export class TestBed implements Injector {
         this._moduleFactory =
             this._compiler.compileModuleAndAllComponentsSync(moduleType).ngModuleFactory;
       } catch (e) {
-        if (getComponentType(e)) {
+        const errorCompType = this._compiler.getComponentFromError(e);
+        if (errorCompType) {
           throw new Error(
-              `This test module uses the component ${stringify(getComponentType(e))} which is using a "templateUrl" or "styleUrls", but they were never compiled. ` +
+              `This test module uses the component ${stringify(errorCompType)} which is using a "templateUrl" or "styleUrls", but they were never compiled. ` +
               `Please call "TestBed.compileComponents" before your test.`);
         } else {
           throw e;
@@ -308,8 +328,8 @@ export class TestBed implements Injector {
       }
     }
     const ngZone = new NgZone({enableLongStackTrace: true});
-    const ngZoneInjector = ReflectiveInjector.resolveAndCreate(
-        [{provide: NgZone, useValue: ngZone}], this.platform.injector);
+    const ngZoneInjector =
+        Injector.create([{provide: NgZone, useValue: ngZone}], this.platform.injector);
     this._moduleRef = this._moduleFactory.create(ngZoneInjector);
     // ApplicationInitStatus.runInitializers() is marked @internal to core. So casting to any
     // before accessing it.
@@ -329,8 +349,7 @@ export class TestBed implements Injector {
 
     const compilerFactory: TestingCompilerFactory =
         this.platform.injector.get(TestingCompilerFactory);
-    this._compiler =
-        compilerFactory.createTestingCompiler(this._compilerOptions.concat([{useDebug: true}]));
+    this._compiler = compilerFactory.createTestingCompiler(this._compilerOptions);
     this._compiler.loadAotSummaries(this._aotSummaries);
     this._moduleOverrides.forEach((entry) => this._compiler.overrideModule(entry[0], entry[1]));
     this._componentOverrides.forEach(
@@ -394,11 +413,33 @@ export class TestBed implements Injector {
     deps: any[],
   }): void;
   overrideProvider(token: any, provider: {useValue: any;}): void;
-  overrideProvider(token: any, provider: {
-    useFactory?: Function,
-    useValue?: any,
-    deps?: any[],
-  }): void {
+  overrideProvider(token: any, provider: {useFactory?: Function, useValue?: any, deps?: any[]}):
+      void {
+    this.overrideProviderImpl(token, provider);
+  }
+
+  /**
+   * Overwrites all providers for the given token with the given provider definition.
+   *
+   * @deprecated as it makes all NgModules lazy. Introduced only for migrating off of it.
+   */
+  deprecatedOverrideProvider(token: any, provider: {
+    useFactory: Function,
+    deps: any[],
+  }): void;
+  deprecatedOverrideProvider(token: any, provider: {useValue: any;}): void;
+  deprecatedOverrideProvider(
+      token: any, provider: {useFactory?: Function, useValue?: any, deps?: any[]}): void {
+    this.overrideProviderImpl(token, provider, /* deprecated */ true);
+  }
+
+  private overrideProviderImpl(
+      token: any, provider: {
+        useFactory?: Function,
+        useValue?: any,
+        deps?: any[],
+      },
+      deprecated = false): void {
     let flags: NodeFlags = 0;
     let value: any;
     if (provider.useFactory) {
@@ -426,7 +467,7 @@ export class TestBed implements Injector {
       }
       return [depFlags, depToken];
     });
-    overrideProvider({token, flags, deps, value});
+    overrideProvider({token, flags, deps, value, deprecatedBehavior: deprecated});
   }
 
   createComponent<T>(component: Type<T>): ComponentFixture<T> {
@@ -550,8 +591,4 @@ export function withModule(moduleDef: TestModuleMetadata, fn?: Function | null):
     };
   }
   return new InjectSetupWrapper(() => moduleDef);
-}
-
-function getComponentType(error: Error): Function {
-  return (error as any)[ɵERROR_COMPONENT_TYPE];
 }

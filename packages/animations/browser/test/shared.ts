@@ -11,12 +11,14 @@ import {trigger} from '@angular/animations';
 import {TriggerAst} from '../src/dsl/animation_ast';
 import {buildAnimationAst} from '../src/dsl/animation_ast_builder';
 import {AnimationTrigger, buildTrigger} from '../src/dsl/animation_trigger';
+import {MockAnimationDriver} from '../testing/src/mock_animation_driver';
 
 export function makeTrigger(
     name: string, steps: any, skipErrors: boolean = false): AnimationTrigger {
+  const driver = new MockAnimationDriver();
   const errors: any[] = [];
   const triggerData = trigger(name, steps);
-  const triggerAst = buildAnimationAst(triggerData, errors) as TriggerAst;
+  const triggerAst = buildAnimationAst(driver, triggerData, errors) as TriggerAst;
   if (!skipErrors && errors.length) {
     const LINE_START = '\n - ';
     throw new Error(

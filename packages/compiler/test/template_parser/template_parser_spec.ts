@@ -5,16 +5,16 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {CompileQueryMetadata, CompilerConfig, JitReflector, ProxyClass, StaticSymbol} from '@angular/compiler';
-import {CompileAnimationEntryMetadata, CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeMetadata, CompilePipeSummary, CompileProviderMetadata, CompileTemplateMetadata, CompileTokenMetadata, CompileTypeMetadata, tokenReference} from '@angular/compiler/src/compile_metadata';
+import {CompileQueryMetadata, CompilerConfig, ProxyClass, StaticSymbol, preserveWhitespacesDefault} from '@angular/compiler';
+import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeMetadata, CompilePipeSummary, CompileProviderMetadata, CompileTemplateMetadata, CompileTokenMetadata, CompileTypeMetadata, tokenReference} from '@angular/compiler/src/compile_metadata';
 import {DomElementSchemaRegistry} from '@angular/compiler/src/schema/dom_element_schema_registry';
 import {ElementSchemaRegistry} from '@angular/compiler/src/schema/element_schema_registry';
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ProviderAstType, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '@angular/compiler/src/template_parser/template_ast';
-import {TEMPLATE_TRANSFORMS, TemplateParser, splitClasses} from '@angular/compiler/src/template_parser/template_parser';
-import {TEST_COMPILER_PROVIDERS} from '@angular/compiler/testing/src/test_bindings';
+import {TemplateParser, splitClasses} from '@angular/compiler/src/template_parser/template_parser';
 import {ChangeDetectionStrategy, ComponentFactory, RendererType2, SchemaMetadata, SecurityContext, ViewEncapsulation} from '@angular/core';
 import {Console} from '@angular/core/src/console';
 import {TestBed, inject} from '@angular/core/testing';
+import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_reflector';
 
 import {CompileEntryComponentMetadata, CompileStylesheetMetadata} from '../../src/compile_metadata';
 import {Identifiers, createTokenForExternalReference, createTokenForReference} from '../../src/identifiers';
@@ -22,6 +22,7 @@ import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../src/ml_pa
 import {noUndefined} from '../../src/util';
 import {MockSchemaRegistry} from '../../testing';
 import {unparse} from '../expression_parser/unparser';
+import {TEST_COMPILER_PROVIDERS} from '../test_bindings';
 
 const someModuleUrl = 'package:someModule';
 
@@ -37,29 +38,28 @@ function createTypeMeta({reference, diDeps}: {reference: any, diDeps?: any[]}):
   return {reference: reference, diDeps: diDeps || [], lifecycleHooks: []};
 }
 
-function compileDirectiveMetadataCreate(
-    {isHost, type, isComponent, selector, exportAs, changeDetection, inputs, outputs, host,
-     providers, viewProviders, queries, viewQueries, entryComponents, template, componentViewType,
-     rendererType, componentFactory}: {
-      isHost?: boolean,
-      type?: CompileTypeMetadata,
-      isComponent?: boolean,
-      selector?: string | null,
-      exportAs?: string | null,
-      changeDetection?: ChangeDetectionStrategy | null,
-      inputs?: string[],
-      outputs?: string[],
-      host?: {[key: string]: string},
-      providers?: CompileProviderMetadata[] | null,
-      viewProviders?: CompileProviderMetadata[] | null,
-      queries?: CompileQueryMetadata[] | null,
-      viewQueries?: CompileQueryMetadata[],
-      entryComponents?: CompileEntryComponentMetadata[],
-      template?: CompileTemplateMetadata,
-      componentViewType?: StaticSymbol | ProxyClass | null,
-      rendererType?: StaticSymbol | RendererType2 | null,
-      componentFactory?: StaticSymbol | ComponentFactory<any>
-    }) {
+function compileDirectiveMetadataCreate({isHost, type, isComponent, selector, exportAs,
+                                         changeDetection, inputs, outputs, host, providers,
+                                         viewProviders, queries, viewQueries, entryComponents,
+                                         template, componentViewType, rendererType}: {
+  isHost?: boolean,
+  type?: CompileTypeMetadata,
+  isComponent?: boolean,
+  selector?: string | null,
+  exportAs?: string | null,
+  changeDetection?: ChangeDetectionStrategy | null,
+  inputs?: string[],
+  outputs?: string[],
+  host?: {[key: string]: string},
+  providers?: CompileProviderMetadata[] | null,
+  viewProviders?: CompileProviderMetadata[] | null,
+  queries?: CompileQueryMetadata[] | null,
+  viewQueries?: CompileQueryMetadata[],
+  entryComponents?: CompileEntryComponentMetadata[],
+  template?: CompileTemplateMetadata,
+  componentViewType?: StaticSymbol | ProxyClass | null,
+  rendererType?: StaticSymbol | RendererType2 | null,
+}) {
   return CompileDirectiveMetadata.create({
     isHost: !!isHost,
     type: noUndefined(type) !,
@@ -78,13 +78,13 @@ function compileDirectiveMetadataCreate(
     template: noUndefined(template) !,
     componentViewType: noUndefined(componentViewType),
     rendererType: noUndefined(rendererType),
-    componentFactory: noUndefined(componentFactory),
+    componentFactory: null,
   });
 }
 
 function compileTemplateMetadata({encapsulation, template, templateUrl, styles, styleUrls,
                                   externalStylesheets, animations, ngContentSelectors,
-                                  interpolation, isInline}: {
+                                  interpolation, isInline, preserveWhitespaces}: {
   encapsulation?: ViewEncapsulation | null,
   template?: string | null,
   templateUrl?: string | null,
@@ -94,19 +94,22 @@ function compileTemplateMetadata({encapsulation, template, templateUrl, styles, 
   ngContentSelectors?: string[],
   animations?: any[],
   interpolation?: [string, string] | null,
-  isInline?: boolean
+  isInline?: boolean,
+  preserveWhitespaces?: boolean | null,
 }): CompileTemplateMetadata {
   return new CompileTemplateMetadata({
     encapsulation: noUndefined(encapsulation),
     template: noUndefined(template),
     templateUrl: noUndefined(templateUrl),
+    htmlAst: null,
     styles: styles || [],
     styleUrls: styleUrls || [],
     externalStylesheets: externalStylesheets || [],
     animations: animations || [],
     ngContentSelectors: ngContentSelectors || [],
     interpolation: noUndefined(interpolation),
-    isInline: !!isInline
+    isInline: !!isInline,
+    preserveWhitespaces: preserveWhitespacesDefault(noUndefined(preserveWhitespaces)),
   });
 }
 
@@ -116,21 +119,24 @@ export function main() {
   let ngIf: CompileDirectiveSummary;
   let parse: (
       template: string, directives: CompileDirectiveSummary[], pipes?: CompilePipeSummary[],
-      schemas?: SchemaMetadata[]) => TemplateAst[];
+      schemas?: SchemaMetadata[], preserveWhitespaces?: boolean) => TemplateAst[];
   let console: ArrayConsole;
 
-  function commonBeforeEach() {
+  function configureCompiler() {
+    console = new ArrayConsole();
     beforeEach(() => {
-      console = new ArrayConsole();
       TestBed.configureCompiler({
         providers: [
           {provide: Console, useValue: console},
+          {provide: CompilerConfig, useValue: new CompilerConfig({enableLegacyTemplate: true})}
         ],
       });
     });
+  }
 
+  function commonBeforeEach() {
     beforeEach(inject([TemplateParser], (parser: TemplateParser) => {
-      const someAnimation = new CompileAnimationEntryMetadata('someAnimation', []);
+      const someAnimation = ['someAnimation'];
       const someTemplate = compileTemplateMetadata({animations: [someAnimation]});
       const component = compileDirectiveMetadataCreate({
         isHost: false,
@@ -148,12 +154,15 @@ export function main() {
 
       parse =
           (template: string, directives: CompileDirectiveSummary[],
-           pipes: CompilePipeSummary[] | null = null,
-           schemas: SchemaMetadata[] = []): TemplateAst[] => {
+           pipes: CompilePipeSummary[] | null = null, schemas: SchemaMetadata[] = [],
+           preserveWhitespaces = true): TemplateAst[] => {
             if (pipes === null) {
               pipes = [];
             }
-            return parser.parse(component, template, directives, pipes, schemas, 'TestComp')
+            return parser
+                .parse(
+                    component, template, directives, pipes, schemas, 'TestComp',
+                    preserveWhitespaces)
                 .template;
           };
     }));
@@ -269,38 +278,6 @@ export function main() {
     });
   });
 
-  describe('TemplateParser template transform', () => {
-    beforeEach(() => { TestBed.configureCompiler({providers: TEST_COMPILER_PROVIDERS}); });
-
-    beforeEach(() => {
-      TestBed.configureCompiler({
-        providers:
-            [{provide: TEMPLATE_TRANSFORMS, useValue: new FooAstTransformer(), multi: true}]
-      });
-    });
-
-    describe('single', () => {
-      commonBeforeEach();
-      it('should transform TemplateAST', () => {
-        expect(humanizeTplAst(parse('<div>', []))).toEqual([[ElementAst, 'foo']]);
-      });
-    });
-
-    describe('multiple', () => {
-      beforeEach(() => {
-        TestBed.configureCompiler({
-          providers:
-              [{provide: TEMPLATE_TRANSFORMS, useValue: new BarAstTransformer(), multi: true}]
-        });
-      });
-
-      commonBeforeEach();
-      it('should compose transformers', () => {
-        expect(humanizeTplAst(parse('<div>', []))).toEqual([[ElementAst, 'bar']]);
-      });
-    });
-  });
-
   describe('TemplateParser Security', () => {
     // Semi-integration test to make sure TemplateParser properly sets the security context.
     // Uses the actual DomElementSchemaRegistry.
@@ -308,11 +285,12 @@ export function main() {
       TestBed.configureCompiler({
         providers: [
           TEST_COMPILER_PROVIDERS,
-          {provide: ElementSchemaRegistry, useClass: DomElementSchemaRegistry}
+          {provide: ElementSchemaRegistry, useClass: DomElementSchemaRegistry, deps: []}
         ]
       });
     });
 
+    configureCompiler();
     commonBeforeEach();
 
     describe('security context', () => {
@@ -345,6 +323,7 @@ export function main() {
       TestBed.configureCompiler({providers: [TEST_COMPILER_PROVIDERS, MOCK_SCHEMA_REGISTRY]});
     });
 
+    configureCompiler();
     commonBeforeEach();
 
     describe('parse', () => {
@@ -394,11 +373,13 @@ export function main() {
                animations: [],
                template: null,
                templateUrl: null,
+               htmlAst: null,
                ngContentSelectors: [],
                externalStylesheets: [],
                styleUrls: [],
                styles: [],
-               encapsulation: null
+               encapsulation: null,
+               preserveWhitespaces: preserveWhitespacesDefault(null),
              }),
              isHost: false,
              exportAs: null,
@@ -417,7 +398,7 @@ export function main() {
 
            });
            expect(humanizeTplAst(
-                      parser.parse(component, '{%a%}', [], [], [], 'TestComp').template,
+                      parser.parse(component, '{%a%}', [], [], [], 'TestComp', true).template,
                       {start: '{%', end: '%}'}))
                .toEqual([[BoundTextAst, '{% a %}']]);
          }));
@@ -569,7 +550,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
 
         it('should not issue a warning when host attributes contain a valid property-bound animation trigger',
            () => {
-             const animationEntries = [new CompileAnimationEntryMetadata('prop', [])];
+             const animationEntries = ['prop'];
              const dirA = compileDirectiveMetadataCreate({
                             selector: 'div',
                             template: compileTemplateMetadata({animations: animationEntries}),
@@ -1203,6 +1184,24 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
           ]);
         });
 
+        it('should assign references to directives via exportAs with multiple names', () => {
+          const pizzaTestDirective =
+              compileDirectiveMetadataCreate({
+                selector: 'pizza-test',
+                type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'Pizza'}}),
+                exportAs: 'pizza, cheeseSauceBread'
+              }).toSummary();
+
+          const template = '<pizza-test #food="pizza" #yum="cheeseSauceBread"></pizza-test>';
+
+          expect(humanizeTplAst(parse(template, [pizzaTestDirective]))).toEqual([
+            [ElementAst, 'pizza-test'],
+            [ReferenceAst, 'food', createTokenForReference(pizzaTestDirective.type.reference)],
+            [ReferenceAst, 'yum', createTokenForReference(pizzaTestDirective.type.reference)],
+            [DirectiveAst, pizzaTestDirective],
+          ]);
+        });
+
         it('should report references with values that dont match a directive as errors', () => {
           expect(() => parse('<div #a="dirA"></div>', [])).toThrowError(`Template parse errors:
 There is no directive with "exportAs" set to "dirA" ("<div [ERROR ->]#a="dirA"></div>"): TestComp@0:5`);
@@ -1215,7 +1214,7 @@ There is no directive with "exportAs" set to "dirA" ("<div [ERROR ->]#a="dirA"><
 
         it('should report variables as errors', () => {
           expect(() => parse('<div let-a></div>', [])).toThrowError(`Template parse errors:
-"let-" is only supported on template elements. ("<div [ERROR ->]let-a></div>"): TestComp@0:5`);
+"let-" is only supported on ng-template elements. ("<div [ERROR ->]let-a></div>"): TestComp@0:5`);
         });
 
         it('should report duplicate reference names', () => {
@@ -1223,6 +1222,31 @@ There is no directive with "exportAs" set to "dirA" ("<div [ERROR ->]#a="dirA"><
               .toThrowError(`Template parse errors:
 Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>"): TestComp@0:19`);
 
+        });
+
+        it('should report duplicate reference names when using mutliple exportAs names', () => {
+          const pizzaDirective =
+              compileDirectiveMetadataCreate({
+                selector: '[dessert-pizza]',
+                type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'Pizza'}}),
+                exportAs: 'dessertPizza, chocolate'
+              }).toSummary();
+
+          const chocolateDirective =
+              compileDirectiveMetadataCreate({
+                selector: '[chocolate]',
+                type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'Chocolate'}}),
+                exportAs: 'chocolate'
+              }).toSummary();
+
+          const template = '<div dessert-pizza chocolate #snack="chocolate"></div>';
+          const compileTemplate = () => parse(template, [pizzaDirective, chocolateDirective]);
+          const duplicateReferenceError = 'Template parse errors:\n' +
+              'Reference "#snack" is defined several times ' +
+              '("<div dessert-pizza chocolate [ERROR ->]#snack="chocolate"></div>")' +
+              ': TestComp@0:29';
+
+          expect(compileTemplate).toThrowError(duplicateReferenceError);
         });
 
         it('should not throw error when there is same reference name in different templates',
@@ -2052,13 +2076,73 @@ The pipe 'test' could not be found ("{{[ERROR ->]a | test}}"): TestComp@0:2`);
     });
   });
 
-  describe('Template Parser - opt-out `<template>` support', () => {
+  describe('whitespaces removal', () => {
+
+    beforeEach(() => {
+      TestBed.configureCompiler({providers: [TEST_COMPILER_PROVIDERS, MOCK_SCHEMA_REGISTRY]});
+    });
+
+    commonBeforeEach();
+
+    it('should not remove whitespaces by default', () => {
+      expect(humanizeTplAst(parse(' <br>  <br>\t<br>\n<br> ', []))).toEqual([
+        [TextAst, ' '],
+        [ElementAst, 'br'],
+        [TextAst, '  '],
+        [ElementAst, 'br'],
+        [TextAst, '\t'],
+        [ElementAst, 'br'],
+        [TextAst, '\n'],
+        [ElementAst, 'br'],
+        [TextAst, ' '],
+      ]);
+    });
+
+    it('should replace each &ngsp; with a space when preserveWhitespaces is true', () => {
+      expect(humanizeTplAst(parse('foo&ngsp;&ngsp;&ngsp;bar', [], [], [], true))).toEqual([
+        [TextAst, 'foo   bar'],
+      ]);
+    });
+
+    it('should replace every &ngsp; with a single space when preserveWhitespaces is false', () => {
+      expect(humanizeTplAst(parse('foo&ngsp;&ngsp;&ngsp;bar', [], [], [], false))).toEqual([
+        [TextAst, 'foo bar'],
+      ]);
+    });
+
+    it('should remove whitespaces when explicitly requested', () => {
+      expect(humanizeTplAst(parse(' <br>  <br>\t<br>\n<br> ', [], [], [], false))).toEqual([
+        [ElementAst, 'br'],
+        [ElementAst, 'br'],
+        [ElementAst, 'br'],
+        [ElementAst, 'br'],
+      ]);
+    });
+
+    it('should remove whitespace between ICU expansions when not preserving whitespaces', () => {
+      const shortForm = '{ count, plural, =0 {small} many {big} }';
+      const expandedForm = '<ng-container [ngPlural]="count">' +
+          '<ng-template ngPluralCase="=0">small</ng-template>' +
+          '<ng-template ngPluralCase="many">big</ng-template>' +
+          '</ng-container>';
+      const humanizedExpandedForm = humanizeTplAst(parse(expandedForm, []));
+
+      // ICU expansions are converted to `<ng-container>` tags and all blank text nodes are reomved
+      // so any whitespace between ICU exansions are removed as well
+      expect(humanizeTplAst(parse(`${shortForm} ${shortForm}`, [], [], [], false))).toEqual([
+        ...humanizedExpandedForm, ...humanizedExpandedForm
+      ]);
+    });
+
+  });
+
+  describe('Template Parser - `<template>` support disabled by default', () => {
     beforeEach(() => {
       TestBed.configureCompiler({
-        providers: [{
-          provide: CompilerConfig,
-          useValue: new CompilerConfig({enableLegacyTemplate: false}),
-        }],
+        providers: [
+          {provide: Console, useValue: console},
+          {provide: CompilerConfig, useValue: new CompilerConfig()}
+        ],
       });
     });
 
@@ -2113,7 +2197,7 @@ class TemplateHumanizer implements TemplateAstVisitor {
 
   constructor(
       private includeSourceSpan: boolean,
-      private interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG){};
+      private interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG) {}
 
   visitNgContent(ast: NgContentAst, context: any): any {
     const res = [NgContentAst];

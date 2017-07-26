@@ -48,4 +48,8 @@ module.exports = new Package('angular.io', [gitPackage, apiPackage, contentPacka
     });
     checkAnchorLinksProcessor.pathVariants = ['', '/', '.html', '/index.html', '#top-of-page'];
     checkAnchorLinksProcessor.errorOnUnmatchedLinks = true;
+  })
+
+  .config(function(renderLinkInfo, postProcessHtml) {
+    renderLinkInfo.docTypes = postProcessHtml.docTypes;
   });

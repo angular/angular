@@ -6,7 +6,7 @@ more functionality from codegen into runtime to reduce generated code size.
 As we introduce more runtime code, we need to be very careful to not
 regress in performance, compared to the pure codegen solution.
 
-## Initial resuls: size of Deep Tree Benchmark
+## Initial results: size of Deep Tree Benchmark
 
 File size for Tree benchmark template,
 view class of the component + the 2 embedded view classes (without imports nor host view factory):

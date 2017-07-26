@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, Component, ContentChild, ContentChildren, Directive, Host, HostBinding, HostListener, Inject, Injectable, Input, NgModule, Optional, Output, Pipe, Self, SkipSelf, ViewChild, ViewChildren, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
-
 import {CompileSummaryKind} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
+import {MetadataFactory, createAttribute, createComponent, createContentChild, createContentChildren, createDirective, createHost, createHostBinding, createHostListener, createInject, createInjectable, createInput, createNgModule, createOptional, createOutput, createPipe, createSelf, createSkipSelf, createViewChild, createViewChildren} from '../core';
 import * as o from '../output/output_ast';
 import {SummaryResolver} from '../summary_resolver';
 import {syntaxError} from '../util';
@@ -48,8 +47,8 @@ export class StaticReflector implements CompileReflector {
   private opaqueToken: StaticSymbol;
   private ROUTES: StaticSymbol;
   private ANALYZE_FOR_ENTRY_COMPONENTS: StaticSymbol;
-  private annotationForParentClassWithSummaryKind = new Map<CompileSummaryKind, any[]>();
-  private annotationNames = new Map<any, string>();
+  private annotationForParentClassWithSummaryKind =
+      new Map<CompileSummaryKind, MetadataFactory<any>[]>();
 
   constructor(
       private summaryResolver: SummaryResolver<StaticSymbol>,
@@ -64,16 +63,12 @@ export class StaticReflector implements CompileReflector {
     knownMetadataFunctions.forEach(
         (kf) => this._registerFunction(this.getStaticSymbol(kf.filePath, kf.name), kf.fn));
     this.annotationForParentClassWithSummaryKind.set(
-        CompileSummaryKind.Directive, [Directive, Component]);
-    this.annotationForParentClassWithSummaryKind.set(CompileSummaryKind.Pipe, [Pipe]);
-    this.annotationForParentClassWithSummaryKind.set(CompileSummaryKind.NgModule, [NgModule]);
+        CompileSummaryKind.Directive, [createDirective, createComponent]);
+    this.annotationForParentClassWithSummaryKind.set(CompileSummaryKind.Pipe, [createPipe]);
+    this.annotationForParentClassWithSummaryKind.set(CompileSummaryKind.NgModule, [createNgModule]);
     this.annotationForParentClassWithSummaryKind.set(
-        CompileSummaryKind.Injectable, [Injectable, Pipe, Directive, Component, NgModule]);
-    this.annotationNames.set(Directive, 'Directive');
-    this.annotationNames.set(Component, 'Component');
-    this.annotationNames.set(Pipe, 'Pipe');
-    this.annotationNames.set(NgModule, 'NgModule');
-    this.annotationNames.set(Injectable, 'Injectable');
+        CompileSummaryKind.Injectable,
+        [createInjectable, createPipe, createDirective, createComponent, createNgModule]);
   }
 
   componentModuleUrl(typeOrFunc: StaticSymbol): string {
@@ -82,12 +77,11 @@ export class StaticReflector implements CompileReflector {
   }
 
   resolveExternalReference(ref: o.ExternalReference): StaticSymbol {
-    const importSymbol = this.getStaticSymbol(ref.moduleName !, ref.name !);
-    const rootSymbol = this.findDeclaration(ref.moduleName !, ref.name !);
-    if (importSymbol != rootSymbol) {
-      this.symbolResolver.recordImportAs(rootSymbol, importSymbol);
-    }
-    return rootSymbol;
+    const refSymbol = this.symbolResolver.getSymbolByModule(ref.moduleName !, ref.name !);
+    const declarationSymbol = this.findSymbolDeclaration(refSymbol);
+    this.symbolResolver.recordModuleNameForFileName(refSymbol.filePath, ref.moduleName !);
+    this.symbolResolver.recordImportAs(declarationSymbol, refSymbol);
+    return declarationSymbol;
   }
 
   findDeclaration(moduleUrl: string, name: string, containingFile?: string): StaticSymbol {
@@ -130,12 +124,12 @@ export class StaticReflector implements CompileReflector {
           const requiredAnnotationTypes =
               this.annotationForParentClassWithSummaryKind.get(summary.type.summaryKind !) !;
           const typeHasRequiredAnnotation = requiredAnnotationTypes.some(
-              (requiredType: any) => ownAnnotations.some(ann => ann instanceof requiredType));
+              (requiredType) => ownAnnotations.some(ann => requiredType.isTypeOf(ann)));
           if (!typeHasRequiredAnnotation) {
             this.reportError(
                 syntaxError(
                     `Class ${type.name} in ${type.filePath} extends from a ${CompileSummaryKind[summary.type.summaryKind!]} in another compilation unit without duplicating the decorator. ` +
-                    `Please add a ${requiredAnnotationTypes.map((type: any) => this.annotationNames.get(type)).join(' or ')} decorator to the class.`),
+                    `Please add a ${requiredAnnotationTypes.map((type) => type.ngMetadataName).join(' or ')} decorator to the class.`),
                 type);
           }
         }
@@ -282,50 +276,48 @@ export class StaticReflector implements CompileReflector {
     this.ANALYZE_FOR_ENTRY_COMPONENTS =
         this.findDeclaration(ANGULAR_CORE, 'ANALYZE_FOR_ENTRY_COMPONENTS');
 
-    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Host'), Host);
+    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Host'), createHost);
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'Injectable'), Injectable);
-    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Self'), Self);
-    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'SkipSelf'), SkipSelf);
-    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Inject'), Inject);
-    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Optional'), Optional);
+        this.findDeclaration(ANGULAR_CORE, 'Injectable'), createInjectable);
+    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Self'), createSelf);
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'Attribute'), Attribute);
+        this.findDeclaration(ANGULAR_CORE, 'SkipSelf'), createSkipSelf);
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'ContentChild'), ContentChild);
+        this.findDeclaration(ANGULAR_CORE, 'Inject'), createInject);
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'ContentChildren'), ContentChildren);
+        this.findDeclaration(ANGULAR_CORE, 'Optional'), createOptional);
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'ViewChild'), ViewChild);
+        this.findDeclaration(ANGULAR_CORE, 'Attribute'), createAttribute);
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'ViewChildren'), ViewChildren);
-    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Input'), Input);
-    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Output'), Output);
-    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Pipe'), Pipe);
+        this.findDeclaration(ANGULAR_CORE, 'ContentChild'), createContentChild);
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'HostBinding'), HostBinding);
+        this.findDeclaration(ANGULAR_CORE, 'ContentChildren'), createContentChildren);
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'HostListener'), HostListener);
+        this.findDeclaration(ANGULAR_CORE, 'ViewChild'), createViewChild);
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'Directive'), Directive);
+        this.findDeclaration(ANGULAR_CORE, 'ViewChildren'), createViewChildren);
+    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Input'), createInput);
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'Component'), Component);
-    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'NgModule'), NgModule);
+        this.findDeclaration(ANGULAR_CORE, 'Output'), createOutput);
+    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Pipe'), createPipe);
+    this._registerDecoratorOrConstructor(
+        this.findDeclaration(ANGULAR_CORE, 'HostBinding'), createHostBinding);
+    this._registerDecoratorOrConstructor(
+        this.findDeclaration(ANGULAR_CORE, 'HostListener'), createHostListener);
+    this._registerDecoratorOrConstructor(
+        this.findDeclaration(ANGULAR_CORE, 'Directive'), createDirective);
+    this._registerDecoratorOrConstructor(
+        this.findDeclaration(ANGULAR_CORE, 'Component'), createComponent);
+    this._registerDecoratorOrConstructor(
+        this.findDeclaration(ANGULAR_CORE, 'NgModule'), createNgModule);
 
     // Note: Some metadata classes can be used directly with Provider.deps.
-    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Host'), Host);
-    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Self'), Self);
-    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'SkipSelf'), SkipSelf);
-    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Optional'), Optional);
-
-    this._registerFunction(this.findDeclaration(ANGULAR_CORE, 'trigger'), trigger);
-    this._registerFunction(this.findDeclaration(ANGULAR_CORE, 'state'), state);
-    this._registerFunction(this.findDeclaration(ANGULAR_CORE, 'transition'), transition);
-    this._registerFunction(this.findDeclaration(ANGULAR_CORE, 'style'), style);
-    this._registerFunction(this.findDeclaration(ANGULAR_CORE, 'animate'), animate);
-    this._registerFunction(this.findDeclaration(ANGULAR_CORE, 'keyframes'), keyframes);
-    this._registerFunction(this.findDeclaration(ANGULAR_CORE, 'sequence'), sequence);
-    this._registerFunction(this.findDeclaration(ANGULAR_CORE, 'group'), group);
+    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Host'), createHost);
+    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Self'), createSelf);
+    this._registerDecoratorOrConstructor(
+        this.findDeclaration(ANGULAR_CORE, 'SkipSelf'), createSkipSelf);
+    this._registerDecoratorOrConstructor(
+        this.findDeclaration(ANGULAR_CORE, 'Optional'), createOptional);
   }
 
   /**
@@ -376,7 +368,6 @@ export class StaticReflector implements CompileReflector {
           if (calling.get(functionSymbol)) {
             throw new Error('Recursion not supported');
           }
-          calling.set(functionSymbol, true);
           try {
             const value = targetFunction['value'];
             if (value && (depth != 0 || value.__symbolic != 'error')) {
@@ -387,6 +378,7 @@ export class StaticReflector implements CompileReflector {
               if (defaults && defaults.length > args.length) {
                 args.push(...defaults.slice(args.length).map((value: any) => simplify(value)));
               }
+              calling.set(functionSymbol, true);
               const functionScope = BindingScope.build();
               for (let i = 0; i < parameters.length; i++) {
                 functionScope.define(parameters[i], args[i]);
@@ -425,7 +417,9 @@ export class StaticReflector implements CompileReflector {
           for (const item of (<any>expression)) {
             // Check for a spread expression
             if (item && item.__symbolic === 'spread') {
-              const spreadArray = simplify(item.expression);
+              // We call with references as 0 because we require the actual value and cannot
+              // tolerate a reference here.
+              const spreadArray = simplifyInContext(context, item.expression, depth, 0);
               if (Array.isArray(spreadArray)) {
                 for (const spreadItem of spreadArray) {
                   result.push(spreadItem);
@@ -442,14 +436,15 @@ export class StaticReflector implements CompileReflector {
           return result;
         }
         if (expression instanceof StaticSymbol) {
-          // Stop simplification at builtin symbols or if we are in a reference context
-          if (expression === self.injectionToken || expression === self.opaqueToken ||
-              self.conversionMap.has(expression) || references > 0) {
+          // Stop simplification at builtin symbols or if we are in a reference context and
+          // the symbol doesn't have members.
+          if (expression === self.injectionToken || self.conversionMap.has(expression) ||
+              (references > 0 && !expression.members.length)) {
             return expression;
           } else {
             const staticSymbol = expression;
             const declarationValue = resolveReferenceValue(staticSymbol);
-            if (declarationValue) {
+            if (declarationValue != null) {
               return simplifyInContext(staticSymbol, declarationValue, depth + 1, references);
             } else {
               return staticSymbol;
@@ -527,8 +522,8 @@ export class StaticReflector implements CompileReflector {
                 }
                 return null;
               case 'index':
-                let indexTarget = simplify(expression['expression']);
-                let index = simplify(expression['index']);
+                let indexTarget = simplifyInContext(context, expression['expression'], depth, 0);
+                let index = simplifyInContext(context, expression['index'], depth, 0);
                 if (indexTarget && isPrimitive(index)) return indexTarget[index];
                 return null;
               case 'select':
@@ -540,7 +535,7 @@ export class StaticReflector implements CompileReflector {
                   selectContext =
                       self.getStaticSymbol(selectTarget.filePath, selectTarget.name, members);
                   const declarationValue = resolveReferenceValue(selectContext);
-                  if (declarationValue) {
+                  if (declarationValue != null) {
                     return simplifyInContext(
                         selectContext, declarationValue, depth + 1, references);
                   } else {
@@ -574,6 +569,9 @@ export class StaticReflector implements CompileReflector {
                   if (staticSymbol === self.injectionToken || staticSymbol === self.opaqueToken) {
                     // if somebody calls new InjectionToken, don't create an InjectionToken,
                     // but rather return the symbol to which the InjectionToken is assigned to.
+
+                    // OpaqueToken is supported too as it is required by the language service to
+                    // support v4 and prior versions of Angular.
                     return context;
                   }
                   const argExpressions: any[] = expression['arguments'] || [];
@@ -621,7 +619,7 @@ export class StaticReflector implements CompileReflector {
               }
               return simplifyInContext(context, value, depth, references + 1);
             }
-            return simplify(value)
+            return simplify(value);
           });
         }
         return IGNORE;

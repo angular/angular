@@ -1207,13 +1207,8 @@ Here's an excerpt:
 
 
 Create the file <code>styles.css</code>.
-Ensure that the file contains the [master styles provided here](https://raw.githubusercontent.com/angular/angular/master/aio/tools/examples/shared/boilerplate/src/styles.css).
-Also edit <code>index.html</code> to refer to this stylesheet.
+Ensure that the file contains the [master styles provided here](https://raw.githubusercontent.com/angular/angular/master/aio/tools/examples/shared/boilerplate/common/src/styles.css).
 
-
-<code-example path="toh-pt5/src/index.html" region="css" title="src/index.html (link ref)">
-
-</code-example>
 
 
 
@@ -1356,7 +1351,7 @@ Verify that you have the following structure:
 
 
 
-## The road you’ve travelled
+## Summary
 Here's what you achieved in this page:
 
 * You added the Angular router to navigate among different components.
@@ -1368,7 +1363,7 @@ Here's what you achieved in this page:
 
 Your app should look like this <live-example></live-example>.
 
-### The road ahead
+### Next step
 
 You have much of the foundation you need to build an app.
 You're still missing a key piece: remote data access.

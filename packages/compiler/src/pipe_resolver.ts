@@ -6,15 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Pipe, Type, resolveForwardRef, ɵstringify as stringify} from '@angular/core';
-
 import {CompileReflector} from './compile_reflector';
+import {Pipe, Type, createPipe} from './core';
 import {findLast} from './directive_resolver';
-import {CompilerInjectable} from './injectable';
-
-function _isPipeMetadata(type: any): boolean {
-  return type instanceof Pipe;
-}
+import {resolveForwardRef, stringify} from './util';
 
 /**
  * Resolve a `Type` for {@link Pipe}.
@@ -23,22 +18,21 @@ function _isPipeMetadata(type: any): boolean {
  *
  * See {@link Compiler}
  */
-@CompilerInjectable()
 export class PipeResolver {
   constructor(private _reflector: CompileReflector) {}
 
-  isPipe(type: Type<any>) {
+  isPipe(type: Type) {
     const typeMetadata = this._reflector.annotations(resolveForwardRef(type));
-    return typeMetadata && typeMetadata.some(_isPipeMetadata);
+    return typeMetadata && typeMetadata.some(createPipe.isTypeOf);
   }
 
   /**
    * Return {@link Pipe} for a given `Type`.
    */
-  resolve(type: Type<any>, throwIfNotFound = true): Pipe|null {
+  resolve(type: Type, throwIfNotFound = true): Pipe|null {
     const metas = this._reflector.annotations(resolveForwardRef(type));
     if (metas) {
-      const annotation = findLast(metas, _isPipeMetadata);
+      const annotation = findLast(metas, createPipe.isTypeOf);
       if (annotation) {
         return annotation;
       }

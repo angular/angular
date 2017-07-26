@@ -14,6 +14,7 @@
   "scopes": [
     "aio",
     "animations",
+    "bazel",
     "benchpress",
     "common",
     "compiler",
@@ -28,9 +29,8 @@
     "platform-webworker",
     "platform-webworker-dynamic",
     "router",
+    "service-worker",
     "upgrade",
-    "tsc-wrapped",
-
     "packaging",
     "changelog"
   ]

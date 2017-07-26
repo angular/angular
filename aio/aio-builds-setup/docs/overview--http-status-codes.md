@@ -46,8 +46,8 @@ with a bried explanation of what they mean:
   Request method other than POST.
 
 - **409 (Conflict)**:
-  Request to overwrite existing directory (e.g. deploy existing build or change PR visibility when
-  the destination directory does already exist).
+  Request to overwrite existing (public or non-public) directory (e.g. deploy existing build or
+  change PR visibility when the destination directory does already exist).
 
 - **413 (Payload Too Large)**:
   Payload larger than size specified in `AIO_UPLOAD_MAX_SIZE`.
@@ -71,7 +71,8 @@ with a bried explanation of what they mean:
   Request method other than POST.
 
 - **409 (Conflict)**:
-  Request to overwrite existing directory (i.e. directories for both visibilities exist).
+  Request to overwrite existing (public or non-public) directory (i.e. directories for both
+  visibilities exist).
   (Normally, this should not happen.)
 
 

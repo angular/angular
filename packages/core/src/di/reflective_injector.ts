@@ -49,7 +49,7 @@ const UNDEFINED = new Object();
  * Notice, we don't use the `new` operator because we explicitly want to have the `Injector`
  * resolve all of the object's dependencies automatically.
  *
- * @stable
+ * @deprecated from v5 - slow and brings in a lot of code, Use `Injector.create` instead.
  */
 export abstract class ReflectiveInjector implements Injector {
   /**
@@ -277,12 +277,12 @@ export abstract class ReflectiveInjector implements Injector {
 }
 
 export class ReflectiveInjector_ implements ReflectiveInjector {
+  private static INJECTOR_KEY = ReflectiveKey.get(Injector);
   /** @internal */
   _constructionCounter: number = 0;
   /** @internal */
   public _providers: ResolvedReflectiveProvider[];
-  /** @internal */
-  public _parent: Injector|null;
+  public readonly parent: Injector|null;
 
   keyIds: number[];
   objs: any[];
@@ -291,7 +291,7 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
    */
   constructor(_providers: ResolvedReflectiveProvider[], _parent?: Injector) {
     this._providers = _providers;
-    this._parent = _parent || null;
+    this.parent = _parent || null;
 
     const len = _providers.length;
 
@@ -308,8 +308,6 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
     return this._getByKey(ReflectiveKey.get(token), null, notFoundValue);
   }
 
-  get parent(): Injector|null { return this._parent; }
-
   resolveAndCreateChild(providers: Provider[]): ReflectiveInjector {
     const ResolvedReflectiveProviders = ReflectiveInjector.resolve(providers);
     return this.createChildFromResolved(ResolvedReflectiveProviders);
@@ -317,7 +315,7 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
 
   createChildFromResolved(providers: ResolvedReflectiveProvider[]): ReflectiveInjector {
     const inj = new ReflectiveInjector_(providers);
-    inj._parent = this;
+    (inj as{parent: Injector | null}).parent = this;
     return inj;
   }
 
@@ -389,7 +387,7 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
   }
 
   private _getByKey(key: ReflectiveKey, visibility: Self|SkipSelf|null, notFoundValue: any): any {
-    if (key === INJECTOR_KEY) {
+    if (key === ReflectiveInjector_.INJECTOR_KEY) {
       return this;
     }
 
@@ -435,7 +433,7 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
     let inj: Injector|null;
 
     if (visibility instanceof SkipSelf) {
-      inj = this._parent;
+      inj = this.parent;
     } else {
       inj = this;
     }
@@ -444,7 +442,7 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
       const inj_ = <ReflectiveInjector_>inj;
       const obj = inj_._getObjByKeyId(key.id);
       if (obj !== UNDEFINED) return obj;
-      inj = inj_._parent;
+      inj = inj_.parent;
     }
     if (inj !== null) {
       return inj.get(key.token, notFoundValue);
@@ -462,8 +460,6 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
 
   toString(): string { return this.displayName; }
 }
-
-const INJECTOR_KEY = ReflectiveKey.get(Injector);
 
 function _mapProviders(injector: ReflectiveInjector_, fn: Function): any[] {
   const res: any[] = new Array(injector._providers.length);

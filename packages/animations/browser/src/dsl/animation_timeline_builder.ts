@@ -5,10 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimateChildOptions, AnimateTimings, AnimationOptions, AnimationQueryOptions, ɵPRE_STYLE as PRE_STYLE, ɵStyleData} from '@angular/animations';
+import {AUTO_STYLE, AnimateChildOptions, AnimateTimings, AnimationMetadataType, AnimationOptions, AnimationQueryOptions, ɵPRE_STYLE as PRE_STYLE, ɵStyleData} from '@angular/animations';
 
 import {AnimationDriver} from '../render/animation_driver';
-import {copyObj, copyStyles, interpolateParams, iteratorToArray, resolveTiming, resolveTimingValue} from '../util';
+import {copyObj, copyStyles, interpolateParams, iteratorToArray, resolveTiming, resolveTimingValue, visitDslNode} from '../util';
 
 import {AnimateAst, AnimateChildAst, AnimateRefAst, Ast, AstVisitor, DynamicTimingAst, GroupAst, KeyframesAst, QueryAst, ReferenceAst, SequenceAst, StaggerAst, StateAst, StyleAst, TimingAst, TransitionAst, TriggerAst} from './animation_ast';
 import {AnimationTimelineInstruction, createTimelineInstruction} from './animation_timeline_instruction';
@@ -101,8 +101,8 @@ const ONE_FRAME_IN_MILLISECONDS = 1;
  * the `AnimationValidatorVisitor` code.
  */
 export function buildAnimationTimelines(
-    driver: AnimationDriver, rootElement: any, ast: Ast, startingStyles: ɵStyleData = {},
-    finalStyles: ɵStyleData = {}, options: AnimationOptions,
+    driver: AnimationDriver, rootElement: any, ast: Ast<AnimationMetadataType>,
+    startingStyles: ɵStyleData = {}, finalStyles: ɵStyleData = {}, options: AnimationOptions,
     subInstructions?: ElementInstructionMap, errors: any[] = []): AnimationTimelineInstruction[] {
   return new AnimationTimelineBuilderVisitor().buildKeyframes(
       driver, rootElement, ast, startingStyles, finalStyles, options, subInstructions, errors);
@@ -110,15 +110,15 @@ export function buildAnimationTimelines(
 
 export class AnimationTimelineBuilderVisitor implements AstVisitor {
   buildKeyframes(
-      driver: AnimationDriver, rootElement: any, ast: Ast, startingStyles: ɵStyleData,
-      finalStyles: ɵStyleData, options: AnimationOptions, subInstructions?: ElementInstructionMap,
-      errors: any[] = []): AnimationTimelineInstruction[] {
+      driver: AnimationDriver, rootElement: any, ast: Ast<AnimationMetadataType>,
+      startingStyles: ɵStyleData, finalStyles: ɵStyleData, options: AnimationOptions,
+      subInstructions?: ElementInstructionMap, errors: any[] = []): AnimationTimelineInstruction[] {
     subInstructions = subInstructions || new ElementInstructionMap();
     const context = new AnimationTimelineContext(driver, rootElement, subInstructions, errors, []);
     context.options = options;
     context.currentTimeline.setStyles([startingStyles], null, context.errors, options);
 
-    ast.visit(this, context);
+    visitDslNode(this, ast, context);
 
     // this checks to see if an actual animation happened
     const timelines = context.timelines.filter(timeline => timeline.containsAnimation());
@@ -193,7 +193,7 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
 
   visitReference(ast: ReferenceAst, context: AnimationTimelineContext) {
     context.updateOptions(ast.options, true);
-    ast.animation.visit(this, context);
+    visitDslNode(this, ast.animation, context);
     context.previousNode = ast;
   }
 
@@ -207,7 +207,7 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
       ctx.transformIntoNewTimeline();
 
       if (options.delay != null) {
-        if (ctx.previousNode instanceof StyleAst) {
+        if (ctx.previousNode.type == AnimationMetadataType.Style) {
           ctx.currentTimeline.snapshotCurrentStyles();
           ctx.previousNode = DEFAULT_NOOP_PREVIOUS_NODE;
         }
@@ -218,7 +218,7 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
     }
 
     if (ast.steps.length) {
-      ast.steps.forEach(s => s.visit(this, ctx));
+      ast.steps.forEach(s => visitDslNode(this, s, ctx));
 
       // this is here just incase the inner steps only contain or end with a style() call
       ctx.currentTimeline.applyStylesToKeyframe();
@@ -245,7 +245,7 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
         innerContext.delayNextStep(delay);
       }
 
-      s.visit(this, innerContext);
+      visitDslNode(this, s, innerContext);
       furthestTime = Math.max(furthestTime, innerContext.currentTimeline.currentTime);
       innerTimelines.push(innerContext.currentTimeline);
     });
@@ -259,19 +259,19 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
     context.previousNode = ast;
   }
 
-  visitTiming(ast: TimingAst, context: AnimationTimelineContext): AnimateTimings {
-    if (ast instanceof DynamicTimingAst) {
-      const strValue = context.params ?
-          interpolateParams(ast.value, context.params, context.errors) :
-          ast.value.toString();
-      return resolveTiming(strValue, context.errors);
+  private _visitTiming(ast: TimingAst, context: AnimationTimelineContext): AnimateTimings {
+    if ((ast as DynamicTimingAst).dynamic) {
+      const strValue = (ast as DynamicTimingAst).strValue;
+      const timingValue =
+          context.params ? interpolateParams(strValue, context.params, context.errors) : strValue;
+      return resolveTiming(timingValue, context.errors);
     } else {
       return {duration: ast.duration, delay: ast.delay, easing: ast.easing};
     }
   }
 
   visitAnimate(ast: AnimateAst, context: AnimationTimelineContext) {
-    const timings = context.currentAnimateTimings = this.visitTiming(ast.timings, context);
+    const timings = context.currentAnimateTimings = this._visitTiming(ast.timings, context);
     const timeline = context.currentTimeline;
     if (timings.delay) {
       context.incrementTime(timings.delay);
@@ -279,7 +279,7 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
     }
 
     const style = ast.style;
-    if (style instanceof KeyframesAst) {
+    if (style.type == AnimationMetadataType.Keyframes) {
       this.visitKeyframes(style, context);
     } else {
       context.incrementTime(timings.duration);
@@ -343,7 +343,7 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
     const options = (ast.options || {}) as AnimationQueryOptions;
     const delay = options.delay ? resolveTimingValue(options.delay) : 0;
 
-    if (delay && (context.previousNode instanceof StyleAst ||
+    if (delay && (context.previousNode.type === AnimationMetadataType.Style ||
                   (startTime == 0 && context.currentTimeline.getCurrentStyleProperties().length))) {
       context.currentTimeline.snapshotCurrentStyles();
       context.previousNode = DEFAULT_NOOP_PREVIOUS_NODE;
@@ -368,7 +368,7 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
         sameElementTimeline = innerContext.currentTimeline;
       }
 
-      ast.animation.visit(this, innerContext);
+      visitDslNode(this, ast.animation, innerContext);
 
       // this is here just incase the inner steps only contain or end
       // with a style() call (which is here to signal that this is a preparatory
@@ -415,7 +415,7 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
     }
 
     const startingTime = timeline.currentTime;
-    ast.animation.visit(this, context);
+    visitDslNode(this, ast.animation, context);
     context.previousNode = ast;
 
     // time = duration + delay
@@ -431,12 +431,12 @@ export declare type StyleAtTime = {
   time: number; value: string | number;
 };
 
-const DEFAULT_NOOP_PREVIOUS_NODE = <Ast>{};
+const DEFAULT_NOOP_PREVIOUS_NODE = <Ast<AnimationMetadataType>>{};
 export class AnimationTimelineContext {
   public parentContext: AnimationTimelineContext|null = null;
   public currentTimeline: TimelineBuilder;
   public currentAnimateTimings: AnimateTimings|null = null;
-  public previousNode: Ast = DEFAULT_NOOP_PREVIOUS_NODE;
+  public previousNode: Ast<AnimationMetadataType> = DEFAULT_NOOP_PREVIOUS_NODE;
   public subContextCount = 0;
   public options: AnimationOptions = {};
   public currentQueryIndex: number = 0;
@@ -447,7 +447,7 @@ export class AnimationTimelineContext {
       private _driver: AnimationDriver, public element: any,
       public subInstructions: ElementInstructionMap, public errors: any[],
       public timelines: TimelineBuilder[], initialTimeline?: TimelineBuilder) {
-    this.currentTimeline = initialTimeline || new TimelineBuilder(element, 0);
+    this.currentTimeline = initialTimeline || new TimelineBuilder(this._driver, element, 0);
     timelines.push(this.currentTimeline);
   }
 
@@ -489,7 +489,7 @@ export class AnimationTimelineContext {
       const oldParams = this.options.params;
       if (oldParams) {
         const params: {[name: string]: any} = options['params'] = {};
-        Object.keys(this.options.params).forEach(name => { params[name] = oldParams[name]; });
+        Object.keys(oldParams).forEach(name => { params[name] = oldParams[name]; });
       }
     }
     return options;
@@ -530,7 +530,7 @@ export class AnimationTimelineContext {
       easing: ''
     };
     const builder = new SubTimelineBuilder(
-        instruction.element, instruction.keyframes, instruction.preStyleProps,
+        this._driver, instruction.element, instruction.keyframes, instruction.preStyleProps,
         instruction.postStyleProps, updatedTimings, instruction.stretchStartingKeyframe);
     this.timelines.push(builder);
     return updatedTimings;
@@ -556,7 +556,12 @@ export class AnimationTimelineContext {
     }
     if (selector.length > 0) {  // if :self is only used then the selector is empty
       const multi = limit != 1;
-      results.push(...this._driver.query(this.element, selector, multi));
+      let elements = this._driver.query(this.element, selector, multi);
+      if (limit !== 0) {
+        elements = limit < 0 ? elements.slice(elements.length + limit, elements.length) :
+                               elements.slice(0, limit);
+      }
+      results.push(...elements);
     }
 
     if (!optional && results.length == 0) {
@@ -582,7 +587,7 @@ export class TimelineBuilder {
   private _currentEmptyStepKeyframe: ɵStyleData|null = null;
 
   constructor(
-      public element: any, public startTime: number,
+      private _driver: AnimationDriver, public element: any, public startTime: number,
       private _elementTimelineStylesLookup?: Map<any, ɵStyleData>) {
     if (!this._elementTimelineStylesLookup) {
       this._elementTimelineStylesLookup = new Map<any, ɵStyleData>();
@@ -632,7 +637,7 @@ export class TimelineBuilder {
   fork(element: any, currentTime?: number): TimelineBuilder {
     this.applyStylesToKeyframe();
     return new TimelineBuilder(
-        element, currentTime || this.currentTime, this._elementTimelineStylesLookup);
+        this._driver, element, currentTime || this.currentTime, this._elementTimelineStylesLookup);
   }
 
   private _loadKeyframe() {
@@ -796,10 +801,10 @@ class SubTimelineBuilder extends TimelineBuilder {
   public timings: AnimateTimings;
 
   constructor(
-      public element: any, public keyframes: ɵStyleData[], public preStyleProps: string[],
-      public postStyleProps: string[], timings: AnimateTimings,
+      driver: AnimationDriver, public element: any, public keyframes: ɵStyleData[],
+      public preStyleProps: string[], public postStyleProps: string[], timings: AnimateTimings,
       private _stretchStartingKeyframe: boolean = false) {
-    super(element, timings.delay);
+    super(driver, element, timings.delay);
     this.timings = {duration: timings.duration, delay: timings.delay, easing: timings.easing};
   }
 

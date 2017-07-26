@@ -3,10 +3,10 @@ import { Hero } from './hero';
 
 // #docregion
 @Component({
-  selector: 'hero-app',
+  selector: 'app-root',
   template: `
     <h1>Tour of Heroes</h1>
-    <hero-app-main [hero]=hero></hero-app-main>`,
+    <app-hero-main [hero]=hero></app-hero-main>`,
   styles: ['h1 { font-weight: normal; }']
 })
 export class HeroAppComponent {

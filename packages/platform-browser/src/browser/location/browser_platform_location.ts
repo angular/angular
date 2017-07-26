@@ -23,7 +23,7 @@ import {supportsState} from './history';
  */
 @Injectable()
 export class BrowserPlatformLocation extends PlatformLocation {
-  private _location: Location;
+  public readonly location: Location;
   private _history: History;
 
   constructor(@Inject(DOCUMENT) private _doc: any) {
@@ -34,11 +34,9 @@ export class BrowserPlatformLocation extends PlatformLocation {
   // This is moved to its own method so that `MockPlatformLocationStrategy` can overwrite it
   /** @internal */
   _init() {
-    this._location = getDOM().getLocation();
+    (this as{location: Location}).location = getDOM().getLocation();
     this._history = getDOM().getHistory();
   }
-
-  get location(): Location { return this._location; }
 
   getBaseHrefFromDOM(): string { return getDOM().getBaseHref(this._doc) !; }
 
@@ -50,16 +48,16 @@ export class BrowserPlatformLocation extends PlatformLocation {
     getDOM().getGlobalEventTarget(this._doc, 'window').addEventListener('hashchange', fn, false);
   }
 
-  get pathname(): string { return this._location.pathname; }
-  get search(): string { return this._location.search; }
-  get hash(): string { return this._location.hash; }
-  set pathname(newPath: string) { this._location.pathname = newPath; }
+  get pathname(): string { return this.location.pathname; }
+  get search(): string { return this.location.search; }
+  get hash(): string { return this.location.hash; }
+  set pathname(newPath: string) { this.location.pathname = newPath; }
 
   pushState(state: any, title: string, url: string): void {
     if (supportsState()) {
       this._history.pushState(state, title, url);
     } else {
-      this._location.hash = url;
+      this.location.hash = url;
     }
   }
 
@@ -67,7 +65,7 @@ export class BrowserPlatformLocation extends PlatformLocation {
     if (supportsState()) {
       this._history.replaceState(state, title, url);
     } else {
-      this._location.hash = url;
+      this.location.hash = url;
     }
   }
 

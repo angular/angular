@@ -156,7 +156,7 @@ RUN find $AIO_SCRIPTS_SH_DIR -maxdepth 1 -type f -printf "%P\n" \
 # Set up the Node.js scripts
 COPY scripts-js/ $AIO_SCRIPTS_JS_DIR/
 WORKDIR $AIO_SCRIPTS_JS_DIR/
-RUN yarn install --production
+RUN yarn install --production --frozen-lockfile
 
 
 # Set up health check

@@ -7,53 +7,11 @@
  */
 
 import {Type} from '../type';
-import {global, stringify} from '../util';
-
-let _nextClassId = 0;
-const Reflect = global['Reflect'];
-
-/**
- * Declares the interface to be used with {@link Class}.
- *
- * @stable
- */
-export type ClassDefinition = {
-  /**
-   * Optional argument for specifying the superclass.
-   */
-  extends?: Type<any>;
-
-  /**
-   * Required constructor function for a class.
-   *
-   * The function may be optionally wrapped in an `Array`, in which case additional parameter
-   * annotations may be specified.
-   * The number of arguments and the number of parameter annotations must match.
-   *
-   * See {@link Class} for example of usage.
-   */
-  constructor: Function | any[];
-} &
-{
-  /**
-   * Other methods on the class. Note that values should have type 'Function' but TS requires
-   * all properties to have a narrower type than the index signature.
-   */
-  [x: string]: Type<any>|Function|any[];
-};
 
 /**
  * An interface implemented by all Angular type decorators, which allows them to be used as ES7
  * decorators as well as
  * Angular DSL syntax.
- *
- * DSL syntax:
- *
- * ```
- * var MyClass = ng
- *   .Component({...})
- *   .Class({...});
- * ```
  *
  * ES7 syntax:
  *
@@ -74,189 +32,11 @@ export interface TypeDecorator {
   // so we cannot declare this interface as a subtype.
   // see https://github.com/angular/angular/issues/3379#issuecomment-126169417
   (target: Object, propertyKey?: string|symbol, parameterIndex?: number): void;
-
-  /**
-   * Storage for the accumulated annotations so far used by the DSL syntax.
-   *
-   * Used by {@link Class} to annotate the generated class.
-   */
-  annotations: any[];
-
-  /**
-   * Generate a class from the definition and annotate it with {@link TypeDecorator#annotations}.
-   */
-  Class(obj: ClassDefinition): Type<any>;
 }
 
-function extractAnnotation(annotation: any): any {
-  if (typeof annotation === 'function' && annotation.hasOwnProperty('annotation')) {
-    // it is a decorator, extract annotation
-    annotation = annotation.annotation;
-  }
-  return annotation;
-}
-
-function applyParams(fnOrArray: Function | any[] | undefined, key: string): Function {
-  if (fnOrArray === Object || fnOrArray === String || fnOrArray === Function ||
-      fnOrArray === Number || fnOrArray === Array) {
-    throw new Error(`Can not use native ${stringify(fnOrArray)} as constructor`);
-  }
-
-  if (typeof fnOrArray === 'function') {
-    return fnOrArray;
-  }
-
-  if (Array.isArray(fnOrArray)) {
-    const annotations: any[] = fnOrArray as any[];
-    const annoLength = annotations.length - 1;
-    const fn: Function = fnOrArray[annoLength];
-    if (typeof fn !== 'function') {
-      throw new Error(
-          `Last position of Class method array must be Function in key ${key} was '${stringify(fn)}'`);
-    }
-    if (annoLength != fn.length) {
-      throw new Error(
-          `Number of annotations (${annoLength}) does not match number of arguments (${fn.length}) in the function: ${stringify(fn)}`);
-    }
-    const paramsAnnotations: any[][] = [];
-    for (let i = 0, ii = annotations.length - 1; i < ii; i++) {
-      const paramAnnotations: any[] = [];
-      paramsAnnotations.push(paramAnnotations);
-      const annotation = annotations[i];
-      if (Array.isArray(annotation)) {
-        for (let j = 0; j < annotation.length; j++) {
-          paramAnnotations.push(extractAnnotation(annotation[j]));
-        }
-      } else if (typeof annotation === 'function') {
-        paramAnnotations.push(extractAnnotation(annotation));
-      } else {
-        paramAnnotations.push(annotation);
-      }
-    }
-    Reflect.defineMetadata('parameters', paramsAnnotations, fn);
-    return fn;
-  }
-
-  throw new Error(
-      `Only Function or Array is supported in Class definition for key '${key}' is '${stringify(fnOrArray)}'`);
-}
-
-/**
- * Provides a way for expressing ES6 classes with parameter annotations in ES5.
- *
- * ## Basic Example
- *
- * ```
- * var Greeter = ng.Class({
- *   constructor: function(name) {
- *     this.name = name;
- *   },
- *
- *   greet: function() {
- *     alert('Hello ' + this.name + '!');
- *   }
- * });
- * ```
- *
- * is equivalent to ES6:
- *
- * ```
- * class Greeter {
- *   constructor(name) {
- *     this.name = name;
- *   }
- *
- *   greet() {
- *     alert('Hello ' + this.name + '!');
- *   }
- * }
- * ```
- *
- * or equivalent to ES5:
- *
- * ```
- * var Greeter = function (name) {
- *   this.name = name;
- * }
- *
- * Greeter.prototype.greet = function () {
- *   alert('Hello ' + this.name + '!');
- * }
- * ```
- *
- * ### Example with parameter annotations
- *
- * ```
- * var MyService = ng.Class({
- *   constructor: [String, [new Optional(), Service], function(name, myService) {
- *     ...
- *   }]
- * });
- * ```
- *
- * is equivalent to ES6:
- *
- * ```
- * class MyService {
- *   constructor(name: string, @Optional() myService: Service) {
- *     ...
- *   }
- * }
- * ```
- *
- * ### Example with inheritance
- *
- * ```
- * var Shape = ng.Class({
- *   constructor: (color) {
- *     this.color = color;
- *   }
- * });
- *
- * var Square = ng.Class({
- *   extends: Shape,
- *   constructor: function(color, size) {
- *     Shape.call(this, color);
- *     this.size = size;
- *   }
- * });
- * ```
- * @suppress {globalThis}
- * @stable
- */
-export function Class(clsDef: ClassDefinition): Type<any> {
-  const constructor = applyParams(
-      clsDef.hasOwnProperty('constructor') ? clsDef.constructor : undefined, 'constructor');
-
-  let proto = constructor.prototype;
-
-  if (clsDef.hasOwnProperty('extends')) {
-    if (typeof clsDef.extends === 'function') {
-      (<Function>constructor).prototype = proto =
-          Object.create((<Function>clsDef.extends).prototype);
-    } else {
-      throw new Error(
-          `Class definition 'extends' property must be a constructor function was: ${stringify(clsDef.extends)}`);
-    }
-  }
-
-  for (const key in clsDef) {
-    if (key !== 'extends' && key !== 'prototype' && clsDef.hasOwnProperty(key)) {
-      proto[key] = applyParams(clsDef[key], key);
-    }
-  }
-
-  if (this && this.annotations instanceof Array) {
-    Reflect.defineMetadata('annotations', this.annotations, constructor);
-  }
-
-  const constructorName = constructor['name'];
-  if (!constructorName || constructorName === 'constructor') {
-    (constructor as any)['overriddenName'] = `class${_nextClassId++}`;
-  }
-
-  return <Type<any>>constructor;
-}
+export const ANNOTATIONS = '__annotations__';
+export const PARAMETERS = '__paramaters__';
+export const PROP_METADATA = '__prop__metadata__';
 
 /**
  * @suppress {globalThis}
@@ -268,27 +48,21 @@ export function makeDecorator(
   const metaCtor = makeMetadataCtor(props);
 
   function DecoratorFactory(objOrType: any): (cls: any) => any {
-    if (!(Reflect && Reflect.getOwnMetadata)) {
-      throw 'reflect-metadata shim is required when using class decorators';
-    }
-
     if (this instanceof DecoratorFactory) {
       metaCtor.call(this, objOrType);
       return this;
     }
 
     const annotationInstance = new (<any>DecoratorFactory)(objOrType);
-    const chainAnnotation =
-        typeof this === 'function' && Array.isArray(this.annotations) ? this.annotations : [];
-    chainAnnotation.push(annotationInstance);
     const TypeDecorator: TypeDecorator = <TypeDecorator>function TypeDecorator(cls: Type<any>) {
-      const annotations = Reflect.getOwnMetadata('annotations', cls) || [];
+      // Use of Object.defineProperty is important since it creates non-enumerable property which
+      // prevents the property is copied during subclassing.
+      const annotations = cls.hasOwnProperty(ANNOTATIONS) ?
+          (cls as any)[ANNOTATIONS] :
+          Object.defineProperty(cls, ANNOTATIONS, {value: []})[ANNOTATIONS];
       annotations.push(annotationInstance);
-      Reflect.defineMetadata('annotations', annotations, cls);
       return cls;
     };
-    TypeDecorator.annotations = chainAnnotation;
-    TypeDecorator.Class = Class;
     if (chainFn) chainFn(TypeDecorator);
     return TypeDecorator;
   }
@@ -297,7 +71,7 @@ export function makeDecorator(
     DecoratorFactory.prototype = Object.create(parentClass.prototype);
   }
 
-  DecoratorFactory.prototype.toString = () => `@${name}`;
+  DecoratorFactory.prototype.ngMetadataName = name;
   (<any>DecoratorFactory).annotationCls = DecoratorFactory;
   return DecoratorFactory as any;
 }
@@ -327,7 +101,11 @@ export function makeParamDecorator(
     return ParamDecorator;
 
     function ParamDecorator(cls: any, unusedKey: any, index: number): any {
-      const parameters: (any[] | null)[] = Reflect.getOwnMetadata('parameters', cls) || [];
+      // Use of Object.defineProperty is important since it creates non-enumerable property which
+      // prevents the property is copied during subclassing.
+      const parameters = cls.hasOwnProperty(PARAMETERS) ?
+          (cls as any)[PARAMETERS] :
+          Object.defineProperty(cls, PARAMETERS, {value: []})[PARAMETERS];
 
       // there might be gaps if some in between parameters do not have annotations.
       // we pad with nulls.
@@ -335,17 +113,14 @@ export function makeParamDecorator(
         parameters.push(null);
       }
 
-      parameters[index] = parameters[index] || [];
-      parameters[index] !.push(annotationInstance);
-
-      Reflect.defineMetadata('parameters', parameters, cls);
+      (parameters[index] = parameters[index] || []).push(annotationInstance);
       return cls;
     }
   }
   if (parentClass) {
     ParamDecoratorFactory.prototype = Object.create(parentClass.prototype);
   }
-  ParamDecoratorFactory.prototype.toString = () => `@${name}`;
+  ParamDecoratorFactory.prototype.ngMetadataName = name;
   (<any>ParamDecoratorFactory).annotationCls = ParamDecoratorFactory;
   return ParamDecoratorFactory;
 }
@@ -363,10 +138,14 @@ export function makePropDecorator(
     const decoratorInstance = new (<any>PropDecoratorFactory)(...args);
 
     return function PropDecorator(target: any, name: string) {
-      const meta = Reflect.getOwnMetadata('propMetadata', target.constructor) || {};
+      const constructor = target.constructor;
+      // Use of Object.defineProperty is important since it creates non-enumerable property which
+      // prevents the property is copied during subclassing.
+      const meta = constructor.hasOwnProperty(PROP_METADATA) ?
+          (constructor as any)[PROP_METADATA] :
+          Object.defineProperty(constructor, PROP_METADATA, {value: {}})[PROP_METADATA];
       meta[name] = meta.hasOwnProperty(name) && meta[name] || [];
       meta[name].unshift(decoratorInstance);
-      Reflect.defineMetadata('propMetadata', meta, target.constructor);
     };
   }
 
@@ -374,7 +153,7 @@ export function makePropDecorator(
     PropDecoratorFactory.prototype = Object.create(parentClass.prototype);
   }
 
-  PropDecoratorFactory.prototype.toString = () => `@${name}`;
+  PropDecoratorFactory.prototype.ngMetadataName = name;
   (<any>PropDecoratorFactory).annotationCls = PropDecoratorFactory;
   return PropDecoratorFactory;
 }

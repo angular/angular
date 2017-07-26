@@ -1,4 +1,4 @@
-import { browser, element, by, promise } from 'protractor';
+import { element, by } from 'protractor';
 import { SitePage } from './app.po';
 
 describe('site App', function() {
@@ -41,20 +41,20 @@ describe('site App', function() {
 
   describe('scrolling to the top', () => {
     it('should scroll to the top when navigating to another page', () => {
-      page.navigateTo('guide/docs');
+      page.navigateTo('guide/security');
       page.scrollToBottom();
       page.getScrollTop().then(scrollTop => expect(scrollTop).toBeGreaterThan(0));
 
-      page.navigateTo('guide/api');
+      page.navigateTo('api');
       page.getScrollTop().then(scrollTop => expect(scrollTop).toBe(0));
     });
 
     it('should scroll to the top when navigating to the same page', () => {
-      page.navigateTo('guide/docs');
+      page.navigateTo('guide/security');
       page.scrollToBottom();
       page.getScrollTop().then(scrollTop => expect(scrollTop).toBeGreaterThan(0));
 
-      page.navigateTo('guide/docs');
+      page.navigateTo('guide/security');
       page.getScrollTop().then(scrollTop => expect(scrollTop).toBe(0));
     });
   });
@@ -66,30 +66,51 @@ describe('site App', function() {
     });
   });
 
+  // TODO(https://github.com/angular/angular/issues/19785): Activate this again
+  // once it is no more flaky.
   describe('google analytics', () => {
-    beforeEach(done => page.gaReady.then(done));
-
-    it('should call ga', done => {
-      page.ga()
-        .then(calls => {
-          expect(calls.length).toBeGreaterThan(2, 'ga calls');
-          done();
-        });
-    });
 
     it('should call ga with initial URL', done => {
       let path: string;
-
+      page.navigateTo('api');
       page.locationPath()
         .then(p => path = p)
         .then(() => page.ga().then(calls => {
-          expect(calls.length).toBeGreaterThan(2, 'ga calls');
-          expect(calls[1]).toEqual(['set', 'page', path]);
+          // The last call (length-1) will be the `send` command
+          // The second to last call (length-2) will be the command to `set` the page url
+          expect(calls[calls.length - 2]).toEqual(['set', 'page', path]);
           done();
         }));
     });
 
-    // Todo: add test to confirm tracking URL when navigate.
+    it('should call ga with new URL on navigation', done => {
+      let path: string;
+      page.getLink('features').click();
+      page.locationPath()
+        .then(p => path = p)
+        .then(() => page.ga().then(calls => {
+          // The last call (length-1) will be the `send` command
+          // The second to last call (length-2) will be the command to `set` the page url
+          expect(calls[calls.length - 2]).toEqual(['set', 'page', path]);
+          done();
+        }));
+    });
   });
 
+  describe('search', () => {
+    it('should find pages when searching by a partial word in the title', () => {
+      page.enterSearch('ngCont');
+      expect(page.getSearchResults().map(link => link.getText())).toContain('NgControl');
+      page.enterSearch('accessor');
+      expect(page.getSearchResults().map(link => link.getText())).toContain('ControlValueAccessor');
+    });
+  });
+
+  describe('404 page', () => {
+    it('should search the index for words found in the url', () => {
+      page.navigateTo('http/router');
+      expect(page.getSearchResults().map(link => link.getText())).toContain('Http');
+      expect(page.getSearchResults().map(link => link.getText())).toContain('Router');
+    });
+  });
 });

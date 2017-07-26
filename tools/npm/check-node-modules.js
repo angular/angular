@@ -10,16 +10,17 @@
 
 var fs = require('fs');
 var path = require('path');
+var childProcess = require('child_process');
 
-var NPM_SHRINKWRAP_FILE = 'npm-shrinkwrap.json';
-var NPM_SHRINKWRAP_CACHED_FILE = 'node_modules/.npm-shrinkwrap.cached.json';
-var FS_OPTS = {encoding: 'utf-8'};
 var PROJECT_ROOT = path.join(__dirname, '../../');
 
-
+// tslint:disable:no-console
 function checkNodeModules(logOutput, purgeIfStale) {
-  var nodeModulesOK = _checkCache(NPM_SHRINKWRAP_FILE, NPM_SHRINKWRAP_CACHED_FILE);
+  var yarnCheck = childProcess.spawnSync(
+      './node_modules/.bin/yarn check --integrity',
+      {shell: true, cwd: path.resolve(__dirname, '../..')});
 
+  var nodeModulesOK = yarnCheck.status === 0;
   if (nodeModulesOK) {
     if (logOutput) console.log(':-) npm dependencies are looking good!');
   } else {
@@ -31,20 +32,6 @@ function checkNodeModules(logOutput, purgeIfStale) {
   }
 
   return nodeModulesOK;
-}
-
-
-function _checkCache(markerFile, cacheMarkerFile) {
-  var absoluteMarkerFilePath = path.join(PROJECT_ROOT, markerFile);
-  var absoluteCacheMarkerFilePath = path.join(PROJECT_ROOT, cacheMarkerFile);
-
-
-  if (!fs.existsSync(absoluteCacheMarkerFilePath)) return false;
-
-  var markerContent = fs.readFileSync(absoluteMarkerFilePath, FS_OPTS);
-  var cacheMarkerContent = fs.readFileSync(absoluteCacheMarkerFilePath, FS_OPTS);
-
-  return markerContent == cacheMarkerContent;
 }
 
 

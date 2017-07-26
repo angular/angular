@@ -1,4 +1,4 @@
-import { ReflectiveInjector, SecurityContext } from '@angular/core';
+import { ReflectiveInjector } from '@angular/core';
 import { DOCUMENT, DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Subject } from 'rxjs/Subject';
 
@@ -29,10 +29,6 @@ describe('TocService', () => {
     scrollSpyService = injector.get(ScrollSpyService);
     tocService = injector.get(TocService);
     tocService.tocList.subscribe(tocList => lastTocList = tocList);
-  });
-
-  it('should be creatable', () => {
-    expect(tocService).toBeTruthy();
   });
 
   describe('tocList', () => {
@@ -272,7 +268,6 @@ describe('TocService', () => {
     });
 
     it('should calculate and set id of heading without an id', () => {
-      const tocItem = lastTocList.find(item => item.title === 'H2 Two');
       const id = headings[2].getAttribute('id');
       expect(id).toEqual('h2-two');
     });

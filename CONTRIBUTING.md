@@ -221,7 +221,6 @@ The following is the list of supported scopes:
 * **platform-webworker-dynamic**
 * **router**
 * **upgrade**
-* **tsc-wrapped**
 
 There are currently a few exceptions to the "use package name" rule:
 

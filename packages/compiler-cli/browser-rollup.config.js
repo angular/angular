@@ -17,10 +17,7 @@ var rxjsLocation = normalize('../../node_modules/rxjs');
 var tslibLocation = normalize('../../node_modules/tslib');
 var esm = 'esm/';
 
-var locations = {
-  'tsc-wrapped': normalize('../../dist/tools/@angular') + '/',
-  'compiler-cli': normalize('../../dist/packages') + '/'
-};
+var locations = {'compiler-cli': normalize('../../dist/packages') + '/'};
 
 var esm_suffixes = {};
 
@@ -30,11 +27,6 @@ function normalize(fileName) {
 
 function resolve(id, from) {
   // console.log('Resolve id:', id, 'from', from)
-  if (id == '@angular/tsc-wrapped') {
-    // Hack to restrict the import to not include the index of @angular/tsc-wrapped so we don't
-    // rollup tsickle.
-    return locations['tsc-wrapped'] + 'tsc-wrapped/src/collector.js';
-  }
   var match = m.exec(id);
   if (match) {
     var packageName = match[1];
@@ -61,6 +53,7 @@ export default {
   entry: '../../dist/packages-dist/compiler-cli/src/ngc.js',
   dest: './browser-bundle.umd.js',
   format: 'umd',
+  amd: {id: '@angular/compiler-cli-browser'},
   moduleName: 'ng.compiler_cli_browser',
   exports: 'named',
   external: [
@@ -76,4 +69,4 @@ export default {
   },
   banner: banner,
   plugins: [{resolveId: resolve}, commonjs()]
-}
+};

@@ -6,18 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, InjectionToken, Optional, SchemaMetadata, ɵConsole as Console} from '@angular/core';
-
 import {CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeSummary, CompileTokenMetadata, CompileTypeMetadata, identifierName} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
 import {CompilerConfig} from '../config';
+import {SchemaMetadata} from '../core';
 import {AST, ASTWithSource, EmptyExpr} from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
 import {I18NHtmlParser} from '../i18n/i18n_html_parser';
 import {Identifiers, createTokenForExternalReference, createTokenForReference} from '../identifiers';
-import {CompilerInjectable} from '../injectable';
 import * as html from '../ml_parser/ast';
 import {ParseTreeResult} from '../ml_parser/html_parser';
+import {removeWhitespaces, replaceNgsp} from '../ml_parser/html_whitespaces';
 import {expandNodes} from '../ml_parser/icu_ast_expander';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {isNgTemplate, splitNsName} from '../ml_parser/tags';
@@ -26,7 +25,7 @@ import {ProviderElementContext, ProviderViewContext} from '../provider_analyzer'
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {CssSelector, SelectorMatcher} from '../selector';
 import {isStyleUrlResolvable} from '../style_url_resolver';
-import {syntaxError} from '../util';
+import {Console, syntaxError} from '../util';
 
 import {BindingParser, BoundProperty} from './binding_parser';
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from './template_ast';
@@ -82,15 +81,6 @@ function warnOnlyOnce(warnings: string[]): (warning: ParseError) => boolean {
   };
 }
 
-/**
- * Provides an array of {@link TemplateAstVisitor}s which will be used to transform
- * parsed templates before compilation is invoked, allowing custom expression syntax
- * and other advanced transformations.
- *
- * This is currently an internal-only feature and not meant for general use.
- */
-export const TEMPLATE_TRANSFORMS = new InjectionToken('TemplateTransforms');
-
 export class TemplateParseError extends ParseError {
   constructor(message: string, span: ParseSourceSpan, level: ParseErrorLevel) {
     super(span, message, level);
@@ -103,19 +93,20 @@ export class TemplateParseResult {
       public errors?: ParseError[]) {}
 }
 
-@CompilerInjectable()
 export class TemplateParser {
   constructor(
       private _config: CompilerConfig, private _reflector: CompileReflector,
       private _exprParser: Parser, private _schemaRegistry: ElementSchemaRegistry,
       private _htmlParser: I18NHtmlParser, private _console: Console,
-      @Optional() @Inject(TEMPLATE_TRANSFORMS) public transforms: TemplateAstVisitor[]) {}
+      public transforms: TemplateAstVisitor[]) {}
 
   parse(
-      component: CompileDirectiveMetadata, template: string, directives: CompileDirectiveSummary[],
-      pipes: CompilePipeSummary[], schemas: SchemaMetadata[],
-      templateUrl: string): {template: TemplateAst[], pipes: CompilePipeSummary[]} {
-    const result = this.tryParse(component, template, directives, pipes, schemas, templateUrl);
+      component: CompileDirectiveMetadata, template: string|ParseTreeResult,
+      directives: CompileDirectiveSummary[], pipes: CompilePipeSummary[], schemas: SchemaMetadata[],
+      templateUrl: string,
+      preserveWhitespaces: boolean): {template: TemplateAst[], pipes: CompilePipeSummary[]} {
+    const result = this.tryParse(
+        component, template, directives, pipes, schemas, templateUrl, preserveWhitespaces);
     const warnings =
         result.errors !.filter(error => error.level === ParseErrorLevel.WARNING)
             .filter(warnOnlyOnce(
@@ -136,13 +127,20 @@ export class TemplateParser {
   }
 
   tryParse(
-      component: CompileDirectiveMetadata, template: string, directives: CompileDirectiveSummary[],
-      pipes: CompilePipeSummary[], schemas: SchemaMetadata[],
-      templateUrl: string): TemplateParseResult {
+      component: CompileDirectiveMetadata, template: string|ParseTreeResult,
+      directives: CompileDirectiveSummary[], pipes: CompilePipeSummary[], schemas: SchemaMetadata[],
+      templateUrl: string, preserveWhitespaces: boolean): TemplateParseResult {
+    let htmlParseResult = typeof template === 'string' ?
+        this._htmlParser !.parse(
+            template, templateUrl, true, this.getInterpolationConfig(component)) :
+        template;
+
+    if (!preserveWhitespaces) {
+      htmlParseResult = removeWhitespaces(htmlParseResult);
+    }
+
     return this.tryParseHtml(
-        this.expandHtml(this._htmlParser !.parse(
-            template, templateUrl, true, this.getInterpolationConfig(component))),
-        component, directives, pipes, schemas);
+        this.expandHtml(htmlParseResult), component, directives, pipes, schemas);
   }
 
   tryParseHtml(
@@ -253,9 +251,10 @@ class TemplateParseVisitor implements html.Visitor {
 
   visitText(text: html.Text, parent: ElementContext): any {
     const ngContentIndex = parent.findNgContentIndex(TEXT_CSS_SELECTOR) !;
-    const expr = this._bindingParser.parseInterpolation(text.value, text.sourceSpan !);
+    const valueNoNgsp = replaceNgsp(text.value);
+    const expr = this._bindingParser.parseInterpolation(valueNoNgsp, text.sourceSpan !);
     return expr ? new BoundTextAst(expr, ngContentIndex, text.sourceSpan !) :
-                  new TextAst(text.value, ngContentIndex, text.sourceSpan !);
+                  new TextAst(valueNoNgsp, ngContentIndex, text.sourceSpan !);
   }
 
   visitAttribute(attribute: html.Attribute, context: any): any {
@@ -447,7 +446,7 @@ class TemplateParseVisitor implements html.Visitor {
           const identifier = bindParts[IDENT_KW_IDX];
           this._parseVariable(identifier, value, srcSpan, targetVars);
         } else {
-          this._reportError(`"let-" is only supported on template elements.`, srcSpan);
+          this._reportError(`"let-" is only supported on ng-template elements.`, srcSpan);
         }
 
       } else if (bindParts[KW_REF_IDX]) {
@@ -573,7 +572,7 @@ class TemplateParseVisitor implements html.Visitor {
           directive.inputs, props, directiveProperties, targetBoundDirectivePropNames);
       elementOrDirectiveRefs.forEach((elOrDirRef) => {
         if ((elOrDirRef.value.length === 0 && directive.isComponent) ||
-            (directive.exportAs == elOrDirRef.value)) {
+            (elOrDirRef.isReferenceToDirective(directive))) {
           targetReferences.push(new ReferenceAst(
               elOrDirRef.name, createTokenForReference(directive.type.reference),
               elOrDirRef.sourceSpan));
@@ -798,8 +797,25 @@ class NonBindableVisitor implements html.Visitor {
   visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any { return expansionCase; }
 }
 
+/**
+ * A reference to an element or directive in a template. E.g., the reference in this template:
+ *
+ * <div #myMenu="coolMenu">
+ *
+ * would be {name: 'myMenu', value: 'coolMenu', sourceSpan: ...}
+ */
 class ElementOrDirectiveRef {
   constructor(public name: string, public value: string, public sourceSpan: ParseSourceSpan) {}
+
+  /** Gets whether this is a reference to the given directive. */
+  isReferenceToDirective(directive: CompileDirectiveSummary) {
+    return splitExportAs(directive.exportAs).indexOf(this.value) !== -1;
+  }
+}
+
+/** Splits a raw, potentially comma-delimted `exportAs` value into an array of names. */
+function splitExportAs(exportAs: string | null): string[] {
+  return exportAs ? exportAs.split(',').map(e => e.trim()) : [];
 }
 
 export function splitClasses(classAttrValue: string): string[] {

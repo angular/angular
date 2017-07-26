@@ -87,7 +87,7 @@ Here's the app in action:
 
 
 
-## Up next
+## Next step
 
 You'll build the Tour of Heroes app, step by step.
 Each step is motivated with a requirement that you've likely

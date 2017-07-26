@@ -16,9 +16,7 @@ animation logic with the rest of your application code, for ease of control.
 Angular animations are built on top of the standard [Web Animations API](https://w3c.github.io/web-animations/)
 and run natively on [browsers that support it](http://caniuse.com/#feat=web-animation).
 
-For other browsers, a polyfill is required. Grab
-[`web-animations.min.js` from GitHub](https://github.com/web-animations/web-animations-js) and
-add it to your page.
+For other browsers, a polyfill is required. Uncomment the `web-animations-js` polyfill from the `polyfills.ts` file.
 
 </div>
 
@@ -28,19 +26,37 @@ The examples in this page are available as a <live-example></live-example>.
 
 </div>
 
+## Setup
+
+Before you can add animations to your application, you need
+to import a few animation-specific modules and functions to the root application module.
+
+<code-example path="animations/src/app/app.module.ts" region="animations-module" title="app.module.ts (animation module import excerpt)" linenums="false"></code-example>
+
+#### Example basics
+
+The animations examples in this guide animate a list of heroes.
+
+A `Hero` class has a `name` property, a `state` property that indicates if the hero is active or not,
+and a `toggleState()` method to switch between the states.
+
+<code-example path="animations/src/app/hero.service.ts" region="hero" title="hero.service.ts (Hero class)" linenums="false"></code-example>
+
+Across the top of the screen (`app.hero-team-builder.component.ts`)
+are a series of buttons that add and remove heroes from the list (via the `HeroService`). 
+The buttons trigger changes to the list that all of the example components see at the same time.
+
 {@a example-transitioning-between-states}
 
-## Quickstart example: Transitioning between two states
+## Transitioning between two states
 
 <img src="generated/images/guide/animations/animation_basic_click.gif" alt="A simple transition animation" class="right">
 
 You can build a simple animation that transitions an element between two states
 driven by a model attribute.
 
-Animations are defined inside `@Component` metadata. Before you can add animations, you need
-to import a few animation-specific imports and functions:
 
-<code-example path="animations/src/app/app.module.ts" region="animations-module" title="app.module.ts (@NgModule imports excerpt)" linenums="false"></code-example>
+Animations can be defined inside `@Component` metadata. 
 
 <code-example path="animations/src/app/hero-list-basic.component.ts" region="imports" title="hero-list-basic.component.ts" linenums="false"></code-example>
 

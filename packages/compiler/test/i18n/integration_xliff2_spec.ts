@@ -26,8 +26,8 @@ export function main() {
     beforeEach(async(() => {
       TestBed.configureCompiler({
         providers: [
-          {provide: ResourceLoader, useClass: SpyResourceLoader},
-          {provide: NgLocalization, useClass: FrLocalization},
+          SpyResourceLoader.PROVIDE,
+          FrLocalization.PROVIDE,
           {provide: TRANSLATIONS, useValue: XLIFF2_TOMERGE},
           {provide: TRANSLATIONS_FORMAT, useValue: 'xlf2'},
         ]

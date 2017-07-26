@@ -10,7 +10,7 @@ import { Logger }               from './logger.service';
 
 // #docregion injector
 @Component({
-  selector: 'my-injectors',
+  selector: 'app-injectors',
   template: `
   <h2>Other Injections</h2>
   <div id="car">{{car.drive()}}</div>

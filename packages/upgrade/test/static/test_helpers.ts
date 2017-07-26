@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PlatformRef, Type} from '@angular/core';
+import {NgZone, PlatformRef, Type} from '@angular/core';
 import * as angular from '@angular/upgrade/src/common/angular1';
 import {$ROOT_SCOPE} from '@angular/upgrade/src/common/constants';
 import {UpgradeModule} from '@angular/upgrade/static';
@@ -18,11 +18,19 @@ export function bootstrap(
   // We bootstrap the Angular module first; then when it is ready (async) we bootstrap the AngularJS
   // module on the bootstrap element (also ensuring that AngularJS errors will fail the test).
   return platform.bootstrapModule(Ng2Module).then(ref => {
+    const ngZone = ref.injector.get<NgZone>(NgZone);
     const upgrade = ref.injector.get(UpgradeModule);
     const failHardModule: any = ($provide: angular.IProvideService) => {
       $provide.value('$exceptionHandler', (err: any) => { throw err; });
     };
-    upgrade.bootstrap(element, [failHardModule, ng1Module.name]);
+
+    // The `bootstrap()` helper is used for convenience in tests, so that we don't have to inject
+    // and call `upgrade.bootstrap()` on every Angular module.
+    // In order to closer emulate what happens in real application, ensure AngularJS is bootstrapped
+    // inside the Angular zone.
+    //
+    ngZone.run(() => upgrade.bootstrap(element, [failHardModule, ng1Module.name]));
+
     return upgrade;
   });
 }

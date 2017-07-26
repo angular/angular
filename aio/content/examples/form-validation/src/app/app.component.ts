@@ -2,11 +2,9 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'my-app',
-  template: `<hero-form-template1></hero-form-template1>
+  selector: 'app-root',
+  template: `<app-hero-form-template></app-hero-form-template>
              <hr>
-             <hero-form-template2></hero-form-template2>
-             <hr>
-             <hero-form-reactive3></hero-form-reactive3>`
+             <app-hero-form-reactive></app-hero-form-reactive>`
 })
 export class AppComponent { }

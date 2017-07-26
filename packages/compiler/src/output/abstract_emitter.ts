@@ -17,10 +17,8 @@ const _INDENT_WITH = '  ';
 export const CATCH_ERROR_VAR = o.variable('error', null, null);
 export const CATCH_STACK_VAR = o.variable('stack', null, null);
 
-export abstract class OutputEmitter {
-  abstract emitStatements(
-      srcFilePath: string, genFilePath: string, stmts: o.Statement[],
-      preamble?: string|null): string;
+export interface OutputEmitter {
+  emitStatements(genFilePath: string, stmts: o.Statement[], preamble?: string|null): string;
 }
 
 class _EmittedLine {
@@ -96,8 +94,7 @@ export class EmitterVisitorContext {
         .join('\n');
   }
 
-  toSourceMapGenerator(sourceFilePath: string, genFilePath: string, startsAtLine: number = 0):
-      SourceMapGenerator {
+  toSourceMapGenerator(genFilePath: string, startsAtLine: number = 0): SourceMapGenerator {
     const map = new SourceMapGenerator(genFilePath);
 
     let firstOffsetMapped = false;
@@ -106,7 +103,7 @@ export class EmitterVisitorContext {
         // Add a single space so that tools won't try to load the file from disk.
         // Note: We are using virtual urls like `ng:///`, so we have to
         // provide a content here.
-        map.addSource(sourceFilePath, ' ').addMapping(0, sourceFilePath, 0, 0);
+        map.addSource(genFilePath, ' ').addMapping(0, genFilePath, 0, 0);
         firstOffsetMapped = true;
       }
     };
@@ -161,7 +158,7 @@ export class EmitterVisitorContext {
   spanOf(line: number, column: number): ParseSourceSpan|null {
     const emittedLine = this._lines[line - this._preambleLineCount];
     if (emittedLine) {
-      let columnsLeft = column - emittedLine.indent;
+      let columnsLeft = column - _createIndent(emittedLine.indent).length;
       for (let partIndex = 0; partIndex < emittedLine.parts.length; partIndex++) {
         const part = emittedLine.parts[partIndex];
         if (part.length > columnsLeft) {

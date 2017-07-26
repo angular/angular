@@ -76,7 +76,94 @@ export function main() {
 
     });
 
+    describe('updateOn', () => {
+
+      it('should default to on change', () => {
+        const c = new FormControl('');
+        expect(c.updateOn).toEqual('change');
+      });
+
+      it('should default to on change with an options obj', () => {
+        const c = new FormControl('', {validators: Validators.required});
+        expect(c.updateOn).toEqual('change');
+      });
+
+      it('should set updateOn when updating on blur', () => {
+        const c = new FormControl('', {updateOn: 'blur'});
+        expect(c.updateOn).toEqual('blur');
+      });
+
+      describe('in groups and arrays', () => {
+        it('should default to group updateOn when not set in control', () => {
+          const g =
+              new FormGroup({one: new FormControl(), two: new FormControl()}, {updateOn: 'blur'});
+
+          expect(g.get('one') !.updateOn).toEqual('blur');
+          expect(g.get('two') !.updateOn).toEqual('blur');
+        });
+
+        it('should default to array updateOn when not set in control', () => {
+          const a = new FormArray([new FormControl(), new FormControl()], {updateOn: 'blur'});
+
+          expect(a.get([0]) !.updateOn).toEqual('blur');
+          expect(a.get([1]) !.updateOn).toEqual('blur');
+        });
+
+        it('should set updateOn with nested groups', () => {
+          const g = new FormGroup(
+              {
+                group: new FormGroup({one: new FormControl(), two: new FormControl()}),
+              },
+              {updateOn: 'blur'});
+
+          expect(g.get('group.one') !.updateOn).toEqual('blur');
+          expect(g.get('group.two') !.updateOn).toEqual('blur');
+          expect(g.get('group') !.updateOn).toEqual('blur');
+        });
+
+        it('should set updateOn with nested arrays', () => {
+          const g = new FormGroup(
+              {
+                arr: new FormArray([new FormControl(), new FormControl()]),
+              },
+              {updateOn: 'blur'});
+
+          expect(g.get(['arr', 0]) !.updateOn).toEqual('blur');
+          expect(g.get(['arr', 1]) !.updateOn).toEqual('blur');
+          expect(g.get('arr') !.updateOn).toEqual('blur');
+        });
+
+        it('should allow control updateOn to override group updateOn', () => {
+          const g = new FormGroup(
+              {one: new FormControl('', {updateOn: 'change'}), two: new FormControl()},
+              {updateOn: 'blur'});
+
+          expect(g.get('one') !.updateOn).toEqual('change');
+          expect(g.get('two') !.updateOn).toEqual('blur');
+        });
+
+        it('should set updateOn with complex setup', () => {
+          const g = new FormGroup({
+            group: new FormGroup(
+                {one: new FormControl('', {updateOn: 'change'}), two: new FormControl()},
+                {updateOn: 'blur'}),
+            groupTwo: new FormGroup({one: new FormControl()}, {updateOn: 'submit'}),
+            three: new FormControl()
+          });
+
+          expect(g.get('group.one') !.updateOn).toEqual('change');
+          expect(g.get('group.two') !.updateOn).toEqual('blur');
+          expect(g.get('groupTwo.one') !.updateOn).toEqual('submit');
+          expect(g.get('three') !.updateOn).toEqual('change');
+        });
+
+
+      });
+
+    });
+
     describe('validator', () => {
+
       it('should run validator with the initial value', () => {
         const c = new FormControl('value', Validators.required);
         expect(c.valid).toEqual(true);
@@ -94,6 +181,39 @@ export function main() {
         expect(c.valid).toEqual(false);
 
         c.setValue('aaa');
+        expect(c.valid).toEqual(true);
+      });
+
+      it('should support single validator from options obj', () => {
+        const c = new FormControl(null, {validators: Validators.required});
+        expect(c.valid).toEqual(false);
+        expect(c.errors).toEqual({required: true});
+
+        c.setValue('value');
+        expect(c.valid).toEqual(true);
+      });
+
+      it('should support multiple validators from options obj', () => {
+        const c =
+            new FormControl(null, {validators: [Validators.required, Validators.minLength(3)]});
+        expect(c.valid).toEqual(false);
+        expect(c.errors).toEqual({required: true});
+
+        c.setValue('aa');
+        expect(c.valid).toEqual(false);
+        expect(c.errors).toEqual({minlength: {requiredLength: 3, actualLength: 2}});
+
+        c.setValue('aaa');
+        expect(c.valid).toEqual(true);
+      });
+
+      it('should support a null validators value', () => {
+        const c = new FormControl(null, {validators: null});
+        expect(c.valid).toEqual(true);
+      });
+
+      it('should support an empty options obj', () => {
+        const c = new FormControl(null, {});
         expect(c.valid).toEqual(true);
       });
 
@@ -220,6 +340,40 @@ export function main() {
            tick();
 
            expect(c.errors).toEqual({'async': true, 'other': true});
+         }));
+
+
+      it('should support a single async validator from options obj', fakeAsync(() => {
+           const c = new FormControl('value', {asyncValidators: asyncValidator('expected')});
+           expect(c.pending).toEqual(true);
+           tick();
+
+           expect(c.valid).toEqual(false);
+           expect(c.errors).toEqual({'async': true});
+         }));
+
+      it('should support multiple async validators from options obj', fakeAsync(() => {
+           const c = new FormControl(
+               'value', {asyncValidators: [asyncValidator('expected'), otherAsyncValidator]});
+           expect(c.pending).toEqual(true);
+           tick();
+
+           expect(c.valid).toEqual(false);
+           expect(c.errors).toEqual({'async': true, 'other': true});
+         }));
+
+      it('should support a mix of validators from options obj', fakeAsync(() => {
+           const c = new FormControl(
+               '', {validators: Validators.required, asyncValidators: asyncValidator('expected')});
+           tick();
+           expect(c.errors).toEqual({required: true});
+
+           c.setValue('value');
+           expect(c.pending).toBe(true);
+
+           tick();
+           expect(c.valid).toEqual(false);
+           expect(c.errors).toEqual({'async': true});
          }));
 
       it('should add single async validator', fakeAsync(() => {

@@ -13,7 +13,6 @@ import * as o from '@angular/compiler/src/output/output_ast';
 import {stripSourceMapAndNewLine} from './abstract_emitter_spec';
 
 const someGenFilePath = 'somePackage/someGenFile';
-const someSourceFilePath = 'somePackage/someSourceFile';
 const anotherModuleUrl = 'somePackage/someOtherPath';
 
 const sameModuleIdentifier = new o.ExternalReference(null, 'someLocalId', null);
@@ -35,7 +34,7 @@ export function main() {
     });
 
     function emitStmt(stmt: o.Statement, preamble?: string): string {
-      const source = emitter.emitStatements(someSourceFilePath, someGenFilePath, [stmt], preamble);
+      const source = emitter.emitStatements(someGenFilePath, [stmt], preamble);
       return stripSourceMapAndNewLine(source);
     }
 

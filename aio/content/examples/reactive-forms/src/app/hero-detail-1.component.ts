@@ -5,7 +5,7 @@ import { FormControl }            from '@angular/forms';
 // #enddocregion
 
 @Component({
-  selector: 'hero-detail-1',
+  selector: 'app-hero-detail-1',
   templateUrl: './hero-detail-1.component.html'
 })
 // #docregion v1

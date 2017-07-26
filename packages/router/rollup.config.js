@@ -7,6 +7,7 @@
  */
 
 import resolve from 'rollup-plugin-node-resolve';
+import sourcemaps from 'rollup-plugin-sourcemaps';
 
 const globals = {
   '@angular/core': 'ng.core',
@@ -39,12 +40,13 @@ const globals = {
 };
 
 export default {
-  entry: '../../dist/packages-dist/router/@angular/router.es5.js',
+  entry: '../../dist/packages-dist/router/esm5/router.js',
   dest: '../../dist/packages-dist/router/bundles/router.umd.js',
   format: 'umd',
   exports: 'named',
+  amd: {id: '@angular/router'},
   moduleName: 'ng.router',
-  plugins: [resolve()],
+  plugins: [resolve(), sourcemaps()],
   external: Object.keys(globals),
   globals: globals
 };

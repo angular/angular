@@ -7,6 +7,7 @@
  */
 
 import resolve from 'rollup-plugin-node-resolve';
+import sourcemaps from 'rollup-plugin-sourcemaps';
 
 const globals = {
   '@angular/core': 'ng.core',
@@ -15,12 +16,13 @@ const globals = {
 };
 
 export default {
-  entry: '../../../dist/packages-dist/core/@angular/core/testing.es5.js',
+  entry: '../../../dist/packages-dist/core/esm5/testing.js',
   dest: '../../../dist/packages-dist/core/bundles/core-testing.umd.js',
   format: 'umd',
   exports: 'named',
+  amd: {id: '@angular/core/testing'},
   moduleName: 'ng.core.testing',
-  plugins: [resolve()],
+  plugins: [resolve(), sourcemaps()],
   external: Object.keys(globals),
   globals: globals
 };

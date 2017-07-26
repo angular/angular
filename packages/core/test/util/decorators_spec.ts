@@ -6,17 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject} from '@angular/core';
-import {reflector} from '@angular/core/src/reflection/reflection';
-import {global} from '@angular/core/src/util';
-import {Class, makeDecorator, makePropDecorator} from '@angular/core/src/util/decorators';
+import {reflector} from '../../src/reflection/reflection';
+import {ANNOTATIONS, makeDecorator, makePropDecorator} from '../../src/util/decorators';
 
 class DecoratedParent {}
 class DecoratedChild extends DecoratedParent {}
 
 export function main() {
-  const Reflect = global['Reflect'];
-
   const TerminalDecorator =
       makeDecorator('TerminalDecorator', (data: any) => ({terminal: true, ...data}));
   const TestDecorator = makeDecorator(
@@ -54,7 +50,7 @@ export function main() {
     it('should invoke as decorator', () => {
       function Type() {}
       TestDecorator({marker: 'WORKS'})(Type);
-      const annotations = Reflect.getOwnMetadata('annotations', Type);
+      const annotations = (Type as any)[ANNOTATIONS];
       expect(annotations[0].marker).toEqual('WORKS');
     });
 
@@ -64,102 +60,13 @@ export function main() {
       expect(annotation.marker).toEqual('WORKS');
     });
 
-    it('should invoke as chain', () => {
-      let chain: any = TestDecorator({marker: 'WORKS'});
-      expect(typeof chain.Terminal).toEqual('function');
-      chain = chain.Terminal();
-      expect(chain.annotations[0] instanceof TestDecorator).toEqual(true);
-      expect(chain.annotations[0].marker).toEqual('WORKS');
-      expect(chain.annotations[1] instanceof TerminalDecorator).toEqual(true);
-    });
-
     it('should not apply decorators from the prototype chain', function() {
       TestDecorator({marker: 'parent'})(DecoratedParent);
       TestDecorator({marker: 'child'})(DecoratedChild);
 
-      const annotations = Reflect.getOwnMetadata('annotations', DecoratedChild);
+      const annotations = (DecoratedChild as any)[ANNOTATIONS];
       expect(annotations.length).toBe(1);
       expect(annotations[0].marker).toEqual('child');
-    });
-
-    describe('Class', () => {
-      it('should create a class', () => {
-        let i0: any;
-        let i1: any;
-        const MyClass = (<any>TestDecorator({marker: 'test-works'})).Class(<any>{
-          extends: Class(<any>{
-            constructor: function() {},
-            extendWorks: function() { return 'extend ' + this.arg; }
-          }),
-          constructor: [String, function(arg: any) { this.arg = arg; }],
-          methodA: [
-            i0 = new Inject(String),
-            [i1 = Inject(String), Number],
-            function(a: any, b: any) {},
-          ],
-          works: function() { return this.arg; },
-          prototype: 'IGNORE'
-        });
-
-        const obj: any = new MyClass('WORKS');
-        expect(obj.arg).toEqual('WORKS');
-        expect(obj.works()).toEqual('WORKS');
-        expect(obj.extendWorks()).toEqual('extend WORKS');
-        expect(reflector.parameters(MyClass)).toEqual([[String]]);
-        expect(reflector.parameters(obj.methodA)).toEqual([[i0], [i1.annotation, Number]]);
-
-        const proto = (<Function>MyClass).prototype;
-        expect(proto.extends).toEqual(undefined);
-        expect(proto.prototype).toEqual(undefined);
-
-        expect(reflector.annotations(MyClass)[0].marker).toEqual('test-works');
-      });
-
-      describe('errors', () => {
-        it('should ensure that last constructor is required', () => {
-          expect(() => { (<Function>Class)({}); })
-              .toThrowError(
-                  'Only Function or Array is supported in Class definition for key \'constructor\' is \'undefined\'');
-        });
-
-
-        it('should ensure that we dont accidentally patch native objects', () => {
-          expect(() => {
-            (<Function>Class)({constructor: Object});
-          }).toThrowError('Can not use native Object as constructor');
-        });
-
-
-        it('should ensure that last position is function', () => {
-          expect(() => { Class({constructor: []}); })
-              .toThrowError(
-                  'Last position of Class method array must be Function in key constructor was \'undefined\'');
-        });
-
-        it('should ensure that annotation count matches parameters count', () => {
-          expect(() => {
-            Class({constructor: [String, function MyType() {}]});
-          })
-              .toThrowError(
-                  'Number of annotations (1) does not match number of arguments (0) in the function: MyType');
-        });
-
-        it('should ensure that only Function|Arrays are supported', () => {
-          expect(() => { Class({constructor: function() {}, method: <any>'non_function'}); })
-              .toThrowError(
-                  'Only Function or Array is supported in Class definition for key \'method\' is \'non_function\'');
-        });
-
-        it('should ensure that extends is a Function', () => {
-          expect(() => { Class({extends: <any>'non_type', constructor: function() {}}); })
-              .toThrowError(
-                  'Class definition \'extends\' property must be a constructor function was: non_type');
-        });
-
-        it('should assign an overridden name for anonymous constructor functions', () => {
-          expect((Class({constructor: function() {}}) as any).overriddenName).not.toBeUndefined();
-        });
-      });
     });
   });
 }

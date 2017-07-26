@@ -6,7 +6,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-/* tslint:disable:no-console  */
 
 // Must be imported first, because Angular decorators throw on load.
 import 'reflect-metadata';
@@ -14,9 +13,9 @@ import 'reflect-metadata';
 import * as path from 'path';
 import * as ts from 'typescript';
 import * as assert from 'assert';
-import {tsc} from '@angular/tsc-wrapped/src/tsc';
-import {AngularCompilerOptions, CodeGenerator, CompilerHostContext, NodeCompilerHostContext} from '@angular/compiler-cli';
+import {CompilerOptions, CodeGenerator, CompilerHostContext, NodeCompilerHostContext, readConfiguration} from '@angular/compiler-cli';
 
+/* tslint:disable:no-console  */
 /**
  * Main method.
  * Standalone program that executes the real codegen and tests that
@@ -46,10 +45,10 @@ function main() {
     }
   }
 
-  const config = tsc.readConfiguration(project, basePath);
-  config.ngOptions.basePath = basePath;
+  const config = readConfiguration(project);
+  config.options.basePath = basePath;
   // This flag tells ngc do not recompile libraries.
-  config.ngOptions.generateCodeForLibraries = false;
+  config.options.generateCodeForLibraries = false;
 
   console.log(`>>> running codegen for ${project}`);
   codegen(
@@ -86,21 +85,21 @@ function main() {
 }
 
 /**
- * Simple adaption of tsc-wrapped main to just run codegen with a CompilerHostContext
+ * Simple adaption of main to just run codegen with a CompilerHostContext
  */
 function codegen(
-    config: {parsed: ts.ParsedCommandLine, ngOptions: AngularCompilerOptions},
+    config: {options: CompilerOptions, rootNames: string[]},
     hostContextFactory: (host: ts.CompilerHost) => CompilerHostContext) {
-  const host = ts.createCompilerHost(config.parsed.options, true);
+  const host = ts.createCompilerHost(config.options, true);
 
   // HACK: patch the realpath to solve symlink issue here:
   // https://github.com/Microsoft/TypeScript/issues/9552
   // todo(misko): remove once facade symlinks are removed
   host.realpath = (path) => path;
 
-  const program = ts.createProgram(config.parsed.fileNames, config.parsed.options, host);
+  const program = ts.createProgram(config.rootNames, config.options, host);
 
-  return CodeGenerator.create(config.ngOptions, {
+  return CodeGenerator.create(config.options, {
                       } as any, program, host, hostContextFactory(host)).codegen();
 }
 

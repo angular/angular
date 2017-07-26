@@ -19,13 +19,12 @@ import { Directive, Input, TemplateRef, ViewContainerRef } from '@angular/core';
  * ### Syntax
  *
  * - `<div *myUnless="condition">...</div>`
- * - `<div template="myUnless condition">...</div>`
- * - `<template [myUnless]="condition"><div>...</div></template>`
+ * - `<ng-template [myUnless]="condition"><div>...</div></ng-template>`
  *
 // #docregion no-docs
  */
 // #docregion skeleton
-@Directive({ selector: '[myUnless]'})
+@Directive({ selector: '[appUnless]'})
 export class UnlessDirective {
   // #enddocregion skeleton
   private hasView = false;
@@ -37,7 +36,7 @@ export class UnlessDirective {
   // #enddocregion ctor
 
   // #docregion set
-  @Input() set myUnless(condition: boolean) {
+  @Input() set appUnless(condition: boolean) {
     if (!condition && !this.hasView) {
       this.viewContainer.createEmbeddedView(this.templateRef);
       this.hasView = true;

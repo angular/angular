@@ -1,7 +1,7 @@
 {
   "name": "@angular/core/testing",
-  "typings": "../testing.d.ts",
+  "typings": "./testing.d.ts",
   "main": "../bundles/core-testing.umd.js",
-  "module": "../@angular/core/testing.es5.js",
-  "es2015": "../@angular/core/testing.js"
+  "module": "../esm5/testing.js",
+  "es2015": "../esm2015/testing.js"
 }

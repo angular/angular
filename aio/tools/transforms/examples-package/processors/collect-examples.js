@@ -6,7 +6,26 @@ module.exports = function collectExamples(exampleMap, regionParser, log, createD
     $runAfter: ['files-read'],
     $runBefore: ['parsing-tags'],
     $validate: {exampleFolders: {presence: true}},
-    $process: function(docs) {
+    exampleFolders: [],
+    ignoredExamples: {},
+    /**
+     * Call this method to indicate to the processor that some files, that actually exist,
+     * have been filtered out from being processed.
+     * @param paths an array of relative paths to the examples that have been ignored.
+     * @param gitIgnorePath the path to the gitignore file that caused this example to be ignored.
+     */
+    registerIgnoredExamples(paths, gitIgnorePath) {
+      paths.forEach(path => { this.ignoredExamples[path] = gitIgnorePath; });
+    },
+    /**
+     * Call this method to find out if an example was ignored.
+     * @param path a relative path to the example file to test for being ignored.
+     * @returns the path to the .gitignore file.
+     */
+    isExampleIgnored(path) {
+      return this.ignoredExamples[path];
+    },
+    $process(docs) {
       const exampleFolders = this.exampleFolders;
       const regionDocs = [];
       docs = docs.filter((doc) => {

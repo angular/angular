@@ -7,6 +7,7 @@
  */
 
 import resolve from 'rollup-plugin-node-resolve';
+import sourcemaps from 'rollup-plugin-sourcemaps';
 
 const globals = {
   '@angular/core': 'ng.core',
@@ -21,12 +22,13 @@ const globals = {
 };
 
 export default {
-  entry: '../../dist/packages-dist/platform-server/@angular/platform-server.es5.js',
+  entry: '../../dist/packages-dist/platform-server/esm5/platform-server.js',
   dest: '../../dist/packages-dist/platform-server/bundles/platform-server.umd.js',
   format: 'umd',
   exports: 'named',
+  amd: {id: '@angular/platform-server'},
   moduleName: 'ng.platformServer',
-  plugins: [resolve()],
+  plugins: [resolve(), sourcemaps()],
   external: Object.keys(globals),
   globals: globals
 };

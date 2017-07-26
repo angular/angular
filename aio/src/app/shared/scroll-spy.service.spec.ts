@@ -3,7 +3,7 @@ import { fakeAsync, tick } from '@angular/core/testing';
 import { DOCUMENT } from '@angular/platform-browser';
 
 import { ScrollService } from 'app/shared/scroll.service';
-import { ScrollItem, ScrollSpiedElement, ScrollSpiedElementGroup, ScrollSpyInfo, ScrollSpyService } from 'app/shared/scroll-spy.service';
+import { ScrollItem, ScrollSpiedElement, ScrollSpiedElementGroup, ScrollSpyService } from 'app/shared/scroll-spy.service';
 
 
 describe('ScrollSpiedElement', () => {
@@ -160,10 +160,6 @@ describe('ScrollSpyService', () => {
   });
 
 
-  it('should be creatable', () => {
-    expect(scrollSpyService).toBeTruthy();
-  });
-
   describe('#spyOn()', () => {
     let getSpiedElemGroups: () => ScrollSpiedElementGroup[];
 
@@ -201,6 +197,7 @@ describe('ScrollSpyService', () => {
                            .and.callFake(() => actions.push('calibrate'));
 
       expect(onResizeSpy).not.toHaveBeenCalled();
+      expect(calibrateSpy).not.toHaveBeenCalled();
 
       scrollSpyService.spyOn([]);
       expect(actions).toEqual(['onResize', 'calibrate']);

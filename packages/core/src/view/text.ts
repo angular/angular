@@ -7,30 +7,32 @@
  */
 
 import {BindingDef, BindingFlags, NodeDef, NodeFlags, TextData, ViewData, asTextData} from './types';
-import {calcBindingFlags, checkAndUpdateBinding, getParentRenderElement} from './util';
+import {checkAndUpdateBinding, getParentRenderElement} from './util';
 
-export function textDef(ngContentIndex: number, constants: string[]): NodeDef {
-  const bindings: BindingDef[] = new Array(constants.length - 1);
-  for (let i = 1; i < constants.length; i++) {
+export function textDef(
+    checkIndex: number, ngContentIndex: number | null, staticText: string[]): NodeDef {
+  const bindings: BindingDef[] = new Array(staticText.length - 1);
+  for (let i = 1; i < staticText.length; i++) {
     bindings[i - 1] = {
       flags: BindingFlags.TypeProperty,
       name: null,
       ns: null,
       nonMinifiedName: null,
       securityContext: null,
-      suffix: constants[i]
+      suffix: staticText[i],
     };
   }
-  const flags = NodeFlags.TypeText;
+
   return {
     // will bet set by the view definition
-    index: -1,
+    nodeIndex: -1,
     parent: null,
     renderParent: null,
     bindingIndex: -1,
     outputIndex: -1,
     // regular values
-    flags,
+    checkIndex,
+    flags: NodeFlags.TypeText,
     childFlags: 0,
     directChildFlags: 0,
     childMatchedQueries: 0,
@@ -38,13 +40,13 @@ export function textDef(ngContentIndex: number, constants: string[]): NodeDef {
     matchedQueryIds: 0,
     references: {}, ngContentIndex,
     childCount: 0, bindings,
-    bindingFlags: calcBindingFlags(bindings),
+    bindingFlags: BindingFlags.TypeProperty,
     outputs: [],
     element: null,
     provider: null,
-    text: {prefix: constants[0]},
+    text: {prefix: staticText[0]},
     query: null,
-    ngContent: null
+    ngContent: null,
   };
 }
 
@@ -88,7 +90,7 @@ export function checkAndUpdateTextInline(
     if (bindLen > 7) value += _addInterpolationPart(v7, bindings[7]);
     if (bindLen > 8) value += _addInterpolationPart(v8, bindings[8]);
     if (bindLen > 9) value += _addInterpolationPart(v9, bindings[9]);
-    const renderNode = asTextData(view, def.index).renderText;
+    const renderNode = asTextData(view, def.nodeIndex).renderText;
     view.renderer.setValue(renderNode, value);
   }
   return changed;
@@ -110,7 +112,7 @@ export function checkAndUpdateTextDynamic(view: ViewData, def: NodeDef, values: 
       value = value + _addInterpolationPart(values[i], bindings[i]);
     }
     value = def.text !.prefix + value;
-    const renderNode = asTextData(view, def.index).renderText;
+    const renderNode = asTextData(view, def.nodeIndex).renderText;
     view.renderer.setValue(renderNode, value);
   }
   return changed;

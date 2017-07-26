@@ -152,6 +152,16 @@ export function main() {
               ]);
         });
 
+        it('should append the required parent considering top level ng-container', () => {
+          expect(humanizeDom(
+                     parser.parse('<ng-container><tr></tr></ng-container><p></p>', 'TestComp')))
+              .toEqual([
+                [html.Element, 'ng-container', 0],
+                [html.Element, 'tr', 1],
+                [html.Element, 'p', 0],
+              ]);
+        });
+
         it('should special case ng-container when adding a required parent', () => {
           expect(humanizeDom(parser.parse(
                      '<table><thead><ng-container><tr></tr></ng-container></thead></table>',

@@ -314,6 +314,28 @@ describe('diagnostics', () => {
       expect(diagnostic).toEqual([]);
     });
 
+    it('should not report errors for using the now removed OpaqueToken (support for v4)', () => {
+      const app_component = `
+        import { Component, Inject, OpaqueToken } from '@angular/core';
+        import { NgForm } from '@angular/common';
+
+        export const token = new OpaqueToken();
+
+        @Component({
+          selector: 'example-app',
+          template: '...'
+        })
+        export class AppComponent {
+          constructor (@Inject(token) value: string) {}
+          onSubmit(form: NgForm) {}
+        }
+      `;
+      const fileName = '/app/app.component.ts';
+      mockHost.override(fileName, app_component);
+      const diagnostics = ngService.getDiagnostics(fileName);
+      expect(diagnostics).toEqual([]);
+    });
+
     function addCode(code: string, cb: (fileName: string, content?: string) => void) {
       const fileName = '/app/app.component.ts';
       const originalContent = mockHost.getFileContent(fileName);

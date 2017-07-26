@@ -123,7 +123,7 @@ export function main() {
         // depending on the browser, we might ge an exception
       }
       try {
-        sanitizeHtml(defaultDoc, '<form><input name="nextSibling" /></form>')
+        sanitizeHtml(defaultDoc, '<form><input name="nextSibling" /></form>');
       } catch (e) {
         // depending on the browser, we might ge an exception
       }
@@ -136,8 +136,9 @@ export function main() {
 
     if (browserDetection.isWebkit) {
       it('should prevent mXSS attacks', function() {
+        // In Chrome Canary 62, the ideographic space character is kept as a stringified HTML entity
         expect(sanitizeHtml(defaultDoc, '<a href="&#x3000;javascript:alert(1)">CLICKME</a>'))
-            .toEqual('<a href="unsafe:javascript:alert(1)">CLICKME</a>');
+            .toMatch(/<a href="unsafe:(&#12288;)?javascript:alert\(1\)">CLICKME<\/a>/);
       });
     }
   });

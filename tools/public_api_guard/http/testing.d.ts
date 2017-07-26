@@ -1,4 +1,4 @@
-/** @experimental */
+/** @deprecated */
 export declare class MockBackend implements ConnectionBackend {
     connections: any;
     connectionsArray: MockConnection[];
@@ -9,7 +9,7 @@ export declare class MockBackend implements ConnectionBackend {
     verifyNoPendingRequests(): void;
 }
 
-/** @experimental */
+/** @deprecated */
 export declare class MockConnection implements Connection {
     readyState: ReadyState;
     request: Request;

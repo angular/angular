@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ModuleMetadata} from '@angular/tsc-wrapped';
+import {METADATA_VERSION, ModuleMetadata} from '@angular/compiler-cli';
 import * as ts from 'typescript';
 
 import {CompilerHost} from '../src/compiler_host';
@@ -163,7 +163,7 @@ describe('CompilerHost', () => {
 
   it('should be able to read a metadata file', () => {
     expect(hostNestedGenDir.getMetadataFor('node_modules/@angular/core.d.ts')).toEqual([
-      {__symbolic: 'module', version: 3, metadata: {foo: {__symbolic: 'class'}}}
+      {__symbolic: 'module', version: METADATA_VERSION, metadata: {foo: {__symbolic: 'class'}}}
     ]);
   });
 
@@ -181,13 +181,14 @@ describe('CompilerHost', () => {
     expect(hostNestedGenDir.getMetadataFor('node_modules/@angular/missing.d.ts')).toBeUndefined();
   });
 
-  it('should add missing v3 metadata from v1 metadata and .d.ts files', () => {
+  it(`should add missing v${METADATA_VERSION} metadata from v1 metadata and .d.ts files`, () => {
     expect(hostNestedGenDir.getMetadataFor('metadata_versions/v1.d.ts')).toEqual([
       {__symbolic: 'module', version: 1, metadata: {foo: {__symbolic: 'class'}}}, {
         __symbolic: 'module',
-        version: 3,
+        version: METADATA_VERSION,
         metadata: {
           foo: {__symbolic: 'class'},
+          aType: {__symbolic: 'interface'},
           Bar: {__symbolic: 'class', members: {ngOnInit: [{__symbolic: 'method'}]}},
           BarChild: {__symbolic: 'class', extends: {__symbolic: 'reference', name: 'Bar'}},
           ReExport: {__symbolic: 'reference', module: './lib/utils2', name: 'ReExport'},
@@ -197,9 +198,29 @@ describe('CompilerHost', () => {
     ]);
   });
 
-  it('should upgrade a missing metadata file into v3', () => {
-    expect(hostNestedGenDir.getMetadataFor('metadata_versions/v1_empty.d.ts')).toEqual([
-      {__symbolic: 'module', version: 3, metadata: {}, exports: [{from: './lib/utils'}]}
+  it(`should upgrade a missing metadata file into v${METADATA_VERSION}`, () => {
+    expect(hostNestedGenDir.getMetadataFor('metadata_versions/v1_empty.d.ts')).toEqual([{
+      __symbolic: 'module',
+      version: METADATA_VERSION,
+      metadata: {},
+      exports: [{from: './lib/utils'}]
+    }]);
+  });
+
+  it(`should upgrade v3 metadata into v${METADATA_VERSION}`, () => {
+    expect(hostNestedGenDir.getMetadataFor('metadata_versions/v3.d.ts')).toEqual([
+      {__symbolic: 'module', version: 3, metadata: {foo: {__symbolic: 'class'}}}, {
+        __symbolic: 'module',
+        version: METADATA_VERSION,
+        metadata: {
+          foo: {__symbolic: 'class'},
+          aType: {__symbolic: 'interface'},
+          Bar: {__symbolic: 'class', members: {ngOnInit: [{__symbolic: 'method'}]}},
+          BarChild: {__symbolic: 'class', extends: {__symbolic: 'reference', name: 'Bar'}},
+          ReExport: {__symbolic: 'reference', module: './lib/utils2', name: 'ReExport'},
+        }
+        // Note: exports is missing because it was elided in the original.
+      }
     ]);
   });
 });
@@ -207,7 +228,7 @@ describe('CompilerHost', () => {
 const dummyModule = 'export let foo: any[];';
 const dummyMetadata: ModuleMetadata = {
   __symbolic: 'module',
-  version: 3,
+  version: METADATA_VERSION,
   metadata:
       {foo: {__symbolic: 'error', message: 'Variable not initialized', line: 0, character: 11}}
 };
@@ -230,7 +251,7 @@ const FILES: Entry = {
         '@angular': {
           'core.d.ts': dummyModule,
           'core.metadata.json':
-              `{"__symbolic":"module", "version": 3, "metadata": {"foo": {"__symbolic": "class"}}}`,
+              `{"__symbolic":"module", "version": ${METADATA_VERSION}, "metadata": {"foo": {"__symbolic": "class"}}}`,
           'router': {'index.d.ts': dummyModule, 'src': {'providers.d.ts': dummyModule}},
           'unused.d.ts': dummyModule,
           'empty.d.ts': 'export declare var a: string;',
@@ -244,6 +265,8 @@ const FILES: Entry = {
 
           export {Export} from './lib/utils2';
 
+          export type aType = number;
+
           export declare class Bar {
             ngOnInit() {}
           }
@@ -253,7 +276,22 @@ const FILES: Entry = {
             `{"__symbolic":"module", "version": 1, "metadata": {"foo": {"__symbolic": "class"}}}`,
         'v1_empty.d.ts': `
           export * from './lib/utils';
-        `
+        `,
+        'v3.d.ts': `
+          import {ReExport} from './lib/utils2';
+          export {ReExport};
+
+          export {Export} from './lib/utils2';
+
+          export type aType = number;
+
+          export declare class Bar {
+            ngOnInit() {}
+          }
+          export declare class BarChild extends Bar {}
+        `,
+        'v3.metadata.json':
+            `{"__symbolic":"module", "version": 3, "metadata": {"foo": {"__symbolic": "class"}}}`,
       }
     }
   }

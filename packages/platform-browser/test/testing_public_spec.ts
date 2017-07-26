@@ -468,6 +468,46 @@ export function main() {
             expect(modFactory.create(getTestBed()).injector.get('a')).toBe('mockA: parentDepValue');
           });
 
+          it('should keep imported NgModules eager', () => {
+            let someModule: SomeModule|undefined;
+
+            @NgModule()
+            class SomeModule {
+              constructor() { someModule = this; }
+            }
+
+            TestBed.configureTestingModule({
+              providers: [
+                {provide: 'a', useValue: 'aValue'},
+              ],
+              imports: [SomeModule]
+            });
+            TestBed.overrideProvider('a', {useValue: 'mockValue'});
+
+            expect(TestBed.get('a')).toBe('mockValue');
+            expect(someModule).toBeAnInstanceOf(SomeModule);
+          });
+
+          it('should keep imported NgModules lazy with deprecatedOverrideProvider', () => {
+            let someModule: SomeModule|undefined;
+
+            @NgModule()
+            class SomeModule {
+              constructor() { someModule = this; }
+            }
+
+            TestBed.configureTestingModule({
+              providers: [
+                {provide: 'a', useValue: 'aValue'},
+              ],
+              imports: [SomeModule]
+            });
+            TestBed.deprecatedOverrideProvider('a', {useValue: 'mockValue'});
+
+            expect(TestBed.get('a')).toBe('mockValue');
+            expect(someModule).toBeUndefined();
+          });
+
           describe('injecting eager providers into an eager overwritten provider', () => {
             @NgModule({
               providers: [

@@ -47,8 +47,8 @@ export abstract class DomAdapter {
    * Maps attribute names to their corresponding property names for cases
    * where attribute name doesn't match property name.
    */
-  get attrToPropMap(): {[key: string]: string} { return this._attrToPropMap; };
-  set attrToPropMap(value: {[key: string]: string}) { this._attrToPropMap = value; };
+  get attrToPropMap(): {[key: string]: string} { return this._attrToPropMap; }
+  set attrToPropMap(value: {[key: string]: string}) { this._attrToPropMap = value; }
   /** @internal */
   _attrToPropMap: {[key: string]: string};
 
@@ -125,6 +125,7 @@ export abstract class DomAdapter {
   abstract removeAttributeNS(element: any, ns: string, attribute: string): any;
   abstract templateAwareRoot(el: any): any;
   abstract createHtmlDocument(): HTMLDocument;
+  abstract getDefaultDocument(): Document;
   abstract getBoundingClientRect(el: any): any;
   abstract getTitle(doc: Document): string;
   abstract setTitle(doc: Document, newTitle: string): any;

@@ -6,31 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation} from '@angular/core';
-import {ArgumentType, BindingFlags, NodeCheckFn, NodeDef, NodeFlags, RootData, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, attachEmbeddedView, detachEmbeddedView, directiveDef, elementDef, moveEmbeddedView, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
-import {inject} from '@angular/core/testing';
+import {SecurityContext} from '@angular/core';
+import {ArgumentType, BindingFlags, NodeCheckFn, NodeFlags, Services, ViewData, anchorDef, asElementData, attachEmbeddedView, detachEmbeddedView, directiveDef, elementDef, moveEmbeddedView, rootRenderNodes} from '@angular/core/src/view/index';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
-import {createEmbeddedView, createRootView, isBrowser} from './helper';
+import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedView} from './helper';
 
 export function main() {
   describe(`Embedded Views`, () => {
-    function compViewDef(
-        nodes: NodeDef[], updateDirectives?: ViewUpdateFn, updateRenderer?: ViewUpdateFn,
-        viewFlags: ViewFlags = ViewFlags.None): ViewDefinition {
-      return viewDef(viewFlags, nodes, updateDirectives, updateRenderer);
-    }
-
-    function embeddedViewDef(nodes: NodeDef[], update?: ViewUpdateFn): ViewDefinitionFactory {
-      return () => viewDef(ViewFlags.None, nodes, update);
-    }
-
-    function createAndGetRootNodes(
-        viewDef: ViewDefinition, context: any = null): {rootNodes: any[], view: ViewData} {
-      const view = createRootView(viewDef, context);
-      const rootNodes = rootRenderNodes(view);
-      return {rootNodes, view};
-    }
 
     it('should create embedded views with the right context', () => {
       const parentContext = new Object();
@@ -38,10 +21,10 @@ export function main() {
 
       const {view: parentView} = createAndGetRootNodes(
           compViewDef([
-            elementDef(NodeFlags.None, null !, null !, 1, 'div'),
+            elementDef(0, NodeFlags.None, null, null, 1, 'div'),
             anchorDef(
-                NodeFlags.EmbeddedViews, null !, null !, 0, null !,
-                embeddedViewDef([elementDef(NodeFlags.None, null !, null !, 0, 'span')])),
+                NodeFlags.EmbeddedViews, null, null, 0, null,
+                compViewDefFactory([elementDef(0, NodeFlags.None, null, null, 0, 'span')])),
           ]),
           parentContext);
 
@@ -52,14 +35,13 @@ export function main() {
 
     it('should attach and detach embedded views', () => {
       const {view: parentView, rootNodes} = createAndGetRootNodes(compViewDef([
-        elementDef(NodeFlags.None, null !, null !, 2, 'div'),
-        anchorDef(NodeFlags.EmbeddedViews, null !, null !, 0, null !, embeddedViewDef([
-                    elementDef(NodeFlags.None, null !, null !, 0, 'span', [['name', 'child0']])
+        elementDef(0, NodeFlags.None, null, null, 2, 'div'),
+        anchorDef(NodeFlags.EmbeddedViews, null, null, 0, null, compViewDefFactory([
+                    elementDef(0, NodeFlags.None, null, null, 0, 'span', [['name', 'child0']])
                   ])),
-        anchorDef(
-            NodeFlags.None, null !, null !, 0, null !,
-            embeddedViewDef(
-                [elementDef(NodeFlags.None, null !, null !, 0, 'span', [['name', 'child1']])]))
+        anchorDef(NodeFlags.None, null, null, 0, null, compViewDefFactory([elementDef(
+                                                           0, NodeFlags.None, null, null, 0, 'span',
+                                                           [['name', 'child1']])]))
       ]));
       const viewContainerData = asElementData(parentView, 1);
       const rf = parentView.root.rendererFactory;
@@ -86,14 +68,13 @@ export function main() {
 
     it('should move embedded views', () => {
       const {view: parentView, rootNodes} = createAndGetRootNodes(compViewDef([
-        elementDef(NodeFlags.None, null !, null !, 2, 'div'),
-        anchorDef(NodeFlags.EmbeddedViews, null !, null !, 0, null !, embeddedViewDef([
-                    elementDef(NodeFlags.None, null !, null !, 0, 'span', [['name', 'child0']])
+        elementDef(0, NodeFlags.None, null, null, 2, 'div'),
+        anchorDef(NodeFlags.EmbeddedViews, null, null, 0, null, compViewDefFactory([
+                    elementDef(0, NodeFlags.None, null, null, 0, 'span', [['name', 'child0']])
                   ])),
-        anchorDef(
-            NodeFlags.None, null !, null !, 0, null !,
-            embeddedViewDef(
-                [elementDef(NodeFlags.None, null !, null !, 0, 'span', [['name', 'child1']])]))
+        anchorDef(NodeFlags.None, null, null, 0, null, compViewDefFactory([elementDef(
+                                                           0, NodeFlags.None, null, null, 0, 'span',
+                                                           [['name', 'child1']])]))
       ]));
       const viewContainerData = asElementData(parentView, 1);
 
@@ -115,10 +96,10 @@ export function main() {
 
     it('should include embedded views in root nodes', () => {
       const {view: parentView} = createAndGetRootNodes(compViewDef([
-        anchorDef(NodeFlags.EmbeddedViews, null !, null !, 0, null !, embeddedViewDef([
-                    elementDef(NodeFlags.None, null !, null !, 0, 'span', [['name', 'child0']])
+        anchorDef(NodeFlags.EmbeddedViews, null, null, 0, null, compViewDefFactory([
+                    elementDef(0, NodeFlags.None, null, null, 0, 'span', [['name', 'child0']])
                   ])),
-        elementDef(NodeFlags.None, null !, null !, 0, 'span', [['name', 'after']])
+        elementDef(1, NodeFlags.None, null, null, 0, 'span', [['name', 'after']])
       ]));
 
       const childView0 = createEmbeddedView(parentView, parentView.def.nodes[0]);
@@ -138,12 +119,12 @@ export function main() {
           });
 
       const {view: parentView, rootNodes} = createAndGetRootNodes(compViewDef([
-        elementDef(NodeFlags.None, null !, null !, 1, 'div'),
+        elementDef(0, NodeFlags.None, null, null, 1, 'div'),
         anchorDef(
-            NodeFlags.EmbeddedViews, null !, null !, 0, null !,
-            embeddedViewDef(
+            NodeFlags.EmbeddedViews, null, null, 0, null,
+            compViewDefFactory(
                 [elementDef(
-                    NodeFlags.None, null !, null !, 0, 'span', null !,
+                    0, NodeFlags.None, null, null, 0, 'span', null,
                     [[BindingFlags.TypeElementAttribute, 'name', SecurityContext.NONE]])],
                 update))
       ]));
@@ -171,14 +152,14 @@ export function main() {
       const log: string[] = [];
 
       class ChildProvider {
-        ngOnDestroy() { log.push('ngOnDestroy'); };
+        ngOnDestroy() { log.push('ngOnDestroy'); }
       }
 
       const {view: parentView} = createAndGetRootNodes(compViewDef([
-        elementDef(NodeFlags.None, null !, null !, 1, 'div'),
-        anchorDef(NodeFlags.EmbeddedViews, null !, null !, 0, null !, embeddedViewDef([
-                    elementDef(NodeFlags.None, null !, null !, 1, 'span'),
-                    directiveDef(NodeFlags.OnDestroy, null !, 0, ChildProvider, [])
+        elementDef(0, NodeFlags.None, null, null, 1, 'div'),
+        anchorDef(NodeFlags.EmbeddedViews, null, null, 0, null, compViewDefFactory([
+                    elementDef(0, NodeFlags.None, null, null, 1, 'span'),
+                    directiveDef(1, NodeFlags.OnDestroy, null, 0, ChildProvider, [])
                   ]))
       ]));
 

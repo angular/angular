@@ -18,8 +18,6 @@ interface Thenable<T> {
   then(callback: (value: T) => any): any;
 }
 
-let downgradeCount = 0;
-
 /**
  * @whatItDoes
  *
@@ -64,9 +62,6 @@ export function downgradeComponent(info: {
   /** @deprecated since v4. This parameter is no longer used */
   selectors?: string[];
 }): any /* angular.IInjectable */ {
-  const idPrefix = `NG2_UPGRADE_${downgradeCount++}_`;
-  let idCount = 0;
-
   const directiveFactory:
       angular.IAnnotatedFunction = function(
                                        $compile: angular.ICompileService,
@@ -111,17 +106,16 @@ export function downgradeComponent(info: {
             throw new Error('Expecting ComponentFactory for: ' + getComponentName(info.component));
           }
 
-          const id = idPrefix + (idCount++);
           const injectorPromise = new ParentInjectorPromise(element);
           const facade = new DowngradeComponentAdapter(
-              id, element, attrs, scope, ngModel, injector, $injector, $compile, $parse,
+              element, attrs, scope, ngModel, injector, $injector, $compile, $parse,
               componentFactory, wrapCallback);
 
           const projectableNodes = facade.compileContents();
           facade.createComponent(projectableNodes);
           facade.setupInputs(needsNgZone, info.propagateDigest);
           facade.setupOutputs();
-          facade.registerCleanup(needsNgZone);
+          facade.registerCleanup();
 
           injectorPromise.resolve(facade.getInjector());
 

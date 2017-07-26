@@ -50,17 +50,22 @@ Week Of       | Stable Release<br>(@latest npm tag) | Beta/RC Release<br>(@n
 2017‑07‑31	  | 4.3.3                               | 5.0.0‑beta.2                       |
 2017‑08‑07	  | 4.3.4                               | 5.0.0‑beta.3                       |
 2017‑08‑14    | 4.3.5                               | 5.0.0‑beta.4                       |
-2017‑08‑21	  | 4.3.6                               | 5.0.0‑rc.0                         |
-2017‑08‑28	  | 4.3.7                               | 5.0.0‑rc.1                         |
-2017‑09‑04	  | 4.3.8                               | 5.0.0‑rc.2                         |
-2017‑09‑11	  | 4.3.9                               | 5.0.0‑rc.3                         |
-2017‑09‑18	  | 5.0.0                               | ‑                                  | Major Version Release
+2017‑08‑21	  | 4.3.6                               | -                                  |
+2017‑08‑28	  | -                                   | 5.0.0‑beta.5                       |
+2017‑09‑04	  | -                                   | 5.0.0‑beta.6                       |
+2017‑09‑11	  | 4.4.0                               | 5.0.0-beta.7                       |
+2017‑09‑18	  | 4.4.1                               | 5.0.0‑beta.8                       |
+2017‑09‑25	  | 4.4.2                               | 5.0.0‑rc.0                         |
+2017‑10‑02	  | 4.4.3                               | 5.0.0‑rc.1                         |
+2017‑10‑09	  | 4.4.4                               | 5.0.0‑rc.2                         |
+2017‑10‑16    | 4.4.5                               | 5.0.0‑rc.3                         |
+2017‑10‑23    | 5.0.0                               | ‑                                  | Major Version Release
 
 ## Tentative Schedule After September 2017
 
  Date                   | Stable Release | Compatibility`*`
  ---------------------- | -------------- | ----------------
- March 2018             | 6.0.0          | ^5.0.0
+ March/April 2018       | 6.0.0          | ^5.0.0
  September/October 2018 | 7.0.0          | ^6.0.0
 
  `*` The primary goal of the backwards compatibility promise is to ensure that changes in the core framework and tooling don't break the existing ecosystem of components and applications and don't put undue upgrade/migration burden on Angular application and component authors.

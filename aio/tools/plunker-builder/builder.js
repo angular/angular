@@ -11,6 +11,7 @@ var globby = require('globby');
 var fileTranslator = require('./translator/fileTranslator');
 var indexHtmlRules = require('./translator/rules/indexHtml');
 var systemjsConfigExtrasRules = require('./translator/rules/systemjsConfigExtras');
+var mainTsRules = require('./translator/rules/mainTs');
 var regionExtractor = require('../transforms/examples-package/services/region-parser');
 
 class PlunkerBuilder {
@@ -18,7 +19,7 @@ class PlunkerBuilder {
     this.basePath = basePath;
     this.destPath = destPath;
     this.options = options;
-    this.boilerplate = path.join(__dirname, '../examples/shared/boilerplate');
+    this.boilerplate = path.join(__dirname, '../examples/shared/boilerplate/systemjs');
     this.copyrights = {};
 
     this._buildCopyrightStrings();
@@ -146,6 +147,11 @@ class PlunkerBuilder {
             config.description = matches[1];
           }
         }
+      }
+
+      // Matches main.ts or main.1.ts
+      if (/^main(?:[.-]\w+)?\.ts$/.test(relativeFileName)) {
+        content = fileTranslator.translate(content, mainTsRules);
       }
 
       if (relativeFileName == 'systemjs.config.extras.js') {
@@ -288,6 +294,10 @@ class PlunkerBuilder {
       '!**/wallaby.js',
       '!**/karma-test-shim.js',
       '!**/karma.conf.js',
+      '!**/test.ts',
+      '!**/polyfills.ts',
+      '!**/tsconfig.app.json',
+      '!**/environments/**',
       // AoT related files
       '!**/aot/**/*.*',
       '!**/*-aot.*'

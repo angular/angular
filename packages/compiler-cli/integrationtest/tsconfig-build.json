@@ -5,7 +5,8 @@
     "genDir": ".",
     "debug": true,
     "enableSummariesForJit": true,
-    "alwaysCompileGeneratedCode": true
+    "alwaysCompileGeneratedCode": true,
+    "i18nFormat": "xlf"
   },
 
   "compilerOptions": {

@@ -6,7 +6,7 @@ import { LoggerService }  from './logger.service';
 
 //////////////////
 @Component({
-  selector: 'my-child',
+  selector: 'app-child',
   template: '<input [(ngModel)]="hero">'
 })
 export class ChildComponent {
@@ -86,7 +86,7 @@ export class AfterContentComponent implements AfterContentChecked, AfterContentI
     <div *ngIf="show">` +
 // #docregion parent-template
      `<after-content>
-        <my-child></my-child>
+        <app-child></app-child>
       </after-content>`
 // #enddocregion parent-template
 + `</div>

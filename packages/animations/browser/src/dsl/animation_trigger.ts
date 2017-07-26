@@ -5,12 +5,14 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ɵStyleData} from '@angular/animations';
+import {AnimationMetadataType, ɵStyleData} from '@angular/animations';
 
-import {copyStyles} from '../util';
+import {copyStyles, interpolateParams} from '../util';
 
-import {SequenceAst, TransitionAst, TriggerAst} from './animation_ast';
-import {AnimationTransitionFactory} from './animation_transition_factory';
+import {SequenceAst, StyleAst, TransitionAst, TriggerAst} from './animation_ast';
+import {AnimationStateStyles, AnimationTransitionFactory} from './animation_transition_factory';
+
+
 
 /**
  * @experimental Animation support is experimental.
@@ -25,16 +27,12 @@ export function buildTrigger(name: string, ast: TriggerAst): AnimationTrigger {
 export class AnimationTrigger {
   public transitionFactories: AnimationTransitionFactory[] = [];
   public fallbackTransition: AnimationTransitionFactory;
-  public states: {[stateName: string]: ɵStyleData} = {};
+  public states: {[stateName: string]: AnimationStateStyles} = {};
 
   constructor(public name: string, public ast: TriggerAst) {
     ast.states.forEach(ast => {
-      const obj = this.states[ast.name] = {};
-      ast.style.styles.forEach(styleTuple => {
-        if (typeof styleTuple == 'object') {
-          copyStyles(styleTuple as ɵStyleData, false, obj);
-        }
-      });
+      const defaultParams = (ast.options && ast.options.params) || {};
+      this.states[ast.name] = new AnimationStateStyles(ast.style, defaultParams);
     });
 
     balanceProperties(this.states, 'true', '1');
@@ -53,13 +51,25 @@ export class AnimationTrigger {
     const entry = this.transitionFactories.find(f => f.match(currentState, nextState));
     return entry || null;
   }
+
+  matchStyles(currentState: any, params: {[key: string]: any}, errors: any[]): ɵStyleData {
+    return this.fallbackTransition.buildStyles(currentState, params, errors);
+  }
 }
 
 function createFallbackTransition(
-    triggerName: string, states: {[stateName: string]: ɵStyleData}): AnimationTransitionFactory {
+    triggerName: string,
+    states: {[stateName: string]: AnimationStateStyles}): AnimationTransitionFactory {
   const matchers = [(fromState: any, toState: any) => true];
-  const animation = new SequenceAst([]);
-  const transition = new TransitionAst(matchers, animation);
+  const animation: SequenceAst = {type: AnimationMetadataType.Sequence, steps: [], options: null};
+  const transition: TransitionAst = {
+    type: AnimationMetadataType.Transition,
+    animation,
+    matchers,
+    options: null,
+    queryCount: 0,
+    depCount: 0
+  };
   return new AnimationTransitionFactory(triggerName, transition, states);
 }
 

@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimationMetadata, AnimationMetadataType, animate, animation, group, keyframes, query, sequence, style, transition, trigger, useAnimation, ɵStyleData} from '@angular/animations';
+import {AUTO_STYLE, AnimationMetadata, AnimationMetadataType, animate, animation, group, keyframes, query, sequence, state, style, transition, trigger, useAnimation, ɵStyleData} from '@angular/animations';
 import {AnimationOptions} from '@angular/core/src/animation/dsl';
 
 import {Animation} from '../../src/dsl/animation';
@@ -173,6 +173,40 @@ export function main() {
         expect(() => {
           validateAndThrowAnimationSequence(steps2);
         }).toThrowError(/keyframes\(\) must be placed inside of a call to animate\(\)/);
+      });
+
+      it('should throw if dynamic style substitutions are used without defaults within state() definitions',
+         () => {
+           const steps = [
+             state('final', style({
+                     'width': '{{ one }}px',
+                     'borderRadius': '{{ two }}px {{ three }}px',
+                   })),
+           ];
+
+           expect(() => { validateAndThrowAnimationSequence(steps); })
+               .toThrowError(
+                   /state\("final", ...\) must define default values for all the following style substitutions: one, two, three/);
+
+           const steps2 = [state(
+               'panfinal', style({
+                 'color': '{{ greyColor }}',
+                 'borderColor': '1px solid {{ greyColor }}',
+                 'backgroundColor': '{{ redColor }}',
+               }),
+               {params: {redColor: 'maroon'}})];
+
+           expect(() => { validateAndThrowAnimationSequence(steps2); })
+               .toThrowError(
+                   /state\("panfinal", ...\) must define default values for all the following style substitutions: greyColor/);
+         });
+
+      it('should throw an error if an invalid CSS property is used in the animation', () => {
+        const steps = [animate(1000, style({abc: '500px'}))];
+
+        expect(() => { validateAndThrowAnimationSequence(steps); })
+            .toThrowError(
+                /The provided animation property "abc" is not a supported CSS property for animations/);
       });
     });
 
@@ -364,14 +398,13 @@ export function main() {
 
         it('should allow multiple substitutions to occur within the same style value', () => {
           const steps = [
-            style({transform: ''}),
-            animate(1000, style({transform: 'translateX({{ x }}) translateY({{ y }})'}))
+            style({borderRadius: '100px 100px'}),
+            animate(1000, style({borderRadius: '{{ one }}px {{ two }}'})),
           ];
           const players =
-              invokeAnimationSequence(rootElement, steps, buildParams({x: '200px', y: '400px'}));
+              invokeAnimationSequence(rootElement, steps, buildParams({one: '200', two: '400px'}));
           expect(players[0].keyframes).toEqual([
-            {offset: 0, transform: ''},
-            {offset: 1, transform: 'translateX(200px) translateY(400px)'}
+            {offset: 0, borderRadius: '100px 100px'}, {offset: 1, borderRadius: '200px 400px'}
           ]);
         });
 
@@ -427,17 +460,17 @@ export function main() {
 
         it('should throw an error when an input variable is not provided when invoked and is not a default value',
            () => {
-             expect(() => {invokeAnimationSequence(rootElement, [style({color: '{{ color }}'})])})
+             expect(() => invokeAnimationSequence(rootElement, [style({color: '{{ color }}'})]))
                  .toThrowError(/Please provide a value for the animation param color/);
 
              expect(
-                 () => {invokeAnimationSequence(
+                 () => invokeAnimationSequence(
                      rootElement,
                      [
                        style({color: '{{ start }}'}),
                        animate('{{ time }}', style({color: '{{ end }}'})),
                      ],
-                     buildParams({start: 'blue', end: 'red'}))})
+                     buildParams({start: 'blue', end: 'red'})))
                  .toThrowError(/Please provide a value for the animation param time/);
            });
       });
@@ -547,18 +580,12 @@ export function main() {
            () => {
              const steps = [
                animate(1000, style({height: '50px'})),
-               animate(
-                   2000, keyframes([
-                     style({left: '0', transform: 'rotate(0deg)', offset: 0}),
-                     style({
-                       left: '40%',
-                       transform: 'rotate(250deg) translateY(-200px)',
-                       offset: .33
-                     }),
-                     style(
-                         {left: '60%', transform: 'rotate(180deg) translateY(200px)', offset: .66}),
-                     style({left: 'calc(100% - 100px)', transform: 'rotate(0deg)', offset: 1}),
-                   ])),
+               animate(2000, keyframes([
+                         style({left: '0', top: '0', offset: 0}),
+                         style({left: '40%', top: '50%', offset: .33}),
+                         style({left: '60%', top: '80%', offset: .66}),
+                         style({left: 'calc(100% - 100px)', top: '100%', offset: 1}),
+                       ])),
                group([animate('2s', style({width: '200px'}))]),
                animate('2s', style({height: '300px'})),
                group([animate('2s', style({height: '500px', width: '500px'}))])
@@ -963,8 +990,9 @@ function invokeAnimationSequence(
 }
 
 function validateAndThrowAnimationSequence(steps: AnimationMetadata | AnimationMetadata[]) {
+  const driver = new MockAnimationDriver();
   const errors: any[] = [];
-  const ast = buildAnimationAst(steps, errors);
+  const ast = buildAnimationAst(driver, steps, errors);
   if (errors.length) {
     throw new Error(errors.join('\n'));
   }

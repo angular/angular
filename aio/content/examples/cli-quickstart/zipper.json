@@ -5,7 +5,5 @@
     "!**/*.[0-9].*",
     ".angular-cli.json",
     "protractor.conf.js"
-  ],
-  "removeSystemJsConfig": true,
-  "type": "cli"
+  ]
 }

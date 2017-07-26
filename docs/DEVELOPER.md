@@ -26,6 +26,8 @@ following products on your development machine:
   (version `>=3.10.7 <4.0.0`), which comes with Node. Depending on your system, you can install Node either from
   source or as a pre-packaged bundle.
 
+* [Yarn](https://yarnpkg.com) (version `>=1.0.2 <2.0.0`) which is used to install dependencies.
+
 * [Java Development Kit](http://www.oracle.com/technetwork/es/java/javase/downloads/index.html) which is used
   to execute the selenium standalone server for e2e testing.
 
@@ -56,29 +58,13 @@ Next, install the JavaScript modules needed to build and test Angular:
 
 ```shell
 # Install Angular project dependencies (package.json)
-npm install
+yarn install
 ```
 
 **Optional**: In this document, we make use of project local `npm` package scripts and binaries
 (stored under `./node_modules/.bin`) by prefixing these command invocations with `$(npm bin)`; in
 particular `gulp` and `protractor` commands. If you prefer, you can drop this path prefix by either:
 
-*Option 1*: globally installing these two packages as follows:
-
-* `npm install -g gulp` (you might need to prefix this command with `sudo`)
-* `npm install -g protractor` (you might need to prefix this command with `sudo`)
-
-Since global installs can become stale, and required versions can vary by project, we avoid their
-use in these instructions.
-
-*Option 2*: globally installing the package `npm-run` by running `npm install -g npm-run`
-(you might need to prefix this command with `sudo`). You will then be able to run locally installed
-package scripts by invoking: e.g., `npm-run gulp build`
-(see [npm-run project page](https://github.com/timoxley/npm-run) for more details).
-
-
-*Option 3*: defining a bash alias like `alias nbin='PATH=$(npm bin):$PATH'` as detailed in this
-[Stack Overflow answer](http://stackoverflow.com/questions/9679932/how-to-use-package-installed-locally-in-node-modules/15157360#15157360) and used like this: e.g., `nbin gulp build`.
 
 ## Installing Bower Modules
 
@@ -125,6 +111,8 @@ $ ./test.sh tools            # Run angular tooling (not framework) tests
 ```
 
 You should execute the 3 test suites before submitting a PR to github.
+
+See [DEBUG.md](DEBUG.md) for information on debugging the code while running the unit tests.
 
 All the tests are executed on our Continuous Integration infrastructure and a PR could only be merged once the tests pass.
 
@@ -177,7 +165,7 @@ First time, you need to create the github repositories:
 
 ``` shell
 $ export TOKEN=[get one from https://github.com/settings/tokens]
-$ CREATE_REPOS=1 ./scripts/publish/publish-build-artifacts.sh [github username]
+$ CREATE_REPOS=1 TRAVIS= ./scripts/ci/publish-build-artifacts.sh [github username]
 ```
 
 For subsequent snapshots, just run

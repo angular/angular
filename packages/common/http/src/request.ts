@@ -15,8 +15,11 @@ import {HttpParams} from './params';
  * All values are optional and will override default values if provided.
  */
 interface HttpRequestInit {
-  headers?: HttpHeaders, reportProgress?: boolean, params?: HttpParams,
-      responseType?: 'arraybuffer'|'blob'|'json'|'text', withCredentials?: boolean,
+  headers?: HttpHeaders;
+  reportProgress?: boolean;
+  params?: HttpParams;
+  responseType?: 'arraybuffer'|'blob'|'json'|'text';
+  withCredentials?: boolean;
 }
 
 /**
@@ -70,7 +73,7 @@ function isFormData(value: any): value is FormData {
  * assumed to be immutable. To modify a `HttpRequest`, the `clone`
  * method should be used.
  *
- * @experimental
+ * @stable
  */
 export class HttpRequest<T> {
   /**
