@@ -21,6 +21,7 @@ export * from './src/transformers/api';
 export * from './src/transformers/entry_points';
 
 export {main as ngc} from './src/ngc';
+export {performCompilation} from './src/ngc';
 
 // TODO(hansl): moving to Angular 4 need to update this API.
 export {NgTools_InternalApi_NG_2 as __NGTOOLS_PRIVATE_API_2} from './src/ngtools_api';
