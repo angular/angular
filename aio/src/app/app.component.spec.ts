@@ -906,6 +906,7 @@ describe('AppComponent', () => {
 //// test helpers ////
 
 function createTestingModule(initialUrl: string, mode: string = 'stable') {
+  const mockLocationService = new MockLocationService(initialUrl);
   TestBed.resetTestingModule();
   TestBed.configureTestingModule({
     imports: [ AppModule ],
@@ -913,11 +914,11 @@ function createTestingModule(initialUrl: string, mode: string = 'stable') {
       { provide: APP_BASE_HREF, useValue: '/' },
       { provide: GaService, useClass: TestGaService },
       { provide: Http, useClass: TestHttp },
-      { provide: LocationService, useFactory: () => new MockLocationService(initialUrl) },
+      { provide: LocationService, useFactory: () => mockLocationService },
       { provide: Logger, useClass: MockLogger },
       { provide: SearchService, useClass: MockSearchService },
       { provide: Deployment, useFactory: () => {
-        const deployment = new Deployment();
+        const deployment = new Deployment(mockLocationService as any);
         deployment.mode = mode;
         return deployment;
       }},
