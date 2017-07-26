@@ -21,8 +21,8 @@
     <aio-nav-menu *ngIf="!isSideBySide" [nodes]="topMenuNarrowNodes" [currentNode]="currentNodes?.TopBarNarrow" [isWide]="false"></aio-nav-menu>
     <aio-nav-menu [nodes]="sideNavNodes" [currentNode]="currentNodes?.SideNav" [isWide]="isSideBySide"></aio-nav-menu>
 
-    <div class="doc-version" title="Angular docs version {{currentDocVersion?.title}}">
-      <aio-select (change)="onDocVersionChange($event.index)" [options]="docVersions" [selected]="docVersions && docVersions[0]"></aio-select>
+    <div class="doc-version">
+      <aio-select (change)="onDocVersionChange($event.index)" [options]="docVersions" [selected]="currentDocVersion"></aio-select>
     </div>
   </md-sidenav>
 
