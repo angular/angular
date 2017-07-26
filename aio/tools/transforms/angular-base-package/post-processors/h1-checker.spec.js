@@ -69,4 +69,14 @@ describe('h1Checker postprocessor', () => {
     processor.$process([doc]);
     expect(doc.vFile.title).toEqual('What is Angular?');
   });
+
+  it('should not break if the h1 is empty (except for an aria-hidden anchor)', () => {
+    const doc = {
+      docType: 'a',
+      renderedContent: `
+        <h1><a aria-hidden="true"></a></h1>
+      `
+    };
+    expect(() => processor.$process([doc])).not.toThrow();
+  });
 });
