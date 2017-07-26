@@ -230,12 +230,9 @@ class _TreeBuilder {
   }
 
   private _closeVoidElement(): void {
-    if (this._elementStack.length > 0) {
-      const el = this._elementStack[this._elementStack.length - 1];
-
-      if (this.getTagDefinition(el.name).isVoid) {
-        this._elementStack.pop();
-      }
+    const el = this._getParentElement();
+    if (el && this.getTagDefinition(el.name).isVoid) {
+      this._elementStack.pop();
     }
   }
 
@@ -274,11 +271,10 @@ class _TreeBuilder {
   }
 
   private _pushElement(el: html.Element) {
-    if (this._elementStack.length > 0) {
-      const parentEl = this._elementStack[this._elementStack.length - 1];
-      if (this.getTagDefinition(parentEl.name).isClosedByChild(el.name)) {
-        this._elementStack.pop();
-      }
+    const parentEl = this._getParentElement();
+
+    if (parentEl && this.getTagDefinition(parentEl.name).isClosedByChild(el.name)) {
+      this._elementStack.pop();
     }
 
     const tagDef = this.getTagDefinition(el.name);
@@ -353,7 +349,7 @@ class _TreeBuilder {
    * `<ng-container>` elements are skipped as they are not rendered as DOM element.
    */
   private _getParentElementSkippingContainers():
-      {parent: html.Element, container: html.Element|null} {
+      {parent: html.Element | null, container: html.Element|null} {
     let container: html.Element|null = null;
 
     for (let i = this._elementStack.length - 1; i >= 0; i--) {
@@ -363,7 +359,7 @@ class _TreeBuilder {
       container = this._elementStack[i];
     }
 
-    return {parent: this._elementStack[this._elementStack.length - 1], container};
+    return {parent: null, container};
   }
 
   private _addToParent(node: html.Node) {
