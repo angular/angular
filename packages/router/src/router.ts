@@ -930,7 +930,7 @@ export class PreActivation {
 
   private runCanActivateChecks(): Observable<boolean> {
     const checks$ = from(this.canActivateChecks);
-    const runningChecks$ = mergeMap.call(
+    const runningChecks$ = concatMap.call(
         checks$, (check: CanActivate) => andObservables(from(
                      [this.runCanActivateChild(check.path), this.runCanActivate(check.route)])));
     return every.call(runningChecks$, (result: boolean) => result === true);
