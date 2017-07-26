@@ -26,7 +26,7 @@ const isStatic = (ts as any).ModifierFlags ?
 /**
  * A set of collector options to use when collecting metadata.
  */
-export class CollectorOptions {
+export interface CollectorOptions {
   /**
    * Version of the metadata to collect.
    */
@@ -42,6 +42,11 @@ export class CollectorOptions {
    * Do not simplify invalid expressions.
    */
   verboseInvalidExpression?: boolean;
+
+  /**
+   * An expression substitution callback.
+   */
+  substituteExpression?: (value: MetadataValue, node: ts.Node) => MetadataValue;
 }
 
 /**
@@ -54,12 +59,25 @@ export class MetadataCollector {
    * Returns a JSON.stringify friendly form describing the decorators of the exported classes from
    * the source file that is expected to correspond to a module.
    */
-  public getMetadata(sourceFile: ts.SourceFile, strict: boolean = false): ModuleMetadata|undefined {
+  public getMetadata(
+      sourceFile: ts.SourceFile, strict: boolean = false,
+      substituteExpression?: (value: MetadataValue, node: ts.Node) => MetadataValue): ModuleMetadata
+      |undefined {
     const locals = new Symbols(sourceFile);
     const nodeMap =
         new Map<MetadataValue|ClassMetadata|InterfaceMetadata|FunctionMetadata, ts.Node>();
-    const evaluator = new Evaluator(locals, nodeMap, this.options);
+    const composedSubstituter = substituteExpression && this.options.substituteExpression ?
+        (value: MetadataValue, node: ts.Node) =>
+            this.options.substituteExpression !(substituteExpression(value, node), node) :
+        substituteExpression;
+    const evaluatorOptions = substituteExpression ?
+        {...this.options, substituteExpression: composedSubstituter} :
+        this.options;
     let metadata: {[name: string]: MetadataValue | ClassMetadata | FunctionMetadata}|undefined;
+    const evaluator = new Evaluator(locals, nodeMap, evaluatorOptions, (name, value) => {
+      if (!metadata) metadata = {};
+      metadata[name] = value;
+    });
     let exports: ModuleExportMetadata[]|undefined = undefined;
 
     function objFromDecorator(decoratorNode: ts.Decorator): MetadataSymbolicExpression {
