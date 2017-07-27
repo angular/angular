@@ -1,4 +1,4 @@
-import {TestBed, async, ComponentFixture} from '@angular/core/testing';
+import {TestBed, async, ComponentFixture, fakeAsync, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {
@@ -83,7 +83,7 @@ describe('MdMenu', () => {
     }).not.toThrowError();
   });
 
-  it('should close the menu when a click occurs outside the menu', () => {
+  it('should close the menu when a click occurs outside the menu', fakeAsync(() => {
     const fixture = TestBed.createComponent(SimpleMenu);
     fixture.detectChanges();
     fixture.componentInstance.trigger.openMenu();
@@ -91,11 +91,12 @@ describe('MdMenu', () => {
     const backdrop = <HTMLElement>overlayContainerElement.querySelector('.cdk-overlay-backdrop');
     backdrop.click();
     fixture.detectChanges();
+    tick(500);
 
     expect(overlayContainerElement.textContent).toBe('');
-  });
+  }));
 
-  it('should close the menu when pressing escape', () => {
+  it('should close the menu when pressing escape', fakeAsync(() => {
     const fixture = TestBed.createComponent(SimpleMenu);
     fixture.detectChanges();
     fixture.componentInstance.trigger.openMenu();
@@ -103,9 +104,10 @@ describe('MdMenu', () => {
     const panel = overlayContainerElement.querySelector('.mat-menu-panel')!;
     dispatchKeyboardEvent(panel, 'keydown', ESCAPE);
     fixture.detectChanges();
+    tick(500);
 
     expect(overlayContainerElement.textContent).toBe('');
-  });
+  }));
 
   it('should open a custom menu', () => {
     const fixture = TestBed.createComponent(CustomMenu);
