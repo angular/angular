@@ -26,6 +26,7 @@ describe('MdCheckbox', () => {
         SingleCheckbox,
         CheckboxWithFormDirectives,
         MultipleCheckboxes,
+        CheckboxWithNgModel,
         CheckboxWithTabIndex,
         CheckboxWithAriaLabel,
         CheckboxWithAriaLabelledby,
@@ -735,6 +736,41 @@ describe('MdCheckbox', () => {
     });
   });
 
+  describe('with required ngModel', () => {
+    let checkboxInstance: MdCheckbox;
+    let inputElement: HTMLInputElement;
+    let testComponent: CheckboxWithNgModel;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(CheckboxWithNgModel);
+      fixture.detectChanges();
+
+      let checkboxDebugElement = fixture.debugElement.query(By.directive(MdCheckbox));
+      let checkboxNativeElement = checkboxDebugElement.nativeElement;
+      testComponent = fixture.debugElement.componentInstance;
+      checkboxInstance = checkboxDebugElement.componentInstance;
+      inputElement = <HTMLInputElement>checkboxNativeElement.querySelector('input');
+    });
+
+    it('should validate with RequiredTrue validator', () => {
+      let checkboxElement = fixture.debugElement.query(By.directive(MdCheckbox));
+      let ngModel = checkboxElement.injector.get<NgModel>(NgModel);
+
+      testComponent.isRequired = true;
+      inputElement.click();
+      fixture.detectChanges();
+
+      expect(checkboxInstance.checked).toBe(true);
+      expect(ngModel.valid).toBe(true);
+
+      inputElement.click();
+      fixture.detectChanges();
+
+      expect(checkboxInstance.checked).toBe(false);
+      expect(ngModel.valid).toBe(false);
+    });
+  });
+
   describe('with name attribute', () => {
     beforeEach(() => {
       fixture = TestBed.createComponent(CheckboxWithNameAttribute);
@@ -874,7 +910,7 @@ class SingleCheckbox {
   onCheckboxChange: (event?: MdCheckboxChange) => void = () => {};
 }
 
-/** Simple component for testing an MdCheckbox with ngModel. */
+/** Simple component for testing an MdCheckbox with ngModel in a form. */
 @Component({
   template: `
     <form>
@@ -884,6 +920,15 @@ class SingleCheckbox {
 })
 class CheckboxWithFormDirectives {
   isGood: boolean = false;
+}
+
+/** Simple component for testing an MdCheckbox with required ngModel. */
+@Component({
+  template: `<md-checkbox [required]="isRequired" [(ngModel)]="isGood">Be good</md-checkbox>`,
+})
+class CheckboxWithNgModel {
+  isGood: boolean = false;
+  isRequired: boolean = true;
 }
 
 /** Simple test component with multiple checkboxes. */
