@@ -6,7 +6,7 @@
 This is the home for the Angular team's Material Design components built for and with Angular.
 
 #### Quick links
-[Documentation, demos, and guides](https://material.angular.io) | 
+[Documentation, demos, and guides][aio] | 
 [Google group](https://groups.google.com/forum/#!forum/angular-material2) |
 [Contributing](https://github.com/angular/material2/blob/master/CONTRIBUTING.md) |
 [Plunker Template](http://plnkr.co/edit/o077B6uEiiIgkC0S06dd?p=preview)
@@ -30,16 +30,16 @@ Also see our [`Good for community contribution`](https://github.com/angular/mate
 label.
 
 High level stuff planned for Q3 2017 (July - September):
-- As many bug fixes as humanly possible
-- Additional features for data-table
-- Continued accessibility improvements
-- Nested menus
-- All components are OnPush
-- Improved documentation, guides, examples, and navigation on material.angular.io
-- Improve library-wide API consistency
-- Stepper component
-- Sticky header helper
-- action-list and selection-list
+* As many bug fixes as humanly possible
+* Additional features for data-table
+* Continued accessibility improvements
+* Nested menus
+* All components are OnPush
+* Improved documentation, guides, examples, and navigation on [material.angular.io][aio]
+* Improve library-wide API consistency
+* Stepper component
+* Sticky header helper
+* action-list and selection-list
 
 
 #### Available features
@@ -87,7 +87,7 @@ High level stuff planned for Q3 2017 (July - September):
 
 | Feature          | Status                              | Docs         | Issue          |
 |------------------|-------------------------------------|--------------|----------------|
-| tree             |      In-progress ([sneak peak][31]) |           -  |  [#3175][3175] |
+| tree             |      In-progress ([sneak peek][31]) |           -  |  [#3175][3175] |
 | stepper          |        In-progress, planned Q3 2017 |           -  |   [#508][0508] |
 | sticky-header    |        In-progress, planned Q3 2017 |           -  |   [#474][0474] |
 | virtual-repeat   |        Not started, planned Q4 2017 |           -  |   [#823][0823] |
@@ -150,9 +150,10 @@ High level stuff planned for Q3 2017 (July - September):
 [0995]: https://github.com/angular/material2/pull/995
 [0474]: https://github.com/angular/material2/pull/474
 
+[aio]: https://material.angular.io
 [getting-started]: https://github.com/angular/material2/blob/master/guides/getting-started.md
-[theming]: https://github.com/angular/material2/blob/master/guides/theming.md
 [lay_rp]:  https://github.com/angular/flex-layout
+[theming]: https://github.com/angular/material2/blob/master/guides/theming.md
 
 
 ## The goal of Angular Material
