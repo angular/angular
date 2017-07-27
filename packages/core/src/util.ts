@@ -60,6 +60,10 @@ export function stringify(token: any): string {
     return token;
   }
 
+  if (token instanceof Array) {
+    return '[' + token.map(stringify).join(', ') + ']';
+  }
+
   if (token == null) {
     return '' + token;
   }
