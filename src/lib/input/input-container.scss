@@ -225,8 +225,7 @@ textarea.mat-input-element {
   }
 }
 
-// Wrapper for the hints and error messages. Provides positioning and text size.
-// Note that we're using `top` in order to allow for stacked children to flow downwards.
+// Wrapper for the hints and error messages.
 .mat-input-subscript-wrapper {
   position: absolute;
   width: 100%;
