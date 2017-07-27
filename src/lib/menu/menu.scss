@@ -15,6 +15,13 @@ $mat-menu-border-radius: 2px !default;
   max-height: calc(100vh - #{$mat-menu-item-height});
   border-radius: $mat-menu-border-radius;
 
+  // Prevent the user from interacting while the panel is still animating.
+  // This avoids issues where the user could accidentally open a sub-menu,
+  // because of the `overlapTrigger` option.
+  &.ng-animating {
+    pointer-events: none;
+  }
+
   @include cdk-high-contrast {
     outline: solid 1px;
   }
