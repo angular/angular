@@ -719,14 +719,27 @@ describe('MdAutocomplete', () => {
         fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
 
         fixture.whenStable().then(() => {
-          spyOn(ENTER_EVENT, 'preventDefault');
-
           fixture.componentInstance.trigger._handleKeydown(ENTER_EVENT);
 
-          expect(ENTER_EVENT.preventDefault).toHaveBeenCalled();
+          expect(ENTER_EVENT.defaultPrevented)
+              .toBe(true, 'Expected the default action to have been prevented.');
         });
       });
     }));
+
+    it('should not prevent the default enter action for a closed panel after a user interaction',
+      fakeAsync(() => {
+        tick();
+        fixture.componentInstance.trigger._handleKeydown(UP_ARROW_EVENT);
+        tick();
+        fixture.detectChanges();
+
+        fixture.componentInstance.trigger.closePanel();
+        fixture.detectChanges();
+        fixture.componentInstance.trigger._handleKeydown(ENTER_EVENT);
+
+        expect(ENTER_EVENT.defaultPrevented).toBe(false, 'Default action should not be prevented.');
+      }));
 
     it('should fill the text field, not select an option, when SPACE is entered', async(() => {
       fixture.whenStable().then(() => {
