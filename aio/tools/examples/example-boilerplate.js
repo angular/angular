@@ -27,16 +27,44 @@ const BOILERPLATE_TEST_PATHS = [
   'karma.conf.js'
 ];
 
+const ANGULAR_DIST_PATH = path.resolve(__dirname, '../../../dist');
+const ANGULAR_PACKAGES_PATH = path.resolve(ANGULAR_DIST_PATH, 'packages-dist');
+const ANGULAR_PACKAGES = [
+  'animations',
+  'common',
+  'compiler',
+  'compiler-cli',
+  'core',
+  'forms',
+  'http',
+  'platform-browser',
+  'platform-browser-dynamic',
+  'platform-server',
+  'router',
+  'upgrade',
+];
+const ANGULAR_TOOLS_PACKAGES_PATH = path.resolve(ANGULAR_DIST_PATH, 'tools', '@angular');
+const ANGULAR_TOOLS_PACKAGES = [
+  'tsc-wrapped'
+];
+
 const EXAMPLE_CONFIG_FILENAME = 'example-config.json';
 
 class ExampleBoilerPlate {
   /**
    * Add boilerplate files to all the examples
    *
+   * @param useLocal if true then overwrite the Angular library files with locally built ones
    */
-  add() {
+  add(useLocal) {
     // first install the shared node_modules
     this.installNodeModules(SHARED_PATH);
+
+    // Replace the Angular packages with those from the dist folder, if necessary
+    if (useLocal) {
+      ANGULAR_PACKAGES.forEach(packageName => this.overridePackage(ANGULAR_PACKAGES_PATH, packageName));
+      ANGULAR_TOOLS_PACKAGES.forEach(packageName => this.overridePackage(ANGULAR_TOOLS_PACKAGES_PATH, packageName));
+    }
 
     // Get all the examples folders, indicated by those that contain a `example-config.json` file
     const exampleFolders = this.getFoldersContaining(EXAMPLES_BASE_PATH, EXAMPLE_CONFIG_FILENAME, 'node_modules');
@@ -67,7 +95,9 @@ class ExampleBoilerPlate {
   main() {
     yargs
       .usage('$0 <cmd> [args]')
-      .command('add', 'add the boilerplate to each example', argv => this.add(argv.local))
+      .command('add [--local]', 'add the boilerplate to each example',
+              { local: { describe: 'Use the locally built Angular libraries, rather than ones from  npm.' } },
+              argv => this.add(argv.local))
       .command('remove', 'remove the boilerplate from each example', () => this.remove())
       .demandCommand(1, 'Please supply a command from the list above')
       .argv;
@@ -75,6 +105,13 @@ class ExampleBoilerPlate {
 
   installNodeModules(basePath) {
     shelljs.exec('yarn', {cwd: basePath});
+  }
+
+  overridePackage(basePath, packageName) {
+    const sourceFolder = path.resolve(basePath, packageName);
+    const destinationFolder = path.resolve(SHARED_NODE_MODULES_PATH, '@angular', packageName);
+    shelljs.rm('-rf', destinationFolder);
+    fs.ensureSymlinkSync(sourceFolder, destinationFolder);
   }
 
   getFoldersContaining(basePath, filename, ignore) {
