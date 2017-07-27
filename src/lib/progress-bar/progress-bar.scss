@@ -35,8 +35,7 @@ $mat-progress-bar-piece-animation-duration: 250ms !default;
   // beyond the current value of the primary progress bar.
   .mat-progress-bar-buffer {
     transform-origin: top left;
-    transition: transform $mat-progress-bar-piece-animation-duration ease,
-                stroke $swift-ease-in-duration $ease-in-out-curve-function;
+    transition: transform $mat-progress-bar-piece-animation-duration ease;
   }
 
   // The secondary progress bar is only used in the indeterminate animation, because of this it
@@ -49,8 +48,7 @@ $mat-progress-bar-piece-animation-duration: 250ms !default;
   .mat-progress-bar-fill {
     animation: none;
     transform-origin: top left;
-    transition: transform $mat-progress-bar-piece-animation-duration ease,
-                stroke $swift-ease-in-duration $ease-in-out-curve-function;
+    transition: transform $mat-progress-bar-piece-animation-duration ease;
   }
 
   // A pseudo element is created for each progress bar bar that fills with the indicator color.
@@ -71,25 +69,30 @@ $mat-progress-bar-piece-animation-duration: 250ms !default;
       transition: none;
     }
     .mat-progress-bar-primary {
-      animation: mat-progress-bar-primary-indeterminate-translate $mat-progress-bar-full-animation-duration infinite linear;
+      animation: mat-progress-bar-primary-indeterminate-translate
+          $mat-progress-bar-full-animation-duration infinite linear;
       left: -145.166611%;
     }
     .mat-progress-bar-primary.mat-progress-bar-fill::after {
-      animation: mat-progress-bar-primary-indeterminate-scale $mat-progress-bar-full-animation-duration infinite linear;
+      animation: mat-progress-bar-primary-indeterminate-scale
+          $mat-progress-bar-full-animation-duration infinite linear;
     }
     .mat-progress-bar-secondary {
-      animation: mat-progress-bar-secondary-indeterminate-translate $mat-progress-bar-full-animation-duration infinite linear;
+      animation: mat-progress-bar-secondary-indeterminate-translate
+          $mat-progress-bar-full-animation-duration infinite linear;
       left: -54.888891%;
       display: block;
     }
     .mat-progress-bar-secondary.mat-progress-bar-fill::after {
-      animation: mat-progress-bar-secondary-indeterminate-scale $mat-progress-bar-full-animation-duration infinite linear;
+      animation: mat-progress-bar-secondary-indeterminate-scale
+          $mat-progress-bar-full-animation-duration infinite linear;
     }
   }
 
   &[mode='buffer'] {
     .mat-progress-bar-background {
-      animation: mat-progress-bar-background-scroll $mat-progress-bar-piece-animation-duration infinite linear;
+      animation: mat-progress-bar-background-scroll
+          $mat-progress-bar-piece-animation-duration infinite linear;
       display: block;
     }
   }
