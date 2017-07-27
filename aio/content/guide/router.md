@@ -1830,7 +1830,7 @@ Finally, you activate the observable with `subscribe` method and (re)set the com
 
 #### _ParamMap_ API
 
-The `ParamMap` API is inspired by the [URLSearchParams interface](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParamsOPut). It provides methods
+The `ParamMap` API is inspired by the [URLSearchParams interface](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams). It provides methods
 to handle parameter access for both route parameters (`paramMap`) and query parameters (`queryParamMap`).
 
 <table>
