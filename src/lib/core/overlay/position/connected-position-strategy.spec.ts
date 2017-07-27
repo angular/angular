@@ -6,7 +6,6 @@ import {OverlayPositionBuilder} from './overlay-position-builder';
 import {ConnectedOverlayPositionChange} from './connected-position';
 import {Scrollable} from '../scroll/scrollable';
 import {Subscription} from 'rxjs/Subscription';
-import Spy = jasmine.Spy;
 import {ScrollDispatchModule} from '../scroll/index';
 
 
@@ -343,53 +342,65 @@ describe('ConnectedPositionStrategy', () => {
       expect(latestCall.args[0] instanceof ConnectedOverlayPositionChange)
           .toBe(true, `Expected strategy to emit an instance of ConnectedOverlayPositionChange.`);
 
-      it('should pick the fallback position that shows the largest area of the element', () => {
-        positionBuilder = new OverlayPositionBuilder(viewportRuler);
+      // If the strategy is re-applied and the initial position would now fit,
+      // the position change event should be emitted again.
+      originElement.style.top = '200px';
+      originElement.style.left = '200px';
+      strategy.apply(overlayElement);
 
-        originElement.style.top = '200px';
-        originElement.style.right = '25px';
-        originRect = originElement.getBoundingClientRect();
+      expect(positionChangeHandler).toHaveBeenCalledTimes(2);
 
-        strategy = positionBuilder.connectedTo(
-            fakeElementRef,
-            {originX: 'end', originY: 'center'},
-            {overlayX: 'start', overlayY: 'center'})
-            .withFallbackPosition(
-                {originX: 'end', originY: 'top'},
-                {overlayX: 'start', overlayY: 'bottom'})
-            .withFallbackPosition(
-                {originX: 'end', originY: 'top'},
-                {overlayX: 'end', overlayY: 'top'});
-
-        strategy.apply(overlayElement);
-
-        let overlayRect = overlayElement.getBoundingClientRect();
-
-        expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect.top));
-        expect(Math.floor(overlayRect.left)).toBe(Math.floor(originRect.left));
-      });
-
-      it('should position a panel properly when rtl', () => {
-        // must make the overlay longer than the origin to properly test attachment
-        overlayElement.style.width = `500px`;
-        originRect = originElement.getBoundingClientRect();
-        strategy = positionBuilder.connectedTo(
-            fakeElementRef,
-            {originX: 'start', originY: 'bottom'},
-            {overlayX: 'start', overlayY: 'top'})
-            .withDirection('rtl');
-        originElement.style.top = '0';
-        originElement.style.left = '0';
-
-        // If the strategy is re-applied and the initial position would now fit,
-        // the position change event should be emitted again.
-        strategy.apply(overlayElement);
-        expect(positionChangeHandler).toHaveBeenCalledTimes(2);
-
-        subscription.unsubscribe();
-      });
+      subscription.unsubscribe();
     });
 
+    it('should emit the onPositionChange event even if none of the positions fit', () => {
+      positionBuilder = new OverlayPositionBuilder(viewportRuler);
+      originElement.style.bottom = '25px';
+      originElement.style.right = '25px';
+
+      strategy = positionBuilder.connectedTo(
+          fakeElementRef,
+          {originX: 'end', originY: 'bottom'},
+          {overlayX: 'start', overlayY: 'top'})
+          .withFallbackPosition(
+              {originX: 'start', originY: 'bottom'},
+              {overlayX: 'end', overlayY: 'top'});
+
+      const positionChangeHandler = jasmine.createSpy('positionChangeHandler');
+      const subscription = strategy.onPositionChange.subscribe(positionChangeHandler);
+
+      strategy.apply(overlayElement);
+
+      expect(positionChangeHandler).toHaveBeenCalled();
+
+      subscription.unsubscribe();
+    });
+
+    it('should pick the fallback position that shows the largest area of the element', () => {
+      positionBuilder = new OverlayPositionBuilder(viewportRuler);
+
+      originElement.style.top = '200px';
+      originElement.style.right = '25px';
+      originRect = originElement.getBoundingClientRect();
+
+      strategy = positionBuilder.connectedTo(
+          fakeElementRef,
+          {originX: 'end', originY: 'center'},
+          {overlayX: 'start', overlayY: 'center'})
+          .withFallbackPosition(
+              {originX: 'end', originY: 'top'},
+              {overlayX: 'start', overlayY: 'bottom'})
+          .withFallbackPosition(
+              {originX: 'end', originY: 'top'},
+              {overlayX: 'end', overlayY: 'top'});
+
+      strategy.apply(overlayElement);
+
+      let overlayRect = overlayElement.getBoundingClientRect();
+
+      expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect.top));
+      expect(Math.floor(overlayRect.left)).toBe(Math.floor(originRect.left));
+    });
 
     /**
      * Run all tests for connecting the overlay to the origin such that first preferred
@@ -485,7 +496,7 @@ describe('ConnectedPositionStrategy', () => {
     let strategy: ConnectedPositionStrategy;
 
     let scrollable: HTMLDivElement;
-    let positionChangeHandler: Spy;
+    let positionChangeHandler: jasmine.Spy;
     let onPositionChangeSubscription: Subscription;
     let positionChange: ConnectedOverlayPositionChange;
 

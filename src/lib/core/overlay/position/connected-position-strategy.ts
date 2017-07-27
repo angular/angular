@@ -133,11 +133,6 @@ export class ConnectedPositionStrategy implements PositionStrategy {
         // Save the last connected position in case the position needs to be re-calculated.
         this._lastConnectedPosition = pos;
 
-        // Notify that the position has been changed along with its change properties.
-        const scrollableViewProperties = this.getScrollableViewProperties(element);
-        const positionChange = new ConnectedOverlayPositionChange(pos, scrollableViewProperties);
-        this._onPositionChange.next(positionChange);
-
         return;
       } else if (!fallbackPoint || fallbackPoint.visibleArea < overlayPoint.visibleArea) {
         fallbackPoint = overlayPoint;
@@ -395,6 +390,11 @@ export class ConnectedPositionStrategy implements PositionStrategy {
 
     element.style[verticalStyleProperty] = `${y}px`;
     element.style[horizontalStyleProperty] = `${x}px`;
+
+    // Notify that the position has been changed along with its change properties.
+    const scrollableViewProperties = this.getScrollableViewProperties(element);
+    const positionChange = new ConnectedOverlayPositionChange(pos, scrollableViewProperties);
+    this._onPositionChange.next(positionChange);
   }
 
   /** Returns the bounding positions of the provided element with respect to the viewport. */

@@ -45,7 +45,7 @@ import {Subscription} from 'rxjs/Subscription';
 import {merge} from 'rxjs/observable/merge';
 import {fromEvent} from 'rxjs/observable/fromEvent';
 import {of as observableOf} from 'rxjs/observable/of';
-import {RxChain, switchMap, first, filter} from '../core/rxjs/index';
+import {RxChain, switchMap, first, filter, map} from '../core/rxjs/index';
 
 /**
  * The following style constants are necessary to save here in order
@@ -379,12 +379,17 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
    * stream every time the option list changes.
    */
   private _subscribeToClosingActions(): Subscription {
+    const firstStable = first.call(this._zone.onStable);
+    const optionChanges = map.call(this.autocomplete.options.changes, () =>
+      this._positionStrategy.recalculateLastPosition());
+
     // When the zone is stable initially, and when the option list changes...
-    return RxChain.from(merge(first.call(this._zone.onStable), this.autocomplete.options.changes))
+    return RxChain.from(merge(firstStable, optionChanges))
       // create a new stream of panelClosingActions, replacing any previous streams
       // that were created, and flatten it so our stream only emits closing events...
       .call(switchMap, () => {
-        this._resetPanel();
+        this._resetActiveItem();
+        this.autocomplete._setVisibility();
         return this.panelClosingActions;
       })
       // when the first closing event occurs...
@@ -479,16 +484,6 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   /** Reset active item to -1 so arrow events will activate the correct options.*/
   private _resetActiveItem(): void {
     this.autocomplete._keyManager.setActiveItem(-1);
-  }
-
-  /**
-   * Resets the active item and re-calculates alignment of the panel in case its size
-   * has changed due to fewer or greater number of options.
-   */
-  private _resetPanel() {
-    this._resetActiveItem();
-    this._positionStrategy.recalculateLastPosition();
-    this.autocomplete._setVisibility();
   }
 
 }
