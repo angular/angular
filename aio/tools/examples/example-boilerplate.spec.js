@@ -12,6 +12,7 @@ describe('example-boilerplate tool', () => {
 
     beforeEach(() => {
       spyOn(exampleBoilerPlate, 'installNodeModules');
+      spyOn(exampleBoilerPlate, 'overridePackage');
       spyOn(exampleBoilerPlate, 'getFoldersContaining').and.returnValue(exampleFolders);
       spyOn(fs, 'ensureSymlinkSync');
       spyOn(exampleBoilerPlate, 'copyFile');
@@ -21,6 +22,16 @@ describe('example-boilerplate tool', () => {
     it('should install the node modules', () => {
       exampleBoilerPlate.add();
       expect(exampleBoilerPlate.installNodeModules).toHaveBeenCalledWith(path.resolve(__dirname, 'shared'));
+    });
+
+    it('should override the Angular node_modules with the locally built Angular packages if `useLocal` is true', () => {
+      const numberOfAngularPackages = 12;
+      const numberOfAngularToolsPackages = 1;
+      exampleBoilerPlate.add(true);
+      expect(exampleBoilerPlate.overridePackage).toHaveBeenCalledTimes(numberOfAngularPackages + numberOfAngularToolsPackages);
+      // for example
+      expect(exampleBoilerPlate.overridePackage).toHaveBeenCalledWith(path.resolve(__dirname, '../../../dist/packages-dist'), 'core');
+      expect(exampleBoilerPlate.overridePackage).toHaveBeenCalledWith(path.resolve(__dirname, '../../../dist/tools/@angular'), 'tsc-wrapped');
     });
 
     it('should process all the example folders', () => {
@@ -73,6 +84,23 @@ describe('example-boilerplate tool', () => {
       spyOn(shelljs, 'exec');
       exampleBoilerPlate.installNodeModules('some/base/path');
       expect(shelljs.exec).toHaveBeenCalledWith('yarn', { cwd: 'some/base/path' });
+    });
+  });
+
+  describe('overridePackage', () => {
+    beforeEach(() => {
+      spyOn(shelljs, 'rm');
+      spyOn(fs, 'ensureSymlinkSync');
+    });
+
+    it('should remove the original package from the shared node_modules folder', () => {
+      exampleBoilerPlate.overridePackage('base/path', 'somePackage');
+      expect(shelljs.rm).toHaveBeenCalledWith('-rf', path.resolve(__dirname, 'shared/node_modules/@angular/somePackage'));
+    });
+
+    it('should symlink the source folder to the shared node_modules folder', () => {
+      exampleBoilerPlate.overridePackage('base/path', 'somePackage');
+      expect(fs.ensureSymlinkSync).toHaveBeenCalledWith(path.resolve('base/path/somePackage'), path.resolve(__dirname, 'shared/node_modules/@angular/somePackage'));
     });
   });
 
