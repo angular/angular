@@ -19,7 +19,7 @@ export const platformWorkerAppDynamic =
     createPlatformFactory(platformCoreDynamic, 'workerAppDynamic', [
       {
         provide: COMPILER_OPTIONS,
-        useValue: {providers: [{provide: ResourceLoader, useClass: ResourceLoaderImpl}]},
+        useValue: {providers: [{provide: ResourceLoader, useClass: ResourceLoaderImpl, deps: []}]},
         multi: true
       },
       {provide: PLATFORM_ID, useValue: PLATFORM_WORKER_UI_ID}
