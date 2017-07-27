@@ -444,8 +444,11 @@ function match(segmentGroup: UrlSegmentGroup, route: Route, segments: UrlSegment
 
   if (!res) {
     return {
-      matched: false, consumedSegments: <any[]>[], lastChild: 0, positionalParamSegments: {},
-    }
+      matched: false,
+      consumedSegments: <any[]>[],
+      lastChild: 0,
+      positionalParamSegments: {},
+    };
   }
 
   return {

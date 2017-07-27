@@ -32,7 +32,7 @@ export class TypeScriptNodeEmitter {
       }
       statements[0] = ts.setSyntheticLeadingComments(
           statements[0],
-          [{kind: ts.SyntaxKind.MultiLineCommentTrivia, text: preamble, pos: -1, end: -1}])
+          [{kind: ts.SyntaxKind.MultiLineCommentTrivia, text: preamble, pos: -1, end: -1}]);
     }
     return [newSourceFile, converter.getNodeMap()];
   }
@@ -279,7 +279,7 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
     return this.record(
         expr, ts.createCall(
                   expr.fn.visitExpression(this, null), /* typeArguments */ undefined,
-                  expr.args.map(arg => arg.visitExpression(this, null))))
+                  expr.args.map(arg => arg.visitExpression(this, null))));
   }
 
   visitInstantiateExpr(expr: InstantiateExpr): RecordedNode<ts.NewExpression> {

@@ -9,8 +9,7 @@
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {ModuleFilenameResolver} from './api';
-import {CompilerOptions} from './api';
+import {CompilerOptions, ModuleFilenameResolver} from './api';
 
 const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 const DTS = /\.d\.ts$/;

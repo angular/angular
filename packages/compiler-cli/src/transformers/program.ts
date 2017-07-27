@@ -15,8 +15,7 @@ import * as ts from 'typescript';
 import {CompilerHost as AotCompilerHost, CompilerHostContext} from '../compiler_host';
 import {TypeChecker} from '../diagnostics/check_types';
 
-import {CompilerHost, CompilerOptions, DiagnosticCategory} from './api';
-import {Diagnostic, EmitFlags, Program} from './api';
+import {CompilerHost, CompilerOptions, Diagnostic, DiagnosticCategory, EmitFlags, Program} from './api';
 import {LowerMetadataCache, getExpressionLoweringTransformFactory} from './lower_expressions';
 import {getAngularEmitterTransformFactory} from './node_emitter_transform';
 
@@ -144,7 +143,7 @@ class AngularCompilerProgram implements Program {
   }
 
   private get structuralDiagnostics(): Diagnostic[] {
-    return this.analyzedModules && this._structuralDiagnostics
+    return this.analyzedModules && this._structuralDiagnostics;
   }
 
   private get stubs(): GeneratedFile[] {
@@ -171,7 +170,7 @@ class AngularCompilerProgram implements Program {
   }
 
   private get generatedFiles(): GeneratedFile[] {
-    return this._generatedFiles || (this._generatedFiles = this.generateFiles())
+    return this._generatedFiles || (this._generatedFiles = this.generateFiles());
   }
 
   private get typeChecker(): TypeChecker {
@@ -343,7 +342,7 @@ function createProgramWithStubsHost(
     generatedFiles: GeneratedFile[], originalProgram: ts.Program,
     originalHost: ts.CompilerHost): ts.CompilerHost {
   interface FileData {
-    g: GeneratedFile
+    g: GeneratedFile;
     s?: ts.SourceFile;
   }
   return new class implements ts.CompilerHost {

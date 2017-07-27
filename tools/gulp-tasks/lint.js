@@ -9,6 +9,7 @@ module.exports = (gulp) => () => {
         // todo(vicb): add .js files when supported
         // see https://github.com/palantir/tslint/pull/1515
         './modules/**/*.ts',
+        './packages/**/*.ts',
         './tools/**/*.ts',
         './*.ts',
 

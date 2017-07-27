@@ -228,7 +228,7 @@ export class ReadVarExpr extends Expression {
 
   set(value: Expression): WriteVarExpr {
     if (!this.name) {
-      throw new Error(`Built in variable ${this.builtin} can not be assigned to.`)
+      throw new Error(`Built in variable ${this.builtin} can not be assigned to.`);
     }
     return new WriteVarExpr(this.name, value, null, this.sourceSpan);
   }

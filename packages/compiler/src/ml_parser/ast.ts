@@ -142,7 +142,7 @@ export function findNode(nodes: Node[], position: number): HtmlAstPath {
         return true;
       }
     }
-  }
+  };
 
   visitAll(visitor, nodes);
 
