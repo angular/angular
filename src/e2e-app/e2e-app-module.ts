@@ -11,7 +11,6 @@ import {SimpleRadioButtons} from './radio/radio-e2e';
 import {BasicTabs} from './tabs/tabs-e2e';
 import {DialogE2E, TestDialog} from './dialog/dialog-e2e';
 import {GridListE2E} from './grid-list/grid-list-e2e';
-import {ListE2E} from './list/list-e2e';
 import {ProgressBarE2E} from './progress-bar/progress-bar-e2e';
 import {ProgressSpinnerE2E} from './progress-spinner/progress-spinner-e2e';
 import {FullscreenE2E, TestDialog as TestDialogFullScreen} from './fullscreen/fullscreen-e2e';
@@ -70,7 +69,6 @@ export class E2eMaterialModule {}
     Home,
     IconE2E,
     InputE2E,
-    ListE2E,
     MenuE2E,
     ProgressBarE2E,
     ProgressSpinnerE2E,
