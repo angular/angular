@@ -19,7 +19,6 @@
 .mat-input-container {
   font-size: 14px;
   flex-grow: 1;
-  margin-left: 32px;
   margin-top: 8px;
 }
 
@@ -34,8 +33,6 @@
 /** Selection styles */
 .example-selection-header {
   font-size: 18px;
-  background: rgba(255, 64, 129, 0.3);
-  border-bottom: 1px solid #d696ac;
 }
 
 .mat-column-select {

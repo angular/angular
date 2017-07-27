@@ -1,15 +1,16 @@
+<div class="example-header" [style.display]="selection.isEmpty() ? '' : 'none'">
+  <md-input-container floatPlaceholder="never">
+    <input mdInput #filter placeholder="Filter users">
+  </md-input-container>
+</div>
+<div class="example-header example-selection-header"
+     *ngIf="!selection.isEmpty()">
+  {{selection.selected.length}}
+  {{selection.selected.length == 1 ? 'user' : 'users'}}
+  selected
+</div>
+
 <div class="example-container mat-elevation-z8">
-  <div class="example-header" [style.display]="selection.isEmpty() ? '' : 'none'">
-    <md-input-container floatPlaceholder="never">
-      <input mdInput #filter placeholder="Filter users">
-    </md-input-container>
-  </div>
-  <div class="example-header example-selection-header"
-       *ngIf="!selection.isEmpty()">
-    {{selection.selected.length}}
-    {{selection.selected.length == 1 ? 'user' : 'users'}}
-    selected
-  </div>
 
   <md-table #table [dataSource]="dataSource" mdSort>
 
@@ -58,8 +59,8 @@
 
     <md-header-row *cdkHeaderRowDef="displayedColumns"></md-header-row>
     <md-row *cdkRowDef="let row; columns: displayedColumns;"
-             [class.example-selected-row]="selection.isSelected(row.id)"
-             (click)="selection.toggle(row.id)">
+            [class.example-selected-row]="selection.isSelected(row.id)"
+            (click)="selection.toggle(row.id)">
     </md-row>
   </md-table>
 

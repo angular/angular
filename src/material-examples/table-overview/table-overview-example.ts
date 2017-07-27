@@ -129,6 +129,9 @@ export class ExampleDataSource extends DataSource<any> {
               private _paginator: MdPaginator,
               private _sort: MdSort) {
     super();
+
+    // Reset to the first page when the user changes the filter.
+    this._filterChange.subscribe(() => this._paginator.pageIndex = 0);
   }
 
   /** Connect function called by the table to retrieve one stream containing the data to render. */
