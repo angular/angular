@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {MdDatepickerInputEvent} from '@angular/material';
 
 
@@ -7,6 +7,7 @@ import {MdDatepickerInputEvent} from '@angular/material';
   selector: 'datepicker-demo',
   templateUrl: 'datepicker-demo.html',
   styleUrls: ['datepicker-demo.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DatepickerDemo {
   touch: boolean;
