@@ -1,4 +1,4 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {async, ComponentFixture, inject, TestBed} from '@angular/core/testing';
 import {Component} from '@angular/core';
 import {MdCalendar} from './calendar';
 import {By} from '@angular/platform-browser';
@@ -147,6 +147,18 @@ describe('MdCalendar', () => {
       expect(calendarInstance._monthView).toBe(true, 'should be in month view');
       expect(testComponent.selected).toEqual(new Date(2017, JAN, 31));
     });
+
+    it('should re-render when the i18n labels have changed',
+      inject([MdDatepickerIntl], (intl: MdDatepickerIntl) => {
+        const button = fixture.debugElement.nativeElement
+            .querySelector('.mat-calendar-period-button');
+
+        intl.switchToYearViewLabel = 'Go to year view?';
+        intl.changes.emit();
+        fixture.detectChanges();
+
+        expect(button.getAttribute('aria-label')).toBe('Go to year view?');
+      }));
 
     describe('a11y', () => {
       describe('calendar body', () => {

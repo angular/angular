@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '@angular/core';
+import {Injectable, EventEmitter} from '@angular/core';
 import {SortDirection} from './sort-direction';
 
 /**
@@ -15,6 +15,13 @@ import {SortDirection} from './sort-direction';
  */
 @Injectable()
 export class MdSortHeaderIntl {
+  /**
+   * Stream that emits whenever the labels here are changed. Use this to notify
+   * components if the labels have changed after initialization.
+   */
+  changes: EventEmitter<void> = new EventEmitter<void>();
+
+  /** ARIA label for the sorting button. */
   sortButtonLabel = (id: string) => {
     return `Change sorting for ${id}`;
   }

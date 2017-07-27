@@ -1,4 +1,4 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed, inject} from '@angular/core/testing';
 import {MdPaginatorModule} from './index';
 import {MdPaginator, PageEvent} from './paginator';
 import {Component, ElementRef, ViewChild} from '@angular/core';
@@ -90,6 +90,17 @@ describe('MdPaginator', () => {
       expect(getPreviousButton(fixture).getAttribute('aria-label')).toBe('Previous page');
       expect(getNextButton(fixture).getAttribute('aria-label')).toBe('Next page');
     });
+
+    it('should re-render when the i18n labels change',
+      inject([MdPaginatorIntl], (intl: MdPaginatorIntl) => {
+        const label = fixture.nativeElement.querySelector('.mat-paginator-page-size-label');
+
+        intl.itemsPerPageLabel = '1337 items per page';
+        intl.changes.emit();
+        fixture.detectChanges();
+
+        expect(label.textContent).toBe('1337 items per page');
+      }));
   });
 
   describe('when navigating with the navigation buttons', () => {

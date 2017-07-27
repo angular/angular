@@ -3,7 +3,7 @@ import {async, ComponentFixture, TestBed, inject} from '@angular/core/testing';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {By} from '@angular/platform-browser';
-import {MdDatepickerModule} from './index';
+import {MdDatepickerModule, MdDatepickerIntl} from './index';
 import {MdDatepicker} from './datepicker';
 import {MdDatepickerInput} from './datepicker-input';
 import {MdInputModule} from '../input/index';
@@ -532,6 +532,17 @@ describe('MdDatepicker', () => {
 
         expect(document.activeElement).toBe(toggle, 'Expected focus to be restored to toggle.');
       });
+
+      it('should re-render when the i18n labels change',
+        inject([MdDatepickerIntl], (intl: MdDatepickerIntl) => {
+          const toggle = fixture.debugElement.query(By.css('button')).nativeElement;
+
+          intl.openCalendarLabel = 'Open the calendar, perhaps?';
+          intl.changes.emit();
+          fixture.detectChanges();
+
+          expect(toggle.getAttribute('aria-label')).toBe('Open the calendar, perhaps?');
+        }));
     });
 
     describe('datepicker inside input-container', () => {

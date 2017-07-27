@@ -1,15 +1,15 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed, inject} from '@angular/core/testing';
 import {Component, ElementRef, ViewChild} from '@angular/core';
-import {MdSort, MdSortHeader, Sort, SortDirection, MdSortModule} from './index';
+import {By} from '@angular/platform-browser';
+import {MdSort, MdSortHeader, Sort, SortDirection, MdSortModule, MdSortHeaderIntl} from './index';
 import {CdkTableModule, DataSource, CollectionViewer} from '@angular/cdk/table';
 import {Observable} from 'rxjs/Observable';
-import {dispatchMouseEvent} from '@angular/cdk/testing';
 import {
   getMdSortDuplicateMdSortableIdError,
   getMdSortHeaderMissingIdError,
   getMdSortHeaderNotContainedWithinMdSortError
 } from './sort-errors';
-import {wrappedErrorMessage} from '@angular/cdk/testing';
+import {wrappedErrorMessage, dispatchMouseEvent} from '@angular/cdk/testing';
 import {map} from '../core/rxjs/index';
 import {MdTableModule} from '../table/index';
 
@@ -141,6 +141,18 @@ describe('MdSort', () => {
     const button = fixture.nativeElement.querySelector('#defaultSortHeaderA button');
     expect(button.getAttribute('aria-label')).toBe('Change sorting for defaultSortHeaderA');
   });
+
+  it('should re-render when the i18n labels have changed',
+    inject([MdSortHeaderIntl], (intl: MdSortHeaderIntl) => {
+      const header = fixture.debugElement.query(By.directive(MdSortHeader)).nativeElement;
+      const button = header.querySelector('.mat-sort-header-button');
+
+      intl.sortButtonLabel = () => 'Sort all of the things';
+      intl.changes.emit();
+      fixture.detectChanges();
+
+      expect(button.getAttribute('aria-label')).toBe('Sort all of the things');
+    }));
 });
 
 /**

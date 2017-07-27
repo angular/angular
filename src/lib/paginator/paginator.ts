@@ -7,16 +7,19 @@
  */
 
 import {
-  ChangeDetectionStrategy, ChangeDetectorRef,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   Input,
   OnInit,
   Output,
-  ViewEncapsulation
+  ViewEncapsulation,
+  OnDestroy,
 } from '@angular/core';
 import {MdPaginatorIntl} from './paginator-intl';
 import {MATERIAL_COMPATIBILITY_MODE} from '../core';
+import {Subscription} from 'rxjs/Subscription';
 
 /** The default page size if there is no page size and there are no provided page size options. */
 const DEFAULT_PAGE_SIZE = 50;
@@ -55,8 +58,9 @@ export class PageEvent {
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class MdPaginator implements OnInit {
+export class MdPaginator implements OnInit, OnDestroy {
   private _initialized: boolean;
+  private _intlChanges: Subscription;
 
   /** The zero-based page index of the displayed list of items. Defaulted to 0. */
   @Input()
@@ -101,11 +105,17 @@ export class MdPaginator implements OnInit {
   _displayedPageSizeOptions: number[];
 
   constructor(public _intl: MdPaginatorIntl,
-              private _changeDetectorRef: ChangeDetectorRef) { }
+              private _changeDetectorRef: ChangeDetectorRef) {
+    this._intlChanges = _intl.changes.subscribe(() => this._changeDetectorRef.markForCheck());
+  }
 
   ngOnInit() {
     this._initialized = true;
     this._updateDisplayedPageSizeOptions();
+  }
+
+  ngOnDestroy() {
+    this._intlChanges.unsubscribe();
   }
 
   /** Advances to the next page if it exists. */

@@ -17,7 +17,9 @@ import {
   NgZone,
   Optional,
   Output,
-  ViewEncapsulation
+  ViewEncapsulation,
+  ChangeDetectorRef,
+  OnDestroy,
 } from '@angular/core';
 import {
   DOWN_ARROW,
@@ -36,6 +38,7 @@ import {createMissingDateImplError} from './datepicker-errors';
 import {MD_DATE_FORMATS, MdDateFormats} from '../core/datetime/date-formats';
 import {MATERIAL_COMPATIBILITY_MODE} from '../core';
 import {first} from '../core/rxjs/index';
+import {Subscription} from 'rxjs/Subscription';
 
 
 /**
@@ -53,7 +56,9 @@ import {first} from '../core/rxjs/index';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MdCalendar<D> implements AfterContentInit {
+export class MdCalendar<D> implements AfterContentInit, OnDestroy {
+  private _intlChanges: Subscription;
+
   /** A date representing the period (month or year) to start the calendar in. */
   @Input() startAt: D;
 
@@ -123,19 +128,28 @@ export class MdCalendar<D> implements AfterContentInit {
               private _ngZone: NgZone,
               @Optional() @Inject(MATERIAL_COMPATIBILITY_MODE) public _isCompatibilityMode: boolean,
               @Optional() private _dateAdapter: DateAdapter<D>,
-              @Optional() @Inject(MD_DATE_FORMATS) private _dateFormats: MdDateFormats) {
+              @Optional() @Inject(MD_DATE_FORMATS) private _dateFormats: MdDateFormats,
+              changeDetectorRef: ChangeDetectorRef) {
+
     if (!this._dateAdapter) {
       throw createMissingDateImplError('DateAdapter');
     }
+
     if (!this._dateFormats) {
       throw createMissingDateImplError('MD_DATE_FORMATS');
     }
+
+    this._intlChanges = _intl.changes.subscribe(() => changeDetectorRef.markForCheck());
   }
 
   ngAfterContentInit() {
     this._activeDate = this.startAt || this._dateAdapter.today();
     this._focusActiveCell();
     this._monthView = this.startView != 'year';
+  }
+
+  ngOnDestroy() {
+    this._intlChanges.unsubscribe();
   }
 
   /** Handles date selection in the month view. */

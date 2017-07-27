@@ -6,10 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  ViewEncapsulation,
+  OnDestroy,
+  ChangeDetectorRef,
+} from '@angular/core';
 import {MdDatepicker} from './datepicker';
 import {MdDatepickerIntl} from './datepicker-intl';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {Subscription} from 'rxjs/Subscription';
 
 
 @Component({
@@ -27,7 +35,9 @@ import {coerceBooleanProperty} from '@angular/cdk/coercion';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MdDatepickerToggle<D> {
+export class MdDatepickerToggle<D> implements OnDestroy {
+  private _intlChanges: Subscription;
+
   /** Datepicker instance that the button will toggle. */
   @Input('mdDatepickerToggle') datepicker: MdDatepicker<D>;
 
@@ -45,7 +55,13 @@ export class MdDatepickerToggle<D> {
   }
   private _disabled: boolean;
 
-  constructor(public _intl: MdDatepickerIntl) {}
+  constructor(public _intl: MdDatepickerIntl, changeDetectorRef: ChangeDetectorRef) {
+    this._intlChanges = _intl.changes.subscribe(() => changeDetectorRef.markForCheck());
+  }
+
+  ngOnDestroy() {
+    this._intlChanges.unsubscribe();
+  }
 
   _open(event: Event): void {
     if (this.datepicker && !this.disabled) {
