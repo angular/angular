@@ -80,15 +80,6 @@ const XLIFF2_TOMERGE = `
         <target><pc id="0" equivStart="START_ITALIC_TEXT" equivEnd="CLOSE_ITALIC_TEXT" type="fmt" dispStart="&lt;i&gt;" dispEnd="&lt;/i&gt;">avec des espaces réservés</pc></target>
       </segment>
     </unit>
-    <unit id="5415448997399451992">
-      <notes>
-        <note category="location">file.ts:11</note>
-      </notes>
-      <segment>
-        <source><pc id="0" equivStart="START_TAG_DIV" equivEnd="CLOSE_TAG_DIV" type="other" dispStart="&lt;div&gt;" dispEnd="&lt;/div&gt;">with <pc id="1" equivStart="START_TAG_DIV" equivEnd="CLOSE_TAG_DIV" type="other" dispStart="&lt;div&gt;" dispEnd="&lt;/div&gt;">nested</pc> placeholders</pc></source>
-        <target><pc id="0" equivStart="START_TAG_DIV" equivEnd="CLOSE_TAG_DIV" type="other" dispStart="&lt;div&gt;" dispEnd="&lt;/div&gt;">avec <pc id="1" equivStart="START_TAG_DIV" equivEnd="CLOSE_TAG_DIV" type="other" dispStart="&lt;div&gt;" dispEnd="&lt;/div&gt;">espaces réservés</pc> imbriqués</pc></target>
-      </segment>
-    </unit>
     <unit id="5525133077318024839">
       <segment>
         <source>on not translatable node</source>
@@ -251,17 +242,9 @@ const XLIFF2_EXTRACTED = `
         <source><pc id="0" equivStart="START_ITALIC_TEXT" equivEnd="CLOSE_ITALIC_TEXT" type="fmt" dispStart="&lt;i&gt;" dispEnd="&lt;/i&gt;">with placeholders</pc></source>
       </segment>
     </unit>
-    <unit id="5415448997399451992">
-      <notes>
-        <note category="location">file.ts:11</note>
-      </notes>
-      <segment>
-        <source><pc id="0" equivStart="START_TAG_DIV" equivEnd="CLOSE_TAG_DIV" type="other" dispStart="&lt;div&gt;" dispEnd="&lt;/div&gt;">with <pc id="1" equivStart="START_TAG_DIV" equivEnd="CLOSE_TAG_DIV" type="other" dispStart="&lt;div&gt;" dispEnd="&lt;/div&gt;">nested</pc> placeholders</pc></source>
-      </segment>
-    </unit>
     <unit id="5525133077318024839">
       <notes>
-        <note category="location">file.ts:14</note>
+        <note category="location">file.ts:13</note>
       </notes>
       <segment>
         <source>on not translatable node</source>
@@ -269,7 +252,7 @@ const XLIFF2_EXTRACTED = `
     </unit>
     <unit id="8670732454866344690">
       <notes>
-        <note category="location">file.ts:15</note>
+        <note category="location">file.ts:14</note>
       </notes>
       <segment>
         <source>on translatable node</source>
@@ -277,8 +260,8 @@ const XLIFF2_EXTRACTED = `
     </unit>
     <unit id="4593805537723189714">
       <notes>
-        <note category="location">file.ts:20</note>
-        <note category="location">file.ts:37</note>
+        <note category="location">file.ts:19</note>
+        <note category="location">file.ts:36</note>
       </notes>
       <segment>
         <source>{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<pc id="0" equivStart="START_BOLD_TEXT" equivEnd="CLOSE_BOLD_TEXT" type="fmt" dispStart="&lt;b&gt;" dispEnd="&lt;/b&gt;">many</pc>} }</source>
@@ -286,7 +269,7 @@ const XLIFF2_EXTRACTED = `
     </unit>
     <unit id="4360321700965841752">
       <notes>
-        <note category="location">file.ts:22,24</note>
+        <note category="location">file.ts:21,23</note>
       </notes>
       <segment>
         <source>
@@ -296,7 +279,7 @@ const XLIFF2_EXTRACTED = `
     </unit>
     <unit id="5460933846928880074">
       <notes>
-        <note category="location">file.ts:23</note>
+        <note category="location">file.ts:22</note>
       </notes>
       <segment>
         <source>{VAR_SELECT, select, 0 {other} m {male} f {female} }</source>
@@ -304,7 +287,7 @@ const XLIFF2_EXTRACTED = `
     </unit>
     <unit id="1746565782635215">
       <notes>
-        <note category="location">file.ts:25,27</note>
+        <note category="location">file.ts:24,26</note>
       </notes>
       <segment>
         <source>
@@ -314,7 +297,7 @@ const XLIFF2_EXTRACTED = `
     </unit>
     <unit id="5868084092545682515">
       <notes>
-        <note category="location">file.ts:26</note>
+        <note category="location">file.ts:25</note>
       </notes>
       <segment>
         <source>{VAR_SELECT, select, m {male} f {female} }</source>
@@ -322,7 +305,7 @@ const XLIFF2_EXTRACTED = `
     </unit>
     <unit id="4851788426695310455">
       <notes>
-        <note category="location">file.ts:29</note>
+        <note category="location">file.ts:28</note>
       </notes>
       <segment>
         <source><ph id="0" equiv="INTERPOLATION" disp="{{ &quot;count = &quot; + count }}"/></source>
@@ -330,7 +313,7 @@ const XLIFF2_EXTRACTED = `
     </unit>
     <unit id="9013357158046221374">
       <notes>
-        <note category="location">file.ts:30</note>
+        <note category="location">file.ts:29</note>
       </notes>
       <segment>
         <source>sex = <ph id="0" equiv="INTERPOLATION" disp="{{ sex }}"/></source>
@@ -338,7 +321,7 @@ const XLIFF2_EXTRACTED = `
     </unit>
     <unit id="8324617391167353662">
       <notes>
-        <note category="location">file.ts:31</note>
+        <note category="location">file.ts:30</note>
       </notes>
       <segment>
         <source><ph id="0" equiv="CUSTOM_NAME" disp="{{ &quot;custom name&quot; //i18n(ph=&quot;CUSTOM_NAME&quot;) }}"/></source>
@@ -346,8 +329,8 @@ const XLIFF2_EXTRACTED = `
     </unit>
     <unit id="7685649297917455806">
       <notes>
-        <note category="location">file.ts:36</note>
-        <note category="location">file.ts:54</note>
+        <note category="location">file.ts:35</note>
+        <note category="location">file.ts:53</note>
       </notes>
       <segment>
         <source>in a translatable section</source>
@@ -355,7 +338,7 @@ const XLIFF2_EXTRACTED = `
     </unit>
     <unit id="2387287228265107305">
       <notes>
-        <note category="location">file.ts:34,38</note>
+        <note category="location">file.ts:33,37</note>
       </notes>
       <segment>
         <source>
@@ -367,7 +350,7 @@ const XLIFF2_EXTRACTED = `
     </unit>
     <unit id="1491627405349178954">
       <notes>
-        <note category="location">file.ts:40</note>
+        <note category="location">file.ts:39</note>
       </notes>
       <segment>
         <source>it <pc id="0" equivStart="START_BOLD_TEXT" equivEnd="CLOSE_BOLD_TEXT" type="fmt" dispStart="&lt;b&gt;" dispEnd="&lt;/b&gt;">should</pc> work</source>
@@ -375,7 +358,7 @@ const XLIFF2_EXTRACTED = `
     </unit>
     <unit id="i18n16">
       <notes>
-        <note category="location">file.ts:42</note>
+        <note category="location">file.ts:41</note>
       </notes>
       <segment>
         <source>with an explicit ID</source>
@@ -383,7 +366,7 @@ const XLIFF2_EXTRACTED = `
     </unit>
     <unit id="i18n17">
       <notes>
-        <note category="location">file.ts:43</note>
+        <note category="location">file.ts:42</note>
       </notes>
       <segment>
         <source>{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<pc id="0" equivStart="START_BOLD_TEXT" equivEnd="CLOSE_BOLD_TEXT" type="fmt" dispStart="&lt;b&gt;" dispEnd="&lt;/b&gt;">many</pc>} }</source>
@@ -392,7 +375,7 @@ const XLIFF2_EXTRACTED = `
     <unit id="4085484936881858615">
       <notes>
         <note category="description">desc</note>
-        <note category="location">file.ts:46,52</note>
+        <note category="location">file.ts:45,51</note>
       </notes>
       <segment>
         <source>{VAR_PLURAL, plural, =0 {Found no results} =1 {Found one result} other {Found <ph id="0" equiv="INTERPOLATION" disp="{{response.getItemsList().length}}"/> results} }</source>
@@ -400,7 +383,7 @@ const XLIFF2_EXTRACTED = `
     </unit>
     <unit id="4035252431381981115">
       <notes>
-        <note category="location">file.ts:54</note>
+        <note category="location">file.ts:53</note>
       </notes>
       <segment>
         <source>foo<pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link" dispStart="&lt;a&gt;" dispEnd="&lt;/a&gt;">bar</pc></source>
@@ -408,7 +391,7 @@ const XLIFF2_EXTRACTED = `
     </unit>
     <unit id="5339604010413301604">
       <notes>
-        <note category="location">file.ts:56</note>
+        <note category="location">file.ts:55</note>
       </notes>
       <segment>
         <source><ph id="0" equiv="MAP NAME" disp="{{ &apos;test&apos; //i18n(ph=&quot;map name&quot;) }}"/></source>
