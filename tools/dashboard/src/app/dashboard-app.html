@@ -3,10 +3,19 @@
 </md-toolbar>
 
 <div class="dashboard-content">
-  <md-card class="payload-size-card">
+
+  <md-card class="dashboard-panel-card">
     <md-card-title>Payload Size Chart</md-card-title>
     <md-card-content>
       <payload-chart [data]="payloads | async"></payload-chart>
     </md-card-content>
   </md-card>
+
+  <md-card class="dashboard-panel-card">
+    <md-card-title>Coverage Reports</md-card-title>
+    <md-card-content>
+      <coverage-chart [data]="coverage | async"></coverage-chart>
+    </md-card-content>
+  </md-card>
+
 </div>

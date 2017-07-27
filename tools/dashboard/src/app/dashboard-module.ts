@@ -8,6 +8,7 @@ import {MdCardModule, MdProgressSpinnerModule, MdToolbarModule} from '@angular/m
 import {NgxChartsModule} from '@swimlane/ngx-charts';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {PayloadChart} from './payload-chart/payload-chart';
+import {CoverageChart} from './coverage-chart/coverage-chart';
 
 @NgModule({
   exports: [
@@ -21,7 +22,8 @@ export class DashboardMaterialModule {}
 @NgModule({
   declarations: [
     DashboardApp,
-    PayloadChart
+    PayloadChart,
+    CoverageChart
   ],
   imports: [
     BrowserModule,

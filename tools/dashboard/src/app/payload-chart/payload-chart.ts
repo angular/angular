@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {PayloadResult} from '../data-definitions';
-import {NgxChartItem, NgxChartResult} from './ngx-definitions';
+import {NgxChartItem, NgxChartResult} from '../ngx-definitions';
 
 @Component({
   selector: 'payload-chart',

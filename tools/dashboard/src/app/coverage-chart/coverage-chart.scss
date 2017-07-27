@@ -1,0 +1,20 @@
+$coverage-chart-loading-size: 50px;
+
+:host {
+  display: block;
+  position: relative;
+
+  height: 400px;
+  width: 100%;
+  max-width: 700px;
+}
+
+.coverage-chart-loading {
+  position: absolute;
+
+  top: calc(50% - #{$coverage-chart-loading-size});
+  left: calc(50% - #{$coverage-chart-loading-size});
+
+  height: $coverage-chart-loading-size;
+  width: $coverage-chart-loading-size;
+}

@@ -1,8 +1,11 @@
 .dashboard-content {
+  display: flex;
+  flex-flow: wrap;
   padding: 16px;
 }
 
-.payload-size-card {
+.dashboard-panel-card {
   width: 100%;
   max-width: 700px;
+  margin: 12px;
 }
