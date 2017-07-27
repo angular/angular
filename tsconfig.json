@@ -16,13 +16,14 @@
     "baseUrl": ".",
     "paths": {
       "@angular/material": ["./src/lib/public_api.ts"],
-      "@angular/cdk*": ["./src/cdk/*"],
-      "@angular/material-examples": ["./src/material-examples"]
+      "@angular/cdk/*": ["./src/cdk/*"],
+      "@angular/material-examples": ["./src/material-examples"],
+      "material2-build-tools": ["./tools/package-tools"]
     }
   },
   "include": [
     "src/**/*.ts",
-    "tools/**.ts"
+    "tools/**/*.ts"
   ],
   "exclude": [
     // Exclude files that depend on Node APIs because those depend on the Node types and therefore
@@ -31,6 +32,8 @@
 
     // IDEs should not type-check the different node_modules directories of the different packages.
     // This would cause the IDEs to be slower and also linters would check the node_modules.
-    "**/node_modules"
+    "node_modules/",
+    "tools/dashboard/node_modules/",
+    "tools/screenshot-test/node_modules/"
   ]
 }

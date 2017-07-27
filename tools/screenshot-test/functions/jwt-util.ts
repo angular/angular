@@ -13,9 +13,10 @@ const secret = firebaseFunctions.config().secret.key;
  * Replace '/' with '.' to get the token.
  */
 function getSecureToken(event: firebaseFunctions.Event<any>) {
-  let {jwtHeader, jwtPayload, jwtSignature} = event.params;
+  const {jwtHeader, jwtPayload, jwtSignature} = event.params!;
   return `${jwtHeader}.${jwtPayload}.${jwtSignature}`;
 }
+
 
 /**
  * Verify that the event has a valid JsonWebToken. If the token is *not* valid,
@@ -23,7 +24,7 @@ function getSecureToken(event: firebaseFunctions.Event<any>) {
  */
 export function verifySecureToken(event: firebaseFunctions.Event<any>) {
   return new Promise((resolve, reject) => {
-    const prNumber = event.params['prNumber'];
+    const prNumber = event.params!['prNumber'];
     const secureToken = getSecureToken(event);
 
     return verifyJWT(secureToken, prNumber, secret, repoSlug).then(() => {

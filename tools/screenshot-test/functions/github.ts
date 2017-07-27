@@ -14,11 +14,13 @@ const authDomain = firebaseFunctions.config().firebase.authDomain;
 const toolName = firebaseFunctions.config().tool.name;
 
 export function updateGithubStatus(event: firebaseFunctions.Event<any>) {
-  if (!event.data.exists() || typeof event.data.val() != 'boolean') {
+  if (!event.data.exists() || typeof event.data.val() != 'boolean' && event.params) {
     return;
   }
-  let result = event.data.val() == true;
-  let {prNumber, sha} = event.params;
+
+  const result = event.data.val() == true;
+  const {prNumber, sha} = event.params!;
+
   return setGithubStatus(sha, {
       result: result,
       name: toolName,

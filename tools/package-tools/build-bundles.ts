@@ -1,5 +1,4 @@
 import {join} from 'path';
-import {readdirSync, lstatSync} from 'fs';
 import {ScriptTarget, ModuleKind, NewLineKind} from 'typescript';
 import {uglifyJsFile} from './minify-sources';
 import {createRollupBundle} from './rollup-helpers';

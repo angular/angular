@@ -1,8 +1,9 @@
 import {join} from 'path';
-import {lstatSync, readdirSync, writeFileSync} from 'fs';
+import {writeFileSync} from 'fs';
 
 /** Creates a package.json for a secondary entry-point with the different bundle locations. */
-export function createEntryPointPackageJson(destDir: string, packageName: string, entryPointName: string) {
+export function createEntryPointPackageJson(destDir: string, packageName: string,
+                                            entryPointName: string) {
   const content = {
     name: `@angular/${packageName}/${entryPointName}`,
     typings: `../${entryPointName}.d.ts`,

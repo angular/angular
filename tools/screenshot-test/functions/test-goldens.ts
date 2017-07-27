@@ -15,17 +15,18 @@ const bucket = gcs.bucket(firebaseFunctions.config().firebase.storageBucket);
 export function copyTestImagesToGoldens(prNumber: string) {
   return firebaseAdmin.database().ref(`screenshot/reports/${prNumber}/results`).once('value')
     .then((snapshot: firebaseAdmin.database.DataSnapshot) => {
-      let failedFilenames: string[] = [];
+      const failedFilenames: string[] = [];
       let counter = 0;
-      snapshot.forEach((childSnapshot: firebaseAdmin.database.DataSnapshot) => {
-        if (childSnapshot.val() === false) {
+
+      snapshot.forEach(childSnapshot => {
+        if (childSnapshot.key && childSnapshot.val() === false) {
           failedFilenames.push(childSnapshot.key);
         }
+
         counter++;
-        if (counter == snapshot.numChildren()) {
-          return true;
-        }
+        return counter === snapshot.numChildren();
       });
+
       return failedFilenames;
     }).then((failedFilenames: string[]) => {
       return bucket.getFiles({prefix: `screenshots/${prNumber}/test`}).then((data: any) => {

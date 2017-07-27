@@ -48,7 +48,8 @@ export function composeRelease(packageName: string, options: ComposeReleaseOptio
 }
 
 /** Creates files necessary for a secondary entry-point. */
-function createFilesForSecondaryEntryPoint(packageName: string, packagePath: string, releasePath: string) {
+function createFilesForSecondaryEntryPoint(packageName: string, packagePath: string,
+                                           releasePath: string) {
   getSecondaryEntryPointsForPackage(packageName).forEach(entryPointName => {
     // Create a directory in the root of the package for this entry point that contains
     // * A package.json that lists the different bundle locations

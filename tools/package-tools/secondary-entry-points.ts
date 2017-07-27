@@ -1,8 +1,3 @@
-import {join} from 'path';
-import {readdirSync, lstatSync} from 'fs';
-import {buildConfig} from './build-config';
-
-
 /**
  * List of cdk entry-points in the order that they must be built. This is necessary because
  * some of the entry-points depend on each other. This is temporary until we switch to bazel.

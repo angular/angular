@@ -1,6 +1,5 @@
 import {dest, src, task} from 'gulp';
 import {join} from 'path';
-import {readFileSync, unlink, writeFileSync} from 'fs';
 import {main as tsc} from '@angular/tsc-wrapped';
 import {buildConfig} from '../build-config';
 import {composeRelease} from '../build-release';
@@ -27,8 +26,11 @@ const htmlMinifierOptions = {
  * Creates a set of gulp tasks that can build the specified package.
  * @param packageName Name of the package. Needs to be similar to the directory name in `src/`.
  * @param dependencies Required packages that will be built before building the current package.
+ * @param options Options that can be passed to adjust the gulp package tasks.
  */
-export function createPackageBuildTasks(packageName: string, dependencies: string[] = [], options: PackageTaskOptions = {}) {
+export function createPackageBuildTasks(packageName: string, dependencies: string[] = [],
+                                        options: PackageTaskOptions = {}) {
+
   // To avoid refactoring of the project the package material will map to the source path `lib/`.
   const packageRoot = join(packagesDir, packageName === 'material' ? 'lib' : packageName);
   const packageOut = join(outputDir, 'packages', packageName);
