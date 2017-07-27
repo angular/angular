@@ -151,7 +151,10 @@ export class MdDatepicker<D> implements OnDestroy {
   }
   private _disabled: boolean;
 
-  /** Emits new selected date when selected date changes. */
+  /**
+   * Emits new selected date when selected date changes.
+   * @deprecated Switch to the `dateChange` and `dateInput` binding on the input element.
+   */
   @Output() selectedChanged = new EventEmitter<D>();
 
   /** Whether the calendar is open. */
