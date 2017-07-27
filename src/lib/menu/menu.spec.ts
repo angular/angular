@@ -872,6 +872,17 @@ describe('MdMenu', () => {
       expect(overlay.querySelectorAll('.mat-menu-panel').length).toBe(0, 'Expected no open menus');
     });
 
+    it('should set a class on the menu items that trigger a sub-menu', () => {
+      compileTestComponent();
+      instance.rootTrigger.openMenu();
+      fixture.detectChanges();
+
+      const menuItems = overlay.querySelectorAll('[md-menu-item]');
+
+      expect(menuItems[0].classList).toContain('mat-menu-item-submenu-trigger');
+      expect(menuItems[1].classList).not.toContain('mat-menu-item-submenu-trigger');
+    });
+
   });
 
 });

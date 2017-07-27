@@ -18,12 +18,11 @@
     &[disabled] {
       color: mat-color($foreground, 'disabled');
     }
+  }
 
-    .mat-icon {
-      color: mat-color($foreground, 'icon');
-      vertical-align: middle;
-    }
-
+  .mat-menu-item .mat-icon,
+  .mat-menu-item-submenu-trigger::after {
+    color: mat-color($foreground, 'icon');
   }
 
   .mat-menu-item:hover,

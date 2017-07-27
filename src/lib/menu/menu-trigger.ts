@@ -122,13 +122,19 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
   /** Event emitted when the associated menu is closed. */
   @Output() onMenuClose = new EventEmitter<void>();
 
-  constructor(private _overlay: Overlay,
-              private _element: ElementRef,
-              private _viewContainerRef: ViewContainerRef,
-              @Inject(MD_MENU_SCROLL_STRATEGY) private _scrollStrategy,
-              @Optional() private _parentMenu: MdMenu,
-              @Optional() @Self() private _menuItemInstance: MdMenuItem,
-              @Optional() private _dir: Directionality) { }
+  constructor(
+    private _overlay: Overlay,
+    private _element: ElementRef,
+    private _viewContainerRef: ViewContainerRef,
+    @Inject(MD_MENU_SCROLL_STRATEGY) private _scrollStrategy,
+    @Optional() private _parentMenu: MdMenu,
+    @Optional() @Self() private _menuItemInstance: MdMenuItem,
+    @Optional() private _dir: Directionality) {
+
+    if (_menuItemInstance) {
+      _menuItemInstance._triggersSubmenu = this.triggersSubmenu();
+    }
+  }
 
   ngAfterViewInit() {
     this._checkMenu();

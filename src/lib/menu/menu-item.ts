@@ -28,6 +28,7 @@ export const _MdMenuItemMixinBase = mixinDisabled(MdMenuItemBase);
     'role': 'menuitem',
     'class': 'mat-menu-item',
     '[class.mat-menu-item-highlighted]': '_highlighted',
+    '[class.mat-menu-item-submenu-trigger]': '_triggersSubmenu',
     '[attr.tabindex]': '_getTabIndex()',
     '[attr.aria-disabled]': 'disabled.toString()',
     '[attr.disabled]': 'disabled || null',
@@ -44,6 +45,9 @@ export class MdMenuItem extends _MdMenuItemMixinBase implements Focusable, CanDi
 
   /** Whether the menu item is highlighted. */
   _highlighted: boolean = false;
+
+  /** Whether the menu item acts as a trigger for a sub-menu. */
+  _triggersSubmenu: boolean = false;
 
   constructor(private _elementRef: ElementRef) {
     super();
