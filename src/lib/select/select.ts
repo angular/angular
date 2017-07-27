@@ -28,6 +28,7 @@ import {
   ChangeDetectionStrategy,
   InjectionToken,
 } from '@angular/core';
+import {NgForm, FormGroupDirective} from '@angular/forms';
 import {MdOption, MdOptionSelectionChange, MdOptgroup} from '../core/option/index';
 import {ENTER, SPACE, UP_ARROW, DOWN_ARROW, HOME, END} from '../core/keyboard/keycodes';
 import {FocusKeyManager} from '../core/a11y/focus-key-manager';
@@ -153,9 +154,10 @@ export const _MdSelectMixinBase = mixinColor(mixinDisabled(MdSelectBase), 'prima
     '[attr.aria-labelledby]': 'ariaLabelledby',
     '[attr.aria-required]': 'required.toString()',
     '[attr.aria-disabled]': 'disabled.toString()',
-    '[attr.aria-invalid]': '_control?.invalid || "false"',
+    '[attr.aria-invalid]': '_isErrorState()',
     '[attr.aria-owns]': '_optionIds',
     '[class.mat-select-disabled]': 'disabled',
+    '[class.mat-select-invalid]': '_isErrorState()',
     '[class.mat-select-required]': 'required',
     'class': 'mat-select',
     '(keydown)': '_handleClosedKeydown($event)',
@@ -368,10 +370,13 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
     renderer: Renderer2,
     elementRef: ElementRef,
     @Optional() private _dir: Directionality,
+    @Optional() private _parentForm: NgForm,
+    @Optional() private _parentFormGroup: FormGroupDirective,
     @Self() @Optional() public _control: NgControl,
     @Attribute('tabindex') tabIndex: string,
     @Optional() @Inject(MD_PLACEHOLDER_GLOBAL_OPTIONS) placeholderOptions: PlaceholderOptions,
     @Inject(MD_SELECT_SCROLL_STRATEGY) private _scrollStrategyFactory) {
+
     super(renderer, elementRef);
 
     if (this._control) {
@@ -603,6 +608,16 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
   /** Whether the select has a value. */
   _hasValue(): boolean {
     return this._selectionModel && this._selectionModel.hasValue();
+  }
+
+  /** Whether the select is in an error state. */
+  _isErrorState(): boolean {
+    const isInvalid = this._control && this._control.invalid;
+    const isTouched = this._control && this._control.touched;
+    const isSubmitted = (this._parentFormGroup && this._parentFormGroup.submitted) ||
+        (this._parentForm && this._parentForm.submitted);
+
+    return !!(isInvalid && (isTouched || isSubmitted));
   }
 
   /**

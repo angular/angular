@@ -66,8 +66,7 @@
     }
   }
 
-  .mat-select:focus:not(.mat-select-disabled).mat-warn,
-  .mat-select:not(:focus).ng-invalid.ng-touched:not(.mat-select-disabled) {
+  .mat-select:focus:not(.mat-select-disabled).mat-warn, .mat-select-invalid {
     @include _mat-select-inner-content-theme($warn);
   }
 }

@@ -1,5 +1,3 @@
-import {TestBed, async, ComponentFixture, fakeAsync, tick, inject} from '@angular/core/testing';
-import {By} from '@angular/platform-browser';
 import {
   Component,
   DebugElement,
@@ -9,7 +7,19 @@ import {
   ChangeDetectionStrategy,
   OnInit,
 } from '@angular/core';
+import {
+  ControlValueAccessor,
+  FormControl,
+  FormsModule,
+  NG_VALUE_ACCESSOR,
+  ReactiveFormsModule,
+  FormGroup,
+  FormGroupDirective,
+  Validators,
+} from '@angular/forms';
+import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {TestBed, async, ComponentFixture, fakeAsync, tick, inject} from '@angular/core/testing';
 import {MdSelectModule} from './index';
 import {OverlayContainer} from '../core/overlay/overlay-container';
 import {MdSelect} from './select';
@@ -17,9 +27,6 @@ import {getMdSelectDynamicMultipleError, getMdSelectNonArrayValueError} from './
 import {MdOption} from '../core/option/option';
 import {Directionality} from '../core/bidi/index';
 import {DOWN_ARROW, UP_ARROW, ENTER, SPACE, HOME, END, TAB} from '../core/keyboard/keycodes';
-import {
-  ControlValueAccessor, FormControl, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule
-} from '@angular/forms';
 import {Subject} from 'rxjs/Subject';
 import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
 import {dispatchFakeEvent, dispatchKeyboardEvent, wrappedErrorMessage} from '@angular/cdk/testing';
@@ -66,7 +73,8 @@ describe('MdSelect', () => {
         InvalidSelectInForm,
         BasicSelectWithoutForms,
         BasicSelectWithoutFormsPreselected,
-        BasicSelectWithoutFormsMultiple
+        BasicSelectWithoutFormsMultiple,
+        SelectInsideFormGroup
       ],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
@@ -1719,11 +1727,12 @@ describe('MdSelect', () => {
           'mat-select-required', `Expected the mat-select-required class to be set.`);
       });
 
-      it('should set aria-invalid for selects that are invalid', () => {
+      it('should set aria-invalid for selects that are invalid and touched', () => {
         expect(select.getAttribute('aria-invalid'))
           .toEqual('false', `Expected aria-invalid attr to be false for valid selects.`);
 
         fixture.componentInstance.isRequired = true;
+        fixture.componentInstance.control.markAsTouched();
         fixture.detectChanges();
 
         expect(select.getAttribute('aria-invalid'))
@@ -2571,6 +2580,77 @@ describe('MdSelect', () => {
 
   });
 
+  describe('error state', () => {
+    let fixture: ComponentFixture<SelectInsideFormGroup>;
+    let testComponent: SelectInsideFormGroup;
+    let select: HTMLElement;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(SelectInsideFormGroup);
+      fixture.detectChanges();
+      testComponent = fixture.componentInstance;
+      select = fixture.debugElement.query(By.css('md-select')).nativeElement;
+    });
+
+    it('should not set the invalid class on a clean select', () => {
+      expect(testComponent.formGroup.untouched).toBe(true, 'Expected the form to be untouched.');
+      expect(testComponent.formControl.invalid).toBe(true, 'Expected form control to be invalid.');
+      expect(select.classList)
+          .not.toContain('mat-select-invalid', 'Expected select not to appear invalid.');
+      expect(select.getAttribute('aria-invalid'))
+          .toBe('false', 'Expected aria-invalid to be set to false.');
+    });
+
+    it('should appear as invalid if it becomes touched', () => {
+      expect(select.classList)
+          .not.toContain('mat-select-invalid', 'Expected select not to appear invalid.');
+      expect(select.getAttribute('aria-invalid'))
+          .toBe('false', 'Expected aria-invalid to be set to false.');
+
+      testComponent.formControl.markAsTouched();
+      fixture.detectChanges();
+
+      expect(select.classList)
+          .toContain('mat-select-invalid', 'Expected select to appear invalid.');
+      expect(select.getAttribute('aria-invalid'))
+          .toBe('true', 'Expected aria-invalid to be set to true.');
+    });
+
+    it('should not have the invalid class when the select becomes valid', () => {
+      testComponent.formControl.markAsTouched();
+      fixture.detectChanges();
+
+      expect(select.classList)
+          .toContain('mat-select-invalid', 'Expected select to appear invalid.');
+      expect(select.getAttribute('aria-invalid'))
+          .toBe('true', 'Expected aria-invalid to be set to true.');
+
+      testComponent.formControl.setValue('pizza-1');
+      fixture.detectChanges();
+
+      expect(select.classList)
+          .not.toContain('mat-select-invalid', 'Expected select not to appear invalid.');
+      expect(select.getAttribute('aria-invalid'))
+          .toBe('false', 'Expected aria-invalid to be set to false.');
+    });
+
+    it('should appear as invalid when the parent form group is submitted', () => {
+      expect(select.classList)
+          .not.toContain('mat-select-invalid', 'Expected select not to appear invalid.');
+      expect(select.getAttribute('aria-invalid'))
+          .toBe('false', 'Expected aria-invalid to be set to false.');
+
+      dispatchFakeEvent(fixture.debugElement.query(By.css('form')).nativeElement, 'submit');
+      fixture.detectChanges();
+
+      expect(select.classList)
+          .toContain('mat-select-invalid', 'Expected select to appear invalid.');
+      expect(select.getAttribute('aria-invalid'))
+          .toBe('true', 'Expected aria-invalid to be set to true.');
+    });
+
+  });
+
 });
 
 
@@ -2918,6 +2998,7 @@ class BasicSelectWithTheming {
   theme: string;
 }
 
+
 @Component({
   selector: 'reset-values-select',
   template: `
@@ -2943,7 +3024,6 @@ class ResetValuesSelect {
 
   @ViewChild(MdSelect) select: MdSelect;
 }
-
 
 @Component({
   template: `
@@ -3025,6 +3105,25 @@ class SelectWithGroups {
 })
 class InvalidSelectInForm {
   value: any;
+}
+
+
+@Component({
+  template: `
+    <form [formGroup]="formGroup">
+      <md-select placeholder="Food" formControlName="food">
+        <md-option value="steak-0">Steak</md-option>
+        <md-option value="pizza-1">Pizza</md-option>
+      </md-select>
+    </form>
+  `
+})
+class SelectInsideFormGroup {
+  @ViewChild(FormGroupDirective) formGroupDirective: FormGroupDirective;
+  formControl = new FormControl('', Validators.required);
+  formGroup = new FormGroup({
+    food: this.formControl
+  });
 }
 
 
