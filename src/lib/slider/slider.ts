@@ -452,6 +452,12 @@ export class MdSlider extends _MdSliderMixinBase
       return;
     }
 
+    // The slide start event sometimes fails to fire on iOS, so if we're not already in the sliding
+    // state, call the slide start handler manually.
+    if (!this._isSliding) {
+      this._onSlideStart(null);
+    }
+
     // Prevent the slide from selecting anything else.
     event.preventDefault();
     this._updateValueFromPosition({x: event.center.x, y: event.center.y});
@@ -460,7 +466,7 @@ export class MdSlider extends _MdSliderMixinBase
     this._emitInputEvent();
   }
 
-  _onSlideStart(event: HammerInput) {
+  _onSlideStart(event: HammerInput | null) {
     if (this.disabled) {
       return;
     }
@@ -468,10 +474,13 @@ export class MdSlider extends _MdSliderMixinBase
     // Simulate mouseenter in case this is a mobile device.
     this._onMouseenter();
 
-    event.preventDefault();
     this._isSliding = true;
     this._renderer.addFocus();
-    this._updateValueFromPosition({x: event.center.x, y: event.center.y});
+
+    if (event) {
+      this._updateValueFromPosition({x: event.center.x, y: event.center.y});
+      event.preventDefault();
+    }
   }
 
   _onSlideEnd() {
