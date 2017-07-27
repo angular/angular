@@ -1,0 +1,69 @@
+<md-accordion class="example-headers-align">
+  <md-expansion-panel [expanded]="step === 0" (opened)="setStep(0)" hideToggle="true">
+    <md-expansion-panel-header>
+      <md-panel-title>
+        Personal data
+      </md-panel-title>
+      <md-panel-description>
+        Type your name and age
+        <md-icon>account_circle</md-icon>
+      </md-panel-description>
+    </md-expansion-panel-header>
+
+    <md-input-container>
+      <input mdInput placeholder="First name">
+    </md-input-container>
+
+    <md-input-container>
+      <input mdInput type="number" min="1" placeholder="Age">
+    </md-input-container>
+
+    <md-action-row>
+      <button md-button color="primary" (click)="nextStep()">Next</button>
+    </md-action-row>
+  </md-expansion-panel>
+
+  <md-expansion-panel [expanded]="step === 1" (opened)="setStep(1)" hideToggle="true">
+    <md-expansion-panel-header>
+      <md-panel-title>
+        Destination
+      </md-panel-title>
+      <md-panel-description>
+        Type the country name
+        <md-icon>map</md-icon>
+      </md-panel-description>
+    </md-expansion-panel-header>
+
+    <md-input-container>
+      <input mdInput placeholder="Country">
+    </md-input-container>
+
+    <md-action-row>
+      <button md-button color="warn" (click)="prevStep()">Previous</button>
+      <button md-button color="primary" (click)="nextStep()">Next</button>
+    </md-action-row>
+  </md-expansion-panel>
+
+  <md-expansion-panel [expanded]="step === 2" (opened)="setStep(2)" hideToggle="true">
+    <md-expansion-panel-header>
+      <md-panel-title>
+        Day of the trip
+      </md-panel-title>
+      <md-panel-description>
+        Inform the date you wish to travel
+        <md-icon>date_range</md-icon>
+      </md-panel-description>
+    </md-expansion-panel-header>
+
+    <md-input-container>
+      <input mdInput placeholder="Date" [mdDatepicker]="picker" (focus)="picker.open()" readonly>
+    </md-input-container>
+    <md-datepicker #picker></md-datepicker>
+
+    <md-action-row>
+      <button md-button color="warn" (click)="prevStep()">Previous</button>
+      <button md-button color="primary" (click)="nextStep()">End</button>
+    </md-action-row>
+  </md-expansion-panel>
+
+</md-accordion>
