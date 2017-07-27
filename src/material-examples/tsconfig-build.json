@@ -21,16 +21,7 @@
     "baseUrl": ".",
     "paths": {
       "@angular/material": ["../../dist/packages/material/public_api"],
-      "@angular/cdk/a11y": ["../../dist/packages/cdk/a11y/public_api"],
-      "@angular/cdk/bidi": ["../../dist/packages/cdk/bidi/public_api"],
-      "@angular/cdk/coercion": ["../../dist/packages/cdk/coercion/public_api"],
-      "@angular/cdk/platform": ["../../dist/packages/cdk/platform/public_api"],
-      "@angular/cdk/portal": ["../../dist/packages/cdk/portal/public_api"],
-      "@angular/cdk/keyboard": ["../../dist/packages/cdk/keyboard/public_api"],
-      "@angular/cdk/rxjs": ["../../dist/packages/cdk/rxjs/public_api"],
-      "@angular/cdk/table": ["../../dist/packages/cdk/table/public_api"],
-      "@angular/cdk/testing": ["../../dist/packages/cdk/testing/public_api"],
-      "@angular/cdk/observe-content": ["../../dist/packages/cdk/observe-content/public_api"]
+      "@angular/cdk/*": ["../../dist/packages/cdk/*/public_api"]
     }
   },
   "files": [

@@ -7,12 +7,7 @@
     "importHelpers": false,
     "module": "commonjs",
     "target": "es5",
-    "types": ["jasmine"],
-    "experimentalDecorators": true,
-    "strictNullChecks": true,
-    "paths": {
-      "@angular/cdk/*": ["../../dist/packages/cdk/*"]
-    }
+    "types": ["jasmine"]
   },
   "include": [
     "**/*.spec.ts",
