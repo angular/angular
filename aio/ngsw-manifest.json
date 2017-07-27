@@ -10,7 +10,7 @@
   },
   "static.ignore": [
     "\\.js\\.map$",
-    "^/assets/images/.*/unused/",
+    "^/assets/images/.*/_unused/",
     "^/generated/(?:docs/(?!api/api-list\\.json).*|images|live-examples|zips)/"
   ],
   "static.versioned": [
