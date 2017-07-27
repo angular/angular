@@ -271,7 +271,7 @@ export function main() {
           done();
         });
         factory.mock.mockFlush(200, 'OK', 'Test');
-      })
+      });
     });
     describe('corrects for quirks', () => {
       it('by normalizing 1223 status to 204', (done: DoneFn) => {

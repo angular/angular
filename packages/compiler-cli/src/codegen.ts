@@ -96,7 +96,7 @@ export class CodeGenerator {
       }
     }
     if (!transContent) {
-      missingTranslation = MissingTranslationStrategy.Ignore
+      missingTranslation = MissingTranslationStrategy.Ignore;
     }
     const {compiler: aotCompiler} = compiler.createAotCompiler(ngCompilerHost, {
       translations: transContent,

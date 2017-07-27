@@ -136,12 +136,11 @@ export function performCompilation(
 
     const rootFileNames = files.map(f => path.normalize(f));
 
-    const addGeneratedFileName =
-        (fileName: string) => {
-          if (fileName.startsWith(basePath) && TS_EXT.exec(fileName)) {
-            rootFileNames.push(fileName);
-          }
-        }
+    const addGeneratedFileName = (fileName: string) => {
+      if (fileName.startsWith(basePath) && TS_EXT.exec(fileName)) {
+        rootFileNames.push(fileName);
+      }
+    };
 
     if (ngOptions.flatModuleOutFile && !ngOptions.skipMetadataEmit) {
       const {host: bundleHost, indexName, errors} =

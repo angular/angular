@@ -41,7 +41,7 @@ export function main() {
     return e;
   }
 
-  function otherObservableValidator() { return of ({'other': true}) }
+  function otherObservableValidator() { return of ({'other': true}); }
 
   describe('FormGroup', () => {
     describe('value', () => {
