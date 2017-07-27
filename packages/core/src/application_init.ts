@@ -45,11 +45,10 @@ export class ApplicationInitStatus {
 
     const asyncInitPromises: Promise<any>[] = [];
 
-    const complete =
-        () => {
-          this._done = true;
-          this.resolve();
-        }
+    const complete = () => {
+      this._done = true;
+      this.resolve();
+    };
 
     if (this.appInits) {
       for (let i = 0; i < this.appInits.length; i++) {

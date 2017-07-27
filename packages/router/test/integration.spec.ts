@@ -1070,7 +1070,7 @@ describe('Integration', () => {
                 return map.call(of (null), () => {
                   log.push('resolver2');
                   observer.next(null);
-                  observer.complete()
+                  observer.complete();
                 });
               }
             },

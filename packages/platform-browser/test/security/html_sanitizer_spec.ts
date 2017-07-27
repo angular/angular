@@ -123,7 +123,7 @@ export function main() {
         // depending on the browser, we might ge an exception
       }
       try {
-        sanitizeHtml(defaultDoc, '<form><input name="nextSibling" /></form>')
+        sanitizeHtml(defaultDoc, '<form><input name="nextSibling" /></form>');
       } catch (e) {
         // depending on the browser, we might ge an exception
       }

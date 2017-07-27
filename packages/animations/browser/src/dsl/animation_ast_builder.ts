@@ -201,7 +201,7 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
         } else {
           styles.push(styleTuple as ɵStyleData);
         }
-      })
+      });
     } else {
       styles.push(metadata.styles);
     }

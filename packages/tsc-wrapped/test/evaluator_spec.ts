@@ -259,9 +259,9 @@ describe('Evaluator', () => {
       const expr = findVar(source, 'a');
       expect(evaluator.evaluateNode(expr !.initializer !)).toEqual([
         {provide: 'someValue', useFactory: {__symbolic: 'reference', name: lambdaTemp}}
-      ])
+      ]);
     });
-  })
+  });
 });
 
 function sourceFileOf(text: string): ts.SourceFile {

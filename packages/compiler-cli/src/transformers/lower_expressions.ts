@@ -63,7 +63,7 @@ function transformSourceFile(
       const result = ts.visitEachChild(node, visitNode, context);
 
       if (declarations.length) {
-        inserts.push({priorTo: result, declarations})
+        inserts.push({priorTo: result, declarations});
       }
       return result;
     }
@@ -113,7 +113,7 @@ export function getExpressionLoweringTransformFactory(requestsMap: RequestsMap):
   return (context: ts.TransformationContext) => (sourceFile: ts.SourceFile): ts.SourceFile => {
     const requests = requestsMap.getRequests(sourceFile);
     if (requests && requests.size) {
-      return transformSourceFile(sourceFile, requests, context)
+      return transformSourceFile(sourceFile, requests, context);
     }
     return sourceFile;
   };
@@ -155,12 +155,11 @@ export class LowerMetadataCache implements RequestsMap {
     let identNumber = 0;
     const freshIdent = () => '\u0275' + identNumber++;
     const requests = new Map<number, LoweringRequest>();
-    const replaceNode =
-        (node: ts.Node) => {
-          const name = freshIdent();
-          requests.set(node.pos, {name, kind: node.kind, location: node.pos, end: node.end});
-          return {__symbolic: 'reference', name};
-        }
+    const replaceNode = (node: ts.Node) => {
+      const name = freshIdent();
+      requests.set(node.pos, {name, kind: node.kind, location: node.pos, end: node.end});
+      return {__symbolic: 'reference', name};
+    };
 
     const substituteExpression = (value: MetadataValue, node: ts.Node): MetadataValue => {
       if (node.kind === ts.SyntaxKind.ArrowFunction ||

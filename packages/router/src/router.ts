@@ -1128,7 +1128,7 @@ class ActivateRoutes {
       const children: {[outletName: string]: any} = nodeChildrenAsMap(route);
       const contexts = route.value.component ? context.children : parentContexts;
 
-      forEach(children, (v: any, k: string) => {this.deactivateRouteAndItsChildren(v, contexts)});
+      forEach(children, (v: any, k: string) => this.deactivateRouteAndItsChildren(v, contexts));
 
       if (context.outlet) {
         // Destroy the component

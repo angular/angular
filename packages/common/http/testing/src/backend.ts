@@ -126,7 +126,7 @@ export class HttpClientTestingBackend implements HttpBackend, HttpTestingControl
       const requests = open.map(testReq => {
                              const url = testReq.request.urlWithParams.split('?')[0];
                              const method = testReq.request.method;
-                             return `${method} ${url}`
+                             return `${method} ${url}`;
                            })
                            .join(', ');
       throw new Error(`Expected no open requests, found ${open.length}: ${requests}`);

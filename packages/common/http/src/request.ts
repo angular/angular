@@ -15,8 +15,11 @@ import {HttpParams} from './params';
  * All values are optional and will override default values if provided.
  */
 interface HttpRequestInit {
-  headers?: HttpHeaders, reportProgress?: boolean, params?: HttpParams,
-      responseType?: 'arraybuffer'|'blob'|'json'|'text', withCredentials?: boolean,
+  headers?: HttpHeaders;
+  reportProgress?: boolean;
+  params?: HttpParams;
+  responseType?: 'arraybuffer'|'blob'|'json'|'text';
+  withCredentials?: boolean;
 }
 
 /**

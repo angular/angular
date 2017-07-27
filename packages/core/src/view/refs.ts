@@ -466,7 +466,8 @@ export function createNgModuleRef(
 class NgModuleRef_ implements NgModuleData, InternalNgModuleRef<any> {
   private _destroyListeners: (() => void)[] = [];
   private _destroyed: boolean = false;
-  public _providers: any[];
+  /** @internal */
+  _providers: any[];
 
   constructor(
       private _moduleType: Type<any>, public _parent: Injector,
