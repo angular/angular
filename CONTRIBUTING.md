@@ -66,7 +66,7 @@ chances of your issue being dealt with quickly:
 * **Reproduce the Error** - provide a live example (using [CodePen][codepen], [JsBin][jsbin],
     [Plunker][plunker], etc.) or a unambiguous set of steps
 * **Screenshots** - Due to the visual nature of Angular Material, screenshots can help the team
-    triage issues far more quickly than a text descrption.
+    triage issues far more quickly than a text description.
 * **Related Issues** - has a similar issue been reported before?
 * **Suggest a Fix** - if you can't fix the bug yourself, perhaps you can point to what might be
     causing the problem (line of code or commit)
