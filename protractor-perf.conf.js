@@ -49,7 +49,8 @@ exports.config = {
   framework: 'jasmine2',
   jasmineNodeOpts: {
     showColors: true,
-    defaultTimeoutInterval: 60000,
+    // Large timeout to prevent flakiness on Travis
+    defaultTimeoutInterval: process.env.TRAVIS ? 500000 : 60000,
     print: function(msg) { console.log(msg); },
   },
   useAllAngular2AppRoots: true
