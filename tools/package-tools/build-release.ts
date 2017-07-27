@@ -2,7 +2,7 @@ import {join} from 'path';
 import {mkdirpSync} from 'fs-extra';
 import {copyFiles} from './copy-files';
 import {addPureAnnotationsToFile} from './pure-annotations';
-import {updatePackageVersion} from './package-versions';
+import {replaceVersionPlaceholders} from './version-placeholders';
 import {inlinePackageMetadataFiles} from './metadata-inlining';
 import {createTypingsReexportFile} from './typings-reexport';
 import {createMetadataReexportFile} from './metadata-reexport';
@@ -36,7 +36,7 @@ export function composeRelease(packageName: string, options: ComposeReleaseOptio
   copyFiles(packagesDir, 'README.md', releasePath);
   copyFiles(sourcePath, 'package.json', releasePath);
 
-  updatePackageVersion(releasePath);
+  replaceVersionPlaceholders(releasePath);
   createTypingsReexportFile(releasePath, './typings/index', packageName);
   createMetadataReexportFile(releasePath, './typings/index', packageName);
 
