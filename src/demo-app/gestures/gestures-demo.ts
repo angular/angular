@@ -7,7 +7,6 @@ import {Component} from '@angular/core';
   styleUrls: ['gestures-demo.css'],
 })
 export class GesturesDemo {
-  dragCount: number = 0;
   panCount: number = 0;
   pressCount: number = 0;
   longpressCount: number = 0;

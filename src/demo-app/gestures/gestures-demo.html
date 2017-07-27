@@ -1,10 +1,9 @@
 <div class="demo-gestures">
-    <div (drag)="dragCount = dragCount + 1" (pan)="panCount = panCount + 1"
-         (longpress)="longpressCount = longpressCount + 1" (press)="pressCount = pressCount + 1"
-         (swipe)="swipeCount = swipeCount + 1" (slide)="slideCount = slideCount + 1">
+    <div (pan)="panCount = panCount + 1" (longpress)="longpressCount = longpressCount + 1"
+         (press)="pressCount = pressCount + 1" (swipe)="swipeCount = swipeCount + 1"
+         (slide)="slideCount = slideCount + 1">
         Drag, swipe, or press me.
     </div>
-    <p>Drag: {{dragCount}}</p>
     <p>Pan: {{panCount}}</p>
     <p>Longpress: {{longpressCount}}</p>
     <p>Press: {{pressCount}}</p>
