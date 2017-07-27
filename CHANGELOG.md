@@ -1,3 +1,32 @@
+<a name="5.0.0-beta.1"></a>
+# [5.0.0-beta.1](https://github.com/angular/angular/compare/5.0.0-beta.0...5.0.0-beta.1) (2017-07-27)
+
+
+### Bug Fixes
+
+* **animations:** export BrowserModule as apart of BrowserAnimationsModule ([#18263](https://github.com/angular/angular/issues/18263)) ([fd0cc01](https://github.com/angular/angular/commit/fd0cc01))
+* **compiler:** add equiv & disp attributes to Xliff2 ICU placeholders ([#18283](https://github.com/angular/angular/issues/18283)) ([38ec05f](https://github.com/angular/angular/commit/38ec05f)), closes [#17344](https://github.com/angular/angular/issues/17344)
+* **compiler:** allow numbers for ICU message cases in lexer ([#18095](https://github.com/angular/angular/issues/18095)) ([a3a5429](https://github.com/angular/angular/commit/a3a5429)), closes [#17799](https://github.com/angular/angular/issues/17799)
+* **core:** invoke error handler outside of the Angular Zone ([#18269](https://github.com/angular/angular/issues/18269)) ([7ae7573](https://github.com/angular/angular/commit/7ae7573)), closes [#17073](https://github.com/angular/angular/issues/17073) [#7774](https://github.com/angular/angular/issues/7774)
+* **platform-server:** don't clobber parse5 properties when setting ([#18237](https://github.com/angular/angular/issues/18237)) ([a094769](https://github.com/angular/angular/commit/a094769)), closes [#17050](https://github.com/angular/angular/issues/17050)
+* **router:** child CanActivate guard should wait for parent to complete ([#18110](https://github.com/angular/angular/issues/18110)) ([086f4aa](https://github.com/angular/angular/commit/086f4aa)), closes [#15670](https://github.com/angular/angular/issues/15670)
+* **router:** should throw when lazy loaded module doesn't define any routes ([#15001](https://github.com/angular/angular/issues/15001)) ([82923a3](https://github.com/angular/angular/commit/82923a3)), closes [#14596](https://github.com/angular/angular/issues/14596)
+* **upgrade:** ensure downgraded components are created in the Angular zone ([#18209](https://github.com/angular/angular/issues/18209)) ([43c33d5](https://github.com/angular/angular/commit/43c33d5))
+* **upgrade:** throw error if trying to get injector before setting ([#18209](https://github.com/angular/angular/issues/18209)) ([d31dc7b](https://github.com/angular/angular/commit/d31dc7b))
+
+
+### Features
+
+* **compiler:** add representation of placeholders to xliff & xmb ([b3085e9](https://github.com/angular/angular/commit/b3085e9)), closes [#17345](https://github.com/angular/angular/issues/17345)
+
+
+### Performance Improvements
+
+* latest tsickle to tree shake: abstract class methods & interfaces ([#18236](https://github.com/angular/angular/issues/18236)) ([b7a6f52](https://github.com/angular/angular/commit/b7a6f52))
+* **core:** use native addEventListener for faster rendering. ([#18107](https://github.com/angular/angular/issues/18107)) ([6279e50](https://github.com/angular/angular/commit/6279e50))
+
+
+
 <a name="4.3.2"></a>
 ## [4.3.2](https://github.com/angular/angular/compare/4.3.1...4.3.2) (2017-07-26)
 
