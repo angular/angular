@@ -9,7 +9,7 @@ export class AppComponent {
   wolves = 0;
   gender = 'f';
   fly = true;
-  logo = 'https://angular.io/resources/images/logos/angular/angular.png';
+  logo = 'https://angular.io/assets/images/logos/angular/angular.png';
   count = 3;
   heroes: string[] = ['Magneta', 'Celeritas', 'Dynama'];
   inc(i: number) {
