@@ -102,17 +102,14 @@ export class ConnectedOverlayDirective implements OnDestroy, OnChanges {
   private _escapeListener: Function;
 
   /** Origin for the connected overlay. */
-  @Input() origin: OverlayOrigin;
+  @Input('cdkConnectedOverlayOrigin') origin: OverlayOrigin;
 
   /** Registered connected position pairs. */
-  @Input() positions: ConnectionPositionPair[];
+  @Input('cdkConnectedOverlayPositions') positions: ConnectionPositionPair[];
 
   /** The offset in pixels for the overlay connection point on the x-axis */
-  @Input()
-  get offsetX(): number {
-    return this._offsetX;
-  }
-
+  @Input('cdkConnectedOverlayOffsetX')
+  get offsetX(): number { return this._offsetX; }
   set offsetX(offsetX: number) {
     this._offsetX = offsetX;
     if (this._position) {
@@ -121,11 +118,8 @@ export class ConnectedOverlayDirective implements OnDestroy, OnChanges {
   }
 
   /** The offset in pixels for the overlay connection point on the y-axis */
-  @Input()
-  get offsetY() {
-    return this._offsetY;
-  }
-
+  @Input('cdkConnectedOverlayOffsetY')
+  get offsetY() { return this._offsetY; }
   set offsetY(offsetY: number) {
     this._offsetY = offsetY;
     if (this._position) {
@@ -134,35 +128,93 @@ export class ConnectedOverlayDirective implements OnDestroy, OnChanges {
   }
 
   /** The width of the overlay panel. */
-  @Input() width: number | string;
+  @Input('cdkConnectedOverlayWidth') width: number | string;
 
   /** The height of the overlay panel. */
-  @Input() height: number | string;
+  @Input('cdkConnectedOverlayHeight') height: number | string;
 
   /** The min width of the overlay panel. */
-  @Input() minWidth: number | string;
+  @Input('cdkConnectedOverlayMinWidth') minWidth: number | string;
 
   /** The min height of the overlay panel. */
-  @Input() minHeight: number | string;
+  @Input('cdkConnectedOverlayMinHeight') minHeight: number | string;
 
   /** The custom class to be set on the backdrop element. */
-  @Input() backdropClass: string;
+  @Input('cdkConnectedOverlayBackdropClass') backdropClass: string;
 
   /** Strategy to be used when handling scroll events while the overlay is open. */
-  @Input() scrollStrategy: ScrollStrategy = this._scrollStrategy();
+  @Input('cdkConnectedOverlayScrollStrategy') scrollStrategy: ScrollStrategy =
+      this._scrollStrategy();
 
   /** Whether the overlay is open. */
-  @Input() open: boolean = false;
+  @Input('cdkConnectedOverlayOpen') open: boolean = false;
 
   /** Whether or not the overlay should attach a backdrop. */
-  @Input()
-  get hasBackdrop() {
-    return this._hasBackdrop;
+  @Input('cdkConnectedOverlayHasBackdrop')
+  get hasBackdrop() { return this._hasBackdrop; }
+  set hasBackdrop(value: any) { this._hasBackdrop = coerceBooleanProperty(value); }
+
+  /** @deprecated */
+  @Input('origin')
+  get _deprecatedOrigin(): OverlayOrigin { return this.origin; }
+  set _deprecatedOrigin(_origin: OverlayOrigin) { this.origin = _origin; }
+
+  /** @deprecated */
+  @Input('positions')
+  get _deprecatedPositions(): ConnectionPositionPair[] { return this.positions; }
+  set _deprecatedPositions(_positions: ConnectionPositionPair[]) { this.positions = _positions; }
+
+  /** @deprecated */
+  @Input('offsetX')
+  get _deprecatedOffsetX(): number { return this.offsetX; }
+  set _deprecatedOffsetX(_offsetX: number) { this.offsetX = _offsetX; }
+
+  /** @deprecated */
+  @Input('offsetY')
+  get _deprecatedOffsetY(): number { return this.offsetY; }
+  set _deprecatedOffsetY(_offsetY: number) { this.offsetY = _offsetY; }
+
+  /** @deprecated */
+  @Input('width')
+  get _deprecatedWidth(): number | string { return this.width; }
+  set _deprecatedWidth(_width: number | string) { this.width = _width; }
+
+  /** @deprecated */
+  @Input('height')
+  get _deprecatedHeight(): number | string { return this.height; }
+  set _deprecatedHeight(_height: number | string) { this.height = _height; }
+
+  /** @deprecated */
+  @Input('minWidth')
+  get _deprecatedMinWidth(): number | string { return this.minWidth; }
+  set _deprecatedMinWidth(_minWidth: number | string) { this.minWidth = _minWidth; }
+
+  /** @deprecated */
+  @Input('minHeight')
+  get _deprecatedMinHeight(): number | string { return this.minHeight; }
+  set _deprecatedMinHeight(_minHeight: number | string) { this.minHeight = _minHeight; }
+
+  /** @deprecated */
+  @Input('backdropClass')
+  get _deprecatedBackdropClass(): string { return this.backdropClass; }
+  set _deprecatedBackdropClass(_backdropClass: string) { this.backdropClass = _backdropClass; }
+
+  /** @deprecated */
+  @Input('scrollStrategy')
+  get _deprecatedScrollStrategy(): ScrollStrategy { return this.scrollStrategy; }
+  set _deprecatedScrollStrategy(_scrollStrategy: ScrollStrategy) {
+    this.scrollStrategy = _scrollStrategy;
   }
 
-  set hasBackdrop(value: any) {
-    this._hasBackdrop = coerceBooleanProperty(value);
-  }
+  /** @deprecated */
+  @Input('open')
+  get _deprecatedOpen(): boolean { return this.open; }
+  set _deprecatedOpen(_open: boolean) { this.open = _open; }
+
+  /** @deprecated */
+  @Input('hasBackdrop')
+  get _deprecatedHasBackdrop() { return this.hasBackdrop; }
+  set _deprecatedHasBackdrop(_hasBackdrop: any) { this.hasBackdrop = _hasBackdrop; }
 
   /** Event emitted when the backdrop is clicked. */
   @Output() backdropClick = new EventEmitter<void>();
@@ -203,7 +255,7 @@ export class ConnectedOverlayDirective implements OnDestroy, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['open']) {
+    if (changes['open'] || changes['_deprecatedOpen']) {
       this.open ? this._attachOverlay() : this._detachOverlay();
     }
   }
