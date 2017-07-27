@@ -491,6 +491,7 @@ export declare abstract class Injector {
     /** @deprecated */ abstract get(token: any, notFoundValue?: any): any;
     static NULL: Injector;
     static THROW_IF_NOT_FOUND: Object;
+    static create(providers: StaticProvider[], parent?: Injector): Injector;
 }
 
 /** @stable */
@@ -950,6 +951,9 @@ export interface SkipSelfDecorator {
 
 /** @deprecated */
 export declare function state(name: string, styles: AnimationStyleMetadata): AnimationStateMetadata;
+
+/** @stable */
+export declare type StaticProvider = ValueProvider | ExistingProvider | StaticClassProvider | ConstructorProvider | FactoryProvider | any[];
 
 /** @deprecated */
 export declare function style(tokens: {
