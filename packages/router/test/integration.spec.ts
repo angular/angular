@@ -2750,27 +2750,6 @@ describe('Integration', () => {
              expect(fixture.nativeElement).toHaveText('lazy-loaded-parent [lazy-loaded-child]');
            })));
 
-    it(`should throw an error when lazy loaded module does not provide any routes`,
-       fakeAsync(inject(
-           [Router, Location, NgModuleFactoryLoader],
-           (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
-
-             @NgModule({})
-             class LazyLoadedModule {
-             }
-
-             loader.stubbedModules = {expected: LazyLoadedModule};
-
-             const fixture = createRoot(router, RootCmp);
-
-             router.resetConfig([{path: 'lazy', loadChildren: 'expected'}]);
-
-             router.navigateByUrl('/lazy');
-             expect(() => advance(fixture))
-                 .toThrowError(
-                     /A lazy loaded module must define at least 1 route, but it seems like the 'LazyLoadedModule' module hasn't defined any/);
-           })));
-
     it('should have 2 injector trees: module and element',
        fakeAsync(inject(
            [Router, Location, NgModuleFactoryLoader],
