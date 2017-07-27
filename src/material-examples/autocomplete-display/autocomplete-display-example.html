@@ -1,0 +1,11 @@
+<form class="example-form">
+  <md-input-container class="example-full-width">
+    <input type="text" placeholder="Assignee" aria-label="Assignee" mdInput [formControl]="myControl" [mdAutocomplete]="auto">
+  </md-input-container>
+
+  <md-autocomplete #auto="mdAutocomplete" [displayWith]="displayFn">
+    <md-option *ngFor="let option of filteredOptions | async" [value]="option">
+      {{ option.name }}
+    </md-option>
+  </md-autocomplete>
+</form>

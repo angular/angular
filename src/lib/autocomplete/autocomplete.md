@@ -43,6 +43,8 @@ local template variable (here we called it "auto"), and binding that variable to
 </md-autocomplete>
 ```
 
+<!-- example(autocomplete-simple) -->
+
 ### Adding a custom filter
 
 At this point, the autocomplete panel should be toggleable on focus and options should be selectable. But if we want 
@@ -61,41 +63,7 @@ Below we are also priming our value change stream with `null` so that the option
 This is especially helpful for screenreader users if you're using a non-standard filter that doesn't limit matches 
 to the beginning of the string.
 
-*my-comp.ts*
-```ts
-class MyComp {
-   myControl = new FormControl();
-   options = [
-    'One',
-    'Two',
-    'Three'
-   ];
-   filteredOptions: Observable<string[]>;
-
-   ngOnInit() {
-      this.filteredOptions = this.myControl.valueChanges
-         .startWith(null)
-         .map(val => val ? this.filter(val) : this.options.slice());
-   }
-   
-   filter(val: string): string[] {
-      return this.options.filter(option => new RegExp(`^${val}`, 'gi').test(option)); 
-   }
-}
-```
-
-*my-comp.html*
-```html
-<md-input-container>
-   <input type="text" mdInput [formControl]="myControl" [mdAutocomplete]="auto">
-</md-input-container>
-
-<md-autocomplete #auto="mdAutocomplete">
-   <md-option *ngFor="let option of filteredOptions | async" [value]="option">
-      {{ option }}
-   </md-option>
-</md-autocomplete>
-```
+<!-- example(autocomplete-filter) -->
 
 ### Setting separate control and display values
 
@@ -107,45 +75,7 @@ the option's string properties.
 To make this work, create a function on your component class that maps the control value to the desired display value. 
 Then bind it to the autocomplete's `displayWith` property. 
 
-```html
-<md-input-container>
-   <input type="text" mdInput [formControl]="myControl" [mdAutocomplete]="auto">
-</md-input-container>
-
-<md-autocomplete #auto="mdAutocomplete" [displayWith]="displayFn">
-   <md-option *ngFor="let option of filteredOptions | async" [value]="option">
-      {{ option.name }}
-   </md-option>
-</md-autocomplete>
-```
-
-*my-comp.ts*
-```ts
-class MyComp {
-   myControl = new FormControl();
-   options = [
-     new User('Mary'),
-     new User('Shelley'),
-     new User('Igor')
-   ];
-   filteredOptions: Observable<User[]>;
-
-   ngOnInit() { 
-      this.filteredOptions = this.myControl.valueChanges
-         .startWith(null)
-         .map(user => user && typeof user === 'object' ? user.name : user)
-         .map(name => name ? this.filter(name) : this.options.slice());
-   }
-   
-   filter(name: string): User[] {
-      return this.options.filter(option => new RegExp(`^${name}`, 'gi').test(option.name)); 
-   }
-   
-   displayFn(user: User): string {
-      return user ? user.name : user;
-   }
-}
-```
+<!-- example(autocomplete-display) -->
 
 
 #### Keyboard interaction:

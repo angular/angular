@@ -13,7 +13,10 @@ export interface LiveExample {
   selectorName?: string;
 }
 
+import {AutocompleteDisplayExample} from './autocomplete-display/autocomplete-display-example';
+import {AutocompleteFilterExample} from './autocomplete-filter/autocomplete-filter-example';
 import {AutocompleteOverviewExample} from './autocomplete-overview/autocomplete-overview-example';
+import {AutocompleteSimpleExample} from './autocomplete-simple/autocomplete-simple-example';
 import {ButtonOverviewExample} from './button-overview/button-overview-example';
 import {ButtonToggleExclusiveExample} from './button-toggle-exclusive/button-toggle-exclusive-example';
 import {ButtonToggleOverviewExample} from './button-toggle-overview/button-toggle-overview-example';
@@ -83,9 +86,27 @@ import {TooltipOverviewExample} from './tooltip-overview/tooltip-overview-exampl
 import {TooltipPositionExample} from './tooltip-position/tooltip-position-example';
 
 export const EXAMPLE_COMPONENTS = {
+  'autocomplete-display': {
+    title: 'Display value autocomplete',
+    component: AutocompleteDisplayExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'autocomplete-filter': {
+    title: 'Filter autocomplete',
+    component: AutocompleteFilterExample,
+    additionalFiles: null,
+    selectorName: null
+  },
   'autocomplete-overview': {
-    title: 'Basic autocomplete',
+    title: 'Autocomplete overview',
     component: AutocompleteOverviewExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'autocomplete-simple': {
+    title: 'Simple autocomplete',
+    component: AutocompleteSimpleExample,
     additionalFiles: null,
     selectorName: null
   },
@@ -494,7 +515,10 @@ export const EXAMPLE_COMPONENTS = {
 };
 
 export const EXAMPLE_LIST = [
+  AutocompleteDisplayExample,
+  AutocompleteFilterExample,
   AutocompleteOverviewExample,
+  AutocompleteSimpleExample,
   ButtonOverviewExample,
   ButtonToggleExclusiveExample,
   ButtonToggleOverviewExample,
