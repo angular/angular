@@ -42,7 +42,7 @@ env:
   - BROWSER_PROVIDER_ERROR_FILE=/tmp/angular-material2-build/errorfile
 
 before_install:
-  - source ./scripts/ci/env.sh
+  - source ./scripts/ci/travis-env.sh
   - npm i -g npm@^5.3.0
 
 install:
