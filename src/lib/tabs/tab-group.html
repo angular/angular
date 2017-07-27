@@ -3,7 +3,7 @@
                [disableRipple]="disableRipple"
                (indexFocused)="_focusChanged($event)"
                (selectFocusedIndex)="selectedIndex = $event">
-  <div class="mat-tab-label" role="tab" md-tab-label-wrapper md-ripple
+  <div class="mat-tab-label" role="tab" mdTabLabelWrapper md-ripple
        *ngFor="let tab of _tabs; let i = index"
        [id]="_getTabLabelId(i)"
        [tabIndex]="selectedIndex == i ? 0 : -1"

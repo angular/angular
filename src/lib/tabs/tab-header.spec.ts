@@ -277,7 +277,7 @@ interface Tab {
     <md-tab-header [selectedIndex]="selectedIndex" [disableRipple]="disableRipple"
                (indexFocused)="focusedIndex = $event"
                (selectFocusedIndex)="selectedIndex = $event">
-      <div md-tab-label-wrapper style="min-width: 30px; width: 30px"
+      <div mdTabLabelWrapper style="min-width: 30px; width: 30px"
            *ngFor="let tab of tabs; let i = index"
            [disabled]="!!tab.disabled"
            (click)="selectedIndex = i">
