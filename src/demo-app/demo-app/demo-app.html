@@ -4,6 +4,9 @@
       <a *ngFor="let navItem of navItems"
          md-list-item
          (click)="start.close()"
+         routerLinkActive
+         #routerLinkActiveInstance="routerLinkActive"
+         [attr.tabindex]="routerLinkActiveInstance.isActive ? 0 : -1"
          [routerLink]="[navItem.route]">
         {{navItem.name}}
       </a>
