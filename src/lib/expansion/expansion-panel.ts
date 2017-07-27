@@ -65,9 +65,8 @@ export const EXPANSION_PANEL_ANIMATION_TIMING = '225ms cubic-bezier(0.4,0.0,0.2,
       transition('expanded <=> collapsed', animate(EXPANSION_PANEL_ANIMATION_TIMING)),
     ]),
     trigger('displayMode', [
-      state('collapsed', style({margin: '0'})),
+      state('flat, collapsed', style({margin: '0'})),
       state('default', style({margin: '16px 0'})),
-      state('flat', style({margin: '0'})),
       transition('flat <=> collapsed, default <=> collapsed, flat <=> default',
                  animate(EXPANSION_PANEL_ANIMATION_TIMING)),
     ]),
@@ -93,14 +92,12 @@ export class MdExpansionPanel extends AccordionItem {
   }
 
   /** Gets the panel's display mode. */
-  _getDisplayMode(): MdAccordionDisplayMode | MdExpansionPanelState {
-    if (!this.expanded) {
-      return this._getExpandedState();
-    }
+  _getDisplayMode(): MdAccordionDisplayMode | MdExpansionPanelState | 'void' {
     if (this.accordion) {
-      return this.accordion.displayMode;
+      return this.expanded ? this.accordion.displayMode : this._getExpandedState();
     }
-    return this._getExpandedState();
+
+    return 'void';
   }
 
   /** Gets the expanded state string. */
