@@ -7,7 +7,13 @@
  */
 
 import {ChangeDetectionStrategy, Component, Directive} from '@angular/core';
-import {CdkHeaderRow, CdkRow, CDK_ROW_TEMPLATE, CdkRowDef, CdkHeaderRowDef} from '@angular/cdk/table';
+import {
+  CdkHeaderRow,
+  CdkRow,
+  CDK_ROW_TEMPLATE,
+  CdkRowDef,
+  CdkHeaderRowDef
+} from '@angular/cdk/table';
 
 /** Workaround for https://github.com/angular/angular/issues/17849 */
 export const _MdHeaderRowDef = CdkHeaderRowDef;

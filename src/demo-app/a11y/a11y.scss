@@ -1,0 +1,22 @@
+body {
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+
+  // Helps fonts on OSX looks more consistent with other systems
+  // Isn't currently in button styles due to performance concerns
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1 {
+    font-size: 20px;
+  }
+
+  ul, li {
+    list-style: none;
+  }
+
+  nav a {
+    margin: 2px;
+  }
+}

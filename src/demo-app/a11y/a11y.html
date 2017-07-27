@@ -1,0 +1,9 @@
+<h1>Accessibility Demo</h1>
+
+<nav>
+  <a *ngFor="let navItem of navItems" [routerLink]="[navItem.route]">
+    {{navItem.name}}
+  </a>
+</nav>
+
+<router-outlet></router-outlet>

@@ -7,7 +7,13 @@
  */
 
 import {Directive, ElementRef, Input, Renderer2} from '@angular/core';
-import {CdkCell, CdkCellDef, CdkColumnDef, CdkHeaderCell, CdkHeaderCellDef} from '@angular/cdk/table';
+import {
+  CdkCell,
+  CdkCellDef,
+  CdkColumnDef,
+  CdkHeaderCell,
+  CdkHeaderCellDef
+} from '@angular/cdk/table';
 
 /** Workaround for https://github.com/angular/angular/issues/17849 */
 export const _MdCellDef = CdkCellDef;
