@@ -1116,7 +1116,7 @@ export function main() {
 
            tick(100);
            expect(resultArr.length)
-               .toEqual(2, `Expected original observable to be canceled on the next value change.`)
+               .toEqual(2, `Expected original observable to be canceled on the next value change.`);
          }));
 
 

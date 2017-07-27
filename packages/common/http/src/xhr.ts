@@ -268,27 +268,26 @@ export class HttpXhrBackend implements HttpBackend {
 
       // The upload progress event handler, which is only registered if
       // progress events are enabled.
-      const onUpProgress =
-          (event: ProgressEvent) => {
-            // Upload progress events are simpler. Begin building the progress
-            // event.
-            let progress: HttpUploadProgressEvent = {
-              type: HttpEventType.UploadProgress,
-              loaded: event.loaded,
-            };
+      const onUpProgress = (event: ProgressEvent) => {
+        // Upload progress events are simpler. Begin building the progress
+        // event.
+        let progress: HttpUploadProgressEvent = {
+          type: HttpEventType.UploadProgress,
+          loaded: event.loaded,
+        };
 
-            // If the total number of bytes being uploaded is available, include
-            // it.
-            if (event.lengthComputable) {
-              progress.total = event.total;
-            }
+        // If the total number of bytes being uploaded is available, include
+        // it.
+        if (event.lengthComputable) {
+          progress.total = event.total;
+        }
 
-            // Send the event.
-            observer.next(progress);
-          }
+        // Send the event.
+        observer.next(progress);
+      };
 
-                                    // By default, register for load and error events.
-                                    xhr.addEventListener('load', onLoad);
+      // By default, register for load and error events.
+      xhr.addEventListener('load', onLoad);
       xhr.addEventListener('error', onError);
 
       // Progress events are only enabled if requested.
