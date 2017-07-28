@@ -331,35 +331,46 @@ export function checkNoChangesView(view: ViewData) {
 }
 
 export function checkAndUpdateView(view: ViewData) {
-  if (view.state & ViewState.BeforeFirstCheck) {
-    view.state &= ~ViewState.BeforeFirstCheck;
-    view.state |= ViewState.FirstCheck;
+  if (view.state & ViewState.BeingCheckedAndUpdated) {
+    return;
   } else {
-    view.state &= ~ViewState.FirstCheck;
+    view.state |= ViewState.BeingCheckedAndUpdated;
   }
-  markProjectedViewsForCheck(view);
-  Services.updateDirectives(view, CheckType.CheckAndUpdate);
-  execEmbeddedViewsAction(view, ViewAction.CheckAndUpdate);
-  execQueriesAction(
-      view, NodeFlags.TypeContentQuery, NodeFlags.DynamicQuery, CheckType.CheckAndUpdate);
+  try {
+    if (view.state & ViewState.BeforeFirstCheck) {
+      view.state &= ~ViewState.BeforeFirstCheck;
+      view.state |= ViewState.FirstCheck;
+    } else {
+      view.state &= ~ViewState.FirstCheck;
+    }
+    markProjectedViewsForCheck(view);
+    Services.updateDirectives(view, CheckType.CheckAndUpdate);
+    execEmbeddedViewsAction(view, ViewAction.CheckAndUpdate);
+    execQueriesAction(
+        view, NodeFlags.TypeContentQuery, NodeFlags.DynamicQuery, CheckType.CheckAndUpdate);
 
-  callLifecycleHooksChildrenFirst(
-      view, NodeFlags.AfterContentChecked |
-          (view.state & ViewState.FirstCheck ? NodeFlags.AfterContentInit : 0));
+    callLifecycleHooksChildrenFirst(
+        view, NodeFlags.AfterContentChecked |
+            (view.state & ViewState.FirstCheck ? NodeFlags.AfterContentInit : 0));
 
-  Services.updateRenderer(view, CheckType.CheckAndUpdate);
+    Services.updateRenderer(view, CheckType.CheckAndUpdate);
 
-  execComponentViewsAction(view, ViewAction.CheckAndUpdate);
-  execQueriesAction(
-      view, NodeFlags.TypeViewQuery, NodeFlags.DynamicQuery, CheckType.CheckAndUpdate);
-  callLifecycleHooksChildrenFirst(
-      view, NodeFlags.AfterViewChecked |
-          (view.state & ViewState.FirstCheck ? NodeFlags.AfterViewInit : 0));
+    execComponentViewsAction(view, ViewAction.CheckAndUpdate);
+    execQueriesAction(
+        view, NodeFlags.TypeViewQuery, NodeFlags.DynamicQuery, CheckType.CheckAndUpdate);
+    callLifecycleHooksChildrenFirst(
+        view, NodeFlags.AfterViewChecked |
+            (view.state & ViewState.FirstCheck ? NodeFlags.AfterViewInit : 0));
 
-  if (view.def.flags & ViewFlags.OnPush) {
-    view.state &= ~ViewState.ChecksEnabled;
+    if (view.def.flags & ViewFlags.OnPush) {
+      view.state &= ~ViewState.ChecksEnabled;
+    }
+    view.state &= ~(ViewState.CheckProjectedViews | ViewState.CheckProjectedView);
+  } catch (e) {
+    throw e;
+  } finally {
+    view.state &= ~ViewState.BeingCheckedAndUpdated;
   }
-  view.state &= ~(ViewState.CheckProjectedViews | ViewState.CheckProjectedView);
 }
 
 export function checkAndUpdateNode(

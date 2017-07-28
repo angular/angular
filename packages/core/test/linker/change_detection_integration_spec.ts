@@ -108,6 +108,8 @@ export function main() {
           PipeWithOnDestroy,
           IdentityPipe,
           WrappedPipe,
+          ReceiverComponent,
+          EmitterComponent,
         ],
         providers: [
           RenderLog,
@@ -1463,6 +1465,14 @@ export function main() {
         expect(divEl.nativeElement).toHaveCssClass('foo');
       });
     });
+
+    describe('checkAndUpdateView', () => {
+      it('should not run many times in parallel on the same View (issue #17035)', fakeAsync(() => {
+           const ctx = createCompFixture('<receiver-component></receiver-component>');
+           expect(() => ctx.detectChanges())
+               .toThrowError('ngOnInit was called in EmitterComponent instance');
+         }));
+    });
   });
 }
 
@@ -1844,4 +1854,25 @@ class PersonHolder extends Holder<Person> {
 
 @Component({selector: 'root', template: 'empty'})
 class PersonHolderHolder extends Holder<Holder<Person>> {
+}
+
+@Component({selector: 'emitter-component', template: ``})
+export class EmitterComponent {
+  @Input() someInput: boolean;
+  @Output() someOutput = new EventEmitter<any>();
+
+  ngOnChanges() { this.someOutput.emit(null); }
+
+  ngOnInit() { throw('ngOnInit was called in EmitterComponent instance'); }
+}
+
+@Component({
+  selector: 'receiver-component',
+  template:
+      `<emitter-component (someOutput)="onSomeOutput()" [someInput]="true"></emitter-component>`
+})
+export class ReceiverComponent {
+  constructor(private _changeDetectionRef: ChangeDetectorRef) {}
+
+  onSomeOutput() { this._changeDetectionRef.detectChanges(); }
 }
