@@ -103,12 +103,47 @@ describe('MdExpansionPanel', () => {
     expect(styles.marginLeft).toBe('37px');
     expect(styles.marginRight).toBe('37px');
   }));
+
+  it('should be able to hide the toggle', () => {
+    const fixture = TestBed.createComponent(PanelWithContent);
+    const header = fixture.debugElement.query(By.css('.mat-expansion-panel-header')).nativeElement;
+
+    fixture.detectChanges();
+
+    expect(header.querySelector('.mat-expansion-indicator'))
+        .toBeTruthy('Expected indicator to be shown.');
+
+    fixture.componentInstance.hideToggle = true;
+    fixture.detectChanges();
+
+    expect(header.querySelector('.mat-expansion-indicator'))
+        .toBeFalsy('Expected indicator to be hidden.');
+  });
+
+  it('should update the indicator rotation when the expanded state is toggled programmatically',
+    fakeAsync(() => {
+      const fixture = TestBed.createComponent(PanelWithContent);
+
+      fixture.detectChanges();
+      tick(250);
+
+      const arrow = fixture.debugElement.query(By.css('.mat-expansion-indicator')).nativeElement;
+
+      expect(arrow.style.transform).toBe('rotate(0deg)', 'Expected no rotation.');
+
+      fixture.componentInstance.expanded = true;
+      fixture.detectChanges();
+      tick(250);
+
+      expect(arrow.style.transform).toBe('rotate(180deg)', 'Expected 180 degree rotation.');
+    }));
 });
 
 
 @Component({
   template: `
   <md-expansion-panel [expanded]="expanded"
+                      [hideToggle]="hideToggle"
                       (opened)="openCallback()"
                       (closed)="closeCallback()">
     <md-expansion-panel-header>Panel Title</md-expansion-panel-header>
@@ -118,6 +153,7 @@ describe('MdExpansionPanel', () => {
 })
 class PanelWithContent {
   expanded: boolean = false;
+  hideToggle: boolean = false;
   openCallback = jasmine.createSpy('openCallback');
   closeCallback = jasmine.createSpy('closeCallback');
 }

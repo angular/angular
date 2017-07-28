@@ -12,6 +12,8 @@ import {
   Host,
   ViewEncapsulation,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  OnDestroy,
 } from '@angular/core';
 import {
   trigger,
@@ -22,6 +24,9 @@ import {
 } from '@angular/animations';
 import {SPACE, ENTER} from '../core/keyboard/keycodes';
 import {MdExpansionPanel, EXPANSION_PANEL_ANIMATION_TIMING} from './expansion-panel';
+import {filter} from '../core/rxjs/index';
+import {merge} from 'rxjs/observable/merge';
+import {Subscription} from 'rxjs/Subscription';
 
 
 /**
@@ -62,8 +67,22 @@ import {MdExpansionPanel, EXPANSION_PANEL_ANIMATION_TIMING} from './expansion-pa
     ]),
   ],
 })
-export class MdExpansionPanelHeader {
-  constructor(@Host() public panel: MdExpansionPanel) {}
+export class MdExpansionPanelHeader implements OnDestroy {
+  private _parentChangeSubscription: Subscription | null = null;
+
+  constructor(
+    @Host() public panel: MdExpansionPanel,
+    private _changeDetectorRef: ChangeDetectorRef) {
+
+    // Since the toggle state depends on an @Input on the panel, we
+    // need to  subscribe and trigger change detection manually.
+    this._parentChangeSubscription = merge(
+      panel.opened,
+      panel.closed,
+      filter.call(panel._inputChanges, changes => !!changes.hideToggle)
+    )
+    .subscribe(() => this._changeDetectorRef.markForCheck());
+  }
 
   /** Toggles the expanded state of the panel. */
   _toggle(): void {
@@ -101,6 +120,13 @@ export class MdExpansionPanelHeader {
         break;
       default:
         return;
+    }
+  }
+
+  ngOnDestroy() {
+    if (this._parentChangeSubscription) {
+      this._parentChangeSubscription.unsubscribe();
+      this._parentChangeSubscription = null;
     }
   }
 }

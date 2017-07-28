@@ -16,6 +16,9 @@ import {
   forwardRef,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
+  SimpleChanges,
+  OnChanges,
+  OnDestroy,
 } from '@angular/core';
 import {
   trigger,
@@ -27,6 +30,7 @@ import {
 import {MdAccordion, MdAccordionDisplayMode} from './accordion';
 import {AccordionItem} from './accordion-item';
 import {UniqueSelectionDispatcher} from '../core';
+import {Subject} from 'rxjs/Subject';
 
 
 /** MdExpansionPanel's states. */
@@ -72,9 +76,12 @@ export const EXPANSION_PANEL_ANIMATION_TIMING = '225ms cubic-bezier(0.4,0.0,0.2,
     ]),
   ],
 })
-export class MdExpansionPanel extends AccordionItem {
+export class MdExpansionPanel extends AccordionItem implements OnChanges, OnDestroy {
   /** Whether the toggle indicator should be hidden. */
   @Input() hideToggle: boolean = false;
+
+  /** Stream that emits for changes in `@Input` properties. */
+  _inputChanges = new Subject<SimpleChanges>();
 
   constructor(@Optional() @Host() accordion: MdAccordion,
               _changeDetectorRef: ChangeDetectorRef,
@@ -103,6 +110,14 @@ export class MdExpansionPanel extends AccordionItem {
   /** Gets the expanded state string. */
   _getExpandedState(): MdExpansionPanelState {
     return this.expanded ? 'expanded' : 'collapsed';
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    this._inputChanges.next(changes);
+  }
+
+  ngOnDestroy() {
+    this._inputChanges.complete();
   }
 }
 
