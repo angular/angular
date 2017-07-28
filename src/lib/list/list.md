@@ -34,7 +34,7 @@ element in an `<md-list-item>`.
 ```html
 <md-nav-list>
   <md-list-item *ngFor="let link of links">
-     <a md-line href="...">{{ link }}</a>
+     <a mdLine href="...">{{ link }}</a>
      <button md-icon-button (click)="showInfo(link)">
         <md-icon>info</md-icon>
      </button>
@@ -43,7 +43,7 @@ element in an `<md-list-item>`.
 ```
 
 ### Multi-line lists
-For lists that require multiple lines per item, annotate each line with an `md-line` attribute.
+For lists that require multiple lines per item, annotate each line with an `mdLine` attribute.
 Whichever heading tag is appropriate for your DOM hierarchy should be used (not necessarily `<h3>`
 as shown in the example).
 
@@ -51,8 +51,8 @@ as shown in the example).
 <!-- two line list -->
 <md-list>
   <md-list-item *ngFor="let message of messages">
-    <h3 md-line> {{message.from}} </h3>
-    <p md-line>
+    <h3 mdLine> {{message.from}} </h3>
+    <p mdLine>
       <span> {{message.subject}} </span>
       <span class="demo-2"> -- {{message.content}} </span>
     </p>
@@ -62,24 +62,24 @@ as shown in the example).
 <!-- three line list -->
 <md-list>
   <md-list-item *ngFor="let message of messages">
-    <h3 md-line> {{message.from}} </h3>
-    <p md-line> {{message.subject}} </p>
-    <p md-line class="demo-2"> {{message.content}} </p>
+    <h3 mdLine> {{message.from}} </h3>
+    <p mdLine> {{message.subject}} </p>
+    <p mdLine class="demo-2"> {{message.content}} </p>
   </md-list-item>
 </md-list>
 ```
 
 ### Lists with icons
 
-To add an icon to your list item, use the `md-list-icon` attribute.
+To add an icon to your list item, use the `mdListIcon` attribute.
 
 
 ```html
 <md-list>
   <md-list-item *ngFor="let message of messages">
-    <md-icon md-list-icon>folder</md-icon>
-    <h3 md-line> {{message.from}} </h3>
-    <p md-line>
+    <md-icon mdListIcon>folder</md-icon>
+    <h3 mdLine> {{message.from}} </h3>
+    <p mdLine>
       <span> {{message.subject}} </span>
       <span class="demo-2"> -- {{message.content}} </span>
     </p>
@@ -89,14 +89,14 @@ To add an icon to your list item, use the `md-list-icon` attribute.
 
 ### Lists with avatars
 
-To include an avatar image, add an image tag with an `md-list-avatar` attribute. 
+To include an avatar image, add an image tag with an `mdListAvatar` attribute. 
 
 ```html
 <md-list>
   <md-list-item *ngFor="let message of messages">
-    <img md-list-avatar src="..." alt="...">
-    <h3 md-line> {{message.from}} </h3>
-    <p md-line>
+    <img mdListAvatar src="..." alt="...">
+    <h3 mdLine> {{message.from}} </h3>
+    <p mdLine>
       <span> {{message.subject}} </span>
       <span class="demo-2"> -- {{message.content}} </span>
     </p>
@@ -121,23 +121,23 @@ to the main `md-list` tag.
 
 ### Lists with multiple sections
 
-Subheader can be added to a list by annotating a heading tag with an `md-subheader` attribute. 
+Subheader can be added to a list by annotating a heading tag with an `mdSubheader` attribute. 
 To add a divider, use `<md-divider>`.
 
 ```html
 <md-list>
-   <h3 md-subheader>Folders</h3>
+   <h3 mdSubheader>Folders</h3>
    <md-list-item *ngFor="let folder of folders">
-      <md-icon md-list-icon>folder</md-icon>
-      <h4 md-line>{{folder.name}}</h4>
-      <p md-line class="demo-2"> {{folder.updated}} </p>
+      <md-icon mdListIcon>folder</md-icon>
+      <h4 mdLine>{{folder.name}}</h4>
+      <p mdLine class="demo-2"> {{folder.updated}} </p>
    </md-list-item>
    <md-divider></md-divider>
-   <h3 md-subheader>Notes</h3>
+   <h3 mdSubheader>Notes</h3>
    <md-list-item *ngFor="let note of notes">
-      <md-icon md-list-icon>note</md-icon>
-      <h4 md-line>{{note.name}}</h4>
-      <p md-line class="demo-2"> {{note.updated}} </p>
+      <md-icon mdListIcon>note</md-icon>
+      <h4 mdLine>{{note.name}}</h4>
+      <p mdLine class="demo-2"> {{note.updated}} </p>
    </md-list-item>
 </md-list>
 ```

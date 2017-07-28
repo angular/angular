@@ -108,7 +108,7 @@ export class MdListIconCssMatStyler {}
  * @docs-private
  */
 @Directive({
-  selector: '[md-subheader], [mat-subheader]',
+  selector: '[md-subheader], [mat-subheader], [mdSubheader], [matSubheader]',
   host: {'class': 'mat-subheader'}
 })
 export class MdListSubheaderCssMatStyler {}

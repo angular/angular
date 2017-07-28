@@ -5,7 +5,13 @@
   </div>
 
   <ng-content
-      select="[md-list-avatar],[md-list-icon], [mat-list-avatar], [mat-list-icon]"></ng-content>
-  <div class="mat-list-text"><ng-content select="[md-line], [mat-line]"></ng-content></div>
+      select="[md-list-avatar], [md-list-icon], [mat-list-avatar], [mat-list-icon],
+              [mdListAvatar], [mdListIcon], [matListAvatar], [matListIcon]">
+  </ng-content>
+
+  <div class="mat-list-text">
+    <ng-content select="[md-line], [mat-line], [mdLine], [matLine]"></ng-content>
+  </div>
+
   <ng-content></ng-content>
 </div>
