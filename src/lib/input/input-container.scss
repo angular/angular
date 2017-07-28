@@ -11,6 +11,7 @@ $mat-input-underline-height: 1px !default;
 .mat-input-container {
   display: inline-block;
   position: relative;
+  width: 200px;
 
   // To avoid problems with text-align.
   text-align: left;
