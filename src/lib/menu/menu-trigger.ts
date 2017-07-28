@@ -224,8 +224,9 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
    * the menu was opened via the keyboard.
    */
   private _initMenu(): void {
-    this.menu.isSubmenu = this.triggersSubmenu();
+    this.menu.parentMenu = this.triggersSubmenu() ? this._parentMenu : undefined;
     this.menu.direction = this.dir;
+    this._setMenuElevation();
     this._setIsMenuOpen(true);
 
     // Should only set focus if opened via the keyboard, so keyboard users can
@@ -233,6 +234,21 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
     // see the focus style.
     if (!this._openedByMouse) {
       this.menu.focusFirstItem();
+    }
+  }
+
+  /** Updates the menu elevation based on the amount of parent menus that it has. */
+  private _setMenuElevation(): void {
+    if (this.menu.setElevation) {
+      let depth = 0;
+      let parentMenu = this.menu.parentMenu;
+
+      while (parentMenu) {
+        depth++;
+        parentMenu = parentMenu.parentMenu;
+      }
+
+      this.menu.setElevation(depth);
     }
   }
 

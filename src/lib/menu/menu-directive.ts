@@ -47,6 +47,13 @@ export interface MdMenuDefaultOptions {
 export const MD_MENU_DEFAULT_OPTIONS =
     new InjectionToken<MdMenuDefaultOptions>('md-menu-default-options');
 
+/**
+ * Start elevation for the menu panel.
+ * @docs-private
+ */
+const MD_MENU_BASE_ELEVATION = 2;
+
+
 @Component({
   moduleId: module.id,
   selector: 'md-menu, mat-menu',
@@ -64,6 +71,7 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
   private _keyManager: FocusKeyManager;
   private _xPosition: MenuPositionX = this._defaultOptions.xPosition;
   private _yPosition: MenuPositionY = this._defaultOptions.yPosition;
+  private _previousElevation: string;
 
   /** Subscription to tab events on the menu panel */
   private _tabSubscription: Subscription;
@@ -74,8 +82,8 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
   /** Current state of the panel animation. */
   _panelAnimationState: 'void' | 'enter-start' | 'enter' = 'void';
 
-  /** Whether the menu is a sub-menu or a top-level menu. */
-  isSubmenu: boolean = false;
+  /** Parent menu of the current menu panel. */
+  parentMenu: MdMenuPanel | undefined;
 
   /** Layout direction of the menu. */
   direction: Direction;
@@ -162,12 +170,12 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
         this.close.emit('keydown');
       break;
       case LEFT_ARROW:
-        if (this.isSubmenu && this.direction === 'ltr') {
+        if (this.parentMenu && this.direction === 'ltr') {
           this.close.emit('keydown');
         }
       break;
       case RIGHT_ARROW:
-        if (this.isSubmenu && this.direction === 'rtl') {
+        if (this.parentMenu && this.direction === 'rtl') {
           this.close.emit('keydown');
         }
       break;
@@ -193,6 +201,25 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
     this._classList['mat-menu-after'] = posX === 'after';
     this._classList['mat-menu-above'] = posY === 'above';
     this._classList['mat-menu-below'] = posY === 'below';
+  }
+
+  /**
+   * Sets the menu panel elevation.
+   * @param depth Number of parent menus that come before the menu.
+   */
+  setElevation(depth: number): void {
+    // The elevation starts at the base and increases by one for each level.
+    const newElevation = `mat-elevation-z${MD_MENU_BASE_ELEVATION + depth}`;
+    const customElevation = Object.keys(this._classList).find(c => c.startsWith('mat-elevation-z'));
+
+    if (!customElevation || customElevation === this._previousElevation) {
+      if (this._previousElevation) {
+        this._classList[this._previousElevation] = false;
+      }
+
+      this._classList[newElevation] = true;
+      this._previousElevation = newElevation;
+    }
   }
 
   /** Starts the enter animation. */
