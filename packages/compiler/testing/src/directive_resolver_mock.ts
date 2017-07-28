@@ -85,7 +85,8 @@ export class MockDirectiveResolver extends DirectiveResolver {
         styles: view.styles,
         styleUrls: view.styleUrls,
         encapsulation: view.encapsulation,
-        interpolation: view.interpolation
+        interpolation: view.interpolation,
+        preserveWhitespaces: view.preserveWhitespaces,
       });
     }
 

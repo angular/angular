@@ -91,6 +91,10 @@ export interface CompilerOptions extends ts.CompilerOptions {
 
   // Whether to enable support for <template> and the template attribute (true by default)
   enableLegacyTemplate?: boolean;
+
+  // Whether to remove blank text nodes from compiled templates. It is `true` by default
+  // in Angular 4 and will be re-visited post Angular 5.
+  preserveWhitespaces?: boolean;
 }
 
 export interface ModuleFilenameResolver {

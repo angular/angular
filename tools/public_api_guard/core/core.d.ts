@@ -212,6 +212,7 @@ export declare type CompilerOptions = {
     providers?: any[];
     missingTranslation?: MissingTranslationStrategy;
     enableLegacyTemplate?: boolean;
+    preserveWhitespaces?: boolean;
 };
 
 /** @stable */

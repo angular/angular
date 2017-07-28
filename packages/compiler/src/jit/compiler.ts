@@ -262,6 +262,7 @@ export class JitCompiler implements Compiler {
     const externalStylesheetsByModuleUrl = new Map<string, CompiledStylesheet>();
     const outputContext = createOutputContext();
     const componentStylesheet = this._styleCompiler.compileComponent(outputContext, compMeta);
+    const preserveWhitespaces = compMeta !.template !.preserveWhitespaces;
     compMeta.template !.externalStylesheets.forEach((stylesheetMeta) => {
       const compiledStylesheet =
           this._styleCompiler.compileStyles(createOutputContext(), compMeta, stylesheetMeta);
@@ -274,7 +275,8 @@ export class JitCompiler implements Compiler {
         pipe => this._metadataResolver.getPipeSummary(pipe.reference));
     const {template: parsedTemplate, pipes: usedPipes} = this._templateParser.parse(
         compMeta, compMeta.template !.template !, directives, pipes, template.ngModule.schemas,
-        templateSourceUrl(template.ngModule.type, template.compMeta, template.compMeta.template !));
+        templateSourceUrl(template.ngModule.type, template.compMeta, template.compMeta.template !),
+        preserveWhitespaces);
     const compileResult = this._viewCompiler.compileComponent(
         outputContext, compMeta, parsedTemplate, ir.variable(componentStylesheet.stylesVar),
         usedPipes);

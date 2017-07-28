@@ -252,8 +252,9 @@ export class CompileTemplateMetadata {
   animations: any[];
   ngContentSelectors: string[];
   interpolation: [string, string]|null;
+  preserveWhitespaces: boolean;
   constructor({encapsulation, template, templateUrl, styles, styleUrls, externalStylesheets,
-               animations, ngContentSelectors, interpolation, isInline}: {
+               animations, ngContentSelectors, interpolation, isInline, preserveWhitespaces}: {
     encapsulation: ViewEncapsulation | null,
     template: string|null,
     templateUrl: string|null,
@@ -263,7 +264,8 @@ export class CompileTemplateMetadata {
     ngContentSelectors: string[],
     animations: any[],
     interpolation: [string, string]|null,
-    isInline: boolean
+    isInline: boolean,
+    preserveWhitespaces: boolean
   }) {
     this.encapsulation = encapsulation;
     this.template = template;
@@ -278,6 +280,7 @@ export class CompileTemplateMetadata {
     }
     this.interpolation = interpolation;
     this.isInline = isInline;
+    this.preserveWhitespaces = preserveWhitespaces;
   }
 
   toSummary(): CompileTemplateSummary {
@@ -516,7 +519,8 @@ export function createHostComponentMeta(
       animations: [],
       isInline: true,
       externalStylesheets: [],
-      interpolation: null
+      interpolation: null,
+      preserveWhitespaces: false,
     }),
     exportAs: null,
     changeDetection: ChangeDetectionStrategy.Default,
