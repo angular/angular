@@ -1,0 +1,36 @@
+<section>
+  <h2>Radio buttons in group</h2>
+  <md-radio-group name="seasons" [(ngModel)]="favoriteSeason" aria-label="Seasons">
+    <md-radio-button *ngFor="let season of seasonOptions" [value]="season">
+      {{season}}
+    </md-radio-button>
+  </md-radio-group>
+</section>
+
+<section>
+  <h2>Radio buttons with align-end label position</h2>
+  <md-radio-group name="bread" align="end" aria-label="Breads">
+    <md-radio-button value="toast">Toast</md-radio-button>
+    <md-radio-button value="biscuit">Biscuit</md-radio-button>
+    <md-radio-button value="bagel">Bagel</md-radio-button>
+  </md-radio-group>
+</section>
+
+<section>
+  <h2>Disabled radio buttons</h2>
+  <p>
+    This section contains three radio buttons for "Yes", "No", and "Maybe".
+    The "Maybe" radio button is disabled.
+  </p>
+  <md-radio-button name="disable">Yes</md-radio-button>
+  <md-radio-button name="disable">No</md-radio-button>
+  <md-radio-button name="disable" [disabled]="true">Maybe</md-radio-button>
+</section>
+
+<section>
+  <h2>Radio buttons with different colors</h2>
+  <md-radio-button name="color">Default (accent)</md-radio-button>
+  <md-radio-button name="color" color="primary">Primary</md-radio-button>
+  <md-radio-button name="color" color="accent">Accent</md-radio-button>
+  <md-radio-button name="color" color="warn">Warn</md-radio-button>
+</section>
