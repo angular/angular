@@ -22,7 +22,6 @@ import {ENTER, SPACE} from '../keyboard/keycodes';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {MATERIAL_COMPATIBILITY_MODE} from '../../core/compatibility/compatibility';
 import {MdOptgroup} from './optgroup';
-import {CanDisableRipple, mixinDisableRipple} from '../common-behaviors/disable-ripple';
 
 /**
  * Option IDs need to be unique across components, so this counter exists outside of
@@ -35,19 +34,12 @@ export class MdOptionSelectionChange {
   constructor(public source: MdOption, public isUserInput = false) { }
 }
 
-// Boilerplate for applying mixins to MdOption.
-/** @docs-private */
-export class MdOptionBase {}
-export const _MdOptionMixinBase = mixinDisableRipple(MdOptionBase);
-
-
 /**
  * Single option inside of a `<md-select>` element.
  */
 @Component({
   moduleId: module.id,
   selector: 'md-option, mat-option',
-  inputs: ['disableRipple'],
   host: {
     'role': 'option',
     '[attr.tabindex]': '_getTabIndex()',
@@ -66,10 +58,11 @@ export const _MdOptionMixinBase = mixinDisableRipple(MdOptionBase);
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MdOption extends _MdOptionMixinBase implements CanDisableRipple {
+export class MdOption {
   private _selected: boolean = false;
   private _active: boolean = false;
   private _multiple: boolean = false;
+  private _disableRipple: boolean = false;
 
   /** Whether the option is disabled.  */
   private _disabled: boolean = false;
@@ -99,6 +92,13 @@ export class MdOption extends _MdOptionMixinBase implements CanDisableRipple {
   get disabled() { return (this.group && this.group.disabled) || this._disabled; }
   set disabled(value: any) { this._disabled = coerceBooleanProperty(value); }
 
+  /** Whether ripples for the option are disabled. */
+  get disableRipple() { return this._disableRipple; }
+  set disableRipple(value: boolean) {
+    this._disableRipple = value;
+    this._changeDetectorRef.markForCheck();
+  }
+
   /** Event emitted when the option is selected or deselected. */
   @Output() onSelectionChange = new EventEmitter<MdOptionSelectionChange>();
 
@@ -106,10 +106,7 @@ export class MdOption extends _MdOptionMixinBase implements CanDisableRipple {
     private _element: ElementRef,
     private _changeDetectorRef: ChangeDetectorRef,
     @Optional() public readonly group: MdOptgroup,
-    @Optional() @Inject(MATERIAL_COMPATIBILITY_MODE) public _isCompatibilityMode: boolean
-  ) {
-    super();
-  }
+    @Optional() @Inject(MATERIAL_COMPATIBILITY_MODE) public _isCompatibilityMode: boolean) {}
 
   /**
    * Whether or not the option is currently active and ready to be selected.

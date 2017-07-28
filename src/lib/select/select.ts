@@ -344,6 +344,15 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
   }
   private _value: any;
 
+  /** Whether ripples for all options in the select are disabled. */
+  @Input()
+  get disableRipple(): boolean { return this._disableRipple; }
+  set disableRipple(value: boolean) {
+    this._disableRipple = coerceBooleanProperty(value);
+    this._setOptionDisableRipple();
+  }
+  private _disableRipple: boolean = false;
+
   /** Aria label of the select. If not specified, the placeholder will be used as label. */
   @Input('aria-label') ariaLabel: string = '';
 
@@ -719,6 +728,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
     this._listenToOptions();
     this._setOptionIds();
     this._setOptionMultiple();
+    this._setOptionDisableRipple();
   }
 
   /** Listens to user-generated selection events on each option. */
@@ -815,6 +825,12 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
     }
   }
 
+  /** Sets the `disableRipple` property on each option. */
+  private _setOptionDisableRipple() {
+    if (this.options) {
+      this.options.forEach(option => option.disableRipple = this.disableRipple);
+    }
+  }
   /**
    * Must set the width of the selected option's value programmatically
    * because it is absolutely positioned and otherwise will not clip

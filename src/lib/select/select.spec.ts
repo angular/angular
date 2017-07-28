@@ -308,6 +308,18 @@ describe('MdSelect', () => {
       expect(event.defaultPrevented).toBe(true);
     });
 
+    it('should update disableRipple properly on each option', () => {
+      const options = fixture.componentInstance.options.toArray();
+
+      expect(options.every(option => option.disableRipple === false))
+        .toBeTruthy('Expected all options to have disableRipple set to false initially.');
+
+      fixture.componentInstance.disableRipple = true;
+      fixture.detectChanges();
+
+      expect(options.every(option => option.disableRipple === true))
+        .toBeTruthy('Expected all options to have disableRipple set to true.');
+    });
   });
 
   describe('selection logic', () => {
@@ -924,7 +936,6 @@ describe('MdSelect', () => {
         });
       });
     }));
-
   });
 
   describe('misc forms', () => {
@@ -2660,7 +2671,7 @@ describe('MdSelect', () => {
     <div [style.height.px]="heightAbove"></div>
     <md-select placeholder="Food" [formControl]="control" [required]="isRequired"
       [tabIndex]="tabIndexOverride" [aria-label]="ariaLabel" [aria-labelledby]="ariaLabelledby"
-      [panelClass]="panelClass">
+      [panelClass]="panelClass" [disableRipple]="disableRipple">
       <md-option *ngFor="let food of foods" [value]="food.value" [disabled]="food.disabled">
         {{ food.viewValue }}
       </md-option>
@@ -2687,6 +2698,7 @@ class BasicSelect {
   ariaLabel: string;
   ariaLabelledby: string;
   panelClass = ['custom-one', 'custom-two'];
+  disableRipple: boolean;
 
   @ViewChild(MdSelect) select: MdSelect;
   @ViewChildren(MdOption) options: QueryList<MdOption>;

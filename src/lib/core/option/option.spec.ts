@@ -9,18 +9,18 @@ describe('MdOption component', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [MdOptionModule],
-      declarations: [OptionWithDisableRipple]
+      declarations: [OptionWithDisable]
     }).compileComponents();
   }));
 
   describe('ripples', () => {
-    let fixture: ComponentFixture<OptionWithDisableRipple>;
+    let fixture: ComponentFixture<OptionWithDisable>;
     let optionDebugElement: DebugElement;
     let optionNativeElement: HTMLElement;
     let optionInstance: MdOption;
 
     beforeEach(() => {
-      fixture = TestBed.createComponent(OptionWithDisableRipple);
+      fixture = TestBed.createComponent(OptionWithDisable);
       fixture.detectChanges();
 
       optionDebugElement = fixture.debugElement.query(By.directive(MdOption));
@@ -58,7 +58,7 @@ describe('MdOption component', () => {
       expect(optionNativeElement.querySelectorAll('.mat-ripple-element').length)
         .toBe(0, 'Expected no ripples to show up initially');
 
-      fixture.componentInstance.disableRipple = true;
+      optionInstance.disableRipple = true;
       fixture.detectChanges();
 
       dispatchFakeEvent(optionNativeElement, 'mousedown');
@@ -73,9 +73,8 @@ describe('MdOption component', () => {
 });
 
 @Component({
-  template: `<md-option [disableRipple]="disableRipple" [disabled]="disabled"></md-option>`
+  template: `<md-option [disabled]="disabled"></md-option>`
 })
-export class OptionWithDisableRipple {
-  disableRipple: boolean;
+export class OptionWithDisable {
   disabled: boolean;
 }
