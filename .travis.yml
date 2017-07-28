@@ -53,7 +53,7 @@ env:
     - CI_MODE=browserstack_required
     - CI_MODE=saucelabs_optional
     - CI_MODE=browserstack_optional
-    - CI_MODE=docs_test
+    - CI_MODE=aio_tools_test
     - CI_MODE=aio
     - CI_MODE=aio_e2e AIO_SHARD=0
     - CI_MODE=aio_e2e AIO_SHARD=1
