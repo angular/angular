@@ -24,7 +24,7 @@
   $mat-slider-off-color: mat-color($foreground, slider-off);
   $mat-slider-off-focused-color: mat-color($foreground, slider-off-active);
   $mat-slider-disabled-color: mat-color($foreground, slider-off);
-  $mat-slider-labeled-min-value-thumb-color: mat-color($foreground, base);
+  $mat-slider-labeled-min-value-thumb-color: mat-color($foreground, slider-min);
   $mat-slider-labeled-min-value-thumb-label-color: mat-color($foreground, slider-off);
   $mat-slider-focus-ring-color: mat-color($accent, default, 0.2);
   $mat-slider-focus-ring-min-value-color: mat-color($foreground, base, 0.12);

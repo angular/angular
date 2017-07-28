@@ -692,6 +692,7 @@ $mat-light-theme-foreground: (
   icon:              rgba(black, 0.54),
   icons:             rgba(black, 0.54),
   text:              rgba(black, 0.87),
+  slider-min:        rgba(black, 0.87),
   slider-off:        rgba(black, 0.26),
   slider-off-active: rgba(black, 0.38),
 );
@@ -709,6 +710,7 @@ $mat-dark-theme-foreground: (
   icon:              white,
   icons:             white,
   text:              white,
+  slider-min:        white,
   slider-off:        rgba(white, 0.3),
   slider-off-active: rgba(white, 0.3),
 );

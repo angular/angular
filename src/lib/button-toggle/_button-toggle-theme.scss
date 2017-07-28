@@ -25,7 +25,7 @@
 
   .mat-button-toggle-checked {
     background-color: mat-color($background, selected-button);
-    color: mat-color($foreground, base);
+    color: mat-color($foreground, secondary-text);
   }
 
   .mat-button-toggle-disabled {
