@@ -10,6 +10,6 @@ source ${thisDir}/_travis-fold.sh
 travisFoldStart "test.docs"
   (
     cd ${PROJECT_ROOT}/aio
-    yarn docs-test
+    yarn tools-test
   )
 travisFoldEnd "test.docs"
