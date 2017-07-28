@@ -10,6 +10,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   Directive,
+  IterableChanges,
   IterableDiffer,
   IterableDiffers,
   SimpleChanges,
@@ -17,7 +18,6 @@ import {
   ViewContainerRef
 } from '@angular/core';
 import {CdkCellDef} from './cell';
-import {Subject} from 'rxjs/Subject';
 
 /**
  * The row template that can be used by the md-table. Should not be used outside of the
@@ -33,20 +33,11 @@ export abstract class BaseRowDef {
   /** The columns to be displayed on this row. */
   columns: string[];
 
-  /** Event stream that emits when changes are made to the columns. */
-  columnsChange: Subject<void> = new Subject<void>();
-
   /** Differ used to check if any changes were made to the columns. */
   protected _columnsDiffer: IterableDiffer<any>;
 
-  private viewInitialized = false;
-
   constructor(public template: TemplateRef<any>,
               protected _differs: IterableDiffers) { }
-
-  ngAfterViewInit() {
-    this.viewInitialized = true;
-  }
 
   ngOnChanges(changes: SimpleChanges): void {
     // Create a new columns differ if one does not yet exist. Initialize it based on initial value
@@ -58,12 +49,12 @@ export abstract class BaseRowDef {
     }
   }
 
-  ngDoCheck(): void {
-    if (!this.viewInitialized || !this._columnsDiffer || !this.columns) { return; }
-
-    // Notify the table if there are any changes to the columns.
-    const changes = this._columnsDiffer.diff(this.columns);
-    if (changes) { this.columnsChange.next(); }
+  /**
+   * Returns the difference between the current columns and the columns from the last diff, or null
+   * if there is no difference.
+   */
+  getColumnsDiff(): IterableChanges<any> | null {
+    return this._columnsDiffer.diff(this.columns);
   }
 }
 

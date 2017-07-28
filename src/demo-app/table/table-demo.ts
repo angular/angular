@@ -1,12 +1,13 @@
 import {Component, ViewChild} from '@angular/core';
 import {PeopleDatabase, UserData} from './people-database';
 import {PersonDataSource} from './person-data-source';
-import {MdPaginator} from '@angular/material';
-import {MdSort} from '@angular/material';
+import {MdPaginator, MdSort} from '@angular/material';
 
 export type UserProperties = 'userId' | 'userName' | 'progress' | 'color' | undefined;
 
 export type TrackByStrategy = 'id' | 'reference' | 'index';
+
+const properties = ['id', 'name', 'progress', 'color'];
 
 @Component({
   moduleId: module.id,
@@ -21,6 +22,9 @@ export class TableDemo {
   changeReferences = false;
   highlights = new Set<string>();
 
+  dynamicColumnDefs: any[] = [];
+  dynamicColumnIds: string[] = [];
+
   @ViewChild(MdPaginator) _paginator: MdPaginator;
 
   @ViewChild(MdSort) sort: MdSort;
@@ -29,6 +33,22 @@ export class TableDemo {
 
   ngOnInit() {
     this.connect();
+  }
+
+  addDynamicColumnDef() {
+    const nextProperty = properties[this.dynamicColumnDefs.length];
+    this.dynamicColumnDefs.push({
+      id: nextProperty.toUpperCase(),
+      property: nextProperty,
+      headerText: nextProperty
+    });
+
+    this.dynamicColumnIds = this.dynamicColumnDefs.map(columnDef => columnDef.id);
+  }
+
+  removeDynamicColumnDef() {
+    this.dynamicColumnDefs.pop();
+    this.dynamicColumnIds.pop();
   }
 
   connect() {

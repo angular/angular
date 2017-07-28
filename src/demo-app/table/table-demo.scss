@@ -22,6 +22,18 @@
 .demo-row-highlight-even { background: #ff0099; }
 .demo-row-highlight-odd { background: #83f52c; }
 
+.demo-table-card {
+  margin: 24px 0;
+  max-height: 200px;
+  overflow: auto;
+
+  h3 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
 /** Styles so that the CDK Table columns have width and font size. */
 .cdk-table {
   font-size: 12px;

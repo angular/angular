@@ -31,21 +31,12 @@ import {
 } from '@angular/core';
 import {CollectionViewer, DataSource} from './data-source';
 import {CdkCellOutlet, CdkCellOutletRowContext, CdkHeaderRowDef, CdkRowDef} from './row';
-import {merge} from 'rxjs/observable/merge';
 import {takeUntil} from 'rxjs/operator/takeUntil';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {Subscription} from 'rxjs/Subscription';
 import {Subject} from 'rxjs/Subject';
 import {CdkCellDef, CdkColumnDef, CdkHeaderCellDef} from './cell';
-
-/**
- * Returns an error to be thrown when attempting to find an unexisting column.
- * @param id Id whose lookup failed.
- * @docs-private
- */
-export function getTableUnknownColumnError(id: string) {
-  return new Error(`cdk-table: Could not find column with id "${id}".`);
-}
+import {getTableDuplicateColumnNameError, getTableUnknownColumnError} from './table-errors';
 
 /**
  * Provides a handle for the table to grab the view container's ng-container to insert data rows.
@@ -96,10 +87,7 @@ export class CdkTable<T> implements CollectionViewer {
   /** Subscription that listens for the data provided by the data source. */
   private _renderChangeSubscription: Subscription | null;
 
-  /**
-   * Map of all the user's defined columns identified by name.
-   * Contains the header and data-cell templates.
-   */
+  /** Map of all the user's defined columns (header and data cell template) identified by name. */
   private _columnDefinitionsByName = new Map<string,  CdkColumnDef>();
 
   /** Differ used to find the changes in the data provided by the data source. */
@@ -123,15 +111,6 @@ export class CdkTable<T> implements CollectionViewer {
   get trackBy(): TrackByFunction<T> { return this._trackByFn; }
   private _trackByFn: TrackByFunction<T>;
 
-  // TODO(andrewseguin): Remove max value as the end index
-  //   and instead calculate the view on init and scroll.
-  /**
-   * Stream containing the latest information on the range of rows being displayed on screen.
-   * Can be used by the data source to as a heuristic of what data should be provided.
-   */
-  viewChange =
-      new BehaviorSubject<{start: number, end: number}>({start: 0, end: Number.MAX_VALUE});
-
   /**
    * Provides a stream containing the latest data array to render. Influenced by the table's
    * stream of view window (what rows are currently on screen).
@@ -144,6 +123,15 @@ export class CdkTable<T> implements CollectionViewer {
     }
   }
   private _dataSource: DataSource<T>;
+
+  // TODO(andrewseguin): Remove max value as the end index
+  //   and instead calculate the view on init and scroll.
+  /**
+   * Stream containing the latest information on what rows are being displayed on screen.
+   * Can be used by the data source to as a heuristic of what data should be provided.
+   */
+  viewChange =
+      new BehaviorSubject<{start: number, end: number}>({start: 0, end: Number.MAX_VALUE});
 
   // Placeholders within the table's template where the header and data rows will be inserted.
   @ViewChild(RowPlaceholder) _rowPlaceholder: RowPlaceholder;
@@ -171,6 +159,24 @@ export class CdkTable<T> implements CollectionViewer {
     }
   }
 
+  ngOnInit() {
+    // TODO(andrewseguin): Setup a listener for scrolling, emit the calculated view to viewChange
+    this._dataDiffer = this._differs.find([]).create(this._trackByFn);
+  }
+
+  ngAfterContentInit() {
+    this._cacheColumnDefinitionsByName();
+    this._columnDefinitions.changes.subscribe(() => this._cacheColumnDefinitionsByName());
+    this._renderHeaderRow();
+  }
+
+  ngAfterContentChecked() {
+    this._renderUpdatedColumns();
+    if (this.dataSource && !this._renderChangeSubscription) {
+      this._observeRenderChanges();
+    }
+  }
+
   ngOnDestroy() {
     this._rowPlaceholder.viewContainer.clear();
     this._headerRowPlaceholder.viewContainer.clear();
@@ -182,41 +188,38 @@ export class CdkTable<T> implements CollectionViewer {
     }
   }
 
-  ngOnInit() {
-    // TODO(andrewseguin): Setup a listener for scroll events
-    //   and emit the calculated view to this.viewChange
-    this._dataDiffer = this._differs.find([]).create(this._trackByFn);
-  }
 
-  ngAfterContentInit() {
-    // TODO(andrewseguin): Throw an error if two columns share the same name
+  /** Update the map containing the content's column definitions. */
+  private _cacheColumnDefinitionsByName() {
+    this._columnDefinitionsByName.clear();
     this._columnDefinitions.forEach(columnDef => {
+      if (this._columnDefinitionsByName.has(columnDef.name)) {
+        throw getTableDuplicateColumnNameError(columnDef.name);
+      }
       this._columnDefinitionsByName.set(columnDef.name, columnDef);
     });
-
-    // Re-render the rows if any of their columns change.
-    // TODO(andrewseguin): Determine how to only re-render the rows that have their columns changed.
-    const columnChangeEvents = this._rowDefinitions.map(rowDef => rowDef.columnsChange);
-
-    takeUntil.call(merge(...columnChangeEvents), this._onDestroy).subscribe(() => {
-      // Reset the data to an empty array so that renderRowChanges will re-render all new rows.
-      this._rowPlaceholder.viewContainer.clear();
-      this._dataDiffer.diff([]);
-      this._renderRowChanges();
-    });
-
-    // Re-render the header row if the columns change
-    takeUntil.call(this._headerDefinition.columnsChange, this._onDestroy).subscribe(() => {
-      this._headerRowPlaceholder.viewContainer.clear();
-      this._renderHeaderRow();
-    });
-
-    this._renderHeaderRow();
   }
 
-  ngAfterContentChecked() {
-    if (this.dataSource && !this._renderChangeSubscription) {
-      this._observeRenderChanges();
+  /**
+   * Check if the header or rows have changed what columns they want to display. If there is a diff,
+   * then re-render that section.
+   */
+  private _renderUpdatedColumns() {
+    // Re-render the rows when the row definition columns change.
+    this._rowDefinitions.forEach(rowDefinition => {
+      if (!!rowDefinition.getColumnsDiff()) {
+        // Reset the data to an empty array so that renderRowChanges will re-render all new rows.
+        this._dataDiffer.diff([]);
+
+        this._rowPlaceholder.viewContainer.clear();
+        this._renderRowChanges();
+      }
+    });
+
+    // Re-render the header row if there is a difference in its columns.
+    if (this._headerDefinition.getColumnsDiff()) {
+      this._headerRowPlaceholder.viewContainer.clear();
+      this._renderHeaderRow();
     }
   }
 
