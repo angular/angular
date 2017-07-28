@@ -106,6 +106,7 @@ export class JitCompilerFactory implements CompilerFactory {
       defaultEncapsulation: ViewEncapsulation.Emulated,
       missingTranslation: MissingTranslationStrategy.Warning,
       enableLegacyTemplate: true,
+      preserveWhitespaces: true,
     };
 
     this._defaultOptions = [compilerOptions, ...defaultOptions];
@@ -125,6 +126,7 @@ export class JitCompilerFactory implements CompilerFactory {
             defaultEncapsulation: opts.defaultEncapsulation,
             missingTranslation: opts.missingTranslation,
             enableLegacyTemplate: opts.enableLegacyTemplate,
+            preserveWhitespaces: opts.preserveWhitespaces,
           });
         },
         deps: []
@@ -152,6 +154,7 @@ function _mergeOptions(optionsArr: CompilerOptions[]): CompilerOptions {
     providers: _mergeArrays(optionsArr.map(options => options.providers !)),
     missingTranslation: _lastDefined(optionsArr.map(options => options.missingTranslation)),
     enableLegacyTemplate: _lastDefined(optionsArr.map(options => options.enableLegacyTemplate)),
+    preserveWhitespaces: _lastDefined(optionsArr.map(options => options.preserveWhitespaces)),
   };
 }
 

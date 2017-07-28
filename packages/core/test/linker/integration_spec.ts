@@ -1758,6 +1758,51 @@ function declareTests({useJit}: {useJit: boolean}) {
       });
     });
 
+    describe('whitespaces in templates', () => {
+      it('should not remove whitespaces by default', async(() => {
+           @Component({
+             selector: 'comp',
+             template: '<span>foo</span>  <span>bar</span>',
+           })
+           class MyCmp {
+           }
+
+           const f = TestBed.configureTestingModule({declarations: [MyCmp]}).createComponent(MyCmp);
+           f.detectChanges();
+
+           expect(f.nativeElement.childNodes.length).toBe(3);
+         }));
+
+      it('should not remove whitespaces when explicitly requested not to do so', async(() => {
+           @Component({
+             selector: 'comp',
+             template: '<span>foo</span>  <span>bar</span>',
+             preserveWhitespaces: true,
+           })
+           class MyCmp {
+           }
+
+           const f = TestBed.configureTestingModule({declarations: [MyCmp]}).createComponent(MyCmp);
+           f.detectChanges();
+
+           expect(f.nativeElement.childNodes.length).toBe(3);
+         }));
+
+      it('should remove whitespaces when explicitly requested to do so', async(() => {
+           @Component({
+             selector: 'comp',
+             template: '<span>foo</span>  <span>bar</span>',
+             preserveWhitespaces: false,
+           })
+           class MyCmp {
+           }
+
+           const f = TestBed.configureTestingModule({declarations: [MyCmp]}).createComponent(MyCmp);
+           f.detectChanges();
+
+           expect(f.nativeElement.childNodes.length).toBe(2);
+         }));
+    });
 
     if (getDOM().supportsDOMEvents()) {
       describe('svg', () => {
