@@ -11,17 +11,28 @@ fi
 
 # Do not deploy if the current commit is not the latest on its branch.
 readonly LATEST_COMMIT=$(git ls-remote origin $TRAVIS_BRANCH | cut -c1-40)
-if [ $TRAVIS_COMMIT != $LATEST_COMMIT ]; then
+if [[ $TRAVIS_COMMIT != $LATEST_COMMIT ]]; then
   echo "Skipping deploy because $TRAVIS_COMMIT is not the latest commit ($LATEST_COMMIT)."
   exit 0
 fi
 
 # The deployment mode is computed based on the branch we are building
-if [ $TRAVIS_BRANCH == master ]; then
+if [[ $TRAVIS_BRANCH == master ]]; then
   readonly deployEnv=next
+elif [[ $TRAVIS_BRANCH == $STABLE_BRANCH ]]; then
+    readonly deployEnv=stable
 else
-  # Extract the major version from the branch that we are deploying, e.g. the 4 from 4.3.x
+  # Extract the major versions from the branches, e.g. the 4 from 4.3.x
   readonly majorVersion=${TRAVIS_BRANCH%%.*}
+  readonly majorVersionStable=${STABLE_BRANCH%%.*}
+
+  # Do not deploy if the major version is not less than the stable branch major version
+  if [[ $majorVersion -ge $majorVersionStable ]]; then
+    echo "Skipping deploy of branch \"${TRAVIS_BRANCH}\" to firebase."
+    echo "We only deploy archive branches with the major version less than the stable branch: \"${STABLE_BRANCH}\""
+    exit 0
+  fi
+
   # Find the branch that has highest minor version for the given `$majorVersion`
   readonly mostRecentMinorVersion=$(
     # List the branches that start with the major version
@@ -35,23 +46,19 @@ else
   )
 
   # Do not deploy as it is not the latest branch for the given major version
-  if [ $TRAVIS_BRANCH != $mostRecentMinorVersion ]; then
+  if [[ $TRAVIS_BRANCH != $mostRecentMinorVersion ]]; then
     echo "Skipping deploy of branch \"${TRAVIS_BRANCH}\" to firebase."
     echo "There is a more recent branch with the same major version: \"${mostRecentMinorVersion}\""
     exit 0
   fi
 
-  if [ $TRAVIS_BRANCH == $STABLE_BRANCH ]; then
-    readonly deployEnv=stable
-  else
-    readonly deployEnv=archive
-  fi
+  readonly deployEnv=archive
 fi
 
 case $deployEnv in
   next)
     readonly projectId=aio-staging
-    readonly deployedUrl=https://$projectId.firebaseapp.com/
+    readonly deployedUrl=https://next.angular.io/
     readonly firebaseToken=$FIREBASE_TOKEN
     ;;
   stable)
@@ -70,6 +77,10 @@ echo "Git branch        : $TRAVIS_BRANCH"
 echo "Build/deploy mode : $deployEnv"
 echo "Firebase project  : $projectId"
 echo "Deployment URL    : $deployedUrl"
+
+if [[ $1 == "--dry-run" ]]; then
+  exit 0
+fi
 
 # Deploy
 (

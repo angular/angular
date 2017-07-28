@@ -42,12 +42,11 @@ case ${CI_MODE} in
     ;;
 
   aio)
-      travisFoldStart "deploy.aio"
-      (
-        cd ${TRAVIS_BUILD_DIR}/aio
-        yarn deploy-production
-      )
-      travisFoldEnd "deploy.aio"
-    fi
+    travisFoldStart "deploy.aio"
+    (
+      cd ${TRAVIS_BUILD_DIR}/aio
+      yarn deploy-production
+    )
+    travisFoldEnd "deploy.aio"
     ;;
 esac
