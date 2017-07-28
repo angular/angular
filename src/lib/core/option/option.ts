@@ -146,7 +146,11 @@ export class MdOption extends _MdOptionMixinBase implements CanDisableRipple {
 
   /** Sets focus onto this option. */
   focus(): void {
-    this._getHostElement().focus();
+    const element = this._getHostElement();
+
+    if ('focus' in element) {
+      element.focus();
+    }
   }
 
   /**

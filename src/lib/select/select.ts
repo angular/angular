@@ -56,6 +56,7 @@ import {
 // considers such imports as unused (https://github.com/Microsoft/TypeScript/issues/14953)
 // tslint:disable-next-line:no-unused-variable
 import {ScrollStrategy, RepositionScrollStrategy} from '../core/overlay/scroll';
+import {Platform} from '@angular/cdk/platform';
 
 /**
  * The following style constants are necessary to save here in order
@@ -110,6 +111,13 @@ export const SELECT_PANEL_PADDING_Y = 16;
  * this value or more away from the viewport boundary.
  */
 export const SELECT_PANEL_VIEWPORT_PADDING = 8;
+
+/**
+ * Default minimum width of the trigger based on the CSS.
+ * Used as a fallback for server-side rendering.
+ * @docs-private
+ */
+const SELECT_TRIGGER_MIN_WIDTH = 112;
 
 /** Injection token that determines the scroll handling while a select is open. */
 export const MD_SELECT_SCROLL_STRATEGY =
@@ -367,6 +375,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
     private _viewportRuler: ViewportRuler,
     private _changeDetectorRef: ChangeDetectorRef,
     private _overlay: Overlay,
+    private _platform: Platform,
     renderer: Renderer2,
     elementRef: ElementRef,
     @Optional() private _dir: Directionality,
@@ -534,7 +543,9 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
    * the overlay width to the trigger width.
    */
   private _setTriggerWidth(): void {
-    this._triggerWidth = this._getTriggerRect().width;
+    this._triggerWidth = this._platform.isBrowser ? this._getTriggerRect().width :
+        SELECT_TRIGGER_MIN_WIDTH;
+
     this._changeDetectorRef.markForCheck();
   }
 
