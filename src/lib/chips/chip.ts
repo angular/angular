@@ -53,6 +53,7 @@ export class MdBasicChip { }
   selector: `md-basic-chip, [md-basic-chip], md-chip, [md-chip],
              mat-basic-chip, [mat-basic-chip], mat-chip, [mat-chip]`,
   inputs: ['color', 'disabled'],
+  exportAs: 'mdChip',
   host: {
     'class': 'mat-chip',
     'tabindex': '-1',
