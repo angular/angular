@@ -37,8 +37,8 @@ case ${CI_MODE} in
   browserstack_optional)
     ${thisDir}/test-browserstack.sh
     ;;
-  docs_test)
-    ${thisDir}/test-docs.sh
+  aio_tools_test)
+    ${thisDir}/test-aio-tools.sh
     ;;
   aio)
     ${thisDir}/test-aio.sh
