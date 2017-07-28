@@ -16,8 +16,9 @@ $mat-chips-chip-margin: 8px;
 }
 
 .mat-chip:not(.mat-basic-chip) {
+  @include mat-elevation-transition;
   display: inline-flex;
-  padding: $mat-chip-vertical-padding $mat-chip-horizontal-padding $mat-chip-vertical-padding $mat-chip-horizontal-padding;
+  padding: $mat-chip-vertical-padding $mat-chip-horizontal-padding;
   border-radius: $mat-chip-horizontal-padding * 2;
   align-items: center;
   cursor: default;
@@ -82,6 +83,7 @@ $mat-chips-chip-margin: 8px;
 .mat-chip-remove {
   margin-right: $mat-chip-remove-margin-after;
   margin-left: $mat-chip-remove-margin-before;
+  cursor: pointer;
 
   [dir='rtl'] & {
     margin-right: $mat-chip-remove-margin-before;
