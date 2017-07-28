@@ -383,7 +383,7 @@ You must import those modules before you can use their directives.
 To illustrate this point, you'll extend the sample app with `ContactComponent`,
 a form component that imports form support from the Angular `FormsModule`.
 
-<h3 class="no-toc">Add the _ContactComponent_</h3>
+<h3 class="no-toc">Add the <em>ContactComponent</em></h3>
 
 [Angular forms](guide/forms) are a great way to manage user data entry.
 
@@ -542,7 +542,8 @@ You'll learn more about that issue later in this page, in [Resolve directive con
 
 
 
-<h3 class="no-toc">Provide the _ContactService_</h3>
+<h3 class="no-toc">Provide the <em>ContactService</em></h3>
+
 The `ContactComponent` displays contacts retrieved by the `ContactService`,
 which Angular injects into its constructor.
 
@@ -570,6 +571,7 @@ Now you can inject `ContactService` (like `UserService`) into any component in t
 
 
 <h3 class="no-toc">Application-scoped providers</h3>
+  
   The `ContactService` provider is _application_-scoped because Angular
   registers a module's `providers` with the application's *root injector*.
 
@@ -1248,10 +1250,7 @@ and only one provider of it.
 
 `UserService` is an application-wide singleton.
 You don't want each module to have its own separate instance.
-Yet there is [a real danger](guide/ngmodule-faq#q-why-bad) of that happening
-<!-- CF: This link goes to the top of the NgModule FAQs page.
-It looks like it is supposed to go to a specific question/section within the page. -->
-if the `SharedModule` provides the `UserService`.
+Yet there is [a real danger](guide/ngmodule-faq#q-why-bad) of that happening if the `SharedModule` provides the `UserService`.
 
 
 <div class="alert is-critical">
