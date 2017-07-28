@@ -547,18 +547,21 @@ describe('MdSlideToggle with forms', () => {
       expect(slideToggleModel.pristine).toBe(true);
       expect(slideToggleModel.touched).toBe(false);
 
-      // After changing the value programmatically, the control should
-      // become dirty (not pristine), but remain untouched.
+      // After changing the value from the view, the control should
+      // become dirty (not pristine), but remain untouched if focus is still there.
       slideToggle.checked = true;
-      fixture.detectChanges();
+
+      // Dispatch a change event on the input element to fake a user interaction that triggered
+      // the state change.
+      dispatchFakeEvent(inputElement, 'change');
 
       expect(slideToggleModel.valid).toBe(true);
       expect(slideToggleModel.pristine).toBe(false);
       expect(slideToggleModel.touched).toBe(false);
 
-      // After a user interaction occurs (such as a click), the control should remain dirty and
-      // now also be touched.
-      labelElement.click();
+      // Once the input element loses focus, the control should remain dirty but should
+      // also turn touched.
+      dispatchFakeEvent(inputElement, 'blur');
       fixture.detectChanges();
 
       expect(slideToggleModel.valid).toBe(true);
@@ -576,13 +579,13 @@ describe('MdSlideToggle with forms', () => {
       expect(slideToggleModel.touched).toBe(false);
       expect(slideToggleElement.classList).toContain('mat-checked');
 
-      // After a user interaction occurs (such as a click), the control should remain dirty and
-      // now also be touched.
-      inputElement.click();
+      // Once the input element loses focus, the control should remain dirty but should
+      // also turn touched.
+      dispatchFakeEvent(inputElement, 'blur');
       fixture.detectChanges();
 
       expect(slideToggleModel.touched).toBe(true);
-      expect(slideToggleElement.classList).not.toContain('mat-checked');
+      expect(slideToggleElement.classList).toContain('mat-checked');
     });
 
     it('should not set the control to touched when changing the model', fakeAsync(() => {
@@ -602,6 +605,31 @@ describe('MdSlideToggle with forms', () => {
       expect(slideToggleModel.touched).toBe(false);
       expect(slideToggle.checked).toBe(true);
       expect(slideToggleElement.classList).toContain('mat-checked');
+    }));
+
+    it('should update checked state on click if control is checked initially', fakeAsync(() => {
+      fixture = TestBed.createComponent(SlideToggleWithModel);
+      slideToggle = fixture.debugElement.query(By.directive(MdSlideToggle)).componentInstance;
+      labelElement = fixture.debugElement.query(By.css('label')).nativeElement;
+
+      fixture.componentInstance.modelValue = true;
+      fixture.detectChanges();
+
+      // Flush the microtasks because the forms module updates the model state asynchronously.
+      flushMicrotasks();
+
+      // Now the new checked variable has been updated in the slide-toggle and the slide-toggle
+      // is marked for check because it still needs to update the underlying input.
+      fixture.detectChanges();
+
+      expect(slideToggle.checked)
+        .toBe(true, 'Expected slide-toggle to be checked initially');
+
+      labelElement.click();
+      fixture.detectChanges();
+
+      expect(slideToggle.checked)
+        .toBe(false, 'Expected slide-toggle to be no longer checked after label click.');
     }));
   });
 
