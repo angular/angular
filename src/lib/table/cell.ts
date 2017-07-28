@@ -12,7 +12,7 @@ import {
   CdkCellDef,
   CdkColumnDef,
   CdkHeaderCell,
-  CdkHeaderCellDef
+  CdkHeaderCellDef,
 } from '@angular/cdk/table';
 
 /** Workaround for https://github.com/angular/angular/issues/17849 */
