@@ -9,7 +9,7 @@
 import {ViewEncapsulation, ɵstringify as stringify} from '@angular/core';
 
 import {CompileAnimationEntryMetadata, CompileDirectiveMetadata, CompileStylesheetMetadata, CompileTemplateMetadata, templateSourceUrl} from './compile_metadata';
-import {CompilerConfig} from './config';
+import {CompilerConfig, preserveWhitespacesDefault} from './config';
 import {CompilerInjectable} from './injectable';
 import * as html from './ml_parser/ast';
 import {HtmlParser} from './ml_parser/html_parser';
@@ -31,6 +31,7 @@ export interface PrenormalizedTemplateMetadata {
   interpolation: [string, string]|null;
   encapsulation: ViewEncapsulation|null;
   animations: CompileAnimationEntryMetadata[];
+  preserveWhitespaces: boolean|null;
 }
 
 @CompilerInjectable()
@@ -82,6 +83,13 @@ export class DirectiveNormalizer {
       throw syntaxError(
           `No template specified for component ${stringify(prenormData.componentType)}`);
     }
+
+    if (isDefined(prenormData.preserveWhitespaces) &&
+        typeof prenormData.preserveWhitespaces !== 'boolean') {
+      throw syntaxError(
+          `The preserveWhitespaces option for component ${stringify(prenormData.componentType)} must be a boolean`);
+    }
+
     return SyncAsync.then(
         this.normalizeTemplateOnly(prenormData),
         (result: CompileTemplateMetadata) => this.normalizeExternalStylesheets(result));
@@ -149,7 +157,9 @@ export class DirectiveNormalizer {
       ngContentSelectors: visitor.ngContentSelectors,
       animations: prenormData.animations,
       interpolation: prenormData.interpolation, isInline,
-      externalStylesheets: []
+      externalStylesheets: [],
+      preserveWhitespaces: preserveWhitespacesDefault(
+          prenormData.preserveWhitespaces, this._config.preserveWhitespaces),
     });
   }
 
@@ -168,6 +178,7 @@ export class DirectiveNormalizer {
           animations: templateMeta.animations,
           interpolation: templateMeta.interpolation,
           isInline: templateMeta.isInline,
+          preserveWhitespaces: templateMeta.preserveWhitespaces,
         }));
   }
 

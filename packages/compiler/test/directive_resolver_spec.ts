@@ -79,7 +79,12 @@ class SomeDirectiveWithViewChild {
   c: any;
 }
 
-@Component({selector: 'sample', template: 'some template', styles: ['some styles']})
+@Component({
+  selector: 'sample',
+  template: 'some template',
+  styles: ['some styles'],
+  preserveWhitespaces: true
+})
 class ComponentWithTemplate {
 }
 
@@ -439,6 +444,7 @@ export function main() {
         const compMetadata: Component = resolver.resolve(ComponentWithTemplate);
         expect(compMetadata.template).toEqual('some template');
         expect(compMetadata.styles).toEqual(['some styles']);
+        expect(compMetadata.preserveWhitespaces).toBe(true);
       });
     });
   });

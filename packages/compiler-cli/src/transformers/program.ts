@@ -347,6 +347,7 @@ function getAotCompilerOptions(options: CompilerOptions): AotCompilerOptions {
     i18nFormat: options.i18nInFormat || options.i18nOutFormat, translations, missingTranslation,
     enableLegacyTemplate: options.enableLegacyTemplate,
     enableSummariesForJit: true,
+    preserveWhitespaces: options.preserveWhitespaces,
   };
 }
 

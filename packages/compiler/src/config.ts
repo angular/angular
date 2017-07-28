@@ -6,11 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken, MissingTranslationStrategy, ViewEncapsulation, isDevMode} from '@angular/core';
-
-import {CompileIdentifierMetadata} from './compile_metadata';
-import {Identifiers} from './identifiers';
-
+import {MissingTranslationStrategy, ViewEncapsulation} from '@angular/core';
+import {noUndefined} from './util';
 
 export class CompilerConfig {
   public defaultEncapsulation: ViewEncapsulation|null;
@@ -19,18 +16,26 @@ export class CompilerConfig {
   public enableLegacyTemplate: boolean;
   public useJit: boolean;
   public missingTranslation: MissingTranslationStrategy|null;
+  public preserveWhitespaces: boolean;
 
   constructor(
       {defaultEncapsulation = ViewEncapsulation.Emulated, useJit = true, missingTranslation,
-       enableLegacyTemplate}: {
+       enableLegacyTemplate, preserveWhitespaces}: {
         defaultEncapsulation?: ViewEncapsulation,
         useJit?: boolean,
         missingTranslation?: MissingTranslationStrategy,
         enableLegacyTemplate?: boolean,
+        preserveWhitespaces?: boolean
       } = {}) {
     this.defaultEncapsulation = defaultEncapsulation;
     this.useJit = !!useJit;
     this.missingTranslation = missingTranslation || null;
     this.enableLegacyTemplate = enableLegacyTemplate !== false;
+    this.preserveWhitespaces = preserveWhitespacesDefault(noUndefined(preserveWhitespaces));
   }
+}
+
+export function preserveWhitespacesDefault(
+    preserveWhitespacesOption: boolean | null, defaultSetting = true): boolean {
+  return preserveWhitespacesOption === null ? defaultSetting : preserveWhitespacesOption;
 }
