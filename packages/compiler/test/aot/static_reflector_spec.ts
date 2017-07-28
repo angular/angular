@@ -462,6 +462,20 @@ describe('StaticReflector', () => {
     expect(annotations[0].providers[0].useValue.members[0]).toEqual('staticMethod');
   });
 
+  it('should be able to get metadata for a class calling a macro function', () => {
+    const annotations = reflector.annotations(
+        reflector.getStaticSymbol('/tmp/src/call-macro-function.ts', 'MyComponent'));
+    expect(annotations.length).toBe(1);
+    expect(annotations[0].providers.useValue).toBe(100);
+  });
+
+  it('should be able to get metadata for a class calling a nested macro function', () => {
+    const annotations = reflector.annotations(
+        reflector.getStaticSymbol('/tmp/src/call-macro-function.ts', 'MyComponentNested'));
+    expect(annotations.length).toBe(1);
+    expect(annotations[0].providers.useValue.useValue).toBe(100);
+  });
+
   // #13605
   it('should not throw on unknown decorators', () => {
     const data = Object.create(DEFAULT_TEST_DATA);
@@ -1391,6 +1405,25 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
         export class MyModule {
           static VALUE = 'Some string';
         }
+      `,
+      '/tmp/src/macro-function.ts': `
+        export function v(value: any) {
+          return { provide: 'a', useValue: value };
+        }
+      `,
+      '/tmp/src/call-macro-function.ts': `
+        import {Component} from '@angular/core';
+        import {v} from './macro-function';
+
+        @Component({
+          providers: v(100)
+        })
+        export class MyComponent { }
+
+        @Component({
+          providers: v(v(100))
+        })
+        export class MyComponentNested { }
       `,
       '/tmp/src/static-field-reference.ts': `
         import {Component} from '@angular/core';
