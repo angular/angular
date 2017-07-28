@@ -23,7 +23,6 @@ import {
   ViewChild,
   ViewEncapsulation,
   forwardRef,
-  AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
 } from '@angular/core';
@@ -72,8 +71,8 @@ export class MdButtonToggleChange {
   },
   exportAs: 'mdButtonToggleGroup',
 })
-export class MdButtonToggleGroup extends _MdButtonToggleGroupMixinBase implements AfterViewInit,
-    ControlValueAccessor, CanDisable {
+export class MdButtonToggleGroup extends _MdButtonToggleGroupMixinBase
+    implements ControlValueAccessor, CanDisable {
 
   /** The value for the button toggle group. Should match currently selected button toggle. */
   private _value: any = null;
@@ -87,24 +86,17 @@ export class MdButtonToggleGroup extends _MdButtonToggleGroupMixinBase implement
   /** The currently selected button toggle, should match the value. */
   private _selected: MdButtonToggle | null = null;
 
-  /** Whether the button toggle group is initialized or not. */
-  private _isInitialized: boolean = false;
-
   /**
    * The method to be called in order to update ngModel.
    * Now `ngModel` binding is not supported in multiple selection mode.
    */
-  private _controlValueAccessorChangeFn: (value: any) => void = () => {};
+  _controlValueAccessorChangeFn: (value: any) => void = () => {};
 
   /** onTouch function registered via registerOnTouch (ControlValueAccessor). */
   onTouched: () => any = () => {};
 
   /** Child button toggle buttons. */
   @ContentChildren(forwardRef(() => MdButtonToggle)) _buttonToggles: QueryList<MdButtonToggle>;
-
-  ngAfterViewInit() {
-    this._isInitialized = true;
-  }
 
   /** `name` attribute for the underlying `input` element. */
   @Input()
@@ -132,18 +124,11 @@ export class MdButtonToggleGroup extends _MdButtonToggleGroupMixinBase implement
   get value(): any {
     return this._value;
   }
-
   set value(newValue: any) {
     if (this._value != newValue) {
       this._value = newValue;
 
       this._updateSelectedButtonToggleFromValue();
-
-      // Only emit a change event if the view is completely initialized.
-      // We don't want to emit a change event for the initial values.
-      if (this._isInitialized) {
-        this._emitChangeEvent();
-      }
     }
   }
 
@@ -164,6 +149,10 @@ export class MdButtonToggleGroup extends _MdButtonToggleGroupMixinBase implement
 
   /** Event emitted when the group's value changes. */
   @Output() change: EventEmitter<MdButtonToggleChange> = new EventEmitter<MdButtonToggleChange>();
+
+  constructor(private _changeDetector: ChangeDetectorRef) {
+    super();
+  }
 
   private _updateButtonToggleNames(): void {
     if (this._buttonToggles) {
@@ -193,7 +182,7 @@ export class MdButtonToggleGroup extends _MdButtonToggleGroupMixinBase implement
   }
 
   /** Dispatch change event with current selection and group value. */
-  private _emitChangeEvent(): void {
+  _emitChangeEvent(): void {
     let event = new MdButtonToggleChange();
     event.source = this._selected;
     event.value = this._value;
@@ -207,6 +196,7 @@ export class MdButtonToggleGroup extends _MdButtonToggleGroupMixinBase implement
    */
   writeValue(value: any) {
     this.value = value;
+    this._changeDetector.markForCheck();
   }
 
   /**
@@ -438,9 +428,13 @@ export class MdButtonToggle implements OnInit, OnDestroy {
     if (this._isSingleSelector) {
       // Propagate the change one-way via the group, which will in turn mark this
       // button toggle as checked.
+      let groupValueChanged = this.buttonToggleGroup.selected != this;
       this.checked = true;
       this.buttonToggleGroup.selected = this;
       this.buttonToggleGroup.onTouched();
+      if (groupValueChanged) {
+        this.buttonToggleGroup._emitChangeEvent();
+      }
     } else {
       this._toggle();
     }

@@ -87,10 +87,11 @@ describe('MdButtonToggle with forms', () => {
     let buttonToggleInstances: MdButtonToggle[];
     let testComponent: ButtonToggleGroupWithNgModel;
     let groupNgModel: NgModel;
+    let buttonToggleLabels: HTMLElement[];
 
     beforeEach(async(() => {
       fixture = TestBed.createComponent(ButtonToggleGroupWithNgModel);
-
+      fixture.detectChanges();
       testComponent = fixture.debugElement.componentInstance;
 
       groupDebugElement = fixture.debugElement.query(By.directive(MdButtonToggleGroup));
@@ -102,6 +103,8 @@ describe('MdButtonToggle with forms', () => {
       buttonToggleNativeElements =
         buttonToggleDebugElements.map(debugEl => debugEl.nativeElement);
       buttonToggleInstances = buttonToggleDebugElements.map(debugEl => debugEl.componentInstance);
+      buttonToggleLabels = buttonToggleDebugElements.map(
+        debugEl => debugEl.query(By.css('label')).nativeElement);
 
       fixture.detectChanges();
     }));
@@ -110,41 +113,12 @@ describe('MdButtonToggle with forms', () => {
       expect(testComponent.modelValue).toBeUndefined();
       expect(testComponent.lastEvent).toBeUndefined();
 
-      groupInstance.value = 'red';
+      buttonToggleLabels[0].click();
       fixture.detectChanges();
 
       tick();
       expect(testComponent.modelValue).toBe('red');
       expect(testComponent.lastEvent.value).toBe('red');
-    }));
-  });
-
-  describe('button toggle group with ngModel', () => {
-    let fixture: ComponentFixture<ButtonToggleGroupWithNgModel>;
-    let groupDebugElement: DebugElement;
-    let groupNativeElement: HTMLElement;
-    let buttonToggleDebugElements: DebugElement[];
-    let buttonToggleNativeElements: HTMLElement[];
-    let groupInstance: MdButtonToggleGroup;
-    let buttonToggleInstances: MdButtonToggle[];
-    let testComponent: ButtonToggleGroupWithNgModel;
-    let groupNgModel: NgModel;
-
-    beforeEach(async(() => {
-      fixture = TestBed.createComponent(ButtonToggleGroupWithNgModel);
-      fixture.detectChanges();
-
-      testComponent = fixture.debugElement.componentInstance;
-
-      groupDebugElement = fixture.debugElement.query(By.directive(MdButtonToggleGroup));
-      groupNativeElement = groupDebugElement.nativeElement;
-      groupInstance = groupDebugElement.injector.get<MdButtonToggleGroup>(MdButtonToggleGroup);
-      groupNgModel = groupDebugElement.injector.get<NgModel>(NgModel);
-
-      buttonToggleDebugElements = fixture.debugElement.queryAll(By.directive(MdButtonToggle));
-      buttonToggleNativeElements =
-        buttonToggleDebugElements.map(debugEl => debugEl.nativeElement);
-      buttonToggleInstances = buttonToggleDebugElements.map(debugEl => debugEl.componentInstance);
     }));
 
     it('should set individual radio names based on the group name', () => {
@@ -183,11 +157,10 @@ describe('MdButtonToggle with forms', () => {
         tick();
 
         expect(groupNgModel.valid).toBe(true);
-        expect(groupNgModel.pristine).toBe(false);
+        expect(groupNgModel.pristine).toBe(true);
         expect(groupNgModel.touched).toBe(false);
 
-        let nativeRadioLabel = buttonToggleDebugElements[2].query(By.css('label')).nativeElement;
-        nativeRadioLabel.click();
+        buttonToggleLabels[2].click();
         fixture.detectChanges();
         tick();
 
@@ -197,7 +170,7 @@ describe('MdButtonToggle with forms', () => {
       }));
 
     it('should update the ngModel value when selecting a button toggle', fakeAsync(() => {
-      buttonToggleInstances[1].checked = true;
+      buttonToggleLabels[1].click();
       fixture.detectChanges();
 
       tick();
@@ -276,9 +249,7 @@ describe('MdButtonToggle without forms', () => {
 
     it('should update the group value when one of the toggles changes', () => {
       expect(groupInstance.value).toBeFalsy();
-      let nativeCheckboxLabel = buttonToggleDebugElements[0].query(By.css('label')).nativeElement;
-
-      nativeCheckboxLabel.click();
+      buttonToggleLabelElements[0].click();
       fixture.detectChanges();
 
       expect(groupInstance.value).toBe('test1');
@@ -287,9 +258,7 @@ describe('MdButtonToggle without forms', () => {
 
     it('should update the group and toggles when one of the button toggles is clicked', () => {
       expect(groupInstance.value).toBeFalsy();
-      let nativeCheckboxLabel = buttonToggleDebugElements[0].query(By.css('label')).nativeElement;
-
-      nativeCheckboxLabel.click();
+      buttonToggleLabelElements[0].click();
       fixture.detectChanges();
 
       expect(groupInstance.value).toBe('test1');
@@ -297,9 +266,7 @@ describe('MdButtonToggle without forms', () => {
       expect(buttonToggleInstances[0].checked).toBe(true);
       expect(buttonToggleInstances[1].checked).toBe(false);
 
-      let nativeCheckboxLabel2 = buttonToggleDebugElements[1].query(By.css('label')).nativeElement;
-
-      nativeCheckboxLabel2.click();
+      buttonToggleLabelElements[1].click();
       fixture.detectChanges();
 
       expect(groupInstance.value).toBe('test2');
@@ -309,9 +276,7 @@ describe('MdButtonToggle without forms', () => {
     });
 
     it('should check a button toggle upon interaction with underlying native radio button', () => {
-      let nativeRadioInput = buttonToggleDebugElements[0].query(By.css('input')).nativeElement;
-
-      nativeRadioInput.click();
+      buttonToggleLabelElements[0].click();
       fixture.detectChanges();
 
       expect(buttonToggleInstances[0].checked).toBe(true);
@@ -354,12 +319,12 @@ describe('MdButtonToggle without forms', () => {
       let changeSpy = jasmine.createSpy('button-toggle-group change listener');
       groupInstance.change.subscribe(changeSpy);
 
-      groupInstance.value = 'test1';
+      buttonToggleLabelElements[0].click();
       fixture.detectChanges();
       tick();
       expect(changeSpy).toHaveBeenCalled();
 
-      groupInstance.value = 'test2';
+      buttonToggleLabelElements[1].click();
       fixture.detectChanges();
       tick();
       expect(changeSpy).toHaveBeenCalledTimes(2);
@@ -414,7 +379,7 @@ describe('MdButtonToggle without forms', () => {
       fixture.detectChanges();
 
       expect(groupInstance.value).toBe('green');
-      expect(testComponent.lastEvent.value).toBe('green');
+      expect(testComponent.lastEvent).toBeFalsy();
     });
 
   });
