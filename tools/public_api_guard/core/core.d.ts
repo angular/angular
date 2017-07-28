@@ -201,6 +201,7 @@ export declare type CompilerOptions = {
     providers?: StaticProvider[];
     missingTranslation?: MissingTranslationStrategy;
     enableLegacyTemplate?: boolean;
+    preserveWhitespaces?: boolean;
 };
 
 /** @stable */

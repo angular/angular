@@ -24,7 +24,7 @@
 export {VERSION} from './version';
 export * from './template_parser/template_ast';
 export {TEMPLATE_TRANSFORMS} from './template_parser/template_parser';
-export {CompilerConfig} from './config';
+export {CompilerConfig, preserveWhitespacesDefault} from './config';
 export * from './compile_metadata';
 export * from './aot/compiler_factory';
 export * from './aot/compiler';

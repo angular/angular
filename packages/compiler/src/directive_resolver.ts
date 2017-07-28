@@ -152,7 +152,8 @@ export class DirectiveResolver {
         styleUrls: directive.styleUrls,
         encapsulation: directive.encapsulation,
         animations: directive.animations,
-        interpolation: directive.interpolation
+        interpolation: directive.interpolation,
+        preserveWhitespaces: directive.preserveWhitespaces,
       });
     } else {
       return new Directive({
