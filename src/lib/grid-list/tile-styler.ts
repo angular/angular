@@ -190,16 +190,16 @@ export class RatioTileStyler extends TileStyler {
     let percentHeightPerTile = percentWidth / this.rowHeightRatio;
     this.baseTileHeight = this.getBaseTileSize(percentHeightPerTile, gutterWidth);
 
-    // Use paddingTop and marginTop to maintain the given aspect ratio, as
+    // Use padding-top and margin-top to maintain the given aspect ratio, as
     // a percentage-based value for these properties is applied versus the *width* of the
     // containing block. See http://www.w3.org/TR/CSS2/box.html#margin-properties
-    tile._setStyle('marginTop', this.getTilePosition(this.baseTileHeight, rowIndex));
-    tile._setStyle('paddingTop', calc(this.getTileSize(this.baseTileHeight, tile.rowspan)));
+    tile._setStyle('margin-top', this.getTilePosition(this.baseTileHeight, rowIndex));
+    tile._setStyle('padding-top', calc(this.getTileSize(this.baseTileHeight, tile.rowspan)));
   }
 
   getComputedHeight(): [string, string] {
     return [
-      'paddingBottom', calc(`${this.getTileSpan(this.baseTileHeight)} + ${this.getGutterSpan()}`)
+      'padding-bottom', calc(`${this.getTileSpan(this.baseTileHeight)} + ${this.getGutterSpan()}`)
     ];
   }
 
