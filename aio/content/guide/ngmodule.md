@@ -107,7 +107,7 @@ Later in this page, you'll read about this process. For now, you'll start with t
 
 
 
-## The root _AppModule_
+## The root `AppModule`
 
 Every Angular app has a *root module* class.
 By convention, the *root module* class is called `AppModule` and it exists in a file named `app.module.ts`.
@@ -383,7 +383,7 @@ You must import those modules before you can use their directives.
 To illustrate this point, you'll extend the sample app with `ContactComponent`,
 a form component that imports form support from the Angular `FormsModule`.
 
-<h3 class="no-toc">Add the <em>ContactComponent</em></h3>
+<h3 class="no-toc">Add the <code>ContactComponent</code></h3>
 
 [Angular forms](guide/forms) are a great way to manage user data entry.
 
@@ -471,7 +471,7 @@ Even if Angular somehow recognized `ngModel`,
 `ContactComponent` wouldn't behave like an Angular form because
 form features such as validation aren't yet available.
 
-<h3 class="no-toc">Import the FormsModule</h3>
+<h3 class="no-toc">Import the <code>FormsModule</code></h3>
 
 Add the `FormsModule` to the `AppModule` metadata's `imports` list.
 
@@ -542,7 +542,7 @@ You'll learn more about that issue later in this page, in [Resolve directive con
 
 
 
-<h3 class="no-toc">Provide the <em>ContactService</em></h3>
+<h3 class="no-toc">Provide the <code>ContactService</code></h3>
 
 The `ContactComponent` displays contacts retrieved by the `ContactService`,
 which Angular injects into its constructor.
@@ -794,7 +794,7 @@ It's easy to refactor the contact material into a contact feature module.
 
 `AppModule` is the only existing class that changes. But you do add one new file.
 
-### Add the _ContactModule_
+### Add the `ContactModule`
 
 Here's the new `ContactModule`:
 
@@ -835,7 +835,7 @@ The `AwesomePipe` and `HighlightDirective` are hidden from the rest of the appli
 The `HighlightDirective` can no longer color the `AppComponent` title text.
 
 
-### Refactor the _AppModule_
+### Refactor the `AppModule`
 Return to the `AppModule` and remove everything specific to the contact feature set.
 
 * Delete the contact import statements.
@@ -996,7 +996,7 @@ the latter separated from the former by a `#`.
 
 
 
-### RouterModule.forRoot
+### `RouterModule.forRoot`
 
 The `forRoot` static class method of the `RouterModule` with the provided configuration and
 added to the `imports` array provides the routing concerns for the module.
@@ -1227,7 +1227,7 @@ Technically,  there is no need for `SharedModule` to import `FormsModule`.
 
 `SharedModule` can still export `FormsModule` without listing it among its `imports`.
 
-### Why _TitleComponent_ isn't shared
+### Why `TitleComponent` isn't shared
 
 `SharedModule` exists to make commonly used components, directives, and pipes available
 for use in the templates of components in many other modules.
@@ -1239,7 +1239,7 @@ There's no point in sharing it.
 {@a no-shared-module-providers}
 
 
-### Why _UserService_ isn't shared
+### Why `UserService` isn't shared
 
 While many components share the same service instances,
 they rely on Angular dependency injection to do this kind of sharing, not the module system.
@@ -1351,7 +1351,7 @@ A simplified root `AppModule` imports `CoreModule` in its capacity as orchestrat
 ## Cleanup
 Having refactored to a `CoreModule` and a `SharedModule`, it's time to clean up the other modules.
 
-### A trimmer _AppModule_
+### A trimmer `AppModule`
 
 Here is the updated `AppModule` paired with version 3 for comparison:
 
@@ -1376,7 +1376,7 @@ Here is the updated `AppModule` paired with version 3 for comparison:
 * Delegated to imported modules rather than doing work.
 * Focused on its main task, orchestrating the app as a whole.
 
-### A trimmer _ContactModule_
+### A trimmer `ContactModule`
 Here is the new `ContactModule` paired with the prior version:
 
 <code-tabs>
@@ -1408,7 +1408,7 @@ Notice the following:
 
 
 
-## Configure core services with _CoreModule.forRoot_
+## Configure core services with `CoreModule.forRoot`
 
 A module that adds providers to the application can offer a facility for configuring those providers as well.
 
@@ -1487,7 +1487,7 @@ Remember to _import_ the result; don't add it to any other `@NgModule` list.
 
 
 
-## Prevent reimport of the _CoreModule_
+## Prevent reimport of the `CoreModule`
 
 Only the root `AppModule` should import the `CoreModule`.
 [Bad things happen](guide/ngmodule-faq#q-why-bad) if a lazy-loaded module imports it.
