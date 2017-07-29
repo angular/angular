@@ -612,6 +612,31 @@ describe('StaticReflector', () => {
     expect(error).toBeUndefined();
   });
 
+  it('should reject a reference to an ambient symbol', () => {
+    const data = Object.create(DEFAULT_TEST_DATA);
+    const file = '/tmp/src/invalid-component.ts';
+    data[file] = `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'tmp',
+          template: '',
+          providers: [{provide: Window, useValue: null}, {provide: 'someValue', useValue: window}]
+        })
+        export class BadComponent {
+
+        }
+    `;
+    let errors: any[] = [];
+    init(data, [], (err: any, filePath: string) => { errors.push(err); });
+    const badComponent = reflector.getStaticSymbol(file, 'BadComponent');
+    reflector.annotations(badComponent);
+    expect(errors.map(e => e.message)).toEqual([
+      'Unsupported reference to ambient symbol Window',
+      'Unsupported reference to ambient symbol window'
+    ]);
+  });
+
   describe('inheritance', () => {
     class ClassDecorator {
       constructor(public value: any) {}
@@ -843,6 +868,7 @@ describe('StaticReflector', () => {
       expect(reflector.parameters(reflector.getStaticSymbol(file, 'SomeClass'))[0].length)
           .toEqual(1);
     });
+
   });
 
   describe('expression lowering', () => {
