@@ -1080,8 +1080,11 @@ To get access to the `FormArray` class, import it into `hero-detail.component.ts
 
 
 To _work_ with a `FormArray` you do the following:
+
 1. Define the items (`FormControls` or `FormGroups`) in the array.
+
 1. Initialize the array with items created from data in the _data model_.
+
 1. Add and remove items as the user requires.
 
 In this guide, you define a `FormArray` for `Hero.addresses` and
