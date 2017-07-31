@@ -884,6 +884,9 @@ export class PreActivation {
       curr: ActivatedRouteSnapshot, future: ActivatedRouteSnapshot,
       mode: RunGuardsAndResolvers|undefined): boolean {
     switch (mode) {
+      case 'never':
+        return false;
+
       case 'always':
         return true;
 
