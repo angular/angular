@@ -52,11 +52,9 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
   // Keeps track of records where custom track by is the same, but item identity has changed
   private _identityChangesHead: IterableChangeRecord_<V>|null = null;
   private _identityChangesTail: IterableChangeRecord_<V>|null = null;
-  private _trackByFn: TrackByFunction<V>
+  private _trackByFn: TrackByFunction<V>;
 
-  constructor(trackByFn?: TrackByFunction<V>) {
-    this._trackByFn = trackByFn || trackByIdentity;
-  }
+  constructor(trackByFn?: TrackByFunction<V>) { this._trackByFn = trackByFn || trackByIdentity; }
 
   get collection() { return this._collection; }
 

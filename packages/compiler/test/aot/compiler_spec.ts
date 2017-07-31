@@ -28,7 +28,7 @@ describe('compiler (unbundled Angular)', () => {
 
   describe('aot source mapping', () => {
     const componentPath = '/app/app.component.ts';
-    const ngComponentPath = 'ng:///app/app.component.ts'
+    const ngComponentPath = 'ng:///app/app.component.ts';
 
     let rootDir: MockDirectory;
     let appDir: MockDirectory;

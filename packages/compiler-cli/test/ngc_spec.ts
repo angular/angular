@@ -437,12 +437,11 @@ describe('ngc command-line', () => {
         throw new Error(`Expected ${fileName} to be emitted (outDir: ${outDir})`);
       }
     };
-    const shouldNotExist =
-        (fileName: string) => {
-          if (fs.existsSync(path.resolve(outDir, fileName))) {
-            throw new Error(`Did not expect ${fileName} to be emitted (outDir: ${outDir})`);
-          }
-        }
+    const shouldNotExist = (fileName: string) => {
+      if (fs.existsSync(path.resolve(outDir, fileName))) {
+        throw new Error(`Did not expect ${fileName} to be emitted (outDir: ${outDir})`);
+      }
+    };
 
     it('should be able to generate a flat module library', () => {
       writeConfig(`

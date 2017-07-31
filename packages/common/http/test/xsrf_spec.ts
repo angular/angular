@@ -64,7 +64,7 @@ export function main() {
   });
   describe('HttpXsrfCookieExtractor', () => {
     let document: {[key: string]: string};
-    let extractor: HttpXsrfCookieExtractor
+    let extractor: HttpXsrfCookieExtractor;
     beforeEach(() => {
       document = {
         cookie: 'XSRF-TOKEN=test',

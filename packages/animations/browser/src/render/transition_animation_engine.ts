@@ -490,6 +490,7 @@ export class TransitionAnimationEngine {
   // this method is designed to be overridden by the code that uses this engine
   public onRemovalComplete = (element: any, context: any) => {};
 
+  /** @internal */
   _onRemovalComplete(element: any, context: any) { this.onRemovalComplete(element, context); }
 
   constructor(public driver: AnimationDriver, private _normalizer: AnimationStyleNormalizer) {}

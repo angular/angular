@@ -621,7 +621,7 @@ export class StaticReflector implements CompileReflector {
               }
               return simplifyInContext(context, value, depth, references + 1);
             }
-            return simplify(value)
+            return simplify(value);
           });
         }
         return IGNORE;

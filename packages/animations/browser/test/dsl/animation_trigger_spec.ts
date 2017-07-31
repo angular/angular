@@ -182,7 +182,7 @@ export function main() {
            const trans = buildTransition(result, element, false, true) !;
            expect(trans.timelines[0].keyframes).toEqual([
              {offset: 0, color: 'red'}, {offset: 1, color: 'green'}
-           ])
+           ]);
          });
 
       it('should match `1` and `0` state styles on a `true <=> false` boolean transition given boolean values',
@@ -195,7 +195,7 @@ export function main() {
            const trans = buildTransition(result, element, false, true) !;
            expect(trans.timelines[0].keyframes).toEqual([
              {offset: 0, color: 'orange'}, {offset: 1, color: 'blue'}
-           ])
+           ]);
          });
 
       describe('aliases', () => {

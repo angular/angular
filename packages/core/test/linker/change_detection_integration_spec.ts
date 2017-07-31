@@ -1353,7 +1353,7 @@ export function main() {
           tpl: TemplateRef<any>;
 
           @Input()
-          outerTpl: TemplateRef<any>
+          outerTpl: TemplateRef<any>;
 
           constructor(public cdRef: ChangeDetectorRef) {}
           log(id: string) { log.push(`inner-${id}`); }
