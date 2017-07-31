@@ -7,6 +7,7 @@ import {DemoMaterialModule} from '../demo-material-module';
 import {AccessibilityHome, AccessibilityDemo} from './a11y';
 import {ButtonAccessibilityDemo} from './button/button-a11y';
 import {CheckboxAccessibilityDemo} from './checkbox/checkbox-a11y';
+import {ChipsAccessibilityDemo} from './chips/chips-a11y';
 import {RadioAccessibilityDemo} from './radio/radio-a11y';
 
 @NgModule({
@@ -34,6 +35,7 @@ export class AccessibilityRoutingModule {}
     AccessibilityHome,
     ButtonAccessibilityDemo,
     CheckboxAccessibilityDemo,
+    ChipsAccessibilityDemo,
     RadioAccessibilityDemo,
   ]
 })

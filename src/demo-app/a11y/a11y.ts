@@ -19,6 +19,7 @@ export class AccessibilityDemo {
     {name: 'Home', route: '.'},
     {name: 'Button', route: 'button'},
     {name: 'Checkbox', route: 'checkbox'},
+    {name: 'Chips', route: 'chips'},
     {name: 'Radio buttons', route: 'radio'},
   ];
 }

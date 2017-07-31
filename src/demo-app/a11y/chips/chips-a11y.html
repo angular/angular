@@ -1,0 +1,56 @@
+<section>
+  <h2>Basic chips</h2>
+  <md-chip-list>
+    <md-chip>Carnation</md-chip>
+    <md-chip>Irises</md-chip>
+    <md-chip>Buttercup</md-chip>
+  </md-chip-list>
+
+</section>
+
+<section>
+  <h2>Unstyled chips</h2>
+
+  <md-chip-list>
+    <md-basic-chip>Husky </md-basic-chip>
+    <md-basic-chip>Golden Retriever </md-basic-chip>
+    <md-basic-chip>Border Collie </md-basic-chip>
+  </md-chip-list>
+</section>
+
+<section>
+  <h2>Removable chips in input container</h2>
+
+  <md-input-container>
+    <md-chip-list mdPrefix #chipList>
+      <md-chip *ngFor="let person of people" [color]="color">
+        {{person.name}}
+      </md-chip>
+    </md-chip-list>
+    <input mdInput placeholder="New Contributor..."
+           aria-label="New contributor"
+           [mdChipInputFor]="chipList"
+           [mdChipInputAddOnBlur]="addOnBlur"
+           (mdChipInputTokenEnd)="add($event)" />
+  </md-input-container>
+</section>
+
+<section>
+  <h2>Colored chips</h2>
+  <p>This example is good for contrast-radio checking.</p>
+  <md-chip-list>
+    <md-chip color="primary" selected="true">Primary</md-chip>
+    <md-chip color="accent" selected="true">Accent</md-chip>
+    <md-chip color="warn" selected="true">Warn</md-chip>
+  </md-chip-list>
+</section>
+
+
+<section>
+  <h2>Stacked chips</h2>
+  <md-chip-list class="mat-chip-list-stacked">
+    <md-chip [selectable]="false">Lemon</md-chip>
+    <md-chip [selectable]="false">Lime</md-chip>
+    <md-chip [selectable]="false">Grapefruit</md-chip>
+  </md-chip-list>
+</section>
