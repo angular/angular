@@ -65,5 +65,5 @@ into files that are consumed by the AIO application.
 Dgeni is configured by "packages", which contain services and processors. Some of these packages are installed as `node_modules`
 from the [dgeni-packages](https://github.com/angular/dgeni-packages) and some are specific to the AIO project.
 
-The project specific packages are stored in the `aio/tools/transforms` folder. See the [README.md](plunker-builder/README.md)
+The project specific packages are stored in the `aio/tools/transforms` folder. See the [README.md](transforms/README.md)
 for more details.
