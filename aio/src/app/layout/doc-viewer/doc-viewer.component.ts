@@ -1,18 +1,18 @@
-import {
-  Component, ComponentFactory, ComponentFactoryResolver, ComponentRef,
-  DoCheck, ElementRef, EventEmitter, Injector, Input, OnDestroy,
-  Output
-} from '@angular/core';
-
-import { EmbeddedComponents } from 'app/embedded/embedded.module';
-import { DocumentContents } from 'app/documents/document.service';
+import { Component, ComponentRef, DoCheck, ElementRef, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { Title } from '@angular/platform-browser';
+
+import { Observable } from 'rxjs/Observable';
+import { of } from 'rxjs/observable/of';
+import 'rxjs/add/operator/catch';
+import 'rxjs/add/operator/do';
+import 'rxjs/add/operator/switchMap';
+import 'rxjs/add/operator/takeUntil';
+
+import { DocumentContents } from 'app/documents/document.service';
+import { EmbedComponentsService } from 'app/embed-components/embed-components.service';
+import { Logger } from 'app/shared/logger.service';
 import { TocService } from 'app/shared/toc.service';
 
-interface EmbeddedComponentFactory {
-  contentPropertyName: string;
-  factory: ComponentFactory<any>;
-}
 
 // Initialization prevents flicker once pre-rendering is on
 const initialDocViewerElement = document.querySelector('aio-doc-viewer');
@@ -26,18 +26,30 @@ const initialDocViewerContent = initialDocViewerElement ? initialDocViewerElemen
 })
 export class DocViewerComponent implements DoCheck, OnDestroy {
 
-  private embeddedComponents: ComponentRef<any>[] = [];
-  private embeddedComponentFactories: Map<string, EmbeddedComponentFactory> = new Map();
   private hostElement: HTMLElement;
 
+  private void$ = of<void>(undefined);
+  private onDestroy$ = new EventEmitter<void>();
+  private docContents$ = new EventEmitter<DocumentContents>();
+
+  protected embeddedComponentRefs: ComponentRef<any>[] = [];
+
+  @Input()
+  set doc(newDoc: DocumentContents) {
+    // Ignore `undefined` values that could happen if the host component
+    // does not initially specify a value for the `doc` input.
+    if (newDoc) {
+      this.docContents$.emit(newDoc);
+    }
+  }
+
   @Output()
-  docRendered = new EventEmitter();
+  docRendered = new EventEmitter<void>();
 
   constructor(
-    componentFactoryResolver: ComponentFactoryResolver,
     elementRef: ElementRef,
-    embeddedComponents: EmbeddedComponents,
-    private injector: Injector,
+    private embedComponentsService: EmbedComponentsService,
+    private logger: Logger,
     private titleService: Title,
     private tocService: TocService
     ) {
@@ -45,52 +57,27 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
     // Security: the initialDocViewerContent comes from the prerendered DOM and is considered to be secure
     this.hostElement.innerHTML = initialDocViewerContent;
 
-    for (const component of embeddedComponents.components) {
-      const factory = componentFactoryResolver.resolveComponentFactory(component);
-      const selector = factory.selector;
-      const contentPropertyName = this.selectorToContentPropertyName(selector);
-      this.embeddedComponentFactories.set(selector, { contentPropertyName, factory });
-    }
+    this.onDestroy$.subscribe(() => this.destroyEmbeddedComponents());
+    this.docContents$
+        .do(() => this.destroyEmbeddedComponents())
+        .switchMap(newDoc => this.render(newDoc))
+        .do(() => this.docRendered.emit())
+        .takeUntil(this.onDestroy$)
+        .subscribe();
   }
 
-  @Input()
-  set doc(newDoc: DocumentContents) {
-    this.ngOnDestroy();
-    if (newDoc) {
-      this.build(newDoc);
-      this.docRendered.emit();
-    }
+  ngDoCheck() {
+    this.embeddedComponentRefs.forEach(comp => comp.changeDetectorRef.detectChanges());
+  }
+
+  ngOnDestroy() {
+    this.onDestroy$.emit();
   }
 
   /**
-   * Add doc content to host element and build it out with embedded components
+   * Set up the window title and ToC.
    */
-  private build(doc: DocumentContents) {
-
-    // security: the doc.content is always authored by the documentation team
-    // and is considered to be safe
-    this.hostElement.innerHTML = doc.contents || '';
-
-    if (!doc.contents) { return; }
-
-    this.addTitleAndToc(doc.id);
-
-    // TODO(i): why can't I use for-of? why doesn't typescript like Map#value() iterators?
-    this.embeddedComponentFactories.forEach(({ contentPropertyName, factory }, selector) => {
-      const embeddedComponentElements = this.hostElement.querySelectorAll(selector);
-
-      // cast due to https://github.com/Microsoft/TypeScript/issues/4947
-      for (const element of embeddedComponentElements as any as HTMLElement[]){
-        // hack: preserve the current element content because the factory will empty it out
-        // security: the source of this innerHTML is always authored by the documentation team
-        // and is considered to be safe
-        element[contentPropertyName] = element.innerHTML;
-        this.embeddedComponents.push(factory.create(this.injector, [], element));
-      }
-    });
-  }
-
-  private addTitleAndToc(docId: string) {
+  protected addTitleAndToc(docId: string): void {
     this.tocService.reset();
     const titleEl = this.hostElement.querySelector('h1');
     let title = '';
@@ -108,21 +95,31 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
     this.titleService.setTitle(title ? `Angular - ${title}` : 'Angular');
   }
 
-  ngDoCheck() {
-    this.embeddedComponents.forEach(comp => comp.changeDetectorRef.detectChanges());
-  }
-
-  ngOnDestroy() {
-    // destroy these components else there will be memory leaks
-    this.embeddedComponents.forEach(comp => comp.destroy());
-    this.embeddedComponents.length = 0;
+  /**
+   * Destroy the embedded components to avoid memory leaks.
+   */
+  protected destroyEmbeddedComponents(): void {
+    this.embeddedComponentRefs.forEach(comp => comp.destroy());
+    this.embeddedComponentRefs = [];
   }
 
   /**
-   * Compute the component content property name by converting the selector to camelCase and appending
-   * 'Content', e.g. live-example => liveExampleContent
+   * Add doc content to host element and build it out with embedded components.
    */
-  private selectorToContentPropertyName(selector: string) {
-    return selector.replace(/-(.)/g, (match, $1) => $1.toUpperCase()) + 'Content';
+  protected render(doc: DocumentContents): Observable<void> {
+    return this.void$
+        .do(() => {
+          // Security: `doc.contents` is always authored by the documentation team
+          //           and is considered to be safe.
+          this.hostElement.innerHTML = doc.contents || '';
+          this.addTitleAndToc(doc.id);
+        })
+        .switchMap(() => this.embedComponentsService.embedInto(this.hostElement))
+        .do(componentRefs => this.embeddedComponentRefs = componentRefs)
+        .switchMap(() => this.void$)
+        .catch(err => {
+          this.logger.error(`[DocViewer]: Error preparing document '${doc.id}'.`, err);
+          return this.void$;
+        });
   }
 }
