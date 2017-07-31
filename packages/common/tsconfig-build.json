@@ -1,11 +1,4 @@
 {
-  "angularCompilerOptions": {
-    "annotateForClosureCompiler": true,
-    "strictMetadataEmit": true,
-    "flatModuleOutFile": "index.js",
-    "flatModuleId": "@angular/common"
-  },
-
   "compilerOptions": {
     "stripInternal": true,
     "strictNullChecks": true,
@@ -37,5 +30,12 @@
   "files": [
     "public_api.ts",
     "../../node_modules/zone.js/dist/zone.js.d.ts"
-  ]
+  ],
+  "angularCompilerOptions": {
+    "annotateForClosureCompiler": true,
+    "strictMetadataEmit": true,
+    "skipTemplateCodegen": true,
+    "flatModuleOutFile": "index.js",
+    "flatModuleId": "@angular/common"
+  }
 }
