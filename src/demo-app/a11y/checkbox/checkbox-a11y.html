@@ -1,1 +1,35 @@
-Checkbox Placeholder
+<section>
+  <h2>Checkbox without label</h2>
+  <md-checkbox aria-label="A single checkbox with no label example"></md-checkbox>
+</section>
+<section>
+  <h2>Standalone checkbox</h2>
+  <div>
+    <md-checkbox>Yes, I agree to the terms and conditions</md-checkbox>
+  </div>
+  <div>
+    <md-checkbox [disabled]="true">No, I do not agree to the terms and conditions</md-checkbox>
+  </div>
+  <div>
+    <md-checkbox [indeterminate]="true">A partially done task</md-checkbox>
+  </div>
+</section>
+
+<section>
+  <h2>Nested checklist</h2>
+    <div *ngFor="let task of tasks">
+      <md-checkbox [(ngModel)]="task.completed"
+                   [checked]="allComplete(task)"
+                   [indeterminate]="someComplete(task.subtasks)"
+                   (change)="setAllCompleted(task.subtasks, $event.checked)">
+        {{task.name}}
+      </md-checkbox>
+      <div class="sub-list">
+        <div *ngFor="let subtask of task.subtasks">
+          <md-checkbox [(ngModel)]="subtask.completed">
+            {{subtask.name}}
+          </md-checkbox>
+        </div>
+      </div>
+    </div>
+</section>

@@ -26,6 +26,8 @@ export class AccessibilityRoutingModule {}
     ReactiveFormsModule,
     AccessibilityRoutingModule,
     DemoMaterialModule,
+    FormsModule,
+    ReactiveFormsModule,
   ],
   declarations: [
     AccessibilityDemo,
