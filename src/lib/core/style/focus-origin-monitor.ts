@@ -84,9 +84,9 @@ export class FocusOriginMonitor {
     }
     // Check if we're already monitoring this element.
     if (this._elementInfo.has(element)) {
-      let info = this._elementInfo.get(element);
-      info!.checkChildren = checkChildren;
-      return info!.subject.asObservable();
+      let cachedInfo = this._elementInfo.get(element);
+      cachedInfo!.checkChildren = checkChildren;
+      return cachedInfo!.subject.asObservable();
     }
 
     // Create monitored element info.

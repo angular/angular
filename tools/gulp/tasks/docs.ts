@@ -93,9 +93,9 @@ task('markdown-docs', () => {
  */
 task('highlight-examples', () => {
   // rename files to fit format: [filename]-[filetype].html
-  const renameFile = (path: any) => {
-    const extension = path.extname.slice(1);
-    path.basename = `${path.basename}-${extension}`;
+  const renameFile = (filePath: any) => {
+    const extension = filePath.extname.slice(1);
+    filePath.basename = `${path.basename}-${extension}`;
   };
 
   return src('src/material-examples/**/*.+(html|css|ts)')
