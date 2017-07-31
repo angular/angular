@@ -2,10 +2,6 @@
 @import '../core/style/variables';
 
 .mat-sidenav-transition {
-  .mat-sidenav {
-    transition: transform $swift-ease-out-duration $swift-ease-out-timing-function;
-  }
-
   .mat-sidenav-content {
     transition: {
       duration: $swift-ease-out-duration;

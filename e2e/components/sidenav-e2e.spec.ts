@@ -1,26 +1,27 @@
-import {browser, by, element, ExpectedConditions} from 'protractor';
+import {browser, by, element, ElementFinder} from 'protractor';
 
 describe('sidenav', () => {
   describe('opening and closing', () => {
-    beforeEach(() => browser.get('/sidenav'));
+    let sidenav: ElementFinder;
 
-    let input = element(by.tagName('md-sidenav'));
-
+    beforeEach(() => {
+      browser.get('/sidenav');
+      sidenav = element(by.tagName('md-sidenav'));
+    });
 
     it('should be closed', () => {
-      expect(input.isDisplayed()).toBeFalsy();
+      expect(sidenav.isDisplayed()).toBeFalsy();
     });
 
     it('should open', () => {
       element(by.buttonText('Open sidenav')).click();
-      expect(input.isDisplayed()).toBeTruthy();
+      expect(sidenav.isDisplayed()).toBeTruthy();
     });
 
     it('should close again', () => {
       element(by.buttonText('Open sidenav')).click();
       element(by.buttonText('Open sidenav')).click();
-      browser.wait(ExpectedConditions.presenceOf(element(by.className('mat-sidenav-closed'))), 999);
-      expect(input.isDisplayed()).toBeFalsy();
+      expect(sidenav.isDisplayed()).toBeFalsy();
     });
   });
 });

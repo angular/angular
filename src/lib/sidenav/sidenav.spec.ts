@@ -1,25 +1,18 @@
 import {fakeAsync, async, tick, ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component, ElementRef, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MdSidenav, MdSidenavModule, MdSidenavContainer} from './index';
 import {A11yModule} from '../core/a11y/index';
 import {PlatformModule} from '../core/platform/index';
 import {ESCAPE} from '../core/keyboard/keycodes';
-
-function endSidenavTransition(fixture: ComponentFixture<any>) {
-  let sidenav: any = fixture.debugElement.query(By.directive(MdSidenav)).componentInstance;
-  sidenav._onTransitionEnd(<any> {
-    target: (<any>sidenav)._elementRef.nativeElement,
-    propertyName: 'transform'
-  });
-  fixture.detectChanges();
-}
+import {dispatchKeyboardEvent} from '@angular/cdk/testing';
 
 
 describe('MdSidenav', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdSidenavModule, A11yModule, PlatformModule],
+      imports: [MdSidenavModule, A11yModule, PlatformModule, NoopAnimationsModule],
       declarations: [
         BasicTestApp,
         SidenavContainerNoSidenavTestApp,
@@ -37,138 +30,39 @@ describe('MdSidenav', () => {
     it('should be able to open and close', fakeAsync(() => {
       let fixture = TestBed.createComponent(BasicTestApp);
 
+      fixture.detectChanges();
+      tick();
+
       let testComponent: BasicTestApp = fixture.debugElement.componentInstance;
-      let openButtonElement = fixture.debugElement.query(By.css('.open'));
-      openButtonElement.nativeElement.click();
-      fixture.detectChanges();
-      tick();
-
-      expect(testComponent.openStartCount).toBe(1);
-      expect(testComponent.openCount).toBe(0);
-
-      endSidenavTransition(fixture);
-      tick();
-
-      expect(testComponent.openStartCount).toBe(1);
-      expect(testComponent.openCount).toBe(1);
-      expect(testComponent.closeStartCount).toBe(0);
-      expect(testComponent.closeCount).toBe(0);
-
-      let sidenavElement = fixture.debugElement.query(By.css('md-sidenav'));
+      let sidenav = fixture.debugElement.query(By.directive(MdSidenav));
       let sidenavBackdropElement = fixture.debugElement.query(By.css('.mat-sidenav-backdrop'));
-      expect(getComputedStyle(sidenavElement.nativeElement).visibility).toEqual('visible');
-      expect(getComputedStyle(sidenavBackdropElement.nativeElement).visibility)
-        .toEqual('visible');
 
-      // Close it.
-      let closeButtonElement = fixture.debugElement.query(By.css('.close'));
-      closeButtonElement.nativeElement.click();
+      fixture.debugElement.query(By.css('.open')).nativeElement.click();
       fixture.detectChanges();
-      tick();
 
-      expect(testComponent.openStartCount).toBe(1);
-      expect(testComponent.openCount).toBe(1);
-      expect(testComponent.closeStartCount).toBe(1);
+      expect(testComponent.openCount).toBe(0);
       expect(testComponent.closeCount).toBe(0);
 
-      endSidenavTransition(fixture);
       tick();
 
-      expect(testComponent.openStartCount).toBe(1);
+      expect(sidenav.componentInstance._isAnimating).toBe(false);
       expect(testComponent.openCount).toBe(1);
-      expect(testComponent.closeStartCount).toBe(1);
-      expect(testComponent.closeCount).toBe(1);
+      expect(testComponent.closeCount).toBe(0);
+      expect(getComputedStyle(sidenav.nativeElement).visibility).toBe('visible');
+      expect(getComputedStyle(sidenavBackdropElement.nativeElement).visibility).toBe('visible');
 
-      expect(getComputedStyle(sidenavElement.nativeElement).visibility).toEqual('hidden');
-      expect(getComputedStyle(sidenavBackdropElement.nativeElement).visibility).toEqual('hidden');
-    }));
-
-    it('open/close() return a promise that resolves after animation end', fakeAsync(() => {
-      let fixture = TestBed.createComponent(BasicTestApp);
-      let sidenav: MdSidenav = fixture.debugElement
-        .query(By.directive(MdSidenav)).componentInstance;
-      let called = false;
-
-      sidenav.open().then(() => {
-        called = true;
-      });
-
-      expect(called).toBe(false);
-      endSidenavTransition(fixture);
-      tick();
-      expect(called).toBe(true);
-
-      called = false;
-      sidenav.close().then(() => {
-        called = true;
-      });
-
-      expect(called).toBe(false);
-      endSidenavTransition(fixture);
-      tick();
-      expect(called).toBe(true);
-
-    }));
-
-    it('open/close() twice returns the same promise', fakeAsync(() => {
-      let fixture = TestBed.createComponent(BasicTestApp);
-      let sidenav: MdSidenav = fixture.debugElement
-        .query(By.directive(MdSidenav)).componentInstance;
-
-      let promise = sidenav.open();
-      expect(sidenav.open()).toBe(promise);
+      fixture.debugElement.query(By.css('.close')).nativeElement.click();
       fixture.detectChanges();
+
+      expect(testComponent.openCount).toBe(1);
+      expect(testComponent.closeCount).toBe(0);
+
       tick();
 
-      promise = sidenav.close();
-      expect(sidenav.close()).toBe(promise);
-      tick();
-    }));
-
-    it('open() then close() cancel animations when called too fast', fakeAsync(() => {
-      let fixture = TestBed.createComponent(BasicTestApp);
-      let sidenav: MdSidenav = fixture.debugElement
-        .query(By.directive(MdSidenav)).componentInstance;
-
-      sidenav.open().then(openResult => {
-        expect(openResult.type).toBe('open');
-        expect(openResult.animationFinished).toBe(false);
-      });
-
-      // We do not call transition end, close directly.
-      sidenav.close().then(closeResult => {
-        expect(closeResult.type).toBe('close');
-        expect(closeResult.animationFinished).toBe(true);
-      });
-
-      endSidenavTransition(fixture);
-      tick();
-    }));
-
-    it('close() then open() cancel animations when called too fast', fakeAsync(() => {
-      let fixture = TestBed.createComponent(BasicTestApp);
-      let sidenav: MdSidenav = fixture.debugElement
-        .query(By.directive(MdSidenav)).componentInstance;
-
-      // First, open the sidenav completely.
-      sidenav.open();
-      endSidenavTransition(fixture);
-      tick();
-
-      // Then close and check behavior.
-      sidenav.close().then(closeResult => {
-        expect(closeResult.type).toBe('close');
-        expect(closeResult.animationFinished).toBe(false);
-      });
-
-      // We do not call transition end, open directly.
-      sidenav.open().then(openResult => {
-        expect(openResult.type).toBe('open');
-        expect(openResult.animationFinished).toBe(true);
-      });
-
-      endSidenavTransition(fixture);
-      tick();
+      expect(testComponent.openCount).toBe(1);
+      expect(testComponent.closeCount).toBe(1);
+      expect(getComputedStyle(sidenav.nativeElement).visibility).toBe('hidden');
+      expect(getComputedStyle(sidenavBackdropElement.nativeElement).visibility).toBe('hidden');
     }));
 
     it('does not throw when created without a sidenav', fakeAsync(() => {
@@ -181,41 +75,27 @@ describe('MdSidenav', () => {
 
     it('should emit the backdropClick event when the backdrop is clicked', fakeAsync(() => {
       let fixture = TestBed.createComponent(BasicTestApp);
-
       let testComponent: BasicTestApp = fixture.debugElement.componentInstance;
-      let openButtonElement = fixture.debugElement.query(By.css('.open'));
-      openButtonElement.nativeElement.click();
-      fixture.detectChanges();
-      tick();
+      let openButtonElement = fixture.debugElement.query(By.css('.open')).nativeElement;
 
-      endSidenavTransition(fixture);
+      openButtonElement.click();
+      fixture.detectChanges();
       tick();
 
       expect(testComponent.backdropClickedCount).toBe(0);
 
-      let sidenavBackdropElement = fixture.debugElement.query(By.css('.mat-sidenav-backdrop'));
-      sidenavBackdropElement.nativeElement.click();
+      fixture.debugElement.query(By.css('.mat-sidenav-backdrop')).nativeElement.click();
       fixture.detectChanges();
       tick();
 
       expect(testComponent.backdropClickedCount).toBe(1);
 
-      endSidenavTransition(fixture);
-      tick();
-
-      openButtonElement.nativeElement.click();
+      openButtonElement.click();
       fixture.detectChanges();
       tick();
 
-      endSidenavTransition(fixture);
-      tick();
-
-      let closeButtonElement = fixture.debugElement.query(By.css('.close'));
-      closeButtonElement.nativeElement.click();
+      fixture.debugElement.query(By.css('.close')).nativeElement.click();
       fixture.detectChanges();
-      tick();
-
-      endSidenavTransition(fixture);
       tick();
 
       expect(testComponent.backdropClickedCount).toBe(1);
@@ -223,51 +103,39 @@ describe('MdSidenav', () => {
 
     it('should close when pressing escape', fakeAsync(() => {
       let fixture = TestBed.createComponent(BasicTestApp);
+
+      fixture.detectChanges();
+      tick();
+
       let testComponent: BasicTestApp = fixture.debugElement.componentInstance;
-      let sidenav: MdSidenav = fixture.debugElement
-        .query(By.directive(MdSidenav)).componentInstance;
+      let sidenav = fixture.debugElement.query(By.directive(MdSidenav));
 
-      sidenav.open();
-
+      sidenav.componentInstance.open();
       fixture.detectChanges();
-      endSidenavTransition(fixture);
       tick();
 
-      expect(testComponent.openCount).toBe(1);
-      expect(testComponent.closeCount).toBe(0);
+      expect(testComponent.openCount).toBe(1, 'Expected one open event.');
+      expect(testComponent.closeCount).toBe(0, 'Expected no close events.');
 
-      // Simulate pressing the escape key.
-      sidenav.handleKeydown({
-        keyCode: ESCAPE,
-        stopPropagation: () => {}
-      } as KeyboardEvent);
-
+      dispatchKeyboardEvent(sidenav.nativeElement, 'keydown', ESCAPE);
       fixture.detectChanges();
-      endSidenavTransition(fixture);
       tick();
 
-      expect(testComponent.closeCount).toBe(1);
+      expect(testComponent.closeCount).toBe(1, 'Expected one close event.');
     }));
 
     it('should not close by pressing escape when disableClose is set', fakeAsync(() => {
       let fixture = TestBed.createComponent(BasicTestApp);
       let testComponent = fixture.debugElement.componentInstance;
-      let sidenav = fixture.debugElement.query(By.directive(MdSidenav)).componentInstance;
+      let sidenav = fixture.debugElement.query(By.directive(MdSidenav));
 
-      sidenav.disableClose = true;
-      sidenav.open();
-
+      sidenav.componentInstance.disableClose = true;
+      sidenav.componentInstance.open();
       fixture.detectChanges();
-      endSidenavTransition(fixture);
       tick();
 
-      sidenav.handleKeydown({
-        keyCode: ESCAPE,
-        stopPropagation: () => {}
-      });
-
+      dispatchKeyboardEvent(sidenav.nativeElement, 'keydown', ESCAPE);
       fixture.detectChanges();
-      endSidenavTransition(fixture);
       tick();
 
       expect(testComponent.closeCount).toBe(0);
@@ -280,18 +148,11 @@ describe('MdSidenav', () => {
 
       sidenav.disableClose = true;
       sidenav.open();
-
-      fixture.detectChanges();
-      endSidenavTransition(fixture);
-      tick();
-
-      let backdropEl = fixture.debugElement.query(By.css('.mat-sidenav-backdrop')).nativeElement;
-      backdropEl.click();
       fixture.detectChanges();
       tick();
 
+      fixture.debugElement.query(By.css('.mat-sidenav-backdrop')).nativeElement.click();
       fixture.detectChanges();
-      endSidenavTransition(fixture);
       tick();
 
       expect(testComponent.closeCount).toBe(0);
@@ -299,23 +160,22 @@ describe('MdSidenav', () => {
 
     it('should restore focus on close if focus is inside sidenav', fakeAsync(() => {
       let fixture = TestBed.createComponent(BasicTestApp);
-      let sidenav: MdSidenav = fixture.debugElement
-        .query(By.directive(MdSidenav)).componentInstance;
+
+      fixture.detectChanges();
+      tick();
+
+      let sidenav = fixture.debugElement.query(By.directive(MdSidenav)).componentInstance;
       let openButton = fixture.componentInstance.openButton.nativeElement;
       let sidenavButton = fixture.componentInstance.sidenavButton.nativeElement;
 
       openButton.focus();
       sidenav.open();
-
       fixture.detectChanges();
-      endSidenavTransition(fixture);
       tick();
       sidenavButton.focus();
 
       sidenav.close();
-
       fixture.detectChanges();
-      endSidenavTransition(fixture);
       tick();
 
       expect(document.activeElement)
@@ -333,14 +193,11 @@ describe('MdSidenav', () => {
       sidenav.open();
 
       fixture.detectChanges();
-      endSidenavTransition(fixture);
       tick();
       closeButton.focus();
 
       sidenav.close();
-
       fixture.detectChanges();
-      endSidenavTransition(fixture);
       tick();
 
       expect(document.activeElement)
@@ -351,26 +208,22 @@ describe('MdSidenav', () => {
   describe('attributes', () => {
     it('should correctly parse opened="false"', () => {
       let fixture = TestBed.createComponent(SidenavSetToOpenedFalse);
+
       fixture.detectChanges();
 
-      let sidenavEl = fixture.debugElement.query(By.css('md-sidenav')).nativeElement;
+      let sidenav = fixture.debugElement.query(By.directive(MdSidenav)).componentInstance;
 
-      expect(sidenavEl.classList).toContain('mat-sidenav-closed');
-      expect(sidenavEl.classList).not.toContain('mat-sidenav-opened');
+      expect((sidenav as MdSidenav).opened).toBe(false);
     });
 
     it('should correctly parse opened="true"', () => {
       let fixture = TestBed.createComponent(SidenavSetToOpenedTrue);
+
       fixture.detectChanges();
-      endSidenavTransition(fixture);
 
-      let sidenavEl = fixture.debugElement.query(By.css('md-sidenav')).nativeElement;
-      let testComponent = fixture.debugElement.query(By.css('md-sidenav')).componentInstance;
+      let sidenav = fixture.debugElement.query(By.directive(MdSidenav)).componentInstance;
 
-      expect(sidenavEl.classList).not.toContain('mat-sidenav-closed');
-      expect(sidenavEl.classList).toContain('mat-sidenav-opened');
-
-      expect((testComponent as any)._toggleAnimationPromise).toBeNull();
+      expect((sidenav as MdSidenav).opened).toBe(true);
     });
 
     it('should remove align attr from DOM', () => {
@@ -382,15 +235,16 @@ describe('MdSidenav', () => {
           .toBe(false, 'Expected sidenav not to have a native align attribute.');
     });
 
-    it('should throw when multiple sidenavs have the same align', () => {
+    it('should throw when multiple sidenavs have the same align', fakeAsync(() => {
       const fixture = TestBed.createComponent(SidenavDynamicAlign);
       fixture.detectChanges();
+      tick();
 
       const testComponent: SidenavDynamicAlign = fixture.debugElement.componentInstance;
       testComponent.sidenav1Align = 'end';
 
       expect(() => fixture.detectChanges()).toThrow();
-    });
+    }));
 
     it('should not throw when sidenavs swap sides', () => {
       const fixture = TestBed.createComponent(SidenavDynamicAlign);
@@ -425,7 +279,7 @@ describe('MdSidenav', () => {
       lastFocusableElement.focus();
 
       sidenav.open();
-      endSidenavTransition(fixture);
+      fixture.detectChanges();
       tick();
 
       expect(document.activeElement).toBe(firstFocusableElement);
@@ -436,7 +290,7 @@ describe('MdSidenav', () => {
       lastFocusableElement.focus();
 
       sidenav.open();
-      endSidenavTransition(fixture);
+      fixture.detectChanges();
       tick();
 
       expect(document.activeElement).toBe(firstFocusableElement);
@@ -447,7 +301,7 @@ describe('MdSidenav', () => {
       lastFocusableElement.focus();
 
       sidenav.open();
-      endSidenavTransition(fixture);
+      fixture.detectChanges();
       tick();
 
       expect(document.activeElement).toBe(lastFocusableElement);
@@ -458,38 +312,36 @@ describe('MdSidenav', () => {
 describe('MdSidenavContainer', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdSidenavModule, A11yModule, PlatformModule],
-      declarations: [
-        SidenavContainerTwoSidenavTestApp
-      ],
+      imports: [MdSidenavModule, A11yModule, PlatformModule, NoopAnimationsModule],
+      declarations: [SidenavContainerTwoSidenavTestApp],
     });
 
     TestBed.compileComponents();
   }));
 
-  describe('methods', () => {
-    it('should be able to open and close', async(() => {
-      const fixture = TestBed.createComponent(SidenavContainerTwoSidenavTestApp);
+  it('should be able to open and close all sidenavs', fakeAsync(() => {
+    const fixture = TestBed.createComponent(SidenavContainerTwoSidenavTestApp);
 
-      fixture.detectChanges();
+    fixture.detectChanges();
 
-      const testComponent: SidenavContainerTwoSidenavTestApp =
-        fixture.debugElement.componentInstance;
-      const sidenavs = fixture.debugElement.queryAll(By.directive(MdSidenav));
+    const testComponent: SidenavContainerTwoSidenavTestApp =
+      fixture.debugElement.componentInstance;
+    const sidenavs = fixture.debugElement.queryAll(By.directive(MdSidenav));
 
-      expect(sidenavs.every(sidenav => sidenav.componentInstance.opened)).toBeFalsy();
+    expect(sidenavs.every(sidenav => sidenav.componentInstance.opened)).toBe(false);
 
-      return testComponent.sidenavContainer.open()
-        .then(() => {
-          expect(sidenavs.every(sidenav => sidenav.componentInstance.opened)).toBeTruthy();
+    testComponent.sidenavContainer.open();
+    fixture.detectChanges();
+    tick();
 
-          return testComponent.sidenavContainer.close();
-        })
-        .then(() => {
-          expect(sidenavs.every(sidenav => sidenav.componentInstance.opened)).toBeTruthy();
-        });
-    }));
-  });
+    expect(sidenavs.every(sidenav => sidenav.componentInstance.opened)).toBe(true);
+
+    testComponent.sidenavContainer.close();
+    fixture.detectChanges();
+    tick();
+
+    expect(sidenavs.every(sidenav => sidenav.componentInstance.opened)).toBe(false);
+  }));
 });
 
 
@@ -515,9 +367,7 @@ class SidenavContainerTwoSidenavTestApp {
   template: `
     <md-sidenav-container (backdropClick)="backdropClicked()">
       <md-sidenav #sidenav align="start"
-                  (open-start)="openStart()"
                   (open)="open()"
-                  (close-start)="closeStart()"
                   (close)="close()">
         <button #sidenavButton>Content.</button>
       </md-sidenav>
@@ -526,9 +376,7 @@ class SidenavContainerTwoSidenavTestApp {
     </md-sidenav-container>`,
 })
 class BasicTestApp {
-  openStartCount: number = 0;
   openCount: number = 0;
-  closeStartCount: number = 0;
   closeCount: number = 0;
   backdropClickedCount: number = 0;
 
@@ -536,16 +384,8 @@ class BasicTestApp {
   @ViewChild('openButton') openButton: ElementRef;
   @ViewChild('closeButton') closeButton: ElementRef;
 
-  openStart() {
-    this.openStartCount++;
-  }
-
   open() {
     this.openCount++;
-  }
-
-  closeStart() {
-    this.closeStartCount++;
   }
 
   close() {

@@ -3,26 +3,6 @@
 @import '../core/style/layout-common';
 @import '../core/a11y/a11y';
 
-
-// Mixin to help with defining LTR/RTL 'transform: translate3d()' values.
-// @param $open The translation value when the sidenav is opened.
-// @param $close The translation value when the sidenav is closed.
-@mixin mat-sidenav-transition($open, $close) {
-  transform: translate3d($close, 0, 0);
-
-  &.mat-sidenav-closed {
-    // We use 'visibility: hidden | visible' because 'display: none' will not animate any
-    // transitions, while visibility will interpolate transitions properly.
-    // see https://developer.mozilla.org/en-US/docs/Web/CSS/visibility, the Interpolation
-    // section.
-    visibility: hidden;
-  }
-
-  &.mat-sidenav-opening, &.mat-sidenav-opened {
-    transform: translate3d($open, 0, 0);
-  }
-}
-
 // Mixin that creates a new stacking context.
 // see https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index/The_stacking_context
 @mixin mat-sidenav-stacking-context() {
@@ -103,8 +83,7 @@
   box-sizing: border-box;
   height: 100%;
   overflow-y: auto; // TODO(kara): revisit scrolling behavior for sidenavs
-
-  @include mat-sidenav-transition(0, -100%);
+  transform: translate3d(-100%, 0, 0);
 
   &.mat-sidenav-side {
     z-index: 1;
@@ -112,18 +91,16 @@
 
   &.mat-sidenav-end {
     right: 0;
-
-    @include mat-sidenav-transition(0, 100%);
+    transform: translate3d(100%, 0, 0);
   }
 
   [dir='rtl'] & {
-    @include mat-sidenav-transition(0, 100%);
+    transform: translate3d(100%, 0, 0);
 
     &.mat-sidenav-end {
       left: 0;
       right: auto;
-
-      @include mat-sidenav-transition(0, -100%);
+      transform: translate3d(-100%, 0, 0);
     }
   }
 
