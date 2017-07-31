@@ -23,6 +23,9 @@ $(npm bin)/ngc -p scripts/closure-compiler/tsconfig-rxjs.json
 # Create a list of all RxJS source files.
 rxjsSourceFiles=$(find dist/packages/rxjs -name '*.js');
 
+# List of entry points in the CDK package. Exclude "testing" since it's not an entry point.
+cdkEntryPoints=($(find src/cdk/* -type d ! -name testing -exec basename {} \;))
+
 # Due a Closure Compiler issue https://github.com/google/closure-compiler/issues/2247
 # we need to add exports to the different RxJS ES2015 files.
 for i in $rxjsSourceFiles; do
@@ -43,15 +46,6 @@ OPTS=(
   "--js_module_root=dist/packages"
   "--js_module_root=dist/releases/material"
   "--js_module_root=dist/releases/cdk"
-  "--js_module_root=dist/releases/cdk/a11y"
-  "--js_module_root=dist/releases/cdk/bidi"
-  "--js_module_root=dist/releases/cdk/coercion"
-  "--js_module_root=dist/releases/cdk/keyboard"
-  "--js_module_root=dist/releases/cdk/observe-content"
-  "--js_module_root=dist/releases/cdk/platform"
-  "--js_module_root=dist/releases/cdk/portal"
-  "--js_module_root=dist/releases/cdk/rxjs"
-  "--js_module_root=dist/releases/cdk/table"
   "--js_module_root=node_modules/@angular/core"
   "--js_module_root=node_modules/@angular/common"
   "--js_module_root=node_modules/@angular/compiler"
@@ -71,15 +65,6 @@ OPTS=(
   # Include the Material and CDK FESM bundles
   dist/releases/material/@angular/material.js
   dist/releases/cdk/@angular/cdk.js
-  dist/releases/cdk/@angular/cdk/a11y.js
-  dist/releases/cdk/@angular/cdk/bidi.js
-  dist/releases/cdk/@angular/cdk/coercion.js
-  dist/releases/cdk/@angular/cdk/keyboard.js
-  dist/releases/cdk/@angular/cdk/observe-content.js
-  dist/releases/cdk/@angular/cdk/platform.js
-  dist/releases/cdk/@angular/cdk/portal.js
-  dist/releases/cdk/@angular/cdk/rxjs.js
-  dist/releases/cdk/@angular/cdk/table.js
 
   # Include all Angular FESM bundles.
   node_modules/@angular/core/@angular/core.js
@@ -104,6 +89,12 @@ OPTS=(
   "--entry_point=./dist/packages/demo-app/main.js"
   "--dependency_mode=STRICT"
 )
+
+# Walk through every entry-point of the CDK and add it to closure options.
+for i in "${cdkEntryPoints[@]}"; do
+  OPTS+=("--js_module_root=dist/releases/cdk/${i}")
+  OPTS+=("dist/releases/cdk/@angular/cdk/${i}.js")
+done
 
 # Write closure flags to a closure flagfile.
 closureFlags=$(mktemp)
