@@ -14,7 +14,7 @@ import {SimpleChange} from '../change_detection/change_detection_util';
  * values are instances of {@link SimpleChange}. See {@link OnChanges}
  * @stable
  */
-export interface SimpleChanges { [propName: string]: SimpleChange; }
+export interface SimpleChanges { [propName: string]: SimpleChange<any>; }
 
 /**
  * @whatItDoes Lifecycle hook that is called when any data-bound property of a directive changes.
