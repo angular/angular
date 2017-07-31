@@ -6,7 +6,7 @@ import {spawnSync} from 'child_process';
 const versionPlaceholderText = '0.0.0-PLACEHOLDER';
 
 /** RegExp that matches version placeholders inside of a file. */
-const versionPlaceholderRegex = new RegExp(versionPlaceholderText);
+const versionPlaceholderRegex = new RegExp(versionPlaceholderText, 'g');
 
 /**
  * Walks through every file in a directory and replaces the version placeholders with the current

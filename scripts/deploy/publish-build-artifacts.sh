@@ -59,14 +59,10 @@ publishPackage() {
   # Create the build commit and push the changes to the repository.
   cd ${repoDir}
 
-  # Update the package.json version to include the current commit SHA.
-  # Normally this "sed" call would just replace the version placeholder, but the version in the
-  # package.json file is already replaced by the release task of the current package.
-  sed -i "s/${buildVersion}/${buildVersion}-${commitSha}/g" package.json
-
-  # For build artifacts the different Angular packages that refer to the 0.0.0-PLACEHOLDER should
-  # be replaced with the Github builds that are published at the same time.
-  sed -i "s/0.0.0-PLACEHOLDER/${buildVersion}-${commitSha}/g" package.json
+  # Replace the version in every file recursively with a more specific version that also includes
+  # the SHA of the current build job. Normally this "sed" call would just replace the version
+  # placeholder, but the version placeholders have been replaced by the release task already.
+  sed -i "s/${buildVersion}/${buildVersion}-${commitSha}/g" $(find . -type f)
 
   # Prepare Git for pushing the artifacts to the repository.
   git config user.name "${commitAuthorName}"
