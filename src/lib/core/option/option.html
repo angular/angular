@@ -1,8 +1,8 @@
 <span [ngSwitch]="_isCompatibilityMode" *ngIf="multiple">
   <mat-pseudo-checkbox class="mat-option-pseudo-checkbox" *ngSwitchCase="true"
-      [state]="selected ? 'checked' : ''" color="primary"></mat-pseudo-checkbox>
+      [state]="selected ? 'checked' : ''"></mat-pseudo-checkbox>
   <md-pseudo-checkbox class="mat-option-pseudo-checkbox" *ngSwitchDefault
-      [state]="selected ? 'checked' : ''" color="primary"></md-pseudo-checkbox>
+      [state]="selected ? 'checked' : ''"></md-pseudo-checkbox>
 </span>
 
 <ng-content></ng-content>
