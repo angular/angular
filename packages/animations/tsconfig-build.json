@@ -27,6 +27,7 @@
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": true,
+    "skipTemplateCodegen": true,
     "flatModuleOutFile": "index.js",
     "flatModuleId": "@angular/animations"
   }
