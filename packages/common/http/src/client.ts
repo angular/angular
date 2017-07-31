@@ -30,7 +30,7 @@ import {HttpEvent, HttpResponse} from './response';
 function addBody<T>(
     options: {
       headers?: HttpHeaders|{[header: string]: string | string[]},
-      observe?: HttpObserve,
+      observe?: 'body'|'events'|'response',
       params?: HttpParams|{[param: string]: string | string[]},
       reportProgress?: boolean,
       responseType?: 'arraybuffer'|'blob'|'json'|'text',
@@ -47,8 +47,6 @@ function addBody<T>(
     withCredentials: options.withCredentials,
   };
 }
-
-export type HttpObserve = 'body'|'events'|'response';
 
 /**
  * Performs HTTP requests.
@@ -408,7 +406,7 @@ export class HttpClient {
     body?: any,
     headers?: HttpHeaders|{[header: string]: string | string[]},
     params?: HttpParams|{[param: string]: string | string[]},
-    observe?: HttpObserve,
+    observe?: 'body'|'events'|'response',
     reportProgress?: boolean,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
     withCredentials?: boolean,
@@ -443,7 +441,7 @@ export class HttpClient {
   request(first: string|HttpRequest<any>, url?: string, options: {
     body?: any,
     headers?: HttpHeaders|{[header: string]: string | string[]},
-    observe?: HttpObserve,
+    observe?: 'body'|'events'|'response',
     params?: HttpParams|{[param: string]: string | string[]},
     reportProgress?: boolean,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
@@ -825,7 +823,7 @@ export class HttpClient {
    */
   delete(url: string, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
-    observe?: HttpObserve,
+    observe?: 'body'|'events'|'response',
     params?: HttpParams|{[param: string]: string | string[]},
     reportProgress?: boolean,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
@@ -1100,7 +1098,7 @@ export class HttpClient {
    */
   get(url: string, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
-    observe?: HttpObserve,
+    observe?: 'body'|'events'|'response',
     params?: HttpParams|{[param: string]: string | string[]},
     reportProgress?: boolean,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
@@ -1382,7 +1380,7 @@ export class HttpClient {
    */
   head(url: string, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
-    observe?: HttpObserve,
+    observe?: 'body'|'events'|'response',
     params?: HttpParams|{[param: string]: string | string[]},
     reportProgress?: boolean,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
@@ -1711,7 +1709,7 @@ export class HttpClient {
    */
   options(url: string, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
-    observe?: HttpObserve,
+    observe?: 'body'|'events'|'response',
     params?: HttpParams|{[param: string]: string | string[]},
     reportProgress?: boolean,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
@@ -2005,7 +2003,7 @@ export class HttpClient {
    */
   patch(url: string, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
-    observe?: HttpObserve,
+    observe?: 'body'|'events'|'response',
     params?: HttpParams|{[param: string]: string | string[]},
     reportProgress?: boolean,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
@@ -2299,7 +2297,7 @@ export class HttpClient {
    */
   post(url: string, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
-    observe?: HttpObserve,
+    observe?: 'body'|'events'|'response',
     params?: HttpParams|{[param: string]: string | string[]},
     reportProgress?: boolean,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
@@ -2592,7 +2590,7 @@ export class HttpClient {
    */
   put(url: string, body: any|null, options: {
     headers?: HttpHeaders|{[header: string]: string | string[]},
-    observe?: HttpObserve,
+    observe?: 'body'|'events'|'response',
     params?: HttpParams|{[param: string]: string | string[]},
     reportProgress?: boolean,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
