@@ -603,7 +603,7 @@ export function main() {
            tick();
            expect(ngModel.control.disabled).toEqual(false);
 
-           ngModel.ngOnChanges({isDisabled: new SimpleChange<string | boolean>('', false, false)});
+           ngModel.ngOnChanges({isDisabled: new SimpleChange<string|boolean>('', false, false)});
            tick();
            expect(ngModel.control.disabled).toEqual(false);
 
@@ -611,7 +611,7 @@ export function main() {
            tick();
            expect(ngModel.control.disabled).toEqual(false);
 
-           ngModel.ngOnChanges({isDisabled: new SimpleChange<string | number>('', 0, false)});
+           ngModel.ngOnChanges({isDisabled: new SimpleChange<string|number>('', 0, false)});
            tick();
            expect(ngModel.control.disabled).toEqual(false);
 
