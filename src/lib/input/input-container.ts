@@ -7,31 +7,31 @@
  */
 
 import {
-  AfterContentInit,
   AfterContentChecked,
+  AfterContentInit,
   AfterViewInit,
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ContentChild,
   ContentChildren,
   Directive,
+  DoCheck,
   ElementRef,
+  Inject,
   Input,
+  OnChanges,
+  OnDestroy,
   Optional,
   QueryList,
   Renderer2,
   Self,
   ViewChild,
   ViewEncapsulation,
-  Inject,
-  ChangeDetectionStrategy,
-  OnChanges,
-  OnDestroy,
-  DoCheck,
 } from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {coerceBooleanProperty, Platform} from '../core';
-import {FormGroupDirective, NgControl, NgForm, FormControl} from '@angular/forms';
+import {FormControl, FormGroupDirective, NgControl, NgForm} from '@angular/forms';
 import {getSupportedInputTypes} from '../core/platform/features';
 import {
   getMdInputContainerDuplicatedHintError,
@@ -41,13 +41,13 @@ import {
 } from './input-container-errors';
 import {
   FloatPlaceholderType,
-  PlaceholderOptions,
-  MD_PLACEHOLDER_GLOBAL_OPTIONS
+  MD_PLACEHOLDER_GLOBAL_OPTIONS,
+  PlaceholderOptions
 } from '../core/placeholder/placeholder-options';
 import {
   defaultErrorStateMatcher,
-  ErrorStateMatcher,
   ErrorOptions,
+  ErrorStateMatcher,
   MD_ERROR_GLOBAL_OPTIONS
 } from '../core/error/error-options';
 import {Subject} from 'rxjs/Subject';
@@ -138,7 +138,6 @@ export class MdSuffix {}
   }
 })
 export class MdInputDirective implements OnChanges, OnDestroy, DoCheck {
-
   /** Variables used as cache for getters and setters. */
   private _type = 'text';
   private _placeholder: string = '';
@@ -232,7 +231,6 @@ export class MdInputDirective implements OnChanges, OnDestroy, DoCheck {
   constructor(private _elementRef: ElementRef,
               private _renderer: Renderer2,
               private _platform: Platform,
-              private _changeDetectorRef: ChangeDetectorRef,
               @Optional() @Self() public _ngControl: NgControl,
               @Optional() private _parentForm: NgForm,
               @Optional() private _parentFormGroup: FormGroupDirective,
@@ -242,6 +240,22 @@ export class MdInputDirective implements OnChanges, OnDestroy, DoCheck {
     this.id = this.id;
     this._errorOptions = errorOptions ? errorOptions : {};
     this.errorStateMatcher = this._errorOptions.errorStateMatcher || defaultErrorStateMatcher;
+
+    // On some versions of iOS the caret gets stuck in the wrong place when holding down the delete
+    // key. In order to get around this we need to "jiggle" the caret loose. Since this bug only
+    // exists on iOS, we only bother to install the listener on iOS.
+    if (_platform.IOS) {
+      _renderer.listen(_elementRef.nativeElement, 'keyup', (event: Event) => {
+        let el = event.target as HTMLInputElement;
+        if (!el.value && !el.selectionStart && !el.selectionEnd) {
+          // Note: Just setting `0, 0` doesn't fix the issue. Setting `1, 1` fixes it for the first
+          // time that you type text and then hold delete. Toggling to `1, 1` and then back to
+          // `0, 0` seems to completely fix it.
+          el.setSelectionRange(1, 1);
+          el.setSelectionRange(0, 0);
+        }
+      });
+    }
   }
 
   ngOnChanges() {
