@@ -8,6 +8,7 @@ import {
   MdChipsModule,
   MdDatepickerModule,
   MdDialogModule,
+  MdExpansionModule,
   MdGridListModule,
   MdIconModule,
   MdInputModule,
@@ -67,6 +68,7 @@ export class KitchenSink { }
     MdTabsModule,
     MdToolbarModule,
     MdTooltipModule,
+    MdExpansionModule
   ],
   bootstrap: [KitchenSink],
   declarations: [KitchenSink],
