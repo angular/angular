@@ -136,15 +136,25 @@ Note that `md-icon` supports any font or svg icons; using Material Icons is one 
 ## Appendix: Configuring SystemJS
 
 If your project is using SystemJS for module loading, you will need to add `@angular/material` and
-`@angular/cdk` to the SystemJS configuration:
+`@angular/cdk` to the SystemJS configuration.
+
+The `@angular/cdk` package is organized of multiple entry-points. 
+Each of these entry-points must be registered individually with SystemJS.
+
+Here is a example configuration where `@angular/material`, `@angular/cdk/platform` and 
+`@angular/cdk/a11y` are used:
+
 
 ```js
 System.config({
-  // existing configuration options
+  // Existing configuration options
   map: {
     // ...
     '@angular/material': 'npm:@angular/material/bundles/material.umd.js',
-    '@angular/cdk': 'npm:@angular/cdk/bundles/cdk.umd.js'
+    
+    // CDK individual packages
+    '@angular/cdk/platform': 'npm:@angular/cdk/bundles/cdk-platform.umd.js',
+    '@angular/cdk/a11y': 'npm:@angular/cdk/bundles/cdk-a11y.umd.js',
     // ...
   }
 });
