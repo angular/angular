@@ -631,6 +631,21 @@ describe('MdSlideToggle with forms', () => {
       expect(slideToggle.checked)
         .toBe(false, 'Expected slide-toggle to be no longer checked after label click.');
     }));
+
+    it('should be pristine if initial value is set from NgModel', fakeAsync(() => {
+      fixture = TestBed.createComponent(SlideToggleWithModel);
+
+      fixture.componentInstance.modelValue = true;
+      fixture.detectChanges();
+
+      const debugElement = fixture.debugElement.query(By.directive(MdSlideToggle));
+      const modelInstance = debugElement.injector.get<NgModel>(NgModel);
+
+      // Flush the microtasks because the forms module updates the model state asynchronously.
+      flushMicrotasks();
+
+      expect(modelInstance.pristine).toBe(true);
+    }));
   });
 
   describe('with a FormControl', () => {
