@@ -41,11 +41,8 @@ $mat-input-underline-height: 1px !default;
   flex: none;
 
   // Allow icons in a prefix or suffix to adapt to the correct size.
-  .mat-icon,
-  .mat-datepicker-toggle {
+  .mat-icon {
     width: 1em;
-    height: 1em;
-    vertical-align: text-bottom;
   }
 
   // Allow icon buttons in a prefix or suffix to adapt to the correct size.
@@ -55,9 +52,6 @@ $mat-input-underline-height: 1px !default;
 
     .mat-icon {
       font-size: inherit;
-      width: 1em;
-      height: 1em;
-      vertical-align: baseline;
     }
   }
 }
@@ -236,8 +230,7 @@ textarea.mat-input-element {
 // Scale down icons in the placeholder and hint to be the same size as the text.
 .mat-input-subscript-wrapper,
 .mat-input-placeholder-wrapper {
-  .mat-icon,
-  .mat-datepicker-toggle {
+  .mat-icon {
     width: 1em;
     height: 1em;
     font-size: inherit;

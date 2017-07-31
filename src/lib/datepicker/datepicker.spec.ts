@@ -465,7 +465,7 @@ describe('MdDatepicker', () => {
       });
     });
 
-    describe('datepicker with mdDatepickerToggle', () => {
+    describe('datepicker with md-datepicker-toggle', () => {
       let fixture: ComponentFixture<DatepickerWithToggle>;
       let testComponent: DatepickerWithToggle;
 
@@ -960,7 +960,7 @@ class DatepickerWithFormControl {
 @Component({
   template: `
     <input [mdDatepicker]="d">
-    <button [mdDatepickerToggle]="d"></button>
+    <md-datepicker-toggle [for]="d"></md-datepicker-toggle>
     <md-datepicker #d [touchUi]="touchUI"></md-datepicker>
   `,
 })
@@ -987,7 +987,7 @@ class InputContainerDatepicker {
 @Component({
   template: `
     <input [mdDatepicker]="d" [(ngModel)]="date" [min]="minDate" [max]="maxDate">
-    <button [mdDatepickerToggle]="d"></button>
+    <md-datepicker-toggle [for]="d"></md-datepicker-toggle>
     <md-datepicker #d></md-datepicker>
   `,
 })
@@ -1002,7 +1002,7 @@ class DatepickerWithMinAndMaxValidation {
 @Component({
   template: `
     <input [mdDatepicker]="d" [(ngModel)]="date" [mdDatepickerFilter]="filter">
-    <button [mdDatepickerToggle]="d"></button>
+    <md-datepicker-toggle [for]="d"></md-datepicker-toggle>
     <md-datepicker #d [touchUi]="true"></md-datepicker>
   `,
 })

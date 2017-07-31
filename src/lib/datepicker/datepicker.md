@@ -25,7 +25,7 @@ An optional datepicker toggle button is available. A toggle can be added to the 
 
 ```html
 <input [mdDatepicker]="myDatepicker">
-<button [mdDatepickerToggle]="myDatepicker"></button>
+<md-datepicker-toggle [for]="myDatepicker"></md-datepicker-toggle>
 <md-datepicker #myDatepicker></md-datepicker>
 ```
 
@@ -35,7 +35,7 @@ can easily be used as a prefix or suffix on the material input:
 ```html
 <md-input-container>
   <input mdInput [mdDatepicker]="myDatepicker">
-  <button mdSuffix [mdDatepickerToggle]="myDatepicker"></button>
+  <md-datepicker-toggle mdSuffix [for]="myDatepicker"></md-datepicker-toggle>
 </md-input-container>
 <md-datepicker #myDatepicker></md-datepicker>
 ```

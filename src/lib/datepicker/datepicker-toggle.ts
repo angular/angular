@@ -22,15 +22,10 @@ import {Subscription} from 'rxjs/Subscription';
 
 @Component({
   moduleId: module.id,
-  selector: 'button[mdDatepickerToggle], button[matDatepickerToggle]',
-  template: '',
-  styleUrls: ['datepicker-toggle.css'],
+  selector: 'md-datepicker-toggle, mat-datepicker-toggle',
+  templateUrl: 'datepicker-toggle.html',
   host: {
-    'type': 'button',
     'class': 'mat-datepicker-toggle',
-    '[attr.aria-label]': '_intl.openCalendarLabel',
-    '[disabled]': 'disabled',
-    '(click)': '_open($event)',
   },
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -39,11 +34,7 @@ export class MdDatepickerToggle<D> implements OnDestroy {
   private _intlChanges: Subscription;
 
   /** Datepicker instance that the button will toggle. */
-  @Input('mdDatepickerToggle') datepicker: MdDatepicker<D>;
-
-  @Input('matDatepickerToggle')
-  get _datepicker() { return this.datepicker; }
-  set _datepicker(v: MdDatepicker<D>) { this.datepicker = v; }
+  @Input('for') datepicker: MdDatepicker<D>;
 
   /** Whether the toggle button is disabled. */
   @Input()

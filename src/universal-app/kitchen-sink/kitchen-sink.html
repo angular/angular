@@ -85,7 +85,7 @@
 
 <md-input-container>
   <input type="text" mdInput [mdDatepicker]="birthday" placeholder="Birthday">
-  <button mdSuffix [mdDatepickerToggle]="birthday"></button>
+  <md-datepicker-toggle mdSuffix [for]="birthday"></md-datepicker-toggle>
   <md-datepicker #birthday></md-datepicker>
 </md-input-container>
 
