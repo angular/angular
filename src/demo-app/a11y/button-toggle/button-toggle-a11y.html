@@ -1,0 +1,62 @@
+<section>
+  <h2>Single button toggle</h2>
+  <md-button-toggle>Yes</md-button-toggle>
+</section>
+
+<section>
+  <h2>Button toggles with icons</h2>
+  <md-button-toggle-group name="alignment" aria-label="Alignments">
+    <md-button-toggle value="left" aria-label="Align left">
+      <md-icon>format_align_left</md-icon>
+    </md-button-toggle>
+    <md-button-toggle value="center" aria-label="Align center">
+      <md-icon>format_align_center</md-icon>
+    </md-button-toggle>
+    <md-button-toggle value="right" aria-label="Align right">
+      <md-icon>format_align_right</md-icon>
+    </md-button-toggle>
+    <md-button-toggle value="justify" aria-label="Align justify">
+      <md-icon>format_align_justify</md-icon>
+    </md-button-toggle>
+  </md-button-toggle-group>
+</section>
+
+<section>
+  <h2>Multi-selection button toggle group</h2>
+  <md-button-toggle-group multiple aria-label="Groceries">
+    <md-button-toggle>Flour</md-button-toggle>
+    <md-button-toggle>Eggs</md-button-toggle>
+    <md-button-toggle>Sugar</md-button-toggle>
+    <md-button-toggle>Milk</md-button-toggle>
+  </md-button-toggle-group>
+</section>
+
+<section>
+  <h2>Exclusive selection button toggle group</h2>
+  <md-button-toggle-group name="pies" [(ngModel)]="favoritePie"  aria-label="Pies">
+    <md-button-toggle *ngFor="let pie of pieOptions" [value]="pie">
+      {{pie}}
+    </md-button-toggle>
+  </md-button-toggle-group>
+  <p>Your favorite type of pie is: {{favoritePie}}</p>
+</section>
+
+<section>
+  <h2>Disabled button toggle group</h2>
+  <md-button-toggle-group [disabled]="true" aria-label="Groceries">
+    <md-button-toggle>Flour</md-button-toggle>
+    <md-button-toggle>Eggs</md-button-toggle>
+    <md-button-toggle>Sugar</md-button-toggle>
+    <md-button-toggle>Milk</md-button-toggle>
+  </md-button-toggle-group>
+</section>
+
+<section>
+  <h2>Vertical button toggle group</h2>
+  <md-button-toggle-group multiple [vertical]="true" aria-label="Groceries">
+    <md-button-toggle>Flour</md-button-toggle>
+    <md-button-toggle>Eggs</md-button-toggle>
+    <md-button-toggle>Sugar</md-button-toggle>
+    <md-button-toggle>Milk</md-button-toggle>
+  </md-button-toggle-group>
+</section>
