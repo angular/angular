@@ -35,6 +35,11 @@
       "src/lib",
       "src/cdk"
     ],
+    "missing-rollup-globals": [
+      true,
+      "./tools/package-tools/rollup-globals.json",
+      "^((?!tools).)*$"
+    ],
     "one-line": [
       true,
       "check-catch",
