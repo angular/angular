@@ -1472,7 +1472,7 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
-        observe?: HttpObserve;
+        observe?: 'body' | 'events' | 'response';
         reportProgress?: boolean;
         responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
         withCredentials?: boolean;
