@@ -4,7 +4,7 @@ In the AIO application, we offer the reader the option to download each example 
 
 ## Example zipper
 
-The  `exampleZipper.js` tool is very similar to the Plunker's `builder.js`. The latter creates an HTML file with all the examples' files and the former creates a .zip file instead. They both use the `plnkr.json` file to flag an example as something to plunker a zip. For example:
+The `exampleZipper.js` tool is very similar to the Plunker's `builder.js`. The latter creates an HTML file with all the examples' files and the former creates a zip file instead. They both use the `plnkr.json` file to flag an example as something to plunker or zip. For example:
 
 ```json
 {
@@ -21,11 +21,11 @@ The  `exampleZipper.js` tool is very similar to the Plunker's `builder.js`. The 
 
 The zipper will use this information for creating new zips.
 
-## Three kind of examples
+## Three kinds of examples
 
 The majority of examples in AIO use `System.js` but there are also `CLI` and `Webpack` projects. This tool is able to differentiate between them.
 
-The boilerplate uses a `package.json` that contains packages and scripts tags to run any kind of example. Using that `package.json` in the zips would confuse the users.
+The boilerplate uses a `package.json` that contains packages and scripts to run any kind of example. Using that `package.json` in the zips would confuse the users.
 
 Thanks to the `package.json` customizer, we can create a new `package.json` on the fly that would only contain the packages and scripts needed to run that example.
 
@@ -40,7 +40,7 @@ Here you find a:
 * **base.json** - All the common scripts and packages
 * **cli.json** - Extra scripts and packages for the CLI
 * **webpack.json** - Extra scripts and packages for Webpack
-* **systemjs.json** - All the system.js related packages but it also contains the remainder scripts that are not in the other files.
+* **systemjs.json** - All the System.js related packages but it also contains the remainder scripts that are not in the other files.
 
 The tool will also give some standard names to the scripts. 
 
@@ -48,11 +48,11 @@ The tool will also give some standard names to the scripts.
 
 As mentioned, the tool uses the `plnkr.json` as a flag and also a configuration file for the zipper. The problem is that not all examples have a plunker but they could offer a zip instead.
 
-In those cases, you can create a `zipper.json` file with with the same syntax. It will be ignored by the plunker tool.
+In those cases, you can create a `zipper.json` file with the same syntax. It will be ignored by the plunker tool.
 
 ## Choosing the zip "type"
 
-In both `plnkr.json` and `zipper.json` you can use two new properties:
+In both `plnkr.json` and `zipper.json` you can use two extra properties for the zipper configuration:
 
 ```
 {
@@ -62,12 +62,12 @@ In both `plnkr.json` and `zipper.json` you can use two new properties:
 }
 ```
 
-This would generate a .zip for a webpack application and it will also remove everything related with SystemJS.
+This would generate a zip for a webpack application and it will also remove everything related with SystemJS.
 
 ## Executing the zip generation
 
-`generateSipz.js` will create a zip for each `plnk.json`  or `zipper.json` it finds.
+`generateZips.js` will create a zip for each `plnkr.json`  or `zipper.json` it finds.
 
-Where? at `src/generated/zips/`.
+Where? At `src/generated/zips/`.
 
 Then the `<live-example>` embedded component will look at this folder to get the zip it needs for the example.
