@@ -10,8 +10,8 @@ export declare abstract class AbstractControl {
     readonly pending: boolean;
     readonly pristine: boolean;
     readonly root: AbstractControl;
-    readonly status: string;
-    readonly statusChanges: Observable<any>;
+    readonly status: 'VALID' | 'INVALID' | 'PENDING' | 'DISABLED';
+    readonly statusChanges: Observable<'VALID' | 'INVALID' | 'PENDING' | 'DISABLED'>;
     readonly touched: boolean;
     readonly untouched: boolean;
     readonly valid: boolean;

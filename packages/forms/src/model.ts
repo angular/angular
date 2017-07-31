@@ -108,8 +108,8 @@ export abstract class AbstractControl {
   _onCollectionChange = () => {};
 
   private _valueChanges: EventEmitter<any>;
-  private _statusChanges: EventEmitter<any>;
-  private _status: string;
+  private _statusChanges: EventEmitter<'VALID'|'INVALID'|'PENDING'|'DISABLED'>;
+  private _status: 'VALID'|'INVALID'|'PENDING'|'DISABLED';
   private _errors: ValidationErrors|null;
   private _pristine: boolean = true;
   private _touched: boolean = false;
@@ -140,7 +140,7 @@ export abstract class AbstractControl {
    * These statuses are mutually exclusive, so a control cannot be
    * both valid AND invalid or invalid AND disabled.
    */
-  get status(): string { return this._status; }
+  get status(): 'VALID'|'INVALID'|'PENDING'|'DISABLED' { return this._status; }
 
   /**
    * A control is `valid` when its `status === VALID`.
@@ -229,7 +229,9 @@ export abstract class AbstractControl {
    * Emits an event every time the validation status of the control
    * is re-calculated.
    */
-  get statusChanges(): Observable<any> { return this._statusChanges; }
+  get statusChanges(): Observable<'VALID'|'INVALID'|'PENDING'|'DISABLED'> {
+    return <EventEmitter<any>>this._statusChanges;
+  }
 
   /**
    * Sets the synchronous validators that are active on this control.  Calling
@@ -544,7 +546,7 @@ export abstract class AbstractControl {
   }
 
 
-  private _calculateStatus(): string {
+  private _calculateStatus(): 'VALID'|'INVALID'|'PENDING'|'DISABLED' {
     if (this._allControlsDisabled()) return DISABLED;
     if (this._errors) return INVALID;
     if (this._anyControlsHaveStatus(PENDING)) return PENDING;
