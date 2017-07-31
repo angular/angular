@@ -151,6 +151,31 @@ export function main() {
       });
     });
 
+    describe('should support <type=file>', () => {
+      it('with basic use case', () => {
+        const fixture = initTest(FormControlFileInput);
+        const control = new FormControl();
+        fixture.componentInstance.control = control;
+        fixture.detectChanges();
+
+        // model -> view
+        const input = fixture.debugElement.query(By.css('input'));
+        expect(input.nativeElement.value).toEqual('');
+      });
+
+      it('when value is cleared in the UI', () => {
+        const fixture = initTest(FormControlFileInput);
+        const control = new FormControl('', Validators.required);
+        fixture.componentInstance.control = control;
+        fixture.detectChanges();
+
+        const input = fixture.debugElement.query(By.css('input'));
+
+        expect(control.valid).toBe(false);
+        expect(control.value).toEqual('');
+      });
+    });
+
     describe('select controls', () => {
 
       describe('in reactive forms', () => {
@@ -1024,6 +1049,12 @@ export class FormGroupComp {
   form: FormGroup;
   myGroup: FormGroup;
   event: Event;
+}
+
+@Component(
+    {selector: 'form-control-file-input', template: `<input type="file" [formControl]="control">`})
+class FormControlFileInput {
+  control: FormControl;
 }
 
 @Component({
