@@ -2,7 +2,7 @@ import { Component, ElementRef, ViewChild, OnChanges, Input } from '@angular/cor
 import { Logger } from 'app/shared/logger.service';
 import { PrettyPrinter } from './pretty-printer.service';
 import { CopierService } from 'app/shared/copier.service';
-import { MatSnackBar } from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 const defaultLineNumsCount = 10; // by default, show linenums over this number
 
