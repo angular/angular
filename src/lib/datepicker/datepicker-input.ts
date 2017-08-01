@@ -112,36 +112,41 @@ export class MdDatepickerInput<D> implements AfterContentInit, ControlValueAcces
   /** The value of the input. */
   @Input()
   get value(): D | null {
-    return this._dateAdapter.parse(this._elementRef.nativeElement.value,
-        this._dateFormats.parse.dateInput);
+    return this._getValidDateOrNull(this._dateAdapter.parse(
+        this._elementRef.nativeElement.value, this._dateFormats.parse.dateInput));
   }
   set value(value: D | null) {
-    let date = this._dateAdapter.parse(value, this._dateFormats.parse.dateInput);
+    if (value != null && !this._dateAdapter.isDateInstance(value)) {
+      throw Error('Datepicker: value not recognized as a date object by DateAdapter.');
+    }
+    this._lastValueValid = !value || this._dateAdapter.isValid(value);
+    value = this._getValidDateOrNull(value);
+
     let oldDate = this.value;
     this._renderer.setProperty(this._elementRef.nativeElement, 'value',
-        date ? this._dateAdapter.format(date, this._dateFormats.display.dateInput) : '');
-    if (!this._dateAdapter.sameDate(oldDate, date)) {
-      this._valueChange.emit(date);
+        value ? this._dateAdapter.format(value, this._dateFormats.display.dateInput) : '');
+    if (!this._dateAdapter.sameDate(oldDate, value)) {
+      this._valueChange.emit(value);
     }
   }
 
   /** The minimum valid date. */
   @Input()
-  get min(): D { return this._min; }
-  set min(value: D) {
+  get min(): D | null { return this._min; }
+  set min(value: D | null) {
     this._min = value;
     this._validatorOnChange();
   }
-  private _min: D;
+  private _min: D | null;
 
   /** The maximum valid date. */
   @Input()
-  get max(): D { return this._max; }
-  set max(value: D) {
+  get max(): D | null { return this._max; }
+  set max(value: D | null) {
     this._max = value;
     this._validatorOnChange();
   }
-  private _max: D;
+  private _max: D | null;
 
   /** Whether the datepicker-input is disabled. */
   @Input()
@@ -168,6 +173,12 @@ export class MdDatepickerInput<D> implements AfterContentInit, ControlValueAcces
 
   private _datepickerSubscription: Subscription;
 
+  /** The form control validator for whether the input parses. */
+  private _parseValidator: ValidatorFn = (): ValidationErrors | null => {
+    return this._lastValueValid ?
+        null : {'mdDatepickerParse': {'text': this._elementRef.nativeElement.value}};
+  }
+
   /** The form control validator for the min date. */
   private _minValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
     return (!this.min || !control.value ||
@@ -190,7 +201,11 @@ export class MdDatepickerInput<D> implements AfterContentInit, ControlValueAcces
 
   /** The combined form control validator for this input. */
   private _validator: ValidatorFn | null =
-      Validators.compose([this._minValidator, this._maxValidator, this._filterValidator]);
+      Validators.compose(
+          [this._parseValidator, this._minValidator, this._maxValidator, this._filterValidator]);
+
+  /** Whether the last value set on the input was valid. */
+  private _lastValueValid = false;
 
   constructor(
       private _elementRef: ElementRef,
@@ -270,6 +285,8 @@ export class MdDatepickerInput<D> implements AfterContentInit, ControlValueAcces
 
   _onInput(value: string) {
     let date = this._dateAdapter.parse(value, this._dateFormats.parse.dateInput);
+    this._lastValueValid = !date || this._dateAdapter.isValid(date);
+    date = this._getValidDateOrNull(date);
     this._cvaOnChange(date);
     this._valueChange.emit(date);
     this.dateInput.emit(new MdDatepickerInputEvent(this, this._elementRef.nativeElement));
@@ -277,5 +294,13 @@ export class MdDatepickerInput<D> implements AfterContentInit, ControlValueAcces
 
   _onChange() {
     this.dateChange.emit(new MdDatepickerInputEvent(this, this._elementRef.nativeElement));
+  }
+
+  /**
+   * @param obj The object to check.
+   * @returns The given object if it is both a date instance and valid, otherwise null.
+   */
+  private _getValidDateOrNull(obj: any): D | null {
+    return (this._dateAdapter.isDateInstance(obj) && this._dateAdapter.isValid(obj)) ? obj : null;
   }
 }

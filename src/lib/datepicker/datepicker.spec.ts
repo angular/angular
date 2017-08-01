@@ -223,6 +223,15 @@ describe('MdDatepicker', () => {
         expect(ownedElement).not.toBeNull();
         expect((ownedElement as Element).tagName.toLowerCase()).toBe('md-calendar');
       });
+
+      it('should throw when given wrong data type', () => {
+        testComponent.date = '1/1/2017' as any;
+
+        expect(() => fixture.detectChanges())
+            .toThrowError(/Datepicker: value not recognized as a date object by DateAdapter\./);
+
+        testComponent.date = null;
+      });
     });
 
     describe('datepicker with too many inputs', () => {
@@ -902,7 +911,7 @@ describe('MdDatepicker', () => {
 class StandardDatepicker {
   touch = false;
   disabled = false;
-  date = new Date(2020, JAN, 1);
+  date: Date | null = new Date(2020, JAN, 1);
   @ViewChild('d') datepicker: MdDatepicker<Date>;
   @ViewChild(MdDatepickerInput) datepickerInput: MdDatepickerInput<Date>;
 }
@@ -1008,7 +1017,7 @@ class InputContainerDatepicker {
 })
 class DatepickerWithMinAndMaxValidation {
   @ViewChild('d') datepicker: MdDatepicker<Date>;
-  date: Date;
+  date: Date | null;
   minDate = new Date(2010, JAN, 1);
   maxDate = new Date(2020, JAN, 1);
 }

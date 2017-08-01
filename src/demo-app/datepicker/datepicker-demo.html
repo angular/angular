@@ -40,6 +40,9 @@
            placeholder="Pick a date"
            (dateInput)="onDateInput($event)"
            (dateChange)="onDateChange($event)">
+    <md-error *ngIf="resultPickerModel.hasError('mdDatepickerParse')">
+      "{{resultPickerModel.getError('mdDatepickerParse').text}}" is not a valid date!
+    </md-error>
     <md-error *ngIf="resultPickerModel.hasError('mdDatepickerMin')">Too early!</md-error>
     <md-error *ngIf="resultPickerModel.hasError('mdDatepickerMax')">Too late!</md-error>
     <md-error *ngIf="resultPickerModel.hasError('mdDatepickerFilter')">Date unavailable!</md-error>

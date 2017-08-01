@@ -157,11 +157,16 @@ export class NativeDateAdapter extends DateAdapter<Date> {
   parse(value: any): Date | null {
     // We have no way using the native JS Date to set the parse format or locale, so we ignore these
     // parameters.
-    let timestamp = typeof value == 'number' ? value : Date.parse(value);
-    return isNaN(timestamp) ? null : new Date(timestamp);
+    if (typeof value == 'number') {
+      return new Date(value);
+    }
+    return value ? new Date(Date.parse(value)) : null;
   }
 
   format(date: Date, displayFormat: Object): string {
+    if (!this.isValid(date)) {
+      throw Error('NativeDateAdapter: Cannot format invalid date.');
+    }
     if (SUPPORTS_INTL_API) {
       if (this.useUtcForDisplay) {
         date = new Date(Date.UTC(
@@ -205,6 +210,14 @@ export class NativeDateAdapter extends DateAdapter<Date> {
       this._2digit(date.getUTCMonth() + 1),
       this._2digit(date.getUTCDate())
     ].join('-');
+  }
+
+  isDateInstance(obj: any) {
+    return obj instanceof Date;
+  }
+
+  isValid(date: Date) {
+    return !isNaN(date.getTime());
   }
 
   /** Creates a date but allows the month and date to overflow. */
