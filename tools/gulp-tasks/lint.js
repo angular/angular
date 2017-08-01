@@ -13,6 +13,9 @@ module.exports = (gulp) => () => {
         './tools/**/*.ts',
         './*.ts',
 
+        // Ignore node_modules directories
+        '!**/node_modules/**',
+
         // Ignore TypeScript mocks because it's not managed by us
         '!./tools/@angular/tsc-wrapped/test/typescript.mocks.ts',
 
