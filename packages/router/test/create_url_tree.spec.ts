@@ -20,11 +20,11 @@ describe('createUrlTree', () => {
     it('should support parameter with multiple values', () => {
       const p1 = serializer.parse('/');
       const t1 = createRoot(p1, ['/'], {m: ['v1', 'v2']});
-      expect(serializer.serialize(t1)).toEqual('/?m=v1&m=v2');
+      expect(serializer.serialize(t1)).toEqual('/?m[]=v1&m[]=v2');
 
       const p2 = serializer.parse('/a/c');
       const t2 = create(p2.root.children[PRIMARY_OUTLET], 1, p2, ['c2'], {m: ['v1', 'v2']});
-      expect(serializer.serialize(t2)).toEqual('/a/c/c2?m=v1&m=v2');
+      expect(serializer.serialize(t2)).toEqual('/a/c/c2?m[]=v1&m[]=v2');
     });
 
     it('should set query params', () => {

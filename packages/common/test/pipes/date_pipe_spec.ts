@@ -192,11 +192,15 @@ export function main() {
 
       });
 
-      it('should format invalid in IE ISO date',
-         () => expect(pipe.transform('2017-01-11T09:25:14.014-0500')).toEqual('Jan 11, 2017'));
+      it('should format invalid in IE ISO date', () => {
+        const validFormattedString = pipe.transform(new Date('2017-01-11T09:25:14+00:00'));
+        expect(pipe.transform('2017-01-11T09:25:14.014-0500')).toEqual(validFormattedString);
+      });
 
-      it('should format invalid in Safari ISO date',
-         () => expect(pipe.transform('2017-01-20T19:00:00+0000')).toEqual('Jan 20, 2017'));
+      it('should format invalid in Safari ISO date', () => {
+        const validFormattedString = pipe.transform(new Date('2017-01-20T19:00:00+00:00'))
+        expect(pipe.transform('2017-01-20T19:00:00+0000')).toEqual(validFormattedString);
+      });
 
       it('should remove bidi control characters',
          () => expect(pipe.transform(date, 'MM/dd/yyyy') !.length).toEqual(10));

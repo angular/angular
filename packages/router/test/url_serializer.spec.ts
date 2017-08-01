@@ -165,7 +165,7 @@ describe('url serializer', () => {
     expect(tree.queryParams).toEqual({a: ['foo', 'bar', 'swaz']});
     expect(tree.queryParamMap.get('a')).toEqual('foo');
     expect(tree.queryParamMap.getAll('a')).toEqual(['foo', 'bar', 'swaz']);
-    expect(url.serialize(tree)).toEqual('/one?a=foo&a=bar&a=swaz');
+    expect(url.serialize(tree)).toEqual('/one?a[]=foo&a[]=bar&a[]=swaz');
   });
 
   it('should parse fragment', () => {
