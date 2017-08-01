@@ -1,9 +1,5 @@
 {
   "extends": "../tsconfig-build",
-  "compilerOptions": {
-    "baseUrl": ".",
-    "outDir": "../../../dist/packages/cdk"
-  },
   "files": [
     "public_api.ts"
   ],

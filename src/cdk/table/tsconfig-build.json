@@ -1,12 +1,5 @@
 {
   "extends": "../tsconfig-build",
-  "compilerOptions": {
-    "outDir": "../../../dist/packages/cdk",
-    "baseUrl": ".",
-    "paths": {
-      "@angular/cdk/platform": ["../../../dist/packages/cdk/platform/index"]
-    }
-  },
   "files": [
     "public_api.ts"
   ],
