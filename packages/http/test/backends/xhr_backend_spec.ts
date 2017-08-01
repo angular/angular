@@ -118,16 +118,24 @@ export function main() {
 
     if (getDOM().supportsCookies()) {
       describe('XSRF support', () => {
+        let req: Request;
+        beforeEach(() => { req = new Request({url: '/test'}); })
         it('sets an XSRF header by default', () => {
           getDOM().setCookie('XSRF-TOKEN', 'magic XSRF value');
-          backend.createConnection(sampleRequest);
-          expect(sampleRequest.headers.get('X-XSRF-TOKEN')).toBe('magic XSRF value');
+          backend.createConnection(req);
+          expect(req.headers.get('X-XSRF-TOKEN')).toBe('magic XSRF value');
         });
         it('should allow overwriting of existing headers', () => {
           getDOM().setCookie('XSRF-TOKEN', 'magic XSRF value');
-          sampleRequest.headers.set('X-XSRF-TOKEN', 'already set');
-          backend.createConnection(sampleRequest);
-          expect(sampleRequest.headers.get('X-XSRF-TOKEN')).toBe('magic XSRF value');
+          req.headers.set('X-XSRF-TOKEN', 'already set');
+          backend.createConnection(req);
+          expect(req.headers.get('X-XSRF-TOKEN')).toBe('magic XSRF value');
+        });
+        it('should skip non-relative urls', () => {
+          getDOM().setCookie('XSRF-TOKEN', 'magic XSRF value');
+          req = new Request({url: 'http://www.google.com'});
+          backend.createConnection(req);
+          expect(req.headers.has('X-XSRF-TOKEN')).toEqual(false);
         });
 
         describe('configuration', () => {
@@ -138,8 +146,8 @@ export function main() {
 
           it('uses the configured names', () => {
             getDOM().setCookie('my cookie', 'XSRF value');
-            backend.createConnection(sampleRequest);
-            expect(sampleRequest.headers.get('X-MY-HEADER')).toBe('XSRF value');
+            backend.createConnection(req);
+            expect(req.headers.get('X-MY-HEADER')).toBe('XSRF value');
           });
         });
       });
