@@ -926,11 +926,11 @@ export declare function sequence(steps: AnimationMetadata[]): AnimationSequenceM
 export declare function setTestabilityGetter(getter: GetTestability): void;
 
 /** @stable */
-export declare class SimpleChange {
-    currentValue: any;
+export declare class SimpleChange<T = any> {
+    currentValue: T;
     firstChange: boolean;
-    previousValue: any;
-    constructor(previousValue: any, currentValue: any, firstChange: boolean);
+    previousValue: T;
+    constructor(previousValue: T, currentValue: T, firstChange: boolean);
     isFirstChange(): boolean;
 }
 
