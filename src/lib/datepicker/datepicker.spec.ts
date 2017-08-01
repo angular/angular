@@ -411,6 +411,21 @@ describe('MdDatepicker', () => {
 
         expect(inputEl.classList).toContain('ng-touched');
       });
+
+      it('should mark input touched on calendar selection', () => {
+        let inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
+
+        expect(inputEl.classList).toContain('ng-untouched');
+
+        testComponent.datepicker._selectAndClose(new Date(2017, JAN, 1));
+        fixture.detectChanges();
+
+        fixture.whenStable().then(() => {
+          fixture.detectChanges();
+
+          expect(inputEl.classList).toContain('ng-touched');
+        });
+      });
     });
 
     describe('datepicker with formControl', () => {
