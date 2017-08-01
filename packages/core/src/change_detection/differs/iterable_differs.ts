@@ -63,8 +63,9 @@ export interface IterableChanges<V> {
    *        of the item, after applying the operations up to this point.
    */
   forEachOperation(
-      fn: (record: IterableChangeRecord<V>, previousIndex: number, currentIndex: number) => void):
-      void;
+      fn:
+          (record: IterableChangeRecord<V>, previousIndex: number|null,
+           currentIndex: number|null) => void): void;
 
   /**
    * Iterate over changes in the order of original `Iterable` showing where the original items

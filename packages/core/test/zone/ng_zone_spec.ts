@@ -647,9 +647,9 @@ function commonTests() {
     it('should call onUnstable and onMicrotaskEmpty before and after each turn, respectively',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          let aResolve: (result: string | null) => void;
-         let aPromise: Promise<string>;
+         let aPromise: Promise<string|null>;
          let bResolve: (result: string | null) => void;
-         let bPromise: Promise<string>;
+         let bPromise: Promise<string|null>;
 
          runNgZoneNoLog(() => {
            macroTask(() => {
