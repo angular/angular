@@ -15,7 +15,7 @@ import {SimpleChange} from '../change_detection/change_detection_util';
  * @stable
  */
 export type SimpleChanges<T = any> = {
-    [P in keyof T]?: SimpleChange<T[P]>;
+  [P in keyof T]?: SimpleChange<T[P]>;
 }
 
 /**
@@ -32,7 +32,9 @@ export type SimpleChanges<T = any> = {
  *
  * @stable
  */
-export interface OnChanges { ngOnChanges(changes: SimpleChanges): void; }
+export interface OnChanges {
+  ngOnChanges(changes: SimpleChanges): void;
+}
 
 /**
  * @whatItDoes Lifecycle hook that is called after data-bound properties of a directive are
