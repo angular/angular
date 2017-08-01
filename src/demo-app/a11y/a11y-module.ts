@@ -10,6 +10,7 @@ import {ButtonToggleAccessibilityDemo} from './button-toggle/button-toggle-a11y'
 import {CheckboxAccessibilityDemo} from './checkbox/checkbox-a11y';
 import {ChipsAccessibilityDemo} from './chips/chips-a11y';
 import {RadioAccessibilityDemo} from './radio/radio-a11y';
+import {DatepickerAccessibilityDemo} from './datepicker/datepicker-a11y';
 
 @NgModule({
   imports: [
@@ -23,12 +24,8 @@ export class AccessibilityRoutingModule {}
 
 @NgModule({
   imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
     AccessibilityRoutingModule,
-    FormsModule,
-    ReactiveFormsModule,
+    CommonModule,
     DemoMaterialModule,
     FormsModule,
     ReactiveFormsModule,
@@ -40,6 +37,7 @@ export class AccessibilityRoutingModule {}
     ButtonToggleAccessibilityDemo,
     CheckboxAccessibilityDemo,
     ChipsAccessibilityDemo,
+    DatepickerAccessibilityDemo,
     RadioAccessibilityDemo,
   ]
 })

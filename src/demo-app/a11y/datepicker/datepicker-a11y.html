@@ -1,0 +1,112 @@
+<section>
+  <h2>Choose a date (e.g. choose your date of birth)</h2>
+  <md-input-container>
+    <input mdInput
+           [mdDatepicker]="birthdayPicker"
+           [(ngModel)]="birthday"
+           #birthdayModel="ngModel"
+           [max]="maxBirthday"
+           required
+           placeholder="Date of birth">
+    <md-datepicker-toggle mdSuffix [for]="birthdayPicker"></md-datepicker-toggle>
+    <md-error *ngIf="birthdayModel.hasError('required')">
+      Please choose a date.
+    </md-error>
+    <md-error *ngIf="birthdayModel.hasError('mdDatepickerMax')">
+      Please choose an earlier date.
+    </md-error>
+  </md-input-container>
+  <md-datepicker #birthdayPicker startView="year"></md-datepicker>
+</section>
+
+<section>
+  <h2>Choose a date with touch UI (e.g. choose a payment date on mobile)</h2>
+  <p>When would you like to schedule your payment?</p>
+  <md-input-container>
+    <input mdInput
+           [mdDatepicker]="paymentPicker"
+           [(ngModel)]="paymentDate"
+           #paymentDateModel="ngModel"
+           [min]="minPaymentDate"
+           required
+           aria-label="Payment date">
+    <md-datepicker-toggle mdSuffix [for]="paymentPicker"></md-datepicker-toggle>
+    <md-error *ngIf="paymentDateModel.hasError('required')">
+      Please choose a date.
+    </md-error>
+    <md-error *ngIf="paymentDateModel.hasError('mdDatepickerMin')">
+      Please choose a later date.
+    </md-error>
+  </md-input-container>
+  <md-datepicker #paymentPicker></md-datepicker>
+</section>
+
+<section>
+  <h2>Choose date with startAt, min and max (e.g. schedule a departing and returning flight)</h2>
+  <md-input-container>
+    <input mdInput
+           [mdDatepicker]="departPicker"
+           [(ngModel)]="departDate"
+           #departDateModel="ngModel"
+           [min]="minTripDate"
+           [max]="maxTripDate"
+           required
+           placeholder="Departure date">
+    <md-datepicker-toggle mdSuffix [for]="departPicker"></md-datepicker-toggle>
+    <md-error *ngIf="departDateModel.hasError('required')">
+      Please choose a date.
+    </md-error>
+    <md-error *ngIf="departDateModel.hasError('mdDatepickerMin')">
+      Please choose a later date.
+    </md-error>
+    <md-error *ngIf="departDateModel.hasError('mdDatepickerMax')">
+      Please choose an earlier date.
+    </md-error>
+  </md-input-container>
+  <md-datepicker #departPicker [startAt]="startTripDate"></md-datepicker>
+  <md-input-container>
+    <input mdInput
+           [mdDatepicker]="returnPicker"
+           [(ngModel)]="returnDate"
+           #returnDateModel="ngModel"
+           [min]="departDate || minTripDate"
+           [max]="maxTripDate"
+           placeholder="Return date">
+    <md-datepicker-toggle mdSuffix [for]="returnPicker"></md-datepicker-toggle>
+    <md-error *ngIf="returnDateModel.hasError('mdDatepickerMin') && !departDate">
+      Please choose a later date.
+    </md-error>
+    <md-error *ngIf="returnDateModel.hasError('mdDatepickerMin') && departDate">
+      Please choose a date after your departure.
+    </md-error>
+    <md-error *ngIf="returnDateModel.hasError('mdDatepickerMax')">
+      Please choose an earlier date.
+    </md-error>
+  </md-input-container>
+  <md-datepicker #returnPicker [startAt]="startTripDate"></md-datepicker>
+</section>
+
+<section>
+  <h2>Choose date with date filter (e.g. schedule a doctor appointment)</h2>
+  <md-input-container>
+    <input mdInput
+           [mdDatepicker]="appointmentPicker"
+           [(ngModel)]="appointmentDate"
+           #appointmentDateModel="ngModel"
+           [min]="minAppointmentDate"
+           [max]="maxAppointmentDate"
+           [mdDatepickerFilter]="weekdaysOnly"
+           required
+           placeholder="Appointment date">
+    <md-datepicker-toggle mdSuffix [for]="appointmentPicker"></md-datepicker-toggle>
+    <md-error *ngIf="appointmentDateModel.hasError('required')">
+      Please choose a date.
+    </md-error>
+    <md-error *ngIf="appointmentDateModel.hasError('mdDatepickerMin') ||
+                     appointmentDateModel.hasError('mdDatepickerMax') ||
+                     appointmentDateModel.hasError('mdDatepickerFilter')">
+      No appointments available on this date.
+    </md-error>
+  </md-input-container>
+  <md-datepicker #appointmentPicker></md-datepicker>
+</section>

@@ -21,6 +21,7 @@ export class AccessibilityDemo {
     {name: 'Button toggle', route: 'button-toggle'},
     {name: 'Checkbox', route: 'checkbox'},
     {name: 'Chips', route: 'chips'},
+    {name: 'Datepicker', route: 'datepicker'},
     {name: 'Radio buttons', route: 'radio'},
   ];
 }
