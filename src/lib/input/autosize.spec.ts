@@ -130,6 +130,21 @@ describe('MdTextareaAutosize', () => {
       .toBeGreaterThan(previousMinHeight, 'Expected the textarea to grow to two rows.');
   });
 
+  it('should calculate the proper height based on the specified amount of max rows', () => {
+    fixture.componentInstance.content = [1, 2, 3, 4, 5, 6, 7, 8].join('\n');
+    fixture.detectChanges();
+    autosize.resizeToFitContent();
+
+    expect(textarea.clientHeight)
+      .toBe(textarea.scrollHeight, 'Expected textarea to not have a vertical scrollbar.');
+
+    fixture.componentInstance.maxRows = 5;
+    fixture.detectChanges();
+
+    expect(textarea.clientHeight)
+      .toBeLessThan(textarea.scrollHeight, 'Expected textarea to have a vertical scrollbar.');
+  });
+
   it('should properly resize to content on init', () => {
     // Manually create the test component in this test, because in this test the first change
     // detection should be triggered after a multiline content is set.
