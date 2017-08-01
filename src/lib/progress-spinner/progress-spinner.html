@@ -1,9 +1,11 @@
 <!--
   preserveAspectRatio of xMidYMid meet as the center of the viewport is the circle's
   center. The center of the circle will remain at the center of the md-progress-spinner
-  element containing the SVG.
+  element containing the SVG. `focusable="false"` prevents IE from allowing the user to
+  tab into the SVG element.
 -->
 <svg viewBox="0 0 100 100"
-     preserveAspectRatio="xMidYMid meet">
+     preserveAspectRatio="xMidYMid meet"
+     focusable="false">
   <path #path [style.strokeWidth]="strokeWidth"></path>
 </svg>

@@ -178,6 +178,14 @@ describe('MdProgressSpinner', () => {
         .toBe(oldDimesions, 'Expected circle dimensions to have changed.');
   });
 
+  it('should remove the underlying SVG element from the tab order explicitly', () => {
+    const fixture = TestBed.createComponent(BasicProgressSpinner);
+
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('svg').getAttribute('focusable')).toBe('false');
+  });
+
 });
 
 
