@@ -41,7 +41,6 @@ const MD_FIT_MODE = 'fit';
   templateUrl: 'grid-list.html',
   styleUrls: ['grid-list.css'],
   host: {
-    'role': 'list',
     'class': 'mat-grid-list',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -25,7 +25,6 @@ import {coerceToNumber} from './grid-list-measure';
   moduleId: module.id,
   selector: 'md-grid-tile, mat-grid-tile',
   host: {
-    'role': 'listitem',
     'class': 'mat-grid-tile',
   },
   templateUrl: 'grid-tile.html',
