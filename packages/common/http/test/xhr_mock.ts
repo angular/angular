@@ -79,8 +79,8 @@ export class MockXMLHttpRequest {
     return new HttpHeaders(this.mockResponseHeaders).get(header);
   }
 
-  mockFlush(status: number, statusText: string, body: any|null) {
-    if (this.responseType === 'text') {
+  mockFlush(status: number, statusText: string, body?: string) {
+    if (typeof body === 'string') {
       this.responseText = body;
     } else {
       this.response = body;
