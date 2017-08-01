@@ -1,65 +1,65 @@
 # Angular Material components
-lib/list/**                    @jelbourn @crisbeto
-lib/tooltip/**                 @andrewseguin
-lib/button-toggle/**           @tinayuangao
-lib/snack-bar/**               @jelbourn @crisbeto @josephperrott
-lib/radio/**                   @tinayuangao @devversion
-lib/card/**                    @jelbourn
-lib/input/**                   @mmalerba
-lib/progress-spinner/**        @jelbourn @crisbeto @josephperrott
-lib/datepicker/**              @mmalerba
-lib/sort/**                    @andrewseguin
-lib/autocomplete/**            @kara @crisbeto
-lib/chips/**                   @tinayuangao
-lib/icon/**                    @jelbourn
-lib/dialog/**                  @jelbourn @crisbeto
-lib/progress-bar/**            @jelbourn @crisbeto @josephperrott
-lib/grid-list/**               @kara @jelbourn
-lib/select/**                  @kara @crisbeto
-lib/expansion/**               @josephperrott @jelbourn
-lib/slide-toggle/**            @devversion
-lib/toolbar/**                 @devversion
-lib/button/**                  @tinayuangao
-lib/checkbox/**                @tinayuangao @devversion
-lib/table/**                   @andrewseguin
-lib/slider/**                  @mmalerba
-lib/sidenav/**                 @mmalerba
-lib/menu/**                    @kara @crisbeto
-lib/paginator/**               @andrewseguin
-lib/tabs/**                    @andrewseguin
+src/lib/list/**                    @jelbourn @crisbeto
+src/lib/tooltip/**                 @andrewseguin
+src/lib/button-toggle/**           @tinayuangao
+src/lib/snack-bar/**               @jelbourn @crisbeto @josephperrott
+src/lib/radio/**                   @tinayuangao @devversion
+src/lib/card/**                    @jelbourn
+src/lib/input/**                   @mmalerba
+src/lib/progress-spinner/**        @jelbourn @crisbeto @josephperrott
+src/lib/datepicker/**              @mmalerba
+src/lib/sort/**                    @andrewseguin
+src/lib/autocomplete/**            @kara @crisbeto
+src/lib/chips/**                   @tinayuangao
+src/lib/icon/**                    @jelbourn
+src/lib/dialog/**                  @jelbourn @crisbeto
+src/lib/progress-bar/**            @jelbourn @crisbeto @josephperrott
+src/lib/grid-list/**               @kara @jelbourn
+src/lib/select/**                  @kara @crisbeto
+src/lib/expansion/**               @josephperrott @jelbourn
+src/lib/slide-toggle/**            @devversion
+src/lib/toolbar/**                 @devversion
+src/lib/button/**                  @tinayuangao
+src/lib/checkbox/**                @tinayuangao @devversion
+src/lib/table/**                   @andrewseguin
+src/lib/slider/**                  @mmalerba
+src/lib/sidenav/**                 @mmalerba
+src/lib/menu/**                    @kara @crisbeto
+src/lib/paginator/**               @andrewseguin
+src/lib/tabs/**                    @andrewseguin
 
 # Angular Material core
-lib/core/selection/**          @tinayuangao @jelbourn
-lib/core/selection/pseudo*/**  @crisbeto @jelbourn
-lib/core/theming/**            @jelbourn
-lib/core/option/**             @kara @crisbeto
-lib/core/rxjs/**               @jelbourn
-lib/core/ripple/**             @devversion
-lib/core/a11y/**               @jelbourn @devversion
-lib/core/compatibility/**      @jelbourn
-lib/core/overlay/**            @jelbourn @crisbeto
-lib/core/overlay/scroll/**     @andrewseguin @crisbeto
-lib/core/platform/**           @jelbourn @devversion
-lib/core/bidi/**               @jelbourn
-lib/core/placeholder/**        @kara @mmalerba
-lib/core/portal/**             @jelbourn
-lib/core/typography/**         @crisbeto
-lib/core/datetime/**           @mmalerba
+src/lib/core/selection/**          @tinayuangao @jelbourn
+src/lib/core/selection/pseudo*/**  @crisbeto @jelbourn
+src/lib/core/theming/**            @jelbourn
+src/lib/core/option/**             @kara @crisbeto
+src/lib/core/rxjs/**               @jelbourn
+src/lib/core/ripple/**             @devversion
+src/lib/core/a11y/**               @jelbourn @devversion
+src/lib/core/compatibility/**      @jelbourn
+src/lib/core/overlay/**            @jelbourn @crisbeto
+src/lib/core/overlay/scroll/**     @andrewseguin @crisbeto
+src/lib/core/platform/**           @jelbourn @devversion
+src/lib/core/bidi/**               @jelbourn
+src/lib/core/placeholder/**        @kara @mmalerba
+src/lib/core/portal/**             @jelbourn
+src/lib/core/typography/**         @crisbeto
+src/lib/core/datetime/**           @mmalerba
 
 # CDK
-cdk/coercion/**                @jelbourn
-cdk/rxjs/**                    @jelbourn
-cdk/observe-content/**         @crisbeto @jelbourn
-cdk/a11y/**                    @jelbourn @devversion
-cdk/platform/**                @jelbourn @devversion
-cdk/bidi/**                    @jelbourn
-cdk/table/**                   @andrewseguin
-cdk/portal/**                  @jelbourn
+src/cdk/coercion/**                @jelbourn
+src/cdk/rxjs/**                    @jelbourn
+src/cdk/observe-content/**         @crisbeto @jelbourn
+src/cdk/a11y/**                    @jelbourn @devversion
+src/cdk/platform/**                @jelbourn @devversion
+src/cdk/bidi/**                    @jelbourn
+src/cdk/table/**                   @andrewseguin
+src/cdk/portal/**                  @jelbourn
 
 # Tooling
-tools/**                       @devversion @jelbourn
-test/**                        @devversion @jelbourn
-scripts/**                     @devversion @jelbourn
+tools/**                           @devversion @jelbourn
+test/**                            @devversion @jelbourn
+scripts/**                         @devversion @jelbourn
 
 # Docs examples
-material-examples/**           @amcdnl @jelbourn
+src/material-examples/**           @amcdnl @jelbourn
