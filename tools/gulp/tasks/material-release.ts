@@ -3,36 +3,33 @@ import {join} from 'path';
 import {writeFileSync, mkdirpSync} from 'fs-extra';
 import {Bundler} from 'scss-bundle';
 import {composeRelease, buildConfig, sequenceTask} from 'material2-build-tools';
+import {materialPackage} from '../packages';
 
 // There are no type definitions available for these imports.
 const gulpRename = require('gulp-rename');
 
-const {packagesDir, outputDir} = buildConfig;
+const {outputDir} = buildConfig;
+const {packageRoot, packageOut} = materialPackage;
 
 /** Path to the directory where all releases are created. */
 const releasesDir = join(outputDir, 'releases');
 
-/** Path to the output of the Material package. */
-const materialOutputPath = join(outputDir, 'packages', 'material');
-
-// Path to the sources of the Material package.
-const materialPath = join(packagesDir, 'lib');
 // Path to the release output of material.
 const releasePath = join(releasesDir, 'material');
 // The entry-point for the scss theming bundle.
-const themingEntryPointPath = join(materialPath, 'core', 'theming', '_all-theme.scss');
+const themingEntryPointPath = join(packageRoot, 'core', 'theming', '_all-theme.scss');
 // Output path for the scss theming bundle.
 const themingBundlePath = join(releasePath, '_theming.scss');
 // Matches all pre-built theme css files
-const prebuiltThemeGlob = join(materialOutputPath, '**/theming/prebuilt/*.css?(.map)');
+const prebuiltThemeGlob = join(packageOut, '**/theming/prebuilt/*.css?(.map)');
 // Matches all SCSS files in the library.
-const allScssGlob = join(materialPath, '**/*.scss');
+const allScssGlob = join(packageRoot, '**/*.scss');
 
 /**
  * Overwrite the release task for the material package. The material release will include special
  * files, like a bundled theming SCSS file or all prebuilt themes.
  */
-task('material:build-release', ['material:prepare-release'], () => composeRelease('material'));
+task('material:build-release', ['material:prepare-release'], () => composeRelease(materialPackage));
 
 /**
  * Task that will build the material package. It will also copy all prebuilt themes and build

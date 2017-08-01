@@ -5,11 +5,9 @@ import {createRollupBundle} from './rollup-helpers';
 import {remapSourcemap} from './sourcemap-remap';
 import {transpileFile} from './typescript-transpile';
 import {buildConfig} from './build-config';
-import {getSecondaryEntryPointsForPackage} from './secondary-entry-points';
 
 /** Directory where all bundles will be created in. */
 const bundlesDir = join(buildConfig.outputDir, 'bundles');
-
 
 /** Builds bundles for the primary entry-point w/ given entry file, e.g. @angular/cdk */
 export async function buildPrimaryEntryPointBundles(entryFile: string, packageName: string) {
@@ -23,18 +21,9 @@ export async function buildPrimaryEntryPointBundles(entryFile: string, packageNa
   });
 }
 
-/** Builds bundles for all secondary entry-points for a given package, e.g. 'cdk' */
-export async function buildAllSecondaryEntryPointBundles(packageName: string) {
-  const rootPackageDir = join(buildConfig.outputDir, 'packages', packageName);
-
-  return Promise.all(getSecondaryEntryPointsForPackage(packageName)
-      .map(entryPointName => buildSecondaryEntryPointBundles(
-          join(rootPackageDir, entryPointName, `index.js`), packageName, entryPointName)));
-}
-
 /** Builds bundles for a single secondary entry-point w/ given entry file, e.g. @angular/cdk/a11y */
-export async function buildSecondaryEntryPointBundles(
-    entryFile: string, packageName: string, entryPointName: string) {
+export async function buildSecondaryEntryPointBundles(entryFile: string, packageName: string,
+                                                      entryPointName: string) {
   return createBundlesForEntryPoint({
     entryFile,
     moduleName: `ng.${packageName}.${entryPointName}`,

@@ -31,5 +31,5 @@ export function getSecondaryEntryPointsForPackage(packageName: string) {
     return CDK_ENTRY_POINTS;
   }
 
-  throw Error('Only the cdk supports secondary entry-points right now.');
+  return [];
 }
