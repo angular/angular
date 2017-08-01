@@ -8,5 +8,9 @@ import {Component} from '@angular/core';
   styleUrls: ['button-a11y.css'],
 })
 export class ButtonAccessibilityDemo {
-  // TODO(tinayuangao): Add use cases
+  counter: number = 0;
+
+  increase() {
+    this.counter++;
+  }
 }
