@@ -404,6 +404,10 @@ describe('MdCheckbox', () => {
           .toBe(0, 'Expected no ripple after element is blurred.');
     }));
 
+    it('should remove the SVG checkmark from the tab order', () => {
+      expect(checkboxNativeElement.querySelector('svg')!.getAttribute('focusable')).toBe('false');
+    });
+
     describe('ripple elements', () => {
 
       it('should show ripples on label mousedown', () => {
