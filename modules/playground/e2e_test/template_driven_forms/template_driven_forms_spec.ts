@@ -25,9 +25,9 @@ describe('Template-Driven Forms', function() {
     input.sendKeys('invalid');
     firstName.click();
 
-    // TODO: getInnerHtml has been deprecated by selenium-webdriver in the
-    // upcoming release of 3.0.0. Protractor has removed this method from
-    // ElementFinder but can still be accessed via WebElement.
-    expect(form.getWebElement().getInnerHtml()).toContain('is invalid credit card number');
+    // getInnerHtml is deprecated, using workaround in changelog
+    // https://github.com/angular/protractor/blob/master/CHANGELOG.md#500
+    expect(browser.executeScript('return arguments[0].innerHTML;', form))
+        .toContain('is invalid credit card number');
   });
 });

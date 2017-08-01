@@ -33,6 +33,7 @@ function _main(args) {
     ignoreHttpsAudits(config);
   }
 
+  // Cannot use Chrome Headless here since it lowers the score.
   launchChromeAndRunLighthouse(url, {}, config).
     then(results => processResults(results, logFile)).
     then(score => evaluateScore(minScore, score)).

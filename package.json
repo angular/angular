@@ -17,7 +17,7 @@
     "url": "https://github.com/angular/angular.git"
   },
   "scripts": {
-    "postinstall": "node tools/npm/copy-npm-shrinkwrap && webdriver-manager update",
+    "postinstall": "node tools/npm/copy-npm-shrinkwrap && webdriver-manager update --standalone false --gecko false --quiet",
     "check-env": "gulp check-env"
   },
   "dependencies": {
@@ -37,7 +37,7 @@
     "@types/hammerjs": "^2.0.33",
     "@types/jasmine": "^2.2.22-alpha",
     "@types/node": "^6.0.84",
-    "@types/selenium-webdriver": "^2.53.35",
+    "@types/selenium-webdriver": "^2.53.42",
     "@types/systemjs": "^0.19.32",
     "angular": "^1.5.0",
     "angular-animate": "^1.5.0",
@@ -69,7 +69,7 @@
     "jpm": "1.0.0",
     "karma": "^0.13.20",
     "karma-browserstack-launcher": "^0.1.9",
-    "karma-chrome-launcher": "^0.2.0",
+    "karma-chrome-launcher": "^2.1.1",
     "karma-jasmine": "^0.3.6",
     "karma-sauce-launcher": "^0.3.0",
     "karma-sourcemap-loader": "^0.3.6",
@@ -79,7 +79,7 @@
     "node-uuid": "1.4.x",
     "parse5": "^3.0.1",
     "protobufjs": "^5.0.0",
-    "protractor": "^4.0.14",
+    "protractor": "^5.1.2",
     "react": "^0.14.0",
     "rewire": "^2.3.3",
     "rho": "^0.3.0",

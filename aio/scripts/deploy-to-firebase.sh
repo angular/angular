@@ -47,5 +47,7 @@ fi
   firebase deploy --message "Commit: $TRAVIS_COMMIT" --non-interactive --token "$firebaseToken"
 
   # Run PWA-score tests
+  # Lighthouse needs Chrome with a screen otherwise the score suffers.
+  sh -e /etc/init.d/xvfb start
   yarn test-pwa-score -- "$deployedUrl" "$MIN_PWA_SCORE"
 )

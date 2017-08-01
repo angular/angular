@@ -39,7 +39,13 @@ module.exports = function (config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: ['Chrome'],
+    browsers: ['ChromeCI'],
+    customLaunchers: {
+      ChromeCI: {
+        base: process.env['TRAVIS'] ? 'ChromeHeadless' : 'Chrome',
+        flags: process.env['TRAVIS'] ? ['--no-sandbox'] : []
+      }
+    },
     singleRun: false
   });
 };
