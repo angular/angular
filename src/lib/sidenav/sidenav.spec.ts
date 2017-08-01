@@ -313,7 +313,7 @@ describe('MdSidenavContainer', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [MdSidenavModule, A11yModule, PlatformModule, NoopAnimationsModule],
-      declarations: [SidenavContainerTwoSidenavTestApp],
+      declarations: [SidenavContainerTwoSidenavTestApp, SidenavDelayed],
     });
 
     TestBed.compileComponents();
@@ -342,6 +342,26 @@ describe('MdSidenavContainer', () => {
 
     expect(sidenavs.every(sidenav => sidenav.componentInstance.opened)).toBe(false);
   }));
+
+  it('should animate the content when a sidenav is added at a later point', fakeAsync(() => {
+    const fixture = TestBed.createComponent(SidenavDelayed);
+
+    fixture.detectChanges();
+
+    const contentElement = fixture.debugElement.nativeElement.querySelector('.mat-sidenav-content');
+
+    expect(parseInt(contentElement.style.marginLeft)).toBe(0);
+
+    fixture.componentInstance.showSidenav = true;
+    fixture.detectChanges();
+
+    fixture.componentInstance.sidenav.open();
+    fixture.detectChanges();
+    tick();
+    fixture.detectChanges();
+
+    expect(parseInt(contentElement.style.marginLeft)).toBeGreaterThan(0);
+  }));
 });
 
 
@@ -358,8 +378,7 @@ class SidenavContainerNoSidenavTestApp { }
     </md-sidenav-container>`,
 })
 class SidenavContainerTwoSidenavTestApp {
-  @ViewChild(MdSidenavContainer)
-  sidenavContainer: MdSidenavContainer;
+  @ViewChild(MdSidenavContainer) sidenavContainer: MdSidenavContainer;
 }
 
 /** Test component that contains an MdSidenavContainer and one MdSidenav. */
@@ -440,4 +459,17 @@ class SidenavDynamicAlign {
 })
 class SidenavWitFocusableElements {
   mode: string = 'over';
+}
+
+
+@Component({
+  template: `
+    <md-sidenav-container>
+      <md-sidenav *ngIf="showSidenav" #sidenav mode="side">Sidenav</md-sidenav>
+    </md-sidenav-container>
+  `,
+})
+class SidenavDelayed {
+  @ViewChild(MdSidenav) sidenav: MdSidenav;
+  showSidenav = false;
 }

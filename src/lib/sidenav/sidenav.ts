@@ -28,8 +28,9 @@ import {animate, state, style, transition, trigger, AnimationEvent} from '@angul
 import {Directionality, coerceBooleanProperty} from '../core';
 import {FocusTrapFactory, FocusTrap} from '../core/a11y/focus-trap';
 import {ESCAPE} from '../core/keyboard/keycodes';
-import {first} from '../core/rxjs/index';
+import {first, takeUntil, startWith} from '../core/rxjs/index';
 import {DOCUMENT} from '@angular/platform-browser';
+import {merge} from 'rxjs/observable/merge';
 
 
 /** Throws an exception when two MdSidenav are matching the same side. */
@@ -336,13 +337,13 @@ export class MdSidenavContainer implements AfterContentInit {
   }
 
   ngAfterContentInit() {
-    // On changes, assert on consistency.
-    this._sidenavs.changes.subscribe(() => this._validateDrawers());
-    this._sidenavs.forEach((sidenav: MdSidenav) => {
-      this._watchSidenavToggle(sidenav);
-      this._watchSidenavAlign(sidenav);
+    startWith.call(this._sidenavs.changes, null).subscribe(() => {
+      this._validateDrawers();
+      this._sidenavs.forEach((sidenav: MdSidenav) => {
+        this._watchSidenavToggle(sidenav);
+        this._watchSidenavAlign(sidenav);
+      });
     });
-    this._validateDrawers();
   }
 
   /** Calls `open` of both start and end sidenavs */
@@ -361,16 +362,17 @@ export class MdSidenavContainer implements AfterContentInit {
    * is properly hidden.
    */
   private _watchSidenavToggle(sidenav: MdSidenav): void {
-    sidenav._animationStarted.subscribe(() => {
-      // Set the transition class on the container so that the animations occur. This should not
-      // be set initially because animations should only be triggered via a change in state.
-      this._renderer.addClass(this._element.nativeElement, 'mat-sidenav-transition');
-      this._changeDetectorRef.markForCheck();
-    });
+    takeUntil.call(sidenav._animationStarted, this._sidenavs.changes)
+      .subscribe(() => {
+        // Set the transition class on the container so that the animations occur. This should not
+        // be set initially because animations should only be triggered via a change in state.
+        this._renderer.addClass(this._element.nativeElement, 'mat-sidenav-transition');
+        this._changeDetectorRef.markForCheck();
+      });
 
     if (sidenav.mode !== 'side') {
-      sidenav.onOpen.subscribe(() => this._setContainerClass(true));
-      sidenav.onClose.subscribe(() => this._setContainerClass(false));
+      takeUntil.call(merge(sidenav.onOpen, sidenav.onClose), this._sidenavs.changes).subscribe(() =>
+          this._setContainerClass(sidenav.opened));
     }
   }
 
@@ -384,7 +386,7 @@ export class MdSidenavContainer implements AfterContentInit {
     }
     // NOTE: We need to wait for the microtask queue to be empty before validating,
     // since both drawers may be swapping sides at the same time.
-    sidenav.onAlignChanged.subscribe(() =>
+    takeUntil.call(sidenav.onAlignChanged, this._sidenavs.changes).subscribe(() =>
         first.call(this._ngZone.onMicrotaskEmpty).subscribe(() => this._validateDrawers()));
   }
 
