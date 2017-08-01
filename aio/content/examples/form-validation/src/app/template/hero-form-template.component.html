@@ -1,18 +1,20 @@
  <!-- #docregion -->
 <div class="container">
 
-  <h1>Reactive Form</h1>
-
-  <form [formGroup]="heroForm" #formDir="ngForm">
-
-    <div [hidden]="formDir.submitted">
+  <h1>Template-Driven Form</h1>
+  <!-- #docregion form-tag-->
+  <form #heroForm="ngForm">
+  <!-- #enddocregion form-tag-->
+    <div [hidden]="heroForm.submitted">
 
       <div class="form-group">
-
         <label for="name">Name</label>
         <!-- #docregion name-with-error-msg -->
-        <input id="name" class="form-control"
-               formControlName="name" required >
+        <!-- #docregion name-input -->
+        <input id="name" name="name" class="form-control"
+               required minlength="4" forbiddenName="bob"
+               [(ngModel)]="hero.name" #name="ngModel" >
+        <!-- #enddocregion name-input -->
 
         <div *ngIf="name.invalid && (name.dirty || name.touched)"
              class="alert alert-danger">
@@ -26,6 +28,7 @@
           <div *ngIf="name.errors.forbiddenName">
             Name cannot be Bob.
           </div>
+
         </div>
         <!-- #enddocregion name-with-error-msg -->
       </div>
@@ -33,30 +36,31 @@
       <div class="form-group">
         <label for="alterEgo">Alter Ego</label>
         <input id="alterEgo" class="form-control"
-            formControlName="alterEgo"  >
+               name="alterEgo" [(ngModel)]="hero.alterEgo" >
       </div>
 
       <div class="form-group">
         <label for="power">Hero Power</label>
-        <select id="power" class="form-control"
-            formControlName="power" required >
+        <select id="power" name="power" class="form-control"
+                required [(ngModel)]="hero.power" #power="ngModel" >
           <option *ngFor="let p of powers" [value]="p">{{p}}</option>
         </select>
 
-        <div *ngIf="power.invalid && power.touched" class="alert alert-danger">
+        <div *ngIf="power.errors && power.touched" class="alert alert-danger">
           <div *ngIf="power.errors.required">Power is required.</div>
         </div>
       </div>
 
       <button type="submit" class="btn btn-default"
-             [disabled]="heroForm.invalid">Submit</button>
+              [disabled]="heroForm.invalid">Submit</button>
       <button type="button" class="btn btn-default"
-             (click)="formDir.resetForm({})">Reset</button>
+              (click)="heroForm.resetForm({})">Reset</button>
+    </div>
+
+    <div class="submitted-message" *ngIf="heroForm.submitted">
+      <p>You've submitted your hero, {{ heroForm.value.name }}!</p>
+      <button (click)="heroForm.resetForm({})">Add new hero</button>
     </div>
   </form>
 
-  <div class="submitted-message" *ngIf="formDir.submitted">
-    <p>You've submitted your hero, {{ heroForm.value.name }}!</p>
-    <button (click)="formDir.resetForm({})">Add new hero</button>
-  </div>
 </div>

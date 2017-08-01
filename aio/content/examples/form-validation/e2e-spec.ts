@@ -9,30 +9,20 @@ describe('Form Validation Tests', function () {
     browser.get('');
   });
 
-  describe('Hero Form 1', () => {
+  describe('Template-driven form', () => {
     beforeAll(() => {
-      getPage('hero-form-template1');
+      getPage('hero-form-template');
     });
 
-    tests();
+    tests('Template-Driven Form');
   });
 
-  describe('Hero Form 2', () => {
+  describe('Reactive form', () => {
     beforeAll(() => {
-      getPage('hero-form-template2');
+      getPage('hero-form-reactive');
     });
 
-    tests();
-    bobTests();
-  });
-
-  describe('Hero Form 3 (Reactive)', () => {
-    beforeAll(() => {
-      getPage('hero-form-reactive3');
-      makeNameTooLong();
-    });
-
-    tests();
+    tests('Reactive Form');
     bobTests();
   });
 });
@@ -48,6 +38,7 @@ let page: {
   nameInput: ElementFinder,
   alterEgoInput: ElementFinder,
   powerSelect: ElementFinder,
+  powerOption: ElementFinder,
   errorMessages: ElementArrayFinder,
   heroFormButtons: ElementArrayFinder,
   heroSubmitted: ElementFinder
@@ -64,19 +55,21 @@ function getPage(sectionTag: string) {
     nameInput: section.element(by.css('#name')),
     alterEgoInput: section.element(by.css('#alterEgo')),
     powerSelect: section.element(by.css('#power')),
+    powerOption: section.element(by.css('#power option')),
     errorMessages: section.all(by.css('div.alert')),
     heroFormButtons: buttons,
-    heroSubmitted: section.element(by.css('hero-submitted > div'))
+    heroSubmitted: section.element(by.css('.submitted-message'))
   };
 }
 
-function tests() {
+function tests(title: string) {
+
   it('should display correct title', function () {
-    expect(page.title.getText()).toContain('Hero Form');
+    expect(page.title.getText()).toContain(title);
   });
 
   it('should not display submitted message before submit', function () {
-    expect(page.heroSubmitted.isElementPresent(by.css('h2'))).toBe(false);
+    expect(page.heroSubmitted.isElementPresent(by.css('p'))).toBe(false);
   });
 
   it('should have form buttons', function () {
@@ -130,11 +123,11 @@ function tests() {
 
   it('should hide form after submit', function () {
     page.heroFormButtons.get(0).click();
-    expect(page.title.isDisplayed()).toBe(false);
+    expect(page.heroFormButtons.get(0).isDisplayed()).toBe(false);
   });
 
   it('submitted form should be displayed', function () {
-    expect(page.heroSubmitted.isElementPresent(by.css('h2'))).toBe(true);
+    expect(page.heroSubmitted.isElementPresent(by.css('p'))).toBe(true);
   });
 
   it('submitted form should have new hero name', function () {
@@ -142,9 +135,9 @@ function tests() {
   });
 
   it('clicking edit button should reveal form again', function () {
-    const editBtn = page.heroSubmitted.element(by.css('button'));
-    editBtn.click();
-    expect(page.heroSubmitted.isElementPresent(by.css('h2')))
+    const newFormBtn = page.heroSubmitted.element(by.css('button'));
+    newFormBtn.click();
+    expect(page.heroSubmitted.isElementPresent(by.css('p')))
       .toBe(false, 'submitted hidden again');
     expect(page.title.isDisplayed()).toBe(true, 'can see form title');
   });
@@ -159,9 +152,13 @@ function expectFormIsInvalid() {
 }
 
 function bobTests() {
-  const emsg = 'Someone named "Bob" cannot be a hero.';
+  const emsg = 'Name cannot be Bob.';
 
   it('should produce "no bob" error after setting name to "Bobby"', function () {
+    // Re-populate select element
+    page.powerSelect.click();
+    page.powerOption.click();
+
     page.nameInput.clear();
     page.nameInput.sendKeys('Bobby');
     expectFormIsInvalid();
@@ -173,9 +170,4 @@ function bobTests() {
     page.nameInput.sendKeys(testName);
     expectFormIsValid();
   });
-}
-
-function makeNameTooLong() {
-  // make the first name invalid
-  page.nameInput.sendKeys('ThisHeroNameHasWayWayTooManyLetters');
 }
