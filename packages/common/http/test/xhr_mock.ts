@@ -79,12 +79,13 @@ export class MockXMLHttpRequest {
     return new HttpHeaders(this.mockResponseHeaders).get(header);
   }
 
-  mockFlush(status: number, statusText: string, body: any|null) {
-    if (this.responseType === 'text') {
+  mockFlush(status: number, statusText: string, body: any|null, browserFailedParse?: boolean) {
+    if (this.responseType === 'text' || browserFailedParse) {
       this.responseText = body;
     } else {
       this.response = body;
     }
+
     this.status = status;
     this.statusText = statusText;
     this.mockLoadEvent();

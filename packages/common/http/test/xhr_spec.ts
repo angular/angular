@@ -92,9 +92,16 @@ export function main() {
       const res = events[1] as HttpResponse<{data: string}>;
       expect(res.body !.data).toBe('some data');
     });
+    it('handles a json string response', () => {
+      const events = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));
+      factory.mock.mockFlush(200, 'OK', 'some data');
+      expect(events.length).toBe(2);
+      const res = events[1] as HttpResponse<string>;
+      expect(res.body).toBe('some data');
+    });
     it('handles a json response that comes via responseText', () => {
       const events = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));
-      factory.mock.mockFlush(200, 'OK', JSON.stringify({data: 'some data'}));
+      factory.mock.mockFlush(200, 'OK', JSON.stringify({data: 'some data'}), true);
       expect(events.length).toBe(2);
       const res = events[1] as HttpResponse<{data: string}>;
       expect(res.body !.data).toBe('some data');
