@@ -70,8 +70,8 @@ export class ValueUnwrapper {
  * Represents a basic change from a previous to a new value.
  * @stable
  */
-export class SimpleChange {
-  constructor(public previousValue: any, public currentValue: any, public firstChange: boolean) {}
+export class SimpleChange<T> {
+  constructor(public previousValue: T, public currentValue: T, public firstChange: boolean) {}
 
   /**
    * Check whether the new value is the first value assigned.
