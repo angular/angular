@@ -78,7 +78,7 @@ Here are the available global options:
 | --------------- | ------- | ------------------- | ----------------------------------------- |
 | float           | string  | auto, always, never | The default placeholder float behavior.   |
 
-#### Keyboard interaction:
+### Keyboard interaction
 - <kbd>DOWN_ARROW</kbd>: Focus next option
 - <kbd>UP_ARROW</kbd>: Focus previous option
 - <kbd>ENTER</kbd> or <kbd>SPACE</kbd>: Select focused item

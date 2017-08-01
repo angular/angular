@@ -7,7 +7,7 @@ import {EXAMPLE_COMPONENTS} from './example-module';
  */
 export class ExampleData {
   // TODO: figure out how do we get these variables.
-  description: string = 'Some description for material';
+  description = 'Some description for material';
   // TODO: use real example and delete the example/ folder.
   examplePath = '/assets/example/';
   exampleFiles = ['button-demo.html', 'button-demo.scss', 'button-demo.ts'];

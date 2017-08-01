@@ -48,7 +48,7 @@ snackbar.open('Message archived', 'Undo', {
 });
 ```
 
-### Sharing data with a custom snack-bar.
+### Sharing data with a custom snack-bar
 You can share data with the custom snack-bar, that you opened via the `openFromComponent` method,
 by passing it through the `data` property.
 

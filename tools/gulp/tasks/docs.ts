@@ -69,10 +69,25 @@ task('docs', [
 
 /** Generates html files from the markdown overviews and guides. */
 task('markdown-docs', () => {
+  // Extend the renderer for custom heading anchor rendering
+  markdown.marked.Renderer.prototype.heading = (text: string, level: number): string => {
+    if (level === 3 || level === 4) {
+      const escapedText = text.toLowerCase().replace(/[^\w]+/g, '-');
+      return `
+        <h${level} id="${escapedText}" class="docs-header-link">
+          <div header-link="${escapedText}"></div>
+          ${text}
+        </h${level}>
+      `;
+    } else {
+      return `<h${level}>${text}</h${level}>`;
+    }
+  };
+
   return src(['src/lib/**/*.md', 'src/cdk/**/*.md', 'guides/*.md'])
       .pipe(markdown({
         // Add syntax highlight using highlight.js
-        highlight: (code: string, language: string) => {
+        highlight: (code: string, language: string): string => {
           if (language) {
             // highlight.js expects "typescript" written out, while Github supports "ts".
             let lang = language.toLowerCase() === 'ts' ? 'typescript' : language;

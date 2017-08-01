@@ -78,7 +78,7 @@ Then bind it to the autocomplete's `displayWith` property.
 <!-- example(autocomplete-display) -->
 
 
-#### Keyboard interaction:
+### Keyboard interaction
 - <kbd>DOWN_ARROW</kbd>: Next option becomes active.
 - <kbd>UP_ARROW</kbd>: Previous option becomes active.
 - <kbd>ENTER</kbd>: Select currently active item.
