@@ -1,7 +1,6 @@
 import {join} from 'path';
 import {mkdirpSync} from 'fs-extra';
 import {copyFiles} from './copy-files';
-import {addPureAnnotationsToFile} from './pure-annotations';
 import {replaceVersionPlaceholders} from './version-placeholders';
 import {inlinePackageMetadataFiles} from './metadata-inlining';
 import {createTypingsReexportFile} from './typings-reexport';
@@ -43,8 +42,6 @@ export function composeRelease(packageName: string, options: ComposeReleaseOptio
   if (options.useSecondaryEntryPoints) {
     createFilesForSecondaryEntryPoint(packageName, packagePath, releasePath);
   }
-
-  addPureAnnotationsToFile(join(releasePath, '@angular', `${packageName}.es5.js`));
 }
 
 /** Creates files necessary for a secondary entry-point. */

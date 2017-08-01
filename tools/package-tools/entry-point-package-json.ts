@@ -12,5 +12,5 @@ export function createEntryPointPackageJson(destDir: string, packageName: string
     es2015: `../@angular/${packageName}/${entryPointName}.js`,
   };
 
-  writeFileSync(join(destDir, 'package.json'), JSON.stringify(content), 'utf-8');
+  writeFileSync(join(destDir, 'package.json'), JSON.stringify(content, null, 2), 'utf-8');
 }
