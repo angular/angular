@@ -533,7 +533,7 @@ export class Router {
     let resolve: any = null;
     let reject: any = null;
 
-    const promise = new Promise((res, rej) => {
+    const promise = new Promise<boolean>((res, rej) => {
       resolve = res;
       reject = rej;
     });
