@@ -83,14 +83,17 @@ export class DefaultValueAccessor implements ControlValueAccessor {
     this._renderer.setProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
   }
 
+  /** @internal */
   _handleInput(value: any): void {
     if (!this._compositionMode || (this._compositionMode && !this._composing)) {
       this.onChange(value);
     }
   }
 
+  /** @internal */
   _compositionStart(): void { this._composing = true; }
 
+  /** @internal */
   _compositionEnd(value: any): void {
     this._composing = false;
     this._compositionMode && this.onChange(value);

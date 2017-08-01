@@ -31,5 +31,5 @@ export function main() {
         expect(Object.keys(args).length).toBe(20);
       });
     });
-  })
+  });
 }

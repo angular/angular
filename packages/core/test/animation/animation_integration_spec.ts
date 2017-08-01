@@ -1790,7 +1790,7 @@ export function main() {
            class Cmp {
              exp: string;
              log: any[] = [];
-             callback = (event: any) => { this.log.push(`${event.phaseName} => ${event.toState}`); }
+             callback = (event: any) => this.log.push(`${event.phaseName} => ${event.toState}`);
            }
 
            TestBed.configureTestingModule({

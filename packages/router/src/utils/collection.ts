@@ -64,7 +64,7 @@ export function forEach<K, V>(map: {[key: string]: V}, callback: (v: V, k: strin
 export function waitForMap<A, B>(
     obj: {[k: string]: A}, fn: (k: string, a: A) => Observable<B>): Observable<{[k: string]: B}> {
   if (Object.keys(obj).length === 0) {
-    return of ({})
+    return of ({});
   }
 
   const waitHead: Observable<B>[] = [];

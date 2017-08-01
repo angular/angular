@@ -145,7 +145,7 @@ function eventHandlerClosure(view: ViewData, index: number, eventName: string) {
       // Attention: Don't rethrow, as it would cancel Observable subscriptions!
       view.root.errorHandler.handleError(e);
     }
-  }
+  };
 }
 
 export function checkAndUpdateDirectiveInline(

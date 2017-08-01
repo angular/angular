@@ -427,17 +427,17 @@ export function main() {
 
         it('should throw an error when an input variable is not provided when invoked and is not a default value',
            () => {
-             expect(() => {invokeAnimationSequence(rootElement, [style({color: '{{ color }}'})])})
+             expect(() => invokeAnimationSequence(rootElement, [style({color: '{{ color }}'})]))
                  .toThrowError(/Please provide a value for the animation param color/);
 
              expect(
-                 () => {invokeAnimationSequence(
+                 () => invokeAnimationSequence(
                      rootElement,
                      [
                        style({color: '{{ start }}'}),
                        animate('{{ time }}', style({color: '{{ end }}'})),
                      ],
-                     buildParams({start: 'blue', end: 'red'}))})
+                     buildParams({start: 'blue', end: 'red'})))
                  .toThrowError(/Please provide a value for the animation param time/);
            });
       });

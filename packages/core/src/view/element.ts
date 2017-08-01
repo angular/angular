@@ -196,7 +196,7 @@ function renderEventHandlerClosure(view: ViewData, index: number, eventName: str
       // Attention: Don't rethrow, to keep in sync with directive events.
       view.root.errorHandler.handleError(e);
     }
-  }
+  };
 }
 
 
