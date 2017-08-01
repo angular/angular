@@ -68,8 +68,8 @@ export class ExampleHttpDao {
 export class ExampleDataSource extends DataSource<GithubIssue> {
   // The number of issues returned by github matching the query.
   resultsLength = 0;
-  isLoadingResults: boolean;
-  isRateLimitReached: boolean;
+  isLoadingResults = false;
+  isRateLimitReached = false;
 
   constructor(private exampleDatabase: ExampleHttpDao,
               private paginator: MdPaginator,
