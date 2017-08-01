@@ -51,6 +51,26 @@ export class MdSort {
   set disableClear(v) { this._disableClear = coerceBooleanProperty(v); }
   private _disableClear: boolean;
 
+  // Properties with `mat-` prefix for noconflict mode.
+  @Input('matSortActive')
+  get _matSortActive() { return this.active; }
+  set _matSortActive(v) { this.active = v; }
+
+  // Properties with `mat-` prefix for noconflict mode.
+  @Input('matSortStart')
+  get _matSortStart() { return this.start; }
+  set _matSortStart(v) { this.start = v; }
+
+  // Properties with `mat-` prefix for noconflict mode.
+  @Input('matSortDirection')
+  get _matSortDirection() { return this.direction; }
+  set _matSortDirection(v) { this.direction = v; }
+
+  // Properties with `mat-` prefix for noconflict mode.
+  @Input('matSortDisableClear')
+  get _matSortDisableClear() { return this.disableClear; }
+  set _matSortDisableClear(v) { this.disableClear = v; }
+
   /** Event emitted when the user changes either the active sort or sort direction. */
   @Output() mdSortChange = new EventEmitter<Sort>();
 
