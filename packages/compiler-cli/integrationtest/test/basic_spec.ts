@@ -12,7 +12,6 @@ import * as path from 'path';
 import {MultipleComponentsMyComp} from '../src/a/multiple_components';
 import {BasicComp} from '../src/basic';
 import {createComponent} from './util';
-import {createComponentAlt} from './util_alt';
 
 describe('template codegen output', () => {
   const outDir = 'src';
@@ -37,9 +36,9 @@ describe('template codegen output', () => {
     expect(fs.readFileSync(dtsOutput, {encoding: 'utf-8'})).toContain('Basic');
   });
 
-  it('should write .ngfactory.ts for .d.ts inputs', () => {
+  it('should write .ngfactory.js for .d.ts inputs', () => {
     const factoryOutput =
-        path.join('node_modules', '@angular2-material', 'button', 'button.ngfactory.ts');
+        path.join('node_modules', '@angular2-material', 'button', 'button.ngfactory.js');
     expect(fs.existsSync(factoryOutput)).toBeTruthy();
   });
 
@@ -93,12 +92,6 @@ describe('template codegen output', () => {
     it('should have removed i18n markup', () => {
       const containerElement = createComponent(BasicComp).debugElement.children[0];
       expect(containerElement.attributes['title']).toBe('käännä teksti');
-      expect(containerElement.attributes['i18n-title']).toBeUndefined();
-    });
-
-    it('should have removed i18n markup event without translations', () => {
-      const containerElement = createComponentAlt(BasicComp).debugElement.children[0];
-      expect(containerElement.attributes['title']).toBe('translate me');
       expect(containerElement.attributes['i18n-title']).toBeUndefined();
     });
   });

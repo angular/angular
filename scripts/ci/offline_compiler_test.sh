@@ -8,7 +8,7 @@ LINKABLE_PKGS=(
   $(pwd)/dist/packages-dist/{common,forms,core,compiler,compiler-cli,platform-{browser,server},platform-browser-dynamic,router,http,animations,tsc-wrapped}
 )
 
-TYPESCRIPT_2_1=typescript@2.1.5
+TYPESCRIPT_2_3=typescript@2.3.x
 PKGS=(
   reflect-metadata@0.1.8
   zone.js@0.6.25
@@ -33,7 +33,7 @@ cp -v package.json $TMP
 (
   cd $TMP
   set -ex -o pipefail
-  npm install ${PKGS[*]} $TYPESCRIPT_2_1
+  npm install ${PKGS[*]} $TYPESCRIPT_2_3
   # TODO(alexeagle): allow this to be npm link instead
   npm install ${LINKABLE_PKGS[*]}
 
@@ -54,7 +54,6 @@ cp -v package.json $TMP
   # Copy the html files from source to the emitted output
   cp flat_module/src/*.html node_modules/flat_module/src
 
-  ./node_modules/.bin/ngc -p tsconfig-build-alt.json --missingTranslation=error --i18nFormat=xlf
   ./node_modules/.bin/ngc -p tsconfig-build.json --i18nFile=src/messages.fi.xlf --locale=fi --i18nFormat=xlf
 
   ./node_modules/.bin/ng-xi18n -p tsconfig-xi18n.json --i18nFormat=xlf --locale=fr

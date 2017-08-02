@@ -55,19 +55,26 @@ function transformSourceFile(
     context: ts.TransformationContext): ts.SourceFile {
   const inserts: DeclarationInsert[] = [];
 
-  // Calculate the range of intersting locations. The transform will only visit nodes in this
+  // Calculate the range of interesting locations. The transform will only visit nodes in this
   // range to improve the performance on large files.
   const locations = Array.from(requests.keys());
   const min = Math.min(...locations);
   const max = Math.max(...locations);
+
+  // Visit nodes matching the request and synthetic nodes added by tsickle
+  function shouldVisit(pos: number, end: number): boolean {
+    return (pos <= max && end >= min) || pos == -1;
+  }
 
   function visitSourceFile(sourceFile: ts.SourceFile): ts.SourceFile {
     function topLevelStatement(node: ts.Node): ts.Node {
       const declarations: Declaration[] = [];
 
       function visitNode(node: ts.Node): ts.Node {
-        const nodeRequest = requests.get(node.pos);
-        if (nodeRequest && nodeRequest.kind == node.kind && nodeRequest.end == node.end) {
+        // Get the original node before tsickle
+        const {pos, end, kind} = ts.getOriginalNode(node);
+        const nodeRequest = requests.get(pos);
+        if (nodeRequest && nodeRequest.kind == kind && nodeRequest.end == end) {
           // This node is requested to be rewritten as a reference to the exported name.
           // Record that the node needs to be moved to an exported variable with the given name
           const name = nodeRequest.name;
@@ -75,14 +82,16 @@ function transformSourceFile(
           return ts.createIdentifier(name);
         }
         let result = node;
-        if (node.pos <= max && node.end >= min && !isLexicalScope(node)) {
+
+        if (shouldVisit(pos, end) && !isLexicalScope(node)) {
           result = ts.visitEachChild(node, visitNode, context);
         }
         return result;
       }
 
-      const result =
-          (node.pos <= max && node.end >= min) ? ts.visitEachChild(node, visitNode, context) : node;
+      // Get the original node before tsickle
+      const {pos, end} = ts.getOriginalNode(node);
+      const result = shouldVisit(pos, end) ? ts.visitEachChild(node, visitNode, context) : node;
 
       if (declarations.length) {
         inserts.push({priorTo: result, declarations});
@@ -91,6 +100,7 @@ function transformSourceFile(
     }
 
     const traversedSource = ts.visitEachChild(sourceFile, topLevelStatement, context);
+
     if (inserts.length) {
       // Insert the declarations before the rewritten statement that references them.
       const insertMap = toMap(inserts, i => i.priorTo);
