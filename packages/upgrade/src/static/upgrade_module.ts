@@ -107,17 +107,17 @@ import {NgAdapterInjector} from './util';
  *
  * Import the `UpgradeModule` into your top level {@link NgModule Angular `NgModule`}.
  *
- * {@example upgrade/static/ts/module.ts region='ng2-module'}
+ * {@example upgrade/static/ts/full/module.ts region='ng2-module'}
  *
  * Then inject `UpgradeModule` into your Angular `NgModule` and use it to bootstrap the top level
  * [AngularJS module](https://docs.angularjs.org/api/ng/type/angular.Module) in the
  * `ngDoBootstrap()` method.
  *
- * {@example upgrade/static/ts/module.ts region='bootstrap-ng1'}
+ * {@example upgrade/static/ts/full/module.ts region='bootstrap-ng1'}
  *
  * Finally, kick off the whole process, by bootstraping your top level Angular `NgModule`.
  *
- * {@example upgrade/static/ts/module.ts region='bootstrap-ng2'}
+ * {@example upgrade/static/ts/full/module.ts region='bootstrap-ng2'}
  *
  * {@a upgrading-an-angular-1-service}
  * ### Upgrading an AngularJS service
@@ -127,17 +127,17 @@ import {NgAdapterInjector} from './util';
  *
  * Let's say you have an AngularJS service:
  *
- * {@example upgrade/static/ts/module.ts region="ng1-title-case-service"}
+ * {@example upgrade/static/ts/full/module.ts region="ng1-title-case-service"}
  *
  * Then you should define an Angular provider to be included in your `NgModule` `providers`
  * property.
  *
- * {@example upgrade/static/ts/module.ts region="upgrade-ng1-service"}
+ * {@example upgrade/static/ts/full/module.ts region="upgrade-ng1-service"}
  *
  * Then you can use the "upgraded" AngularJS service by injecting it into an Angular component
  * or service.
  *
- * {@example upgrade/static/ts/module.ts region="use-ng1-upgraded-service"}
+ * {@example upgrade/static/ts/full/module.ts region="use-ng1-upgraded-service"}
  *
  * @experimental
  */

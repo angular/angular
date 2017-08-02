@@ -7,16 +7,15 @@
  */
 
 import {browser, by, element} from 'protractor';
-import {verifyNoBrowserErrors} from '../../../../_common/e2e_util';
+import {verifyNoBrowserErrors} from '../../../../../_common/e2e_util';
 
-function loadPage(url: string) {
-  browser.ng12Hybrid = true;
+function loadPage() {
   browser.rootEl = 'example-app';
-  browser.get(url);
+  browser.get('/upgrade/static/ts/full/');
 }
 
-describe('upgrade(static)', () => {
-  beforeEach(() => { loadPage('/upgrade/static/ts/'); });
+describe('upgrade/static (full)', () => {
+  beforeEach(loadPage);
   afterEach(verifyNoBrowserErrors);
 
   it('should render the `ng2-heroes` component', () => {
