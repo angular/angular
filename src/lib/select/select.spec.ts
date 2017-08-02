@@ -1066,7 +1066,7 @@ describe('MdSelect', () => {
         // these styles are necessary because we are first testing the overlay's position
         // if there is room for it to open to its full extent in either direction.
         select.style.position = 'fixed';
-        select.style.top = '300px';
+        select.style.top = '285px';
         select.style.left = '20px';
       });
 
@@ -1194,9 +1194,9 @@ describe('MdSelect', () => {
 
         // Scroll should adjust by the difference between the top space available (85px + 8px
         // viewport padding = 77px) and the height of the panel above the option (113px).
-        // 113px - 77px = 36px difference + original scrollTop 88px = 124px
+        // 113px - 93px = 20px difference + original scrollTop 88px = 108px
         expect(scrollContainer.scrollTop)
-            .toEqual(124, `Expected panel to adjust scroll position to fit in viewport.`);
+            .toEqual(108, `Expected panel to adjust scroll position to fit in viewport.`);
 
         checkTriggerAlignedWithOption(4);
       });
