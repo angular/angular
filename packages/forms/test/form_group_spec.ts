@@ -629,7 +629,7 @@ export function main() {
       it('should return true when the component is enabled', () => {
         expect(group.contains('required')).toEqual(true);
 
-        group.enable('optional');
+        group.enable();
 
         expect(group.contains('optional')).toEqual(true);
       });
