@@ -50,7 +50,7 @@ What kind of problem is this?
 
 * `type: RFC / discussion / question`
 * `type: bug`
-* `type: chore`
+* `type: docs`
 * `type: feature`
 * `type: performance`
 * `type: refactor`
@@ -108,16 +108,31 @@ closing or reviewing PRs is a top priority ahead of other ongoing work.
 
 Every triaged PR must have a `pr_action` label assigned to it and an assignee:
 
-* `pr_action: review` - work is complete and comment is needed from the assignee.
-* `pr_action: cleanup` - more work is needed from the current assignee.
-* `pr_action: discuss` - discussion is needed, to be led by the current assignee.
-* `pr_action: merge` - the PR should be merged. Add this to a PR when you would like to
-  trigger automatic merging following a successful build. This is described in [COMMITTER.md](COMMITTER.md).
+* `PR action: review` - work is complete and comment is needed from the assignee.
+* `PR action: cleanup` - more work is needed from the current assignee.
+* `PR action: discuss` - discussion is needed, to be led by the current assignee.
+* `PR action: merge` - the PR is ready to be merged by the caretaker.
 
 In addition, PRs can have the following states:
 
-* `pr_state: WIP` - PR is experimental or rapidly changing. Not ready for review or triage.
-* `pr_state: blocked` - PR is blocked on an issue or other PR. Not ready for review or triage.
+* `PR state: WIP` - PR is experimental or rapidly changing. Not ready for review or triage.
+* `PR state: blocked` - PR is blocked on an issue or other PR. Not ready for review or triage.
+
+
+## PR Target
+
+In our git workflow, we merge changes either to the `master` branch, the most recent patch branch (e.g. `4.3.x`), or to both.
+
+The decision about the target must be done by the PR author and/or reviewer. This decision is then honored when the PR is being merged.
+
+To communicate the target we use the following labels:
+
+* `PR target: master-only`
+* `PR target: patch-only`
+* `PR target: master & patch`
+* `PR target: TBD` - the target is yet to be determined
+
+If a PR is missing the "PR target" label, or if the label is set to "TBD" when the PR is sent to the caretaker, the caretaker should reject the PR and request the appropriate target label to be applied before the PR is merged.
 
 
 ## PR Approvals
