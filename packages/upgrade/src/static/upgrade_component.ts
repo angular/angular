@@ -100,11 +100,6 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
    * * The `name` parameter should be the name of the AngularJS directive.
    * * The `elementRef` and `injector` parameters should be acquired from Angular by dependency
    *   injection into the base class constructor.
-   *
-   * Note that we must manually implement lifecycle hooks that call through to the super class.
-   * This is because, at the moment, the AoT compiler is not able to tell that the
-   * `UpgradeComponent`
-   * already implements them and so does not wire up calls to them at runtime.
    */
   constructor(private name: string, private elementRef: ElementRef, private injector: Injector) {
     this.helper = new UpgradeHelper(injector, name, elementRef);
