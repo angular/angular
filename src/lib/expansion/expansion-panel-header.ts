@@ -14,6 +14,8 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   OnDestroy,
+  Renderer2,
+  ElementRef,
 } from '@angular/core';
 import {
   trigger,
@@ -25,6 +27,7 @@ import {
 import {SPACE, ENTER} from '../core/keyboard/keycodes';
 import {MdExpansionPanel, EXPANSION_PANEL_ANIMATION_TIMING} from './expansion-panel';
 import {filter} from '../core/rxjs/index';
+import {FocusOriginMonitor} from '../core/style/index';
 import {merge} from 'rxjs/observable/merge';
 import {Subscription} from 'rxjs/Subscription';
 
@@ -72,6 +75,9 @@ export class MdExpansionPanelHeader implements OnDestroy {
 
   constructor(
     @Host() public panel: MdExpansionPanel,
+    private _renderer: Renderer2,
+    private _element: ElementRef,
+    private _focusOriginMonitor: FocusOriginMonitor,
     private _changeDetectorRef: ChangeDetectorRef) {
 
     // Since the toggle state depends on an @Input on the panel, we
@@ -82,6 +88,8 @@ export class MdExpansionPanelHeader implements OnDestroy {
       filter.call(panel._inputChanges, changes => !!changes.hideToggle)
     )
     .subscribe(() => this._changeDetectorRef.markForCheck());
+
+    _focusOriginMonitor.monitor(_element.nativeElement, _renderer, false);
   }
 
   /** Toggles the expanded state of the panel. */
@@ -128,6 +136,8 @@ export class MdExpansionPanelHeader implements OnDestroy {
       this._parentChangeSubscription.unsubscribe();
       this._parentChangeSubscription = null;
     }
+
+    this._focusOriginMonitor.stopMonitoring(this._element.nativeElement);
   }
 }
 

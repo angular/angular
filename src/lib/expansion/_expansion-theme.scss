@@ -15,19 +15,19 @@
     border-top-color: mat-color($foreground, divider);
   }
 
-  .mat-expansion-panel-header:focus,
-  .mat-expansion-panel-header:hover {
-    background: mat-color($background, hover);
+  .mat-expansion-panel-header {
+    &.cdk-keyboard-focused,
+    &.cdk-program-focused,
+    &:hover {
+      background: mat-color($background, hover);
+    }
   }
 
   .mat-expansion-panel-header-title {
     color: mat-color($foreground, text);
   }
 
-  .mat-expansion-panel-header-description {
-    color: mat-color($foreground, secondary-text);
-  }
-
+  .mat-expansion-panel-header-description,
   .mat-expansion-indicator::after {
     color: mat-color($foreground, secondary-text);
   }
