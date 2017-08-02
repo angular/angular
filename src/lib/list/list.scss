@@ -121,6 +121,7 @@ $mat-dense-list-icon-size: 20px;
 // This mixin adjusts the heights and padding based on whether the list is in dense mode.
 @mixin mat-subheader-spacing($top-padding, $base-height) {
   height: $base-height;
+  line-height: $base-height - $mat-list-side-padding * 2;
 
   &:first-child {
     margin-top: -$top-padding;

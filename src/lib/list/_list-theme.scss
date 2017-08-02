@@ -46,7 +46,9 @@
     }
 
     .mat-subheader {
-      @include mat-typography-level-to-styles($config, body-2);
+      font-family: mat-font-family($config, body-2);
+      font-size: mat-font-size($config, body-2);
+      font-weight: mat-font-weight($config, body-2);
     }
   }
 
@@ -58,7 +60,9 @@
     }
 
     .mat-subheader {
-      font: mat-font-weight($config, body-2) mat-font-size($config, caption) $font-family;
+      font-family: $font-family;
+      font-size: mat-font-size($config, caption);
+      font-weight: mat-font-weight($config, body-2);
     }
   }
 }
