@@ -198,7 +198,7 @@ export function main() {
       });
 
       it('should format invalid in Safari ISO date', () => {
-        const validFormattedString = pipe.transform(new Date('2017-01-20T19:00:00+00:00'))
+        const validFormattedString = pipe.transform(new Date('2017-01-20T19:00:00+00:00'));
         expect(pipe.transform('2017-01-20T19:00:00+0000')).toEqual(validFormattedString);
       });
 

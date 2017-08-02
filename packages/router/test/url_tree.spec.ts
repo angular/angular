@@ -26,24 +26,17 @@ describe('UrlTree', () => {
 
     it('should parse multiple value query parameters', () => {
       const tree = serializer.parse('/path/to?a[]=1&a[]=2');
-      expect(tree.queryParams).toEqual({
-        'a': ['1', '2']
-      });
+      expect(tree.queryParams).toEqual({'a': ['1', '2']});
     });
 
     it('should parse query parameter with `[]` postfixed key parameter.', () => {
       const tree = serializer.parse('/path/to?a[]=1&a[]=2&b=hello&a=4');
-      expect(tree.queryParams).toEqual({
-        'a': ['1', '2', '4'],
-        'b': 'hello'
-      });
+      expect(tree.queryParams).toEqual({'a': ['1', '2', '4'], 'b': 'hello'});
     });
 
     it('should parse query parameter with single `[]` postfixed key parameter.', () => {
       const tree = serializer.parse('/path/to?a[]=1');
-      expect(tree.queryParams).toEqual({
-        'a': ['1']
-      });
+      expect(tree.queryParams).toEqual({'a': ['1']});
     });
   });
 

@@ -507,7 +507,7 @@ class UrlParser {
     }
 
     const {'1': keyWithoutBracket, '2': hasBracket} =
-      /^(.*)(\[\])$/g.exec(key) || [null, key, false];
+        /^(.*)(\[\])$/g.exec(key) || [null, key, false];
 
     const decodedKey = decode(keyWithoutBracket as string);
     const decodedVal = decode(value);
