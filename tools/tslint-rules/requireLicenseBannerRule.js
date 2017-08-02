@@ -50,6 +50,8 @@ class RequireLicenseBannerWalker extends Lint.RuleWalker {
     if (licenseCommentPos !== 0) {
       return this.addFailureAt(0, 0, ERROR_MESSAGE, tslintFix);
     }
+
+    super.visitSourceFile(sourceFile);
   }
 }
 

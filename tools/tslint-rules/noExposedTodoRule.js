@@ -28,6 +28,8 @@ class NoExposedTodoWalker extends Lint.RuleWalker {
         this.addFailureAt(commentRange.pos, commentRange.end - commentRange.pos, ERROR_MESSAGE);
       }
     });
+
+    super.visitSourceFile(sourceFile);
   }
 }
 
