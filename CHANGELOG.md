@@ -1,3 +1,20 @@
+<a name="5.0.0-beta.2"></a>
+# [5.0.0-beta.2](https://github.com/angular/angular/compare/5.0.0-beta.1...5.0.0-beta.2) (2017-08-02)
+
+
+### Bug Fixes
+
+* **compiler:** do not consider arguments when determining recursion ([e64b54b](https://github.com/angular/angular/commit/e64b54b))
+* **compiler:** fix for element needing implicit parent placed in top-level ng-container ([381471d](https://github.com/angular/angular/commit/381471d)), closes [#18314](https://github.com/angular/angular/issues/18314)
+
+
+### Features
+
+* **forms:** add options arg to abstract controls ([ebef5e6](https://github.com/angular/angular/commit/ebef5e6))
+* **router:** add events tracking activation of individual routes ([49cd851](https://github.com/angular/angular/commit/49cd851))
+
+
+
 <a name="4.3.3"></a>
 ## [4.3.3](https://github.com/angular/angular/compare/4.3.2...4.3.3) (2017-08-02)
 
