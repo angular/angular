@@ -559,8 +559,8 @@ export function expectNoDiagnostics(program: ts.Program) {
 
   function lineInfo(diagnostic: ts.Diagnostic): string {
     if (diagnostic.file) {
-      const start = diagnostic.start;
-      let end = diagnostic.start + diagnostic.length;
+      const start = diagnostic.start !;
+      let end = diagnostic.start ! + diagnostic.length !;
       const source = diagnostic.file.text;
       let lineStart = start;
       let lineEnd = end;
