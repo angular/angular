@@ -106,6 +106,7 @@ export class MdDatepickerContent<D> implements AfterContentInit {
     if (event.keyCode === ESCAPE) {
       this.datepicker.close();
       event.preventDefault();
+      event.stopPropagation();
     }
   }
 }

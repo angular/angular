@@ -168,6 +168,7 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
     switch (event.keyCode) {
       case ESCAPE:
         this.close.emit('keydown');
+        event.stopPropagation();
       break;
       case LEFT_ARROW:
         if (this.parentMenu && this.direction === 'ltr') {

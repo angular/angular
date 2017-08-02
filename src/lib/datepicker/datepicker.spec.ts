@@ -9,8 +9,13 @@ import {MdDatepickerInput} from './datepicker-input';
 import {MdInputModule} from '../input/index';
 import {MdNativeDateModule} from '../core/datetime/index';
 import {ESCAPE, OverlayContainer} from '../core';
-import {dispatchFakeEvent, dispatchMouseEvent, dispatchKeyboardEvent} from '@angular/cdk/testing';
 import {DEC, JAN} from '../core/testing/month-constants';
+import {
+  dispatchFakeEvent,
+  dispatchMouseEvent,
+  createKeyboardEvent,
+  dispatchEvent,
+} from '@angular/cdk/testing';
 
 describe('MdDatepicker', () => {
   afterEach(inject([OverlayContainer], (container: OverlayContainer) => {
@@ -134,13 +139,17 @@ describe('MdDatepicker', () => {
         let content = document.querySelector('.cdk-overlay-pane md-datepicker-content')!;
         expect(content).toBeTruthy('Expected datepicker to be open.');
 
-        let keyboadEvent = dispatchKeyboardEvent(content, 'keydown', ESCAPE);
+        const keyboardEvent = createKeyboardEvent('keydown', ESCAPE);
+        const stopPropagationSpy = spyOn(keyboardEvent, 'stopPropagation').and.callThrough();
+
+        dispatchEvent(content, keyboardEvent);
         fixture.detectChanges();
 
         content = document.querySelector('.cdk-overlay-pane md-datepicker-content')!;
 
         expect(content).toBeFalsy('Expected datepicker to be closed.');
-        expect(keyboadEvent.defaultPrevented)
+        expect(stopPropagationSpy).toHaveBeenCalled();
+        expect(keyboardEvent.defaultPrevented)
             .toBe(true, 'Expected default ESCAPE action to be prevented.');
       });
 

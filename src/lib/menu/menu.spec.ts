@@ -29,7 +29,12 @@ import {
 } from './index';
 import {MENU_PANEL_TOP_PADDING} from './menu-trigger';
 import {extendObject} from '../core/util/object-extend';
-import {dispatchKeyboardEvent, dispatchMouseEvent} from '@angular/cdk/testing';
+import {
+  dispatchKeyboardEvent,
+  dispatchMouseEvent,
+  dispatchEvent,
+  createKeyboardEvent,
+} from '@angular/cdk/testing';
 
 
 describe('MdMenu', () => {
@@ -103,11 +108,15 @@ describe('MdMenu', () => {
     fixture.componentInstance.trigger.openMenu();
 
     const panel = overlayContainerElement.querySelector('.mat-menu-panel')!;
-    dispatchKeyboardEvent(panel, 'keydown', ESCAPE);
+    const event = createKeyboardEvent('keydown', ESCAPE);
+    const stopPropagationSpy = spyOn(event, 'stopPropagation').and.callThrough();
+
+    dispatchEvent(panel, event);
     fixture.detectChanges();
     tick(500);
 
     expect(overlayContainerElement.textContent).toBe('');
+    expect(stopPropagationSpy).toHaveBeenCalled();
   }));
 
   it('should open a custom menu', () => {
