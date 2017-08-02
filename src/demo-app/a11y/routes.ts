@@ -7,6 +7,7 @@ import {GridListAccessibilityDemo} from './grid-list/grid-list-a11y';
 import {RadioAccessibilityDemo} from './radio/radio-a11y';
 import {AccessibilityHome} from './a11y';
 import {DatepickerAccessibilityDemo} from './datepicker/datepicker-a11y';
+import {InputAccessibilityDemo} from './input/input-a11y';
 
 export const ACCESSIBILITY_DEMO_ROUTES: Routes = [
   {path: '', component: AccessibilityHome},
@@ -16,5 +17,6 @@ export const ACCESSIBILITY_DEMO_ROUTES: Routes = [
   {path: 'chips', component: ChipsAccessibilityDemo},
   {path: 'datepicker', component: DatepickerAccessibilityDemo},
   {path: 'grid-list', component: GridListAccessibilityDemo},
+  {path: 'input', component: InputAccessibilityDemo},
   {path: 'radio', component: RadioAccessibilityDemo},
 ];

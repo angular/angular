@@ -23,6 +23,7 @@ export class AccessibilityDemo {
     {name: 'Chips', route: 'chips'},
     {name: 'Datepicker', route: 'datepicker'},
     {name: 'Grid list', route: 'grid-list'},
+    {name: 'Input', route: 'input'},
     {name: 'Radio buttons', route: 'radio'},
   ];
 }
