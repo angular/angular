@@ -19,23 +19,12 @@ export function forbiddenNameValidator(nameRe: RegExp): ValidatorFn {
   providers: [{provide: NG_VALIDATORS, useExisting: ForbiddenValidatorDirective, multi: true}]
   // #enddocregion directive-providers
 })
-export class ForbiddenValidatorDirective implements Validator, OnChanges {
+export class ForbiddenValidatorDirective implements Validator {
   @Input() forbiddenName: string;
-  private valFn = Validators.nullValidator;
-
-  ngOnChanges(changes: SimpleChanges): void {
-    const change = changes['forbiddenName'];
-    if (change) {
-      const val: string | RegExp = change.currentValue;
-      const re = val instanceof RegExp ? val : new RegExp(val, 'i');
-      this.valFn = forbiddenNameValidator(re);
-    } else {
-      this.valFn = Validators.nullValidator;
-    }
-  }
 
   validate(control: AbstractControl): {[key: string]: any} {
-    return this.valFn(control);
+    return this.forbiddenName ? forbiddenNameValidator(new RegExp(this.forbiddenName, 'i'))(control)
+                              : null;
   }
 }
 // #enddocregion directive
