@@ -107,6 +107,17 @@ Event and property bindings can be added directly to the row element.
 </cdk-row>
 ```
 
+##### Styling columns
+
+Each header and row cell will be provided a CSS class that includes its column. For example,
+cells that are displayed in the column `name` will be given the class `cdk-column-name`. This allows
+columns to be given styles that will match across the header and rows.
+
+Since columns can be given any string for its name, its possible that it cannot be directly applied
+to the CSS class (e.g. `*nameColumn!`). In these cases, the special characters will be replaced by 
+the `-` character. For example, cells container in a column named `*nameColumn!` will be given
+the class `cdk-column--nameColumn-`.    
+
 #### Connecting the table to a data source
 
 Data is provided to the table through a `DataSource`. When the table receives a data source,

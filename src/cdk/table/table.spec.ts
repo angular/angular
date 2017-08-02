@@ -29,6 +29,7 @@ describe('CdkTable', () => {
         RowContextCdkTableApp,
         DuplicateColumnDefNameCdkTableApp,
         MissingColumnDefCdkTableApp,
+        CrazyColumnNameCdkTableApp,
       ],
     }).compileComponents();
   }));
@@ -95,6 +96,17 @@ describe('CdkTable', () => {
         });
       });
     });
+  });
+
+  it('should be able to apply class-friendly css class names for the column cells', () => {
+    const crazyColumnNameAppFixture = TestBed.createComponent(CrazyColumnNameCdkTableApp);
+    const crazyColumnNameTableElement =
+        crazyColumnNameAppFixture.nativeElement.querySelector('cdk-table');
+    crazyColumnNameAppFixture.detectChanges();
+
+    // Column was named 'crazy-column-NAME-1!@#$%^-_&*()2'
+    expect(getHeaderCells(crazyColumnNameTableElement)[0].classList)
+        .toContain('cdk-column-crazy-column-NAME-1-------_----2');
   });
 
   it('should disconnect the data source when table is destroyed', () => {
@@ -678,6 +690,26 @@ class DynamicColumnDefinitionsCdkTableApp {
 class CustomRoleCdkTableApp {
   dataSource: FakeDataSource = new FakeDataSource();
   columnsToRender = ['column_a'];
+
+  @ViewChild(CdkTable) table: CdkTable<TestData>;
+}
+
+@Component({
+  template: `
+    <cdk-table [dataSource]="dataSource">
+      <ng-container [cdkColumnDef]="columnsToRender[0]">
+        <cdk-header-cell *cdkHeaderCellDef> Column A</cdk-header-cell>
+        <cdk-cell *cdkCellDef="let row"> {{row.a}}</cdk-cell>
+      </ng-container>
+
+      <cdk-header-row *cdkHeaderRowDef="columnsToRender"></cdk-header-row>
+      <cdk-row *cdkRowDef="let row; columns: columnsToRender"></cdk-row>
+    </cdk-table>
+  `
+})
+class CrazyColumnNameCdkTableApp {
+  dataSource: FakeDataSource = new FakeDataSource();
+  columnsToRender = ['crazy-column-NAME-1!@#$%^-_&*()2'];
 
   @ViewChild(CdkTable) table: CdkTable<TestData>;
 }
