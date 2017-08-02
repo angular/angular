@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// TODO(chuckj): Remove the requirment for a fake 'reflect` implementation from
+// TODO(chuckj): Remove the requirement for a fake 'reflect` implementation from
 // the compiler
 import 'reflect-metadata';
 import {performCompilation} from '@angular/compiler-cli';
@@ -28,16 +28,7 @@ function main(args: string[]) {
   const basePath = path.resolve(process.cwd(), projectDir);
   const result = performCompilation(basePath, files, options, ngOptions, undefined);
 
-  if (result === 0) {
-    // Ensure that expected output files exist.
-    if (ngOptions && ngOptions.expectedOut) {
-      for (const out of ngOptions.expectedOut) {
-        fs.appendFileSync(out, '', 'utf-8');
-      }
-    }
-  }
-
-  return result;
+  return result.errorCode;
 }
 
 if (require.main === module) {

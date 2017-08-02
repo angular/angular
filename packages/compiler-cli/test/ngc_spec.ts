@@ -82,19 +82,19 @@ describe('ngc command-line', () => {
 
     spyOn(mockConsole, 'error');
 
-    const result = performCompilation(
-        basePath, [path.join(basePath, 'test.ts')], {
-          experimentalDecorators: true,
-          skipLibCheck: true,
-          types: [],
-          outDir: path.join(basePath, 'built'),
-          declaration: true,
-          module: ts.ModuleKind.ES2015,
-          moduleResolution: ts.ModuleResolutionKind.NodeJs,
-        },
-        {}, mockConsole.error);
-    expect(mockConsole.error).not.toHaveBeenCalled();
-    expect(result).toBe(0);
+    expect(
+        () => performCompilation(
+            basePath, [path.join(basePath, 'test.ts')], {
+              experimentalDecorators: true,
+              skipLibCheck: true,
+              types: [],
+              outDir: path.join(basePath, 'built'),
+              declaration: true,
+              module: ts.ModuleKind.ES2015,
+              moduleResolution: ts.ModuleResolutionKind.NodeJs,
+            },
+            {}))
+        .not.toThrow();
   });
 
   it('should not print the stack trace if user input file does not exist', () => {
@@ -292,7 +292,7 @@ describe('ngc command-line', () => {
           .toBe(true);
     });
 
-    it('should compile with a explicit tsconfig reference', () => {
+    it('should compile with an explicit tsconfig reference', () => {
       writeConfig(`{
           "extends": "./tsconfig-base.json",
           "files": ["mymodule.ts"]
@@ -314,6 +314,92 @@ describe('ngc command-line', () => {
                  outDir, 'node_modules', '@angular', 'core', 'src',
                  'application_module.ngfactory.js')))
           .toBe(true);
+    });
+
+    describe('closure', () => {
+      it('should not generate closure specific code by default', () => {
+        writeConfig(`{
+          "extends": "./tsconfig-base.json",
+          "files": ["mymodule.ts"]
+        }`);
+        write('mymodule.ts', `
+        import {NgModule, Component} from '@angular/core';
+
+        @Component({template: ''})
+        export class MyComp {}
+
+        @NgModule({declarations: [MyComp]})
+        export class MyModule {}
+      `);
+
+        const mockConsole = {error: (s: string) => {}};
+        const exitCode = main(['-p', basePath], mockConsole.error);
+        expect(exitCode).toEqual(0);
+
+        const mymodulejs = path.resolve(outDir, 'mymodule.js');
+        const mymoduleSource = fs.readFileSync(mymodulejs, 'utf8');
+        expect(mymoduleSource).not.toContain('@fileoverview added by tsickle');
+        expect(mymoduleSource).toContain('MyComp.decorators = [');
+      });
+
+      it('should add closure annotations', () => {
+        writeConfig(`{
+          "extends": "./tsconfig-base.json",
+          "angularCompilerOptions": {
+            "annotateForClosureCompiler": true
+          },
+          "files": ["mymodule.ts"]
+        }`);
+        write('mymodule.ts', `
+        import {NgModule, Component} from '@angular/core';
+
+        @Component({template: ''})
+        export class MyComp {
+          fn(p: any) {}
+        }
+
+        @NgModule({declarations: [MyComp]})
+        export class MyModule {}
+      `);
+
+        const mockConsole = {error: (s: string) => {}};
+        const exitCode = main(['-p', basePath], mockConsole.error);
+        expect(exitCode).toEqual(0);
+
+        const mymodulejs = path.resolve(outDir, 'mymodule.js');
+        const mymoduleSource = fs.readFileSync(mymodulejs, 'utf8');
+        expect(mymoduleSource).toContain('@fileoverview added by tsickle');
+        expect(mymoduleSource).toContain('@param {?} p');
+      });
+
+      it('should add metadata as decorators', () => {
+        writeConfig(`{
+          "extends": "./tsconfig-base.json",
+          "angularCompilerOptions": {
+            "annotationsAs": "decorators"
+          },
+          "files": ["mymodule.ts"]
+        }`);
+        write('mymodule.ts', `
+        import {NgModule, Component} from '@angular/core';
+
+        @Component({template: ''})
+        export class MyComp {
+          fn(p: any) {}
+        }
+
+        @NgModule({declarations: [MyComp]})
+        export class MyModule {}
+      `);
+
+        const mockConsole = {error: (s: string) => {}};
+        const exitCode = main(['-p', basePath], mockConsole.error);
+        expect(exitCode).toEqual(0);
+
+        const mymodulejs = path.resolve(outDir, 'mymodule.js');
+        const mymoduleSource = fs.readFileSync(mymodulejs, 'utf8');
+        expect(mymoduleSource).toContain('MyComp = __decorate([');
+      });
     });
 
     describe('expression lowering', () => {
@@ -437,7 +523,7 @@ describe('ngc command-line', () => {
           import {CommonModule} from '@angular/common';
           import {NgModule} from '@angular/core';
 
-          class Foo {}
+          export class Foo {}
 
           export const factory = () => new Foo();
 
@@ -557,7 +643,7 @@ describe('ngc command-line', () => {
         export class FlatModule {
         }`);
 
-      const exitCode = performCompilation(
+      const emitResult = performCompilation(
           basePath, [path.join(basePath, 'public-api.ts')], {
             target: ts.ScriptTarget.ES5,
             experimentalDecorators: true,
@@ -578,7 +664,7 @@ describe('ngc command-line', () => {
           });
 
 
-      expect(exitCode).toEqual(0);
+      expect(emitResult.errorCode).toEqual(0);
       shouldExist('index.js');
       shouldExist('index.metadata.json');
     });
@@ -758,7 +844,7 @@ describe('ngc command-line', () => {
           write(path.join(dir, 'tsconfig.json'), `
           {
             "angularCompilerOptions": {
-              "generateCodeForLibraries": false,
+              "generateCodeForLibraries": true,
               "enableSummariesForJit": true
             },
             "compilerOptions": {
@@ -820,7 +906,7 @@ describe('ngc command-line', () => {
         shouldExist('lib1/module.ngfactory.d.ts');
       });
 
-      it('should be able to compiler library 2', () => {
+      it('should be able to compile library 2', () => {
         expect(main(['-p', path.join(basePath, 'lib1')])).toBe(0);
         expect(main(['-p', path.join(basePath, 'lib2')])).toBe(0);
         shouldExist('lib2/module.js');
