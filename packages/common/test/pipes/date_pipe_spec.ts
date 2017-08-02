@@ -124,9 +124,12 @@ export function main() {
           expectDateFormatAs(date, pattern, dateFixtures[pattern]);
         });
 
-        Object.keys(isoStringWithoutTimeFixtures).forEach((pattern: string) => {
-          expectDateFormatAs(isoStringWithoutTime, pattern, isoStringWithoutTimeFixtures[pattern]);
-        });
+        if (!browserDetection.isOldChrome) {
+          Object.keys(isoStringWithoutTimeFixtures).forEach((pattern: string) => {
+            expectDateFormatAs(
+                isoStringWithoutTime, pattern, isoStringWithoutTimeFixtures[pattern]);
+          });
+        }
 
         expect(pipe.transform(date, 'Z')).toBeDefined();
       });
