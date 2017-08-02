@@ -56,11 +56,11 @@ export function main() {
     });
     describe('throws an error', () => {
       it('when request method is not JSONP',
-         () => {expect(() => backend.handle(SAMPLE_REQ.clone<never>({method: 'GET'})))
-                    .toThrowError(JSONP_ERR_WRONG_METHOD)});
+         () => expect(() => backend.handle(SAMPLE_REQ.clone<never>({method: 'GET'})))
+                   .toThrowError(JSONP_ERR_WRONG_METHOD));
       it('when response type is not json',
-         () => {expect(() => backend.handle(SAMPLE_REQ.clone<never>({responseType: 'text'})))
-                    .toThrowError(JSONP_ERR_WRONG_RESPONSE_TYPE)});
+         () => expect(() => backend.handle(SAMPLE_REQ.clone<never>({responseType: 'text'})))
+                   .toThrowError(JSONP_ERR_WRONG_RESPONSE_TYPE));
       it('when callback is never called', (done: DoneFn) => {
         backend.handle(SAMPLE_REQ).subscribe(undefined, (err: HttpErrorResponse) => {
           expect(err.status).toBe(0);
@@ -69,7 +69,7 @@ export function main() {
           done();
         });
         document.mockLoad();
-      })
+      });
     });
   });
 }

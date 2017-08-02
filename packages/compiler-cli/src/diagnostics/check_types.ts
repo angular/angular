@@ -203,11 +203,9 @@ class TypeCheckingHost implements ts.CompilerHost {
   }
 
   writeFile: ts.WriteFileCallback =
-      () => { throw new Error('Unexpected write in diagnostic program'); }
+      () => { throw new Error('Unexpected write in diagnostic program'); };
 
-  getCurrentDirectory(): string {
-    return this.host.getCurrentDirectory();
-  }
+  getCurrentDirectory(): string { return this.host.getCurrentDirectory(); }
 
   getDirectories(path: string): string[] { return this.host.getDirectories(path); }
 

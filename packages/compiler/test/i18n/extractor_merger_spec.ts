@@ -490,7 +490,7 @@ export function main() {
             .toEqual(
                 '<span someAttr="ok">foo</span><div>{count, plural, =0 {<p title="foo"></p>}}</div>');
       });
-    })
+    });
   });
 }
 

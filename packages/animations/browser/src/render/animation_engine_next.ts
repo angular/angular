@@ -29,8 +29,8 @@ export class AnimationEngine {
     this._transitionEngine = new TransitionAnimationEngine(driver, normalizer);
     this._timelineEngine = new TimelineAnimationEngine(driver, normalizer);
 
-    this._transitionEngine.onRemovalComplete =
-        (element: any, context: any) => { this.onRemovalComplete(element, context); }
+    this._transitionEngine.onRemovalComplete = (element: any, context: any) =>
+        this.onRemovalComplete(element, context);
   }
 
   registerTrigger(

@@ -466,6 +466,7 @@ export function createNgModuleRef(
 class NgModuleRef_ implements NgModuleData, InternalNgModuleRef<any> {
   private _destroyListeners: (() => void)[] = [];
   private _destroyed: boolean = false;
+  // tslint:disable-next-line
   public _providers: any[];
 
   constructor(

@@ -45,7 +45,7 @@ describe('symbol query', () => {
     options.basePath = '/quickstart';
     const aotHost = new CompilerHost(program, options, host, {verboseInvalidExpression: true});
     context = new DiagnosticContext(service, program, checker, aotHost);
-    query = getSymbolQuery(program, checker, sourceFile, emptyPipes)
+    query = getSymbolQuery(program, checker, sourceFile, emptyPipes);
   });
 
   it('should be able to get undefined for an unknown symbol', () => {

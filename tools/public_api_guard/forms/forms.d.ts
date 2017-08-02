@@ -144,9 +144,6 @@ export declare class DefaultValueAccessor implements ControlValueAccessor {
     onChange: (_: any) => void;
     onTouched: () => void;
     constructor(_renderer: Renderer2, _elementRef: ElementRef, _compositionMode: boolean);
-    _compositionEnd(value: any): void;
-    _compositionStart(): void;
-    _handleInput(value: any): void;
     registerOnChange(fn: (_: any) => void): void;
     registerOnTouched(fn: () => void): void;
     setDisabledState(isDisabled: boolean): void;
