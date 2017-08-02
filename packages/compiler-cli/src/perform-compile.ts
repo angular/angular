@@ -7,10 +7,11 @@
  */
 
 import {isSyntaxError, syntaxError} from '@angular/compiler';
-import {MetadataBundler, createBundleIndexHost} from '@angular/tsc-wrapped';
+import {createBundleIndexHost} from '@angular/tsc-wrapped';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
+
 import * as api from './transformers/api';
 import * as ng from './transformers/entry_points';
 
@@ -70,17 +71,6 @@ export function throwOnDiagnostics(cwd: string, ...args: Diagnostics[]) {
   }
 }
 
-function syntheticError(message: string): ts.Diagnostic {
-  return {
-    file: null as any as ts.SourceFile,
-    start: 0,
-    length: 0,
-    messageText: message,
-    category: ts.DiagnosticCategory.Error,
-    code: 0
-  };
-}
-
 export function readConfiguration(
     project: string, basePath: string,
     checkFunc: (cwd: string, ...args: any[]) => void = throwOnDiagnostics,
@@ -111,28 +101,22 @@ export function readConfiguration(
   return {parsed, ngOptions};
 }
 
-function getProjectDirectory(project: string): string {
-  let isFile: boolean;
-  try {
-    isFile = fs.lstatSync(project).isFile();
-  } catch (e) {
-    // Project doesn't exist. Assume it is a file has an extension. This case happens
-    // when the project file is passed to set basePath but no tsconfig.json file exists.
-    // It is used in tests to ensure that the options can be passed in without there being
-    // an actual config file.
-    isFile = path.extname(project) !== '';
-  }
-
-  // If project refers to a file, the project directory is the file's parent directory
-  // otherwise project is the project directory.
-  return isFile ? path.dirname(project) : project;
-}
-
+/**
+ * Returns an object with two properties:
+ * - `errorCode` is 0 when the compilation was successful,
+ * - `result` is an `EmitResult` when the errorCode is 0, `undefined` otherwise.
+ */
 export function performCompilation(
-    basePath: string, files: string[], options: ts.CompilerOptions, ngOptions: any,
+    basePath: string, files: string[], options: ts.CompilerOptions, ngOptions: api.CompilerOptions,
     consoleError: (s: string) => void = console.error,
     checkFunc: (cwd: string, ...args: any[]) => void = throwOnDiagnostics,
-    tsCompilerHost?: ts.CompilerHost) {
+    tsCompilerHost?: ts.CompilerHost): {errorCode: number, result?: api.EmitResult} {
+  const [major, minor] = ts.version.split('.');
+
+  if (+major < 2 || (+major === 2 && +minor < 3)) {
+    throw new Error('Must use TypeScript > 2.3 to have transformer support');
+  }
+
   try {
     ngOptions.basePath = basePath;
     ngOptions.genDir = basePath;
@@ -175,18 +159,20 @@ export function performCompilation(
     // Check Angular semantic diagnostics
     checkFunc(basePath, ngProgram.getNgSemanticDiagnostics());
 
-    ngProgram.emit({
+    const result = ngProgram.emit({
       emitFlags: api.EmitFlags.Default |
           ((ngOptions.skipMetadataEmit || ngOptions.flatModuleOutFile) ? 0 : api.EmitFlags.Metadata)
     });
+
+    checkFunc(basePath, result.diagnostics);
+
+    return {errorCode: 0, result};
   } catch (e) {
     if (isSyntaxError(e)) {
-      console.error(e.message);
       consoleError(e.message);
-      return 1;
+      return {errorCode: 1};
     }
+
     throw e;
   }
-
-  return 0;
 }

@@ -19,8 +19,10 @@ export class TypeScriptNodeEmitter {
   updateSourceFile(sourceFile: ts.SourceFile, stmts: Statement[], preamble?: string):
       [ts.SourceFile, Map<ts.Node, Node>] {
     const converter = new _NodeEmitterVisitor();
-    const statements =
-        stmts.map(stmt => stmt.visitStatement(converter, null)).filter(stmt => stmt != null);
+    // [].concat flattens the result so that each `visit...` method can also return an array of
+    // stmts.
+    const statements: any[] = [].concat(
+        ...stmts.map(stmt => stmt.visitStatement(converter, null)).filter(stmt => stmt != null));
     const newSourceFile = ts.updateSourceFileNode(
         sourceFile, [...converter.getReexports(), ...converter.getImports(), ...statements]);
     if (preamble) {
@@ -118,20 +120,30 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
       }
     }
 
-    return this.record(
-        stmt, ts.createVariableStatement(
-                  this.getModifiers(stmt),
-                  ts.createVariableDeclarationList([ts.createVariableDeclaration(
-                      ts.createIdentifier(stmt.name),
-                      /* type */ undefined,
-                      (stmt.value && stmt.value.visitExpression(this, null)) || undefined)])));
+    const varDeclList = ts.createVariableDeclarationList([ts.createVariableDeclaration(
+        ts.createIdentifier(stmt.name),
+        /* type */ undefined,
+        (stmt.value && stmt.value.visitExpression(this, null)) || undefined)]);
+
+    if (stmt.hasModifier(StmtModifier.Exported)) {
+      // Note: We need to add an explicit variable and export declaration so that
+      // the variable can be referred in the same file as well.
+      const tsVarStmt =
+          this.record(stmt, ts.createVariableStatement(/* modifiers */[], varDeclList));
+      const exportStmt = this.record(
+          stmt, ts.createExportDeclaration(
+                    /*decorators*/ undefined, /*modifiers*/ undefined,
+                    ts.createNamedExports([ts.createExportSpecifier(stmt.name, stmt.name)])));
+      return [tsVarStmt, exportStmt];
+    }
+    return this.record(stmt, ts.createVariableStatement(this.getModifiers(stmt), varDeclList));
   }
 
   visitDeclareFunctionStmt(stmt: DeclareFunctionStmt, context: any) {
     return this.record(
         stmt, ts.createFunctionDeclaration(
                   /* decorators */ undefined, this.getModifiers(stmt),
-                  /* astrictToken */ undefined, stmt.name, /* typeParameters */ undefined,
+                  /* asteriskToken */ undefined, stmt.name, /* typeParameters */ undefined,
                   stmt.params.map(
                       p => ts.createParameter(
                           /* decorators */ undefined, /* modifiers */ undefined,
