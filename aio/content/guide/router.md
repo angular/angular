@@ -232,22 +232,11 @@ During each navigation, the `Router` emits navigation events through the `Router
 
   <tr>
     <td>
-      <code>RoutesRecognized</code>
-    </td>
-    <td>
-
-      An [event](api/router/RoutesRecognized) triggered when the Router parses the URL and the routes are recognized.
-
-    </td>
-  </tr>
-
-  <tr>
-    <td>
       <code>RouteConfigLoadStart</code>
     </td>
     <td>
 
-      An [event](api/router/RouteConfigLoadStart) triggered before the `Router` 
+      An [event](api/router/RouteConfigLoadStart) triggered before the `Router`
       [lazy loads](#asynchronous-routing) a route configuration.
 
     </td>
@@ -260,6 +249,85 @@ During each navigation, the `Router` emits navigation events through the `Router
     <td>
 
       An [event](api/router/RouteConfigLoadEnd) triggered after a route has been lazy loaded.
+
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <code>RoutesRecognized</code>
+    </td>
+    <td>
+
+      An [event](api/router/RoutesRecognized) triggered when the Router parses the URL and the routes are recognized.
+
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <code>GuardsCheckStart</code>
+    </td>
+    <td>
+
+      An [event](api/router/GuardsCheckStart) triggered when the Router begins the Guards phase of routing.
+
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <code>ChildActivationStart</code>
+    </td>
+    <td>
+
+      An [event](api/router/ChildActivationStart) triggered when the Router begins activating a route's children. This
+      event receives the Route config for the parent route.
+
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <code>GuardsCheckEnd</code>
+    </td>
+    <td>
+
+      An [event](api/router/GuardsCheckEnd) triggered when the Router finishes the Guards phase of routing successfully.
+
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <code>ResolveStart</code>
+    </td>
+    <td>
+
+      An [event](api/router/ResolveStart) triggered when the Router begins the Resolve phase of routing.
+
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <code>ResolveEnd</code>
+    </td>
+    <td>
+
+      An [event](api/router/ResolveEnd) triggered when the Router finishes the Resolve phase of routing successfuly.
+
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <code>ChildActivationEnd</code>
+    </td>
+    <td>
+
+      An [event](api/router/ChildActivationEnd) triggered when the Router finishes activating a route's children. This
+      event receives the Route config for the parent route.
 
     </td>
   </tr>
@@ -281,7 +349,7 @@ During each navigation, the `Router` emits navigation events through the `Router
     </td>
     <td>
 
-      An [event](api/router/NavigationCancel) triggered when navigation is canceled. 
+      An [event](api/router/NavigationCancel) triggered when navigation is canceled.
       This is due to a [Route Guard](#guards) returning false during navigation.
 
     </td>
@@ -924,7 +992,7 @@ When the application launches, the initial URL in the browser bar is something l
   localhost:3000
 </code-example>
 
-That doesn't match any of the concrete configured routes which means 
+That doesn't match any of the concrete configured routes which means
 the router falls through to the wildcard route and displays the `PageNotFoundComponent`.
 
 The application needs a **default route** to a valid page.
@@ -1690,7 +1758,7 @@ It has a great deal of useful information including:
     </td>
     <td>
 
-    An `Observable` that contains a [map](api/router/ParamMap) of the [query parameters](#query-parameters) available to all routes. 
+    An `Observable` that contains a [map](api/router/ParamMap) of the [query parameters](#query-parameters) available to all routes.
     The map supports retrieving single and multiple values from the query parameter.
 
     </td>
@@ -1769,7 +1837,7 @@ Two older properties are still available. They are less capable than their repla
 
 **`params`** &mdash; An `Observable` that contains the required and [optional parameters](#optional-route-parameters) specific to the route. Use `paramMap` instead.
 
-**`queryParams`** &mdash; An `Observable` that contains the [query parameters](#query-parameters) available to all routes. 
+**`queryParams`** &mdash; An `Observable` that contains the [query parameters](#query-parameters) available to all routes.
 Use `queryParamMap` instead.
 
 </div>
@@ -1813,10 +1881,10 @@ pull the hero `id` from the parameters and retrieve the hero to display.
 
 </code-example>
 
-The `paramMap` processing is a bit tricky. When the map changes, you `get()` 
+The `paramMap` processing is a bit tricky. When the map changes, you `get()`
 the `id` parameter from the changed parameters.
 
-Then you tell the `HeroService` to fetch the hero with that `id` and return the result of the `HeroService` request. 
+Then you tell the `HeroService` to fetch the hero with that `id` and return the result of the `HeroService` request.
 
 You might think to use the RxJS `map` operator.
 But the `HeroService` returns an `Observable<Hero>`.
@@ -1861,7 +1929,7 @@ to handle parameter access for both route parameters (`paramMap`) and query para
     </td>
     <td>
 
-    Returns the parameter name value (a `string`) if present, or `null` if the parameter name is not in the map. Returns the _first_ element if the parameter value is actually an array of values. 
+    Returns the parameter name value (a `string`) if present, or `null` if the parameter name is not in the map. Returns the _first_ element if the parameter value is actually an array of values.
 
     </td>
   </tr>
