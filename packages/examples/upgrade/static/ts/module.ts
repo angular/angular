@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Component, Directive, DoCheck, ElementRef, EventEmitter, Inject, Injectable, Injector, Input, NgModule, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
+import {Component, Directive, ElementRef, EventEmitter, Inject, Injectable, Injector, Input, NgModule, Output, SimpleChanges} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {UpgradeComponent, UpgradeModule, downgradeComponent, downgradeInjectable} from '@angular/upgrade/static';
@@ -66,28 +66,18 @@ class HeroesService {
 // #docregion ng1-hero-wrapper
 // This Angular directive will act as an interface to the "upgraded" AngularJS component
 @Directive({selector: 'ng1-hero'})
-class Ng1HeroComponentWrapper extends UpgradeComponent implements OnInit, OnChanges, DoCheck,
-    OnDestroy {
+class Ng1HeroComponentWrapper extends UpgradeComponent {
   // The names of the input and output properties here must match the names of the
   // `<` and `&` bindings in the AngularJS component that is being wrapped
   // TODO(issue/24571): remove '!'.
   @Input() hero !: Hero;
   // TODO(issue/24571): remove '!'.
   @Output() onRemove !: EventEmitter<void>;
-  constructor(@Inject(ElementRef) elementRef: ElementRef, @Inject(Injector) injector: Injector) {
+
+  constructor(elementRef: ElementRef, injector: Injector) {
     // We must pass the name of the directive as used by AngularJS to the super
     super('ng1Hero', elementRef, injector);
   }
-
-  // For this class to work when compiled with AoT, we must implement these lifecycle hooks
-  // because the AoT compiler will not realise that the super class implements them
-  ngOnInit() { super.ngOnInit(); }
-
-  ngOnChanges(changes: SimpleChanges) { super.ngOnChanges(changes); }
-
-  ngDoCheck() { super.ngDoCheck(); }
-
-  ngOnDestroy() { super.ngOnDestroy(); }
 }
 // #enddocregion
 
@@ -107,11 +97,19 @@ class Ng1HeroComponentWrapper extends UpgradeComponent implements OnInit, OnChan
   // We must import `UpgradeModule` to get access to the AngularJS core services
   imports: [BrowserModule, UpgradeModule]
 })
+// #docregion bootstrap-ng1
 class Ng2AppModule {
-  ngDoBootstrap() { /* this is a placeholder to stop the bootstrapper from complaining */
+  // #enddocregion ng2-module
+  constructor(private upgrade: UpgradeModule) {}
+
+  ngDoBootstrap() {
+    // We bootstrap the AngularJS app.
+    this.upgrade.bootstrap(document.body, [ng1AppModule.name]);
   }
+  // #docregion ng2-module
 }
-// #enddocregion
+// #enddocregion bootstrap-ng1
+// #enddocregion ng2-module
 // #enddocregion
 
 
@@ -147,7 +145,7 @@ ng1AppModule.factory('heroesService', downgradeInjectable(HeroesService) as any)
 // #enddocregion
 
 // #docregion ng2-heroes-wrapper
-// This is directive will act as the interface to the "downgraded"  Angular component
+// This is directive will act as the interface to the "downgraded" Angular component
 ng1AppModule.directive('ng2Heroes', downgradeComponent({component: Ng2HeroesComponent}));
 // #enddocregion
 
@@ -171,16 +169,12 @@ ng1AppModule.component('exampleApp', {
                <p class="extra">There are {{ $ctrl.heroesService.heroes.length }} heroes.</p>
              </ng2-heroes>`
 } as any);
-// #enddocregion
+// #enddocregion
 // #enddocregion
 
 
-// #docregion bootstrap
-// First we bootstrap the Angular HybridModule
-// (We are using the dynamic browser platform as this example has not been compiled AoT)
-platformBrowserDynamic().bootstrapModule(Ng2AppModule).then(ref => {
-  // Once Angular bootstrap is complete then we bootstrap the AngularJS module
-  const upgrade = ref.injector.get(UpgradeModule) as UpgradeModule;
-  upgrade.bootstrap(document.body, [ng1AppModule.name]);
-});
+// #docregion bootstrap-ng2
+// We bootstrap the Angular module as we would do in a normal Angular app.
+// (We are using the dynamic browser platform as this example has not been compiled AoT.)
+platformBrowserDynamic().bootstrapModule(Ng2AppModule);
 // #enddocregion
