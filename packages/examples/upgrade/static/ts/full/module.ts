@@ -5,10 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Component, Directive, ElementRef, EventEmitter, Inject, Injectable, Injector, Input, NgModule, Output, SimpleChanges} from '@angular/core';
+
+import {Component, Directive, ElementRef, EventEmitter, Inject, Injectable, Injector, Input, NgModule, Output} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {UpgradeComponent, UpgradeModule, downgradeComponent, downgradeInjectable} from '@angular/upgrade/static';
+
+declare var angular: ng.IAngularStatic;
 
 interface Hero {
   name: string;
@@ -116,7 +119,6 @@ class Ng2AppModule {
 // #docregion Angular 1 Stuff
 // #docregion ng1-module
 // This Angular 1 module represents the AngularJS pieces of the application
-declare var angular: ng.IAngularStatic;
 const ng1AppModule = angular.module('ng1AppModule', []);
 // #enddocregion
 
@@ -136,7 +138,7 @@ ng1AppModule.component('ng1Hero', {
 // This AngularJS service will be "upgraded" to be used in Angular
 ng1AppModule.factory(
     'titleCase',
-    (() => (value: string) => value.replace(/((^|\s)[a-z])/g, (_, c) => c.toUpperCase())) as any);
+    () => (value: string) => value.replace(/((^|\s)[a-z])/g, (_, c) => c.toUpperCase()));
 // #enddocregion
 
 // #docregion downgrade-ng2-heroes-service
@@ -145,7 +147,7 @@ ng1AppModule.factory('heroesService', downgradeInjectable(HeroesService) as any)
 // #enddocregion
 
 // #docregion ng2-heroes-wrapper
-// This is directive will act as the interface to the "downgraded" Angular component
+// This directive will act as the interface to the "downgraded" Angular component
 ng1AppModule.directive('ng2Heroes', downgradeComponent({component: Ng2HeroesComponent}));
 // #enddocregion
 
@@ -155,20 +157,18 @@ ng1AppModule.component('exampleApp', {
   // We inject the "downgraded" HeroesService into this AngularJS component
   // (We don't need the `HeroesService` type for AngularJS DI - it just helps with TypeScript
   // compilation)
-  controller:
-      [
-        'heroesService',
-        function(heroesService: HeroesService) { this.heroesService = heroesService; }
-      ],
-      // This template make use of the downgraded `ng2-heroes` component
-      // Note that because its element is compiled by AngularJS we must use kebab-case attributes
-      // for inputs and outputs
-      template: `<link rel="stylesheet" href="./styles.css">
-             <ng2-heroes [heroes]="$ctrl.heroesService.heroes" (add-hero)="$ctrl.heroesService.addHero()" (remove-hero)="$ctrl.heroesService.removeHero($event)">
-               <h1>Heroes</h1>
-               <p class="extra">There are {{ $ctrl.heroesService.heroes.length }} heroes.</p>
-             </ng2-heroes>`
-} as any);
+  controller: [
+    'heroesService', function(heroesService: HeroesService) { this.heroesService = heroesService; }
+  ],
+  // This template makes use of the downgraded `ng2-heroes` component
+  // Note that because its element is compiled by AngularJS we must use kebab-case attributes
+  // for inputs and outputs
+  template: `<link rel="stylesheet" href="./styles.css">
+          <ng2-heroes [heroes]="$ctrl.heroesService.heroes" (add-hero)="$ctrl.heroesService.addHero()" (remove-hero)="$ctrl.heroesService.removeHero($event)">
+            <h1>Heroes</h1>
+            <p class="extra">There are {{ $ctrl.heroesService.heroes.length }} heroes.</p>
+          </ng2-heroes>`
+});
 // #enddocregion
 // #enddocregion
 
