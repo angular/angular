@@ -1,10 +1,10 @@
 import {buildConfig} from './build-config';
 import {rollupRemoveLicensesPlugin} from './rollup-remove-licenses';
+import {rollupGlobals} from './rollup-globals';
 
 // There are no type definitions available for these imports.
 const rollup = require('rollup');
 const rollupNodeResolutionPlugin = require('rollup-plugin-node-resolve');
-const ROLLUP_GLOBALS = require('./rollup-globals.json');
 
 export type BundleConfig = {
   entry: string;
@@ -17,7 +17,7 @@ export type BundleConfig = {
 export function createRollupBundle(config: BundleConfig): Promise<any> {
   const bundleOptions = {
     context: 'this',
-    external: Object.keys(ROLLUP_GLOBALS),
+    external: Object.keys(rollupGlobals),
     entry: config.entry,
     plugins: [rollupRemoveLicensesPlugin]
   };
@@ -29,7 +29,7 @@ export function createRollupBundle(config: BundleConfig): Promise<any> {
     banner: buildConfig.licenseBanner,
     format: config.format,
     dest: config.dest,
-    globals: ROLLUP_GLOBALS,
+    globals: rollupGlobals,
     sourceMap: true
   };
 
@@ -38,7 +38,7 @@ export function createRollupBundle(config: BundleConfig): Promise<any> {
   if (config.format === 'umd') {
     bundleOptions.plugins.push(rollupNodeResolutionPlugin());
 
-    const external = Object.keys(ROLLUP_GLOBALS);
+    const external = Object.keys(rollupGlobals);
     external.splice(external.indexOf('tslib'), 1);
     bundleOptions.external = external;
   }

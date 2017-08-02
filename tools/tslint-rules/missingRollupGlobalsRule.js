@@ -1,6 +1,13 @@
 const path = require('path');
 const Lint = require('tslint');
 
+// Since the packaging is based on TypeScript and is only compiled at run-time using ts-node, the
+// custom TSLint rule is not able to read the map of rollup globals. Because the custom rules
+// for TSLint are written in JavaScript we also need to use ts-node here to read the globals.
+require('ts-node').register({
+  project: path.join(__dirname, '../gulp/tsconfig.json')
+});
+
 /**
  * Rule that enforces that the specified external packages have been included in our Rollup config.
  * Usage: [true, './path/to/rollup/config.json']
@@ -22,7 +29,7 @@ class Walker extends Lint.RuleWalker {
     const [configPath, ...whitelist] = options.ruleArguments;
 
     this._configPath = path.resolve(process.cwd(), configPath);
-    this._config = require(this._configPath);
+    this._config = require(this._configPath).rollupGlobals;
     this._enabled = !whitelist.length || whitelist.some(p => new RegExp(p).test(file.fileName));
   }
 

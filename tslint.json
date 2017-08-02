@@ -37,7 +37,7 @@
     ],
     "missing-rollup-globals": [
       true,
-      "./tools/package-tools/rollup-globals.json",
+      "./tools/package-tools/rollup-globals.ts",
       "^((?!tools).)*$"
     ],
     "one-line": [
