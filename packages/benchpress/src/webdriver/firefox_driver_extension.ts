@@ -40,7 +40,7 @@ export class FirefoxDriverExtension extends WebDriverExtension {
     return this._driver.executeScript(script);
   }
 
-  readPerfLog(): Promise<PerfLogEvent> {
+  readPerfLog(): Promise<PerfLogEvent[]> {
     return this._driver.executeAsyncScript('var cb = arguments[0]; window.getProfile(cb);');
   }
 
