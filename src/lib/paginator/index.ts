@@ -8,7 +8,6 @@
 
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {FormsModule} from '@angular/forms';
 import {MdButtonModule} from '../button/index';
 import {MdSelectModule} from '../select/index';
 import {MdPaginator} from './paginator';
@@ -19,7 +18,6 @@ import {MdTooltipModule} from '../tooltip/index';
 @NgModule({
   imports: [
     CommonModule,
-    FormsModule,
     MdButtonModule,
     MdSelectModule,
     MdTooltipModule,

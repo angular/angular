@@ -5,7 +5,7 @@
 
   <md-select *ngIf="_displayedPageSizeOptions.length > 1"
              class="mat-paginator-page-size-select"
-             [ngModel]="pageSize"
+             [value]="pageSize"
              [aria-label]="_intl.itemsPerPageLabel"
              (change)="_changePageSize($event.value)">
     <md-option *ngFor="let pageSizeOption of _displayedPageSizeOptions" [value]="pageSizeOption">
