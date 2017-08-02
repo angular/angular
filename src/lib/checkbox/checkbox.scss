@@ -347,8 +347,8 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * $mat-checkbox-size !default;
       // Instead of delaying the animation, we simply multiply its length by 2 and begin the
       // animation at 50% in order to prevent a flash of styles applied to a checked checkmark
       // as the background is fading in before the animation begins.
-      animation:
-        $mat-checkbox-transition-duration * 2 linear 0ms mat-checkbox-unchecked-checked-checkmark-path;
+      animation: $mat-checkbox-transition-duration * 2 linear 0ms
+          mat-checkbox-unchecked-checked-checkmark-path;
     }
   }
 

@@ -3,8 +3,8 @@
 @import '../core/typography/typography-utils';
 
 @mixin _mat-slide-toggle-checked($palette, $thumb-checked-hue) {
-  // Do not apply the checked colors if the toggle is disabled, because the specificity would be to high for
-  // the disabled styles.
+  // Do not apply the checked colors if the toggle is disabled, because the
+  // specificity would be to high for the disabled styles.
   &.mat-checked:not(.mat-disabled) {
     .mat-slide-toggle-thumb {
       background-color: mat-color($palette, $thumb-checked-hue);
@@ -69,9 +69,9 @@
 
   .mat-disabled {
     .mat-slide-toggle-thumb {
-      // The thumb of the slide-toggle always uses the hue 400 of the grey palette in dark or light themes.
-      // Since this is very specific to the slide-toggle component, we're not providing
-      // it in the background palette.
+      // The thumb of the slide-toggle always uses the hue 400 of the grey palette in dark
+      // or light themes. Since this is very specific to the slide-toggle component, we're not
+      // providing it in the background palette.
       background-color: mat-color($mat-grey, $thumb-disabled-hue);
     }
     .mat-slide-toggle-bar {

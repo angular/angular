@@ -23,7 +23,7 @@
       border-radius: 50%;
       overflow: hidden;
       // z-index needed to make clipping to border-radius work correctly.
-      // http://stackoverflow.com/questions/20001515/chrome-bug-border-radius-not-clipping-contents-when-combined-with-css-transiti
+      // http://stackoverflow.com/questions/20001515/
       z-index: 1;
     }
   }

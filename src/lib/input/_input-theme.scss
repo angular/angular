@@ -102,12 +102,12 @@
 
 // Applies a floating placeholder above the input itself.
 @mixin _mat-input-placeholder-floating($font-scale, $infix-padding, $infix-margin-top) {
+  // We use perspecitve to fix the text blurriness as described here:
+  // http://www.useragentman.com/blog/2014/05/04/fixing-typography-inside-of-2-d-css-transforms/
+  // This results in a small jitter after the label floats on Firefox, which the
+  // translateZ fixes.
   transform: translateY(-$infix-margin-top - $infix-padding)
              scale($font-scale)
-             // We use perspecitve to fix the text blurriness as described here:
-             // http://www.useragentman.com/blog/2014/05/04/fixing-typography-inside-of-2-d-css-transforms/
-             // This results in a small jitter after the label floats on Firefox, which the
-             // translateZ fixes.
              perspective(100px) translateZ(0.001px);
   // The tricks above used to smooth out the animation on chrome and firefox actually make things
   // worse on IE, so we don't include them in the IE version.

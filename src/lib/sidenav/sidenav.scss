@@ -3,8 +3,10 @@
 @import '../core/style/layout-common';
 @import '../core/a11y/a11y';
 
+// stylelint-disable max-line-length
 // Mixin that creates a new stacking context.
 // see https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index/The_stacking_context
+// stylelint-enable
 @mixin mat-sidenav-stacking-context() {
   position: relative;
 

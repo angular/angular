@@ -115,9 +115,11 @@ $mat-progress-bar-piece-animation-duration: 250ms !default;
 
 // KEYFRAME BLOCK                      DESCRIPTION
 // primary-indeterminate-translate     Translation of the primary progressbar across the screen
-// primary-indeterminate-scale         Scaling of the primary bar as it's being translated across the screen
+// primary-indeterminate-scale         Scaling of the primary bar as it's being translated
+//                                     across the screen
 // secondary-indeterminate-translate   Translation of the secondary bar across the screen
-// secondary-indeterminate-scale       Scaling of the secondary bar as it's being translated across the screen
+// secondary-indeterminate-scale       Scaling of the secondary bar as it's being translated
+//                                     across the screen
 //
 // Because two different transform animations need to be applied at once, the translation is
 // applied to the outer element and the scaling is applied to the inner element, which provides the
@@ -126,23 +128,33 @@ $mat-progress-bar-piece-animation-duration: 250ms !default;
 
 // Progress Bar Timing functions:
 // $mat-progress-bar-primary-indeterminate-translate-step-1 has no timing function.
-$mat-progress-bar-primary-indeterminate-translate-step-2: cubic-bezier(0.5, 0, 0.701732, 0.495819) !default;
-$mat-progress-bar-primary-indeterminate-translate-step-3: cubic-bezier(0.302435, 0.381352, 0.55, 0.956352) !default;
+$mat-progress-bar-primary-indeterminate-translate-step-2:
+    cubic-bezier(0.5, 0, 0.701732, 0.495819) !default;
+$mat-progress-bar-primary-indeterminate-translate-step-3:
+    cubic-bezier(0.302435, 0.381352, 0.55, 0.956352) !default;
 // $mat-progress-bar-primary-indeterminate-translate-step-4 has no timing function.
 
 // $mat-progress-bar-primary-indeterminate-scale-step-1 has no timing function
-$mat-progress-bar-primary-indeterminate-scale-step-2: cubic-bezier(0.334731, 0.12482, 0.785844, 1) !default;
-$mat-progress-bar-primary-indeterminate-scale-step-3: cubic-bezier(0.06, 0.11, 0.6, 1) !default;
+$mat-progress-bar-primary-indeterminate-scale-step-2:
+    cubic-bezier(0.334731, 0.12482, 0.785844, 1) !default;
+$mat-progress-bar-primary-indeterminate-scale-step-3:
+    cubic-bezier(0.06, 0.11, 0.6, 1) !default;
 // $mat-progress-bar-primary-indeterminate-scale-step-4 has no timing function
 
-$mat-progress-bar-secondary-indeterminate-translate-step-1: cubic-bezier(0.15, 0, 0.515058, 0.409685) !default;
-$mat-progress-bar-secondary-indeterminate-translate-step-2: cubic-bezier(0.31033, 0.284058, 0.8, 0.733712) !default;
-$mat-progress-bar-secondary-indeterminate-translate-step-3: cubic-bezier(0.4, 0.627035, 0.6, 0.902026) !default;
+$mat-progress-bar-secondary-indeterminate-translate-step-1:
+    cubic-bezier(0.15, 0, 0.515058, 0.409685) !default;
+$mat-progress-bar-secondary-indeterminate-translate-step-2:
+    cubic-bezier(0.31033, 0.284058, 0.8, 0.733712) !default;
+$mat-progress-bar-secondary-indeterminate-translate-step-3:
+    cubic-bezier(0.4, 0.627035, 0.6, 0.902026) !default;
 // $mat-progress-bar-secondary-indeterminate-translate-step-4 has no timing function
 
-$mat-progress-bar-secondary-indeterminate-scale-step-1: cubic-bezier(0.15, 0, 0.515058, 0.409685) !default;
-$mat-progress-bar-secondary-indeterminate-scale-step-2: cubic-bezier(0.31033, 0.284058, 0.8, 0.733712) !default;
-$mat-progress-bar-secondary-indeterminate-scale-step-3: cubic-bezier(0.4, 0.627035, 0.6, 0.902026) !default;
+$mat-progress-bar-secondary-indeterminate-scale-step-1:
+    cubic-bezier(0.15, 0, 0.515058, 0.409685) !default;
+$mat-progress-bar-secondary-indeterminate-scale-step-2:
+    cubic-bezier(0.31033, 0.284058, 0.8, 0.733712) !default;
+$mat-progress-bar-secondary-indeterminate-scale-step-3:
+    cubic-bezier(0.4, 0.627035, 0.6, 0.902026) !default;
 // $mat-progress-bar-secondary-indeterminate-scale-step-4 has no timing function
 
 

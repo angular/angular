@@ -6,10 +6,16 @@
  */
 $mat-autocomplete-panel-max-height: 256px !default;
 
-/** When in "below" position, the panel needs a slight y-offset to ensure the input underline displays. */
+/**
+ * When in "below" position, the panel needs a slight
+ * y-offset to ensure the input underline displays.
+ */
 $mat-autocomplete-panel-below-offset: 6px !default;
 
-/** When in "above" position, the panel needs a larger y-offset to ensure the label has room to display. */
+/**
+ * When in "above" position, the panel needs a larger
+ * y-offset to ensure the label has room to display.
+ */
 $mat-autocomplete-panel-above-offset: -24px !default;
 
 .mat-autocomplete-panel {

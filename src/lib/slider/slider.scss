@@ -316,7 +316,8 @@ $mat-slider-focus-ring-size: 30px !default;
   .mat-slider-thumb-label {
     right: -$mat-slider-thumb-label-size / 2;
     top: -($mat-slider-thumb-label-size + $mat-slider-thumb-arrow-gap);
-    transform: translateY($mat-slider-thumb-label-size / 2 + $mat-slider-thumb-arrow-gap) scale(0.01)
+    transform: translateY($mat-slider-thumb-label-size / 2 + $mat-slider-thumb-arrow-gap)
+        scale(0.01)
         rotate(45deg);
   }
 
@@ -392,7 +393,8 @@ $mat-slider-focus-ring-size: 30px !default;
   .mat-slider-thumb-label {
     bottom: -$mat-slider-thumb-label-size / 2;
     left: -($mat-slider-thumb-label-size + $mat-slider-thumb-arrow-gap);
-    transform: translateX($mat-slider-thumb-label-size / 2 + $mat-slider-thumb-arrow-gap) scale(0.01)
+    transform: translateX($mat-slider-thumb-label-size / 2 + $mat-slider-thumb-arrow-gap)
+        scale(0.01)
         rotate(-45deg);
   }
 
