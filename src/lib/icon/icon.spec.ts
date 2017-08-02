@@ -47,6 +47,7 @@ describe('MdIcon', () => {
         IconWithCustomFontCss,
         IconFromSvgName,
         IconWithAriaHiddenFalse,
+        IconWithBindingAndNgIf,
       ],
       providers: [
         MockBackend,
@@ -313,6 +314,23 @@ describe('MdIcon', () => {
       verifyPathChildElement(svgElement, 'left');
       expect(svgElement.getAttribute('viewBox')).toBeFalsy();
     });
+
+    it('should not throw when toggling an icon that has a binding in IE11', () => {
+      mdIconRegistry.addSvgIcon('fluffy', trust('cat.svg'));
+
+      const fixture = TestBed.createComponent(IconWithBindingAndNgIf);
+
+      fixture.detectChanges();
+
+      expect(() => {
+        fixture.componentInstance.showIcon = false;
+        fixture.detectChanges();
+
+        fixture.componentInstance.showIcon = true;
+        fixture.detectChanges();
+      }).not.toThrow();
+    });
+
   });
 
   describe('custom fonts', () => {
@@ -405,3 +423,9 @@ class IconFromSvgName {
 
 @Component({template: '<md-icon aria-hidden="false">face</md-icon>'})
 class IconWithAriaHiddenFalse { }
+
+@Component({template: `<md-icon [svgIcon]="iconName" *ngIf="showIcon">{{iconName}}</md-icon>`})
+class IconWithBindingAndNgIf {
+  iconName = 'fluffy';
+  showIcon = true;
+}
