@@ -54,7 +54,8 @@ describe('MdAutocomplete', () => {
         AutocompleteWithNumbers,
         AutocompleteWithOnPushDelay,
         AutocompleteWithNativeInput,
-        AutocompleteWithoutPanel
+        AutocompleteWithoutPanel,
+        AutocompleteWithFormsAndNonfloatingPlaceholder
       ],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
@@ -1314,6 +1315,21 @@ describe('MdAutocomplete', () => {
       }).toThrow(getMdAutocompleteMissingPanelError());
     }));
 
+    it('should hide the placeholder with a preselected form control value ' +
+      'and a disabled floating placeholder', fakeAsync(() => {
+        const fixture = TestBed.createComponent(AutocompleteWithFormsAndNonfloatingPlaceholder);
+
+        fixture.detectChanges();
+        tick();
+        fixture.detectChanges();
+
+        const input = fixture.nativeElement.querySelector('input');
+        const placeholder = fixture.nativeElement.querySelector('.mat-input-placeholder');
+
+        expect(input.value).toBe('California');
+        expect(placeholder.classList).not.toContain('mat-empty');
+      }));
+
   });
 
   it('should have correct width when opened', () => {
@@ -1501,7 +1517,6 @@ class AutocompleteWithoutForms {
   onInput(value: any) {
     this.filteredStates = this.states.filter(s => new RegExp(value, 'gi').test(s));
   }
-
 }
 
 
@@ -1531,7 +1546,6 @@ class AutocompleteWithNgModel {
   onInput(value: any) {
     this.filteredStates = this.states.filter(s => new RegExp(value, 'gi').test(s));
   }
-
 }
 
 @Component({
@@ -1610,4 +1624,20 @@ class AutocompleteWithNativeInput {
 })
 class AutocompleteWithoutPanel {
   @ViewChild(MdAutocompleteTrigger) trigger: MdAutocompleteTrigger;
+}
+
+
+@Component({
+  template: `
+    <md-input-container floatPlaceholder="never">
+      <input placeholder="State" mdInput [mdAutocomplete]="auto" [formControl]="formControl">
+    </md-input-container>
+
+    <md-autocomplete #auto="mdAutocomplete">
+      <md-option value="California">California</md-option>
+    </md-autocomplete>
+  `
+})
+class AutocompleteWithFormsAndNonfloatingPlaceholder {
+  formControl = new FormControl('California');
 }

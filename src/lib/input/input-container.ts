@@ -207,7 +207,12 @@ export class MdInputDirective implements OnChanges, OnDestroy, DoCheck {
 
   /** The input element's value. */
   get value() { return this._elementRef.nativeElement.value; }
-  set value(value: string) { this._elementRef.nativeElement.value = value; }
+  set value(value: string) {
+    if (value !== this.value) {
+      this._elementRef.nativeElement.value = value;
+      this._stateChanges.next();
+    }
+  }
 
   /** Whether the input is empty. */
   get empty() {
@@ -443,7 +448,10 @@ export class MdInputContainer implements AfterViewInit, AfterContentInit, AfterC
   @Input()
   get floatPlaceholder() { return this._floatPlaceholder; }
   set floatPlaceholder(value: FloatPlaceholderType) {
-    this._floatPlaceholder = value || this._placeholderOptions.float || 'auto';
+    if (value !== this._floatPlaceholder) {
+      this._floatPlaceholder = value || this._placeholderOptions.float || 'auto';
+      this._changeDetectorRef.markForCheck();
+    }
   }
   private _floatPlaceholder: FloatPlaceholderType;
 

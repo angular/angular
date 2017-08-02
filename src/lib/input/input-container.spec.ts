@@ -566,6 +566,25 @@ describe('MdInputContainer without forms', function () {
     expect(labelEl.classList).not.toContain('mat-float');
   });
 
+  it('should be able to toggle the floating placeholder programmatically', () => {
+    const fixture = TestBed.createComponent(MdInputContainerWithId);
+
+    fixture.detectChanges();
+
+    const inputContainer = fixture.debugElement.query(By.directive(MdInputContainer));
+    const containerInstance = inputContainer.componentInstance as MdInputContainer;
+    const placeholder = inputContainer.nativeElement.querySelector('.mat-input-placeholder');
+
+    expect(containerInstance.floatPlaceholder).toBe('auto');
+    expect(placeholder.classList).toContain('mat-empty', 'Expected input to be considered empty.');
+
+    containerInstance.floatPlaceholder = 'always';
+    fixture.detectChanges();
+
+    expect(placeholder.classList)
+        .not.toContain('mat-empty', 'Expected input to be considered not empty.');
+  });
+
   it('should not have prefix and suffix elements when none are specified', () => {
     let fixture = TestBed.createComponent(MdInputContainerWithId);
     fixture.detectChanges();
