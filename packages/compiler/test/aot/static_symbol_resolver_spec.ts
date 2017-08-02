@@ -459,7 +459,7 @@ export class MockStaticSymbolResolverHost implements StaticSymbolResolverHost {
           const errors =
               diagnostics
                   .map(d => {
-                    const {line, character} = ts.getLineAndCharacterOfPosition(d.file, d.start);
+                    const {line, character} = ts.getLineAndCharacterOfPosition(d.file !, d.start !);
                     return `(${line}:${character}): ${d.messageText}`;
                   })
                   .join('\n');
