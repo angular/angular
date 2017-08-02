@@ -14,35 +14,35 @@
           The actual rendered columns are set as a property on the row definition" -->
 
     <!-- Number Column -->
-    <ng-container cdkColumnDef="number">
-      <md-header-cell *cdkHeaderCellDef>#</md-header-cell>
-      <md-cell *cdkCellDef="let row">{{ row.number }}</md-cell>
+    <ng-container mdColumnDef="number">
+      <md-header-cell *mdHeaderCellDef>#</md-header-cell>
+      <md-cell *mdCellDef="let row">{{ row.number }}</md-cell>
     </ng-container>
 
     <!-- Title Column -->
-    <ng-container cdkColumnDef="title">
-      <md-header-cell *cdkHeaderCellDef>Title</md-header-cell>
-      <md-cell *cdkCellDef="let row">{{ row.title }}</md-cell>
+    <ng-container mdColumnDef="title">
+      <md-header-cell *mdHeaderCellDef>Title</md-header-cell>
+      <md-cell *mdCellDef="let row">{{ row.title }}</md-cell>
     </ng-container>
 
     <!-- State Column -->
-    <ng-container cdkColumnDef="state">
-      <md-header-cell *cdkHeaderCellDef>State</md-header-cell>
-      <md-cell *cdkCellDef="let row">{{ row.state }}</md-cell>
+    <ng-container mdColumnDef="state">
+      <md-header-cell *mdHeaderCellDef>State</md-header-cell>
+      <md-cell *mdCellDef="let row">{{ row.state }}</md-cell>
     </ng-container>
 
     <!-- Created Column -->
-    <ng-container cdkColumnDef="created_at">
-      <md-header-cell *cdkHeaderCellDef
+    <ng-container mdColumnDef="created_at">
+      <md-header-cell *mdHeaderCellDef
                       md-sort-header
                       disableClear="true">
         Created
       </md-header-cell>
-      <md-cell *cdkCellDef="let row">{{ row.created_at | date }}</md-cell>
+      <md-cell *mdCellDef="let row">{{ row.created_at | date }}</md-cell>
     </ng-container>
 
-    <md-header-row *cdkHeaderRowDef="displayedColumns"></md-header-row>
-    <md-row *cdkRowDef="let row; columns: displayedColumns;"></md-row>
+    <md-header-row *mdHeaderRowDef="displayedColumns"></md-header-row>
+    <md-row *mdRowDef="let row; columns: displayedColumns;"></md-row>
   </md-table>
 
   <md-paginator [length]="dataSource.resultsLength"

@@ -18,14 +18,14 @@
           The actual rendered columns are set as a property on the row definition" -->
 
     <!-- Checkbox Column -->
-    <ng-container cdkColumnDef="select">
-      <md-header-cell *cdkHeaderCellDef>
+    <ng-container mdColumnDef="select">
+      <md-header-cell *mdHeaderCellDef>
         <md-checkbox (change)="$event ? masterToggle() : null"
                      [checked]="isAllSelected()"
                      [indeterminate]="selection.hasValue() && !isAllSelected()">
         </md-checkbox>
       </md-header-cell>
-      <md-cell *cdkCellDef="let row">
+      <md-cell *mdCellDef="let row">
         <md-checkbox (click)="$event.stopPropagation()"
                      (change)="$event ? selection.toggle(row.id) : null"
                      [checked]="selection.isSelected(row.id)">
@@ -34,31 +34,31 @@
     </ng-container>
 
     <!-- ID Column -->
-    <ng-container cdkColumnDef="userId">
-      <md-header-cell *cdkHeaderCellDef md-sort-header> ID </md-header-cell>
-      <md-cell *cdkCellDef="let row"> {{row.id}} </md-cell>
+    <ng-container mdColumnDef="userId">
+      <md-header-cell *mdHeaderCellDef md-sort-header> ID </md-header-cell>
+      <md-cell *mdCellDef="let row"> {{row.id}} </md-cell>
     </ng-container>
 
     <!-- Progress Column -->
-    <ng-container cdkColumnDef="progress">
-      <md-header-cell *cdkHeaderCellDef md-sort-header> Progress </md-header-cell>
-      <md-cell *cdkCellDef="let row"> {{row.progress}}% </md-cell>
+    <ng-container mdColumnDef="progress">
+      <md-header-cell *mdHeaderCellDef md-sort-header> Progress </md-header-cell>
+      <md-cell *mdCellDef="let row"> {{row.progress}}% </md-cell>
     </ng-container>
 
     <!-- Name Column -->
-    <ng-container cdkColumnDef="userName">
-      <md-header-cell *cdkHeaderCellDef md-sort-header> Name </md-header-cell>
-      <md-cell *cdkCellDef="let row"> {{row.name}} </md-cell>
+    <ng-container mdColumnDef="userName">
+      <md-header-cell *mdHeaderCellDef md-sort-header> Name </md-header-cell>
+      <md-cell *mdCellDef="let row"> {{row.name}} </md-cell>
     </ng-container>
 
     <!-- Color Column -->
-    <ng-container cdkColumnDef="color">
-      <md-header-cell *cdkHeaderCellDef md-sort-header> Color </md-header-cell>
-      <md-cell *cdkCellDef="let row" [style.color]="row.color"> {{row.color}} </md-cell>
+    <ng-container mdColumnDef="color">
+      <md-header-cell *mdHeaderCellDef md-sort-header> Color </md-header-cell>
+      <md-cell *mdCellDef="let row" [style.color]="row.color"> {{row.color}} </md-cell>
     </ng-container>
 
-    <md-header-row *cdkHeaderRowDef="displayedColumns"></md-header-row>
-    <md-row *cdkRowDef="let row; columns: displayedColumns;"
+    <md-header-row *mdHeaderRowDef="displayedColumns"></md-header-row>
+    <md-row *mdRowDef="let row; columns: displayedColumns;"
             [class.example-selected-row]="selection.isSelected(row.id)"
             (click)="selection.toggle(row.id)">
     </md-row>
