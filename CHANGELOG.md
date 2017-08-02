@@ -1,3 +1,13 @@
+<a name="4.3.3"></a>
+## [4.3.3](https://github.com/angular/angular/compare/4.3.2...4.3.3) (2017-08-02)
+
+
+### Bug Fixes
+
+* **compiler:** fix for element needing implicit parent placed in top-level ng-container ([f5cbc2e](https://github.com/angular/angular/commit/f5cbc2e)), closes [#18314](https://github.com/angular/angular/issues/18314)
+
+
+
 <a name="5.0.0-beta.1"></a>
 # [5.0.0-beta.1](https://github.com/angular/angular/compare/5.0.0-beta.0...5.0.0-beta.1) (2017-07-27)
 
