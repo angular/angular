@@ -9,7 +9,7 @@
     "ng-xi18n": "./src/extract_i18n.js"
   },
   "dependencies": {
-    "@angular/tsc-wrapped": "5.0.0-beta.1",
+    "@angular/tsc-wrapped": "5.0.0-beta.2",
     "reflect-metadata": "^0.1.2",
     "minimist": "^1.2.0"
   },
