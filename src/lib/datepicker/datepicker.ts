@@ -288,7 +288,8 @@ export class MdDatepicker<D> implements OnDestroy {
   /** Open the calendar as a dialog. */
   private _openAsDialog(): void {
     this._dialogRef = this._dialog.open(MdDatepickerContent, {
-      direction: this._dir ? this._dir.value : 'ltr'
+      direction: this._dir ? this._dir.value : 'ltr',
+      viewContainerRef: this._viewContainerRef,
     });
     this._dialogRef.afterClosed().subscribe(() => this.close());
     this._dialogRef.componentInstance.datepicker = this;

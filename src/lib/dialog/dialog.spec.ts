@@ -15,6 +15,7 @@ import {
   ViewContainerRef,
   Injector,
   Inject,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
@@ -151,6 +152,31 @@ describe('MdDialog', () => {
     viewContainerFixture.whenStable().then(() => {
       expect(overlayContainerElement.querySelector('md-dialog-container')).toBeNull();
     });
+  }));
+
+  it('should close from a ViewContainerRef with OnPush change detection', fakeAsync(() => {
+    const onPushFixture = TestBed.createComponent(ComponentWithOnPushViewContainer);
+
+    onPushFixture.detectChanges();
+
+    const dialogRef = dialog.open(PizzaMsg, {
+      viewContainerRef: onPushFixture.componentInstance.viewContainerRef
+    });
+
+    flushMicrotasks();
+    onPushFixture.detectChanges();
+    flushMicrotasks();
+
+    expect(overlayContainerElement.querySelectorAll('md-dialog-container').length)
+        .toBe(1, 'Expected one open dialog.');
+
+    dialogRef.close();
+    flushMicrotasks();
+    onPushFixture.detectChanges();
+    tick(500);
+
+    expect(overlayContainerElement.querySelectorAll('md-dialog-container').length)
+        .toBe(0, 'Expected no open dialogs.');
   }));
 
   it('should close when clicking on the overlay backdrop', async(() => {
@@ -385,14 +411,25 @@ describe('MdDialog', () => {
 
   it('should have the componentInstance available in the afterClosed callback', fakeAsync(() => {
     let dialogRef = dialog.open(PizzaMsg);
+    let spy = jasmine.createSpy('afterClosed spy');
+
+    flushMicrotasks();
+    viewContainerFixture.detectChanges();
+    flushMicrotasks();
 
     dialogRef.afterClosed().subscribe(() => {
+      spy();
       expect(dialogRef.componentInstance).toBeTruthy('Expected component instance to be defined.');
     });
 
     dialogRef.close();
-    tick(500);
+
+    flushMicrotasks();
     viewContainerFixture.detectChanges();
+    tick(500);
+
+    // Ensure that the callback actually fires.
+    expect(spy).toHaveBeenCalled();
   }));
 
   describe('passing in data', () => {
@@ -566,12 +603,12 @@ describe('MdDialog', () => {
       document.body.appendChild(button);
       button.focus();
 
-      let dialogRef = dialog.open(PizzaMsg, {
-        viewContainerRef: testViewContainerRef
-      });
+      let dialogRef = dialog.open(PizzaMsg, { viewContainerRef: testViewContainerRef });
 
+      flushMicrotasks();
       viewContainerFixture.detectChanges();
       flushMicrotasks();
+
       expect(document.activeElement.id)
           .not.toBe('dialog-trigger', 'Expected the focus to change when dialog was opened.');
 
@@ -579,9 +616,9 @@ describe('MdDialog', () => {
       expect(document.activeElement.id).not.toBe('dialog-trigger',
           'Expcted the focus not to have changed before the animation finishes.');
 
-      tick(500);
-      viewContainerFixture.detectChanges();
       flushMicrotasks();
+      viewContainerFixture.detectChanges();
+      tick(500);
 
       expect(document.activeElement.id).toBe('dialog-trigger',
           'Expected that the trigger was refocused after the dialog is closed.');
@@ -603,9 +640,12 @@ describe('MdDialog', () => {
 
       let dialogRef = dialog.open(PizzaMsg, { viewContainerRef: testViewContainerRef });
 
-      dialogRef.afterClosed().subscribe(() => input.focus());
+      tick(500);
+      viewContainerFixture.detectChanges();
 
+      dialogRef.afterClosed().subscribe(() => input.focus());
       dialogRef.close();
+
       tick(500);
       viewContainerFixture.detectChanges();
       flushMicrotasks();
@@ -776,6 +816,14 @@ class DirectiveWithViewContainer {
 }
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: 'hello',
+})
+class ComponentWithOnPushViewContainer {
+  constructor(public viewContainerRef: ViewContainerRef) { }
+}
+
+@Component({
   selector: 'arbitrary-component',
   template: `<dir-with-view-container></dir-with-view-container>`,
 })
@@ -829,6 +877,7 @@ const TEST_DIRECTIVES = [
   ComponentWithChildViewContainer,
   PizzaMsg,
   DirectiveWithViewContainer,
+  ComponentWithOnPushViewContainer,
   ContentElementDialog,
   DialogWithInjectedData
 ];

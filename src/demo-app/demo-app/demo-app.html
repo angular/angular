@@ -14,12 +14,13 @@
       <hr>
 
       <a md-list-item
+         tabindex="-1"
          (click)="start.close()"
          [routerLink]="['/baseline']">
         Baseline
       </a>
     </md-nav-list>
-    <button md-button (click)="start.close()">CLOSE</button>
+    <button md-button tabindex="-1" (click)="start.close()">CLOSE</button>
   </md-sidenav>
   <div>
     <md-toolbar color="primary">
