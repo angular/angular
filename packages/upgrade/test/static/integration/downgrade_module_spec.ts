@@ -10,6 +10,7 @@ import {Component, Inject, Injector, Input, NgModule, NgZone, OnChanges, Provide
 import {async, fakeAsync, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import * as angular from '@angular/upgrade/src/common/angular1';
 import {$ROOT_SCOPE, INJECTOR_KEY, LAZY_MODULE_REF} from '@angular/upgrade/src/common/constants';
 import {LazyModuleRef} from '@angular/upgrade/src/common/util';
@@ -298,6 +299,7 @@ export function main() {
              ngDoBootstrap() {}
            }
 
+           const tickDelay = browserDetection.isIE ? 100 : 0;
            const bootstrapFn = (extraProviders: Provider[]) =>
                platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
            const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
@@ -311,8 +313,8 @@ export function main() {
            const $rootScope = $injector.get($ROOT_SCOPE) as angular.IRootScopeService;
 
            $rootScope.$apply('showNg2 = true');
-           tick();  // Wait for the module to be bootstrapped and `$evalAsync()` to propagate
-                    // inputs.
+           tick(tickDelay);  // Wait for the module to be bootstrapped and `$evalAsync()` to
+                             // propagate inputs.
 
            const injector = ($injector.get(LAZY_MODULE_REF) as LazyModuleRef).injector !;
            const injectorGet = injector.get;
@@ -327,7 +329,7 @@ export function main() {
            expect(element.textContent).toBe('');
 
            $rootScope.$apply('showNg2 = true');
-           tick();  // Wait for `$evalAsync()` to propagate inputs.
+           tick(tickDelay);  // Wait for `$evalAsync()` to propagate inputs.
            expect(element.textContent).toBe('Count: 2 | In the zone: true');
 
            $rootScope.$destroy();
