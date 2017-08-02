@@ -31,6 +31,8 @@ Here are a few essential commands for guide page authors.
 
 1.  http://localhost:4200/  &mdash;  browse to the app running locally.
 
+You can combine `yarn docs-watch` and `yarn start` into one command with `yarn serve-and-sync`.
+
 ## Guide pages
 
  All but a few guide pages are [markdown](https://daringfireball.net/projects/markdown/syntax "markdown") files with an `.md` extension.
