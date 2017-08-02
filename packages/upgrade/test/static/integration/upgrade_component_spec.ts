@@ -1028,7 +1028,10 @@ export function main() {
            // Define `ng1Component`
            const ng1ComponentA: angular.IComponent = {template: 'ng1A(<ng1-b></ng1-b>)'};
            const ng1DirectiveB: angular.IDirective = {
-             compile: tElem => grandParentNodeName = tElem.parent !().parent !()[0].nodeName
+             compile: tElem => {
+               grandParentNodeName = tElem.parent !().parent !()[0].nodeName;
+               return {};
+             }
            };
 
            // Define `Ng1ComponentAFacade`
