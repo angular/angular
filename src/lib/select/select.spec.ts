@@ -1915,6 +1915,21 @@ describe('MdSelect', () => {
             .toBe('true', 'Expected aria-hidden to be true when the select is open.');
       });
 
+      it('should set `aria-multiselectable` to true on multi-select instances', () => {
+        fixture.destroy();
+
+        const multiFixture = TestBed.createComponent(MultiSelect);
+
+        multiFixture.detectChanges();
+        select = multiFixture.debugElement.query(By.css('md-select')).nativeElement;
+
+        expect(select.getAttribute('aria-multiselectable')).toBe('true');
+      });
+
+      it('should set `aria-multiselectable` false on single-selection instances', () => {
+        expect(select.getAttribute('aria-multiselectable')).toBe('false');
+      });
+
     });
 
     describe('for options', () => {
