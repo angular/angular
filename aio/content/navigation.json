@@ -62,6 +62,12 @@
     },
 
     {
+      "url": "guide/webpack",
+      "title": "Webpack: An Introduction",
+      "hidden": true
+    },
+
+    {
       "url": "guide/quickstart",
       "title": "Getting Started",
       "tooltip": "A gentle introduction to Angular."
