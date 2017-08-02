@@ -350,7 +350,7 @@ describe('MdSidenavContainer', () => {
 
     const contentElement = fixture.debugElement.nativeElement.querySelector('.mat-sidenav-content');
 
-    expect(parseInt(contentElement.style.marginLeft)).toBe(0);
+    expect(parseInt(contentElement.style.marginLeft)).toBeFalsy();
 
     fixture.componentInstance.showSidenav = true;
     fixture.detectChanges();

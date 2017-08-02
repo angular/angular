@@ -326,6 +326,9 @@ export class MdSidenavContainer implements AfterContentInit {
   private _left: MdSidenav | null;
   private _right: MdSidenav | null;
 
+  /** Inline styles to be applied to the container. */
+  _styles: { marginLeft: string; marginRight: string; transform: string; };
+
   constructor(@Optional() private _dir: Directionality, private _element: ElementRef,
               private _renderer: Renderer2, private _ngZone: NgZone,
               private _changeDetectorRef: ChangeDetectorRef) {
@@ -362,13 +365,13 @@ export class MdSidenavContainer implements AfterContentInit {
    * is properly hidden.
    */
   private _watchSidenavToggle(sidenav: MdSidenav): void {
-    takeUntil.call(sidenav._animationStarted, this._sidenavs.changes)
-      .subscribe(() => {
-        // Set the transition class on the container so that the animations occur. This should not
-        // be set initially because animations should only be triggered via a change in state.
-        this._renderer.addClass(this._element.nativeElement, 'mat-sidenav-transition');
-        this._changeDetectorRef.markForCheck();
-      });
+    takeUntil.call(sidenav._animationStarted, this._sidenavs.changes).subscribe(() => {
+      // Set the transition class on the container so that the animations occur. This should not
+      // be set initially because animations should only be triggered via a change in state.
+      this._renderer.addClass(this._element.nativeElement, 'mat-sidenav-transition');
+      this._updateStyles();
+      this._changeDetectorRef.markForCheck();
+    });
 
     if (sidenav.mode !== 'side') {
       takeUntil.call(merge(sidenav.onOpen, sidenav.onClose), this._sidenavs.changes).subscribe(() =>
@@ -461,40 +464,20 @@ export class MdSidenavContainer implements AfterContentInit {
     return (this._isSidenavOpen(sidenav) && sidenav.mode == mode) ? sidenav._width : 0;
   }
 
-  _getMarginLeft() {
-    return this._left ? this._getSidenavEffectiveWidth(this._left, 'side') : 0;
-  }
-
-  _getMarginRight() {
-    return this._right ? this._getSidenavEffectiveWidth(this._right, 'side') : 0;
-  }
-
-  _getPositionLeft() {
-    return this._left ? this._getSidenavEffectiveWidth(this._left, 'push') : 0;
-  }
-
-  _getPositionRight() {
-    return this._right ? this._getSidenavEffectiveWidth(this._right, 'push') : 0;
-  }
-
   /**
-   * Returns the horizontal offset for the content area.  There should never be a value for both
-   * left and right, so by subtracting the right value from the left value, we should always get
-   * the appropriate offset.
+   * Recalculates and updates the inline styles. Note that this
+   * should be used sparingly, because it causes a reflow.
    */
-  _getPositionOffset() {
-    return this._getPositionLeft() - this._getPositionRight();
-  }
+  private _updateStyles() {
+    const marginLeft = this._left ? this._getSidenavEffectiveWidth(this._left, 'side') : 0;
+    const marginRight = this._right ? this._getSidenavEffectiveWidth(this._right, 'side') : 0;
+    const leftWidth = this._left ? this._getSidenavEffectiveWidth(this._left, 'push') : 0;
+    const rightWidth = this._right ? this._getSidenavEffectiveWidth(this._right, 'push') : 0;
 
-  /**
-   * This is using [ngStyle] rather than separate [style...] properties because [style.transform]
-   * doesn't seem to work right now.
-   */
-  _getStyles() {
-    return {
-      marginLeft: `${this._getMarginLeft()}px`,
-      marginRight: `${this._getMarginRight()}px`,
-      transform: `translate3d(${this._getPositionOffset()}px, 0, 0)`
+    this._styles = {
+      marginLeft: `${marginLeft}px`,
+      marginRight: `${marginRight}px`,
+      transform: `translate3d(${leftWidth - rightWidth}px, 0, 0)`
     };
   }
 }
