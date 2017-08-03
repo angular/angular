@@ -179,6 +179,7 @@ export function performCompilation(
       consoleError(e.message);
       return 1;
     }
+    throw e;
   }
 
   return 0;
