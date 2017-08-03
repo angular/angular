@@ -70,7 +70,7 @@ import {UrlTree} from '../url_tree';
  *
  * You can tell the directive to how to handle queryParams, available options are:
  *  - 'merge' merge the queryParams into the current queryParams
- *  - 'preserve' prserve the current queryParams
+ *  - 'preserve' preserve the current queryParams
  *  - default / '' use the queryParams only
  *  same options for {@link NavigationExtras#queryParamsHandling}
  *
