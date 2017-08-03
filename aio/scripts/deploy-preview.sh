@@ -26,31 +26,31 @@ readonly relevantChangedFilesCount=$(git diff --name-only $TRAVIS_COMMIT_RANGE |
   fi
 
   # Build the app
-  if [ "$skipBuild" != "true" ]; then
+  if [[ "$skipBuild" != "true" ]]; then
     yarn build
   fi
   tar --create --gzip --directory "$INPUT_DIR" --file "$OUTPUT_FILE" .
   yarn payload-size
 
   # Deploy to staging
-  readonly httpCode=$(
+  readonly output=$(
     curl --include --location --request POST --silent --write-out "\nHTTP_CODE: %{http_code}\n" \
         --header "Authorization: Token $NGBUILDS_IO_KEY" --data-binary "@$OUTPUT_FILE" "$UPLOAD_URL" \
     | sed 's/\r\n/\n/' \
-    | tee /dev/fd/3 \
-    | tail -1 \
-    | sed 's/HTTP_CODE: //'
+    | tee /dev/fd/3
   )
+  readonly isHidden=$([[ `echo $output | grep 'non-public'` ]] && echo "true" || echo "")
+  readonly httpCode=$(echo "$output" | tail -1 | sed 's/HTTP_CODE: //')
 
   # Exit with an error if the request failed.
   # (Ignore 409 failures, which mean trying to re-deploy for the same PR/SHA.)
-  if [ $httpCode -lt 200 ] || ([ $httpCode -ge 400 ] && [ $httpCode -ne 409 ]); then
+  if [[ $httpCode -lt 200 ]] || ([[ $httpCode -ge 400 ]] && [[ $httpCode -ne 409 ]]); then
     exit 1
   fi
 
   # Run PWA-score tests (unless the deployment is not public yet;
   # i.e. it could not be automatically verified).
-  if [ $httpCode -ne 202 ]; then
+  if [[ $httpCode -ne 202 ]] && [[ "$isHidden" != "true" ]]; then
     yarn test-pwa-score -- "$DEPLOYED_URL" "$MIN_PWA_SCORE"
   fi
 )

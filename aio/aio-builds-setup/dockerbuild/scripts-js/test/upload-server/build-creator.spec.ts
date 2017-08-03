@@ -153,7 +153,8 @@ describe('BuildCreator', () => {
         it('should abort and skip further operations if the build does already exist', done => {
           existsValues[shaDir] = true;
           bc.create(pr, sha, archive, isPublic).catch(err => {
-            expectToBeUploadError(err, 409, `Request to overwrite existing directory: ${shaDir}`);
+            const publicOrNot = isPublic ? 'public' : 'non-public';
+            expectToBeUploadError(err, 409, `Request to overwrite existing ${publicOrNot} directory: ${shaDir}`);
             expect(shellMkdirSpy).not.toHaveBeenCalled();
             expect(bcExtractArchiveSpy).not.toHaveBeenCalled();
             expect(bcEmitSpy).not.toHaveBeenCalled();
@@ -169,7 +170,8 @@ describe('BuildCreator', () => {
           expect(bcExistsSpy(shaDir)).toBe(false);
 
           bc.create(pr, sha, archive, isPublic).catch(err => {
-            expectToBeUploadError(err, 409, `Request to overwrite existing directory: ${shaDir}`);
+            const publicOrNot = isPublic ? 'public' : 'non-public';
+            expectToBeUploadError(err, 409, `Request to overwrite existing ${publicOrNot} directory: ${shaDir}`);
             expect(shellMkdirSpy).not.toHaveBeenCalled();
             expect(bcExtractArchiveSpy).not.toHaveBeenCalled();
             expect(bcEmitSpy).not.toHaveBeenCalled();
