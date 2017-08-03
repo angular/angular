@@ -163,13 +163,19 @@ export function main() {
 
           // root elements
           expect(() => createAndGetRootNodes(compViewDef(nodes)))
-              .toThrowError('No provider for Dep!');
+              .toThrowError(
+                  'StaticInjectorError[Dep]: \n' +
+                  '  StaticInjectorError[Dep]: \n' +
+                  '    NullInjectorError: No provider for Dep!');
 
           // non root elements
           expect(
               () => createAndGetRootNodes(compViewDef(
                   [elementDef(NodeFlags.None, null !, null !, 4, 'span')].concat(nodes))))
-              .toThrowError('No provider for Dep!');
+              .toThrowError(
+                  'StaticInjectorError[Dep]: \n' +
+                  '  StaticInjectorError[Dep]: \n' +
+                  '    NullInjectorError: No provider for Dep!');
         });
 
         it('should inject from a parent element in a parent view', () => {
@@ -191,7 +197,10 @@ export function main() {
                    elementDef(NodeFlags.None, null !, null !, 1, 'span'),
                    directiveDef(NodeFlags.None, null !, 0, SomeService, ['nonExistingDep'])
                  ])))
-              .toThrowError('No provider for nonExistingDep!');
+              .toThrowError(
+                  'StaticInjectorError[nonExistingDep]: \n' +
+                  '  StaticInjectorError[nonExistingDep]: \n' +
+                  '    NullInjectorError: No provider for nonExistingDep!');
         });
 
         it('should use null for optional missing dependencies', () => {

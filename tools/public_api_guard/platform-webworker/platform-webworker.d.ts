@@ -1,5 +1,5 @@
 /** @experimental */
-export declare function bootstrapWorkerUi(workerScriptUri: string, customProviders?: Provider[]): Promise<PlatformRef>;
+export declare function bootstrapWorkerUi(workerScriptUri: string, customProviders?: StaticProvider[]): Promise<PlatformRef>;
 
 /** @experimental */
 export declare abstract class ClientMessageBroker {
@@ -41,10 +41,10 @@ export interface MessageBusSource {
 }
 
 /** @experimental */
-export declare const platformWorkerApp: (extraProviders?: Provider[] | undefined) => PlatformRef;
+export declare const platformWorkerApp: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
 
 /** @experimental */
-export declare const platformWorkerUi: (extraProviders?: Provider[] | undefined) => PlatformRef;
+export declare const platformWorkerUi: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
 
 /** @experimental */
 export declare const PRIMITIVE: SerializerTypes;
@@ -100,7 +100,7 @@ export declare const WORKER_APP_LOCATION_PROVIDERS: ({
 })[];
 
 /** @experimental */
-export declare const WORKER_UI_LOCATION_PROVIDERS: Provider[];
+export declare const WORKER_UI_LOCATION_PROVIDERS: StaticProvider[];
 
 /** @experimental */
 export declare class WorkerAppModule {

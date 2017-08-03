@@ -161,7 +161,7 @@ function validateNode(parent: NodeDef | null, node: NodeDef, nodeCount: number) 
     const parentFlags = parent ? parent.flags : 0;
     if ((parentFlags & NodeFlags.TypeElement) === 0) {
       throw new Error(
-          `Illegal State: Provider/Directive nodes need to be children of elements or anchors, at index ${node.index}!`);
+          `Illegal State: StaticProvider/Directive nodes need to be children of elements or anchors, at index ${node.index}!`);
     }
   }
   if (node.query) {

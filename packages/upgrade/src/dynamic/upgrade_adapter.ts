@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, CompilerOptions, Directive, Injector, NgModule, NgModuleRef, NgZone, Provider, Testability, Type} from '@angular/core';
+import {Compiler, CompilerOptions, Directive, Injector, NgModule, NgModuleRef, NgZone, StaticProvider, Testability, Type} from '@angular/core';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import * as angular from '../common/angular1';
@@ -110,7 +110,7 @@ export class UpgradeAdapter {
    * @internal
    */
   private ng1ComponentsToBeUpgraded: {[name: string]: UpgradeNg1ComponentAdapterBuilder} = {};
-  private upgradedProviders: Provider[] = [];
+  private upgradedProviders: StaticProvider[] = [];
   private ngZone: NgZone;
   private ng1Module: angular.IModule;
   private moduleRef: NgModuleRef<any>|null = null;

@@ -11,7 +11,7 @@ const yargs = require('yargs');
 const nodeUuid = require('node-uuid');
 import * as fs from 'fs-extra';
 
-import {SeleniumWebDriverAdapter, Options, JsonFileReporter, Validator, RegressionSlopeValidator, ConsoleReporter, SizeValidator, MultiReporter, MultiMetric, Runner, Provider} from '@angular/benchpress';
+import {SeleniumWebDriverAdapter, Options, JsonFileReporter, Validator, RegressionSlopeValidator, ConsoleReporter, SizeValidator, MultiReporter, MultiMetric, Runner, StaticProvider} from '@angular/benchpress';
 import {readCommandLine as readE2eCommandLine, openBrowser} from './e2e_util';
 
 let cmdArgs: {'sample-size': number, 'force-gc': boolean, 'dryrun': boolean, 'bundles': boolean};
@@ -59,7 +59,7 @@ function createBenchpressRunner(): Runner {
   }
   const resultsFolder = './dist/benchmark_results';
   fs.ensureDirSync(resultsFolder);
-  const providers: Provider[] = [
+  const providers: StaticProvider[] = [
     SeleniumWebDriverAdapter.PROTRACTOR_PROVIDERS,
     {provide: Options.FORCE_GC, useValue: cmdArgs['force-gc']},
     {provide: Options.DEFAULT_DESCRIPTION, useValue: {'runId': runId}}, JsonFileReporter.PROVIDERS,

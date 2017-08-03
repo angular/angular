@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ReflectiveInjector} from '@angular/core';
+import {Injector} from '@angular/core';
 import {AsyncTestCompleter, SpyObject, afterEach, beforeEach, describe, inject, it} from '@angular/core/testing/src/testing_internal';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {BrowserJsonp} from '../../src/backends/browser_jsonp';
@@ -52,10 +52,10 @@ export function main() {
     let sampleRequest: Request;
 
     beforeEach(() => {
-      const injector = ReflectiveInjector.resolveAndCreate([
-        {provide: ResponseOptions, useClass: BaseResponseOptions},
-        {provide: BrowserJsonp, useClass: MockBrowserJsonp},
-        {provide: JSONPBackend, useClass: JSONPBackend_}
+      const injector = Injector.create([
+        {provide: ResponseOptions, useClass: BaseResponseOptions, deps: []},
+        {provide: BrowserJsonp, useClass: MockBrowserJsonp, deps: []},
+        {provide: JSONPBackend, useClass: JSONPBackend_, deps: [BrowserJsonp, ResponseOptions]}
       ]);
       backend = injector.get(JSONPBackend);
       const base = new BaseRequestOptions();

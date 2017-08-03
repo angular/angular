@@ -26,8 +26,8 @@ export function main() {
     beforeEach(fakeAsync(() => {
       TestBed.configureCompiler({
         providers: [
-          {provide: UrlResolver, useClass: TestUrlResolver},
-          {provide: ResourceLoader, useFactory: createCachedResourceLoader}
+          {provide: UrlResolver, useClass: TestUrlResolver, deps: []},
+          {provide: ResourceLoader, useFactory: createCachedResourceLoader, deps: []}
         ]
       });
 
