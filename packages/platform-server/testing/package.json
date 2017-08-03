@@ -1,7 +1,7 @@
 {
   "name": "@angular/platform-server/testing",
-  "typings": "../testing.d.ts",
+  "typings": "./index.d.ts",
   "main": "../bundles/platform-server-testing.umd.js",
-  "module": "../@angular/platform-server/testing.es5.js",
-  "es2015": "../@angular/platform-server/testing.js"
+  "module": "../esm5/testing/index.js",
+  "es2015": "../esm15/testing/index.js"
 }

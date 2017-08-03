@@ -1,29 +1,23 @@
 {
+  "extends": "../tsconfig-build.json",
+
   "compilerOptions": {
-    "baseUrl": ".",
-    "declaration": true,
-    "experimentalDecorators": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
     "module": "commonjs",
-    "outDir": "../../dist/packages/compiler-cli",
+    "stripInternal": false,
+    "target": "es5",
+    "baseUrl": ".",
+    "rootDir": ".",
     "paths": {
       "@angular/compiler": ["../../dist/packages/compiler"],
       "@angular/tsc-wrapped": ["../../dist/packages-dist/tsc-wrapped"]
     },
-    "rootDir": ".",
-    "sourceMap": true,
-    "inlineSources": true,
-    "target": "es5",
-    "lib": [
-      "es6",
-      "dom"
-    ],
-    "skipLibCheck": true
+    "outDir": "../../dist/packages/compiler-cli"
   },
+
   "exclude": [
     "integrationtest"
   ],
+
   "files": [
     "index.ts",
     "ngtools2.ts",

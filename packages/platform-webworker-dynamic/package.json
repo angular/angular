@@ -3,9 +3,9 @@
   "version": "0.0.0-PLACEHOLDER",
   "description": "Angular - library for using Angular in a web browser with web workers",
   "main": "./bundles/platform-webworker-dynamic.umd.js",
-  "module": "./@angular/platform-webworker-dynamic.es5.js",
-  "es2015": "./@angular/platform-webworker-dynamic.js",
-  "typings": "./platform-webworker-dynamic.d.ts",
+  "module": "./esm5/index.js",
+  "es2015": "./esm15/index.js",
+  "typings": "./index.d.ts",
   "author": "angular",
   "license": "MIT",
   "dependencies": {

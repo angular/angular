@@ -9,6 +9,7 @@
 const globals = {
   '@angular/core': 'ng.core',
   '@angular/platform-browser': 'ng.platformBrowser',
+  '@angular/common': 'ng.common',
   'rxjs/Observable': 'Rx',
   'rxjs/Subject': 'Rx',
 
@@ -20,7 +21,7 @@ const globals = {
 };
 
 export default {
-  entry: '../../../dist/packages-dist/common/@angular/common/http.es5.js',
+  entry: '../../../dist/packages-dist/common/esm5/http/index.js',
   dest: '../../../dist/packages-dist/common/bundles/common-http.umd.js',
   format: 'umd',
   exports: 'named',

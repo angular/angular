@@ -9,7 +9,7 @@
 /**
  * @module
  * @description
- * Entry point for all public APIs of the upgrade/dynamic package, allowing
+ * Entry point for all public APIs of this package. allowing
  * Angular 1 and Angular 2+ to run side by side in the same application.
  */
 export {VERSION} from './src/common/version';

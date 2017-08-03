@@ -11,7 +11,7 @@
     "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
     "@angular/platform-server": "file:../../dist/packages-dist/platform-server",
     "@angular/tsc-wrapped": "file:../../dist/packages-dist/tsc-wrapped",
-    "google-closure-compiler": "20170409.0.0",
+    "google-closure-compiler": "git+https://github.com/alexeagle/closure-compiler.git#packagejson.dist",
     "rxjs": "5.3.1",
     "typescript": "~2.3.1",
     "zone.js": "0.8.6"

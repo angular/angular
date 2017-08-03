@@ -1,15 +1,23 @@
 {
-  "extends": "../tsconfig-build",
+  "extends": "../tsconfig-build.json",
 
   "compilerOptions": {
-    // Test that we rely on decorator downleveling
-    "emitDecoratorMetadata": false,
+    "baseUrl": ".",
+    "rootDir": "../",
     "paths": {
-      "@angular/compiler": ["../../dist/packages/compiler"]
-    }
+      "@angular/compiler": ["../../../dist/packages/compiler"]
+    },
+    "outDir": "../../../dist/packages/compiler"
   },
+
   "files": [
-    "index.ts",
+    "public_api.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts"
-  ]
+  ],
+
+  "angularCompilerOptions": {
+    "annotateForClosureCompiler": true,
+    "flatModuleOutFile": "index.js",
+    "flatModuleId": "@angular/compiler/testing"
+  }
 }

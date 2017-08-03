@@ -7,6 +7,7 @@
  */
 
 import resolve from 'rollup-plugin-node-resolve';
+import sourcemaps from 'rollup-plugin-sourcemaps';
 
 const globals = {
   '@angular/core': 'ng.core',
@@ -14,12 +15,12 @@ const globals = {
 };
 
 export default {
-  entry: '../../dist/packages-dist/platform-browser/@angular/platform-browser.es5.js',
+  entry: '../../dist/packages-dist/platform-browser/esm5/index.js',
   dest: '../../dist/packages-dist/platform-browser/bundles/platform-browser.umd.js',
   format: 'umd',
   exports: 'named',
   moduleName: 'ng.platformBrowser',
-  plugins: [resolve()],
+  plugins: [resolve(), sourcemaps()],
   external: Object.keys(globals),
   globals: globals
 };

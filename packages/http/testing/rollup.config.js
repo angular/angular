@@ -7,6 +7,7 @@
  */
 
 import resolve from 'rollup-plugin-node-resolve';
+import sourcemaps from 'rollup-plugin-sourcemaps';
 
 const globals = {
   '@angular/core': 'ng.core',
@@ -20,12 +21,12 @@ const globals = {
 };
 
 export default {
-  entry: '../../../dist/packages-dist/http/@angular/http/testing.es5.js',
+  entry: '../../../dist/packages-dist/http/esm5/testing/index.js',
   dest: '../../../dist/packages-dist/http/bundles/http-testing.umd.js',
   format: 'umd',
   exports: 'named',
   moduleName: 'ng.http.testing',
-  plugins: [resolve()],
+  plugins: [resolve(), sourcemaps()],
   external: Object.keys(globals),
   globals: globals
 };
