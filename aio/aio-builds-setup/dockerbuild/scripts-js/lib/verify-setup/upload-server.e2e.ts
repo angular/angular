@@ -110,6 +110,7 @@ describe('upload-server (on HTTP)', () => {
       const authorizationHeader2 = isPublic ?
         authorizationHeader : `--header "Authorization: ${c.BV_verify_verifiedNotTrusted}"`;
       const cmdPrefix = curl('', `${authorizationHeader2} ${xFileHeader}`);
+      const overwriteRe = RegExp(`^Request to overwrite existing ${isPublic ? 'public' : 'non-public'} directory`);
 
 
       it('should not overwrite existing builds', done => {
@@ -120,7 +121,7 @@ describe('upload-server (on HTTP)', () => {
         expect(h.readBuildFile(pr, sha9, 'index.html', isPublic)).toBe('My content');
 
         h.runCmd(`${cmdPrefix} http://${host}/create-build/${pr}/${sha9}`).
-          then(h.verifyResponse(409, /^Request to overwrite existing directory/)).
+          then(h.verifyResponse(409, overwriteRe)).
           then(() => expect(h.readBuildFile(pr, sha9, 'index.html', isPublic)).toBe('My content')).
           then(done);
       });
@@ -141,7 +142,7 @@ describe('upload-server (on HTTP)', () => {
         expect(h.readBuildFile(pr, sha9, 'index.html', isPublic)).toBe('My content');
 
         h.runCmd(`${cmdPrefix} http://${host}/create-build/${pr}/${sha9Almost}`).
-          then(h.verifyResponse(409, /^Request to overwrite existing directory/)).
+          then(h.verifyResponse(409, overwriteRe)).
           then(() => expect(h.readBuildFile(pr, sha9, 'index.html', isPublic)).toBe('My content')).
           then(done);
       });
@@ -310,7 +311,7 @@ describe('upload-server (on HTTP)', () => {
           expect(h.buildExists(pr, sha0, isPublic)).toBe(false);
 
           uploadBuild(sha0).
-            then(h.verifyResponse(409, /^Request to overwrite existing directory/)).
+            then(h.verifyResponse(409, overwriteRe)).
             then(() => {
               checkPrVisibility(isPublic);
               expect(h.readBuildFile(pr, sha0, 'index.html', isPublic)).toContain(pr);
