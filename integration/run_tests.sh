@@ -4,6 +4,10 @@ set -e -o pipefail
 
 cd `dirname $0`
 
+# Track payload size functions
+source ../scripts/ci/payload-size.sh
+source ./_payload-limits.sh
+
 # Workaround https://github.com/yarnpkg/yarn/issues/2165
 # Yarn will cache file://dist URIs and not update Angular code
 readonly cache=.yarn_local_cache
@@ -34,7 +38,17 @@ for testDir in $(ls | grep -v node_modules) ; do
     cd $testDir
     # Workaround for https://github.com/yarnpkg/yarn/issues/2256
     rm -f yarn.lock
+    rm -rf dist
     yarn install --cache-folder ../$cache
     yarn test || exit 1
+    # Track payload size for cli-hello-world and hello_world__closure
+    if [[ $testDir == cli-hello-world ]] || [[ $testDir == hello_world__closure ]]; then
+      if [[ $testDir == cli-hello-world ]]; then
+        yarn build
+      fi
+      trackPayloadSize "$testDir" "dist/*.js" true false
+    fi
   )
 done
+
+trackPayloadSize "umd" "../dist/packages-dist/*/bundles/*.umd.min.js" false false
