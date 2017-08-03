@@ -1820,7 +1820,7 @@ describe('Integration', () => {
 
         function delayPromise(delay: number): Promise<boolean> {
           let resolve: (val: boolean) => void;
-          const promise = new Promise(res => resolve = res);
+          const promise = new Promise<boolean>(res => resolve = res);
           setTimeout(() => resolve(true), delay);
           return promise;
         }
