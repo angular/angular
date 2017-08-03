@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Compiler, ComponentFactory, ErrorHandler, EventEmitter, Host, Inject, Injectable, InjectionToken, Injector, NO_ERRORS_SCHEMA, NgModule, NgModuleRef, OnDestroy, ReflectiveInjector, SkipSelf} from '@angular/core';
+import {Compiler, ComponentFactory, ErrorHandler, EventEmitter, Host, Inject, Injectable, InjectionToken, Injector, NO_ERRORS_SCHEMA, NgModule, NgModuleRef, OnDestroy, SkipSelf} from '@angular/core';
 import {ChangeDetectionStrategy, ChangeDetectorRef, PipeTransform} from '@angular/core/src/change_detection/change_detection';
 import {getDebugContext} from '@angular/core/src/errors';
 import {ComponentFactoryResolver} from '@angular/core/src/linker/component_factory_resolver';
@@ -1850,8 +1850,7 @@ class DynamicViewport {
     const myService = new MyService();
     myService.greeting = 'dynamic greet';
 
-    this.injector = ReflectiveInjector.resolveAndCreate(
-        [{provide: MyService, useValue: myService}], vc.injector);
+    this.injector = Injector.create([{provide: MyService, useValue: myService}], vc.injector);
     this.componentFactory =
         componentFactoryResolver.resolveComponentFactory(ChildCompUsingService) !;
   }

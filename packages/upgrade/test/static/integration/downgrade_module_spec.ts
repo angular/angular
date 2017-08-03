@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Inject, Injector, Input, NgModule, NgZone, OnChanges, Provider, destroyPlatform} from '@angular/core';
+import {Component, Inject, Injector, Input, NgModule, NgZone, OnChanges, StaticProvider, destroyPlatform} from '@angular/core';
 import {async, fakeAsync, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -46,7 +46,7 @@ export function main() {
              ngDoBootstrap() {}
            }
 
-           const bootstrapFn = (extraProviders: Provider[]) =>
+           const bootstrapFn = (extraProviders: StaticProvider[]) =>
                platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
            const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
            const ng1Module =
@@ -108,7 +108,7 @@ export function main() {
              ngDoBootstrap() {}
            }
 
-           const bootstrapFn = (extraProviders: Provider[]) =>
+           const bootstrapFn = (extraProviders: StaticProvider[]) =>
                platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
            const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
            const ng1Module =
@@ -152,7 +152,7 @@ export function main() {
              ngDoBootstrap() {}
            }
 
-           const bootstrapFn = (extraProviders: Provider[]) =>
+           const bootstrapFn = (extraProviders: StaticProvider[]) =>
                platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
            const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
            const ng1Module =
@@ -191,7 +191,7 @@ export function main() {
              ngDoBootstrap() {}
            }
 
-           const bootstrapFn = (extraProviders: Provider[]) =>
+           const bootstrapFn = (extraProviders: StaticProvider[]) =>
                platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
            const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
            const ng1Module =
@@ -245,7 +245,7 @@ export function main() {
              ngDoBootstrap() {}
            }
 
-           const bootstrapFn = (extraProviders: Provider[]) =>
+           const bootstrapFn = (extraProviders: StaticProvider[]) =>
                platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
            const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
            const ng1Module =
@@ -300,7 +300,7 @@ export function main() {
            }
 
            const tickDelay = browserDetection.isIE ? 100 : 0;
-           const bootstrapFn = (extraProviders: Provider[]) =>
+           const bootstrapFn = (extraProviders: StaticProvider[]) =>
                platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
            const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
            const ng1Module =
@@ -355,7 +355,7 @@ export function main() {
              ngDoBootstrap() {}
            }
 
-           const bootstrapFn = (extraProviders: Provider[]) =>
+           const bootstrapFn = (extraProviders: StaticProvider[]) =>
                platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
            const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
            const ng1Module =

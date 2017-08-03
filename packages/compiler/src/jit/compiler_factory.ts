@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {COMPILER_OPTIONS, Compiler, CompilerFactory, CompilerOptions, Inject, InjectionToken, MissingTranslationStrategy, Optional, PlatformRef, Provider, ReflectiveInjector, TRANSLATIONS, TRANSLATIONS_FORMAT, Type, ViewEncapsulation, createPlatformFactory, isDevMode, platformCore, ɵConsole as Console} from '@angular/core';
+import {COMPILER_OPTIONS, Compiler, CompilerFactory, CompilerOptions, Inject, InjectionToken, Injector, MissingTranslationStrategy, Optional, PACKAGE_ROOT_URL, PlatformRef, StaticProvider, TRANSLATIONS, TRANSLATIONS_FORMAT, Type, ViewEncapsulation, createPlatformFactory, isDevMode, platformCore, ɵConsole as Console} from '@angular/core';
 
+import {StaticSymbolCache} from '../aot/static_symbol';
 import {CompileReflector} from '../compile_reflector';
 import {CompilerConfig} from '../config';
 import {DirectiveNormalizer} from '../directive_normalizer';
@@ -16,7 +17,7 @@ import {Lexer} from '../expression_parser/lexer';
 import {Parser} from '../expression_parser/parser';
 import * as i18n from '../i18n/index';
 import {CompilerInjectable} from '../injectable';
-import {CompileMetadataResolver} from '../metadata_resolver';
+import {CompileMetadataResolver, ERROR_COLLECTOR_TOKEN} from '../metadata_resolver';
 import {HtmlParser} from '../ml_parser/html_parser';
 import {NgModuleCompiler} from '../ng_module_compiler';
 import {NgModuleResolver} from '../ng_module_resolver';
@@ -26,7 +27,7 @@ import {DomElementSchemaRegistry} from '../schema/dom_element_schema_registry';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {StyleCompiler} from '../style_compiler';
 import {JitSummaryResolver, SummaryResolver} from '../summary_resolver';
-import {TemplateParser} from '../template_parser/template_parser';
+import {TEMPLATE_TRANSFORMS, TemplateParser} from '../template_parser/template_parser';
 import {DEFAULT_PACKAGE_URL_PROVIDER, UrlResolver} from '../url_resolver';
 import {ViewCompiler} from '../view_compiler/view_compiler';
 
@@ -45,17 +46,18 @@ const baseHtmlParser = new InjectionToken('HtmlParser');
  * A set of providers that provide `JitCompiler` and its dependencies to use for
  * template compilation.
  */
-export const COMPILER_PROVIDERS: Array<any|Type<any>|{[k: string]: any}|any[]> = [
+export const COMPILER_PROVIDERS = <StaticProvider[]>[
   {provide: CompileReflector, useValue: new JitReflector()},
   {provide: ResourceLoader, useValue: _NO_RESOURCE_LOADER},
-  JitSummaryResolver,
+  {provide: JitSummaryResolver, deps: []},
   {provide: SummaryResolver, useExisting: JitSummaryResolver},
-  Console,
-  Lexer,
-  Parser,
+  {provide: Console, deps: []},
+  {provide: Lexer, deps: []},
+  {provide: Parser, deps: [Lexer]},
   {
     provide: baseHtmlParser,
     useClass: HtmlParser,
+    deps: [],
   },
   {
     provide: i18n.I18NHtmlParser,
@@ -78,22 +80,37 @@ export const COMPILER_PROVIDERS: Array<any|Type<any>|{[k: string]: any}|any[]> =
     provide: HtmlParser,
     useExisting: i18n.I18NHtmlParser,
   },
-  TemplateParser,
-  DirectiveNormalizer,
-  CompileMetadataResolver,
+  {
+    provide: TemplateParser, deps: [CompilerConfig, CompileReflector,
+    Parser, ElementSchemaRegistry,
+    i18n.I18NHtmlParser, Console, [Optional, TEMPLATE_TRANSFORMS]]
+  },
+  { provide: DirectiveNormalizer, deps: [ResourceLoader, UrlResolver, HtmlParser, CompilerConfig]},
+  { provide: CompileMetadataResolver, deps: [CompilerConfig, NgModuleResolver,
+                      DirectiveResolver, PipeResolver,
+                      SummaryResolver,
+                      ElementSchemaRegistry,
+                      DirectiveNormalizer, Console,
+                      [Optional, StaticSymbolCache],
+                      CompileReflector,
+                      [Optional, ERROR_COLLECTOR_TOKEN]]},
   DEFAULT_PACKAGE_URL_PROVIDER,
-  StyleCompiler,
-  ViewCompiler,
-  NgModuleCompiler,
-  {provide: CompilerConfig, useValue: new CompilerConfig()},
-  JitCompiler,
-  {provide: Compiler, useExisting: JitCompiler},
-  DomElementSchemaRegistry,
-  {provide: ElementSchemaRegistry, useExisting: DomElementSchemaRegistry},
-  UrlResolver,
-  DirectiveResolver,
-  PipeResolver,
-  NgModuleResolver,
+  { provide: StyleCompiler, deps: [UrlResolver]},
+  { provide: ViewCompiler, deps: [CompilerConfig, CompileReflector, ElementSchemaRegistry]},
+  { provide: NgModuleCompiler, deps: [CompileReflector] },
+  { provide: CompilerConfig, useValue: new CompilerConfig()},
+  { provide: JitCompiler, deps: [Injector, CompileMetadataResolver,
+                                TemplateParser, StyleCompiler,
+                                ViewCompiler, NgModuleCompiler,
+                                SummaryResolver,  CompilerConfig,
+                                Console]},
+  { provide: Compiler, useExisting: JitCompiler},
+  { provide: DomElementSchemaRegistry, deps: []},
+  { provide: ElementSchemaRegistry, useExisting: DomElementSchemaRegistry},
+  { provide: UrlResolver, deps: [PACKAGE_ROOT_URL]},
+  { provide: DirectiveResolver, deps: [CompileReflector]},
+  { provide: PipeResolver, deps: [CompileReflector]},
+  { provide: NgModuleResolver, deps: [CompileReflector]},
 ];
 
 @CompilerInjectable()
@@ -112,7 +129,7 @@ export class JitCompilerFactory implements CompilerFactory {
   }
   createCompiler(options: CompilerOptions[] = []): Compiler {
     const opts = _mergeOptions(this._defaultOptions.concat(options));
-    const injector = ReflectiveInjector.resolveAndCreate([
+    const injector = Injector.create([
       COMPILER_PROVIDERS, {
         provide: CompilerConfig,
         useFactory: () => {
@@ -142,7 +159,7 @@ export class JitCompilerFactory implements CompilerFactory {
  */
 export const platformCoreDynamic = createPlatformFactory(platformCore, 'coreDynamic', [
   {provide: COMPILER_OPTIONS, useValue: {}, multi: true},
-  {provide: CompilerFactory, useClass: JitCompilerFactory},
+  {provide: CompilerFactory, useClass: JitCompilerFactory, deps: [COMPILER_OPTIONS]},
 ]);
 
 function _mergeOptions(optionsArr: CompilerOptions[]): CompilerOptions {

@@ -328,10 +328,7 @@ export function main() {
 
     describe('normalizeExternalStylesheets', () => {
 
-      beforeEach(() => {
-        TestBed.configureCompiler(
-            {providers: [{provide: ResourceLoader, useClass: SpyResourceLoader}]});
-      });
+      beforeEach(() => { TestBed.configureCompiler({providers: [SpyResourceLoader.PROVIDE]}); });
 
       it('should load an external stylesheet',
          inject(

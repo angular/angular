@@ -209,7 +209,7 @@ export declare type CompilerOptions = {
     /** @deprecated */ useDebug?: boolean;
     useJit?: boolean;
     defaultEncapsulation?: ViewEncapsulation;
-    providers?: any[];
+    providers?: StaticProvider[];
     missingTranslation?: MissingTranslationStrategy;
     enableLegacyTemplate?: boolean;
 };
@@ -289,7 +289,7 @@ export interface ContentChildrenDecorator {
 export declare function createPlatform(injector: Injector): PlatformRef;
 
 /** @experimental */
-export declare function createPlatformFactory(parentPlatformFactory: ((extraProviders?: Provider[]) => PlatformRef) | null, name: string, providers?: Provider[]): (extraProviders?: Provider[]) => PlatformRef;
+export declare function createPlatformFactory(parentPlatformFactory: ((extraProviders?: StaticProvider[]) => PlatformRef) | null, name: string, providers?: StaticProvider[]): (extraProviders?: StaticProvider[]) => PlatformRef;
 
 /** @stable */
 export declare const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata;
@@ -537,7 +537,7 @@ export declare class IterableDiffers {
     constructor(factories: IterableDifferFactory[]);
     find(iterable: any): IterableDifferFactory;
     static create(factories: IterableDifferFactory[], parent?: IterableDiffers): IterableDiffers;
-    static extend(factories: IterableDifferFactory[]): Provider;
+    static extend(factories: IterableDifferFactory[]): StaticProvider;
 }
 
 /** @deprecated */
@@ -580,7 +580,7 @@ export declare class KeyValueDiffers {
     constructor(factories: KeyValueDifferFactory[]);
     find(kv: any): KeyValueDifferFactory;
     static create<S>(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers;
-    static extend<S>(factories: KeyValueDifferFactory[]): Provider;
+    static extend<S>(factories: KeyValueDifferFactory[]): StaticProvider;
 }
 
 /** @experimental */
@@ -715,7 +715,7 @@ export declare const PLATFORM_ID: InjectionToken<Object>;
 export declare const PLATFORM_INITIALIZER: InjectionToken<(() => void)[]>;
 
 /** @experimental */
-export declare const platformCore: (extraProviders?: Provider[] | undefined) => PlatformRef;
+export declare const platformCore: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
 
 /** @stable */
 export declare abstract class PlatformRef {
@@ -772,7 +772,7 @@ export declare abstract class ReflectiveInjector implements Injector {
     static resolveAndCreate(providers: Provider[], parent?: Injector): ReflectiveInjector;
 }
 
-/** @experimental */
+/** @deprecated */
 export declare class ReflectiveKey {
     readonly displayName: string;
     id: number;

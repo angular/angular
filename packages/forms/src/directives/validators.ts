@@ -6,10 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Input, OnChanges, Provider, SimpleChanges, forwardRef} from '@angular/core';
+import {Directive, Input, OnChanges, SimpleChanges, StaticProvider, forwardRef} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
+
 import {AbstractControl} from '../model';
 import {NG_VALIDATORS, Validators} from '../validators';
+
 
 /** @experimental */
 export type ValidationErrors = {
@@ -45,13 +47,13 @@ export interface AsyncValidator extends Validator {
   validate(c: AbstractControl): Promise<ValidationErrors|null>|Observable<ValidationErrors|null>;
 }
 
-export const REQUIRED_VALIDATOR: Provider = {
+export const REQUIRED_VALIDATOR: StaticProvider = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => RequiredValidator),
   multi: true
 };
 
-export const CHECKBOX_REQUIRED_VALIDATOR: Provider = {
+export const CHECKBOX_REQUIRED_VALIDATOR: StaticProvider = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => CheckboxRequiredValidator),
   multi: true

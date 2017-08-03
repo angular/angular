@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Optional, Provider, SkipSelf} from '../../di';
+import {Optional, SkipSelf, StaticProvider} from '../../di';
 import {ChangeDetectorRef} from '../change_detector_ref';
+
 
 /**
  * A type describing supported iterable types.
@@ -181,7 +182,7 @@ export class IterableDiffers {
    * })
    * ```
    */
-  static extend(factories: IterableDifferFactory[]): Provider {
+  static extend(factories: IterableDifferFactory[]): StaticProvider {
     return {
       provide: IterableDiffers,
       useFactory: (parent: IterableDiffers) => {

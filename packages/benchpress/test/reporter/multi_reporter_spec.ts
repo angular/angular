@@ -8,12 +8,12 @@
 
 import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
 
-import {MeasureValues, MultiReporter, ReflectiveInjector, Reporter} from '../../index';
+import {Injector, MeasureValues, MultiReporter, Reporter} from '../../index';
 
 export function main() {
   function createReporters(ids: any[]) {
-    const r = ReflectiveInjector
-                  .resolveAndCreate([
+    const r = Injector
+                  .create([
                     ids.map(id => ({provide: id, useValue: new MockReporter(id)})),
                     MultiReporter.provideWith(ids)
                   ])

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, ReflectiveInjector, SimpleChange, SimpleChanges, Type} from '@angular/core';
+import {ApplicationRef, ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, SimpleChange, SimpleChanges, Type} from '@angular/core';
 
 import * as angular from './angular1';
 import {PropertyBinding} from './component_info';
@@ -57,8 +57,8 @@ export class DowngradeComponentAdapter {
   }
 
   createComponent(projectableNodes: Node[][]) {
-    const childInjector = ReflectiveInjector.resolveAndCreate(
-        [{provide: $SCOPE, useValue: this.componentScope}], this.parentInjector);
+    const childInjector =
+        Injector.create([{provide: $SCOPE, useValue: this.componentScope}], this.parentInjector);
 
     this.componentRef =
         this.componentFactory.create(childInjector, projectableNodes, this.element[0]);

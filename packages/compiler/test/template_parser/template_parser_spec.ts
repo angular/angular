@@ -308,7 +308,7 @@ export function main() {
       TestBed.configureCompiler({
         providers: [
           TEST_COMPILER_PROVIDERS,
-          {provide: ElementSchemaRegistry, useClass: DomElementSchemaRegistry}
+          {provide: ElementSchemaRegistry, useClass: DomElementSchemaRegistry, deps: []}
         ]
       });
     });
