@@ -6,7 +6,7 @@
     "interface-name": [true, "never-prefix"],
     "max-classes-per-file": [true, 4],
     "no-consecutive-blank-lines": [true, 2],
-    "no-console": false,
+    "no-console": [false],
     "no-namespace": [true, "allow-declarations"],
     "no-string-literal": false,
     "quotemark": [true, "single"],
