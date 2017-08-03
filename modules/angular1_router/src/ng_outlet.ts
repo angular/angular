@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-///<reference path="../typings/angularjs/angular.d.ts"/>
+///<reference path="../typings/angular/angular.d.ts"/>
 
 
 
