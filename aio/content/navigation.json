@@ -339,6 +339,11 @@
               "tooltip": "Learn why and how to use the Ahead-of-Time (AOT) compiler."
             },
             {
+              "url": "guide/metadata",
+              "title": "Metadata and AOT",
+              "tooltip": "How Angular handles metadata with AOT."
+            },
+            {
               "url": "guide/deployment",
               "title": "Deployment",
               "tooltip": "Learn how to deploy your Angular app."
