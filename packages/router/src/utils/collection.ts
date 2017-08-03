@@ -116,5 +116,5 @@ export function wrapIntoObservable<T>(value: T | NgModuleFactory<T>| Promise<T>|
     return fromPromise(Promise.resolve(value));
   }
 
-  return of (value);
+  return of (value as T);
 }
