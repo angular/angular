@@ -76,7 +76,27 @@ export function main() {
 
     });
 
+    describe('updateOn', () => {
+
+      it('should default to on change', () => {
+        const c = new FormControl('');
+        expect(c._updateOn).toEqual('change');
+      });
+
+      it('should default to on change with an options obj', () => {
+        const c = new FormControl('', {validators: Validators.required});
+        expect(c._updateOn).toEqual('change');
+      });
+
+      it('should set updateOn when updating on blur', () => {
+        const c = new FormControl('', {updateOn: 'blur'});
+        expect(c._updateOn).toEqual('blur');
+      });
+
+    });
+
     describe('validator', () => {
+
       it('should run validator with the initial value', () => {
         const c = new FormControl('value', Validators.required);
         expect(c.valid).toEqual(true);

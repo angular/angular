@@ -78,10 +78,14 @@ function coerceToAsyncValidator(
                                              origAsyncValidator || null;
 }
 
+export type FormHooks = 'change' | 'blur';
+
 export interface AbstractControlOptions {
   validators?: ValidatorFn|ValidatorFn[]|null;
   asyncValidators?: AsyncValidatorFn|AsyncValidatorFn[]|null;
+  updateOn?: FormHooks;
 }
+
 
 function isOptionsObj(
     validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null): boolean {
@@ -659,6 +663,15 @@ export abstract class AbstractControl {
  * });
  * ```
  *
+ * The options object can also be used to define when the control should update.
+ * By default, the value and validity of a control updates whenever the value
+ * changes. You can configure it to update on the blur event instead by setting
+ * the `updateOn` option to `'blur'`.
+ *
+ * ```ts
+ * const c = new FormControl('', { updateOn: 'blur' });
+ * ```
+ *
  * See its superclass, {@link AbstractControl}, for more properties and methods.
  *
  * * **npm package**: `@angular/forms`
@@ -669,6 +682,15 @@ export class FormControl extends AbstractControl {
   /** @internal */
   _onChange: Function[] = [];
 
+  /** @internal */
+  _updateOn: FormHooks = 'change';
+
+  /** @internal */
+  _pendingValue: any;
+
+  /** @internal */
+  _pendingDirty: boolean;
+
   constructor(
       formState: any = null,
       validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
@@ -677,6 +699,7 @@ export class FormControl extends AbstractControl {
         coerceToValidator(validatorOrOpts),
         coerceToAsyncValidator(asyncValidator, validatorOrOpts));
     this._applyFormState(formState);
+    this._setUpdateStrategy(validatorOrOpts);
     this.updateValueAndValidity({onlySelf: true, emitEvent: false});
     this._initObservables();
   }
@@ -704,7 +727,7 @@ export class FormControl extends AbstractControl {
     emitModelToViewChange?: boolean,
     emitViewToModelChange?: boolean
   } = {}): void {
-    this._value = value;
+    this._value = this._pendingValue = value;
     if (this._onChange.length && options.emitModelToViewChange !== false) {
       this._onChange.forEach(
           (changeFn) => changeFn(this._value, options.emitViewToModelChange !== false));
@@ -759,6 +782,7 @@ export class FormControl extends AbstractControl {
   reset(formState: any = null, options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     this._applyFormState(formState);
     this.markAsPristine(options);
+    this._pendingDirty = false;
     this.markAsUntouched(options);
     this.setValue(this._value, options);
   }
@@ -806,11 +830,17 @@ export class FormControl extends AbstractControl {
 
   private _applyFormState(formState: any) {
     if (this._isBoxedValue(formState)) {
-      this._value = formState.value;
+      this._value = this._pendingValue = formState.value;
       formState.disabled ? this.disable({onlySelf: true, emitEvent: false}) :
                            this.enable({onlySelf: true, emitEvent: false});
     } else {
-      this._value = formState;
+      this._value = this._pendingValue = formState;
+    }
+  }
+
+  private _setUpdateStrategy(opts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null): void {
+    if (isOptionsObj(opts) && (opts as AbstractControlOptions).updateOn != null) {
+      this._updateOn = (opts as AbstractControlOptions).updateOn !;
     }
   }
 }
