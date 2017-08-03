@@ -6,75 +6,50 @@
 Improve overall data quality by validating user input for accuracy and completeness.
 
 This page shows how to validate user input in the UI and display useful validation messages
-using first the Template Driven Forms and then the Reactive Forms approach.
+using both reactive and template-driven forms. It assumes some basic knowledge of the two 
+forms modules.
 
 <div class="l-sub-section">
 
-Read more about these choices in the [Forms](guide/forms)
-and the [Reactive Forms](guide/reactive-forms) guides.
+If you're new to forms, start by reviewing the [Forms](guide/forms) and 
+[Reactive Forms](guide/reactive-forms) guides.
 
 </div>
 
 
-{@a live-example}
+## Template-driven validation
 
+To add validation to a template-driven form, you add the same validation attributes as you 
+would with [native HTML form validation](https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/Constraint_validation). 
+Angular uses directives to match these attributes with validator functions in the framework.
 
-**Try the live example to see and download the full cookbook source code.**
+Every time the value of a form control changes, Angular runs validation and generates 
+either a list of validation errors, which results in an INVALID status, or null, which results in a VALID status.
 
-<live-example name="form-validation" embedded=true img="guide/form-validation/plunker.png">
+You can then inspect the control's state by exporting `ngModel` to a local template variable.
+The following example exports `NgModel` into a variable called `name`:
 
-</live-example>
-
-## Simple Template Driven Forms
-
-In the Template Driven approach, you arrange
-[form elements](https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Forms_in_HTML) in the component's template.
-
-You add Angular form directives (mostly directives beginning `ng...`) to help
-Angular construct a corresponding internal control model that implements form functionality.
-In Template Driven forms, the control model is _implicit_ in the template.
-
-To validate user input, you add [HTML validation attributes](https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/Constraint_validation)
-to the elements. Angular interprets those as well, adding validator functions to the control model.
-
-Angular exposes information about the state of the controls including
-whether the user has "touched" the control or made changes and if the control values are valid.
-
-In this first template validation example,
-notice the HTML that reads the control state and updates the display appropriately.
-Here's an excerpt from the template HTML for a single input control bound to the hero name:
-
-<code-example path="form-validation/src/app/template/hero-form-template1.component.html" region="name-with-error-msg" title="template/hero-form-template1.component.html (Hero name)" linenums="false">
+<code-example path="form-validation/src/app/template/hero-form-template.component.html" region="name-with-error-msg" title="template/hero-form-template.component.html (name)" linenums="false">
 
 </code-example>
 
 
-
 Note the following:
 
-* The `<input>` element carries the HTML validation attributes: `required`, `minlength`, and `maxlength`.
+* The `<input>` element carries the HTML validation attributes: `required` and `minlength`. It 
+also carries a custom validator directive, `forbiddenName`. For more 
+information, see [Custom validators](guide/form-validation#custom-validators) section.
 
-* The `name` attribute of the input is set to `"name"` so Angular can track this input element and associate it
-with an Angular form control called `name` in its internal control model.
-
-* The `[(ngModel)]` directive allows two-way data binding between the input box to the `hero.name` property.
-
-* The template variable (`#name`) has the value `"ngModel"` (always `ngModel`).
-This gives you a reference to the Angular `NgModel` directive
-associated with this control that you can use _in the template_
-to check for control states such as `valid` and `dirty`.
+* `#name="ngModel"` exports `NgModel` into a local variable callled `name`. `NgModel` mirrors many of the properties of its underlying 
+`FormControl` instance, so you can use this in the template to check for control states such as `valid` and `dirty`. For a full list of control properties, see the [AbstractControl](api/forms/AbstractControl) 
+API reference.
 
 * The `*ngIf` on the `<div>` element reveals a set of nested message `divs`
-but only if there are `name` errors and
-the control is either `dirty` or `touched`.
+but only if the `name` is invalid and the control is either `dirty` or `touched`.
 
 * Each nested `<div>` can present a custom message for one of the possible validation errors.
-There are messages for `required`, `minlength`, and `maxlength`.
-
-The full template repeats this kind of layout for each data entry control on the form.
-
-{@a why-check}
-
+There are messages for `required`, `minlength`, and `forbiddenName`.
+ 
 
 <div class="l-sub-section">
 
@@ -82,567 +57,152 @@ The full template repeats this kind of layout for each data entry control on the
 
 #### Why check _dirty_ and _touched_?
 
-The app shouldn't show errors for a new hero before the user has had a chance to edit the value.
-The checks for `dirty` and `touched` prevent premature display of errors.
-
-Learn about `dirty` and `touched` in the [Forms](guide/forms) guide.
+You may not want your application to display errors before the user has a chance to edit the form.
+The checks for `dirty` and `touched` prevent errors from showing until the user 
+does one of two things: changes the value, 
+turning the control dirty; or blurs the form control element, setting the control to touched.
 
 </div>
 
+## Reactive form validation
 
+In a reactive form, the source of truth is the component class. Instead of adding validators through attributes in the template, you add validator functions directly to the form control model in the component class. Angular then calls these functions whenever the value of the control changes.
 
-The component class manages the hero model used in the data binding
-as well as other code to support the view.
+### Validator functions
 
+There are two types of validator functions: sync validators and async validators.  
 
-<code-example path="form-validation/src/app/template/hero-form-template1.component.ts" region="class" title="template/hero-form-template1.component.ts (class)">
+* **Sync validators**: functions that take a control instance and immediately return either a set of validation errors or `null`. You can pass these in as the second argument when you instantiate a `FormControl`.
 
-</code-example>
+* **Async validators**: functions that take a control instance and return a Promise 
+or Observable that later emits a set of validation errors or `null`. You can 
+pass these in as the third argument when you instantiate a `FormControl`. 
 
+Note: for performance reasons, Angular only runs async validators if all sync validators pass. Each must complete before errors are set.
 
+### Built-in validators
 
-Use this Template Driven validation technique when working with static forms with simple, standard validation rules.
+You can choose to [write your own validator functions](guide/form-validation#custom-validators), or you can use some of 
+Angular's built-in validators. 
 
-Here are the complete files for the first version of `HeroFormTemplateCompononent` in the Template Driven approach:
+The same built-in validators that are available as attributes in template-driven forms, such as `required` and `minlength`, are all available to use as functions from the `Validators` class. For a full list of built-in validators, see the [Validators](api/forms/Validators) API reference.
 
-
-<code-tabs>
-
-  <code-pane title="template/hero-form-template1.component.html" path="form-validation/src/app/template/hero-form-template1.component.html">
-
-  </code-pane>
-
-  <code-pane title="template/hero-form-template1.component.ts" path="form-validation/src/app/template/hero-form-template1.component.ts">
-
-  </code-pane>
-
-</code-tabs>
-
-
-
-
-
-## Template Driven Forms with validation messages in code
-
-While the layout is straightforward,
-there are obvious shortcomings with the way it's handling validation messages:
-
-* It takes a lot of HTML to represent all possible error conditions.
-This gets out of hand when there are many controls and many validation rules.
-
-* There's a lot of JavaScript logic in the HTML.
-
-* The messages are static strings, hard-coded into the template.
-It's easier to maintain _dynamic_ messages in the component class.
-
-In this example, you can move the logic and the messages into the component with a few changes to
-the template and component.
-
-Here's the hero name again, excerpted from the revised template
-(template 2), next to the original version:
-
-<code-tabs>
-
-  <code-pane title="hero-form-template2.component.html (name #2)" path="form-validation/src/app/template/hero-form-template2.component.html" region="name-with-error-msg">
-
-  </code-pane>
-
-  <code-pane title="hero-form-template1.component.html (name #1)" path="form-validation/src/app/template/hero-form-template1.component.html" region="name-with-error-msg">
-
-  </code-pane>
-
-</code-tabs>
-
-
-
-The `<input>` element HTML is almost the same. There are noteworthy differences:
-
-* The hard-code error message `<divs>` are gone.
-
-* There's a new attribute, `forbiddenName`, that is actually a custom validation directive.
-It invalidates the control if the user enters "bob" in the name `<input>`([try it](guide/form-validation#live-example)).
-See the [custom validation](guide/form-validation#custom-validation) section later in this page for more information
-on custom validation directives.
-
-* The `#name` template variable is gone because the app no longer refers to the Angular control for this element.
-
-* Binding to the new `formErrors.name` property is sufficient to display all name validation error messages.
-
-{@a component-class}
-
-### Component class
-The original component code for Template 1 stayed the same; however,
-Template 2 requires some changes in the component. This section covers the code
-necessary in Template 2's component class to acquire the Angular
-form control and compose error messages.
-
-The first step is to acquire the form control that Angular created from the template by querying for it.
-
-Look back at the top of the component template at the
-`#heroForm` template variable in the `<form>` element:
-
-<code-example path="form-validation/src/app/template/hero-form-template1.component.html" region="form-tag" title="template/hero-form-template1.component.html (form tag)" linenums="false">
-
-</code-example>
-
-
-
-The `heroForm` variable is a reference to the control model that Angular derived from the template.
-Tell Angular to inject that model into the component class's `currentForm` property using a `@ViewChild` query:
-
-<code-example path="form-validation/src/app/template/hero-form-template2.component.ts" region="view-child" title="template/hero-form-template2.component.ts (heroForm)" linenums="false">
-
-</code-example>
-
-
-
-Some observations:
-
-* Angular `@ViewChild` queries for a template variable when you pass it
-the name of that variable as a string (`'heroForm'` in this case).
-
-* The `heroForm` object changes several times during the life of the component, most notably when you add a new hero.
-Periodically inspecting it reveals these changes.
-
-* Angular calls the `ngAfterViewChecked()` [lifecycle hook method](guide/lifecycle-hooks#afterview)
-when anything changes in the view.
-That's the right time to see if there's a new `heroForm` object.
-
-* When there _is_ a new `heroForm` model, `formChanged()` subscribes to its `valueChanges` _Observable_ property.
-The `onValueChanged` handler looks for validation errors after every keystroke.
-
-<code-example path="form-validation/src/app/template/hero-form-template2.component.ts" region="handler" title="template/hero-form-template2.component.ts (handler)" linenums="false">
-
-</code-example>
-
-
-
-The `onValueChanged` handler interprets user data entry.
-The `data` object passed into the handler contains the current element values.
-The handler ignores them. Instead, it iterates over the fields of the component's `formErrors` object.
-
-The `formErrors` is a dictionary of the hero fields that have validation rules and their current error messages.
-Only two hero properties have validation rules, `name` and `power`.
-The messages are empty strings when the hero data are valid.
-
-For each field, the `onValueChanged` handler does the following:
-  * Clears the prior error message, if any.
-  * Acquires the field's corresponding Angular form control.
-  * If such a control exists _and_ it's been changed ("dirty")
-  _and_ it's invalid, the handler composes a consolidated error message for all of the control's errors.
-
-Next, the component needs some error messages&mdash;a set for each validated property with
-one message per validation rule:
-
-<code-example path="form-validation/src/app/template/hero-form-template2.component.ts" region="messages" title="template/hero-form-template2.component.ts (messages)" linenums="false">
-
-</code-example>
-
-
-
-Now every time the user makes a change, the `onValueChanged` handler checks for validation errors and produces messages accordingly.
-
-
-{@a improvement}
-
-
-### The benefits of messages in code
-
-Clearly the template got substantially smaller while the component code got substantially larger.
-It's not easy to see the benefit when there are just three fields and only two of them have validation rules.
-
-Consider what happens as the number of validated
-fields and rules increases.
-In general, HTML is harder to read and maintain than code.
-The initial template was already large and threatening to get rapidly worse
-with the addition of more validation message `<div>` elements.
-
-After moving the validation messaging to the component,
-the template grows more slowly and proportionally.
-Each field has approximately the same number of lines no matter its number of validation rules.
-The component also grows proportionally, at the rate of one line per validated field
-and one line per validation message.
-
-Now that the messages are in code, you have more flexibility and can compose messages more efficiently.
-You can refactor the messages out of the component, perhaps to a service class that retrieves them from the server.
-In short, there are more opportunities to improve message handling now that text and logic have moved from template to code.
-
-
-{@a formmodule}
-
-
-### _FormModule_ and Template Driven forms
-
-Angular has two different forms modules&mdash;`FormsModule` and
-`ReactiveFormsModule`&mdash;that correspond with the
-two approaches to form development. Both modules come
-from the same `@angular/forms` library package.
-
-You've been reviewing the Template Driven approach which requires the `FormsModule`.
-Here's how you imported it in the `HeroFormTemplateModule`.
-
-
-<code-example path="form-validation/src/app/template/hero-form-template.module.ts" title="template/hero-form-template.module.ts" linenums="false">
-
-</code-example>
-
-
-
-<div class="l-sub-section">
-
-
-
-This guide hasn't talked about the `SharedModule` or its `SubmittedComponent` which appears at the bottom of every
-form template in this cookbook.
-
-They're not germane to the validation story. Look at the [live example](guide/form-validation#live-example) if you're interested.
-
-
-</div>
-
-
-
-
-{@a reactive}
-
-
-## Reactive Forms with validation in code
-
-In the Template Driven approach, you mark up the template with form elements, validation attributes,
-and `ng...` directives from the Angular `FormsModule`.
-At runtime, Angular interprets the template and derives its _form control model_.
-
-**Reactive Forms** takes a different approach.
-You create the form control model in code. You write the template with form elements
-and `form...` directives from the Angular `ReactiveFormsModule`.
-At runtime, Angular binds the template elements to your control model based on your instructions.
-
-This allows you to do the following:
-
-* Add, change, and remove validation functions on the fly.
-* Manipulate the control model dynamically from within the component.
-* [Test](guide/form-validation#testing-considerations) validation and control logic with isolated unit tests.
-
-The following sample re-writes the hero form in Reactive Forms style.
-
-
-{@a reactive-forms-module}
-
-
-### Switch to the _ReactiveFormsModule_
-The Reactive Forms classes and directives come from the Angular `ReactiveFormsModule`, not the `FormsModule`.
-The application module for the Reactive Forms feature in this sample looks like this:
-
-<code-example path="form-validation/src/app/reactive/hero-form-reactive.module.ts" title="src/app/reactive/hero-form-reactive.module.ts" linenums="false">
-
-</code-example>
-
-
-
-The Reactive Forms feature module and component are in the `src/app/reactive` folder.
-Focus on the `HeroFormReactiveComponent` there, starting with its template.
-
-
-{@a reactive-component-template}
-
-
-### Component template
-
-Begin by changing the `<form>` tag so that it binds the Angular `formGroup` directive in the template
-to the `heroForm` property in the component class.
-The `heroForm` is the control model that the component class builds and maintains.
-
-
-<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.html" region="form-tag" title="form-validation/src/app/reactive/hero-form-reactive.component.html" linenums="false">
-
-</code-example>
-
-
-
-Next, modify the template HTML elements to match the Reactive Forms style.
-Here is the "name" portion of the template again, revised for Reactive Forms and compared with the Template Driven version:
-
-<code-tabs>
-
-  <code-pane title="hero-form-reactive.component.html (name #3)" path="form-validation/src/app/reactive/hero-form-reactive.component.html" region="name-with-error-msg">
-
-  </code-pane>
-
-  <code-pane title="hero-form-template1.component.html (name #2)" path="form-validation/src/app/template/hero-form-template2.component.html" region="name-with-error-msg">
-
-  </code-pane>
-
-</code-tabs>
-
-
-
-Key changes are:
-* The validation attributes are gone (except `required`) because
-validating happens in code.
-
-* `required` remains, not for validation purposes (that's in the code),
-but rather for css styling and accessibility.
-
-
-<div class="l-sub-section">
-
-Currently, Reactive Forms doesn't add the `required` or `aria-required`
-HTML validation attribute to the DOM element
-when the control has the `required` validator function.
-
-Until then, apply the `required` attribute _and_ add the `Validator.required` function
-to the control model, as you'll see below.
-
-</div>
-
-
-
-* The `formControlName` replaces the `name` attribute; it serves the same
-purpose of correlating the input with the Angular form control.
-
-* The two-way `[(ngModel)]` binding is gone.
-The reactive approach does not use data binding to move data into and out of the form controls.
-That's all in code.
-
-
+To update the hero form to be a reactive form, you can use some of the same 
+built-in validators&mdash;this time, in function form. See below:
 
 {@a reactive-component-class}
 
-
-### Component class
-
-The component class is now responsible for defining and managing the form control model.
-
-Angular no longer derives the control model from the template so you can no longer query for it.
-You can create the Angular form control model explicitly with
-the help of the `FormBuilder` class.
-
-Here's the section of code devoted to that process, paired with the Template Driven code it replaces:
-
-<code-tabs>
-
-  <code-pane title="reactive/hero-form-reactive.component.ts (FormBuilder)" path="form-validation/src/app/reactive/hero-form-reactive.component.ts" region="form-builder">
-
-  </code-pane>
-
-  <code-pane title="template/hero-form-template2.component.ts (ViewChild)" path="form-validation/src/app/template/hero-form-template2.component.ts" region="view-child">
-
-  </code-pane>
-
-</code-tabs>
-
-
-
-* Inject `FormBuilder` in a constructor.
-
-* Call a `buildForm` method in the `ngOnInit` [lifecycle hook method](guide/lifecycle-hooks#hooks-overview)
-because that's when you'll have the hero data. Call it again in the `addHero` method.
-
-<div class="l-sub-section">
-
-
-
-A real app would retrieve the hero asynchronously from a data service, a task best performed in the `ngOnInit` hook.
-
-</div>
-
-
-
-* The `buildForm` method uses the `FormBuilder`, `fb`, to declare the form control model.
-Then it attaches the same `onValueChanged` handler (there's a one line difference)
-to the form's `valueChanges` event and calls it immediately
-to set error messages for the new control model.
-
-## Built-in validators
-
-Angular forms include a number of built-in validator functions, which are functions
-that help you check common user input in forms. In addition to the built-in
-validators covered here of `minlength`, `maxlength`,
-and `required`, there are others such as `email` and `pattern`
-for Reactive Forms.
-For a full list of built-in validators,
-see the [Validators](api/forms/Validators) API reference.
-
-
-#### _FormBuilder_ declaration
-The `FormBuilder` declaration object specifies the three controls of the sample's hero form.
-
-Each control spec is a control name with an array value.
-The first array element is the current value of the corresponding hero field.
-The optional second value is a validator function or an array of validator functions.
-
-Most of the validator functions are stock validators provided by Angular as static methods of the `Validators` class.
-Angular has stock validators that correspond to the standard HTML validation attributes.
-
-The `forbiddenName` validator on the `"name"` control is a custom validator,
-discussed in a separate [section below](guide/form-validation#custom-validation).
-
-<div class="l-sub-section">
-
-Learn more about `FormBuilder` in the [Introduction to FormBuilder](guide/reactive-forms#formbuilder) section of Reactive Forms guide.
-
-</div>
-
-#### Committing hero value changes
-
-In two-way data binding, the user's changes flow automatically from the controls back to the data model properties.
-A Reactive Forms component should not use data binding to
-automatically update data model properties.
-The developer decides _when and how_ to update the data model from control values.
-
-This sample updates the model twice:
-
-1. When the user submits the form.
-1. When the user adds a new hero.
-
-The `onSubmit()` method simply replaces the `hero` object with the combined values of the form:
-
-<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.ts" region="on-submit" title="form-validation/src/app/reactive/hero-form-reactive.component.ts" linenums="false">
+<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.ts" region="form-group" title="reactive/hero-form-reactive.component.ts (validator functions)" linenums="false">
 </code-example>
 
+Note that:
 
-The `addHero()` method discards pending changes and creates a brand new `hero` model object.
+* The name control sets up two built-in validators&mdash;`Validators.required` and `Validators.minLength(4)`&mdash;and one custom validator, `forbiddenNameValidator`. For more details see the [Custom validators](guide/form-validation#custom-validators) section in this guide.
+* As these validators are all sync validators, you pass them in as the second argument. 
+* Support multiple validators by passing the functions in as an array.
+* This example adds a few getter methods. In a reactive form, you can always access any form control through the `get` method on its parent group, but sometimes it's useful to define getters as shorthands 
+for the template.
 
-<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.ts" region="add-hero" title="form-validation/src/app/reactive/hero-form-reactive.component.ts" linenums="false">
+
+If you look at the template for the name input again, it is fairly similar to the template-driven example. 
+
+<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.html" region="name-with-error-msg" title="reactive/hero-form-reactive.component.html (name with error msg)" linenums="false">
 </code-example>
 
+Key takeaways:
+ 
+ * The form no longer exports any directives, and instead uses the `name` getter defined in 
+ the component class.
+ * The `required` attribute is still present. While it's not necessary for validation purposes, 
+ you may want to keep it in your template for CSS styling or accessibility reasons.
 
 
-Then it calls `buildForm()` again which replaces the previous `heroForm` control model with a new one.
-The `<form>` tag's `[formGroup]` binding refreshes the page with the new control model.
+## Custom validators
 
-Here's the complete reactive component file, compared to the two Template Driven component files.
+Since the built-in validators won't always match the exact use case of your application, sometimes you'll want to create a custom validator. 
 
-<code-tabs>
-
-  <code-pane title="reactive/hero-form-reactive.component.ts (#3)" path="form-validation/src/app/reactive/hero-form-reactive.component.ts">
-
-  </code-pane>
-
-  <code-pane title="template/hero-form-template2.component.ts (#2)" path="form-validation/src/app/template/hero-form-template2.component.ts">
-
-  </code-pane>
-
-  <code-pane title="template/hero-form-template1.component.ts (#1)" path="form-validation/src/app/template/hero-form-template1.component.ts">
-
-  </code-pane>
-
-</code-tabs>
-
-
-
-<div class="l-sub-section">
-
-Run the [live example](guide/form-validation#live-example) to see how the reactive form behaves,
-and to compare all of the files in this sample.
-
-</div>
-
-## Custom validation
-This cookbook sample has a custom `forbiddenNameValidator()` function that's applied to both the
-Template Driven and the reactive form controls. It's in the `src/app/shared` folder
-and declared in the `SharedModule`.
-
-Here's the `forbiddenNameValidator()` function:
+Consider the `forbiddenNameValidator` function from previous
+[examples](guide/form-validation#reactive-component-class) in 
+this guide. Here's what the definition of that function looks like:
 
 <code-example path="form-validation/src/app/shared/forbidden-name.directive.ts" region="custom-validator" title="shared/forbidden-name.directive.ts (forbiddenNameValidator)" linenums="false">
 </code-example>
 
+The function is actually a factory that takes a regular expression to detect a _specific_ forbidden name and returns a validator function.
 
-
-The function is actually a factory that takes a regular expression to detect a _specific_ forbidden name
-and returns a validator function.
-
-In this sample, the forbidden name is "bob";
-the validator rejects any hero name containing "bob".
+In this sample, the forbidden name is "bob", so the validator will reject any hero name containing "bob".
 Elsewhere it could reject "alice" or any name that the configuring regular expression matches.
 
 The `forbiddenNameValidator` factory returns the configured validator function.
 That function takes an Angular control object and returns _either_
 null if the control value is valid _or_ a validation error object.
 The validation error object typically has a property whose name is the validation key, `'forbiddenName'`,
-and whose value is an arbitrary dictionary of values that you could insert into an error message (`{name}`).
+and whose value is an arbitrary dictionary of values that you could insert into an error message, `{name}`.
 
+### Adding to reactive forms
 
+In reactive forms, custom validators are fairly simple to add. All you have to do is pass the function directly 
+to the `FormControl`.
 
-### Custom validation directive
-In the Reactive Forms component, the `'name'` control's validator function list
-has a `forbiddenNameValidator` at the bottom.
-
-<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.ts" region="name-validators" title="reactive/hero-form-reactive.component.ts (name validators)" linenums="false">
+<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.ts" region="custom-validator" title="reactive/hero-form-reactive.component.ts (validator functions)" linenums="false">
 </code-example>
 
+### Adding to template-driven forms
 
+In template-driven forms, you don't have direct access to the `FormControl` instance, so you can't pass the 
+validator in like you can for reactive forms. Instead, you need to add a directive to the template.
 
-In the Template Driven example, the `<input>` has the selector (`forbiddenName`)
-of a custom _attribute directive_, which rejects "bob".
+The corresponding `ForbiddenValidatorDirective` serves as a wrapper around the `forbiddenNameValidator`.
 
-<code-example path="form-validation/src/app/template/hero-form-template2.component.html" region="name-input" title="template/hero-form-template2.component.html (name input)" linenums="false">
-</code-example>
-
-
-
-The corresponding `ForbiddenValidatorDirective` is a wrapper around the `forbiddenNameValidator`.
-
-Angular `forms` recognizes the directive's role in the validation process because the directive registers itself
-with the `NG_VALIDATORS` provider, a provider with an extensible collection of validation directives.
+Angular recognizes the directive's role in the validation process because the directive registers itself
+with the `NG_VALIDATORS` provider, a provider with an extensible collection of validators.
 
 <code-example path="form-validation/src/app/shared/forbidden-name.directive.ts" region="directive-providers" title="shared/forbidden-name.directive.ts (providers)" linenums="false">
 </code-example>
 
-
-
-Here is the rest of the directive to help you get an idea of how it all comes together:
+The directive class then implements the `Validator` interface, so that it can easily integrate 
+with Angular forms. Here is the rest of the directive to help you get an idea of how it all 
+comes together:
 
 <code-example path="form-validation/src/app/shared/forbidden-name.directive.ts" region="directive" title="shared/forbidden-name.directive.ts (directive)">
 </code-example>
 
+Once the `ForbiddenValidatorDirective` is ready, you can simply add its selector, `forbiddenName`, to any input element to activate it. For example:
 
+<code-example path="form-validation/src/app/template/hero-form-template.component.html" region="name-input" title="template/hero-form-template.component.html (forbidden-name-input)" linenums="false">
 
+</code-example>
 
 
 <div class="l-sub-section">
 
-If you are familiar with Angular validations, you may have noticed
-that the custom validation directive is instantiated with `useExisting`
+You may have noticed that the custom validation directive is instantiated with `useExisting`
 rather than `useClass`. The registered validator must be _this instance_ of
 the `ForbiddenValidatorDirective`&mdash;the instance in the form with
 its `forbiddenName` property bound to “bob". If you were to replace
 `useExisting` with `useClass`, then you’d be registering a new class instance, one that
 doesn’t have a `forbiddenName`.
 
-To see this in action, run the example and then type “bob” in the name of Hero Form 2.
-Notice that you get a validation error. Now change from `useExisting` to `useClass` and try again.
-This time, when you type “bob”, there's no "bob" error message.
-
 </div>
 
+## Control status CSS classes
 
-<div class="l-sub-section">
+Like in AngularJS, Angular automatically mirrors many control properties onto the form control element as CSS classes. You can use these classes to style form control elements according to the state of the form. The following classes are currently supported:
 
-For more information on attaching behavior to elements,
-see [Attribute Directives](guide/attribute-directives).
+* `.ng-valid`
+* `.ng-invalid`
+* `.ng-pending`
+* `.ng-pristine`
+* `.ng-dirty`
+* `.ng-untouched`
+* `.ng-touched`
 
-</div>
+The hero form uses the `.ng-valid` and `.ng-invalid` classes to 
+set the color of each form control's border.
+
+<code-example path="form-validation/src/forms.css" title="forms.css (status classes)">
+
+</code-example>
 
 
-
-## Testing Considerations
-
-You can write _isolated unit tests_ of validation and control logic in Reactive Forms.
-
-_Isolated unit tests_ probe the component class directly, independent of its
-interactions with its template, the DOM, other dependencies, or Angular itself.
-
-Such tests have minimal setup, are quick to write, and easy to maintain.
-They do not require the `Angular TestBed` or asynchronous testing practices.
-
-That's not possible with Template Driven forms.
-The Template Driven approach relies on Angular to produce the control model and
-to derive validation rules from the HTML validation attributes.
-You must use the `Angular TestBed` to create component test instances,
-write asynchronous tests, and interact with the DOM.
-
-While not difficult, this takes more time, work and
-skill&mdash;factors that tend to diminish test code
-coverage and quality.
+**You can run the <live-example></live-example> to see the complete reactive and template-driven example code.**
