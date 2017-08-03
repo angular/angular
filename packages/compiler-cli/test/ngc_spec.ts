@@ -315,7 +315,7 @@ describe('ngc command-line', () => {
           .toBe(true);
     });
 
-    describe('expression lowering', () => {
+    xdescribe('expression lowering', () => {
       beforeEach(() => {
         writeConfig(`{
             "extends": "./tsconfig-base.json",
