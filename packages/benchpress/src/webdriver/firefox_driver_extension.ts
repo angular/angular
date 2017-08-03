@@ -13,7 +13,7 @@ import {PerfLogEvent, PerfLogFeatures, WebDriverExtension} from '../web_driver_e
 
 @Injectable()
 export class FirefoxDriverExtension extends WebDriverExtension {
-  static PROVIDERS = [FirefoxDriverExtension];
+  static PROVIDERS = [{provide: FirefoxDriverExtension, deps: [WebDriverAdapter]}];
 
   private _profilerStarted: boolean;
 

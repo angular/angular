@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable} from '@angular/core';
+import {Inject, Injectable, StaticProvider} from '@angular/core';
 
 import {Options} from '../common_options';
 import {Metric} from '../metric';
@@ -14,7 +14,8 @@ import {WebDriverAdapter} from '../web_driver_adapter';
 
 @Injectable()
 export class UserMetric extends Metric {
-  static PROVIDERS = [UserMetric];
+  static PROVIDERS =
+      <StaticProvider[]>[{provide: UserMetric, deps: [Options.USER_METRICS, WebDriverAdapter]}];
 
   constructor(
       @Inject(Options.USER_METRICS) private _userMetrics: {[key: string]: string},

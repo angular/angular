@@ -8,7 +8,7 @@
 
 import {AsyncTestCompleter, describe, expect, iit, inject, it} from '@angular/core/testing/src/testing_internal';
 
-import {ChromeDriverExtension, Options, ReflectiveInjector, WebDriverAdapter, WebDriverExtension} from '../../index';
+import {ChromeDriverExtension, Injector, Options, WebDriverAdapter, WebDriverExtension} from '../../index';
 import {TraceEventFactory} from '../trace_event_factory';
 
 export function main() {
@@ -41,8 +41,8 @@ export function main() {
         userAgent = CHROME45_USER_AGENT;
       }
       log = [];
-      extension = ReflectiveInjector
-                      .resolveAndCreate([
+      extension = Injector
+                      .create([
                         ChromeDriverExtension.PROVIDERS, {
                           provide: WebDriverAdapter,
                           useValue: new MockDriverAdapter(log, perfRecords, messageMethod)
