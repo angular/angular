@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, InjectionToken} from '../di';
+import {Injectable, InjectionToken, StaticProvider} from '../di';
 import {MissingTranslationStrategy} from '../i18n/tokens';
 import {ViewEncapsulation} from '../metadata';
 import {Type} from '../type';
 
 import {ComponentFactory} from './component_factory';
 import {NgModuleFactory} from './ng_module_factory';
+
 
 /**
  * Combination of NgModuleFactory and ComponentFactorys.
@@ -101,7 +102,7 @@ export type CompilerOptions = {
   useDebug?: boolean,
   useJit?: boolean,
   defaultEncapsulation?: ViewEncapsulation,
-  providers?: any[],
+  providers?: StaticProvider[],
   missingTranslation?: MissingTranslationStrategy,
   // Whether to support the `<template>` tag and the `template` attribute to define angular
   // templates. They have been deprecated in 4.x, `<ng-template>` should be used instead.

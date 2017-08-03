@@ -8,11 +8,11 @@
 
 import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
 
-import {Injector, Metric, Options, ReflectiveInjector, Runner, SampleDescription, SampleState, Sampler, Validator, WebDriverAdapter} from '../index';
+import {Injector, Metric, Options, Runner, SampleDescription, SampleState, Sampler, Validator, WebDriverAdapter} from '../index';
 
 export function main() {
   describe('runner', () => {
-    let injector: ReflectiveInjector;
+    let injector: Injector;
     let runner: Runner;
 
     function createRunner(defaultProviders?: any[]): Runner {
@@ -22,7 +22,7 @@ export function main() {
       runner = new Runner([
         defaultProviders, {
           provide: Sampler,
-          useFactory: (_injector: ReflectiveInjector) => {
+          useFactory: (_injector: Injector) => {
             injector = _injector;
             return new MockSampler();
           },

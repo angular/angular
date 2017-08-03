@@ -20,7 +20,14 @@ import {PerfLogEvent, PerfLogFeatures, WebDriverExtension} from '../web_driver_e
 export class PerflogMetric extends Metric {
   static SET_TIMEOUT = new InjectionToken('PerflogMetric.setTimeout');
   static PROVIDERS = [
-    PerflogMetric, {
+    {
+      provide: PerflogMetric,
+      deps: [
+        WebDriverExtension, PerflogMetric.SET_TIMEOUT, Options.MICRO_METRICS, Options.FORCE_GC,
+        Options.CAPTURE_FRAMES, Options.RECEIVED_DATA, Options.REQUEST_COUNT
+      ]
+    },
+    {
       provide: PerflogMetric.SET_TIMEOUT,
       useValue: (fn: Function, millis: number) => <any>setTimeout(fn, millis)
     }

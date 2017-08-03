@@ -36,7 +36,7 @@ export function main() {
 
         beforeEach(() => {
           TestBed.configureCompiler(
-              {providers: [{provide: ResourceLoader, useClass: StubResourceLoader}]});
+              {providers: [{provide: ResourceLoader, useClass: StubResourceLoader, deps: []}]});
         });
 
         it('should throw when using a templateUrl that has not been compiled before', async(() => {
@@ -68,7 +68,7 @@ export function main() {
 
         beforeEach(() => {
           TestBed.configureCompiler(
-              {providers: [{provide: ResourceLoader, useClass: StubResourceLoader}]});
+              {providers: [{provide: ResourceLoader, useClass: StubResourceLoader, deps: []}]});
         });
 
         it('should allow to use templateUrl components that have been loaded before', async(() => {
@@ -88,10 +88,7 @@ export function main() {
     let dirResolver: MockDirectiveResolver;
     let injector: Injector;
 
-    beforeEach(() => {
-      TestBed.configureCompiler(
-          {providers: [{provide: ResourceLoader, useClass: SpyResourceLoader}]});
-    });
+    beforeEach(() => { TestBed.configureCompiler({providers: [SpyResourceLoader.PROVIDE]}); });
 
     beforeEach(fakeAsync(inject(
         [Compiler, ResourceLoader, DirectiveResolver, Injector],

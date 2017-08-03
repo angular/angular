@@ -21,7 +21,11 @@ export class RegressionSlopeValidator extends Validator {
   static SAMPLE_SIZE = new InjectionToken('RegressionSlopeValidator.sampleSize');
   static METRIC = new InjectionToken('RegressionSlopeValidator.metric');
   static PROVIDERS = [
-    RegressionSlopeValidator, {provide: RegressionSlopeValidator.SAMPLE_SIZE, useValue: 10},
+    {
+      provide: RegressionSlopeValidator,
+      deps: [RegressionSlopeValidator.SAMPLE_SIZE, RegressionSlopeValidator.METRIC]
+    },
+    {provide: RegressionSlopeValidator.SAMPLE_SIZE, useValue: 10},
     {provide: RegressionSlopeValidator.METRIC, useValue: 'scriptTime'}
   ];
 
