@@ -75,7 +75,7 @@ describe('tsc-wrapped', () => {
           // No helpers since decorators were lowered
           expect(out).not.toContain('__decorate');
           // Expand `export *` and fix index import
-          expect(out).toContain(`export { A, B } from './dep/index'`);
+          expect(out).toContain(`export { A, B } from './dep'`);
           // Annotated for Closure compiler
           expect(out).toContain('* @param {?} x');
           // Comments should stay multi-line
@@ -112,7 +112,7 @@ describe('tsc-wrapped', () => {
         .then(() => {
           const out = readOut('js');
           // Expand `export *` and fix index import
-          expect(out).toContain(`export { A, B } from './dep/index'`);
+          expect(out).toContain(`export { A, B } from './dep'`);
           // Annotated for Closure compiler
           expect(out).toContain('* @param {?} x');
           done();
@@ -387,13 +387,13 @@ describe('tsc-wrapped', () => {
     main(basePath, {basePath})
         .then(() => {
           const fileOutput = readOut('js');
-          expect(fileOutput).toContain(`export { A, B } from './dep/index'`);
+          expect(fileOutput).toContain(`export { A, B } from './dep'`);
           done();
         })
         .catch(e => done.fail(e));
   });
 
-  it('should expand shorthand imports for ES5 CommonJS modules', (done) => {
+  it('should not expand shorthand imports for ES5 CommonJS modules', (done) => {
     write('tsconfig.json', `{
       "compilerOptions": {
         "experimentalDecorators": true,
@@ -413,7 +413,7 @@ describe('tsc-wrapped', () => {
     main(basePath, {basePath})
         .then(() => {
           const fileOutput = readOut('js');
-          expect(fileOutput).toContain(`var index_1 = require("./dep/index");`);
+          expect(fileOutput).toContain(`var dep_1 = require("./dep");`);
           done();
         })
         .catch(e => done.fail(e));

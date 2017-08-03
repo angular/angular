@@ -7,10 +7,12 @@
  */
 
 import resolve from 'rollup-plugin-node-resolve';
+import sourcemaps from 'rollup-plugin-sourcemaps';
 
 const globals = {
   '@angular/core': 'ng.core',
   '@angular/platform-browser': 'ng.platformBrowser',
+  '@angular/common': 'ng.common',
   '@angular/common/http': 'ng.common.http',
   'rxjs/Observable': 'Rx',
   'rxjs/ReplaySubject': 'Rx',
@@ -18,12 +20,12 @@ const globals = {
 };
 
 export default {
-  entry: '../../../../dist/packages-dist/common/@angular/common/http/testing.es5.js',
+  entry: '../../../../dist/packages-dist/common/esm5/http/testing/index.js',
   dest: '../../../../dist/packages-dist/common/bundles/common-http-testing.umd.js',
   format: 'umd',
   exports: 'named',
   moduleName: 'ng.common.http.testing',
-  plugins: [resolve()],
+  plugins: [resolve(), sourcemaps()],
   external: Object.keys(globals),
   globals: globals
 };

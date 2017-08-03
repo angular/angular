@@ -3,9 +3,9 @@
   "version": "0.0.0-PLACEHOLDER",
   "description": "Angular - directives and services for creating forms",
   "main": "./bundles/forms.umd.js",
-  "module": "./@angular/forms.es5.js",
-  "es2015": "./@angular/forms.js",
-  "typings": "./forms.d.ts",
+  "module": "./esm5/index.js",
+  "es2015": "./esm15/index.js",
+  "typings": "./index.d.ts",
   "author": "angular",
   "license": "MIT",
   "dependencies": {

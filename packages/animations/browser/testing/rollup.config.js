@@ -7,20 +7,22 @@
  */
 
 import resolve from 'rollup-plugin-node-resolve';
+import sourcemaps from 'rollup-plugin-sourcemaps';
 
 const globals = {
   '@angular/core': 'ng.core',
+  '@angular/animations': 'ng.animations',
   'rxjs/Observable': 'Rx',
   'rxjs/Subject': 'Rx',
 };
 
 export default {
-  entry: '../../../../dist/packages-dist/animations/@angular/animations/browser/testing.es5.js',
+  entry: '../../../../dist/packages-dist/animations/esm5/browser/testing/index.js',
   dest: '../../../../dist/packages-dist/animations/bundles/animations-browser-testing.umd.js',
   format: 'umd',
   exports: 'named',
   moduleName: 'ng.animations.browser.testing',
-  plugins: [resolve()],
+  plugins: [resolve(), sourcemaps()],
   external: Object.keys(globals),
   globals: globals
 };
