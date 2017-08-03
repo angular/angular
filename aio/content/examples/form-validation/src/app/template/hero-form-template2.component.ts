@@ -21,23 +21,13 @@ export class HeroFormTemplate2Component implements AfterViewChecked {
   onSubmit() {
     this.submitted = true;
   }
-// #enddocregion
 
-  // Reset the form with a new hero AND restore 'pristine' class state
-  // by toggling 'active' flag which causes the form
-  // to be removed/re-added in a tick via NgIf
-  // TODO: Workaround until NgForm has a reset method (#6822)
-  active = true;
-// #docregion
-
+  // #docregion add-hero
   addHero() {
+    this.heroForm.reset(); // restores pristine state
     this.hero = new Hero(42, '', '');
-// #enddocregion
-
-    this.active = false;
-    setTimeout(() => this.active = true, 0);
-// #docregion
   }
+  // #enddocregion add-hero
 
   // #docregion view-child
   heroForm: NgForm;
@@ -59,7 +49,6 @@ export class HeroFormTemplate2Component implements AfterViewChecked {
 
   // #docregion handler
   onValueChanged(data?: any) {
-    if (!this.heroForm) { return; }
     const form = this.heroForm.form;
 
     for (const field in this.formErrors) {
