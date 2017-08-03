@@ -38,7 +38,7 @@ setEnvVar NODE_VERSION 6.9.5
 setEnvVar NPM_VERSION 3.10.7 # do not upgrade to >3.10.8 unless https://github.com/npm/npm/issues/14042 is resolved
 setEnvVar YARN_VERSION 0.24.6
 setEnvVar SAUCE_CONNECT_VERSION 4.3.11
-setEnvVar ANGULAR_CLI_VERSION 1.3.2
+setEnvVar ANGULAR_CLI_VERSION 1.4.0-rc.2
 setEnvVar PROJECT_ROOT $(cd ${thisDir}/../..; pwd)
 
 if [[ ${TRAVIS:-} ]]; then

@@ -1,16 +1,21 @@
 {
-  "extends": "../tsconfig-build",
+  "extends": "../tsconfig-build.json",
+
   "compilerOptions": {
-    "strictNullChecks": true,
+    "baseUrl": ".",
+    "rootDir": "../",
     "paths": {
-      "@angular/core": ["../../dist/packages/core"],
-      "@angular/http": ["../../dist/packages/http"],
-      "rxjs/*": ["../../node_modules/rxjs/*"]
-    }
+      "@angular/core": ["../../../dist/packages/core"],
+      "@angular/http": ["../../../dist/packages/http"],
+      "rxjs/*": ["../../../node_modules/rxjs/*"]
+    },
+    "outDir": "../../../dist/packages/http"
   },
+
   "files": [
     "public_api.ts"
   ],
+
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": true,

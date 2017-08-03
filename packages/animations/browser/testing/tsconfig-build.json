@@ -1,17 +1,26 @@
 {
-  "extends": "../../tsconfig-build",
+  "extends": "../tsconfig-build.json",
+
   "compilerOptions": {
+    "baseUrl": ".",
+    "rootDir": "../../",
     "paths": {
-      "@angular/animations": ["../../dist/packages/animations"]
-    }
+      "@angular/animations": ["../../../../dist/packages/animations"]
+    },
+    "outDir": "../../../../dist/packages/animations"
   },
+
   "files": [
-    "index.ts",
+    "public_api.ts",
     "../../../../node_modules/@types/hammerjs/index.d.ts",
     "../../../../node_modules/@types/jasmine/index.d.ts",
     "../../../../node_modules/zone.js/dist/zone.js.d.ts"
   ],
+
   "angularCompilerOptions": {
-    "strictMetadataEmit": true
+    "annotateForClosureCompiler": true,
+    "strictMetadataEmit": true,
+    "flatModuleOutFile": "index.js",
+    "flatModuleId": "@angular/animations/browser/testing"
   }
 }

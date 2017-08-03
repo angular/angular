@@ -7,6 +7,7 @@
  */
 
 import commonjs from 'rollup-plugin-commonjs';
+import sourcemaps from 'rollup-plugin-sourcemaps';
 import * as path from 'path';
 
 var m = /^\@angular\/((\w|\-)+)(\/(\w|\d|\/|\-)+)?$/;
@@ -39,7 +40,8 @@ function resolve(id, from) {
     var esm_suffix = esm_suffixes[packageName] || '';
     var loc = locations[packageName] || location;
     var r = loc !== location && (loc + esm_suffix + packageName + (match[3] || '/index') + '.js') ||
-        loc + packageName + '/@angular/' + packageName + '.es5.js';
+        loc + packageName + '/esm5/' +
+            'index.js';
     // console.log('** ANGULAR MAPPED **: ', r);
     return r;
   }
@@ -69,7 +71,7 @@ module.exports = function(provided) {
 `;
 
 export default {
-  entry: '../../dist/packages-dist/language-service/@angular/language-service.es5.js',
+  entry: '../../dist/packages-dist/language-service/esm5/index.js',
   dest: '../../dist/packages-dist/language-service/bundles/language-service.umd.js',
   format: 'amd',
   moduleName: 'ng.language_service',
@@ -85,5 +87,5 @@ export default {
     'fs': 'fs',
   },
   banner: banner,
-  plugins: [{resolveId: resolve}, commonjs()]
+  plugins: [{resolveId: resolve}, commonjs(), sourcemaps()]
 }

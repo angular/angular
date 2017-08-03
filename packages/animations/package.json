@@ -3,9 +3,9 @@
   "version": "0.0.0-PLACEHOLDER",
   "description": "Angular - animations integration with web-animationss",
   "main": "./bundles/animations.umd.js",
-  "module": "./@angular/animations.es5.js",
-  "es2015": "./@angular/animations.js",
-  "typings": "./animations.d.ts",
+  "module": "./esm5/index.js",
+  "es2015": "./esm15/index.js",
+  "typings": "./index.d.ts",
   "author": "angular",
   "license": "MIT",
   "dependencies": {

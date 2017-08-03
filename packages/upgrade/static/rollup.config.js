@@ -7,18 +7,19 @@
  */
 
 import resolve from 'rollup-plugin-node-resolve';
+import sourcemaps from 'rollup-plugin-sourcemaps';
 
 const globals = {
   '@angular/core': 'ng.core'
 };
 
 export default {
-  entry: '../../../dist/packages-dist/upgrade/@angular/upgrade/static.es5.js',
+  entry: '../../../dist/packages-dist/upgrade/esm5/static/index.js',
   dest: '../../../dist/packages-dist/upgrade/bundles/upgrade-static.umd.js',
   format: 'umd',
   exports: 'named',
   moduleName: 'ng.upgrade.static',
-  plugins: [resolve()],
+  plugins: [resolve(), sourcemaps()],
   external: Object.keys(globals),
   globals: globals
 };
