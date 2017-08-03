@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MissingTranslationStrategy, ViewEncapsulation, ɵConsole as Console} from '@angular/core';
+import {ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 import {CompilerConfig} from '../config';
 import {DirectiveNormalizer} from '../directive_normalizer';
 import {DirectiveResolver} from '../directive_resolver';
@@ -29,7 +29,7 @@ import {AotCompiler} from './compiler';
 import {AotCompilerHost} from './compiler_host';
 import {AotCompilerOptions} from './compiler_options';
 import {StaticReflector} from './static_reflector';
-import {StaticSymbol, StaticSymbolCache} from './static_symbol';
+import {StaticSymbolCache} from './static_symbol';
 import {StaticSymbolResolver} from './static_symbol_resolver';
 import {AotSummaryResolver} from './summary_resolver';
 
@@ -65,12 +65,10 @@ export function createAotCompiler(compilerHost: AotCompilerHost, options: AotCom
       config, new NgModuleResolver(staticReflector), new DirectiveResolver(staticReflector),
       new PipeResolver(staticReflector), summaryResolver, elementSchemaRegistry, normalizer,
       console, symbolCache, staticReflector);
-  // TODO(vicb): do not pass options.i18nFormat here
   const viewCompiler = new ViewCompiler(config, staticReflector, elementSchemaRegistry);
   const compiler = new AotCompiler(
       config, compilerHost, staticReflector, resolver, tmplParser, new StyleCompiler(urlResolver),
       viewCompiler, new NgModuleCompiler(staticReflector), new TypeScriptEmitter(), summaryResolver,
-      options.locale || null, options.i18nFormat || null, options.enableSummariesForJit || null,
-      symbolResolver);
+      options.locale || null, options.enableSummariesForJit || null, symbolResolver);
   return {compiler, reflector: staticReflector};
 }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileIdentifierMetadata, CompileNgModuleMetadata, CompileNgModuleSummary, CompilePipeMetadata, CompileProviderMetadata, CompileStylesheetMetadata, CompileSummaryKind, CompileTypeMetadata, CompileTypeSummary, componentFactoryName, createHostComponentMeta, flatten, identifierName, sourceUrl, templateSourceUrl} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeMetadata, CompileProviderMetadata, CompileStylesheetMetadata, CompileTypeMetadata, CompileTypeSummary, componentFactoryName, createHostComponentMeta, flatten, identifierName, templateSourceUrl} from '../compile_metadata';
 import {CompilerConfig} from '../config';
 import {Identifiers, createTokenForExternalReference} from '../identifiers';
 import {CompileMetadataResolver} from '../metadata_resolver';
@@ -23,9 +23,9 @@ import {AotCompilerHost} from './compiler_host';
 import {GeneratedFile} from './generated_file';
 import {StaticReflector} from './static_reflector';
 import {StaticSymbol} from './static_symbol';
-import {ResolvedStaticSymbol, StaticSymbolResolver} from './static_symbol_resolver';
+import {StaticSymbolResolver} from './static_symbol_resolver';
 import {createForJitStub, serializeSummaries} from './summary_serializer';
-import {ngfactoryFilePath, splitTypescriptSuffix, summaryFileName, summaryForJitFileName, summaryForJitName} from './util';
+import {ngfactoryFilePath, splitTypescriptSuffix, summaryFileName, summaryForJitFileName} from './util';
 
 export class AotCompiler {
   constructor(
@@ -35,8 +35,8 @@ export class AotCompiler {
       private _viewCompiler: ViewCompiler, private _ngModuleCompiler: NgModuleCompiler,
       private _outputEmitter: OutputEmitter,
       private _summaryResolver: SummaryResolver<StaticSymbol>, private _localeId: string|null,
-      private _translationFormat: string|null, private _enableSummariesForJit: boolean|null,
-      private _symbolResolver: StaticSymbolResolver) {}
+      private _enableSummariesForJit: boolean|null, private _symbolResolver: StaticSymbolResolver) {
+  }
 
   clearCache() { this._metadataResolver.clearCache(); }
 
@@ -92,14 +92,11 @@ export class AotCompiler {
     // partial is true when we only need the files we are certain will produce a factory and/or
     // summary.
     // This is the normal case for `ngc` but if we assume libraryies are generating their own
-    // factories
-    // then we might need a factory for a file that re-exports a module or factory which we cannot
-    // know
-    // ahead of time so we need a stub generate for all non-.d.ts files. The .d.ts files do not need
-    // to
-    // be excluded here because they are excluded when the modules are analyzed. If a factory ends
-    // up
-    // not being needed, the factory file is not written in writeFile callback.
+    // factories then we might need a factory for a file that re-exports a module or factory which
+    // we cannot know ahead of time so we need a stub generate for all non-.d.ts files.
+    // The .d.ts files do not need to be excluded here because they are excluded when the modules
+    // are analyzed. If a factory ends up not being needed, the factory file is not written in
+    // writeFile callback.
     const fileSuffix = splitTypescriptSuffix(srcFileUrl, true)[1];
     const generatedFiles: GeneratedFile[] = [];
 
@@ -194,7 +191,7 @@ export class AotCompiler {
       });
 
       // compile components
-      const compViewVars = this._compileComponent(
+      this._compileComponent(
           outputCtx, compMeta, ngModule, ngModule.transitiveModule.directives, componentStylesheet,
           fileSuffix);
       this._compileComponentFactory(outputCtx, compMeta, ngModule, fileSuffix);
@@ -247,7 +244,7 @@ export class AotCompiler {
     const summaryJson = new GeneratedFile(srcFileUrl, summaryFileName(srcFileUrl), json);
     if (this._enableSummariesForJit) {
       return [summaryJson, this._codegenSourceModule(srcFileUrl, forJitOutputCtx)];
-    };
+    }
 
     return [summaryJson];
   }
@@ -260,13 +257,6 @@ export class AotCompiler {
       providers.push({
         token: createTokenForExternalReference(this._reflector, Identifiers.LOCALE_ID),
         useValue: this._localeId,
-      });
-    }
-
-    if (this._translationFormat) {
-      providers.push({
-        token: createTokenForExternalReference(this._reflector, Identifiers.TRANSLATIONS_FORMAT),
-        useValue: this._translationFormat
       });
     }
 

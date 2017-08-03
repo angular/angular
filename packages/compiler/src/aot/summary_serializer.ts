@@ -165,7 +165,7 @@ class ToJsonSerializer extends ValueTransformer {
         return {
           __symbol: index,
           name: symbol.name,
-          // We convert the source filenames tinto output filenames,
+          // We convert the source filenames into output filenames,
           // as the generated summary file will be used when the current
           // compilation unit is used as a library
           filePath: this.summaryResolver.getLibraryFileName(symbol.filePath),
