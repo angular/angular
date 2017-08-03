@@ -221,6 +221,13 @@
             "rev": true,
             "title": "Compodoc",
             "url": "https://github.com/compodoc/compodoc"
+          },
+          "ncg": {
+            "desc": "Generate several types of CRUD apps complete with e2e testing using template-sets for Angular, Material Design, Bootstrap, Kendo UI, Ionic, ...",
+            "logo": "https://avatars3.githubusercontent.com/u/27976684",
+            "rev": true,
+            "title": "NinjaCodeGen - Angular CRUD Generator",
+            "url": "https://ninjaCodeGen.com"
           }
         }
       },
@@ -324,7 +331,7 @@
             "title": "Amexio - Angular Extensions",
             "url": "http://www.amexio.tech/",
             "logo": "http://www.amexio.org/amexio-logo.png"
-          }          
+          }
         }
       }
     }
