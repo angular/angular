@@ -991,11 +991,20 @@ export class TransitionAnimationEngine {
       } else {
         eraseStyles(element, instruction.fromStyles);
         player.onDestroy(() => setStyles(element, instruction.toStyles));
+        // there still might be a ancestor player animating this
+        // element therefore we will still add it as a sub player
+        // even if its animation may be disabled
         subPlayers.push(player);
+        if (disabledElementsSet.has(element)) {
+          skippedPlayers.push(player);
+        }
       }
     });
 
+    // find all of the sub players' corresponding inner animation player
     subPlayers.forEach(player => {
+      // even if any players are not found for a sub animation then it
+      // will still complete itself after the next tick since it's Noop
       const playersForElement = skippedPlayersMap.get(player.element);
       if (playersForElement && playersForElement.length) {
         const innerPlayer = optimizeGroupPlayer(playersForElement);
