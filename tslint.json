@@ -28,6 +28,7 @@
     "no-unused-expression": true,
     "no-var-keyword": true,
     "no-exposed-todo": true,
+    "member-access": [true, "no-public"],
     "no-debugger": true,
     "no-unused-variable": [true, {"ignore-pattern": "^_"}],
     "no-rxjs-patch-imports": [
