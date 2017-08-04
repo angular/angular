@@ -2727,6 +2727,76 @@ export function main() {
           fixture.detectChanges();
           expect(getLog().length).toEqual(0);
         });
+        
+        it('should respect parent/sub animations when the respective area in the DOM is disabled',
+           fakeAsync(() => {
+             @Component({
+               selector: 'parent-cmp',
+               animations: [
+                 trigger(
+                     'parent',
+                     [
+                       transition(
+                           '* => empty',
+                           [
+                             style({opacity: 0}),
+                             query(
+                                 '@child',
+                                 [
+                                   animateChild(),
+                                 ]),
+                             animate('1s', style({opacity: 1})),
+                           ]),
+                     ]),
+                 trigger(
+                     'child',
+                     [
+                       transition(
+                           ':leave',
+                           [
+                             animate('1s', style({opacity: 0})),
+                           ]),
+                     ]),
+               ],
+               template: `
+              <div [@.disabled]="disableExp" #container>
+                <div [@parent]="exp" (@parent.done)="onDone($event)">
+                  <div class="item" *ngFor="let item of items" @child (@child.done)="onDone($event)"></div>
+                </div>
+              </div>
+                `
+             })
+             class Cmp {
+               @ViewChild('container') public container: any;
+
+               disableExp = false;
+               exp = '';
+               items: any[] = [];
+               doneLog: any[] = [];
+
+               onDone(event: any) { this.doneLog.push(event); }
+             }
+
+             TestBed.configureTestingModule({declarations: [Cmp]});
+             const engine = TestBed.get(ɵAnimationEngine);
+             const fixture = TestBed.createComponent(Cmp);
+             const cmp = fixture.componentInstance;
+             cmp.disableExp = true;
+             cmp.items = [0, 1, 2, 3, 4];
+             fixture.detectChanges();
+             flushMicrotasks();
+
+             cmp.exp = 'empty';
+             cmp.items = [];
+             cmp.doneLog = [];
+             fixture.detectChanges();
+             flushMicrotasks();
+
+             const elms = cmp.container.nativeElement.querySelectorAll('.item');
+             expect(elms.length).toEqual(0);
+
+             expect(cmp.doneLog.length).toEqual(6);
+           }));
       });
     });
 
