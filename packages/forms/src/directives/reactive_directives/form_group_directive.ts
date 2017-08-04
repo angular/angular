@@ -150,7 +150,7 @@ export class FormGroupDirective extends ControlContainer implements Form,
   _syncPendingControls() {
     this.form._syncPendingControls();
     this.directives.forEach(dir => {
-      if (dir.control._updateOn === 'submit') {
+      if (dir.control.updateOn === 'submit') {
         dir.viewToModelUpdate(dir.control._pendingValue);
       }
     });
