@@ -813,6 +813,24 @@ describe('MdInputContainer with forms', () => {
           .toBe(1, 'Expected one hint to still be shown.');
       });
     }));
+
+    it('sets the aria-describedby to reference errors when in error state', () => {
+      let hintId = fixture.debugElement.query(By.css('.mat-hint')).nativeElement.getAttribute('id');
+      let describedBy = inputEl.getAttribute('aria-describedby');
+
+      expect(hintId).toBeTruthy('hint should be shown');
+      expect(describedBy).toBe(hintId);
+
+      fixture.componentInstance.formControl.markAsTouched();
+      fixture.detectChanges();
+
+      let errorIds = fixture.debugElement.queryAll(By.css('.mat-input-error'))
+          .map(el => el.nativeElement.getAttribute('id')).join(' ');
+      describedBy = inputEl.getAttribute('aria-describedby');
+
+      expect(errorIds).toBeTruthy('errors should be shown');
+      expect(describedBy).toBe(errorIds);
+    });
   });
 
   describe('custom error behavior', () => {

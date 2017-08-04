@@ -51,6 +51,7 @@ import {
   MD_ERROR_GLOBAL_OPTIONS
 } from '../core/error/error-options';
 import {Subject} from 'rxjs/Subject';
+import {startWith} from '@angular/cdk/rxjs';
 
 // Invalid input type. Using one of these will throw an MdInputContainerUnsupportedTypeError.
 const MD_INPUT_INVALID_TYPES = [
@@ -100,10 +101,13 @@ export class MdHint {
 @Directive({
   selector: 'md-error, mat-error',
   host: {
-    'class': 'mat-input-error'
+    'class': 'mat-input-error',
+    '[attr.id]': 'id',
   }
 })
-export class MdErrorDirective { }
+export class MdErrorDirective {
+  @Input() id: string = `md-input-error-${nextUniqueId++}`;
+}
 
 /** Prefix to be placed the the front of the input. */
 @Directive({
@@ -474,12 +478,11 @@ export class MdInputContainer implements AfterViewInit, AfterContentInit, AfterC
 
   ngAfterContentInit() {
     this._validateInputChild();
-    this._processHints();
-    this._validatePlaceholders();
 
     // Subscribe to changes in the child input state in order to update the container UI.
-    this._mdInputChild._stateChanges.subscribe(() => {
+    startWith.call(this._mdInputChild._stateChanges, null).subscribe(() => {
       this._validatePlaceholders();
+      this._syncAriaDescribedby();
       this._changeDetectorRef.markForCheck();
     });
 
@@ -489,8 +492,17 @@ export class MdInputContainer implements AfterViewInit, AfterContentInit, AfterC
       });
     }
 
-    // Re-validate when the amount of hints changes.
-    this._hintChildren.changes.subscribe(() => this._processHints());
+    // Re-validate when the number of hints changes.
+    startWith.call(this._hintChildren.changes, null).subscribe(() => {
+      this._processHints();
+      this._changeDetectorRef.markForCheck();
+    });
+
+    // Update the aria-described by when the number of errors changes.
+    startWith.call(this._errorChildren.changes, null).subscribe(() => {
+      this._syncAriaDescribedby();
+      this._changeDetectorRef.markForCheck();
+    });
   }
 
   ngAfterContentChecked() {
@@ -522,7 +534,8 @@ export class MdInputContainer implements AfterViewInit, AfterContentInit, AfterC
   /** Determines whether to display hints or errors. */
   _getDisplayedMessages(): 'error' | 'hint' {
     let input = this._mdInputChild;
-    return (this._errorChildren.length > 0 && input._isErrorState) ? 'error' : 'hint';
+    return (this._errorChildren && this._errorChildren.length > 0 && input._isErrorState) ?
+        'error' : 'hint';
   }
 
   /**
@@ -574,19 +587,24 @@ export class MdInputContainer implements AfterViewInit, AfterContentInit, AfterC
   private _syncAriaDescribedby() {
     if (this._mdInputChild) {
       let ids: string[] = [];
-      let startHint = this._hintChildren ?
-          this._hintChildren.find(hint => hint.align === 'start') : null;
-      let endHint = this._hintChildren ?
-          this._hintChildren.find(hint => hint.align === 'end') : null;
 
-      if (startHint) {
-        ids.push(startHint.id);
-      } else if (this._hintLabel) {
-        ids.push(this._hintLabelId);
-      }
+      if (this._getDisplayedMessages() === 'hint') {
+        let startHint = this._hintChildren ?
+            this._hintChildren.find(hint => hint.align === 'start') : null;
+        let endHint = this._hintChildren ?
+            this._hintChildren.find(hint => hint.align === 'end') : null;
 
-      if (endHint) {
-        ids.push(endHint.id);
+        if (startHint) {
+          ids.push(startHint.id);
+        } else if (this._hintLabel) {
+          ids.push(this._hintLabelId);
+        }
+
+        if (endHint) {
+          ids.push(endHint.id);
+        }
+      } else if (this._errorChildren) {
+        ids = this._errorChildren.map(mdError => mdError.id);
       }
 
       this._mdInputChild.ariaDescribedby = ids.join(' ');
