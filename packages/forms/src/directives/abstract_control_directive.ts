@@ -36,6 +36,8 @@ export abstract class AbstractControlDirective {
 
   get touched(): boolean|null { return this.control ? this.control.touched : null; }
 
+  get status(): string|null { return this.control ? this.control.status : null; }
+
   get untouched(): boolean|null { return this.control ? this.control.untouched : null; }
 
   get disabled(): boolean|null { return this.control ? this.control.disabled : null; }

@@ -74,6 +74,7 @@ export declare abstract class AbstractControlDirective {
     readonly path: string[] | null;
     readonly pending: boolean | null;
     readonly pristine: boolean | null;
+    readonly status: string | null;
     readonly statusChanges: Observable<any> | null;
     readonly touched: boolean | null;
     readonly untouched: boolean | null;

@@ -332,6 +332,7 @@ export function main() {
         expect(form.touched).toBe(formModel.touched);
         expect(form.untouched).toBe(formModel.untouched);
         expect(form.statusChanges).toBe(formModel.statusChanges);
+        expect(form.status).toBe(formModel.status);
         expect(form.valueChanges).toBe(formModel.valueChanges);
         expect(form.disabled).toBe(formModel.disabled);
         expect(form.enabled).toBe(formModel.enabled);
@@ -419,6 +420,7 @@ export function main() {
         expect(controlGroupDir.touched).toBe(formModel.touched);
         expect(controlGroupDir.untouched).toBe(formModel.untouched);
         expect(controlGroupDir.statusChanges).toBe(formModel.statusChanges);
+        expect(controlGroupDir.status).toBe(formModel.status);
         expect(controlGroupDir.valueChanges).toBe(formModel.valueChanges);
         expect(controlGroupDir.disabled).toBe(formModel.disabled);
         expect(controlGroupDir.enabled).toBe(formModel.enabled);
@@ -456,6 +458,7 @@ export function main() {
         expect(formArrayDir.pristine).toBe(formModel.pristine);
         expect(formArrayDir.dirty).toBe(formModel.dirty);
         expect(formArrayDir.touched).toBe(formModel.touched);
+        expect(formArrayDir.status).toBe(formModel.status);
         expect(formArrayDir.untouched).toBe(formModel.untouched);
         expect(formArrayDir.disabled).toBe(formModel.disabled);
         expect(formArrayDir.enabled).toBe(formModel.enabled);
@@ -486,6 +489,7 @@ export function main() {
         expect(controlDir.touched).toBe(control.touched);
         expect(controlDir.untouched).toBe(control.untouched);
         expect(controlDir.statusChanges).toBe(control.statusChanges);
+        expect(controlDir.status).toBe(control.status);
         expect(controlDir.valueChanges).toBe(control.valueChanges);
         expect(controlDir.disabled).toBe(control.disabled);
         expect(controlDir.enabled).toBe(control.enabled);
@@ -551,6 +555,7 @@ export function main() {
         expect(ngModel.touched).toBe(control.touched);
         expect(ngModel.untouched).toBe(control.untouched);
         expect(ngModel.statusChanges).toBe(control.statusChanges);
+        expect(ngModel.status).toBe(control.status);
         expect(ngModel.valueChanges).toBe(control.valueChanges);
         expect(ngModel.disabled).toBe(control.disabled);
         expect(ngModel.enabled).toBe(control.enabled);
@@ -660,6 +665,7 @@ export function main() {
         expect(controlNameDir.touched).toBe(formModel.touched);
         expect(controlNameDir.untouched).toBe(formModel.untouched);
         expect(controlNameDir.statusChanges).toBe(formModel.statusChanges);
+        expect(controlNameDir.status).toBe(formModel.status);
         expect(controlNameDir.valueChanges).toBe(formModel.valueChanges);
         expect(controlNameDir.disabled).toBe(formModel.disabled);
         expect(controlNameDir.enabled).toBe(formModel.enabled);
