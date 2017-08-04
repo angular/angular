@@ -1,6 +1,6 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {Component, DebugElement} from '@angular/core';
+import {Component, DebugElement, ViewChild} from '@angular/core';
 import {By, HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 import {MdSlider, MdSliderModule} from './index';
 import {TestGestureConfig} from './test-gesture-config';
@@ -658,6 +658,7 @@ describe('MdSlider without forms', () => {
 
       testComponent = fixture.debugElement.componentInstance;
       spyOn(testComponent, 'onChange');
+      spyOn(testComponent, 'onInput');
 
       sliderDebugElement = fixture.debugElement.query(By.directive(MdSlider));
       sliderNativeElement = sliderDebugElement.nativeElement;
@@ -690,6 +691,30 @@ describe('MdSlider without forms', () => {
       fixture.detectChanges();
 
       expect(testComponent.onChange).toHaveBeenCalledTimes(1);
+    });
+
+    it('should dispatch events when changing back to previously emitted value after ' +
+        'programmatically setting value', () => {
+      expect(testComponent.onChange).not.toHaveBeenCalled();
+      expect(testComponent.onInput).not.toHaveBeenCalled();
+
+      dispatchClickEventSequence(sliderNativeElement, 0.2);
+      fixture.detectChanges();
+
+      expect(testComponent.onChange).toHaveBeenCalledTimes(1);
+      expect(testComponent.onInput).toHaveBeenCalledTimes(1);
+
+      testComponent.slider.value = 0;
+      fixture.detectChanges();
+
+      expect(testComponent.onChange).toHaveBeenCalledTimes(1);
+      expect(testComponent.onInput).toHaveBeenCalledTimes(1);
+
+      dispatchClickEventSequence(sliderNativeElement, 0.2);
+      fixture.detectChanges();
+
+      expect(testComponent.onChange).toHaveBeenCalledTimes(2);
+      expect(testComponent.onInput).toHaveBeenCalledTimes(2);
     });
   });
 
@@ -1351,6 +1376,8 @@ class SliderWithValueGreaterThanMax { }
 class SliderWithChangeHandler {
   onChange() { }
   onInput() { }
+
+  @ViewChild(MdSlider) slider: MdSlider;
 }
 
 @Component({
