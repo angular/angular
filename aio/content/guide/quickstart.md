@@ -74,8 +74,8 @@ Generate a new project and skeleton application by running the following command
 
 
 
-Patience please.
-It takes time to set up a new project, most of it spent installing npm packages.
+Patience, please.
+It takes time to set up a new project; most of it is spent installing npm packages.
 
 
 </div>
