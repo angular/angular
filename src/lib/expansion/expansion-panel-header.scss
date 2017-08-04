@@ -1,18 +1,10 @@
-$mat-expansion-panel-header-height: 48px;
-$mat-expansion-panel-header-height-expanded: 64px;
 
 .mat-expansion-panel-header {
   cursor: pointer;
   display: flex;
   flex-direction: row;
-  height: $mat-expansion-panel-header-height;
-  line-height: $mat-expansion-panel-header-height;
+  align-items: center;
   padding: 0 24px;
-
-  &.mat-expanded {
-    height: $mat-expansion-panel-header-height-expanded;
-    line-height: $mat-expansion-panel-header-height-expanded;
-  }
 
   &:focus,
   &:hover {
