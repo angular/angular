@@ -814,6 +814,13 @@ describe('MdInputContainer with forms', () => {
       });
     }));
 
+    it('should set the proper role on the error messages', () => {
+      testComponent.formControl.markAsTouched();
+      fixture.detectChanges();
+
+      expect(containerEl.querySelector('md-error')!.getAttribute('role')).toBe('alert');
+    });
+
     it('sets the aria-describedby to reference errors when in error state', () => {
       let hintId = fixture.debugElement.query(By.css('.mat-hint')).nativeElement.getAttribute('id');
       let describedBy = inputEl.getAttribute('aria-describedby');

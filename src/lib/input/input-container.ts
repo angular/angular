@@ -102,6 +102,7 @@ export class MdHint {
   selector: 'md-error, mat-error',
   host: {
     'class': 'mat-input-error',
+    'role': 'alert',
     '[attr.id]': 'id',
   }
 })
