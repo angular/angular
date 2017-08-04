@@ -1016,11 +1016,20 @@ export class TransitionAnimationEngine {
       } else {
         eraseStyles(element, instruction.fromStyles);
         player.onDestroy(() => setStyles(element, instruction.toStyles));
+        // there still might be a ancestor player animating this
+        // element therefore we will still add it as a sub player
+        // even if its animation may be disabled
         subPlayers.push(player);
+        if (disabledElementsSet.has(element)) {
+          skippedPlayers.push(player);
+        }
       }
     });
 
+    // find all of the sub players' corresponding inner animation player
     subPlayers.forEach(player => {
+      // even if any players are not found for a sub animation then it
+      // will still complete itself after the next tick since it's Noop
       const playersForElement = skippedPlayersMap.get(player.element);
       if (playersForElement && playersForElement.length) {
         const innerPlayer = optimizeGroupPlayer(playersForElement);
@@ -1052,7 +1061,7 @@ export class TransitionAnimationEngine {
       // until that animation is over (or the parent queried animation)
       if (details && details.hasAnimation) continue;
 
-      let players: AnimationPlayer[] = [];
+      let players: TransitionAnimationPlayer[] = [];
 
       // if this element is queried or if it contains queried children
       // then we want for the element not to be removed from the page
@@ -1071,8 +1080,10 @@ export class TransitionAnimationEngine {
           }
         }
       }
-      if (players.length) {
-        removeNodesAfterAnimationDone(this, element, players);
+
+      const activePlayers = players.filter(p => !p.destroyed);
+      if (activePlayers.length) {
+        removeNodesAfterAnimationDone(this, element, activePlayers);
       } else {
         this.processLeaveNode(element);
       }
