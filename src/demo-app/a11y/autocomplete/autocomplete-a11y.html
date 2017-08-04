@@ -1,0 +1,16 @@
+<section>
+  <h2>Filtering and selection</h2>
+  <p>Select your favorite state</p>
+  <md-input-container>
+    <input mdInput placeholder="Search for a state" [mdAutocomplete]="autocomplete"
+      [(ngModel)]="value" (ngModelChange)="filteredStates = filter(value)">
+  </md-input-container>
+
+  <p>Selected value: {{ value }}</p>
+</section>
+
+<md-autocomplete #autocomplete="mdAutocomplete">
+  <md-option *ngFor="let state of filteredStates" [value]="state.name">
+    <span>{{ state.name }}</span>
+  </md-option>
+</md-autocomplete>

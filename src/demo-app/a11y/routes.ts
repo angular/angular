@@ -8,9 +8,11 @@ import {RadioAccessibilityDemo} from './radio/radio-a11y';
 import {AccessibilityHome} from './a11y';
 import {DatepickerAccessibilityDemo} from './datepicker/datepicker-a11y';
 import {InputAccessibilityDemo} from './input/input-a11y';
+import {AutocompleteAccessibilityDemo} from './autocomplete/autocomplete-a11y';
 
 export const ACCESSIBILITY_DEMO_ROUTES: Routes = [
   {path: '', component: AccessibilityHome},
+  {path: 'autocomplete', component: AutocompleteAccessibilityDemo},
   {path: 'button', component: ButtonAccessibilityDemo},
   {path: 'button-toggle', component: ButtonToggleAccessibilityDemo},
   {path: 'checkbox', component: CheckboxAccessibilityDemo},
