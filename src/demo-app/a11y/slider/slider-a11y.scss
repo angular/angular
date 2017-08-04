@@ -1,0 +1,21 @@
+.demo-color-container {
+  display: flex;
+  align-items: center;
+}
+
+.demo-color-label {
+  display: inline-block;
+  width: 50px;
+}
+
+.demo-color-swatch {
+  width: 60px;
+  height: 60px;
+  margin-left: 60px;
+}
+
+.demo-volume-container {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+}

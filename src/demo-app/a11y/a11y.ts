@@ -26,5 +26,6 @@ export class AccessibilityDemo {
     {name: 'Grid list', route: 'grid-list'},
     {name: 'Input', route: 'input'},
     {name: 'Radio buttons', route: 'radio'},
+    {name: 'Slider', route: 'slider'},
   ];
 }

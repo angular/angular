@@ -1,4 +1,5 @@
 import {Routes} from '@angular/router';
+import {AutocompleteAccessibilityDemo} from './autocomplete/autocomplete-a11y';
 import {ButtonAccessibilityDemo} from './button/button-a11y';
 import {ButtonToggleAccessibilityDemo} from './button-toggle/button-toggle-a11y';
 import {CheckboxAccessibilityDemo} from './checkbox/checkbox-a11y';
@@ -8,7 +9,7 @@ import {RadioAccessibilityDemo} from './radio/radio-a11y';
 import {AccessibilityHome} from './a11y';
 import {DatepickerAccessibilityDemo} from './datepicker/datepicker-a11y';
 import {InputAccessibilityDemo} from './input/input-a11y';
-import {AutocompleteAccessibilityDemo} from './autocomplete/autocomplete-a11y';
+import {SliderAccessibilityDemo} from './slider/slider-a11y';
 
 export const ACCESSIBILITY_DEMO_ROUTES: Routes = [
   {path: '', component: AccessibilityHome},
@@ -21,4 +22,5 @@ export const ACCESSIBILITY_DEMO_ROUTES: Routes = [
   {path: 'grid-list', component: GridListAccessibilityDemo},
   {path: 'input', component: InputAccessibilityDemo},
   {path: 'radio', component: RadioAccessibilityDemo},
+  {path: 'slider', component: SliderAccessibilityDemo},
 ];
