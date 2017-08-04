@@ -377,6 +377,15 @@ describe('MdInputContainer without forms', function () {
     expect(el.nativeElement.textContent).toMatch(/hello\s+\*/g);
   });
 
+  it('should hide the required star from screen readers', () => {
+    let fixture = TestBed.createComponent(MdInputContainerPlaceholderRequiredTestComponent);
+    fixture.detectChanges();
+
+    let el = fixture.debugElement.query(By.css('.mat-placeholder-required')).nativeElement;
+
+    expect(el.getAttribute('aria-hidden')).toBe('true');
+  });
+
   it('hide placeholder required star when set to hide the required marker', () => {
     let fixture = TestBed.createComponent(MdInputContainerPlaceholderRequiredTestComponent);
     fixture.detectChanges();
