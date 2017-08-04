@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+# Load the retry-call utility function.
+source ./scripts/ci/sources/retry-call.sh
+
+# Variable the specifies how often the wait script should be invoked if it fails.
+WAIT_RETRIES=1
 
 start_tunnel() {
   case "$MODE" in
@@ -17,15 +22,14 @@ start_tunnel() {
 wait_for_tunnel() {
   case "$MODE" in
     e2e*|saucelabs*)
-      ./scripts/saucelabs/wait-tunnel.sh
+      retryCall ${WAIT_RETRIES} ./scripts/saucelabs/wait-tunnel.sh
       ;;
     browserstack*)
-      ./scripts/browserstack/wait-tunnel.sh
+      retryCall ${WAIT_RETRIES} ./scripts/browserstack/wait-tunnel.sh
       ;;
     *)
       ;;
   esac
-  sleep 10
 }
 
 teardown_tunnel() {
