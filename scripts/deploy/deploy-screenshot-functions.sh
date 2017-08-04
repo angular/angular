@@ -16,7 +16,7 @@ if [ -z ${MATERIAL2_SCREENSHOT_FIREBASE_DEPLOY_TOKEN} ]; then
 fi
 
 # Path to the screenshot tool in the project.
-screenshotToolFolder="tools/dashboard"
+screenshotToolFolder="tools/screenshot-test"
 
 # Path to the firebase binary of the root package.json
 firebaseBin=$(npm bin)/firebase
