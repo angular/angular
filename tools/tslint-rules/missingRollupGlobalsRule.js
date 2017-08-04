@@ -1,5 +1,6 @@
 const path = require('path');
 const Lint = require('tslint');
+const minimatch = require('minimatch');
 
 // Since the packaging is based on TypeScript and is only compiled at run-time using ts-node, the
 // custom TSLint rule is not able to read the map of rollup globals. Because the custom rules
@@ -26,11 +27,14 @@ class Walker extends Lint.RuleWalker {
       throw Error('missing-rollup-globals: The Rollup config path has to be specified.');
     }
 
-    const [configPath, ...whitelist] = options.ruleArguments;
+    const [configPath, ...fileGlobs] = options.ruleArguments;
+
+    // Relative path for the current TypeScript source file.
+    const relativeFilePath = path.relative(process.cwd(), file.fileName);
 
     this._configPath = path.resolve(process.cwd(), configPath);
     this._config = require(this._configPath).rollupGlobals;
-    this._enabled = !whitelist.length || whitelist.some(p => new RegExp(p).test(file.fileName));
+    this._enabled = fileGlobs.some(p => minimatch(relativeFilePath, p));
   }
 
   visitImportDeclaration(node) {

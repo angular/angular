@@ -99,6 +99,7 @@
     "madge": "^1.6.0",
     "magic-string": "^0.21.3",
     "merge2": "^1.0.3",
+    "minimatch": "^3.0.4",
     "minimist": "^1.2.0",
     "node-sass": "^4.5.3",
     "protractor": "^5.1.2",

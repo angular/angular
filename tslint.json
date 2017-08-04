@@ -32,13 +32,12 @@
     "no-unused-variable": [true, {"ignore-pattern": "^_"}],
     "no-rxjs-patch-imports": [
       true,
-      "src/lib",
-      "src/cdk"
+      "src/+(lib|cdk)/**/*.ts"
     ],
     "missing-rollup-globals": [
       true,
       "./tools/package-tools/rollup-globals.ts",
-      "^((?!tools).)*$"
+      "src/+(lib|cdk|material-examples)/**/*.ts"
     ],
     "one-line": [
       true,
@@ -85,6 +84,6 @@
     "import-blacklist": [true, "rxjs"],
     // Avoids inconsistent linebreak styles in source files. Forces developers to use LF linebreaks.
     "linebreak-style": [true, "LF"],
-    "require-license-banner": true
+    "require-license-banner": [true, "src/+(lib|cdk)/**/!(*.spec).ts"]
   }
 }

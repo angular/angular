@@ -1,5 +1,6 @@
 const Lint = require('tslint');
 const path = require('path');
+const minimatch = require('minimatch');
 const buildConfig = require('../../build-config');
 
 /** Paths to the directories that are public packages and should be validated. */
@@ -31,16 +32,21 @@ class Rule extends Lint.Rules.AbstractRule {
 
 class RequireLicenseBannerWalker extends Lint.RuleWalker {
 
+  constructor(file, options) {
+    super(...arguments);
+
+    // Globs that are used to determine which files to lint.
+    const fileGlobs = options.ruleArguments;
+
+    // Relative path for the current TypeScript source file.
+    const relativeFilePath = path.relative(process.cwd(), file.fileName);
+
+    // Whether the file should be checked at all.
+    this._enabled = fileGlobs.some(p => minimatch(relativeFilePath, p));
+  }
+
   visitSourceFile(sourceFile) {
-    const filePath = path.join(buildConfig.projectDir, sourceFile.fileName);
-
-    // Do not check TypeScript source files that are not inside of a public package.
-    if (!packageDirs.some(packageDir => filePath.includes(packageDir))) {
-      return;
-    }
-
-    // Do not check source files inside of public packages that are spec or definition files.
-    if (filePath.endsWith('.spec.ts') || filePath.endsWith('.d.ts')) {
+    if (!this._enabled) {
       return;
     }
 
