@@ -2,10 +2,8 @@ import {join} from 'path';
 import {main as tsc} from '@angular/tsc-wrapped';
 import {buildConfig} from './build-config';
 import {getSecondaryEntryPointsForPackage} from './secondary-entry-points';
-import {
-  buildPrimaryEntryPointBundles,
-  buildSecondaryEntryPointBundles
-} from 'material2-build-tools';
+import {buildPrimaryEntryPointBundles, buildSecondaryEntryPointBundles} from './build-bundles';
+
 
 const {packagesDir, outputDir} = buildConfig;
 
@@ -23,9 +21,6 @@ export class BuildPackage {
   /** Path to the package output. */
   packageOut: string;
 
-  /** Secondary entry points for the package. */
-  secondaryEntryPoints: string[];
-
   /** Path to the entry file of the package in the output directory. */
   private entryFilePath: string;
 
@@ -35,6 +30,17 @@ export class BuildPackage {
   /** Path to the tsconfig file, which will be used to build the tests. */
   private tsconfigTests: string;
 
+  /** Secondary entry points for the package. */
+  get secondaryEntryPoints(): string[] {
+    if (!this._secondaryEntryPoints) {
+      this._secondaryEntryPoints = getSecondaryEntryPointsForPackage(this);
+    }
+
+    return this._secondaryEntryPoints;
+  }
+
+  private _secondaryEntryPoints: string[];
+
   constructor(public packageName: string, public dependencies: BuildPackage[] = []) {
     this.packageRoot = join(packagesDir, packageName);
     this.packageOut = join(outputDir, 'packages', packageName);
@@ -43,8 +49,6 @@ export class BuildPackage {
     this.tsconfigTests = join(this.packageRoot, testsTsconfigName);
 
     this.entryFilePath = join(this.packageOut, 'index.js');
-
-    this.secondaryEntryPoints = getSecondaryEntryPointsForPackage(packageName);
   }
 
   /** Compiles the package sources with all secondary entry points. */

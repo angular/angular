@@ -47,7 +47,7 @@ export function composeRelease(buildPackage: BuildPackage) {
 function createFilesForSecondaryEntryPoint(buildPackage: BuildPackage, releasePath: string) {
   const {packageName, packageOut} = buildPackage;
 
-  getSecondaryEntryPointsForPackage(packageName).forEach(entryPointName => {
+  getSecondaryEntryPointsForPackage(buildPackage).forEach(entryPointName => {
     // Create a directory in the root of the package for this entry point that contains
     // * A package.json that lists the different bundle locations
     // * An index.d.ts file that re-exports the index.d.ts from the typings/ directory

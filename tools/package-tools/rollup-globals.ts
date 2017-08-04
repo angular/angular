@@ -1,10 +1,12 @@
-import {getSecondaryEntryPointsForPackage} from './secondary-entry-points';
+import {join} from 'path';
+import {getSubdirectoryNames} from './secondary-entry-points';
+import {buildConfig} from './build-config';
 
 /** Method that converts dash-case strings to a camel-based string. */
 const dashCaseToCamelCase = (str: string) => str.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
 
-/** List of available secondary entry-points for the CDK package. */
-const cdkSecondaryEntryPoints = getSecondaryEntryPointsForPackage('cdk');
+/** List of potential secondary entry-points for the CDK package. */
+const cdkSecondaryEntryPoints = getSubdirectoryNames(join(buildConfig.packagesDir, 'cdk'));
 
 /** Object with all CDK entry points in the format of Rollup globals. */
 const rollupCdkEntryPoints = cdkSecondaryEntryPoints.reduce((globals: any, entryPoint: string) => {
