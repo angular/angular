@@ -25,6 +25,50 @@ describe('Form Validation Tests', function () {
     tests('Reactive Form');
     bobTests();
   });
+
+  describe('UpdateOn form', () => {
+    let updatePage: {
+      select: ElementFinder,
+      input: ElementFinder,
+      changeOption: ElementFinder,
+      nameText: ElementFinder,
+      statusText: ElementFinder
+    };
+
+    beforeEach(() => {
+      const section = element(by.css('hero-form-update-on'));
+      updatePage = {
+        select: section.element(by.css('select')),
+        input: section.element(by.css('input')),
+        changeOption: section.element(by.css('option')),
+        nameText: section.element(by.id('nameText')),
+        statusText: section.element(by.id('statusText'))
+      };
+    });
+
+    it('should default to updateOn: blur', () => {
+      expect(updatePage.select.getAttribute('value')).toEqual('blur');
+    });
+
+    it('should not update value/validity until blur', () => {
+      updatePage.input.sendKeys('Nancy');
+      expect(updatePage.nameText.getText()).toEqual('');
+      expect(updatePage.statusText.getText()).toEqual('INVALID');
+      updatePage.nameText.click();
+      expect(updatePage.nameText.getText()).toEqual('Nancy');
+      expect(updatePage.statusText.getText()).toEqual('VALID');
+    });
+
+    it('should update on change when selected', () => {
+      updatePage.select.click();
+      updatePage.changeOption.click();
+
+      updatePage.input.sendKeys('Nancy');
+      expect(updatePage.nameText.getText()).toEqual('Nancy');
+      expect(updatePage.statusText.getText()).toEqual('VALID');
+    });
+
+  });
 });
 
 //////////

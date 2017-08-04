@@ -6,6 +6,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent }           from './app.component';
 import { HeroFormTemplateComponent } from './template/hero-form-template.component';
 import { HeroFormReactiveComponent } from './reactive/hero-form-reactive.component';
+import { HeroFormUpdateOnComponent } from './reactive/hero-form-update-on.component';
 import { ForbiddenValidatorDirective } from './shared/forbidden-name.directive';
 
 
@@ -19,7 +20,8 @@ import { ForbiddenValidatorDirective } from './shared/forbidden-name.directive';
     AppComponent,
     HeroFormTemplateComponent,
     HeroFormReactiveComponent,
-    ForbiddenValidatorDirective
+    HeroFormUpdateOnComponent,
+    ForbiddenValidatorDirective,
   ],
   bootstrap:    [ AppComponent ]
 })
