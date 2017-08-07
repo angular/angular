@@ -3,6 +3,9 @@ import {DataSource} from '@angular/cdk/table';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/observable/of';
 
+/**
+ * @title Basic table
+ */
 @Component({
   selector: 'table-basic-example',
   styleUrls: ['table-basic-example.css'],

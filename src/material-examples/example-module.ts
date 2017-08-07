@@ -73,8 +73,8 @@ import {PizzaPartyComponent,SnackBarComponentExample} from './snack-bar-componen
 import {SnackBarOverviewExample} from './snack-bar-overview/snack-bar-overview-example';
 import {SortOverviewExample} from './sort-overview/sort-overview-example';
 import {TableBasicExample} from './table-basic/table-basic-example';
-import {TableHttpExample} from './table-http/table-http-example';
 import {TableFilteringExample} from './table-filtering/table-filtering-example';
+import {TableHttpExample} from './table-http/table-http-example';
 import {TableOverviewExample} from './table-overview/table-overview-example';
 import {TablePaginationExample} from './table-pagination/table-pagination-example';
 import {TableSortingExample} from './table-sorting/table-sorting-example';
@@ -446,15 +446,15 @@ export const EXAMPLE_COMPONENTS = {
     additionalFiles: null,
     selectorName: null
   },
-  'table-http': {
-    title: 'Table retrieving data through HTTP',
-    component: TableHttpExample,
-    additionalFiles: null,
-    selectorName: null
-  },
   'table-filtering': {
     title: 'Table with filtering',
     component: TableFilteringExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'table-http': {
+    title: 'Table retrieving data through HTTP',
+    component: TableHttpExample,
     additionalFiles: null,
     selectorName: null
   },

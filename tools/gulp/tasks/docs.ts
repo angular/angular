@@ -64,6 +64,7 @@ task('docs', [
   'highlight-examples',
   'api-docs',
   'minified-api-docs',
+  'build-examples-module',
   'plunker-example-assets',
 ]);
 

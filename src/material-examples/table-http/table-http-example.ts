@@ -10,6 +10,9 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/startWith';
 import 'rxjs/add/operator/switchMap';
 
+/**
+ * @title Table retrieving data through HTTP
+ */
 @Component({
   selector: 'table-http-example',
   styleUrls: ['table-http-example.css'],
