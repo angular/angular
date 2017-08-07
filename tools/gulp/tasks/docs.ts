@@ -110,7 +110,7 @@ task('highlight-examples', () => {
   // rename files to fit format: [filename]-[filetype].html
   const renameFile = (filePath: any) => {
     const extension = filePath.extname.slice(1);
-    filePath.basename = `${path.basename}-${extension}`;
+    filePath.basename = `${filePath.basename}-${extension}`;
   };
 
   return src('src/material-examples/**/*.+(html|css|ts)')
