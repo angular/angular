@@ -78,7 +78,7 @@ function coerceToAsyncValidator(
                                              origAsyncValidator || null;
 }
 
-export type FormHooks = 'change' | 'blur';
+export type FormHooks = 'change' | 'blur' | 'submit';
 
 export interface AbstractControlOptions {
   validators?: ValidatorFn|ValidatorFn[]|null;
@@ -108,6 +108,13 @@ function isOptionsObj(
 export abstract class AbstractControl {
   /** @internal */
   _value: any;
+
+  /** @internal */
+  _pendingDirty: boolean;
+
+  /** @internal */
+  _pendingTouched: boolean;
+
   /** @internal */
   _onCollectionChange = () => {};
 
@@ -284,6 +291,7 @@ export abstract class AbstractControl {
    */
   markAsUntouched(opts: {onlySelf?: boolean} = {}): void {
     this._touched = false;
+    this._pendingTouched = false;
 
     this._forEachChild(
         (control: AbstractControl) => { control.markAsUntouched({onlySelf: true}); });
@@ -316,6 +324,7 @@ export abstract class AbstractControl {
    */
   markAsPristine(opts: {onlySelf?: boolean} = {}): void {
     this._pristine = true;
+    this._pendingDirty = false;
 
     this._forEachChild((control: AbstractControl) => { control.markAsPristine({onlySelf: true}); });
 
@@ -569,6 +578,9 @@ export abstract class AbstractControl {
   abstract _allControlsDisabled(): boolean;
 
   /** @internal */
+  abstract _syncPendingControls(): boolean;
+
+  /** @internal */
   _anyControlsHaveStatus(status: string): boolean {
     return this._anyControls((control: AbstractControl) => control.status === status);
   }
@@ -672,6 +684,9 @@ export abstract class AbstractControl {
  * const c = new FormControl('', { updateOn: 'blur' });
  * ```
  *
+ * You can also set `updateOn` to `'submit'`, which will delay value and validity
+ * updates until the parent form of the control fires a submit event.
+ *
  * See its superclass, {@link AbstractControl}, for more properties and methods.
  *
  * * **npm package**: `@angular/forms`
@@ -687,9 +702,6 @@ export class FormControl extends AbstractControl {
 
   /** @internal */
   _pendingValue: any;
-
-  /** @internal */
-  _pendingDirty: boolean;
 
   constructor(
       formState: any = null,
@@ -782,7 +794,6 @@ export class FormControl extends AbstractControl {
   reset(formState: any = null, options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     this._applyFormState(formState);
     this.markAsPristine(options);
-    this._pendingDirty = false;
     this.markAsUntouched(options);
     this.setValue(this._value, options);
   }
@@ -827,6 +838,17 @@ export class FormControl extends AbstractControl {
    * @internal
    */
   _forEachChild(cb: Function): void {}
+
+  /** @internal */
+  _syncPendingControls(): boolean {
+    if (this._updateOn === 'submit') {
+      this.setValue(this._pendingValue, {onlySelf: true, emitModelToViewChange: false});
+      if (this._pendingDirty) this.markAsDirty();
+      if (this._pendingTouched) this.markAsTouched();
+      return true;
+    }
+    return false;
+  }
 
   private _applyFormState(formState: any) {
     if (this._isBoxedValue(formState)) {
@@ -1090,6 +1112,15 @@ export class FormGroup extends AbstractControl {
           acc[name] = control instanceof FormControl ? control.value : (<any>control).getRawValue();
           return acc;
         });
+  }
+
+  /** @internal */
+  _syncPendingControls(): boolean {
+    let subtreeUpdated = this._reduceChildren(false, (updated: boolean, child: AbstractControl) => {
+      return child._syncPendingControls() ? true : updated;
+    });
+    if (subtreeUpdated) this.updateValueAndValidity({onlySelf: true});
+    return subtreeUpdated;
   }
 
   /** @internal */
@@ -1402,6 +1433,15 @@ export class FormArray extends AbstractControl {
     return this.controls.map((control: AbstractControl) => {
       return control instanceof FormControl ? control.value : (<any>control).getRawValue();
     });
+  }
+
+  /** @internal */
+  _syncPendingControls(): boolean {
+    let subtreeUpdated = this.controls.reduce((updated: boolean, child: AbstractControl) => {
+      return child._syncPendingControls() ? true : updated;
+    }, false);
+    if (subtreeUpdated) this.updateValueAndValidity({onlySelf: true});
+    return subtreeUpdated;
   }
 
   /** @internal */

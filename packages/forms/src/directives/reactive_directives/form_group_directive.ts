@@ -134,6 +134,7 @@ export class FormGroupDirective extends ControlContainer implements Form,
 
   onSubmit($event: Event): boolean {
     this._submitted = true;
+    this._syncPendingControls();
     this.ngSubmit.emit($event);
     return false;
   }
@@ -143,6 +144,16 @@ export class FormGroupDirective extends ControlContainer implements Form,
   resetForm(value: any = undefined): void {
     this.form.reset(value);
     this._submitted = false;
+  }
+
+  /** @internal */
+  _syncPendingControls() {
+    this.form._syncPendingControls();
+    this.directives.forEach(dir => {
+      if (dir.control._updateOn === 'submit') {
+        dir.viewToModelUpdate(dir.control._pendingValue);
+      }
+    });
   }
 
   /** @internal */
