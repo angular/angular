@@ -582,6 +582,37 @@ export function main() {
              expect(inputs[0].nativeElement.disabled).toBe(false);
            });
 
+        it('should remove disabled attribute when re-instantiated as enabled', () => {
+          const fixture = initTest(FormControlComp);
+          const input = fixture.debugElement.query(By.css('input'));
+
+          const disabledControl = new FormControl({value: 'some value', disabled: true});
+          fixture.componentInstance.control = disabledControl;
+          fixture.detectChanges();
+          expect(input.nativeElement.disabled).toBe(true);
+
+          const enabledControl = new FormControl({value: 'some value', disabled: false});
+          fixture.componentInstance.control = enabledControl;
+          fixture.detectChanges();
+          expect(input.nativeElement.disabled).toBe(false);
+        });
+
+        it('should remove disabled attribute when setControl() is called with enabled control',
+           () => {
+             const fixture = initTest(FormGroupComp);
+             const input = fixture.debugElement.query(By.css('input'));
+
+             const disabledControl = new FormControl({value: 'some value', disabled: true});
+             const form = new FormGroup({'login': disabledControl});
+             fixture.componentInstance.form = form;
+             fixture.detectChanges();
+             expect(input.nativeElement.disabled).toBe(true);
+
+             const enabledControl = new FormControl({value: 'some value', disabled: false});
+             fixture.componentInstance.form.setControl('login', enabledControl);
+             fixture.detectChanges();
+             expect(input.nativeElement.disabled).toBe(false);
+           });
 
         it('should not add disabled attribute to custom controls when disable() is called', () => {
           const fixture = initTest(MyInputForm, MyInput);
