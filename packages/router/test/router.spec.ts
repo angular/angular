@@ -55,6 +55,36 @@ describe('Router', () => {
        }));
   });
 
+  describe('urlToRouteStateSnapshot', () => {
+    beforeEach(() => { TestBed.configureTestingModule({imports: [RouterTestingModule]}); });
+
+    it('should return snapshot or exception', inject([Router], (r: Router) => {
+         r.resetConfig([
+           {
+             path: 'a',
+             component: ComponentA,
+             data: {state: 'i am A'},
+             children: [{path: 'b', component: ComponentB, data: {state: 'i am B'}}]
+           },
+           {path: 'c', component: ComponentC, data: {state: 'i am C'}}
+         ]);
+
+         r.urlToRouteStateSnapshot('/a').then(
+             (s) => { expect(s.root.firstChild !.data).toEqual({state: 'i am A'}); });
+
+         r.urlToRouteStateSnapshot('/a/b').then(
+             (s) => { expect(s.root.firstChild !.firstChild !.data).toEqual({state: 'i am B'}); });
+
+         r.urlToRouteStateSnapshot('/c').then(
+             (s) => { expect(s.root.firstChild !.data).toEqual({state: 'i am C'}); });
+
+         r.urlToRouteStateSnapshot('/x').catch((s => {
+           expect(s.toString()).toContain('Error: Cannot match any routes. URL Segment: \'x\'');
+         }));
+
+       }));
+  });
+
   describe('PreActivation', () => {
     const serializer = new DefaultUrlSerializer();
     const inj = {get: (token: any) => () => `${token}_value`};
@@ -367,3 +397,7 @@ function checkGuards(
   p.initalize(new ChildrenOutletContexts());
   p.checkGuards().subscribe(check, (e) => { throw e; });
 }
+
+class ComponentA {}
+class ComponentB {}
+class ComponentC {}

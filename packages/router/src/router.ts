@@ -16,6 +16,7 @@ import {of } from 'rxjs/observable/of';
 import {concatMap} from 'rxjs/operator/concatMap';
 import {map} from 'rxjs/operator/map';
 import {mergeMap} from 'rxjs/operator/mergeMap';
+import {toPromise} from 'rxjs/operator/toPromise';
 
 import {applyRedirects} from './apply_redirects';
 import {LoadedRouterConfig, QueryParamsHandling, Route, Routes, validateConfig} from './config';
@@ -472,6 +473,22 @@ export class Router {
 
   /** Parses a string into a {@link UrlTree} */
   parseUrl(url: string): UrlTree { return this.urlSerializer.parse(url); }
+
+  /** Converts given Url to RouterStateSnapshot */
+  urlToRouteStateSnapshot(url: string|UrlTree): Promise<RouterStateSnapshot> {
+    const urlTree = url instanceof UrlTree ? url : this.parseUrl(url);
+    const mergedTree = this.urlHandlingStrategy.merge(urlTree, this.rawUrlTree);
+    const moduleInjector = this.ngModule.injector;
+    const redirectsApplied$ = applyRedirects(
+        moduleInjector, this.configLoader, this.urlSerializer, mergedTree, this.config);
+
+    let snapshot$ = mergeMap.call(redirectsApplied$, (appliedUrl: UrlTree) => {
+      return map.call(
+          recognize(this.rootComponentType, this.config, appliedUrl, this.serializeUrl(appliedUrl)),
+          (snapshot: any) => { return snapshot; });
+    });
+    return toPromise.call(snapshot$);
+  }
 
   /** Returns whether the url is activated */
   isActive(url: string|UrlTree, exact: boolean): boolean {
