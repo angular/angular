@@ -60,7 +60,12 @@ export class OverlayRef implements PortalHost {
     }
 
     if (this._state.panelClass) {
-      this._pane.classList.add(this._state.panelClass);
+      // We can't do a spread here, because IE doesn't support setting multiple classes.
+      if (Array.isArray(this._state.panelClass)) {
+        this._state.panelClass.forEach(cls => this._pane.classList.add(cls));
+      } else {
+        this._pane.classList.add(this._state.panelClass);
+      }
     }
 
     // Only emit the `attachments` event once all other setup is done.

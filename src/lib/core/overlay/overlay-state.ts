@@ -24,7 +24,7 @@ export class OverlayState {
   scrollStrategy: ScrollStrategy = new NoopScrollStrategy();
 
   /** Custom class to add to the overlay pane. */
-  panelClass?: string = '';
+  panelClass?: string | string[] = '';
 
   /** Whether the overlay has a backdrop. */
   hasBackdrop?: boolean = false;

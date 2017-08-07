@@ -40,7 +40,7 @@ export class MdDialogConfig {
   role?: DialogRole = 'dialog';
 
   /** Custom class for the overlay pane. */
-  panelClass?: string = '';
+  panelClass?: string | string[] = '';
 
   /** Whether the dialog has a backdrop. */
   hasBackdrop?: boolean = true;
