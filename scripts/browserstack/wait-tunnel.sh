@@ -1,6 +1,7 @@
 #!/bin/bash
 
 TUNNEL_LOG="$LOGS_DIR/browserstack-tunnel.log"
+WAIT_DELAY=60
 
 # Method that prints the logfile output of the browserstack tunnel.
 printLog() {
@@ -24,7 +25,9 @@ fi
 while [ ! -f $BROWSER_PROVIDER_READY_FILE ]; do
   let "counter++"
 
-  if [ $counter -gt 240 ]; then
+  # Counter needs to be multiplied by two because the while loop only sleeps a half second.
+  # This has been made in favor of better progress logging (printing dots every half second)
+  if [ $counter -gt $[${WAIT_DELAY} * 2] ]; then
     echo
     echo "Timed out after 2 minutes waiting for tunnel ready file"
     printLog
@@ -32,7 +35,7 @@ while [ ! -f $BROWSER_PROVIDER_READY_FILE ]; do
   fi
 
   printf "."
-  sleep .5
+  sleep 0.5
 done
 
 echo ""
