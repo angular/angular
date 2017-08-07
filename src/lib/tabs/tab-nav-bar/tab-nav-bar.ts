@@ -11,7 +11,6 @@ import {
   Component,
   Directive,
   ElementRef,
-  HostBinding,
   Inject,
   Input,
   NgZone,
@@ -153,6 +152,7 @@ export const _MdTabLinkMixinBase = mixinDisabled(MdTabLinkBase);
   host: {
     'class': 'mat-tab-link',
     '[attr.aria-disabled]': 'disabled.toString()',
+    '[attr.tabindex]': 'tabIndex',
     '[class.mat-tab-disabled]': 'disabled'
   }
 })
@@ -174,7 +174,6 @@ export class MdTabLink extends _MdTabLinkMixinBase implements OnDestroy, CanDisa
   }
 
   /** @docs-private */
-  @HostBinding('tabIndex')
   get tabIndex(): number {
     return this.disabled ? -1 : 0;
   }

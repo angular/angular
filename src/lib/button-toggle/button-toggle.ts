@@ -13,7 +13,6 @@ import {
   ElementRef,
   Renderer2,
   EventEmitter,
-  HostBinding,
   Input,
   OnInit,
   OnDestroy,
@@ -264,7 +263,10 @@ export class MdButtonToggleGroupMultiple extends _MdButtonToggleGroupMixinBase
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class.mat-button-toggle-standalone]': '!buttonToggleGroup && !buttonToggleGroupMultiple',
-    'class': 'mat-button-toggle'
+    '[class.mat-button-toggle-checked]': 'checked',
+    '[class.mat-button-toggle-disabled]': 'disabled',
+    'class': 'mat-button-toggle',
+    '[attr.id]': 'id',
   }
 })
 export class MdButtonToggle implements OnInit, OnDestroy {
@@ -311,21 +313,14 @@ export class MdButtonToggle implements OnInit, OnDestroy {
   }
 
   /** The unique ID for this button toggle. */
-  @HostBinding()
-  @Input()
-  id: string;
+  @Input() id: string;
 
   /** HTML's 'name' attribute used to group radios for unique selection. */
-  @Input()
-  name: string;
+  @Input() name: string;
 
   /** Whether the button is checked. */
-  @HostBinding('class.mat-button-toggle-checked')
   @Input()
-  get checked(): boolean {
-    return this._checked;
-  }
-
+  get checked(): boolean { return this._checked; }
   set checked(newCheckedState: boolean) {
     if (this._isSingleSelector && newCheckedState) {
       // Notify all button toggles with the same name (in the same group) to un-check.
@@ -356,7 +351,6 @@ export class MdButtonToggle implements OnInit, OnDestroy {
   }
 
   /** Whether the button is disabled. */
-  @HostBinding('class.mat-button-toggle-disabled')
   @Input()
   get disabled(): boolean {
     return this._disabled || (this.buttonToggleGroup != null && this.buttonToggleGroup.disabled) ||
