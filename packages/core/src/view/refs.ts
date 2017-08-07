@@ -187,6 +187,9 @@ class ViewContainerRef_ implements ViewContainerData {
   }
 
   insert(viewRef: ViewRef, index?: number): ViewRef {
+    if (viewRef.destroyed) {
+      throw new Error('Cannot insert a destroyed View in a ViewContainer!');
+    }
     const viewRef_ = <ViewRef_>viewRef;
     const viewData = viewRef_._view;
     attachEmbeddedView(this._view, this._data, index, viewData);
@@ -195,6 +198,9 @@ class ViewContainerRef_ implements ViewContainerData {
   }
 
   move(viewRef: ViewRef_, currentIndex: number): ViewRef {
+    if (viewRef.destroyed) {
+      throw new Error('Cannot move a destroyed View in a ViewContainer!');
+    }
     const previousIndex = this._embeddedViews.indexOf(viewRef._view);
     moveEmbeddedView(this._data, previousIndex, currentIndex);
     return viewRef;
