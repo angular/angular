@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, ContentChildren, Directive, NO_ERRORS_SCHEMA, QueryList, TemplateRef} from '@angular/core';
+import {Component, ContentChildren, Directive, Injectable, NO_ERRORS_SCHEMA, OnDestroy, QueryList, TemplateRef} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -26,11 +26,9 @@ export function main() {
 
     beforeEach(() => {
       TestBed.configureTestingModule({
-        declarations: [
-          TestComponent,
-          CaptureTplRefs,
-        ],
+        declarations: [TestComponent, CaptureTplRefs, DestroyableCmpt],
         imports: [CommonModule],
+        providers: [DestroyedSpyService]
       });
     });
 
@@ -125,7 +123,103 @@ export function main() {
          fixture.componentInstance.context = {shawshank: 'was here'};
          detectChangesAndExpectText('was here');
        }));
+
+    it('should update but not destroy embedded view when context values change', () => {
+      const template =
+          `<ng-template let-foo="foo" #tpl><destroyable-cmpt></destroyable-cmpt>:{{foo}}</ng-template>` +
+          `<ng-template [ngTemplateOutlet]="tpl" [ngTemplateOutletContext]="{foo: value}"></ng-template>`;
+
+      fixture = createTestComponent(template);
+      const spyService = fixture.debugElement.injector.get(DestroyedSpyService);
+
+      detectChangesAndExpectText('Content to destroy:bar');
+      expect(spyService.destroyed).toBeFalsy();
+
+      fixture.componentInstance.value = 'baz';
+      detectChangesAndExpectText('Content to destroy:baz');
+      expect(spyService.destroyed).toBeFalsy();
+    });
+
+    it('should recreate embedded view when context shape changes', () => {
+      const template =
+          `<ng-template let-foo="foo" #tpl><destroyable-cmpt></destroyable-cmpt>:{{foo}}</ng-template>` +
+          `<ng-template [ngTemplateOutlet]="tpl" [ngTemplateOutletContext]="context"></ng-template>`;
+
+      fixture = createTestComponent(template);
+      const spyService = fixture.debugElement.injector.get(DestroyedSpyService);
+
+      detectChangesAndExpectText('Content to destroy:bar');
+      expect(spyService.destroyed).toBeFalsy();
+
+      fixture.componentInstance.context = {foo: 'baz', other: true};
+      detectChangesAndExpectText('Content to destroy:baz');
+      expect(spyService.destroyed).toBeTruthy();
+    });
+
+    it('should destroy embedded view when context value changes and templateRef becomes undefined',
+       () => {
+         const template =
+             `<ng-template let-foo="foo" #tpl><destroyable-cmpt></destroyable-cmpt>:{{foo}}</ng-template>` +
+             `<ng-template [ngTemplateOutlet]="value === 'bar' ? tpl : undefined" [ngTemplateOutletContext]="{foo: value}"></ng-template>`;
+
+         fixture = createTestComponent(template);
+         const spyService = fixture.debugElement.injector.get(DestroyedSpyService);
+
+         detectChangesAndExpectText('Content to destroy:bar');
+         expect(spyService.destroyed).toBeFalsy();
+
+         fixture.componentInstance.value = 'baz';
+         detectChangesAndExpectText('');
+         expect(spyService.destroyed).toBeTruthy();
+       });
+
+    it('should not try to update null / undefined context when context changes but template stays the same',
+       () => {
+         const template = `<ng-template let-foo="foo" #tpl>{{foo}}</ng-template>` +
+             `<ng-template [ngTemplateOutlet]="tpl" [ngTemplateOutletContext]="value === 'bar' ? null : undefined"></ng-template>`;
+
+         fixture = createTestComponent(template);
+         detectChangesAndExpectText('');
+
+         fixture.componentInstance.value = 'baz';
+         detectChangesAndExpectText('');
+       });
+
+    it('should not try to update null / undefined context when template changes', () => {
+      const template = `<ng-template let-foo="foo" #tpl1>{{foo}}</ng-template>` +
+          `<ng-template let-foo="foo" #tpl2>{{foo}}</ng-template>` +
+          `<ng-template [ngTemplateOutlet]="value === 'bar' ? tpl1 : tpl2" [ngTemplateOutletContext]="value === 'bar' ? null : undefined"></ng-template>`;
+
+      fixture = createTestComponent(template);
+      detectChangesAndExpectText('');
+
+      fixture.componentInstance.value = 'baz';
+      detectChangesAndExpectText('');
+    });
+
+    it('should not try to update context on undefined view', () => {
+      const template = `<ng-template let-foo="foo" #tpl>{{foo}}</ng-template>` +
+          `<ng-template [ngTemplateOutlet]="value === 'bar' ? null : undefined" [ngTemplateOutletContext]="{foo: value}"></ng-template>`;
+
+      fixture = createTestComponent(template);
+      detectChangesAndExpectText('');
+
+      fixture.componentInstance.value = 'baz';
+      detectChangesAndExpectText('');
+    });
   });
+}
+
+@Injectable()
+class DestroyedSpyService {
+  destroyed = false;
+}
+
+@Component({selector: 'destroyable-cmpt', template: 'Content to destroy'})
+class DestroyableCmpt implements OnDestroy {
+  constructor(private _spyService: DestroyedSpyService) {}
+
+  ngOnDestroy(): void { this._spyService.destroyed = true; }
 }
 
 @Directive({selector: 'tpl-refs', exportAs: 'tplRefs'})
@@ -137,6 +231,7 @@ class CaptureTplRefs {
 class TestComponent {
   currentTplRef: TemplateRef<any>;
   context: any = {foo: 'bar'};
+  value = 'bar';
 }
 
 function createTestComponent(template: string): ComponentFixture<TestComponent> {
