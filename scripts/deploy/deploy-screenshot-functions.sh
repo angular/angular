@@ -28,6 +28,6 @@ cd ${screenshotToolFolder}
 # to collect all function names before it can deploy them.
 (cd functions; npm install)
 
-# Deploy the screenshot functions to Firebase
-${firebaseBin} deploy --only functions --token ${MATERIAL2_SCREENSHOT_FIREBASE_DEPLOY_TOKEN} \
-  --non-interactive --project material2-screenshots
+# Deploy the screenshot application and functions to Firebase
+${firebaseBin} deploy --token ${MATERIAL2_SCREENSHOT_FIREBASE_DEPLOY_TOKEN} --non-interactive \
+  --project material2-screenshots
