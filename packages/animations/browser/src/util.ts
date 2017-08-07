@@ -9,6 +9,8 @@ import {AnimateTimings, AnimationMetadata, AnimationOptions, sequence, ɵStyleDa
 
 export const ONE_SECOND = 1000;
 
+export const SUBSTITUTION_EXPR_START = '{{';
+export const SUBSTITUTION_EXPR_END = '}}';
 export const ENTER_CLASSNAME = 'ng-enter';
 export const LEAVE_CLASSNAME = 'ng-leave';
 export const ENTER_SELECTOR = '.ng-enter';
@@ -151,10 +153,8 @@ export function normalizeAnimationEntry(steps: AnimationMetadata | AnimationMeta
 export function validateStyleParams(
     value: string | number, options: AnimationOptions, errors: any[]) {
   const params = options.params || {};
-  if (typeof value !== 'string') return;
-
-  const matches = value.toString().match(PARAM_REGEX);
-  if (matches) {
+  const matches = extractStyleParams(value);
+  if (matches.length) {
     matches.forEach(varName => {
       if (!params.hasOwnProperty(varName)) {
         errors.push(
@@ -164,7 +164,22 @@ export function validateStyleParams(
   }
 }
 
-const PARAM_REGEX = /\{\{\s*(.+?)\s*\}\}/g;
+const PARAM_REGEX =
+    new RegExp(`${SUBSTITUTION_EXPR_START}\\s*(.+?)\\s*${SUBSTITUTION_EXPR_END}`, 'g');
+export function extractStyleParams(value: string | number): string[] {
+  let params: string[] = [];
+  if (typeof value === 'string') {
+    const val = value.toString();
+
+    let match: any;
+    while (match = PARAM_REGEX.exec(val)) {
+      params.push(match[1] as string);
+    }
+    PARAM_REGEX.lastIndex = 0;
+  }
+  return params;
+}
+
 export function interpolateParams(
     value: string | number, params: {[name: string]: any}, errors: any[]): string|number {
   const original = value.toString();

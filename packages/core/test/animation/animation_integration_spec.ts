@@ -1526,6 +1526,60 @@ export function main() {
            expect(players.length).toEqual(0);
          });
 
+      it('should update the final state styles when params update even if the expression hasn\'t changed',
+         fakeAsync(() => {
+           @Component({
+             selector: 'ani-cmp',
+             template: `
+            <div [@myAnimation]="{value:exp,params:{color:color}}"></div>
+          `,
+             animations: [
+               trigger(
+                   'myAnimation',
+                   [
+                     state('*', style({color: '{{ color }}'}), {params: {color: 'black'}}),
+                     transition('* => 1', animate(500))
+                   ]),
+             ]
+           })
+           class Cmp {
+             public exp: any;
+             public color: string|null;
+           }
+
+           TestBed.configureTestingModule({declarations: [Cmp]});
+
+           const engine = TestBed.get(ɵAnimationEngine);
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
+
+           cmp.exp = '1';
+           cmp.color = 'red';
+           fixture.detectChanges();
+           const player = getLog()[0] !;
+           const element = player.element;
+           player.finish();
+
+           flushMicrotasks();
+           expect(getDOM().hasStyle(element, 'color', 'red')).toBeTruthy();
+
+           cmp.exp = '1';
+           cmp.color = 'blue';
+           fixture.detectChanges();
+           resetLog();
+
+           flushMicrotasks();
+           expect(getDOM().hasStyle(element, 'color', 'blue')).toBeTruthy();
+
+           cmp.exp = '1';
+           cmp.color = null;
+           fixture.detectChanges();
+           resetLog();
+
+           flushMicrotasks();
+           expect(getDOM().hasStyle(element, 'color', 'black')).toBeTruthy();
+         }));
+
       it('should substitute in values if the provided state match is an object with values', () => {
         @Component({
           selector: 'ani-cmp',
@@ -1562,6 +1616,138 @@ export function main() {
           {opacity: '0.3', offset: 0}, {opacity: '0.6', offset: 1}
         ]);
       });
+
+      it('should retain substituted styles on the element once the animation is complete if referenced in the final state',
+         fakeAsync(() => {
+           @Component({
+             selector: 'ani-cmp',
+             template: `
+            <div [@myAnimation]="{value:exp, params: { color: color }}"></div>
+          `,
+             animations: [
+               trigger(
+                   'myAnimation',
+                   [
+                     state(
+                         'start', style({
+                           color: '{{ color }}',
+                           fontSize: '{{ fontSize }}px',
+                           width: '{{ width }}'
+                         }),
+                         {params: {color: 'red', fontSize: '200', width: '10px'}}),
+
+                     state(
+                         'final',
+                         style(
+                             {color: '{{ color }}', fontSize: '{{ fontSize }}px', width: '888px'}),
+                         {params: {color: 'green', fontSize: '50', width: '100px'}}),
+
+                     transition('start => final', animate(500)),
+                   ]),
+             ]
+           })
+           class Cmp {
+             public exp: any;
+             public color: any;
+           }
+
+           TestBed.configureTestingModule({declarations: [Cmp]});
+
+           const engine = TestBed.get(ɵAnimationEngine);
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
+
+           cmp.exp = 'start';
+           cmp.color = 'red';
+           fixture.detectChanges();
+           resetLog();
+
+           cmp.exp = 'final';
+           cmp.color = 'blue';
+           fixture.detectChanges();
+
+           const players = getLog();
+           expect(players.length).toEqual(1);
+           const [p1] = players;
+
+           expect(p1.keyframes).toEqual([
+             {color: 'red', fontSize: '200px', width: '10px', offset: 0},
+             {color: 'blue', fontSize: '50px', width: '888px', offset: 1}
+           ]);
+
+           const element = p1.element;
+           p1.finish();
+           flushMicrotasks();
+
+           expect(getDOM().hasStyle(element, 'color', 'blue')).toBeTruthy();
+           expect(getDOM().hasStyle(element, 'fontSize', '50px')).toBeTruthy();
+           expect(getDOM().hasStyle(element, 'width', '888px')).toBeTruthy();
+         }));
+
+      it('should only evaluate final state param substitutions from the expression and state values and not from the transition options ',
+         fakeAsync(() => {
+           @Component({
+             selector: 'ani-cmp',
+             template: `
+            <div [@myAnimation]="exp"></div>
+          `,
+             animations: [
+               trigger(
+                   'myAnimation',
+                   [
+                     state(
+                         'start', style({
+                           width: '{{ width }}',
+                           height: '{{ height }}',
+                         }),
+                         {params: {width: '0px', height: '0px'}}),
+
+                     state(
+                         'final', style({
+                           width: '{{ width }}',
+                           height: '{{ height }}',
+                         }),
+                         {params: {width: '100px', height: '100px'}}),
+
+                     transition(
+                         'start => final', [animate(500)],
+                         {params: {width: '333px', height: '666px'}}),
+                   ]),
+             ]
+           })
+           class Cmp {
+             public exp: any;
+           }
+
+           TestBed.configureTestingModule({declarations: [Cmp]});
+
+           const engine = TestBed.get(ɵAnimationEngine);
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
+
+           cmp.exp = 'start';
+           fixture.detectChanges();
+           resetLog();
+
+           cmp.exp = 'final';
+           fixture.detectChanges();
+
+           const players = getLog();
+           expect(players.length).toEqual(1);
+           const [p1] = players;
+
+           expect(p1.keyframes).toEqual([
+             {width: '0px', height: '0px', offset: 0},
+             {width: '100px', height: '100px', offset: 1},
+           ]);
+
+           const element = p1.element;
+           p1.finish();
+           flushMicrotasks();
+
+           expect(getDOM().hasStyle(element, 'width', '100px')).toBeTruthy();
+           expect(getDOM().hasStyle(element, 'height', '100px')).toBeTruthy();
+         }));
 
       it('should not flush animations twice when an inner component runs change detection', () => {
         @Component({
