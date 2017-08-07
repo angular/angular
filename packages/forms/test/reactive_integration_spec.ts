@@ -12,8 +12,10 @@ import {AbstractControl, AsyncValidator, AsyncValidatorFn, COMPOSITION_BUFFER_MO
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
+import {merge} from 'rxjs/observable/merge';
 import {timer} from 'rxjs/observable/timer';
 import {_do} from 'rxjs/operator/do';
+
 import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
 export function main() {
@@ -898,8 +900,320 @@ export function main() {
           dispatchEvent(input, 'blur');
           fixture.detectChanges();
 
-          expect(control.dirty).toBe(false, 'Expected pending dirty value to reset.');
+          expect(input.value).toEqual('', 'Expected view value to reset');
           expect(control.value).toBe(null, 'Expected pending value to reset.');
+          expect(control.dirty).toBe(false, 'Expected pending dirty value to reset.');
+        });
+
+        it('should not emit valueChanges or statusChanges until blur', () => {
+          const fixture = initTest(FormControlComp);
+          const control = new FormControl('', {validators: Validators.required, updateOn: 'blur'});
+          fixture.componentInstance.control = control;
+          fixture.detectChanges();
+          const values: string[] = [];
+
+          const sub =
+              merge(control.valueChanges, control.statusChanges).subscribe(val => values.push(val));
+
+          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          input.value = 'Nancy';
+          dispatchEvent(input, 'input');
+          fixture.detectChanges();
+
+          expect(values).toEqual([], 'Expected no valueChanges or statusChanges on input.');
+
+          dispatchEvent(input, 'blur');
+          fixture.detectChanges();
+
+          expect(values).toEqual(
+              ['Nancy', 'VALID'], 'Expected valueChanges and statusChanges on blur.');
+
+          sub.unsubscribe();
+        });
+
+
+        it('should mark as pristine properly if pending dirty', () => {
+          const fixture = initTest(FormControlComp);
+          const control = new FormControl('', {updateOn: 'blur'});
+          fixture.componentInstance.control = control;
+          fixture.detectChanges();
+
+          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          input.value = 'aa';
+          dispatchEvent(input, 'input');
+          fixture.detectChanges();
+
+          dispatchEvent(input, 'blur');
+          fixture.detectChanges();
+
+          control.markAsPristine();
+          expect(control.dirty).toBe(false, 'Expected control to become pristine.');
+
+          dispatchEvent(input, 'blur');
+          fixture.detectChanges();
+
+          expect(control.dirty).toBe(false, 'Expected pending dirty value to reset.');
+        });
+
+      });
+
+      describe('on submit', () => {
+
+        it('should set initial value and validity on init', () => {
+          const fixture = initTest(FormGroupComp);
+          const form = new FormGroup({
+            login:
+                new FormControl('Nancy', {validators: Validators.required, updateOn: 'submit'})
+          });
+          fixture.componentInstance.form = form;
+          fixture.detectChanges();
+
+          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          expect(input.value).toEqual('Nancy', 'Expected initial value to propagate to view.');
+          expect(form.value).toEqual({login: 'Nancy'}, 'Expected initial value to be set.');
+          expect(form.valid).toBe(true, 'Expected form to run validation on initial value.');
+        });
+
+        it('should not update value or validity until submit', () => {
+          const fixture = initTest(FormGroupComp);
+          const formGroup = new FormGroup(
+              {login: new FormControl('', {validators: Validators.required, updateOn: 'submit'})});
+          fixture.componentInstance.form = formGroup;
+          fixture.detectChanges();
+
+          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          input.value = 'Nancy';
+          dispatchEvent(input, 'input');
+          fixture.detectChanges();
+
+          expect(formGroup.value)
+              .toEqual({login: ''}, 'Expected form value to remain unchanged on input.');
+          expect(formGroup.valid).toBe(false, 'Expected form validation not to run on input.');
+
+          dispatchEvent(input, 'blur');
+          fixture.detectChanges();
+
+          expect(formGroup.value)
+              .toEqual({login: ''}, 'Expected form value to remain unchanged on blur.');
+          expect(formGroup.valid).toBe(false, 'Expected form validation not to run on blur.');
+
+          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          dispatchEvent(form, 'submit');
+          fixture.detectChanges();
+
+          expect(formGroup.value)
+              .toEqual({login: 'Nancy'}, 'Expected form value to update on submit.');
+          expect(formGroup.valid).toBe(true, 'Expected form validation to run on submit.');
+        });
+
+        it('should not update after submit until a second submit', () => {
+          const fixture = initTest(FormGroupComp);
+          const formGroup = new FormGroup(
+              {login: new FormControl('', {validators: Validators.required, updateOn: 'submit'})});
+          fixture.componentInstance.form = formGroup;
+          fixture.detectChanges();
+
+          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          input.value = 'Nancy';
+          dispatchEvent(input, 'input');
+          fixture.detectChanges();
+
+          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          dispatchEvent(form, 'submit');
+          fixture.detectChanges();
+
+          input.value = '';
+          dispatchEvent(input, 'input');
+          fixture.detectChanges();
+
+          expect(formGroup.value)
+              .toEqual({login: 'Nancy'}, 'Expected value not to change until a second submit.');
+          expect(formGroup.valid)
+              .toBe(true, 'Expected validation not to run until a second submit.');
+
+          dispatchEvent(form, 'submit');
+          fixture.detectChanges();
+
+          expect(formGroup.value)
+              .toEqual({login: ''}, 'Expected value to update on the second submit.');
+          expect(formGroup.valid).toBe(false, 'Expected validation to run on a second submit.');
+        });
+
+        it('should not wait for submit to set value programmatically', () => {
+          const fixture = initTest(FormGroupComp);
+          const formGroup = new FormGroup(
+              {login: new FormControl('', {validators: Validators.required, updateOn: 'submit'})});
+          fixture.componentInstance.form = formGroup;
+          fixture.detectChanges();
+
+          formGroup.setValue({login: 'Nancy'});
+          fixture.detectChanges();
+
+          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          expect(input.value).toEqual('Nancy', 'Expected view value to update immediately.');
+          expect(formGroup.value)
+              .toEqual({login: 'Nancy'}, 'Expected form value to update immediately.');
+          expect(formGroup.valid).toBe(true, 'Expected form validation to run immediately.');
+        });
+
+        it('should not update dirty until submit', () => {
+          const fixture = initTest(FormGroupComp);
+          const formGroup = new FormGroup({login: new FormControl('', {updateOn: 'submit'})});
+          fixture.componentInstance.form = formGroup;
+          fixture.detectChanges();
+
+          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          dispatchEvent(input, 'input');
+          fixture.detectChanges();
+
+          expect(formGroup.dirty).toBe(false, 'Expected dirty not to change on input.');
+
+          dispatchEvent(input, 'blur');
+          fixture.detectChanges();
+
+          expect(formGroup.dirty).toBe(false, 'Expected dirty not to change on blur.');
+
+          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          dispatchEvent(form, 'submit');
+          fixture.detectChanges();
+
+          expect(formGroup.dirty).toBe(true, 'Expected dirty to update on submit.');
+        });
+
+        it('should not update touched until submit', () => {
+          const fixture = initTest(FormGroupComp);
+          const formGroup = new FormGroup({login: new FormControl('', {updateOn: 'submit'})});
+          fixture.componentInstance.form = formGroup;
+          fixture.detectChanges();
+
+          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          dispatchEvent(input, 'blur');
+          fixture.detectChanges();
+
+          expect(formGroup.touched).toBe(false, 'Expected touched not to change until submit.');
+
+          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          dispatchEvent(form, 'submit');
+          fixture.detectChanges();
+
+          expect(formGroup.touched).toBe(true, 'Expected touched to update on submit.');
+        });
+
+        it('should reset properly', () => {
+          const fixture = initTest(FormGroupComp);
+          const formGroup = new FormGroup(
+              {login: new FormControl('', {validators: Validators.required, updateOn: 'submit'})});
+          fixture.componentInstance.form = formGroup;
+          fixture.detectChanges();
+
+          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          input.value = 'Nancy';
+          dispatchEvent(input, 'input');
+          fixture.detectChanges();
+
+          dispatchEvent(input, 'blur');
+          fixture.detectChanges();
+
+          formGroup.reset();
+          fixture.detectChanges();
+
+          expect(input.value).toEqual('', 'Expected view value to reset.');
+          expect(formGroup.value).toEqual({login: null}, 'Expected form value to reset');
+          expect(formGroup.dirty).toBe(false, 'Expected dirty to stay false on reset.');
+          expect(formGroup.touched).toBe(false, 'Expected touched to stay false on reset.');
+
+          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          dispatchEvent(form, 'submit');
+          fixture.detectChanges();
+
+          expect(formGroup.value)
+              .toEqual({login: null}, 'Expected form value to stay empty on submit');
+          expect(formGroup.dirty).toBe(false, 'Expected dirty to stay false on submit.');
+          expect(formGroup.touched).toBe(false, 'Expected touched to stay false on submit.');
+        });
+
+        it('should not emit valueChanges or statusChanges until submit', () => {
+          const fixture = initTest(FormGroupComp);
+          const control =
+              new FormControl('', {validators: Validators.required, updateOn: 'submit'});
+          const formGroup = new FormGroup({login: control});
+          fixture.componentInstance.form = formGroup;
+          fixture.detectChanges();
+
+          const values: string[] = [];
+          const streams = merge(
+              control.valueChanges, control.statusChanges, formGroup.valueChanges,
+              formGroup.statusChanges);
+          const sub = streams.subscribe(val => values.push(val));
+
+          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          input.value = 'Nancy';
+          dispatchEvent(input, 'input');
+          fixture.detectChanges();
+
+          expect(values).toEqual([], 'Expected no valueChanges or statusChanges on input');
+
+          dispatchEvent(input, 'blur');
+          fixture.detectChanges();
+
+          expect(values).toEqual([], 'Expected no valueChanges or statusChanges on blur');
+
+          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          dispatchEvent(form, 'submit');
+          fixture.detectChanges();
+
+          expect(values).toEqual(
+              ['Nancy', 'VALID', {login: 'Nancy'}, 'VALID'],
+              'Expected valueChanges and statusChanges to update on submit.');
+
+          sub.unsubscribe();
+        });
+
+        it('should not run validation for onChange controls on submit', () => {
+          const validatorSpy = jasmine.createSpy('validator');
+          const groupValidatorSpy = jasmine.createSpy('groupValidatorSpy');
+
+          const fixture = initTest(NestedFormGroupComp);
+          const formGroup = new FormGroup({
+            signin: new FormGroup({login: new FormControl(), password: new FormControl()}),
+            email: new FormControl('', {updateOn: 'submit'})
+          });
+          fixture.componentInstance.form = formGroup;
+          fixture.detectChanges();
+
+          formGroup.get('signin.login') !.setValidators(validatorSpy);
+          formGroup.get('signin') !.setValidators(groupValidatorSpy);
+
+          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          dispatchEvent(form, 'submit');
+          fixture.detectChanges();
+
+          expect(validatorSpy).not.toHaveBeenCalled();
+          expect(groupValidatorSpy).not.toHaveBeenCalled();
+
+        });
+
+
+        it('should mark as untouched properly if pending touched', () => {
+          const fixture = initTest(FormGroupComp);
+          const formGroup = new FormGroup({login: new FormControl('', {updateOn: 'submit'})});
+          fixture.componentInstance.form = formGroup;
+          fixture.detectChanges();
+
+          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          dispatchEvent(input, 'blur');
+          fixture.detectChanges();
+
+          formGroup.markAsUntouched();
+          fixture.detectChanges();
+
+          expect(formGroup.touched).toBe(false, 'Expected group to become untouched.');
+
+          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          dispatchEvent(form, 'submit');
+          fixture.detectChanges();
+
+          expect(formGroup.touched).toBe(false, 'Expected touched to stay false on submit.');
         });
 
       });
@@ -958,6 +1272,33 @@ export function main() {
 
            // selection start has not changed because we did not reset the value
            expect(input.selectionStart).toEqual(1);
+         }));
+
+      it('should work with updateOn submit', fakeAsync(() => {
+           const fixture = initTest(FormGroupNgModel);
+           const formGroup = new FormGroup({login: new FormControl('', {updateOn: 'submit'})});
+           fixture.componentInstance.form = formGroup;
+           fixture.componentInstance.login = 'initial';
+           fixture.detectChanges();
+           tick();
+
+           const input = fixture.debugElement.query(By.css('input')).nativeElement;
+           input.value = 'Nancy';
+           dispatchEvent(input, 'input');
+           fixture.detectChanges();
+           tick();
+
+           expect(fixture.componentInstance.login)
+               .toEqual('initial', 'Expected ngModel value to remain unchanged on input.');
+
+           const form = fixture.debugElement.query(By.css('form')).nativeElement;
+           dispatchEvent(form, 'submit');
+           fixture.detectChanges();
+           tick();
+
+           expect(fixture.componentInstance.login)
+               .toEqual('Nancy', 'Expected ngModel value to update on submit.');
+
          }));
 
     });
@@ -1697,13 +2038,12 @@ class FormArrayNestedGroup {
   cityArray: FormArray;
 }
 
-
 @Component({
   selector: 'form-group-ng-model',
   template: `
-  <div [formGroup]="form">
+  <form [formGroup]="form">
     <input type="text" formControlName="login" [(ngModel)]="login">
-   </div>`
+   </form>`
 })
 class FormGroupNgModel {
   form: FormGroup;
