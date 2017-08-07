@@ -105,6 +105,7 @@ export interface AnimationTriggerMetadata extends AnimationMetadata {
 export interface AnimationStateMetadata extends AnimationMetadata {
   name: string;
   styles: AnimationStyleMetadata;
+  options?: {params: {[name: string]: any}};
 }
 
 /**
@@ -567,8 +568,10 @@ export function style(
  *
  * @experimental Animation support is experimental.
  */
-export function state(name: string, styles: AnimationStyleMetadata): AnimationStateMetadata {
-  return {type: AnimationMetadataType.State, name, styles};
+export function state(
+    name: string, styles: AnimationStyleMetadata,
+    options?: {params: {[name: string]: any}}): AnimationStateMetadata {
+  return {type: AnimationMetadataType.State, name, styles, options};
 }
 
 /**
