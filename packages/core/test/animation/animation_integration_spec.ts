@@ -868,6 +868,87 @@ export function main() {
         expect(pp[2].currentSnapshot).toEqual({opacity: AUTO_STYLE});
       });
 
+      it('should provide the styling of previous players that are grouped and queried and make sure match the players with the correct elements',
+         () => {
+           @Component({
+             selector: 'ani-cmp',
+             template: `
+          <div class="container" [@myAnimation]="exp">
+            <div class="inner"></div>
+          </div>
+        `,
+             animations: [
+               trigger(
+                   'myAnimation',
+                   [
+                     transition(
+                         '1 => 2',
+                         [
+                           style({fontSize: '10px'}),
+                           query(
+                               '.inner',
+                               [
+                                 style({fontSize: '20px'}),
+                               ]),
+                           animate('1s', style({fontSize: '100px'})),
+                           query(
+                               '.inner',
+                               [
+                                 animate('1s', style({fontSize: '200px'})),
+                               ]),
+                         ]),
+                     transition(
+                         '2 => 3',
+                         [
+                           animate('1s', style({fontSize: '0px'})),
+                           query(
+                               '.inner',
+                               [
+                                 animate('1s', style({fontSize: '0px'})),
+                               ]),
+                         ]),
+                   ]),
+             ],
+           })
+           class Cmp {
+             exp: any = false;
+           }
+
+           TestBed.configureTestingModule({declarations: [Cmp]});
+
+           const engine = TestBed.get(ɵAnimationEngine);
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
+
+           fixture.detectChanges();
+
+           cmp.exp = '1';
+           fixture.detectChanges();
+           resetLog();
+
+           cmp.exp = '2';
+           fixture.detectChanges();
+           resetLog();
+
+           cmp.exp = '3';
+           fixture.detectChanges();
+           const players = getLog();
+           expect(players.length).toEqual(2);
+           const [p1, p2] = players as MockAnimationPlayer[];
+
+           const pp1 = p1.previousPlayers as MockAnimationPlayer[];
+           expect(p1.element.classList.contains('container')).toBeTruthy();
+           for (let i = 0; i < pp1.length; i++) {
+             expect(pp1[i].element).toEqual(p1.element);
+           }
+
+           const pp2 = p2.previousPlayers as MockAnimationPlayer[];
+           expect(p2.element.classList.contains('inner')).toBeTruthy();
+           for (let i = 0; i < pp2.length; i++) {
+             expect(pp2[i].element).toEqual(p2.element);
+           }
+         });
+
       it('should properly balance styles between states even if there are no destination state styles',
          () => {
            @Component({
