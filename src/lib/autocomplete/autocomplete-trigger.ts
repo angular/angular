@@ -119,9 +119,6 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   private _portal: TemplatePortal;
   private _panelOpen: boolean = false;
 
-  /** The subscription to positioning changes in the autocomplete panel. */
-  private _panelPositionSubscription: Subscription;
-
   /** Strategy that is used to position the panel. */
   private _positionStrategy: ConnectedPositionStrategy;
 
@@ -160,10 +157,6 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
               @Optional() @Inject(DOCUMENT) private _document: any) {}
 
   ngOnDestroy() {
-    if (this._panelPositionSubscription) {
-      this._panelPositionSubscription.unsubscribe();
-    }
-
     this._destroyPanel();
   }
 
@@ -467,28 +460,21 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
 
   private _getOverlayPosition(): PositionStrategy {
     this._positionStrategy =  this._overlay.position().connectedTo(
-        this._element,
+        this._getConnectedElement(),
         {originX: 'start', originY: 'bottom'}, {overlayX: 'start', overlayY: 'top'})
         .withFallbackPosition(
             {originX: 'start', originY: 'top'}, {overlayX: 'start', overlayY: 'bottom'}
         );
-    this._subscribeToPositionChanges(this._positionStrategy);
     return this._positionStrategy;
   }
 
-  /**
-   * This method subscribes to position changes in the autocomplete panel, so the panel's
-   * y-offset can be adjusted to match the new position.
-   */
-  private _subscribeToPositionChanges(strategy: ConnectedPositionStrategy) {
-    this._panelPositionSubscription = strategy.onPositionChange.subscribe(change => {
-      this.autocomplete.positionY = change.connectionPair.originY === 'top' ? 'above' : 'below';
-    });
+  private _getConnectedElement(): ElementRef {
+    return this._inputContainer ? this._inputContainer._connectionContainerRef : this._element;
   }
 
   /** Returns the width of the input element, so the panel width can match it. */
   private _getHostWidth(): number {
-    return this._element.nativeElement.getBoundingClientRect().width;
+    return this._getConnectedElement().nativeElement.getBoundingClientRect().width;
   }
 
   /** Reset active item to -1 so arrow events will activate the correct options.*/

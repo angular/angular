@@ -462,6 +462,7 @@ export class MdInputContainer implements AfterViewInit, AfterContentInit, AfterC
 
   /** Reference to the input's underline element. */
   @ViewChild('underline') underlineRef: ElementRef;
+  @ViewChild('connectionContainer') _connectionContainerRef: ElementRef;
   @ContentChild(MdInputDirective) _mdInputChild: MdInputDirective;
   @ContentChild(MdPlaceholder) _placeholderChild: MdPlaceholder;
   @ContentChildren(MdErrorDirective) _errorChildren: QueryList<MdErrorDirective>;

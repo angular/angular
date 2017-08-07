@@ -1055,27 +1055,26 @@ describe('MdAutocomplete', () => {
   describe('Fallback positions', () => {
     let fixture: ComponentFixture<SimpleAutocomplete>;
     let input: HTMLInputElement;
+    let inputReference: HTMLInputElement;
 
     beforeEach(() => {
       fixture = TestBed.createComponent(SimpleAutocomplete);
       fixture.detectChanges();
 
       input = fixture.debugElement.query(By.css('input')).nativeElement;
+      inputReference = fixture.debugElement.query(By.css('.mat-input-flex')).nativeElement;
     });
 
     it('should use below positioning by default', () => {
       fixture.componentInstance.trigger.openPanel();
       fixture.detectChanges();
 
-      const inputBottom = input.getBoundingClientRect().bottom;
+      const inputBottom = inputReference.getBoundingClientRect().bottom;
       const panel = overlayContainerElement.querySelector('.mat-autocomplete-panel')!;
       const panelTop = panel.getBoundingClientRect().top;
 
-      // Panel is offset by 6px in styles so that the underline has room to display.
-      expect(Math.floor(inputBottom + 6))
+      expect(Math.floor(inputBottom))
           .toEqual(Math.floor(panelTop), `Expected panel top to match input bottom by default.`);
-      expect(fixture.componentInstance.trigger.autocomplete.positionY)
-          .toEqual('below', `Expected autocomplete positionY to default to below.`);
     });
 
     it('should reposition the panel on scroll', () => {
@@ -1091,11 +1090,11 @@ describe('MdAutocomplete', () => {
       scrolledSubject.next();
       fixture.detectChanges();
 
-      const inputBottom = input.getBoundingClientRect().bottom;
+      const inputBottom = inputReference.getBoundingClientRect().bottom;
       const panel = overlayContainerElement.querySelector('.mat-autocomplete-panel')!;
       const panelTop = panel.getBoundingClientRect().top;
 
-      expect(Math.floor(inputBottom + 6)).toEqual(Math.floor(panelTop),
+      expect(Math.floor(inputBottom)).toEqual(Math.floor(panelTop),
           'Expected panel top to match input bottom after scrolling.');
 
       document.body.removeChild(spacer);
@@ -1103,27 +1102,24 @@ describe('MdAutocomplete', () => {
 
     it('should fall back to above position if panel cannot fit below', () => {
       // Push the autocomplete trigger down so it won't have room to open "below"
-      input.style.top = '600px';
-      input.style.position = 'relative';
+      inputReference.style.top = '600px';
+      inputReference.style.position = 'relative';
 
       fixture.componentInstance.trigger.openPanel();
       fixture.detectChanges();
 
-      const inputTop = input.getBoundingClientRect().top;
+      const inputTop = inputReference.getBoundingClientRect().top;
       const panel = overlayContainerElement.querySelector('.mat-autocomplete-panel')!;
       const panelBottom = panel.getBoundingClientRect().bottom;
 
-      // Panel is offset by 24px in styles so that the label has room to display.
-      expect(Math.floor(inputTop - 24))
+      expect(Math.floor(inputTop))
           .toEqual(Math.floor(panelBottom), `Expected panel to fall back to above position.`);
-      expect(fixture.componentInstance.trigger.autocomplete.positionY)
-          .toEqual('above', `Expected autocomplete positionY to be "above" if panel won't fit.`);
     });
 
     it('should align panel properly when filtering in "above" position', async(() => {
       // Push the autocomplete trigger down so it won't have room to open "below"
-      input.style.top = '600px';
-      input.style.position = 'relative';
+      inputReference.style.top = '600px';
+      inputReference.style.position = 'relative';
 
       fixture.componentInstance.trigger.openPanel();
       fixture.detectChanges();
@@ -1132,15 +1128,12 @@ describe('MdAutocomplete', () => {
         typeInElement('f', input);
         fixture.detectChanges();
 
-        const inputTop = input.getBoundingClientRect().top;
+        const inputTop = inputReference.getBoundingClientRect().top;
         const panel = overlayContainerElement.querySelector('.mat-autocomplete-panel')!;
         const panelBottom = panel.getBoundingClientRect().bottom;
 
-        // Panel is offset by 24px in styles so that the label has room to display.
-        expect(Math.floor(inputTop - 24))
+        expect(Math.floor(inputTop))
             .toEqual(Math.floor(panelBottom), `Expected panel to stay aligned after filtering.`);
-        expect(fixture.componentInstance.trigger.autocomplete.positionY)
-            .toEqual('above', `Expected autocomplete positionY to be "above" if panel won't fit.`);
       });
     }));
 

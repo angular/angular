@@ -6,18 +6,6 @@
  */
 $mat-autocomplete-panel-max-height: 256px !default;
 
-/**
- * When in "below" position, the panel needs a slight
- * y-offset to ensure the input underline displays.
- */
-$mat-autocomplete-panel-below-offset: 6px !default;
-
-/**
- * When in "above" position, the panel needs a larger
- * y-offset to ensure the label has room to display.
- */
-$mat-autocomplete-panel-above-offset: -24px !default;
-
 .mat-autocomplete-panel {
   @include mat-menu-base(8);
   visibility: hidden;
@@ -25,14 +13,6 @@ $mat-autocomplete-panel-above-offset: -24px !default;
   max-width: none;
   max-height: $mat-autocomplete-panel-max-height;
   position: relative;
-
-  &.mat-autocomplete-panel-below {
-    top: $mat-autocomplete-panel-below-offset;
-  }
-
-  &.mat-autocomplete-panel-above {
-    top: $mat-autocomplete-panel-above-offset;
-  }
 
   &.mat-autocomplete-visible {
     visibility: visible;
