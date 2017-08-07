@@ -6,6 +6,7 @@ import {
   clickElementAtPoint,
   waitForElement,
 } from '../util/index';
+import {screenshot} from '../screenshot';
 
 
 describe('dialog', () => {
@@ -14,6 +15,7 @@ describe('dialog', () => {
   it('should open a dialog', () => {
     element(by.id('default')).click();
     expectToExist('md-dialog-container');
+    screenshot('simple dialog opened');
   });
 
   it('should open a template dialog', () => {
