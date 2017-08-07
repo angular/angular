@@ -187,8 +187,7 @@ class AngularCompilerProgram implements Program {
     const before: ts.TransformerFactory<ts.SourceFile>[] = [];
     const after: ts.TransformerFactory<ts.SourceFile>[] = [];
     if (!this.options.disableExpressionLowering) {
-      // TODO(chuckj): fix and re-enable + tests - see https://github.com/angular/angular/pull/18388
-      // before.push(getExpressionLoweringTransformFactory(this.metadataCache));
+      before.push(getExpressionLoweringTransformFactory(this.metadataCache));
     }
     if (!this.options.skipTemplateCodegen) {
       after.push(getAngularEmitterTransformFactory(this.generatedFiles));
