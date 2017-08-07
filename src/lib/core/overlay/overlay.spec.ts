@@ -476,6 +476,11 @@ describe('OverlayContainer theming', () => {
     expect(overlayContainerElement.classList).not.toContain('initial-theme');
     expect(overlayContainerElement.classList).toContain('new-theme');
   });
+
+  it('should not throw when switching from a blank theme', () => {
+    overlayContainer.themeClass = '';
+    expect(() => overlayContainer.themeClass = 'new-theme').not.toThrow();
+  });
 });
 
 /** Simple component for testing ComponentPortal. */

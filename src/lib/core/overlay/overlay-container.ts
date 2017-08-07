@@ -25,7 +25,9 @@ export class OverlayContainer {
   get themeClass(): string { return this._themeClass; }
   set themeClass(value: string) {
     if (this._containerElement) {
-      this._containerElement.classList.remove(this._themeClass);
+      if (this._themeClass) {
+        this._containerElement.classList.remove(this._themeClass);
+      }
 
       if (value) {
         this._containerElement.classList.add(value);
