@@ -11,7 +11,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {main, performCompilation} from '../src/ngc';
+import {main} from '../src/ngc';
+import {performCompilation} from '../src/perform-compile';
 
 function getNgRootDir() {
   const moduleFilename = module.filename.replace(/\\/g, '/');
