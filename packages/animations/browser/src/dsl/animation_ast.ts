@@ -82,6 +82,7 @@ export class AnimateAst extends Ast {
 
 export class StyleAst extends Ast {
   public isEmptyStep = false;
+  public containsDynamicStyles = false;
 
   constructor(
       public styles: (ɵStyleData|string)[], public easing: string|null,

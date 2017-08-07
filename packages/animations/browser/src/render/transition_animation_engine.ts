@@ -66,6 +66,8 @@ export class StateValue {
   public value: string;
   public options: AnimationOptions;
 
+  get params(): {[key: string]: any} { return this.options.params as{[key: string]: any}; }
+
   constructor(input: any) {
     const isObj = input && input.hasOwnProperty('value');
     const value = isObj ? input['value'] : input;
@@ -213,7 +215,24 @@ export class AnimationTransitionNamespace {
     // The removal arc here is special cased because the same element is triggered
     // twice in the event that it contains animations on the outer/inner portions
     // of the host container
-    if (!isRemoval && fromState.value === toState.value) return;
+    if (!isRemoval && fromState.value === toState.value) {
+      // this means that despite the value not changing, some inner params
+      // have changed which means that the animation final styles need to be applied
+      if (!objEquals(fromState.params, toState.params)) {
+        const errors: any[] = [];
+        const fromStyles = trigger.matchStyles(fromState.value, fromState.params, errors);
+        const toStyles = trigger.matchStyles(toState.value, toState.params, errors);
+        if (errors.length) {
+          this._engine.reportError(errors);
+        } else {
+          this._engine.afterFlush(() => {
+            eraseStyles(element, fromStyles);
+            setStyles(element, toStyles);
+          });
+        }
+      }
+      return;
+    }
 
     const playersOnElement: TransitionAnimationPlayer[] =
         getOrSetAsInMap(this._engine.playersByElement, element, []);
@@ -664,7 +683,7 @@ export class TransitionAnimationEngine {
   private _buildInstruction(entry: QueueInstruction, subTimelines: ElementInstructionMap) {
     return entry.transition.build(
         this.driver, entry.element, entry.fromState.value, entry.toState.value,
-        entry.toState.options, subTimelines);
+        entry.fromState.options, entry.toState.options, subTimelines);
   }
 
   destroyInnerAnimations(containerElement: any) {
@@ -779,6 +798,11 @@ export class TransitionAnimationEngine {
         quietFns.forEach(fn => fn());
       }
     }
+  }
+
+  reportError(errors: string[]) {
+    throw new Error(
+        `Unable to process animations due to the following failed trigger transitions\n ${errors.join("\n")}`);
   }
 
   private _flushAnimations(cleanupFns: Function[], microtaskId: number):
@@ -901,14 +925,14 @@ export class TransitionAnimationEngine {
     }
 
     if (erroneousTransitions.length) {
-      let msg = `Unable to process animations due to the following failed trigger transitions\n`;
+      const errors: string[] = [];
       erroneousTransitions.forEach(instruction => {
-        msg += `@${instruction.triggerName} has failed due to:\n`;
-        instruction.errors !.forEach(error => { msg += `- ${error}\n`; });
+        errors.push(`@${instruction.triggerName} has failed due to:\n`);
+        instruction.errors !.forEach(error => errors.push(`- ${error}\n`));
       });
 
       allPlayers.forEach(player => player.destroy());
-      throw new Error(msg);
+      this.reportError(errors);
     }
 
     // these can only be detected here since we have a map of all the elements
@@ -1490,4 +1514,15 @@ function _flattenGroupPlayersRecur(players: AnimationPlayer[], finalPlayers: Ani
       finalPlayers.push(player as AnimationPlayer);
     }
   }
+}
+
+function objEquals(a: {[key: string]: any}, b: {[key: string]: any}): boolean {
+  const k1 = Object.keys(a);
+  const k2 = Object.keys(b);
+  if (k1.length != k2.length) return false;
+  for (let i = 0; i < k1.length; i++) {
+    const prop = k1[i];
+    if (!b.hasOwnProperty(prop) || a[prop] !== b[prop]) return false;
+  }
+  return true;
 }

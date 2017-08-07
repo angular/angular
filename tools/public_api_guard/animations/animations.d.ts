@@ -151,6 +151,11 @@ export interface AnimationStaggerMetadata extends AnimationMetadata {
 /** @experimental */
 export interface AnimationStateMetadata extends AnimationMetadata {
     name: string;
+    options?: {
+        params: {
+            [name: string]: any;
+        };
+    };
     styles: AnimationStyleMetadata;
 }
 
@@ -221,7 +226,11 @@ export declare function sequence(steps: AnimationMetadata[], options?: Animation
 export declare function stagger(timings: string | number, animation: AnimationMetadata | AnimationMetadata[]): AnimationStaggerMetadata;
 
 /** @experimental */
-export declare function state(name: string, styles: AnimationStyleMetadata): AnimationStateMetadata;
+export declare function state(name: string, styles: AnimationStyleMetadata, options?: {
+    params: {
+        [name: string]: any;
+    };
+}): AnimationStateMetadata;
 
 /** @experimental */
 export declare function style(tokens: '*' | {
