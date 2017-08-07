@@ -2,10 +2,11 @@
   "name": "material2-screenshot-functions",
   "description": "Angular Material screenshot firebase functions",
   "dependencies": {
+    "@types/jsonwebtoken": "^7.2.3",
     "@google-cloud/storage": "^0.8.0",
     "firebase-admin": "~4.1.3",
     "firebase-functions": "^0.5.2",
-    "jsonwebtoken": "^7.3.0",
+    "jsonwebtoken": "^7.4.2",
     "request": "^2.81.0",
     "typescript": "^2.2.2",
     "ts-node": "^3.0.2"
