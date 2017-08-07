@@ -1,4 +1,5 @@
 import {readFileSync, writeFileSync} from 'fs';
+import {platform} from 'os';
 import {buildConfig} from './build-config';
 import {spawnSync} from 'child_process';
 
@@ -13,12 +14,9 @@ const versionPlaceholderRegex = new RegExp(versionPlaceholderText, 'g');
  * version of Material.
  */
 export function replaceVersionPlaceholders(packageDir: string) {
-  // Resolve files that contain version placeholders using Grep since it's super fast and also
-  // does have a very simple usage.
-  const files = spawnSync('grep', ['-ril', versionPlaceholderText, packageDir]).stdout
-    .toString()
-    .split('\n')
-    .filter(String);
+  // Resolve files that contain version placeholders using Grep or Findstr since those are
+  // extremely fast and also have a very simple usage.
+  const files = findFilesWithPlaceholders(packageDir);
 
   // Walk through every file that contains version placeholders and replace those with the current
   // version of the root package.json file.
@@ -29,4 +27,28 @@ export function replaceVersionPlaceholders(packageDir: string) {
 
     writeFileSync(filePath, fileContent);
   });
+}
+
+/** Finds all files in the specified package dir where version placeholders are included. */
+function findFilesWithPlaceholders(packageDir: string): string[] {
+  const findCommand = buildPlaceholderFindCommand(packageDir);
+  return spawnSync(findCommand.binary, findCommand.args).stdout
+    .toString()
+    .split(/[\n\r]/)
+    .filter(String);
+}
+
+/** Builds the command that will be executed to find all files containing version placeholders. */
+function buildPlaceholderFindCommand(packageDir: string) {
+  if (platform() === 'win32') {
+    return {
+      binary: 'findstr',
+      args: ['/msi', `/c:${versionPlaceholderText}`, `${packageDir}\\*`]
+    };
+  } else {
+    return {
+      binary: 'grep',
+      args: ['-ril', versionPlaceholderText, packageDir]
+    };
+  }
 }
