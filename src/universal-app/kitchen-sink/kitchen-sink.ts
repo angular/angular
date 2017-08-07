@@ -1,6 +1,7 @@
 import {Component, NgModule} from '@angular/core';
 import {ServerModule} from '@angular/platform-server';
 import {BrowserModule} from '@angular/platform-browser';
+import {Observable} from 'rxjs/Observable';
 import {
   MdAutocompleteModule,
   MdButtonModule,
@@ -29,14 +30,33 @@ import {
   MdToolbarModule,
   MdTooltipModule,
 } from '@angular/material';
+import {
+  CdkTableModule,
+  DataSource
+} from '@angular/cdk/table';
 
+import 'rxjs/add/observable/of';
 
 @Component({
   selector: 'kitchen-sink',
   templateUrl: './kitchen-sink.html',
   styleUrls: ['./kitchen-sink.css'],
 })
-export class KitchenSink { }
+export class KitchenSink {
+
+  /** List of columns for the CDK table. */
+  cdkTableColumns = ['userId'];
+
+  /** Data source for the CDK table. */
+  cdkTableDataSource: DataSource<any> = {
+    connect: () => Observable.of([
+      { userId: 1 },
+      { userId: 2 }
+    ]),
+    disconnect: () => {}
+  };
+
+}
 
 
 @NgModule({
@@ -70,7 +90,10 @@ export class KitchenSink { }
     MdTabsModule,
     MdToolbarModule,
     MdTooltipModule,
-    MdExpansionModule
+    MdExpansionModule,
+
+    // CDK Modules
+    CdkTableModule
   ],
   bootstrap: [KitchenSink],
   declarations: [KitchenSink],

@@ -227,3 +227,15 @@
   This is the content text that makes sense here.
   <md-action-row>Action</md-action-row>
 </md-expansion-panel>
+
+<h2>CDK Table</h2>
+
+<cdk-table #table [dataSource]="cdkTableDataSource">
+  <ng-container cdkColumnDef="userId">
+    <cdk-header-cell *cdkHeaderCellDef>ID</cdk-header-cell>
+    <cdk-cell *cdkCellDef="let row">{{row.userId}}</cdk-cell>
+  </ng-container>
+
+  <cdk-header-row *cdkHeaderRowDef="cdkTableColumns" ></cdk-header-row>
+  <cdk-row *cdkRowDef="let row; columns: cdkTableColumns;"></cdk-row>
+</cdk-table>
