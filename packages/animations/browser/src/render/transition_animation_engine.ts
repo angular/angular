@@ -1169,8 +1169,17 @@ export class TransitionAnimationEngine {
       if (details && details.removedBeforeQueried) return new NoopAnimationPlayer();
 
       const isQueriedElement = element !== rootElement;
-      const previousPlayers = flattenGroupPlayers(
-          (allPreviousPlayersMap.get(element) || EMPTY_PLAYER_ARRAY).map(p => p.getRealPlayer()));
+      const previousPlayers =
+          flattenGroupPlayers((allPreviousPlayersMap.get(element) || EMPTY_PLAYER_ARRAY)
+                                  .map(p => p.getRealPlayer()))
+              .filter(p => {
+                // the `element` is not apart of the AnimationPlayer definition, but
+                // Mock/WebAnimations
+                // use the element within their implementation. This will be added in Angular5 to
+                // AnimationPlayer
+                const pp = p as any;
+                return pp.element ? pp.element === element : false;
+              });
 
       const preStyles = preStylesMap.get(element);
       const postStyles = postStylesMap.get(element);
