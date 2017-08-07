@@ -98,7 +98,7 @@ export class MockConnection implements Connection {
    * ```
    *
    */
-  mockError(err?: Error) {
+  mockError(err?: Response|Error) {
     // Matches ResourceLoader semantics
     this.readyState = ReadyState.Done;
     this.response.error(err);
