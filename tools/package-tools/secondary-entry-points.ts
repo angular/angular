@@ -38,10 +38,10 @@ export function getSecondaryEntryPointsForPackage(pkg: BuildPackage) {
   buildNodes.forEach(node => {
     // Look for any imports that reference this same umbrella package and get the corresponding
     // BuildNode for each by looking at the import statements with grep.
-    node.deps = spawnSync('egrep', [
-      '-roh',
+    node.deps = spawnSync('grep', [
+      '-Eroh',
       '--include', '*.ts',
-      `from.'@angular/${packageName}/.+';`,
+      `from '@angular/${packageName}/.+';`,
       `${packageDir}/${node.name}/`
     ])
     .stdout
