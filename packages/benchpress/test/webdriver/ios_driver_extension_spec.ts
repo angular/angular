@@ -8,7 +8,7 @@
 
 import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
 
-import {IOsDriverExtension, ReflectiveInjector, WebDriverAdapter, WebDriverExtension} from '../../index';
+import {IOsDriverExtension, Injector, WebDriverAdapter, WebDriverExtension} from '../../index';
 import {TraceEventFactory} from '../trace_event_factory';
 
 export function main() {
@@ -24,8 +24,8 @@ export function main() {
       }
       log = [];
       extension =
-          ReflectiveInjector
-              .resolveAndCreate([
+          Injector
+              .create([
                 IOsDriverExtension.PROVIDERS,
                 {provide: WebDriverAdapter, useValue: new MockDriverAdapter(log, perfRecords)}
               ])

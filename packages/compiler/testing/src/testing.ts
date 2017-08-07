@@ -28,7 +28,7 @@ export * from './pipe_resolver_mock';
 
 import {createPlatformFactory, ModuleWithComponentFactories, Injectable, CompilerOptions, COMPILER_OPTIONS, CompilerFactory, ComponentFactory, NgModuleFactory, Injector, NgModule, Component, Directive, Pipe, Type, PlatformRef, ɵstringify} from '@angular/core';
 import {MetadataOverride, ɵTestingCompilerFactory as TestingCompilerFactory, ɵTestingCompiler as TestingCompiler} from '@angular/core/testing';
-import {platformCoreDynamic, JitCompiler, DirectiveResolver, NgModuleResolver, PipeResolver, CompileMetadataResolver} from '@angular/compiler';
+import {platformCoreDynamic, JitCompiler, DirectiveResolver, NgModuleResolver, PipeResolver, CompileMetadataResolver, CompileReflector} from '@angular/compiler';
 import {MockDirectiveResolver} from './directive_resolver_mock';
 import {MockNgModuleResolver} from './ng_module_resolver_mock';
 import {MockPipeResolver} from './pipe_resolver_mock';
@@ -124,15 +124,19 @@ export const platformCoreDynamicTesting: (extraProviders?: any[]) => PlatformRef
         provide: COMPILER_OPTIONS,
         useValue: {
           providers: [
-            MockPipeResolver,
+            {provide: MockPipeResolver, deps: [Injector, CompileReflector]},
             {provide: PipeResolver, useExisting: MockPipeResolver},
-            MockDirectiveResolver,
+            {provide: MockDirectiveResolver, deps: [Injector, CompileReflector]},
             {provide: DirectiveResolver, useExisting: MockDirectiveResolver},
-            MockNgModuleResolver,
+            {provide: MockNgModuleResolver, deps: [Injector, CompileReflector]},
             {provide: NgModuleResolver, useExisting: MockNgModuleResolver},
           ]
         },
         multi: true
       },
-      {provide: TestingCompilerFactory, useClass: TestingCompilerFactoryImpl}
+      {
+        provide: TestingCompilerFactory,
+        useClass: TestingCompilerFactoryImpl,
+        deps: [CompilerFactory]
+      }
     ]);

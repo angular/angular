@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Provider, ReflectiveInjector} from '@angular/core';
+import {Injector, StaticProvider} from '@angular/core';
 
 import {Options} from './common_options';
 import {Metric} from './metric';
@@ -34,17 +34,17 @@ import {IOsDriverExtension} from './webdriver/ios_driver_extension';
  * It provides defaults, creates the injector and calls the sampler.
  */
 export class Runner {
-  constructor(private _defaultProviders: Provider[] = []) {}
+  constructor(private _defaultProviders: StaticProvider[] = []) {}
 
   sample({id, execute, prepare, microMetrics, providers, userMetrics}: {
     id: string,
     execute?: Function,
     prepare?: Function,
     microMetrics?: {[key: string]: string},
-    providers?: Provider[],
+    providers?: StaticProvider[],
     userMetrics?: {[key: string]: string}
   }): Promise<SampleState> {
-    const sampleProviders: Provider[] = [
+    const sampleProviders: StaticProvider[] = [
       _DEFAULT_PROVIDERS, this._defaultProviders, {provide: Options.SAMPLE_ID, useValue: id},
       {provide: Options.EXECUTE, useValue: execute}
     ];
@@ -61,7 +61,7 @@ export class Runner {
       sampleProviders.push(providers);
     }
 
-    const inj = ReflectiveInjector.resolveAndCreate(sampleProviders);
+    const inj = Injector.create(sampleProviders);
     const adapter: WebDriverAdapter = inj.get(WebDriverAdapter);
 
     return Promise
@@ -75,7 +75,7 @@ export class Runner {
           // Only WebDriverAdapter is reused.
           // TODO vsavkin consider changing it when toAsyncFactory is added back or when child
           // injectors are handled better.
-          const injector = ReflectiveInjector.resolveAndCreate([
+          const injector = Injector.create([
             sampleProviders, {provide: Options.CAPABILITIES, useValue: capabilities},
             {provide: Options.USER_AGENT, useValue: userAgent},
             {provide: WebDriverAdapter, useValue: adapter}

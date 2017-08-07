@@ -90,7 +90,7 @@ export declare class NgProbeToken {
 }
 
 /** @stable */
-export declare const platformBrowser: (extraProviders?: Provider[]) => PlatformRef;
+export declare const platformBrowser: (extraProviders?: StaticProvider[]) => PlatformRef;
 
 /** @stable */
 export interface SafeHtml extends SafeValue {

@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Provider} from '@angular/core';
+import {StaticProvider} from '@angular/core';
 import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
 
-import {Metric, Options, PerfLogEvent, PerfLogFeatures, PerflogMetric, ReflectiveInjector, WebDriverExtension} from '../../index';
+import {Injector, Metric, Options, PerfLogEvent, PerfLogFeatures, PerflogMetric, WebDriverExtension} from '../../index';
 import {TraceEventFactory} from '../trace_event_factory';
 
 export function main() {
@@ -33,7 +33,7 @@ export function main() {
     if (!microMetrics) {
       microMetrics = {};
     }
-    const providers: Provider[] = [
+    const providers: StaticProvider[] = [
       Options.DEFAULT_PROVIDERS, PerflogMetric.PROVIDERS,
       {provide: Options.MICRO_METRICS, useValue: microMetrics}, {
         provide: PerflogMetric.SET_TIMEOUT,
@@ -59,7 +59,7 @@ export function main() {
     if (requestCount != null) {
       providers.push({provide: Options.REQUEST_COUNT, useValue: requestCount});
     }
-    return ReflectiveInjector.resolveAndCreate(providers).get(PerflogMetric);
+    return Injector.create(providers).get(PerflogMetric);
   }
 
   describe('perflog metric', () => {

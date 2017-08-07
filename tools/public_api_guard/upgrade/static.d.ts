@@ -11,7 +11,7 @@ export declare function downgradeComponent(info: {
 export declare function downgradeInjectable(token: any): Function;
 
 /** @experimental */
-export declare function downgradeModule<T>(moduleFactoryOrBootstrapFn: NgModuleFactory<T> | ((extraProviders: Provider[]) => Promise<NgModuleRef<T>>)): string;
+export declare function downgradeModule<T>(moduleFactoryOrBootstrapFn: NgModuleFactory<T> | ((extraProviders: StaticProvider[]) => Promise<NgModuleRef<T>>)): string;
 
 /** @stable */
 export declare function getAngularLib(): any;

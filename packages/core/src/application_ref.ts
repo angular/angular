@@ -19,7 +19,7 @@ import {isPromise} from '../src/util/lang';
 import {ApplicationInitStatus} from './application_init';
 import {APP_BOOTSTRAP_LISTENER, PLATFORM_INITIALIZER} from './application_tokens';
 import {Console} from './console';
-import {Injectable, InjectionToken, Injector, Provider, ReflectiveInjector} from './di';
+import {Injectable, InjectionToken, Injector, StaticProvider} from './di';
 import {CompilerFactory, CompilerOptions} from './linker/compiler';
 import {ComponentFactory, ComponentRef} from './linker/component_factory';
 import {ComponentFactoryBoundToModule, ComponentFactoryResolver} from './linker/component_factory_resolver';
@@ -99,17 +99,18 @@ export function createPlatform(injector: Injector): PlatformRef {
  * @experimental APIs related to application bootstrap are currently under review.
  */
 export function createPlatformFactory(
-    parentPlatformFactory: ((extraProviders?: Provider[]) => PlatformRef) | null, name: string,
-    providers: Provider[] = []): (extraProviders?: Provider[]) => PlatformRef {
+    parentPlatformFactory: ((extraProviders?: StaticProvider[]) => PlatformRef) | null,
+    name: string, providers: StaticProvider[] = []): (extraProviders?: StaticProvider[]) =>
+    PlatformRef {
   const marker = new InjectionToken(`Platform: ${name}`);
-  return (extraProviders: Provider[] = []) => {
+  return (extraProviders: StaticProvider[] = []) => {
     let platform = getPlatform();
     if (!platform || platform.injector.get(ALLOW_MULTIPLE_PLATFORMS, false)) {
       if (parentPlatformFactory) {
         parentPlatformFactory(
             providers.concat(extraProviders).concat({provide: marker, useValue: true}));
       } else {
-        createPlatform(ReflectiveInjector.resolveAndCreate(
+        createPlatform(Injector.create(
             providers.concat(extraProviders).concat({provide: marker, useValue: true})));
       }
     }
@@ -292,8 +293,7 @@ export class PlatformRef_ extends PlatformRef {
     // Attention: Don't use ApplicationRef.run here,
     // as we want to be sure that all possible constructor calls are inside `ngZone.run`!
     return ngZone.run(() => {
-      const ngZoneInjector =
-          ReflectiveInjector.resolveAndCreate([{provide: NgZone, useValue: ngZone}], this.injector);
+      const ngZoneInjector = Injector.create([{provide: NgZone, useValue: ngZone}], this.injector);
       const moduleRef = <InternalNgModuleRef<M>>moduleFactory.create(ngZoneInjector);
       const exceptionHandler: ErrorHandler = moduleRef.injector.get(ErrorHandler, null);
       if (!exceptionHandler) {
