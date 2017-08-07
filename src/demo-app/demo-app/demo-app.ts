@@ -1,4 +1,11 @@
-import {Component, ViewEncapsulation, ElementRef, ChangeDetectionStrategy} from '@angular/core';
+import {
+  Component,
+  ViewEncapsulation,
+  ElementRef,
+  ChangeDetectionStrategy,
+  Renderer2,
+} from '@angular/core';
+import {OverlayContainer} from '@angular/material';
 
 const changeDetectionKey = 'mdDemoChangeDetection';
 
@@ -45,9 +52,6 @@ export class DemoAppOnPush {}
   selector: 'demo-app',
   templateUrl: 'demo-app.html',
   styleUrls: ['demo-app.css'],
-  host: {
-    '[class.unicorn-dark-theme]': 'dark',
-  },
   encapsulation: ViewEncapsulation.None,
 })
 export class DemoApp {
@@ -90,7 +94,10 @@ export class DemoApp {
     {name: 'Typography', route: '/typography'}
   ];
 
-  constructor(private _element: ElementRef) {
+  constructor(
+    private _element: ElementRef,
+    private _renderer: Renderer2,
+    private _overlayContainer: OverlayContainer) {
     // Some browsers will throw when trying to access localStorage in incognito.
     try {
       this.changeDetectionStrategy = window.localStorage.getItem(changeDetectionKey) || 'Default';
@@ -120,6 +127,20 @@ export class DemoApp {
       window.location.reload();
     } catch (error) {
       console.error(error);
+    }
+  }
+
+  toggleTheme() {
+    const darkThemeClass = 'unicorn-dark-theme';
+
+    this.dark = !this.dark;
+
+    if (this.dark) {
+      this._renderer.addClass(this._element.nativeElement, darkThemeClass);
+      this._overlayContainer.themeClass = darkThemeClass;
+    } else {
+      this._renderer.removeClass(this._element.nativeElement, darkThemeClass);
+      this._overlayContainer.themeClass = '';
     }
   }
 }
