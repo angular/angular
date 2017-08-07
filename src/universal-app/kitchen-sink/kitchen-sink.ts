@@ -26,6 +26,7 @@ import {
   MdSliderModule,
   MdSlideToggleModule,
   MdSnackBarModule,
+  MdSortModule,
   MdTabsModule,
   MdToolbarModule,
   MdTooltipModule,
@@ -91,6 +92,7 @@ export class KitchenSink {
     MdToolbarModule,
     MdTooltipModule,
     MdExpansionModule,
+    MdSortModule,
 
     // CDK Modules
     CdkTableModule
