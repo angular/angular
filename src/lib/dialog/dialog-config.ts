@@ -33,6 +33,9 @@ export class MdDialogConfig {
    */
   viewContainerRef?: ViewContainerRef;
 
+  /** ID for the dialog. If omitted, a unique one will be generated. */
+  id?: string;
+
   /** The ARIA role of the dialog element. */
   role?: DialogRole = 'dialog';
 

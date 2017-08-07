@@ -56,6 +56,7 @@ export const rollupGlobals = {
   'rxjs/observable/merge': 'Rx.Observable',
   'rxjs/observable/of': 'Rx.Observable',
   'rxjs/observable/throw': 'Rx.Observable',
+  'rxjs/observable/defer': 'Rx.Observable',
   'rxjs/operator/auditTime': 'Rx.Observable.prototype',
   'rxjs/operator/catch': 'Rx.Observable.prototype',
   'rxjs/operator/debounceTime': 'Rx.Observable.prototype',
