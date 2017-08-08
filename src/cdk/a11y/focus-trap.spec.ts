@@ -15,6 +15,7 @@ describe('FocusTrap', () => {
         SimpleFocusTrap,
         FocusTrapTargets,
         FocusTrapWithSvg,
+        FocusTrapWithoutFocusableElements,
       ],
       providers: [InteractivityChecker, Platform, FocusTrapFactory]
     });
@@ -35,22 +36,37 @@ describe('FocusTrap', () => {
     it('wrap focus from end to start', () => {
       // Because we can't mimic a real tab press focus change in a unit test, just call the
       // focus event handler directly.
-      focusTrapInstance.focusFirstTabbableElement();
+      const result = focusTrapInstance.focusFirstTabbableElement();
 
       expect(document.activeElement.nodeName.toLowerCase())
           .toBe('input', 'Expected input element to be focused');
+      expect(result).toBe(true, 'Expected return value to be true if focus was shifted.');
     });
 
     it('should wrap focus from start to end', () => {
       // Because we can't mimic a real tab press focus change in a unit test, just call the
       // focus event handler directly.
-      focusTrapInstance.focusLastTabbableElement();
+      const result = focusTrapInstance.focusLastTabbableElement();
 
       // In iOS button elements are never tabbable, so the last element will be the input.
-      let lastElement = new Platform().IOS ? 'input' : 'button';
+      const lastElement = new Platform().IOS ? 'input' : 'button';
 
       expect(document.activeElement.nodeName.toLowerCase())
           .toBe(lastElement, `Expected ${lastElement} element to be focused`);
+
+      expect(result).toBe(true, 'Expected return value to be true if focus was shifted.');
+    });
+
+    it('should return false if it did not manage to find a focusable element', () => {
+      fixture.destroy();
+
+      const newFixture = TestBed.createComponent(FocusTrapWithoutFocusableElements);
+      newFixture.detectChanges();
+
+      const focusTrap = newFixture.componentInstance.focusTrapDirective.focusTrap;
+      const result = focusTrap.focusFirstTabbableElement();
+
+      expect(result).toBe(false);
     });
 
     it('should be enabled by default', () => {
@@ -197,5 +213,16 @@ class FocusTrapTargets {
     `
 })
 class FocusTrapWithSvg {
+  @ViewChild(FocusTrapDirective) focusTrapDirective: FocusTrapDirective;
+}
+
+@Component({
+  template: `
+    <div cdkTrapFocus>
+      <p>Hello</p>
+    </div>
+    `
+})
+class FocusTrapWithoutFocusableElements {
   @ViewChild(FocusTrapDirective) focusTrapDirective: FocusTrapDirective;
 }
