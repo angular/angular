@@ -16,8 +16,6 @@ import {PlatformState} from './platform_state';
 import {platformDynamicServer, platformServer} from './server';
 import {INITIAL_CONFIG} from './tokens';
 
-const parse5 = require('parse5');
-
 interface PlatformOptions {
   document?: string;
   url?: string;

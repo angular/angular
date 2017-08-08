@@ -83,7 +83,7 @@ jrunner.onComplete(function(passed: boolean) { process.exit(passed ? 0 : 1); });
 jrunner.projectBaseDir = path.resolve(__dirname, '../../');
 jrunner.specDir = '';
 require('./test-cjs-main.js');
-distAllRequire('@angular/platform-server/src/parse5_adapter.js').Parse5DomAdapter.makeCurrent();
+distAllRequire('@angular/platform-server/src/domino_adapter.js').DominoAdapter.makeCurrent();
 specFiles.forEach((file: string) => {
   const r = distAllRequire(file);
   if (r.main) {

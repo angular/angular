@@ -3720,6 +3720,11 @@
       "from": "domhandler@>=2.3.0 <3.0.0",
       "resolved": "https://registry.npmjs.org/domhandler/-/domhandler-2.3.0.tgz"
     },
+    "domino": {
+      "version": "1.0.29",
+      "from": "domino@latest",
+      "resolved": "https://registry.npmjs.org/domino/-/domino-1.0.29.tgz"
+    },
     "domutils": {
       "version": "1.5.1",
       "from": "domutils@>=1.5.1 <2.0.0",
@@ -9849,18 +9854,6 @@
       "version": "2.2.0",
       "from": "parse-json@>=2.2.0 <3.0.0",
       "resolved": "https://registry.npmjs.org/parse-json/-/parse-json-2.2.0.tgz"
-    },
-    "parse5": {
-      "version": "3.0.1",
-      "from": "parse5@3.0.1",
-      "resolved": "https://registry.npmjs.org/parse5/-/parse5-3.0.1.tgz",
-      "dependencies": {
-        "@types/node": {
-          "version": "6.0.63",
-          "from": "@types/node@>=6.0.46 <7.0.0",
-          "resolved": "https://registry.npmjs.org/@types/node/-/node-6.0.63.tgz"
-        }
-      }
     },
     "parsejson": {
       "version": "0.0.1",
