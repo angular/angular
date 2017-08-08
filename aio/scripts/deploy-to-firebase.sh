@@ -78,7 +78,7 @@ echo "Build/deploy mode : $deployEnv"
 echo "Firebase project  : $projectId"
 echo "Deployment URL    : $deployedUrl"
 
-if [[ $1 == "--dry-run" ]]; then
+if [[ ${1:-} == "--dry-run" ]]; then
   exit 0
 fi
 
