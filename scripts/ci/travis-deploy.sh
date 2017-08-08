@@ -30,7 +30,7 @@ if [[ "${DEPLOY_MODE}" == "docs-content" ]]; then
 fi
 
 if [[ "${DEPLOY_MODE}" == "screenshot-tool" ]]; then
-  ./scripts/deploy/deploy-screenshot-functions.sh
+  ./scripts/deploy/deploy-screenshot-tool.sh
 fi
 
 if [[ "${DEPLOY_MODE}" == "dashboard" ]]; then
