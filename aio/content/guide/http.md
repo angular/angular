@@ -547,12 +547,12 @@ In order to prevent collisions in environments where multiple Angular apps share
 
 ### Configuring custom cookie/header names
 
-If your backend service uses different names for the XSRF token cookie or header, use `HttpClientXsrfModule.withConfig()` to override the defaults.
+If your backend service uses different names for the XSRF token cookie or header, use `HttpClientXsrfModule.withOptions()` to override the defaults.
 
 ```javascript
 imports: [
   HttpClientModule,
-  HttpClientXsrfModule.withConfig({
+  HttpClientXsrfModule.withOptions({
     cookieName: 'My-Xsrf-Cookie',
     headerName: 'My-Xsrf-Header',
   }),
