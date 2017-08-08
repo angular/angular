@@ -362,7 +362,11 @@
             }
           ]
         },
-
+        {
+          "url": "guide/universal",
+          "title": "Server-side Rendering",
+          "tooltip": "Render HTML server-side with Angular Universal."
+        },
         {
           "url": "guide/visual-studio-2015",
           "title": "Visual Studio 2015 QuickStart",

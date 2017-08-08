@@ -9,7 +9,7 @@ const outputCache = {};   // cache for rendered pages
 
 export function ngUniversalEngine(setupOptions: any) {
 
-  return function (filePath: string, options: { req: Request }, callback: (err: Error, html: string) => void) {
+  return function (filePath: string, options: { req: any }, callback: (err: Error, html: string) => void) {
     let url: string = options.req.url;
     let html: string = outputCache[url];
     if (html) {
@@ -26,7 +26,7 @@ export function ngUniversalEngine(setupOptions: any) {
     }
 
     // render the page via angular platform-server
-    let appModuleFactory = setupOptions.bootstrap[0];
+    let appModuleFactory = setupOptions.bootstrap;
     renderModuleFactory(appModuleFactory, {
       document: templateCache[filePath],
       url: url

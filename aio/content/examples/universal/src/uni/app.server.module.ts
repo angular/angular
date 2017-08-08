@@ -13,8 +13,7 @@ import { AppModule } from '../app/app.module';
     AppComponent
   ],
   providers: [
-    {provide: APP_BASE_HREF, useValue: '/'}
-	//   { provide: NgModuleFactoryLoader, useClass: ServerRouterLoader }
+    {provide: APP_BASE_HREF, useValue: 'http://localhost:3200/' }
   ]
 })
 export class AppServerModule {

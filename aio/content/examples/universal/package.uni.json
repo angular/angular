@@ -5,13 +5,10 @@
   "scripts": {
     "build": "tsc -p src/",
     "build:watch": "tsc -w",
-    "build:aot": "webpack --config webpack.config.aot.js",
     "build:uni": "webpack --config webpack.config.uni.js",
 
     "serve": "lite-server -c=bs-config.json",
-    "serve:aot": "lite-server -c=bs-config.aot.js",
     "serve:uni": "node src/dist/server.js",
-    "serve:uni2": "lite-server -c bs-config.uni.js",
 
     "prestart": "npm run build",
     "start": "concurrently \"npm run build:watch\" \"npm run serve\"",
@@ -34,6 +31,7 @@
     "@angular/platform-browser-dynamic": "angular/platform-browser-dynamic-builds",
     "@angular/platform-server": "angular/platform-server-builds",
     "@angular/router": "angular/router-builds",
+    "@angular/animations": "^4.2.5",
 
     "angular-in-memory-web-api": "^0.3.1",
     "systemjs": "0.19.40",

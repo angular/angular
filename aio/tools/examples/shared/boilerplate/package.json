@@ -19,6 +19,10 @@
     "pretest:once": "npm run build",
     "test:once": "karma start karma.conf.js --single-run",
     "lint": "tslint ./src/**/*.ts -t verbose",
+    "clean": "rimraf src/dist && rimraf src/app/*.js* && rimraf src/uni/*.js* && rimraf src/main.js*",
+
+    "build:uni": "webpack --config webpack.config.uni.js",
+    "serve:uni": "node src/dist/server.js",
 
     "build:upgrade": "tsc",
     "serve:upgrade": "http-server",
