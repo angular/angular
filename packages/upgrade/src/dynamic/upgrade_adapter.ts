@@ -551,19 +551,19 @@ export class UpgradeAdapter {
             .then(() => {
               // At this point we have ng1 injector and we have prepared
               // ng1 components to be upgraded, we now can bootstrap ng2.
-              const DynamicNgUpgradeModule =
-                  NgModule({
-                    providers: [
-                      {provide: $INJECTOR, useFactory: () => ng1Injector},
-                      {provide: $COMPILE, useFactory: () => ng1Injector.get($COMPILE)},
-                      this.upgradedProviders
-                    ],
-                    imports: [this.ng2AppModule],
-                    entryComponents: this.downgradedComponents
-                  }).Class({
-                    constructor: function DynamicNgUpgradeModule() {},
-                    ngDoBootstrap: function() {}
-                  });
+              @NgModule({
+                providers: [
+                  {provide: $INJECTOR, useFactory: () => ng1Injector},
+                  {provide: $COMPILE, useFactory: () => ng1Injector.get($COMPILE)},
+                  this.upgradedProviders
+                ],
+                imports: [this.ng2AppModule],
+                entryComponents: this.downgradedComponents
+              })
+              class DynamicNgUpgradeModule {
+                constructor() {}
+                ngDoBootstrap() {}
+              }
               (platformRef as any)
                   ._bootstrapModuleWithZone(
                       DynamicNgUpgradeModule, this.compilerOptions, this.ngZone)
