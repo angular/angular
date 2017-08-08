@@ -164,17 +164,6 @@ export declare abstract class ChangeDetectorRef {
 }
 
 /** @stable */
-export declare function Class(clsDef: ClassDefinition): Type<any>;
-
-/** @stable */
-export declare type ClassDefinition = {
-    extends?: Type<any>;
-    constructor: Function | any[];
-} & {
-    [x: string]: Type<any> | Function | any[];
-};
-
-/** @stable */
 export interface ClassProvider {
     multi?: boolean;
     provide: any;
@@ -1029,10 +1018,8 @@ export declare const Type: FunctionConstructor;
 
 /** @stable */
 export interface TypeDecorator {
-    annotations: any[];
     (target: Object, propertyKey?: string | symbol, parameterIndex?: number): void;
     <T extends Type<any>>(type: T): T;
-    Class(obj: ClassDefinition): Type<any>;
 }
 
 /** @stable */

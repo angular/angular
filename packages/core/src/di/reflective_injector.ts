@@ -279,6 +279,7 @@ export abstract class ReflectiveInjector implements Injector {
 }
 
 export class ReflectiveInjector_ implements ReflectiveInjector {
+  private static INJECTOR_KEY = ReflectiveKey.get(Injector);
   /** @internal */
   _constructionCounter: number = 0;
   /** @internal */
@@ -391,7 +392,7 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
   }
 
   private _getByKey(key: ReflectiveKey, visibility: Self|SkipSelf|null, notFoundValue: any): any {
-    if (key === INJECTOR_KEY) {
+    if (key === ReflectiveInjector_.INJECTOR_KEY) {
       return this;
     }
 
@@ -464,8 +465,6 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
 
   toString(): string { return this.displayName; }
 }
-
-const INJECTOR_KEY = ReflectiveKey.get(Injector);
 
 function _mapProviders(injector: ReflectiveInjector_, fn: Function): any[] {
   const res: any[] = new Array(injector._providers.length);

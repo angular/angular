@@ -13,7 +13,7 @@
  */
 export * from './metadata';
 export * from './version';
-export {Class, ClassDefinition, TypeDecorator} from './util/decorators';
+export {TypeDecorator} from './util/decorators';
 export * from './di';
 export {createPlatform, assertPlatform, destroyPlatform, getPlatform, PlatformRef, ApplicationRef, enableProdMode, isDevMode, createPlatformFactory, NgProbeToken} from './application_ref';
 export {APP_ID, PACKAGE_ROOT_URL, PLATFORM_INITIALIZER, PLATFORM_ID, APP_BOOTSTRAP_LISTENER} from './application_tokens';

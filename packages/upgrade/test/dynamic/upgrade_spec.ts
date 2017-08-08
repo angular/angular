@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, Class, Component, EventEmitter, Input, NO_ERRORS_SCHEMA, NgModule, NgZone, OnChanges, SimpleChange, SimpleChanges, Testability, destroyPlatform, forwardRef} from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, Input, NO_ERRORS_SCHEMA, NgModule, NgZone, OnChanges, SimpleChange, SimpleChanges, Testability, destroyPlatform, forwardRef} from '@angular/core';
 import {async, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -25,14 +25,16 @@ export function main() {
       it('should instantiate ng2 in ng1 template and project content', async(() => {
            const ng1Module = angular.module('ng1', []);
 
-           const Ng2 = Component({
-                         selector: 'ng2',
-                         template: `{{ 'NG2' }}(<ng-content></ng-content>)`,
-                       }).Class({constructor: function() {}});
+           @Component({
+             selector: 'ng2',
+             template: `{{ 'NG2' }}(<ng-content></ng-content>)`,
+           })
+           class Ng2 {
+           }
 
-           const Ng2Module = NgModule({declarations: [Ng2], imports: [BrowserModule]}).Class({
-             constructor: function() {}
-           });
+           @NgModule({declarations: [Ng2], imports: [BrowserModule]})
+           class Ng2Module {
+           }
 
            const element =
                html('<div>{{ \'ng1[\' }}<ng2>~{{ \'ng-content\' }}~</ng2>{{ \']\' }}</div>');
@@ -49,15 +51,19 @@ export function main() {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
            const ng1Module = angular.module('ng1', []);
 
-           const Ng2 = Component({
-                         selector: 'ng2',
-                         template: `{{ 'ng2(' }}<ng1>{{'transclude'}}</ng1>{{ ')' }}`,
-                       }).Class({constructor: function Ng2() {}});
+           @Component({
+             selector: 'ng2',
+             template: `{{ 'ng2(' }}<ng1>{{'transclude'}}</ng1>{{ ')' }}`,
+           })
+           class Ng2 {
+           };
 
-           const Ng2Module = NgModule({
-                               declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
-                               imports: [BrowserModule],
-                             }).Class({constructor: function Ng2Module() {}});
+           @NgModule({
+             declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
+             imports: [BrowserModule],
+           })
+           class Ng2Module {
+           }
 
            ng1Module.directive('ng1', () => {
              return {transclude: true, template: '{{ "ng1" }}(<ng-transclude></ng-transclude>)'};
@@ -77,19 +83,20 @@ export function main() {
            spyOn(platformRef, '_bootstrapModuleWithZone').and.callThrough();
 
            const ng1Module = angular.module('ng1', []);
-           const Ng2 = Component({
-                         selector: 'ng2',
-                         template: `{{ 'NG2' }}(<ng-content></ng-content>)`
-                       }).Class({constructor: function() {}});
+           @Component({selector: 'ng2', template: `{{ 'NG2' }}(<ng-content></ng-content>)`})
+           class Ng2 {
+           }
 
            const element =
                html('<div>{{ \'ng1[\' }}<ng2>~{{ \'ng-content\' }}~</ng2>{{ \']\' }}</div>');
 
-           const Ng2AppModule =
-               NgModule({
-                 declarations: [Ng2],
-                 imports: [BrowserModule],
-               }).Class({constructor: function Ng2AppModule() {}, ngDoBootstrap: function() {}});
+           @NgModule({
+             declarations: [Ng2],
+             imports: [BrowserModule],
+           })
+           class Ng2AppModule {
+             ngDoBootstrap() {}
+           };
 
            const adapter: UpgradeAdapter = new UpgradeAdapter(Ng2AppModule, {providers: []});
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
@@ -107,15 +114,19 @@ export function main() {
       beforeEach(() => {
         angular.module('ng1', []);
 
-        const ng2Component = Component({
-                               selector: 'ng2',
-                               template: `<BAD TEMPLATE div></div>`,
-                             }).Class({constructor: function() {}});
+        @Component({
+          selector: 'ng2',
+          template: `<BAD TEMPLATE div></div>`,
+        })
+        class ng2Component {
+        }
 
-        const Ng2Module = NgModule({
-                            declarations: [ng2Component],
-                            imports: [BrowserModule],
-                          }).Class({constructor: function() {}});
+        @NgModule({
+          declarations: [ng2Component],
+          imports: [BrowserModule],
+        })
+        class Ng2Module {
+        }
 
         adapter = new UpgradeAdapter(Ng2Module);
       });
@@ -161,18 +172,22 @@ export function main() {
              $rootScope.reset = () => log.length = 0;
            });
 
-           const Ng2 = Component({
-                         selector: 'ng2',
-                         template: `{{l('2A')}}<ng1a></ng1a>{{l('2B')}}<ng1b></ng1b>{{l('2C')}}`
-                       }).Class({constructor: function() { this.l = l; }});
+           @Component({
+             selector: 'ng2',
+             template: `{{l('2A')}}<ng1a></ng1a>{{l('2B')}}<ng1b></ng1b>{{l('2C')}}`
+           })
+           class Ng2 {
+             l: any;
+             constructor() { this.l = l; }
+           }
 
-           const Ng2Module =
-               NgModule({
-                 declarations: [
-                   adapter.upgradeNg1Component('ng1a'), adapter.upgradeNg1Component('ng1b'), Ng2
-                 ],
-                 imports: [BrowserModule],
-               }).Class({constructor: function() {}});
+           @NgModule({
+             declarations:
+                 [adapter.upgradeNg1Component('ng1a'), adapter.upgradeNg1Component('ng1b'), Ng2],
+             imports: [BrowserModule],
+           })
+           class Ng2Module {
+           }
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
 
@@ -302,37 +317,35 @@ export function main() {
              $rootScope.eventA = '?';
              $rootScope.eventB = '?';
            });
-           const Ng2 = Component({
-                         selector: 'ng2',
-                         inputs:
-                             ['literal', 'interpolate', 'oneWayA', 'oneWayB', 'twoWayA', 'twoWayB'],
-                         outputs: [
-                           'eventA', 'eventB', 'twoWayAEmitter: twoWayAChange',
-                           'twoWayBEmitter: twoWayBChange'
-                         ],
-                         template: 'ignore: {{ignore}}; ' +
-                             'literal: {{literal}}; interpolate: {{interpolate}}; ' +
-                             'oneWayA: {{oneWayA}}; oneWayB: {{oneWayB}}; ' +
-                             'twoWayA: {{twoWayA}}; twoWayB: {{twoWayB}}; ({{ngOnChangesCount}})'
-                       }).Class({
-             constructor: function() {
-               this.ngOnChangesCount = 0;
-               this.ignore = '-';
-               this.literal = '?';
-               this.interpolate = '?';
-               this.oneWayA = '?';
-               this.oneWayB = '?';
-               this.twoWayA = '?';
-               this.twoWayB = '?';
-               this.eventA = new EventEmitter();
-               this.eventB = new EventEmitter();
-               this.twoWayAEmitter = new EventEmitter();
-               this.twoWayBEmitter = new EventEmitter();
-             },
-             ngOnChanges: function(changes: SimpleChanges) {
+           @Component({
+             selector: 'ng2',
+             inputs: ['literal', 'interpolate', 'oneWayA', 'oneWayB', 'twoWayA', 'twoWayB'],
+             outputs: [
+               'eventA', 'eventB', 'twoWayAEmitter: twoWayAChange', 'twoWayBEmitter: twoWayBChange'
+             ],
+             template: 'ignore: {{ignore}}; ' +
+                 'literal: {{literal}}; interpolate: {{interpolate}}; ' +
+                 'oneWayA: {{oneWayA}}; oneWayB: {{oneWayB}}; ' +
+                 'twoWayA: {{twoWayA}}; twoWayB: {{twoWayB}}; ({{ngOnChangesCount}})'
+           })
+           class Ng2 {
+             ngOnChangesCount = 0;
+             ignore = '-';
+             literal = '?';
+             interpolate = '?';
+             oneWayA = '?';
+             oneWayB = '?';
+             twoWayA = '?';
+             twoWayB = '?';
+             eventA = new EventEmitter();
+             eventB = new EventEmitter();
+             twoWayAEmitter = new EventEmitter();
+             twoWayBEmitter = new EventEmitter();
+             ngOnChanges(changes: SimpleChanges) {
                const assert = (prop: string, value: any) => {
-                 if (this[prop] != value) {
-                   throw new Error(`Expected: '${prop}' to be '${value}' but was '${this[prop]}'`);
+                 if ((this as any)[prop] != value) {
+                   throw new Error(
+                       `Expected: '${prop}' to be '${value}' but was '${(this as any)[prop]}'`);
                  }
                };
 
@@ -374,13 +387,15 @@ export function main() {
                    throw new Error('Called too many times! ' + JSON.stringify(changes));
                }
              }
-           });
+           }
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
 
-           const Ng2Module = NgModule({
-                               declarations: [Ng2],
-                               imports: [BrowserModule],
-                             }).Class({constructor: function() {}});
+           @NgModule({
+             declarations: [Ng2],
+             imports: [BrowserModule],
+           })
+           class Ng2Module {
+           };
 
            const element = html(`<div>
               <ng2 literal="Text" interpolate="Hello {{name}}"
@@ -493,11 +508,13 @@ export function main() {
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
            const element = html(`<div><ng2 ng-model="modelA"></ng2> | {{modelA}}</div>`);
 
-           const Ng2Module = NgModule({
-                               declarations: [Ng2],
-                               imports: [BrowserModule],
-                               schemas: [NO_ERRORS_SCHEMA],
-                             }).Class({constructor: function() {}});
+           @NgModule({
+             declarations: [Ng2],
+             imports: [BrowserModule],
+             schemas: [NO_ERRORS_SCHEMA],
+           })
+           class Ng2Module {
+           }
 
            adapter.bootstrap(element, ['ng1']).ready((ref) => {
              let $rootScope: any = ref.ng1RootScope;
@@ -537,15 +554,17 @@ export function main() {
              };
            });
 
-           const Ng2 = Component({selector: 'ng2', template: 'test'}).Class({
-             constructor: function() {},
-             ngOnDestroy: function() { onDestroyed.emit('destroyed'); }
-           });
+           @Component({selector: 'ng2', template: 'test'})
+           class Ng2 {
+             ngOnDestroy() { onDestroyed.emit('destroyed'); }
+           }
 
-           const Ng2Module = NgModule({
-                               declarations: [Ng2],
-                               imports: [BrowserModule],
-                             }).Class({constructor: function() {}});
+           @NgModule({
+             declarations: [Ng2],
+             imports: [BrowserModule],
+           })
+           class Ng2Module {
+           }
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
            const element = html('<ng1></ng1>');
@@ -571,13 +590,16 @@ export function main() {
              }
            ]);
 
-           const Ng2 =
-               Component({selector: 'ng2', template: 'test'}).Class({constructor: function() {}});
+           @Component({selector: 'ng2', template: 'test'})
+           class Ng2 {
+           };
 
-           const Ng2Module = NgModule({
-                               declarations: [Ng2],
-                               imports: [BrowserModule],
-                             }).Class({constructor: function() {}});
+           @NgModule({
+             declarations: [Ng2],
+             imports: [BrowserModule],
+           })
+           class Ng2Module {
+           }
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
            const element = html('<ng1></ng1>');
@@ -590,15 +612,17 @@ export function main() {
       it('should support multi-slot projection', async(() => {
            const ng1Module = angular.module('ng1', []);
 
-           const Ng2 = Component({
-                         selector: 'ng2',
-                         template: '2a(<ng-content select=".ng1a"></ng-content>)' +
-                             '2b(<ng-content select=".ng1b"></ng-content>)'
-                       }).Class({constructor: function() {}});
+           @Component({
+             selector: 'ng2',
+             template: '2a(<ng-content select=".ng1a"></ng-content>)' +
+                 '2b(<ng-content select=".ng1b"></ng-content>)'
+           })
+           class Ng2 {
+           }
 
-           const Ng2Module = NgModule({declarations: [Ng2], imports: [BrowserModule]}).Class({
-             constructor: function() {}
-           });
+           @NgModule({declarations: [Ng2], imports: [BrowserModule]})
+           class Ng2Module {
+           }
 
            // The ng-if on one of the projected children is here to make sure
            // the correct slot is targeted even with structural directives in play.
@@ -942,27 +966,27 @@ export function main() {
              };
            };
            ng1Module.directive('ng1', ng1);
-           const Ng2 =
-               Component({
-                 selector: 'ng2',
-                 template:
-                     '<ng1 fullName="{{last}}, {{first}}, {{city}}" [dataA]="first" [(dataB)]="last" [modelC]="city" ' +
-                     '(event)="event=$event"></ng1>' +
-                     '<ng1 fullName="{{\'TEST\'}}" dataA="First" dataB="Last" modelC="City"></ng1>' +
-                     '{{event}}-{{last}}, {{first}}, {{city}}'
-               }).Class({
-                 constructor: function() {
-                   this.first = 'Victor';
-                   this.last = 'Savkin';
-                   this.city = 'SF';
-                   this.event = '?';
-                 }
-               });
+           @Component({
+             selector: 'ng2',
+             template:
+                 '<ng1 fullName="{{last}}, {{first}}, {{city}}" [dataA]="first" [(dataB)]="last" [modelC]="city" ' +
+                 '(event)="event=$event"></ng1>' +
+                 '<ng1 fullName="{{\'TEST\'}}" dataA="First" dataB="Last" modelC="City"></ng1>' +
+                 '{{event}}-{{last}}, {{first}}, {{city}}'
+           })
+           class Ng2 {
+             first = 'Victor';
+             last = 'Savkin';
+             city = 'SF';
+             event = '?';
+           }
 
-           const Ng2Module = NgModule({
-                               declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
-                               imports: [BrowserModule],
-                             }).Class({constructor: function() {}});
+           @NgModule({
+             declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
+             imports: [BrowserModule],
+           })
+           class Ng2Module {
+           }
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
            const element = html(`<div><ng2></ng2></div>`);
@@ -989,23 +1013,24 @@ export function main() {
              };
            };
            ng1Module.directive('ng1', ng1);
-           const Ng2 = Component({
-                         selector: 'ng2',
-                         template: '<ng1 [dataA]="first" [modelB]="last"></ng1>' +
-                             '<ng1 dataA="First" modelB="Last"></ng1>' +
-                             '<ng1></ng1>' +
-                             '<ng1></ng1>'
-                       }).Class({
-             constructor: function() {
-               this.first = 'Victor';
-               this.last = 'Savkin';
-             }
-           });
+           @Component({
+             selector: 'ng2',
+             template: '<ng1 [dataA]="first" [modelB]="last"></ng1>' +
+                 '<ng1 dataA="First" modelB="Last"></ng1>' +
+                 '<ng1></ng1>' +
+                 '<ng1></ng1>'
+           })
+           class Ng2 {
+             first = 'Victor';
+             last = 'Savkin';
+           }
 
-           const Ng2Module = NgModule({
-                               declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
-                               imports: [BrowserModule],
-                             }).Class({constructor: function() {}});
+           @NgModule({
+             declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
+             imports: [BrowserModule],
+           })
+           class Ng2Module {
+           }
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
            const element = html(`<div><ng2></ng2></div>`);
@@ -1036,23 +1061,22 @@ export function main() {
            };
 
            ng1Module.directive('ng1', ng1);
-           const Ng2 =
-               Component({
-                 selector: 'ng2',
-                 template:
-                     '{{someText}} - Length: {{dataList.length}} | <ng1 [(data)]="dataList"></ng1>'
-               }).Class({
+           @Component({
+             selector: 'ng2',
+             template:
+                 '{{someText}} - Length: {{dataList.length}} | <ng1 [(data)]="dataList"></ng1>'
+           })
+           class Ng2 {
+             dataList = [1, 2, 3];
+             someText = 'ng2';
+           }
 
-                 constructor: function() {
-                   this.dataList = [1, 2, 3];
-                   this.someText = 'ng2';
-                 }
-               });
-
-           const Ng2Module = NgModule({
-                               declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
-                               imports: [BrowserModule],
-                             }).Class({constructor: function() {}});
+           @NgModule({
+             declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
+             imports: [BrowserModule],
+           })
+           class Ng2Module {
+           }
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
            const element = html(`<div><ng2></ng2></div>`);
@@ -1081,23 +1105,22 @@ export function main() {
            };
 
            ng1Module.directive('ng1', ng1);
-           const Ng2 =
-               Component({
-                 selector: 'ng2',
-                 template:
-                     '{{someText}} - Length: {{dataList.length}} | <ng1 [(data)]="dataList"></ng1>'
-               }).Class({
+           @Component({
+             selector: 'ng2',
+             template:
+                 '{{someText}} - Length: {{dataList.length}} | <ng1 [(data)]="dataList"></ng1>'
+           })
+           class Ng2 {
+             dataList = [1, 2, 3];
+             someText = 'ng2';
+           }
 
-                 constructor: function() {
-                   this.dataList = [1, 2, 3];
-                   this.someText = 'ng2';
-                 }
-               });
-
-           const Ng2Module = NgModule({
-                               declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
-                               imports: [BrowserModule],
-                             }).Class({constructor: function() {}});
+           @NgModule({
+             declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
+             imports: [BrowserModule],
+           })
+           class Ng2Module {
+           }
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
            const element = html(`<div><ng2></ng2></div>`);
@@ -1122,14 +1145,16 @@ export function main() {
 
            const ng1 = () => { return {templateUrl: 'url.html'}; };
            ng1Module.directive('ng1', ng1);
-           const Ng2 = Component({selector: 'ng2', template: '<ng1></ng1>'}).Class({
-             constructor: function() {}
-           });
+           @Component({selector: 'ng2', template: '<ng1></ng1>'})
+           class Ng2 {
+           }
 
-           const Ng2Module = NgModule({
-                               declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
-                               imports: [BrowserModule],
-                             }).Class({constructor: function() {}});
+           @NgModule({
+             declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
+             imports: [BrowserModule],
+           })
+           class Ng2Module {
+           }
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
            const element = html(`<div><ng2></ng2></div>`);
@@ -1149,14 +1174,16 @@ export function main() {
 
            const ng1 = () => { return {templateUrl() { return 'url.html'; }}; };
            ng1Module.directive('ng1', ng1);
-           const Ng2 = Component({selector: 'ng2', template: '<ng1></ng1>'}).Class({
-             constructor: function() {}
-           });
+           @Component({selector: 'ng2', template: '<ng1></ng1>'})
+           class Ng2 {
+           }
 
-           const Ng2Module = NgModule({
-                               declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
-                               imports: [BrowserModule],
-                             }).Class({constructor: function() {}});
+           @NgModule({
+             declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
+             imports: [BrowserModule],
+           })
+           class Ng2Module {
+           }
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
            const element = html(`<div><ng2></ng2></div>`);
@@ -1173,14 +1200,16 @@ export function main() {
            const ng1 = () => { return {template: ''}; };
            ng1Module.directive('ng1', ng1);
 
-           const Ng2 = Component({selector: 'ng2', template: '<ng1></ng1>'}).Class({
-             constructor: function() {}
-           });
+           @Component({selector: 'ng2', template: '<ng1></ng1>'})
+           class Ng2 {
+           }
 
-           const Ng2Module = NgModule({
-                               declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
-                               imports: [BrowserModule],
-                             }).Class({constructor: function() {}});
+           @NgModule({
+             declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
+             imports: [BrowserModule],
+           })
+           class Ng2Module {
+           }
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
            const element = html(`<div><ng2></ng2></div>`);
@@ -1197,14 +1226,16 @@ export function main() {
            const ng1 = () => { return {template() { return ''; }}; };
            ng1Module.directive('ng1', ng1);
 
-           const Ng2 = Component({selector: 'ng2', template: '<ng1></ng1>'}).Class({
-             constructor: function() {}
-           });
+           @Component({selector: 'ng2', template: '<ng1></ng1>'})
+           class Ng2 {
+           }
 
-           const Ng2Module = NgModule({
-                               declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
-                               imports: [BrowserModule],
-                             }).Class({constructor: function() {}});
+           @NgModule({
+             declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
+             imports: [BrowserModule],
+           })
+           class Ng2Module {
+           }
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
            const element = html(`<div><ng2></ng2></div>`);
@@ -1222,14 +1253,16 @@ export function main() {
            const ng1 = () => { return {templateUrl: 'url.html'}; };
            ng1Module.directive('ng1', ng1);
 
-           const Ng2 = Component({selector: 'ng2', template: '<ng1></ng1>'}).Class({
-             constructor: function() {}
-           });
+           @Component({selector: 'ng2', template: '<ng1></ng1>'})
+           class Ng2 {
+           }
 
-           const Ng2Module = NgModule({
-                               declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
-                               imports: [BrowserModule],
-                             }).Class({constructor: function() {}});
+           @NgModule({
+             declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
+             imports: [BrowserModule],
+           })
+           class Ng2Module {
+           }
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
            const element = html(`<div><ng2></ng2></div>`);
@@ -1249,30 +1282,31 @@ export function main() {
                template:
                    '{{ctl.scope}}; {{ctl.isClass}}; {{ctl.hasElement}}; {{ctl.isPublished()}}',
                controllerAs: 'ctl',
-               controller: Class({
-                 constructor: function($scope: any, $element: any) {
-                   (<any>this).verifyIAmAClass();
+               controller: class {
+                 scope: any; hasElement: string; $element: any; isClass: any;
+                 constructor($scope: any, $element: any) {
+                   this.verifyIAmAClass();
                    this.scope = $scope.$parent.$parent == $scope.$root ? 'scope' : 'wrong-scope';
                    this.hasElement = $element[0].nodeName;
                    this.$element = $element;
-                 },
-                 verifyIAmAClass: function() { this.isClass = 'isClass'; },
-                 isPublished: function() {
+                 } verifyIAmAClass() { this.isClass = 'isClass'; } isPublished() {
                    return this.$element.controller('ng1') == this ? 'published' : 'not-published';
                  }
-               })
+               }
              };
            };
            ng1Module.directive('ng1', ng1);
 
-           const Ng2 = Component({selector: 'ng2', template: '<ng1></ng1>'}).Class({
-             constructor: function() {}
-           });
+           @Component({selector: 'ng2', template: '<ng1></ng1>'})
+           class Ng2 {
+           }
 
-           const Ng2Module = NgModule({
-                               declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
-                               imports: [BrowserModule],
-                             }).Class({constructor: function() {}});
+           @NgModule({
+             declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
+             imports: [BrowserModule],
+           })
+           class Ng2Module {
+           }
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
            const element = html(`<div><ng2></ng2></div>`);
@@ -1292,19 +1326,21 @@ export function main() {
                bindToController: true,
                template: '{{ctl.title}}',
                controllerAs: 'ctl',
-               controller: Class({constructor: function() {}})
+               controller: class {}
              };
            };
            ng1Module.directive('ng1', ng1);
 
-           const Ng2 = Component({selector: 'ng2', template: '<ng1 title="WORKS"></ng1>'}).Class({
-             constructor: function() {}
-           });
+           @Component({selector: 'ng2', template: '<ng1 title="WORKS"></ng1>'})
+           class Ng2 {
+           }
 
-           const Ng2Module = NgModule({
-                               declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
-                               imports: [BrowserModule],
-                             }).Class({constructor: function() {}});
+           @NgModule({
+             declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
+             imports: [BrowserModule],
+           })
+           class Ng2Module {
+           }
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
            const element = html(`<div><ng2></ng2></div>`);
@@ -1324,19 +1360,21 @@ export function main() {
                bindToController: {title: '@'},
                template: '{{ctl.title}}',
                controllerAs: 'ctl',
-               controller: Class({constructor: function() {}})
+               controller: class {}
              };
            };
            ng1Module.directive('ng1', ng1);
 
-           const Ng2 = Component({selector: 'ng2', template: '<ng1 title="WORKS"></ng1>'}).Class({
-             constructor: function() {}
-           });
+           @Component({selector: 'ng2', template: '<ng1 title="WORKS"></ng1>'})
+           class Ng2 {
+           }
 
-           const Ng2Module = NgModule({
-                               declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
-                               imports: [BrowserModule],
-                             }).Class({constructor: function() {}});
+           @NgModule({
+             declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
+             imports: [BrowserModule],
+           })
+           class Ng2Module {
+           }
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
            const element = html(`<div><ng2></ng2></div>`);
@@ -1357,7 +1395,7 @@ export function main() {
                template: '{{ctl.status}}',
                require: 'ng1',
                controllerAs: 'ctrl',
-               controller: Class({constructor: function() { this.status = 'WORKS'; }}),
+               controller: class {status = 'WORKS';},
                link: function(scope: any, element: any, attrs: any, linkController: any) {
                  expect(scope.$root).toEqual($rootScope);
                  expect(element[0].nodeName).toEqual('NG1');
@@ -1368,14 +1406,16 @@ export function main() {
            };
            ng1Module.directive('ng1', ng1);
 
-           const Ng2 = Component({selector: 'ng2', template: '<ng1></ng1>'}).Class({
-             constructor: function() {}
-           });
+           @Component({selector: 'ng2', template: '<ng1></ng1>'})
+           class Ng2 {
+           }
 
-           const Ng2Module = NgModule({
-                               declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
-                               imports: [BrowserModule],
-                             }).Class({constructor: function() {}});
+           @NgModule({
+             declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
+             imports: [BrowserModule],
+           })
+           class Ng2Module {
+           }
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
            const element = html(`<div><ng2></ng2></div>`);
@@ -1389,9 +1429,7 @@ export function main() {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
            const ng1Module = angular.module('ng1', []);
 
-           const parent = () => {
-             return {controller: Class({constructor: function() { this.parent = 'PARENT'; }})};
-           };
+           const parent = () => { return {controller: class {parent = 'PARENT';}}; };
            const ng1 = () => {
              return {
                scope: {title: '@'},
@@ -1399,7 +1437,7 @@ export function main() {
                template: '{{parent.parent}}:{{ng1.status}}',
                require: ['ng1', '^parent', '?^^notFound'],
                controllerAs: 'ctrl',
-               controller: Class({constructor: function() { this.status = 'WORKS'; }}),
+               controller: class {status = 'WORKS';},
                link: function(scope: any, element: any, attrs: any, linkControllers: any) {
                  expect(linkControllers[0].status).toEqual('WORKS');
                  expect(linkControllers[1].parent).toEqual('PARENT');
@@ -1412,14 +1450,16 @@ export function main() {
            ng1Module.directive('parent', parent);
            ng1Module.directive('ng1', ng1);
 
-           const Ng2 = Component({selector: 'ng2', template: '<ng1></ng1>'}).Class({
-             constructor: function() {}
-           });
+           @Component({selector: 'ng2', template: '<ng1></ng1>'})
+           class Ng2 {
+           }
 
-           const Ng2Module = NgModule({
-                               declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
-                               imports: [BrowserModule],
-                             }).Class({constructor: function() {}});
+           @NgModule({
+             declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
+             imports: [BrowserModule],
+           })
+           class Ng2Module {
+           }
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
            const element = html(`<div><parent><ng2></ng2></parent></div>`);
@@ -1835,7 +1875,8 @@ export function main() {
              }
 
              // On browsers that don't support `requestAnimationFrame` (IE 9, Android <= 4.3),
-             // `$animate` will use `setTimeout(..., 16.6)` instead. This timeout will still be on
+             // `$animate` will use `setTimeout(..., 16.6)` instead. This timeout will still be
+             // on
              // the queue at the end of the test, causing it to fail.
              // Mocking animations (via `ngAnimateMock`) avoids the issue.
              angular.module('ng1', ['ngAnimateMock'])
@@ -1923,7 +1964,8 @@ export function main() {
              }
 
              // On browsers that don't support `requestAnimationFrame` (IE 9, Android <= 4.3),
-             // `$animate` will use `setTimeout(..., 16.6)` instead. This timeout will still be on
+             // `$animate` will use `setTimeout(..., 16.6)` instead. This timeout will still be
+             // on
              // the queue at the end of the test, causing it to fail.
              // Mocking animations (via `ngAnimateMock`) avoids the issue.
              angular.module('ng1', ['ngAnimateMock'])
@@ -2618,19 +2660,21 @@ export function main() {
            const ng1 = {
              bindings: {personProfile: '<'},
              template: 'Hello {{$ctrl.personProfile.firstName}} {{$ctrl.personProfile.lastName}}',
-             controller: Class({constructor: function() {}})
+             controller: class {}
            };
            ng1Module.component('ng1', ng1);
 
-           const Ng2 =
-               Component({selector: 'ng2', template: '<ng1 [personProfile]="goku"></ng1>'}).Class({
-                 constructor: function() { this.goku = {firstName: 'GOKU', lastName: 'SAN'}; }
-               });
+           @Component({selector: 'ng2', template: '<ng1 [personProfile]="goku"></ng1>'})
+           class Ng2 {
+             goku = {firstName: 'GOKU', lastName: 'SAN'};
+           }
 
-           const Ng2Module = NgModule({
-                               declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
-                               imports: [BrowserModule],
-                             }).Class({constructor: function() {}});
+           @NgModule({
+             declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
+             imports: [BrowserModule],
+           })
+           class Ng2Module {
+           }
 
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
 
@@ -2650,19 +2694,22 @@ export function main() {
            };
            ng1Module.component('ng1', ng1);
 
-           const Ng2a = Component({selector: 'ng2a', template: 'ng2a(<ng1></ng1>)'}).Class({
-             constructor: function() {}
-           });
+           @Component({selector: 'ng2a', template: 'ng2a(<ng1></ng1>)'})
+           class Ng2a {
+           }
            ng1Module.directive('ng2a', adapter.downgradeNg2Component(Ng2a));
 
-           const Ng2b =
-               Component({selector: 'ng2b', template: 'ng2b'}).Class({constructor: function() {}});
+           @Component({selector: 'ng2b', template: 'ng2b'})
+           class Ng2b {
+           }
            ng1Module.directive('ng2b', adapter.downgradeNg2Component(Ng2b));
 
-           const Ng2Module = NgModule({
-                               declarations: [adapter.upgradeNg1Component('ng1'), Ng2a, Ng2b],
-                               imports: [BrowserModule],
-                             }).Class({constructor: function() {}});
+           @NgModule({
+             declarations: [adapter.upgradeNg1Component('ng1'), Ng2a, Ng2b],
+             imports: [BrowserModule],
+           })
+           class Ng2Module {
+           }
 
            const element = html(`<div><ng2a></ng2a></div>`);
            adapter.bootstrap(element, ['ng1']).ready((ref) => {
@@ -2675,10 +2722,12 @@ export function main() {
       function SomeToken() {}
 
       it('should export ng2 instance to ng1', async(() => {
-           const MyNg2Module = NgModule({
-                                 providers: [{provide: SomeToken, useValue: 'correct_value'}],
-                                 imports: [BrowserModule],
-                               }).Class({constructor: function() {}});
+           @NgModule({
+             providers: [{provide: SomeToken, useValue: 'correct_value'}],
+             imports: [BrowserModule],
+           })
+           class MyNg2Module {
+           }
 
            const adapter: UpgradeAdapter = new UpgradeAdapter(MyNg2Module);
            const module = angular.module('myExample', []);
@@ -2690,8 +2739,9 @@ export function main() {
          }));
 
       it('should export ng1 instance to ng2', async(() => {
-           const MyNg2Module =
-               NgModule({imports: [BrowserModule]}).Class({constructor: function() {}});
+           @NgModule({imports: [BrowserModule]})
+           class MyNg2Module {
+           };
 
            const adapter: UpgradeAdapter = new UpgradeAdapter(MyNg2Module);
            const module = angular.module('myExample', []);
@@ -2710,18 +2760,17 @@ export function main() {
       it('should respect hierarchical dependency injection for ng2', async(() => {
            const ng1Module = angular.module('ng1', []);
 
-           const Ng2Parent = Component({
-                               selector: 'ng2-parent',
-                               template: `ng2-parent(<ng-content></ng-content>)`
-                             }).Class({constructor: function() {}});
-           const Ng2Child = Component({selector: 'ng2-child', template: `ng2-child`}).Class({
-             constructor: [Ng2Parent, function(parent: any) {}]
-           });
+           @Component({selector: 'ng2-parent', template: `ng2-parent(<ng-content></ng-content>)`})
+           class Ng2Parent {
+           }
+           @Component({selector: 'ng2-child', template: `ng2-child`})
+           class Ng2Child {
+             constructor(parent: Ng2Parent) {}
+           }
 
-           const Ng2Module =
-               NgModule({declarations: [Ng2Parent, Ng2Child], imports: [BrowserModule]}).Class({
-                 constructor: function() {}
-               });
+           @NgModule({declarations: [Ng2Parent, Ng2Child], imports: [BrowserModule]})
+           class Ng2Module {
+           }
 
            const element = html('<ng2-parent><ng2-child></ng2-child></ng2-parent>');
 
@@ -2737,8 +2786,9 @@ export function main() {
 
     describe('testability', () => {
       it('should handle deferred bootstrap', async(() => {
-           const MyNg2Module =
-               NgModule({imports: [BrowserModule]}).Class({constructor: function() {}});
+           @NgModule({imports: [BrowserModule]})
+           class MyNg2Module {
+           }
 
            const adapter: UpgradeAdapter = new UpgradeAdapter(MyNg2Module);
            angular.module('ng1', []);
@@ -2759,8 +2809,9 @@ export function main() {
          }));
 
       it('should wait for ng2 testability', async(() => {
-           const MyNg2Module =
-               NgModule({imports: [BrowserModule]}).Class({constructor: function() {}});
+           @NgModule({imports: [BrowserModule]})
+           class MyNg2Module {
+           }
 
            const adapter: UpgradeAdapter = new UpgradeAdapter(MyNg2Module);
            angular.module('ng1', []);
@@ -2797,17 +2848,20 @@ export function main() {
            };
            module.directive('ng1', ng1);
 
-           const Ng2 =
-               Component({
-                 selector: 'ng2',
-                 inputs: ['name'],
-                 template: 'ng2[<ng1 [title]="name">transclude</ng1>](<ng-content></ng-content>)'
-               }).Class({constructor: function() {}});
+           @Component({
+             selector: 'ng2',
+             inputs: ['name'],
+             template: 'ng2[<ng1 [title]="name">transclude</ng1>](<ng-content></ng-content>)'
+           })
+           class Ng2 {
+           }
 
-           const Ng2Module = NgModule({
-                               declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
-                               imports: [BrowserModule],
-                             }).Class({constructor: function() {}});
+           @NgModule({
+             declarations: [adapter.upgradeNg1Component('ng1'), Ng2],
+             imports: [BrowserModule],
+           })
+           class Ng2Module {
+           }
 
            module.directive('ng2', adapter.downgradeNg2Component(Ng2));
 
@@ -2829,14 +2883,16 @@ export function main() {
       beforeEach(() => {
         const ng1Module = angular.module('ng1', []);
 
-        const Ng2 = Component({
-                      selector: 'ng2',
-                      template: 'Hello World',
-                    }).Class({constructor: function() {}});
+        @Component({
+          selector: 'ng2',
+          template: 'Hello World',
+        })
+        class Ng2 {
+        }
 
-        const Ng2Module = NgModule({declarations: [Ng2], imports: [BrowserModule]}).Class({
-          constructor: function() {}
-        });
+        @NgModule({declarations: [Ng2], imports: [BrowserModule]})
+        class Ng2Module {
+        }
 
         const upgradeAdapter = new UpgradeAdapter(Ng2Module);
         ng1Module.directive('ng2', upgradeAdapter.downgradeNg2Component(Ng2));

@@ -38,23 +38,26 @@ export class UpgradeNg1ComponentAdapterBuilder {
         name.replace(CAMEL_CASE, (all: string, next: string) => '-' + next.toLowerCase());
     const self = this;
 
-    this.type =
-        Directive({selector: selector, inputs: this.inputsRename, outputs: this.outputsRename})
-            .Class({
-              constructor: [
-                new Inject($SCOPE), Injector, ElementRef,
-                function(scope: angular.IScope, injector: Injector, elementRef: ElementRef) {
-                  const helper = new UpgradeHelper(injector, name, elementRef, this.directive);
-                  return new UpgradeNg1ComponentAdapter(
-                      helper, scope, self.template, self.inputs, self.outputs, self.propertyOutputs,
-                      self.checkProperties, self.propertyMap);
-                }
-              ],
-              ngOnInit: function() { /* needs to be here for ng2 to properly detect it */ },
-              ngOnChanges: function() { /* needs to be here for ng2 to properly detect it */ },
-              ngDoCheck: function() { /* needs to be here for ng2 to properly detect it */ },
-              ngOnDestroy: function() { /* needs to be here for ng2 to properly detect it */ },
-            });
+    @Directive({selector: selector, inputs: this.inputsRename, outputs: this.outputsRename})
+    class MyClass {
+      directive: angular.IDirective;
+      constructor(
+          @Inject($SCOPE) scope: angular.IScope, injector: Injector, elementRef: ElementRef) {
+        const helper = new UpgradeHelper(injector, name, elementRef, this.directive);
+        return new UpgradeNg1ComponentAdapter(
+            helper, scope, self.template, self.inputs, self.outputs, self.propertyOutputs,
+            self.checkProperties, self.propertyMap) as any;
+      }
+      ngOnInit() { /* needs to be here for ng2 to properly detect it */
+      }
+      ngOnChanges() { /* needs to be here for ng2 to properly detect it */
+      }
+      ngDoCheck() { /* needs to be here for ng2 to properly detect it */
+      }
+      ngOnDestroy() { /* needs to be here for ng2 to properly detect it */
+      }
+    };
+    this.type = MyClass;
   }
 
   extractBindings() {
