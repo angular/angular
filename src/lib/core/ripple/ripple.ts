@@ -135,7 +135,7 @@ export class MdRipple implements OnChanges, OnDestroy {
   }
 
   /** Updates the ripple renderer with the latest ripple configuration. */
-  private _updateRippleRenderer() {
+  _updateRippleRenderer() {
     this._rippleRenderer.rippleDisabled = this._globalOptions.disabled || this.disabled;
     this._rippleRenderer.rippleConfig = this.rippleConfig;
   }
