@@ -1,7 +1,7 @@
 # Upgrading from AngularJS to Angular
 
-_Angular_ is the name for the Angular of today and tomorrow.
-_AngularJS_ is the name for all v1.x versions of Angular.
+_Angular_ is the name for the Angular of today and tomorrow.<br />
+_AngularJS_ is the name for all 1.x versions of Angular.
 
 AngularJS apps are great.
 Always consider the business case before moving to Angular.
@@ -195,7 +195,7 @@ transition period.
 
 ### How ngUpgrade Works
 
-The primary tool provided by ngUpgrade is called the `UpgradeModule`.
+One of the primary tools provided by ngUpgrade is called the `UpgradeModule`.
 This is a module that contains utilities for bootstrapping and managing hybrid
 applications that support both Angular and AngularJS code.
 
@@ -252,7 +252,7 @@ frameworks in how it actually works.
 </table>
 
 Even accounting for these differences you can still have dependency injection
-interoperability. The `UpgradeModule` resolves the differences and makes
+interoperability. `upgrade/static` resolves the differences and makes
 everything work seamlessly:
 
 * You can make AngularJS services available for injection to Angular code
@@ -569,7 +569,7 @@ So, you can write an Angular component and then use it from AngularJS
 code. This is useful when you start to migrate from lower-level
 components and work your way up. But in some cases it is more convenient
 to do things in the opposite order: To start with higher-level components
-and work your way down. This too can be done using the `UpgradeModule`.
+and work your way down. This too can be done using the `upgrade/static`.
 You can *upgrade* AngularJS component directives and then use them from
 Angular.
 
@@ -710,7 +710,7 @@ and then provide the input and output using Angular template syntax:
 When you are using a downgraded Angular component from an AngularJS
 template, the need may arise to *transclude* some content into it. This
 is also possible. While there is no such thing as transclusion in Angular,
-there is a very similar concept called *content projection*. The `UpgradeModule`
+there is a very similar concept called *content projection*. `upgrade/static`
 is able to make these two features interoperate.
 
 Angular components that support content projection make use of an `<ng-content>`

@@ -18,8 +18,6 @@ import {NgAdapterInjector} from './util';
 
 
 /**
- * <!-- TODO(gkalpak): Add link to guide. -->
- *
  * @description
  *
  * A helper function for creating an AngularJS module that can bootstrap an Angular module
@@ -48,6 +46,9 @@ import {NgAdapterInjector} from './util';
  * declare a dependency in your main AngularJS module.
  *
  * {@example upgrade/static/ts/lite/module.ts region="basic-how-to"}
+ *
+ * For more details on how to use `downgradeModule()` see
+ * [Upgrading for Performance](guide/upgrade-lite).
  *
  * @usageNotes
  *
@@ -83,6 +84,9 @@ import {NgAdapterInjector} from './util';
  * necessary (e.g. when the inputs of a downgraded component change). This improves performance,
  * especially in change-detection-heavy applications, but leaves it up to the developer to manually
  * notify each framework as needed.
+ *
+ * For a more detailed discussion of the differences and their implications, see
+ * [Upgrading for Performance](guide/upgrade-lite).
  *
  * <div class="alert is-helpful">
  *
