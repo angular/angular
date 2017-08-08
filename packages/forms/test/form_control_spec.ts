@@ -659,6 +659,16 @@ export function main() {
 
       beforeEach(() => { c = new FormControl('old', Validators.required); });
 
+      it('should not emit when options.emitEvent is undefined and values are equal', fakeAsync(() => {
+          let count = 0;
+          c.statusChanges.subscribe(value => ++count);
+
+          c.setValue('new');
+          c.setValue('new');
+          tick();
+          expect(count).toEqual(1);
+        }));
+
       it('should fire an event after the value has been updated',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            c.valueChanges.subscribe({

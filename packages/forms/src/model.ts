@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EventEmitter} from '@angular/core';
+import {EventEmitter, ɵlooseIdentical as looseIdentical} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {composeAsyncValidators, composeValidators} from './directives/shared';
 import {AsyncValidatorFn, ValidationErrors, ValidatorFn} from './directives/validators';
@@ -708,6 +708,9 @@ export class FormControl extends AbstractControl {
     if (this._onChange.length && options.emitModelToViewChange !== false) {
       this._onChange.forEach(
           (changeFn) => changeFn(this._value, options.emitViewToModelChange !== false));
+    }
+    if(typeof options.emitEvent === 'undefined' && typeof value != 'object' && typeof this._value != 'object' ){
+      options.emitEvent = !looseIdentical(value, this._value);
     }
     this.updateValueAndValidity(options);
   }
