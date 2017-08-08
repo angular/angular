@@ -12,7 +12,7 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import {main} from '../src/ngc';
-import {performCompilation} from '../src/perform-compile';
+import {performCompilation, readConfiguration} from '../src/perform-compile';
 
 function getNgRootDir() {
   const moduleFilename = module.filename.replace(/\\/g, '/');
@@ -316,7 +316,7 @@ describe('ngc command-line', () => {
           .toBe(true);
     });
 
-    xdescribe('expression lowering', () => {
+    describe('expression lowering', () => {
       beforeEach(() => {
         writeConfig(`{
             "extends": "./tsconfig-base.json",
@@ -424,12 +424,34 @@ describe('ngc command-line', () => {
           })
           export class MyModule {}
         `);
-        expect(compile()).toEqual(0);
+        expect(compile()).toEqual(0, 'Compile failed');
 
         const mymodulejs = path.resolve(outDir, 'mymodule.js');
         const mymoduleSource = fs.readFileSync(mymodulejs, 'utf8');
         expect(mymoduleSource).toContain('var ɵ0 = function () { return new Foo(); }');
         expect(mymoduleSource).toContain('export { ɵ0');
+      });
+
+      it('should not lower a lambda that is already exported', () => {
+        write('mymodule.ts', `
+          import {CommonModule} from '@angular/common';
+          import {NgModule} from '@angular/core';
+
+          class Foo {}
+
+          export const factory = () => new Foo();
+
+          @NgModule({
+            imports: [CommonModule],
+            providers: [{provide: 'someToken', useFactory: factory}]
+          })
+          export class MyModule {}
+        `);
+        expect(compile()).toEqual(0);
+
+        const mymodulejs = path.resolve(outDir, 'mymodule.js');
+        const mymoduleSource = fs.readFileSync(mymodulejs, 'utf8');
+        expect(mymoduleSource).not.toContain('ɵ0');
       });
     });
 
