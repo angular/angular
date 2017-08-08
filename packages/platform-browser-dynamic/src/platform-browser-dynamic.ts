@@ -18,7 +18,7 @@ export {VERSION} from './version';
  * @experimental
  */
 export const RESOURCE_CACHE_PROVIDER: Provider[] =
-    [{provide: ResourceLoader, useClass: CachedResourceLoader}];
+    [{provide: ResourceLoader, useClass: CachedResourceLoader, deps: []}];
 
 /**
  * @stable
