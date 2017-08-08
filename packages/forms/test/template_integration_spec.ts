@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, Type, forwardRef} from '@angular/core';
+import {Component, Directive, Type, ViewChild, forwardRef} from '@angular/core';
 import {ComponentFixture, TestBed, async, fakeAsync, tick} from '@angular/core/testing';
-import {AbstractControl, AsyncValidator, COMPOSITION_BUFFER_MODE, FormControl, FormsModule, NG_ASYNC_VALIDATORS, NgForm} from '@angular/forms';
+import {AbstractControl, AsyncValidator, COMPOSITION_BUFFER_MODE, FormControl, FormsModule, NG_ASYNC_VALIDATORS, NgForm, NgModel} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
@@ -766,6 +766,123 @@ export function main() {
 
       });
 
+      describe('ngFormOptions', () => {
+
+        it('should use ngFormOptions value when ngModelOptions are not set', fakeAsync(() => {
+             const fixture = initTest(NgModelOptionsStandalone);
+             fixture.componentInstance.options = {name: 'two'};
+             fixture.componentInstance.formOptions = {updateOn: 'blur'};
+             fixture.detectChanges();
+             tick();
+
+             const form = fixture.debugElement.children[0].injector.get(NgForm);
+             const controlOne = form.control.get('one') !as FormControl;
+             expect(controlOne._updateOn).toBeUndefined();
+             expect(controlOne.updateOn)
+                 .toEqual('blur', 'Expected first control to inherit updateOn from parent form.');
+
+             const controlTwo = form.control.get('two') !as FormControl;
+             expect(controlTwo._updateOn).toBeUndefined();
+             expect(controlTwo.updateOn)
+                 .toEqual('blur', 'Expected last control to inherit updateOn from parent form.');
+           }));
+
+        it('should actually update using ngFormOptions value', fakeAsync(() => {
+             const fixture = initTest(NgModelOptionsStandalone);
+             fixture.componentInstance.one = '';
+             fixture.componentInstance.formOptions = {updateOn: 'blur'};
+             fixture.detectChanges();
+             tick();
+
+             const input = fixture.debugElement.query(By.css('input')).nativeElement;
+             input.value = 'Nancy Drew';
+             dispatchEvent(input, 'input');
+             fixture.detectChanges();
+             tick();
+
+             const form = fixture.debugElement.children[0].injector.get(NgForm);
+             expect(form.value).toEqual({one: ''}, 'Expected value not to update on input.');
+
+             dispatchEvent(input, 'blur');
+             fixture.detectChanges();
+
+             expect(form.value).toEqual({one: 'Nancy Drew'}, 'Expected value to update on blur.');
+           }));
+
+        it('should allow ngModelOptions updateOn to override ngFormOptions', fakeAsync(() => {
+             const fixture = initTest(NgModelOptionsStandalone);
+             fixture.componentInstance.options = {updateOn: 'blur', name: 'two'};
+             fixture.componentInstance.formOptions = {updateOn: 'change'};
+             fixture.detectChanges();
+             tick();
+
+             const form = fixture.debugElement.children[0].injector.get(NgForm);
+             const controlOne = form.control.get('one') !as FormControl;
+             expect(controlOne._updateOn).toBeUndefined();
+             expect(controlOne.updateOn)
+                 .toEqual('change', 'Expected control updateOn to inherit form updateOn.');
+
+             const controlTwo = form.control.get('two') !as FormControl;
+             expect(controlTwo._updateOn).toEqual('blur', 'Expected control to set blur override.');
+             expect(controlTwo.updateOn)
+                 .toEqual('blur', 'Expected control updateOn to override form updateOn.');
+           }));
+
+        it('should update using ngModelOptions override', fakeAsync(() => {
+             const fixture = initTest(NgModelOptionsStandalone);
+             fixture.componentInstance.one = '';
+             fixture.componentInstance.two = '';
+             fixture.componentInstance.options = {updateOn: 'blur', name: 'two'};
+             fixture.componentInstance.formOptions = {updateOn: 'change'};
+             fixture.detectChanges();
+             tick();
+
+             const [inputOne, inputTwo] = fixture.debugElement.queryAll(By.css('input'));
+             inputOne.nativeElement.value = 'Nancy Drew';
+             dispatchEvent(inputOne.nativeElement, 'input');
+             fixture.detectChanges();
+
+             const form = fixture.debugElement.children[0].injector.get(NgForm);
+             expect(form.value)
+                 .toEqual({one: 'Nancy Drew', two: ''}, 'Expected first value to update on input.');
+
+             inputTwo.nativeElement.value = 'Carson Drew';
+             dispatchEvent(inputTwo.nativeElement, 'input');
+             fixture.detectChanges();
+             tick();
+
+             expect(form.value)
+                 .toEqual(
+                     {one: 'Nancy Drew', two: ''}, 'Expected second value not to update on input.');
+
+             dispatchEvent(inputTwo.nativeElement, 'blur');
+             fixture.detectChanges();
+
+             expect(form.value)
+                 .toEqual(
+                     {one: 'Nancy Drew', two: 'Carson Drew'},
+                     'Expected second value to update on blur.');
+           }));
+
+        it('should not use ngFormOptions for standalone ngModels', fakeAsync(() => {
+             const fixture = initTest(NgModelOptionsStandalone);
+             fixture.componentInstance.two = '';
+             fixture.componentInstance.options = {standalone: true};
+             fixture.componentInstance.formOptions = {updateOn: 'blur'};
+             fixture.detectChanges();
+             tick();
+
+             const inputTwo = fixture.debugElement.queryAll(By.css('input'))[1].nativeElement;
+             inputTwo.value = 'Nancy Drew';
+             dispatchEvent(inputTwo, 'input');
+             fixture.detectChanges();
+
+             expect(fixture.componentInstance.two)
+                 .toEqual('Nancy Drew', 'Expected standalone ngModel not to inherit blur update.');
+           }));
+
+      });
+
     });
 
     describe('submit and reset events', () => {
@@ -1473,15 +1590,17 @@ class InvalidNgModelNoName {
 @Component({
   selector: 'ng-model-options-standalone',
   template: `
-    <form>
+    <form [ngFormOptions]="formOptions">
       <input name="one" [(ngModel)]="one">
-      <input [(ngModel)]="two" [ngModelOptions]="{standalone: true}">
+      <input [(ngModel)]="two" [ngModelOptions]="options">
     </form>
   `
 })
 class NgModelOptionsStandalone {
   one: string;
   two: string;
+  options: {name?: string, standalone?: boolean, updateOn?: string} = {standalone: true};
+  formOptions = {};
 }
 
 @Component({
