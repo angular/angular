@@ -819,6 +819,22 @@ export function main() {
           expect(control.dirty).toBe(true, 'Expected control to update dirty state when blurred.');
         });
 
+        it('should update touched when control is blurred', () => {
+          const fixture = initTest(FormControlComp);
+          const control = new FormControl('', {updateOn: 'blur'});
+          fixture.componentInstance.control = control;
+          fixture.detectChanges();
+
+          expect(control.touched).toBe(false, 'Expected control to start out untouched.');
+
+          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          dispatchEvent(input, 'blur');
+          fixture.detectChanges();
+
+          expect(control.touched)
+              .toBe(true, 'Expected control to update touched state when blurred.');
+        });
+
         it('should continue waiting for blur to update if previously blurred', () => {
           const fixture = initTest(FormControlComp);
           const control =

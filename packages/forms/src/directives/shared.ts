@@ -167,6 +167,16 @@ export function isBuiltInAccessor(valueAccessor: ControlValueAccessor): boolean 
   return BUILTIN_ACCESSORS.some(a => valueAccessor.constructor === a);
 }
 
+export function syncPendingControls(form: FormGroup, directives: NgControl[]): void {
+  form._syncPendingControls();
+  directives.forEach(dir => {
+    const control = dir.control as FormControl;
+    if (control.updateOn === 'submit') {
+      dir.viewToModelUpdate(control._pendingValue);
+    }
+  });
+}
+
 // TODO: vsavkin remove it once https://github.com/angular/angular/issues/3011 is implemented
 export function selectValueAccessor(
     dir: NgControl, valueAccessors: ControlValueAccessor[]): ControlValueAccessor|null {
@@ -197,4 +207,9 @@ export function selectValueAccessor(
 
   _throwError(dir, 'No valid value accessor for form control with');
   return null;
+}
+
+export function removeDir<T>(list: T[], el: T): void {
+  const index = list.indexOf(el);
+  if (index > -1) list.splice(index, 1);
 }

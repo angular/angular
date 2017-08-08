@@ -424,6 +424,7 @@ export declare class NgModel extends NgControl implements OnChanges, OnDestroy {
     options: {
         name?: string;
         standalone?: boolean;
+        updateOn?: FormHooks;
     };
     readonly path: string[];
     update: EventEmitter<{}>;

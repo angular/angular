@@ -12,7 +12,7 @@ import {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from '../../validators';
 import {ControlContainer} from '../control_container';
 import {Form} from '../form_interface';
 import {ReactiveErrors} from '../reactive_errors';
-import {cleanUpControl, composeAsyncValidators, composeValidators, setUpControl, setUpFormContainer} from '../shared';
+import {cleanUpControl, composeAsyncValidators, composeValidators, removeDir, setUpControl, setUpFormContainer, syncPendingControls} from '../shared';
 
 import {FormControlName} from './form_control_name';
 import {FormArrayName, FormGroupName} from './form_group_name';
@@ -105,7 +105,7 @@ export class FormGroupDirective extends ControlContainer implements Form,
 
   getControl(dir: FormControlName): FormControl { return <FormControl>this.form.get(dir.path); }
 
-  removeControl(dir: FormControlName): void { remove(this.directives, dir); }
+  removeControl(dir: FormControlName): void { removeDir<FormControlName>(this.directives, dir); }
 
   addFormGroup(dir: FormGroupName): void {
     const ctrl: any = this.form.get(dir.path);
@@ -134,7 +134,7 @@ export class FormGroupDirective extends ControlContainer implements Form,
 
   onSubmit($event: Event): boolean {
     this._submitted = true;
-    this._syncPendingControls();
+    syncPendingControls(this.form, this.directives);
     this.ngSubmit.emit($event);
     return false;
   }
@@ -146,15 +146,6 @@ export class FormGroupDirective extends ControlContainer implements Form,
     this._submitted = false;
   }
 
-  /** @internal */
-  _syncPendingControls() {
-    this.form._syncPendingControls();
-    this.directives.forEach(dir => {
-      if (dir.control.updateOn === 'submit') {
-        dir.viewToModelUpdate(dir.control._pendingValue);
-      }
-    });
-  }
 
   /** @internal */
   _updateDomValue() {
@@ -188,12 +179,5 @@ export class FormGroupDirective extends ControlContainer implements Form,
     if (!this.form) {
       ReactiveErrors.missingFormException();
     }
-  }
-}
-
-function remove<T>(list: T[], el: T): void {
-  const index = list.indexOf(el);
-  if (index > -1) {
-    list.splice(index, 1);
   }
 }
