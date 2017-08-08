@@ -18,7 +18,7 @@ import {
   forwardRef,
 } from '@angular/core';
 
-import {Focusable} from '../core/a11y/focus-key-manager';
+import {FocusableOption} from '../core/a11y/focus-key-manager';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {CanColor, mixinColor} from '../core/common-behaviors/color';
 import {CanDisable, mixinDisabled} from '../core/common-behaviors/disabled';
@@ -68,7 +68,8 @@ export class MdBasicChip { }
     '(blur)': '_hasFocus = false',
   }
 })
-export class MdChip extends _MdChipMixinBase implements Focusable, OnDestroy, CanColor, CanDisable {
+export class MdChip extends _MdChipMixinBase implements FocusableOption, OnDestroy, CanColor,
+  CanDisable {
 
   @ContentChild(forwardRef(() => MdChipRemove)) _chipRemove: MdChipRemove;
 

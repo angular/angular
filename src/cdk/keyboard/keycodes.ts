@@ -20,3 +20,5 @@ export const TAB = 9;
 export const ESCAPE = 27;
 export const BACKSPACE = 8;
 export const DELETE = 46;
+export const A = 65;
+export const Z = 90;

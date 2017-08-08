@@ -174,6 +174,11 @@ export class MdOption {
     }
   }
 
+  /** Gets the label to be used when determining whether the option should be focused. */
+  getLabel(): string {
+    return this.viewValue;
+  }
+
   /** Ensures the option is selected when activated from the keyboard. */
   _handleKeydown(event: KeyboardEvent): void {
     if (event.keyCode === ENTER || event.keyCode === SPACE) {
@@ -201,7 +206,7 @@ export class MdOption {
     return this.disabled ? '-1' : '0';
   }
 
-  /** Fetches the host DOM element. */
+  /** Gets the host DOM element. */
   _getHostElement(): HTMLElement {
     return this._element.nativeElement;
   }

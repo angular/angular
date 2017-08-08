@@ -719,7 +719,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
 
   /** Sets up a key manager to listen to keyboard events on the overlay panel. */
   private _initKeyManager() {
-    this._keyManager = new FocusKeyManager(this.options);
+    this._keyManager = new FocusKeyManager(this.options).withTypeAhead();
     this._tabSubscription = this._keyManager.tabOut.subscribe(() => this.close());
   }
 

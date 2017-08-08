@@ -6,24 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {QueryList} from '@angular/core';
-import {ListKeyManager, CanDisable} from './list-key-manager';
+import {ListKeyManager, ListKeyManagerOption} from './list-key-manager';
 
 /**
  * This is the interface for focusable items (used by the FocusKeyManager).
- * Each item must know how to focus itself and whether or not it is currently disabled.
+ * Each item must know how to focus itself, whether or not it is currently disabled
+ * and be able to supply it's label.
  */
-export interface Focusable extends CanDisable {
+export interface FocusableOption extends ListKeyManagerOption {
   focus(): void;
 }
 
-
-export class FocusKeyManager extends ListKeyManager<Focusable> {
-
-  constructor(items: QueryList<Focusable>) {
-    super(items);
-  }
-
+export class FocusKeyManager extends ListKeyManager<FocusableOption> {
   /**
    * This method sets the active item to the item at the specified index.
    * It also adds focuses the newly active item.
@@ -35,5 +29,4 @@ export class FocusKeyManager extends ListKeyManager<Focusable> {
       this.activeItem.focus();
     }
   }
-
 }

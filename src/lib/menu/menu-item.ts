@@ -7,7 +7,7 @@
  */
 
 import {Component, ElementRef, OnDestroy, ChangeDetectionStrategy} from '@angular/core';
-import {Focusable} from '../core/a11y/focus-key-manager';
+import {FocusableOption} from '../core/a11y/focus-key-manager';
 import {CanDisable, mixinDisabled} from '../core/common-behaviors/disabled';
 import {Subject} from 'rxjs/Subject';
 
@@ -39,7 +39,9 @@ export const _MdMenuItemMixinBase = mixinDisabled(MdMenuItemBase);
   templateUrl: 'menu-item.html',
   exportAs: 'mdMenuItem',
 })
-export class MdMenuItem extends _MdMenuItemMixinBase implements Focusable, CanDisable, OnDestroy {
+export class MdMenuItem extends _MdMenuItemMixinBase implements FocusableOption, CanDisable,
+  OnDestroy {
+
   /** Stream that emits when the menu item is hovered. */
   hover: Subject<MdMenuItem> = new Subject();
 
