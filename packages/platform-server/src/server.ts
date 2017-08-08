@@ -16,8 +16,8 @@ import {BrowserModule, DOCUMENT, ɵSharedStylesHost as SharedStylesHost, ɵTRANS
 import {NoopAnimationsModule, ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
 
 import {SERVER_HTTP_PROVIDERS} from './http';
+import {JsDomAdapter, parseDocument} from './jsdom_adapter';
 import {ServerPlatformLocation} from './location';
-import {Parse5DomAdapter, parseDocument} from './parse5_adapter';
 import {PlatformState} from './platform_state';
 import {ServerRendererFactory2} from './server_renderer';
 import {ServerStylesHost} from './styles_host';
@@ -41,7 +41,7 @@ export const INTERNAL_SERVER_PLATFORM_PROVIDERS: StaticProvider[] = [
 ];
 
 function initParse5Adapter(injector: Injector) {
-  return () => { Parse5DomAdapter.makeCurrent(); };
+  return () => { JsDomAdapter.makeCurrent(); };
 }
 
 export function instantiateServerRendererFactory(

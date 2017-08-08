@@ -11,6 +11,7 @@ import {getDebugContext} from '@angular/core/src/errors';
 import {ArgumentType, BindingFlags, DebugContext, DepFlags, NodeDef, NodeFlags, RootData, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, asProviderData, directiveDef, elementDef, providerDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
 import {TestBed, inject, withModule} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 
 import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, isBrowser} from './helper';
 
@@ -108,6 +109,7 @@ export function main() {
         class SomeService {
           constructor() { throw new Error('Test'); }
         }
+        const doc = TestBed.get(DOCUMENT);
 
         let err: any;
         try {
@@ -118,7 +120,7 @@ export function main() {
                     () => compViewDef([textDef(null !, ['a'])])),
                 directiveDef(NodeFlags.Component, null !, 0, SomeService, [])
               ]),
-              TestBed.get(Injector), [], getDOM().createElement('div'));
+              TestBed.get(Injector), [], getDOM().createElement('div', doc));
         } catch (e) {
           err = e;
         }

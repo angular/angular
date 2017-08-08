@@ -229,9 +229,8 @@ export function main() {
 
            expect(doc.head).toBe(getDOM().querySelector(doc, 'head'));
            expect(doc.body).toBe(getDOM().querySelector(doc, 'body'));
-           expect((<any>doc)._window).toEqual({});
 
-           expect(getDOM().getText(doc)).toEqual('Works!');
+           expect(getDOM().getText(doc.documentElement)).toEqual('Works!');
 
            platform.destroy();
          });
@@ -247,13 +246,13 @@ export function main() {
 
          platform.bootstrapModule(ExampleModule).then((moduleRef) => {
            const doc = moduleRef.injector.get(DOCUMENT);
-           expect(getDOM().getText(doc)).toEqual('Works!');
+           expect(getDOM().getText(doc.documentElement)).toEqual('Works!');
            platform.destroy();
          });
 
          platform2.bootstrapModule(ExampleModule2).then((moduleRef) => {
            const doc = moduleRef.injector.get(DOCUMENT);
-           expect(getDOM().getText(doc)).toEqual('Works too!');
+           expect(getDOM().getText(doc.documentElement)).toEqual('Works too!');
            platform2.destroy();
          });
        }));
@@ -308,7 +307,7 @@ export function main() {
            const appRef: ApplicationRef = ref.injector.get(ApplicationRef);
            const app = appRef.components[0].location.nativeElement;
            const img = getDOM().getElementsByTagName(app, 'img')[0] as any;
-           expect(img.attribs['src']).toEqual('link');
+           expect(img.attributes['src'].value).toEqual('link');
          });
        }));
 
@@ -381,7 +380,7 @@ export function main() {
       let doc: string;
       let called: boolean;
       let expectedOutput =
-          '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">Works!<h1 innerText="fine">fine</h1></app></body></html>';
+          '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">Works!<h1 innertext="fine"></h1></app></body></html>';
 
       beforeEach(() => {
         // PlatformConfig takes in a parsed document so that it can be cached across requests.
@@ -438,8 +437,10 @@ export function main() {
       it('works with animation', async(() => {
            renderModule(AnimationServerModule, {document: doc}).then(output => {
              expect(output).toBe(
-                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
-                 '<div>Works!</div></app></body></html>');
+                 '<html><head></head><body><app class="ng-tns-c2-0" ' +
+                 'ng-version="0.0.0-PLACEHOLDER"><div class="ng-tns-c2-0 ' +
+                 'ng-trigger ng-trigger-myAnimation">Works!</div></app>' +
+                 '</body></html>');
              called = true;
            });
          }));

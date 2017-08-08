@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "5.0.0-beta.0",
+  "version": "5.0.0-beta.2",
   "dependencies": {
     "@types/angularjs": {
       "version": "1.5.13-alpha"
@@ -32,6 +32,9 @@
     "@types/systemjs": {
       "version": "0.19.32"
     },
+    "abab": {
+      "version": "1.0.3"
+    },
     "abbrev": {
       "version": "1.0.9"
     },
@@ -48,6 +51,14 @@
     },
     "acorn": {
       "version": "1.2.2"
+    },
+    "acorn-globals": {
+      "version": "3.1.0",
+      "dependencies": {
+        "acorn": {
+          "version": "4.0.13"
+        }
+      }
     },
     "add-stream": {
       "version": "1.0.0"
@@ -151,6 +162,9 @@
       "version": "1.0.1"
     },
     "array-differ": {
+      "version": "1.0.0"
+    },
+    "array-equal": {
       "version": "1.0.0"
     },
     "array-ify": {
@@ -1692,6 +1706,9 @@
     "content-type": {
       "version": "1.0.1"
     },
+    "content-type-parser": {
+      "version": "1.0.1"
+    },
     "conventional-changelog": {
       "version": "1.1.0"
     },
@@ -1817,6 +1834,12 @@
     "csrf": {
       "version": "3.0.0"
     },
+    "cssom": {
+      "version": "0.3.2"
+    },
+    "cssstyle": {
+      "version": "0.2.37"
+    },
     "csurf": {
       "version": "1.8.3"
     },
@@ -1860,6 +1883,9 @@
     },
     "deep-extend": {
       "version": "0.4.1"
+    },
+    "deep-is": {
+      "version": "0.1.3"
     },
     "defaults": {
       "version": "1.0.3"
@@ -2055,6 +2081,20 @@
     "escape-string-regexp": {
       "version": "1.0.4"
     },
+    "escodegen": {
+      "version": "1.8.1",
+      "dependencies": {
+        "estraverse": {
+          "version": "1.9.3"
+        },
+        "esutils": {
+          "version": "2.0.2"
+        },
+        "source-map": {
+          "version": "0.2.0"
+        }
+      }
+    },
     "esprima": {
       "version": "2.7.1"
     },
@@ -2161,6 +2201,9 @@
           "version": "2.0.0"
         }
       }
+    },
+    "fast-levenshtein": {
+      "version": "2.0.6"
     },
     "faye-websocket": {
       "version": "0.10.0"
@@ -3034,6 +3077,9 @@
     "html": {
       "version": "1.0.0"
     },
+    "html-encoding-sniffer": {
+      "version": "1.0.1"
+    },
     "htmlparser2": {
       "version": "3.9.2",
       "dependencies": {
@@ -3306,6 +3352,44 @@
     "jsbn": {
       "version": "0.1.0"
     },
+    "jsdom": {
+      "version": "11.1.0",
+      "dependencies": {
+        "acorn": {
+          "version": "4.0.13"
+        },
+        "caseless": {
+          "version": "0.12.0"
+        },
+        "har-validator": {
+          "version": "4.2.1"
+        },
+        "mime-db": {
+          "version": "1.29.0"
+        },
+        "mime-types": {
+          "version": "2.1.16"
+        },
+        "qs": {
+          "version": "6.4.0"
+        },
+        "request": {
+          "version": "2.81.0"
+        },
+        "sax": {
+          "version": "1.2.4"
+        },
+        "tough-cookie": {
+          "version": "2.3.2"
+        },
+        "tunnel-agent": {
+          "version": "0.6.0"
+        },
+        "uuid": {
+          "version": "3.1.0"
+        }
+      }
+    },
     "json-schema": {
       "version": "0.2.3"
     },
@@ -3422,6 +3506,9 @@
     "leven": {
       "version": "2.0.0"
     },
+    "levn": {
+      "version": "0.3.0"
+    },
     "liftoff": {
       "version": "2.2.0",
       "dependencies": {
@@ -3491,6 +3578,9 @@
     },
     "lodash.restparam": {
       "version": "3.6.1"
+    },
+    "lodash.sortby": {
+      "version": "4.7.0"
     },
     "lodash.template": {
       "version": "3.6.2"
@@ -3899,6 +3989,9 @@
         }
       }
     },
+    "nwmatcher": {
+      "version": "1.4.1"
+    },
     "oauth-sign": {
       "version": "0.8.2"
     },
@@ -3931,6 +4024,14 @@
       "dependencies": {
         "minimist": {
           "version": "0.0.10"
+        }
+      }
+    },
+    "optionator": {
+      "version": "0.8.2",
+      "dependencies": {
+        "wordwrap": {
+          "version": "1.0.0"
         }
       }
     },
@@ -3991,12 +4092,7 @@
       "version": "2.2.0"
     },
     "parse5": {
-      "version": "3.0.1",
-      "dependencies": {
-        "@types/node": {
-          "version": "6.0.63"
-        }
-      }
+      "version": "3.0.2"
     },
     "parsejson": {
       "version": "0.0.1"
@@ -4065,6 +4161,12 @@
     },
     "pkginfo": {
       "version": "0.3.1"
+    },
+    "pn": {
+      "version": "1.0.0"
+    },
+    "prelude-ls": {
+      "version": "1.1.2"
     },
     "prepend-http": {
       "version": "1.0.4"
@@ -4341,6 +4443,22 @@
     },
     "request-capture-har": {
       "version": "1.1.4"
+    },
+    "request-promise-core": {
+      "version": "1.1.1",
+      "dependencies": {
+        "lodash": {
+          "version": "4.17.4"
+        }
+      }
+    },
+    "request-promise-native": {
+      "version": "1.0.4",
+      "dependencies": {
+        "tough-cookie": {
+          "version": "2.3.2"
+        }
+      }
     },
     "requires-port": {
       "version": "1.0.0"
@@ -4670,6 +4788,9 @@
     "statuses": {
       "version": "1.2.1"
     },
+    "stealthy-require": {
+      "version": "1.1.1"
+    },
     "stream-browserify": {
       "version": "1.0.0"
     },
@@ -4731,6 +4852,9 @@
     },
     "symbol-observable": {
       "version": "1.0.4"
+    },
+    "symbol-tree": {
+      "version": "3.2.2"
     },
     "systemjs": {
       "version": "0.18.10"
@@ -4820,6 +4944,9 @@
     "tough-cookie": {
       "version": "2.2.1"
     },
+    "tr46": {
+      "version": "0.0.3"
+    },
     "traverse": {
       "version": "0.3.9"
     },
@@ -4885,6 +5012,9 @@
     },
     "tweetnacl": {
       "version": "0.14.3"
+    },
+    "type-check": {
+      "version": "0.3.2"
     },
     "type-is": {
       "version": "1.6.10",
@@ -5152,6 +5282,9 @@
         }
       }
     },
+    "webidl-conversions": {
+      "version": "4.0.1"
+    },
     "webpack": {
       "version": "1.12.9",
       "dependencies": {
@@ -5203,8 +5336,19 @@
     "websocket-extensions": {
       "version": "0.1.1"
     },
+    "whatwg-encoding": {
+      "version": "1.0.1",
+      "dependencies": {
+        "iconv-lite": {
+          "version": "0.4.13"
+        }
+      }
+    },
     "whatwg-fetch": {
       "version": "0.9.0"
+    },
+    "whatwg-url": {
+      "version": "6.1.0"
     },
     "when": {
       "version": "3.7.2"
@@ -5263,6 +5407,9 @@
     },
     "xhr2": {
       "version": "0.1.4"
+    },
+    "xml-name-validator": {
+      "version": "2.0.1"
     },
     "xml2js": {
       "version": "0.4.15"

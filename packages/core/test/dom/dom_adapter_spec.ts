@@ -18,8 +18,8 @@ export function main() {
     });
 
     it('should not coalesque text nodes', () => {
-      const el1 = el('<div>a</div>');
-      const el2 = el('<div>b</div>');
+      const el1 = el('<div>a</div>', defaultDoc);
+      const el2 = el('<div>b</div>', defaultDoc);
       getDOM().appendChild(el2, getDOM().firstChild(el1));
       expect(getDOM().childNodes(el2).length).toBe(2);
 
@@ -28,7 +28,7 @@ export function main() {
     });
 
     it('should clone correctly', () => {
-      const el1 = el('<div x="y">a<span>b</span></div>');
+      const el1 = el('<div x="y">a<span>b</span></div>', defaultDoc);
       const clone = getDOM().clone(el1);
 
       expect(clone).not.toBe(el1);
@@ -50,26 +50,26 @@ export function main() {
     });
 
     it('should be able to create text nodes and use them with the other APIs', () => {
-      const t = getDOM().createTextNode('hello');
+      const t = getDOM().createTextNode('hello', defaultDoc);
       expect(getDOM().isTextNode(t)).toBe(true);
-      const d = getDOM().createElement('div');
+      const d = getDOM().createElement('div', defaultDoc);
       getDOM().appendChild(d, t);
       expect(getDOM().getInnerHTML(d)).toEqual('hello');
     });
 
     it('should set className via the class attribute', () => {
-      const d = getDOM().createElement('div');
+      const d = getDOM().createElement('div', defaultDoc);
       getDOM().setAttribute(d, 'class', 'class1');
       expect(d.className).toEqual('class1');
     });
 
     it('should allow to remove nodes without parents', () => {
-      const d = getDOM().createElement('div');
+      const d = getDOM().createElement('div', defaultDoc);
       expect(() => getDOM().remove(d)).not.toThrow();
     });
 
     it('should parse styles with urls correctly', () => {
-      const d = getDOM().createElement('div');
+      const d = getDOM().createElement('div', defaultDoc);
       getDOM().setStyle(d, 'background-url', 'url(http://test.com/bg.jpg)');
       expect(getDOM().getStyle(d, 'background-url')).toBe('url(http://test.com/bg.jpg)');
     });
@@ -82,7 +82,7 @@ export function main() {
            () => { expect(getDOM().getBaseHref(defaultDoc)).toBeNull(); });
 
         it('should return the value of the base element', () => {
-          const baseEl = getDOM().createElement('base');
+          const baseEl = getDOM().createElement('base', defaultDoc);
           getDOM().setAttribute(baseEl, 'href', '/drop/bass/connon/');
           const headEl = defaultDoc.head;
           getDOM().appendChild(headEl, baseEl);
@@ -95,7 +95,7 @@ export function main() {
         });
 
         it('should return a relative url', () => {
-          const baseEl = getDOM().createElement('base');
+          const baseEl = getDOM().createElement('base', defaultDoc);
           getDOM().setAttribute(baseEl, 'href', 'base');
           const headEl = defaultDoc.head;
           getDOM().appendChild(headEl, baseEl);

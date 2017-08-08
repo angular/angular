@@ -11,19 +11,21 @@ import {Component, Injectable, NgZone, RendererFactory2, RendererType2, ViewChil
 import {TestBed} from '@angular/core/testing';
 import {BrowserAnimationsModule, ɵAnimationRendererFactory as AnimationRendererFactory} from '@angular/platform-browser/animations';
 import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
+import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {InjectableAnimationEngine} from '../../animations/src/providers';
 import {el} from '../../testing/src/browser_util';
 
 export function main() {
   describe('AnimationRenderer', () => {
     let element: any;
+    let doc: Document;
     beforeEach(() => {
-      element = el('<div></div>');
-
       TestBed.configureTestingModule({
         providers: [{provide: AnimationEngine, useClass: MockAnimationEngine}],
         imports: [BrowserAnimationsModule]
       });
+      doc = TestBed.get(DOCUMENT);
+      element = el('<div></div>', doc);
     });
 
     function makeRenderer(animationTriggers: any[] = []) {
@@ -40,7 +42,7 @@ export function main() {
     it('should hook into the engine\'s insert operations when appending children', () => {
       const renderer = makeRenderer();
       const engine = TestBed.get(AnimationEngine) as MockAnimationEngine;
-      const container = el('<div></div>');
+      const container = el('<div></div>', doc);
 
       renderer.appendChild(container, element);
       expect(engine.captures['onInsert'].pop()).toEqual([element]);
@@ -50,8 +52,8 @@ export function main() {
        () => {
          const renderer = makeRenderer();
          const engine = TestBed.get(AnimationEngine) as MockAnimationEngine;
-         const container = el('<div></div>');
-         const element2 = el('<div></div>');
+         const container = el('<div></div>', doc);
+         const element2 = el('<div></div>', doc);
          container.appendChild(element2);
 
          renderer.insertBefore(container, element, element2);
@@ -61,7 +63,7 @@ export function main() {
     it('should hook into the engine\'s insert operations when removing children', () => {
       const renderer = makeRenderer();
       const engine = TestBed.get(AnimationEngine) as MockAnimationEngine;
-      const container = el('<div></div>');
+      const container = el('<div></div>', doc);
 
       renderer.removeChild(container, element);
       expect(engine.captures['onRemove'].pop()).toEqual([element]);
@@ -109,160 +111,159 @@ export function main() {
            expect(engine.captures['listen'].pop()[0]).toBe(window);
          });
     });
+  });
 
-    describe('registering animations', () => {
-      it('should only create a trigger definition once even if the registered multiple times');
-    });
+  describe('registering animations', () => {
+    it('should only create a trigger definition once even if the registered multiple times');
+  });
 
-    describe('flushing animations', () => {
-      // these tests are only mean't to be run within the DOM
-      if (typeof Element == 'undefined') return;
+  describe('flushing animations', () => {
+    // these tests are only mean't to be run within the DOM
+    if (typeof Element == 'undefined') return;
 
-      it('should flush and fire callbacks when the zone becomes stable', (async) => {
-        @Component({
-          selector: 'my-cmp',
-          template: '<div [@myAnimation]="exp" (@myAnimation.start)="onStart($event)"></div>',
-          animations: [trigger(
-              'myAnimation',
-              [transition(
-                  '* => state',
-                  [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))])])],
-        })
-        class Cmp {
-          exp: any;
-          event: any;
-          onStart(event: any) { this.event = event; }
-        }
+    it('should flush and fire callbacks when the zone becomes stable', (async) => {
+      @Component({
+        selector: 'my-cmp',
+        template: '<div [@myAnimation]="exp" (@myAnimation.start)="onStart($event)"></div>',
+        animations: [trigger(
+            'myAnimation',
+            [transition(
+                '* => state', [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))])])],
+      })
+      class Cmp {
+        exp: any;
+        event: any;
+        onStart(event: any) { this.event = event; }
+      }
 
-        TestBed.configureTestingModule({
-          providers: [{provide: AnimationEngine, useClass: InjectableAnimationEngine}],
-          declarations: [Cmp]
-        });
-
-        const engine = TestBed.get(AnimationEngine);
-        const fixture = TestBed.createComponent(Cmp);
-        const cmp = fixture.componentInstance;
-        cmp.exp = 'state';
-        fixture.detectChanges();
-        fixture.whenStable().then(() => {
-          expect(cmp.event.triggerName).toEqual('myAnimation');
-          expect(cmp.event.phaseName).toEqual('start');
-          cmp.event = null;
-
-          engine.flush();
-          expect(cmp.event).toBeFalsy();
-          async();
-        });
+      TestBed.configureTestingModule({
+        providers: [{provide: AnimationEngine, useClass: InjectableAnimationEngine}],
+        declarations: [Cmp]
       });
 
-      it('should properly insert/remove nodes through the animation renderer that do not contain animations',
-         (async) => {
-           @Component({
-             selector: 'my-cmp',
-             template: '<div #elm *ngIf="exp"></div>',
-             animations: [trigger(
-                 'someAnimation',
-                 [transition(
-                     '* => *', [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))])])],
-           })
-           class Cmp {
-             exp: any;
-             @ViewChild('elm') public element: any;
-           }
+      const engine = TestBed.get(AnimationEngine);
+      const fixture = TestBed.createComponent(Cmp);
+      const cmp = fixture.componentInstance;
+      cmp.exp = 'state';
+      fixture.detectChanges();
+      fixture.whenStable().then(() => {
+        expect(cmp.event.triggerName).toEqual('myAnimation');
+        expect(cmp.event.phaseName).toEqual('start');
+        cmp.event = null;
 
-           TestBed.configureTestingModule({
-             providers: [{provide: AnimationEngine, useClass: InjectableAnimationEngine}],
-             declarations: [Cmp]
-           });
-
-           const fixture = TestBed.createComponent(Cmp);
-           const cmp = fixture.componentInstance;
-           cmp.exp = true;
-           fixture.detectChanges();
-
-           fixture.whenStable().then(() => {
-             cmp.exp = false;
-             const element = cmp.element;
-             expect(element.nativeElement.parentNode).toBeTruthy();
-
-             fixture.detectChanges();
-             fixture.whenStable().then(() => {
-               expect(element.nativeElement.parentNode).toBeFalsy();
-               async();
-             });
-           });
-         });
-
-      it('should only queue up dom removals if the element itself contains a valid leave animation',
-         () => {
-           @Component({
-             selector: 'my-cmp',
-             template: `
-               <div #elm1 *ngIf="exp1"></div>
-               <div #elm2 @animation1 *ngIf="exp2"></div>
-               <div #elm3 @animation2 *ngIf="exp3"></div>
-            `,
-             animations: [
-               trigger('animation1', [transition('a => b', [])]),
-               trigger('animation2', [transition(':leave', [])]),
-             ]
-           })
-           class Cmp {
-             exp1: any = true;
-             exp2: any = true;
-             exp3: any = true;
-
-             @ViewChild('elm1') public elm1: any;
-
-             @ViewChild('elm2') public elm2: any;
-
-             @ViewChild('elm3') public elm3: any;
-           }
-
-           TestBed.configureTestingModule({
-             providers: [{provide: AnimationEngine, useClass: InjectableAnimationEngine}],
-             declarations: [Cmp]
-           });
-
-           const engine = TestBed.get(AnimationEngine);
-           const fixture = TestBed.createComponent(Cmp);
-           const cmp = fixture.componentInstance;
-
-           fixture.detectChanges();
-           const elm1 = cmp.elm1;
-           const elm2 = cmp.elm2;
-           const elm3 = cmp.elm3;
-           assertHasParent(elm1);
-           assertHasParent(elm2);
-           assertHasParent(elm3);
-           engine.flush();
-           finishPlayers(engine.players);
-
-           cmp.exp1 = false;
-           fixture.detectChanges();
-           assertHasParent(elm1, false);
-           assertHasParent(elm2);
-           assertHasParent(elm3);
-           engine.flush();
-           expect(engine.players.length).toEqual(0);
-
-           cmp.exp2 = false;
-           fixture.detectChanges();
-           assertHasParent(elm1, false);
-           assertHasParent(elm2, false);
-           assertHasParent(elm3);
-           engine.flush();
-           expect(engine.players.length).toEqual(0);
-
-           cmp.exp3 = false;
-           fixture.detectChanges();
-           assertHasParent(elm1, false);
-           assertHasParent(elm2, false);
-           assertHasParent(elm3);
-           engine.flush();
-           expect(engine.players.length).toEqual(1);
-         });
+        engine.flush();
+        expect(cmp.event).toBeFalsy();
+        async();
+      });
     });
+
+    it('should properly insert/remove nodes through the animation renderer that do not contain animations',
+       (async) => {
+         @Component({
+           selector: 'my-cmp',
+           template: '<div #elm *ngIf="exp"></div>',
+           animations: [trigger(
+               'someAnimation',
+               [transition(
+                   '* => *', [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))])])],
+         })
+         class Cmp {
+           exp: any;
+           @ViewChild('elm') public element: any;
+         }
+
+         TestBed.configureTestingModule({
+           providers: [{provide: AnimationEngine, useClass: InjectableAnimationEngine}],
+           declarations: [Cmp]
+         });
+
+         const fixture = TestBed.createComponent(Cmp);
+         const cmp = fixture.componentInstance;
+         cmp.exp = true;
+         fixture.detectChanges();
+
+         fixture.whenStable().then(() => {
+           cmp.exp = false;
+           const element = cmp.element;
+           expect(element.nativeElement.parentNode).toBeTruthy();
+
+           fixture.detectChanges();
+           fixture.whenStable().then(() => {
+             expect(element.nativeElement.parentNode).toBeFalsy();
+             async();
+           });
+         });
+       });
+
+    it('should only queue up dom removals if the element itself contains a valid leave animation',
+       () => {
+         @Component({
+           selector: 'my-cmp',
+           template: `
+              <div #elm1 *ngIf="exp1"></div>
+              <div #elm2 @animation1 *ngIf="exp2"></div>
+              <div #elm3 @animation2 *ngIf="exp3"></div>
+          `,
+           animations: [
+             trigger('animation1', [transition('a => b', [])]),
+             trigger('animation2', [transition(':leave', [])]),
+           ]
+         })
+         class Cmp {
+           exp1: any = true;
+           exp2: any = true;
+           exp3: any = true;
+
+           @ViewChild('elm1') public elm1: any;
+
+           @ViewChild('elm2') public elm2: any;
+
+           @ViewChild('elm3') public elm3: any;
+         }
+
+         TestBed.configureTestingModule({
+           providers: [{provide: AnimationEngine, useClass: InjectableAnimationEngine}],
+           declarations: [Cmp]
+         });
+
+         const engine = TestBed.get(AnimationEngine);
+         const fixture = TestBed.createComponent(Cmp);
+         const cmp = fixture.componentInstance;
+
+         fixture.detectChanges();
+         const elm1 = cmp.elm1;
+         const elm2 = cmp.elm2;
+         const elm3 = cmp.elm3;
+         assertHasParent(elm1);
+         assertHasParent(elm2);
+         assertHasParent(elm3);
+         engine.flush();
+         finishPlayers(engine.players);
+
+         cmp.exp1 = false;
+         fixture.detectChanges();
+         assertHasParent(elm1, false);
+         assertHasParent(elm2);
+         assertHasParent(elm3);
+         engine.flush();
+         expect(engine.players.length).toEqual(0);
+
+         cmp.exp2 = false;
+         fixture.detectChanges();
+         assertHasParent(elm1, false);
+         assertHasParent(elm2, false);
+         assertHasParent(elm3);
+         engine.flush();
+         expect(engine.players.length).toEqual(0);
+
+         cmp.exp3 = false;
+         fixture.detectChanges();
+         assertHasParent(elm1, false);
+         assertHasParent(elm2, false);
+         assertHasParent(elm3);
+         engine.flush();
+         expect(engine.players.length).toEqual(1);
+       });
   });
 
   describe('AnimationRendererFactory', () => {
@@ -281,7 +282,7 @@ export function main() {
       @Component({
         selector: 'my-cmp',
         template: `
-          <div [@myAnimation]="exp"></div> 
+          <div [@myAnimation]="exp"></div>
         `,
         animations: [trigger('myAnimation', [])]
       })

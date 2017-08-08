@@ -9,11 +9,12 @@
 module.exports = {
   target: 'node',
   entry: './test/all_spec.js',
-  output: {filename: './all_spec.js'},
+  output: {filename: './all_spec.js', libraryTarget: 'commonjs2'},
   resolve: {extensions: ['.js']},
   devtool: '#source-map',
   module: {
     loaders:
         [{test: /\.js$/, exclude: /node_modules/, loaders: ['source-map-loader'], enforce: 'pre'}]
   },
+  externals: ['canvas', 'jsdom']
 };

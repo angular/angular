@@ -7,9 +7,7 @@
  */
 
 import {ApplicationRef, Inject, Injectable, Optional} from '@angular/core';
-import {DOCUMENT, ɵSharedStylesHost as SharedStylesHost, ɵTRANSITION_ID, ɵgetDOM as getDOM} from '@angular/platform-browser';
-
-import {Parse5DomAdapter} from './parse5_adapter';
+import {DOCUMENT, ɵDomAdapter as DomAdapter, ɵSharedStylesHost as SharedStylesHost, ɵTRANSITION_ID, ɵgetDOM as getDOM} from '@angular/platform-browser';
 
 @Injectable()
 export class ServerStylesHost extends SharedStylesHost {
@@ -23,8 +21,8 @@ export class ServerStylesHost extends SharedStylesHost {
   }
 
   private _addStyle(style: string): void {
-    let adapter: Parse5DomAdapter = getDOM() as Parse5DomAdapter;
-    const el = adapter.createElement('style');
+    let adapter: DomAdapter = getDOM();
+    const el = adapter.createElement('style', this.doc);
     adapter.setText(el, style);
     if (!!this.transitionId) {
       adapter.setAttribute(el, 'ng-transition', this.transitionId);
