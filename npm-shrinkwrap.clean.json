@@ -2352,6 +2352,9 @@
     "domhandler": {
       "version": "2.3.0"
     },
+    "domino": {
+      "version": "1.0.29"
+    },
     "domutils": {
       "version": "1.5.1"
     },
@@ -6161,14 +6164,6 @@
     },
     "parse-json": {
       "version": "2.2.0"
-    },
-    "parse5": {
-      "version": "3.0.1",
-      "dependencies": {
-        "@types/node": {
-          "version": "6.0.63"
-        }
-      }
     },
     "parsejson": {
       "version": "0.0.1"
