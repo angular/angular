@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set +x -eu -o pipefail
 
 function check {
   if [[ $1 == $2 ]]; then
@@ -133,11 +134,11 @@ We only deploy archive branches with the major version less than the stable bran
     export TRAVIS_PULL_REQUEST=false
     export TRAVIS_BRANCH=2.4.x
     export STABLE_BRANCH=2.2.x
-    export TRAVIS_COMMIT=$(git ls-remote origin 2.1.x | cut -c-40)
+    export TRAVIS_COMMIT=$(git ls-remote origin 2.4.x | cut -c-40)
     export FIREBASE_TOKEN=XXXXX
     `dirname $0`/deploy-to-firebase.sh --dry-run
   )
-  expected="Skipping deploy of branch \"2.1.x\" to firebase.
+  expected="Skipping deploy of branch \"2.4.x\" to firebase.
 We only deploy archive branches with the major version less than the stable branch: \"2.2.x\""
   check "$actual" "$expected"
 )
