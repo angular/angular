@@ -32,6 +32,24 @@ function toMap<T, K>(items: T[], select: (item: T) => K): Map<K, T> {
   return new Map(items.map<[K, T]>(i => [select(i), i]));
 }
 
+// We will never lower expressions in a nested lexical scope so avoid entering them.
+// This also avoids a bug in TypeScript 2.3 where the lexical scopes get out of sync
+// when using visitEachChild.
+function isLexicalScope(node: ts.Node): boolean {
+  switch (node.kind) {
+    case ts.SyntaxKind.ArrowFunction:
+    case ts.SyntaxKind.FunctionExpression:
+    case ts.SyntaxKind.FunctionDeclaration:
+    case ts.SyntaxKind.ClassExpression:
+    case ts.SyntaxKind.ClassDeclaration:
+    case ts.SyntaxKind.FunctionType:
+    case ts.SyntaxKind.TypeLiteral:
+    case ts.SyntaxKind.ArrayType:
+      return true;
+  }
+  return false;
+}
+
 function transformSourceFile(
     sourceFile: ts.SourceFile, requests: RequestLocationMap,
     context: ts.TransformationContext): ts.SourceFile {
@@ -56,11 +74,15 @@ function transformSourceFile(
           declarations.push({name, node});
           return ts.createIdentifier(name);
         }
-        if (node.pos <= max && node.end >= min) return ts.visitEachChild(node, visitNode, context);
-        return node;
+        let result = node;
+        if (node.pos <= max && node.end >= min && !isLexicalScope(node)) {
+          result = ts.visitEachChild(node, visitNode, context);
+        }
+        return result;
       }
 
-      const result = ts.visitEachChild(node, visitNode, context);
+      const result =
+          (node.pos <= max && node.end >= min) ? ts.visitEachChild(node, visitNode, context) : node;
 
       if (declarations.length) {
         inserts.push({priorTo: result, declarations});
@@ -126,6 +148,29 @@ interface MetadataAndLoweringRequests {
   requests: RequestLocationMap;
 }
 
+function shouldLower(node: ts.Node | undefined): boolean {
+  if (node) {
+    switch (node.kind) {
+      case ts.SyntaxKind.SourceFile:
+      case ts.SyntaxKind.Decorator:
+        // Lower expressions that are local to the module scope or
+        // in a decorator.
+        return true;
+      case ts.SyntaxKind.ClassDeclaration:
+      case ts.SyntaxKind.InterfaceDeclaration:
+      case ts.SyntaxKind.EnumDeclaration:
+      case ts.SyntaxKind.FunctionDeclaration:
+        // Don't lower expressions in a declaration.
+        return false;
+      case ts.SyntaxKind.VariableDeclaration:
+        // Avoid lowering expressions already in an exported variable declaration
+        return (ts.getCombinedModifierFlags(node) & ts.ModifierFlags.Export) == 0;
+    }
+    return shouldLower(node.parent);
+  }
+  return true;
+}
+
 export class LowerMetadataCache implements RequestsMap {
   private collector: MetadataCollector;
   private metadataCache = new Map<string, MetadataAndLoweringRequests>();
@@ -162,8 +207,9 @@ export class LowerMetadataCache implements RequestsMap {
     };
 
     const substituteExpression = (value: MetadataValue, node: ts.Node): MetadataValue => {
-      if (node.kind === ts.SyntaxKind.ArrowFunction ||
-          node.kind === ts.SyntaxKind.FunctionExpression) {
+      if ((node.kind === ts.SyntaxKind.ArrowFunction ||
+           node.kind === ts.SyntaxKind.FunctionExpression) &&
+          shouldLower(node)) {
         return replaceNode(node);
       }
       return value;

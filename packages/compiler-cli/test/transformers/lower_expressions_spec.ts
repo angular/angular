@@ -51,11 +51,9 @@ function convert(annotatedSource: string) {
 
   for (const annotation of annotations) {
     const node = findNode(sourceFile, annotation.start, annotation.length);
-    expect(node).toBeDefined();
-    if (node) {
-      const location = node.pos;
-      requests.set(location, {name: annotation.name, kind: node.kind, location, end: node.end});
-    }
+    if (!node) throw new Error('Invalid test specification. Could not find the node to substitute');
+    const location = node.pos;
+    requests.set(location, {name: annotation.name, kind: node.kind, location, end: node.end});
   }
 
   const program = ts.createProgram(
