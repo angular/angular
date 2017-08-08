@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EventEmitter, Inject, Optional, Self, forwardRef} from '@angular/core';
+import {AfterViewInit, Directive, EventEmitter, Inject, Input, Optional, Self, forwardRef} from '@angular/core';
 
-import {AbstractControl, FormControl, FormGroup} from '../model';
+import {AbstractControl, FormControl, FormGroup, FormHooks} from '../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
 
 import {ControlContainer} from './control_container';
@@ -63,12 +63,29 @@ const resolvedPromise = Promise.resolve(null);
   outputs: ['ngSubmit'],
   exportAs: 'ngForm'
 })
-export class NgForm extends ControlContainer implements Form {
+export class NgForm extends ControlContainer implements Form,
+    AfterViewInit {
   private _submitted: boolean = false;
   private _directives: NgModel[] = [];
 
   form: FormGroup;
   ngSubmit = new EventEmitter();
+
+  /**
+   * Options for the `NgForm` instance. Accepts the following properties:
+   *
+   * **updateOn**: Serves as the default `updateOn` value for all child `NgModels` below it
+   * (unless a child has explicitly set its own value for this in `ngModelOptions`).
+   * Potential values: `'change'` | `'blur'` | `'submit'`
+   *
+   * ```html
+   * <form [ngFormOptions]="{updateOn: 'blur'}">
+   *    <input name="one" ngModel>  <!-- this ngModel will update on blur -->
+   * </form>
+   * ```
+   *
+   */
+  @Input('ngFormOptions') options: {updateOn?: FormHooks};
 
   constructor(
       @Optional() @Self() @Inject(NG_VALIDATORS) validators: any[],
@@ -77,6 +94,8 @@ export class NgForm extends ControlContainer implements Form {
     this.form =
         new FormGroup({}, composeValidators(validators), composeAsyncValidators(asyncValidators));
   }
+
+  ngAfterViewInit() { this._setUpdateStrategy(); }
 
   get submitted(): boolean { return this._submitted; }
 
@@ -152,6 +171,12 @@ export class NgForm extends ControlContainer implements Form {
   resetForm(value: any = undefined): void {
     this.form.reset(value);
     this._submitted = false;
+  }
+
+  private _setUpdateStrategy() {
+    if (this.options && this.options.updateOn != null) {
+      this.form._updateOn = this.options.updateOn;
+    }
   }
 
   /** @internal */
