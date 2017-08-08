@@ -7,3 +7,7 @@ inside the folder with the same name as the current deployment mode (next, stabl
 will be copied to the `dist` folder.
 
 See the `scripts/deploy-to-firebase.sh` script for more detail.
+
+**Note:**
+The `deploy-to-firebase.sh` script always expects there to be a folder for the current deployment
+mode (even if it is empty).
