@@ -47,10 +47,14 @@ export * from './year-view';
     A11yModule,
   ],
   exports: [
+    MdCalendar,
+    MdCalendarBody,
     MdDatepicker,
     MdDatepickerContent,
     MdDatepickerInput,
     MdDatepickerToggle,
+    MdMonthView,
+    MdYearView,
   ],
   declarations: [
     MdCalendar,
