@@ -16,7 +16,7 @@ import {Form} from './form_interface';
 import {NgControl} from './ng_control';
 import {NgModel} from './ng_model';
 import {NgModelGroup} from './ng_model_group';
-import {composeAsyncValidators, composeValidators, setUpControl, setUpFormContainer} from './shared';
+import {composeAsyncValidators, composeValidators, removeDir, setUpControl, setUpFormContainer, syncPendingControls} from './shared';
 
 export const formDirectiveProvider: any = {
   provide: ControlContainer,
@@ -65,6 +65,7 @@ const resolvedPromise = Promise.resolve(null);
 })
 export class NgForm extends ControlContainer implements Form {
   private _submitted: boolean = false;
+  private _directives: NgModel[] = [];
 
   form: FormGroup;
   ngSubmit = new EventEmitter();
@@ -93,6 +94,7 @@ export class NgForm extends ControlContainer implements Form {
       dir._control = <FormControl>container.registerControl(dir.name, dir.control);
       setUpControl(dir.control, dir);
       dir.control.updateValueAndValidity({emitEvent: false});
+      this._directives.push(dir);
     });
   }
 
@@ -104,6 +106,7 @@ export class NgForm extends ControlContainer implements Form {
       if (container) {
         container.removeControl(dir.name);
       }
+      removeDir<NgModel>(this._directives, dir);
     });
   }
 
@@ -139,6 +142,7 @@ export class NgForm extends ControlContainer implements Form {
 
   onSubmit($event: Event): boolean {
     this._submitted = true;
+    syncPendingControls(this.form, this._directives);
     this.ngSubmit.emit($event);
     return false;
   }
