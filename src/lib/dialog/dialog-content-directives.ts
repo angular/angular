@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Input, Optional, OnInit} from '@angular/core';
+import {Directive, Input, OnChanges, OnInit, Optional, SimpleChanges} from '@angular/core';
 import {MdDialogRef} from './dialog-ref';
 import {MdDialogContainer} from './dialog-container';
 
@@ -25,17 +25,27 @@ let dialogElementUid = 0;
     'type': 'button', // Prevents accidental form submits.
   }
 })
-export class MdDialogClose {
+export class MdDialogClose implements OnChanges {
   /** Screenreader label for the button. */
   @Input('aria-label') ariaLabel: string = 'Close dialog';
 
   /** Dialog close input. */
   @Input('md-dialog-close') dialogResult: any;
 
-  /** Dialog close input for compatibility mode. */
-  @Input('mat-dialog-close') set _matDialogClose(value: any) { this.dialogResult = value; }
+  @Input('matDialogClose') _matDialogClose: any;
+  @Input('mdDialogClose') _mdDialogClose: any;
+  @Input('mat-dialog-close') _matDialogCloseResult: any;
 
   constructor(public dialogRef: MdDialogRef<any>) { }
+
+  ngOnChanges(changes: SimpleChanges) {
+    const proxiedChange = changes._matDialogClose || changes._mdDialogClose ||
+        changes._matDialogCloseResult;
+
+    if (proxiedChange) {
+      this.dialogResult = proxiedChange.currentValue;
+    }
+  }
 }
 
 /**
