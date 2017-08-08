@@ -125,6 +125,7 @@ export abstract class DomAdapter {
   abstract removeAttributeNS(element: any, ns: string, attribute: string): any;
   abstract templateAwareRoot(el: any): any;
   abstract createHtmlDocument(): HTMLDocument;
+  abstract getDefaultDocument(): Document;
   abstract getBoundingClientRect(el: any): any;
   abstract getTitle(doc: Document): string;
   abstract setTitle(doc: Document, newTitle: string): any;

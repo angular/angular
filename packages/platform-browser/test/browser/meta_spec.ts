@@ -14,11 +14,13 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 export function main() {
   describe('Meta service', () => {
-    const doc = getDOM().createHtmlDocument();
-    const metaService = new Meta(doc);
+    let doc: Document;
+    let metaService: Meta;
     let defaultMeta: HTMLMetaElement;
 
     beforeEach(() => {
+      doc = getDOM().createHtmlDocument();
+      metaService = new Meta(doc);
       defaultMeta = getDOM().createElement('meta', doc) as HTMLMetaElement;
       getDOM().setAttribute(defaultMeta, 'property', 'fb:app_id');
       getDOM().setAttribute(defaultMeta, 'content', '123456789');

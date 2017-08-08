@@ -15,9 +15,9 @@ import {BrowserModule, DOCUMENT, ɵSharedStylesHost as SharedStylesHost, ɵTRANS
 import {ɵplatformCoreDynamic as platformCoreDynamic} from '@angular/platform-browser-dynamic';
 import {NoopAnimationsModule, ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
 
+import {DominoAdapter, parseDocument} from './domino_adapter';
 import {SERVER_HTTP_PROVIDERS} from './http';
 import {ServerPlatformLocation} from './location';
-import {Parse5DomAdapter, parseDocument} from './parse5_adapter';
 import {PlatformState} from './platform_state';
 import {ServerRendererFactory2} from './server_renderer';
 import {ServerStylesHost} from './styles_host';
@@ -41,7 +41,7 @@ export const INTERNAL_SERVER_PLATFORM_PROVIDERS: StaticProvider[] = [
 ];
 
 function initParse5Adapter(injector: Injector) {
-  return () => { Parse5DomAdapter.makeCurrent(); };
+  return () => { DominoAdapter.makeCurrent(); };
 }
 
 export function instantiateServerRendererFactory(
@@ -80,7 +80,7 @@ export class ServerModule {
 function _document(injector: Injector) {
   let config: PlatformConfig|null = injector.get(INITIAL_CONFIG, null);
   if (config && config.document) {
-    return parseDocument(config.document);
+    return parseDocument(config.document, config.url);
   } else {
     return getDOM().createHtmlDocument();
   }

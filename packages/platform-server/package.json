@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "tslib": "^1.7.1",
-    "parse5": "^3.0.1",
+    "domino": "^1.0.29",
     "xhr2": "^0.1.4"
   },
   "repository": {
