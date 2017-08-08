@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, EventEmitter} from '@angular/core';
+import {Injectable} from '@angular/core';
+import {Subject} from 'rxjs/Subject';
 
 
 /** Datepicker data that requires internationalization. */
@@ -16,7 +17,7 @@ export class MdDatepickerIntl {
    * Stream that emits whenever the labels here are changed. Use this to notify
    * components if the labels have changed after initialization.
    */
-  changes: EventEmitter<void> = new EventEmitter<void>();
+  changes: Subject<void> = new Subject<void>();
 
   /** A label for the calendar popup (used by screen readers). */
   calendarLabel = 'Calendar';

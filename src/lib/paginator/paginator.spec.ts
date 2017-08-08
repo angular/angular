@@ -96,7 +96,7 @@ describe('MdPaginator', () => {
         const label = fixture.nativeElement.querySelector('.mat-paginator-page-size-label');
 
         intl.itemsPerPageLabel = '1337 items per page';
-        intl.changes.emit();
+        intl.changes.next();
         fixture.detectChanges();
 
         expect(label.textContent).toBe('1337 items per page');

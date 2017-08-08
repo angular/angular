@@ -154,7 +154,7 @@ describe('MdCalendar', () => {
             .querySelector('.mat-calendar-period-button');
 
         intl.switchToYearViewLabel = 'Go to year view?';
-        intl.changes.emit();
+        intl.changes.next();
         fixture.detectChanges();
 
         expect(button.getAttribute('aria-label')).toBe('Go to year view?');

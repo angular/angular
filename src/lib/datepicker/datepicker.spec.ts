@@ -571,7 +571,7 @@ describe('MdDatepicker', () => {
           const toggle = fixture.debugElement.query(By.css('button')).nativeElement;
 
           intl.openCalendarLabel = 'Open the calendar, perhaps?';
-          intl.changes.emit();
+          intl.changes.next();
           fixture.detectChanges();
 
           expect(toggle.getAttribute('aria-label')).toBe('Open the calendar, perhaps?');

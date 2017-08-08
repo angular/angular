@@ -148,7 +148,7 @@ describe('MdSort', () => {
       const button = header.querySelector('.mat-sort-header-button');
 
       intl.sortButtonLabel = () => 'Sort all of the things';
-      intl.changes.emit();
+      intl.changes.next();
       fixture.detectChanges();
 
       expect(button.getAttribute('aria-label')).toBe('Sort all of the things');
