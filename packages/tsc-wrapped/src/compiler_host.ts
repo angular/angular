@@ -120,51 +120,40 @@ export class MetadataWriterHost extends DelegatingHost {
       }
 }
 
-export class SyntheticIndexHost extends DelegatingHost {
-  private normalSyntheticIndexName: string;
-  private indexContent: string;
-  private indexMetadata: string;
+export function createSyntheticIndexHost<H extends ts.CompilerHost>(
+    delegate: H, syntheticIndex: {name: string, content: string, metadata: string}): H {
+  const normalSyntheticIndexName = normalize(syntheticIndex.name);
+  const indexContent = syntheticIndex.content;
+  const indexMetadata = syntheticIndex.metadata;
 
-  constructor(
-      delegate: ts.CompilerHost,
-      syntheticIndex: {name: string, content: string, metadata: string}) {
-    super(delegate);
-    this.normalSyntheticIndexName = normalize(syntheticIndex.name);
-    this.indexContent = syntheticIndex.content;
-    this.indexMetadata = syntheticIndex.metadata;
-  }
+  const newHost = Object.create(delegate);
+  newHost.fileExists = (fileName: string): boolean => {
+    return normalize(fileName) == normalSyntheticIndexName || delegate.fileExists(fileName);
+  };
 
-  fileExists = (fileName: string):
-      boolean => {
-        return normalize(fileName) == this.normalSyntheticIndexName ||
-            this.delegate.fileExists(fileName);
-      }
+  newHost.readFile = (fileName: string) => {
+    return normalize(fileName) == normalSyntheticIndexName ? indexContent :
+                                                             delegate.readFile(fileName);
+  };
 
-  readFile =
-      (fileName: string) => {
-        return normalize(fileName) == this.normalSyntheticIndexName ?
-            this.indexContent :
-            this.delegate.readFile(fileName);
-      }
-
-  getSourceFile =
-      (fileName: string, languageVersion: ts.ScriptTarget,
-       onError?: (message: string) => void) => {
-        if (normalize(fileName) == this.normalSyntheticIndexName) {
-          return ts.createSourceFile(fileName, this.indexContent, languageVersion, true);
+  newHost.getSourceFile =
+      (fileName: string, languageVersion: ts.ScriptTarget, onError?: (message: string) => void) => {
+        if (normalize(fileName) == normalSyntheticIndexName) {
+          return ts.createSourceFile(fileName, indexContent, languageVersion, true);
         }
-        return this.delegate.getSourceFile(fileName, languageVersion, onError);
-      }
+        return delegate.getSourceFile(fileName, languageVersion, onError);
+      };
 
-                                               writeFile: ts.WriteFileCallback =
-          (fileName: string, data: string, writeByteOrderMark: boolean,
-           onError?: (message: string) => void, sourceFiles?: ts.SourceFile[]) => {
-            this.delegate.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
-            if (fileName.match(DTS) && sourceFiles && sourceFiles.length == 1 &&
-                normalize(sourceFiles[0].fileName) == this.normalSyntheticIndexName) {
-              // If we are writing the synthetic index, write the metadata along side.
-              const metadataName = fileName.replace(DTS, '.metadata.json');
-              writeFileSync(metadataName, this.indexMetadata, {encoding: 'utf8'});
-            }
-          }
+  newHost.writeFile =
+      (fileName: string, data: string, writeByteOrderMark: boolean,
+       onError?: (message: string) => void, sourceFiles?: ts.SourceFile[]) => {
+        delegate.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
+        if (fileName.match(DTS) && sourceFiles && sourceFiles.length == 1 &&
+            normalize(sourceFiles[0].fileName) == normalSyntheticIndexName) {
+          // If we are writing the synthetic index, write the metadata along side.
+          const metadataName = fileName.replace(DTS, '.metadata.json');
+          writeFileSync(metadataName, indexMetadata, {encoding: 'utf8'});
+        }
+      };
+  return newHost;
 }

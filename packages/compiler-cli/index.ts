@@ -20,7 +20,7 @@ export {BuiltinType, DeclarationKind, Definition, PipeInfo, Pipes, Signature, Sp
 export * from './src/transformers/api';
 export * from './src/transformers/entry_points';
 
-export {performCompilation} from './src/perform-compile';
+export {performCompilation, readConfiguration, formatDiagnostics, calcProjectFileAndBasePath, createNgCompilerOptions} from './src/perform-compile';
 
 // TODO(hansl): moving to Angular 4 need to update this API.
 export {NgTools_InternalApi_NG_2 as __NGTOOLS_PRIVATE_API_2} from './src/ngtools_api';

@@ -8,6 +8,7 @@
 
 import {AotCompiler, AotCompilerOptions, GeneratedFile, NgAnalyzedModules, createAotCompiler, getParseErrors, isSyntaxError, toTypeScript} from '@angular/compiler';
 import {MissingTranslationStrategy} from '@angular/core';
+import {createBundleIndexHost} from '@angular/tsc-wrapped';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as tsickle from 'tsickle';
@@ -16,7 +17,7 @@ import * as ts from 'typescript';
 import {CompilerHost as AotCompilerHost} from '../compiler_host';
 import {TypeChecker} from '../diagnostics/check_types';
 
-import {CompilerHost, CompilerOptions, Diagnostic, DiagnosticCategory, EmitFlags, EmitResult, Program} from './api';
+import {CompilerHost, CompilerOptions, Diagnostic, EmitFlags, EmitResult, Program} from './api';
 import {LowerMetadataCache, getExpressionLoweringTransformFactory} from './lower_expressions';
 import {getAngularEmitterTransformFactory} from './node_emitter_transform';
 
@@ -31,8 +32,6 @@ const emptyModules: NgAnalyzedModules = {
 };
 
 class AngularCompilerProgram implements Program {
-  // Initialized in the constructor
-  private oldTsProgram: ts.Program|undefined;
   private tsProgram: ts.Program;
   private aotCompilerHost: AotCompilerHost;
   private compiler: AotCompiler;
@@ -49,12 +48,26 @@ class AngularCompilerProgram implements Program {
   private _generatedFileDiagnostics: Diagnostic[]|undefined;
   private _typeChecker: TypeChecker|undefined;
   private _semanticDiagnostics: Diagnostic[]|undefined;
+  private _optionsDiagnostics: Diagnostic[] = [];
 
   constructor(
       private rootNames: string[], private options: CompilerOptions, private host: CompilerHost,
       private oldProgram?: Program) {
-    this.oldTsProgram = oldProgram ? oldProgram.getTsProgram() : undefined;
-    this.tsProgram = ts.createProgram(rootNames, options, host, this.oldTsProgram);
+    if (options.flatModuleOutFile && !options.skipMetadataEmit) {
+      const {host: bundleHost, indexName, errors} = createBundleIndexHost(options, rootNames, host);
+      if (errors) {
+        // TODO(tbosch): once we move MetadataBundler from tsc_wrapped into compiler_cli,
+        // directly create ng.Diagnostic instead of using ts.Diagnostic here.
+        this._optionsDiagnostics.push(
+            ...errors.map(e => ({category: e.category, message: e.messageText as string})));
+      } else {
+        rootNames.push(indexName !);
+        this.host = host = bundleHost;
+      }
+    }
+
+    const oldTsProgram = oldProgram ? oldProgram.getTsProgram() : undefined;
+    this.tsProgram = ts.createProgram(rootNames, options, host, oldTsProgram);
     this.srcNames =
         this.tsProgram.getSourceFiles()
             .map(sf => sf.fileName)
@@ -78,7 +91,7 @@ class AngularCompilerProgram implements Program {
   }
 
   getNgOptionDiagnostics(cancellationToken?: ts.CancellationToken): Diagnostic[] {
-    return getNgOptionDiagnostics(this.options);
+    return [...this._optionsDiagnostics, ...getNgOptionDiagnostics(this.options)];
   }
 
   getTsSyntacticDiagnostics(sourceFile?: ts.SourceFile, cancellationToken?: ts.CancellationToken):
@@ -237,11 +250,11 @@ class AngularCompilerProgram implements Program {
         this._structuralDiagnostics =
             parserErrors.map<Diagnostic>(e => ({
                                            message: e.contextualMessage(),
-                                           category: DiagnosticCategory.Error,
+                                           category: ts.DiagnosticCategory.Error,
                                            span: e.span
                                          }));
       } else {
-        this._structuralDiagnostics = [{message: e.message, category: DiagnosticCategory.Error}];
+        this._structuralDiagnostics = [{message: e.message, category: ts.DiagnosticCategory.Error}];
       }
       this._analyzedModules = emptyModules;
       return emptyModules;
@@ -272,7 +285,8 @@ class AngularCompilerProgram implements Program {
       return this.options.skipTemplateCodegen ? [] : result;
     } catch (e) {
       if (isSyntaxError(e)) {
-        this._generatedFileDiagnostics = [{message: e.message, category: DiagnosticCategory.Error}];
+        this._generatedFileDiagnostics =
+            [{message: e.message, category: ts.DiagnosticCategory.Error}];
         return [];
       }
       throw e;
@@ -395,7 +409,7 @@ function getNgOptionDiagnostics(options: CompilerOptions): Diagnostic[] {
         return [{
           message:
               'Angular compiler options "annotationsAs" only supports "static fields" and "decorators"',
-          category: DiagnosticCategory.Error
+          category: ts.DiagnosticCategory.Error
         }];
     }
   }

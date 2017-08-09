@@ -18,16 +18,22 @@ function getNgRootDir() {
   return moduleFilename.substr(0, distIndex);
 }
 
-describe('compiler-cli', () => {
+describe('compiler-cli with disableTransformerPipeline', () => {
   let basePath: string;
   let outDir: string;
   let write: (fileName: string, content: string) => void;
+  let errorSpy: jasmine.Spy&((s: string) => void);
 
   function writeConfig(tsconfig: string = '{"extends": "./tsconfig-base.json"}') {
-    write('tsconfig.json', tsconfig);
+    const json = JSON.parse(tsconfig);
+    // Note: 'extends' does not work for "angularCompilerOptions" yet.
+    const ngOptions = json['angularCompilerOptions'] = json['angularCompilerOptions'] || {};
+    ngOptions['disableTransformerPipeline'] = true;
+    write('tsconfig.json', JSON.stringify(json));
   }
 
   beforeEach(() => {
+    errorSpy = jasmine.createSpy('consoleError');
     basePath = makeTempDir();
     write = (fileName: string, content: string) => {
       fs.writeFileSync(path.join(basePath, fileName), content, {encoding: 'utf-8'});
@@ -58,13 +64,9 @@ describe('compiler-cli', () => {
     writeConfig();
     write('test.ts', 'export const A = 1;');
 
-    const mockConsole = {error: (s: string) => {}};
-
-    spyOn(mockConsole, 'error');
-
-    main({p: basePath}, mockConsole.error)
+    main(['-p', basePath], errorSpy)
         .then((exitCode) => {
-          expect(mockConsole.error).not.toHaveBeenCalled();
+          expect(errorSpy).not.toHaveBeenCalled();
           expect(exitCode).toEqual(0);
           done();
         })
@@ -76,16 +78,11 @@ describe('compiler-cli', () => {
       "extends": "./tsconfig-base.json",
       "files": ["test.ts"]
     }`);
-    const mockConsole = {error: (s: string) => {}};
 
-    spyOn(mockConsole, 'error');
-
-    main({p: basePath}, mockConsole.error)
+    main(['-p', basePath], errorSpy)
         .then((exitCode) => {
-          expect(mockConsole.error)
-              .toHaveBeenCalledWith(
-                  `Error File '` + path.join(basePath, 'test.ts') + `' not found.`);
-          expect(mockConsole.error).not.toHaveBeenCalledWith('Compilation failed');
+          expect(errorSpy).toHaveBeenCalledWith(
+              `Error File '` + path.join(basePath, 'test.ts') + `' not found.`);
           expect(exitCode).toEqual(1);
           done();
         })
@@ -96,16 +93,10 @@ describe('compiler-cli', () => {
     writeConfig();
     write('test.ts', 'foo;');
 
-    const mockConsole = {error: (s: string) => {}};
-
-    spyOn(mockConsole, 'error');
-
-    main({p: basePath}, mockConsole.error)
+    main(['-p', basePath], errorSpy)
         .then((exitCode) => {
-          expect(mockConsole.error)
-              .toHaveBeenCalledWith(
-                  'Error at ' + path.join(basePath, 'test.ts') + `:1:1: Cannot find name 'foo'.`);
-          expect(mockConsole.error).not.toHaveBeenCalledWith('Compilation failed');
+          expect(errorSpy).toHaveBeenCalledWith(
+              'Error at ' + path.join(basePath, 'test.ts') + `:1:1: Cannot find name 'foo'.`);
           expect(exitCode).toEqual(1);
           done();
         })
@@ -116,17 +107,11 @@ describe('compiler-cli', () => {
     writeConfig();
     write('test.ts', `import {MyClass} from './not-exist-deps';`);
 
-    const mockConsole = {error: (s: string) => {}};
-
-    spyOn(mockConsole, 'error');
-
-    main({p: basePath}, mockConsole.error)
+    main(['-p', basePath], errorSpy)
         .then((exitCode) => {
-          expect(mockConsole.error)
-              .toHaveBeenCalledWith(
-                  'Error at ' + path.join(basePath, 'test.ts') +
-                  `:1:23: Cannot find module './not-exist-deps'.`);
-          expect(mockConsole.error).not.toHaveBeenCalledWith('Compilation failed');
+          expect(errorSpy).toHaveBeenCalledWith(
+              'Error at ' + path.join(basePath, 'test.ts') +
+              `:1:23: Cannot find module './not-exist-deps'.`);
           expect(exitCode).toEqual(1);
           done();
         })
@@ -138,17 +123,11 @@ describe('compiler-cli', () => {
     write('empty-deps.ts', 'export const A = 1;');
     write('test.ts', `import {MyClass} from './empty-deps';`);
 
-    const mockConsole = {error: (s: string) => {}};
-
-    spyOn(mockConsole, 'error');
-
-    main({p: basePath}, mockConsole.error)
+    main(['-p', basePath], errorSpy)
         .then((exitCode) => {
-          expect(mockConsole.error)
-              .toHaveBeenCalledWith(
-                  'Error at ' + path.join(basePath, 'test.ts') + `:1:9: Module '"` +
-                  path.join(basePath, 'empty-deps') + `"' has no exported member 'MyClass'.`);
-          expect(mockConsole.error).not.toHaveBeenCalledWith('Compilation failed');
+          expect(errorSpy).toHaveBeenCalledWith(
+              'Error at ' + path.join(basePath, 'test.ts') + `:1:9: Module '"` +
+              path.join(basePath, 'empty-deps') + `"' has no exported member 'MyClass'.`);
           expect(exitCode).toEqual(1);
           done();
         })
@@ -163,18 +142,12 @@ describe('compiler-cli', () => {
       A();
     `);
 
-    const mockConsole = {error: (s: string) => {}};
-
-    spyOn(mockConsole, 'error');
-
-    main({p: basePath}, mockConsole.error)
+    main(['-p', basePath], errorSpy)
         .then((exitCode) => {
-          expect(mockConsole.error)
-              .toHaveBeenCalledWith(
-                  'Error at ' + path.join(basePath, 'test.ts') +
-                  ':3:7: Cannot invoke an expression whose type lacks a call signature. ' +
-                  'Type \'String\' has no compatible call signatures.');
-          expect(mockConsole.error).not.toHaveBeenCalledWith('Compilation failed');
+          expect(errorSpy).toHaveBeenCalledWith(
+              'Error at ' + path.join(basePath, 'test.ts') +
+              ':3:7: Cannot invoke an expression whose type lacks a call signature. ' +
+              'Type \'String\' has no compatible call signatures.');
           expect(exitCode).toEqual(1);
           done();
         })
@@ -184,14 +157,11 @@ describe('compiler-cli', () => {
   it('should print the stack trace on compiler internal errors', (done) => {
     write('test.ts', 'export const A = 1;');
 
-    const mockConsole = {error: (s: string) => {}};
-
-    spyOn(mockConsole, 'error');
-
-    main({p: 'not-exist'}, mockConsole.error)
+    main(['-p', 'not-exist'], errorSpy)
         .then((exitCode) => {
-          expect(mockConsole.error).toHaveBeenCalled();
-          expect(mockConsole.error).toHaveBeenCalledWith('Compilation failed');
+          expect(errorSpy).toHaveBeenCalled();
+          expect(errorSpy.calls.mostRecent().args[0]).toContain('no such file or directory');
+          expect(errorSpy.calls.mostRecent().args[0]).toContain('at Error (native)');
           expect(exitCode).toEqual(1);
           done();
         })
@@ -215,7 +185,7 @@ describe('compiler-cli', () => {
         export class MyModule {}
       `);
 
-         main({p: basePath})
+         main(['-p', basePath], errorSpy)
              .then((exitCode) => {
                expect(exitCode).toEqual(0);
 
@@ -244,11 +214,7 @@ describe('compiler-cli', () => {
         export class MyModule {}
       `);
 
-      const mockConsole = {error: (s: string) => {}};
-
-      const errorSpy = spyOn(mockConsole, 'error');
-
-      main({p: basePath}, mockConsole.error)
+      main(['-p', basePath], errorSpy)
           .then((exitCode) => {
             expect(errorSpy).toHaveBeenCalledTimes(1);
             expect(errorSpy.calls.mostRecent().args[0])
@@ -280,7 +246,7 @@ describe('compiler-cli', () => {
         export class MyModule {}
       `);
 
-      main({p: basePath})
+      main(['-p', basePath], errorSpy)
           .then((exitCode) => {
             expect(exitCode).toEqual(0);
 
@@ -307,7 +273,7 @@ describe('compiler-cli', () => {
         export class MyModule {}
       `);
 
-      main({p: basePath})
+      main(['-p', basePath], errorSpy)
           .then((exitCode) => {
             expect(exitCode).toEqual(0);
             expect(fs.existsSync(path.resolve(outDir, 'mymodule.ngsummary.js'))).toBe(false);
@@ -333,7 +299,7 @@ describe('compiler-cli', () => {
         export class MyModule {}
       `);
 
-      main({p: basePath})
+      main(['-p', basePath], errorSpy)
           .then((exitCode) => {
             expect(exitCode).toEqual(0);
             expect(fs.existsSync(path.resolve(outDir, 'mymodule.ngsummary.js'))).toBe(true);

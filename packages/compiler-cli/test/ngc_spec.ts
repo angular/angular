@@ -11,8 +11,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {main} from '../src/ngc';
-import {performCompilation, readConfiguration} from '../src/perform-compile';
+import {mainSync} from '../src/main';
 
 function getNgRootDir() {
   const moduleFilename = module.filename.replace(/\\/g, '/');
@@ -20,16 +19,18 @@ function getNgRootDir() {
   return moduleFilename.substr(0, distIndex);
 }
 
-describe('ngc command-line', () => {
+describe('ngc transformer command-line', () => {
   let basePath: string;
   let outDir: string;
   let write: (fileName: string, content: string) => void;
+  let errorSpy: jasmine.Spy&((s: string) => void);
 
   function writeConfig(tsconfig: string = '{"extends": "./tsconfig-base.json"}') {
     write('tsconfig.json', tsconfig);
   }
 
   beforeEach(() => {
+    errorSpy = jasmine.createSpy('consoleError');
     basePath = makeTempDir();
     write = (fileName: string, content: string) => {
       const dir = path.dirname(fileName);
@@ -66,35 +67,9 @@ describe('ngc command-line', () => {
     writeConfig();
     write('test.ts', 'export const A = 1;');
 
-    const mockConsole = {error: (s: string) => {}};
-
-    spyOn(mockConsole, 'error');
-
-    const result = main(['-p', basePath], mockConsole.error);
-    expect(mockConsole.error).not.toHaveBeenCalled();
-    expect(result).toBe(0);
-  });
-
-  it('should be able to be called without a config file by passing options explicitly', () => {
-    write('test.ts', 'export const A = 1;');
-
-    const mockConsole = {error: (s: string) => {}};
-
-    spyOn(mockConsole, 'error');
-
-    expect(
-        () => performCompilation(
-            basePath, [path.join(basePath, 'test.ts')], {
-              experimentalDecorators: true,
-              skipLibCheck: true,
-              types: [],
-              outDir: path.join(basePath, 'built'),
-              declaration: true,
-              module: ts.ModuleKind.ES2015,
-              moduleResolution: ts.ModuleResolutionKind.NodeJs,
-            },
-            {}))
-        .not.toThrow();
+    const exitCode = mainSync(['-p', basePath], errorSpy);
+    expect(errorSpy).not.toHaveBeenCalled();
+    expect(exitCode).toBe(0);
   });
 
   it('should not print the stack trace if user input file does not exist', () => {
@@ -102,16 +77,11 @@ describe('ngc command-line', () => {
       "extends": "./tsconfig-base.json",
       "files": ["test.ts"]
     }`);
-    const mockConsole = {error: (s: string) => {}};
 
-    spyOn(mockConsole, 'error');
-
-    const exitCode = main(['-p', basePath], mockConsole.error);
-    expect(mockConsole.error)
-        .toHaveBeenCalledWith(
-            `error TS6053: File '` + path.join(basePath, 'test.ts') + `' not found.` +
-            '\n');
-    expect(mockConsole.error).not.toHaveBeenCalledWith('Compilation failed');
+    const exitCode = mainSync(['-p', basePath], errorSpy);
+    expect(errorSpy).toHaveBeenCalledWith(
+        `error TS6053: File '` + path.join(basePath, 'test.ts') + `' not found.` +
+        '\n');
     expect(exitCode).toEqual(1);
   });
 
@@ -119,16 +89,10 @@ describe('ngc command-line', () => {
     writeConfig();
     write('test.ts', 'foo;');
 
-    const mockConsole = {error: (s: string) => {}};
-
-    spyOn(mockConsole, 'error');
-
-    const exitCode = main(['-p', basePath], mockConsole.error);
-    expect(mockConsole.error)
-        .toHaveBeenCalledWith(
-            `test.ts(1,1): error TS2304: Cannot find name 'foo'.` +
-            '\n');
-    expect(mockConsole.error).not.toHaveBeenCalledWith('Compilation failed');
+    const exitCode = mainSync(['-p', basePath], errorSpy);
+    expect(errorSpy).toHaveBeenCalledWith(
+        `test.ts(1,1): error TS2304: Cannot find name 'foo'.` +
+        '\n');
     expect(exitCode).toEqual(1);
   });
 
@@ -136,16 +100,10 @@ describe('ngc command-line', () => {
     writeConfig();
     write('test.ts', `import {MyClass} from './not-exist-deps';`);
 
-    const mockConsole = {error: (s: string) => {}};
-
-    spyOn(mockConsole, 'error');
-
-    const exitCode = main(['-p', basePath], mockConsole.error);
-    expect(mockConsole.error)
-        .toHaveBeenCalledWith(
-            `test.ts(1,23): error TS2307: Cannot find module './not-exist-deps'.` +
-            '\n');
-    expect(mockConsole.error).not.toHaveBeenCalledWith('Compilation failed');
+    const exitCode = mainSync(['-p', basePath], errorSpy);
+    expect(errorSpy).toHaveBeenCalledWith(
+        `test.ts(1,23): error TS2307: Cannot find module './not-exist-deps'.` +
+        '\n');
     expect(exitCode).toEqual(1);
   });
 
@@ -154,17 +112,11 @@ describe('ngc command-line', () => {
     write('empty-deps.ts', 'export const A = 1;');
     write('test.ts', `import {MyClass} from './empty-deps';`);
 
-    const mockConsole = {error: (s: string) => {}};
-
-    spyOn(mockConsole, 'error');
-
-    const exitCode = main(['-p', basePath], mockConsole.error);
-    expect(mockConsole.error)
-        .toHaveBeenCalledWith(
-            `test.ts(1,9): error TS2305: Module '"` + path.join(basePath, 'empty-deps') +
-            `"' has no exported member 'MyClass'.` +
-            '\n');
-    expect(mockConsole.error).not.toHaveBeenCalledWith('Compilation failed');
+    const exitCode = mainSync(['-p', basePath], errorSpy);
+    expect(errorSpy).toHaveBeenCalledWith(
+        `test.ts(1,9): error TS2305: Module '"` + path.join(basePath, 'empty-deps') +
+        `"' has no exported member 'MyClass'.` +
+        '\n');
     expect(exitCode).toEqual(1);
   });
 
@@ -176,30 +128,21 @@ describe('ngc command-line', () => {
       A();
     `);
 
-    const mockConsole = {error: (s: string) => {}};
-
-    spyOn(mockConsole, 'error');
-
-    const exitCode = main(['-p', basePath], mockConsole.error);
-    expect(mockConsole.error)
-        .toHaveBeenCalledWith(
-            'test.ts(3,7): error TS2349: Cannot invoke an expression whose type lacks a call signature. ' +
-            'Type \'String\' has no compatible call signatures.\n');
-    expect(mockConsole.error).not.toHaveBeenCalledWith('Compilation failed');
+    const exitCode = mainSync(['-p', basePath], errorSpy);
+    expect(errorSpy).toHaveBeenCalledWith(
+        'test.ts(3,7): error TS2349: Cannot invoke an expression whose type lacks a call signature. ' +
+        'Type \'String\' has no compatible call signatures.\n');
     expect(exitCode).toEqual(1);
   });
 
   it('should print the stack trace on compiler internal errors', () => {
     write('test.ts', 'export const A = 1;');
 
-    const mockConsole = {error: (s: string) => {}};
-
-    spyOn(mockConsole, 'error');
-
-    const exitCode = main(['-p', 'not-exist'], mockConsole.error);
-    expect(mockConsole.error).toHaveBeenCalled();
-    expect(mockConsole.error).toHaveBeenCalledWith('Compilation failed');
-    expect(exitCode).toEqual(2);
+    const exitCode = mainSync(['-p', 'not-exist'], errorSpy);
+    expect(errorSpy).toHaveBeenCalledTimes(1);
+    expect(errorSpy.calls.mostRecent().args[0]).toContain('no such file or directory');
+    expect(errorSpy.calls.mostRecent().args[0]).toContain('at Error (native)');
+    expect(exitCode).toEqual(1);
   });
 
   describe('compile ngfactory files', () => {
@@ -218,11 +161,7 @@ describe('ngc command-line', () => {
         export class MyModule {}
       `);
 
-      const mockConsole = {error: (s: string) => {}};
-
-      const errorSpy = spyOn(mockConsole, 'error');
-
-      const exitCode = main(['-p', basePath], mockConsole.error);
+      const exitCode = mainSync(['-p', basePath], errorSpy);
       expect(errorSpy).toHaveBeenCalledTimes(1);
       expect(errorSpy.calls.mostRecent().args[0])
           .toContain('Error at ng://' + path.join(basePath, 'mymodule.ts.MyComp.html'));
@@ -253,11 +192,7 @@ describe('ngc command-line', () => {
         export class MyModule {}
       `);
 
-      const mockConsole = {error: (s: string) => {}};
-
-      const errorSpy = spyOn(mockConsole, 'error');
-
-      const exitCode = main(['-p', basePath], mockConsole.error);
+      const exitCode = mainSync(['-p', basePath], errorSpy);
       expect(errorSpy).toHaveBeenCalledTimes(1);
       expect(errorSpy.calls.mostRecent().args[0])
           .toContain('Error at ng://' + path.join(basePath, 'my.component.html(1,5):'));
@@ -282,7 +217,7 @@ describe('ngc command-line', () => {
         export class MyModule {}
       `);
 
-      const exitCode = main(['-p', basePath]);
+      const exitCode = mainSync(['-p', basePath], errorSpy);
       expect(exitCode).toEqual(0);
 
       expect(fs.existsSync(path.resolve(outDir, 'mymodule.ngfactory.js'))).toBe(true);
@@ -307,7 +242,7 @@ describe('ngc command-line', () => {
         export class MyModule {}
       `);
 
-      const exitCode = main(['-p', path.join(basePath, 'tsconfig.json')]);
+      const exitCode = mainSync(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
       expect(exitCode).toEqual(0);
       expect(fs.existsSync(path.resolve(outDir, 'mymodule.ngfactory.js'))).toBe(true);
       expect(fs.existsSync(path.resolve(
@@ -332,8 +267,7 @@ describe('ngc command-line', () => {
         export class MyModule {}
       `);
 
-        const mockConsole = {error: (s: string) => {}};
-        const exitCode = main(['-p', basePath], mockConsole.error);
+        const exitCode = mainSync(['-p', basePath], errorSpy);
         expect(exitCode).toEqual(0);
 
         const mymodulejs = path.resolve(outDir, 'mymodule.js');
@@ -362,8 +296,7 @@ describe('ngc command-line', () => {
         export class MyModule {}
       `);
 
-        const mockConsole = {error: (s: string) => {}};
-        const exitCode = main(['-p', basePath], mockConsole.error);
+        const exitCode = mainSync(['-p', basePath], errorSpy);
         expect(exitCode).toEqual(0);
 
         const mymodulejs = path.resolve(outDir, 'mymodule.js');
@@ -392,8 +325,7 @@ describe('ngc command-line', () => {
         export class MyModule {}
       `);
 
-        const mockConsole = {error: (s: string) => {}};
-        const exitCode = main(['-p', basePath], mockConsole.error);
+        const exitCode = mainSync(['-p', basePath], errorSpy);
         expect(exitCode).toEqual(0);
 
         const mymodulejs = path.resolve(outDir, 'mymodule.js');
@@ -411,9 +343,9 @@ describe('ngc command-line', () => {
       });
 
       function compile(): number {
-        const errors: string[] = [];
-        const result = main(['-p', path.join(basePath, 'tsconfig.json')], s => errors.push(s));
-        expect(errors).toEqual([]);
+        errorSpy.calls.reset();
+        const result = mainSync(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
+        expect(errorSpy).not.toHaveBeenCalled();
         return result;
       }
 
@@ -607,64 +539,8 @@ describe('ngc command-line', () => {
         export class FlatModule {
         }`);
 
-      const exitCode = main(['-p', path.join(basePath, 'tsconfig.json')]);
+      const exitCode = mainSync(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
       expect(exitCode).toEqual(0);
-      shouldExist('index.js');
-      shouldExist('index.metadata.json');
-    });
-
-    it('should be able to build a flat module passing explicit options', () => {
-      write('public-api.ts', `
-        export * from './src/flat.component';
-        export * from './src/flat.module';`);
-      write('src/flat.component.html', '<div>flat module component</div>');
-      write('src/flat.component.ts', `
-        import {Component} from '@angular/core';
-
-        @Component({
-          selector: 'flat-comp',
-          templateUrl: 'flat.component.html',
-        })
-        export class FlatComponent {
-        }`);
-      write('src/flat.module.ts', `
-        import {NgModule} from '@angular/core';
-
-        import {FlatComponent} from './flat.component';
-
-        @NgModule({
-          declarations: [
-            FlatComponent,
-          ],
-          exports: [
-            FlatComponent,
-          ]
-        })
-        export class FlatModule {
-        }`);
-
-      const emitResult = performCompilation(
-          basePath, [path.join(basePath, 'public-api.ts')], {
-            target: ts.ScriptTarget.ES5,
-            experimentalDecorators: true,
-            noImplicitAny: true,
-            moduleResolution: ts.ModuleResolutionKind.NodeJs,
-            rootDir: basePath,
-            declaration: true,
-            lib: ['lib.es2015.d.ts', 'lib.dom.d.ts'],
-            baseUrl: basePath,
-            outDir: path.join(basePath, 'built'),
-            typeRoots: [path.join(basePath, 'node_modules/@types')]
-          },
-          {
-            genDir: 'ng',
-            flatModuleId: 'flat_module',
-            flatModuleOutFile: 'index.js',
-            skipTemplateCodegen: true
-          });
-
-
-      expect(emitResult.errorCode).toEqual(0);
       shouldExist('index.js');
       shouldExist('index.metadata.json');
     });
@@ -756,7 +632,7 @@ describe('ngc command-line', () => {
       it('should honor skip code generation', () => {
         // First ensure that we skip code generation when requested;.
         writeGenConfig(/* skipCodegen */ true);
-        const exitCode = main(['-p', path.join(basePath, 'tsconfig.json')]);
+        const exitCode = mainSync(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
         expect(exitCode).toEqual(0);
         modules.forEach(moduleName => {
           shouldExist(moduleName + '.js');
@@ -772,7 +648,7 @@ describe('ngc command-line', () => {
       it('should produce factories', () => {
         // First ensure that we skip code generation when requested;.
         writeGenConfig(/* skipCodegen */ false);
-        const exitCode = main(['-p', path.join(basePath, 'tsconfig.json')]);
+        const exitCode = mainSync(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
         expect(exitCode).toEqual(0);
         modules.forEach(moduleName => {
           shouldExist(moduleName + '.js');
@@ -823,7 +699,7 @@ describe('ngc command-line', () => {
       });
 
       it('should compile without error', () => {
-        expect(main(['-p', path.join(basePath, 'tsconfig.json')])).toBe(0);
+        expect(mainSync(['-p', path.join(basePath, 'tsconfig.json')], errorSpy)).toBe(0);
       });
     });
 
@@ -897,7 +773,7 @@ describe('ngc command-line', () => {
       });
 
       it('should be able to compile library 1', () => {
-        expect(main(['-p', path.join(basePath, 'lib1')])).toBe(0);
+        expect(mainSync(['-p', path.join(basePath, 'lib1')], errorSpy)).toBe(0);
         shouldExist('lib1/module.js');
         shouldExist('lib1/module.ngsummary.json');
         shouldExist('lib1/module.ngsummary.js');
@@ -907,8 +783,8 @@ describe('ngc command-line', () => {
       });
 
       it('should be able to compile library 2', () => {
-        expect(main(['-p', path.join(basePath, 'lib1')])).toBe(0);
-        expect(main(['-p', path.join(basePath, 'lib2')])).toBe(0);
+        expect(mainSync(['-p', path.join(basePath, 'lib1')], errorSpy)).toBe(0);
+        expect(mainSync(['-p', path.join(basePath, 'lib2')], errorSpy)).toBe(0);
         shouldExist('lib2/module.js');
         shouldExist('lib2/module.ngsummary.json');
         shouldExist('lib2/module.ngsummary.js');
@@ -919,12 +795,12 @@ describe('ngc command-line', () => {
 
       describe('building an application', () => {
         beforeEach(() => {
-          expect(main(['-p', path.join(basePath, 'lib1')])).toBe(0);
-          expect(main(['-p', path.join(basePath, 'lib2')])).toBe(0);
+          expect(mainSync(['-p', path.join(basePath, 'lib1')], errorSpy)).toBe(0);
+          expect(mainSync(['-p', path.join(basePath, 'lib2')], errorSpy)).toBe(0);
         });
 
         it('should build without error', () => {
-          expect(main(['-p', path.join(basePath, 'app')])).toBe(0);
+          expect(mainSync(['-p', path.join(basePath, 'app')], errorSpy)).toBe(0);
           shouldExist('app/main.js');
         });
       });
