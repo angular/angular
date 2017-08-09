@@ -13,8 +13,6 @@ import {cyclicDependencyError, instantiationError, noProviderError, outOfBoundsE
 import {ReflectiveKey} from './reflective_key';
 import {ReflectiveDependency, ResolvedReflectiveFactory, ResolvedReflectiveProvider, resolveReflectiveProviders} from './reflective_provider';
 
-
-
 // Threshold for the dynamic version
 const UNDEFINED = new Object();
 
@@ -51,7 +49,7 @@ const UNDEFINED = new Object();
  * Notice, we don't use the `new` operator because we explicitly want to have the `Injector`
  * resolve all of the object's dependencies automatically.
  *
- * @stable
+ * @deprecated from v5 - slow and brings in a lot of code, Use `Injector.create` instead.
  */
 export abstract class ReflectiveInjector implements Injector {
   /**

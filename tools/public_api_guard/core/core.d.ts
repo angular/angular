@@ -759,7 +759,7 @@ export declare class QueryList<T> {
     toString(): string;
 }
 
-/** @stable */
+/** @deprecated */
 export declare abstract class ReflectiveInjector implements Injector {
     readonly abstract parent: Injector | null;
     abstract createChildFromResolved(providers: ResolvedReflectiveProvider[]): ReflectiveInjector;
