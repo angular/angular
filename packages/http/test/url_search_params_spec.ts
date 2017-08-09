@@ -167,5 +167,19 @@ export function main() {
       expect(params.toString()).toEqual('q=Q');
     });
 
+    it('should support map-like operations via getKeys()', () => {
+      const mapA = new URLSearchParams('a=1&b=2&c=3&d=4');
+      const mapB = new URLSearchParams();
+      const keys: Array<string> = mapA.getKeys();
+      for (const key of keys) {
+        mapB.set(key, mapA.getAll(key)[0]);
+      }
+      expect(mapB.get('a')).toEqual('1');
+      expect(mapB.get('b')).toEqual('2');
+      expect(mapB.get('c')).toEqual('3');
+      expect(mapB.get('d')).toEqual('4');
+      expect(mapB.toString()).toEqual('a=1&b=2&c=3&d=4');
+    });
+
   });
 }

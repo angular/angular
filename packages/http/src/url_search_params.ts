@@ -99,6 +99,10 @@ export class URLSearchParams {
     return Array.isArray(storedParam) ? storedParam[0] : null;
   }
 
+  // we are casting IterableIterator<string> to an Array<string>, because iterables are not supported
+  // in this project yet, and as such we cannot use them in for-of loops without errors
+  getKeys(): Array<string> { return Array.from(this.paramsMap.keys()); }
+
   getAll(param: string): string[] { return this.paramsMap.get(param) || []; }
 
   set(param: string, val: string) {
