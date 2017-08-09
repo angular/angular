@@ -62,7 +62,7 @@ describe('compiler-cli', () => {
 
     spyOn(mockConsole, 'error');
 
-    main({p: basePath}, mockConsole.error)
+    main(['-p', basePath], mockConsole.error)
         .then((exitCode) => {
           expect(mockConsole.error).not.toHaveBeenCalled();
           expect(exitCode).toEqual(0);
@@ -80,7 +80,7 @@ describe('compiler-cli', () => {
 
     spyOn(mockConsole, 'error');
 
-    main({p: basePath}, mockConsole.error)
+    main(['-p', basePath], mockConsole.error)
         .then((exitCode) => {
           expect(mockConsole.error)
               .toHaveBeenCalledWith(
@@ -100,7 +100,7 @@ describe('compiler-cli', () => {
 
     spyOn(mockConsole, 'error');
 
-    main({p: basePath}, mockConsole.error)
+    main(['-p', basePath], mockConsole.error)
         .then((exitCode) => {
           expect(mockConsole.error)
               .toHaveBeenCalledWith(
@@ -120,7 +120,7 @@ describe('compiler-cli', () => {
 
     spyOn(mockConsole, 'error');
 
-    main({p: basePath}, mockConsole.error)
+    main(['-p', basePath], mockConsole.error)
         .then((exitCode) => {
           expect(mockConsole.error)
               .toHaveBeenCalledWith(
@@ -142,7 +142,7 @@ describe('compiler-cli', () => {
 
     spyOn(mockConsole, 'error');
 
-    main({p: basePath}, mockConsole.error)
+    main(['-p', basePath], mockConsole.error)
         .then((exitCode) => {
           expect(mockConsole.error)
               .toHaveBeenCalledWith(
@@ -167,7 +167,7 @@ describe('compiler-cli', () => {
 
     spyOn(mockConsole, 'error');
 
-    main({p: basePath}, mockConsole.error)
+    main(['-p', basePath], mockConsole.error)
         .then((exitCode) => {
           expect(mockConsole.error)
               .toHaveBeenCalledWith(
@@ -188,7 +188,7 @@ describe('compiler-cli', () => {
 
     spyOn(mockConsole, 'error');
 
-    main({p: 'not-exist'}, mockConsole.error)
+    main(['-p', 'not-exist'], mockConsole.error)
         .then((exitCode) => {
           expect(mockConsole.error).toHaveBeenCalled();
           expect(mockConsole.error).toHaveBeenCalledWith('Compilation failed');
@@ -215,7 +215,7 @@ describe('compiler-cli', () => {
         export class MyModule {}
       `);
 
-         main({p: basePath})
+         main(['-p', basePath])
              .then((exitCode) => {
                expect(exitCode).toEqual(0);
 
@@ -248,7 +248,7 @@ describe('compiler-cli', () => {
 
       const errorSpy = spyOn(mockConsole, 'error');
 
-      main({p: basePath}, mockConsole.error)
+      main(['-p', basePath], mockConsole.error)
           .then((exitCode) => {
             expect(errorSpy).toHaveBeenCalledTimes(1);
             expect(errorSpy.calls.mostRecent().args[0])
@@ -280,7 +280,7 @@ describe('compiler-cli', () => {
         export class MyModule {}
       `);
 
-      main({p: basePath})
+      main(['-p', basePath])
           .then((exitCode) => {
             expect(exitCode).toEqual(0);
 
@@ -307,7 +307,7 @@ describe('compiler-cli', () => {
         export class MyModule {}
       `);
 
-      main({p: basePath})
+      main(['-p', basePath])
           .then((exitCode) => {
             expect(exitCode).toEqual(0);
             expect(fs.existsSync(path.resolve(outDir, 'mymodule.ngsummary.js'))).toBe(false);
@@ -333,7 +333,7 @@ describe('compiler-cli', () => {
         export class MyModule {}
       `);
 
-      main({p: basePath})
+      main(['-p', basePath])
           .then((exitCode) => {
             expect(exitCode).toEqual(0);
             expect(fs.existsSync(path.resolve(outDir, 'mymodule.ngsummary.js'))).toBe(true);

@@ -9,16 +9,10 @@
 import {ParseSourceSpan} from '@angular/compiler';
 import * as ts from 'typescript';
 
-export enum DiagnosticCategory {
-  Warning = 0,
-  Error = 1,
-  Message = 2,
-}
-
 export interface Diagnostic {
   message: string;
   span?: ParseSourceSpan;
-  category: DiagnosticCategory;
+  category: ts.DiagnosticCategory;
 }
 
 export interface CompilerOptions extends ts.CompilerOptions {

@@ -9,7 +9,8 @@
 // TODO(chuckj): Remove the requirement for a fake 'reflect` implementation from
 // the compiler
 import 'reflect-metadata';
-import {performCompilation} from '@angular/compiler-cli';
+
+import {createPerformCompilationHost, performCompilation} from '@angular/compiler-cli';
 import * as fs from 'fs';
 import * as path from 'path';
 // Note, the tsc_wrapped module comes from rules_typescript, not from @angular/tsc-wrapped
@@ -17,7 +18,6 @@ import {parseTsconfig} from 'tsc_wrapped';
 
 function main(args: string[]) {
   const [{options, bazelOpts, files, config}] = parseTsconfig(args[1]);
-  const ngOptions: {expectedOut: string[]} = (config as any).angularCompilerOptions;
 
   const parsedArgs = require('minimist')(args);
   const project = parsedArgs.p || parsedArgs.project || '.';
@@ -26,9 +26,9 @@ function main(args: string[]) {
 
   // file names in tsconfig are resolved relative to this absolute path
   const basePath = path.resolve(process.cwd(), projectDir);
-  const result = performCompilation(basePath, files, options, ngOptions, undefined);
-
-  return result.errorCode;
+  const host = createPerformCompilationHost(basePath, project);
+  host.readConfiguration = () => ({options, fileNames: files});
+  return performCompilation(basePath, project, files);
 }
 
 if (require.main === module) {
