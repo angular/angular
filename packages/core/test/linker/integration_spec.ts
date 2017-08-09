@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Compiler, ComponentFactory, ErrorHandler, EventEmitter, Host, Inject, Injectable, InjectionToken, Injector, NO_ERRORS_SCHEMA, NgModule, NgModuleRef, OnDestroy, SkipSelf} from '@angular/core';
+import {Compiler, ComponentFactory, ComponentRef, ErrorHandler, EventEmitter, Host, Inject, Injectable, InjectionToken, Injector, NO_ERRORS_SCHEMA, NgModule, NgModuleRef, OnDestroy, SkipSelf, ViewRef} from '@angular/core';
 import {ChangeDetectionStrategy, ChangeDetectorRef, PipeTransform} from '@angular/core/src/change_detection/change_detection';
 import {getDebugContext} from '@angular/core/src/errors';
 import {ComponentFactoryResolver} from '@angular/core/src/linker/component_factory_resolver';
@@ -1030,7 +1030,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         fixture.destroy();
       });
 
-      describe('ViewContainerRef.createComponent', () => {
+      describe('ViewContainerRef', () => {
         beforeEach(() => {
           // we need a module to declarate ChildCompUsingService as an entryComponent otherwise the
           // factory doesn't get created
@@ -1047,146 +1047,184 @@ function declareTests({useJit}: {useJit: boolean}) {
               MyComp, {add: {template: '<div><dynamic-vp #dynamic></dynamic-vp></div>'}});
         });
 
-        it('should allow to create a component at any bound location', async(() => {
-             const fixture = TestBed.configureTestingModule({schemas: [NO_ERRORS_SCHEMA]})
-                                 .createComponent(MyComp);
-             const tc = fixture.debugElement.children[0].children[0];
-             const dynamicVp: DynamicViewport = tc.injector.get(DynamicViewport);
-             dynamicVp.create();
-             fixture.detectChanges();
-             expect(fixture.debugElement.children[0].children[1].nativeElement)
-                 .toHaveText('dynamic greet');
-           }));
+        describe('.createComponent', () => {
+          it('should allow to create a component at any bound location', async(() => {
+               const fixture = TestBed.configureTestingModule({schemas: [NO_ERRORS_SCHEMA]})
+                                   .createComponent(MyComp);
+               const tc = fixture.debugElement.children[0].children[0];
+               const dynamicVp: DynamicViewport = tc.injector.get(DynamicViewport);
+               dynamicVp.create();
+               fixture.detectChanges();
+               expect(fixture.debugElement.children[0].children[1].nativeElement)
+                   .toHaveText('dynamic greet');
+             }));
 
-        it('should allow to create multiple components at a location', async(() => {
-             const fixture = TestBed.configureTestingModule({schemas: [NO_ERRORS_SCHEMA]})
-                                 .createComponent(MyComp);
-             const tc = fixture.debugElement.children[0].children[0];
-             const dynamicVp: DynamicViewport = tc.injector.get(DynamicViewport);
-             dynamicVp.create();
-             dynamicVp.create();
-             fixture.detectChanges();
-             expect(fixture.debugElement.children[0].children[1].nativeElement)
-                 .toHaveText('dynamic greet');
-             expect(fixture.debugElement.children[0].children[2].nativeElement)
-                 .toHaveText('dynamic greet');
-           }));
+          it('should allow to create multiple components at a location', async(() => {
+               const fixture = TestBed.configureTestingModule({schemas: [NO_ERRORS_SCHEMA]})
+                                   .createComponent(MyComp);
+               const tc = fixture.debugElement.children[0].children[0];
+               const dynamicVp: DynamicViewport = tc.injector.get(DynamicViewport);
+               dynamicVp.create();
+               dynamicVp.create();
+               fixture.detectChanges();
+               expect(fixture.debugElement.children[0].children[1].nativeElement)
+                   .toHaveText('dynamic greet');
+               expect(fixture.debugElement.children[0].children[2].nativeElement)
+                   .toHaveText('dynamic greet');
+             }));
 
-        it('should create a component that has been freshly compiled', () => {
-          @Component({template: ''})
-          class RootComp {
-            constructor(public vc: ViewContainerRef) {}
-          }
+          it('should create a component that has been freshly compiled', () => {
+            @Component({template: ''})
+            class RootComp {
+              constructor(public vc: ViewContainerRef) {}
+            }
 
-          @NgModule({
-            declarations: [RootComp],
-            providers: [{provide: 'someToken', useValue: 'someRootValue'}],
-          })
-          class RootModule {
-          }
+            @NgModule({
+              declarations: [RootComp],
+              providers: [{provide: 'someToken', useValue: 'someRootValue'}],
+            })
+            class RootModule {
+            }
 
-          @Component({template: ''})
-          class MyComp {
-            constructor(@Inject('someToken') public someToken: string) {}
-          }
+            @Component({template: ''})
+            class MyComp {
+              constructor(@Inject('someToken') public someToken: string) {}
+            }
 
-          @NgModule({
-            declarations: [MyComp],
-            providers: [{provide: 'someToken', useValue: 'someValue'}],
-          })
-          class MyModule {
-          }
+            @NgModule({
+              declarations: [MyComp],
+              providers: [{provide: 'someToken', useValue: 'someValue'}],
+            })
+            class MyModule {
+            }
 
-          const compFixture =
-              TestBed.configureTestingModule({imports: [RootModule]}).createComponent(RootComp);
-          const compiler = <Compiler>TestBed.get(Compiler);
-          const myCompFactory =
-              <ComponentFactory<MyComp>>compiler.compileModuleAndAllComponentsSync(MyModule)
-                  .componentFactories[0];
+            const compFixture =
+                TestBed.configureTestingModule({imports: [RootModule]}).createComponent(RootComp);
+            const compiler = <Compiler>TestBed.get(Compiler);
+            const myCompFactory =
+                <ComponentFactory<MyComp>>compiler.compileModuleAndAllComponentsSync(MyModule)
+                    .componentFactories[0];
 
-          // Note: the ComponentFactory was created directly via the compiler, i.e. it
-          // does not have an association to an NgModuleRef.
-          // -> expect the providers of the module that the view container belongs to.
-          const compRef = compFixture.componentInstance.vc.createComponent(myCompFactory);
-          expect(compRef.instance.someToken).toBe('someRootValue');
+            // Note: the ComponentFactory was created directly via the compiler, i.e. it
+            // does not have an association to an NgModuleRef.
+            // -> expect the providers of the module that the view container belongs to.
+            const compRef = compFixture.componentInstance.vc.createComponent(myCompFactory);
+            expect(compRef.instance.someToken).toBe('someRootValue');
+          });
+
+          it('should create a component with the passed NgModuleRef', () => {
+            @Component({template: ''})
+            class RootComp {
+              constructor(public vc: ViewContainerRef) {}
+            }
+
+            @Component({template: ''})
+            class MyComp {
+              constructor(@Inject('someToken') public someToken: string) {}
+            }
+
+            @NgModule({
+              declarations: [RootComp, MyComp],
+              entryComponents: [MyComp],
+              providers: [{provide: 'someToken', useValue: 'someRootValue'}],
+            })
+            class RootModule {
+            }
+
+            @NgModule({providers: [{provide: 'someToken', useValue: 'someValue'}]})
+            class MyModule {
+            }
+
+            const compFixture =
+                TestBed.configureTestingModule({imports: [RootModule]}).createComponent(RootComp);
+            const compiler = <Compiler>TestBed.get(Compiler);
+            const myModule = compiler.compileModuleSync(MyModule).create(TestBed.get(NgModuleRef));
+            const myCompFactory = (<ComponentFactoryResolver>TestBed.get(ComponentFactoryResolver))
+                                      .resolveComponentFactory(MyComp);
+
+            // Note: MyComp was declared as entryComponent in the RootModule,
+            // but we pass MyModule to the createComponent call.
+            // -> expect the providers of MyModule!
+            const compRef = compFixture.componentInstance.vc.createComponent(
+                myCompFactory, undefined, undefined, undefined, myModule);
+            expect(compRef.instance.someToken).toBe('someValue');
+          });
+
+          it('should create a component with the NgModuleRef of the ComponentFactoryResolver',
+             () => {
+               @Component({template: ''})
+               class RootComp {
+                 constructor(public vc: ViewContainerRef) {}
+               }
+
+               @NgModule({
+                 declarations: [RootComp],
+                 providers: [{provide: 'someToken', useValue: 'someRootValue'}],
+               })
+               class RootModule {
+               }
+
+               @Component({template: ''})
+               class MyComp {
+                 constructor(@Inject('someToken') public someToken: string) {}
+               }
+
+               @NgModule({
+                 declarations: [MyComp],
+                 entryComponents: [MyComp],
+                 providers: [{provide: 'someToken', useValue: 'someValue'}],
+               })
+               class MyModule {
+               }
+
+               const compFixture = TestBed.configureTestingModule({imports: [RootModule]})
+                                       .createComponent(RootComp);
+               const compiler = <Compiler>TestBed.get(Compiler);
+               const myModule =
+                   compiler.compileModuleSync(MyModule).create(TestBed.get(NgModuleRef));
+               const myCompFactory =
+                   myModule.componentFactoryResolver.resolveComponentFactory(MyComp);
+
+               // Note: MyComp was declared as entryComponent in MyModule,
+               // and we don't pass an explicit ModuleRef to the createComponent call.
+               // -> expect the providers of MyModule!
+               const compRef = compFixture.componentInstance.vc.createComponent(myCompFactory);
+               expect(compRef.instance.someToken).toBe('someValue');
+             });
         });
 
-        it('should create a component with the passed NgModuleRef', () => {
-          @Component({template: ''})
-          class RootComp {
-            constructor(public vc: ViewContainerRef) {}
-          }
+        describe('.insert', () => {
+          it('should throw with destroyed views', async(() => {
+               const fixture = TestBed.configureTestingModule({schemas: [NO_ERRORS_SCHEMA]})
+                                   .createComponent(MyComp);
+               const tc = fixture.debugElement.children[0].children[0];
+               const dynamicVp: DynamicViewport = tc.injector.get(DynamicViewport);
+               const ref = dynamicVp.create();
+               fixture.detectChanges();
 
-          @Component({template: ''})
-          class MyComp {
-            constructor(@Inject('someToken') public someToken: string) {}
-          }
-
-          @NgModule({
-            declarations: [RootComp, MyComp],
-            entryComponents: [MyComp],
-            providers: [{provide: 'someToken', useValue: 'someRootValue'}],
-          })
-          class RootModule {
-          }
-
-          @NgModule({providers: [{provide: 'someToken', useValue: 'someValue'}]})
-          class MyModule {
-          }
-
-          const compFixture =
-              TestBed.configureTestingModule({imports: [RootModule]}).createComponent(RootComp);
-          const compiler = <Compiler>TestBed.get(Compiler);
-          const myModule = compiler.compileModuleSync(MyModule).create(TestBed.get(NgModuleRef));
-          const myCompFactory = (<ComponentFactoryResolver>TestBed.get(ComponentFactoryResolver))
-                                    .resolveComponentFactory(MyComp);
-
-          // Note: MyComp was declared as entryComponent in the RootModule,
-          // but we pass MyModule to the createComponent call.
-          // -> expect the providers of MyModule!
-          const compRef = compFixture.componentInstance.vc.createComponent(
-              myCompFactory, undefined, undefined, undefined, myModule);
-          expect(compRef.instance.someToken).toBe('someValue');
+               ref.destroy();
+               expect(() => {
+                 dynamicVp.insert(ref.hostView);
+               }).toThrowError('Cannot insert a destroyed View in a ViewContainer!');
+             }));
         });
 
-        it('should create a component with the NgModuleRef of the ComponentFactoryResolver', () => {
-          @Component({template: ''})
-          class RootComp {
-            constructor(public vc: ViewContainerRef) {}
-          }
+        describe('.move', () => {
+          it('should throw with destroyed views', async(() => {
+               const fixture = TestBed.configureTestingModule({schemas: [NO_ERRORS_SCHEMA]})
+                                   .createComponent(MyComp);
+               const tc = fixture.debugElement.children[0].children[0];
+               const dynamicVp: DynamicViewport = tc.injector.get(DynamicViewport);
+               const ref = dynamicVp.create();
+               fixture.detectChanges();
 
-          @NgModule({
-            declarations: [RootComp],
-            providers: [{provide: 'someToken', useValue: 'someRootValue'}],
-          })
-          class RootModule {
-          }
-
-          @Component({template: ''})
-          class MyComp {
-            constructor(@Inject('someToken') public someToken: string) {}
-          }
-
-          @NgModule({
-            declarations: [MyComp],
-            entryComponents: [MyComp],
-            providers: [{provide: 'someToken', useValue: 'someValue'}],
-          })
-          class MyModule {
-          }
-
-          const compFixture =
-              TestBed.configureTestingModule({imports: [RootModule]}).createComponent(RootComp);
-          const compiler = <Compiler>TestBed.get(Compiler);
-          const myModule = compiler.compileModuleSync(MyModule).create(TestBed.get(NgModuleRef));
-          const myCompFactory = myModule.componentFactoryResolver.resolveComponentFactory(MyComp);
-
-          // Note: MyComp was declared as entryComponent in MyModule,
-          // and we don't pass an explicit ModuleRef to the createComponent call.
-          // -> expect the providers of MyModule!
-          const compRef = compFixture.componentInstance.vc.createComponent(myCompFactory);
-          expect(compRef.instance.someToken).toBe('someValue');
+               ref.destroy();
+               expect(() => {
+                 dynamicVp.move(ref.hostView, 1);
+               }).toThrowError('Cannot move a destroyed View in a ViewContainer!');
+             }));
         });
+
       });
 
       it('should support static attributes', () => {
@@ -1855,7 +1893,15 @@ class DynamicViewport {
         componentFactoryResolver.resolveComponentFactory(ChildCompUsingService) !;
   }
 
-  create() { this.vc.createComponent(this.componentFactory, this.vc.length, this.injector); }
+  create(): ComponentRef<ChildCompUsingService> {
+    return this.vc.createComponent(this.componentFactory, this.vc.length, this.injector);
+  }
+
+  insert(viewRef: ViewRef, index?: number): ViewRef { return this.vc.insert(viewRef, index); }
+
+  move(viewRef: ViewRef, currentIndex: number): ViewRef {
+    return this.vc.move(viewRef, currentIndex);
+  }
 }
 
 @Directive({selector: '[my-dir]', inputs: ['dirProp: elprop'], exportAs: 'mydir'})
