@@ -118,6 +118,9 @@ export abstract class AbstractControl {
   /** @internal */
   _onCollectionChange = () => {};
 
+  /** @internal */
+  _updateOn: FormHooks;
+
   private _valueChanges: EventEmitter<any>;
   private _statusChanges: EventEmitter<any>;
   private _status: string;
@@ -241,6 +244,15 @@ export abstract class AbstractControl {
    * is re-calculated.
    */
   get statusChanges(): Observable<any> { return this._statusChanges; }
+
+  /**
+   * Returns the update strategy of the `AbstractControl` (i.e.
+   * the event on which the control will update itself).
+   * Possible values: `'change'` (default) | `'blur'` | `'submit'`
+   */
+  get updateOn(): FormHooks {
+    return this._updateOn ? this._updateOn : (this.parent ? this.parent.updateOn : 'change');
+  }
 
   /**
    * Sets the synchronous validators that are active on this control.  Calling
@@ -624,6 +636,13 @@ export abstract class AbstractControl {
 
   /** @internal */
   _registerOnCollectionChange(fn: () => void): void { this._onCollectionChange = fn; }
+
+  /** @internal */
+  _setUpdateStrategy(opts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null): void {
+    if (isOptionsObj(opts) && (opts as AbstractControlOptions).updateOn != null) {
+      this._updateOn = (opts as AbstractControlOptions).updateOn !;
+    }
+  }
 }
 
 /**
@@ -696,9 +715,6 @@ export abstract class AbstractControl {
 export class FormControl extends AbstractControl {
   /** @internal */
   _onChange: Function[] = [];
-
-  /** @internal */
-  _updateOn: FormHooks = 'change';
 
   /** @internal */
   _pendingValue: any;
@@ -841,7 +857,7 @@ export class FormControl extends AbstractControl {
 
   /** @internal */
   _syncPendingControls(): boolean {
-    if (this._updateOn === 'submit') {
+    if (this.updateOn === 'submit') {
       this.setValue(this._pendingValue, {onlySelf: true, emitModelToViewChange: false});
       if (this._pendingDirty) this.markAsDirty();
       if (this._pendingTouched) this.markAsTouched();
@@ -857,12 +873,6 @@ export class FormControl extends AbstractControl {
                            this.enable({onlySelf: true, emitEvent: false});
     } else {
       this._value = this._pendingValue = formState;
-    }
-  }
-
-  private _setUpdateStrategy(opts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null): void {
-    if (isOptionsObj(opts) && (opts as AbstractControlOptions).updateOn != null) {
-      this._updateOn = (opts as AbstractControlOptions).updateOn !;
     }
   }
 }
@@ -925,6 +935,17 @@ export class FormControl extends AbstractControl {
  * }, {validators: passwordMatchValidator, asyncValidators: otherValidator});
  * ```
  *
+ * The options object can also be used to set a default value for each child
+ * control's `updateOn` property. If you set `updateOn` to `'blur'` at the
+ * group level, all child controls will default to 'blur', unless the child
+ * has explicitly specified a different `updateOn` value.
+ *
+ * ```ts
+ * const c = new FormGroup({
+ *    one: new FormControl()
+ * }, {updateOn: 'blur'});
+ * ```
+ *
  * * **npm package**: `@angular/forms`
  *
  * @stable
@@ -938,6 +959,7 @@ export class FormGroup extends AbstractControl {
         coerceToValidator(validatorOrOpts),
         coerceToAsyncValidator(asyncValidator, validatorOrOpts));
     this._initObservables();
+    this._setUpdateStrategy(validatorOrOpts);
     this._setUpControls();
     this.updateValueAndValidity({onlySelf: true, emitEvent: false});
   }
@@ -1242,6 +1264,17 @@ export class FormGroup extends AbstractControl {
  * ], {validators: myValidator, asyncValidators: myAsyncValidator});
  * ```
  *
+ * The options object can also be used to set a default value for each child
+ * control's `updateOn` property. If you set `updateOn` to `'blur'` at the
+ * array level, all child controls will default to 'blur', unless the child
+ * has explicitly specified a different `updateOn` value.
+ *
+ * ```ts
+ * const c = new FormArray([
+ *    new FormControl()
+ * ], {updateOn: 'blur'});
+ * ```
+ *
  * ### Adding or removing controls
  *
  * To change the controls in the array, use the `push`, `insert`, or `removeAt` methods
@@ -1263,6 +1296,7 @@ export class FormArray extends AbstractControl {
         coerceToValidator(validatorOrOpts),
         coerceToAsyncValidator(asyncValidator, validatorOrOpts));
     this._initObservables();
+    this._setUpdateStrategy(validatorOrOpts);
     this._setUpControls();
     this.updateValueAndValidity({onlySelf: true, emitEvent: false});
   }

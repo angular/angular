@@ -931,7 +931,6 @@ export function main() {
           sub.unsubscribe();
         });
 
-
         it('should mark as pristine properly if pending dirty', () => {
           const fixture = initTest(FormControlComp);
           const control = new FormControl('', {updateOn: 'blur'});
@@ -954,6 +953,94 @@ export function main() {
 
           expect(control.dirty).toBe(false, 'Expected pending dirty value to reset.');
         });
+
+        it('should update on blur with group updateOn', () => {
+          const fixture = initTest(FormGroupComp);
+          const control = new FormControl('', Validators.required);
+          const formGroup = new FormGroup({login: control}, {updateOn: 'blur'});
+          fixture.componentInstance.form = formGroup;
+          fixture.detectChanges();
+
+          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          input.value = 'Nancy';
+          dispatchEvent(input, 'input');
+          fixture.detectChanges();
+
+          expect(control.value).toEqual('', 'Expected value to remain unchanged until blur.');
+          expect(control.valid).toBe(false, 'Expected no validation to occur until blur.');
+
+          dispatchEvent(input, 'blur');
+          fixture.detectChanges();
+
+          expect(control.value)
+              .toEqual('Nancy', 'Expected value to change once control is blurred.');
+          expect(control.valid).toBe(true, 'Expected validation to run once control is blurred.');
+
+        });
+
+        it('should update on blur with array updateOn', () => {
+          const fixture = initTest(FormArrayComp);
+          const control = new FormControl('', Validators.required);
+          const cityArray = new FormArray([control], {updateOn: 'blur'});
+          const formGroup = new FormGroup({cities: cityArray});
+          fixture.componentInstance.form = formGroup;
+          fixture.componentInstance.cityArray = cityArray;
+          fixture.detectChanges();
+
+          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          input.value = 'Nancy';
+          dispatchEvent(input, 'input');
+          fixture.detectChanges();
+
+          expect(control.value).toEqual('', 'Expected value to remain unchanged until blur.');
+          expect(control.valid).toBe(false, 'Expected no validation to occur until blur.');
+
+          dispatchEvent(input, 'blur');
+          fixture.detectChanges();
+
+          expect(control.value)
+              .toEqual('Nancy', 'Expected value to change once control is blurred.');
+          expect(control.valid).toBe(true, 'Expected validation to run once control is blurred.');
+
+        });
+
+
+        it('should allow child control updateOn blur to override group updateOn', () => {
+          const fixture = initTest(NestedFormGroupComp);
+          const loginControl =
+              new FormControl('', {validators: Validators.required, updateOn: 'change'});
+          const passwordControl = new FormControl('', Validators.required);
+          const formGroup = new FormGroup(
+              {signin: new FormGroup({login: loginControl, password: passwordControl})},
+              {updateOn: 'blur'});
+          fixture.componentInstance.form = formGroup;
+          fixture.detectChanges();
+
+          const [loginInput, passwordInput] = fixture.debugElement.queryAll(By.css('input'));
+          loginInput.nativeElement.value = 'Nancy';
+          dispatchEvent(loginInput.nativeElement, 'input');
+          fixture.detectChanges();
+
+          expect(loginControl.value).toEqual('Nancy', 'Expected value change on input.');
+          expect(loginControl.valid).toBe(true, 'Expected validation to run on input.');
+
+          passwordInput.nativeElement.value = 'Carson';
+          dispatchEvent(passwordInput.nativeElement, 'input');
+          fixture.detectChanges();
+
+          expect(passwordControl.value)
+              .toEqual('', 'Expected value to remain unchanged until blur.');
+          expect(passwordControl.valid).toBe(false, 'Expected no validation to occur until blur.');
+
+          dispatchEvent(passwordInput.nativeElement, 'blur');
+          fixture.detectChanges();
+
+          expect(passwordControl.value)
+              .toEqual('Carson', 'Expected value to change once control is blurred.');
+          expect(passwordControl.valid)
+              .toBe(true, 'Expected validation to run once control is blurred.');
+        });
+
 
       });
 
@@ -1193,7 +1280,6 @@ export function main() {
 
         });
 
-
         it('should mark as untouched properly if pending touched', () => {
           const fixture = initTest(FormGroupComp);
           const formGroup = new FormGroup({login: new FormControl('', {updateOn: 'submit'})});
@@ -1214,6 +1300,99 @@ export function main() {
           fixture.detectChanges();
 
           expect(formGroup.touched).toBe(false, 'Expected touched to stay false on submit.');
+        });
+
+        it('should update on submit with group updateOn', () => {
+          const fixture = initTest(FormGroupComp);
+          const control = new FormControl('', Validators.required);
+          const formGroup = new FormGroup({login: control}, {updateOn: 'submit'});
+          fixture.componentInstance.form = formGroup;
+          fixture.detectChanges();
+
+          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          input.value = 'Nancy';
+          dispatchEvent(input, 'input');
+          fixture.detectChanges();
+
+          expect(control.value).toEqual('', 'Expected value to remain unchanged until submit.');
+          expect(control.valid).toBe(false, 'Expected no validation to occur until submit.');
+
+          dispatchEvent(input, 'blur');
+          fixture.detectChanges();
+
+          expect(control.value).toEqual('', 'Expected value to remain unchanged until submit.');
+          expect(control.valid).toBe(false, 'Expected no validation to occur until submit.');
+
+          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          dispatchEvent(form, 'submit');
+          fixture.detectChanges();
+
+          expect(control.value).toEqual('Nancy', 'Expected value to change on submit.');
+          expect(control.valid).toBe(true, 'Expected validation to run on submit.');
+
+        });
+
+        it('should update on submit with array updateOn', () => {
+          const fixture = initTest(FormArrayComp);
+          const control = new FormControl('', Validators.required);
+          const cityArray = new FormArray([control], {updateOn: 'submit'});
+          const formGroup = new FormGroup({cities: cityArray});
+          fixture.componentInstance.form = formGroup;
+          fixture.componentInstance.cityArray = cityArray;
+          fixture.detectChanges();
+
+          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          input.value = 'Nancy';
+          dispatchEvent(input, 'input');
+          fixture.detectChanges();
+
+          expect(control.value).toEqual('', 'Expected value to remain unchanged until submit.');
+          expect(control.valid).toBe(false, 'Expected no validation to occur until submit.');
+
+
+          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          dispatchEvent(form, 'submit');
+          fixture.detectChanges();
+
+          expect(control.value).toEqual('Nancy', 'Expected value to change once control on submit');
+          expect(control.valid).toBe(true, 'Expected validation to run on submit.');
+
+        });
+
+        it('should allow child control updateOn submit to override group updateOn', () => {
+          const fixture = initTest(NestedFormGroupComp);
+          const loginControl =
+              new FormControl('', {validators: Validators.required, updateOn: 'change'});
+          const passwordControl = new FormControl('', Validators.required);
+          const formGroup = new FormGroup(
+              {signin: new FormGroup({login: loginControl, password: passwordControl})},
+              {updateOn: 'submit'});
+          fixture.componentInstance.form = formGroup;
+          fixture.detectChanges();
+
+          const [loginInput, passwordInput] = fixture.debugElement.queryAll(By.css('input'));
+          loginInput.nativeElement.value = 'Nancy';
+          dispatchEvent(loginInput.nativeElement, 'input');
+          fixture.detectChanges();
+
+          expect(loginControl.value).toEqual('Nancy', 'Expected value change on input.');
+          expect(loginControl.valid).toBe(true, 'Expected validation to run on input.');
+
+          passwordInput.nativeElement.value = 'Carson';
+          dispatchEvent(passwordInput.nativeElement, 'input');
+          fixture.detectChanges();
+
+          expect(passwordControl.value)
+              .toEqual('', 'Expected value to remain unchanged until submit.');
+          expect(passwordControl.valid)
+              .toBe(false, 'Expected no validation to occur until submit.');
+
+          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          dispatchEvent(form, 'submit');
+          fixture.detectChanges();
+
+          expect(passwordControl.value).toEqual('Carson', 'Expected value to change on submit.');
+          expect(passwordControl.valid).toBe(true, 'Expected validation to run on submit.');
         });
 
       });
@@ -2008,13 +2187,13 @@ class NestedFormGroupComp {
 @Component({
   selector: 'form-array-comp',
   template: `
-    <div [formGroup]="form">
+    <form [formGroup]="form">
       <div formArrayName="cities">
         <div *ngFor="let city of cityArray.controls; let i=index">
           <input [formControlName]="i">
         </div>
       </div>
-     </div>`
+     </form>`
 })
 class FormArrayComp {
   form: FormGroup;

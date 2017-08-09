@@ -14,6 +14,7 @@ export declare abstract class AbstractControl {
     readonly statusChanges: Observable<any>;
     readonly touched: boolean;
     readonly untouched: boolean;
+    readonly updateOn: FormHooks;
     readonly valid: boolean;
     validator: ValidatorFn | null;
     readonly value: any;
