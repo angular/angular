@@ -10,11 +10,13 @@ import {AnimationDriver, ɵAnimationEngine, ɵWebAnimationsDriver, ɵWebAnimatio
 import {AnimationGroupPlayer} from '@angular/animations/src/players/animation_group_player';
 import {Component} from '@angular/core';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 
 import {TestBed} from '../../testing';
 
 export function main() {
   // these tests are only mean't to be run within the DOM (for now)
+  // Buggy in Chromium 39, see https://github.com/angular/angular/issues/15793
   if (typeof Element == 'undefined' || !ɵsupportsWebAnimations()) return;
 
   describe('animation integration tests using web animations', function() {
@@ -66,16 +68,18 @@ export function main() {
         {height: '0px', offset: 0}, {height: '100px', offset: 1}
       ]);
 
-      cmp.exp = false;
-      fixture.detectChanges();
-      engine.flush();
+      if (!browserDetection.isOldChrome) {
+        cmp.exp = false;
+        fixture.detectChanges();
+        engine.flush();
 
-      expect(engine.players.length).toEqual(1);
-      webPlayer = engine.players[0].getRealPlayer() as ɵWebAnimationsPlayer;
+        expect(engine.players.length).toEqual(1);
+        webPlayer = engine.players[0].getRealPlayer() as ɵWebAnimationsPlayer;
 
-      expect(webPlayer.keyframes).toEqual([
-        {height: '100px', offset: 0}, {height: '0px', offset: 1}
-      ]);
+        expect(webPlayer.keyframes).toEqual([
+          {height: '100px', offset: 0}, {height: '0px', offset: 1}
+        ]);
+      }
     });
 
     it('should compute (!) animation styles for a container that is being inserted', () => {
