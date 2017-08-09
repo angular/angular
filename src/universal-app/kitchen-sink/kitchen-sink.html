@@ -250,12 +250,24 @@
 
 <h2>CDK Table</h2>
 
-<cdk-table #table [dataSource]="cdkTableDataSource">
+<cdk-table #table [dataSource]="tableDataSource">
   <ng-container cdkColumnDef="userId">
     <cdk-header-cell *cdkHeaderCellDef>ID</cdk-header-cell>
     <cdk-cell *cdkCellDef="let row">{{row.userId}}</cdk-cell>
   </ng-container>
 
-  <cdk-header-row *cdkHeaderRowDef="cdkTableColumns" ></cdk-header-row>
-  <cdk-row *cdkRowDef="let row; columns: cdkTableColumns;"></cdk-row>
+  <cdk-header-row *cdkHeaderRowDef="tableColumns" ></cdk-header-row>
+  <cdk-row *cdkRowDef="let row; columns: tableColumns;"></cdk-row>
 </cdk-table>
+
+<h2>Material Table</h2>
+
+<md-table [dataSource]="tableDataSource">
+  <ng-container cdkColumnDef="userId">
+    <md-header-cell *cdkHeaderCellDef>ID</md-header-cell>
+    <md-cell *cdkCellDef="let row"> {{row.userId}} </md-cell>
+  </ng-container>
+
+  <md-header-row *cdkHeaderRowDef="tableColumns"></md-header-row>
+  <md-row *cdkRowDef="let row; columns: tableColumns;"></md-row>
+</md-table>

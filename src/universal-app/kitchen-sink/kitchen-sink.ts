@@ -27,6 +27,7 @@ import {
   MdSlideToggleModule,
   MdSnackBarModule,
   MdSortModule,
+  MdTableModule,
   MdTabsModule,
   MdToolbarModule,
   MdTooltipModule,
@@ -45,11 +46,11 @@ import 'rxjs/add/observable/of';
 })
 export class KitchenSink {
 
-  /** List of columns for the CDK table. */
-  cdkTableColumns = ['userId'];
+  /** List of columns for the CDK and Material table. */
+  tableColumns = ['userId'];
 
-  /** Data source for the CDK table. */
-  cdkTableDataSource: DataSource<any> = {
+  /** Data source for the CDK and Material table. */
+  tableDataSource: DataSource<any> = {
     connect: () => Observable.of([
       { userId: 1 },
       { userId: 2 }
@@ -93,6 +94,7 @@ export class KitchenSink {
     MdTooltipModule,
     MdExpansionModule,
     MdSortModule,
+    MdTableModule,
 
     // CDK Modules
     CdkTableModule
