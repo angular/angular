@@ -16,6 +16,7 @@ import {
   OnDestroy,
   AfterContentInit,
   Injectable,
+  NgZone,
 } from '@angular/core';
 import {Subject} from 'rxjs/Subject';
 import {RxChain, debounceTime} from '@angular/cdk/rxjs';
@@ -52,19 +53,24 @@ export class ObserveContent implements AfterContentInit, OnDestroy {
 
   constructor(
     private _mutationObserverFactory: MdMutationObserverFactory,
-    private _elementRef: ElementRef) { }
+    private _elementRef: ElementRef,
+    private _ngZone: NgZone) { }
 
   ngAfterContentInit() {
     if (this.debounce > 0) {
-      RxChain.from(this._debouncer)
-        .call(debounceTime, this.debounce)
-        .subscribe((mutations: MutationRecord[]) => this.event.emit(mutations));
+      this._ngZone.runOutsideAngular(() => {
+        RxChain.from(this._debouncer)
+          .call(debounceTime, this.debounce)
+          .subscribe((mutations: MutationRecord[]) => this.event.emit(mutations));
+      });
     } else {
       this._debouncer.subscribe(mutations => this.event.emit(mutations));
     }
 
-    this._observer = this._mutationObserverFactory.create((mutations: MutationRecord[]) => {
-      this._debouncer.next(mutations);
+    this._observer = this._ngZone.runOutsideAngular(() => {
+      return this._mutationObserverFactory.create((mutations: MutationRecord[]) => {
+        this._debouncer.next(mutations);
+      });
     });
 
     if (this._observer) {
@@ -79,8 +85,9 @@ export class ObserveContent implements AfterContentInit, OnDestroy {
   ngOnDestroy() {
     if (this._observer) {
       this._observer.disconnect();
-      this._debouncer.complete();
     }
+
+    this._debouncer.complete();
   }
 }
 
