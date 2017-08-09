@@ -18,13 +18,15 @@ import {BlockScrollStrategyE2E} from '../block-scroll-strategy/block-scroll-stra
 import {
   CardFancyExample,
   ListOverviewExample,
-  ToolbarMultirowExample
+  ToolbarMultirowExample,
+  ButtonToggleOverviewExample,
 } from '@angular/material-examples';
 
 export const E2E_APP_ROUTES: Routes = [
   {path: '', component: Home},
   {path: 'block-scroll-strategy', component: BlockScrollStrategyE2E},
   {path: 'button', component: ButtonE2E},
+  {path: 'button-toggle', component: ButtonToggleOverviewExample},
   {path: 'checkbox', component: SimpleCheckboxes},
   {path: 'dialog', component: DialogE2E},
   {path: 'fullscreen', component: FullscreenE2E},
@@ -40,5 +42,5 @@ export const E2E_APP_ROUTES: Routes = [
   {path: 'slide-toggle', component: SlideToggleE2E},
   {path: 'tabs', component: BasicTabs},
   {path: 'card-fancy', component: CardFancyExample},
-  {path: 'toolbar', component: ToolbarMultirowExample}
+  {path: 'toolbar', component: ToolbarMultirowExample},
 ];
