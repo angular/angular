@@ -2,12 +2,11 @@
 # yarn lockfile v1
 
 
-"@angular-devkit/build-optimizer@0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/build-optimizer/-/build-optimizer-0.0.3.tgz#092bdf732b79a779ce540f9bb99d6590dd971204"
+"@angular-devkit/build-optimizer@0.0.13":
+  version "0.0.13"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/build-optimizer/-/build-optimizer-0.0.13.tgz#cf397af76abe899aa909d4a735106694ca1f08cf"
   dependencies:
     loader-utils "^1.1.0"
-    magic-string "^0.19.1"
     source-map "^0.5.6"
     typescript "^2.3.3"
 
@@ -27,7 +26,7 @@
   version "1.3.0-rc.3"
   resolved "https://registry.yarnpkg.com/@angular/cli/-/cli-1.3.0-rc.3.tgz#5a6999382f956b6109d3042569659972bca38a63"
   dependencies:
-    "@angular-devkit/build-optimizer" "0.0.3"
+    "@angular-devkit/build-optimizer" "0.0.13"
     "@ngtools/json-schema" "1.1.0"
     "@ngtools/webpack" "1.6.0-rc.3"
     autoprefixer "^6.5.3"
