@@ -15,6 +15,7 @@ describe('MdRadio', () => {
     TestBed.configureTestingModule({
       imports: [MdRadioModule, FormsModule, ReactiveFormsModule],
       declarations: [
+        FocusableRadioButton,
         RadiosInsideRadioGroup,
         RadioGroupWithNgModel,
         RadioGroupWithFormControl,
@@ -640,6 +641,27 @@ describe('MdRadio', () => {
       }
     });
   });
+
+  describe('with tabindex', () => {
+    let fixture: ComponentFixture<FocusableRadioButton>;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(FocusableRadioButton);
+      fixture.detectChanges();
+    });
+
+    it('should forward focus to native input', () => {
+      let radioButtonEl = fixture.debugElement.query(By.css('.mat-radio-button')).nativeElement;
+      let inputEl = fixture.debugElement.query(By.css('.mat-radio-input')).nativeElement;
+
+      radioButtonEl.focus();
+      // Focus events don't always fire in tests, so we needc to fake it.
+      dispatchFakeEvent(radioButtonEl, 'focus');
+      fixture.detectChanges();
+
+      expect(document.activeElement).toBe(inputEl);
+    });
+  });
 });
 
 
@@ -728,3 +750,8 @@ class RadioGroupWithNgModel {
 class RadioGroupWithFormControl {
   formControl = new FormControl();
 }
+
+@Component({
+  template: `<md-radio-button tabindex="-1"></md-radio-button>`
+})
+class FocusableRadioButton {}
