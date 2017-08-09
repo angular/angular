@@ -1,4 +1,6 @@
-import {async, ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
+import {
+  async, ComponentFixture, TestBed, fakeAsync, tick, discardPeriodicTasks
+} from '@angular/core/testing';
 import {Component, ViewChild, ViewContainerRef} from '@angular/core';
 import {Direction, Directionality} from '../core/bidi/index';
 import {MdTabHeader} from './tab-header';
@@ -261,6 +263,22 @@ describe('MdTabHeader', () => {
       fixture.detectChanges();
 
       expect(inkBar.alignToElement).toHaveBeenCalled();
+      discardPeriodicTasks();
+    }));
+
+    it('should update arrows when the window is resized', fakeAsync(() => {
+      fixture = TestBed.createComponent(SimpleTabHeaderApp);
+
+      const header = fixture.componentInstance.mdTabHeader;
+
+      spyOn(header, '_checkPaginationEnabled');
+
+      dispatchFakeEvent(window, 'resize');
+      tick(10);
+      fixture.detectChanges();
+
+      expect(header._checkPaginationEnabled).toHaveBeenCalled();
+      discardPeriodicTasks();
     }));
 
   });
