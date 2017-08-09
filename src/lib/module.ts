@@ -13,7 +13,7 @@ import {
   BidiModule,
   MdCommonModule,
   MdRippleModule,
-  ObserveContentModule,
+  ObserversModule,
   OverlayModule,
   PortalModule
 } from './core/index';
@@ -86,7 +86,7 @@ const MATERIAL_MODULES = [
   A11yModule,
   PlatformModule,
   MdCommonModule,
-  ObserveContentModule
+  ObserversModule
 ];
 
 /** @deprecated */

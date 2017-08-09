@@ -10,7 +10,7 @@ import {QueryList} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
-import {UP_ARROW, DOWN_ARROW, TAB, A, Z} from '@angular/cdk/keyboard';
+import {UP_ARROW, DOWN_ARROW, TAB, A, Z} from '@angular/cdk/keycodes';
 import {RxChain, debounceTime, filter, map, doOperator} from '@angular/cdk/rxjs';
 
 /**

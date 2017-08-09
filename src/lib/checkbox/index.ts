@@ -8,13 +8,13 @@
 
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {ObserveContentModule} from '@angular/cdk/observe-content';
+import {ObserversModule} from '@angular/cdk/observers';
 import {MdRippleModule, MdCommonModule, FocusOriginMonitor} from '../core';
 import {MdCheckbox} from './checkbox';
 import {MdCheckboxRequiredValidator} from './checkbox-required-validator';
 
 @NgModule({
-  imports: [CommonModule, MdRippleModule, MdCommonModule, ObserveContentModule],
+  imports: [CommonModule, MdRippleModule, MdCommonModule, ObserversModule],
   exports: [MdCheckbox, MdCheckboxRequiredValidator, MdCommonModule],
   declarations: [MdCheckbox, MdCheckboxRequiredValidator],
   providers: [FocusOriginMonitor]

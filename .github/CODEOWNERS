@@ -49,7 +49,7 @@ src/lib/core/datetime/**           @mmalerba
 # CDK
 src/cdk/coercion/**                @jelbourn
 src/cdk/rxjs/**                    @jelbourn
-src/cdk/observe-content/**         @crisbeto @jelbourn
+src/cdk/observers/**               @crisbeto @jelbourn
 src/cdk/a11y/**                    @jelbourn @devversion
 src/cdk/platform/**                @jelbourn @devversion
 src/cdk/bidi/**                    @jelbourn

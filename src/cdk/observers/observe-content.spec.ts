@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {async, TestBed, ComponentFixture, fakeAsync, tick} from '@angular/core/testing';
-import {ObserveContentModule, MdMutationObserverFactory} from './observe-content';
+import {ObserversModule, MdMutationObserverFactory} from './observe-content';
 
 // TODO(elad): `ProxyZone` doesn't seem to capture the events raised by
 // `MutationObserver` and needs to be investigated
@@ -9,7 +9,7 @@ describe('Observe content', () => {
   describe('basic usage', () => {
     beforeEach(async(() => {
       TestBed.configureTestingModule({
-        imports: [ObserveContentModule],
+        imports: [ObserversModule],
         declarations: [ComponentWithTextContent, ComponentWithChildTextContent]
       });
 
@@ -58,7 +58,7 @@ describe('Observe content', () => {
       callbacks = [];
 
       TestBed.configureTestingModule({
-        imports: [ObserveContentModule],
+        imports: [ObserversModule],
         declarations: [ComponentWithDebouncedListener],
         providers: [{
           provide: MdMutationObserverFactory,

@@ -2,11 +2,11 @@ import {fakeAsync, async, tick, ComponentFixture, TestBed} from '@angular/core/t
 import {Component, ElementRef, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {MdSidenav, MdSidenavModule, MdSidenavContainer} from './index';
-import {A11yModule} from '../core/a11y/index';
-import {PlatformModule} from '../core/platform/index';
-import {ESCAPE} from '../core/keyboard/keycodes';
+import {A11yModule} from '@angular/cdk/a11y';
+import {PlatformModule} from '@angular/cdk/platform';
+import {ESCAPE} from '@angular/cdk/keycodes';
 import {dispatchKeyboardEvent} from '@angular/cdk/testing';
+import {MdSidenav, MdSidenavModule, MdSidenavContainer} from './index';
 
 
 describe('MdSidenav', () => {

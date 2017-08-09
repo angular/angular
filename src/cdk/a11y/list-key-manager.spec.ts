@@ -1,7 +1,7 @@
 import {QueryList} from '@angular/core';
 import {fakeAsync, tick} from '@angular/core/testing';
 import {FocusKeyManager} from './focus-key-manager';
-import {DOWN_ARROW, UP_ARROW, TAB} from '../keyboard/keycodes';
+import {DOWN_ARROW, UP_ARROW, TAB} from '../keycodes/keycodes';
 import {ListKeyManager} from './list-key-manager';
 import {ActiveDescendantKeyManager} from './activedescendant-key-manager';
 import {createKeyboardEvent} from '../testing/event-objects';

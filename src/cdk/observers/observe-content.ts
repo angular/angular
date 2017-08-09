@@ -90,4 +90,4 @@ export class ObserveContent implements AfterContentInit, OnDestroy {
   declarations: [ObserveContent],
   providers: [MdMutationObserverFactory]
 })
-export class ObserveContentModule {}
+export class ObserversModule {}
