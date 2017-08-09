@@ -9,26 +9,25 @@
 // TODO(chuckj): Remove the requirement for a fake 'reflect` implementation from
 // the compiler
 import 'reflect-metadata';
-import {performCompilation} from '@angular/compiler-cli';
+
+import {calcProjectFileAndBasePath, createNgCompilerOptions, formatDiagnostics, performCompilation} from '@angular/compiler-cli';
 import * as fs from 'fs';
 import * as path from 'path';
 // Note, the tsc_wrapped module comes from rules_typescript, not from @angular/tsc-wrapped
 import {parseTsconfig} from 'tsc_wrapped';
+import * as ts from 'typescript';
 
 function main(args: string[]) {
-  const [{options, bazelOpts, files, config}] = parseTsconfig(args[1]);
-  const ngOptions: {expectedOut: string[]} = (config as any).angularCompilerOptions;
+  const project = args[1];
+  const [{options: tsOptions, bazelOpts, files, config}] = parseTsconfig(project);
+  const {basePath} = calcProjectFileAndBasePath(project);
+  const ngOptions = createNgCompilerOptions(basePath, config, tsOptions);
 
-  const parsedArgs = require('minimist')(args);
-  const project = parsedArgs.p || parsedArgs.project || '.';
-
-  const projectDir = fs.lstatSync(project).isFile() ? path.dirname(project) : project;
-
-  // file names in tsconfig are resolved relative to this absolute path
-  const basePath = path.resolve(process.cwd(), projectDir);
-  const result = performCompilation(basePath, files, options, ngOptions, undefined);
-
-  return result.errorCode;
+  const {diagnostics} = performCompilation(files, ngOptions);
+  if (diagnostics.length) {
+    console.error(formatDiagnostics(ngOptions, diagnostics));
+  }
+  return diagnostics.some(d => d.category === ts.DiagnosticCategory.Error) ? 1 : 0;
 }
 
 if (require.main === module) {
