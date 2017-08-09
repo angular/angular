@@ -41,8 +41,11 @@ const ANGULAR_PACKAGES = [
   'platform-browser-dynamic',
   'platform-server',
   'router',
-  'tsc-wrapped',
   'upgrade',
+];
+const ANGULAR_TOOLS_PACKAGES_PATH = path.resolve(ANGULAR_DIST_PATH, 'tools', '@angular');
+const ANGULAR_TOOLS_PACKAGES = [
+  'tsc-wrapped'
 ];
 
 const EXAMPLE_CONFIG_FILENAME = 'example-config.json';
@@ -60,6 +63,7 @@ class ExampleBoilerPlate {
     // Replace the Angular packages with those from the dist folder, if necessary
     if (useLocal) {
       ANGULAR_PACKAGES.forEach(packageName => this.overridePackage(ANGULAR_PACKAGES_PATH, packageName));
+      ANGULAR_TOOLS_PACKAGES.forEach(packageName => this.overridePackage(ANGULAR_TOOLS_PACKAGES_PATH, packageName));
     }
 
     // Get all the examples folders, indicated by those that contain a `example-config.json` file
