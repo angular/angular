@@ -30,8 +30,9 @@ describe('example-boilerplate tool', () => {
       exampleBoilerPlate.add(true);
       expect(exampleBoilerPlate.overridePackage).toHaveBeenCalledTimes(numberOfAngularPackages + numberOfAngularToolsPackages);
       // for example
+      expect(exampleBoilerPlate.overridePackage).toHaveBeenCalledWith(path.resolve(__dirname, '../../../dist/packages-dist'), 'common');
       expect(exampleBoilerPlate.overridePackage).toHaveBeenCalledWith(path.resolve(__dirname, '../../../dist/packages-dist'), 'core');
-      expect(exampleBoilerPlate.overridePackage).toHaveBeenCalledWith(path.resolve(__dirname, '../../../dist/tools/@angular'), 'tsc-wrapped');
+      expect(exampleBoilerPlate.overridePackage).toHaveBeenCalledWith(path.resolve(__dirname, '../../../dist/packages-dist'), 'tsc-wrapped');
     });
 
     it('should process all the example folders', () => {
@@ -90,7 +91,7 @@ describe('example-boilerplate tool', () => {
   describe('overridePackage', () => {
     beforeEach(() => {
       spyOn(shelljs, 'rm');
-      spyOn(fs, 'ensureSymlinkSync');
+      spyOn(fs, 'copySync');
     });
 
     it('should remove the original package from the shared node_modules folder', () => {
@@ -98,9 +99,9 @@ describe('example-boilerplate tool', () => {
       expect(shelljs.rm).toHaveBeenCalledWith('-rf', path.resolve(__dirname, 'shared/node_modules/@angular/somePackage'));
     });
 
-    it('should symlink the source folder to the shared node_modules folder', () => {
+    it('should copy the source folder to the shared node_modules folder', () => {
       exampleBoilerPlate.overridePackage('base/path', 'somePackage');
-      expect(fs.ensureSymlinkSync).toHaveBeenCalledWith(path.resolve('base/path/somePackage'), path.resolve(__dirname, 'shared/node_modules/@angular/somePackage'));
+      expect(fs.copySync).toHaveBeenCalledWith(path.resolve('base/path/somePackage'), path.resolve(__dirname, 'shared/node_modules/@angular/somePackage'));
     });
   });
 

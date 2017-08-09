@@ -32,7 +32,7 @@
     "zone.js": "^0.8.4"
   },
   "devDependencies": {
-    "@angular/cli": "^1.2.0",
+    "@angular/cli": "^1.2.7",
     "@types/angular": "^1.5.16",
     "@types/angular-animate": "^1.5.5",
     "@types/angular-cookies": "^1.4.2",
