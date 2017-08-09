@@ -74,7 +74,8 @@ describe('MdSelect', () => {
         BasicSelectWithoutForms,
         BasicSelectWithoutFormsPreselected,
         BasicSelectWithoutFormsMultiple,
-        SelectInsideFormGroup
+        SelectInsideFormGroup,
+        SelectWithCustomTrigger
       ],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
@@ -950,7 +951,6 @@ describe('MdSelect', () => {
     });
 
   });
-
 
   describe('animations', () => {
     let fixture: ComponentFixture<BasicSelect>;
@@ -2529,6 +2529,21 @@ describe('MdSelect', () => {
       expect(panel.classList).toContain('mat-warn');
     });
 
+    it('should allow the user to customize the label', () => {
+      fixture.destroy();
+
+      const labelFixture = TestBed.createComponent(SelectWithCustomTrigger);
+      labelFixture.detectChanges();
+
+      labelFixture.componentInstance.control.setValue('pizza-1');
+      labelFixture.detectChanges();
+
+      const label = labelFixture.debugElement.query(By.css('.mat-select-value')).nativeElement;
+
+      expect(label.textContent).toContain('azziP',
+          'Expected the displayed text to be "Pizza" in reverse.');
+    });
+
   });
 
   describe('reset values', () => {
@@ -3211,4 +3226,25 @@ class BasicSelectWithoutFormsMultiple {
   ];
 
   @ViewChild(MdSelect) select: MdSelect;
+}
+
+@Component({
+  selector: 'select-with-custom-trigger',
+  template: `
+    <md-select placeholder="Food" [formControl]="control" #select="mdSelect">
+      <md-select-trigger>
+        {{ select.selected?.viewValue.split('').reverse().join('') }}
+      </md-select-trigger>
+      <md-option *ngFor="let food of foods" [value]="food.value">
+        {{ food.viewValue }}
+      </md-option>
+    </md-select>
+  `
+})
+class SelectWithCustomTrigger {
+  foods: any[] = [
+    { value: 'steak-0', viewValue: 'Steak' },
+    { value: 'pizza-1', viewValue: 'Pizza' },
+  ];
+  control = new FormControl();
 }

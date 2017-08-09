@@ -9,6 +9,7 @@
 import {
   AfterContentInit,
   Component,
+  ContentChild,
   ContentChildren,
   ElementRef,
   EventEmitter,
@@ -27,6 +28,7 @@ import {
   Inject,
   ChangeDetectionStrategy,
   InjectionToken,
+  Directive,
 } from '@angular/core';
 import {NgForm, FormGroupDirective} from '@angular/forms';
 import {MdOption, MdOptionSelectionChange, MdOptgroup} from '../core/option/index';
@@ -146,6 +148,16 @@ export class MdSelectBase {
   constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
 }
 export const _MdSelectMixinBase = mixinColor(mixinDisabled(MdSelectBase), 'primary');
+
+
+/**
+ * Allows the user to customize the trigger that is displayed when the select has a value.
+ */
+@Directive({
+  selector: 'md-select-trigger, mat-select-trigger'
+})
+export class MdSelectTrigger {}
+
 
 @Component({
   moduleId: module.id,
@@ -292,6 +304,9 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
 
   /** Classes to be passed to the select panel. Supports the same syntax as `ngClass`. */
   @Input() panelClass: string|string[]|Set<string>|{[key: string]: any};
+
+  /** User-supplied override of the trigger element. */
+  @ContentChild(MdSelectTrigger) customTrigger: MdSelectTrigger;
 
   /** Placeholder to be shown if no value has been selected. */
   @Input()
