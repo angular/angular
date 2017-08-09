@@ -9,6 +9,7 @@ import {RadioAccessibilityDemo} from './radio/radio-a11y';
 import {AccessibilityHome} from './a11y';
 import {DatepickerAccessibilityDemo} from './datepicker/datepicker-a11y';
 import {InputAccessibilityDemo} from './input/input-a11y';
+import {ProgressSpinnerAccessibilityDemo} from './progress-spinner/progress-spinner-a11y';
 import {SliderAccessibilityDemo} from './slider/slider-a11y';
 
 export const ACCESSIBILITY_DEMO_ROUTES: Routes = [
@@ -21,6 +22,7 @@ export const ACCESSIBILITY_DEMO_ROUTES: Routes = [
   {path: 'datepicker', component: DatepickerAccessibilityDemo},
   {path: 'grid-list', component: GridListAccessibilityDemo},
   {path: 'input', component: InputAccessibilityDemo},
+  {path: 'progress-spinner', component: ProgressSpinnerAccessibilityDemo},
   {path: 'radio', component: RadioAccessibilityDemo},
   {path: 'slider', component: SliderAccessibilityDemo},
 ];

@@ -14,6 +14,7 @@ import {GridListAccessibilityDemo} from './grid-list/grid-list-a11y';
 import {RadioAccessibilityDemo} from './radio/radio-a11y';
 import {DatepickerAccessibilityDemo} from './datepicker/datepicker-a11y';
 import {InputAccessibilityDemo} from './input/input-a11y';
+import {ProgressSpinnerAccessibilityDemo} from './progress-spinner/progress-spinner-a11y';
 import {SliderAccessibilityDemo} from './slider/slider-a11y';
 
 
@@ -46,6 +47,7 @@ export class AccessibilityRoutingModule {}
     DatepickerAccessibilityDemo,
     GridListAccessibilityDemo,
     InputAccessibilityDemo,
+    ProgressSpinnerAccessibilityDemo,
     RadioAccessibilityDemo,
     SliderAccessibilityDemo,
   ]
