@@ -528,6 +528,11 @@ Compiling with AOT presupposes certain supporting files, most of them discussed 
 
 Extend the `scripts` section of the `package.json` with these npm scripts:
 
+<code-example language="json">
+  "build:aot": "ngc -p tsconfig-aot.json && rollup -c rollup-config.js",
+  "serve:aot": "lite-server -c bs-config.aot.json",
+</code-example>
+
 Copy the AOT distribution files into the `/aot` folder with the node script:
 
 <code-example language="none" class="code-shell">
