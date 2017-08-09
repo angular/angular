@@ -1,4 +1,5 @@
 @import '../theming/theming';
+@import '../a11y/a11y';
 
 $mat-ripple-color-opacity: 0.1;
 
@@ -7,6 +8,11 @@ $mat-ripple-color-opacity: 0.1;
   // "relative" so that the ripple divs it creates inside itself are correctly positioned.
   .mat-ripple {
     overflow: hidden;
+
+    // In high contrast mode the ripple is opaque, causing it to obstruct the content.
+    @include cdk-high-contrast {
+      display: none;
+    }
   }
 
   .mat-ripple.mat-ripple-unbounded {
