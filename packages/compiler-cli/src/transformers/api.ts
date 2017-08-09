@@ -9,21 +9,16 @@
 import {ParseSourceSpan} from '@angular/compiler';
 import * as ts from 'typescript';
 
-export enum DiagnosticCategory {
-  Warning = 0,
-  Error = 1,
-  Message = 2,
-}
-
 export interface Diagnostic {
   message: string;
   span?: ParseSourceSpan;
-  category: DiagnosticCategory;
+  category: ts.DiagnosticCategory;
 }
 
 export interface CompilerOptions extends ts.CompilerOptions {
   // Absolute path to a directory where generated file structure is written.
   // If unspecified, generated files will be written alongside sources.
+  // @deprecated - no effect
   genDir?: string;
 
   // Path to the directory containing the tsconfig.json file.
@@ -95,6 +90,27 @@ export interface CompilerOptions extends ts.CompilerOptions {
   // Whether to enable lowering expressions lambdas and expressions in a reference value
   // position.
   disableExpressionLowering?: boolean;
+
+  // The list of expected files, when provided:
+  // - extra files are filtered out,
+  // - missing files are created empty.
+  expectedOut?: string[];
+
+  // Locale of the application
+  i18nOutLocale?: string;
+  // Export format (xlf, xlf2 or xmb)
+  i18nOutFormat?: string;
+  // Path to the extracted message file
+  i18nOutFile?: string;
+
+  // Import format if different from `i18nFormat`
+  i18nInFormat?: string;
+  // Locale of the imported translations
+  i18nInLocale?: string;
+  // Path to the translation file
+  i18nInFile?: string;
+  // How to handle missing messages
+  i18nInMissingTranslations?: 'error'|'warning'|'ignore';
 }
 
 export interface ModuleFilenameResolver {
@@ -146,6 +162,11 @@ export enum EmitFlags {
 //   afterTs?: ts.TransformerFactory<ts.SourceFile>[];
 // }
 
+export interface EmitResult extends ts.EmitResult {
+  modulesManifest: {modules: string[]; fileNames: string[];};
+  externs: {[fileName: string]: string;};
+}
+
 export interface Program {
   /**
    * Retrieve the TypeScript program used to produce semantic diagnostics and emit the sources.
@@ -155,7 +176,7 @@ export interface Program {
   getTsProgram(): ts.Program;
 
   /**
-   * Retreive options diagnostics for the TypeScript options used to create the program. This is
+   * Retrieve options diagnostics for the TypeScript options used to create the program. This is
    * faster than calling `getTsProgram().getOptionsDiagnostics()` since it does not need to
    * collect Angular structural information to produce the errors.
    */
@@ -167,7 +188,7 @@ export interface Program {
   getNgOptionDiagnostics(cancellationToken?: ts.CancellationToken): Diagnostic[];
 
   /**
-   * Retrive the syntax diagnostics from TypeScript. This is faster than calling
+   * Retrieve the syntax diagnostics from TypeScript. This is faster than calling
    * `getTsProgram().getSyntacticDiagnostics()` since it does not need to collect Angular structural
    * information to produce the errors.
    */
@@ -188,7 +209,7 @@ export interface Program {
   getNgStructuralDiagnostics(cancellationToken?: ts.CancellationToken): Diagnostic[];
 
   /**
-   * Retreive the semantic diagnostics from TypeScript. This is equivilent to calling
+   * Retrieve the semantic diagnostics from TypeScript. This is equivilent to calling
    * `getTsProgram().getSemanticDiagnostics()` directly and is included for completeness.
    */
   getTsSemanticDiagnostics(sourceFile?: ts.SourceFile, cancellationToken?: ts.CancellationToken):
@@ -227,5 +248,5 @@ export interface Program {
     emitFlags: EmitFlags,
     // transformers?: CustomTransformers, // See TODO above
     cancellationToken?: ts.CancellationToken,
-  }): void;
+  }): EmitResult;
 }

@@ -13,7 +13,7 @@ import * as ts from 'typescript';
 
 import {CompilerHostAdapter, MetadataBundler} from './bundler';
 import {CliOptions} from './cli_options';
-import {MetadataWriterHost, SyntheticIndexHost} from './compiler_host';
+import {MetadataWriterHost, createSyntheticIndexHost} from './compiler_host';
 import {privateEntriesToIndex} from './index_writer';
 import NgOptions from './options';
 import {check, tsc} from './tsc';
@@ -33,9 +33,9 @@ export interface CodegenExtension {
    host: ts.CompilerHost): Promise<string[]>;
 }
 
-export function createBundleIndexHost(
+export function createBundleIndexHost<H extends ts.CompilerHost>(
     ngOptions: NgOptions, rootFiles: string[],
-    host: ts.CompilerHost): {host: ts.CompilerHost, indexName?: string, errors?: ts.Diagnostic[]} {
+    host: H): {host: H, indexName?: string, errors?: ts.Diagnostic[]} {
   const files = rootFiles.filter(f => !DTS.test(f));
   if (files.length != 1) {
     return {
@@ -61,7 +61,7 @@ export function createBundleIndexHost(
       path.join(path.dirname(indexModule), ngOptions.flatModuleOutFile !.replace(JS_EXT, '.ts'));
   const libraryIndex = `./${path.basename(indexModule)}`;
   const content = privateEntriesToIndex(libraryIndex, metadataBundle.privates);
-  host = new SyntheticIndexHost(host, {name, content, metadata});
+  host = createSyntheticIndexHost(host, {name, content, metadata});
   return {host, indexName: name};
 }
 

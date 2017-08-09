@@ -13,8 +13,8 @@ import {createModuleFilenameResolver} from './module_filename_resolver';
 export {createProgram} from './program';
 export {createModuleFilenameResolver};
 
-export function createHost({tsHost, options}: {tsHost: ts.CompilerHost, options: CompilerOptions}):
-    CompilerHost {
+export function createHost({options, tsHost = ts.createCompilerHost(options, true)}:
+                               {options: CompilerOptions, tsHost?: ts.CompilerHost}): CompilerHost {
   const resolver = createModuleFilenameResolver(tsHost, options);
 
   const host = Object.create(tsHost);

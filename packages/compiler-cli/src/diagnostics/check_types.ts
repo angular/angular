@@ -9,7 +9,7 @@
 import {AotCompiler, AotCompilerHost, AotCompilerOptions, EmitterVisitorContext, GeneratedFile, NgAnalyzedModules, ParseSourceSpan, Statement, StaticReflector, TypeScriptEmitter, createAotCompiler} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {Diagnostic, DiagnosticCategory} from '../transformers/api';
+import {Diagnostic} from '../transformers/api';
 
 interface FactoryInfo {
   source: ts.SourceFile;
@@ -143,7 +143,7 @@ export class TypeChecker {
           const diagnosticsList = diagnosticsFor(fileName);
           diagnosticsList.push({
             message: diagnosticMessageToString(diagnostic.messageText),
-            category: diagnosticCategoryConverter(diagnostic.category), span
+            category: diagnostic.category, span
           });
         }
       }
@@ -164,11 +164,6 @@ export class TypeChecker {
 
 function diagnosticMessageToString(message: ts.DiagnosticMessageChain | string): string {
   return ts.flattenDiagnosticMessageText(message, '\n');
-}
-
-function diagnosticCategoryConverter(kind: ts.DiagnosticCategory) {
-  // The diagnostics kind matches ts.DiagnosticCategory. Review this code if this changes.
-  return kind as any as DiagnosticCategory;
 }
 
 function createFactoryInfo(emitter: TypeScriptEmitter, file: GeneratedFile): FactoryInfo {
