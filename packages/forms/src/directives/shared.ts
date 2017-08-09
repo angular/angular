@@ -84,7 +84,7 @@ function setUpViewChangePipeline(control: FormControl, dir: NgControl): void {
     control._pendingValue = newValue;
     control._pendingDirty = true;
 
-    if (control._updateOn === 'change') updateControl(control, dir);
+    if (control.updateOn === 'change') updateControl(control, dir);
   });
 }
 
@@ -92,8 +92,8 @@ function setUpBlurPipeline(control: FormControl, dir: NgControl): void {
   dir.valueAccessor !.registerOnTouched(() => {
     control._pendingTouched = true;
 
-    if (control._updateOn === 'blur') updateControl(control, dir);
-    if (control._updateOn !== 'submit') control.markAsTouched();
+    if (control.updateOn === 'blur') updateControl(control, dir);
+    if (control.updateOn !== 'submit') control.markAsTouched();
   });
 }
 
