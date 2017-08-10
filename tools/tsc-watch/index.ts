@@ -96,10 +96,10 @@ if (platform == 'node') {
 } else if (platform == 'tools') {
   tscWatch = new TscWatch(Object.assign(
       {
-        tsconfig: 'tools/tsconfig.json',
+        tsconfig: ['tools/tsconfig.json', 'packages/tsc-wrapped/tsconfig.json'],
         onChangeCmds: [[
           'node', 'dist/tools/cjs-jasmine/index-tools', '--',
-          '@angular/tsc-wrapped/**/*{_,.}spec.js'
+          'dist/all/@angular/tsc-wrapped/**/*{_,.}spec.js'
         ]]
       },
       BaseConfig));
