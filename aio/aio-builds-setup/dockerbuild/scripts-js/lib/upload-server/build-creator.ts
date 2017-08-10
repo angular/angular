@@ -32,7 +32,8 @@ export class BuildCreator extends EventEmitter {
       then(() => Promise.all([this.exists(prDir), this.exists(shaDir)])).
       then(([prDirExisted, shaDirExisted]) => {
         if (shaDirExisted) {
-          throw new UploadError(409, `Request to overwrite existing directory: ${shaDir}`);
+          const publicOrNot = isPublic ? 'public' : 'non-public';
+          throw new UploadError(409, `Request to overwrite existing ${publicOrNot} directory: ${shaDir}`);
         }
 
         dirToRemoveOnError = prDirExisted ? shaDir : prDir;
