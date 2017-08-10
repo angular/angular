@@ -19,7 +19,7 @@
     "plugin-typescript": "6.0.4",
     "rxjs": "file:../../node_modules/rxjs",
     "systemjs": "0.20.2",
-    "typescript": "2.1.6",
+    "typescript": "^2.3.4",
     "zone.js": "0.7.6"
   },
   "devDependencies": {

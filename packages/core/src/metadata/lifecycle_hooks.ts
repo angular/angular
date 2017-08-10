@@ -14,7 +14,9 @@ import {SimpleChange} from '../change_detection/change_detection_util';
  * values are instances of {@link SimpleChange}. See {@link OnChanges}
  * @stable
  */
-export interface SimpleChanges { [propName: string]: SimpleChange; }
+export type SimpleChanges<T = any> = {
+  [P in keyof T]?: SimpleChange<T[P]>;
+}
 
 /**
  * @whatItDoes Lifecycle hook that is called when any data-bound property of a directive changes.
@@ -30,7 +32,9 @@ export interface SimpleChanges { [propName: string]: SimpleChange; }
  *
  * @stable
  */
-export interface OnChanges { ngOnChanges(changes: SimpleChanges): void; }
+export interface OnChanges {
+  ngOnChanges(changes: SimpleChanges): void;
+}
 
 /**
  * @whatItDoes Lifecycle hook that is called after data-bound properties of a directive are
