@@ -9,20 +9,20 @@
   <md-input-container>
     <input mdInput [mdDatepicker]="minDatePicker" [(ngModel)]="minDate" placeholder="Min date">
     <md-datepicker-toggle mdSuffix [for]="minDatePicker"></md-datepicker-toggle>
+    <md-datepicker #minDatePicker [touchUi]="touch" [disabled]="datepickerDisabled"></md-datepicker>
   </md-input-container>
-  <md-datepicker #minDatePicker [touchUi]="touch" [disabled]="datepickerDisabled"></md-datepicker>
   <md-input-container>
     <input mdInput [mdDatepicker]="maxDatePicker" [(ngModel)]="maxDate" placeholder="Max date">
     <md-datepicker-toggle mdSuffix [for]="maxDatePicker"></md-datepicker-toggle>
+    <md-datepicker #maxDatePicker [touchUi]="touch" [disabled]="datepickerDisabled"></md-datepicker>
   </md-input-container>
-  <md-datepicker #maxDatePicker [touchUi]="touch" [disabled]="datepickerDisabled"></md-datepicker>
 </p>
 <p>
   <md-input-container>
     <input mdInput [mdDatepicker]="startAtPicker" [(ngModel)]="startAt" placeholder="Start at date">
     <md-datepicker-toggle mdSuffix [for]="startAtPicker"></md-datepicker-toggle>
+    <md-datepicker #startAtPicker [touchUi]="touch" [disabled]="datepickerDisabled"></md-datepicker>
   </md-input-container>
-  <md-datepicker #startAtPicker [touchUi]="touch" [disabled]="datepickerDisabled"></md-datepicker>
 </p>
 
 <h2>Result</h2>
@@ -40,6 +40,13 @@
            placeholder="Pick a date"
            (dateInput)="onDateInput($event)"
            (dateChange)="onDateChange($event)">
+    <md-datepicker
+        #resultPicker
+        [touchUi]="touch"
+        [disabled]="datepickerDisabled"
+        [startAt]="startAt"
+        [startView]="yearView ? 'year' : 'month'">
+    </md-datepicker>
     <md-error *ngIf="resultPickerModel.hasError('mdDatepickerParse')">
       "{{resultPickerModel.getError('mdDatepickerParse').text}}" is not a valid date!
     </md-error>
@@ -47,13 +54,6 @@
     <md-error *ngIf="resultPickerModel.hasError('mdDatepickerMax')">Too late!</md-error>
     <md-error *ngIf="resultPickerModel.hasError('mdDatepickerFilter')">Date unavailable!</md-error>
   </md-input-container>
-  <md-datepicker
-      #resultPicker
-      [touchUi]="touch"
-      [disabled]="datepickerDisabled"
-      [startAt]="startAt"
-      [startView]="yearView ? 'year' : 'month'">
-  </md-datepicker>
 </p>
 <p>Last input: {{lastDateInput}}</p>
 <p>Last change: {{lastDateChange}}</p>
@@ -83,9 +83,9 @@
     <input mdInput [mdDatepicker]="datePicker1" [(ngModel)]="date" [min]="minDate" [max]="maxDate"
            [mdDatepickerFilter]="filterOdd ? dateFilter : null" [disabled]="true"
            placeholder="Input disabled">
-  </md-input-container>
-  <md-datepicker #datePicker1 [touchUi]="touch" [startAt]="startAt"
+    <md-datepicker #datePicker1 [touchUi]="touch" [startAt]="startAt"
                    [startView]="yearView ? 'year' : 'month'"></md-datepicker>
+  </md-input-container>
 </p>
 
 <h2>Input disabled, datepicker popup enabled</h2>
@@ -95,7 +95,7 @@
     <input mdInput disabled [mdDatepicker]="datePicker2" [(ngModel)]="date" [min]="minDate"
            [max]="maxDate" [mdDatepickerFilter]="filterOdd ? dateFilter : null"
            placeholder="Input disabled, datepicker enabled">
+    <md-datepicker #datePicker2 [touchUi]="touch" [disabled]="false" [startAt]="startAt"
+                   [startView]="yearView ? 'year' : 'month'"></md-datepicker>
   </md-input-container>
-  <md-datepicker #datePicker2 [touchUi]="touch" [disabled]="false" [startAt]="startAt"
-                 [startView]="yearView ? 'year' : 'month'"></md-datepicker>
 </p>

@@ -40,7 +40,7 @@ import {Observable} from 'rxjs/Observable';
 import {MdOptionSelectionChange, MdOption} from '../core/option/option';
 import {ENTER, UP_ARROW, DOWN_ARROW, ESCAPE} from '../core/keyboard/keycodes';
 import {Directionality} from '../core/bidi/index';
-import {MdInputContainer} from '../input/input-container';
+import {MdFormField} from '../form-field/index';
 import {Subscription} from 'rxjs/Subscription';
 import {merge} from 'rxjs/observable/merge';
 import {fromEvent} from 'rxjs/observable/fromEvent';
@@ -153,7 +153,7 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
               private _changeDetectorRef: ChangeDetectorRef,
               @Inject(MD_AUTOCOMPLETE_SCROLL_STRATEGY) private _scrollStrategy,
               @Optional() private _dir: Directionality,
-              @Optional() @Host() private _inputContainer: MdInputContainer,
+              @Optional() @Host() private _formField: MdFormField,
               @Optional() @Inject(DOCUMENT) private _document: any) {}
 
   ngOnDestroy() {
@@ -246,8 +246,8 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
       fromEvent(this._document, 'touchend')
     )).call(filter, (event: MouseEvent | TouchEvent) => {
       const clickTarget = event.target as HTMLElement;
-      const inputContainer = this._inputContainer ?
-          this._inputContainer._elementRef.nativeElement : null;
+      const inputContainer = this._formField ?
+          this._formField._elementRef.nativeElement : null;
 
       return this._panelOpen &&
              clickTarget !== this._element.nativeElement &&
@@ -329,8 +329,8 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
    * This method manually floats the placeholder until the panel can be closed.
    */
   private _floatPlaceholder(): void {
-    if (this._inputContainer && this._inputContainer.floatPlaceholder === 'auto') {
-      this._inputContainer.floatPlaceholder = 'always';
+    if (this._formField && this._formField.floatPlaceholder === 'auto') {
+      this._formField.floatPlaceholder = 'always';
       this._manuallyFloatingPlaceholder = true;
     }
   }
@@ -338,7 +338,7 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   /** If the placeholder has been manually elevated, return it to its normal state. */
   private _resetPlaceholder(): void  {
     if (this._manuallyFloatingPlaceholder) {
-      this._inputContainer.floatPlaceholder = 'auto';
+      this._formField.floatPlaceholder = 'auto';
       this._manuallyFloatingPlaceholder = false;
     }
   }
@@ -408,10 +408,10 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
     // The display value can also be the number zero and shouldn't fall back to an empty string.
     const inputValue = toDisplay != null ? toDisplay : '';
 
-    // If it's used in a Material container, we should set it through
-    // the property so it can go through the change detection.
-    if (this._inputContainer) {
-      this._inputContainer._mdInputChild.value = inputValue;
+    // If it's used within a `MdFormField`, we should set it through the property so it can go
+    // through change detection.
+    if (this._formField) {
+      this._formField._control.value = inputValue;
     } else {
       this._element.nativeElement.value = inputValue;
     }
@@ -469,7 +469,7 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   }
 
   private _getConnectedElement(): ElementRef {
-    return this._inputContainer ? this._inputContainer._connectionContainerRef : this._element;
+    return this._formField ? this._formField._connectionContainerRef : this._element;
   }
 
   /** Returns the width of the input element, so the panel width can match it. */

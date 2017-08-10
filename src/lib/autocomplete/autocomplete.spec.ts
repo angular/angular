@@ -23,7 +23,7 @@ import {Directionality, Direction} from '../core/bidi/index';
 import {Subscription} from 'rxjs/Subscription';
 import {ENTER, DOWN_ARROW, SPACE, UP_ARROW, ESCAPE} from '../core/keyboard/keycodes';
 import {MdOption} from '../core/option/option';
-import {MdInputContainer} from '../input/input-container';
+import {MdFormField, MdFormFieldModule} from '../form-field/index';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {createKeyboardEvent, dispatchFakeEvent, typeInElement} from '@angular/cdk/testing';
@@ -41,6 +41,7 @@ describe('MdAutocomplete', () => {
     TestBed.configureTestingModule({
       imports: [
         MdAutocompleteModule,
+        MdFormFieldModule,
         MdInputModule,
         FormsModule,
         ReactiveFormsModule,
@@ -517,7 +518,7 @@ describe('MdAutocomplete', () => {
 
     it('should disable input in view when disabled programmatically', () => {
       const inputUnderline =
-          fixture.debugElement.query(By.css('.mat-input-underline')).nativeElement;
+          fixture.debugElement.query(By.css('.mat-form-field-underline')).nativeElement;
 
       expect(input.disabled)
           .toBe(false, `Expected input to start out enabled in view.`);
@@ -1319,10 +1320,10 @@ describe('MdAutocomplete', () => {
         fixture.detectChanges();
 
         const input = fixture.nativeElement.querySelector('input');
-        const placeholder = fixture.nativeElement.querySelector('.mat-input-placeholder');
+        const placeholder = fixture.nativeElement.querySelector('.mat-form-field-placeholder');
 
         expect(input.value).toBe('California');
-        expect(placeholder.classList).not.toContain('mat-empty');
+        expect(placeholder.classList).not.toContain('mat-form-field-empty');
       }));
 
   });
@@ -1417,7 +1418,7 @@ class SimpleAutocomplete implements OnDestroy {
 
   @ViewChild(MdAutocompleteTrigger) trigger: MdAutocompleteTrigger;
   @ViewChild(MdAutocomplete) panel: MdAutocomplete;
-  @ViewChild(MdInputContainer) inputContainer: MdInputContainer;
+  @ViewChild(MdFormField) inputContainer: MdFormField;
   @ViewChildren(MdOption) options: QueryList<MdOption>;
 
   states = [

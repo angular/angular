@@ -27,6 +27,7 @@
 @import '../../toolbar/toolbar-theme';
 @import '../../tooltip/tooltip-theme';
 @import '../../snack-bar/simple-snack-bar-theme';
+@import '../../form-field/form-field-theme';
 
 
 // Create a theme.
@@ -42,6 +43,7 @@
   @include mat-datepicker-theme($theme);
   @include mat-dialog-theme($theme);
   @include mat-expansion-panel-theme($theme);
+  @include mat-form-field-theme($theme);
   @include mat-grid-list-theme($theme);
   @include mat-icon-theme($theme);
   @include mat-input-theme($theme);

@@ -16,7 +16,7 @@
   border-bottom: 1px solid transparent;
 }
 
-.mat-input-container {
+.mat-form-field {
   font-size: 14px;
   flex-grow: 1;
   margin-top: 8px;

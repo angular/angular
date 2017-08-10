@@ -32,7 +32,7 @@ $mat-chips-chip-margin: 8px;
     }
   }
 
-  .mat-input-prefix & {
+  .mat-form-field-prefix & {
     &:last-child {
       margin-right: $mat-chips-chip-margin;
     }
@@ -76,7 +76,7 @@ $mat-chips-chip-margin: 8px;
   }
 }
 
-.mat-input-prefix .mat-chip-list-wrapper {
+.mat-form-field-prefix .mat-chip-list-wrapper {
   margin-bottom: $mat-chips-chip-margin;
 }
 

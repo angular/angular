@@ -8,7 +8,7 @@ import {
   MdListModule, MdMenuModule, MdProgressBarModule, MdProgressSpinnerModule,
   MdRadioModule, MdSelectModule, MdSidenavModule, MdSliderModule, MdSortModule,
   MdSlideToggleModule, MdSnackBarModule, MdTableModule, MdTabsModule, MdToolbarModule,
-  MdTooltipModule
+  MdTooltipModule, MdFormFieldModule
 } from '@angular/material';
 
 @NgModule({
@@ -22,6 +22,7 @@ import {
     MdChipsModule,
     MdDatepickerModule,
     MdDialogModule,
+    MdFormFieldModule,
     MdGridListModule,
     MdIconModule,
     MdInputModule,

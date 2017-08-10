@@ -7,43 +7,28 @@
  */
 
 import {NgModule} from '@angular/core';
-import {
-  MdErrorDirective,
-  MdHint,
-  MdInputContainer,
-  MdInputDirective,
-  MdPlaceholder,
-  MdPrefix,
-  MdSuffix
-} from './input-container';
+import {MdInput} from './input';
 import {MdTextareaAutosize} from './autosize';
 import {CommonModule} from '@angular/common';
 import {PlatformModule} from '../core/platform/index';
+import {MdFormFieldModule} from '../form-field/index';
 
 
 @NgModule({
   declarations: [
-    MdErrorDirective,
-    MdHint,
-    MdInputContainer,
-    MdInputDirective,
-    MdPlaceholder,
-    MdPrefix,
-    MdSuffix,
+    MdInput,
     MdTextareaAutosize,
   ],
   imports: [
     CommonModule,
+    MdFormFieldModule,
     PlatformModule,
   ],
   exports: [
-    MdErrorDirective,
-    MdHint,
-    MdInputContainer,
-    MdInputDirective,
-    MdPlaceholder,
-    MdPrefix,
-    MdSuffix,
+    // We re-export the `MdFormFieldModule` since `MdInput` will almost always be used together with
+    // `MdFormField`.
+    MdFormFieldModule,
+    MdInput,
     MdTextareaAutosize,
   ],
 })
@@ -51,6 +36,6 @@ export class MdInputModule {}
 
 
 export * from './autosize';
-export * from './input-container';
-export * from './input-container-errors';
+export * from './input';
+export * from './input-errors';
 

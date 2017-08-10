@@ -1,0 +1,49 @@
+@import '../core/style/variables';
+@import '../core/style/vendor-prefixes';
+
+
+// The Input element proper.
+.mat-input-element {
+  // Font needs to be inherited, because by default <input> has a system font.
+  font: inherit;
+
+  // The Material input should match whatever background it is above.
+  background: transparent;
+
+  // If background matches current background then so should the color for proper contrast
+  color: currentColor;
+
+  // By default, <input> has a padding, border, outline and a default width.
+  border: none;
+  outline: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+
+  // Prevent textareas from being resized outside the form field.
+  max-width: 100%;
+  resize: vertical;
+
+  // Needed to make last line of the textarea line up with the baseline.
+  vertical-align: bottom;
+
+  // Undo the red box-shadow glow added by Firefox on invalid inputs.
+  // See https://developer.mozilla.org/en-US/docs/Web/CSS/:-moz-ui-invalid
+  &:-moz-ui-invalid {
+    box-shadow: none;
+  }
+
+  // Note that we can't use something like visibility: hidden or
+  // display: none, because IE ends up preventing the user from
+  // focusing the input altogether.
+  @include input-placeholder {
+    // Needs to be !important, because the placeholder will end up inheriting the
+    // input color in IE, if the consumer overrides it with a higher specificity.
+    color: transparent !important;
+  }
+}
+
+// Prevents IE from always adding a scrollbar by default.
+textarea.mat-input-element {
+  overflow: auto;
+}

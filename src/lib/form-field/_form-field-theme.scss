@@ -1,0 +1,218 @@
+@import '../core/theming/palette';
+@import '../core/theming/theming';
+@import '../core/style/form-common';
+@import '../core/typography/typography-utils';
+
+
+@mixin mat-form-field-theme($theme) {
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+  $warn: map-get($theme, warn);
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+  $is-dark-theme: map-get($theme, is-dark);
+
+  // Placeholder colors. Required is used for the `*` star shown in the placeholder.
+  $placeholder-color: mat-color($foreground, secondary-text);
+  $floating-placeholder-color: mat-color($primary);
+  $required-placeholder-color: mat-color($accent);
+
+  // Underline colors.
+  $underline-color: mat-color($foreground, divider, if($is-dark-theme, 0.7, 0.42));
+  $underline-color-accent: mat-color($accent);
+  $underline-color-warn: mat-color($warn);
+  $underline-focused-color: mat-color($primary);
+
+  .mat-form-field-placeholder {
+    color: $placeholder-color;
+  }
+
+  .mat-hint {
+    color: mat-color($foreground, secondary-text);
+  }
+
+  .mat-focused .mat-form-field-placeholder {
+    color: $floating-placeholder-color;
+
+    &.mat-accent {
+      color: $underline-color-accent;
+    }
+
+    &.mat-warn {
+      color: $underline-color-warn;
+    }
+  }
+
+  .mat-form-field-autofill-float:-webkit-autofill + .mat-form-field-placeholder,
+  .mat-focused .mat-form-field-placeholder.mat-form-field-float {
+    .mat-form-field-required-marker {
+      color: $required-placeholder-color;
+    }
+  }
+
+  .mat-form-field-underline {
+    background-color: $underline-color;
+
+    &.mat-disabled {
+      @include mat-control-disabled-underline($underline-color);
+    }
+  }
+
+  .mat-form-field-ripple {
+    background-color: $underline-focused-color;
+
+    &.mat-accent {
+      background-color: $underline-color-accent;
+    }
+
+    &.mat-warn {
+      background-color: $underline-color-warn;
+    }
+  }
+
+  // Styling for the error state of the form field. Note that while the same can be
+  // achieved with the ng-* classes, we use this approach in order to ensure that the same
+  // logic is used to style the error state and to show the error messages.
+  .mat-form-field-invalid {
+    .mat-form-field-placeholder {
+      color: $underline-color-warn;
+
+      &.mat-accent,
+      &.mat-form-field-float .mat-form-field-required-marker {
+        color: $underline-color-warn;
+      }
+    }
+
+    .mat-form-field-ripple {
+      background-color: $underline-color-warn;
+    }
+  }
+
+  .mat-error {
+    color: $underline-color-warn;
+  }
+}
+
+// Applies a floating placeholder above the form field control itself.
+@mixin _mat-form-field-placeholder-floating($font-scale, $infix-padding, $infix-margin-top) {
+  // We use perspective to fix the text blurriness as described here:
+  // http://www.useragentman.com/blog/2014/05/04/fixing-typography-inside-of-2-d-css-transforms/
+  // This results in a small jitter after the label floats on Firefox, which the
+  // translateZ fixes.
+  transform: translateY(-$infix-margin-top - $infix-padding) scale($font-scale) perspective(100px)
+             translateZ(0.001px);
+  // The tricks above used to smooth out the animation on chrome and firefox actually make things
+  // worse on IE, so we don't include them in the IE version.
+  -ms-transform: translateY(-$infix-margin-top - $infix-padding)
+  scale($font-scale);
+
+  width: 100% / $font-scale;
+}
+
+@mixin mat-form-field-typography($config) {
+  // The unit-less line-height from the font config.
+  $line-height: mat-line-height($config, input);
+
+  // The amount to scale the font for the floating label and subscript.
+  $subscript-font-scale: 0.75;
+  // The amount to scale the font for the prefix and suffix icons.
+  $prefix-suffix-icon-font-scale: 1.5;
+
+  // The amount of space between the top of the line and the top of the actual text
+  // (as a fraction of the font-size).
+  $line-spacing: ($line-height - 1) / 2;
+  // The padding on the infix. Mocks show half of the text size, but seem to measure from the edge
+  // of the text itself, not the edge of the line; therefore we subtract off the line spacing.
+  $infix-padding: 0.5em - $line-spacing;
+  // The margin applied to the form-field-infix to reserve space for the floating label.
+  $infix-margin-top: 1em * $line-height * $subscript-font-scale;
+  // Font size to use for the label and subscript text.
+  $subscript-font-size: $subscript-font-scale * 100%;
+  // Font size to use for the for the prefix and suffix icons.
+  $prefix-suffix-icon-font-size: $prefix-suffix-icon-font-scale * 100%;
+  // The space between the bottom of the .mat-form-field-flex area and the subscript wrapper.
+  // Mocks show half of the text size, but this margin is applied to an element with the subscript
+  // text font size, so we need to divide by the scale factor to make it half of the original text
+  // size. We again need to subtract off the line spacing since the mocks measure to the edge of the
+  // text, not the  edge of the line.
+  $subscript-margin-top: 0.5em / $subscript-font-scale - ($line-spacing * 2);
+  // The padding applied to the form-field-wrapper to reserve space for the subscript, since it's
+  // absolutely positioned. This is a combination of the subscript's margin and line-height, but we
+  // need to multiply by the subscript font scale factor since the wrapper has a larger font size.
+  $wrapper-padding-bottom: ($subscript-margin-top + $line-height) * $subscript-font-scale;
+
+  .mat-form-field {
+    font-family: mat-font-family($config);
+    font-size: inherit;
+    font-weight: mat-font-weight($config, input);
+    line-height: mat-line-height($config, input);
+  }
+
+  .mat-form-field-wrapper {
+    padding-bottom: $wrapper-padding-bottom;
+  }
+
+  .mat-form-field-prefix,
+  .mat-form-field-suffix {
+    // Allow icons in a prefix or suffix to adapt to the correct size.
+    .mat-icon {
+      font-size: $prefix-suffix-icon-font-size;
+      line-height: $line-height;
+    }
+
+    // Allow icon buttons in a prefix or suffix to adapt to the correct size.
+    .mat-icon-button {
+      height: $prefix-suffix-icon-font-scale * 1em;
+      width: $prefix-suffix-icon-font-scale * 1em;
+
+      .mat-icon {
+        height: $line-height * 1em;
+        line-height: $line-height;
+      }
+    }
+  }
+
+  .mat-form-field-infix {
+    padding: $infix-padding 0;
+    // Throws off the baseline if we do it as a real margin, so we do it as a border instead.
+    border-top: $infix-margin-top solid transparent;
+  }
+
+  .mat-form-field-autofill-float {
+    &:-webkit-autofill + .mat-form-field-placeholder-wrapper .mat-form-field-float {
+      @include _mat-form-field-placeholder-floating(
+          $subscript-font-scale, $infix-padding, $infix-margin-top);
+    }
+  }
+
+  .mat-form-field-placeholder-wrapper {
+    top: -$infix-margin-top;
+    padding-top: $infix-margin-top;
+  }
+
+  .mat-form-field-placeholder {
+    top: $infix-margin-top + $infix-padding;
+
+    // Show the placeholder above the control when it's not empty, or focused.
+    &.mat-form-field-float:not(.mat-form-field-empty),
+    .mat-focused &.mat-form-field-float {
+      @include _mat-form-field-placeholder-floating($subscript-font-scale,
+          $infix-padding, $infix-margin-top);
+    }
+  }
+
+  .mat-form-field-underline {
+    // We want the underline to start at the end of the content box, not the padding box,
+    // so we move it up by the padding amount.
+    bottom: $wrapper-padding-bottom;
+  }
+
+  .mat-form-field-subscript-wrapper {
+    font-size: $subscript-font-size;
+    margin-top: $subscript-margin-top;
+
+    // We want the subscript to start at the end of the content box, not the padding box,
+    // so we move it up by the padding amount (adjusted for the smaller font size);
+    top: calc(100% - #{$wrapper-padding-bottom / $subscript-font-scale});
+  }
+}

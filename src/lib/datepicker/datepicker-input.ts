@@ -31,7 +31,7 @@ import {
   Validators
 } from '@angular/forms';
 import {Subscription} from 'rxjs/Subscription';
-import {MdInputContainer} from '../input/input-container';
+import {MdFormField} from '../form-field/index';
 import {DOWN_ARROW} from '../core/keyboard/keycodes';
 import {DateAdapter} from '../core/datetime/index';
 import {createMissingDateImplError} from './datepicker-errors';
@@ -212,7 +212,7 @@ export class MdDatepickerInput<D> implements AfterContentInit, ControlValueAcces
       private _renderer: Renderer2,
       @Optional() private _dateAdapter: DateAdapter<D>,
       @Optional() @Inject(MD_DATE_FORMATS) private _dateFormats: MdDateFormats,
-      @Optional() private _mdInputContainer: MdInputContainer) {
+      @Optional() private _mdInputContainer: MdFormField) {
     if (!this._dateAdapter) {
       throw createMissingDateImplError('DateAdapter');
     }

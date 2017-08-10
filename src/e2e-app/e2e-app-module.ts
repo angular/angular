@@ -20,10 +20,24 @@ import {InputE2E} from './input/input-e2e';
 import {SidenavE2E} from './sidenav/sidenav-e2e';
 import {BlockScrollStrategyE2E} from './block-scroll-strategy/block-scroll-strategy-e2e';
 import {
-  OverlayContainer, FullscreenOverlayContainer, MdGridListModule, MdProgressBarModule,
-  MdProgressSpinnerModule, MdTabsModule, MdRadioModule, MdSlideToggleModule, MdMenuModule,
-  MdListModule, MdInputModule, MdIconModule, MdDialogModule, MdCheckboxModule, MdButtonModule,
-  MdSidenavModule, MdNativeDateModule,
+  FullscreenOverlayContainer,
+  MdButtonModule,
+  MdCheckboxModule,
+  MdDialogModule,
+  MdFormFieldModule,
+  MdGridListModule,
+  MdIconModule,
+  MdInputModule,
+  MdListModule,
+  MdMenuModule,
+  MdNativeDateModule,
+  MdProgressBarModule,
+  MdProgressSpinnerModule,
+  MdRadioModule,
+  MdSidenavModule,
+  MdSlideToggleModule,
+  MdTabsModule,
+  OverlayContainer,
 } from '@angular/material';
 import {ExampleModule} from '@angular/material-examples';
 
@@ -35,6 +49,7 @@ import {ExampleModule} from '@angular/material-examples';
     MdButtonModule,
     MdCheckboxModule,
     MdDialogModule,
+    MdFormFieldModule,
     MdGridListModule,
     MdIconModule,
     MdInputModule,

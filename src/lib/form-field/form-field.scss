@@ -1,0 +1,211 @@
+@import '../core/style/variables';
+@import '../core/style/vendor-prefixes';
+
+
+// Min amount of space between start and end hint.
+$mat-form-field-hint-min-space: 1em !default;
+// The height of the underline.
+$mat-form-field-underline-height: 1px !default;
+
+
+.mat-form-field {
+  display: inline-block;
+  position: relative;
+  width: 200px;
+
+  // To avoid problems with text-align.
+  text-align: left;
+
+  [dir='rtl'] & {
+    text-align: right;
+  }
+}
+
+// Global wrapper. We need to apply margin to the element for spacing, but
+// cannot apply it to the host element directly.
+.mat-form-field-wrapper {
+  position: relative;
+}
+
+// We use a flex layout to baseline align the prefix and suffix elements.
+// The underline is outside of it so it can cover all of the elements under this flex container.
+.mat-form-field-flex {
+  display: inline-flex;
+  align-items: baseline;
+  width: 100%;
+}
+
+.mat-form-field-prefix,
+.mat-form-field-suffix {
+  white-space: nowrap;
+  flex: none;
+
+  // Allow icons in a prefix or suffix to adapt to the correct size.
+  .mat-icon {
+    width: 1em;
+  }
+
+  // Allow icon buttons in a prefix or suffix to adapt to the correct size.
+  .mat-icon-button {
+    font: inherit;
+    vertical-align: baseline;
+
+    .mat-icon {
+      font-size: inherit;
+    }
+  }
+}
+
+.mat-form-field-infix {
+  display: block;
+  position: relative;
+  flex: auto;
+}
+
+// Pseudo-class for Chrome and Safari auto-fill to move the placeholder to the floating position.
+// This is necessary because these browsers do not actually fire any events when a form auto-fill is
+// occurring. Once the autofill is committed, a change event happen and the regular md-form-field
+// classes take over to fulfill this behaviour. Assumes the autofill is non-empty.
+.mat-form-field-autofill-float:-webkit-autofill + .mat-form-field-placeholder-wrapper {
+  // The control is still technically empty at this point, so we need to hide non-floating
+  // placeholders to prevent overlapping with the autofilled value.
+  .mat-form-field-placeholder {
+    display: none;
+  }
+
+  .mat-form-field-float {
+    display: block;
+    transition: none;
+  }
+}
+
+// Used to hide the placeholder overflow on IE, since IE doesn't take transform into account when
+// determining overflow.
+.mat-form-field-placeholder-wrapper {
+  position: absolute;
+  left: 0;
+  box-sizing: content-box;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;  // We shouldn't catch mouse events (let them through).
+}
+
+// The placeholder label. This is invisible unless it is. The logic to show it is
+// basically `empty || (float && (!empty || focused))`. Float is dependent on the
+// `floatingPlaceholder` property.
+.mat-form-field-placeholder {
+  // The placeholder is after the form field control, but needs to be aligned top-left of the
+  // infix <div>.
+  position: absolute;
+  left: 0;
+
+  font: inherit;
+  pointer-events: none;  // We shouldn't catch mouse events (let them through).
+
+  // Put ellipsis text overflow.
+  width: 100%;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+
+  // The perspective helps smooth out animations on Chrome and Firefox but isn't needed on IE.
+  transform: perspective(100px);
+  -ms-transform: none;
+
+  transform-origin: 0 0;
+  transition: transform $swift-ease-out-duration $swift-ease-out-timing-function,
+  color $swift-ease-out-duration $swift-ease-out-timing-function,
+  width $swift-ease-out-duration $swift-ease-out-timing-function;
+
+  // Hide the placeholder initially, and only show it when it's floating or the control is empty.
+  display: none;
+
+  &.mat-form-field-empty,
+  &.mat-form-field-float:not(.mat-form-field-empty),
+  .mat-focused &.mat-form-field-float {
+    display: block;
+  }
+
+  [dir='rtl'] & {
+    transform-origin: 100% 0;
+    left: auto;
+    right: 0;
+  }
+}
+
+// Disable the placeholder animation when the control is not empty (this prevents placeholder
+// animating up when the value is set programmatically).
+.mat-form-field-placeholder:not(.mat-form-field-empty) {
+  transition: none;
+}
+
+// The underline is what's shown under the control, its prefix and its suffix.
+// The ripple is the blue animation coming on top of it.
+.mat-form-field-underline {
+  position: absolute;
+  height: $mat-form-field-underline-height;
+  width: 100%;
+
+  &.mat-disabled {
+    background-position: 0;
+    background-color: transparent;
+  }
+
+  .mat-form-field-ripple {
+    position: absolute;
+    height: $mat-form-field-underline-height;
+    top: 0;
+    left: 0;
+    width: 100%;
+    transform-origin: 50%;
+    transform: scaleX(0.5);
+    visibility: hidden;
+    transition: background-color $swift-ease-in-duration $swift-ease-in-timing-function;
+
+    .mat-focused & {
+      height: $mat-form-field-underline-height * 2;
+    }
+
+    .mat-focused &,
+    .mat-form-field-invalid & {
+      visibility: visible;
+      transform: scaleX(1);
+      transition: transform 150ms linear,
+      background-color $swift-ease-in-duration $swift-ease-in-timing-function;
+    }
+  }
+}
+
+// Wrapper for the hints and error messages.
+.mat-form-field-subscript-wrapper {
+  position: absolute;
+  width: 100%;
+  overflow: hidden; // prevents multi-line errors from overlapping the control
+}
+
+// Scale down icons in the placeholder and hint to be the same size as the text.
+.mat-form-field-subscript-wrapper,
+.mat-form-field-placeholder-wrapper {
+  .mat-icon {
+    width: 1em;
+    height: 1em;
+    font-size: inherit;
+    vertical-align: baseline;
+  }
+}
+
+// Clears the floats on the hints. This is necessary for the hint animation to work.
+.mat-form-field-hint-wrapper {
+  display: flex;
+}
+
+// Spacer used to make sure start and end hints have enough space between them.
+.mat-form-field-hint-spacer {
+  flex: 1 0 $mat-form-field-hint-min-space;
+}
+
+// Single error message displayed beneath the form field underline.
+.mat-error {
+  display: block;
+}

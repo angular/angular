@@ -9,6 +9,7 @@ import {createKeyboardEvent} from '@angular/cdk/testing';
 import {MdInputModule} from '../input/index';
 import {LEFT_ARROW, RIGHT_ARROW, BACKSPACE, DELETE, TAB} from '../core/keyboard/keycodes';
 import {Directionality} from '../core';
+import {MdFormFieldModule} from '../form-field/index';
 
 describe('MdChipList', () => {
   let fixture: ComponentFixture<any>;
@@ -23,7 +24,7 @@ describe('MdChipList', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdChipsModule, MdInputModule, NoopAnimationsModule],
+      imports: [MdChipsModule, MdFormFieldModule, MdInputModule, NoopAnimationsModule],
       declarations: [
         StandardChipList, InputContainerChipList
       ],

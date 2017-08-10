@@ -16,6 +16,7 @@ import {
   createKeyboardEvent,
   dispatchEvent,
 } from '@angular/cdk/testing';
+import {MdFormFieldModule} from '../form-field/index';
 
 describe('MdDatepicker', () => {
   afterEach(inject([OverlayContainer], (container: OverlayContainer) => {
@@ -28,6 +29,7 @@ describe('MdDatepicker', () => {
         imports: [
           FormsModule,
           MdDatepickerModule,
+          MdFormFieldModule,
           MdInputModule,
           MdNativeDateModule,
           NoopAnimationsModule,
@@ -596,7 +598,7 @@ describe('MdDatepicker', () => {
 
       it('should attach popup to input-container underline', () => {
         let attachToRef = testComponent.datepickerInput.getPopupConnectionElementRef();
-        expect(attachToRef.nativeElement.classList.contains('mat-input-underline'))
+        expect(attachToRef.nativeElement.classList.contains('mat-form-field-underline'))
             .toBe(true, 'popup should be attached to input-container underline');
       });
     });
@@ -817,6 +819,7 @@ describe('MdDatepicker', () => {
         imports: [
           FormsModule,
           MdDatepickerModule,
+          MdFormFieldModule,
           MdInputModule,
           NoopAnimationsModule,
           ReactiveFormsModule,
@@ -840,7 +843,13 @@ describe('MdDatepicker', () => {
 
     beforeEach(async(() => {
       TestBed.configureTestingModule({
-        imports: [MdDatepickerModule, MdInputModule, MdNativeDateModule, NoopAnimationsModule],
+        imports: [
+          MdDatepickerModule,
+          MdFormFieldModule,
+          MdInputModule,
+          MdNativeDateModule,
+          NoopAnimationsModule
+        ],
         declarations: [StandardDatepicker],
       }).compileComponents();
 

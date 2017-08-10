@@ -1,0 +1,57 @@
+<div class="mat-input-wrapper mat-form-field-wrapper">
+  <div class="mat-input-flex mat-form-field-flex" #connectionContainer>
+    <div class="mat-input-prefix mat-form-field-prefix" *ngIf="_prefixChildren.length">
+      <ng-content select="[mdPrefix], [matPrefix]"></ng-content>
+    </div>
+
+    <div class="mat-input-infix mat-form-field-infix">
+      <ng-content></ng-content>
+
+      <span class="mat-input-placeholder-wrapper mat-form-field-placeholder-wrapper">
+        <label class="mat-input-placeholder mat-form-field-placeholder"
+               [attr.for]="_control.id"
+               [class.mat-empty]="_control.empty && !_shouldAlwaysFloat"
+               [class.mat-form-field-empty]="_control.empty && !_shouldAlwaysFloat"
+               [class.mat-float]="_canPlaceholderFloat"
+               [class.mat-form-field-float]="_canPlaceholderFloat"
+               [class.mat-accent]="color == 'accent'"
+               [class.mat-warn]="color == 'warn'"
+               *ngIf="_hasPlaceholder()">
+          <ng-content select="md-placeholder, mat-placeholder"></ng-content>
+          {{_control.placeholder}}
+          <span
+            class="mat-placeholder-required mat-form-field-required-marker"
+            aria-hidden="true"
+            *ngIf="!hideRequiredMarker && _control.required">*</span>
+        </label>
+      </span>
+    </div>
+
+    <div class="mat-input-suffix mat-form-field-suffix" *ngIf="_suffixChildren.length">
+      <ng-content select="[mdSuffix], [matSuffix]"></ng-content>
+    </div>
+  </div>
+
+  <div class="mat-input-underline mat-form-field-underline" #underline
+       [class.mat-disabled]="_control.disabled">
+    <span class="mat-input-ripple mat-form-field-ripple"
+          [class.mat-accent]="color == 'accent'"
+          [class.mat-warn]="color == 'warn'"></span>
+  </div>
+
+  <div class="mat-input-subscript-wrapper mat-form-field-subscript-wrapper"
+       [ngSwitch]="_getDisplayedMessages()">
+    <div *ngSwitchCase="'error'" [@transitionMessages]="_subscriptAnimationState">
+      <ng-content select="md-error, mat-error"></ng-content>
+    </div>
+
+    <div class="mat-input-hint-wrapper mat-form-field-hint-wrapper" *ngSwitchCase="'hint'"
+      [@transitionMessages]="_subscriptAnimationState">
+      <!-- TODO(mmalerba): use an actual <mat-hint> once all selectors are switched to mat-* -->
+      <div *ngIf="hintLabel" [id]="_hintLabelId" class="mat-hint">{{hintLabel}}</div>
+      <ng-content select="md-hint:not([align='end']), mat-hint:not([align='end'])"></ng-content>
+      <div class="mat-input-hint-spacer mat-form-field-hint-spacer"></div>
+      <ng-content select="md-hint[align='end'], mat-hint[align='end']"></ng-content>
+    </div>
+  </div>
+</div>

@@ -28,6 +28,7 @@
 @import '../../snack-bar/simple-snack-bar-theme';
 @import '../option/option-theme';
 @import '../option/optgroup-theme';
+@import '../../form-field/form-field-theme';
 
 
 // Includes all of the typographic styles.
@@ -47,6 +48,7 @@
   @include mat-datepicker-typography($config);
   @include mat-dialog-typography($config);
   @include mat-expansion-panel-typography($config);
+  @include mat-form-field-typography($config);
   @include mat-grid-list-typography($config);
   @include mat-icon-typography($config);
   @include mat-input-typography($config);
