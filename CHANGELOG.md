@@ -32,7 +32,7 @@
 ### BREAKING CHANGES
 
 * `platformXXXX()` no longer accepts providers which depend on reflection.
-Specifically the method signature when from `Provider[]` to
+Specifically the method signature went from `Provider[]` to
 `StaticProvider[]`.
 
 Example:
