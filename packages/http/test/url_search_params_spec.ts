@@ -170,7 +170,7 @@ export function main() {
     it('should support map-like operations via getKeys()', () => {
       const mapA = new URLSearchParams('a=1&b=2&c=3&d=4');
       const mapB = new URLSearchParams();
-      const keys: Array<string> = mapA.getKeys();
+      const keys: Array<string> = Array.from(mapA.keys());
       for (const key of keys) {
         mapB.set(key, mapA.getAll(key)[0]);
       }
