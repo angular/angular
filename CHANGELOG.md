@@ -1,3 +1,15 @@
+<a name="4.3.4"></a>
+## [4.3.4](https://github.com/angular/angular/compare/4.3.3...4.3.4) (2017-08-10)
+
+### Bug Fixes
+
+* **animations:** revert container/queried animations accordingly during cancel ([#18516](https://github.com/angular/angular/issues/18516)) ([5a165eb](https://github.com/angular/angular/commit/5a165eb))
+* **animations:** support persisting dynamic styles within animation states ([#18468](https://github.com/angular/angular/issues/18468)) ([e0660b1](https://github.com/angular/angular/commit/e0660b1)), closes [#18423](https://github.com/angular/angular/issues/18423) [#17505](https://github.com/angular/angular/issues/17505)
+* **benchpress:** compile cleanly with TS 2.4 ([#18455](https://github.com/angular/angular/issues/18455)) ([5afc7ab](https://github.com/angular/angular/commit/5afc7ab))
+* **compiler:** cleanly compile with TypeScript 2.4 ([#18456](https://github.com/angular/angular/issues/18456)) ([5e4054b](https://github.com/angular/angular/commit/5e4054b))
+* **compiler:** ignore [@import](https://github.com/import) in multi-line css ([#18452](https://github.com/angular/angular/issues/18452)) ([e7e7622](https://github.com/angular/angular/commit/e7e7622)), closes [#18038](https://github.com/angular/angular/issues/18038)
+
+
 <a name="5.0.0-beta.3"></a>
 # [5.0.0-beta.3](https://github.com/angular/angular/compare/5.0.0-beta.2...5.0.0-beta.3) (2017-08-09)
 
@@ -81,15 +93,12 @@ DEPRECATION:
 * **router:** add events tracking activation of individual routes ([49cd851](https://github.com/angular/angular/commit/49cd851))
 
 
-
 <a name="4.3.3"></a>
 ## [4.3.3](https://github.com/angular/angular/compare/4.3.2...4.3.3) (2017-08-02)
-
 
 ### Bug Fixes
 
 * **compiler:** fix for element needing implicit parent placed in top-level ng-container ([f5cbc2e](https://github.com/angular/angular/commit/f5cbc2e)), closes [#18314](https://github.com/angular/angular/issues/18314)
-
 
 
 <a name="5.0.0-beta.1"></a>
