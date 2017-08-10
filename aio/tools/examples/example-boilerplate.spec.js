@@ -32,7 +32,7 @@ describe('example-boilerplate tool', () => {
       // for example
       expect(exampleBoilerPlate.overridePackage).toHaveBeenCalledWith(path.resolve(__dirname, '../../../dist/packages-dist'), 'common');
       expect(exampleBoilerPlate.overridePackage).toHaveBeenCalledWith(path.resolve(__dirname, '../../../dist/packages-dist'), 'core');
-      expect(exampleBoilerPlate.overridePackage).toHaveBeenCalledWith(path.resolve(__dirname, '../../../dist/packages-dist'), 'tsc-wrapped');
+      expect(exampleBoilerPlate.overridePackage).toHaveBeenCalledWith(path.resolve(__dirname, '../../../dist/tools/@angular'), 'tsc-wrapped');
     });
 
     it('should process all the example folders', () => {
