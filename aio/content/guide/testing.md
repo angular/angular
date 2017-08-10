@@ -1,12 +1,4 @@
-@title
-Testing
-
-@intro
-Techniques and practices for testing an Angular app.
-
-@description
-
-
+# Testing
 
 This guide offers tips and techniques for testing Angular applications.
 Though this page includes some general testing principles and techniques,
@@ -14,119 +6,6 @@ the focus is on testing applications written with Angular.
 
 
 {@a top}
-
-
-# Contents
-
-* [Live examples](guide/testing#live-examples "Live examples of the tests in this guide")
-<br><br>
-* [Introduction to Angular testing](guide/testing#testing-intro)
-
-  * [Tools and technologies](guide/testing#tools-and-tech)
-  * [Setup](guide/testing#setup)
-  * [Isolated unit tests vs. the Angular testing utilities](guide/testing#isolated-v-testing-utilities)
-
-* [The first karma test](guide/testing#1st-karma-test)
-
- * [Run with karma](guide/testing#run-karma)
- * [Test debugging](guide/testing#test-debugging)
- * [Try the live example](guide/testing#live-karma-example)
-
-* [Test a component](guide/testing#simple-component-test)
-
-  * [_TestBed_](guide/testing#testbed)
-  * [_createComponent_](guide/testing#create-component)
-  * [_ComponentFixture_, _DebugElement_, and _query(By.css)_](guide/testing#component-fixture)
-  * [The tests](guide/testing#the-tests)
-  * [_detectChanges_: Angular change detection within a test](guide/testing#detect-changes)
-  * [Try the live example](guide/testing#try-example)
-  * [Automatic change detection](guide/testing#auto-detect-changes)
-
-* [Test a component with an external template](guide/testing#component-with-external-template)
-
-  * [The first asynchronous _beforeEach_](guide/testing#async-in-before-each)
-  * [_compileComponents_](guide/testing#compile-components)
-  * [The second synchronous _beforeEach_](guide/testing#second-before-each)
-  * [Waiting for _compileComponents_](guide/testing#waiting-compile-components)
-  * [Try the live example](guide/testing#live-external-template-example)
-
-* [Test a component with a service dependency](guide/testing#component-with-dependency)
-
-  * [Provide service test doubles](guide/testing#service-test-doubles)
-  * [Get injected services](guide/testing#get-injected-service)
-  * [_TestBed.get_](guide/testing#testbed-get)
-  * [Always get the service from an injector](guide/testing#service-from-injector)
-  * [Final setup and tests](guide/testing#welcome-spec-setup)
-
-* [Test a component with an async service](guide/testing#component-with-async-service)
-
-  * [Spying on the real service](guide/testing#service-spy)
-  * [Synchronous tests](guide/testing#sync-tests)
-  * [The _async_ funciton in it](guide/testing#async)
-  * [_whenStable_](guide/testing#when-stable)
-  * [The _fakeAsync_ function](guide/testing#fake-async)
-  * [The _tick_ function](guide/testing#tick)
-  * [_jasmine.done_](guide/testing#jasmine-done)
-
-* [Test a component with inputs and outputs](guide/testing#component-with-input-output)
-
-  * [Test _DashboardHeroComponent_ stand-alone](guide/testing#dashboard-standalone)
-  * [_triggerEventHandler_](guide/testing#trigger-event-handler)
-
-* [Test a component inside a test host component](guide/testing#component-inside-test-host)
-
-* [Test a routed component](guide/testing#routed-component)
-
-  * [The _inject_ helper function](guide/testing#inject)
-  * [Test a routed component with parameters](guide/testing#routed-component-w-param)
-  * [Create an _Observable_ test double](guide/testing#stub-observable)
-  * [Testing with the _Observable_ test double](guide/testing#tests-w-observable-double)
-
-* [Use a _page_ object to simplify setup](guide/testing#page-object)
-* [Set up with module imports](guide/testing#import-module)
-* [Import the feature module](guide/testing#feature-module-import)
-<br><br>
-* [Override a component's providers](guide/testing#component-override)
-
-  * [The _overrideComponent_ method](guide/testing#override-component-method)
-  * [Provide a _spy-stub (HeroDetailServiceSpy)_](guide/testing#spy-stub)
-  * [The override tests](guide/testing#override-tests)
-  * [More overrides](guide/testing#more-overrides)
-
-* [Test a _RouterOutlet_ component](guide/testing#router-outlet-component)
-
-  * [Stubbing unneeded components](guide/testing#stub-component)
-  * [Stubbing the _RouterLink_](guide/testing#router-link-stub)
-  * [_By.directive_ and injected directives](guide/testing#by-directive)
-  * [What good are these tests?](guide/testing#why-stubbed-routerlink-tests)
-
-* ["Shallow component tests" with  *NO\_ERRORS\_SCHEMA*](guide/testing#shallow-component-test)
-<br><br>
-* [Test an attribute directive](guide/testing#attribute-directive)
-<br><br>
-* [Isolated unit tests](guide/testing#isolated-unit-tests "Unit testing without the Angular testing utilities")
-
-  * [Services](guide/testing#isolated-service-tests)
-  * [Services with dependencies](guide/testing#services-with-dependencies)
-  * [Pipes](guide/testing#isolated-pipe-tests)
-  * [Write Angular tests too](guide/testing#write-tests)
-  * [Components](guide/testing#isolated-component-tests)
-
-* [Angular testing utility APIs](guide/testing#atu-apis)
-
-  * [_TestBed_ class summary](guide/testing#testbed-class-summary)
-  * [The _ComponentFixture_](guide/testing#component-fixture-api-summary)
-  * [_ComponentFixture_ properties](guide/testing#component-fixture-properties)
-  * [The _ComponentFixture_ methods](guide/testing#component-fixture-methods)
-  * [_DebugElement_](guide/testing#debug-element-details)
-
-* [Test environment setup files](guide/testing#setup-files)
-
-  * [npm packages](guide/testing#npm-packages)
-
-* [FAQ: Frequently asked questions](guide/testing#faq "Frequently asked questions")
-
-It’s a big agenda. Fortunately, you can learn a little bit at a time and put each lesson to use.
 
 ## Live examples
 
@@ -281,10 +160,11 @@ This guide describes specific choices that are known to work well.
 ### Setup
 
 There are two fast paths to getting started with unit testing.
+
 1. Start a new project following the instructions in [Setup](guide/setup "Setup").
 
 1. Start a new project with the
-<a href="https://github.com/angular/angular-cli/blob/master/README.md" target="_blank" title="Angular CLI">Angular CLI</a>.
+<a href="https://github.com/angular/angular-cli/blob/master/README.md" title="Angular CLI">Angular CLI</a>.
 
 Both approaches install npm packages, files, and scripts pre-configured for applications
 built in their respective modalities.
@@ -298,7 +178,7 @@ For a discussion of the unit testing setup files, [see below](guide/testing#setu
 {@a isolated-v-testing-utilities}
 
 
-### Isolated unit tests vs. the Angular testing utilites
+### Isolated unit tests vs. the Angular testing utilities
 
 [Isolated unit tests](guide/testing#isolated-unit-tests "Unit testing without the Angular testing utilities")
 examine an instance of a class all by itself without any dependence on Angular or any injected values.
@@ -388,8 +268,8 @@ The Angular CLI has different commands to do the same thing. Adjust accordingly.
 
 After a few moments, karma opens a browser and starts writing to the console.
 
-<figure class='image-display'>
-  <img src='assets/images/devguide/testing/karma-browser.png' style="width:400px;" alt="Karma browser"></img>
+<figure>
+  <img src='generated/images/guide/testing/karma-browser.png' alt="Karma browser">
 </figure>
 
 
@@ -472,8 +352,8 @@ Debug specs in the browser in the same way that you debug an application.
   1. Refresh the browser, and it stops at the breakpoint.
 
 
-<figure class='image-display'>
-  <img src='assets/images/devguide/testing/karma-1st-spec-debug.png' style="width:700px;" alt="Karma debugging"></img>
+<figure>
+  <img src='generated/images/guide/testing/karma-1st-spec-debug.png' alt="Karma debugging">
 </figure>
 
 
@@ -547,7 +427,7 @@ and re-attach it to a dynamically-constructed Angular test module
 tailored specifically for this battery of tests.
 
 The `configureTestingModule` method takes an `@NgModule`-like metadata object.
-The metadata object can have most of the properties of a normal [Angular module](guide/ngmodule).
+The metadata object can have most of the properties of a normal [NgModule](guide/ngmodule).
 
 _This metadata object_ simply declares the component to test, `BannerComponent`.
 The metadata lack `imports` because (a) the default testing module configuration already has what `BannerComponent` needs
@@ -636,7 +516,7 @@ A query predicate receives a `DebugElement` and returns `true` if the element me
 
 The **`By`** class is an Angular testing utility that produces useful predicates.
 Its `By.css` static method produces a
-<a href="https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Getting_started/Selectors" target="_blank">standard CSS selector</a>
+<a href="https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Getting_started/Selectors">standard CSS selector</a>
 predicate that filters the same way as a jQuery selector.
 
 Finally, the setup assigns the DOM element from the `DebugElement` **`nativeElement`** property to `el`.
@@ -862,7 +742,7 @@ before calling `TestBed.createComponent` to instantiate the _component-under-tes
 
 
 
-Calling `compileComponents` closes the current `TestBed` instance is further configuration.
+Calling `compileComponents` closes the current `TestBed` instance to further configuration.
 You cannot call any more `TestBed` configuration methods, not `configureTestingModule`
 nor any of the `override...` methods. The `TestBed` throws an error if you try.
 
@@ -897,6 +777,8 @@ into a `compileComponents().then(...)` callback and write only one `beforeEach`.
 
 Most developers find that hard to read.
 The two `beforeEach` calls are widely preferred.
+
+{@a live-external-template-example}
 
 ### Try the live example
 
@@ -1072,7 +954,7 @@ The first is a sanity test; it confirms that the stubbed `UserService` is called
 
 
 
-The second parameter to the Jasmine `it` (e.g., `'expected name'`) is an optional addendum.
+The second parameter to the Jasmine matcher (e.g., `'expected name'`) is an optional addendum.
 If the expectation fails, Jasmine displays this addendum after the expectation failure message.
 In a spec with multiple expectations, it can help clarify what went wrong and which expectation failed.
 
@@ -1509,7 +1391,7 @@ Make that easy by encapsulating the _click-triggering_ process in a helper such 
 
 The first parameter is the _element-to-click_. If you wish, you can pass a
 custom event object as the second parameter. The default is a (partial)
-<a href="https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button" target="_blank">left-button mouse event object</a>
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button">left-button mouse event object</a>
 accepted by many handlers including the `RouterLink` directive.
 
 
@@ -1811,7 +1693,7 @@ Notable features of this stub are:
 
 * The stub implements only two of the `ActivatedRoute` capabilities: `params` and `snapshot.params`.
 
-* <a href="https://github.com/Reactive-Extensions/RxJS/blob/master/doc/api/subjects/behaviorsubject.md" target="_blank">_BehaviorSubject_</a>
+* <a href="https://github.com/Reactive-Extensions/RxJS/blob/master/doc/api/subjects/behaviorsubject.md">_BehaviorSubject_</a>
 drives the stub's `params` _Observable_ and returns the same value to every `params` subscriber until it's given a new value.
 
 * The `HeroDetailComponent` chains its expressions to this stub `params` _Observable_ which is now under the tester's control.
@@ -1913,8 +1795,8 @@ Inspect and download _all_ of the guide's application test code with this <live-
 
 The `HeroDetailComponent` is a simple view with a title, two hero fields, and two buttons.
 
-<figure class='image-display'>
-  <img src='assets/images/devguide/testing/hero-detail.component.png' alt="HeroDetailComponent in action"></img>
+<figure>
+  <img src='generated/images/guide/testing/hero-detail.component.png' alt="HeroDetailComponent in action">
 </figure>
 
 
@@ -2504,8 +2386,8 @@ A better solution is to create an artificial test component that demonstrates al
 
 
 
-<figure class='image-display'>
-  <img src='assets/images/devguide/testing/highlight-directive-spec.png' width="200px" alt="HighlightDirective spec in action"></img>
+<figure>
+  <img src='generated/images/guide/testing/highlight-directive-spec.png' alt="HighlightDirective spec in action">
 </figure>
 
 
@@ -2533,7 +2415,7 @@ A few techniques are noteworthy:
 
 * The `By.directive` predicate is a great way to get the elements that have this directive _when their element types are unknown_.
 
-* The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:not" target="_blank">`:not` pseudo-class</a>
+* The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:not">`:not` pseudo-class</a>
 in `By.css('h2:not([highlight])')` helps find `<h2>` elements that _do not_ have the directive.
 `By.css('*:not([highlight])')` finds _any_ element that does not have the directive.
 
@@ -2847,15 +2729,14 @@ Here's a summary of the stand-alone functions, in order of likely utility:
 
       Simulates the passage of time and the completion of pending asynchronous activities
       by flushing both _timer_ and _micro-task_ queues within the _fakeAsync test zone_.
-      
+
 
 <div class="l-sub-section">
 
 
 
       The curious, dedicated reader might enjoy this lengthy blog post,
-      "<a href="https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/"
-      target="_blank">_Tasks, microtasks, queues and schedules_</a>".      
+      ["_Tasks, microtasks, queues and schedules_"](https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/).
 
 </div>
 
@@ -3013,6 +2894,7 @@ appropriate to the method, that is, the parameter of an `@NgModule`,
 
 
 {@a testbed-methods}
+{@a testbed-api-summary}
 
 
 The `TestBed` API consists of static class methods that either update or reference a _global_ instance of the`TestBed`.
@@ -3601,7 +3483,7 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
 
 
       The immediate `DebugElement` children. Walk the tree by descending through `children`.
-      
+
 
 <div class="l-sub-section">
 
@@ -3609,7 +3491,7 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
 
       `DebugElement` also has `childNodes`, a list of `DebugNode` objects.
       `DebugElement` derives from `DebugNode` objects and there are often
-      more nodes than elements. Testers can usually ignore plain nodes.      
+      more nodes than elements. Testers can usually ignore plain nodes.
 
 </div>
 

@@ -1,36 +1,9 @@
-@title
-Deployment
-
-@intro
-Learn how to deploy your Angular app.
-
-@description
-
+# Deployment
 
 This page describes tools and techniques for deploy and optimize your Angular application.
 
 
 {@a toc}
-
-
-## Table of contents
-
-* [Overview](guide/deployment#overview)
-* [Simplest deployment possible](guide/deployment#dev-deploy)
-* [Optimize for production](guide/deployment#optimize)
-  * [Ahead-of-Time (AOT) compilation](guide/deployment#aot)
-  * [Webpack](guide/deployment#webpack)
-  * [Tree shaking with _rollup_](guide/deployment#rollup)
-  * [Pruned libraries](guide/deployment#prune)
-  * [Measure performance first](guide/deployment#measure)
-* [Angular configuration](guide/deployment#angular-configuration)
-  * [The `base` tag](guide/deployment#base-tag)
-  * [Enable production mode](guide/deployment#enable-prod-mode)
-  * [Lazy loading](guide/deployment#lazy-loading)
-* [Server configuration](guide/deployment#server-configuration)
-  * [Routed apps must fallback to `index.html`](guide/deployment#fallback)
-  * [CORS: requesting services from a different server](guide/deployment#cors)
-
 
 {@a overview}
 
@@ -45,7 +18,7 @@ The techniques progress from _easy but suboptimal_ to _more optimal and more inv
 
 * [_Ahead of Time_ compilation (AOT)](guide/deployment#aot "AOT Compilation") is the first of
 [several optimization strategies](guide/deployment#optimize).
-You'll also want to read the [detailed instructions in the AOT Cookbook](cookbook/aot-compiler "AOT Cookbook").
+You'll also want to read the [detailed instructions in the AOT Cookbook](guide/aot-compiler "AOT Cookbook").
 
 * [Webpack](guide/deployment#webpack "Webpack Optimization") is a popular general purpose packaging tool with a rich ecosystem, including plugins for AOT.
 The Angular [webpack guide](guide/webpack "Webpack: an introduction") can get you started and
@@ -154,7 +127,7 @@ Notice the `paths` key:
 
 In the standard SystemJS config, the `npm` path points to the `node_modules/`.
 In this server config, it points to
-<a href="https://unpkg.com/" target="_blank" title="unpkg.com">https://unpkg.com</a>,
+<a href="https://unpkg.com/" title="unpkg.com">https://unpkg.com</a>,
 a site that hosts _npm packages_,
 and loads them from the web directly.
 There are other service providers that do the same thing.
@@ -233,7 +206,7 @@ Although deploying directly from the development environment works, it's far fro
 
 The client makes many small requests for individual application code and template files,
 a fact you can quickly confirm by looking at the network tab in a browser's developer tools.
-Each small file download can spend more time communicating with the server than tranfering data.
+Each small file download can spend more time communicating with the server than transferring data.
 
 Development files are full of comments and whitespace for easy reading and debugging.
 The browser downloads entire libraries, instead of just the parts the app needs.
@@ -242,7 +215,7 @@ can be significantly larger than is strictly necessary to execute the applicatio
 
 The many requests and large payloads mean
 the app takes longer to launch than it would if you optimized it.
-Several seconds may pass (or worse) before the user can see or do anything userful.
+Several seconds may pass (or worse) before the user can see or do anything useful.
 
 Does it matter? That depends upon business and technical factors you must evaluate for yourself.
 
@@ -280,7 +253,7 @@ Apps compiled with AOT launch faster for several reasons.
 * You don't download the Angular compiler, which is pretty big on its own.
 * The compiler discards unused Angular directives that a tree-shaking tool can then exclude.
 
-Learn more about AOT Compilation in the [AOT Cookbook](cookbook/aot-compiler "AOT Cookbook")
+Learn more about AOT Compilation in the [AOT Cookbook](guide/aot-compiler "AOT Cookbook")
 which describes running the AOT compiler from the command line
 and using [_rollup_](guide/deployment#rollup) for bundling, minification, uglification and tree shaking.
 
@@ -290,13 +263,13 @@ and using [_rollup_](guide/deployment#rollup) for bundling, minification, uglifi
 
 ### Webpack (and AOT)
 
-<a href="https://webpack.js.org/" target="_blank" title="Webpack 2">Webpack 2</a> is another
+<a href="https://webpack.js.org/" title="Webpack 2">Webpack 2</a> is another
 great option for inlining templates and style-sheets, for bundling, minifying, and uglifying the application.
 The "[Webpack: an introduction](guide/webpack "Webpack: an introduction")" guide will get you started
 using webpack with Angular.
 
 Consider configuring _Webpack_ with the official
-<a href="https://github.com/angular/angular-cli/tree/master/packages/%40ngtools/webpack" target="_blank" title="Ahead-of-Time Webpack Plugin">
+<a href="https://github.com/angular/angular-cli/tree/master/packages/%40ngtools/webpack" title="Ahead-of-Time Webpack Plugin">
 Angular Ahead-of-Time Webpack Plugin</a>.
 This plugin transpiles the TypeScript application code,
 bundles lazy loaded `NgModules` separately,
@@ -315,10 +288,10 @@ _Tree shaking_ is a _dead code elimination_ technique that removes entire export
 If a library exports something that the application doesn't import, a tree shaking tool removes it from the code base.
 
 Tree shaking was popularized by
-<a href="http://rollupjs.org/" target="_blank" title="Rollup">Rollup</a>, a popular tool with an ecosystem of
+<a href="http://rollupjs.org/" title="Rollup">Rollup</a>, a popular tool with an ecosystem of
 plugins for bundling, minification, and uglification.
 Learn more about tree shaking and dead code elmination in
-<a href="https://medium.com/@Rich_Harris/tree-shaking-versus-dead-code-elimination-d3765df85c80#.15ih9cyvl" target="_blank" title="Tree-shaking and Dead Code Elimination">
+<a href="https://medium.com/@Rich_Harris/tree-shaking-versus-dead-code-elimination-d3765df85c80#.15ih9cyvl" title="Tree-shaking and Dead Code Elimination">
 this post</a> by rollup-creator, Rich Harris.
 
 
@@ -349,7 +322,7 @@ You can waste a lot of time and money optimizing something that has no tangible 
 You should measure the app's actual behavior when running in the environments that are important to you.
 
 The
-<a href="https://developers.google.com/web/tools/chrome-devtools/network-performance/understanding-resource-timing" target="_blank" title="Chrome DevTools Network Performance">
+<a href="https://developers.google.com/web/tools/chrome-devtools/network-performance/understanding-resource-timing" title="Chrome DevTools Network Performance">
 Chrome DevTools Network Performance page</a> is a good place to start learning about measuring performance.
 
 The [WebPageTest](https://www.webpagetest.org/) tool is another good choice
@@ -370,7 +343,7 @@ Angular configuration can make the difference between whether the app launches q
 
 ### The `base` tag
 
-The HTML [_&lt;base href="..."/&gt;_](https://angular.io/docs/ts/latest/guide/router.html#!)
+The HTML [_&lt;base href="..."/&gt;_](/guide/router)
 specifies a base path for resolving relative URLs to assets such as images, scripts, and style sheets.
 For example, given the `<base href="/my/app/">`, the browser resolves a URL such as `some/place/foo.jpg`
 into a server request for `my/app/some/place/foo.jpg`.
@@ -381,7 +354,7 @@ During navigation, the Angular router uses the _base href_ as the base path to c
 
 
 
-See also the [*APP_BASE_HREF*](api/common/index/APP_BASE_HREF-let "API: APP_BASE_HREF") alternative.
+See also the [*APP_BASE_HREF*](api/common/APP_BASE_HREF "API: APP_BASE_HREF") alternative.
 
 </div>
 
@@ -415,7 +388,7 @@ console:
 
 Switching to production mode can make it run faster by disabling development specific checks such as the dual change detection cycles.
 
-To enable [production mode](api/core/index/enableProdMode-function) when running remotely, add the following code to the `main.ts`.
+To enable [production mode](api/core/enableProdMode) when running remotely, add the following code to the `main.ts`.
 
 
 <code-example path="deployment/src/main.ts" region="enableProdMode" title="src/main.ts (enableProdMode)" linenums="false">
@@ -611,7 +584,7 @@ and to
 ### Requesting services from a different server (CORS)
 
 Angular developers may encounter a
-<a href="https://en.wikipedia.org/wiki/Cross-origin_resource_sharing" target="_blank" title="Cross-origin resource sharing">
+<a href="https://en.wikipedia.org/wiki/Cross-origin_resource_sharing" title="Cross-origin resource sharing">
 <i>cross-origin resource sharing</i></a> error when making a service request (typically a data service request).
 to a server other than the application's own host server.
 Browsers forbid such requests unless the server permits them explicitly.
@@ -619,7 +592,7 @@ Browsers forbid such requests unless the server permits them explicitly.
 There isn't anything the client application can do about these errors.
 The server must be configured to accept the application's requests.
 Read about how to enable CORS for specific servers at
-<a href="http://enable-cors.org/server.html" target="_blank" title="Enabling CORS server">enable-cors.org</a>.
+<a href="http://enable-cors.org/server.html" title="Enabling CORS server">enable-cors.org</a>.
 
 
 {@a next-steps}
@@ -628,4 +601,4 @@ Read about how to enable CORS for specific servers at
 
 ## Next steps
  If you want to go beyond the [simple _copy-deploy_](guide/deployment#dev-deploy "Simplest deployment possible") approach,
- read the [AOT Cookbook](cookbook/aot-compiler "AOT Cookbook") next.
+ read the [AOT Cookbook](guide/aot-compiler "AOT Cookbook") next.

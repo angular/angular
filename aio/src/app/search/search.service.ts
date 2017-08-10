@@ -6,9 +6,11 @@ can be found in the LICENSE file at http://angular.io/license
 
 import { NgZone, Injectable, Type } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
-import 'rxjs/add/operator/publishLast';
+import { ReplaySubject } from 'rxjs/ReplaySubject';
+import 'rxjs/add/observable/race';
+import 'rxjs/add/observable/timer';
 import 'rxjs/add/operator/concatMap';
+import 'rxjs/add/operator/publish';
 import { WebWorkerClient } from 'app/shared/web-worker';
 
 export interface SearchResults {
@@ -27,26 +29,50 @@ export interface SearchResult {
 
 @Injectable()
 export class SearchService {
-  private worker: WebWorkerClient;
-  private ready: Observable<boolean>;
-  private resultsSubject = new Subject<SearchResults>();
-  get searchResults() { return this.resultsSubject.asObservable(); }
+  private searchesSubject = new ReplaySubject<string>(1);
+  searchResults: Observable<SearchResults>;
 
   constructor(private zone: NgZone) {}
 
-  initWorker(workerUrl) {
-    this.worker = new WebWorkerClient(new Worker(workerUrl), this.zone);
+  /**
+   * Initialize the search engine. We offer an `initDelay` to prevent the search initialisation from delaying the
+   * initial rendering of the web page. Triggering a search will override this delay and cause the index to be
+   * loaded immediately.
+   *
+   * @param workerUrl the url of the WebWorker script that runs the searches
+   * @param initDelay the number of milliseconds to wait before we load the WebWorker and generate the search index
+   */
+  initWorker(workerUrl: string, initDelay: number) {
+    const searchResults = Observable
+      // Wait for the initDelay or the first search
+      .race(
+        Observable.timer(initDelay),
+        this.searchesSubject.first()
+      )
+      .concatMap(() => {
+        // Create the worker and load the index
+        const worker = WebWorkerClient.create(workerUrl, this.zone);
+        return worker.sendMessage('load-index').concatMap(() =>
+          // Once the index has loaded, switch to listening to the searches coming in
+          this.searchesSubject.switchMap((query) =>
+            // Each search gets switched to a web worker message, whose results are returned via an observable
+            worker.sendMessage<SearchResults>('query-index', query)
+          )
+        );
+      }).publish();
+
+      // Connect to the observable to kick off the timer
+    searchResults.connect();
+
+    // Expose the connected observable to the rest of the world
+    this.searchResults = searchResults;
   }
 
-  loadIndex() {
-    const ready = this.ready = this.worker.sendMessage<boolean>('load-index').publishLast();
-    // trigger the index to be loaded immediately
-    ready.connect();
-  }
-
+  /**
+   * Send a search query to the index.
+   * The results will appear on the `searchResults` observable.
+   */
   search(query: string) {
-    this.ready.concatMap(ready => {
-      return this.worker.sendMessage('query-index', query) as Observable<SearchResults>;
-    }).subscribe(results => this.resultsSubject.next(results));
+    this.searchesSubject.next(query);
   }
 }

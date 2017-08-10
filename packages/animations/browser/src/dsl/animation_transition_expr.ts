@@ -24,8 +24,14 @@ export function parseTransitionExpr(
 function parseInnerTransitionStr(
     eventStr: string, expressions: TransitionMatcherFn[], errors: string[]) {
   if (eventStr[0] == ':') {
-    eventStr = parseAnimationAlias(eventStr, errors);
+    const result = parseAnimationAlias(eventStr, errors);
+    if (typeof result == 'function') {
+      expressions.push(result);
+      return;
+    }
+    eventStr = result as string;
   }
+
   const match = eventStr.match(/^(\*|[-\w]+)\s*(<?[=-]>)\s*(\*|[-\w]+)$/);
   if (match == null || match.length < 4) {
     errors.push(`The provided transition expression "${eventStr}" is not supported`);
@@ -43,12 +49,16 @@ function parseInnerTransitionStr(
   }
 }
 
-function parseAnimationAlias(alias: string, errors: string[]): string {
+function parseAnimationAlias(alias: string, errors: string[]): string|TransitionMatcherFn {
   switch (alias) {
     case ':enter':
       return 'void => *';
     case ':leave':
       return '* => void';
+    case ':increment':
+      return (fromState: any, toState: any): boolean => parseFloat(toState) > parseFloat(fromState);
+    case ':decrement':
+      return (fromState: any, toState: any): boolean => parseFloat(toState) < parseFloat(fromState);
     default:
       errors.push(`The transition alias value "${alias}" is not supported`);
       return '* => *';
@@ -57,8 +67,16 @@ function parseAnimationAlias(alias: string, errors: string[]): string {
 
 function makeLambdaFromStates(lhs: string, rhs: string): TransitionMatcherFn {
   return (fromState: any, toState: any): boolean => {
-    const lhsMatch = lhs == ANY_STATE || lhs == fromState;
-    const rhsMatch = rhs == ANY_STATE || rhs == toState;
+    let lhsMatch = lhs == ANY_STATE || lhs == fromState;
+    let rhsMatch = rhs == ANY_STATE || rhs == toState;
+
+    if (!lhsMatch && typeof fromState === 'boolean') {
+      lhsMatch = fromState ? lhs === 'true' : lhs === 'false';
+    }
+    if (!rhsMatch && typeof toState === 'boolean') {
+      rhsMatch = toState ? rhs === 'true' : rhs === 'false';
+    }
+
     return lhsMatch && rhsMatch;
   };
 }

@@ -1,9 +1,10 @@
-<!-- #docregion -->
 <!DOCTYPE html>
+<!-- #docregion -->
 <html>
   <head>
-    <title>Documentation Style</title>
     <base href="/">
+
+    <title>Style Guide Sample</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="styles.css">
@@ -15,11 +16,15 @@
     <script src="node_modules/systemjs/dist/system.src.js"></script>
 
     <script src="systemjs.config.js"></script>
+    <script src="systemjs.custom.js"></script>
     <script>
       System.import('main.js').catch(function(err){ console.error(err); });
     </script>
   </head>
+
   <body>
-    <my-app></my-app>
+    <my-app>loading...</my-app>
   </body>
+
 </html>
+<!-- #enddocregion -->

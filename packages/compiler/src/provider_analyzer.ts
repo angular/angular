@@ -8,7 +8,8 @@
 
 
 import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileDirectiveSummary, CompileNgModuleMetadata, CompileProviderMetadata, CompileQueryMetadata, CompileTokenMetadata, CompileTypeMetadata, tokenName, tokenReference} from './compile_metadata';
-import {Identifiers, createIdentifierToken, resolveIdentifier} from './identifiers';
+import {CompileReflector} from './compile_reflector';
+import {Identifiers, createTokenForExternalReference} from './identifiers';
 import {ParseError, ParseSourceSpan} from './parse_util';
 import {AttrAst, DirectiveAst, ProviderAst, ProviderAstType, QueryMatch, ReferenceAst} from './template_parser/template_ast';
 
@@ -32,7 +33,7 @@ export class ProviderViewContext {
   viewProviders: Map<any, boolean>;
   errors: ProviderError[] = [];
 
-  constructor(public component: CompileDirectiveMetadata) {
+  constructor(public reflector: CompileReflector, public component: CompileDirectiveMetadata) {
     this.viewQueries = _getViewQueries(component);
     this.viewProviders = new Map<any, boolean>();
     component.viewProviders.forEach((provider) => {
@@ -68,14 +69,17 @@ export class ProviderElementContext {
       this._addQueryReadsTo(provider.token, provider.token, this._queriedTokens);
     });
     if (isTemplate) {
-      const templateRefId = createIdentifierToken(Identifiers.TemplateRef);
+      const templateRefId =
+          createTokenForExternalReference(this.viewContext.reflector, Identifiers.TemplateRef);
       this._addQueryReadsTo(templateRefId, templateRefId, this._queriedTokens);
     }
     refs.forEach((refAst) => {
-      let defaultQueryValue = refAst.value || createIdentifierToken(Identifiers.ElementRef);
+      let defaultQueryValue = refAst.value ||
+          createTokenForExternalReference(this.viewContext.reflector, Identifiers.ElementRef);
       this._addQueryReadsTo({value: refAst.name}, defaultQueryValue, this._queriedTokens);
     });
-    if (this._queriedTokens.get(resolveIdentifier(Identifiers.ViewContainerRef))) {
+    if (this._queriedTokens.get(
+            this.viewContext.reflector.resolveExternalReference(Identifiers.ViewContainerRef))) {
       this._hasViewContainer = true;
     }
 
@@ -96,7 +100,17 @@ export class ProviderElementContext {
   }
 
   get transformProviders(): ProviderAst[] {
-    return Array.from(this._transformedProviders.values());
+    // Note: Maps keep their insertion order.
+    const lazyProviders: ProviderAst[] = [];
+    const eagerProviders: ProviderAst[] = [];
+    this._transformedProviders.forEach(provider => {
+      if (provider.eager) {
+        eagerProviders.push(provider);
+      } else {
+        lazyProviders.push(provider);
+      }
+    });
+    return lazyProviders.concat(eagerProviders);
   }
 
   get transformedDirectiveAsts(): DirectiveAst[] {
@@ -222,18 +236,25 @@ export class ProviderElementContext {
       // access builtints
       if ((requestingProviderType === ProviderAstType.Directive ||
            requestingProviderType === ProviderAstType.Component)) {
-        if (tokenReference(dep.token) === resolveIdentifier(Identifiers.Renderer) ||
-            tokenReference(dep.token) === resolveIdentifier(Identifiers.ElementRef) ||
-            tokenReference(dep.token) === resolveIdentifier(Identifiers.ChangeDetectorRef) ||
-            tokenReference(dep.token) === resolveIdentifier(Identifiers.TemplateRef)) {
+        if (tokenReference(dep.token) ===
+                this.viewContext.reflector.resolveExternalReference(Identifiers.Renderer) ||
+            tokenReference(dep.token) ===
+                this.viewContext.reflector.resolveExternalReference(Identifiers.ElementRef) ||
+            tokenReference(dep.token) ===
+                this.viewContext.reflector.resolveExternalReference(
+                    Identifiers.ChangeDetectorRef) ||
+            tokenReference(dep.token) ===
+                this.viewContext.reflector.resolveExternalReference(Identifiers.TemplateRef)) {
           return dep;
         }
-        if (tokenReference(dep.token) === resolveIdentifier(Identifiers.ViewContainerRef)) {
+        if (tokenReference(dep.token) ===
+            this.viewContext.reflector.resolveExternalReference(Identifiers.ViewContainerRef)) {
           this._hasViewContainer = true;
         }
       }
       // access the injector
-      if (tokenReference(dep.token) === resolveIdentifier(Identifiers.Injector)) {
+      if (tokenReference(dep.token) ===
+          this.viewContext.reflector.resolveExternalReference(Identifiers.Injector)) {
         return dep;
       }
       // access providers
@@ -294,8 +315,8 @@ export class NgModuleProviderAnalyzer {
   private _errors: ProviderError[] = [];
 
   constructor(
-      ngModule: CompileNgModuleMetadata, extraProviders: CompileProviderMetadata[],
-      sourceSpan: ParseSourceSpan) {
+      private reflector: CompileReflector, ngModule: CompileNgModuleMetadata,
+      extraProviders: CompileProviderMetadata[], sourceSpan: ParseSourceSpan) {
     this._allProviders = new Map<any, ProviderAst>();
     ngModule.transitiveModule.modules.forEach((ngModuleType: CompileTypeMetadata) => {
       const ngModuleProvider = {token: {identifier: ngModuleType}, useClass: ngModuleType};
@@ -316,7 +337,17 @@ export class NgModuleProviderAnalyzer {
       const errorString = this._errors.join('\n');
       throw new Error(`Provider parse errors:\n${errorString}`);
     }
-    return Array.from(this._transformedProviders.values());
+    // Note: Maps keep their insertion order.
+    const lazyProviders: ProviderAst[] = [];
+    const eagerProviders: ProviderAst[] = [];
+    this._transformedProviders.forEach(provider => {
+      if (provider.eager) {
+        eagerProviders.push(provider);
+      } else {
+        lazyProviders.push(provider);
+      }
+    });
+    return lazyProviders.concat(eagerProviders);
   }
 
   private _getOrCreateLocalProvider(token: CompileTokenMetadata, eager: boolean): ProviderAst|null {
@@ -375,8 +406,10 @@ export class NgModuleProviderAnalyzer {
     let foundLocal = false;
     if (!dep.isSkipSelf && dep.token != null) {
       // access the injector
-      if (tokenReference(dep.token) === resolveIdentifier(Identifiers.Injector) ||
-          tokenReference(dep.token) === resolveIdentifier(Identifiers.ComponentFactoryResolver)) {
+      if (tokenReference(dep.token) ===
+              this.reflector.resolveExternalReference(Identifiers.Injector) ||
+          tokenReference(dep.token) ===
+              this.reflector.resolveExternalReference(Identifiers.ComponentFactoryResolver)) {
         foundLocal = true;
         // access providers
       } else if (this._getOrCreateLocalProvider(dep.token, eager) != null) {

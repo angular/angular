@@ -12,12 +12,16 @@ import * as angular from '../common/angular1';
 // We store the ng1 injector so that the provider in the module injector can access it
 // Then we "get" the ng1 injector from the module injector, which triggers the provider to read
 // the stored injector and release the reference to it.
-let tempInjectorRef: angular.IInjectorService;
+let tempInjectorRef: angular.IInjectorService|null;
 export function setTempInjectorRef(injector: angular.IInjectorService) {
   tempInjectorRef = injector;
 }
 export function injectorFactory() {
-  const injector: angular.IInjectorService = tempInjectorRef;
+  if (!tempInjectorRef) {
+    throw new Error('Trying to get the AngularJS injector before it being set.');
+  }
+
+  const injector: angular.IInjectorService|null = tempInjectorRef;
   tempInjectorRef = null;  // clear the value to prevent memory leaks
   return injector;
 }
@@ -39,7 +43,7 @@ export const angular1Providers = [
   // > Metadata collected contains an error that will be reported at runtime:
   // >   Function calls are not supported.
   // >   Consider replacing the function or lambda with a reference to an exported function
-  {provide: '$injector', useFactory: injectorFactory},
+  {provide: '$injector', useFactory: injectorFactory, deps: []},
   {provide: '$rootScope', useFactory: rootScopeFactory, deps: ['$injector']},
   {provide: '$compile', useFactory: compileFactory, deps: ['$injector']},
   {provide: '$parse', useFactory: parseFactory, deps: ['$injector']}

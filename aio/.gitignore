@@ -3,7 +3,7 @@
 # compiled output
 /dist
 /out-tsc
-/src/content
+/src/generated
 /tmp
 
 # dependencies
@@ -38,7 +38,11 @@ yarn-error.log
 # e2e
 /e2e/*.js
 /e2e/*.map
+protractor-results*.txt
 
 # System Files
 .DS_Store
 Thumbs.db
+
+# copied dependencies
+src/assets/js/lunr*

@@ -1,30 +1,25 @@
-/* Banner */
+/* BANNER */
 
-.banner {
+.info-banner {
+    margin: 16px 0;
     justify-content: center;
     background: $white;
+    border: 1px solid rgba($lightgray, 0.5);
+    border-radius: 4px;
     box-sizing: border-box;
-    font-size: 18px;
-    font-weight: 200;
     padding: 16px;
-    min-height: 97px;
+    background: $white;
+    height: auto;
+    overflow: visible;
 
-
-    @media (max-width: 480px) {
-        padding: 16px;
+    @media screen and (max-width: 600px) {
+        text-align: center;
     }
-
-    &.is-plain {
-        background: $white;
-        height: auto;
-        overflow: visible;
-    }
-
 
     p, .text-body {
         color: $darkgray;
-        font-size: 18px;
         line-height: 32px;
         margin: 0;
+        text-align: center;
     }
 }

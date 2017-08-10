@@ -119,7 +119,7 @@ export interface Attribute { attributeName?: string; }
  * @Annotation
  */
 export const Attribute: AttributeDecorator =
-    makeParamDecorator('Attribute', [['attributeName', undefined]]);
+    makeParamDecorator('Attribute', (attributeName?: string) => ({attributeName}));
 
 /**
  * Type of the Query metadata.
@@ -183,11 +183,8 @@ export interface ContentChildrenDecorator {
    * @stable
    * @Annotation
    */
-  (selector: Type<any>|Function|string,
-   {descendants, read}?: {descendants?: boolean, read?: any}): any;
-  new (
-      selector: Type<any>|Function|string,
-      {descendants, read}?: {descendants?: boolean, read?: any}): Query;
+  (selector: Type<any>|Function|string, opts?: {descendants?: boolean, read?: any}): any;
+  new (selector: Type<any>|Function|string, opts?: {descendants?: boolean, read?: any}): Query;
 }
 
 /**
@@ -204,18 +201,11 @@ export type ContentChildren = Query;
  *  @stable
  *  @Annotation
  */
-export const ContentChildren: ContentChildrenDecorator =
-    <ContentChildrenDecorator>makePropDecorator(
-        'ContentChildren',
-        [
-          ['selector', undefined], {
-            first: false,
-            isViewQuery: false,
-            descendants: false,
-            read: undefined,
-          }
-        ],
-        Query);
+export const ContentChildren: ContentChildrenDecorator = makePropDecorator(
+    'ContentChildren',
+    (selector?: any, data: any = {}) =>
+        ({selector, first: false, isViewQuery: false, descendants: false, ...data}),
+    Query);
 
 /**
  * Type of the ContentChild decorator / constructor function.
@@ -253,8 +243,8 @@ export interface ContentChildDecorator {
    * @stable
    * @Annotation
    */
-  (selector: Type<any>|Function|string, {read}?: {read?: any}): any;
-  new (selector: Type<any>|Function|string, {read}?: {read?: any}): ContentChild;
+  (selector: Type<any>|Function|string, opts?: {read?: any}): any;
+  new (selector: Type<any>|Function|string, opts?: {read?: any}): ContentChild;
 }
 
 /**
@@ -273,21 +263,14 @@ export type ContentChild = Query;
  * @Annotation
  */
 export const ContentChild: ContentChildDecorator = makePropDecorator(
-    'ContentChild',
-    [
-      ['selector', undefined], {
-        first: true,
-        isViewQuery: false,
-        descendants: true,
-        read: undefined,
-      }
-    ],
+    'ContentChild', (selector?: any, data: any = {}) =>
+                        ({selector, first: true, isViewQuery: false, descendants: true, ...data}),
     Query);
 
 /**
  * Type of the ViewChildren decorator / constructor function.
  *
- * See {@ViewChildren}.
+ * See {@link ViewChildren}.
  *
  * @stable
  */
@@ -321,8 +304,8 @@ export interface ViewChildrenDecorator {
    * @stable
    * @Annotation
    */
-  (selector: Type<any>|Function|string, {read}?: {read?: any}): any;
-  new (selector: Type<any>|Function|string, {read}?: {read?: any}): ViewChildren;
+  (selector: Type<any>|Function|string, opts?: {read?: any}): any;
+  new (selector: Type<any>|Function|string, opts?: {read?: any}): ViewChildren;
 }
 
 /**
@@ -339,15 +322,8 @@ export type ViewChildren = Query;
  * @Annotation
  */
 export const ViewChildren: ViewChildrenDecorator = makePropDecorator(
-    'ViewChildren',
-    [
-      ['selector', undefined], {
-        first: false,
-        isViewQuery: true,
-        descendants: true,
-        read: undefined,
-      }
-    ],
+    'ViewChildren', (selector?: any, data: any = {}) =>
+                        ({selector, first: false, isViewQuery: true, descendants: true, ...data}),
     Query);
 
 /**
@@ -385,8 +361,8 @@ export interface ViewChildDecorator {
    * @stable
    * @Annotation
    */
-  (selector: Type<any>|Function|string, {read}?: {read?: any}): any;
-  new (selector: Type<any>|Function|string, {read}?: {read?: any}): ViewChild;
+  (selector: Type<any>|Function|string, opts?: {read?: any}): any;
+  new (selector: Type<any>|Function|string, opts?: {read?: any}): ViewChild;
 }
 
 /**
@@ -403,13 +379,6 @@ export type ViewChild = Query;
  * @Annotation
  */
 export const ViewChild: ViewChildDecorator = makePropDecorator(
-    'ViewChild',
-    [
-      ['selector', undefined], {
-        first: true,
-        isViewQuery: true,
-        descendants: true,
-        read: undefined,
-      }
-    ],
+    'ViewChild', (selector: any, data: any) =>
+                     ({selector, first: true, isViewQuery: true, descendants: true, ...data}),
     Query);

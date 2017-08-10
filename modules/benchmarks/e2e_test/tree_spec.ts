@@ -7,107 +7,57 @@
  */
 
 import {openBrowser, verifyNoBrowserErrors} from 'e2e_util/e2e_util';
-import {$} from 'protractor';
+import {$, browser} from 'protractor';
+
+import {Benchmark, Benchmarks, CreateBtn, DestroyBtn, DetectChangesBtn, NumberOfChecksEl, RootEl} from './tree_data';
 
 describe('tree benchmark spec', () => {
 
-  afterEach(verifyNoBrowserErrors);
+  let _oldRootEl: any;
+  beforeEach(() => _oldRootEl = browser.rootEl);
 
-  it('should work for ng2', () => {
-    testTreeBenchmark({
-      url: 'all/benchmarks/src/tree/ng2/index.html',
+  afterEach(() => {
+    browser.rootEl = _oldRootEl;
+    verifyNoBrowserErrors();
+  });
+
+  Benchmarks.forEach(benchmark => {
+    describe(benchmark.id, () => {
+      it('should work for createDestroy', () => {
+        openTreeBenchmark(benchmark);
+        $(CreateBtn).click();
+        expect($(RootEl).getText()).toContain('0');
+        $(DestroyBtn).click();
+        expect($(RootEl).getText()).toEqual('');
+      });
+
+      it('should work for update', () => {
+        openTreeBenchmark(benchmark);
+        $(CreateBtn).click();
+        $(CreateBtn).click();
+        expect($(RootEl).getText()).toContain('A');
+      });
+
+      if (benchmark.buttons.indexOf(DetectChangesBtn) !== -1) {
+        it('should work for detectChanges', () => {
+          openTreeBenchmark(benchmark);
+          $(DetectChangesBtn).click();
+          expect($(NumberOfChecksEl).getText()).toContain('10');
+        });
+      }
     });
   });
 
-  it('should work for ng2 detect changes', () => {
+  function openTreeBenchmark(benchmark: Benchmark) {
     let params = [{name: 'depth', value: 4}];
-    openBrowser({url: 'all/benchmarks/src/tree/ng2/index.html', params});
-    $('#detectChanges').click();
-    expect($('#numberOfChecks').getText()).toContain('10');
-  });
-
-  it('should work for ng2 next', () => {
-    testTreeBenchmark({
-      url: 'all/benchmarks/src/tree/ng2_next/index.html',
-      ignoreBrowserSynchronization: true,
-      // Can't use bundles as we use non exported code
-      extraParams: [{name: 'bundles', value: false}]
-    });
-  });
-
-  it('should work for ng2 next detect changes', () => {
-    let params = [
-      {name: 'depth', value: 4},
-      // Can't use bundles as we use non exported code
-      {name: 'bundles', value: false}
-    ];
-    openBrowser({
-      url: 'all/benchmarks/src/tree/ng2_next/index.html',
-      ignoreBrowserSynchronization: true, params
-    });
-    $('#detectChanges').click();
-    expect($('#numberOfChecks').getText()).toContain('10');
-  });
-
-  it('should work for ng2 static', () => {
-    testTreeBenchmark({
-      url: 'all/benchmarks/src/tree/ng2_static/index.html',
-    });
-  });
-
-  it('should work for ng2 switch', () => {
-    testTreeBenchmark({
-      url: 'all/benchmarks/src/tree/ng2_switch/index.html',
-    });
-  });
-
-  it('should work for the baseline', () => {
-    testTreeBenchmark({
-      url: 'all/benchmarks/src/tree/baseline/index.html',
-      ignoreBrowserSynchronization: true,
-    });
-  });
-
-  it('should work for incremental dom', () => {
-    testTreeBenchmark({
-      url: 'all/benchmarks/src/tree/incremental_dom/index.html',
-      ignoreBrowserSynchronization: true,
-    });
-  });
-
-  it('should work for polymer binary tree', () => {
-    testTreeBenchmark({
-      url: 'all/benchmarks/src/tree/polymer/index.html',
-      ignoreBrowserSynchronization: true,
-    });
-  });
-
-  it('should work for polymer leaves', () => {
-    testTreeBenchmark({
-      url: 'all/benchmarks/src/tree/polymer_leaves/index.html',
-      ignoreBrowserSynchronization: true,
-    });
-  });
-
-  function testTreeBenchmark(openConfig: {
-    url: string,
-    ignoreBrowserSynchronization?: boolean,
-    extraParams?: {name: string, value: any}[]
-  }) {
-    let params = [{name: 'depth', value: 4}];
-    if (openConfig.extraParams) {
-      params = params.concat(openConfig.extraParams);
+    if (benchmark.extraParams) {
+      params = params.concat(benchmark.extraParams);
     }
+    browser.rootEl = RootEl;
     openBrowser({
-      url: openConfig.url,
-      ignoreBrowserSynchronization: openConfig.ignoreBrowserSynchronization,
+      url: benchmark.url,
+      ignoreBrowserSynchronization: benchmark.ignoreBrowserSynchronization,
       params: params,
     });
-    $('#createDom').click();
-    expect($('#root').getText()).toContain('0');
-    $('#createDom').click();
-    expect($('#root').getText()).toContain('A');
-    $('#destroyDom').click();
-    expect($('#root').getText()).toEqual('');
   }
 });

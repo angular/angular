@@ -1,7 +1,0 @@
-{% macro githubHref(doc, versionInfo) -%}
-https://github.com/{$ versionInfo.gitRepoInfo.owner $}/{$ versionInfo.gitRepoInfo.repo $}/tree/{$ versionInfo.currentVersion.isSnapshot and versionInfo.currentVersion.SHA or versionInfo.currentVersion.raw $}/packages/{$ doc.fileInfo.projectRelativePath $}#L{$ doc.location.start.line+1 $}-L{$ doc.location.end.line+1 $}
-{%- endmacro %}
-
-{% macro githubViewLink(doc, versionInfo) -%}
-  <a href="{$ githubHref(doc, versionInfo) $}">{$ doc.fileInfo.projectRelativePath $}</a>
-{%- endmacro %}

@@ -8,6 +8,8 @@
 
 import {animate, style, transition, trigger} from '@angular/animations';
 import {APP_BASE_HREF, PlatformLocation, isPlatformServer} from '@angular/common';
+import {HttpClient, HttpClientModule} from '@angular/common/http';
+import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {ApplicationRef, CompilerFactory, Component, HostListener, Input, NgModule, NgModuleRef, NgZone, PLATFORM_ID, PlatformRef, ViewEncapsulation, destroyPlatform, getPlatform} from '@angular/core';
 import {TestBed, async, inject} from '@angular/core/testing';
 import {Http, HttpModule, Response, ResponseOptions, XHRBackend} from '@angular/http';
@@ -145,6 +147,14 @@ export class HttpBeforeExampleModule {
 export class HttpAfterExampleModule {
 }
 
+@NgModule({
+  bootstrap: [MyServerApp],
+  declarations: [MyServerApp],
+  imports: [ServerModule, HttpClientModule, HttpClientTestingModule],
+})
+export class HttpClientExmapleModule {
+}
+
 @Component({selector: 'app', template: `<img [src]="'link'">`})
 class ImageApp {
 }
@@ -185,6 +195,20 @@ class MyHostComponent {
   imports: [ServerModule, BrowserModule.withServerTransition({appId: 'false-attributes'})]
 })
 class FalseAttributesModule {
+}
+
+@Component({selector: 'app', template: '<input [name]="name">'})
+class MyInputComponent {
+  @Input()
+  name = '';
+}
+
+@NgModule({
+  declarations: [MyInputComponent],
+  bootstrap: [MyInputComponent],
+  imports: [ServerModule, BrowserModule.withServerTransition({appId: 'name-attributes'})]
+})
+class NameModule {
 }
 
 export function main() {
@@ -429,10 +453,19 @@ export function main() {
          }));
 
       it('should handle false values on attributes', async(() => {
-           renderModule(FalseAttributesModule, {document: doc}).then((output) => {
+           renderModule(FalseAttributesModule, {document: doc}).then(output => {
              expect(output).toBe(
                  '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
                  '<my-child ng-reflect-attr="false">Works!</my-child></app></body></html>');
+             called = true;
+           });
+         }));
+
+      it('should handle element property "name"', async(() => {
+           renderModule(NameModule, {document: doc}).then(output => {
+             expect(output).toBe(
+                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
+                 '<input name=""></app></body></html>');
              called = true;
            });
          }));
@@ -531,6 +564,46 @@ export function main() {
              expect(() => http.get('/testing'))
                  .toThrowError(
                      'URLs requested via Http on the server must be absolute. URL: /testing');
+           });
+         }));
+    });
+    describe('HttpClient', () => {
+      it('can inject HttpClient', async(() => {
+           const platform = platformDynamicServer(
+               [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
+           platform.bootstrapModule(HttpClientExmapleModule).then(ref => {
+             expect(ref.injector.get(HttpClient) instanceof HttpClient).toBeTruthy();
+           });
+         }));
+      it('can make HttpClient requests', async(() => {
+           const platform = platformDynamicServer(
+               [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
+           platform.bootstrapModule(HttpClientExmapleModule).then(ref => {
+             const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
+             const http = ref.injector.get(HttpClient);
+             ref.injector.get(NgZone).run(() => {
+               http.get('http://localhost/testing').subscribe(body => {
+                 NgZone.assertInAngularZone();
+                 expect(body).toEqual('success!');
+               });
+               mock.expectOne('http://localhost/testing').flush('success!');
+             });
+           });
+         }));
+      it('requests are macrotasks', async(() => {
+           const platform = platformDynamicServer(
+               [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
+           platform.bootstrapModule(HttpClientExmapleModule).then(ref => {
+             const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
+             const http = ref.injector.get(HttpClient);
+             ref.injector.get(NgZone).run(() => {
+               http.get('http://localhost/testing').subscribe(body => {
+                 expect(body).toEqual('success!');
+               });
+               expect(ref.injector.get(NgZone).hasPendingMacrotasks).toBeTruthy();
+               mock.expectOne('http://localhost/testing').flush('success!');
+               expect(ref.injector.get(NgZone).hasPendingMacrotasks).toBeFalsy();
+             });
            });
          }));
     });

@@ -9,15 +9,14 @@ describe('TopMenuComponent', () => {
   let component: TopMenuComponent;
   let fixture: ComponentFixture<TopMenuComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [ TopMenuComponent ],
       providers: [
         { provide: NavigationService, useClass: TestNavigationService }
       ]
-    })
-    .compileComponents();
-  }));
+    });
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(TopMenuComponent);

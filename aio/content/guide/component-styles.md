@@ -1,12 +1,4 @@
-@title
-Component Styles
-
-@intro
-Learn how to apply CSS styles to components.
-
-@description
-
-
+# Component Styles
 
 Angular applications are styled with standard CSS. That means you can apply
 everything you know about CSS stylesheets, selectors, rules, and media queries
@@ -17,6 +9,8 @@ with components, enabling a more modular design than regular stylesheets.
 
 This page describes how to load and apply these component styles.
 
+<!--
+
 ## Table Of Contents
 
 * [Using component styles](guide/component-styles#using-component-styles)
@@ -25,6 +19,8 @@ This page describes how to load and apply these component styles.
 * [Controlling view encapsulation: native, emulated, and none](guide/component-styles#view-encapsulation)
 * [Appendix 1: Inspecting the CSS generated in emulated view encapsulation](guide/component-styles#inspect-generated-css)
 * [Appendix 2: Loading styles with relative URLs](guide/component-styles#relative-urls)
+
+-->
 
 You can run the <live-example></live-example> in Plunker and download the code from there.
 
@@ -123,12 +119,13 @@ if some ancestor element has the CSS class `theme-light`.
 
 
 
-### /deep/
+### (deprecated) `/deep/`, `>>>`, and `::ng-deep`
 
 Component styles normally apply only to the HTML in the component's own template. 
 
-Use the `/deep/` selector to force a style down through the child component tree into all the child component views.
-The `/deep/` selector works to any depth of nested components, and it applies to both the view
+Use the `/deep/` shadow-piercing descendant combinator to force a style down through the child
+component tree into all the child component views.
+The `/deep/` combinator works to any depth of nested components, and it applies to both the view
 children and content children of the component. 
 
 The following example targets all `<h3>` elements, from the host element down 
@@ -138,29 +135,27 @@ through this component to all of its child elements in the DOM.
 
 </code-example>
 
-
-
-The `/deep/` selector also has the alias `>>>`. You can use either interchangeably.
-
+The `/deep/` combinator also has the aliases `>>>`, and `::ng-deep`.
 
 <div class="alert is-important">
 
-
-
-Use the `/deep/` and `>>>` selectors only with *emulated* view encapsulation.
+Use `/deep/`, `>>>` and `::ng-deep` only with *emulated* view encapsulation.
 Emulated is the default and most commonly used view encapsulation. For more information, see the
 [Controlling view encapsulation](guide/component-styles#view-encapsulation) section.
 
+</div>
+
+<div class="alert is-important">
+
+The shadow-piercing descendant combinator is deprecated and [support is being removed from major browsers](https://www.chromestatus.com/features/6750456638341120) and tools.
+As such we plan to drop support in Angular (for all 3 of `/deep/`, `>>>` and `::ng-deep`).
+Until then `::ng-deep` should be preferred for a broader compatibility with the tools.
 
 </div>
 
-
-
 {@a loading-styles}
 
-
-
-## Loading styles into components
+## Loading component styles
 
 There are several ways to add styles to a component: 
 
@@ -275,7 +270,7 @@ In this case, the URL is relative to the CSS file into which you're importing.
 
 
 
-## Controlling view encapsulation: native, emulated, and none
+## View encapsulation
 
 As discussed earlier, component CSS styles are encapsulated into the component's view and don't
 affect the rest of the application.
@@ -319,7 +314,7 @@ in most cases.
 
 
 
-## Appendix 1: Inspecting the CSS generated in emulated view encapsulation
+## Appendix: Inspecting generated CSS
 
 When using emulated view encapsulation, Angular preprocesses
 all component styles so that they approximate the standard shadow CSS scoping rules.
@@ -377,7 +372,7 @@ These extra selectors enable the scoping rules described in this page.
 
 
 
-## Appendix 2: Loading styles with relative URLs
+## Appendix: Loading with relative URLs
 
 It's common practice to split a component's code, HTML, and CSS into three separate files in the same directory:
 

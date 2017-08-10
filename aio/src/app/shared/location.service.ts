@@ -2,44 +2,65 @@ import { Injectable } from '@angular/core';
 import { Location, PlatformLocation } from '@angular/common';
 
 import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
+import { ReplaySubject } from 'rxjs/ReplaySubject';
 import 'rxjs/add/operator/do';
-import 'rxjs/add/operator/publishReplay';
 
 import { GaService } from 'app/shared/ga.service';
+import { SwUpdatesService } from 'app/sw-updates/sw-updates.service';
 
 @Injectable()
 export class LocationService {
 
   private readonly urlParser = document.createElement('a');
-  private urlSubject = new Subject<string>();
+  private urlSubject = new ReplaySubject<string>(1);
+  private swUpdateActivated = false;
+
   currentUrl = this.urlSubject
-    .do(url => this.gaService.locationChanged(url))
-    .publishReplay(1);
+    .map(url => this.stripSlashes(url));
+
+  currentPath = this.currentUrl
+    .map(url => url.match(/[^?#]*/)[0]) // strip query and hash
+    .do(path => this.gaService.locationChanged(path));
 
   constructor(
     private gaService: GaService,
     private location: Location,
-    private platformLocation: PlatformLocation) {
+    private platformLocation: PlatformLocation,
+    swUpdates: SwUpdatesService) {
 
-    this.currentUrl.connect();
-    const initialUrl = this.stripLeadingSlashes(location.path(true));
-    this.urlSubject.next(initialUrl);
+    this.urlSubject.next(location.path(true));
 
     this.location.subscribe(state => {
-      const url = this.stripLeadingSlashes(state.url);
-      return this.urlSubject.next(url);
+      return this.urlSubject.next(state.url);
     });
+
+    swUpdates.updateActivated.subscribe(() => this.swUpdateActivated = true);
   }
 
   // TODO?: ignore if url-without-hash-or-search matches current location?
   go(url: string) {
-    this.location.go(url);
-    this.urlSubject.next(url);
+    if (!url) { return; }
+    url = this.stripSlashes(url);
+    if (/^http/.test(url) || this.swUpdateActivated) {
+      // Has http protocol so leave the site
+      // (or do a "full page navigation" if a ServiceWorker update has been activated)
+      this.goExternal(url);
+    } else {
+      this.location.go(url);
+      this.urlSubject.next(url);
+    }
   }
 
-  private stripLeadingSlashes(url: string) {
-    return url.replace(/^\/+/, '');
+  goExternal(url: string) {
+    window.location.assign(url);
+  }
+
+  replace(url: string) {
+    window.location.replace(url);
+  }
+
+  private stripSlashes(url: string) {
+    return url.replace(/^\/+/, '').replace(/\/+(\?|#|$)/, '$1');
   }
 
   search(): { [index: string]: string; } {
@@ -72,6 +93,14 @@ export class LocationService {
   }
 
   /**
+   * Handle user's anchor click
+   *
+   * @param anchor {HTMLAnchorElement} - the anchor element clicked
+   * @param button Number of the mouse button held down. 0 means left or none
+   * @param ctrlKey True if control key held down
+   * @param metaKey True if command or window key held down
+   * @return false if service navigated with `go()`; true if browser should handle it.
+   *
    * Since we are using `LocationService` to navigate between docs, without the browser
    * reloading the page, we must intercept clicks on links.
    * If the link is to a document that we will render, then we navigate using `Location.go()`
@@ -84,9 +113,10 @@ export class LocationService {
    * `AppComponent`, whose element contains all the of the application and so captures all
    * link clicks both inside and outside the `DocViewerComponent`.
    */
-  handleAnchorClick(anchor: HTMLAnchorElement, button: number, ctrlKey: boolean, metaKey: boolean) {
 
-    // Check for modifier keys, which indicate the user wants to control navigation
+  handleAnchorClick(anchor: HTMLAnchorElement, button = 0, ctrlKey = false, metaKey = false) {
+
+    // Check for modifier keys and non-left-button, which indicate the user wants to control navigation
     if (button !== 0 || ctrlKey || metaKey) {
       return true;
     }
@@ -99,20 +129,22 @@ export class LocationService {
       return true;
     }
 
-    // don't navigate if external link or zip
-    const { pathname, search, hash } = anchor;
-
     if (anchor.getAttribute('download') != null) {
       return true; // let the download happen
     }
 
+    const { pathname, search, hash } = anchor;
     const relativeUrl = pathname + search + hash;
     this.urlParser.href = relativeUrl;
-    if (anchor.href !== this.urlParser.href) {
+
+    // don't navigate if external link or has extension
+    if ( anchor.href !== this.urlParser.href ||
+         !/\/[^/.]*$/.test(pathname) ) {
       return true;
     }
 
-    this.go(this.stripLeadingSlashes(relativeUrl));
+    // approved for navigation
+    this.go(relativeUrl);
     return false;
   }
 }

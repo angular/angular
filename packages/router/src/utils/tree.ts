@@ -17,7 +17,7 @@ export class Tree<T> {
   /**
    * @internal
    */
-  parent(t: T): T {
+  parent(t: T): T|null {
     const p = this.pathFromRoot(t);
     return p.length > 1 ? p[p.length - 2] : null;
   }
@@ -33,7 +33,7 @@ export class Tree<T> {
   /**
    * @internal
    */
-  firstChild(t: T): T {
+  firstChild(t: T): T|null {
     const n = findNode(t, this._root);
     return n && n.children.length > 0 ? n.children[0].value : null;
   }
@@ -42,7 +42,7 @@ export class Tree<T> {
    * @internal
    */
   siblings(t: T): T[] {
-    const p = findPath(t, this._root, []);
+    const p = findPath(t, this._root);
     if (p.length < 2) return [];
 
     const c = p[p.length - 2].children.map(c => c.value);
@@ -52,26 +52,32 @@ export class Tree<T> {
   /**
    * @internal
    */
-  pathFromRoot(t: T): T[] { return findPath(t, this._root, []).map(s => s.value); }
+  pathFromRoot(t: T): T[] { return findPath(t, this._root).map(s => s.value); }
 }
 
-function findNode<T>(expected: T, c: TreeNode<T>): TreeNode<T> {
-  if (expected === c.value) return c;
-  for (const cc of c.children) {
-    const r = findNode(expected, cc);
-    if (r) return r;
+
+// DFS for the node matching the value
+function findNode<T>(value: T, node: TreeNode<T>): TreeNode<T>|null {
+  if (value === node.value) return node;
+
+  for (const child of node.children) {
+    const node = findNode(value, child);
+    if (node) return node;
   }
+
   return null;
 }
 
-function findPath<T>(expected: T, c: TreeNode<T>, collected: TreeNode<T>[]): TreeNode<T>[] {
-  collected.push(c);
-  if (expected === c.value) return collected;
+// Return the path to the node with the given value using DFS
+function findPath<T>(value: T, node: TreeNode<T>): TreeNode<T>[] {
+  if (value === node.value) return [node];
 
-  for (const cc of c.children) {
-    const cloned = collected.slice(0);
-    const r = findPath(expected, cc, cloned);
-    if (r.length > 0) return r;
+  for (const child of node.children) {
+    const path = findPath(value, child);
+    if (path.length) {
+      path.unshift(node);
+      return path;
+    }
   }
 
   return [];
@@ -81,4 +87,15 @@ export class TreeNode<T> {
   constructor(public value: T, public children: TreeNode<T>[]) {}
 
   toString(): string { return `TreeNode(${this.value})`; }
+}
+
+// Return the list of T indexed by outlet name
+export function nodeChildrenAsMap<T extends{outlet: string}>(node: TreeNode<T>| null) {
+  const map: {[outlet: string]: TreeNode<T>} = {};
+
+  if (node) {
+    node.children.forEach(child => map[child.value.outlet] = child);
+  }
+
+  return map;
 }

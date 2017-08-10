@@ -16,12 +16,14 @@ import {el} from '../../../testing/src/browser_util';
 export function main() {
   let domEventPlugin: DomEventsPlugin;
   let doc: any;
+  let zone: NgZone;
 
   describe('EventManager', () => {
 
     beforeEach(() => {
       doc = getDOM().supportsDOMEvents() ? document : getDOM().createHtmlDocument();
-      domEventPlugin = new DomEventsPlugin(doc);
+      zone = new NgZone({});
+      domEventPlugin = new DomEventsPlugin(doc, zone);
     });
 
     it('should delegate event bindings to plugins that are passed in from the most generic one to the most specific one',
@@ -51,7 +53,7 @@ export function main() {
       const element = el('<div></div>');
       const plugin = new FakeEventManagerPlugin(doc, ['dblclick']);
       const manager = new EventManager([plugin], new FakeNgZone());
-      expect(() => manager.addEventListener(element, 'click', null))
+      expect(() => manager.addEventListener(element, 'click', null !))
           .toThrowError('No event manager plugin found for event click');
     });
 
@@ -107,7 +109,6 @@ class FakeEventManagerPlugin extends EventManagerPlugin {
 
 class FakeNgZone extends NgZone {
   constructor() { super({enableLongStackTrace: false}); }
-  run(fn: Function) { fn(); }
-
+  run<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T { return fn(); }
   runOutsideAngular(fn: Function) { return fn(); }
 }

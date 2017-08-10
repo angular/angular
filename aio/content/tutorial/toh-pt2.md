@@ -111,7 +111,7 @@ To display a list of heroes, you'll add heroes to the view's template.
 Create an array of ten heroes.
 
 
-<code-example path="toh-2/src/app/app.component.ts" region="hero-array" title="src/app/app.component.ts (hero array)">
+<code-example path="toh-pt2/src/app/app.component.ts" region="hero-array" title="src/app/app.component.ts (hero array)">
 
 </code-example>
 
@@ -126,7 +126,7 @@ Create a public property in `AppComponent` that exposes the heroes for binding.
 
 
 
-<code-example path="toh-2/src/app/app.component.1.html" region="hero-array-1" title="app.component.ts (hero array property)">
+<code-example path="toh-pt2/src/app/app.component.1.html" region="hero-array-1" title="app.component.ts (hero array property)">
 
 </code-example>
 
@@ -153,7 +153,7 @@ insert the following chunk of HTML below the title and above the hero details.
 
 
 
-<code-example path="toh-2/src/app/app.component.1.html" region="heroes-template-1" title="app.component.ts (heroes template)" linenums="false">
+<code-example path="toh-pt2/src/app/app.component.1.html" region="heroes-template-1" title="app.component.ts (heroes template)" linenums="false">
 
 </code-example>
 
@@ -169,7 +169,7 @@ and display them individually.
 Modify the `<li>` tag by adding the built-in directive `*ngFor`.
 
 
-<code-example path="toh-2/src/app/app.component.1.html" region="heroes-ngfor-1" title="app.component.ts (ngFor)">
+<code-example path="toh-pt2/src/app/app.component.1.html" region="heroes-ngfor-1" title="app.component.ts (ngFor)">
 
 </code-example>
 
@@ -206,7 +206,7 @@ that uses the `hero` template variable to display the hero's properties.
 
 
 
-<code-example path="toh-2/src/app/app.component.1.html" region="ng-for" title="app.component.ts (ngFor template)" linenums="false">
+<code-example path="toh-pt2/src/app/app.component.1.html" region="ng-for" title="app.component.ts (ngFor template)" linenums="false">
 
 </code-example>
 
@@ -221,7 +221,7 @@ To add styles to your component, set the `styles` property on the `@Component` d
 to the following CSS classes:
 
 
-<code-example path="toh-2/src/app/app.component.ts" region="styles" title="src/app/app.component.ts (styles)" linenums="false">
+<code-example path="toh-pt2/src/app/app.component.ts" region="styles" title="src/app/app.component.ts (styles)" linenums="false">
 
 </code-example>
 
@@ -238,7 +238,7 @@ The template for displaying heroes should look like this:
 
 
 
-<code-example path="toh-2/src/app/app.component.1.html" region="heroes-styled" title="src/app/app.component.ts (styled heroes)" linenums="false">
+<code-example path="toh-pt2/src/app/app.component.1.html" region="heroes-styled" title="src/app/app.component.ts (styled heroes)" linenums="false">
 
 </code-example>
 
@@ -260,7 +260,7 @@ Add a click event binding to the `<li>` like this:
 
 
 
-<code-example path="toh-2/src/app/app.component.1.html" region="selectedHero-click" title="app.component.ts (template excerpt)" linenums="false">
+<code-example path="toh-pt2/src/app/app.component.1.html" region="selectedHero-click" title="app.component.ts (template excerpt)" linenums="false">
 
 </code-example>
 
@@ -291,7 +291,7 @@ But the user will be able to select one of the heroes by clicking on it.
 So replace the `hero` property with this simple `selectedHero` property:
 
 
-<code-example path="toh-2/src/app/app.component.ts" region="selected-hero" title="src/app/app.component.ts (selectedHero)">
+<code-example path="toh-pt2/src/app/app.component.ts" region="selected-hero" title="src/app/app.component.ts (selectedHero)">
 
 </code-example>
 
@@ -302,7 +302,7 @@ you won't initialize the `selectedHero` as you did with `hero`.
 
 Add an `onSelect()` method that sets the `selectedHero` property to the `hero` that the user clicks.
 
-<code-example path="toh-2/src/app/app.component.ts" region="on-select" title="src/app/app.component.ts (onSelect)" linenums="false">
+<code-example path="toh-pt2/src/app/app.component.ts" region="on-select" title="src/app/app.component.ts (onSelect)" linenums="false">
 
 </code-example>
 
@@ -313,7 +313,7 @@ Bind to the new `selectedHero` property instead as follows:
 
 
 
-<code-example path="toh-2/src/app/app.component.1.html" region="selectedHero-details" title="app.component.ts (template excerpt)" linenums="false">
+<code-example path="toh-pt2/src/app/app.component.1.html" region="selectedHero-details" title="app.component.ts (template excerpt)" linenums="false">
 
 </code-example>
 
@@ -341,7 +341,7 @@ Wrap the HTML hero detail content of the template with a `<div>`.
 Then add the `ngIf` built-in directive and set it to the `selectedHero` property of the component.
 
 
-<code-example path="toh-2/src/app/app.component.1.html" region="ng-if" title="src/app/app.component.ts (ngIf)" linenums="false">
+<code-example path="toh-pt2/src/app/app.component.1.html" region="ng-if" title="src/app/app.component.ts (ngIf)" linenums="false">
 
 </code-example>
 
@@ -393,15 +393,15 @@ For example, when the user clicks "Magneta", it should render with a distinctive
 like this:
 
 
-<figure class='image-display'>
-  <img src='assets/images/devguide/toh/heroes-list-selected.png' alt="Selected hero"></img>
+<figure>
+  <img src='generated/images/guide/toh/heroes-list-selected.png' alt="Selected hero">
 </figure>
 
 
 
 In the template, add the following `[class.selected]` binding to  the `<li>`:
 
-<code-example path="toh-2/src/app/app.component.1.html" region="class-selected-1" title="app.component.ts (setting the CSS class)" linenums="false">
+<code-example path="toh-pt2/src/app/app.component.1.html" region="class-selected-1" title="app.component.ts (setting the CSS class)" linenums="false">
 
 </code-example>
 
@@ -425,7 +425,7 @@ Read more about the `[class]` binding in the [Template Syntax](guide/template-sy
 
 The final version of the `<li>` looks like this:
 
-<code-example path="toh-2/src/app/app.component.1.html" region="class-selected-2" title="app.component.ts (styling each hero)" linenums="false">
+<code-example path="toh-pt2/src/app/app.component.1.html" region="class-selected-2" title="app.component.ts (styling each hero)" linenums="false">
 
 </code-example>
 
@@ -434,8 +434,8 @@ The final version of the `<li>` looks like this:
 After clicking "Magneta", the list should look like this:
 
 
-<figure class='image-display'>
-  <img src='assets/images/devguide/toh/heroes-list-1.png' alt="Output of heroes list app"></img>
+<figure>
+  <img src='generated/images/guide/toh/heroes-list-1.png' alt="Output of heroes list app">
 </figure>
 
 
@@ -443,7 +443,7 @@ After clicking "Magneta", the list should look like this:
 Here's the complete `app.component.ts` as of now:
 
 
-<code-example path="toh-2/src/app/app.component.ts" title="src/app/app.component.ts">
+<code-example path="toh-pt2/src/app/app.component.ts" title="src/app/app.component.ts">
 
 </code-example>
 
@@ -463,4 +463,4 @@ Your app should look like this <live-example></live-example>.
 ## The road ahead
 You've expanded the Tour of Heroes app, but it's far from complete.
 An app shouldn't be one monolithic component.
-In the [next page](tutorial/toh-pt3), you'll split the app into subcomponents and make them work together.
+In the [next page](tutorial/toh-pt3 "Multiple Components"), you'll split the app into subcomponents and make them work together.

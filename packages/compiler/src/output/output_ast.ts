@@ -7,7 +7,6 @@
  */
 
 
-import {CompileIdentifierMetadata} from '../compile_metadata';
 import {ParseSourceSpan} from '../parse_util';
 
 //// Types
@@ -229,7 +228,7 @@ export class ReadVarExpr extends Expression {
 
   set(value: Expression): WriteVarExpr {
     if (!this.name) {
-      throw new Error(`Built in variable ${this.builtin} can not be assigned to.`)
+      throw new Error(`Built in variable ${this.builtin} can not be assigned to.`);
     }
     return new WriteVarExpr(this.name, value, null, this.sourceSpan);
   }
@@ -344,8 +343,8 @@ export class LiteralExpr extends Expression {
 
 export class ExternalExpr extends Expression {
   constructor(
-      public value: CompileIdentifierMetadata, type?: Type|null,
-      public typeParams: Type[]|null = null, sourceSpan?: ParseSourceSpan|null) {
+      public value: ExternalReference, type?: Type|null, public typeParams: Type[]|null = null,
+      sourceSpan?: ParseSourceSpan|null) {
     super(type, sourceSpan);
   }
   visitExpression(visitor: ExpressionVisitor, context: any): any {
@@ -353,6 +352,9 @@ export class ExternalExpr extends Expression {
   }
 }
 
+export class ExternalReference {
+  constructor(public moduleName: string|null, public name: string|null, public runtime: any|null) {}
+}
 
 export class ConditionalExpr extends Expression {
   public trueCase: Expression;
@@ -374,6 +376,15 @@ export class NotExpr extends Expression {
   }
   visitExpression(visitor: ExpressionVisitor, context: any): any {
     return visitor.visitNotExpr(this, context);
+  }
+}
+
+export class AssertNotNull extends Expression {
+  constructor(public condition: Expression, sourceSpan?: ParseSourceSpan|null) {
+    super(condition.type, sourceSpan);
+  }
+  visitExpression(visitor: ExpressionVisitor, context: any): any {
+    return visitor.visitAssertNotNullExpr(this, context);
   }
 }
 
@@ -465,7 +476,7 @@ export class LiteralArrayExpr extends Expression {
 }
 
 export class LiteralMapEntry {
-  constructor(public key: string, public value: Expression, public quoted: boolean = false) {}
+  constructor(public key: string, public value: Expression, public quoted: boolean) {}
 }
 
 export class LiteralMapExpr extends Expression {
@@ -503,6 +514,7 @@ export interface ExpressionVisitor {
   visitExternalExpr(ast: ExternalExpr, context: any): any;
   visitConditionalExpr(ast: ConditionalExpr, context: any): any;
   visitNotExpr(ast: NotExpr, context: any): any;
+  visitAssertNotNullExpr(ast: AssertNotNull, context: any): any;
   visitCastExpr(ast: CastExpr, context: any): any;
   visitFunctionExpr(ast: FunctionExpr, context: any): any;
   visitBinaryOperatorExpr(ast: BinaryOperatorExpr, context: any): any;
@@ -523,7 +535,8 @@ export const TYPED_NULL_EXPR = new LiteralExpr(null, INFERRED_TYPE, null);
 //// Statements
 export enum StmtModifier {
   Final,
-  Private
+  Private,
+  Exported
 }
 
 export abstract class Statement {
@@ -768,6 +781,11 @@ export class AstTransformer implements StatementVisitor, ExpressionVisitor {
         new NotExpr(ast.condition.visitExpression(this, context), ast.sourceSpan), context);
   }
 
+  visitAssertNotNullExpr(ast: AssertNotNull, context: any): any {
+    return this.transformExpr(
+        new AssertNotNull(ast.condition.visitExpression(this, context), ast.sourceSpan), context);
+  }
+
   visitCastExpr(ast: CastExpr, context: any): any {
     return this.transformExpr(
         new CastExpr(ast.value.visitExpression(this, context), ast.type, ast.sourceSpan), context);
@@ -813,7 +831,7 @@ export class AstTransformer implements StatementVisitor, ExpressionVisitor {
   visitLiteralMapExpr(ast: LiteralMapExpr, context: any): any {
     const entries = ast.entries.map(
         (entry): LiteralMapEntry => new LiteralMapEntry(
-            entry.key, entry.value.visitExpression(this, context), entry.quoted, ));
+            entry.key, entry.value.visitExpression(this, context), entry.quoted));
     const mapType = new MapType(ast.valueType, null);
     return this.transformExpr(new LiteralMapExpr(entries, mapType, ast.sourceSpan), context);
   }
@@ -945,6 +963,10 @@ export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor 
     return ast;
   }
   visitNotExpr(ast: NotExpr, context: any): any {
+    ast.condition.visitExpression(this, context);
+    return ast;
+  }
+  visitAssertNotNullExpr(ast: AssertNotNull, context: any): any {
     ast.condition.visitExpression(this, context);
     return ast;
   }
@@ -1106,13 +1128,13 @@ export function variable(
 }
 
 export function importExpr(
-    id: CompileIdentifierMetadata, typeParams: Type[] | null = null,
+    id: ExternalReference, typeParams: Type[] | null = null,
     sourceSpan?: ParseSourceSpan | null): ExternalExpr {
   return new ExternalExpr(id, null, typeParams, sourceSpan);
 }
 
 export function importType(
-    id: CompileIdentifierMetadata, typeParams: Type[] | null = null,
+    id: ExternalReference, typeParams: Type[] | null = null,
     typeModifiers: TypeModifier[] | null = null): ExpressionType|null {
   return id != null ? expressionType(importExpr(id, typeParams, null), typeModifiers) : null;
 }
@@ -1129,14 +1151,19 @@ export function literalArr(
 }
 
 export function literalMap(
-    values: [string, Expression][], type: MapType | null = null,
-    quoted: boolean = false): LiteralMapExpr {
+    values: {key: string, quoted: boolean, value: Expression}[],
+    type: MapType | null = null): LiteralMapExpr {
   return new LiteralMapExpr(
-      values.map(entry => new LiteralMapEntry(entry[0], entry[1], quoted)), type, null);
+      values.map(e => new LiteralMapEntry(e.key, e.value, e.quoted)), type, null);
 }
 
 export function not(expr: Expression, sourceSpan?: ParseSourceSpan | null): NotExpr {
   return new NotExpr(expr, sourceSpan);
+}
+
+export function assertNotNull(
+    expr: Expression, sourceSpan?: ParseSourceSpan | null): AssertNotNull {
+  return new AssertNotNull(expr, sourceSpan);
 }
 
 export function fn(

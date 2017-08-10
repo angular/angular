@@ -14,7 +14,7 @@ import {BROWSER_ANIMATIONS_PROVIDERS, BROWSER_NOOP_ANIMATIONS_PROVIDERS} from '.
  * @experimental Animation support is experimental.
  */
 @NgModule({
-  imports: [BrowserModule],
+  exports: [BrowserModule],
   providers: BROWSER_ANIMATIONS_PROVIDERS,
 })
 export class BrowserAnimationsModule {
@@ -24,7 +24,7 @@ export class BrowserAnimationsModule {
  * @experimental Animation support is experimental.
  */
 @NgModule({
-  imports: [BrowserModule],
+  exports: [BrowserModule],
   providers: BROWSER_NOOP_ANIMATIONS_PROVIDERS,
 })
 export class NoopAnimationsModule {

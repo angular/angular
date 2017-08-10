@@ -1,12 +1,4 @@
-@title
-NgModules
-
-@intro
-Define application modules with @NgModule.
-
-@description
-
-
+# NgModules
 
 **NgModules** help organize an application into cohesive blocks of functionality.
 <!-- CF: "app" and "application" are used interchangeably throughout this page.
@@ -20,41 +12,32 @@ making some of them public so external components can use them.
 And there are many more options covered here.
 
 Before reading this page, read the
-[The Root Module](guide/appmodule) page, which introduces NgModules and the essentials
+[The Root Module](guide/bootstrapping) page, which introduces NgModules and the essentials
 of creating and maintaining a single root `AppModule` for the entire application.
 
 This page covers NgModules in greater depth.
 
-## Table of Contents
-
-<!-- CF: The titling for tables of contents in the advanced chapters is inconsistent:
-
-* some are titled "Contents" while others are titled "Table of Contents" (should probably be sentence case as it's an H2
-* some headings are H2, some are H3
-* some pages don't have tables of contents
-
-I didn't make changes here as I'm not sure what the correct style is.
--->
+<!-- CF: See my comment in the "Resolve directive conflicts" section below proposing renaming or reorganizing that section.
 
 * [Angular modularity](guide/ngmodule#angular-modularity "Add structure to the app with NgModule")
 * [The application root module](guide/ngmodule#root-module "The startup module that every app requires")
-* [Bootstrap](guide/ngmodule#bootstrap "Launch the app in a browser with the root module as the entry point") the root module
+* [Bootstrap the root module](guide/ngmodule#bootstrap "Launch the app in a browser with the root module as the entry point")
 * [Declarations](guide/ngmodule#declarations "Declare the components, directives, and pipes that belong to a module")
 * [Providers](guide/ngmodule#providers "Extend the app with additional services")
 * [Imports](guide/ngmodule#imports "Import components, directives, and pipes for use in component templates")
 * [Resolve conflicts](guide/ngmodule#resolve-conflicts "When two directives have the same selector")
-<!-- CF: See my comment in the "Resolve diretive conflicts" section below proposing renaming or reorganizing that section. -->
 * [Feature modules](guide/ngmodule#feature-modules "Partition the app into feature modules")
-* [Lazy loaded modules](guide/ngmodule#lazy-load "Load modules asynchronously") with the router
+* [Lazy loaded modules with the router](guide/ngmodule#lazy-load "Load modules asynchronously")
 * [Shared modules](guide/ngmodule#shared-module "Create modules for commonly used components, directives, and pipes")
 * [The Core module](guide/ngmodule#core-module "Create a core module with app-wide singleton services and single-use components")
 * [Configure core services with _forRoot_](guide/ngmodule#core-for-root "Configure providers during module import")
 * [Prevent reimport of the _CoreModule_](guide/ngmodule#prevent-reimport "because bad things happen if a lazy loaded module imports Core")
+<!--
 * [NgModule metadata properties](guide/ngmodule#ngmodule-properties "A technical summary of the @NgModule metadata properties")
-<!-- CF: This link goes to the top of this page. I would expect it to go to an "NgModule metadata properties"
+ CF: This link goes to the top of this page. I would expect it to go to an "NgModule metadata properties"
  section at the end of this page, but that section doesn't exist. -->
 
-### Live examples
+#### Live examples
 This page explains NgModules through a progression of improvements to a sample with a "Tour of Heroes" theme.
 Here's an index to live examples at key moments in the evolution of the sample:
 
@@ -64,11 +47,11 @@ Here's an index to live examples at key moments in the evolution of the sample:
 * <live-example plnkr="pre-shared.3">Just before adding SharedModule</live-example>
 * <live-example>The final version</live-example>
 
-### Frequently asked questions (FAQs)
+#### Frequently asked questions (FAQs)
 
 This page covers NgModule concepts in a tutorial fashion.
 
-The companion [NgModule FAQs](cookbook/ngmodule-faq "NgModule FAQs") cookbook
+The companion [NgModule FAQs](guide/ngmodule-faq "NgModule FAQs") guide
 offers answers to specific design and implementation questions.
 Read this page before reading those FAQs.
 
@@ -87,9 +70,9 @@ Modules are a great way to organize an application and extend it with capabiliti
 
 Many Angular libraries are modules (such as `FormsModule`, `HttpModule`, and `RouterModule`).
 Many third-party libraries are available as NgModules (such as
-<a href="https://material.angular.io/" target="_blank">Material Design</a>,
-<a href="http://ionicframework.com/" target="_blank">Ionic</a>,
-<a href="https://github.com/angular/angularfire2" target="_blank">AngularFire2</a>).
+<a href="https://material.angular.io/">Material Design</a>,
+<a href="http://ionicframework.com/">Ionic</a>,
+<a href="https://github.com/angular/angularfire2">AngularFire2</a>).
 
 NgModules consolidate components, directives, and pipes into
 cohesive blocks of functionality, each focused on a
@@ -124,7 +107,7 @@ Later in this page, you'll read about this process. For now, you'll start with t
 
 
 
-## _AppModule_: the application root module
+## The root _AppModule_
 
 Every Angular app has a *root module* class.
 By convention, the *root module* class is called `AppModule` and it exists in a file named `app.module.ts`.
@@ -172,8 +155,8 @@ You launch the application by bootstrapping the `AppModule` in the `main.ts` fil
 Angular offers a variety of bootstrapping options targeting multiple platforms.
 This page describes two options, both targeting the browser.
 
-### Dynamic bootstrapping with the just-in-time (JIT) compiler
-In the first, _dynamic_ option, the [Angular compiler](cookbook/ngmodule-faq#q-angular-compiler "About the Angular Compiler")
+### Compile just-in-time (JIT)
+In the first, _dynamic_ option, the [Angular compiler](guide/ngmodule-faq#q-angular-compiler "About the Angular Compiler")
 compiles the application in the browser and then launches the app.
 
 
@@ -185,10 +168,10 @@ compiles the application in the browser and then launches the app.
 
 The samples in this page demonstrate the dynamic bootstrapping approach.
 
-<live-example embedded plnkr="minimal.0" img="devguide/ngmodule/minimal-plunker.png">Try the live example.</live-example>
+<live-example embedded plnkr="minimal.0" img="guide/ngmodule/minimal-plunker.png">Try the live example.</live-example>
 
 
-### Static bootstrapping with the ahead-of-time (AOT) compiler
+### Compile ahead-of-time (AOT)
 
 Consider the static alternative which can produce a much smaller application that
 launches faster, especially on mobile devices and high latency networks.
@@ -260,10 +243,6 @@ Import the `HighlightDirective` class and add it to the module's `declarations` 
 <code-example path="ngmodule/src/app/app.module.1.ts" region="directive" title="src/app/app.module.ts" linenums="false">
 
 </code-example>
-
-
-
-### Add a component
 
 Refactor the title into its own `TitleComponent`.
 The component's template binds to the component's `title` and `subtitle` properties like this:
@@ -390,7 +369,7 @@ More accurately, `NgIf` is declared in `CommonModule` from `@angular/common`.
 
 `CommonModule` contributes many of the common directives that applications need, including `ngIf` and `ngFor`.
 
-`BrowserModule` imports `CommonModule` and [re-exports](cookbook/ngmodule-faq#q-re-export) it.
+`BrowserModule` imports `CommonModule` and [re-exports](guide/ngmodule-faq#q-re-export) it.
 The net effect is that an importer of `BrowserModule` gets `CommonModule` directives automatically.
 
 </div>
@@ -404,7 +383,7 @@ You must import those modules before you can use their directives.
 To illustrate this point, you'll extend the sample app with `ContactComponent`,
 a form component that imports form support from the Angular `FormsModule`.
 
-### Add the _ContactComponent_
+<h3 class="no-toc">Add the _ContactComponent_</h3>
 
 [Angular forms](guide/forms) are a great way to manage user data entry.
 
@@ -416,11 +395,11 @@ implemented with Angular forms in the [template-driven form](guide/forms#templat
 
 
 
-### Angular form styles
+<h3 class="no-toc">Angular form styles</h3>
 
 You can write Angular form components in
 template-driven or
-[reactive](cookbook/dynamic-form) style.
+[reactive](guide/dynamic-form) style.
 <!-- CF: this link goes to a page titled "Dynamic Forms". Should the link text be "dynamic" instead of "reactive"? -->
 
 The following sample imports the `FormsModule` from `@angular/forms` because
@@ -492,7 +471,7 @@ Even if Angular somehow recognized `ngModel`,
 `ContactComponent` wouldn't behave like an Angular form because
 form features such as validation aren't yet available.
 
-### Import the FormsModule
+<h3 class="no-toc">Import the FormsModule</h3>
 
 Add the `FormsModule` to the `AppModule` metadata's `imports` list.
 
@@ -526,7 +505,7 @@ Components, directives, and pipes belong to _one module only_.
 {@a declare-pipe}
 
 
-### Declare the contact component, directive, and pipe
+<h3 class="no-toc">Declare the contact component, directive, and pipe</h3>
 
 The application won't compile until you declare the contact component, directive, and pipe.
 Update the `declarations` in the  `AppModule` accordingly:
@@ -563,7 +542,7 @@ You'll learn more about that issue later in this page, in [Resolve directive con
 
 
 
-### Provide the _ContactService_
+<h3 class="no-toc">Provide the _ContactService_</h3>
 The `ContactComponent` displays contacts retrieved by the `ContactService`,
 which Angular injects into its constructor.
 
@@ -590,7 +569,7 @@ Now you can inject `ContactService` (like `UserService`) into any component in t
 
 
 
-### Application-scoped providers
+<h3 class="no-toc">Application-scoped providers</h3>
   The `ContactService` provider is _application_-scoped because Angular
   registers a module's `providers` with the application's *root injector*.
 
@@ -610,15 +589,15 @@ Now you can inject `ContactService` (like `UserService`) into any component in t
   To inject `ContactService`, you must first import its _type_.
   Only Contact components should import the `ContactService` type.
 
-  Read more in the [How do I restrict service scope to a module?](cookbook/ngmodule-faq#q-component-scoped-providers) section
-  of the [NgModule FAQs](cookbook/ngmodule-faq) page.
+  Read more in the [How do I restrict service scope to a module?](guide/ngmodule-faq#q-component-scoped-providers) section
+  of the [NgModule FAQs](guide/ngmodule-faq) page.
 
 
 </div>
 
 
 
-### Run the app
+<h3 class="no-toc">Run the app</h3>
 Everything is in place to run the application with its contact editor.
 
 The app file structure looks like this:
@@ -682,7 +661,8 @@ The app file structure looks like this:
 
 
 Try the example:
-<live-example embedded plnkr="contact.1b" img="devguide/ngmodule/contact-1b-plunker.png"></live-example>
+
+<live-example embedded plnkr="contact.1b" img="guide/ngmodule/contact-1b-plunker.png"></live-example>
 
 
 {@a resolve-conflicts}
@@ -840,8 +820,8 @@ Before `ContactComponent` can bind with `[(ngModel)]`, its `ContactModule` must 
 
 
 You also replaced `BrowserModule` by `CommonModule`, for reasons explained in the
-[Should I import BrowserModule or CommonModule?](cookbook/ngmodule-faq#q-browser-vs-common-module)
-section of the [NgModule FAQs](cookbook/ngmodule-faq) page.
+[Should I import BrowserModule or CommonModule?](guide/ngmodule-faq#q-browser-vs-common-module)
+section of the [NgModule FAQs](guide/ngmodule-faq) page.
 
 You _declare_ the contact component, directive, and pipe in the module `declarations`.
 
@@ -896,7 +876,7 @@ There's a lot to like in the revised `AppModule`.
 
 Try this `ContactModule` version of the sample.
 
-<live-example embedded plnkr="contact.2" img="devguide/ngmodule/contact-2-plunker.png">Try the live example.</live-example>
+<live-example embedded plnkr="contact.2" img="guide/ngmodule/contact-2-plunker.png">Try the live example.</live-example>
 
 
 {@a lazy-load}
@@ -915,7 +895,7 @@ Their specifics aren't important to the story and this page doesn't discuss ever
 
 
 Examine and download the complete source for this version from
-the <live-example plnkr="pre-shared.3" img="devguide/ngmodule/v3-plunker.png">live example.</live-example>
+the <live-example plnkr="pre-shared.3" img="guide/ngmodule/v3-plunker.png">live example.</live-example>
 
 </div>
 
@@ -1083,8 +1063,8 @@ _forRoot_ and _forChild_ are conventional names for methods that
 deliver different `import` values to root and feature modules.
 Angular doesn't recognize them but Angular developers do.
 
-[Follow this convention](cookbook/ngmodule-faq#q-for-root) if you write a similar module
-that has both shared [declarables](cookbook/ngmodule-faq#q-declarable) and services.
+[Follow this convention](guide/ngmodule-faq#q-for-root) if you write a similar module
+that has both shared [declarables](guide/ngmodule-faq#q-declarable) and services.
 
 
 </div>
@@ -1194,7 +1174,7 @@ It imports the `HeroRoutingModule` from `hero-routing.module.ts` just as `Contac
 
 The `CrisisModule` is much the same.
 
-<live-example embedded plnkr="pre-shared.3" img="devguide/ngmodule/v3-plunker.png">Try the live example.</live-example>
+<live-example embedded plnkr="pre-shared.3" img="guide/ngmodule/v3-plunker.png">Try the live example.</live-example>
 
 
 {@a shared-module}
@@ -1268,7 +1248,7 @@ and only one provider of it.
 
 `UserService` is an application-wide singleton.
 You don't want each module to have its own separate instance.
-Yet there is [a real danger](cookbook/ngmodule-faq#q-why-it-is-bad) of that happening
+Yet there is [a real danger](guide/ngmodule-faq#q-why-bad) of that happening
 <!-- CF: This link goes to the top of the NgModule FAQs page.
 It looks like it is supposed to go to a specific question/section within the page. -->
 if the `SharedModule` provides the `UserService`.
@@ -1338,7 +1318,7 @@ whether that component is eagerly or lazily loaded.
 
 
 
-### Why bother?
+<h3 class="no-toc">Why bother?</h3>
 This scenario is clearly contrived.
 The app is too small to worry about a single service file and a tiny, one-time component.
 
@@ -1435,7 +1415,7 @@ A module that adds providers to the application can offer a facility for configu
 
 By convention, the `forRoot` static method both provides and configures services at the same time.
 It takes a service configuration object and returns a
-[ModuleWithProviders](api/core/index/ModuleWithProviders-interface), which is
+[ModuleWithProviders](api/core/ModuleWithProviders), which is
 a simple object with the following properties:
 
 * `ngModule`: the `CoreModule` class
@@ -1511,7 +1491,7 @@ Remember to _import_ the result; don't add it to any other `@NgModule` list.
 ## Prevent reimport of the _CoreModule_
 
 Only the root `AppModule` should import the `CoreModule`.
-[Bad things happen](cookbook/ngmodule-faq#q-why-it-is-bad) if a lazy-loaded module imports it.
+[Bad things happen](guide/ngmodule-faq#q-why-bad) if a lazy-loaded module imports it.
 <!-- CF: Again, this link goes to the top of the NgModule FAQs page.
 It looks like it is supposed to go to a specific question/section within the page. -->
 
@@ -1546,13 +1526,13 @@ Angular creates a lazy-loaded module with its own injector, a _child_ of the roo
 Of course it finds the instance imported by the root `AppModule`.
 Now `parentModule` exists and the constructor throws the error.
 
-### Conclusion
+## Conclusion
 
 You made it! You can examine and download the complete source for this final version from the live example.
-<live-example embedded  img="devguide/ngmodule/final-plunker.png"></live-example>
+<live-example embedded  img="guide/ngmodule/final-plunker.png"></live-example>
 
-### Frequently asked questions
+## Frequently asked questions
 
 Now that you understand NgModules, you may be interested
-in the companion [NgModule FAQs](cookbook/ngmodule-faq "NgModule FAQs") page
+in the companion [NgModule FAQs](guide/ngmodule-faq "NgModule FAQs") page
 with its ready answers to specific design and implementation questions.

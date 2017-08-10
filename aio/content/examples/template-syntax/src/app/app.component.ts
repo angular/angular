@@ -111,7 +111,7 @@ export class AppComponent implements AfterViewInit, OnInit {
   }
 
   onSave(event: KeyboardEvent) {
-    let evtMsg = event ? ' Event target is ' + (<HTMLElement>event.target).innerText : '';
+    let evtMsg = event ? ' Event target is ' + (<HTMLElement>event.target).textContent : '';
     this.alert('Saved.' + evtMsg);
     if (event) { event.stopPropagation(); }
   }
@@ -127,6 +127,7 @@ export class AppComponent implements AfterViewInit, OnInit {
   resetHeroes() {
     this.heroes = Hero.heroes.map(hero => hero.clone());
     this.currentHero = this.heroes[0];
+    this.hero = this.currentHero;
     this.heroesWithTrackByCountReset = 0;
   }
 
@@ -139,9 +140,9 @@ export class AppComponent implements AfterViewInit, OnInit {
   setCurrentClasses() {
     // CSS classes: added/removed per current state of component properties
     this.currentClasses =  {
-      saveable: this.canSave,
-      modified: !this.isUnchanged,
-      special:  this.isSpecial
+      'saveable': this.canSave,
+      'modified': !this.isUnchanged,
+      'special':  this.isSpecial
     };
   }
   // #enddocregion setClasses
@@ -172,8 +173,8 @@ function trackChanges(views: QueryList<ElementRef>, changed: () => void) {
   let oldRefs = views.toArray();
   views.changes.subscribe((changes: QueryList<ElementRef>) => {
       const changedRefs = changes.toArray();
-      // Is every changed ElemRef the same as old and in the same position
-      const isSame = oldRefs.every((v, i) => v === changedRefs[i]);
+      // Check if every changed Element is the same as old and in the same position
+      const isSame = oldRefs.every((v, i) => v.nativeElement === changedRefs[i].nativeElement);
       if (!isSame) {
         oldRefs = changedRefs;
         // wait a tick because called after views are constructed

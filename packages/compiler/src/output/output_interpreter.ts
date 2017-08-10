@@ -11,13 +11,13 @@
 import * as o from './output_ast';
 import {debugOutputAstAsTypeScript} from './ts_emitter';
 
-export function interpretStatements(statements: o.Statement[], resultVars: string[]): any[] {
-  const stmtsWithReturn = statements.concat(
-      [new o.ReturnStatement(o.literalArr(resultVars.map(resultVar => o.variable(resultVar))))]);
+export function interpretStatements(statements: o.Statement[]): {[key: string]: any} {
   const ctx = new _ExecutionContext(null, null, null, new Map<string, any>());
   const visitor = new StatementInterpreter();
-  const result = visitor.visitAllStatements(stmtsWithReturn, ctx);
-  return result != null ? result.value : null;
+  visitor.visitAllStatements(statements, ctx);
+  const result: {[key: string]: any} = {};
+  ctx.exports.forEach((exportName) => { result[exportName] = ctx.vars.get(exportName); });
+  return result;
 }
 
 function _executeFunctionStatements(
@@ -32,6 +32,8 @@ function _executeFunctionStatements(
 }
 
 class _ExecutionContext {
+  exports: string[] = [];
+
   constructor(
       public parent: _ExecutionContext|null, public instance: any, public className: string|null,
       public vars: Map<string, any>) {}
@@ -90,6 +92,9 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
 
   visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: _ExecutionContext): any {
     ctx.vars.set(stmt.name, stmt.value.visitExpression(this, ctx));
+    if (stmt.hasModifier(o.StmtModifier.Exported)) {
+      ctx.exports.push(stmt.name);
+    }
     return null;
   }
   visitWriteVarExpr(expr: o.WriteVarExpr, ctx: _ExecutionContext): any {
@@ -185,6 +190,9 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
   visitDeclareClassStmt(stmt: o.ClassStmt, ctx: _ExecutionContext): any {
     const clazz = createDynamicClass(stmt, ctx, this);
     ctx.vars.set(stmt.name, clazz);
+    if (stmt.hasModifier(o.StmtModifier.Exported)) {
+      ctx.exports.push(stmt.name);
+    }
     return null;
   }
   visitExpressionStmt(stmt: o.ExpressionStatement, ctx: _ExecutionContext): any {
@@ -219,9 +227,7 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
     return new clazz(...args);
   }
   visitLiteralExpr(ast: o.LiteralExpr, ctx: _ExecutionContext): any { return ast.value; }
-  visitExternalExpr(ast: o.ExternalExpr, ctx: _ExecutionContext): any {
-    return ast.value.reference;
-  }
+  visitExternalExpr(ast: o.ExternalExpr, ctx: _ExecutionContext): any { return ast.value.runtime; }
   visitConditionalExpr(ast: o.ConditionalExpr, ctx: _ExecutionContext): any {
     if (ast.condition.visitExpression(this, ctx)) {
       return ast.trueCase.visitExpression(this, ctx);
@@ -233,6 +239,9 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
   visitNotExpr(ast: o.NotExpr, ctx: _ExecutionContext): any {
     return !ast.condition.visitExpression(this, ctx);
   }
+  visitAssertNotNullExpr(ast: o.AssertNotNull, ctx: _ExecutionContext): any {
+    return ast.condition.visitExpression(this, ctx);
+  }
   visitCastExpr(ast: o.CastExpr, ctx: _ExecutionContext): any {
     return ast.value.visitExpression(this, ctx);
   }
@@ -243,6 +252,9 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
   visitDeclareFunctionStmt(stmt: o.DeclareFunctionStmt, ctx: _ExecutionContext): any {
     const paramNames = stmt.params.map((param) => param.name);
     ctx.vars.set(stmt.name, _declareFn(paramNames, stmt.statements, ctx, this));
+    if (stmt.hasModifier(o.StmtModifier.Exported)) {
+      ctx.exports.push(stmt.name);
+    }
     return null;
   }
   visitBinaryOperatorExpr(ast: o.BinaryOperatorExpr, ctx: _ExecutionContext): any {
@@ -299,9 +311,8 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
     return this.visitAllExpressions(ast.entries, ctx);
   }
   visitLiteralMapExpr(ast: o.LiteralMapExpr, ctx: _ExecutionContext): any {
-    const result = {};
-    ast.entries.forEach(
-        (entry) => (result as any)[entry.key] = entry.value.visitExpression(this, ctx));
+    const result: {[k: string]: any} = {};
+    ast.entries.forEach(entry => result[entry.key] = entry.value.visitExpression(this, ctx));
     return result;
   }
   visitCommaExpr(ast: o.CommaExpr, context: any): any {

@@ -6,11 +6,11 @@
 
 
 ## Build docker image
-- `<aio-builds-setup-dir>/scripts/build.sh [<name>[:<tag>] [--build-arg <NAME>=<value> ...]]`
+- `<aio-builds-setup-dir>/scripts/create-image.sh [<name>[:<tag>] [--build-arg <NAME>=<value> ...]]`
 - You can overwrite the default environment variables inside the image, by passing new values using
   `--build-arg`.
 
-**Note:** The build script has to execute docker commands with `sudo`.
+**Note:** The script has to execute docker commands with `sudo`.
 
 
 ## Example
@@ -25,7 +25,7 @@ The following commands would create a docker image from GitHub repo `foo/bar` to
     --build-arg AIO_REPO_SLUG=foo/bar \
     --build-arg AIO_DOMAIN_NAME=foobar-builds.io \
     --build-arg AIO_GITHUB_ORGANIZATION=foo \
-    --build-arg AIO_GITHUB_TEMA_SLUGS=bar-core,bar-docs-authors
+    --build-arg AIO_GITHUB_TEAM_SLUGS=bar-core,bar-docs-authors
   ```
 
 A full list of the available environment variables can be found

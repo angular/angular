@@ -8,6 +8,21 @@ describe('GaService', () => {
   let gaSpy: jasmine.Spy;
   let injector: ReflectiveInjector;
 
+  // filter for 'send' which communicates with server
+  // returns the url of the 'send pageview'
+  function gaSpySendCalls() {
+    let lastUrl: string;
+    return gaSpy.calls.all()
+      .reduce((acc, c) =>  {
+        const args = c.args;
+        if (args[0] === 'set') {
+          lastUrl = args[2];
+        } else if (args[0] === 'send') {
+          acc.push(lastUrl);
+        }
+        return acc;
+      }, []);
+  }
 
   beforeEach(() => {
     injector = ReflectiveInjector.resolveAndCreate([
@@ -40,6 +55,16 @@ describe('GaService', () => {
       expect(first[0]).toBe('create');
     });
 
+    describe('#locationChanged(url)', () => {
+      it('should send page to url w/ leading slash', () => {
+        gaService.locationChanged('testUrl');
+        let args = gaSpy.calls.all()[1].args;
+        expect(args).toEqual(['set', 'page', '/testUrl']);
+        args = gaSpy.calls.all()[2].args;
+        expect(args).toEqual(['send', 'pageview']);
+      });
+    });
+
     describe('#sendPage(url)', () => {
       it('should set page to url w/ leading slash', () => {
         gaService.sendPage('testUrl');
@@ -55,36 +80,34 @@ describe('GaService', () => {
 
       it('should not send twice with same URL, back-to-back', () => {
         gaService.sendPage('testUrl');
-        const count1 = gaSpy.calls.count();
-
         gaService.sendPage('testUrl');
-        const count2 = gaSpy.calls.count();
-        expect(count2).toEqual(count1);
+        expect(gaSpySendCalls()).toEqual(['/testUrl']);
+      });
+
+      it('should send twice with same URL, back-to-back, even when the hash changes', () => {
+        // Therefore it is up to caller NOT to call it when hash changes if this is unwanted.
+        // See LocationService and its specs
+        gaService.sendPage('testUrl#one');
+        gaService.sendPage('testUrl#two');
+        expect(gaSpySendCalls()).toEqual([
+          '/testUrl#one',
+          '/testUrl#two'
+        ]);
+
       });
 
       it('should send same URL twice when other intervening URL', () => {
         gaService.sendPage('testUrl');
-        const count1 = gaSpy.calls.count();
-
         gaService.sendPage('testUrl2');
-        const count2 = gaSpy.calls.count();
-        expect(count2).toBeGreaterThan(count1, 'testUrl2 was sent');
-
         gaService.sendPage('testUrl');
-        const count3 = gaSpy.calls.count();
-        expect(count3).toBeGreaterThan(count1, 'testUrl was sent 2nd time');
+        expect(gaSpySendCalls()).toEqual([
+          '/testUrl',
+          '/testUrl2',
+          '/testUrl'
+        ]);
       });
     });
 
-    describe('#locationChanged(url)', () => {
-      it('should send page to url w/ leading slash', () => {
-        gaService.locationChanged('testUrl');
-        let args = gaSpy.calls.all()[1].args;
-        expect(args).toEqual(['set', 'page', '/testUrl']);
-        args = gaSpy.calls.all()[2].args;
-        expect(args).toEqual(['send', 'pageview']);
-      });
-    });
   });
 
   describe('when no ambient GA', () => {

@@ -1,6 +1,6 @@
 {
   "name": "@angular/router",
-  "version": "0.0.0-ROUTERPLACEHOLDER",
+  "version": "0.0.0-PLACEHOLDER",
   "description": "Angular - the routing library",
   "main": "./bundles/router.umd.js",
   "module": "./@angular/router.es5.js",
@@ -19,7 +19,10 @@
   "bugs": {
     "url": "https://github.com/angular/angular/issues"
   },
-  "homepage": "https://github.com/angular/angular/blob/master/modules/%40angular/router/README.md",
+  "homepage": "https://github.com/angular/angular/tree/master/packages/router",
+  "dependencies": {
+    "tslib": "^1.7.1"
+  },
   "peerDependencies": {
     "@angular/core": "0.0.0-PLACEHOLDER",
     "@angular/common": "0.0.0-PLACEHOLDER",

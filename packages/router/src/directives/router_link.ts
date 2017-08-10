@@ -7,7 +7,7 @@
  */
 
 import {LocationStrategy} from '@angular/common';
-import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, Renderer, isDevMode} from '@angular/core';
+import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, Renderer2, isDevMode} from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
 
 import {QueryParamsHandling} from '../config';
@@ -70,9 +70,9 @@ import {UrlTree} from '../url_tree';
  *
  * You can tell the directive to how to handle queryParams, available options are:
  *  - 'merge' merge the queryParams into the current queryParams
- *  - 'preserve' prserve the current queryParams
+ *  - 'preserve' preserve the current queryParams
  *  - default / '' use the queryParams only
- *  same options for {@link NavigationExtras.queryParamsHandling}
+ *  same options for {@link NavigationExtras#queryParamsHandling}
  *
  * ```
  * <a [routerLink]="['/user/bob']" [queryParams]="{debug: true}" queryParamsHandling="merge">
@@ -89,7 +89,7 @@ import {UrlTree} from '../url_tree';
  *
  * @ngModule RouterModule
  *
- * See {@link Router.createUrlTree} for more information.
+ * See {@link Router#createUrlTree} for more information.
  *
  * @stable
  */
@@ -106,9 +106,9 @@ export class RouterLink {
 
   constructor(
       private router: Router, private route: ActivatedRoute,
-      @Attribute('tabindex') tabIndex: string, renderer: Renderer, el: ElementRef) {
+      @Attribute('tabindex') tabIndex: string, renderer: Renderer2, el: ElementRef) {
     if (tabIndex == null) {
-      renderer.setElementAttribute(el.nativeElement, 'tabindex', '0');
+      renderer.setAttribute(el.nativeElement, 'tabindex', '0');
     }
   }
 
@@ -209,9 +209,9 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   ngOnChanges(changes: {}): any { this.updateTargetUrlAndHref(); }
   ngOnDestroy(): any { this.subscription.unsubscribe(); }
 
-  @HostListener('click', ['$event.button', '$event.ctrlKey', '$event.metaKey'])
-  onClick(button: number, ctrlKey: boolean, metaKey: boolean): boolean {
-    if (button !== 0 || ctrlKey || metaKey) {
+  @HostListener('click', ['$event.button', '$event.ctrlKey', '$event.metaKey', '$event.shiftKey'])
+  onClick(button: number, ctrlKey: boolean, metaKey: boolean, shiftKey: boolean): boolean {
+    if (button !== 0 || ctrlKey || metaKey || shiftKey) {
       return true;
     }
 

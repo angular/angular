@@ -10,6 +10,7 @@ import {AnimationEngineInstruction, AnimationTransitionInstructionType} from '..
 import {AnimationTimelineInstruction} from './animation_timeline_instruction';
 
 export interface AnimationTransitionInstruction extends AnimationEngineInstruction {
+  element: any;
   triggerName: string;
   isRemovalTransition: boolean;
   fromState: string;
@@ -17,20 +18,32 @@ export interface AnimationTransitionInstruction extends AnimationEngineInstructi
   toState: string;
   toStyles: ɵStyleData;
   timelines: AnimationTimelineInstruction[];
+  queriedElements: any[];
+  preStyleProps: Map<any, {[prop: string]: boolean}>;
+  postStyleProps: Map<any, {[prop: string]: boolean}>;
+  errors?: any[];
 }
 
 export function createTransitionInstruction(
-    triggerName: string, fromState: string, toState: string, isRemovalTransition: boolean,
-    fromStyles: ɵStyleData, toStyles: ɵStyleData,
-    timelines: AnimationTimelineInstruction[]): AnimationTransitionInstruction {
+    element: any, triggerName: string, fromState: string, toState: string,
+    isRemovalTransition: boolean, fromStyles: ɵStyleData, toStyles: ɵStyleData,
+    timelines: AnimationTimelineInstruction[], queriedElements: any[],
+    preStyleProps: Map<any, {[prop: string]: boolean}>,
+    postStyleProps: Map<any, {[prop: string]: boolean}>,
+    errors?: any[]): AnimationTransitionInstruction {
   return {
     type: AnimationTransitionInstructionType.TransitionAnimation,
+    element,
     triggerName,
     isRemovalTransition,
     fromState,
     fromStyles,
     toState,
     toStyles,
-    timelines
+    timelines,
+    queriedElements,
+    preStyleProps,
+    postStyleProps,
+    errors
   };
 }

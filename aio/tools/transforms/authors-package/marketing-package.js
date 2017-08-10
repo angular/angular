@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 const Package = require('dgeni').Package;
-const { basePackage, CONTENTS_PATH } = require('./base-package');
+const contentPackage = require('../angular-content-package');
+const { CONTENTS_PATH } = require('../config');
 
 function createPackage() {
-  return new Package('author-marketing', [basePackage])
+  return new Package('author-marketing', [contentPackage])
     .config(function(readFilesProcessor) {
       readFilesProcessor.sourceFiles = [
         {

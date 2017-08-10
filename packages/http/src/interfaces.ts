@@ -46,21 +46,21 @@ export abstract class XSRFStrategy { abstract configureRequest(req: Request): vo
  * @experimental
  */
 export interface RequestOptionsArgs {
-  url?: string;
-  method?: string|RequestMethod;
+  url?: string|null;
+  method?: string|RequestMethod|null;
   /** @deprecated from 4.0.0. Use params instead. */
-  search?: string|URLSearchParams|{[key: string]: any | any[]};
-  params?: string|URLSearchParams|{[key: string]: any | any[]};
-  headers?: Headers;
+  search?: string|URLSearchParams|{[key: string]: any | any[]}|null;
+  params?: string|URLSearchParams|{[key: string]: any | any[]}|null;
+  headers?: Headers|null;
   body?: any;
-  withCredentials?: boolean;
-  responseType?: ResponseContentType;
+  withCredentials?: boolean|null;
+  responseType?: ResponseContentType|null;
 }
 
 /**
  * Required structure when constructing new Request();
  */
-export interface RequestArgs extends RequestOptionsArgs { url: string; }
+export interface RequestArgs extends RequestOptionsArgs { url: string|null; }
 
 /**
  * Interface for options to construct a Response, based on
@@ -69,10 +69,10 @@ export interface RequestArgs extends RequestOptionsArgs { url: string; }
  * @experimental
  */
 export interface ResponseOptionsArgs {
-  body?: string|Object|FormData|ArrayBuffer|Blob;
-  status?: number;
-  statusText?: string;
-  headers?: Headers;
-  type?: ResponseType;
-  url?: string;
+  body?: string|Object|FormData|ArrayBuffer|Blob|null;
+  status?: number|null;
+  statusText?: string|null;
+  headers?: Headers|null;
+  type?: ResponseType|null;
+  url?: string|null;
 }

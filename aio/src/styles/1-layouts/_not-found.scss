@@ -1,0 +1,27 @@
+#file-not-found {
+    padding: 3rem 3rem 3rem;
+}
+
+.nf-container {
+    align-items: center;
+    padding: 32px;
+}
+
+.nf-response {
+    margin: 32px;
+    height: 100%;
+    flex-direction: column;
+
+    h1 {
+        font-size: 48px;
+        color: $blue;
+        text-transform: uppercase;
+        margin: 8px 0;
+    }
+}
+
+.nf-icon.material-icons {
+    color: $blue;
+    font-size: 100px;
+    position: static;
+}

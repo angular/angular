@@ -1,0 +1,201 @@
+.toc-container {
+  width: 18%;
+  position: fixed;
+  top: 76px;
+  right: 0;
+  bottom: 12px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+aio-toc {
+  &.embedded {
+    @media (min-width: 801px) {
+      display: none;
+    }
+  }
+}
+
+.toc-inner {
+  font-size: 13px;
+  overflow-y: visible;
+  padding: 4px 0 0 10px;
+
+  .toc-heading,
+  .toc-list .h1 {
+    font-size: 115%;
+  }
+
+  .toc-heading {
+    font-weight: 500;
+    margin: 0 0 16px 8px;
+    padding: 0;
+  }
+
+  .toc-heading.secondary {
+    position: relative;
+    top: -8px;
+
+    &:hover {
+      color: $accentblue;
+    }
+  }
+
+  button.toc-heading,
+  button.toc-more-items {
+    cursor: pointer;
+    display: inline-block;
+    background: 0;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    text-align: start;
+
+    &.embedded:focus {
+      outline: none;
+      background: $lightgray;
+    }
+  }
+
+  button.toc-heading {
+    md-icon.rotating-icon {
+      height: 18px;
+      width: 18px;
+      position: relative;
+      left: -4px;
+      top: 5px;
+    }
+
+    &:hover:not(.embedded) {
+      color: $accentblue;
+    }
+  }
+
+  button.toc-more-items {
+    color: $mediumgray;
+    top: 10px;
+    position: relative;
+
+    &:hover {
+      color: $accentblue;
+    }
+  }
+
+  button.toc-more-items::after {
+    content: 'expand_less';
+  }
+
+  button.toc-more-items.collapsed::after {
+    content: 'more_horiz';
+  }
+
+
+  .mat-icon.collapsed {
+    @include rotate(0deg);
+  }
+
+  .mat-icon:not(.collapsed) {
+    @include rotate(90deg);
+    // margin: 4px;
+  }
+
+  ul.toc-list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0 8px 0 0;
+
+    @media (max-width: 800px) {
+      width: auto;
+    }
+
+    li {
+      box-sizing: border-box;
+      font-size: 12px;
+      line-height: 16px;
+      padding: 3px 0 3px 12px;
+      position: relative;
+      transition: all 0.3s ease-in-out;
+
+      &.h1:after {
+        content: '';
+        display: block;
+        height: 1px;
+        width: 40%;
+        margin: 7px 0 4px 0;
+        background: #DBDBDB;
+        clear: both;
+      }
+
+      &.h3 {
+        padding-left: 24px;
+      }
+
+      a {
+        font-size: inherit;
+        color: lighten($darkgray, 10);
+        display:table-cell;
+        overflow: visible;
+        font-size: 12px;
+        display: table-cell;
+      }
+
+      &:hover a {
+        color: $accentblue;
+      }
+
+      &.active {
+        a {
+          color: $blue;
+          font-weight: 500;
+
+          &:before {
+            content: '';
+            border-radius: 50%;
+            left: -3px;
+            top: 12px;
+            background: $blue;
+            position: absolute;
+            width: 6px;
+            height: 6px;
+          }
+        }
+      }
+    }
+
+    &:not(.embedded) li {
+      &:before {
+        border-left: 1px solid $lightgray;
+        bottom: 0;
+        content: '';
+        left: 0;
+        position: absolute;
+        top: 0;
+      }
+
+      &:first-child:before {
+        top: 13px;
+      }
+
+      &:last-child:before {
+        bottom: calc(100% - 14px);
+      }
+
+      &:not(.active):hover a:before {
+        content: '';
+        border-radius: 50%;
+        left: -3px;
+        top: 12px;
+        background: $lightgray;
+        position: absolute;
+        width: 6px;
+        height: 6px;
+      }
+    }
+  }
+
+}
+
+aio-toc.embedded > div.collapsed li.secondary {
+  display: none;
+}

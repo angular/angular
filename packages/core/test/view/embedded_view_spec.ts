@@ -11,7 +11,7 @@ import {ArgumentType, BindingFlags, NodeCheckFn, NodeDef, NodeFlags, RootData, S
 import {inject} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
-import {createRootView, isBrowser} from './helper';
+import {createEmbeddedView, createRootView, isBrowser} from './helper';
 
 export function main() {
   describe(`Embedded Views`, () => {
@@ -45,8 +45,7 @@ export function main() {
           ]),
           parentContext);
 
-      const childView =
-          Services.createEmbeddedView(parentView, parentView.def.nodes[1], childContext);
+      const childView = createEmbeddedView(parentView, parentView.def.nodes[1], childContext);
       expect(childView.component).toBe(parentContext);
       expect(childView.context).toBe(childContext);
     });
@@ -63,9 +62,10 @@ export function main() {
                 [elementDef(NodeFlags.None, null !, null !, 0, 'span', [['name', 'child1']])]))
       ]));
       const viewContainerData = asElementData(parentView, 1);
+      const rf = parentView.root.rendererFactory;
 
-      const childView0 = Services.createEmbeddedView(parentView, parentView.def.nodes[1]);
-      const childView1 = Services.createEmbeddedView(parentView, parentView.def.nodes[2]);
+      const childView0 = createEmbeddedView(parentView, parentView.def.nodes[1]);
+      const childView1 = createEmbeddedView(parentView, parentView.def.nodes[2]);
 
       attachEmbeddedView(parentView, viewContainerData, 0, childView0);
       attachEmbeddedView(parentView, viewContainerData, 1, childView1);
@@ -76,8 +76,10 @@ export function main() {
       expect(getDOM().getAttribute(rootChildren[1], 'name')).toBe('child0');
       expect(getDOM().getAttribute(rootChildren[2], 'name')).toBe('child1');
 
+      rf.begin !();
       detachEmbeddedView(viewContainerData, 1);
       detachEmbeddedView(viewContainerData, 0);
+      rf.end !();
 
       expect(getDOM().childNodes(rootNodes[0]).length).toBe(2);
     });
@@ -95,8 +97,8 @@ export function main() {
       ]));
       const viewContainerData = asElementData(parentView, 1);
 
-      const childView0 = Services.createEmbeddedView(parentView, parentView.def.nodes[1]);
-      const childView1 = Services.createEmbeddedView(parentView, parentView.def.nodes[2]);
+      const childView0 = createEmbeddedView(parentView, parentView.def.nodes[1]);
+      const childView1 = createEmbeddedView(parentView, parentView.def.nodes[2]);
 
       attachEmbeddedView(parentView, viewContainerData, 0, childView0);
       attachEmbeddedView(parentView, viewContainerData, 1, childView1);
@@ -119,7 +121,7 @@ export function main() {
         elementDef(NodeFlags.None, null !, null !, 0, 'span', [['name', 'after']])
       ]));
 
-      const childView0 = Services.createEmbeddedView(parentView, parentView.def.nodes[0]);
+      const childView0 = createEmbeddedView(parentView, parentView.def.nodes[0]);
       attachEmbeddedView(parentView, asElementData(parentView, 0), 0, childView0);
 
       const rootNodes = rootRenderNodes(parentView);
@@ -146,7 +148,7 @@ export function main() {
                 update))
       ]));
 
-      const childView0 = Services.createEmbeddedView(parentView, parentView.def.nodes[1]);
+      const childView0 = createEmbeddedView(parentView, parentView.def.nodes[1]);
 
       attachEmbeddedView(parentView, asElementData(parentView, 1), 0, childView0);
 
@@ -180,7 +182,7 @@ export function main() {
                   ]))
       ]));
 
-      const childView0 = Services.createEmbeddedView(parentView, parentView.def.nodes[1]);
+      const childView0 = createEmbeddedView(parentView, parentView.def.nodes[1]);
 
       attachEmbeddedView(parentView, asElementData(parentView, 1), 0, childView0);
       Services.destroyView(parentView);

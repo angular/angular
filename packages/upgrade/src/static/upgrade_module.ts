@@ -6,19 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, NgModule, NgZone, Testability, ɵNOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR as NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from '@angular/core';
+import {Injector, NgModule, NgZone, Testability} from '@angular/core';
 
 import * as angular from '../common/angular1';
-import {$$TESTABILITY, $DELEGATE, $INJECTOR, $PROVIDE, INJECTOR_KEY, UPGRADE_MODULE_NAME} from '../common/constants';
+import {$$TESTABILITY, $DELEGATE, $INJECTOR, $INTERVAL, $PROVIDE, INJECTOR_KEY, LAZY_MODULE_REF, UPGRADE_MODULE_NAME} from '../common/constants';
 import {controllerKey} from '../common/util';
 
 import {angular1Providers, setTempInjectorRef} from './angular1_providers';
+import {NgAdapterInjector} from './util';
 
 
 /**
  * @whatItDoes
  *
- * *Part of the [upgrade/static](/docs/ts/latest/api/#!?query=upgrade%2Fstatic)
+ * *Part of the [upgrade/static](api?query=upgrade%2Fstatic)
  * library for hybrid upgrade apps that support AoT compilation*
  *
  * Allows AngularJS and Angular components to be used together inside a hybrid upgrade
@@ -88,6 +89,7 @@ import {angular1Providers, setTempInjectorRef} from './angular1_providers';
  *
  * {@example upgrade/static/ts/module.ts region='bootstrap'}
  *
+ * {@a upgrading-an-angular-1-service}
  *
  * ## Upgrading an AngularJS service
  *
@@ -162,6 +164,10 @@ export class UpgradeModule {
 
             .value(INJECTOR_KEY, this.injector)
 
+            .factory(
+                LAZY_MODULE_REF,
+                [INJECTOR_KEY, (injector: Injector) => ({injector, needsNgZone: false})])
+
             .config([
               $PROVIDE, $INJECTOR,
               ($provide: angular.IProvideService, $injector: angular.IInjectorService) => {
@@ -189,6 +195,33 @@ export class UpgradeModule {
                     }
                   ]);
                 }
+
+                if ($injector.has($INTERVAL)) {
+                  $provide.decorator($INTERVAL, [
+                    $DELEGATE,
+                    (intervalDelegate: angular.IIntervalService) => {
+                      // Wrap the $interval service so that setInterval is called outside NgZone,
+                      // but the callback is still invoked within it. This is so that $interval
+                      // won't block stability, which preserves the behavior from AngularJS.
+                      let wrappedInterval =
+                          (fn: Function, delay: number, count?: number, invokeApply?: boolean,
+                           ...pass: any[]) => {
+                            return this.ngZone.runOutsideAngular(() => {
+                              return intervalDelegate((...args: any[]) => {
+                                // Run callback in the next VM turn - $interval calls
+                                // $rootScope.$apply, and running the callback in NgZone will
+                                // cause a '$digest already in progress' error if it's in the
+                                // same vm turn.
+                                setTimeout(() => { this.ngZone.run(() => fn(...args)); });
+                              }, delay, count, invokeApply, ...pass);
+                            });
+                          };
+
+                      (wrappedInterval as any)['cancel'] = intervalDelegate.cancel;
+                      return wrappedInterval;
+                    }
+                  ]);
+                }
               }
             ])
 
@@ -202,7 +235,7 @@ export class UpgradeModule {
                 this.injector.get($INJECTOR);
 
                 // Put the injector on the DOM, so that it can be "required"
-                angular.element(element).data(controllerKey(INJECTOR_KEY), this.injector);
+                angular.element(element).data !(controllerKey(INJECTOR_KEY), this.injector);
 
                 // Wire up the ng1 rootScope to run a digest cycle whenever the zone settles
                 // We need to do this in the next tick so that we don't prevent the bootup
@@ -219,7 +252,7 @@ export class UpgradeModule {
     const upgradeModule = angular.module(UPGRADE_MODULE_NAME, [INIT_MODULE_NAME].concat(modules));
 
     // Make sure resumeBootstrap() only exists if the current bootstrap is deferred
-    const windowAngular = (window as any /** TODO #???? */)['angular'];
+    const windowAngular = (window as any)['angular'];
     windowAngular.resumeBootstrap = undefined;
 
     // Bootstrap the AngularJS application inside our zone
@@ -235,21 +268,5 @@ export class UpgradeModule {
         ngZone.run(() => { windowAngular.resumeBootstrap.apply(this, args); });
       };
     }
-  }
-}
-
-class NgAdapterInjector implements Injector {
-  constructor(private modInjector: Injector) {}
-
-  // When Angular locate a service in the component injector tree, the not found value is set to
-  // `NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR`. In such a case we should not walk up to the module
-  // injector.
-  // AngularJS only supports a single tree and should always check the module injector.
-  get(token: any, notFoundValue?: any): any {
-    if (notFoundValue === NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR) {
-      return notFoundValue;
-    }
-
-    return this.modInjector.get(token, notFoundValue);
   }
 }

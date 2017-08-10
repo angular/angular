@@ -44,5 +44,5 @@ export function extractStyleUrls(
 }
 
 const CSS_IMPORT_REGEXP = /@import\s+(?:url\()?\s*(?:(?:['"]([^'"]*))|([^;\)\s]*))[^;]*;?/g;
-const CSS_COMMENT_WITH_NO_SOURCE_MAP_REGEXP = /\/\*[^#].*?\*\//g;
+const CSS_COMMENT_WITH_NO_SOURCE_MAP_REGEXP = /\/\*[^#][\s\S]+?\*\//g;
 const URL_WITH_SCHEMA_REGEXP = /^([^:/?#]+):/;

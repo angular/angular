@@ -8,10 +8,10 @@
 
 import {DoCheck, ElementRef, EventEmitter, Injector, OnChanges, OnDestroy, OnInit, SimpleChanges, ɵlooseIdentical as looseIdentical} from '@angular/core';
 import * as angular from '../common/angular1';
-import {$COMPILE, $CONTROLLER, $HTTP_BACKEND, $INJECTOR, $SCOPE, $TEMPLATE_CACHE} from '../common/constants';
-import {controllerKey} from '../common/util';
+import {$SCOPE} from '../common/constants';
+import {IBindingDestination, IControllerInstance, UpgradeHelper} from '../common/upgrade_helper';
+import {isFunction} from '../common/util';
 
-const REQUIRE_PREFIX_RE = /^(\^\^?)?(\?)?(\^\^?)?/;
 const NOT_SUPPORTED: any = 'NOT_SUPPORTED';
 const INITIAL_VALUE = {
   __UNINITIALIZED__: true
@@ -26,24 +26,10 @@ class Bindings {
   propertyToOutputMap: {[propName: string]: string} = {};
 }
 
-interface IBindingDestination {
-  [key: string]: any;
-  $onChanges?: (changes: SimpleChanges) => void;
-}
-
-interface IControllerInstance extends IBindingDestination {
-  $doCheck?: () => void;
-  $onDestroy?: () => void;
-  $onInit?: () => void;
-  $postLink?: () => void;
-}
-
-type LifecycleHook = '$doCheck' | '$onChanges' | '$onDestroy' | '$onInit' | '$postLink';
-
 /**
  * @whatItDoes
  *
- * *Part of the [upgrade/static](/docs/ts/latest/api/#!?query=upgrade%2Fstatic)
+ * *Part of the [upgrade/static](api?query=upgrade%2Fstatic)
  * library for hybrid upgrade apps that support AoT compilation*
  *
  * Allows an AngularJS component to be used from Angular.
@@ -81,11 +67,9 @@ type LifecycleHook = '$doCheck' | '$onChanges' | '$onDestroy' | '$onInit' | '$po
  * @experimental
  */
 export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
+  private helper: UpgradeHelper;
+
   private $injector: angular.IInjectorService;
-  private $compile: angular.ICompileService;
-  private $templateCache: angular.ITemplateCacheService;
-  private $httpBackend: angular.IHttpBackendService;
-  private $controller: angular.IControllerService;
 
   private element: Element;
   private $element: angular.IAugmentedJQuery;
@@ -99,7 +83,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
 
   // We will be instantiating the controller in the `ngOnInit` hook, when the first `ngOnChanges`
   // will have been already triggered. We store the `SimpleChanges` and "play them back" later.
-  private pendingChanges: SimpleChanges;
+  private pendingChanges: SimpleChanges|null;
 
   private unregisterDoCheckWatcher: Function;
 
@@ -120,16 +104,14 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
    * already implements them and so does not wire up calls to them at runtime.
    */
   constructor(private name: string, private elementRef: ElementRef, private injector: Injector) {
-    this.$injector = injector.get($INJECTOR);
-    this.$compile = this.$injector.get($COMPILE);
-    this.$templateCache = this.$injector.get($TEMPLATE_CACHE);
-    this.$httpBackend = this.$injector.get($HTTP_BACKEND);
-    this.$controller = this.$injector.get($CONTROLLER);
+    this.helper = new UpgradeHelper(injector, name, elementRef);
 
-    this.element = elementRef.nativeElement;
-    this.$element = angular.element(this.element);
+    this.$injector = this.helper.$injector;
 
-    this.directive = this.getDirective(name);
+    this.element = this.helper.element;
+    this.$element = this.helper.$element;
+
+    this.directive = this.helper.directive;
     this.bindings = this.initializeBindings(this.directive);
 
     // We ask for the AngularJS scope from the Angular injector, since
@@ -144,15 +126,14 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
 
   ngOnInit() {
     // Collect contents, insert and compile template
-    const contentChildNodes = this.extractChildNodes(this.element);
-    const linkFn = this.compileTemplate(this.directive);
+    const attachChildNodes: angular.ILinkFn|undefined = this.helper.prepareTransclusion();
+    const linkFn = this.helper.compileTemplate();
 
     // Instantiate controller
     const controllerType = this.directive.controller;
     const bindToController = this.directive.bindToController;
     if (controllerType) {
-      this.controllerInstance = this.buildController(
-          controllerType, this.$componentScope, this.$element, this.directive.controllerAs);
+      this.controllerInstance = this.helper.buildController(controllerType, this.$componentScope);
     } else if (bindToController) {
       throw new Error(
           `Upgraded directive '${this.directive.name}' specifies 'bindToController' but no controller.`);
@@ -163,16 +144,8 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     this.bindOutputs();
 
     // Require other controllers
-    const directiveRequire = this.getDirectiveRequire(this.directive);
     const requiredControllers =
-        this.resolveRequire(this.directive.name, this.$element, directiveRequire);
-
-    if (this.directive.bindToController && isMap(directiveRequire)) {
-      const requiredControllersMap = requiredControllers as{[key: string]: IControllerInstance};
-      Object.keys(requiredControllersMap).forEach(key => {
-        this.controllerInstance[key] = requiredControllersMap[key];
-      });
-    }
+        this.helper.resolveAndBindRequiredControllers(this.controllerInstance);
 
     // Hook: $onChanges
     if (this.pendingChanges) {
@@ -187,7 +160,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
 
     // Hook: $doCheck
     if (this.controllerInstance && isFunction(this.controllerInstance.$doCheck)) {
-      const callDoCheck = () => this.controllerInstance.$doCheck();
+      const callDoCheck = () => this.controllerInstance.$doCheck !();
 
       this.unregisterDoCheckWatcher = this.$componentScope.$parent.$watch(callDoCheck);
       callDoCheck();
@@ -203,9 +176,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
       preLink(this.$componentScope, this.$element, attrs, requiredControllers, transcludeFn);
     }
 
-    const attachChildNodes: angular.ILinkFn = (scope, cloneAttach) =>
-        cloneAttach(contentChildNodes);
-    linkFn(this.$componentScope, null, {parentBoundTranscludeFn: attachChildNodes});
+    linkFn(this.$componentScope, null !, {parentBoundTranscludeFn: attachChildNodes});
 
     if (postLink) {
       postLink(this.$componentScope, this.$element, attrs, requiredControllers, transcludeFn);
@@ -254,41 +225,6 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     this.$componentScope.$destroy();
   }
 
-  private getDirective(name: string): angular.IDirective {
-    const directives: angular.IDirective[] = this.$injector.get(name + 'Directive');
-    if (directives.length > 1) {
-      throw new Error('Only support single directive definition for: ' + this.name);
-    }
-    const directive = directives[0];
-    if (directive.replace) this.notSupported('replace');
-    if (directive.terminal) this.notSupported('terminal');
-    if (directive.compile) this.notSupported('compile');
-    const link = directive.link;
-    // QUESTION: why not support link.post?
-    if (typeof link == 'object') {
-      if ((<angular.IDirectivePrePost>link).post) this.notSupported('link.post');
-    }
-    return directive;
-  }
-
-  private getDirectiveRequire(directive: angular.IDirective): angular.DirectiveRequireProperty {
-    const require = directive.require || (directive.controller && directive.name);
-
-    if (isMap(require)) {
-      Object.keys(require).forEach(key => {
-        const value = require[key];
-        const match = value.match(REQUIRE_PREFIX_RE);
-        const name = value.substring(match[0].length);
-
-        if (!name) {
-          require[key] = match[0] + key;
-        }
-      });
-    }
-
-    return require;
-  }
-
   private initializeBindings(directive: angular.IDirective) {
     const btcIsObject = typeof directive.bindToController === 'object';
     if (btcIsObject && Object.keys(directive.scope).length) {
@@ -333,97 +269,6 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     return bindings;
   }
 
-  private extractChildNodes(element: Element): Node[] {
-    const childNodes: Node[] = [];
-    let childNode: Node;
-
-    while (childNode = element.firstChild) {
-      element.removeChild(childNode);
-      childNodes.push(childNode);
-    }
-
-    return childNodes;
-  }
-
-  private compileTemplate(directive: angular.IDirective): angular.ILinkFn {
-    if (this.directive.template !== undefined) {
-      return this.compileHtml(getOrCall(this.directive.template));
-    } else if (this.directive.templateUrl) {
-      const url = getOrCall(this.directive.templateUrl);
-      const html = this.$templateCache.get(url) as string;
-      if (html !== undefined) {
-        return this.compileHtml(html);
-      } else {
-        throw new Error('loading directive templates asynchronously is not supported');
-        // return new Promise((resolve, reject) => {
-        //   this.$httpBackend('GET', url, null, (status: number, response: string) => {
-        //     if (status == 200) {
-        //       resolve(this.compileHtml(this.$templateCache.put(url, response)));
-        //     } else {
-        //       reject(`GET component template from '${url}' returned '${status}: ${response}'`);
-        //     }
-        //   });
-        // });
-      }
-    } else {
-      throw new Error(`Directive '${this.name}' is not a component, it is missing template.`);
-    }
-  }
-
-  private buildController(
-      controllerType: angular.IController, $scope: angular.IScope,
-      $element: angular.IAugmentedJQuery, controllerAs: string) {
-    // TODO: Document that we do not pre-assign bindings on the controller instance
-    // Quoted properties below so that this code can be optimized with Closure Compiler.
-    const locals = {'$scope': $scope, '$element': $element};
-    const controller = this.$controller(controllerType, locals, null, controllerAs);
-    $element.data(controllerKey(this.directive.name), controller);
-    return controller;
-  }
-
-  private resolveRequire(
-      directiveName: string, $element: angular.IAugmentedJQuery,
-      require: angular.DirectiveRequireProperty): angular.SingleOrListOrMap<IControllerInstance> {
-    if (!require) {
-      return null;
-    } else if (Array.isArray(require)) {
-      return require.map(req => this.resolveRequire(directiveName, $element, req));
-    } else if (typeof require === 'object') {
-      const value: {[key: string]: IControllerInstance} = {};
-
-      Object.keys(require).forEach(
-          key => value[key] = this.resolveRequire(directiveName, $element, require[key]));
-
-      return value;
-    } else if (typeof require === 'string') {
-      const match = require.match(REQUIRE_PREFIX_RE);
-      const inheritType = match[1] || match[3];
-
-      const name = require.substring(match[0].length);
-      const isOptional = !!match[2];
-      const searchParents = !!inheritType;
-      const startOnParent = inheritType === '^^';
-
-      const ctrlKey = controllerKey(name);
-
-      if (startOnParent) {
-        $element = $element.parent();
-      }
-
-      const value = searchParents ? $element.inheritedData(ctrlKey) : $element.data(ctrlKey);
-
-      if (!value && !isOptional) {
-        throw new Error(
-            `Unable to find required '${require}' in upgraded directive '${directiveName}'.`);
-      }
-
-      return value;
-    } else {
-      throw new Error(
-          `Unrecognized require syntax on upgraded directive '${directiveName}': ${require}`);
-    }
-  }
-
   private initializeOutputs() {
     // Initialize the outputs for `=` and `&` bindings
     this.bindings.twoWayBoundProperties.concat(this.bindings.expressionBoundProperties)
@@ -452,28 +297,4 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
       this.bindingDestination.$onChanges(changes);
     }
   }
-
-  private notSupported(feature: string) {
-    throw new Error(
-        `Upgraded directive '${this.name}' contains unsupported feature: '${feature}'.`);
-  }
-
-  private compileHtml(html: string): angular.ILinkFn {
-    this.element.innerHTML = html;
-    return this.$compile(this.element.childNodes);
-  }
-}
-
-
-function getOrCall<T>(property: Function | T): T {
-  return isFunction(property) ? property() : property;
-}
-
-function isFunction(value: any): value is Function {
-  return typeof value === 'function';
-}
-
-// NOTE: Only works for `typeof T !== 'object'`.
-function isMap<T>(value: angular.SingleOrListOrMap<T>): value is {[key: string]: T} {
-  return value && !Array.isArray(value) && typeof value === 'object';
 }

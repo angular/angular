@@ -8,19 +8,17 @@ This is an overview of the available scripts and commands.
 The scripts are located inside `<aio-builds-setup-dir>/scripts/`. The following scripts are
 available:
 
-- `build.sh`:
+- `create-image.sh`:
   Can be used for creating a preconfigured docker image.
   See [here](vm-setup--create-docker-image.md) for more info.
 
-- `test.sh`
+- `test.sh`:
   Can be used for running the tests for `<aio-builds-setup-dir>/dockerbuild/scripts-js/`. This is
   useful for CI integration. See [here](misc--integrate-with-ci.md) for more info.
 
-- `travis-preverify-pr.sh`
-  Can be used for "preverifying" a PR before uploading the artifacts to the server. It checks that
-  the author of the PR a member of one of the specified GitHub teams and therefore allowed to upload
-  build artifacts. This is useful for CI integration. See [here](misc--integrate-with-ci.md) for
-  more info.
+- `update-preview-server.sh`:
+  Can be used for updating the docker container (and image) based on the latest changes checked out
+  from a git repository. See [here](vm-setup--update-docker-container.md) for more info.
 
 
 ## Commands

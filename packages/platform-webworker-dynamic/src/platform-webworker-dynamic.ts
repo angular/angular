@@ -8,7 +8,7 @@
 
 import {ɵPLATFORM_WORKER_UI_ID as PLATFORM_WORKER_UI_ID} from '@angular/common';
 import {ResourceLoader, platformCoreDynamic} from '@angular/compiler';
-import {COMPILER_OPTIONS, PLATFORM_ID, PlatformRef, Provider, createPlatformFactory} from '@angular/core';
+import {COMPILER_OPTIONS, PLATFORM_ID, PlatformRef, StaticProvider, createPlatformFactory} from '@angular/core';
 import {ɵResourceLoaderImpl as ResourceLoaderImpl} from '@angular/platform-browser-dynamic';
 export {VERSION} from './version';
 
@@ -19,7 +19,7 @@ export const platformWorkerAppDynamic =
     createPlatformFactory(platformCoreDynamic, 'workerAppDynamic', [
       {
         provide: COMPILER_OPTIONS,
-        useValue: {providers: [{provide: ResourceLoader, useClass: ResourceLoaderImpl}]},
+        useValue: {providers: [{provide: ResourceLoader, useClass: ResourceLoaderImpl, deps: []}]},
         multi: true
       },
       {provide: PLATFORM_ID, useValue: PLATFORM_WORKER_UI_ID}

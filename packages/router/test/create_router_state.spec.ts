@@ -9,7 +9,7 @@
 import {Routes} from '../src/config';
 import {createRouterState} from '../src/create_router_state';
 import {recognize} from '../src/recognize';
-import {DefaultRouteReuseStrategy} from '../src/router';
+import {DefaultRouteReuseStrategy} from '../src/route_reuse_strategy';
 import {ActivatedRoute, RouterState, RouterStateSnapshot, advanceActivatedRoute, createEmptyState} from '../src/router_state';
 import {PRIMARY_OUTLET} from '../src/shared';
 import {DefaultUrlSerializer, UrlSegmentGroup, UrlTree} from '../src/url_tree';
@@ -19,7 +19,7 @@ describe('create router state', () => {
   const reuseStrategy = new DefaultRouteReuseStrategy();
 
   const emptyState = () =>
-      createEmptyState(new UrlTree(new UrlSegmentGroup([], {}), {}, null), RootComponent);
+      createEmptyState(new UrlTree(new UrlSegmentGroup([], {}), {}, null !), RootComponent);
 
   it('should work create new state', () => {
     const state = createRouterState(
@@ -76,11 +76,10 @@ describe('create router state', () => {
         createRouterState(reuseStrategy, createState(config, 'a/2;p=22/(b//right:c)'), prevState);
 
     expect(prevState.root).toBe(state.root);
-    const prevP = prevState.firstChild(prevState.root);
-    const currP = state.firstChild(state.root);
+    const prevP = prevState.firstChild(prevState.root) !;
+    const currP = state.firstChild(state.root) !;
     expect(prevP).toBe(currP);
 
-    const prevC = prevState.children(prevP);
     const currC = state.children(currP);
 
     expect(currP._futureSnapshot.params).toEqual({id: '2', p: '22'});
@@ -101,7 +100,7 @@ function advanceNode(node: TreeNode<ActivatedRoute>): void {
 }
 
 function createState(config: Routes, url: string): RouterStateSnapshot {
-  let res: RouterStateSnapshot;
+  let res: RouterStateSnapshot = undefined !;
   recognize(RootComponent, config, tree(url), url).forEach(s => res = s);
   return res;
 }

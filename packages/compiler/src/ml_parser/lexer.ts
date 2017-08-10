@@ -150,7 +150,7 @@ class _Tokenizer {
   }
 
   /**
-   * @returns {boolean} whether an ICU token has been created
+   * @returns whether an ICU token has been created
    * @internal
    */
   private _tokenizeExpansionForm(): boolean {
@@ -684,7 +684,7 @@ function isExpansionFormStart(
 }
 
 function isExpansionCaseStart(peek: number): boolean {
-  return peek === chars.$EQ || chars.isAsciiLetter(peek);
+  return peek === chars.$EQ || chars.isAsciiLetter(peek) || chars.isDigit(peek);
 }
 
 function compareCharCodeCaseInsensitive(code1: number, code2: number): boolean {

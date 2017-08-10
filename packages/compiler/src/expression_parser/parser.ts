@@ -10,9 +10,9 @@ import * as chars from '../chars';
 import {CompilerInjectable} from '../injectable';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../ml_parser/interpolation_config';
 import {escapeRegExp} from '../util';
-import {AST, ASTWithSource, AstVisitor, Binary, BindingPipe, Chain, Conditional, EmptyExpr, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, ParseSpan, ParserError, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead, TemplateBinding} from './ast';
-import {EOF, Lexer, Token, TokenType, isIdentifier, isQuote} from './lexer';
 
+import {AST, ASTWithSource, AstVisitor, Binary, BindingPipe, Chain, Conditional, EmptyExpr, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralMapKey, LiteralPrimitive, MethodCall, NonNullAssert, ParseSpan, ParserError, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead, TemplateBinding} from './ast';
+import {EOF, Lexer, Token, TokenType, isIdentifier, isQuote} from './lexer';
 
 export class SplitInterpolation {
   constructor(public strings: string[], public expressions: string[], public offsets: number[]) {}
@@ -126,7 +126,7 @@ export class Parser {
     for (let i = 0; i < split.expressions.length; ++i) {
       const expressionText = split.expressions[i];
       const sourceToLex = this._stripComments(expressionText);
-      const tokens = this._lexer.tokenize(this._stripComments(split.expressions[i]));
+      const tokens = this._lexer.tokenize(sourceToLex);
       const ast = new _ParseAST(
                       input, location, tokens, sourceToLex.length, false, this.errors,
                       split.offsets[i] + (expressionText.length - sourceToLex.length))
@@ -289,24 +289,24 @@ export class _ParseAST {
     this.error(`Missing expected operator ${operator}`);
   }
 
-  expectIdentifierOrKeyword(): string|null {
+  expectIdentifierOrKeyword(): string {
     const n = this.next;
     if (!n.isIdentifier() && !n.isKeyword()) {
       this.error(`Unexpected token ${n}, expected identifier or keyword`);
       return '';
     }
     this.advance();
-    return n.toString();
+    return n.toString() as string;
   }
 
-  expectIdentifierOrKeywordOrString(): string|null {
+  expectIdentifierOrKeywordOrString(): string {
     const n = this.next;
     if (!n.isIdentifier() && !n.isKeyword() && !n.isString()) {
       this.error(`Unexpected token ${n}, expected identifier, keyword, or string`);
       return '';
     }
     this.advance();
-    return n.toString();
+    return n.toString() as string;
   }
 
   parseChain(): AST {
@@ -339,7 +339,7 @@ export class _ParseAST {
       }
 
       do {
-        const name = this.expectIdentifierOrKeyword() !;
+        const name = this.expectIdentifierOrKeyword();
         const args: AST[] = [];
         while (this.optionalCharacter(chars.$COLON)) {
           args.push(this.parseExpression());
@@ -523,6 +523,9 @@ export class _ParseAST {
         this.expectCharacter(chars.$RPAREN);
         result = new FunctionCall(this.span(result.span.start), result, args);
 
+      } else if (this.optionalOperator('!')) {
+        result = new NonNullAssert(this.span(result.span.start), result);
+
       } else {
         return result;
       }
@@ -601,15 +604,16 @@ export class _ParseAST {
   }
 
   parseLiteralMap(): LiteralMap {
-    const keys: string[] = [];
+    const keys: LiteralMapKey[] = [];
     const values: AST[] = [];
     const start = this.inputIndex;
     this.expectCharacter(chars.$LBRACE);
     if (!this.optionalCharacter(chars.$RBRACE)) {
       this.rbracesExpected++;
       do {
-        const key = this.expectIdentifierOrKeywordOrString() !;
-        keys.push(key);
+        const quoted = this.next.isString();
+        const key = this.expectIdentifierOrKeywordOrString();
+        keys.push({key, quoted});
         this.expectCharacter(chars.$COLON);
         values.push(this.parsePipe());
       } while (this.optionalCharacter(chars.$COMMA));
@@ -621,7 +625,7 @@ export class _ParseAST {
 
   parseAccessMemberOrMethodCall(receiver: AST, isSafe: boolean = false): AST {
     const start = receiver.span.start;
-    const id = this.expectIdentifierOrKeyword() !;
+    const id = this.expectIdentifierOrKeyword();
 
     if (this.optionalCharacter(chars.$LPAREN)) {
       this.rparensExpected++;
@@ -810,6 +814,8 @@ class SimpleExpressionChecker implements AstVisitor {
   visitBinary(ast: Binary, context: any) {}
 
   visitPrefixNot(ast: PrefixNot, context: any) {}
+
+  visitNonNullAssert(ast: NonNullAssert, context: any) {}
 
   visitConditional(ast: Conditional, context: any) {}
 

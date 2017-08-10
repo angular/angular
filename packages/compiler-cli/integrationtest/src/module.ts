@@ -28,6 +28,9 @@ import {CompUsingRootModuleDirectiveAndPipe, SomeDirectiveInRootModule, SomeLibM
 import {CompWithNgContent, ProjectingComp} from './projection';
 import {CompForChildQuery, CompWithChildQuery, CompWithDirectiveChild, DirectiveForQuery} from './queries';
 
+// Adding an export here so that TypeScript compiles the file as well
+export {SomeModule as JitSummariesSomeModule} from './jit_summaries';
+
 @NgModule({
   declarations: [
     AnimateCmp,

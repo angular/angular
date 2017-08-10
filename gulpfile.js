@@ -29,7 +29,8 @@ function loadTask(fileName, taskName) {
 
 gulp.task('format:enforce', loadTask('format', 'enforce'));
 gulp.task('format', loadTask('format', 'format'));
-gulp.task('build.sh', loadTask('build'));
+gulp.task('build.sh', loadTask('build', 'all'));
+gulp.task('build.sh:no-bundle', loadTask('build', 'no-bundle'));
 gulp.task('public-api:enforce', loadTask('public-api', 'enforce'));
 gulp.task('public-api:update', ['build.sh'], loadTask('public-api', 'update'));
 gulp.task('lint', ['format:enforce', 'validate-commit-messages', 'tslint']);

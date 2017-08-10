@@ -20,6 +20,6 @@ export function createUrlResolverWithoutPackagePrefix(): UrlResolver {
 // TODO: get rid of it or move to a separate @angular/internal_testing package
 export const TEST_COMPILER_PROVIDERS: Provider[] = [
   {provide: ElementSchemaRegistry, useValue: new MockSchemaRegistry({}, {}, {}, [], [])},
-  {provide: ResourceLoader, useClass: MockResourceLoader},
-  {provide: UrlResolver, useFactory: createUrlResolverWithoutPackagePrefix}
+  {provide: ResourceLoader, useClass: MockResourceLoader, deps: []},
+  {provide: UrlResolver, useFactory: createUrlResolverWithoutPackagePrefix, deps: []}
 ];

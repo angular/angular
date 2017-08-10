@@ -39,17 +39,17 @@ describe('RouterState & Snapshot', () => {
     });
 
     it('should return root', () => {
-      const b = state.root.firstChild;
+      const b = state.root.firstChild !;
       expect(b.root).toBe(state.root);
     });
 
     it('should return parent', () => {
-      const b = state.root.firstChild;
+      const b = state.root.firstChild !;
       expect(b.parent).toBe(state.root);
     });
 
     it('should return path from root', () => {
-      const b = state.root.firstChild;
+      const b = state.root.firstChild !;
       const p = b.pathFromRoot;
       expect(p[0]).toBe(state.root);
       expect(p[1]).toBe(b);
@@ -81,17 +81,17 @@ describe('RouterState & Snapshot', () => {
     });
 
     it('should return root', () => {
-      const b = state.root.firstChild;
+      const b = state.root.firstChild !;
       expect(b.root).toBe(state.root);
     });
 
     it('should return parent', () => {
-      const b = state.root.firstChild;
+      const b = state.root.firstChild !;
       expect(b.parent).toBe(state.root);
     });
 
     it('should return path from root', () => {
-      const b = state.root.firstChild;
+      const b = state.root.firstChild !;
       const p = b.pathFromRoot;
       expect(p[0]).toBe(state.root);
       expect(p[1]).toBe(b);
@@ -102,7 +102,7 @@ describe('RouterState & Snapshot', () => {
     function createSnapshot(params: Params, url: UrlSegment[]): ActivatedRouteSnapshot {
       const snapshot = new ActivatedRouteSnapshot(
           url, params, <any>null, <any>null, <any>null, <any>null, <any>null, <any>null, <any>null,
-          -1, null);
+          -1, null !);
       snapshot._routerState = new RouterStateSnapshot('', new TreeNode(snapshot, []));
       return snapshot;
     }
@@ -177,7 +177,7 @@ describe('RouterState & Snapshot', () => {
       const data = {};
       const snapshot = new ActivatedRouteSnapshot(
           url, params, queryParams, fragment, data, <any>null, <any>null, <any>null, <any>null, -1,
-          null);
+          null !);
       const state = new RouterStateSnapshot('', new TreeNode(snapshot, []));
       snapshot._routerState = state;
       return snapshot;
@@ -200,7 +200,7 @@ describe('RouterState & Snapshot', () => {
 function createActivatedRouteSnapshot(cmp: string) {
   return new ActivatedRouteSnapshot(
       <any>null, <any>null, <any>null, <any>null, <any>null, <any>null, <any>cmp, <any>null,
-      <any>null, -1, null);
+      <any>null, -1, null !);
 }
 
 function createActivatedRoute(cmp: string) {

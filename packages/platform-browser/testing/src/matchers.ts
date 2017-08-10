@@ -121,7 +121,7 @@ _global.beforeEach(function() {
         }
       };
 
-      function compareMap(actual: any, expected: any) {
+      function compareMap(actual: any, expected: any): boolean {
         if (actual instanceof Map) {
           let pass = actual.size === expected.size;
           if (pass) {
@@ -129,7 +129,8 @@ _global.beforeEach(function() {
           }
           return pass;
         } else {
-          return undefined;
+          // TODO(misko): we should change the return, but jasmine.d.ts is not null safe
+          return undefined !;
         }
       }
     },
@@ -270,5 +271,5 @@ function elementText(n: any): string {
     return elementText(getDOM().childNodesAsList(n));
   }
 
-  return getDOM().getText(n);
+  return getDOM().getText(n) !;
 }

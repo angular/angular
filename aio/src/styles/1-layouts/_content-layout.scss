@@ -1,15 +1,23 @@
-.sidenav-content {
-  padding: 1rem 3rem 3rem;
-  margin: auto;
+aio-shell.page-docs {
+  .sidenav-content {
+    // padding: 6rem 3rem 3rem 3rem; // THIS CAUSES THE TOP NAV TOOLBAR TO JUMP BETWEEN DOCS AND OTHER PAGES
+    margin: auto;
+  }
 }
 
-.fill-remaining-space {
-  flex: 1 1 auto;
+.sidenav-content {
+  min-height: 100vh;
+  padding: 80px 3rem 1rem;
 }
 
 @media (max-width: 600px) {
   aio-menu {
     display: none;
+  }
+
+  .sidenav-content {
+    min-height: 450px;
+    padding: 80px 1rem 1rem;
   }
 }
 
@@ -20,4 +28,12 @@
 
 .sidenav-content button {
   min-width: 50px;
+}
+
+#guide-change-log h2::before {
+  content: "";
+  display: block;
+  height: 1px;
+  margin: 24px 0px;
+  background: $lightgray;
 }

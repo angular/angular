@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {JitReflector} from '@angular/compiler';
 import {NgModuleResolver} from '@angular/compiler/src/ng_module_resolver';
 import {ɵstringify as stringify} from '@angular/core';
 import {NgModule} from '@angular/core/src/metadata';
@@ -32,7 +33,7 @@ export function main() {
   describe('NgModuleResolver', () => {
     let resolver: NgModuleResolver;
 
-    beforeEach(() => { resolver = new NgModuleResolver(); });
+    beforeEach(() => { resolver = new NgModuleResolver(new JitReflector()); });
 
     it('should read out the metadata from the class', () => {
       const moduleMetadata = resolver.resolve(SomeModule);

@@ -1,4 +1,6 @@
 .presskit-container {
+  padding: 0 32px 32px 32px;
+
   h2 {
     color: #37474F;
   }
@@ -13,7 +15,7 @@
   }
 
   .presskit-row {
-    margin: $unit * 6 0;
+    margin: 48px 0;
     width: 100%;
 
     .presskit-inner {
@@ -31,7 +33,7 @@
         color: #455A64;
 
         @media(max-width: 599px) {
-          padding-bottom: $unit * 2;
+          padding-bottom: 16px;
         }
       }
 
@@ -39,6 +41,7 @@
         margin-top: 10px;
         border-radius: 4px;
         width: 128px;
+        height: 128px;
         background-color: #34474F;
       }
 
@@ -52,7 +55,7 @@
         }
 
         li {
-          margin: 0 0 $unit 0;
+          margin: 0 0 8px 0;
         }
       }
     }
@@ -65,8 +68,17 @@
 
       img {
         width: 128px;
-        margin-bottom: $unit * 2;
+        height: 128px;
+        margin-bottom: 8px * 2;
       }
+    }
+  }
+
+  .presskit-row:first-child {
+    margin-top: 0;
+
+    @media(max-width: 599px) {
+      margin-top: 48px;
     }
   }
 }

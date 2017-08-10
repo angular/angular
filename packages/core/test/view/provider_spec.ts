@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectorRef, DoCheck, ElementRef, EventEmitter, Injector, OnChanges, OnDestroy, OnInit, RenderComponentType, Renderer, Renderer2, RootRenderer, Sanitizer, SecurityContext, SimpleChange, TemplateRef, ViewContainerRef, ViewEncapsulation, WrappedValue, getDebugNode} from '@angular/core';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectorRef, DoCheck, ElementRef, ErrorHandler, EventEmitter, Injector, OnChanges, OnDestroy, OnInit, RenderComponentType, Renderer, Renderer2, RootRenderer, Sanitizer, SecurityContext, SimpleChange, TemplateRef, ViewContainerRef, ViewEncapsulation, WrappedValue, getDebugNode} from '@angular/core';
 import {getDebugContext} from '@angular/core/src/errors';
 import {ArgumentType, BindingFlags, DebugContext, DepFlags, NodeDef, NodeFlags, RootData, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, asProviderData, directiveDef, elementDef, providerDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
 import {TestBed, inject, withModule} from '@angular/core/testing';
@@ -163,16 +163,22 @@ export function main() {
 
           // root elements
           expect(() => createAndGetRootNodes(compViewDef(nodes)))
-              .toThrowError('No provider for Dep!');
+              .toThrowError(
+                  'StaticInjectorError[Dep]: \n' +
+                  '  StaticInjectorError[Dep]: \n' +
+                  '    NullInjectorError: No provider for Dep!');
 
           // non root elements
           expect(
               () => createAndGetRootNodes(compViewDef(
                   [elementDef(NodeFlags.None, null !, null !, 4, 'span')].concat(nodes))))
-              .toThrowError('No provider for Dep!');
+              .toThrowError(
+                  'StaticInjectorError[Dep]: \n' +
+                  '  StaticInjectorError[Dep]: \n' +
+                  '    NullInjectorError: No provider for Dep!');
         });
 
-        it('should inject from a parent elment in a parent view', () => {
+        it('should inject from a parent element in a parent view', () => {
           createAndGetRootNodes(compViewDef([
             elementDef(
                 NodeFlags.None, null !, null !, 1, 'div', null !, null !, null !, null !,
@@ -191,7 +197,10 @@ export function main() {
                    elementDef(NodeFlags.None, null !, null !, 1, 'span'),
                    directiveDef(NodeFlags.None, null !, 0, SomeService, ['nonExistingDep'])
                  ])))
-              .toThrowError('No provider for nonExistingDep!');
+              .toThrowError(
+                  'StaticInjectorError[nonExistingDep]: \n' +
+                  '  StaticInjectorError[nonExistingDep]: \n' +
+                  '    NullInjectorError: No provider for nonExistingDep!');
         });
 
         it('should use null for optional missing dependencies', () => {
@@ -381,6 +390,7 @@ export function main() {
       });
 
       it('should report debug info on event errors', () => {
+        const handleErrorSpy = spyOn(TestBed.get(ErrorHandler), 'handleError');
         let emitter = new EventEmitter<any>();
 
         class SomeService {
@@ -395,12 +405,8 @@ export function main() {
               NodeFlags.None, null !, 0, SomeService, [], null !, {emitter: 'someEventName'})
         ]));
 
-        let err: any;
-        try {
-          emitter.emit('someEventInstance');
-        } catch (e) {
-          err = e;
-        }
+        emitter.emit('someEventInstance');
+        const err = handleErrorSpy.calls.mostRecent().args[0];
         expect(err).toBeTruthy();
         const debugCtx = getDebugContext(err);
         expect(debugCtx.view).toBe(view);

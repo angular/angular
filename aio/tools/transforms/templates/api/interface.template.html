@@ -1,0 +1,9 @@
+{% import "lib/paramList.html" as params -%}
+{% import "lib/memberHelpers.html" as memberHelper -%}
+{% extends 'export-base.template.html' -%}
+
+{% block overview %}{% include "includes/interface-overview.html" %}{% endblock %}
+{% block details %}
+  {% include "includes/description.html" %}
+  {$ memberHelper.renderMemberDetails(doc.members, 'instance-members', 'instance-member', 'Members') $}
+{% endblock %}

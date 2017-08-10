@@ -12,28 +12,28 @@ function _main() {
   const repoSlug = getEnvVar('AIO_REPO_SLUG');
   const organization = getEnvVar('AIO_GITHUB_ORGANIZATION');
   const allowedTeamSlugs = getEnvVar('AIO_GITHUB_TEAM_SLUGS').split(',');
+  const trustedPrLabel = getEnvVar('AIO_TRUSTED_PR_LABEL');
   const pr = +getEnvVar('AIO_PREVERIFY_PR');
 
-  const buildVerifier = new BuildVerifier(secret, githubToken, repoSlug, organization, allowedTeamSlugs);
+  const buildVerifier = new BuildVerifier(secret, githubToken, repoSlug, organization, allowedTeamSlugs,
+                                          trustedPrLabel);
 
   // Exit codes:
-  // - 0: The PR author is a member.
-  // - 1: The PR author is not a member.
-  // - 2: An error occurred.
-  buildVerifier.getPrAuthorTeamMembership(pr).
-    then(({author, isMember}) => {
-      if (isMember) {
-        process.exit(0);
-      } else {
-        const errorMessage = `User '${author}' is not an active member of any of the following teams: ` +
-                             `${allowedTeamSlugs.join(', ')}`;
-        onError(errorMessage, 1);
+  // - 0: The PR can be automatically trusted (i.e. author belongs to trusted team or PR has the "trusted PR" label).
+  // - 1: An error occurred.
+  // - 2: The PR cannot be automatically trusted.
+  buildVerifier.getPrIsTrusted(pr).
+    then(isTrusted => {
+      if (!isTrusted) {
+        console.warn(
+            `The PR cannot be automatically verified, because it doesn't have the "${trustedPrLabel}" label and the ` +
+            `the author is not an active member of any of the following teams: ${allowedTeamSlugs.join(', ')}`);
       }
-    }).
-    catch(err => onError(err, 2));
-}
 
-function onError(err: string, exitCode: number) {
-  console.error(err);
-  process.exit(exitCode || 1);
+      process.exit(isTrusted ? 0 : 2);
+    }).
+    catch(err => {
+      console.error(err);
+      process.exit(1);
+    });
 }

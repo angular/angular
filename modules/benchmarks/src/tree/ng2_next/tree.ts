@@ -7,7 +7,7 @@
  */
 
 import {NgIf} from '@angular/common';
-import {ComponentFactory, ComponentFactoryResolver, ComponentRef, Injector, NgModuleRef, RendererFactory2, RootRenderer, Sanitizer, TemplateRef, ViewContainerRef} from '@angular/core';
+import {ComponentFactory, ComponentFactoryResolver, ComponentRef, ErrorHandler, Injector, NgModuleRef, RendererFactory2, RootRenderer, Sanitizer, TemplateRef, ViewContainerRef} from '@angular/core';
 import {ArgumentType, BindingFlags, NodeFlags, ViewDefinition, ViewFlags, anchorDef, createComponentFactory, directiveDef, elementDef, initServicesIfNeeded, textDef, viewDef} from '@angular/core/src/view/index';
 import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
 import {DomSanitizerImpl, SafeStyle} from '@angular/platform-browser/src/security/dom_sanitization_service';
@@ -108,6 +108,7 @@ export class AppModule implements Injector, NgModuleRef<any> {
       case Sanitizer:
         return this.sanitizer;
       case RootRenderer:
+      case ErrorHandler:
         return null;
       case NgModuleRef:
         return this;

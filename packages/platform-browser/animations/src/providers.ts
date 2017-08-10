@@ -6,14 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationDriver, ɵAnimationEngine as AnimationEngine, ɵAnimationStyleNormalizer as AnimationStyleNormalizer, ɵDomAnimationEngine as DomAnimationEngine, ɵNoopAnimationDriver as NoopAnimationDriver, ɵNoopAnimationEngine as NoopAnimationEngine, ɵWebAnimationsDriver as WebAnimationsDriver, ɵWebAnimationsStyleNormalizer as WebAnimationsStyleNormalizer, ɵsupportsWebAnimations as supportsWebAnimations} from '@angular/animations/browser';
+import {AnimationBuilder} from '@angular/animations';
+import {AnimationDriver, ɵAnimationEngine as AnimationEngine, ɵAnimationStyleNormalizer as AnimationStyleNormalizer, ɵNoopAnimationDriver as NoopAnimationDriver, ɵWebAnimationsDriver as WebAnimationsDriver, ɵWebAnimationsStyleNormalizer as WebAnimationsStyleNormalizer, ɵsupportsWebAnimations as supportsWebAnimations} from '@angular/animations/browser';
 import {Injectable, NgZone, Provider, RendererFactory2} from '@angular/core';
 import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
 
+import {BrowserAnimationBuilder} from './animation_builder';
 import {AnimationRendererFactory} from './animation_renderer';
 
 @Injectable()
-export class InjectableAnimationEngine extends DomAnimationEngine {
+export class InjectableAnimationEngine extends AnimationEngine {
   constructor(driver: AnimationDriver, normalizer: AnimationStyleNormalizer) {
     super(driver, normalizer);
   }
@@ -35,12 +37,8 @@ export function instantiateRendererFactory(
   return new AnimationRendererFactory(renderer, engine, zone);
 }
 
-/**
- * Separate providers from the actual module so that we can do a local modification in Google3 to
- * include them in the BrowserModule.
- */
-export const BROWSER_ANIMATIONS_PROVIDERS: Provider[] = [
-  {provide: AnimationDriver, useFactory: instantiateSupportedAnimationDriver},
+const SHARED_ANIMATION_PROVIDERS: Provider[] = [
+  {provide: AnimationBuilder, useClass: BrowserAnimationBuilder},
   {provide: AnimationStyleNormalizer, useFactory: instantiateDefaultStyleNormalizer},
   {provide: AnimationEngine, useClass: InjectableAnimationEngine}, {
     provide: RendererFactory2,
@@ -51,12 +49,16 @@ export const BROWSER_ANIMATIONS_PROVIDERS: Provider[] = [
 
 /**
  * Separate providers from the actual module so that we can do a local modification in Google3 to
+ * include them in the BrowserModule.
+ */
+export const BROWSER_ANIMATIONS_PROVIDERS: Provider[] = [
+  {provide: AnimationDriver, useFactory: instantiateSupportedAnimationDriver},
+  ...SHARED_ANIMATION_PROVIDERS
+];
+
+/**
+ * Separate providers from the actual module so that we can do a local modification in Google3 to
  * include them in the BrowserTestingModule.
  */
-export const BROWSER_NOOP_ANIMATIONS_PROVIDERS: Provider[] = [
-  {provide: AnimationEngine, useClass: NoopAnimationEngine}, {
-    provide: RendererFactory2,
-    useFactory: instantiateRendererFactory,
-    deps: [DomRendererFactory2, AnimationEngine, NgZone]
-  }
-];
+export const BROWSER_NOOP_ANIMATIONS_PROVIDERS: Provider[] =
+    [{provide: AnimationDriver, useClass: NoopAnimationDriver}, ...SHARED_ANIMATION_PROVIDERS];

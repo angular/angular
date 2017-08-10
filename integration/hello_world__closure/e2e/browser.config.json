@@ -1,11 +1,12 @@
 {
   "open": false,
-  "logLevel": "silent",  
+  "logLevel": "silent",
   "port": 8080,
   "server": {
     "baseDir": "src",
     "routes": {
-      "/dist": "dist"
+      "/dist": "dist",
+      "/node_modules": "node_modules"
     },
     "middleware": {
       "0": null

@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵparseCookieValue as parseCookieValue} from '@angular/common';
 import {ɵglobal as global} from '@angular/core';
+
 import {setRootDomAdapter} from '../dom/dom_adapter';
 
 import {GenericBrowserDomAdapter} from './generic_browser_adapter';
@@ -144,12 +146,12 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return evt.defaultPrevented || evt.returnValue != null && !evt.returnValue;
   }
   getInnerHTML(el: HTMLElement): string { return el.innerHTML; }
-  getTemplateContent(el: Node): Node {
+  getTemplateContent(el: Node): Node|null {
     return 'content' in el && el instanceof HTMLTemplateElement ? el.content : null;
   }
   getOuterHTML(el: HTMLElement): string { return el.outerHTML; }
   nodeName(node: Node): string { return node.nodeName; }
-  nodeValue(node: Node): string { return node.nodeValue; }
+  nodeValue(node: Node): string|null { return node.nodeValue; }
   type(node: HTMLInputElement): string { return node.type; }
   content(node: Node): Node {
     if (this.hasProperty(node, 'content')) {
@@ -158,9 +160,9 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
       return node;
     }
   }
-  firstChild(el: Node): Node { return el.firstChild; }
-  nextSibling(el: Node): Node { return el.nextSibling; }
-  parentElement(el: Node): Node { return el.parentNode; }
+  firstChild(el: Node): Node|null { return el.firstChild; }
+  nextSibling(el: Node): Node|null { return el.nextSibling; }
+  parentElement(el: Node): Node|null { return el.parentNode; }
   childNodes(el: any): Node[] { return el.childNodes; }
   childNodesAsList(el: Node): any[] {
     const childNodes = el.childNodes;
@@ -190,7 +192,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
   insertAfter(parent: Node, ref: Node, node: any) { parent.insertBefore(node, ref.nextSibling); }
   setInnerHTML(el: Element, value: string) { el.innerHTML = value; }
-  getText(el: Node): string { return el.textContent; }
+  getText(el: Node): string|null { return el.textContent; }
   setText(el: Node, value: string) { el.textContent = value; }
   getValue(el: any): string { return el.value; }
   setValue(el: any, value: string) { el.value = value; }
@@ -242,7 +244,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     element.style[stylename] = '';
   }
   getStyle(element: any, stylename: string): string { return element.style[stylename]; }
-  hasStyle(element: any, styleName: string, styleValue: string = null): boolean {
+  hasStyle(element: any, styleName: string, styleValue?: string|null): boolean {
     const value = this.getStyle(element, styleName) || '';
     return styleValue ? value == styleValue : value.length > 0;
   }
@@ -262,7 +264,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   hasAttributeNS(element: Element, ns: string, attribute: string): boolean {
     return element.hasAttributeNS(ns, attribute);
   }
-  getAttribute(element: Element, attribute: string): string {
+  getAttribute(element: Element, attribute: string): string|null {
     return element.getAttribute(attribute);
   }
   getAttributeNS(element: Element, ns: string, name: string): string {
@@ -335,7 +337,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
 
     return _keyMap[key] || key;
   }
-  getGlobalEventTarget(doc: Document, target: string): EventTarget {
+  getGlobalEventTarget(doc: Document, target: string): EventTarget|null {
     if (target === 'window') {
       return window;
     }
@@ -345,10 +347,11 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     if (target === 'body') {
       return document.body;
     }
+    return null;
   }
   getHistory(): History { return window.history; }
   getLocation(): Location { return window.location; }
-  getBaseHref(doc: Document): string {
+  getBaseHref(doc: Document): string|null {
     const href = getBaseElementHref();
     return href == null ? null : relativePath(href);
   }
@@ -357,12 +360,11 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   setData(element: Element, name: string, value: string) {
     this.setAttribute(element, 'data-' + name, value);
   }
-  getData(element: Element, name: string): string {
+  getData(element: Element, name: string): string|null {
     return this.getAttribute(element, 'data-' + name);
   }
   getComputedStyle(element: any): any { return getComputedStyle(element); }
   // TODO(tbosch): move this into a separate environment class once we have it
-  setGlobalVar(path: string, value: any) { setValueOnPath(global, path, value); }
   supportsWebAnimation(): boolean {
     return typeof(<any>Element).prototype['animate'] === 'function';
   }
@@ -375,7 +377,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
 
   supportsCookies(): boolean { return true; }
 
-  getCookie(name: string): string { return parseCookieValue(document.cookie, name); }
+  getCookie(name: string): string|null { return parseCookieValue(document.cookie, name); }
 
   setCookie(name: string, value: string) {
     // document.cookie is magical, assigning into it assigns/overrides one cookie value, but does
@@ -384,10 +386,10 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
 }
 
-let baseElement: HTMLElement = null;
-function getBaseElementHref(): string {
+let baseElement: HTMLElement|null = null;
+function getBaseElementHref(): string|null {
   if (!baseElement) {
-    baseElement = document.querySelector('base');
+    baseElement = document.querySelector('base') !;
     if (!baseElement) {
       return null;
     }
@@ -404,34 +406,4 @@ function relativePath(url: any): string {
   urlParsingNode.setAttribute('href', url);
   return (urlParsingNode.pathname.charAt(0) === '/') ? urlParsingNode.pathname :
                                                        '/' + urlParsingNode.pathname;
-}
-
-export function parseCookieValue(cookieStr: string, name: string): string {
-  name = encodeURIComponent(name);
-  for (const cookie of cookieStr.split(';')) {
-    const eqIndex = cookie.indexOf('=');
-    const [cookieName, cookieValue]: string[] =
-        eqIndex == -1 ? [cookie, ''] : [cookie.slice(0, eqIndex), cookie.slice(eqIndex + 1)];
-    if (cookieName.trim() === name) {
-      return decodeURIComponent(cookieValue);
-    }
-  }
-  return null;
-}
-
-export function setValueOnPath(global: any, path: string, value: any) {
-  const parts = path.split('.');
-  let obj: any = global;
-  while (parts.length > 1) {
-    const name = parts.shift();
-    if (obj.hasOwnProperty(name) && obj[name] != null) {
-      obj = obj[name];
-    } else {
-      obj = obj[name] = {};
-    }
-  }
-  if (obj === undefined || obj === null) {
-    obj = {};
-  }
-  obj[parts.shift()] = value;
 }

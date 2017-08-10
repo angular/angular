@@ -30,5 +30,5 @@ export enum SecurityContext {
  * @stable
  */
 export abstract class Sanitizer {
-  abstract sanitize(context: SecurityContext, value: string): string;
+  abstract sanitize(context: SecurityContext, value: {}|string|null): string|null;
 }

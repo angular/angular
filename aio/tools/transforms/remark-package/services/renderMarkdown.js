@@ -1,5 +1,6 @@
 const remark = require('remark');
 const html = require('remark-html');
+const code = require('./handlers/code');
 
 /**
  * @dgService renderMarkdown
@@ -7,6 +8,7 @@ const html = require('remark-html');
  * Render the markdown in the given string as HTML.
  */
 module.exports = function renderMarkdown() {
+  const handlers = { code };
   const renderer = remark()
                     .use(inlineTagDefs)
                     .use(noIndentedCodeBlocks)
@@ -15,7 +17,7 @@ module.exports = function renderMarkdown() {
                     // .use(() => tree => {
                     //   console.log(require('util').inspect(tree, { colors: true, depth: 4 }));
                     // })
-                    .use(html);
+                    .use(html, { handlers });
 
   return function renderMarkdownImpl(content) {
     return renderer.processSync(content).toString();
@@ -89,26 +91,23 @@ module.exports = function renderMarkdown() {
       const openMatch = anyBlockMatcher.exec(value);
       if (openMatch) {
         const blockName = openMatch[1];
-        const fullMatch = matchRecursiveRegExp(value, createOpenMatcher(blockName), createCloseMatcher(blockName))[0];
-        if (silent || !fullMatch) {
-          // either we are not eating (silent) or the match failed
-          return !!fullMatch;
+        try {
+          const fullMatch = matchRecursiveRegExp(value, createOpenMatcher(blockName), createCloseMatcher(blockName))[0];
+          if (silent || !fullMatch) {
+            // either we are not eating (silent) or the match failed
+            return !!fullMatch;
+          }
+          return eat(fullMatch[0])({
+            type: 'html',
+            value: fullMatch[0]
+          });
+        } catch(e) {
+          this.file.fail('Unmatched plain HTML block tag ' + e.message);
         }
-        return eat(fullMatch[0])({
-          type: 'html',
-          value: fullMatch[0]
-        });
       }
     }
   }
 };
-
-
-
-
-
-
-
 
 /**
  * matchRecursiveRegExp
@@ -166,30 +165,32 @@ function rgxFindMatchPos(str, left, right, flags) {
   let index, match, start, end;
   let count = 0;
 
-  do {
-    while ((match = bothMatcher.exec(str))) {
-      if (leftMatcher.test(match[0])) {
-        if (!(count++)) {
-          index = bothMatcher.lastIndex;
-          start = index - match[0].length;
-        }
-      } else if (count) {
-        if (!--count) {
-          end = match.index + match[0].length;
-          var obj = {
-            left: {start: start, end: index},
-            match: {start: index, end: match.index},
-            right: {start: match.index, end: end},
-            wholeMatch: {start: start, end: end}
-          };
-          pos.push(obj);
-          if (!global) {
-            return pos;
-          }
+  while ((match = bothMatcher.exec(str))) {
+    if (leftMatcher.test(match[0])) {
+      if (!(count++)) {
+        index = bothMatcher.lastIndex;
+        start = index - match[0].length;
+      }
+    } else if (count) {
+      if (!--count) {
+        end = match.index + match[0].length;
+        var obj = {
+          left: {start: start, end: index},
+          match: {start: index, end: match.index},
+          right: {start: match.index, end: end},
+          wholeMatch: {start: start, end: end}
+        };
+        pos.push(obj);
+        if (!global) {
+          return pos;
         }
       }
     }
-  } while (count && (bothMatcher.lastIndex = index));
+  }
+
+  if (count) {
+    throw new Error(str.slice(start, index));
+  }
 
   return pos;
 }

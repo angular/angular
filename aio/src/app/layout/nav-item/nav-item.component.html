@@ -1,6 +1,6 @@
 <div *ngIf="!node.children">
   <a href="{{node.url}}" [ngClass]="classes" title="{{node.tooltip}}"
-    (click)="itemClicked()" class="vertical-menu-item">
+    class="vertical-menu-item">
     {{node.title}}
   </a>
 </div>
@@ -9,17 +9,19 @@
   <a *ngIf="node.url != null" href="{{node.url}}" [ngClass]="classes" title="{{node.tooltip}}"
     (click)="headerClicked()" class="vertical-menu-item heading">
     {{node.title}}
-    <md-icon class="rotating-icon">keyboard_arrow_right</md-icon>
+    <md-icon class="rotating-icon" svgIcon="keyboard_arrow_right"></md-icon>
   </a>
 
-  <a *ngIf="node.url == null" [ngClass]="classes" title="{{node.tooltip}}"
-    (click)="headerClicked()" class="vertical-menu-item heading">
+  <button *ngIf="node.url == null" type="button" [ngClass]="classes" title="{{node.tooltip}}"
+    (click)="headerClicked()" class="vertical-menu-item heading"
+    [attr.aria-pressed]="isExpanded">
     {{node.title}}
-    <md-icon class="rotating-icon">keyboard_arrow_right</md-icon>
-  </a>
+    <md-icon class="rotating-icon" svgIcon="keyboard_arrow_right"></md-icon>
+  </button>
 
   <div class="heading-children" [ngClass]="classes">
-    <aio-nav-item *ngFor="let node of node.children" [level]="level + 1"
+    <aio-nav-item *ngFor="let node of nodeChildren" [level]="level + 1" [isWide]="isWide"
+    [isParentExpanded]="isExpanded"
     [node]="node" [selectedNodes]="selectedNodes"></aio-nav-item>
   </div>
 </div>

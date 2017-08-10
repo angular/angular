@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, ComponentFactory, RendererType2, SchemaMetadata, Type, ViewEncapsulation, ɵLifecycleHooks, ɵreflector, ɵstringify as stringify} from '@angular/core';
+import {ChangeDetectionStrategy, ComponentFactory, RendererType2, SchemaMetadata, Type, ViewEncapsulation, ɵstringify as stringify} from '@angular/core';
 
 import {StaticSymbol} from './aot/static_symbol';
+import {LifecycleHooks} from './lifecycle_reflector';
 import {CssSelector} from './selector';
 import {splitAtColon} from './util';
 
@@ -111,7 +112,8 @@ export function identifierModuleUrl(compileIdentifier: CompileIdentifierMetadata
   if (ref instanceof StaticSymbol) {
     return ref.filePath;
   }
-  return ɵreflector.importUri(ref);
+  // Runtime type
+  return `./${stringify(ref)}`;
 }
 
 export function viewClassName(compType: any, embeddedTemplateIndex: number): string {
@@ -124,10 +126,6 @@ export function rendererTypeName(compType: any): string {
 
 export function hostViewClassName(compType: any): string {
   return `HostView_${identifierName({reference: compType})}`;
-}
-
-export function dirWrapperClassName(dirType: any) {
-  return `Wrapper_${identifierName({reference: dirType})}`;
 }
 
 export function componentFactoryName(compType: any): string {
@@ -203,7 +201,7 @@ export interface CompileTokenMetadata {
  */
 export interface CompileTypeMetadata extends CompileIdentifierMetadata {
   diDeps: CompileDiDependencyMetadata[];
-  lifecycleHooks: ɵLifecycleHooks[];
+  lifecycleHooks: LifecycleHooks[];
   reference: any;
 }
 

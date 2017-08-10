@@ -1,12 +1,4 @@
-@title
-Browser support
-
-@intro
-Browser support and polyfills guide.
-
-@description
-
-
+# Browser support
 
 Angular supports most recent browsers. This includes the following specific versions:
 
@@ -44,7 +36,7 @@ Angular supports most recent browsers. This includes the following specific vers
     </th>
 
     <th>
-      IE mobile
+      IE Mobile
     </th>
 
   </tr>
@@ -76,7 +68,7 @@ Angular supports most recent browsers. This includes the following specific vers
     </td>
 
     <td>
-      Marshmallow (6.0)
+      Nougat (7.0)<br>Marshmallow (6.0)
     </td>
 
     <td>
@@ -201,9 +193,9 @@ Angular supports most recent browsers. This includes the following specific vers
 
 
 
-Angular's continuous integration process runs unit tests of the framework on all of these browsers for every pull request, 
-using <a href="https://saucelabs.com/" target="_blank">SauceLabs</a> and 
-<a href="https://www.browserstack.com" target="_blank">Browserstack</a>.
+Angular's continuous integration process runs unit tests of the framework on all of these browsers for every pull request,
+using <a href="https://saucelabs.com/">SauceLabs</a> and
+<a href="https://www.browserstack.com">Browserstack</a>.
 
 
 </div>
@@ -223,7 +215,7 @@ that implement missing features in JavaScript.
 
 
 
-A particular browser may require at least one polyfill to run _any_ Angular application. 
+A particular browser may require at least one polyfill to run _any_ Angular application.
 You may need additional polyfills for specific features.
 
 The tables below can help you determine which polyfills to load, depending on the browsers you target and the features you use.
@@ -249,19 +241,19 @@ These are the polyfills required to run an Angular application on each supported
 <table>
 
   <tr style="vertical-align: top">
- 
+
     <th>
-      Browsers (desktop & mobile)
+      Browsers (Desktop & Mobile)
     </th>
 
     <th>
-      Polyfills required
+      Polyfills Required
     </th>
 
   </tr>
 
   <tr style="vertical-align: top">
- 
+
     <td>
       Chrome, Firefox, Edge, Safari 9+
     </td>
@@ -273,7 +265,7 @@ These are the polyfills required to run an Angular application on each supported
   </tr>
 
   <tr style="vertical-align: top">
- 
+
     <td>
       Safari 7 & 8, IE10 & 11, Android 4.1+
     </td>
@@ -287,7 +279,7 @@ These are the polyfills required to run an Angular application on each supported
   </tr>
 
   <tr style="vertical-align: top">
- 
+
     <td>
       IE9
     </td>
@@ -317,7 +309,7 @@ Here are the features which may require additional polyfills:
 <table>
 
   <tr style="vertical-align: top">
- 
+
     <th>
       Feature
     </th>
@@ -327,15 +319,16 @@ Here are the features which may require additional polyfills:
     </th>
 
     <th style="width: 50%">
-       Browsers (desktop & mobile)
+       Browsers (Desktop & Mobile)
     </th>
 
   </tr>
 
   <tr style="vertical-align: top">
- 
+
     <td>
-      <a href="./animations.html">Animations</a>
+
+      [Animations](guide/animations)
     </td>
 
     <td>
@@ -351,9 +344,10 @@ Here are the features which may require additional polyfills:
   </tr>
 
   <tr style="vertical-align: top">
- 
+
     <td>
-      <a href="../api/common/index/DatePipe-pipe.html" target="_blank">Date</a>      <span>,  </span>      <a href="../api/common/index/CurrencyPipe-pipe.html" target="_blank">currency</a>      <span>, </span>      <a href="../api/common/index/DecimalPipe-pipe.html" target="_blank">decimal</a>      <span> and </span>      <a href="../api/common/index/PercentPipe-pipe.html" target="_blank">percent</a>      <span> pipes</span>
+
+    [Date](api/common/DatePipe), [currency](api/common/CurrencyPipe), [decimal](api/common/DecimalPipe) and [percent](api/common/PercentPipe) pipes
     </td>
 
     <td>
@@ -369,13 +363,14 @@ Here are the features which may require additional polyfills:
   </tr>
 
   <tr style="vertical-align: top">
- 
+
     <td>
-       <a href="../api/common/index/NgClass-directive.html" target="_blank">NgClass</a>      <span> on SVG elements</span>
+
+       [NgClass](api/common/NgClass) on SVG elements
     </td>
 
     <td>
- 
+
 
       [classList](guide/browser-support#classlist)
     </td>
@@ -387,15 +382,17 @@ Here are the features which may require additional polyfills:
   </tr>
 
   <tr style="vertical-align: top">
- 
+
     <td>
-      <a href="./server-communication.html">Http</a>      <span> when sending and receiving binary data</span>
+
+      [Http](guide/http) when sending and receiving binary data
     </td>
 
     <td>
- 
 
-      [Typed&nbsp;Array](guide/browser-support#typedarray) <br>[Blob](guide/browser-support#blob)<br>[FormData](guide/browser-support#formdata)
+      [Typed&nbsp;Array](guide/browser-support#typedarray)<br>
+      [Blob](guide/browser-support#blob)<br>
+      [FormData](guide/browser-support#formdata)
     </td>
 
     <td>
@@ -409,7 +406,7 @@ Here are the features which may require additional polyfills:
 
 
 ### Suggested polyfills ##
-Below are the polyfills which are used to test the framework itself. They are a good starting point for an application. 
+Below are the polyfills which are used to test the framework itself. They are a good starting point for an application.
 
 
 <table>
@@ -433,7 +430,7 @@ Below are the polyfills which are used to test the framework itself. They are a 
   <tr>
 
     <td>
-      <a id='core-es6' href="https://github.com/zloirock/core-js" target="_blank">ES6</a>
+      <a id='core-es6' href="https://github.com/zloirock/core-js">ES6</a>
     </td>
 
     <td>
@@ -449,7 +446,7 @@ Below are the polyfills which are used to test the framework itself. They are a 
   <tr>
 
     <td>
-      <a id='classlist' href="https://github.com/eligrey/classList.js" target="_blank">classList</a>
+      <a id='classlist' href="https://github.com/eligrey/classList.js">classList</a>
     </td>
 
     <td>
@@ -465,7 +462,7 @@ Below are the polyfills which are used to test the framework itself. They are a 
   <tr>
 
     <td>
-      <a id='intl' href="https://github.com/andyearnshaw/Intl.js" target="_blank">Intl</a>
+      <a id='intl' href="https://github.com/andyearnshaw/Intl.js">Intl</a>
     </td>
 
     <td>
@@ -481,7 +478,7 @@ Below are the polyfills which are used to test the framework itself. They are a 
   <tr>
 
     <td>
-       <a id='web-animations' href="https://github.com/web-animations/web-animations-js" target="_blank">Web Animations</a>
+       <a id='web-animations' href="https://github.com/web-animations/web-animations-js">Web Animations</a>
     </td>
 
     <td>
@@ -497,7 +494,7 @@ Below are the polyfills which are used to test the framework itself. They are a 
   <tr>
 
     <td>
-      <a id='typedarray' href="https://github.com/inexorabletash/polyfill/blob/master/typedarray.js" target="_blank">Typed Array</a>
+      <a id='typedarray' href="https://github.com/inexorabletash/polyfill/blob/master/typedarray.js">Typed Array</a>
     </td>
 
     <td>
@@ -513,7 +510,7 @@ Below are the polyfills which are used to test the framework itself. They are a 
   <tr>
 
     <td>
-       <a id='blob' href="https://github.com/eligrey/Blob.js" target="_blank">Blob</a>
+       <a id='blob' href="https://github.com/eligrey/Blob.js">Blob</a>
     </td>
 
     <td>
@@ -529,7 +526,7 @@ Below are the polyfills which are used to test the framework itself. They are a 
   <tr>
 
     <td>
-       <a id='formdata' href="https://github.com/francois2metz/html5-formdata" target="_blank">FormData</a>
+       <a id='formdata' href="https://github.com/francois2metz/html5-formdata">FormData</a>
     </td>
 
     <td>
@@ -546,5 +543,5 @@ Below are the polyfills which are used to test the framework itself. They are a 
 
 
 
-\* Figures are for minified and gzipped code, 
-computed with the <a href="http://closure-compiler.appspot.com/home" target="_blank">closure compiler</a>.
+\* Figures are for minified and gzipped code,
+computed with the <a href="http://closure-compiler.appspot.com/home">closure compiler</a>.

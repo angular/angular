@@ -22,6 +22,7 @@ export class HeroService {
 
   getHero(id: number | string) {
     return heroesPromise
+      // (+) before `id` turns the string into a number
       .then(heroes => heroes.find(hero => hero.id === +id));
   }
 }

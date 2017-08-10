@@ -1,5 +1,0 @@
-/**
- * @license Angular v0.0.0-ROUTERPLACEHOLDER
- * (c) 2010-2017 Google, Inc. https://angular.io/
- * License: MIT
- */

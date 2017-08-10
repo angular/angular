@@ -15,15 +15,7 @@ import {AotSummaryResolverHost} from './summary_resolver';
  */
 export interface AotCompilerHost extends StaticSymbolResolverHost, AotSummaryResolverHost {
   /**
-   * Converts a file path to a module name that can be used as an `import.
-   * I.e. `path/to/importedFile.ts` should be imported by `path/to/containingFile.ts`.
-   *
-   * See ImportResolver.
-   */
-  fileNameToModuleName(importedFilePath: string, containingFilePath: string): string|null;
-
-  /**
    * Loads a resource (e.g. html / css)
    */
-  loadResource(path: string): Promise<string>;
+  loadResource(path: string): Promise<string>|string;
 }

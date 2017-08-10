@@ -4,6 +4,7 @@
     "declaration": true,
     "stripInternal": true,
     "experimentalDecorators": true,
+    "strictNullChecks": true,
     "module": "es2015",
     "moduleResolution": "node",
     "outDir": "../../dist/packages/platform-browser",

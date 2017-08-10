@@ -15,33 +15,36 @@ import * as ts from 'typescript';
 const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 const DTS = /\.d\.ts$/;
 const NODE_MODULES = '/node_modules/';
-const IS_GENERATED = /\.(ngfactory|ngstyle)$/;
-const GENERATED_FILES = /\.ngfactory\.ts$|\.ngstyle\.ts$/;
-const GENERATED_OR_DTS_FILES = /\.d\.ts$|\.ngfactory\.ts$|\.ngstyle\.ts$/;
+const IS_GENERATED = /\.(ngfactory|ngstyle|ngsummary)$/;
+const GENERATED_FILES = /\.ngfactory\.ts$|\.ngstyle\.ts$|\.ngsummary\.ts$/;
+const GENERATED_OR_DTS_FILES = /\.d\.ts$|\.ngfactory\.ts$|\.ngstyle\.ts$|\.ngsummary\.ts$/;
 const SHALLOW_IMPORT = /^((\w|-)+|(@(\w|-)+(\/(\w|-)+)+))$/;
 
 export interface CompilerHostContext extends ts.ModuleResolutionHost {
-  readResource(fileName: string): Promise<string>;
+  readResource?(fileName: string): Promise<string>|string;
   assumeFileExists(fileName: string): void;
 }
 
+export interface MetadataProvider { getMetadata(source: ts.SourceFile): ModuleMetadata|undefined; }
+
 export class CompilerHost implements AotCompilerHost {
-  protected metadataCollector = new MetadataCollector();
   private isGenDirChildOfRootDir: boolean;
   protected basePath: string;
   private genDir: string;
   private resolverCache = new Map<string, ModuleMetadata[]>();
-  private bundleIndexCache = new Map<string, boolean>();
-  private bundleIndexNames = new Set<string>();
+  private flatModuleIndexCache = new Map<string, boolean>();
+  private flatModuleIndexNames = new Set<string>();
+  private flatModuleIndexRedirectNames = new Set<string>();
   private moduleFileNames = new Map<string, string|null>();
   protected resolveModuleNameHost: CompilerHostContext;
 
   constructor(
       protected program: ts.Program, protected options: AngularCompilerOptions,
-      protected context: CompilerHostContext, collectorOptions?: CollectorOptions) {
+      protected context: CompilerHostContext, collectorOptions?: CollectorOptions,
+      protected metadataProvider: MetadataProvider = new MetadataCollector()) {
     // normalize the path so that it never ends with '/'.
-    this.basePath = path.normalize(path.join(this.options.basePath, '.')).replace(/\\/g, '/');
-    this.genDir = path.normalize(path.join(this.options.genDir, '.')).replace(/\\/g, '/');
+    this.basePath = path.normalize(path.join(this.options.basePath !, '.')).replace(/\\/g, '/');
+    this.genDir = path.normalize(path.join(this.options.genDir !, '.')).replace(/\\/g, '/');
 
     const genPath: string = path.relative(this.basePath, this.genDir);
     this.isGenDirChildOfRootDir = genPath === '' || !genPath.startsWith('..');
@@ -109,7 +112,7 @@ export class CompilerHost implements AotCompilerHost {
   fileNameToModuleName(importedFile: string, containingFile: string): string {
     // If a file does not yet exist (because we compile it later), we still need to
     // assume it exists it so that the `resolve` method works!
-    if (!this.context.fileExists(importedFile)) {
+    if (importedFile !== containingFile && !this.context.fileExists(importedFile)) {
       this.context.assumeFileExists(importedFile);
     }
 
@@ -186,10 +189,11 @@ export class CompilerHost implements AotCompilerHost {
   getMetadataFor(filePath: string): ModuleMetadata[]|undefined {
     if (!this.context.fileExists(filePath)) {
       // If the file doesn't exists then we cannot return metadata for the file.
-      // This will occur if the user refernced a declared module for which no file
+      // This will occur if the user referenced a declared module for which no file
       // exists for the module (i.e. jQuery or angularjs).
       return;
     }
+
     if (DTS.test(filePath)) {
       const metadataPath = filePath.replace(DTS, '.metadata.json');
       if (this.context.fileExists(metadataPath)) {
@@ -201,11 +205,11 @@ export class CompilerHost implements AotCompilerHost {
         return [this.upgradeVersion1Metadata(
             {'__symbolic': 'module', 'version': 1, 'metadata': {}}, filePath)];
       }
-    } else {
-      const sf = this.getSourceFile(filePath);
-      const metadata = this.metadataCollector.getMetadata(sf);
-      return metadata ? [metadata] : [];
     }
+
+    const sf = this.getSourceFile(filePath);
+    const metadata = this.metadataProvider.getMetadata(sf);
+    return metadata ? [metadata] : [];
   }
 
   readMetadata(filePath: string, dtsFilePath: string): ModuleMetadata[] {
@@ -243,7 +247,7 @@ export class CompilerHost implements AotCompilerHost {
       v3Metadata.metadata[prop] = v1Metadata.metadata[prop];
     }
 
-    const exports = this.metadataCollector.getMetadata(this.getSourceFile(dtsFilePath));
+    const exports = this.metadataProvider.getMetadata(this.getSourceFile(dtsFilePath));
     if (exports) {
       for (let prop in exports.metadata) {
         if (!v3Metadata.metadata[prop]) {
@@ -257,7 +261,10 @@ export class CompilerHost implements AotCompilerHost {
     return v3Metadata;
   }
 
-  loadResource(filePath: string): Promise<string> { return this.context.readResource(filePath); }
+  loadResource(filePath: string): Promise<string>|string {
+    if (this.context.readResource) return this.context.readResource(filePath);
+    return this.context.readFile(filePath);
+  }
 
   loadSummary(filePath: string): string|null {
     if (this.context.fileExists(filePath)) {
@@ -280,7 +287,8 @@ export class CompilerHost implements AotCompilerHost {
       // Check for a bundle index.
       if (this.hasBundleIndex(filePath)) {
         const normalFilePath = path.normalize(filePath);
-        return this.bundleIndexNames.has(normalFilePath);
+        return this.flatModuleIndexNames.has(normalFilePath) ||
+            this.flatModuleIndexRedirectNames.has(normalFilePath);
       }
     }
     return true;
@@ -306,12 +314,12 @@ export class CompilerHost implements AotCompilerHost {
       relativePath = relativePath.substr(3);
     }
 
-    return path.join(this.options.genDir, relativePath);
+    return path.join(this.options.genDir !, relativePath);
   }
 
   private hasBundleIndex(filePath: string): boolean {
     const checkBundleIndex = (directory: string): boolean => {
-      let result = this.bundleIndexCache.get(directory);
+      let result = this.flatModuleIndexCache.get(directory);
       if (result == null) {
         if (path.basename(directory) == 'node_module') {
           // Don't look outside the node_modules this package is installed in.
@@ -331,8 +339,14 @@ export class CompilerHost implements AotCompilerHost {
                   const metadataFile = typings.replace(DTS, '.metadata.json');
                   if (this.context.fileExists(metadataFile)) {
                     const metadata = JSON.parse(this.context.readFile(metadataFile));
-                    if (metadata.importAs) {
-                      this.bundleIndexNames.add(typings);
+                    if (metadata.flatModuleIndexRedirect) {
+                      this.flatModuleIndexRedirectNames.add(typings);
+                      // Note: don't set result = true,
+                      // as this would mark this folder
+                      // as having a bundleIndex too early without
+                      // filling the bundleIndexNames.
+                    } else if (metadata.importAs) {
+                      this.flatModuleIndexNames.add(typings);
                       result = true;
                     }
                   }
@@ -352,7 +366,7 @@ export class CompilerHost implements AotCompilerHost {
             result = false;
           }
         }
-        this.bundleIndexCache.set(directory, result);
+        this.flatModuleIndexCache.set(directory, result);
       }
       return result;
     };

@@ -58,7 +58,7 @@ export interface Inject { token: any; }
  * @stable
  * @Annotation
  */
-export const Inject: InjectDecorator = makeParamDecorator('Inject', [['token', undefined]]);
+export const Inject: InjectDecorator = makeParamDecorator('Inject', (token: any) => ({token}));
 
 
 /**
@@ -104,7 +104,7 @@ export interface Optional {}
  * @stable
  * @Annotation
  */
-export const Optional: OptionalDecorator = makeParamDecorator('Optional', []);
+export const Optional: OptionalDecorator = makeParamDecorator('Optional');
 
 /**
  * Type of the Injectable decorator / constructor function.
@@ -127,7 +127,7 @@ export interface InjectableDecorator {
    *
    * {@example core/di/ts/metadata_spec.ts region='Injectable'}
    *
-   * {@link Injector} will throw {@link NoAnnotationError} when trying to instantiate a class that
+   * {@link Injector} will throw an error when trying to instantiate a class that
    * does not have `@Injectable` marker, as shown in the example below.
    *
    * {@example core/di/ts/metadata_spec.ts region='InjectableThrows'}
@@ -151,7 +151,7 @@ export interface Injectable {}
  * @stable
  * @Annotation
  */
-export const Injectable: InjectableDecorator = <InjectableDecorator>makeDecorator('Injectable', []);
+export const Injectable: InjectableDecorator = makeDecorator('Injectable');
 
 /**
  * Type of the Self decorator / constructor function.
@@ -195,7 +195,7 @@ export interface Self {}
  * @stable
  * @Annotation
  */
-export const Self: SelfDecorator = makeParamDecorator('Self', []);
+export const Self: SelfDecorator = makeParamDecorator('Self');
 
 
 /**
@@ -240,7 +240,7 @@ export interface SkipSelf {}
  * @stable
  * @Annotation
  */
-export const SkipSelf: SkipSelfDecorator = makeParamDecorator('SkipSelf', []);
+export const SkipSelf: SkipSelfDecorator = makeParamDecorator('SkipSelf');
 
 /**
  * Type of the Host decorator / constructor function.
@@ -285,4 +285,4 @@ export interface Host {}
  * @stable
  * @Annotation
  */
-export const Host: HostDecorator = makeParamDecorator('Host', []);
+export const Host: HostDecorator = makeParamDecorator('Host');

@@ -4,24 +4,23 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { ApiListComponent } from './api-list.component';
 import { ApiItem, ApiSection, ApiService } from './api.service';
 import { LocationService } from 'app/shared/location.service';
+import { SharedModule } from 'app/shared/shared.module';
 
 describe('ApiListComponent', () => {
   let component: ApiListComponent;
   let fixture: ComponentFixture<ApiListComponent>;
   let sections: ApiSection[];
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [ SharedModule ],
       declarations: [ ApiListComponent ],
       providers: [
         { provide: ApiService, useClass: TestApiService },
         { provide: LocationService, useClass: TestLocationService }
       ]
     });
-    TestBed.compileComponents();
-  }));
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(ApiListComponent);
     component = fixture.componentInstance;
     sections = getApiSections();
@@ -78,17 +77,17 @@ describe('ApiListComponent', () => {
     });
 
     it('item.show should be true for items with selected status', () => {
-      component.setStatus({name: 'stable', title: 'Stable'});
+      component.setStatus({value: 'stable', title: 'Stable'});
       expectFilteredResult('status: stable', item => item.stability === 'stable');
     });
 
     it('item.show should be true for items with "security-risk" status when selected', () => {
-      component.setStatus({name: 'security-risk', title: 'Security Risk'});
+      component.setStatus({value: 'security-risk', title: 'Security Risk'});
       expectFilteredResult('status: security-risk', item => item.securityRisk);
     });
 
     it('item.show should be true for items of selected type', () => {
-      component.setType({name: 'class', title: 'Class'});
+      component.setType({value: 'class', title: 'Class'});
       expectFilteredResult('type: class', item => item.docType === 'class');
     });
 
@@ -192,8 +191,8 @@ describe('ApiListComponent', () => {
 
     it('should have query, status, and type', () => {
       component.setQuery('foo');
-      component.setStatus({name: 'stable', title: 'Stable'});
-      component.setType({name: 'class', title: 'Class'});
+      component.setStatus({value: 'stable', title: 'Stable'});
+      component.setType({value: 'class', title: 'Class'});
 
       const search = locationService.setSearch.calls.mostRecent().args[1];
       expect(search.query).toBe('foo');

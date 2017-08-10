@@ -101,7 +101,7 @@ Add a file named `hero-detail.component.ts` to the `app/` folder.
 This file will hold the new `HeroDetailComponent`.
 
 The file and component names follow the standard described in the Angular
-[style guide](guide/style-guide#naming).
+[style guide](guide/styleguide#naming).
 
 * The component _class_ name should be written in _upper camel case_ and end in the word "Component".
 The hero detail component class is `HeroDetailComponent`.
@@ -113,7 +113,7 @@ The `HeroDetailComponent` class goes in the `hero-detail.component.ts` file.
 Start writing the `HeroDetailComponent` as follows:
 
 
-<code-example path="toh-3/app/hero-detail.component.1.ts" region="v1" title="app/hero-detail.component.ts (initial version)" linenums="false">
+<code-example path="toh-pt3/app/hero-detail.component.1.ts" region="v1" title="app/hero-detail.component.ts (initial version)" linenums="false">
 
 </code-example>
 
@@ -142,7 +142,7 @@ Replace the word, "selectedHero", with the word, "hero", everywhere in the templ
 When you're done, the new template should look like this:
 
 
-<code-example path="toh-3/src/app/hero-detail.component.ts" region="template" title="src/app/hero-detail.component.ts (template)" linenums="false">
+<code-example path="toh-pt3/src/app/hero-detail.component.ts" region="template" title="src/app/hero-detail.component.ts (template)" linenums="false">
 
 </code-example>
 
@@ -153,7 +153,7 @@ When you're done, the new template should look like this:
 The `HeroDetailComponent` template binds to the component's `hero` property.
 Add that property to the `HeroDetailComponent` class like this:
 
-<code-example path="toh-3/app/hero-detail.component.1.ts" region="hero" title="src/app/hero-detail.component.ts (hero property)">
+<code-example path="toh-pt3/app/hero-detail.component.1.ts" region="hero" title="src/app/hero-detail.component.ts (hero property)">
 
 </code-example>
 
@@ -162,12 +162,12 @@ Add that property to the `HeroDetailComponent` class like this:
 The `hero` property is typed as an instance of `Hero`.
 The `Hero` class is still in the `app.component.ts` file.
 Now there are two components that need to reference the `Hero` class.
-The Angular [style guide](guide/style-guide#rule-of-one "Style guide: rule of one") recommends one class per file anyway.
+The Angular [style guide](guide/styleguide#rule-of-one "Style guide: rule of one") recommends one class per file anyway.
 
 Move the `Hero` class from `app.component.ts` to its own `hero.ts` file.
 
 
-<code-example path="toh-3/src/app/hero.ts" title="src/app/hero.ts" linenums="false">
+<code-example path="toh-pt3/src/app/hero.ts" title="src/app/hero.ts" linenums="false">
 
 </code-example>
 
@@ -176,7 +176,7 @@ Move the `Hero` class from `app.component.ts` to its own `hero.ts` file.
 Now that the `Hero` class is in its own file, the `AppComponent` and the `HeroDetailComponent` have to import it.
 Add the following `import` statement near the top of _both_ the `app.component.ts` and the `hero-detail.component.ts` files.
 
-<code-example path="toh-3/app/hero-detail.component.1.ts" region="hero-import" title="toh-3/app/hero-detail.component.ts">
+<code-example path="toh-pt3/app/hero-detail.component.1.ts" region="hero-import" title="src/app/hero-detail.component.ts">
 
 </code-example>
 
@@ -189,7 +189,7 @@ the parent `AppComponent` will tell the child `HeroDetailComponent` which hero t
 by binding its `selectedHero` to the `hero` property of the `HeroDetailComponent`.
 The binding will look like this:
 
-<code-example path="toh-3/app/app.component.1.html" region="hero-detail-binding" title="toh-3/app/app.component.html" linenums="false">
+<code-example path="toh-pt3/app/app.component.1.html" region="hero-detail-binding" title="src/app/app.component.html" linenums="false">
 
 </code-example>
 
@@ -202,7 +202,7 @@ Otherwise, Angular rejects the binding and throws an error.
 
 First, amend the `@angular/core` import statement to include the `Input` symbol.
 
-<code-example path="toh-3/src/app/hero-detail.component.ts" region="import-input" title="src/app/hero-detail.component.ts (excerpt)" linenums="false">
+<code-example path="toh-pt3/src/app/hero-detail.component.ts" region="import-input" title="src/app/hero-detail.component.ts (excerpt)" linenums="false">
 
 </code-example>
 
@@ -211,7 +211,7 @@ First, amend the `@angular/core` import statement to include the `Input` symbol.
 Then declare that `hero` is an *input* property by
 preceding it with the `@Input` decorator that you imported earlier.
 
-<code-example path="toh-3/src/app/hero-detail.component.ts" region="hero" title="src/app/hero-detail.component.ts (excerpt)" linenums="false">
+<code-example path="toh-pt3/src/app/hero-detail.component.ts" region="hero" title="src/app/hero-detail.component.ts (excerpt)" linenums="false">
 
 </code-example>
 
@@ -231,7 +231,7 @@ Read more about _input_ properties in the
 
 That's it. The `hero` property is the only thing in the `HeroDetailComponent` class.
 
-<code-example path="toh-3/src/app/hero-detail.component.ts" region="class" title="toh-3/src/app/hero-detail.component.ts" linenums="false">
+<code-example path="toh-pt3/src/app/hero-detail.component.ts" region="class" title="src/src/app/hero-detail.component.ts" linenums="false">
 
 </code-example>
 
@@ -241,7 +241,7 @@ All it does is receive a hero object through its `hero` input property and then 
 
 Here's the complete `HeroDetailComponent`.
 
-<code-example path="toh-3/src/app/hero-detail.component.ts" title="src/app/hero-detail.component.ts">
+<code-example path="toh-pt3/src/app/hero-detail.component.ts" title="src/app/hero-detail.component.ts">
 
 </code-example>
 
@@ -249,11 +249,11 @@ Here's the complete `HeroDetailComponent`.
 
 
 ## Declare _HeroDetailComponent_ in the _AppModule_
-Every component must be declared in one&mdash;and only one&mdash;Angular module.
+Every component must be declared in one&mdash;and only one&mdash;NgModule.
 
 Open `app.module.ts` in your editor and import the `HeroDetailComponent` so you can refer to it.
 
-<code-example path="toh-3/src/app/app.module.ts" region="hero-detail-import" title="src/app/app.module.ts">
+<code-example path="toh-pt3/src/app/app.module.ts" region="hero-detail-import" title="src/app/app.module.ts">
 
 </code-example>
 
@@ -262,7 +262,7 @@ Open `app.module.ts` in your editor and import the `HeroDetailComponent` so you 
 Add `HeroDetailComponent` to the module's `declarations` array.
 
 
-<code-example path="toh-3/src/app/app.module.ts" region="declarations" title="src/app/app.module.ts" linenums="false">
+<code-example path="toh-pt3/src/app/app.module.ts" region="declarations" title="src/app/app.module.ts" linenums="false">
 
 </code-example>
 
@@ -276,7 +276,7 @@ This module declares only the two application components, `AppComponent` and `He
 
 
 
-Read more about Angular modules in the [NgModules](guide/ngmodule "Angular Modules (NgModule)") guide.
+Read more about NgModules in the [NgModules](guide/ngmodule "NgModules") guide.
 
 
 </div>
@@ -305,7 +305,7 @@ Coordinate the master `AppComponent` with the `HeroDetailComponent`
 by binding the `selectedHero` property of the `AppComponent`
 to the `hero` property of the `HeroDetailComponent`.
 
-<code-example path="toh-3/app/app.component.1.html" region="hero-detail-binding" title="app.component.ts (excerpt)" linenums="false">
+<code-example path="toh-pt3/app/app.component.1.html" region="hero-detail-binding" title="app.component.ts (excerpt)" linenums="false">
 
 </code-example>
 
@@ -316,7 +316,7 @@ Now every time the `selectedHero` changes, the `HeroDetailComponent` gets a new 
 The revised `AppComponent` template should look like this:
 
 
-<code-example path="toh-3/src/app/app.component.ts" region="hero-detail-template" title="app.component.ts (excerpt)" linenums="false">
+<code-example path="toh-pt3/src/app/app.component.ts" region="hero-detail-template" title="app.component.ts (excerpt)" linenums="false">
 
 </code-example>
 
@@ -422,19 +422,19 @@ Here are the code files discussed in this page.
 
 <code-tabs>
 
-  <code-pane title="src/app/hero-detail.component.ts" path="toh-3/src/app/hero-detail.component.ts">
+  <code-pane title="src/app/hero-detail.component.ts" path="toh-pt3/src/app/hero-detail.component.ts">
 
   </code-pane>
 
-  <code-pane title="src/app/app.component.ts" path="toh-3/src/app/app.component.ts">
+  <code-pane title="src/app/app.component.ts" path="toh-pt3/src/app/app.component.ts">
 
   </code-pane>
 
-  <code-pane title="src/app/hero.ts" path="toh-3/src/app/hero.ts">
+  <code-pane title="src/app/hero.ts" path="toh-pt3/src/app/hero.ts">
 
   </code-pane>
 
-  <code-pane title="src/app/app.module.ts" path="toh-3/src/app/app.module.ts">
+  <code-pane title="src/app/app.module.ts" path="toh-pt3/src/app/app.module.ts">
 
   </code-pane>
 
@@ -449,8 +449,8 @@ Here's what you achieved in this page:
 
 * You created a reusable component.
 * You learned how to make a component accept input.
-* You learned to declare the required application directives in an Angular module. You
-listed the directives in the `NgModule` decorator's `declarations` array.
+* You learned to declare the required application directives in an NgModule. You
+listed the directives in the `@NgModule` decorator's `declarations` array.
 * You learned to bind a parent component to a child component.
 
 Your app should look like this <live-example></live-example>.
@@ -464,4 +464,4 @@ That's not sustainable.
 Data access should be refactored to a separate service
 and shared among the components that need data.
 
-You’ll learn to create services in the [next tutorial](tutorial/toh-pt4) page.
+You’ll learn to create services in the [next tutorial](tutorial/toh-pt4 "Services") page.

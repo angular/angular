@@ -8,6 +8,9 @@
   "typings": "./platform-webworker-dynamic.d.ts",
   "author": "angular",
   "license": "MIT",
+  "dependencies": {
+    "tslib": "^1.7.1"
+  },
   "peerDependencies": {
     "@angular/common": "0.0.0-PLACEHOLDER",
     "@angular/core": "0.0.0-PLACEHOLDER",

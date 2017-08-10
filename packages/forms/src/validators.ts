@@ -24,9 +24,6 @@ function isEmptyInputValue(value: any): boolean {
  *
  * Provide this using `multi: true` to add validators.
  *
- * ### Example
- *
- * {@example core/forms/ts/ng_validators/ng_validators.ts region='ng_validators'}
  * @stable
  */
 export const NG_VALIDATORS = new InjectionToken<Array<Validator|Function>>('NgValidators');
@@ -62,6 +59,36 @@ const EMAIL_REGEXP =
  * @stable
  */
 export class Validators {
+  /**
+   * Validator that requires controls to have a value greater than a number.
+   */
+  static min(min: number): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (isEmptyInputValue(control.value) || isEmptyInputValue(min)) {
+        return null;  // don't validate empty values to allow optional controls
+      }
+      const value = parseFloat(control.value);
+      // Controls with NaN values after parsing should be treated as not having a
+      // minimum, per the HTML forms spec: https://www.w3.org/TR/html5/forms.html#attr-input-min
+      return !isNaN(value) && value < min ? {'min': {'min': min, 'actual': control.value}} : null;
+    };
+  }
+
+  /**
+   * Validator that requires controls to have a value less than a number.
+   */
+  static max(max: number): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (isEmptyInputValue(control.value) || isEmptyInputValue(max)) {
+        return null;  // don't validate empty values to allow optional controls
+      }
+      const value = parseFloat(control.value);
+      // Controls with NaN values after parsing should be treated as not having a
+      // maximum, per the HTML forms spec: https://www.w3.org/TR/html5/forms.html#attr-input-max
+      return !isNaN(value) && value > max ? {'max': {'max': max, 'actual': control.value}} : null;
+    };
+  }
+
   /**
    * Validator that requires controls to have a non-empty value.
    */
@@ -143,9 +170,11 @@ export class Validators {
    * Compose multiple validators into a single function that returns the union
    * of the individual error maps.
    */
-  static compose(validators: ValidatorFn[]): ValidatorFn {
+  static compose(validators: null): null;
+  static compose(validators: (ValidatorFn|null|undefined)[]): ValidatorFn|null;
+  static compose(validators: (ValidatorFn|null|undefined)[]|null): ValidatorFn|null {
     if (!validators) return null;
-    const presentValidators = validators.filter(isPresent);
+    const presentValidators: ValidatorFn[] = validators.filter(isPresent) as any;
     if (presentValidators.length == 0) return null;
 
     return function(control: AbstractControl) {
@@ -153,9 +182,9 @@ export class Validators {
     };
   }
 
-  static composeAsync(validators: AsyncValidatorFn[]): AsyncValidatorFn {
+  static composeAsync(validators: (AsyncValidatorFn|null)[]): AsyncValidatorFn|null {
     if (!validators) return null;
-    const presentValidators = validators.filter(isPresent);
+    const presentValidators: AsyncValidatorFn[] = validators.filter(isPresent) as any;
     if (presentValidators.length == 0) return null;
 
     return function(control: AbstractControl) {
@@ -188,7 +217,7 @@ function _executeAsyncValidators(control: AbstractControl, validators: AsyncVali
 function _mergeErrors(arrayOfErrors: ValidationErrors[]): ValidationErrors|null {
   const res: {[key: string]: any} =
       arrayOfErrors.reduce((res: ValidationErrors | null, errors: ValidationErrors | null) => {
-        return errors != null ? {...res, ...errors} : res;
+        return errors != null ? {...res !, ...errors} : res !;
       }, {});
   return Object.keys(res).length === 0 ? null : res;
 }

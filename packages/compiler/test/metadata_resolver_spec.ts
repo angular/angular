@@ -6,14 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {LIFECYCLE_HOOKS_VALUES, LifecycleHooks} from '@angular/compiler/src/lifecycle_reflector';
 import {TEST_COMPILER_PROVIDERS} from '@angular/compiler/testing/src/test_bindings';
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, Component, Directive, DoCheck, Injectable, NgModule, OnChanges, OnDestroy, OnInit, Pipe, SimpleChanges, ViewEncapsulation, ɵstringify as stringify} from '@angular/core';
-import {LIFECYCLE_HOOKS_VALUES} from '@angular/core/src/metadata/lifecycle_hooks';
 import {TestBed, async, inject} from '@angular/core/testing';
+
 import {identifierName} from '../src/compile_metadata';
 import {CompileMetadataResolver} from '../src/metadata_resolver';
 import {ResourceLoader} from '../src/resource_loader';
 import {MockResourceLoader} from '../testing/src/resource_loader_mock';
+
 import {MalformedStylesComponent} from './metadata_resolver_fixture';
 
 export function main() {
@@ -55,10 +57,10 @@ export function main() {
          expect(meta.hostListeners).toEqual({'someHostListener': 'someHostListenerExpr'});
          expect(meta.hostProperties).toEqual({'someHostProp': 'someHostPropExpr'});
          expect(meta.hostAttributes).toEqual({'someHostAttr': 'someHostAttrValue'});
-         expect(meta.template.encapsulation).toBe(ViewEncapsulation.Emulated);
-         expect(meta.template.styles).toEqual(['someStyle']);
-         expect(meta.template.template).toEqual('someTemplate');
-         expect(meta.template.interpolation).toEqual(['{{', '}}']);
+         expect(meta.template !.encapsulation).toBe(ViewEncapsulation.Emulated);
+         expect(meta.template !.styles).toEqual(['someStyle']);
+         expect(meta.template !.template).toEqual('someTemplate');
+         expect(meta.template !.interpolation).toEqual(['{{', '}}']);
        }));
 
     it('should throw when reading metadata for component with external resources when sync=true is passed',
@@ -84,9 +86,9 @@ export function main() {
              resolver.loadNgModuleDirectiveAndPipeMetadata(SomeModule, false).then(() => {
                const meta = resolver.getDirectiveMetadata(ComponentWithExternalResources);
                expect(meta.selector).toEqual('someSelector');
-               expect(meta.template.styleUrls).toEqual(['someStyleUrl']);
-               expect(meta.template.templateUrl).toEqual('someTemplateUrl');
-               expect(meta.template.template).toEqual('someTemplate');
+               expect(meta.template !.styleUrls).toEqual(['someStyleUrl']);
+               expect(meta.template !.templateUrl).toEqual('someTemplateUrl');
+               expect(meta.template !.template).toEqual('someTemplate');
              });
              resourceLoader.flush();
            })));
@@ -104,7 +106,7 @@ export function main() {
 
          resolver.loadNgModuleDirectiveAndPipeMetadata(SomeModule, false).then(() => {
            const value: string =
-               resolver.getDirectiveMetadata(ComponentWithoutModuleId).template.templateUrl;
+               resolver.getDirectiveMetadata(ComponentWithoutModuleId).template !.templateUrl !;
            const expectedEndValue = './someUrl';
            expect(value.endsWith(expectedEndValue)).toBe(true);
          });

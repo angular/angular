@@ -10,7 +10,7 @@ import {SummaryResolver} from '../summary_resolver';
 import {ValueTransformer, visitValue} from '../util';
 
 import {StaticSymbol, StaticSymbolCache} from './static_symbol';
-import {isNgFactoryFile} from './util';
+import {isGeneratedFile, stripSummaryForJitFileSuffix, stripSummaryForJitNameSuffix, summaryForJitFileName, summaryForJitName} from './util';
 
 export class ResolvedStaticSymbol {
   constructor(public symbol: StaticSymbol, public metadata: any) {}
@@ -39,6 +39,13 @@ export interface StaticSymbolResolverHost {
    * `path/to/containingFile.ts` containing `import {...} from 'module-name'`.
    */
   moduleNameToFileName(moduleName: string, containingFile?: string): string|null;
+  /**
+   * Converts a file path to a module name that can be used as an `import.
+   * I.e. `path/to/importedFile.ts` should be imported by `path/to/containingFile.ts`.
+   *
+   * See ImportResolver.
+   */
+  fileNameToModuleName(importedFilePath: string, containingFilePath: string): string|null;
 }
 
 const SUPPORTED_SCHEMA_VERSION = 3;
@@ -60,6 +67,7 @@ export class StaticSymbolResolver {
   private importAs = new Map<StaticSymbol, StaticSymbol>();
   private symbolResourcePaths = new Map<StaticSymbol, string>();
   private symbolFromFile = new Map<string, StaticSymbol[]>();
+  private knownFileNameToModuleNames = new Map<string, string>();
 
   constructor(
       private host: StaticSymbolResolverHost, private staticSymbolCache: StaticSymbolCache,
@@ -103,6 +111,18 @@ export class StaticSymbolResolver {
           this.getStaticSymbol(baseImportAs.filePath, baseImportAs.name, staticSymbol.members) :
           null;
     }
+    const summarizedFileName = stripSummaryForJitFileSuffix(staticSymbol.filePath);
+    if (summarizedFileName !== staticSymbol.filePath) {
+      const summarizedName = stripSummaryForJitNameSuffix(staticSymbol.name);
+      const baseSymbol =
+          this.getStaticSymbol(summarizedFileName, summarizedName, staticSymbol.members);
+      const baseImportAs = this.getImportAs(baseSymbol);
+      return baseImportAs ?
+          this.getStaticSymbol(
+              summaryForJitFileName(baseImportAs.filePath), summaryForJitName(baseImportAs.name),
+              baseSymbol.members) :
+          null;
+    }
     let result = this.summaryResolver.getImportAs(staticSymbol);
     if (!result) {
       result = this.importAs.get(staticSymbol) !;
@@ -124,11 +144,11 @@ export class StaticSymbolResolver {
    * has. If the symbol is not a type the result is null.
    */
   getTypeArity(staticSymbol: StaticSymbol): number|null {
-    // If the file is a factory file, don't resolve the symbol as doing so would
-    // cause the metadata for an factory file to be loaded which doesn't exist.
+    // If the file is a factory/ngsummary file, don't resolve the symbol as doing so would
+    // cause the metadata for an factory/ngsummary file to be loaded which doesn't exist.
     // All references to generated classes must include the correct arity whenever
     // generating code.
-    if (isNgFactoryFile(staticSymbol.filePath)) {
+    if (isGeneratedFile(staticSymbol.filePath)) {
       return null;
     }
     let resolvedSymbol = this.resolveSymbol(staticSymbol);
@@ -136,6 +156,14 @@ export class StaticSymbolResolver {
       resolvedSymbol = this.resolveSymbol(resolvedSymbol.metadata);
     }
     return (resolvedSymbol && resolvedSymbol.metadata && resolvedSymbol.metadata.arity) || null;
+  }
+
+  /**
+   * Converts a file path to a module name that can be used as an `import`.
+   */
+  fileNameToModuleName(importedFilePath: string, containingFilePath: string): string|null {
+    return this.knownFileNameToModuleNames.get(importedFilePath) ||
+        this.host.fileNameToModuleName(importedFilePath, containingFilePath);
   }
 
   recordImportAs(sourceSymbol: StaticSymbol, targetSymbol: StaticSymbol) {
@@ -160,6 +188,17 @@ export class StaticSymbolResolver {
         this.importAs.delete(symbol);
         this.symbolResourcePaths.delete(symbol);
       }
+    }
+  }
+
+  /* @internal */
+  ignoreErrorsFor<T>(cb: () => T) {
+    const recorder = this.errorRecorder;
+    this.errorRecorder = () => {};
+    try {
+      return cb();
+    } finally {
+      this.errorRecorder = recorder;
     }
   }
 
@@ -226,6 +265,11 @@ export class StaticSymbolResolver {
     this.resolvedFilePaths.add(filePath);
     const resolvedSymbols: ResolvedStaticSymbol[] = [];
     const metadata = this.getModuleMetadata(filePath);
+    if (metadata['importAs']) {
+      // Index bundle indices should use the importAs module name defined
+      // in the bundle.
+      this.knownFileNameToModuleNames.set(filePath, metadata['importAs']);
+    }
     if (metadata['metadata']) {
       // handle direct declarations of the symbol
       const topLevelSymbolNames =
@@ -236,13 +280,6 @@ export class StaticSymbolResolver {
         const name = unescapeIdentifier(metadataKey);
 
         const symbol = this.getStaticSymbol(filePath, name);
-        let importSymbol: StaticSymbol|undefined = undefined;
-        if (metadata['importAs']) {
-          // Index bundle indexes should use the importAs module name instead of a reference
-          // to the .d.ts file directly.
-          importSymbol = this.getStaticSymbol(metadata['importAs'], name);
-          this.recordImportAs(symbol, importSymbol);
-        }
 
         const origin = origins.hasOwnProperty(metadataKey) && origins[metadataKey];
         if (origin) {
@@ -419,6 +456,7 @@ export class StaticSymbolResolver {
     }
     return moduleMetadata;
   }
+
 
   getSymbolByModule(module: string, symbolName: string, containingFile?: string): StaticSymbol {
     const filePath = this.resolveModule(module, containingFile);

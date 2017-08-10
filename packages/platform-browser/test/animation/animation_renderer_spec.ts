@@ -6,22 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AnimationPlayer, AnimationTriggerMetadata, animate, state, style, transition, trigger} from '@angular/animations';
-import {ɵAnimationEngine} from '@angular/animations/browser';
-import {Component, Injectable, RendererFactory2, RendererType2, ViewChild} from '@angular/core';
+import {ɵAnimationEngine as AnimationEngine} from '@angular/animations/browser';
+import {Component, Injectable, NgZone, RendererFactory2, RendererType2, ViewChild} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {BrowserAnimationsModule, ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
-
+import {BrowserAnimationsModule, ɵAnimationRendererFactory as AnimationRendererFactory} from '@angular/platform-browser/animations';
+import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
 import {InjectableAnimationEngine} from '../../animations/src/providers';
 import {el} from '../../testing/src/browser_util';
 
 export function main() {
-  describe('ɵAnimationRenderer', () => {
+  describe('AnimationRenderer', () => {
     let element: any;
     beforeEach(() => {
       element = el('<div></div>');
 
       TestBed.configureTestingModule({
-        providers: [{provide: ɵAnimationEngine, useClass: MockAnimationEngine}],
+        providers: [{provide: AnimationEngine, useClass: MockAnimationEngine}],
         imports: [BrowserAnimationsModule]
       });
     });
@@ -29,24 +29,17 @@ export function main() {
     function makeRenderer(animationTriggers: any[] = []) {
       const type = <RendererType2>{
         id: 'id',
-        encapsulation: null,
+        encapsulation: null !,
         styles: [],
         data: {'animation': animationTriggers}
       };
-      return (TestBed.get(RendererFactory2) as ɵAnimationRendererFactory)
+      return (TestBed.get(RendererFactory2) as AnimationRendererFactory)
           .createRenderer(element, type);
     }
 
-    it('should register the provided triggers with the view engine when created', () => {
-      const renderer = makeRenderer([trigger('trig1', []), trigger('trig2', [])]);
-
-      const engine = TestBed.get(ɵAnimationEngine) as MockAnimationEngine;
-      expect(engine.triggers.map(t => t.name)).toEqual(['trig1', 'trig2']);
-    });
-
     it('should hook into the engine\'s insert operations when appending children', () => {
       const renderer = makeRenderer();
-      const engine = TestBed.get(ɵAnimationEngine) as MockAnimationEngine;
+      const engine = TestBed.get(AnimationEngine) as MockAnimationEngine;
       const container = el('<div></div>');
 
       renderer.appendChild(container, element);
@@ -56,7 +49,7 @@ export function main() {
     it('should hook into the engine\'s insert operations when inserting a child before another',
        () => {
          const renderer = makeRenderer();
-         const engine = TestBed.get(ɵAnimationEngine) as MockAnimationEngine;
+         const engine = TestBed.get(AnimationEngine) as MockAnimationEngine;
          const container = el('<div></div>');
          const element2 = el('<div></div>');
          container.appendChild(element2);
@@ -67,7 +60,7 @@ export function main() {
 
     it('should hook into the engine\'s insert operations when removing children', () => {
       const renderer = makeRenderer();
-      const engine = TestBed.get(ɵAnimationEngine) as MockAnimationEngine;
+      const engine = TestBed.get(AnimationEngine) as MockAnimationEngine;
       const container = el('<div></div>');
 
       renderer.removeChild(container, element);
@@ -76,19 +69,19 @@ export function main() {
 
     it('should hook into the engine\'s setProperty call if the property begins with `@`', () => {
       const renderer = makeRenderer();
-      const engine = TestBed.get(ɵAnimationEngine) as MockAnimationEngine;
+      const engine = TestBed.get(AnimationEngine) as MockAnimationEngine;
 
       renderer.setProperty(element, 'prop', 'value');
       expect(engine.captures['setProperty']).toBeFalsy();
 
       renderer.setProperty(element, '@prop', 'value');
-      expect(engine.captures['setProperty'].pop()).toEqual([element, 'id#prop', 'value']);
+      expect(engine.captures['setProperty'].pop()).toEqual([element, 'prop', 'value']);
     });
 
     describe('listen', () => {
       it('should hook into the engine\'s listen call if the property begins with `@`', () => {
         const renderer = makeRenderer();
-        const engine = TestBed.get(ɵAnimationEngine) as MockAnimationEngine;
+        const engine = TestBed.get(AnimationEngine) as MockAnimationEngine;
 
         const cb = (event: any): boolean => { return true; };
 
@@ -96,13 +89,13 @@ export function main() {
         expect(engine.captures['listen']).toBeFalsy();
 
         renderer.listen(element, '@event.phase', cb);
-        expect(engine.captures['listen'].pop()).toEqual([element, 'id#event', 'phase']);
+        expect(engine.captures['listen'].pop()).toEqual([element, 'event', 'phase']);
       });
 
       it('should resolve the body|document|window nodes given their values as strings as input',
          () => {
            const renderer = makeRenderer();
-           const engine = TestBed.get(ɵAnimationEngine) as MockAnimationEngine;
+           const engine = TestBed.get(AnimationEngine) as MockAnimationEngine;
 
            const cb = (event: any): boolean => { return true; };
 
@@ -115,6 +108,10 @@ export function main() {
            renderer.listen('window', '@event', cb);
            expect(engine.captures['listen'].pop()[0]).toBe(window);
          });
+    });
+
+    describe('registering animations', () => {
+      it('should only create a trigger definition once even if the registered multiple times');
     });
 
     describe('flushing animations', () => {
@@ -138,11 +135,11 @@ export function main() {
         }
 
         TestBed.configureTestingModule({
-          providers: [{provide: ɵAnimationEngine, useClass: InjectableAnimationEngine}],
+          providers: [{provide: AnimationEngine, useClass: InjectableAnimationEngine}],
           declarations: [Cmp]
         });
 
-        const engine = TestBed.get(ɵAnimationEngine);
+        const engine = TestBed.get(AnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
         cmp.exp = 'state';
@@ -174,7 +171,7 @@ export function main() {
            }
 
            TestBed.configureTestingModule({
-             providers: [{provide: ɵAnimationEngine, useClass: InjectableAnimationEngine}],
+             providers: [{provide: AnimationEngine, useClass: InjectableAnimationEngine}],
              declarations: [Cmp]
            });
 
@@ -223,11 +220,11 @@ export function main() {
            }
 
            TestBed.configureTestingModule({
-             providers: [{provide: ɵAnimationEngine, useClass: InjectableAnimationEngine}],
+             providers: [{provide: AnimationEngine, useClass: InjectableAnimationEngine}],
              declarations: [Cmp]
            });
 
-           const engine = TestBed.get(ɵAnimationEngine);
+           const engine = TestBed.get(AnimationEngine);
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
@@ -239,7 +236,7 @@ export function main() {
            assertHasParent(elm2);
            assertHasParent(elm3);
            engine.flush();
-           finishPlayers(engine.activePlayers);
+           finishPlayers(engine.players);
 
            cmp.exp1 = false;
            fixture.detectChanges();
@@ -247,7 +244,7 @@ export function main() {
            assertHasParent(elm2);
            assertHasParent(elm3);
            engine.flush();
-           expect(engine.activePlayers.length).toEqual(0);
+           expect(engine.players.length).toEqual(0);
 
            cmp.exp2 = false;
            fixture.detectChanges();
@@ -255,7 +252,7 @@ export function main() {
            assertHasParent(elm2, false);
            assertHasParent(elm3);
            engine.flush();
-           expect(engine.activePlayers.length).toEqual(0);
+           expect(engine.players.length).toEqual(0);
 
            cmp.exp3 = false;
            fixture.detectChanges();
@@ -263,14 +260,57 @@ export function main() {
            assertHasParent(elm2, false);
            assertHasParent(elm3);
            engine.flush();
-           expect(engine.activePlayers.length).toEqual(1);
+           expect(engine.players.length).toEqual(1);
          });
+    });
+  });
+
+  describe('AnimationRendererFactory', () => {
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        providers: [{
+          provide: RendererFactory2,
+          useClass: ExtendedAnimationRendererFactory,
+          deps: [DomRendererFactory2, AnimationEngine, NgZone]
+        }],
+        imports: [BrowserAnimationsModule]
+      });
+    });
+
+    it('should provide hooks at the start and end of change detection', () => {
+      @Component({
+        selector: 'my-cmp',
+        template: `
+          <div [@myAnimation]="exp"></div> 
+        `,
+        animations: [trigger('myAnimation', [])]
+      })
+      class Cmp {
+        public exp: any;
+      }
+
+      TestBed.configureTestingModule({
+        providers: [{provide: AnimationEngine, useClass: InjectableAnimationEngine}],
+        declarations: [Cmp]
+      });
+
+      const renderer = TestBed.get(RendererFactory2) as ExtendedAnimationRendererFactory;
+      const fixture = TestBed.createComponent(Cmp);
+      const cmp = fixture.componentInstance;
+
+      renderer.log = [];
+      fixture.detectChanges();
+      expect(renderer.log).toEqual(['begin', 'end']);
+
+      renderer.log = [];
+      fixture.detectChanges();
+      expect(renderer.log).toEqual(['begin', 'end']);
     });
   });
 }
 
 @Injectable()
-class MockAnimationEngine extends ɵAnimationEngine {
+class MockAnimationEngine extends InjectableAnimationEngine {
   captures: {[method: string]: any[]} = {};
   triggers: AnimationTriggerMetadata[] = [];
 
@@ -279,24 +319,47 @@ class MockAnimationEngine extends ɵAnimationEngine {
     data.push(args);
   }
 
-  registerTrigger(trigger: AnimationTriggerMetadata) { this.triggers.push(trigger); }
-
-  onInsert(element: any, domFn: () => any): void { this._capture('onInsert', [element]); }
-
-  onRemove(element: any, domFn: () => any): void { this._capture('onRemove', [element]); }
-
-  setProperty(element: any, property: string, value: any): void {
-    this._capture('setProperty', [element, property, value]);
+  registerTrigger(componentId: string, namespaceId: string, trigger: AnimationTriggerMetadata) {
+    this.triggers.push(trigger);
   }
 
-  listen(element: any, eventName: string, eventPhase: string, callback: (event: any) => any):
-      () => void {
+  onInsert(namespaceId: string, element: any): void { this._capture('onInsert', [element]); }
+
+  onRemove(namespaceId: string, element: any, domFn: () => any): void {
+    this._capture('onRemove', [element]);
+  }
+
+  process(namespaceId: string, element: any, property: string, value: any): boolean {
+    this._capture('setProperty', [element, property, value]);
+    return true;
+  }
+
+  listen(
+      namespaceId: string, element: any, eventName: string, eventPhase: string,
+      callback: (event: any) => any): () => void {
     // we don't capture the callback here since the renderer wraps it in a zone
     this._capture('listen', [element, eventName, eventPhase]);
     return () => {};
   }
 
   flush() {}
+
+  destroy(namespaceId: string) {}
+}
+
+@Injectable()
+class ExtendedAnimationRendererFactory extends AnimationRendererFactory {
+  public log: string[] = [];
+
+  begin() {
+    super.begin();
+    this.log.push('begin');
+  }
+
+  end() {
+    super.end();
+    this.log.push('end');
+  }
 }
 
 

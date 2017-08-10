@@ -1,0 +1,10 @@
+{%- if doc.selector %}
+<section class="selectors">
+  <h2>Selectors</h2>
+  {% for selector in doc.selector.split(',') %}
+  <div class="selector">
+    <code>{$ selector $}</code>
+  </div>
+  {% endfor %}
+</section>
+{% endif %}

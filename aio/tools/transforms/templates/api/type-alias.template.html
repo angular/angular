@@ -1,0 +1,11 @@
+{% extends 'export-base.template.html' %}
+
+{% block overview %}
+  <code-example language="ts" hideCopy="true">
+  type {$ doc.name $}{% if doc.typeDefinition %} = {$ doc.typeDefinition | escape $}{% endif %};
+  </code-example>
+{% endblock %}
+
+{% block details %}
+  {% include "includes/description.html" %}
+{% endblock %}

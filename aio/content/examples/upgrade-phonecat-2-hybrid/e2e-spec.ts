@@ -1,20 +1,16 @@
 'use strict'; // necessary for es6 output in node
 
 import { browser, element, by } from 'protractor';
-import { setProtractorToHybridMode } from '../protractor-helpers';
 
 // Angular E2E Testing Guide:
 // https://docs.angularjs.org/guide/e2e-testing
 
 describe('PhoneCat Application', function() {
 
-  beforeAll(function () {
-    setProtractorToHybridMode();
-  });
-
   it('should redirect `index.html` to `index.html#!/phones', function() {
     browser.get('index.html');
-    expect(browser.getLocationAbsUrl()).toBe('/phones');
+    browser.sleep(1000); // Not sure why this is needed but it is. The route change works fine.
+    expect(browser.getCurrentUrl()).toMatch(/\/phones$/);
   });
 
   describe('View: Phone list', function() {
@@ -69,8 +65,8 @@ describe('PhoneCat Application', function() {
       query.sendKeys('nexus');
 
       element.all(by.css('.phones li a')).first().click();
-      browser.sleep(200); // Not sure why this is needed but it is. The route change works fine.
-      expect(browser.getLocationAbsUrl()).toBe('/phones/nexus-s');
+      browser.sleep(1000); // Not sure why this is needed but it is. The route change works fine.
+      expect(browser.getCurrentUrl()).toMatch(/\/phones\/nexus-s$/);
     });
 
   });

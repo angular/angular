@@ -6,15 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AttrAst, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, CssSelector, DirectiveAst, Element, ElementAst, EmbeddedTemplateAst, ImplicitReceiver, NAMED_ENTITIES, NgContentAst, Node as HtmlAst, ParseSpan, PropertyRead, ReferenceAst, SelectorMatcher, TagContentType, TemplateAst, TemplateAstVisitor, Text, TextAst, VariableAst, getHtmlTagDefinition, splitNsName, templateVisitAll} from '@angular/compiler';
+import {AST, AstPath, AttrAst, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, CssSelector, DirectiveAst, Element, ElementAst, EmbeddedTemplateAst, ImplicitReceiver, NAMED_ENTITIES, NgContentAst, Node as HtmlAst, NullTemplateVisitor, ParseSpan, PropertyRead, ReferenceAst, SelectorMatcher, TagContentType, TemplateAst, TemplateAstVisitor, Text, TextAst, VariableAst, findNode, getHtmlTagDefinition, splitNsName, templateVisitAll} from '@angular/compiler';
+import {DiagnosticTemplateInfo, getExpressionScope} from '@angular/compiler-cli';
 
 import {AstResult, AttrInfo, SelectorInfo, TemplateInfo} from './common';
-import {getExpressionCompletions, getExpressionScope} from './expressions';
+import {getExpressionCompletions} from './expressions';
 import {attributeNames, elementNames, eventNames, propertyNames} from './html_info';
-import {HtmlAstPath} from './html_path';
-import {NullTemplateVisitor, TemplateAstChildVisitor, TemplateAstPath} from './template_path';
 import {BuiltinType, Completion, Completions, Span, Symbol, SymbolDeclaration, SymbolTable, TemplateSource} from './types';
-import {flatten, getSelectors, hasTemplateReference, inSpan, removeSuffix, spanOf, uniqueByName} from './utils';
+import {diagnosticInfoFromTemplateInfo, findTemplateAstAt, flatten, getSelectors, hasTemplateReference, inSpan, removeSuffix, spanOf, uniqueByName} from './utils';
 
 const TEMPLATE_ATTR_PREFIX = '*';
 
@@ -33,71 +32,73 @@ export function getTemplateCompletions(templateInfo: TemplateInfo): Completions|
   let result: Completions|undefined = undefined;
   let {htmlAst, templateAst, template} = templateInfo;
   // The templateNode starts at the delimiter character so we add 1 to skip it.
-  let templatePosition = templateInfo.position ! - template.span.start;
-  let path = new HtmlAstPath(htmlAst, templatePosition);
-  let mostSpecific = path.tail;
-  if (path.empty) {
-    result = elementCompletions(templateInfo, path);
-  } else {
-    let astPosition = templatePosition - mostSpecific !.sourceSpan !.start.offset;
-    mostSpecific !.visit(
-        {
-          visitElement(ast) {
-            let startTagSpan = spanOf(ast.sourceSpan);
-            let tagLen = ast.name.length;
-            if (templatePosition <=
-                startTagSpan !.start + tagLen + 1 /* 1 for the opening angle bracked */) {
-              // If we are in the tag then return the element completions.
-              result = elementCompletions(templateInfo, path);
-            } else if (templatePosition < startTagSpan !.end) {
-              // We are in the attribute section of the element (but not in an attribute).
-              // Return the attribute completions.
-              result = attributeCompletions(templateInfo, path);
-            }
-          },
-          visitAttribute(ast) {
-            if (!ast.valueSpan || !inSpan(templatePosition, spanOf(ast.valueSpan))) {
-              // We are in the name of an attribute. Show attribute completions.
-              result = attributeCompletions(templateInfo, path);
-            } else if (ast.valueSpan && inSpan(templatePosition, spanOf(ast.valueSpan))) {
-              result = attributeValueCompletions(templateInfo, templatePosition, ast);
-            }
-          },
-          visitText(ast) {
-            // Check if we are in a entity.
-            result = entityCompletions(getSourceText(template, spanOf(ast) !), astPosition);
-            if (result) return result;
-            result = interpolationCompletions(templateInfo, templatePosition);
-            if (result) return result;
-            let element = path.first(Element);
-            if (element) {
-              let definition = getHtmlTagDefinition(element.name);
-              if (definition.contentType === TagContentType.PARSABLE_DATA) {
+  if (templateInfo.position != null) {
+    let templatePosition = templateInfo.position - template.span.start;
+    let path = findNode(htmlAst, templatePosition);
+    let mostSpecific = path.tail;
+    if (path.empty || !mostSpecific) {
+      result = elementCompletions(templateInfo, path);
+    } else {
+      let astPosition = templatePosition - mostSpecific.sourceSpan.start.offset;
+      mostSpecific.visit(
+          {
+            visitElement(ast) {
+              let startTagSpan = spanOf(ast.sourceSpan);
+              let tagLen = ast.name.length;
+              if (templatePosition <=
+                  startTagSpan.start + tagLen + 1 /* 1 for the opening angle bracked */) {
+                // If we are in the tag then return the element completions.
+                result = elementCompletions(templateInfo, path);
+              } else if (templatePosition < startTagSpan.end) {
+                // We are in the attribute section of the element (but not in an attribute).
+                // Return the attribute completions.
+                result = attributeCompletions(templateInfo, path);
+              }
+            },
+            visitAttribute(ast) {
+              if (!ast.valueSpan || !inSpan(templatePosition, spanOf(ast.valueSpan))) {
+                // We are in the name of an attribute. Show attribute completions.
+                result = attributeCompletions(templateInfo, path);
+              } else if (ast.valueSpan && inSpan(templatePosition, spanOf(ast.valueSpan))) {
+                result = attributeValueCompletions(templateInfo, templatePosition, ast);
+              }
+            },
+            visitText(ast) {
+              // Check if we are in a entity.
+              result = entityCompletions(getSourceText(template, spanOf(ast)), astPosition);
+              if (result) return result;
+              result = interpolationCompletions(templateInfo, templatePosition);
+              if (result) return result;
+              let element = path.first(Element);
+              if (element) {
+                let definition = getHtmlTagDefinition(element.name);
+                if (definition.contentType === TagContentType.PARSABLE_DATA) {
+                  result = voidElementAttributeCompletions(templateInfo, path);
+                  if (!result) {
+                    // If the element can hold content Show element completions.
+                    result = elementCompletions(templateInfo, path);
+                  }
+                }
+              } else {
+                // If no element container, implies parsable data so show elements.
                 result = voidElementAttributeCompletions(templateInfo, path);
                 if (!result) {
-                  // If the element can hold content Show element completions.
                   result = elementCompletions(templateInfo, path);
                 }
               }
-            } else {
-              // If no element container, implies parsable data so show elements.
-              result = voidElementAttributeCompletions(templateInfo, path);
-              if (!result) {
-                result = elementCompletions(templateInfo, path);
-              }
-            }
+            },
+            visitComment(ast) {},
+            visitExpansion(ast) {},
+            visitExpansionCase(ast) {}
           },
-          visitComment(ast) {},
-          visitExpansion(ast) {},
-          visitExpansionCase(ast) {}
-        },
-        null);
+          null);
+    }
   }
   return result;
 }
 
-function attributeCompletions(info: TemplateInfo, path: HtmlAstPath): Completions|undefined {
-  let item = path.tail instanceof Element ? path.tail : path.parentOf(path.tail !);
+function attributeCompletions(info: TemplateInfo, path: AstPath<HtmlAst>): Completions|undefined {
+  let item = path.tail instanceof Element ? path.tail : path.parentOf(path.tail);
   if (item instanceof Element) {
     return attributeCompletionsForElement(info, item.name, item);
   }
@@ -189,18 +190,19 @@ function getAttributeInfosForElement(
 
 function attributeValueCompletions(
     info: TemplateInfo, position: number, attr: Attribute): Completions|undefined {
-  const path = new TemplateAstPath(info.templateAst, position);
+  const path = findTemplateAstAt(info.templateAst, position);
   const mostSpecific = path.tail;
+  const dinfo = diagnosticInfoFromTemplateInfo(info);
   if (mostSpecific) {
     const visitor =
-        new ExpressionVisitor(info, position, attr, () => getExpressionScope(info, path, false));
+        new ExpressionVisitor(info, position, attr, () => getExpressionScope(dinfo, path, false));
     mostSpecific.visit(visitor, null);
     if (!visitor.result || !visitor.result.length) {
       // Try allwoing widening the path
-      const widerPath = new TemplateAstPath(info.templateAst, position, /* allowWidening */ true);
+      const widerPath = findTemplateAstAt(info.templateAst, position, /* allowWidening */ true);
       if (widerPath.tail) {
         const widerVisitor = new ExpressionVisitor(
-            info, position, attr, () => getExpressionScope(info, widerPath, false));
+            info, position, attr, () => getExpressionScope(dinfo, widerPath, false));
         widerPath.tail.visit(widerVisitor, null);
         return widerVisitor.result;
       }
@@ -209,15 +211,16 @@ function attributeValueCompletions(
   }
 }
 
-function elementCompletions(info: TemplateInfo, path: HtmlAstPath): Completions|undefined {
+function elementCompletions(info: TemplateInfo, path: AstPath<HtmlAst>): Completions|undefined {
   let htmlNames = elementNames().filter(name => !(name in hiddenHtmlElements));
 
   // Collect the elements referenced by the selectors
-  let directiveElements =
-      getSelectors(info).selectors.map(selector => selector.element).filter(name => !!name);
+  let directiveElements = getSelectors(info)
+                              .selectors.map(selector => selector.element)
+                              .filter(name => !!name) as string[];
 
   let components =
-      directiveElements.map<Completion>(name => ({kind: 'component', name: name !, sort: name !}));
+      directiveElements.map<Completion>(name => ({kind: 'component', name, sort: name}));
   let htmlElements = htmlNames.map<Completion>(name => ({kind: 'element', name: name, sort: name}));
 
   // Return components and html elements
@@ -242,11 +245,12 @@ function entityCompletions(value: string, position: number): Completions|undefin
 
 function interpolationCompletions(info: TemplateInfo, position: number): Completions|undefined {
   // Look for an interpolation in at the position.
-  const templatePath = new TemplateAstPath(info.templateAst, position);
+  const templatePath = findTemplateAstAt(info.templateAst, position);
   const mostSpecific = templatePath.tail;
   if (mostSpecific) {
     let visitor = new ExpressionVisitor(
-        info, position, undefined, () => getExpressionScope(info, templatePath, false));
+        info, position, undefined,
+        () => getExpressionScope(diagnosticInfoFromTemplateInfo(info), templatePath, false));
     mostSpecific.visit(visitor, null);
     return uniqueByName(visitor.result);
   }
@@ -258,29 +262,29 @@ function interpolationCompletions(info: TemplateInfo, position: number): Complet
 // the attributes of an "a" element, not requesting completion in the a text element. This
 // code checks for this case and returns element completions if it is detected or undefined
 // if it is not.
-function voidElementAttributeCompletions(info: TemplateInfo, path: HtmlAstPath): Completions|
+function voidElementAttributeCompletions(info: TemplateInfo, path: AstPath<HtmlAst>): Completions|
     undefined {
   let tail = path.tail;
   if (tail instanceof Text) {
-    let match = tail.value.match(/<(\w(\w|\d|-)*:)?(\w(\w|\d|-)*)\s/) !;
+    let match = tail.value.match(/<(\w(\w|\d|-)*:)?(\w(\w|\d|-)*)\s/);
     // The position must be after the match, otherwise we are still in a place where elements
     // are expected (such as `<|a` or `<a|`; we only want attributes for `<a |` or after).
-    if (match && path.position >= match.index ! + match[0].length + tail.sourceSpan.start.offset) {
+    if (match &&
+        path.position >= (match.index || 0) + match[0].length + tail.sourceSpan.start.offset) {
       return attributeCompletionsForElement(info, match[3]);
     }
   }
 }
 
 class ExpressionVisitor extends NullTemplateVisitor {
+  private getExpressionScope: () => SymbolTable;
   result: Completions;
 
   constructor(
       private info: TemplateInfo, private position: number, private attr?: Attribute,
-      private getExpressionScope?: () => SymbolTable) {
+      getExpressionScope?: () => SymbolTable) {
     super();
-    if (!getExpressionScope) {
-      this.getExpressionScope = () => info.template.members;
-    }
+    this.getExpressionScope = getExpressionScope || (() => info.template.members);
   }
 
   visitDirectiveProperty(ast: BoundDirectivePropertyAst): void {
@@ -311,7 +315,8 @@ class ExpressionVisitor extends NullTemplateVisitor {
           this.info.expressionParser.parseTemplateBindings(key, this.attr.value, null);
 
       // find the template binding that contains the position
-      const valueRelativePosition = this.position - this.attr.valueSpan !.start.offset - 1;
+      if (!this.attr.valueSpan) return;
+      const valueRelativePosition = this.position - this.attr.valueSpan.start.offset - 1;
       const bindings = templateBindingResult.templateBindings;
       const binding =
           bindings.find(
@@ -340,10 +345,12 @@ class ExpressionVisitor extends NullTemplateVisitor {
           // We are after the '=' in a let clause. The valid values here are the members of the
           // template reference's type parameter.
           const directiveMetadata = selectorInfo.map.get(selector);
-          const contextTable =
-              this.info.template.query.getTemplateContext(directiveMetadata !.type.reference);
-          if (contextTable) {
-            this.result = this.symbolsToCompletions(contextTable.values());
+          if (directiveMetadata) {
+            const contextTable =
+                this.info.template.query.getTemplateContext(directiveMetadata.type.reference);
+            if (contextTable) {
+              this.result = this.symbolsToCompletions(contextTable.values());
+            }
           }
         } else if (binding.key && valueRelativePosition <= (binding.key.length - key.length)) {
           keyCompletions();
@@ -371,7 +378,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
     const expressionPosition = this.position - ast.sourceSpan.start.offset;
     if (inSpan(expressionPosition, ast.value.span)) {
       const completions = getExpressionCompletions(
-          this.getExpressionScope !(), ast.value, expressionPosition, this.info.template.query);
+          this.getExpressionScope(), ast.value, expressionPosition, this.info.template.query);
       if (completions) {
         this.result = this.symbolsToCompletions(completions);
       }
@@ -380,8 +387,8 @@ class ExpressionVisitor extends NullTemplateVisitor {
 
   private attributeValueCompletions(value: AST, position?: number) {
     const symbols = getExpressionCompletions(
-        this.getExpressionScope !(), value,
-        position == null ? this.attributeValuePosition : position, this.info.template.query);
+        this.getExpressionScope(), value, position == null ? this.attributeValuePosition : position,
+        this.info.template.query);
     if (symbols) {
       this.result = this.symbolsToCompletions(symbols);
     }
@@ -393,11 +400,12 @@ class ExpressionVisitor extends NullTemplateVisitor {
   }
 
   private get attributeValuePosition() {
-    return this.position - this.attr !.valueSpan !.start.offset - 1;
+    if (this.attr && this.attr.valueSpan) {
+      return this.position - this.attr.valueSpan.start.offset - 1;
+    }
+    return 0;
   }
 }
-
-
 
 function getSourceText(template: TemplateSource, span: Span): string {
   return template.source.substring(span.start, span.end);

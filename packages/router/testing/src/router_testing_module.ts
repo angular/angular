@@ -9,7 +9,7 @@
 import {Location, LocationStrategy} from '@angular/common';
 import {MockLocationStrategy, SpyLocation} from '@angular/common/testing';
 import {Compiler, Injectable, Injector, ModuleWithProviders, NgModule, NgModuleFactory, NgModuleFactoryLoader, Optional} from '@angular/core';
-import {NoPreloading, PreloadingStrategy, ROUTES, Route, Router, RouterModule, RouterOutletMap, Routes, UrlHandlingStrategy, UrlSerializer, provideRoutes, ɵROUTER_PROVIDERS as ROUTER_PROVIDERS, ɵflatten as flatten} from '@angular/router';
+import {ChildrenOutletContexts, NoPreloading, PreloadingStrategy, ROUTES, Route, Router, RouterModule, Routes, UrlHandlingStrategy, UrlSerializer, provideRoutes, ɵROUTER_PROVIDERS as ROUTER_PROVIDERS, ɵflatten as flatten} from '@angular/router';
 
 
 
@@ -82,11 +82,11 @@ export class SpyNgModuleFactoryLoader implements NgModuleFactoryLoader {
  * @stable
  */
 export function setupTestingRouter(
-    urlSerializer: UrlSerializer, outletMap: RouterOutletMap, location: Location,
+    urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location,
     loader: NgModuleFactoryLoader, compiler: Compiler, injector: Injector, routes: Route[][],
     urlHandlingStrategy?: UrlHandlingStrategy) {
   const router = new Router(
-      null, urlSerializer, outletMap, location, injector, loader, compiler, flatten(routes));
+      null !, urlSerializer, contexts, location, injector, loader, compiler, flatten(routes));
   if (urlHandlingStrategy) {
     router.urlHandlingStrategy = urlHandlingStrategy;
   }
@@ -127,8 +127,8 @@ export function setupTestingRouter(
       provide: Router,
       useFactory: setupTestingRouter,
       deps: [
-        UrlSerializer, RouterOutletMap, Location, NgModuleFactoryLoader, Compiler, Injector, ROUTES,
-        [UrlHandlingStrategy, new Optional()]
+        UrlSerializer, ChildrenOutletContexts, Location, NgModuleFactoryLoader, Compiler, Injector,
+        ROUTES, [UrlHandlingStrategy, new Optional()]
       ]
     },
     {provide: PreloadingStrategy, useExisting: NoPreloading}, provideRoutes([])

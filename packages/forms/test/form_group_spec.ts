@@ -9,13 +9,18 @@
 import {EventEmitter} from '@angular/core';
 import {async, fakeAsync, tick} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, describe, inject, it} from '@angular/core/testing/src/testing_internal';
-import {AbstractControl, FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
+import {AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, Validators} from '@angular/forms';
+import {of } from 'rxjs/observable/of';
 
 
 export function main() {
+  function simpleValidator(c: AbstractControl): ValidationErrors|null {
+    return c.get('one') !.value === 'correct' ? null : {'broken': true};
+  }
+
   function asyncValidator(expected: string, timeouts = {}) {
     return (c: AbstractControl) => {
-      let resolve: (result: any) => void;
+      let resolve: (result: any) => void = undefined !;
       const promise = new Promise(res => { resolve = res; });
       const t = (timeouts as any)[c.value] != null ? (timeouts as any)[c.value] : 0;
       const res = c.value != expected ? {'async': true} : null;
@@ -35,6 +40,8 @@ export function main() {
     Promise.resolve(null).then(() => { e.emit({'async': true}); });
     return e;
   }
+
+  function otherObservableValidator() { return of ({'other': true}); }
 
   describe('FormGroup', () => {
     describe('value', () => {
@@ -70,7 +77,7 @@ export function main() {
           'group': new FormGroup({'c2': new FormControl('v2'), 'c3': new FormControl('v3')}),
           'array': new FormArray([new FormControl('v4'), new FormControl('v5')])
         });
-        fg.get('group').get('c3').disable();
+        fg.get('group') !.get('c3') !.disable();
         (fg.get('array') as FormArray).at(1).disable();
 
         expect(fg.getRawValue())
@@ -101,26 +108,6 @@ export function main() {
 
         expect(g.value).toEqual({'one': '1'});
         expect(g.valid).toBe(true);
-      });
-    });
-
-    describe('errors', () => {
-      it('should run the validator when the value changes', () => {
-        const simpleValidator = (c: FormGroup) =>
-            c.controls['one'].value != 'correct' ? {'broken': true} : null;
-
-        const c = new FormControl(null);
-        const g = new FormGroup({'one': c}, simpleValidator);
-
-        c.setValue('correct');
-
-        expect(g.valid).toEqual(true);
-        expect(g.errors).toEqual(null);
-
-        c.setValue('incorrect');
-
-        expect(g.valid).toEqual(false);
-        expect(g.errors).toEqual({'broken': true});
       });
     });
 
@@ -629,7 +616,7 @@ export function main() {
       it('should return true when the component is enabled', () => {
         expect(group.contains('required')).toEqual(true);
 
-        group.enable('optional');
+        group.enable();
 
         expect(group.contains('optional')).toEqual(true);
       });
@@ -687,10 +674,70 @@ export function main() {
       });
     });
 
+    describe('validator', () => {
+
+      function containsValidator(c: AbstractControl): ValidationErrors|null {
+        return c.get('one') !.value && c.get('one') !.value.indexOf('c') !== -1 ? null :
+                                                                                  {'missing': true};
+      }
+
+      it('should run a single validator when the value changes', () => {
+        const c = new FormControl(null);
+        const g = new FormGroup({'one': c}, simpleValidator);
+
+        c.setValue('correct');
+
+        expect(g.valid).toEqual(true);
+        expect(g.errors).toEqual(null);
+
+        c.setValue('incorrect');
+
+        expect(g.valid).toEqual(false);
+        expect(g.errors).toEqual({'broken': true});
+      });
+
+      it('should support multiple validators from array', () => {
+        const g = new FormGroup({one: new FormControl()}, [simpleValidator, containsValidator]);
+        expect(g.valid).toEqual(false);
+        expect(g.errors).toEqual({missing: true, broken: true});
+
+        g.setValue({one: 'c'});
+        expect(g.valid).toEqual(false);
+        expect(g.errors).toEqual({broken: true});
+
+        g.setValue({one: 'correct'});
+        expect(g.valid).toEqual(true);
+      });
+
+      it('should set single validator from options obj', () => {
+        const g = new FormGroup({one: new FormControl()}, {validators: simpleValidator});
+        expect(g.valid).toEqual(false);
+        expect(g.errors).toEqual({broken: true});
+
+        g.setValue({one: 'correct'});
+        expect(g.valid).toEqual(true);
+      });
+
+      it('should set multiple validators from options obj', () => {
+        const g = new FormGroup(
+            {one: new FormControl()}, {validators: [simpleValidator, containsValidator]});
+        expect(g.valid).toEqual(false);
+        expect(g.errors).toEqual({missing: true, broken: true});
+
+        g.setValue({one: 'c'});
+        expect(g.valid).toEqual(false);
+        expect(g.errors).toEqual({broken: true});
+
+        g.setValue({one: 'correct'});
+        expect(g.valid).toEqual(true);
+      });
+
+    });
+
     describe('asyncValidator', () => {
       it('should run the async validator', fakeAsync(() => {
            const c = new FormControl('value');
-           const g = new FormGroup({'one': c}, null, asyncValidator('expected'));
+           const g = new FormGroup({'one': c}, null !, asyncValidator('expected'));
 
            expect(g.pending).toEqual(true);
 
@@ -700,8 +747,40 @@ export function main() {
            expect(g.pending).toEqual(false);
          }));
 
+      it('should set multiple async validators from array', fakeAsync(() => {
+           const g = new FormGroup(
+               {'one': new FormControl('value')}, null !,
+               [asyncValidator('expected'), otherObservableValidator]);
+           expect(g.pending).toEqual(true);
+
+           tick();
+           expect(g.errors).toEqual({'async': true, 'other': true});
+           expect(g.pending).toEqual(false);
+         }));
+
+      it('should set single async validator from options obj', fakeAsync(() => {
+           const g = new FormGroup(
+               {'one': new FormControl('value')}, {asyncValidators: asyncValidator('expected')});
+           expect(g.pending).toEqual(true);
+
+           tick();
+           expect(g.errors).toEqual({'async': true});
+           expect(g.pending).toEqual(false);
+         }));
+
+      it('should set multiple async validators from options obj', fakeAsync(() => {
+           const g = new FormGroup(
+               {'one': new FormControl('value')},
+               {asyncValidators: [asyncValidator('expected'), otherObservableValidator]});
+           expect(g.pending).toEqual(true);
+
+           tick();
+           expect(g.errors).toEqual({'async': true, 'other': true});
+           expect(g.pending).toEqual(false);
+         }));
+
       it('should set the parent group\'s status to pending', fakeAsync(() => {
-           const c = new FormControl('value', null, asyncValidator('expected'));
+           const c = new FormControl('value', null !, asyncValidator('expected'));
            const g = new FormGroup({'one': c});
 
            expect(g.pending).toEqual(true);
@@ -713,13 +792,13 @@ export function main() {
 
       it('should run the parent group\'s async validator when children are pending',
          fakeAsync(() => {
-           const c = new FormControl('value', null, asyncValidator('expected'));
-           const g = new FormGroup({'one': c}, null, asyncValidator('expected'));
+           const c = new FormControl('value', null !, asyncValidator('expected'));
+           const g = new FormGroup({'one': c}, null !, asyncValidator('expected'));
 
            tick(1);
 
            expect(g.errors).toEqual({'async': true});
-           expect(g.get('one').errors).toEqual({'async': true});
+           expect(g.get('one') !.errors).toEqual({'async': true});
          }));
     });
 
@@ -772,10 +851,10 @@ export function main() {
         });
         expect(g.valid).toBe(false);
 
-        g.get('nested').disable();
+        g.get('nested') !.disable();
         expect(g.valid).toBe(true);
 
-        g.get('nested').enable();
+        g.get('nested') !.enable();
         expect(g.valid).toBe(false);
       });
 
@@ -784,10 +863,10 @@ export function main() {
             {nested: new FormGroup({one: new FormControl('one')}), two: new FormControl('two')});
         expect(g.value).toEqual({'nested': {'one': 'one'}, 'two': 'two'});
 
-        g.get('nested').disable();
+        g.get('nested') !.disable();
         expect(g.value).toEqual({'two': 'two'});
 
-        g.get('nested').enable();
+        g.get('nested') !.enable();
         expect(g.value).toEqual({'nested': {'one': 'one'}, 'two': 'two'});
       });
 
@@ -795,13 +874,13 @@ export function main() {
         const g = new FormGroup(
             {nested: new FormGroup({one: new FormControl('one'), two: new FormControl('two')})});
 
-        g.get('nested.two').disable();
+        g.get('nested.two') !.disable();
         expect(g.value).toEqual({nested: {one: 'one'}});
 
-        g.get('nested').disable();
+        g.get('nested') !.disable();
         expect(g.value).toEqual({nested: {one: 'one', two: 'two'}});
 
-        g.get('nested').enable();
+        g.get('nested') !.enable();
         expect(g.value).toEqual({nested: {one: 'one', two: 'two'}});
       });
 
@@ -809,38 +888,38 @@ export function main() {
         const g = new FormGroup(
             {nested: new FormGroup({one: new FormControl('one'), two: new FormControl('two')})});
 
-        g.get('nested.two').disable();
+        g.get('nested.two') !.disable();
         expect(g.value).toEqual({nested: {one: 'one'}});
 
-        g.get('nested').enable();
+        g.get('nested') !.enable();
         expect(g.value).toEqual({nested: {one: 'one', two: 'two'}});
       });
 
       it('should ignore disabled controls when determining dirtiness', () => {
         const g = new FormGroup(
             {nested: new FormGroup({one: new FormControl('one')}), two: new FormControl('two')});
-        g.get('nested.one').markAsDirty();
+        g.get('nested.one') !.markAsDirty();
         expect(g.dirty).toBe(true);
 
-        g.get('nested').disable();
-        expect(g.get('nested').dirty).toBe(true);
+        g.get('nested') !.disable();
+        expect(g.get('nested') !.dirty).toBe(true);
         expect(g.dirty).toEqual(false);
 
-        g.get('nested').enable();
+        g.get('nested') !.enable();
         expect(g.dirty).toEqual(true);
       });
 
       it('should ignore disabled controls when determining touched state', () => {
         const g = new FormGroup(
             {nested: new FormGroup({one: new FormControl('one')}), two: new FormControl('two')});
-        g.get('nested.one').markAsTouched();
+        g.get('nested.one') !.markAsTouched();
         expect(g.touched).toBe(true);
 
-        g.get('nested').disable();
-        expect(g.get('nested').touched).toBe(true);
+        g.get('nested') !.disable();
+        expect(g.get('nested') !.touched).toBe(true);
         expect(g.touched).toEqual(false);
 
-        g.get('nested').enable();
+        g.get('nested') !.enable();
         expect(g.touched).toEqual(true);
       });
 
@@ -907,7 +986,8 @@ export function main() {
         });
 
         it('should clear out async group errors when disabled', fakeAsync(() => {
-             const g = new FormGroup({'one': new FormControl()}, null, asyncValidator('expected'));
+             const g =
+                 new FormGroup({'one': new FormControl()}, null !, asyncValidator('expected'));
              tick();
              expect(g.errors).toEqual({'async': true});
 
@@ -920,7 +1000,8 @@ export function main() {
            }));
 
         it('should re-populate async group errors when enabled from a child', fakeAsync(() => {
-             const g = new FormGroup({'one': new FormControl()}, null, asyncValidator('expected'));
+             const g =
+                 new FormGroup({'one': new FormControl()}, null !, asyncValidator('expected'));
              tick();
              expect(g.errors).toEqual({'async': true});
 
@@ -1028,7 +1109,7 @@ export function main() {
       });
 
       it('should remove control if new control is null', () => {
-        g.setControl('one', null);
+        g.setControl('one', null !);
         expect(g.controls['one']).not.toBeDefined();
         expect(g.value).toEqual({});
       });

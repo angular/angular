@@ -13,8 +13,10 @@ You should run all these tasks from the `angular/aio` folder.
 Here are the most important tasks you might need to use:
 
 * `yarn` - install all the dependencies.
+* `yarn setup` - Install all the dependencies, boilerplate, plunkers, zips and runs dgeni on the docs.
 
 * `yarn start` - run a development web server that watches the files; then builds the doc-viewer and reloads the page, as necessary.
+* `yarn serve-and-sync` - run both the `docs-watch` and `start` in the same console.
 * `yarn lint` - check that the doc-viewer code follows our style rules.
 * `yarn test` - watch all the source files, for the doc-viewer, and run all the unit tests when any change.
 * `yarn e2e` - run all the e2e tests for the doc-viewer.
@@ -27,6 +29,24 @@ Here are the most important tasks you might need to use:
 * `yarn boilerplate:add` - generate all the boilerplate code for the examples, so that they can be run locally.
 * `yarn boilerplate:remove` - remove all the boilerplate code that was added via `yarn boilerplate:add`.
 * `yarn generate-plunkers` - generate the plunker files that are used by the `live-example` tags in the docs.
+* `yarn generate-zips` - generate the zip files from the examples. Zip available via the `live-example` tags in the docs.
+
+* `yarn example-e2e` - run all e2e tests for examples
+  - `yarn example-e2e -- --setup` - force webdriver update & other setup, then run tests
+  - `yarn example-e2e -- --filter=foo` - limit e2e tests to those containing the word "foo"
+
+* `yarn build-ie-polyfills` - generates a js file of polyfills that can be loaded in Internet Explorer.
+
+## Using ServiceWorker locally
+
+Since abb36e3cb, running `yarn start -- --prod` will no longer set up the ServiceWorker, which
+would require manually running `yarn sw-manifest` and `yarn sw-copy` (something that is not possible
+with webpack serving the files from memory).
+
+If you want to test ServiceWorker locally, you can use `yarn build` and serve the files in `dist/`
+with `yarn http-server -- dist -p 4200`.
+
+For more details see #16745.
 
 
 ## Guide to authoring
@@ -45,6 +65,9 @@ More specifically, there are sub-folders that contain particular types of conten
 
 We use the [dgeni](https://github.com/angular/dgeni) tool to convert these files into docs that can be viewed in the doc-viewer.
 
+The [Authors Style Guide](https://angular.io/guide/docs-style-guide) prescribes guidelines for
+writing guide pages, explains how to use the documentation classes and components, and how to markup sample source code to produce code snippets.
+
 ### Generating the complete docs
 
 The main task for generating the docs is `yarn docs`. This will process all the source files (API and other),
@@ -54,9 +77,11 @@ extracting the documentation and generating JSON files that can be consumed by t
 
 Full doc generation can take up to one minute. That's too slow for efficient document creation and editing.
 
-While you can make small changes in a smart editor that displays formatted markdown (e.g,. VS Code), you
-also want to see those changes displayed properly in the doc viewer. You'll want a quicker edit/view cycle
-time.
+You can make small changes in a smart editor that displays formatted markdown:
+>In VS Code, _Cmd-K, V_ opens markdown preview in side pane; _Cmd-B_ toggles left sidebar
+
+You also want to see those changes displayed properly in the doc viewer
+with a quick, edit/view cycle time.
 
 For this purpose, use the `yarn docs-watch` task, which watches for changes to source files and only
 re-processes the the files necessary to generate the docs that are related to the file that has changed.

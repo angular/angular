@@ -1,9 +1,9 @@
 /** @experimental */
-export declare function bootstrapWorkerUi(workerScriptUri: string, customProviders?: Provider[]): Promise<PlatformRef>;
+export declare function bootstrapWorkerUi(workerScriptUri: string, customProviders?: StaticProvider[]): Promise<PlatformRef>;
 
 /** @experimental */
 export declare abstract class ClientMessageBroker {
-    abstract runOnService(args: UiArguments, returnType: Type<any> | SerializerTypes): Promise<any>;
+    abstract runOnService(args: UiArguments, returnType: Type<any> | SerializerTypes | null): Promise<any> | null;
 }
 
 /** @experimental */
@@ -41,10 +41,10 @@ export interface MessageBusSource {
 }
 
 /** @experimental */
-export declare const platformWorkerApp: (extraProviders?: Provider[]) => PlatformRef;
+export declare const platformWorkerApp: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
 
 /** @experimental */
-export declare const platformWorkerUi: (extraProviders?: Provider[]) => PlatformRef;
+export declare const platformWorkerUi: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
 
 /** @experimental */
 export declare const PRIMITIVE: SerializerTypes;
@@ -66,7 +66,7 @@ export declare const enum SerializerTypes {
 
 /** @experimental */
 export declare abstract class ServiceMessageBroker {
-    abstract registerMethod(methodName: string, signature: Array<Type<any> | SerializerTypes>, method: Function, returnType?: Type<any> | SerializerTypes): void;
+    abstract registerMethod(methodName: string, signature: Array<Type<any> | SerializerTypes> | null, method: Function, returnType?: Type<any> | SerializerTypes): void;
 }
 
 /** @experimental */
@@ -100,7 +100,7 @@ export declare const WORKER_APP_LOCATION_PROVIDERS: ({
 })[];
 
 /** @experimental */
-export declare const WORKER_UI_LOCATION_PROVIDERS: Provider[];
+export declare const WORKER_UI_LOCATION_PROVIDERS: StaticProvider[];
 
 /** @experimental */
 export declare class WorkerAppModule {

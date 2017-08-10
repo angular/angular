@@ -12,7 +12,7 @@ import {ɵgetDOM as getDOM} from '@angular/platform-browser';
 export let browserDetection: BrowserDetection;
 
 export class BrowserDetection {
-  private _overrideUa: string;
+  private _overrideUa: string|null;
   private get _ua(): string {
     if (typeof this._overrideUa === 'string') {
       return this._overrideUa;
@@ -23,7 +23,7 @@ export class BrowserDetection {
 
   static setup() { browserDetection = new BrowserDetection(null); }
 
-  constructor(ua: string) { this._overrideUa = ua; }
+  constructor(ua: string|null) { this._overrideUa = ua; }
 
   get isFirefox(): boolean { return this._ua.indexOf('Firefox') > -1; }
 

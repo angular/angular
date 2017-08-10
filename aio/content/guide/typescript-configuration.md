@@ -1,11 +1,4 @@
-@title
-TypeScript Configuration
-
-@intro
-TypeScript configuration for Angular developers.
-
-@description
-
+# TypeScript Configuration
 
 TypeScript is a primary language for Angular application development.
 It is a superset of JavaScript with design-time support for type safety and tooling.
@@ -40,6 +33,8 @@ For details about `tsconfig.json`, see the official
 
 
 The [Setup](guide/setup) guide uses the following `tsconfig.json`:
+
+<code-example path="quickstart/src/tsconfig.1.json" title="tsconfig.json" linenums="false"></code-example>
 
 This file contains options and flags that are essential for Angular applications.
 

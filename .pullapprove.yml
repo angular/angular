@@ -8,9 +8,11 @@
 # alexeagle - Alex Eagle
 # alxhub - Alex Rickabaugh
 # chuckjaz - Chuck Jazdzewski
+# Foxandxss - Jesús Rodríguez
 # gkalpak - George Kalpakas
 # IgorMinar - Igor Minar
 # jasonaden - Jason Aden
+# juleskremer - Jules Kremer
 # kara - Kara Erickson
 # matsko - Matias Niemelä
 # mhevery - Misko Hevery
@@ -18,10 +20,11 @@
 # pkozlowski-opensource - Pawel Kozlowski
 # robwormald - Rob Wormald
 # tbosch - Tobias Bosch
+# tinayuangao - Tina Gao
 # vicb - Victor Berchet
 # vikerman - Vikram Subramanian
 # wardbell - Ward Bell
-# tinayuangao - Tina Gao
+
 
 version: 2
 
@@ -66,8 +69,8 @@ groups:
           - "*.lock"
           - "tools/*"
         exclude:
-          - "tools/@angular/tsc-wrapped/*"
           - "tools/public_api_guard/*"
+          - "tools/ngc-wrapped/*"
           - "aio/*"
     users:
       - IgorMinar #primary
@@ -93,19 +96,21 @@ groups:
         - "packages/core/*"
     users:
       - tbosch #primary
+      - chuckjaz
       - mhevery
       - vicb
       - IgorMinar #fallback
 
-  compiler/animations:
+  animations:
     conditions:
       files:
-        - "packages/compiler/src/animation/*"
+        - "packages/animation/*"
+        - "packages/platform-browser/animations/*"
     users:
       - matsko #primary
-      - tbosch
-      - IgorMinar #fallback
+      - chuckjaz #fallback
       - mhevery #fallback
+      - IgorMinar #fallback
 
   compiler/i18n:
     conditions:
@@ -131,11 +136,13 @@ groups:
   compiler-cli:
     conditions:
       files:
-        - "tools/@angular/tsc-wrapped/*"
+        - "packages/tsc-wrapped/*"
         - "packages/compiler-cli/*"
+        - "tools/ngc-wrapped/*"
     users:
       - alexeagle
       - chuckjaz
+      - vicb
       - tbosch
       - IgorMinar #fallback
       - mhevery #fallback
@@ -248,10 +255,46 @@ groups:
   angular.io:
     conditions:
       files:
-        - "aio/*"
+        include:
+          - "aio/*"
+        exclude:
+          - "aio/content/*"
     users:
-      - IgorMinar #primary
-      - petebacondarwin #secondary
+      - petebacondarwin #primary
+      - IgorMinar
       - gkalpak
+      - mhevery #fallback
+
+  angular.io-guide-and-tutorial:
+    conditions:
+      files:
+        include:
+          - "aio/content/*"
+        exclude:
+          - "aio/content/marketing/*"
+          - "aio/content/navigation.json"
+          - "aio/content/license.md"
+    users:
+      - juleskremer #primary
+      - Foxandxss
+      - stephenfluin
       - wardbell
+      - petebacondarwin
+      - gkalpak
+      - IgorMinar #fallback
+      - mhevery #fallback
+
+  angular.io-marketing:
+    conditions:
+      files:
+        include:
+          - "aio/content/marketing/*"
+          - "aio/content/navigation.json"
+          - "aio/content/license.md"
+    users:
+      - juleskremer #primary
+      - stephenfluin
+      - petebacondarwin
+      - gkalpak
+      - IgorMinar #fallback
       - mhevery #fallback

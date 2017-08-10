@@ -8,7 +8,7 @@
 
 import {Type} from '@angular/core';
 
-let _DOM: DomAdapter = null;
+let _DOM: DomAdapter = null !;
 
 export function getDOM() {
   return _DOM;
@@ -32,7 +32,7 @@ export function setRootDomAdapter(adapter: DomAdapter) {
  * can introduce XSS risks.
  */
 export abstract class DomAdapter {
-  public resourceLoaderType: Type<any> = null;
+  public resourceLoaderType: Type<any> = null !;
   abstract hasProperty(element: any, name: string): boolean;
   abstract setProperty(el: Element, name: string, value: any): any;
   abstract getProperty(el: Element, name: string): any;
@@ -68,12 +68,12 @@ export abstract class DomAdapter {
   abstract getTemplateContent(el: any): any;
   abstract getOuterHTML(el: any): string;
   abstract nodeName(node: any): string;
-  abstract nodeValue(node: any): string;
+  abstract nodeValue(node: any): string|null;
   abstract type(node: any): string;
   abstract content(node: any): any;
-  abstract firstChild(el: any): Node;
-  abstract nextSibling(el: any): Node;
-  abstract parentElement(el: any): Node;
+  abstract firstChild(el: any): Node|null;
+  abstract nextSibling(el: any): Node|null;
+  abstract parentElement(el: any): Node|null;
   abstract childNodes(el: any): Node[];
   abstract childNodesAsList(el: any): Node[];
   abstract clearNodes(el: any): any;
@@ -85,7 +85,7 @@ export abstract class DomAdapter {
   abstract insertAllBefore(parent: any, ref: any, nodes: any): any;
   abstract insertAfter(parent: any, el: any, node: any): any;
   abstract setInnerHTML(el: any, value: any): any;
-  abstract getText(el: any): string;
+  abstract getText(el: any): string|null;
   abstract setText(el: any, value: string): any;
   abstract getValue(el: any): string;
   abstract setValue(el: any, value: string): any;
@@ -117,7 +117,7 @@ export abstract class DomAdapter {
   abstract attributeMap(element: any): Map<string, string>;
   abstract hasAttribute(element: any, attribute: string): boolean;
   abstract hasAttributeNS(element: any, ns: string, attribute: string): boolean;
-  abstract getAttribute(element: any, attribute: string): string;
+  abstract getAttribute(element: any, attribute: string): string|null;
   abstract getAttributeNS(element: any, ns: string, attribute: string): string;
   abstract setAttribute(element: any, name: string, value: string): any;
   abstract setAttributeNS(element: any, ns: string, name: string, value: string): any;
@@ -145,13 +145,12 @@ export abstract class DomAdapter {
   abstract getGlobalEventTarget(doc: Document, target: string): any;
   abstract getHistory(): History;
   abstract getLocation(): Location;
-  abstract getBaseHref(doc: Document): string;
+  abstract getBaseHref(doc: Document): string|null;
   abstract resetBaseElement(): void;
   abstract getUserAgent(): string;
   abstract setData(element: any, name: string, value: string): any;
   abstract getComputedStyle(element: any): any;
-  abstract getData(element: any, name: string): string;
-  abstract setGlobalVar(name: string, value: any): any;
+  abstract getData(element: any, name: string): string|null;
   abstract supportsWebAnimation(): boolean;
   abstract performanceNow(): number;
   abstract getAnimationPrefix(): string;
@@ -159,6 +158,6 @@ export abstract class DomAdapter {
   abstract supportsAnimation(): boolean;
 
   abstract supportsCookies(): boolean;
-  abstract getCookie(name: string): string;
+  abstract getCookie(name: string): string|null;
   abstract setCookie(name: string, value: string): any;
 }

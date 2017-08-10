@@ -1,12 +1,13 @@
 'use strict'; // necessary for es6 output in node
 
 import { browser, element, by } from 'protractor';
-import { setProtractorToHybridMode } from '../protractor-helpers';
 
 describe('Upgrade Tests', function () {
 
   beforeAll(function () {
-    setProtractorToHybridMode();
+    // Set protractor to hybrid mode.
+    browser.rootEl = 'body';
+    browser.ng12Hybrid = true;
   });
 
   describe('AngularJS Auto-bootstrap', function() {
@@ -157,24 +158,6 @@ describe('Upgrade Tests', function () {
 
     it('works', function () {
       expect(element(by.css('h2')).getText()).toBe('1: Windstorm');
-    });
-
-  });
-
-  describe('Dividing routes', function() {
-
-    beforeAll(function () {
-      browser.get('/index-divide-routes.html');
-    });
-
-    it('allows ng1 routes', function () {
-      browser.get('/index-divide-routes.html#/villain');
-      expect(element(by.css('h2')).getText()).toBe('Mr. Nice - No More Mr. Nice Guy');
-    });
-
-    it('allows ng2 routes', function () {
-      browser.get('/index-divide-routes.html#/hero');
-      expect(element(by.css('h2')).getText()).toBe('Windstorm - Specific powers of controlling winds');
     });
 
   });

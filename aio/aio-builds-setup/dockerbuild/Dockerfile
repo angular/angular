@@ -29,6 +29,8 @@ ARG      AIO_NGINX_PORT_HTTPS=443
 ARG TEST_AIO_NGINX_PORT_HTTPS=4433
 ARG      AIO_REPO_SLUG=angular/angular
 ARG TEST_AIO_REPO_SLUG=test-repo/test-slug
+ARG      AIO_TRUSTED_PR_LABEL="aio: preview"
+ARG TEST_AIO_TRUSTED_PR_LABEL="aio: preview"
 ARG      AIO_UPLOAD_HOSTNAME=upload.localhost
 ARG TEST_AIO_UPLOAD_HOSTNAME=upload.localhost
 ARG      AIO_UPLOAD_MAX_SIZE=20971520
@@ -48,9 +50,11 @@ ENV AIO_BUILDS_DIR=$AIO_BUILDS_DIR                     TEST_AIO_BUILDS_DIR=$TEST
     AIO_REPO_SLUG=$AIO_REPO_SLUG                       TEST_AIO_REPO_SLUG=$TEST_AIO_REPO_SLUG                       \
     AIO_SCRIPTS_JS_DIR=/usr/share/aio-scripts-js                                                                    \
     AIO_SCRIPTS_SH_DIR=/usr/share/aio-scripts-sh                                                                    \
+    AIO_TRUSTED_PR_LABEL=$AIO_TRUSTED_PR_LABEL         TEST_AIO_TRUSTED_PR_LABEL=$TEST_AIO_TRUSTED_PR_LABEL         \
     AIO_UPLOAD_HOSTNAME=$AIO_UPLOAD_HOSTNAME           TEST_AIO_UPLOAD_HOSTNAME=$TEST_AIO_UPLOAD_HOSTNAME           \
     AIO_UPLOAD_MAX_SIZE=$AIO_UPLOAD_MAX_SIZE           TEST_AIO_UPLOAD_MAX_SIZE=$TEST_AIO_UPLOAD_MAX_SIZE           \
     AIO_UPLOAD_PORT=$AIO_UPLOAD_PORT                   TEST_AIO_UPLOAD_PORT=$TEST_AIO_UPLOAD_PORT                   \
+    AIO_WWW_USER=www-data                                                                                           \
     NODE_ENV=production
 
 
@@ -63,6 +67,7 @@ RUN apt-get update -y && apt-get install -y curl
 RUN curl --silent --show-error --location https://deb.nodesource.com/setup_6.x | bash -
 RUN curl --silent --show-error https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+RUN echo "deb http://ftp.debian.org/debian jessie-backports main" | tee /etc/apt/sources.list.d/backports.list
 
 
 # Install packages
@@ -71,11 +76,11 @@ RUN apt-get update -y && apt-get install -y \
     cron \
     dnsmasq \
     nano \
-    nginx \
     nodejs \
     openssl \
     rsyslog \
     yarn
+RUN apt-get install -t jessie-backports -y nginx
 RUN yarn global add pm2@2
 
 
@@ -109,31 +114,31 @@ RUN update-ca-certificates
 
 
 # Set up nginx (for production and testing)
-RUN rm /etc/nginx/sites-enabled/*
+RUN sed -i -E "s|^user\s+\S+;|user $AIO_WWW_USER;|" /etc/nginx/nginx.conf
+RUN rm -f /etc/nginx/conf.d/*
+RUN rm -f /etc/nginx/sites-enabled/*
 
-COPY nginx/aio-builds.conf /etc/nginx/sites-available/aio-builds-prod.conf
-RUN sed -i "s|{{\$AIO_BUILDS_DIR}}|$AIO_BUILDS_DIR|g" /etc/nginx/sites-available/aio-builds-prod.conf
-RUN sed -i "s|{{\$AIO_DOMAIN_NAME}}|$AIO_DOMAIN_NAME|g" /etc/nginx/sites-available/aio-builds-prod.conf
-RUN sed -i "s|{{\$AIO_LOCALCERTS_DIR}}|$AIO_LOCALCERTS_DIR|g" /etc/nginx/sites-available/aio-builds-prod.conf
-RUN sed -i "s|{{\$AIO_NGINX_LOGS_DIR}}|$AIO_NGINX_LOGS_DIR|g" /etc/nginx/sites-available/aio-builds-prod.conf
-RUN sed -i "s|{{\$AIO_NGINX_PORT_HTTP}}|$AIO_NGINX_PORT_HTTP|g" /etc/nginx/sites-available/aio-builds-prod.conf
-RUN sed -i "s|{{\$AIO_NGINX_PORT_HTTPS}}|$AIO_NGINX_PORT_HTTPS|g" /etc/nginx/sites-available/aio-builds-prod.conf
-RUN sed -i "s|{{\$AIO_UPLOAD_HOSTNAME}}|$AIO_UPLOAD_HOSTNAME|g" /etc/nginx/sites-available/aio-builds-prod.conf
-RUN sed -i "s|{{\$AIO_UPLOAD_MAX_SIZE}}|$AIO_UPLOAD_MAX_SIZE|g" /etc/nginx/sites-available/aio-builds-prod.conf
-RUN sed -i "s|{{\$AIO_UPLOAD_PORT}}|$AIO_UPLOAD_PORT|g" /etc/nginx/sites-available/aio-builds-prod.conf
-RUN ln -s /etc/nginx/sites-available/aio-builds-prod.conf /etc/nginx/sites-enabled/aio-builds-prod.conf
+COPY nginx/aio-builds.conf /etc/nginx/conf.d/aio-builds-prod.conf
+RUN sed -i "s|{{\$AIO_BUILDS_DIR}}|$AIO_BUILDS_DIR|g" /etc/nginx/conf.d/aio-builds-prod.conf
+RUN sed -i "s|{{\$AIO_DOMAIN_NAME}}|$AIO_DOMAIN_NAME|g" /etc/nginx/conf.d/aio-builds-prod.conf
+RUN sed -i "s|{{\$AIO_LOCALCERTS_DIR}}|$AIO_LOCALCERTS_DIR|g" /etc/nginx/conf.d/aio-builds-prod.conf
+RUN sed -i "s|{{\$AIO_NGINX_LOGS_DIR}}|$AIO_NGINX_LOGS_DIR|g" /etc/nginx/conf.d/aio-builds-prod.conf
+RUN sed -i "s|{{\$AIO_NGINX_PORT_HTTP}}|$AIO_NGINX_PORT_HTTP|g" /etc/nginx/conf.d/aio-builds-prod.conf
+RUN sed -i "s|{{\$AIO_NGINX_PORT_HTTPS}}|$AIO_NGINX_PORT_HTTPS|g" /etc/nginx/conf.d/aio-builds-prod.conf
+RUN sed -i "s|{{\$AIO_UPLOAD_HOSTNAME}}|$AIO_UPLOAD_HOSTNAME|g" /etc/nginx/conf.d/aio-builds-prod.conf
+RUN sed -i "s|{{\$AIO_UPLOAD_MAX_SIZE}}|$AIO_UPLOAD_MAX_SIZE|g" /etc/nginx/conf.d/aio-builds-prod.conf
+RUN sed -i "s|{{\$AIO_UPLOAD_PORT}}|$AIO_UPLOAD_PORT|g" /etc/nginx/conf.d/aio-builds-prod.conf
 
-COPY nginx/aio-builds.conf /etc/nginx/sites-available/aio-builds-test.conf
-RUN sed -i "s|{{\$AIO_BUILDS_DIR}}|$TEST_AIO_BUILDS_DIR|g" /etc/nginx/sites-available/aio-builds-test.conf
-RUN sed -i "s|{{\$AIO_DOMAIN_NAME}}|$TEST_AIO_DOMAIN_NAME|g" /etc/nginx/sites-available/aio-builds-test.conf
-RUN sed -i "s|{{\$AIO_LOCALCERTS_DIR}}|$TEST_AIO_LOCALCERTS_DIR|g" /etc/nginx/sites-available/aio-builds-test.conf
-RUN sed -i "s|{{\$AIO_NGINX_LOGS_DIR}}|$TEST_AIO_NGINX_LOGS_DIR|g" /etc/nginx/sites-available/aio-builds-test.conf
-RUN sed -i "s|{{\$AIO_NGINX_PORT_HTTP}}|$TEST_AIO_NGINX_PORT_HTTP|g" /etc/nginx/sites-available/aio-builds-test.conf
-RUN sed -i "s|{{\$AIO_NGINX_PORT_HTTPS}}|$TEST_AIO_NGINX_PORT_HTTPS|g" /etc/nginx/sites-available/aio-builds-test.conf
-RUN sed -i "s|{{\$AIO_UPLOAD_HOSTNAME}}|$TEST_AIO_UPLOAD_HOSTNAME|g" /etc/nginx/sites-available/aio-builds-test.conf
-RUN sed -i "s|{{\$AIO_UPLOAD_MAX_SIZE}}|$TEST_AIO_UPLOAD_MAX_SIZE|g" /etc/nginx/sites-available/aio-builds-test.conf
-RUN sed -i "s|{{\$AIO_UPLOAD_PORT}}|$TEST_AIO_UPLOAD_PORT|g" /etc/nginx/sites-available/aio-builds-test.conf
-RUN ln -s /etc/nginx/sites-available/aio-builds-test.conf /etc/nginx/sites-enabled/aio-builds-test.conf
+COPY nginx/aio-builds.conf /etc/nginx/conf.d/aio-builds-test.conf
+RUN sed -i "s|{{\$AIO_BUILDS_DIR}}|$TEST_AIO_BUILDS_DIR|g" /etc/nginx/conf.d/aio-builds-test.conf
+RUN sed -i "s|{{\$AIO_DOMAIN_NAME}}|$TEST_AIO_DOMAIN_NAME|g" /etc/nginx/conf.d/aio-builds-test.conf
+RUN sed -i "s|{{\$AIO_LOCALCERTS_DIR}}|$TEST_AIO_LOCALCERTS_DIR|g" /etc/nginx/conf.d/aio-builds-test.conf
+RUN sed -i "s|{{\$AIO_NGINX_LOGS_DIR}}|$TEST_AIO_NGINX_LOGS_DIR|g" /etc/nginx/conf.d/aio-builds-test.conf
+RUN sed -i "s|{{\$AIO_NGINX_PORT_HTTP}}|$TEST_AIO_NGINX_PORT_HTTP|g" /etc/nginx/conf.d/aio-builds-test.conf
+RUN sed -i "s|{{\$AIO_NGINX_PORT_HTTPS}}|$TEST_AIO_NGINX_PORT_HTTPS|g" /etc/nginx/conf.d/aio-builds-test.conf
+RUN sed -i "s|{{\$AIO_UPLOAD_HOSTNAME}}|$TEST_AIO_UPLOAD_HOSTNAME|g" /etc/nginx/conf.d/aio-builds-test.conf
+RUN sed -i "s|{{\$AIO_UPLOAD_MAX_SIZE}}|$TEST_AIO_UPLOAD_MAX_SIZE|g" /etc/nginx/conf.d/aio-builds-test.conf
+RUN sed -i "s|{{\$AIO_UPLOAD_PORT}}|$TEST_AIO_UPLOAD_PORT|g" /etc/nginx/conf.d/aio-builds-test.conf
 
 
 # Set up pm2

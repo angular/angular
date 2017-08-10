@@ -6,16 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Host, Input, OnDestroy, Optional, Provider, Renderer, forwardRef, ɵlooseIdentical as looseIdentical} from '@angular/core';
+import {Directive, ElementRef, Host, Input, OnDestroy, Optional, Renderer2, StaticProvider, forwardRef, ɵlooseIdentical as looseIdentical} from '@angular/core';
+
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
-export const SELECT_VALUE_ACCESSOR: Provider = {
+export const SELECT_VALUE_ACCESSOR: StaticProvider = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => SelectControlValueAccessor),
   multi: true
 };
 
-function _buildValueString(id: string, value: any): string {
+function _buildValueString(id: string | null, value: any): string {
   if (id == null) return `${value}`;
   if (value && typeof value === 'object') value = 'Object';
   return `${id}: ${value}`.slice(0, 50);
@@ -114,16 +115,16 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
 
   private _compareWith: (o1: any, o2: any) => boolean = looseIdentical;
 
-  constructor(private _renderer: Renderer, private _elementRef: ElementRef) {}
+  constructor(private _renderer: Renderer2, private _elementRef: ElementRef) {}
 
   writeValue(value: any): void {
     this.value = value;
-    const id: string = this._getOptionId(value);
+    const id: string|null = this._getOptionId(value);
     if (id == null) {
-      this._renderer.setElementProperty(this._elementRef.nativeElement, 'selectedIndex', -1);
+      this._renderer.setProperty(this._elementRef.nativeElement, 'selectedIndex', -1);
     }
     const valueString = _buildValueString(id, value);
-    this._renderer.setElementProperty(this._elementRef.nativeElement, 'value', valueString);
+    this._renderer.setProperty(this._elementRef.nativeElement, 'value', valueString);
   }
 
   registerOnChange(fn: (value: any) => any): void {
@@ -135,14 +136,14 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
   registerOnTouched(fn: () => any): void { this.onTouched = fn; }
 
   setDisabledState(isDisabled: boolean): void {
-    this._renderer.setElementProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
+    this._renderer.setProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
   }
 
   /** @internal */
   _registerOption(): string { return (this._idCounter++).toString(); }
 
   /** @internal */
-  _getOptionId(value: any): string {
+  _getOptionId(value: any): string|null {
     for (const id of Array.from(this._optionMap.keys())) {
       if (this._compareWith(this._optionMap.get(id), value)) return id;
     }
@@ -170,7 +171,7 @@ export class NgSelectOption implements OnDestroy {
   id: string;
 
   constructor(
-      private _element: ElementRef, private _renderer: Renderer,
+      private _element: ElementRef, private _renderer: Renderer2,
       @Optional() @Host() private _select: SelectControlValueAccessor) {
     if (this._select) this.id = this._select._registerOption();
   }
@@ -191,7 +192,7 @@ export class NgSelectOption implements OnDestroy {
 
   /** @internal */
   _setElementValue(value: string): void {
-    this._renderer.setElementProperty(this._element.nativeElement, 'value', value);
+    this._renderer.setProperty(this._element.nativeElement, 'value', value);
   }
 
   ngOnDestroy(): void {

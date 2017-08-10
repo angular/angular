@@ -112,6 +112,12 @@ export function main() {
         checkAction('!!!true');
       });
 
+      it('should parse postfix ! expression', () => {
+        checkAction('true!');
+        checkAction('a!.b');
+        checkAction('a!!!!.b');
+      });
+
       it('should parse multiplicative expressions',
          () => { checkAction('3*4/2%5', '3 * 4 / 2 % 5'); });
 
@@ -159,7 +165,7 @@ export function main() {
 
         it('should parse map', () => {
           checkAction('{}');
-          checkAction('{a: 1}[2]');
+          checkAction('{a: 1, "b": 2}[2]');
           checkAction('{}["a"]');
         });
 
@@ -257,7 +263,7 @@ export function main() {
           checkBinding('a(b | c)', 'a((b | c))');
           checkBinding('a.b(c.d(e) | f)', 'a.b((c.d(e) | f))');
           checkBinding('[1, 2, 3] | a', '([1, 2, 3] | a)');
-          checkBinding('{a: 1} | b', '({a: 1} | b)');
+          checkBinding('{a: 1, "b": 2} | c', '({a: 1, "b": 2} | c)');
           checkBinding('a[b] | c', '(a[b] | c)');
           checkBinding('a?.b | c', '(a?.b | c)');
           checkBinding('true | a', '(true | a)');

@@ -70,12 +70,12 @@ export declare type AnimationStateTransitionMetadata = any;
 
 /** @deprecated */
 export interface AnimationStyleMetadata extends AnimationMetadata {
-    offset?: number;
-    styles: {
+    offset: number | null;
+    styles: '*' | {
         [key: string]: string | number;
-    } | {
+    } | Array<{
         [key: string]: string | number;
-    }[];
+    } | '*'>;
 }
 
 /** @deprecated */
@@ -131,7 +131,7 @@ export declare abstract class ApplicationRef {
     readonly abstract isStable: Observable<boolean>;
     readonly abstract viewCount: number;
     abstract attachView(view: ViewRef): void;
-    abstract bootstrap<C>(componentFactory: ComponentFactory<C> | Type<C>): ComponentRef<C>;
+    abstract bootstrap<C>(componentFactory: ComponentFactory<C> | Type<C>, rootSelectorOrNode?: string | any): ComponentRef<C>;
     abstract detachView(view: ViewRef): void;
     abstract tick(): void;
 }
@@ -209,7 +209,7 @@ export declare type CompilerOptions = {
     /** @deprecated */ useDebug?: boolean;
     useJit?: boolean;
     defaultEncapsulation?: ViewEncapsulation;
-    providers?: any[];
+    providers?: StaticProvider[];
     missingTranslation?: MissingTranslationStrategy;
     enableLegacyTemplate?: boolean;
 };
@@ -262,10 +262,10 @@ export declare const ContentChild: ContentChildDecorator;
 
 /** @stable */
 export interface ContentChildDecorator {
-    /** @stable */ (selector: Type<any> | Function | string, {read}?: {
+    /** @stable */ (selector: Type<any> | Function | string, opts?: {
         read?: any;
     }): any;
-    new (selector: Type<any> | Function | string, {read}?: {
+    new (selector: Type<any> | Function | string, opts?: {
         read?: any;
     }): ContentChild;
 }
@@ -275,11 +275,11 @@ export declare const ContentChildren: ContentChildrenDecorator;
 
 /** @stable */
 export interface ContentChildrenDecorator {
-    /** @stable */ (selector: Type<any> | Function | string, {descendants, read}?: {
+    /** @stable */ (selector: Type<any> | Function | string, opts?: {
         descendants?: boolean;
         read?: any;
     }): any;
-    new (selector: Type<any> | Function | string, {descendants, read}?: {
+    new (selector: Type<any> | Function | string, opts?: {
         descendants?: boolean;
         read?: any;
     }): Query;
@@ -289,7 +289,7 @@ export interface ContentChildrenDecorator {
 export declare function createPlatform(injector: Injector): PlatformRef;
 
 /** @experimental */
-export declare function createPlatformFactory(parentPlatformFactory: ((extraProviders?: Provider[]) => PlatformRef) | null, name: string, providers?: Provider[]): (extraProviders?: Provider[]) => PlatformRef;
+export declare function createPlatformFactory(parentPlatformFactory: ((extraProviders?: StaticProvider[]) => PlatformRef) | null, name: string, providers?: StaticProvider[]): (extraProviders?: StaticProvider[]) => PlatformRef;
 
 /** @stable */
 export declare const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata;
@@ -341,7 +341,7 @@ export declare class DebugNode {
 
 /** @deprecated */
 export declare class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChanges<V> {
-    readonly collection: NgIterable<V>;
+    readonly collection: V[] | Iterable<V> | null;
     readonly isDirty: boolean;
     readonly length: number;
     constructor(trackByFn?: TrackByFunction<V>);
@@ -491,6 +491,7 @@ export declare abstract class Injector {
     /** @deprecated */ abstract get(token: any, notFoundValue?: any): any;
     static NULL: Injector;
     static THROW_IF_NOT_FOUND: Object;
+    static create(providers: StaticProvider[], parent?: Injector): Injector;
 }
 
 /** @stable */
@@ -536,7 +537,7 @@ export declare class IterableDiffers {
     constructor(factories: IterableDifferFactory[]);
     find(iterable: any): IterableDifferFactory;
     static create(factories: IterableDifferFactory[], parent?: IterableDiffers): IterableDiffers;
-    static extend(factories: IterableDifferFactory[]): Provider;
+    static extend(factories: IterableDifferFactory[]): StaticProvider;
 }
 
 /** @deprecated */
@@ -579,7 +580,7 @@ export declare class KeyValueDiffers {
     constructor(factories: KeyValueDifferFactory[]);
     find(kv: any): KeyValueDifferFactory;
     static create<S>(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers;
-    static extend<S>(factories: KeyValueDifferFactory[]): Provider;
+    static extend<S>(factories: KeyValueDifferFactory[]): StaticProvider;
 }
 
 /** @experimental */
@@ -612,12 +613,9 @@ export declare type NgIterable<T> = Array<T> | Iterable<T>;
 export declare const NgModule: NgModuleDecorator;
 
 /** @experimental */
-export declare class NgModuleFactory<T> {
-    readonly moduleType: Type<T>;
-    constructor(_injectorClass: {
-        new (parentInjector: Injector): NgModuleInjector<T>;
-    }, _moduleType: Type<T>);
-    create(parentInjector: Injector | null): NgModuleRef<T>;
+export declare abstract class NgModuleFactory<T> {
+    readonly abstract moduleType: Type<T>;
+    abstract create(parentInjector: Injector | null): NgModuleRef<T>;
 }
 
 /** @stable */
@@ -653,9 +651,10 @@ export declare class NgZone {
     constructor({enableLongStackTrace}: {
         enableLongStackTrace?: boolean;
     });
-    run(fn: () => any): any;
-    runGuarded(fn: () => any): any;
-    runOutsideAngular(fn: () => any): any;
+    run<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T;
+    runGuarded<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T;
+    runOutsideAngular<T>(fn: (...args: any[]) => T): T;
+    runTask<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[], name?: string): T;
     static assertInAngularZone(): void;
     static assertNotInAngularZone(): void;
     static isInAngularZone(): boolean;
@@ -716,7 +715,7 @@ export declare const PLATFORM_ID: InjectionToken<Object>;
 export declare const PLATFORM_INITIALIZER: InjectionToken<(() => void)[]>;
 
 /** @experimental */
-export declare const platformCore: (extraProviders?: Provider[]) => PlatformRef;
+export declare const platformCore: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
 
 /** @stable */
 export declare abstract class PlatformRef {
@@ -760,7 +759,7 @@ export declare class QueryList<T> {
     toString(): string;
 }
 
-/** @stable */
+/** @deprecated */
 export declare abstract class ReflectiveInjector implements Injector {
     readonly abstract parent: Injector | null;
     abstract createChildFromResolved(providers: ResolvedReflectiveProvider[]): ReflectiveInjector;
@@ -773,7 +772,7 @@ export declare abstract class ReflectiveInjector implements Injector {
     static resolveAndCreate(providers: Provider[], parent?: Injector): ReflectiveInjector;
 }
 
-/** @experimental */
+/** @deprecated */
 export declare class ReflectiveKey {
     readonly displayName: string;
     id: number;
@@ -846,7 +845,10 @@ export declare abstract class Renderer2 {
 
 /** @experimental */
 export declare abstract class RendererFactory2 {
+    abstract begin?(): void;
     abstract createRenderer(hostElement: any, type: RendererType2 | null): Renderer2;
+    abstract end?(): void;
+    abstract whenRenderingDone?(): Promise<any>;
 }
 
 /** @experimental */
@@ -891,7 +893,7 @@ export declare abstract class RootRenderer {
 
 /** @stable */
 export declare abstract class Sanitizer {
-    abstract sanitize(context: SecurityContext, value: string): string;
+    abstract sanitize(context: SecurityContext, value: {} | string | null): string | null;
 }
 
 /** @experimental */
@@ -949,6 +951,9 @@ export interface SkipSelfDecorator {
 
 /** @deprecated */
 export declare function state(name: string, styles: AnimationStyleMetadata): AnimationStateMetadata;
+
+/** @stable */
+export declare type StaticProvider = ValueProvider | ExistingProvider | StaticClassProvider | ConstructorProvider | FactoryProvider | any[];
 
 /** @deprecated */
 export declare function style(tokens: {
@@ -1008,7 +1013,7 @@ export interface TrackByFunction<T> {
 }
 
 /** @deprecated */
-export declare function transition(stateChangeExpr: string | ((fromState: string, toState: string) => boolean), steps: AnimationMetadata | AnimationMetadata[]): AnimationTransitionMetadata;
+export declare function transition(stateChangeExpr: string, steps: AnimationMetadata | AnimationMetadata[]): AnimationTransitionMetadata;
 
 /** @experimental */
 export declare const TRANSLATIONS: InjectionToken<string>;
@@ -1058,10 +1063,10 @@ export declare const ViewChild: ViewChildDecorator;
 
 /** @stable */
 export interface ViewChildDecorator {
-    /** @stable */ (selector: Type<any> | Function | string, {read}?: {
+    /** @stable */ (selector: Type<any> | Function | string, opts?: {
         read?: any;
     }): any;
-    new (selector: Type<any> | Function | string, {read}?: {
+    new (selector: Type<any> | Function | string, opts?: {
         read?: any;
     }): ViewChild;
 }
@@ -1071,10 +1076,10 @@ export declare const ViewChildren: ViewChildrenDecorator;
 
 /** @stable */
 export interface ViewChildrenDecorator {
-    /** @stable */ (selector: Type<any> | Function | string, {read}?: {
+    /** @stable */ (selector: Type<any> | Function | string, opts?: {
         read?: any;
     }): any;
-    new (selector: Type<any> | Function | string, {read}?: {
+    new (selector: Type<any> | Function | string, opts?: {
         read?: any;
     }): ViewChildren;
 }

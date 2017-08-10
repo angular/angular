@@ -45,12 +45,12 @@ export const formControlBinding: any = {
  * {@link AbstractControl}.
  *
  * **Set the value**: You can pass in an initial value when instantiating the {@link FormControl},
- * or you can set it programmatically later using {@link AbstractControl.setValue} or
- * {@link AbstractControl.patchValue}.
+ * or you can set it programmatically later using {@link AbstractControl#setValue} or
+ * {@link AbstractControl#patchValue}.
  *
  * **Listen to value**: If you want to listen to changes in the value of the control, you can
- * subscribe to the {@link AbstractControl.valueChanges} event.  You can also listen to
- * {@link AbstractControl.statusChanges} to be notified when the validation status is
+ * subscribe to the {@link AbstractControl#valueChanges} event.  You can also listen to
+ * {@link AbstractControl#statusChanges} to be notified when the validation status is
  * re-calculated.
  *
  * ### Example
@@ -88,8 +88,8 @@ export class FormControlDirective extends NgControl implements OnChanges {
               ngOnChanges(changes: SimpleChanges): void {
                 if (this._isControlChanged(changes)) {
                   setUpControl(this.form, this);
-                  if (this.control.disabled && this.valueAccessor.setDisabledState) {
-                    this.valueAccessor.setDisabledState(true);
+                  if (this.control.disabled && this.valueAccessor !.setDisabledState) {
+                    this.valueAccessor !.setDisabledState !(true);
                   }
                   this.form.updateValueAndValidity({emitEvent: false});
                 }
@@ -101,9 +101,9 @@ export class FormControlDirective extends NgControl implements OnChanges {
 
               get path(): string[] { return []; }
 
-              get validator(): ValidatorFn { return composeValidators(this._rawValidators); }
+              get validator(): ValidatorFn|null { return composeValidators(this._rawValidators); }
 
-              get asyncValidator(): AsyncValidatorFn {
+              get asyncValidator(): AsyncValidatorFn|null {
                 return composeAsyncValidators(this._rawAsyncValidators);
               }
 

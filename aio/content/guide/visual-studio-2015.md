@@ -1,10 +1,5 @@
-@title
-Visual Studio 2015 QuickStart
+# Visual Studio 2015 QuickStart
 
-@intro
-Use Visual Studio 2015 with the QuickStart files.
-
-@description
 {@a top}
 
 Some developers prefer Visual Studio as their Integrated Development Environment (IDE).
@@ -30,25 +25,13 @@ the QuickStart application itself.
 To set up the QuickStart files with an **ASP.NET 4.x project** in
 Visual Studio 2015, follow these steps:
 
-
-*  [Prerequisite](guide/visual-studio-2015#prereq1): Install Node.js.
-*  [Prerequisite](guide/visual-studio-2015#prereq2): Install Visual Studio 2015 Update 3.
-*  [Prerequisite](guide/visual-studio-2015#prereq3): Configure external web tools.
-*  [Prerequisite](guide/visual-studio-2015#prereq4): Install TypeScript 2.2 for Visual Studio 2015.
-*  [Step 1](guide/visual-studio-2015#download): Download the QuickStart files.
-*  [Step 2](guide/visual-studio-2015#create-project): Create the Visual Studio ASP.NET project.
-*  [Step 3](guide/visual-studio-2015#copy): Copy the QuickStart files into the ASP.NET project folder.
-*  [Step 4](guide/visual-studio-2015#restore): Restore required packages.
-*  [Step 5](guide/visual-studio-2015#build-and-run): Build and run the app.
-
-
 <div class="l-sub-section">
 
 
 
 If you prefer a `File | New Project` experience and are using **ASP.NET Core**, 
 then consider the _experimental_
-<a href="http://blog.stevensanderson.com/2016/10/04/angular2-template-for-visual-studio/" target="_blank">ASP.NET Core + Angular template for Visual Studio 2015</a>. 
+<a href="http://blog.stevensanderson.com/2016/10/04/angular2-template-for-visual-studio/">ASP.NET Core + Angular template for Visual Studio 2015</a>. 
 Note that the resulting code does not map to the docs. Adjust accordingly.   
 
 
@@ -260,7 +243,7 @@ Everything seems fine while you move about _within_ the app.
 But you'll see the problem right away if you refresh the browser
 or paste a link to an app page (called a "deep link") into the browser address bar.
 
-You'll most likely get a *404 - Page Not Found* response from the serer
+You'll most likely get a *404 - Page Not Found* response from the server
 for any address other than `/` or `/index.html`.
 
 You have to configure the server to return `index.html` for requests to these "unknown" pages.

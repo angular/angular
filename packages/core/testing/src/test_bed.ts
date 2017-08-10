@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompilerOptions, Component, Directive, InjectionToken, Injector, ModuleWithComponentFactories, NgModule, NgModuleRef, NgZone, Pipe, PlatformRef, Provider, ReflectiveInjector, SchemaMetadata, Type, ɵERROR_COMPONENT_TYPE, ɵstringify as stringify} from '@angular/core';
+import {ApplicationInitStatus, CompilerOptions, Component, Directive, InjectionToken, Injector, ModuleWithComponentFactories, NgModule, NgModuleFactory, NgModuleRef, NgZone, Optional, Pipe, PlatformRef, Provider, SchemaMetadata, SkipSelf, Type, ɵDepFlags as DepFlags, ɵERROR_COMPONENT_TYPE, ɵNodeFlags as NodeFlags, ɵclearProviderOverrides as clearProviderOverrides, ɵoverrideProvider as overrideProvider, ɵstringify as stringify} from '@angular/core';
+
 import {AsyncTestCompleter} from './async_test_completer';
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
@@ -69,9 +70,10 @@ export class TestBed implements Injector {
    *
    * @experimental
    */
-  static initTestEnvironment(ngModule: Type<any>|Type<any>[], platform: PlatformRef): TestBed {
+  static initTestEnvironment(
+      ngModule: Type<any>|Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): TestBed {
     const testBed = getTestBed();
-    testBed.initTestEnvironment(ngModule, platform);
+    testBed.initTestEnvironment(ngModule, platform, aotSummaries);
     return testBed;
   }
 
@@ -139,6 +141,24 @@ export class TestBed implements Injector {
     return TestBed;
   }
 
+
+  /**
+   * Overwrites all providers for the given token with the given provider definition.
+   */
+  static overrideProvider(token: any, provider: {
+    useFactory: Function,
+    deps: any[],
+  }): void;
+  static overrideProvider(token: any, provider: {useValue: any;}): void;
+  static overrideProvider(token: any, provider: {
+    useFactory?: Function,
+    useValue?: any,
+    deps?: any[],
+  }): typeof TestBed {
+    getTestBed().overrideProvider(token, provider as any);
+    return TestBed;
+  }
+
   static get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND) {
     return getTestBed().get(token, notFoundValue);
   }
@@ -151,7 +171,7 @@ export class TestBed implements Injector {
 
   private _compiler: TestingCompiler = null !;
   private _moduleRef: NgModuleRef<any> = null !;
-  private _moduleWithComponentFactories: ModuleWithComponentFactories<any> = null !;
+  private _moduleFactory: NgModuleFactory<any> = null !;
 
   private _compilerOptions: CompilerOptions[] = [];
 
@@ -166,6 +186,12 @@ export class TestBed implements Injector {
   private _schemas: Array<SchemaMetadata|any[]> = [];
   private _activeFixtures: ComponentFixture<any>[] = [];
 
+  private _aotSummaries: () => any[] = () => [];
+
+  platform: PlatformRef = null !;
+
+  ngModule: Type<any>|Type<any>[] = null !;
+
   /**
    * Initialize the environment for testing with a compiler factory, a PlatformRef, and an
    * angular module. These are common to every test in the suite.
@@ -179,12 +205,16 @@ export class TestBed implements Injector {
    *
    * @experimental
    */
-  initTestEnvironment(ngModule: Type<any>|Type<any>[], platform: PlatformRef) {
+  initTestEnvironment(
+      ngModule: Type<any>|Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]) {
     if (this.platform || this.ngModule) {
       throw new Error('Cannot set base providers because it has already been called');
     }
     this.platform = platform;
     this.ngModule = ngModule;
+    if (aotSummaries) {
+      this._aotSummaries = aotSummaries;
+    }
   }
 
   /**
@@ -196,9 +226,11 @@ export class TestBed implements Injector {
     this.resetTestingModule();
     this.platform = null !;
     this.ngModule = null !;
+    this._aotSummaries = () => [];
   }
 
   resetTestingModule() {
+    clearProviderOverrides();
     this._compiler = null !;
     this._moduleOverrides = [];
     this._componentOverrides = [];
@@ -206,7 +238,7 @@ export class TestBed implements Injector {
     this._pipeOverrides = [];
 
     this._moduleRef = null !;
-    this._moduleWithComponentFactories = null !;
+    this._moduleFactory = null !;
     this._compilerOptions = [];
     this._providers = [];
     this._declarations = [];
@@ -222,10 +254,6 @@ export class TestBed implements Injector {
     });
     this._activeFixtures = [];
   }
-
-  platform: PlatformRef = null !;
-
-  ngModule: Type<any>|Type<any>[] = null !;
 
   configureCompiler(config: {providers?: any[], useJit?: boolean}) {
     this._assertNotInstantiated('TestBed.configureCompiler', 'configure the compiler');
@@ -249,14 +277,14 @@ export class TestBed implements Injector {
   }
 
   compileComponents(): Promise<any> {
-    if (this._moduleWithComponentFactories || this._instantiated) {
+    if (this._moduleFactory || this._instantiated) {
       return Promise.resolve(null);
     }
 
     const moduleType = this._createCompilerAndModule();
     return this._compiler.compileModuleAndAllComponentsAsync(moduleType)
         .then((moduleAndComponentFactories) => {
-          this._moduleWithComponentFactories = moduleAndComponentFactories;
+          this._moduleFactory = moduleAndComponentFactories.ngModuleFactory;
         });
   }
 
@@ -264,11 +292,11 @@ export class TestBed implements Injector {
     if (this._instantiated) {
       return;
     }
-    if (!this._moduleWithComponentFactories) {
+    if (!this._moduleFactory) {
       try {
         const moduleType = this._createCompilerAndModule();
-        this._moduleWithComponentFactories =
-            this._compiler.compileModuleAndAllComponentsSync(moduleType);
+        this._moduleFactory =
+            this._compiler.compileModuleAndAllComponentsSync(moduleType).ngModuleFactory;
       } catch (e) {
         if (getComponentType(e)) {
           throw new Error(
@@ -280,9 +308,12 @@ export class TestBed implements Injector {
       }
     }
     const ngZone = new NgZone({enableLongStackTrace: true});
-    const ngZoneInjector = ReflectiveInjector.resolveAndCreate(
-        [{provide: NgZone, useValue: ngZone}], this.platform.injector);
-    this._moduleRef = this._moduleWithComponentFactories.ngModuleFactory.create(ngZoneInjector);
+    const ngZoneInjector =
+        Injector.create([{provide: NgZone, useValue: ngZone}], this.platform.injector);
+    this._moduleRef = this._moduleFactory.create(ngZoneInjector);
+    // ApplicationInitStatus.runInitializers() is marked @internal to core. So casting to any
+    // before accessing it.
+    (this._moduleRef.injector.get(ApplicationInitStatus) as any).runInitializers();
     this._instantiated = true;
   }
 
@@ -300,6 +331,7 @@ export class TestBed implements Injector {
         this.platform.injector.get(TestingCompilerFactory);
     this._compiler =
         compilerFactory.createTestingCompiler(this._compilerOptions.concat([{useDebug: true}]));
+    this._compiler.loadAotSummaries(this._aotSummaries);
     this._moduleOverrides.forEach((entry) => this._compiler.overrideModule(entry[0], entry[1]));
     this._componentOverrides.forEach(
         (entry) => this._compiler.overrideComponent(entry[0], entry[1]));
@@ -354,10 +386,52 @@ export class TestBed implements Injector {
     this._pipeOverrides.push([pipe, override]);
   }
 
+  /**
+   * Overwrites all providers for the given token with the given provider definition.
+   */
+  overrideProvider(token: any, provider: {
+    useFactory: Function,
+    deps: any[],
+  }): void;
+  overrideProvider(token: any, provider: {useValue: any;}): void;
+  overrideProvider(token: any, provider: {
+    useFactory?: Function,
+    useValue?: any,
+    deps?: any[],
+  }): void {
+    let flags: NodeFlags = 0;
+    let value: any;
+    if (provider.useFactory) {
+      flags |= NodeFlags.TypeFactoryProvider;
+      value = provider.useFactory;
+    } else {
+      flags |= NodeFlags.TypeValueProvider;
+      value = provider.useValue;
+    }
+    const deps = (provider.deps || []).map((dep) => {
+      let depFlags: DepFlags = DepFlags.None;
+      let depToken: any;
+      if (Array.isArray(dep)) {
+        dep.forEach((entry: any) => {
+          if (entry instanceof Optional) {
+            depFlags |= DepFlags.Optional;
+          } else if (entry instanceof SkipSelf) {
+            depFlags |= DepFlags.SkipSelf;
+          } else {
+            depToken = entry;
+          }
+        });
+      } else {
+        depToken = dep;
+      }
+      return [depFlags, depToken];
+    });
+    overrideProvider({token, flags, deps, value});
+  }
+
   createComponent<T>(component: Type<T>): ComponentFixture<T> {
     this._initIfNeeded();
-    const componentFactory = this._moduleWithComponentFactories.componentFactories.find(
-        (compFactory) => compFactory.componentType === component);
+    const componentFactory = this._compiler.getComponentFactory(component);
 
     if (!componentFactory) {
       throw new Error(

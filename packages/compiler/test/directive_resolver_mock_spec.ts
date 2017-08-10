@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {JitReflector} from '@angular/compiler';
 import {Component, Directive, Injector, ɵViewMetadata as ViewMetadata} from '@angular/core';
 import {TestBed, inject} from '@angular/core/testing';
+
 import {MockDirectiveResolver} from '../testing';
 
 export function main() {
@@ -20,7 +22,7 @@ export function main() {
     });
 
     beforeEach(inject([Injector], (injector: Injector) => {
-      dirResolver = new MockDirectiveResolver(injector);
+      dirResolver = new MockDirectiveResolver(injector, new JitReflector());
     }));
 
     describe('Directive overriding', () => {

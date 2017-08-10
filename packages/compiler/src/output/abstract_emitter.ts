@@ -19,31 +19,27 @@ export const CATCH_STACK_VAR = o.variable('stack', null, null);
 
 export abstract class OutputEmitter {
   abstract emitStatements(
-      srcFilePath: string, genFilePath: string, stmts: o.Statement[], exportedVars: string[],
+      srcFilePath: string, genFilePath: string, stmts: o.Statement[],
       preamble?: string|null): string;
 }
 
 class _EmittedLine {
+  partsLength = 0;
   parts: string[] = [];
   srcSpans: (ParseSourceSpan|null)[] = [];
   constructor(public indent: number) {}
 }
 
 export class EmitterVisitorContext {
-  static createRoot(exportedVars: string[]): EmitterVisitorContext {
-    return new EmitterVisitorContext(exportedVars, 0);
-  }
+  static createRoot(): EmitterVisitorContext { return new EmitterVisitorContext(0); }
 
   private _lines: _EmittedLine[];
   private _classes: o.ClassStmt[] = [];
+  private _preambleLineCount = 0;
 
-  constructor(private _exportedVars: string[], private _indent: number) {
-    this._lines = [new _EmittedLine(_indent)];
-  }
+  constructor(private _indent: number) { this._lines = [new _EmittedLine(_indent)]; }
 
   private get _currentLine(): _EmittedLine { return this._lines[this._lines.length - 1]; }
-
-  isExportedVar(varName: string): boolean { return this._exportedVars.indexOf(varName) !== -1; }
 
   println(from?: {sourceSpan: ParseSourceSpan | null}|null, lastPart: string = ''): void {
     this.print(from || null, lastPart, true);
@@ -51,9 +47,14 @@ export class EmitterVisitorContext {
 
   lineIsEmpty(): boolean { return this._currentLine.parts.length === 0; }
 
+  lineLength(): number {
+    return this._currentLine.indent * _INDENT_WITH.length + this._currentLine.partsLength;
+  }
+
   print(from: {sourceSpan: ParseSourceSpan | null}|null, part: string, newLine: boolean = false) {
     if (part.length > 0) {
       this._currentLine.parts.push(part);
+      this._currentLine.partsLength += part.length;
       this._currentLine.srcSpans.push(from && from.sourceSpan || null);
     }
     if (newLine) {
@@ -69,12 +70,16 @@ export class EmitterVisitorContext {
 
   incIndent() {
     this._indent++;
-    this._currentLine.indent = this._indent;
+    if (this.lineIsEmpty()) {
+      this._currentLine.indent = this._indent;
+    }
   }
 
   decIndent() {
     this._indent--;
-    this._currentLine.indent = this._indent;
+    if (this.lineIsEmpty()) {
+      this._currentLine.indent = this._indent;
+    }
   }
 
   pushClass(clazz: o.ClassStmt) { this._classes.push(clazz); }
@@ -149,6 +154,23 @@ export class EmitterVisitorContext {
     });
 
     return map;
+  }
+
+  setPreambleLineCount(count: number) { return this._preambleLineCount = count; }
+
+  spanOf(line: number, column: number): ParseSourceSpan|null {
+    const emittedLine = this._lines[line - this._preambleLineCount];
+    if (emittedLine) {
+      let columnsLeft = column - emittedLine.indent;
+      for (let partIndex = 0; partIndex < emittedLine.parts.length; partIndex++) {
+        const part = emittedLine.parts[partIndex];
+        if (part.length > columnsLeft) {
+          return emittedLine.srcSpans[partIndex];
+        }
+        columnsLeft -= part.length;
+      }
+    }
+    return null;
   }
 
   private get sourceLines(): _EmittedLine[] {
@@ -344,6 +366,10 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     ast.condition.visitExpression(this, ctx);
     return null;
   }
+  visitAssertNotNullExpr(ast: o.AssertNotNull, ctx: EmitterVisitorContext): any {
+    ast.condition.visitExpression(this, ctx);
+    return null;
+  }
   abstract visitFunctionExpr(ast: o.FunctionExpr, ctx: EmitterVisitorContext): any;
   abstract visitDeclareFunctionStmt(stmt: o.DeclareFunctionStmt, context: any): any;
 
@@ -420,24 +446,18 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     return null;
   }
   visitLiteralArrayExpr(ast: o.LiteralArrayExpr, ctx: EmitterVisitorContext): any {
-    const useNewLine = ast.entries.length > 1;
-    ctx.print(ast, `[`, useNewLine);
-    ctx.incIndent();
-    this.visitAllExpressions(ast.entries, ctx, ',', useNewLine);
-    ctx.decIndent();
-    ctx.print(ast, `]`, useNewLine);
+    ctx.print(ast, `[`);
+    this.visitAllExpressions(ast.entries, ctx, ',');
+    ctx.print(ast, `]`);
     return null;
   }
   visitLiteralMapExpr(ast: o.LiteralMapExpr, ctx: EmitterVisitorContext): any {
-    const useNewLine = ast.entries.length > 1;
-    ctx.print(ast, `{`, useNewLine);
-    ctx.incIndent();
+    ctx.print(ast, `{`);
     this.visitAllObjects(entry => {
-      ctx.print(ast, `${escapeIdentifier(entry.key, this._escapeDollarInStrings, entry.quoted)}: `);
+      ctx.print(ast, `${escapeIdentifier(entry.key, this._escapeDollarInStrings, entry.quoted)}:`);
       entry.value.visitExpression(this, ctx);
-    }, ast.entries, ctx, ',', useNewLine);
-    ctx.decIndent();
-    ctx.print(ast, `}`, useNewLine);
+    }, ast.entries, ctx, ',');
+    ctx.print(ast, `}`);
     return null;
   }
   visitCommaExpr(ast: o.CommaExpr, ctx: EmitterVisitorContext): any {
@@ -446,24 +466,35 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     ctx.print(ast, ')');
     return null;
   }
-  visitAllExpressions(
-      expressions: o.Expression[], ctx: EmitterVisitorContext, separator: string,
-      newLine: boolean = false): void {
-    this.visitAllObjects(
-        expr => expr.visitExpression(this, ctx), expressions, ctx, separator, newLine);
+  visitAllExpressions(expressions: o.Expression[], ctx: EmitterVisitorContext, separator: string):
+      void {
+    this.visitAllObjects(expr => expr.visitExpression(this, ctx), expressions, ctx, separator);
   }
 
   visitAllObjects<T>(
-      handler: (t: T) => void, expressions: T[], ctx: EmitterVisitorContext, separator: string,
-      newLine: boolean = false): void {
+      handler: (t: T) => void, expressions: T[], ctx: EmitterVisitorContext,
+      separator: string): void {
+    let incrementedIndent = false;
     for (let i = 0; i < expressions.length; i++) {
       if (i > 0) {
-        ctx.print(null, separator, newLine);
+        if (ctx.lineLength() > 80) {
+          ctx.print(null, separator, true);
+          if (!incrementedIndent) {
+            // continuation are marked with double indent.
+            ctx.incIndent();
+            ctx.incIndent();
+            incrementedIndent = true;
+          }
+        } else {
+          ctx.print(null, separator, false);
+        }
       }
       handler(expressions[i]);
     }
-    if (newLine) {
-      ctx.println();
+    if (incrementedIndent) {
+      // continuation are marked with double indent.
+      ctx.decIndent();
+      ctx.decIndent();
     }
   }
 

@@ -190,13 +190,5 @@ export interface NgModule {
  * @stable
  * @Annotation
  */
-export const NgModule: NgModuleDecorator = <NgModuleDecorator>makeDecorator('NgModule', {
-  providers: undefined,
-  declarations: undefined,
-  imports: undefined,
-  exports: undefined,
-  entryComponents: undefined,
-  bootstrap: undefined,
-  schemas: undefined,
-  id: undefined,
-});
+export const NgModule: NgModuleDecorator =
+    makeDecorator('NgModule', (ngModule: NgModule) => ngModule);

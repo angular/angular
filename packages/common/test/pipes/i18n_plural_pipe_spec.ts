@@ -7,6 +7,7 @@
  */
 
 import {I18nPluralPipe, NgLocalization} from '@angular/common';
+import {JitReflector} from '@angular/compiler';
 import {PipeResolver} from '@angular/compiler/src/pipe_resolver';
 import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 
@@ -27,8 +28,9 @@ export function main() {
       pipe = new I18nPluralPipe(localization);
     });
 
-    it('should be marked as pure',
-       () => { expect(new PipeResolver().resolve(I18nPluralPipe).pure).toEqual(true); });
+    it('should be marked as pure', () => {
+      expect(new PipeResolver(new JitReflector()).resolve(I18nPluralPipe) !.pure).toEqual(true);
+    });
 
     describe('transform', () => {
       it('should return 0 text if value is 0', () => {

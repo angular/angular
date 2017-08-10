@@ -5,31 +5,36 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {CompileNgModuleSummary, CompileSummaryKind, CompileTypeSummary} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileNgModuleMetadata, CompileNgModuleSummary, CompilePipeMetadata, CompileProviderMetadata, CompileSummaryKind, CompileTypeMetadata, CompileTypeSummary} from '../compile_metadata';
+import * as o from '../output/output_ast';
 import {Summary, SummaryResolver} from '../summary_resolver';
-import {ValueTransformer, visitValue} from '../util';
+import {OutputContext, ValueTransformer, ValueVisitor, visitValue} from '../util';
 
 import {StaticSymbol, StaticSymbolCache} from './static_symbol';
 import {ResolvedStaticSymbol, StaticSymbolResolver} from './static_symbol_resolver';
-
+import {summaryForJitFileName, summaryForJitName} from './util';
 
 export function serializeSummaries(
-    summaryResolver: SummaryResolver<StaticSymbol>, symbolResolver: StaticSymbolResolver,
-    symbols: ResolvedStaticSymbol[], types: CompileTypeSummary[]):
-    {json: string, exportAs: {symbol: StaticSymbol, exportAs: string}[]} {
-  const serializer = new Serializer(symbolResolver, summaryResolver);
+    forJitCtx: OutputContext, summaryResolver: SummaryResolver<StaticSymbol>,
+    symbolResolver: StaticSymbolResolver, symbols: ResolvedStaticSymbol[], types: {
+      summary: CompileTypeSummary,
+      metadata: CompileNgModuleMetadata | CompileDirectiveMetadata | CompilePipeMetadata |
+          CompileTypeMetadata
+    }[]): {json: string, exportAs: {symbol: StaticSymbol, exportAs: string}[]} {
+  const toJsonSerializer = new ToJsonSerializer(symbolResolver, summaryResolver);
+  const forJitSerializer = new ForJitSerializer(forJitCtx, symbolResolver);
 
   // for symbols, we use everything except for the class metadata itself
   // (we keep the statics though), as the class metadata is contained in the
   // CompileTypeSummary.
   symbols.forEach(
-      (resolvedSymbol) => serializer.addOrMergeSummary(
+      (resolvedSymbol) => toJsonSerializer.addOrMergeSummary(
           {symbol: resolvedSymbol.symbol, metadata: resolvedSymbol.metadata}));
   // Add summaries that are referenced by the given symbols (transitively)
   // Note: the serializer.symbols array might be growing while
   // we execute the loop!
-  for (let processedIndex = 0; processedIndex < serializer.symbols.length; processedIndex++) {
-    const symbol = serializer.symbols[processedIndex];
+  for (let processedIndex = 0; processedIndex < toJsonSerializer.symbols.length; processedIndex++) {
+    const symbol = toJsonSerializer.symbols[processedIndex];
     if (summaryResolver.isLibraryFile(symbol.filePath)) {
       let summary = summaryResolver.resolveSummary(symbol);
       if (!summary) {
@@ -42,7 +47,10 @@ export function serializeSummaries(
         }
       }
       if (summary) {
-        serializer.addOrMergeSummary(summary);
+        if (summary.type) {
+          forJitSerializer.addLibType(summary.type);
+        }
+        toJsonSerializer.addOrMergeSummary(summary);
       }
     }
   }
@@ -51,32 +59,48 @@ export function serializeSummaries(
   // Note: We don't add the summaries of all referenced symbols as for the ResolvedSymbols,
   // as the type summaries already contain the transitive data that they require
   // (in a minimal way).
-  types.forEach((typeSummary) => {
-    serializer.addOrMergeSummary(
-        {symbol: typeSummary.type.reference, metadata: null, type: typeSummary});
-    if (typeSummary.summaryKind === CompileSummaryKind.NgModule) {
-      const ngModuleSummary = <CompileNgModuleSummary>typeSummary;
+  types.forEach(({summary, metadata}) => {
+    forJitSerializer.addSourceType(summary, metadata);
+    toJsonSerializer.addOrMergeSummary(
+        {symbol: summary.type.reference, metadata: null, type: summary});
+    if (summary.summaryKind === CompileSummaryKind.NgModule) {
+      const ngModuleSummary = <CompileNgModuleSummary>summary;
       ngModuleSummary.exportedDirectives.concat(ngModuleSummary.exportedPipes).forEach((id) => {
         const symbol: StaticSymbol = id.reference;
         if (summaryResolver.isLibraryFile(symbol.filePath)) {
           const summary = summaryResolver.resolveSummary(symbol);
           if (summary) {
-            serializer.addOrMergeSummary(summary);
+            toJsonSerializer.addOrMergeSummary(summary);
           }
         }
       });
     }
   });
-  return serializer.serialize();
+  const {json, exportAs} = toJsonSerializer.serialize();
+  forJitSerializer.serialize(exportAs);
+  return {json, exportAs};
 }
 
 export function deserializeSummaries(symbolCache: StaticSymbolCache, json: string):
     {summaries: Summary<StaticSymbol>[], importAs: {symbol: StaticSymbol, importAs: string}[]} {
-  const deserializer = new Deserializer(symbolCache);
+  const deserializer = new FromJsonDeserializer(symbolCache);
   return deserializer.deserialize(json);
 }
 
-class Serializer extends ValueTransformer {
+export function createForJitStub(outputCtx: OutputContext, reference: StaticSymbol) {
+  return createSummaryForJitFunction(outputCtx, reference, o.NULL_EXPR);
+}
+
+function createSummaryForJitFunction(
+    outputCtx: OutputContext, reference: StaticSymbol, value: o.Expression) {
+  const fnName = summaryForJitName(reference.name);
+  outputCtx.statements.push(
+      o.fn([], [new o.ReturnStatement(value)], new o.ArrayType(o.DYNAMIC_TYPE)).toDeclStmt(fnName, [
+        o.StmtModifier.Final, o.StmtModifier.Exported
+      ]));
+}
+
+class ToJsonSerializer extends ValueTransformer {
   // Note: This only contains symbols without members.
   symbols: StaticSymbol[] = [];
   private indexBySymbol = new Map<StaticSymbol, number>();
@@ -142,7 +166,7 @@ class Serializer extends ValueTransformer {
           __symbol: index,
           name: symbol.name,
           // We convert the source filenames tinto output filenames,
-          // as the generated summary file will be used when teh current
+          // as the generated summary file will be used when the current
           // compilation unit is used as a library
           filePath: this.summaryResolver.getLibraryFileName(symbol.filePath),
           importAs: importAs
@@ -169,7 +193,128 @@ class Serializer extends ValueTransformer {
   }
 }
 
-class Deserializer extends ValueTransformer {
+class ForJitSerializer {
+  private data = new Map<StaticSymbol, {
+    summary: CompileTypeSummary,
+    metadata: CompileNgModuleMetadata|CompileDirectiveMetadata|CompilePipeMetadata|
+    CompileTypeMetadata|null,
+    isLibrary: boolean
+  }>();
+
+  constructor(private outputCtx: OutputContext, private symbolResolver: StaticSymbolResolver) {}
+
+  addSourceType(
+      summary: CompileTypeSummary, metadata: CompileNgModuleMetadata|CompileDirectiveMetadata|
+      CompilePipeMetadata|CompileTypeMetadata) {
+    this.data.set(summary.type.reference, {summary, metadata, isLibrary: false});
+  }
+
+  addLibType(summary: CompileTypeSummary) {
+    this.data.set(summary.type.reference, {summary, metadata: null, isLibrary: true});
+  }
+
+  serialize(exportAs: {symbol: StaticSymbol, exportAs: string}[]): void {
+    const ngModuleSymbols = new Set<StaticSymbol>();
+
+    Array.from(this.data.values()).forEach(({summary, metadata, isLibrary}) => {
+      if (summary.summaryKind === CompileSummaryKind.NgModule) {
+        // collect the symbols that refer to NgModule classes.
+        // Note: we can't just rely on `summary.type.summaryKind` to determine this as
+        // we don't add the summaries of all referenced symbols when we serialize type summaries.
+        // See serializeSummaries for details.
+        ngModuleSymbols.add(summary.type.reference);
+        const modSummary = <CompileNgModuleSummary>summary;
+        modSummary.modules.forEach((mod) => { ngModuleSymbols.add(mod.reference); });
+      }
+      if (!isLibrary) {
+        const fnName = summaryForJitName(summary.type.reference.name);
+        createSummaryForJitFunction(
+            this.outputCtx, summary.type.reference,
+            this.serializeSummaryWithDeps(summary, metadata !));
+      }
+    });
+
+    exportAs.forEach((entry) => {
+      const symbol = entry.symbol;
+      if (ngModuleSymbols.has(symbol)) {
+        const jitExportAsName = summaryForJitName(entry.exportAs);
+        this.outputCtx.statements.push(
+            o.variable(jitExportAsName).set(this.serializeSummaryRef(symbol)).toDeclStmt(null, [
+              o.StmtModifier.Exported
+            ]));
+      }
+    });
+  }
+
+  private serializeSummaryWithDeps(
+      summary: CompileTypeSummary, metadata: CompileNgModuleMetadata|CompileDirectiveMetadata|
+      CompilePipeMetadata|CompileTypeMetadata): o.Expression {
+    const expressions: o.Expression[] = [this.serializeSummary(summary)];
+    let providers: CompileProviderMetadata[] = [];
+    if (metadata instanceof CompileNgModuleMetadata) {
+      expressions.push(...
+                       // For directives / pipes, we only add the declared ones,
+                       // and rely on transitively importing NgModules to get the transitive
+                       // summaries.
+                       metadata.declaredDirectives.concat(metadata.declaredPipes)
+                           .map(type => type.reference)
+                           // For modules,
+                           // we also add the summaries for modules
+                           // from libraries.
+                           // This is ok as we produce reexports for all transitive modules.
+                           .concat(metadata.transitiveModule.modules.map(type => type.reference)
+                                       .filter(ref => ref !== metadata.type.reference))
+                           .map((ref) => this.serializeSummaryRef(ref)));
+      // Note: We don't use `NgModuleSummary.providers`, as that one is transitive,
+      // and we already have transitive modules.
+      providers = metadata.providers;
+    } else if (summary.summaryKind === CompileSummaryKind.Directive) {
+      const dirSummary = <CompileDirectiveSummary>summary;
+      providers = dirSummary.providers.concat(dirSummary.viewProviders);
+    }
+    // Note: We can't just refer to the `ngsummary.ts` files for `useClass` providers (as we do for
+    // declaredDirectives / declaredPipes), as we allow
+    // providers without ctor arguments to skip the `@Injectable` decorator,
+    // i.e. we didn't generate .ngsummary.ts files for these.
+    expressions.push(
+        ...providers.filter(provider => !!provider.useClass).map(provider => this.serializeSummary({
+          summaryKind: CompileSummaryKind.Injectable, type: provider.useClass
+        } as CompileTypeSummary)));
+    return o.literalArr(expressions);
+  }
+
+  private serializeSummaryRef(typeSymbol: StaticSymbol): o.Expression {
+    const jitImportedSymbol = this.symbolResolver.getStaticSymbol(
+        summaryForJitFileName(typeSymbol.filePath), summaryForJitName(typeSymbol.name));
+    return this.outputCtx.importExpr(jitImportedSymbol);
+  }
+
+  private serializeSummary(data: {[key: string]: any}): o.Expression {
+    const outputCtx = this.outputCtx;
+
+    class Transformer implements ValueVisitor {
+      visitArray(arr: any[], context: any): any {
+        return o.literalArr(arr.map(entry => visitValue(entry, this, context)));
+      }
+      visitStringMap(map: {[key: string]: any}, context: any): any {
+        return new o.LiteralMapExpr(Object.keys(map).map(
+            (key) => new o.LiteralMapEntry(key, visitValue(map[key], this, context), false)));
+      }
+      visitPrimitive(value: any, context: any): any { return o.literal(value); }
+      visitOther(value: any, context: any): any {
+        if (value instanceof StaticSymbol) {
+          return outputCtx.importExpr(value);
+        } else {
+          throw new Error(`Illegal State: Encountered value ${value}`);
+        }
+      }
+    }
+
+    return visitValue(data, new Transformer(), null);
+  }
+}
+
+class FromJsonDeserializer extends ValueTransformer {
   private symbols: StaticSymbol[];
 
   constructor(private symbolCache: StaticSymbolCache) { super(); }

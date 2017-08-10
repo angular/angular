@@ -1,39 +1,21 @@
-@title
-Setup for local development
-
-@intro
-Install the Angular QuickStart seed for faster, more efficient development on your machine.
-
-@description
-
-
+# Setup for local development
 
 {@a develop-locally}
 
-
-## Setup a local development environment
-
 The <live-example name=quickstart>QuickStart live-coding</live-example> example is an Angular _playground_.
-It's not where you'd develop a real application. 
+It's not where you'd develop a real application.
 You [should develop locally](guide/setup#why-locally "Why develop locally") on your own machine ... and that's also how we think you should learn Angular.
 
 Setting up a new project on your machine is quick and easy with the **QuickStart seed**,
-maintained [on github](https://github.com/angular/quickstart "Install the github QuickStart repo"). 
+maintained [on github](https://github.com/angular/quickstart "Install the github QuickStart repo").
 
 
 Make sure you have [node and npm installed](guide/setup#install-prerequisites "What if you don't have node and npm?").
-Then ...
-
-1. Create a project folder (you can call it `quickstart` and rename it later).
-1. [Clone](guide/setup#clone "Clone it from github") or [download](guide/setup#download "download it from github") the **QuickStart seed** into your project folder.
-1. Install [npm](guide/setup#install-prerequisites "What if you don't have node and npm?") packages.
-1. Run `npm start` to launch the sample application.
-
 
 {@a clone}
 
 
-### Clone
+## Clone
 
 Perform the _clone-to-launch_ steps with these terminal commands.
 
@@ -52,7 +34,7 @@ Perform the _clone-to-launch_ steps with these terminal commands.
 
 
 
-`npm start` fails in _Bash for Windows_ which does not support networking to servers as of January, 2017.
+`npm start` fails in _Bash for Windows_ in versions earlier than the Creator's Update (April 2017).
 
 
 </div>
@@ -62,7 +44,7 @@ Perform the _clone-to-launch_ steps with these terminal commands.
 {@a download}
 
 
-### Download
+## Download
 <a href="https://github.com/angular/quickstart/archive/master.zip" title="Download the QuickStart seed repository">Download the QuickStart seed</a>
 and unzip it into your project folder. Then perform the remaining steps with these terminal commands.
 
@@ -80,7 +62,7 @@ and unzip it into your project folder. Then perform the remaining steps with the
 
 
 
-`npm start` fails in _Bash for Windows_ which does not support networking to servers as of January, 2017.
+`npm start` fails in _Bash for Windows_ in versions earlier than the Creator's Update (April 2017).
 
 
 </div>
@@ -142,7 +124,7 @@ Open a terminal window in the project folder and enter the following commands fo
 
 The **QuickStart seed** contains the same application as the QuickStart playground.
 But its true purpose is to provide a solid foundation for _local_ development.
-Consequently, there are _many more files_ in the project folder on your machine, 
+Consequently, there are _many more files_ in the project folder on your machine,
 most of which you can [learn about later](guide/setup-systemjs-anatomy "Setup Anatomy").
 
 
@@ -205,7 +187,7 @@ Focus on the following three TypeScript (`.ts`) files in the **`/src`** folder.
 
 
 
-All guides and cookbooks have _at least these core files_. 
+All guides and cookbooks have _at least these core files_.
 Each file has a distinct purpose and evolves independently as the application grows.
 
 Files outside `src/` concern building, deploying, and testing your app.
@@ -257,7 +239,7 @@ The following are all in `src/`
 
       Defines the same `AppComponent` as the one in the QuickStart playground.
       It is the **root** component of what will become a tree of nested components
-      as the application evolves. 
+      as the application evolves.
     </td>
 
   </tr>
@@ -271,7 +253,7 @@ The following are all in `src/`
     <td>
 
 
-      Defines `AppModule`, the  [root module](guide/appmodule "AppModule: the root module") that tells Angular how to assemble the application.
+      Defines `AppModule`, the  [root module](guide/bootstrapping "AppModule: the root module") that tells Angular how to assemble the application.
       Right now it declares only the `AppComponent`.
       Soon there will be more components to declare.
     </td>
@@ -287,8 +269,8 @@ The following are all in `src/`
     <td>
 
 
-      Compiles the application with the [JIT compiler](glossary#jit) and
-      [bootstraps](guide/appmodule#main "bootstrap the application") 
+      Compiles the application with the [JIT compiler](guide/glossary#jit) and
+      [bootstraps](guide/bootstrapping#main "bootstrap the application")
       the application's main module (`AppModule`) to run in the browser.
       The JIT compiler is a reasonable choice during the development of most projects and
       it's the only viable choice for a sample running in a _live-coding_ environment like Plunker.
@@ -308,7 +290,7 @@ The following are all in `src/`
 
 ### Next Step
 
-If you're new to Angular, we recommend staying on the [learning path](guide/learning-angular "Angular learning path").
+If you're new to Angular, we recommend you follow the [tutorial](tutorial "Tour of Heroes tutorial").
 
 
 </div>
@@ -333,8 +315,8 @@ Get them now</a> if they're not already installed on your machine.
 by running the commands `node -v` and `npm -v` in a terminal/console window.
 Older versions produce errors.
 
-We recommend [nvm](https://github.com/creationix/nvm) for managing multiple versions of node and npm. 
-You may need [nvm](https://github.com/creationix/nvm) if you already have projects running on your machine that 
+We recommend [nvm](https://github.com/creationix/nvm) for managing multiple versions of node and npm.
+You may need [nvm](https://github.com/creationix/nvm) if you already have projects running on your machine that
 use other versions of node and npm.
 
 
@@ -349,10 +331,10 @@ use other versions of node and npm.
 Links on almost every documentation page open completed samples in the browser.
 You can play with the sample code, share your changes with friends, and download and run the code on your own machine.
 
-The [QuickStart](quickstart "Angular QuickStart Playground") shows just the `AppComponent` file.
+The [QuickStart](guide/quickstart "Angular QuickStart Playground") shows just the `AppComponent` file.
 It creates the equivalent of `app.module.ts` and `main.ts` internally _for the playground only_.
 so the reader can discover Angular without distraction.
-The other samples are based on the QuickStart seed. 
+The other samples are based on the QuickStart seed.
 
 As much fun as this is ...
 
@@ -361,10 +343,10 @@ As much fun as this is ...
 * transpiling TypeScript in the browser is slow
 * the type support, refactoring, and code completion only work in your local IDE
 
-Use the <live-example title="QuickStart Seed in Plunker">live coding</live-example> environment as a _playground_, 
+Use the <live-example title="QuickStart Seed in Plunker">live coding</live-example> environment as a _playground_,
 a place to try the documentation samples and experiment on your own.
 It's the perfect place to reproduce a bug when you want to
-<a href="https://github.com/angular/angular.io/issues/new" target="_blank" title="File a documentation issue">file a documentation issue</a> or
-<a href="https://github.com/angular/angular/issues/new" target="_blank" title="File an Angular issue">file an issue with Angular itself</a>.
+<a href="https://github.com/angular/angular/issues/new" title="File a documentation issue">file a documentation issue</a> or
+<a href="https://github.com/angular/angular/issues/new" title="File an Angular issue">file an issue with Angular itself</a>.
 
 For real development, we strongly recommend [developing locally](guide/setup#develop-locally).

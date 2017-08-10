@@ -35,9 +35,9 @@ export class Xliff2 extends Serializer {
 
     messages.forEach(message => {
       const unit = new xml.Tag(_UNIT_TAG, {id: message.id});
+      const notes = new xml.Tag('notes');
 
       if (message.description || message.meaning) {
-        const notes = new xml.Tag('notes');
         if (message.description) {
           notes.children.push(
               new xml.CR(8),
@@ -49,10 +49,17 @@ export class Xliff2 extends Serializer {
               new xml.CR(8),
               new xml.Tag('note', {category: 'meaning'}, [new xml.Text(message.meaning)]));
         }
-
-        notes.children.push(new xml.CR(6));
-        unit.children.push(new xml.CR(6), notes);
       }
+
+      message.sources.forEach((source: i18n.MessageSpan) => {
+        notes.children.push(new xml.CR(8), new xml.Tag('note', {category: 'location'}, [
+          new xml.Text(
+              `${source.filePath}:${source.startLine}${source.endLine !== source.startLine ? ',' + source.endLine : ''}`)
+        ]));
+      });
+
+      notes.children.push(new xml.CR(6));
+      unit.children.push(new xml.CR(6), notes);
 
       const segment = new xml.Tag('segment');
 
@@ -158,15 +165,20 @@ class _WriteVisitor implements i18n.Visitor {
   }
 
   visitPlaceholder(ph: i18n.Placeholder, context?: any): xml.Node[] {
+    const idStr = (this._nextPlaceholderId++).toString();
     return [new xml.Tag(_PLACEHOLDER_TAG, {
-      id: (this._nextPlaceholderId++).toString(),
+      id: idStr,
       equiv: ph.name,
       disp: `{{${ph.value}}}`,
     })];
   }
 
   visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): xml.Node[] {
-    return [new xml.Tag(_PLACEHOLDER_TAG, {id: (this._nextPlaceholderId++).toString()})];
+    const cases = Object.keys(ph.value.cases).map((value: string) => value + ' {...}').join(' ');
+    const idStr = (this._nextPlaceholderId++).toString();
+    return [new xml.Tag(
+        _PLACEHOLDER_TAG,
+        {id: idStr, equiv: ph.name, disp: `{${ph.value.expression}, ${ph.value.type}, ${cases}}`})];
   }
 
   serialize(nodes: i18n.Node[]): xml.Node[] {

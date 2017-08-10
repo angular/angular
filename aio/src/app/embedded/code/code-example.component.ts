@@ -1,5 +1,6 @@
 /* tslint:disable component-selector */
-import { Component, ElementRef, OnInit } from '@angular/core';
+import { Component, ElementRef, HostBinding, OnInit } from '@angular/core';
+import { getBoolFromAttribute } from 'app/shared/attribute-utils';
 
 /**
  * An embeddable code block that displays nicely formatted code.
@@ -16,21 +17,44 @@ import { Component, ElementRef, OnInit } from '@angular/core';
   selector: 'code-example',
   template: `
     <header *ngIf="title">{{title}}</header>
-    <aio-code [ngClass]="{'headed-code':title, 'simple-code':!title}" [code]="code" [language]="language" [linenums]="linenums"></aio-code>
+    <aio-code [ngClass]="classes" [code]="code"
+    [language]="language" [linenums]="linenums"
+    [path]="path" [region]="region"
+    [hideCopy]="hideCopy" [title]="title"></aio-code>
   `
 })
-export class CodeExampleComponent implements OnInit { // implements AfterViewInit {
+export class CodeExampleComponent implements OnInit {
 
+  classes: {};
   code: string;
   language: string;
-  linenums: boolean | number;
+  linenums: string;
+  path: string;
+  region: string;
   title: string;
+  hideCopy: boolean;
+
+  @HostBinding('class.avoidFile')
+  isAvoid = false;
 
   constructor(private elementRef: ElementRef) {
-    const element = this.elementRef.nativeElement;
+    const element: HTMLElement = this.elementRef.nativeElement;
+
     this.language = element.getAttribute('language') || '';
     this.linenums = element.getAttribute('linenums');
+    this.path = element.getAttribute('path') || '';
+    this.region = element.getAttribute('region') || '';
     this.title = element.getAttribute('title') || '';
+    // Now remove the title attribute to prevent unwanted tooltip popups when hovering over the code.
+    element.removeAttribute('title');
+
+    this.isAvoid = this.path.indexOf('.avoid.') !== -1;
+    this.hideCopy = this.isAvoid || getBoolFromAttribute(element, ['hidecopy', 'hide-copy']);
+
+    this.classes = {
+      'headed-code': !!this.title,
+      'simple-code': !this.title,
+    };
   }
 
   ngOnInit() {

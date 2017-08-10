@@ -3,6 +3,7 @@ import { browser, element, by, promise, ElementFinder } from 'protractor';
 const githubRegex = /https:\/\/github.com\/angular\/angular\//;
 
 export class SitePage {
+
   links = element.all(by.css('md-toolbar a'));
   docsMenuLink = element(by.cssContainingText('aio-top-menu a', 'Docs'));
   docViewer = element(by.css('aio-doc-viewer'));
@@ -12,8 +13,14 @@ export class SitePage {
     .filter((a: ElementFinder) => a.getAttribute('href').then(href => githubRegex.test(href)))
     .first();
   gaReady: promise.Promise<any>;
+
+  static setWindowWidth(newWidth: number) {
+    const win = browser.driver.manage().window();
+    return win.getSize().then(oldSize => win.setSize(newWidth, oldSize.height));
+  }
+
   getNavItem(pattern: RegExp) {
-    return element.all(by.css('aio-nav-item a'))
+    return element.all(by.css('aio-nav-item .vertical-menu-item'))
                   .filter(element => element.getText().then(text => pattern.test(text)))
                   .first();
   }
@@ -35,9 +42,12 @@ export class SitePage {
     return browser.executeScript('return arguments[0].innerHTML;', element);
   }
 
-  setWindowWidth(newWidth: number) {
-    const win = browser.driver.manage().window();
-    return win.getSize().then(oldSize => win.setSize(newWidth, oldSize.height));
+  getScrollTop() {
+    return browser.executeScript('return window.pageYOffset');
+  }
+
+  scrollToBottom() {
+    return browser.executeScript('window.scrollTo(0, document.body.scrollHeight)');
   }
 
   /**

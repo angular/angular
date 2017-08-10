@@ -1,7 +1,8 @@
 {
   "angularCompilerOptions": {
     "annotationsAs": "static fields",
-    "annotateForClosureCompiler": true
+    "annotateForClosureCompiler": true,
+    "alwaysCompileGeneratedCode": true
   },
 
   "compilerOptions": {
@@ -13,7 +14,8 @@
     "noImplicitAny": false,
     "sourceMap": false,
     "experimentalDecorators": true,
-    "outDir": "built/src",
+    "outDir": "built",
+    "rootDir": ".",
     "declaration": true,
     "types": []
   },

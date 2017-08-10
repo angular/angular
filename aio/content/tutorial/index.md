@@ -1,12 +1,5 @@
-@title
-Tutorial: Tour of Heroes
 
-@intro
-The Tour of Heroes tutorial takes you through the steps of creating an Angular application in TypeScript.
-
-@description
-
-
+# Tutorial: Tour of Heroes
 
 The grand plan for this tutorial is to build an app that helps a staffing agency manage its stable of heroes.
 
@@ -29,32 +22,32 @@ Angular can do whatever you need it to do.
 You'll cover a lot of ground at an introductory level, and you'll find many links
 to pages with greater depth.
 
-When you're done with this tutorial, the app will look like this <live-example name="toh-6"></live-example>.
+When you're done with this tutorial, the app will look like this <live-example name="toh-pt6"></live-example>.
 
 
 
 
-## The end game
+## What you'll build
 
 Here's a visual idea of where this tutorial leads, beginning with the "Dashboard"
 view and the most heroic heroes:
 
 
-<figure class='image-display'>
-  <img src='assets/images/devguide/toh/heroes-dashboard-1.png' alt="Output of heroes dashboard"></img>
+<figure>
+  <img src='generated/images/guide/toh/heroes-dashboard-1.png' alt="Output of heroes dashboard">
 </figure>
 
 
 
-You can click the two links above the dashboard ("Dashboard" and "Heroes") 
+You can click the two links above the dashboard ("Dashboard" and "Heroes")
 to navigate between this Dashboard view and a Heroes view.
 
 If you click the dashboard hero "Magneta," the router opens a "Hero Details" view
 where you can change the hero's name.
 
 
-<figure class='image-display'>
-  <img src='assets/images/devguide/toh/hero-details-1.png' alt="Details of hero in app"></img>
+<figure>
+  <img src='generated/images/guide/toh/hero-details-1.png' alt="Details of hero in app">
 </figure>
 
 
@@ -64,8 +57,8 @@ Links at the top take you to either of the main views.
 If you click "Heroes," the app displays the "Heroes" master list view.
 
 
-<figure class='image-display'>
-  <img src='assets/images/devguide/toh/heroes-list-2.png' alt="Output of heroes list app"></img>
+<figure>
+  <img src='generated/images/guide/toh/heroes-list-2.png' alt="Output of heroes list app">
 </figure>
 
 
@@ -78,8 +71,8 @@ editable details of the selected hero.
 The following diagram captures all of the navigation options.
 
 
-<figure class='image-display'>
-  <img src='assets/images/devguide/toh/nav-diagram.png' alt="View navigations"></img>
+<figure>
+  <img src='generated/images/guide/toh/nav-diagram.png' alt="View navigations">
 </figure>
 
 
@@ -87,8 +80,8 @@ The following diagram captures all of the navigation options.
 Here's the app in action:
 
 
-<figure class='image-display'>
-  <img src='assets/images/devguide/toh/toh-anim.gif' alt="Tour of Heroes in Action"></img>
+<figure>
+  <img src='generated/images/guide/toh/toh-anim.gif' alt="Tour of Heroes in Action">
 </figure>
 
 
@@ -101,3 +94,5 @@ Each step is motivated with a requirement that you've likely
 met in many applications. Everything has a reason.
 
 Along the way, you'll become familiar with many of the core fundamentals of Angular.
+
+Start now by building a simple [hero editor](tutorial/toh-pt1 "The Hero Editor").

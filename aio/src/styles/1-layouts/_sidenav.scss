@@ -1,33 +1,58 @@
-aio-nav-menu.top-menu .vertical-menu-item  {
-  background-color: $lightgray;
-  text-transform: uppercase;
+// Disable sidenav animations while starting the app
+// See https://github.com/angular/material2/blob/master/src/lib/sidenav/sidenav-transitions.scss
+.starting.mat-sidenav-transition {
+  .mat-sidenav,
+  .mat-sidenav-content,
+  .mat-sidenav-backdrop.mat-sidenav-shown {
+    transition: none;
+  }
+}
+
+aio-nav-menu {
+  display: block;
+  margin: 0 auto;
+  font-size: 13px;
+  ul, a {
+    padding: 0;
+    margin: 0;
+  }
+
+  &:first-child {
+    margin-top: 16px;
+  }
+
+  aio-nav-item div a {
+    padding-left: 6px;
+  }
 }
 
 md-sidenav.mat-sidenav.sidenav {
   position: fixed;
+  top: 64px;
   bottom: 0;
-  padding: 80px 0px 0px;
+  left: 0;
+  padding: 0;
   min-width: 260px;
   background-color: $offwhite;
   box-shadow: 6px 0 6px rgba(0,0,0,0.10);
-}
+  height: calc(100vh - 64px);
 
-md-sidenav.mat-sidenav.sidenav.collapsed {
-    padding-top: 32px;
+  &.collapsed {
+    top: 56px;
+  }
 }
 
 md-sidenav-container.sidenav-container {
     min-height: 100%;
     height: auto !important;
-    margin: 0 auto;
+    max-width: 100%;
+    margin: 0;
     transform: none;
-    padding-top: 52px;
-}
 
-// md-sidenav.sidenav.mat-sidenav.mat-sidenav-side.mat-sidenav-opened {
-//   position: fixed;
-//   padding-top: 72px;
-// }
+    &.has-floating-toc {
+      max-width: 82%;
+    }
+}
 
 md-sidenav-container div.mat-sidenav-content {
     height: auto;
@@ -40,54 +65,50 @@ md-sidenav-container div.mat-sidenav-content {
   display: block;
   max-width: 260px;
   overflow-wrap: break-word;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  padding-left: 20px;
+  padding-top: 4px;
+  padding-bottom: 4px;
   text-decoration: none;
   text-align: left;
-  transition-duration: 180ms;
-  transition-property: background-color, color;
-  transition-timing-function: ease-in-out;
-  width: 100%;
+  width: 93%;
   word-wrap: break-word;
-  outline: none;
 
   &:hover {
-    text-shadow: 0 0 5px #ffffff;
     background-color: $lightgray;
+    color: $blue;
+    text-shadow: 0 0 5px #ffffff;
+  }
+
+  &:focus {
+    outline: $accentblue auto 2px;
   }
 
   //icons _within_ nav
-  .material-icons {
+  .mat-icon {
     position: absolute;
-    top: 6px;
-    margin-left: 10px;
+    top: 0;
+    right: 0;
+    margin: 4px;
   }
-
-  @include bp(tiny) {
-    padding-top: 10px;
-    padding-bottom: 10px;
-  }
-
 }
 
 .vertical-menu-item.selected {
   color: $blue;
 }
 
+button.vertical-menu-item {
+  border: none;
+  background-color: transparent;
+  margin-right: 0;
+  padding-left: 6px;
+  padding-top: 8px;
+  padding-bottom: 10px;
+}
+
 .heading {
-  color: #444;
+  color: $darkgray;
   cursor: pointer;
   position: relative;
   text-transform: uppercase;
-  width: 100%;
-}
-
-.material-icons {
-  display: inline-block;
-  position: absolute;
-  top: 6px;
-  right: 8px;
 }
 
 .heading-children.expanded {
@@ -108,58 +129,68 @@ md-sidenav-container div.mat-sidenav-content {
   transition-timing-function: ease-out;
 }
 
-a.selected.level-1,
-.heading.selected.level-1,
-.heading-children.selected.level-1 {
-  border-left: 3px $blue solid;
-}
-
 .level-1 {
   font-family: $main-font;
   font-size: 14px;
   font-weight: 400;
-  padding-left: 10px;
+  margin-left: 14px;
   transition: background-color 0.2s;
+  text-transform: uppercase;
 }
 
 .level-2 {
+  color: $mediumgray;
   font-family: $main-font;
   font-size: 14px;
-  color: $mediumgray;
   font-weight: 400;
-  padding-left: 20px;
+  margin-left: 12px;
   text-transform: none;
 }
 
 .level-3 {
+  color: $mediumgray;
   font-family: $main-font;
   font-size: 14px;
-  color: $mediumgray;
-  padding-left: 30px;
+  margin-left: 10px;
 }
 
-.level-1.expanded .material-icons, .level-2.expanded .material-icons {
+.level-1.expanded .mat-icon, .level-2.expanded .mat-icon {
   @include rotate(90deg);
 }
 
-.level-1:not(.expanded) .material-icons, .level-2:not(.expanded) .material-icons {
+.level-1:not(.expanded) .mat-icon, .level-2:not(.expanded) .mat-icon {
   @include rotate(0deg);
-}
-
-.promo-img-container img {
-  max-width: 90%;
-  @include bp(small) {
-    max-width: 100%;
-  }
+ // margin: 4px;
 }
 
 aio-nav-menu.top-menu {
-  aio-nav-item:first-child .vertical-menu-item {
-    padding-top: 48px;
-  }
+  padding: 24px 0 0;
 
   aio-nav-item:last-child div {
-    border-bottom: 2px solid rgba($mediumgray, 0.5);
+    border-bottom: 1px solid rgba($mediumgray, 0.5);
   }
-  
+
+  aio-nav-item:first-child div {
+    border-top: 1px solid rgba($mediumgray, 0.5);
+  }
+}
+
+// Angular Version Selector
+md-sidenav .doc-version {
+  padding: 8px;
+  border-top: 1px solid $lightgray;
+
+  select {
+    outline: none;
+    width: 100%;
+    background: rgba($lightgray, 0.5);
+    height: 32px;
+    border: 1px solid $lightgray;
+    color: $darkgray;
+
+    option {
+      font-family: $main-font;
+      font-size: 14px;
+    }
+  }
 }

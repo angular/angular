@@ -1,12 +1,4 @@
-@title
-Displaying Data
-
-@intro
-Property binding helps show app data in the UI.
-
-@description
-
-
+# Displaying Data
 
 You can display data by binding controls in an HTML template to properties of an Angular component.
 
@@ -17,18 +9,9 @@ conditionally show a message below the list.
 The final UI looks like this:
 
 
-<figure class='image-display'>
-  <img src="assets/images/devguide/displaying-data/final.png" alt="Final UI"></img>
+<figure>
+  <img src="generated/images/guide/displaying-data/final.png" alt="Final UI">
 </figure>
-
-
-
-# Contents
-
-* [Showing component properties with interpolation](guide/displaying-data#interpolation).
-* [Showing an array property with NgFor](guide/displaying-data#ngFor).
-* [Conditional display with NgIf](guide/displaying-data#ngIf).
-
 
 <div class="l-sub-section">
 
@@ -41,7 +24,7 @@ snippets described in this page.
 </div>
 
 
-
+{@a interpolation}
 
 ## Showing component properties with interpolation
 The easiest way to display a component property
@@ -125,8 +108,8 @@ inside the `<my-app>` tag.
 
 Now run the app. It should display the title and hero name:
 
-<figure class='image-display'>
-  <img src="assets/images/devguide/displaying-data/title-and-hero.png" alt="Title and Hero"></img>
+<figure>
+  <img src="generated/images/guide/displaying-data/title-and-hero.png" alt="Title and Hero">
 </figure>
 
 
@@ -162,7 +145,7 @@ Although this example uses variable assignment to initialize the components, you
 
 This app uses more terse "variable assignment" style simply for brevity.
 
-
+{@a ngFor}
 
 ## Showing an array property with ***ngFor**
 
@@ -232,8 +215,8 @@ repeat items for any [iterable](https://developer.mozilla.org/en-US/docs/Web/Jav
 Now the heroes appear in an unordered list.
 
 
-<figure class='image-display'>
-  <img src="assets/images/devguide/displaying-data/hero-names-list.png" alt="After ngfor"></img>
+<figure>
+  <img src="generated/images/guide/displaying-data/hero-names-list.png" alt="After ngfor">
 </figure>
 
 
@@ -281,7 +264,7 @@ That brief syntax does a lot:
 
 
 
-## Using the Hero class
+### Using the Hero class
 
 After importing the `Hero` class, the `AppComponent.heroes` property can return a _typed_ array
 of `Hero` objects:
@@ -306,7 +289,7 @@ Fix that to display only the hero's `name` property.
 
 The display looks the same, but the code is clearer.
 
-
+{@a ngIf}
 
 ## Conditional display with NgIf
 
@@ -337,7 +320,7 @@ Read more about `ngIf` and `*` in the [ngIf section](guide/template-syntax#ngIf)
 
 
 The template expression inside the double quotes,
-`*ngIf="heros.length > 3"`, looks and behaves much like TypeScript.
+`*ngIf="heroes.length > 3"`, looks and behaves much like TypeScript.
 When the component's list of heroes has more than three items, Angular adds the paragraph
 to the DOM and the message appears. If there are three or fewer items, Angular omits the
 paragraph, so no message appears. For more information,

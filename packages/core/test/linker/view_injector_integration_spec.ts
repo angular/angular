@@ -342,6 +342,66 @@ export function main() {
         expect(created).toBe(true);
       });
 
+      describe('injecting lazy providers into an eager provider via Injector.get', () => {
+
+        it('should inject providers that were declared before it', () => {
+          @Component({
+            template: '',
+            providers: [
+              {provide: 'lazy', useFactory: () => 'lazyValue'},
+              {
+                provide: 'eager',
+                useFactory: (i: Injector) => `eagerValue: ${i.get('lazy')}`,
+                deps: [Injector]
+              },
+            ]
+          })
+          class MyComp {
+            // Component is eager, which makes all of its deps eager
+            constructor(@Inject('eager') eager: any) {}
+          }
+
+          const ctx =
+              TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
+          expect(ctx.debugElement.injector.get('eager')).toBe('eagerValue: lazyValue');
+        });
+
+        it('should inject providers that were declared after it', () => {
+          @Component({
+            template: '',
+            providers: [
+              {
+                provide: 'eager',
+                useFactory: (i: Injector) => `eagerValue: ${i.get('lazy')}`,
+                deps: [Injector]
+              },
+              {provide: 'lazy', useFactory: () => 'lazyValue'},
+            ]
+          })
+          class MyComp {
+            // Component is eager, which makes all of its deps eager
+            constructor(@Inject('eager') eager: any) {}
+          }
+
+          const ctx =
+              TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
+          expect(ctx.debugElement.injector.get('eager')).toBe('eagerValue: lazyValue');
+        });
+      });
+
+      it('should allow injecting lazy providers via Injector.get from an eager provider that is declared earlier',
+         () => {
+           @Component({providers: [{provide: 'a', useFactory: () => 'aValue'}], template: ''})
+           class SomeComponent {
+             public a: string;
+             constructor(injector: Injector) { this.a = injector.get('a'); }
+           }
+
+           const comp = TestBed.configureTestingModule({declarations: [SomeComponent]})
+                            .createComponent(SomeComponent);
+           expect(comp.componentInstance.a).toBe('aValue');
+         });
+
       it('should support ngOnDestroy for lazy providers', () => {
         let created = false;
         let destroyed = false;
@@ -650,6 +710,46 @@ export function main() {
         comp.changeDetectorRef.markForCheck();
         cf.detectChanges();
         expect(compEl.nativeElement).toHaveText('1');
+      });
+
+      it('should inject ChangeDetectorRef of a same element component into a directive', () => {
+        TestBed.configureTestingModule(
+            {declarations: [PushComponentNeedsChangeDetectorRef, DirectiveNeedsChangeDetectorRef]});
+        const cf = createComponentFixture(
+            '<div componentNeedsChangeDetectorRef directiveNeedsChangeDetectorRef></div>');
+        cf.detectChanges();
+        const compEl = cf.debugElement.children[0];
+        const comp = compEl.injector.get(PushComponentNeedsChangeDetectorRef);
+        const dir = compEl.injector.get(DirectiveNeedsChangeDetectorRef);
+        comp.counter = 1;
+        cf.detectChanges();
+        expect(compEl.nativeElement).toHaveText('0');
+        dir.changeDetectorRef.markForCheck();
+        cf.detectChanges();
+        expect(compEl.nativeElement).toHaveText('1');
+      });
+
+      it(`should not inject ChangeDetectorRef of a parent element's component into a directive`, () => {
+        TestBed
+            .configureTestingModule({
+              declarations: [PushComponentNeedsChangeDetectorRef, DirectiveNeedsChangeDetectorRef]
+            })
+            .overrideComponent(
+                PushComponentNeedsChangeDetectorRef,
+                {set: {template: '<ng-content></ng-content>{{counter}}'}});
+        const cf = createComponentFixture(
+            '<div componentNeedsChangeDetectorRef><div directiveNeedsChangeDetectorRef></div></div>');
+        cf.detectChanges();
+        const compEl = cf.debugElement.children[0];
+        const comp = compEl.injector.get(PushComponentNeedsChangeDetectorRef);
+        const dirEl = compEl.children[0];
+        const dir = dirEl.injector.get(DirectiveNeedsChangeDetectorRef);
+        comp.counter = 1;
+        cf.detectChanges();
+        expect(compEl.nativeElement).toHaveText('0');
+        dir.changeDetectorRef.markForCheck();
+        cf.detectChanges();
+        expect(compEl.nativeElement).toHaveText('0');
       });
 
       it('should inject ViewContainerRef', () => {

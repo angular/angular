@@ -13,7 +13,8 @@
     "noImplicitAny": false,
     "sourceMap": false,
     "experimentalDecorators": true,
-    "outDir": "built/src",
+    "outDir": "built",
+    "rootDir": ".",
     "declaration": true,
     "typeRoots": ["node_modules/@types"]
   },

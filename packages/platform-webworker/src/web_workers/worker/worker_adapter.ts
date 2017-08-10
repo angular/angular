@@ -154,7 +154,6 @@ export class WorkerDomAdapter extends DomAdapter {
   setData(element: any, name: string, value: string) { throw 'not implemented'; }
   getComputedStyle(element: any): any { throw 'not implemented'; }
   getData(element: any, name: string): string { throw 'not implemented'; }
-  setGlobalVar(name: string, value: any) { throw 'not implemented'; }
   performanceNow(): number { throw 'not implemented'; }
   getAnimationPrefix(): string { throw 'not implemented'; }
   getTransitionEnd(): string { throw 'not implemented'; }

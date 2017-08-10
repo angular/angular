@@ -12,7 +12,7 @@ import {RendererType2} from '../render/api';
 import {looseIdentical, stringify} from '../util';
 
 import {expressionChangedAfterItHasBeenCheckedError} from './errors';
-import {BindingDef, BindingFlags, ElementData, NodeDef, NodeFlags, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewState, asElementData, asTextData} from './types';
+import {BindingDef, BindingFlags, Definition, DefinitionFactory, DepDef, DepFlags, ElementData, NodeDef, NodeFlags, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewState, asElementData, asTextData} from './types';
 
 export const NOOP: any = () => {};
 
@@ -100,10 +100,10 @@ export function checkAndUpdateBinding(
 export function checkBindingNoChanges(
     view: ViewData, def: NodeDef, bindingIdx: number, value: any) {
   const oldValue = view.oldValues[def.bindingIndex + bindingIdx];
-  if ((view.state & ViewState.FirstCheck) || !devModeEqual(oldValue, value)) {
+  if ((view.state & ViewState.BeforeFirstCheck) || !devModeEqual(oldValue, value)) {
     throw expressionChangedAfterItHasBeenCheckedError(
         Services.createDebugContext(view, def.index), oldValue, value,
-        (view.state & ViewState.FirstCheck) !== 0);
+        (view.state & ViewState.BeforeFirstCheck) !== 0);
   }
 }
 
@@ -117,13 +117,27 @@ export function markParentViewsForCheck(view: ViewData) {
   }
 }
 
+export function markParentViewsForCheckProjectedViews(view: ViewData, endView: ViewData) {
+  let currView: ViewData|null = view;
+  while (currView && currView !== endView) {
+    currView.state |= ViewState.CheckProjectedViews;
+    currView = currView.viewContainerParent || currView.parent;
+  }
+}
+
 export function dispatchEvent(
-    view: ViewData, nodeIndex: number, eventName: string, event: any): boolean {
-  const nodeDef = view.def.nodes[nodeIndex];
-  const startView =
-      nodeDef.flags & NodeFlags.ComponentView ? asElementData(view, nodeIndex).componentView : view;
-  markParentViewsForCheck(startView);
-  return Services.handleEvent(view, nodeIndex, eventName, event);
+    view: ViewData, nodeIndex: number, eventName: string, event: any): boolean|undefined {
+  try {
+    const nodeDef = view.def.nodes[nodeIndex];
+    const startView = nodeDef.flags & NodeFlags.ComponentView ?
+        asElementData(view, nodeIndex).componentView :
+        view;
+    markParentViewsForCheck(startView);
+    return Services.handleEvent(view, nodeIndex, eventName, event);
+  } catch (e) {
+    // Attention: Don't rethrow, as it would cancel Observable subscriptions!
+    view.root.errorHandler.handleError(e);
+  }
 }
 
 export function declaredViewContainer(view: ViewData): ElementData|null {
@@ -195,6 +209,20 @@ export function splitMatchedQueriesDsl(
   return {matchedQueries, references, matchedQueryIds};
 }
 
+export function splitDepsDsl(deps: ([DepFlags, any] | any)[]): DepDef[] {
+  return deps.map(value => {
+    let token: any;
+    let flags: DepFlags;
+    if (Array.isArray(value)) {
+      [flags, token] = value;
+    } else {
+      flags = DepFlags.None;
+      token = value;
+    }
+    return {flags, token, tokenKey: tokenKey(token)};
+  });
+}
+
 export function getParentRenderElement(view: ViewData, renderHost: any, def: NodeDef): any {
   let renderParent = def.renderParent;
   if (renderParent) {
@@ -212,14 +240,14 @@ export function getParentRenderElement(view: ViewData, renderHost: any, def: Nod
   }
 }
 
-const VIEW_DEFINITION_CACHE = new WeakMap<any, ViewDefinition>();
+const DEFINITION_CACHE = new WeakMap<any, Definition<any>>();
 
-export function resolveViewDefinition(factory: ViewDefinitionFactory): ViewDefinition {
-  let value: ViewDefinition = VIEW_DEFINITION_CACHE.get(factory) !;
+export function resolveDefinition<D extends Definition<any>>(factory: DefinitionFactory<D>): D {
+  let value = DEFINITION_CACHE.get(factory) !as D;
   if (!value) {
     value = factory(() => NOOP);
     value.factory = factory;
-    VIEW_DEFINITION_CACHE.set(factory, value);
+    DEFINITION_CACHE.set(factory, value);
   }
   return value;
 }

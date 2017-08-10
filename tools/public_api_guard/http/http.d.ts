@@ -36,13 +36,13 @@ export declare class CookieXSRFStrategy implements XSRFStrategy {
 export declare class Headers {
     constructor(headers?: Headers | {
         [name: string]: any;
-    });
+    } | null);
     append(name: string, value: string): void;
     delete(name: string): void;
     entries(): void;
-    forEach(fn: (values: string[], name: string, headers: Map<string, string[]>) => void): void;
-    get(name: string): string;
-    getAll(name: string): string[];
+    forEach(fn: (values: string[], name: string | undefined, headers: Map<string, string[]>) => void): void;
+    get(name: string): string | null;
+    getAll(name: string): string[] | null;
     has(name: string): boolean;
     keys(): string[];
     set(name: string, value: string | string[]): void;
@@ -137,40 +137,40 @@ export declare enum RequestMethod {
 /** @experimental */
 export declare class RequestOptions {
     body: any;
-    headers: Headers;
-    method: RequestMethod | string;
+    headers: Headers | null;
+    method: RequestMethod | string | null;
     params: URLSearchParams;
-    responseType: ResponseContentType;
+    responseType: ResponseContentType | null;
     /** @deprecated */ search: URLSearchParams;
-    url: string;
-    withCredentials: boolean;
-    constructor({method, headers, body, url, search, params, withCredentials, responseType}?: RequestOptionsArgs);
+    url: string | null;
+    withCredentials: boolean | null;
+    constructor(opts?: RequestOptionsArgs);
     merge(options?: RequestOptionsArgs): RequestOptions;
 }
 
 /** @experimental */
 export interface RequestOptionsArgs {
     body?: any;
-    headers?: Headers;
-    method?: string | RequestMethod;
+    headers?: Headers | null;
+    method?: string | RequestMethod | null;
     params?: string | URLSearchParams | {
         [key: string]: any | any[];
-    };
-    responseType?: ResponseContentType;
+    } | null;
+    responseType?: ResponseContentType | null;
     /** @deprecated */ search?: string | URLSearchParams | {
         [key: string]: any | any[];
-    };
-    url?: string;
-    withCredentials?: boolean;
+    } | null;
+    url?: string | null;
+    withCredentials?: boolean | null;
 }
 
 /** @experimental */
 export declare class Response extends Body {
     bytesLoaded: number;
-    headers: Headers;
+    headers: Headers | null;
     ok: boolean;
     status: number;
-    statusText: string;
+    statusText: string | null;
     totalBytes: number;
     type: ResponseType;
     url: string;
@@ -188,22 +188,22 @@ export declare enum ResponseContentType {
 
 /** @experimental */
 export declare class ResponseOptions {
-    body: string | Object | ArrayBuffer | Blob;
-    headers: Headers;
-    status: number;
-    url: string;
-    constructor({body, status, headers, statusText, type, url}?: ResponseOptionsArgs);
+    body: string | Object | ArrayBuffer | Blob | null;
+    headers: Headers | null;
+    status: number | null;
+    url: string | null;
+    constructor(opts?: ResponseOptionsArgs);
     merge(options?: ResponseOptionsArgs): ResponseOptions;
 }
 
 /** @experimental */
 export interface ResponseOptionsArgs {
-    body?: string | Object | FormData | ArrayBuffer | Blob;
-    headers?: Headers;
-    status?: number;
-    statusText?: string;
-    type?: ResponseType;
-    url?: string;
+    body?: string | Object | FormData | ArrayBuffer | Blob | null;
+    headers?: Headers | null;
+    status?: number | null;
+    statusText?: string | null;
+    type?: ResponseType | null;
+    url?: string | null;
 }
 
 /** @experimental */
@@ -224,7 +224,7 @@ export declare class URLSearchParams {
     appendAll(searchParams: URLSearchParams): void;
     clone(): URLSearchParams;
     delete(param: string): void;
-    get(param: string): string;
+    get(param: string): string | null;
     getAll(param: string): string[];
     has(param: string): boolean;
     replaceAll(searchParams: URLSearchParams): void;

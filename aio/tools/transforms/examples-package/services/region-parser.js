@@ -4,7 +4,7 @@ const inlineC = require('./region-matchers/inline-c');
 const inlineCOnly = require('./region-matchers/inline-c-only');
 const inlineHash = require('./region-matchers/inline-hash');
 const DEFAULT_PLASTER = '. . .';
-const {mapObject} = require('../utils');
+const {mapObject} = require('../../helpers/utils');
 
 module.exports = function regionParser() {
   return regionParserImpl;

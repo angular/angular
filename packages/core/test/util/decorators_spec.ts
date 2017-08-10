@@ -17,14 +17,15 @@ class DecoratedChild extends DecoratedParent {}
 export function main() {
   const Reflect = global['Reflect'];
 
-  const TerminalDecorator = makeDecorator('TerminalDecorator', {terminal: true});
+  const TerminalDecorator =
+      makeDecorator('TerminalDecorator', (data: any) => ({terminal: true, ...data}));
   const TestDecorator = makeDecorator(
-      'TestDecorator', {marker: undefined}, Object, (fn: any) => fn.Terminal = TerminalDecorator);
+      'TestDecorator', (data: any) => data, Object, (fn: any) => fn.Terminal = TerminalDecorator);
 
   describe('Property decorators', () => {
     // https://github.com/angular/angular/issues/12224
     it('should work on the "watch" property', () => {
-      const Prop = makePropDecorator('Prop', [['value', undefined]]);
+      const Prop = makePropDecorator('Prop', (value: any) => ({value}));
 
       class TestClass {
         @Prop('firefox!')
@@ -36,13 +37,14 @@ export function main() {
     });
 
     it('should work with any default plain values', () => {
-      const Default = makePropDecorator('Default', [['value', 5]]);
+      const Default =
+          makePropDecorator('Default', (data: any) => ({value: data != null ? data : 5}));
       expect(new Default(0)['value']).toEqual(0);
     });
 
     it('should work with any object values', () => {
       // make sure we don't walk up the prototype chain
-      const Default = makePropDecorator('Default', [{value: 5}]);
+      const Default = makePropDecorator('Default', (data: any) => ({value: 5, ...data}));
       const value = Object.create({value: 10});
       expect(new Default(value)['value']).toEqual(5);
     });
@@ -121,7 +123,7 @@ export function main() {
         });
 
 
-        it('should ensure that we dont accidently patch native objects', () => {
+        it('should ensure that we dont accidentally patch native objects', () => {
           expect(() => {
             (<Function>Class)({constructor: Object});
           }).toThrowError('Can not use native Object as constructor');

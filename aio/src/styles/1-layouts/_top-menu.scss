@@ -1,34 +1,14 @@
-
-.fill-remaining-space {
-  flex: 1 1 auto;
-}
-
-.nav-link {
-  margin: 0 16px;
-  cursor: pointer;
-}
-
 .nav-link.home img {
   position: relative;
   margin-top: -21px;
   margin-right: 20px;
   top: 12px;
   height: 40px;
-}
 
-@media (max-width: 700px) {
-  .nav-link {
-    font-size: 80%;
-    margin-right: 8px;
-    margin-left: 0px;
-  }
-}
-
-@media (max-width: 600px) {
-  .nav-link {
-    font-size: 80%;
-    margin-right: 8px;
-    margin-left: 0px;
+  @media(max-width: 992px) {
+    &:hover {
+      transform: scale(1.1);
+    }
   }
 }
 
@@ -47,56 +27,118 @@ aio-top-menu {
     margin: 0px;
 
     li {
+      padding-bottom: 2px;
       list-style-type: none;
-      line-height: 64px;
-      height: 64px;
       cursor: pointer;
 
       &:hover {
-        background-color: $accentblue;
+        opacity: 0.7;
       }
+
+      &:focus {
+        background-color: $accentblue;
+        outline: none;
+      }
+    }
+  }
+
+  a.nav-link {
+    margin: 0;
+    padding: 24px 16px;
+    cursor: pointer;
+
+    &:focus {
+      background: rgba($white, 0.15);
+      border-radius: 4px;
+      outline: none;
+      padding: 8px 16px;
     }
   }
 }
 
+// HOME PAGE OVERRIDE: TOPNAV TOOLBAR HAMBURGER MENU
+aio-shell.page-home md-toolbar.app-toolbar.mat-toolbar {
+  background-color: transparent;
+  transition: background-color .2s linear .3s;
+
+  @media (max-width: 480px) {
+    background-color: $blue;
+  }
+}
+
+// DOCS PAGE / STANDARD: TOPNAV TOOLBAR FIXED
 md-toolbar.mat-toolbar {
   position: fixed;
   top: 0;
   right: 0;
   left: 0;
   z-index: 10;
-  box-shadow: 0 2px 5px 0 rgba(0,0,0,0.30);
   padding: 0 16px 0 0;
+  box-shadow: 0 2px 5px 0 rgba(0,0,0,0.30);
+
+  md-icon {
+    color: $white;
+  }
 }
 
-.search-container {
+// MARKETING PAGES OVERRIDE: TOPNAV TOOLBAR AND HAMBURGER
+aio-shell.page-home md-toolbar.mat-toolbar,
+aio-shell.page-features md-toolbar.mat-toolbar,
+aio-shell.page-events md-toolbar.mat-toolbar,
+aio-shell.page-resources md-toolbar.mat-toolbar {
+  // FIXED TOPNAV TOOLBAR FOR SMALL MOBILE
+  @media (min-width: 481px) {
+    position: absolute;
+  }
+
+  @media (min-width: 992px) {
+    button.hamburger {
+      margin: 0 24px 0 -88px;
+    }
+  }
+}
+
+// REMOVE BOX SHADOW ON CERTAIN MARKETING PAGES
+aio-shell.page-home md-toolbar.mat-toolbar,
+aio-shell.page-events md-toolbar.mat-toolbar,
+aio-shell.page-resources md-toolbar.mat-toolbar {
+  box-shadow: none;
+}
+
+
+// SEARCH BOX
+aio-search-box.search-container {
   display: flex;
   justify-content: flex-end;
   align-items: center;
   width: 100%;
   min-width: 150px;
   height: 100%;
-}
 
-aio-search-box input {
-  color: $darkgray;
-  border: none;
-  border-radius: 5px;
-  background-color: $offwhite;
-  padding: 5px 10px;
-  margin-left: 8px;
-  width:150px;
-  height: 40%;
-   @include bp(big) {
-    transition: width 0.4s ease-in-out;
+  input {
+    color: $darkgray;
+    border: none;
+    border-radius: 100px;
+    background-color: $offwhite;
+    padding: 5px 16px;
+    margin-left: 8px;
+    width: 180px;
+    max-width: 240px;
+    height: 50%;
+
     &:focus {
-      width: 50%;
+        outline: none;
     }
-  }
-  @media (max-width: 480px) {
-    transition: width 0.4s ease-in-out;
-    &:focus {
-      width: 50%;
+
+    @include bp(big) {
+      transition: width 0.4s ease-in-out;
+
+      &:focus {
+        width: 50%;
+      }
+    }
+    @media (max-width: 480px) {
+      width: 150px;
     }
   }
 }

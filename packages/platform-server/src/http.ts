@@ -8,8 +8,10 @@
 
 const xhr2: any = require('xhr2');
 
-import {Injectable, Provider} from '@angular/core';
+import {Injectable, Optional, Provider} from '@angular/core';
 import {BrowserXhr, Connection, ConnectionBackend, Http, ReadyState, Request, RequestOptions, Response, XHRBackend, XSRFStrategy} from '@angular/http';
+
+import {HttpClient, HttpEvent, HttpRequest, HttpHandler, HttpInterceptor, HttpResponse, HTTP_INTERCEPTORS, HttpBackend, XhrFactory, ɵinterceptingHandler as interceptingHandler} from '@angular/common/http';
 
 import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
@@ -33,16 +35,12 @@ export class ServerXsrfStrategy implements XSRFStrategy {
   configureRequest(req: Request): void {}
 }
 
-export class ZoneMacroTaskConnection implements Connection {
-  response: Observable<Response>;
-  lastConnection: Connection;
-
-  constructor(public request: Request, backend: XHRBackend) {
-    validateRequestUrl(request.url);
-    this.response = new Observable((observer: Observer<Response>) => {
-      let task: Task = null;
+export abstract class ZoneMacroTaskWrapper<S, R> {
+  wrap(request: S): Observable<R> {
+    return new Observable((observer: Observer<R>) => {
+      let task: Task = null !;
       let scheduled: boolean = false;
-      let sub: Subscription = null;
+      let sub: Subscription|null = null;
       let savedResult: any = null;
       let savedError: any = null;
 
@@ -50,25 +48,26 @@ export class ZoneMacroTaskConnection implements Connection {
         task = _task;
         scheduled = true;
 
-        this.lastConnection = backend.createConnection(request);
-        sub = (this.lastConnection.response as Observable<Response>)
-                  .subscribe(
-                      res => savedResult = res,
-                      err => {
-                        if (!scheduled) {
-                          throw new Error('invoke twice');
-                        }
-                        savedError = err;
-                        scheduled = false;
-                        task.invoke();
-                      },
-                      () => {
-                        if (!scheduled) {
-                          throw new Error('invoke twice');
-                        }
-                        scheduled = false;
-                        task.invoke();
-                      });
+        const delegate = this.delegate(request);
+        sub = delegate.subscribe(
+            res => savedResult = res,
+            err => {
+              if (!scheduled) {
+                throw new Error(
+                    'An http observable was completed twice. This shouldn\'t happen, please file a bug.');
+              }
+              savedError = err;
+              scheduled = false;
+              task.invoke();
+            },
+            () => {
+              if (!scheduled) {
+                throw new Error(
+                    'An http observable was completed twice. This shouldn\'t happen, please file a bug.');
+              }
+              scheduled = false;
+              task.invoke();
+            });
       };
 
       const cancelTask = (_task: Task) => {
@@ -91,11 +90,11 @@ export class ZoneMacroTaskConnection implements Connection {
         }
       };
 
-      // MockBackend is currently synchronous, which means that if scheduleTask is by
+      // MockBackend for Http is synchronous, which means that if scheduleTask is by
       // scheduleMacroTask, the request will hit MockBackend and the response will be
       // sent, causing task.invoke() to be called.
       const _task = Zone.current.scheduleMacroTask(
-          'ZoneMacroTaskConnection.subscribe', onComplete, {}, () => null, cancelTask);
+          'ZoneMacroTaskWrapper.subscribe', onComplete, {}, () => null, cancelTask);
       scheduleTask(_task);
 
       return () => {
@@ -111,6 +110,25 @@ export class ZoneMacroTaskConnection implements Connection {
     });
   }
 
+  protected abstract delegate(request: S): Observable<R>;
+}
+
+export class ZoneMacroTaskConnection extends ZoneMacroTaskWrapper<Request, Response> implements
+    Connection {
+  response: Observable<Response>;
+  lastConnection: Connection;
+
+  constructor(public request: Request, private backend: XHRBackend) {
+    super();
+    validateRequestUrl(request.url);
+    this.response = this.wrap(request);
+  }
+
+  delegate(request: Request): Observable<Response> {
+    this.lastConnection = this.backend.createConnection(request);
+    return this.lastConnection.response as Observable<Response>;
+  }
+
   get readyState(): ReadyState {
     return !!this.lastConnection ? this.lastConnection.readyState : ReadyState.Unsent;
   }
@@ -124,13 +142,34 @@ export class ZoneMacroTaskBackend implements ConnectionBackend {
   }
 }
 
+export class ZoneClientBackend extends
+    ZoneMacroTaskWrapper<HttpRequest<any>, HttpEvent<any>> implements HttpBackend {
+  constructor(private backend: HttpBackend) { super(); }
+
+  handle(request: HttpRequest<any>): Observable<HttpEvent<any>> { return this.wrap(request); }
+
+  protected delegate(request: HttpRequest<any>): Observable<HttpEvent<any>> {
+    return this.backend.handle(request);
+  }
+}
+
 export function httpFactory(xhrBackend: XHRBackend, options: RequestOptions) {
   const macroBackend = new ZoneMacroTaskBackend(xhrBackend);
   return new Http(macroBackend, options);
 }
 
+export function zoneWrappedInterceptingHandler(
+    backend: HttpBackend, interceptors: HttpInterceptor[] | null) {
+  const realBackend: HttpBackend = interceptingHandler(backend, interceptors);
+  return new ZoneClientBackend(realBackend);
+}
+
 export const SERVER_HTTP_PROVIDERS: Provider[] = [
   {provide: Http, useFactory: httpFactory, deps: [XHRBackend, RequestOptions]},
-  {provide: BrowserXhr, useClass: ServerXhr},
-  {provide: XSRFStrategy, useClass: ServerXsrfStrategy},
+  {provide: BrowserXhr, useClass: ServerXhr}, {provide: XSRFStrategy, useClass: ServerXsrfStrategy},
+  {provide: XhrFactory, useClass: ServerXhr}, {
+    provide: HttpHandler,
+    useFactory: zoneWrappedInterceptingHandler,
+    deps: [HttpBackend, [new Optional(), HTTP_INTERCEPTORS]]
+  }
 ];

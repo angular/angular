@@ -1,6 +1,7 @@
 {
   "extends": "../tsconfig-build",
   "compilerOptions": {
+    "strictNullChecks": true,
     "paths": {
       "@angular/core": ["../../dist/packages/core"],
       "@angular/http": ["../../dist/packages/http"],
@@ -8,9 +9,12 @@
     }
   },
   "files": [
-    "index.ts"
+    "public_api.ts"
   ],
   "angularCompilerOptions": {
-    "strictMetadataEmit": true
+    "annotateForClosureCompiler": true,
+    "strictMetadataEmit": true,
+    "flatModuleOutFile": "index.js",
+    "flatModuleId": "@angular/http/testing"
   }
 }

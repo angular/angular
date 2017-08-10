@@ -15,7 +15,7 @@ import {Renderer as RendererV1, Renderer2} from '../render/api';
 
 import {createChangeDetectorRef, createInjector, createRendererV1} from './refs';
 import {BindingDef, BindingFlags, DepDef, DepFlags, NodeDef, NodeFlags, OutputDef, OutputType, ProviderData, QueryValueType, Services, ViewData, ViewFlags, ViewState, asElementData, asProviderData} from './types';
-import {calcBindingFlags, checkBinding, dispatchEvent, isComponentView, splitMatchedQueriesDsl, tokenKey, viewParentEl} from './util';
+import {calcBindingFlags, checkBinding, dispatchEvent, isComponentView, splitDepsDsl, splitMatchedQueriesDsl, tokenKey, viewParentEl} from './util';
 
 const RendererV1TokenKey = tokenKey(RendererV1);
 const Renderer2TokenKey = tokenKey(Renderer2);
@@ -78,17 +78,7 @@ export function _def(
     bindings = [];
   }
 
-  const depDefs: DepDef[] = deps.map(value => {
-    let token: any;
-    let flags: DepFlags;
-    if (Array.isArray(value)) {
-      [flags, token] = value;
-    } else {
-      flags = DepFlags.None;
-      token = value;
-    }
-    return {flags, token, tokenKey: tokenKey(token)};
-  });
+  const depDefs = splitDepsDsl(deps);
 
   return {
     // will bet set by the view definition
@@ -105,7 +95,7 @@ export function _def(
     ngContentIndex: -1, childCount, bindings,
     bindingFlags: calcBindingFlags(bindings), outputs,
     element: null,
-    provider: {token, tokenKey: tokenKey(token), value, deps: depDefs},
+    provider: {token, value, deps: depDefs},
     text: null,
     query: null,
     ngContent: null
@@ -354,6 +344,12 @@ export function resolveDep(
     notFoundValue = null;
   }
   const tokenKey = depDef.tokenKey;
+
+  if (tokenKey === ChangeDetectorRefTokenKey) {
+    // directives on the same element as a component should be able to control the change detector
+    // of that component as well.
+    allowPrivateServices = !!(elDef && elDef.element !.componentView);
+  }
 
   if (elDef && (depDef.flags & DepFlags.SkipSelf)) {
     allowPrivateServices = false;

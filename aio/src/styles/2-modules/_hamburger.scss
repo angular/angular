@@ -8,16 +8,22 @@
 }
 
 .hamburger.mat-button {
-    transition: color 0.2s;
-    height: 100%;
-    margin: 0;
-    padding: 0;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+
+  &:not(.starting) {
+    transition-duration: .4s;
+    transition-property: color, margin;
+    transition-timing-function: cubic-bezier(.25, .8, .25, 1);
+  }
 }
 
 .hamburger.mat-button:hover {
-    color: $offwhite;
+  color: $offwhite;
 }
 
-.hamburger md-icon {
+.hamburger .mat-icon {
   position: inherit;
+  color: white;
 }

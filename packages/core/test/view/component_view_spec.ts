@@ -10,7 +10,13 @@ import {Injector, RenderComponentType, RootRenderer, Sanitizer, SecurityContext,
 import {ArgumentType, BindingFlags, NodeCheckFn, NodeDef, NodeFlags, OutputType, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewState, ViewUpdateFn, anchorDef, asElementData, asProviderData, directiveDef, elementDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
-import {createRootView, isBrowser, removeNodes} from './helper';
+import {createRootView, isBrowser, recordNodeToRemove} from './helper';
+
+/**
+ * We map addEventListener to the Zones internal name. This is because we want to be fast
+ * and bypass the zone bookkeeping. We know that we can do the bookkeeping faster.
+ */
+const addEventListener = '__zone_symbol__addEventListener';
 
 export function main() {
   describe(`Component Views`, () => {
@@ -56,7 +62,7 @@ export function main() {
         beforeEach(() => {
           rootNode = document.createElement('root');
           document.body.appendChild(rootNode);
-          removeNodes.push(rootNode);
+          recordNodeToRemove(rootNode);
         });
 
         it('should select root elements based on a selector', () => {
@@ -180,7 +186,7 @@ export function main() {
 
           const update = jasmine.createSpy('updater');
 
-          const addListenerSpy = spyOn(HTMLElement.prototype, 'addEventListener').and.callThrough();
+          const addListenerSpy = spyOn(HTMLElement.prototype, addEventListener).and.callThrough();
 
           const {view} = createAndGetRootNodes(compViewDef(
               [
@@ -230,7 +236,7 @@ export function main() {
         });
       }
 
-      it('should stop dirty checking views that threw errors in change detection', () => {
+      it('should not stop dirty checking views that threw errors in change detection', () => {
         class AComp {
           a: any;
         }
@@ -255,8 +261,8 @@ export function main() {
         expect(update).toHaveBeenCalled();
 
         update.calls.reset();
-        Services.checkAndUpdateView(view);
-        expect(update).not.toHaveBeenCalled();
+        expect(() => Services.checkAndUpdateView(view)).toThrowError('Test');
+        expect(update).toHaveBeenCalled();
       });
 
     });

@@ -6,8 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '@angular/core';
+import {Injector, Type} from '@angular/core';
 import * as angular from './angular1';
+
+const DIRECTIVE_PREFIX_REGEXP = /^(?:x|data)[:\-_]/i;
+const DIRECTIVE_SPECIAL_CHARS_REGEXP = /[:\-_]+(.)/g;
 
 export function onError(e: any) {
   // TODO: (misko): We seem to not have a stack trace here!
@@ -24,14 +27,19 @@ export function controllerKey(name: string): string {
   return '$' + name + 'Controller';
 }
 
+export function directiveNormalize(name: string): string {
+  return name.replace(DIRECTIVE_PREFIX_REGEXP, '')
+      .replace(DIRECTIVE_SPECIAL_CHARS_REGEXP, (_, letter) => letter.toUpperCase());
+}
+
 export function getAttributesAsArray(node: Node): [string, string][] {
   const attributes = node.attributes;
-  let asArray: [string, string][];
+  let asArray: [string, string][] = undefined !;
   if (attributes) {
     let attrLen = attributes.length;
     asArray = new Array(attrLen);
     for (let i = 0; i < attrLen; i++) {
-      asArray[i] = [attributes[i].nodeName, attributes[i].nodeValue];
+      asArray[i] = [attributes[i].nodeName, attributes[i].nodeValue !];
     }
   }
   return asArray || [];
@@ -40,6 +48,10 @@ export function getAttributesAsArray(node: Node): [string, string][] {
 export function getComponentName(component: Type<any>): string {
   // Return the name of the component or the first line of its stringified version.
   return (component as any).overriddenName || component.name || component.toString().split('\n')[0];
+}
+
+export function isFunction(value: any): value is Function {
+  return typeof value === 'function';
 }
 
 export class Deferred<R> {
@@ -53,6 +65,14 @@ export class Deferred<R> {
       this.reject = rej;
     });
   }
+}
+
+export interface LazyModuleRef {
+  // Whether the AngularJS app has been bootstrapped outside the Angular zone
+  // (in which case calls to Angular APIs need to be brought back in).
+  needsNgZone: boolean;
+  injector?: Injector;
+  promise?: Promise<Injector>;
 }
 
 /**
@@ -73,5 +93,15 @@ export function hookupNgModel(ngModel: angular.INgModelController, component: an
   if (ngModel && supportsNgModel(component)) {
     ngModel.$render = () => { component.writeValue(ngModel.$viewValue); };
     component.registerOnChange(ngModel.$setViewValue.bind(ngModel));
+    if (typeof component.registerOnTouched === 'function') {
+      component.registerOnTouched(ngModel.$setTouched.bind(ngModel));
+    }
   }
+}
+
+/**
+ * Test two values for strict equality, accounting for the fact that `NaN !== NaN`.
+ */
+export function strictEquals(val1: any, val2: any): boolean {
+  return val1 === val2 || (val1 !== val1 && val2 !== val2);
 }

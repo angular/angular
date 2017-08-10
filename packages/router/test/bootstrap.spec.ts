@@ -16,7 +16,7 @@ import {NavigationEnd, Resolve, Router, RouterModule} from '@angular/router';
 
 describe('bootstrap', () => {
   let log: any[] = [];
-  let testProviders: any[] = null;
+  let testProviders: any[] = null !;
 
   @Component({selector: 'test-app', template: 'root <router-outlet></router-outlet>'})
   class RootCmp {
@@ -80,10 +80,12 @@ describe('bootstrap', () => {
 
     platformBrowserDynamic([]).bootstrapModule(TestModule).then(res => {
       const router = res.injector.get(Router);
-      const data = router.routerState.snapshot.root.firstChild.data;
+      const data = router.routerState.snapshot.root.firstChild !.data;
       expect(data['test']).toEqual('test-data');
-      expect(log).toEqual(
-          ['TestModule', 'NavigationStart', 'RoutesRecognized', 'RootCmp', 'NavigationEnd']);
+      expect(log).toEqual([
+        'TestModule', 'NavigationStart', 'RoutesRecognized', 'GuardsCheckStart', 'GuardsCheckEnd',
+        'ResolveStart', 'ResolveEnd', 'RootCmp', 'NavigationEnd'
+      ]);
       done();
     });
   });
@@ -116,8 +118,11 @@ describe('bootstrap', () => {
        platformBrowserDynamic([]).bootstrapModule(TestModule).then(res => {
          const router = res.injector.get(Router);
          expect(router.routerState.snapshot.root.firstChild).toBeNull();
-         // NavigationEnd has not been emitted yet because bootstrap returned too early
-         expect(log).toEqual(['TestModule', 'RootCmp', 'NavigationStart', 'RoutesRecognized']);
+         // ResolveEnd has not been emitted yet because bootstrap returned too early
+         expect(log).toEqual([
+           'TestModule', 'RootCmp', 'NavigationStart', 'RoutesRecognized', 'GuardsCheckStart',
+           'GuardsCheckEnd', 'ResolveStart'
+         ]);
 
          router.events.subscribe((e) => {
            if (e instanceof NavigationEnd) {

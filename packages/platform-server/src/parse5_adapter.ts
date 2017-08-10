@@ -9,7 +9,7 @@
 const parse5 = require('parse5');
 
 import {ɵglobal as global} from '@angular/core';
-import {ɵDomAdapter as DomAdapter, ɵsetRootDomAdapter as setRootDomAdapter, ɵsetValueOnPath as setValueOnPath} from '@angular/platform-browser';
+import {ɵDomAdapter as DomAdapter, ɵsetRootDomAdapter as setRootDomAdapter} from '@angular/platform-browser';
 import {SelectorMatcher, CssSelector} from '@angular/compiler';
 
 let treeAdapter: any;
@@ -85,12 +85,17 @@ export class Parse5DomAdapter extends DomAdapter {
     } else if (name === 'className') {
       el.attribs['class'] = el.className = value;
     } else {
-      el[name] = value;
+      // Store the property in a separate property bag so that it doesn't clobber
+      // actual parse5 properties on the Element.
+      el.properties = el.properties || {};
+      el.properties[name] = value;
     }
   }
   // TODO(tbosch): don't even call this method when we run the tests on server side
   // by not using the DomRenderer in tests. Keeping this for now to make tests happy...
-  getProperty(el: any, name: string): any { return el[name]; }
+  getProperty(el: any, name: string): any {
+    return el.properties ? el.properties[name] : undefined;
+  }
 
   logError(error: string) { console.error(error); }
 
@@ -201,7 +206,7 @@ export class Parse5DomAdapter extends DomAdapter {
   getInnerHTML(el: any): string {
     return parse5.serialize(this.templateAwareRoot(el), {treeAdapter});
   }
-  getTemplateContent(el: any): Node { return null; }
+  getTemplateContent(el: any): Node|null { return null; }
   getOuterHTML(el: any): string {
     const fragment = treeAdapter.createDocumentFragment();
     this.appendChild(fragment, el);
@@ -425,7 +430,7 @@ export class Parse5DomAdapter extends DomAdapter {
   hasClass(element: any, className: string): boolean {
     return this.classList(element).indexOf(className) > -1;
   }
-  hasStyle(element: any, styleName: string, styleValue: string = null): boolean {
+  hasStyle(element: any, styleName: string, styleValue?: string): boolean {
     const value = this.getStyle(element, styleName) || '';
     return styleValue ? value == styleValue : value.length > 0;
   }
@@ -460,7 +465,7 @@ export class Parse5DomAdapter extends DomAdapter {
     }
     element.attribs['style'] = styleAttrValue;
   }
-  setStyle(element: any, styleName: string, styleValue: string) {
+  setStyle(element: any, styleName: string, styleValue?: string|null) {
     const styleMap = this._readStyleAttribute(element);
     (styleMap as any)[styleName] = styleValue;
     this._writeStyleAttribute(element, styleMap);
@@ -594,7 +599,7 @@ export class Parse5DomAdapter extends DomAdapter {
       return doc.body;
     }
   }
-  getBaseHref(doc: Document): string {
+  getBaseHref(doc: Document): string|null {
     const base = this.querySelector(doc, 'base');
     let href = '';
     if (base) {
@@ -611,7 +616,6 @@ export class Parse5DomAdapter extends DomAdapter {
   getComputedStyle(el: any): any { throw 'not implemented'; }
   setData(el: any, name: string, value: string) { this.setAttribute(el, 'data-' + name, value); }
   // TODO(tbosch): move this into a separate environment class once we have it
-  setGlobalVar(path: string, value: any) { setValueOnPath(global, path, value); }
   supportsWebAnimation(): boolean { return false; }
   performanceNow(): number { return Date.now(); }
   getAnimationPrefix(): string { return ''; }

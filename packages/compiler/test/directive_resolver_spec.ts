@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {JitReflector} from '@angular/compiler';
 import {DirectiveResolver} from '@angular/compiler/src/directive_resolver';
 import {Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, Input, Output, ViewChild, ViewChildren} from '@angular/core/src/metadata';
-import {reflector} from '@angular/core/src/reflection/reflection';
 
 @Directive({selector: 'someDirective'})
 class SomeDirective {
@@ -110,13 +110,19 @@ export function main() {
   describe('DirectiveResolver', () => {
     let resolver: DirectiveResolver;
 
-    beforeEach(() => { resolver = new DirectiveResolver(); });
+    beforeEach(() => { resolver = new DirectiveResolver(new JitReflector()); });
 
     it('should read out the Directive metadata', () => {
       const directiveMetadata = resolver.resolve(SomeDirective);
-      expect(directiveMetadata)
-          .toEqual(new Directive(
-              {selector: 'someDirective', inputs: [], outputs: [], host: {}, queries: {}}));
+      expect(directiveMetadata).toEqual(new Directive({
+        selector: 'someDirective',
+        inputs: [],
+        outputs: [],
+        host: {},
+        queries: {},
+        exportAs: undefined,
+        providers: undefined
+      }));
     });
 
     it('should throw if not matching metadata is found', () => {
@@ -136,11 +142,25 @@ export function main() {
       class ChildWithDecorator extends Parent {
       }
 
-      expect(resolver.resolve(ChildNoDecorator))
-          .toEqual(new Directive({selector: 'p', inputs: [], outputs: [], host: {}, queries: {}}));
+      expect(resolver.resolve(ChildNoDecorator)).toEqual(new Directive({
+        selector: 'p',
+        inputs: [],
+        outputs: [],
+        host: {},
+        queries: {},
+        exportAs: undefined,
+        providers: undefined
+      }));
 
-      expect(resolver.resolve(ChildWithDecorator))
-          .toEqual(new Directive({selector: 'c', inputs: [], outputs: [], host: {}, queries: {}}));
+      expect(resolver.resolve(ChildWithDecorator)).toEqual(new Directive({
+        selector: 'c',
+        inputs: [],
+        outputs: [],
+        host: {},
+        queries: {},
+        exportAs: undefined,
+        providers: undefined
+      }));
     });
 
     describe('inputs', () => {

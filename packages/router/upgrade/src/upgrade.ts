@@ -71,6 +71,6 @@ export function setUpLocationSync(ngUpgrade: UpgradeModule) {
   ngUpgrade.$injector.get('$rootScope')
       .$on('$locationChangeStart', (_: any, next: string, __: string) => {
         url.href = next;
-        router.navigateByUrl(url.pathname);
+        router.navigateByUrl(url.pathname + url.search + url.hash);
       });
 }

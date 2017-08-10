@@ -44,12 +44,12 @@ export function expectBrokerCall(
   broker.spy('runOnService').and.callFake((args: UiArguments, returnType: Type<any>) => {
     expect(args.method).toEqual(methodName);
     if (vals != null) {
-      expect(args.args.length).toEqual(vals.length);
-      vals.forEach((v, i) => { expect(v).toEqual(args.args[i].value); });
+      expect(args.args !.length).toEqual(vals.length);
+      vals.forEach((v, i) => { expect(v).toEqual(args.args ![i].value); });
     }
-    let promise: Promise<any>|void = null;
+    let promise: Promise<any>|void = null !;
     if (handler != null) {
-      const givenValues = args.args.map((arg) => arg.value);
+      const givenValues = args.args !.map((arg) => arg.value);
       if (givenValues.length > 0) {
         promise = handler(givenValues);
       } else {
@@ -131,6 +131,6 @@ export class MockMessageBus extends MessageBus {
 }
 
 export class MockMessageBrokerFactory extends ClientMessageBrokerFactory_ {
-  constructor(private _messageBroker: ClientMessageBroker) { super(null, null); }
+  constructor(private _messageBroker: ClientMessageBroker) { super(null !, null !); }
   createMessageBroker(channel: string, runInZone = true) { return this._messageBroker; }
 }

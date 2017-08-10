@@ -36,34 +36,35 @@ dist/
 *.3.js.map
 !systemjs.config.*.js
 !karma-test-shim.*.js
+!copy-dist-files.js
 
 # AngularJS files
 !**/*.ajs.js
+**/app/**/*.ajs.js
 
 # aot
-**/*.ngfactory.ts
-**/*.ngsummary.json
-**/*.shim.ngstyle.ts
-**/*.metadata.json
-!aot/bs-config.json
-!aot/index.html
-!copy-dist-files.js
+*/aot/**/*
+!*/aot/bs-config.json
+!*/aot/index.html
 !rollup-config.js
+
+# i18n
+!i18n/src/systemjs-text-plugin.js
 
 # testing
 !testing/src/browser-test-shim.js
 !testing/karma*.js
 
 # TS to JS
-!cb-ts-to-js/js*/**/*.js
-cb-ts-to-js/js*/**/system*.js
+!ts-to-js/js*/**/*.js
+ts-to-js/js*/**/system*.js
 
 # webpack
 !webpack/**/config/*.js
 !webpack/**/*webpack*.js
 
-# style-guide
-!style-guide/src/systemjs.custom.js
+# styleguide
+!styleguide/src/systemjs.custom.js
 
 # plunkers
 *plnkr.no-link.html

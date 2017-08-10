@@ -27,7 +27,7 @@ export class Extractor {
       public host: ts.CompilerHost, private ngCompilerHost: CompilerHost,
       private program: ts.Program) {}
 
-  extract(formatName: string, outFile: string|null): Promise<void> {
+  extract(formatName: string, outFile: string|null): Promise<string[]> {
     // Checks the format and returns the extension
     const ext = this.getExtension(formatName);
 
@@ -36,8 +36,9 @@ export class Extractor {
     return promiseBundle.then(bundle => {
       const content = this.serialize(bundle, formatName);
       const dstFile = outFile || `messages.${ext}`;
-      const dstPath = path.join(this.options.genDir, dstFile);
+      const dstPath = path.join(this.options.genDir !, dstFile);
       this.host.writeFile(dstPath, content, false);
+      return [dstPath];
     });
   }
 
@@ -66,8 +67,9 @@ export class Extractor {
         serializer = new compiler.Xliff();
     }
     return bundle.write(
-        serializer,
-        (sourcePath: string) => sourcePath.replace(path.join(this.options.basePath, '/'), ''));
+        serializer, (sourcePath: string) => this.options.basePath ?
+            path.relative(this.options.basePath, sourcePath) :
+            sourcePath);
   }
 
   getExtension(formatName: string): string {

@@ -1,33 +1,40 @@
 {
+  "angularCompilerOptions": {
+    "annotateForClosureCompiler": true,
+    "strictMetadataEmit": true,
+    "flatModuleOutFile": "index.js",
+    "flatModuleId": "@angular/core"
+  },
+
   "compilerOptions": {
-    "baseUrl": ".",
     "declaration": true,
     "stripInternal": true,
-    "experimentalDecorators": true,
+    "strictNullChecks": true,
     "module": "es2015",
     "moduleResolution": "node",
+    "target": "es2015",
+    "lib": ["es2015", "dom"],
+    "skipLibCheck": true,
+    // don't auto-discover @types/node, it results in a ///<reference in the .d.ts output
+    "types": [],
+
+    /**
+     * The rest of the file is configuration that's overridden by bazel.
+     * It can be removed after we fully migrate.
+     */
+    "baseUrl": ".",
+    "experimentalDecorators": true,
     "outDir": "../../dist/packages/core",
     "paths": {
       "rxjs/*": ["../../node_modules/rxjs/*"]
     },
     "rootDir": ".",
     "sourceMap": true,
-    "inlineSources": true,
-    "target": "es2015",
-    "lib": ["es2015", "dom"],
-    "skipLibCheck": true,
-    // don't auto-discover @types/node, it results in a ///<reference in the .d.ts output
-    "types": []
+    "inlineSources": true
   },
   "files": [
     "public_api.ts",
     "../../node_modules/zone.js/dist/zone.js.d.ts",
     "../system.d.ts"
-  ],
-  "angularCompilerOptions": {
-    "annotateForClosureCompiler": true,
-    "strictMetadataEmit": true,
-    "flatModuleOutFile": "index.js",
-    "flatModuleId": "@angular/core"
-  }
+  ]
 }

@@ -5,8 +5,7 @@ set -u -e -o pipefail
 
 # These ones can be `npm link`ed for fast development
 LINKABLE_PKGS=(
-  $(pwd)/dist/packages-dist/{common,forms,core,compiler,compiler-cli,platform-{browser,server},platform-browser-dynamic,router,http,animations}
-  $(pwd)/dist/tools/@angular/tsc-wrapped
+  $(pwd)/dist/packages-dist/{common,forms,core,compiler,compiler-cli,platform-{browser,server},platform-browser-dynamic,router,http,animations,tsc-wrapped}
 )
 
 TYPESCRIPT_2_1=typescript@2.1.5
@@ -55,6 +54,7 @@ cp -v package.json $TMP
   # Copy the html files from source to the emitted output
   cp flat_module/src/*.html node_modules/flat_module/src
 
+  ./node_modules/.bin/ngc -p tsconfig-build-alt.json --missingTranslation=error --i18nFormat=xlf
   ./node_modules/.bin/ngc -p tsconfig-build.json --i18nFile=src/messages.fi.xlf --locale=fi --i18nFormat=xlf
 
   ./node_modules/.bin/ng-xi18n -p tsconfig-xi18n.json --i18nFormat=xlf --locale=fr

@@ -8,20 +8,22 @@
 
 import {ApplicationRef} from '../application_ref';
 import {ChangeDetectorRef} from '../change_detection/change_detection';
-import {Injector} from '../di';
+import {Injector} from '../di/injector';
 import {ComponentFactory, ComponentRef} from '../linker/component_factory';
-import {ComponentFactoryBoundToModule} from '../linker/component_factory_resolver';
+import {ComponentFactoryBoundToModule, ComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {ElementRef} from '../linker/element_ref';
-import {NgModuleRef} from '../linker/ng_module_factory';
+import {InternalNgModuleRef, NgModuleRef} from '../linker/ng_module_factory';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
 import {EmbeddedViewRef, InternalViewRef, ViewRef} from '../linker/view_ref';
 import {Renderer as RendererV1, Renderer2} from '../render/api';
 import {Type} from '../type';
+import {stringify} from '../util';
 import {VERSION} from '../version';
 
-import {DepFlags, ElementData, NodeDef, NodeFlags, Services, TemplateData, ViewContainerData, ViewData, ViewDefinitionFactory, ViewState, asElementData, asProviderData, asTextData} from './types';
-import {markParentViewsForCheck, resolveViewDefinition, rootRenderNodes, splitNamespace, tokenKey, viewParentEl} from './util';
+import {callNgModuleLifecycle, initNgModule, resolveNgModuleDep} from './ng_module';
+import {DepFlags, ElementData, NgModuleData, NgModuleDefinition, NodeDef, NodeFlags, Services, TemplateData, ViewContainerData, ViewData, ViewDefinitionFactory, ViewState, asElementData, asProviderData, asTextData} from './types';
+import {markParentViewsForCheck, resolveDefinition, rootRenderNodes, splitNamespace, tokenKey, viewParentEl} from './util';
 import {attachEmbeddedView, detachEmbeddedView, moveEmbeddedView, renderDetachView} from './view_attach';
 
 const EMPTY_CONTEXT = new Object();
@@ -85,12 +87,14 @@ class ComponentFactory_ extends ComponentFactory<any> {
     if (!ngModule) {
       throw new Error('ngModule should be provided');
     }
-    const viewDef = resolveViewDefinition(this.viewDefFactory);
+    const viewDef = resolveDefinition(this.viewDefFactory);
     const componentNodeIndex = viewDef.nodes[0].element !.componentProvider !.index;
     const view = Services.createRootView(
         injector, projectableNodes || [], rootSelectorOrNode, viewDef, ngModule, EMPTY_CONTEXT);
     const component = asProviderData(view, componentNodeIndex).instance;
-    view.renderer.setAttribute(asElementData(view, 0).renderElement, 'ng-version', VERSION.full);
+    if (rootSelectorOrNode) {
+      view.renderer.setAttribute(asElementData(view, 0).renderElement, 'ng-version', VERSION.full);
+    }
 
     return new ComponentRef_(view, new ViewRef_(view), component);
   }
@@ -183,6 +187,9 @@ class ViewContainerRef_ implements ViewContainerData {
   }
 
   insert(viewRef: ViewRef, index?: number): ViewRef {
+    if (viewRef.destroyed) {
+      throw new Error('Cannot insert a destroyed View in a ViewContainer!');
+    }
     const viewRef_ = <ViewRef_>viewRef;
     const viewData = viewRef_._view;
     attachEmbeddedView(this._view, this._data, index, viewData);
@@ -191,6 +198,9 @@ class ViewContainerRef_ implements ViewContainerData {
   }
 
   move(viewRef: ViewRef_, currentIndex: number): ViewRef {
+    if (viewRef.destroyed) {
+      throw new Error('Cannot move a destroyed View in a ViewContainer!');
+    }
     const previousIndex = this._embeddedViews.indexOf(viewRef._view);
     moveEmbeddedView(this._data, previousIndex, currentIndex);
     return viewRef;
@@ -236,11 +246,20 @@ export class ViewRef_ implements EmbeddedViewRef<any>, InternalViewRef {
   get destroyed(): boolean { return (this._view.state & ViewState.Destroyed) !== 0; }
 
   markForCheck(): void { markParentViewsForCheck(this._view); }
-  detach(): void { this._view.state &= ~ViewState.ChecksEnabled; }
-  detectChanges(): void { Services.checkAndUpdateView(this._view); }
+  detach(): void { this._view.state &= ~ViewState.Attached; }
+  detectChanges(): void {
+    const fs = this._view.root.rendererFactory;
+    if (fs.begin) {
+      fs.begin();
+    }
+    Services.checkAndUpdateView(this._view);
+    if (fs.end) {
+      fs.end();
+    }
+  }
   checkNoChanges(): void { Services.checkNoChangesView(this._view); }
 
-  reattach(): void { this._view.state |= ViewState.ChecksEnabled; }
+  reattach(): void { this._view.state |= ViewState.Attached; }
   onDestroy(callback: Function) {
     if (!this._view.disposables) {
       this._view.disposables = [];
@@ -291,7 +310,8 @@ class TemplateRef_ extends TemplateRef<any> implements TemplateData {
   constructor(private _parentView: ViewData, private _def: NodeDef) { super(); }
 
   createEmbeddedView(context: any): EmbeddedViewRef<any> {
-    return new ViewRef_(Services.createEmbeddedView(this._parentView, this._def, context));
+    return new ViewRef_(Services.createEmbeddedView(
+        this._parentView, this._def, this._def.element !.template !, context));
   }
 
   get elementRef(): ElementRef {
@@ -440,4 +460,47 @@ class RendererAdapter implements RendererV1 {
   setText(renderNode: Text, text: string): void { this.delegate.setValue(renderNode, text); }
 
   animate(): any { throw new Error('Renderer.animate is no longer supported!'); }
+}
+
+
+export function createNgModuleRef(
+    moduleType: Type<any>, parent: Injector, bootstrapComponents: Type<any>[],
+    def: NgModuleDefinition): NgModuleRef<any> {
+  return new NgModuleRef_(moduleType, parent, bootstrapComponents, def);
+}
+
+class NgModuleRef_ implements NgModuleData, InternalNgModuleRef<any> {
+  private _destroyListeners: (() => void)[] = [];
+  private _destroyed: boolean = false;
+  /** @internal */
+  _providers: any[];
+
+  constructor(
+      private _moduleType: Type<any>, public _parent: Injector,
+      public _bootstrapComponents: Type<any>[], public _def: NgModuleDefinition) {
+    initNgModule(this);
+  }
+
+  get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND): any {
+    return resolveNgModuleDep(
+        this, {token: token, tokenKey: tokenKey(token), flags: DepFlags.None}, notFoundValue);
+  }
+
+  get instance() { return this.get(this._moduleType); }
+
+  get componentFactoryResolver() { return this.get(ComponentFactoryResolver); }
+
+  get injector(): Injector { return this; }
+
+  destroy(): void {
+    if (this._destroyed) {
+      throw new Error(
+          `The ng module ${stringify(this.instance.constructor)} has already been destroyed.`);
+    }
+    this._destroyed = true;
+    callNgModuleLifecycle(this, NodeFlags.OnDestroy);
+    this._destroyListeners.forEach((listener) => listener());
+  }
+
+  onDestroy(callback: () => void): void { this._destroyListeners.push(callback); }
 }

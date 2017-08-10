@@ -6,26 +6,28 @@
   "author": "Angular",
   "license": "MIT",
   "scripts": {
-    "prebuild": "yarn run clean",
+    "prebuild": "yarn clean-dist",
     "build": "tsc",
-    "build-watch": "yarn run tsc -- --watch",
-    "clean": "node --eval \"require('shelljs').rm('-rf', 'dist')\"",
-    "dev": "concurrently --kill-others --raw --success first \"yarn run build-watch\" \"yarn run test-watch\"",
+    "build-watch": "yarn tsc -- --watch",
+    "clean-dist": "node --eval \"require('shelljs').rm('-rf', 'dist')\"",
+    "dev": "concurrently --kill-others --raw --success first \"yarn build-watch\" \"yarn test-watch\"",
     "lint": "tslint --project tsconfig.json",
-    "pre~~test-only": "yarn run lint",
+    "pre~~test-only": "yarn lint",
     "~~test-only": "node dist/test",
-    "pretest": "yarn run build",
-    "test": "yarn run ~~test-only",
-    "pretest-watch": "yarn run build",
-    "test-watch": "nodemon --exec \"yarn run ~~test-only\" --watch dist"
+    "pretest": "yarn build",
+    "test": "yarn ~~test-only",
+    "pretest-watch": "yarn build",
+    "test-watch": "nodemon --exec \"yarn ~~test-only\" --watch dist"
   },
   "dependencies": {
+    "body-parser": "^1.17.2",
     "express": "^4.14.1",
     "jasmine": "^2.5.3",
     "jsonwebtoken": "^7.3.0",
     "shelljs": "^0.7.6"
   },
   "devDependencies": {
+    "@types/body-parser": "^1.16.4",
     "@types/express": "^4.0.35",
     "@types/jasmine": "^2.5.43",
     "@types/jsonwebtoken": "^7.2.0",

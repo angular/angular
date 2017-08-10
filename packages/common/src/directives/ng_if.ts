@@ -17,13 +17,13 @@ import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef} from '
  *  - `then` template is the inline template of `ngIf` unless bound to a different value.
  *  - `else` template is blank unless it is bound.
  *
- * # Most common usage
+ * ## Most common usage
  *
  * The most common usage of the `ngIf` directive is to conditionally show the inline template as
  * seen in this example:
  * {@example common/ngIf/ts/module.ts region='NgIfSimple'}
  *
- * # Showing an alternative template using `else`
+ * ## Showing an alternative template using `else`
  *
  * If it is necessary to display a template when the `expression` is falsy use the `else` template
  * binding as shown. Note that the `else` binding points to a `<ng-template>` labeled `#elseBlock`.
@@ -32,7 +32,7 @@ import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef} from '
  *
  * {@example common/ngIf/ts/module.ts region='NgIfElse'}
  *
- * # Using non-inlined `then` template
+ * ## Using non-inlined `then` template
  *
  * Usually the `then` template is the inlined template of the `ngIf`, but it can be changed using
  * a binding (just like `else`). Because `then` and `else` are bindings, the template references can
@@ -40,12 +40,12 @@ import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef} from '
  *
  * {@example common/ngIf/ts/module.ts region='NgIfThenElse'}
  *
- * # Storing conditional result in a variable
+ * ## Storing conditional result in a variable
  *
  * A common pattern is that we need to show a set of properties from the same object. If the
  * object is undefined, then we have to use the safe-traversal-operator `?.` to guard against
  * dereferencing a `null` value. This is especially the case when waiting on async data such as
- * when using the `async` pipe as shown in folowing example:
+ * when using the `async` pipe as shown in following example:
  *
  * ```
  * Hello {{ (userStream|async)?.last }}, {{ (userStream|async)?.first }}!

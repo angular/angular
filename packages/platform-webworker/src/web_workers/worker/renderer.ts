@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, RenderComponentType, Renderer, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, RootRenderer, ViewEncapsulation} from '@angular/core';
+import {Injectable, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2} from '@angular/core';
 
 import {ClientMessageBroker, ClientMessageBrokerFactory, FnArg, UiArguments} from '../shared/client_message_broker';
 import {MessageBus} from '../shared/message_bus';
@@ -67,7 +67,7 @@ export class WebWorkerRendererFactory2 implements RendererFactory2 {
     source.subscribe({next: (message: any) => this._dispatchEvent(message)});
   }
 
-  createRenderer(element: any, type: RendererType2): Renderer2 {
+  createRenderer(element: any, type: RendererType2|null): Renderer2 {
     const renderer = new WebWorkerRenderer2(this);
 
     const id = this.renderStore.allocateId();
@@ -80,6 +80,9 @@ export class WebWorkerRendererFactory2 implements RendererFactory2 {
 
     return renderer;
   }
+
+  begin() {}
+  end() {}
 
   callUI(fnName: string, fnArgs: FnArg[]) {
     const args = new UiArguments(fnName, fnArgs);
@@ -277,9 +280,9 @@ export class WebWorkerRenderer2 implements Renderer2 {
       listener: (event: any) => boolean): () => void {
     const unlistenId = this._rendererFactory.allocateId();
 
-    const [targetEl, targetName, fullName]: [any, string, string] = typeof target === 'string' ?
-        [null, target, `${target}:${eventName}`] :
-        [target, null, null];
+    const [targetEl, targetName, fullName]: [any, string | null, string | null] =
+        typeof target === 'string' ? [null, target, `${target}:${eventName}`] :
+                                     [target, null, null];
 
     if (fullName) {
       this._rendererFactory.globalEvents.listen(fullName, listener);

@@ -1,0 +1,56 @@
+# Configuration file for https://circleci.com/gh/angular/angular
+
+# Note: YAML anchors allow an object to be re-used, reducing duplication.
+# The ampersand declares an alias for an object, then later the `<<: *name`
+# syntax dereferences it.
+# See http://blog.daemonl.com/2016/02/yaml.html
+# To validate changes, use an online parser, eg.
+# http://yaml-online-parser.appspot.com/
+
+# Settings common to each job
+anchor_1: &job_defaults
+  working_directory: ~/ng
+  docker:
+    - image: angular/ngcontainer
+
+# After checkout, rebase on top of master.
+# Similar to travis behavior, but not quite the same.
+# See https://discuss.circleci.com/t/1662
+anchor_2: &post_checkout
+  post: git pull --ff-only origin "refs/pull/${CI_PULL_REQUEST//*pull\//}/merge"
+
+version: 2
+jobs:
+  lint:
+    <<: *job_defaults
+    steps:
+      - checkout:
+          <<: *post_checkout
+      - restore_cache:
+          key: angular-{{ .Branch }}-{{ checksum "npm-shrinkwrap.json" }}
+
+      - run: npm install
+      - run: npm run postinstall
+      - run: ./node_modules/.bin/gulp lint
+
+  build:
+    <<: *job_defaults
+    steps:
+      - checkout:
+          <<: *post_checkout
+      - restore_cache:
+          key: angular-{{ .Branch }}-{{ checksum "npm-shrinkwrap.json" }}
+
+      - run: bazel run @build_bazel_rules_typescript_node//:bin/npm install
+      - run: bazel build packages/...
+      - save_cache:
+          key: angular-{{ .Branch }}-{{ checksum "npm-shrinkwrap.json" }}
+          paths:
+            - "node_modules"
+
+workflows:
+  version: 2
+  default_workflow:
+    jobs:
+      - lint
+      - build

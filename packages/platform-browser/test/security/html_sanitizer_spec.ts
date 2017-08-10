@@ -14,7 +14,7 @@ import {sanitizeHtml} from '../../src/security/html_sanitizer';
 export function main() {
   describe('HTML sanitizer', () => {
     let defaultDoc: any;
-    let originalLog: (msg: any) => any = null;
+    let originalLog: (msg: any) => any = null !;
     let logMsgs: string[];
 
     beforeEach(() => {
@@ -123,7 +123,7 @@ export function main() {
         // depending on the browser, we might ge an exception
       }
       try {
-        sanitizeHtml(defaultDoc, '<form><input name="nextSibling" /></form>')
+        sanitizeHtml(defaultDoc, '<form><input name="nextSibling" /></form>');
       } catch (e) {
         // depending on the browser, we might ge an exception
       }

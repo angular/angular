@@ -6,6 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵisPromise as isPromise} from '@angular/core';
+
+import * as o from './output/output_ast';
+import {ParseError} from './parse_util';
+
 export const MODULE_SUFFIX = '';
 
 const CAMEL_CASE_REGEXP = /([A-Z])/g;
@@ -78,24 +83,38 @@ export class ValueTransformer implements ValueVisitor {
   visitOther(value: any, context: any): any { return value; }
 }
 
-export class SyncAsyncResult<T> {
-  constructor(public syncResult: T|null, public asyncResult: Promise<T>|null = null) {
-    if (!asyncResult) {
-      this.asyncResult = Promise.resolve(syncResult);
-    }
-  }
-}
+export type SyncAsync<T> = T | Promise<T>;
 
-export function syntaxError(msg: string): Error {
+export const SyncAsync = {
+  assertSync: <T>(value: SyncAsync<T>): T => {
+    if (isPromise(value)) {
+      throw new Error(`Illegal state: value cannot be a promise`);
+    }
+    return value;
+  },
+  then: <T, R>(value: SyncAsync<T>, cb: (value: T) => R | Promise<R>| SyncAsync<R>):
+            SyncAsync<R> => { return isPromise(value) ? value.then(cb) : cb(value);},
+  all: <T>(syncAsyncValues: SyncAsync<T>[]): SyncAsync<T[]> => {
+    return syncAsyncValues.some(isPromise) ? Promise.all(syncAsyncValues) : syncAsyncValues as T[];
+  }
+};
+
+export function syntaxError(msg: string, parseErrors?: ParseError[]): Error {
   const error = Error(msg);
   (error as any)[ERROR_SYNTAX_ERROR] = true;
+  if (parseErrors) (error as any)[ERROR_PARSE_ERRORS] = parseErrors;
   return error;
 }
 
 const ERROR_SYNTAX_ERROR = 'ngSyntaxError';
+const ERROR_PARSE_ERRORS = 'ngParseErrors';
 
 export function isSyntaxError(error: Error): boolean {
   return (error as any)[ERROR_SYNTAX_ERROR];
+}
+
+export function getParseErrors(error: Error): ParseError[] {
+  return (error as any)[ERROR_PARSE_ERRORS] || [];
 }
 
 export function escapeRegExp(s: string): string {
@@ -137,4 +156,10 @@ export function utf8Encode(str: string): string {
   }
 
   return encoded;
+}
+
+export interface OutputContext {
+  genFilePath: string;
+  statements: o.Statement[];
+  importExpr(reference: any, typeParams?: o.Type[]|null): o.Expression;
 }

@@ -5,23 +5,22 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationMetadata, AnimationPlayer, AnimationStyleMetadata, sequence, ɵStyleData} from '@angular/animations';
+import {AnimationMetadata, AnimationOptions, ɵStyleData} from '@angular/animations';
 
 import {AnimationDriver} from '../render/animation_driver';
-import {DomAnimationEngine} from '../render/dom_animation_engine';
 import {normalizeStyles} from '../util';
 
+import {Ast} from './animation_ast';
+import {buildAnimationAst} from './animation_ast_builder';
+import {buildAnimationTimelines} from './animation_timeline_builder';
 import {AnimationTimelineInstruction} from './animation_timeline_instruction';
-import {buildAnimationKeyframes} from './animation_timeline_visitor';
-import {validateAnimationSequence} from './animation_validator_visitor';
-import {AnimationStyleNormalizer} from './style_normalization/animation_style_normalizer';
+import {ElementInstructionMap} from './element_instruction_map';
 
 export class Animation {
-  private _animationAst: AnimationMetadata;
-  constructor(input: AnimationMetadata|AnimationMetadata[]) {
-    const ast =
-        Array.isArray(input) ? sequence(<AnimationMetadata[]>input) : <AnimationMetadata>input;
-    const errors = validateAnimationSequence(ast);
+  private _animationAst: Ast;
+  constructor(private _driver: AnimationDriver, input: AnimationMetadata|AnimationMetadata[]) {
+    const errors: any[] = [];
+    const ast = buildAnimationAst(input, errors);
     if (errors.length) {
       const errorMessage = `animation validation failed:\n${errors.join("\n")}`;
       throw new Error(errorMessage);
@@ -30,26 +29,21 @@ export class Animation {
   }
 
   buildTimelines(
-      startingStyles: ɵStyleData|ɵStyleData[],
-      destinationStyles: ɵStyleData|ɵStyleData[]): AnimationTimelineInstruction[] {
+      element: any, startingStyles: ɵStyleData|ɵStyleData[],
+      destinationStyles: ɵStyleData|ɵStyleData[], options: AnimationOptions,
+      subInstructions?: ElementInstructionMap): AnimationTimelineInstruction[] {
     const start = Array.isArray(startingStyles) ? normalizeStyles(startingStyles) :
                                                   <ɵStyleData>startingStyles;
     const dest = Array.isArray(destinationStyles) ? normalizeStyles(destinationStyles) :
                                                     <ɵStyleData>destinationStyles;
-    return buildAnimationKeyframes(this._animationAst, start, dest);
-  }
-
-  // this is only used for development demo purposes for now
-  private create(
-      injector: any, element: any, startingStyles: ɵStyleData = {},
-      destinationStyles: ɵStyleData = {}): AnimationPlayer {
-    const instructions = this.buildTimelines(startingStyles, destinationStyles);
-
-    // note the code below is only here to make the tests happy (once the new renderer is
-    // within core then the code below will interact with Renderer.transition(...))
-    const driver: AnimationDriver = injector.get(AnimationDriver);
-    const normalizer: AnimationStyleNormalizer = injector.get(AnimationStyleNormalizer);
-    const engine = new DomAnimationEngine(driver, normalizer);
-    return engine.animateTimeline(element, instructions);
+    const errors: any = [];
+    subInstructions = subInstructions || new ElementInstructionMap();
+    const result = buildAnimationTimelines(
+        this._driver, element, this._animationAst, start, dest, options, subInstructions, errors);
+    if (errors.length) {
+      const errorMessage = `animation building failed:\n${errors.join("\n")}`;
+      throw new Error(errorMessage);
+    }
+    return result;
   }
 }

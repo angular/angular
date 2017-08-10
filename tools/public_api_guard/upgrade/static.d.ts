@@ -1,6 +1,7 @@
 /** @experimental */
 export declare function downgradeComponent(info: {
     component: Type<any>;
+    /** @experimental */ propagateDigest?: boolean;
     /** @deprecated */ inputs?: string[];
     /** @deprecated */ outputs?: string[];
     /** @deprecated */ selectors?: string[];
@@ -8,6 +9,9 @@ export declare function downgradeComponent(info: {
 
 /** @experimental */
 export declare function downgradeInjectable(token: any): Function;
+
+/** @experimental */
+export declare function downgradeModule<T>(moduleFactoryOrBootstrapFn: NgModuleFactory<T> | ((extraProviders: StaticProvider[]) => Promise<NgModuleRef<T>>)): string;
 
 /** @stable */
 export declare function getAngularLib(): any;

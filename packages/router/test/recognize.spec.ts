@@ -16,14 +16,14 @@ describe('recognize', () => {
   it('should work', () => {
     checkRecognize([{path: 'a', component: ComponentA}], 'a', (s: RouterStateSnapshot) => {
       checkActivatedRoute(s.root, '', {}, RootComponent);
-      checkActivatedRoute(s.firstChild(s.root), 'a', {}, ComponentA);
+      checkActivatedRoute(s.firstChild(s.root) !, 'a', {}, ComponentA);
     });
   });
 
   it('should freeze params object', () => {
     checkRecognize([{path: 'a/:id', component: ComponentA}], 'a/10', (s: RouterStateSnapshot) => {
       checkActivatedRoute(s.root, '', {}, RootComponent);
-      const child = s.firstChild(s.root);
+      const child = s.firstChild(s.root) !;
       expect(Object.isFrozen(child.params)).toBeTruthy();
     });
   });
@@ -79,11 +79,11 @@ describe('recognize', () => {
           expect(s.root._urlSegment).toBe(url.root);
           expect(s.root._lastPathIndex).toBe(-1);
 
-          const compA = s.firstChild(s.root);
+          const compA = s.firstChild(s.root) !;
           expect(compA._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
           expect(compA._lastPathIndex).toBe(1);
 
-          const compC = s.firstChild(<any>compA);
+          const compC = s.firstChild(<any>compA) !;
           expect(compC._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
           expect(compC._lastPathIndex).toBe(2);
         });
@@ -101,11 +101,11 @@ describe('recognize', () => {
           expect(s.root._urlSegment).toBe(url.root);
           expect(s.root._lastPathIndex).toBe(-1);
 
-          const compA = s.firstChild(s.root);
+          const compA = s.firstChild(s.root) !;
           expect(compA._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
           expect(compA._lastPathIndex).toBe(0);
 
-          const compC = s.firstChild(<any>compA);
+          const compC = s.firstChild(<any>compA) !;
           expect(compC._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
           expect(compC._lastPathIndex).toBe(2);
         });
@@ -119,16 +119,16 @@ describe('recognize', () => {
         ],
         'a/paramA', (s: RouterStateSnapshot) => {
           checkActivatedRoute(s.root, '', {}, RootComponent);
-          checkActivatedRoute(s.firstChild(s.root), 'a', {}, ComponentA);
+          checkActivatedRoute(s.firstChild(s.root) !, 'a', {}, ComponentA);
           checkActivatedRoute(
-              s.firstChild(<any>s.firstChild(s.root)), 'paramA', {id: 'paramA'}, ComponentB);
+              s.firstChild(<any>s.firstChild(s.root)) !, 'paramA', {id: 'paramA'}, ComponentB);
         });
 
     checkRecognize(
         [{path: 'a', component: ComponentA}, {path: 'a/:id', component: ComponentC}], 'a/paramA',
         (s: RouterStateSnapshot) => {
           checkActivatedRoute(s.root, '', {}, RootComponent);
-          checkActivatedRoute(s.firstChild(s.root), 'a/paramA', {id: 'paramA'}, ComponentC);
+          checkActivatedRoute(s.firstChild(s.root) !, 'a/paramA', {id: 'paramA'}, ComponentC);
         });
   });
 
@@ -187,7 +187,7 @@ describe('recognize', () => {
         'a;a1=11;a2=22/b;b1=111;b2=222(left:c;c1=1111;c2=2222)', (s: RouterStateSnapshot) => {
           const c = s.children(s.root);
           checkActivatedRoute(c[0], 'a', {a1: '11', a2: '22'}, ComponentA);
-          checkActivatedRoute(s.firstChild(<any>c[0]), 'b', {b1: '111', b2: '222'}, ComponentB);
+          checkActivatedRoute(s.firstChild(<any>c[0]) !, 'b', {b1: '111', b2: '222'}, ComponentB);
           checkActivatedRoute(c[1], 'c', {c1: '1111', c2: '2222'}, ComponentC, 'left');
         });
   });
@@ -196,7 +196,7 @@ describe('recognize', () => {
     it('should set static data', () => {
       checkRecognize(
           [{path: 'a', data: {one: 1}, component: ComponentA}], 'a', (s: RouterStateSnapshot) => {
-            const r: ActivatedRouteSnapshot = s.firstChild(s.root);
+            const r: ActivatedRouteSnapshot = s.firstChild(s.root) !;
             expect(r.data).toEqual({one: 1});
           });
     });
@@ -209,7 +209,7 @@ describe('recognize', () => {
             children: [{path: 'b', data: {two: 2}, component: ComponentB}]
           }],
           'a/b', (s: RouterStateSnapshot) => {
-            const r: ActivatedRouteSnapshot = s.firstChild(<any>s.firstChild(s.root));
+            const r: ActivatedRouteSnapshot = s.firstChild(<any>s.firstChild(s.root)) !;
             expect(r.data).toEqual({one: 1, two: 2});
           });
     });
@@ -218,7 +218,7 @@ describe('recognize', () => {
       checkRecognize(
           [{path: 'a', resolve: {one: 'some-token'}, component: ComponentA}], 'a',
           (s: RouterStateSnapshot) => {
-            const r: ActivatedRouteSnapshot = s.firstChild(s.root);
+            const r: ActivatedRouteSnapshot = s.firstChild(s.root) !;
             expect(r._resolve).toEqual({one: 'some-token'});
           });
     });
@@ -228,7 +228,7 @@ describe('recognize', () => {
     describe('root', () => {
       it('should work', () => {
         checkRecognize([{path: '', component: ComponentA}], '', (s: RouterStateSnapshot) => {
-          checkActivatedRoute(s.firstChild(s.root), '', {}, ComponentA);
+          checkActivatedRoute(s.firstChild(s.root) !, '', {}, ComponentA);
         });
       });
 
@@ -236,7 +236,7 @@ describe('recognize', () => {
         checkRecognize(
             [{path: '', pathMatch: 'full', component: ComponentA}], '',
             (s: RouterStateSnapshot) => {
-              checkActivatedRoute(s.firstChild(s.root), '', {}, ComponentA);
+              checkActivatedRoute(s.firstChild(s.root) !, '', {}, ComponentA);
             });
       });
 
@@ -244,8 +244,8 @@ describe('recognize', () => {
         checkRecognize(
             [{path: '', component: ComponentA, children: [{path: '', component: ComponentB}]}], '',
             (s: RouterStateSnapshot) => {
-              checkActivatedRoute(s.firstChild(s.root), '', {}, ComponentA);
-              checkActivatedRoute(s.firstChild(<any>s.firstChild(s.root)), '', {}, ComponentB);
+              checkActivatedRoute(s.firstChild(s.root) !, '', {}, ComponentA);
+              checkActivatedRoute(s.firstChild(<any>s.firstChild(s.root)) !, '', {}, ComponentB);
             });
       });
 
@@ -259,11 +259,11 @@ describe('recognize', () => {
               expect(s.root._urlSegment).toBe(url.root);
               expect(s.root._lastPathIndex).toBe(-1);
 
-              const c = s.firstChild(s.root);
+              const c = s.firstChild(s.root) !;
               expect(c._urlSegment).toBe(url.root);
               expect(c._lastPathIndex).toBe(-1);
 
-              const c2 = s.firstChild(<any>s.firstChild(s.root));
+              const c2 = s.firstChild(<any>s.firstChild(s.root)) !;
               expect(c2._urlSegment).toBe(url.root);
               expect(c2._lastPathIndex).toBe(-1);
             });
@@ -279,10 +279,10 @@ describe('recognize', () => {
               ]
             }],
             '/a;p=1', (s: RouterStateSnapshot) => {
-              checkActivatedRoute(s.firstChild(s.root), 'a', {p: '1'}, ComponentA);
-              checkActivatedRoute(s.firstChild(s.firstChild(s.root)), '', {p: '1'}, ComponentB);
+              checkActivatedRoute(s.firstChild(s.root) !, 'a', {p: '1'}, ComponentA);
+              checkActivatedRoute(s.firstChild(s.firstChild(s.root) !) !, '', {p: '1'}, ComponentB);
               checkActivatedRoute(
-                  s.firstChild(s.firstChild(s.firstChild(s.root))), '', {p: '1'}, ComponentC);
+                  s.firstChild(s.firstChild(s.firstChild(s.root) !) !) !, '', {p: '1'}, ComponentC);
             });
       });
     });
@@ -299,9 +299,9 @@ describe('recognize', () => {
               ]
             }],
             'a/b', (s: RouterStateSnapshot) => {
-              checkActivatedRoute(s.firstChild(s.root), 'a', {}, ComponentA);
+              checkActivatedRoute(s.firstChild(s.root) !, 'a', {}, ComponentA);
 
-              const c = s.children(s.firstChild(s.root));
+              const c = s.children(s.firstChild(s.root) !);
               checkActivatedRoute(c[0], 'b', {}, ComponentB);
               checkActivatedRoute(c[1], '', {}, ComponentC, 'aux');
             });
@@ -330,13 +330,13 @@ describe('recognize', () => {
 
            checkRecognize(config, 'parent/b', (s: RouterStateSnapshot) => {
              checkActivatedRoute(s.root, '', {}, RootComponent);
-             checkActivatedRoute(s.firstChild(s.root), 'parent', {}, undefined);
+             checkActivatedRoute(s.firstChild(s.root) !, 'parent', {}, undefined !);
 
-             const cc = s.children(s.firstChild(s.root));
+             const cc = s.children(s.firstChild(s.root) !);
              checkActivatedRoute(cc[0], '', {}, ComponentA);
              checkActivatedRoute(cc[1], '', {}, ComponentD, 'secondary');
 
-             checkActivatedRoute(s.firstChild(cc[0]), 'b', {}, ComponentB);
+             checkActivatedRoute(s.firstChild(cc[0]) !, 'b', {}, ComponentB);
            });
          });
 
@@ -351,9 +351,9 @@ describe('recognize', () => {
               ]
             }],
             'a/b', (s: RouterStateSnapshot) => {
-              checkActivatedRoute(s.firstChild(s.root), 'a', {}, ComponentA);
+              checkActivatedRoute(s.firstChild(s.root) !, 'a', {}, ComponentA);
 
-              const c = s.children(s.firstChild(s.root));
+              const c = s.children(s.firstChild(s.root) !);
               expect(c.length).toEqual(1);
               checkActivatedRoute(c[0], 'b', {}, ComponentB);
             });
@@ -375,11 +375,11 @@ describe('recognize', () => {
               expect(s.root._urlSegment).toBe(url.root);
               expect(s.root._lastPathIndex).toBe(-1);
 
-              const a = s.firstChild(s.root);
+              const a = s.firstChild(s.root) !;
               expect(a._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
               expect(a._lastPathIndex).toBe(0);
 
-              const b = s.firstChild(a);
+              const b = s.firstChild(a) !;
               expect(b._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
               expect(b._lastPathIndex).toBe(1);
 
@@ -403,15 +403,15 @@ describe('recognize', () => {
               expect(s.root._urlSegment).toBe(url.root);
               expect(s.root._lastPathIndex).toBe(-1);
 
-              const a = s.firstChild(s.root);
+              const a = s.firstChild(s.root) !;
               expect(a._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
               expect(a._lastPathIndex).toBe(0);
 
-              const b = s.firstChild(a);
+              const b = s.firstChild(a) !;
               expect(b._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
               expect(b._lastPathIndex).toBe(0);
 
-              const c = s.firstChild(b);
+              const c = s.firstChild(b) !;
               expect(c._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
               expect(c._lastPathIndex).toBe(0);
             });
@@ -431,15 +431,15 @@ describe('recognize', () => {
               expect(s.root._urlSegment).toBe(url.root);
               expect(s.root._lastPathIndex).toBe(-1);
 
-              const a = s.firstChild(s.root);
+              const a = s.firstChild(s.root) !;
               expect(a._urlSegment).toBe(url.root);
               expect(a._lastPathIndex).toBe(-1);
 
-              const b = s.firstChild(a);
+              const b = s.firstChild(a) !;
               expect(b._urlSegment).toBe(url.root);
               expect(b._lastPathIndex).toBe(-1);
 
-              const c = s.firstChild(b);
+              const c = s.firstChild(b) !;
               expect(c._urlSegment).toBe(url.root);
               expect(c._lastPathIndex).toBe(-1);
             });
@@ -458,9 +458,9 @@ describe('recognize', () => {
               ]
             }],
             'a', (s: RouterStateSnapshot) => {
-              checkActivatedRoute(s.firstChild(s.root), 'a', {}, ComponentA);
+              checkActivatedRoute(s.firstChild(s.root) !, 'a', {}, ComponentA);
 
-              const c = s.children(s.firstChild(s.root));
+              const c = s.children(s.firstChild(s.root) !);
               checkActivatedRoute(c[0], '', {}, ComponentB);
               checkActivatedRoute(c[1], '', {}, ComponentC, 'aux');
             });
@@ -477,9 +477,9 @@ describe('recognize', () => {
               ]
             }],
             'a', (s: RouterStateSnapshot) => {
-              checkActivatedRoute(s.firstChild(s.root), 'a', {}, ComponentA);
+              checkActivatedRoute(s.firstChild(s.root) !, 'a', {}, ComponentA);
 
-              const c = s.children(s.firstChild(s.root));
+              const c = s.children(s.firstChild(s.root) !);
               checkActivatedRoute(c[0], '', {}, ComponentB);
               checkActivatedRoute(c[1], '', {}, ComponentC, 'aux');
             });
@@ -496,9 +496,9 @@ describe('recognize', () => {
               ]
             }],
             'a/(aux:c)', (s: RouterStateSnapshot) => {
-              checkActivatedRoute(s.firstChild(s.root), 'a', {}, ComponentA);
+              checkActivatedRoute(s.firstChild(s.root) !, 'a', {}, ComponentA);
 
-              const c = s.children(s.firstChild(s.root));
+              const c = s.children(s.firstChild(s.root) !);
               checkActivatedRoute(c[0], '', {}, ComponentB);
               checkActivatedRoute(c[1], 'c', {}, ComponentC, 'aux');
             });
@@ -538,13 +538,13 @@ describe('recognize', () => {
               ]
             }],
             'a/(d//aux:e)', (s: RouterStateSnapshot) => {
-              checkActivatedRoute(s.firstChild(s.root), 'a', {}, ComponentA);
+              checkActivatedRoute(s.firstChild(s.root) !, 'a', {}, ComponentA);
 
-              const c = s.children(s.firstChild(s.root));
+              const c = s.children(s.firstChild(s.root) !);
               checkActivatedRoute(c[0], '', {}, ComponentB);
-              checkActivatedRoute(s.firstChild(c[0]), 'd', {}, ComponentD);
+              checkActivatedRoute(s.firstChild(c[0]) !, 'd', {}, ComponentD);
               checkActivatedRoute(c[1], '', {}, ComponentC, 'aux');
-              checkActivatedRoute(s.firstChild(c[1]), 'e', {}, ComponentE);
+              checkActivatedRoute(s.firstChild(c[1]) !, 'e', {}, ComponentE);
             });
       });
     });
@@ -554,7 +554,7 @@ describe('recognize', () => {
     it('should support simple wildcards', () => {
       checkRecognize(
           [{path: '**', component: ComponentA}], 'a/b/c/d;a1=11', (s: RouterStateSnapshot) => {
-            checkActivatedRoute(s.firstChild(s.root), 'a/b/c/d', {a1: '11'}, ComponentA);
+            checkActivatedRoute(s.firstChild(s.root) !, 'a/b/c/d', {a1: '11'}, ComponentA);
           });
     });
   });
@@ -570,8 +570,8 @@ describe('recognize', () => {
             ]
           }],
           'p/11;pp=22/(a;pa=33//aux:b;pb=44)', (s: RouterStateSnapshot) => {
-            const p = s.firstChild(s.root);
-            checkActivatedRoute(p, 'p/11', {id: '11', pp: '22'}, undefined);
+            const p = s.firstChild(s.root) !;
+            checkActivatedRoute(p, 'p/11', {id: '11', pp: '22'}, undefined !);
 
             const c = s.children(p);
             checkActivatedRoute(c[0], 'a', {id: '11', pp: '22', pa: '33'}, ComponentA);
@@ -593,16 +593,16 @@ describe('recognize', () => {
             }]
           }],
           'p/11/a/victor/b/c', (s: RouterStateSnapshot) => {
-            const p = s.firstChild(s.root);
-            checkActivatedRoute(p, 'p/11', {id: '11'}, undefined);
+            const p = s.firstChild(s.root) !;
+            checkActivatedRoute(p, 'p/11', {id: '11'}, undefined !);
 
-            const a = s.firstChild(p);
-            checkActivatedRoute(a, 'a/victor', {id: '11', name: 'victor'}, undefined);
+            const a = s.firstChild(p) !;
+            checkActivatedRoute(a, 'a/victor', {id: '11', name: 'victor'}, undefined !);
 
-            const b = s.firstChild(a);
+            const b = s.firstChild(a) !;
             checkActivatedRoute(b, 'b', {id: '11', name: 'victor'}, ComponentB);
 
-            const c = s.firstChild(b);
+            const c = s.firstChild(b) !;
             checkActivatedRoute(c, 'c', {}, ComponentC);
           });
     });
@@ -614,7 +614,7 @@ describe('recognize', () => {
           [{path: 'a', component: ComponentA, children: [{path: 'b', component: ComponentB}]}],
           '/a', (s: RouterStateSnapshot) => {
             const a = s.firstChild(s.root);
-            checkActivatedRoute(a, 'a', {}, ComponentA);
+            checkActivatedRoute(a !, 'a', {}, ComponentA);
           });
     });
 
@@ -629,7 +629,7 @@ describe('recognize', () => {
             ]
           }],
           '/a', (s: RouterStateSnapshot) => {
-            const a = s.firstChild(s.root);
+            const a = s.firstChild(s.root) !;
             checkActivatedRoute(a, 'a', {}, ComponentA);
             checkActivatedRoute(a.children[0], '', {}, ComponentC, 'aux');
           });
@@ -651,11 +651,31 @@ describe('recognize', () => {
             matcher: matcher,
             component: ComponentA,
             children: [{path: 'b', component: ComponentB}]
-          }],
+          }] as any,
           '/a/1;p=99/b', (s: RouterStateSnapshot) => {
-            const a = s.root.firstChild;
+            const a = s.root.firstChild !;
             checkActivatedRoute(a, 'a/1', {id: '1', p: '99'}, ComponentA);
-            checkActivatedRoute(a.firstChild, 'b', {}, ComponentB);
+            checkActivatedRoute(a.firstChild !, 'b', {}, ComponentB);
+          });
+    });
+
+    it('should work with terminal route', () => {
+      const matcher = (s: any, g: any, r: any) => s.length === 0 ? ({consumed: s}) : null;
+
+      checkRecognize([{matcher, component: ComponentA}] as any, '', (s: RouterStateSnapshot) => {
+        const a = s.root.firstChild !;
+        checkActivatedRoute(a, '', {}, ComponentA);
+      });
+    });
+
+    it('should work with child terminal route', () => {
+      const matcher = (s: any, g: any, r: any) => s.length === 0 ? ({consumed: s}) : null;
+
+      checkRecognize(
+          [{path: 'a', component: ComponentA, children: [{matcher, component: ComponentB}]}] as any,
+          'a', (s: RouterStateSnapshot) => {
+            const a = s.root.firstChild !;
+            checkActivatedRoute(a, 'a', {}, ComponentA);
           });
     });
   });

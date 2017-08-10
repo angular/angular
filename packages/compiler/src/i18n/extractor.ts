@@ -13,7 +13,6 @@
 import {ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 
 import {analyzeAndValidateNgModules, extractProgramSymbols} from '../aot/compiler';
-import {StaticAndDynamicReflectionCapabilities} from '../aot/static_reflection_capabilities';
 import {StaticReflector} from '../aot/static_reflector';
 import {StaticSymbolCache} from '../aot/static_symbol';
 import {StaticSymbolResolver, StaticSymbolResolverHost} from '../aot/static_symbol_resolver';
@@ -30,8 +29,6 @@ import {ParseError} from '../parse_util';
 import {PipeResolver} from '../pipe_resolver';
 import {DomElementSchemaRegistry} from '../schema/dom_element_schema_registry';
 import {createOfflineCompileUrlResolver} from '../url_resolver';
-
-import {I18NHtmlParser} from './i18n_html_parser';
 import {MessageBundle} from './message_bundle';
 
 /**
@@ -42,7 +39,7 @@ export interface ExtractorHost extends StaticSymbolResolverHost, AotSummaryResol
   /**
    * Loads a resource (e.g. html / css)
    */
-  loadResource(path: string): Promise<string>;
+  loadResource(path: string): Promise<string>|string;
 }
 
 export class Extractor {
@@ -88,14 +85,13 @@ export class Extractor {
 
   static create(host: ExtractorHost, locale: string|null):
       {extractor: Extractor, staticReflector: StaticReflector} {
-    const htmlParser = new I18NHtmlParser(new HtmlParser());
+    const htmlParser = new HtmlParser();
 
     const urlResolver = createOfflineCompileUrlResolver();
     const symbolCache = new StaticSymbolCache();
     const summaryResolver = new AotSummaryResolver(host, symbolCache);
     const staticSymbolResolver = new StaticSymbolResolver(host, symbolCache, summaryResolver);
     const staticReflector = new StaticReflector(summaryResolver, staticSymbolResolver);
-    StaticAndDynamicReflectionCapabilities.install(staticReflector);
 
     const config =
         new CompilerConfig({defaultEncapsulation: ViewEncapsulation.Emulated, useJit: false});

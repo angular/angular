@@ -15,7 +15,7 @@ import * as path from 'path';
 import * as ts from 'typescript';
 import * as assert from 'assert';
 import {tsc} from '@angular/tsc-wrapped/src/tsc';
-import {NodeCompilerHostContext, __NGTOOLS_PRIVATE_API_2} from '@angular/compiler-cli';
+import {__NGTOOLS_PRIVATE_API_2} from '@angular/compiler-cli';
 
 const glob = require('glob');
 
@@ -29,6 +29,7 @@ function main() {
 
   Promise.resolve()
       .then(() => codeGenTest())
+      .then(() => codeGenTest(true))
       .then(() => i18nTest())
       .then(() => lazyRoutesTest())
       .then(() => {
@@ -42,14 +43,14 @@ function main() {
       });
 }
 
-function codeGenTest() {
+function codeGenTest(forceError = false) {
   const basePath = path.join(__dirname, '../ngtools_src');
+  const srcPath = path.join(__dirname, '../src');
   const project = path.join(basePath, 'tsconfig-build.json');
   const readResources: string[] = [];
   const wroteFiles: string[] = [];
 
   const config = tsc.readConfiguration(project, basePath);
-  const hostContext = new NodeCompilerHostContext();
   const delegateHost = ts.createCompilerHost(config.parsed.options, true);
   const host: ts.CompilerHost = Object.assign(
       {}, delegateHost,
@@ -59,6 +60,9 @@ function codeGenTest() {
   config.ngOptions.basePath = basePath;
 
   console.log(`>>> running codegen for ${project}`);
+  if (forceError) {
+    console.log(`>>> asserting that missingTranslation param with error value throws`);
+  }
   return __NGTOOLS_PRIVATE_API_2
       .codeGen({
         basePath,
@@ -67,13 +71,17 @@ function codeGenTest() {
         angularCompilerOptions: config.ngOptions,
 
         // i18n options.
-        i18nFormat: undefined,
-        i18nFile: undefined,
-        locale: undefined,
+        i18nFormat: 'xlf',
+        i18nFile: path.join(srcPath, 'messages.fi.xlf'),
+        locale: 'fi',
+        missingTranslation: forceError ? 'error' : 'ignore',
 
         readResource: (fileName: string) => {
           readResources.push(fileName);
-          return hostContext.readResource(fileName);
+          if (!host.fileExists(fileName)) {
+            throw new Error(`Compilation failed. Resource file not found: ${fileName}`);
+          }
+          return Promise.resolve(host.readFile(fileName));
         }
       })
       .then(() => {
@@ -101,10 +109,17 @@ function codeGenTest() {
 
         console.log(`done, no errors.`);
       })
-      .catch((e: any) => {
-        console.error(e.stack);
-        console.error('Compilation failed');
-        throw e;
+      .catch((e: Error) => {
+        if (forceError) {
+          assert(
+              e.message.match(`Missing translation for message`),
+              `Expected error message for missing translations`);
+          console.log(`done, error catched`);
+        } else {
+          console.error(e.stack);
+          console.error('Compilation failed');
+          throw e;
+        }
       });
 }
 
@@ -115,7 +130,6 @@ function i18nTest() {
   const wroteFiles: string[] = [];
 
   const config = tsc.readConfiguration(project, basePath);
-  const hostContext = new NodeCompilerHostContext();
   const delegateHost = ts.createCompilerHost(config.parsed.options, true);
   const host: ts.CompilerHost = Object.assign(
       {}, delegateHost,
@@ -135,7 +149,10 @@ function i18nTest() {
         outFile: undefined,
         readResource: (fileName: string) => {
           readResources.push(fileName);
-          return hostContext.readResource(fileName);
+          if (!host.fileExists(fileName)) {
+            throw new Error(`Compilation failed. Resource file not found: ${fileName}`);
+          }
+          return Promise.resolve(host.readFile(fileName));
         },
       })
       .then(() => {
@@ -165,7 +182,7 @@ function i18nTest() {
 
         console.log(`done, no errors.`);
       })
-      .catch((e: any) => {
+      .catch((e: Error) => {
         console.error(e.stack);
         console.error('Extraction failed');
         throw e;

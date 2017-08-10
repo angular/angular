@@ -2,14 +2,18 @@ html, body {
     height: 100%;
 }
 
+body {
+    background-color: $offwhite;
+}
+
 .clearfix {
     content: "";
     display: table;
     clear: both;
 }
 
-l-relative {
-    position: relative;
+.clear {
+    clear: both;
 }
 
 .l-clearfix:after, .clearfix:after {
@@ -34,4 +38,14 @@ l-relative {
 
 .center {
     text-align: center;
+}
+
+.visually-hidden {
+    position: absolute !important;
+    top: -9999px !important;
+    left: -9999px !important;
+}
+
+.text-uppercase {
+  text-transform: uppercase;
 }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileMetadataResolver, CompileNgModuleMetadata, CompilerConfig, DomElementSchemaRegistry, HtmlParser, I18NHtmlParser, Lexer, NgAnalyzedModules, Parser, TemplateParser} from '@angular/compiler';
+import {CompileMetadataResolver, CompileNgModuleMetadata, CompilePipeSummary, CompilerConfig, DomElementSchemaRegistry, HtmlParser, I18NHtmlParser, Lexer, NgAnalyzedModules, Parser, TemplateParser} from '@angular/compiler';
 
 import {AstResult, TemplateInfo} from './common';
 import {getTemplateCompletions} from './completions';
@@ -48,12 +48,12 @@ class LanguageServiceImpl implements LanguageService {
     return uniqueBySpan(results);
   }
 
-  getPipesAt(fileName: string, position: number): Pipes {
+  getPipesAt(fileName: string, position: number): CompilePipeSummary[] {
     let templateInfo = this.getTemplateAstAtPosition(fileName, position);
     if (templateInfo) {
-      return templateInfo.pipes.map(
-          pipeInfo => ({name: pipeInfo.name, symbol: pipeInfo.type.reference}));
+      return templateInfo.pipes;
     }
+    return [];
   }
 
   getCompletionsAt(fileName: string, position: number): Completions {
@@ -81,24 +81,25 @@ class LanguageServiceImpl implements LanguageService {
     let template = this.host.getTemplateAt(fileName, position);
     if (template) {
       let astResult = this.getTemplateAst(template, fileName);
-      if (astResult && astResult.htmlAst && astResult.templateAst)
+      if (astResult && astResult.htmlAst && astResult.templateAst && astResult.directive &&
+          astResult.directives && astResult.pipes && astResult.expressionParser)
         return {
           position,
           fileName,
           template,
           htmlAst: astResult.htmlAst,
-          directive: astResult.directive !,
-          directives: astResult.directives !,
-          pipes: astResult.pipes !,
+          directive: astResult.directive,
+          directives: astResult.directives,
+          pipes: astResult.pipes,
           templateAst: astResult.templateAst,
-          expressionParser: astResult.expressionParser !
+          expressionParser: astResult.expressionParser
         };
     }
     return undefined;
   }
 
   getTemplateAst(template: TemplateSource, contextFile: string): AstResult {
-    let result: AstResult = undefined !;
+    let result: AstResult|undefined = undefined;
     try {
       const resolvedMetadata =
           this.metadataResolver.getNonNormalizedDirectiveMetadata(template.type as any);
@@ -109,10 +110,11 @@ class LanguageServiceImpl implements LanguageService {
         const expressionParser = new Parser(new Lexer());
         const config = new CompilerConfig();
         const parser = new TemplateParser(
-            config, expressionParser, new DomElementSchemaRegistry(), htmlParser, null !, []);
+            config, this.host.resolver.getReflector(), expressionParser,
+            new DomElementSchemaRegistry(), htmlParser, null !, []);
         const htmlResult = htmlParser.parse(template.source, '', true);
         const analyzedModules = this.host.getAnalyzedModules();
-        let errors: Diagnostic[] = undefined !;
+        let errors: Diagnostic[]|undefined = undefined;
         let ngModule = analyzedModules.ngModuleByPipeOrDirective.get(template.type);
         if (!ngModule) {
           // Reported by the the declaration diagnostics.
@@ -121,8 +123,7 @@ class LanguageServiceImpl implements LanguageService {
         if (ngModule) {
           const resolvedDirectives = ngModule.transitiveModule.directives.map(
               d => this.host.resolver.getNonNormalizedDirectiveMetadata(d.reference));
-          const directives =
-              resolvedDirectives.filter(d => d !== null).map(d => d !.metadata.toSummary());
+          const directives = removeMissing(resolvedDirectives).map(d => d.metadata.toSummary());
           const pipes = ngModule.transitiveModule.pipes.map(
               p => this.host.resolver.getOrLoadPipeMetadata(p.reference).toSummary());
           const schemas = ngModule.schemas;
@@ -142,8 +143,12 @@ class LanguageServiceImpl implements LanguageService {
       }
       result = {errors: [{kind: DiagnosticKind.Error, message: e.message, span}]};
     }
-    return result;
+    return result || {};
   }
+}
+
+function removeMissing<T>(values: (T | null | undefined)[]): T[] {
+  return values.filter(e => !!e) as T[];
 }
 
 function uniqueBySpan < T extends {
@@ -169,8 +174,8 @@ function uniqueBySpan < T extends {
   }
 }
 
-function findSuitableDefaultModule(modules: NgAnalyzedModules): CompileNgModuleMetadata {
-  let result: CompileNgModuleMetadata = undefined !;
+function findSuitableDefaultModule(modules: NgAnalyzedModules): CompileNgModuleMetadata|undefined {
+  let result: CompileNgModuleMetadata|undefined = undefined;
   let resultSize = 0;
   for (const module of modules.ngModules) {
     const moduleSize = module.transitiveModule.directives.length;

@@ -15,10 +15,9 @@ This page contains only planned and past unplanned releases.
 Due to serious regressions or other important reasons we reserve the right to release an unplanned patch or minor release.
 In such case, we'll update this document accordingly.
 
-The dates past March 2017 are just a guidance and might be adjusted slightly if necessary.
+The dates are just a guidance and might be adjusted slightly if necessary.
 
-
-## Tentative Schedule Until March 2017
+## Tentative Schedule Until September 2017
 
 <!--
 The table below is formatted so that it's easy to read and edit in both markdown and rendered html form.
@@ -33,50 +32,46 @@ If you see undesirable wrapping issues in the rendered form, please copy&paste t
 
 Week Of       | Stable Release<br>(@latest npm tag) | Beta/RC Release<br>(@next npm tag) | Note
 ------------- | ----------------------------------- | ---------------------------------- | ---------------------
-2016-09-14    | 2.0.0                               | -                                  | Major Version Release
-2016-09-21    | 2.0.1                               | 2.1.0-beta.0                       |
-2016‑09‑28    | -                                   | -                                  | Angular Connect
-2016-10-05    | 2.0.2                               | 2.1.0-rc.0                         |
-2016-10-12    | 2.1.0                               | -                                  | Minor Version Release
-2016-10-19    | 2.1.1                               | 2.2.0-beta.0                       |
-2016-10-26    | 2.1.2                               | 2.2.0-beta.1                       |
-2016-11-02    | 2.1.3                               | 2.2.0-rc.0                         |
-2016-11-09    | 2.2.0                               | -                                  | Minor Version Release
-2016-11-16    | 2.2.1                               | 2.3.0-beta.0                       |
-2016-11-23    | 2.2.2                               | 2.3.0-beta.1                       |
-*2016-11-23*  | *2.2.3*                             | -                                  | *Unplanned Patch Release to fix regressions*
-2016-11-30    | 2.2.4                               | 2.3.0-rc.0                         |
-2016-12-07    | 2.3.0                               | -                                  | Minor Version Release
-2016-12-14    | 2.3.1                               | 4.0.0-beta.0                       |
-*2016-12-21*  | *2.4.0*                             | -                                  | *Unplanned Minor Release due to release of RxJS 5.0.0*
-2016-12-21    | 2.4.1                               | 4.0.0-beta.1                       |
-2016-12-28    | -                                   | -                                  | Holiday Break
-2017-01-04    | 2.4.2                               | 4.0.0-beta.2                       |
-2017-01-11    | 2.4.3                               | 4.0.0-beta.3                       |
-2017-01-18    | 2.4.4                               | 4.0.0-beta.4                       |
-2017-01-25    | 2.4.5                               | 4.0.0-beta.5                       |
-2017-02-01    | 2.4.6                               | 4.0.0-beta.6                       |
-2017-02-08    | 2.4.7                               | 4.0.0-beta.7                       |
-2017-02-15    | 2.4.8                               | 4.0.0-beta.8                       |
-*2017-02-22*  |                                     | *4.0.0-rc.0*                       | *Unplanned release: bad rebase*
-2017-02-22    |                                     | 4.0.0-rc.1                         | No stable release - we were too busy with the RC
-2017-03-01    | 2.4.9                               | 4.0.0-rc.2                         |
-2017-03-08    | 2.4.10                              | 4.0.0-rc.3                         |
-2017-03-15    | 2.4.11                              | 4.0.0-rc.4                         |
-*2017-03-17*  |                                     | *4.0.0-rc.5*                       | *Unplanned release to fix compiler-cli dependency version*
-2017-03-22    | 4.0.0 + 2.4.12                      | -                                  | Major Version Release
+2017‑05‑01	  | 4.1.1                               | 4.2.0‑beta.0                       |
+2017‑05‑08	  | 4.1.2                               | 4.2.0‑beta.1                       |
+2017‑05‑15	  | 4.1.3                               | 4.2.0‑rc.0                         |
+2017‑05‑26	  | ‑                                   | 4.2.0‑rc.1                         |
+2017‑06‑01    | ‑                                   | 4.2.0‑rc.2                         |
+2017‑06‑05	  | 4.2.0                               | ‑                                  | Minor Version Release
+*2017‑06‑09*  | 4.2.1                               | ‑                                  | *Regression Patch Release*
+2017-06-12    | 4.2.2                               | ‑                                  |
+*2017-06-16*  | 4.2.3                               | ‑                                  | *Regression Patch Release*
+2017‑06‑19	  | 4.2.4                               | 4.3.0‑beta.0                       |
+2017‑06‑26	  | 4.2.5                               | 4.3.0‑beta.1                       |
+2017‑07‑03	  | 4.2.6                               | 4.3.0‑rc.0                         |
+2017‑07‑10	  | 4.3.0                               | -                                  | Minor Version Release
+2017‑07‑17	  | 4.3.1                               | 5.0.0‑beta.0                       |
+2017‑07‑24	  | 4.3.2                               | 5.0.0‑beta.1                       |
+2017‑07‑31	  | 4.3.3                               | 5.0.0‑beta.2                       |
+2017‑08‑07	  | 4.3.4                               | 5.0.0‑beta.3                       |
+2017‑08‑14    | 4.3.5                               | 5.0.0‑beta.4                       |
+2017‑08‑21	  | 4.3.6                               | 5.0.0‑rc.0                         |
+2017‑08‑28	  | 4.3.7                               | 5.0.0‑rc.1                         |
+2017‑09‑04	  | 4.3.8                               | 5.0.0‑rc.2                         |
+2017‑09‑11	  | 4.3.9                               | 5.0.0‑rc.3                         |
+2017‑09‑18	  | 5.0.0                               | ‑                                  | Major Version Release
 
-
-## Tentative Schedule After March 2017
+## Tentative Schedule After September 2017
 
  Date                   | Stable Release | Compatibility`*`
  ---------------------- | -------------- | ----------------
- September/October 2017 | 5.0.0          | ^4.0.0
  March 2018             | 6.0.0          | ^5.0.0
  September/October 2018 | 7.0.0          | ^6.0.0
 
- `*` The goal of the backwards compatibility promise, is to ensure that changes in the core framework and tooling don't break the existing ecosystem of components and applications and don't put undue upgrade/migration burden on Angular application and component authors.
+ `*` The primary goal of the backwards compatibility promise is to ensure that changes in the core framework and tooling don't break the existing ecosystem of components and applications and don't put undue upgrade/migration burden on Angular application and component authors.
 
+## Long-Term Supported (LTS) Versions
+
+ Version     | LTS Start Date | LTS End Date
+ ----------- | -------------- | ------------
+ ^4.0.0      | October 2017   | October 2018
+
+In the long-term support state, only the critical fixes and security patches will be merged and released.
 
 ## More Info & Resources
 

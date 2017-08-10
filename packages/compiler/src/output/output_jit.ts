@@ -35,19 +35,24 @@ function evalExpression(
   return new Function(...fnArgNames.concat(fnBody))(...fnArgValues);
 }
 
-export function jitStatements(
-    sourceUrl: string, statements: o.Statement[], resultVars: string[]): any[] {
+export function jitStatements(sourceUrl: string, statements: o.Statement[]): {[key: string]: any} {
   const converter = new JitEmitterVisitor();
-  const ctx = EmitterVisitorContext.createRoot(resultVars);
-  const returnStmt =
-      new o.ReturnStatement(o.literalArr(resultVars.map(resultVar => o.variable(resultVar))));
-  converter.visitAllStatements(statements.concat([returnStmt]), ctx);
+  const ctx = EmitterVisitorContext.createRoot();
+  converter.visitAllStatements(statements, ctx);
+  converter.createReturnStmt(ctx);
   return evalExpression(sourceUrl, ctx, converter.getArgs());
 }
 
-class JitEmitterVisitor extends AbstractJsEmitterVisitor {
+export class JitEmitterVisitor extends AbstractJsEmitterVisitor {
   private _evalArgNames: string[] = [];
   private _evalArgValues: any[] = [];
+  private _evalExportedVars: string[] = [];
+
+  createReturnStmt(ctx: EmitterVisitorContext) {
+    const stmt = new o.ReturnStatement(new o.LiteralMapExpr(this._evalExportedVars.map(
+        resultVar => new o.LiteralMapEntry(resultVar, o.variable(resultVar), false))));
+    stmt.visitStatement(this, ctx);
+  }
 
   getArgs(): {[key: string]: any} {
     const result: {[key: string]: any} = {};
@@ -58,15 +63,36 @@ class JitEmitterVisitor extends AbstractJsEmitterVisitor {
   }
 
   visitExternalExpr(ast: o.ExternalExpr, ctx: EmitterVisitorContext): any {
-    const value = ast.value.reference;
+    const value = ast.value.runtime;
     let id = this._evalArgValues.indexOf(value);
     if (id === -1) {
       id = this._evalArgValues.length;
       this._evalArgValues.push(value);
-      const name = identifierName(ast.value) || 'val';
-      this._evalArgNames.push(`jit_${name}${id}`);
+      const name = identifierName({reference: ast.value.runtime}) || 'val';
+      this._evalArgNames.push(`jit_${name}_${id}`);
     }
     ctx.print(ast, this._evalArgNames[id]);
     return null;
+  }
+
+  visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: EmitterVisitorContext): any {
+    if (stmt.hasModifier(o.StmtModifier.Exported)) {
+      this._evalExportedVars.push(stmt.name);
+    }
+    return super.visitDeclareVarStmt(stmt, ctx);
+  }
+
+  visitDeclareFunctionStmt(stmt: o.DeclareFunctionStmt, ctx: EmitterVisitorContext): any {
+    if (stmt.hasModifier(o.StmtModifier.Exported)) {
+      this._evalExportedVars.push(stmt.name);
+    }
+    return super.visitDeclareFunctionStmt(stmt, ctx);
+  }
+
+  visitDeclareClassStmt(stmt: o.ClassStmt, ctx: EmitterVisitorContext): any {
+    if (stmt.hasModifier(o.StmtModifier.Exported)) {
+      this._evalExportedVars.push(stmt.name);
+    }
+    return super.visitDeclareClassStmt(stmt, ctx);
   }
 }

@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PipeResolver} from '@angular/compiler';
+import {CompileReflector, PipeResolver} from '@angular/compiler';
 import {Compiler, Injectable, Injector, Pipe, Type} from '@angular/core';
 
 @Injectable()
 export class MockPipeResolver extends PipeResolver {
   private _pipes = new Map<Type<any>, Pipe>();
 
-  constructor(private _injector: Injector) { super(); }
+  constructor(private _injector: Injector, refector: CompileReflector) { super(refector); }
 
   private get _compiler(): Compiler { return this._injector.get(Compiler); }
 

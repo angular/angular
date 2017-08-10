@@ -1,0 +1,41 @@
+{
+  "scripts": [
+    { "name": "lint" }
+  ],
+  "dependencies": [
+    "@angular/animations",
+    "@angular/common",
+    "@angular/compiler",
+    "@angular/compiler-cli",
+    "@angular/core",
+    "@angular/forms",
+    "@angular/http",
+    "@angular/platform-browser",
+    "@angular/platform-browser-dynamic",
+    "@angular/platform-server",
+    "@angular/router",
+    "@angular/tsc-wrapped",
+    "@angular/upgrade",
+    "angular-in-memory-web-api",
+    "core-js",
+    "rxjs",
+    "zone.js"
+  ],
+  "devDependencies": [
+    "@types/jasmine",
+    "@types/node",
+    "jasmine",
+    "jasmine-core",
+    "karma",
+    "karma-chrome-launcher",
+    "karma-cli",
+    "karma-jasmine",
+    "karma-jasmine-html-reporter",
+    "karma-phantomjs-launcher",
+    "lodash",
+    "phantomjs-prebuilt",
+    "protractor",
+    "tslint",
+    "typescript"
+  ]
+}

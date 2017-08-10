@@ -8,11 +8,12 @@
 
 import {ElementSchemaRegistry} from '@angular/compiler/src/schema/element_schema_registry';
 import {TEST_COMPILER_PROVIDERS} from '@angular/compiler/testing/src/test_bindings';
-import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, DebugElement, Directive, DoCheck, EventEmitter, HostBinding, Inject, Injectable, Input, OnChanges, OnDestroy, OnInit, Output, Pipe, PipeTransform, RenderComponentType, Renderer, RendererFactory2, RootRenderer, SimpleChange, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef, WrappedValue} from '@angular/core';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, DebugElement, Directive, DoCheck, EventEmitter, HostBinding, Inject, Injectable, Input, OnChanges, OnDestroy, OnInit, Output, Pipe, PipeTransform, RenderComponentType, Renderer, RendererFactory2, RootRenderer, SimpleChange, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef, WrappedValue} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+
 import {DomElementSchemaRegistry} from '../../../compiler/index';
 import {MockSchemaRegistry} from '../../../compiler/testing/index';
 
@@ -666,6 +667,22 @@ export function main() {
 
     });
 
+    describe('RendererFactory', () => {
+      it('should call the begin and end methods on the renderer factory when change detection is called',
+         fakeAsync(() => {
+           const ctx = createCompFixture('<div testDirective [a]="42"></div>');
+           const rf = TestBed.get(RendererFactory2);
+           spyOn(rf, 'begin');
+           spyOn(rf, 'end');
+           expect(rf.begin).not.toHaveBeenCalled();
+           expect(rf.end).not.toHaveBeenCalled();
+
+           ctx.detectChanges(false);
+           expect(rf.begin).toHaveBeenCalled();
+           expect(rf.end).toHaveBeenCalled();
+         }));
+    });
+
     describe('change notification', () => {
       describe('updating directives', () => {
         it('should happen without invoking the renderer', fakeAsync(() => {
@@ -765,6 +782,7 @@ export function main() {
              try {
                ctx.detectChanges(false);
              } catch (e) {
+               expect(e.message).toBe('Boom!');
                errored = true;
              }
              expect(errored).toBe(true);
@@ -776,7 +794,8 @@ export function main() {
              try {
                ctx.detectChanges(false);
              } catch (e) {
-               throw new Error('Second detectChanges() should not have run detection.');
+               expect(e.message).toBe('Boom!');
+               throw new Error('Second detectChanges() should not have called ngOnInit.');
              }
              expect(directiveLog.filter(['ngOnInit'])).toEqual([]);
            }));
@@ -1175,6 +1194,21 @@ export function main() {
            expect(renderLog.log).toEqual([]);
          }));
 
+      it('Detached should disable OnPush', fakeAsync(() => {
+           const ctx = createCompFixture('<push-cmp [value]="value"></push-cmp>');
+           ctx.componentInstance.value = 0;
+           ctx.detectChanges();
+           renderLog.clear();
+
+           const cmp: CompWithRef = queryDirs(ctx.debugElement, PushComp)[0];
+           cmp.changeDetectorRef.detach();
+
+           ctx.componentInstance.value = 1;
+           ctx.detectChanges();
+
+           expect(renderLog.log).toEqual([]);
+         }));
+
       it('Detached view can be checked locally', fakeAsync(() => {
            const ctx = createCompFixture('<wrap-comp-with-ref></wrap-comp-with-ref>');
            const cmp: CompWithRef = queryDirs(ctx.debugElement, CompWithRef)[0];
@@ -1225,7 +1259,6 @@ export function main() {
 
            ctx.detectChanges();
            expect(cmp.renderCount).toBe(count);
-
          }));
 
     });
@@ -1277,6 +1310,120 @@ export function main() {
            ctx.detectChanges();
            expect(renderLog.loggedValues).toEqual(['Tom']);
          });
+
+      describe('projected views', () => {
+        let log: string[];
+
+        @Directive({selector: '[i]'})
+        class DummyDirective {
+          @Input()
+          i: any;
+        }
+
+        @Component({
+          selector: 'main-cmp',
+          template:
+              `<span [i]="log('start')"></span><outer-cmp><ng-template><span [i]="log('tpl')"></span></ng-template></outer-cmp>`
+        })
+        class MainComp {
+          constructor(public cdRef: ChangeDetectorRef) {}
+          log(id: string) { log.push(`main-${id}`); }
+        }
+
+        @Component({
+          selector: 'outer-cmp',
+          template:
+              `<span [i]="log('start')"></span><inner-cmp [outerTpl]="tpl"><ng-template><span [i]="log('tpl')"></span></ng-template></inner-cmp>`
+        })
+        class OuterComp {
+          @ContentChild(TemplateRef)
+          tpl: TemplateRef<any>;
+
+          constructor(public cdRef: ChangeDetectorRef) {}
+          log(id: string) { log.push(`outer-${id}`); }
+        }
+
+        @Component({
+          selector: 'inner-cmp',
+          template:
+              `<span [i]="log('start')"></span>><ng-container [ngTemplateOutlet]="outerTpl"></ng-container><ng-container [ngTemplateOutlet]="tpl"></ng-container>`
+        })
+        class InnerComp {
+          @ContentChild(TemplateRef)
+          tpl: TemplateRef<any>;
+
+          @Input()
+          outerTpl: TemplateRef<any>;
+
+          constructor(public cdRef: ChangeDetectorRef) {}
+          log(id: string) { log.push(`inner-${id}`); }
+        }
+
+        let ctx: ComponentFixture<MainComp>;
+        let mainComp: MainComp;
+        let outerComp: OuterComp;
+        let innerComp: InnerComp;
+
+        beforeEach(() => {
+          log = [];
+          ctx = TestBed
+                    .configureTestingModule(
+                        {declarations: [MainComp, OuterComp, InnerComp, DummyDirective]})
+                    .createComponent(MainComp);
+          mainComp = ctx.componentInstance;
+          outerComp = ctx.debugElement.query(By.directive(OuterComp)).injector.get(OuterComp);
+          innerComp = ctx.debugElement.query(By.directive(InnerComp)).injector.get(InnerComp);
+        });
+
+        it('should dirty check projected views in regular order', () => {
+          ctx.detectChanges(false);
+          expect(log).toEqual(
+              ['main-start', 'outer-start', 'inner-start', 'main-tpl', 'outer-tpl']);
+
+          log = [];
+          ctx.detectChanges(false);
+          expect(log).toEqual(
+              ['main-start', 'outer-start', 'inner-start', 'main-tpl', 'outer-tpl']);
+        });
+
+        it('should not dirty check projected views if neither the declaration nor the insertion place is dirty checked',
+           () => {
+             ctx.detectChanges(false);
+             log = [];
+             mainComp.cdRef.detach();
+             ctx.detectChanges(false);
+
+             expect(log).toEqual([]);
+           });
+
+        it('should dirty check projected views if the insertion place is dirty checked', () => {
+          ctx.detectChanges(false);
+          log = [];
+
+          innerComp.cdRef.detectChanges();
+          expect(log).toEqual(['inner-start', 'main-tpl', 'outer-tpl']);
+        });
+
+        it('should dirty check projected views if the declaration place is dirty checked', () => {
+          ctx.detectChanges(false);
+          log = [];
+          innerComp.cdRef.detach();
+          mainComp.cdRef.detectChanges();
+
+          expect(log).toEqual(['main-start', 'outer-start', 'main-tpl', 'outer-tpl']);
+
+          log = [];
+          outerComp.cdRef.detectChanges();
+
+          expect(log).toEqual(['outer-start', 'outer-tpl']);
+
+          log = [];
+          outerComp.cdRef.detach();
+          mainComp.cdRef.detectChanges();
+
+          expect(log).toEqual(['main-start', 'main-tpl']);
+        });
+      });
     });
 
     describe('class binding', () => {

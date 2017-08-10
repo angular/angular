@@ -59,8 +59,8 @@ const EVENT_NAMES = {
 export const HAMMER_GESTURE_CONFIG = new InjectionToken<HammerGestureConfig>('HammerGestureConfig');
 
 export interface HammerInstance {
-  on(eventName: string, callback: Function): void;
-  off(eventName: string, callback: Function): void;
+  on(eventName: string, callback?: Function): void;
+  off(eventName: string, callback?: Function): void;
 }
 
 /**

@@ -10,7 +10,7 @@ import {Injector, RenderComponentType, RootRenderer, Sanitizer, SecurityContext,
 import {DebugContext, NodeDef, NodeFlags, RootData, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, asProviderData, asTextData, attachEmbeddedView, detachEmbeddedView, directiveDef, elementDef, ngContentDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
-import {createRootView, isBrowser} from './helper';
+import {createEmbeddedView, createRootView, isBrowser} from './helper';
 
 export function main() {
   describe(`View NgContent`, () => {
@@ -121,14 +121,17 @@ export function main() {
       ])));
 
       const componentView = asElementData(view, 0).componentView;
-      const view0 = Services.createEmbeddedView(componentView, componentView.def.nodes[1]);
+      const rf = componentView.root.rendererFactory;
+      const view0 = createEmbeddedView(componentView, componentView.def.nodes[1]);
 
       attachEmbeddedView(view, asElementData(componentView, 1), 0, view0);
       expect(getDOM().childNodes(getDOM().firstChild(rootNodes[0])).length).toBe(3);
       expect(getDOM().childNodes(getDOM().firstChild(rootNodes[0]))[1])
           .toBe(asTextData(view, 2).renderText);
 
+      rf.begin !();
       detachEmbeddedView(asElementData(componentView, 1), 0);
+      rf.end !();
       expect(getDOM().childNodes(getDOM().firstChild(rootNodes[0])).length).toBe(1);
     });
 

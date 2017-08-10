@@ -6,14 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AttrAst, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, CompileDirectiveMetadata, CompileDirectiveSummary, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgAnalyzedModules, NgContentAst, ReferenceAst, StaticSymbol, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '@angular/compiler';
+import {NgAnalyzedModules, StaticSymbol} from '@angular/compiler';
+import {DiagnosticTemplateInfo, getTemplateExpressionDiagnostics} from '@angular/compiler-cli';
 
-import {AstResult, SelectorInfo, TemplateInfo} from './common';
-import {getExpressionDiagnostics, getExpressionScope} from './expressions';
-import {HtmlAstPath} from './html_path';
-import {NullTemplateVisitor, TemplateAstChildVisitor, TemplateAstPath} from './template_path';
-import {Declaration, Declarations, Diagnostic, DiagnosticKind, Diagnostics, Span, SymbolTable, TemplateSource} from './types';
-import {getSelectors, hasTemplateReference, offsetSpan, spanOf} from './utils';
+import {AstResult} from './common';
+import {Declarations, Diagnostic, DiagnosticKind, Diagnostics, Span, TemplateSource} from './types';
+import {offsetSpan, spanOf} from './utils';
 
 export interface AstProvider {
   getTemplateAst(template: TemplateSource, fileName: string): AstResult;
@@ -29,11 +27,18 @@ export function getTemplateDiagnostics(
         results.push(...ast.parseErrors.map<Diagnostic>(
             e => ({
               kind: DiagnosticKind.Error,
-              span: offsetSpan(spanOf(e.span) !, template.span.start),
+              span: offsetSpan(spanOf(e.span), template.span.start),
               message: e.msg
             })));
-      } else if (ast.templateAst) {
-        const expressionDiagnostics = getTemplateExpressionDiagnostics(template, ast);
+      } else if (ast.templateAst && ast.htmlAst) {
+        const info: DiagnosticTemplateInfo = {
+          templateAst: ast.templateAst,
+          htmlAst: ast.htmlAst,
+          offset: template.span.start,
+          query: template.query,
+          members: template.members
+        };
+        const expressionDiagnostics = getTemplateExpressionDiagnostics(info);
         results.push(...expressionDiagnostics);
       }
       if (ast.errors) {
@@ -87,163 +92,4 @@ export function getDeclarationDiagnostics(
   }
 
   return results;
-}
-
-function getTemplateExpressionDiagnostics(
-    template: TemplateSource, astResult: AstResult): Diagnostics {
-  const info: TemplateInfo = {
-    template,
-    htmlAst: astResult.htmlAst !,
-    directive: astResult.directive !,
-    directives: astResult.directives !,
-    pipes: astResult.pipes !,
-    templateAst: astResult.templateAst !,
-    expressionParser: astResult.expressionParser !
-  };
-  const visitor = new ExpressionDiagnosticsVisitor(
-      info, (path: TemplateAstPath, includeEvent: boolean) =>
-                getExpressionScope(info, path, includeEvent));
-  templateVisitAll(visitor, astResult.templateAst !);
-  return visitor.diagnostics;
-}
-
-class ExpressionDiagnosticsVisitor extends TemplateAstChildVisitor {
-  private path: TemplateAstPath;
-  private directiveSummary: CompileDirectiveSummary;
-
-  diagnostics: Diagnostics = [];
-
-  constructor(
-      private info: TemplateInfo,
-      private getExpressionScope: (path: TemplateAstPath, includeEvent: boolean) => SymbolTable) {
-    super();
-    this.path = new TemplateAstPath([], 0);
-  }
-
-  visitDirective(ast: DirectiveAst, context: any): any {
-    // Override the default child visitor to ignore the host properties of a directive.
-    if (ast.inputs && ast.inputs.length) {
-      templateVisitAll(this, ast.inputs, context);
-    }
-  }
-
-  visitBoundText(ast: BoundTextAst): void {
-    this.push(ast);
-    this.diagnoseExpression(ast.value, ast.sourceSpan.start.offset, false);
-    this.pop();
-  }
-
-  visitDirectiveProperty(ast: BoundDirectivePropertyAst): void {
-    this.push(ast);
-    this.diagnoseExpression(ast.value, this.attributeValueLocation(ast), false);
-    this.pop();
-  }
-
-  visitElementProperty(ast: BoundElementPropertyAst): void {
-    this.push(ast);
-    this.diagnoseExpression(ast.value, this.attributeValueLocation(ast), false);
-    this.pop();
-  }
-
-  visitEvent(ast: BoundEventAst): void {
-    this.push(ast);
-    this.diagnoseExpression(ast.handler, this.attributeValueLocation(ast), true);
-    this.pop();
-  }
-
-  visitVariable(ast: VariableAst): void {
-    const directive = this.directiveSummary;
-    if (directive && ast.value) {
-      const context = this.info.template.query.getTemplateContext(directive.type.reference) !;
-      if (context && !context.has(ast.value)) {
-        if (ast.value === '$implicit') {
-          this.reportError(
-              'The template context does not have an implicit value', spanOf(ast.sourceSpan) !);
-        } else {
-          this.reportError(
-              `The template context does not defined a member called '${ast.value}'`,
-              spanOf(ast.sourceSpan) !);
-        }
-      }
-    }
-  }
-
-  visitElement(ast: ElementAst, context: any): void {
-    this.push(ast);
-    super.visitElement(ast, context);
-    this.pop();
-  }
-
-  visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {
-    const previousDirectiveSummary = this.directiveSummary;
-
-    this.push(ast);
-
-    // Find directive that refernces this template
-    this.directiveSummary =
-        ast.directives.map(d => d.directive).find(d => hasTemplateReference(d.type)) !;
-
-    // Process children
-    super.visitEmbeddedTemplate(ast, context);
-
-    this.pop();
-
-    this.directiveSummary = previousDirectiveSummary;
-  }
-
-  private attributeValueLocation(ast: TemplateAst) {
-    const path = new HtmlAstPath(this.info.htmlAst, ast.sourceSpan.start.offset);
-    const last = path.tail;
-    if (last instanceof Attribute && last.valueSpan) {
-      // Add 1 for the quote.
-      return last.valueSpan.start.offset + 1;
-    }
-    return ast.sourceSpan.start.offset;
-  }
-
-  private diagnoseExpression(ast: AST, offset: number, includeEvent: boolean) {
-    const scope = this.getExpressionScope(this.path, includeEvent);
-    this.diagnostics.push(
-        ...getExpressionDiagnostics(scope, ast, this.info.template.query, {
-          event: includeEvent
-        }).map(d => ({
-                 span: offsetSpan(d.ast.span, offset + this.info.template.span.start),
-                 kind: d.kind,
-                 message: d.message
-               })));
-  }
-
-  private push(ast: TemplateAst) { this.path.push(ast); }
-
-  private pop() { this.path.pop(); }
-
-  private _selectors: SelectorInfo;
-  private selectors(): SelectorInfo {
-    let result = this._selectors;
-    if (!result) {
-      this._selectors = result = getSelectors(this.info);
-    }
-    return result;
-  }
-
-  private findElement(position: number): Element|undefined {
-    const htmlPath = new HtmlAstPath(this.info.htmlAst, position);
-    if (htmlPath.tail instanceof Element) {
-      return htmlPath.tail;
-    }
-  }
-
-  private reportError(message: string, span: Span) {
-    this.diagnostics.push({
-      span: offsetSpan(span, this.info.template.span.start),
-      kind: DiagnosticKind.Error, message
-    });
-  }
-
-  private reportWarning(message: string, span: Span) {
-    this.diagnostics.push({
-      span: offsetSpan(span, this.info.template.span.start),
-      kind: DiagnosticKind.Warning, message
-    });
-  }
 }

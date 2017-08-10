@@ -26,4 +26,13 @@ describe('getExampleRegion', () => {
   it('should contain the region contents from the example file if a region is specified', () => {
     expect(getExampleRegion({}, 'test/url', 'region-1')).toEqual('region 1 contents');
   });
+
+  it('should throw an error if an example doesn\'t exist', function() {
+    expect(function() {
+      getExampleRegion({}, 'missing/file', 'region-1');
+    }).toThrowError();
+    expect(function() {
+      getExampleRegion({}, 'test/url', 'missing-region');
+    }).toThrowError();
+  });
 });

@@ -8,6 +8,10 @@ table {
     width: 100%;
   }
 
+  &.is-fixed-layout {
+    table-layout: fixed;
+  }
+
   thead {
     vertical-align: middle;
     border-color: inherit;
@@ -34,7 +38,7 @@ table {
     th,
     td {
       border-bottom: 1px solid $lightgray;
-      padding: 16px 32px;
+      padding: 16px;
       text-align: left;
       line-height: 24px;
       vertical-align: top;
@@ -51,16 +55,12 @@ table {
     td {
       letter-spacing: 0.30px;
 
-      @media (max-width: 480px) {
-        display: block;
-      }
-
     tr td:first-child {
       @media (max-width: 480px) {
         background-color: $lightgray;
       }
     }
-      
+
     }
 
     th {
@@ -68,10 +68,6 @@ table {
       border-right: 1px solid $lightgray;
       font-weight: 600;
       max-width: 100px;
-
-      @media (max-width: 480px) {
-        display: none;
-      }
     }
 
     tr:last-child td {
@@ -80,7 +76,39 @@ table {
       @media (max-width: 480px) {
         border-bottom: 1px solid $lightgray;
       }
+    }
+  }
+}
 
+#cheatsheet {
+
+  table tbody td {
+    overflow: auto;
+  }
+
+  @media only screen and (max-width: 990px) {
+
+    /* Force table to not be like tables anymore */
+    table, thead, tbody, tfoot, tr, th, td {
+      display: block;
+      position: relative;
+      max-width: 100%;
+
+      code {
+        padding: 0;
+        background-color: inherit;
+      }
+    }
+
+    th {
+      border-right: none;
+    }
+
+    th, td {
+      &:not(:last-child) {
+        border-bottom: none;
+        padding-bottom: 0px;
+      }
     }
   }
 }

@@ -4,25 +4,18 @@ import { Http } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import { AsyncSubject } from 'rxjs/AsyncSubject';
 import { combineLatest } from 'rxjs/observable/combineLatest';
+import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/publishLast';
 import 'rxjs/add/operator/publishReplay';
 
-import { Logger } from 'app/shared/logger.service';
 import { LocationService } from 'app/shared/location.service';
+import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
 
 // Import and re-export the Navigation model types
-import { CurrentNode, NavigationNode, NavigationResponse, NavigationViews, VersionInfo } from './navigation.model';
-export { CurrentNode, NavigationNode, NavigationResponse, NavigationViews, VersionInfo } from './navigation.model';
+import { CurrentNodes, NavigationNode, NavigationResponse, NavigationViews, VersionInfo } from './navigation.model';
+export { CurrentNodes, CurrentNode, NavigationNode, NavigationResponse, NavigationViews, VersionInfo } from './navigation.model';
 
-const navigationPath = 'content/navigation.json';
-
-const urlParser = document.createElement('a');
-function cleanUrl(url: string) {
-  // remove hash (#) and query params (?)
-  urlParser.href = '/' + url;
-  // strip leading and trailing slashes
-  return urlParser.pathname.replace(/^\/+|\/$/g, '');
-}
+const navigationPath = CONTENT_URL_PREFIX + 'navigation.json';
 
 @Injectable()
 export class NavigationService {
@@ -41,14 +34,15 @@ export class NavigationService {
    * node (if any) that matches the current URL location
    * including its navigation view and its ancestor nodes in that view
    */
-  currentNode: Observable<CurrentNode>;
+  currentNodes: Observable<CurrentNodes>;
 
-  constructor(private http: Http, private location: LocationService, private logger: Logger) {
+  constructor(private http: Http, private location: LocationService) {
     const navigationInfo = this.fetchNavigationInfo();
+    this.navigationViews = this.getNavigationViews(navigationInfo);
+
+    this.currentNodes = this.getCurrentNodes(this.navigationViews);
     // The version information is packaged inside the navigation response to save us an extra request.
     this.versionInfo = this.getVersionInfo(navigationInfo);
-    this.navigationViews = this.getNavigationViews(navigationInfo);
-    this.currentNode = this.getCurrentNode(this.navigationViews);
   }
 
   /**
@@ -64,42 +58,52 @@ export class NavigationService {
    */
   private fetchNavigationInfo(): Observable<NavigationResponse> {
     const navigationInfo = this.http.get(navigationPath)
-             .map(res => res.json() as NavigationResponse)
-             .publishLast();
+      .map(res => res.json() as NavigationResponse)
+      .publishLast();
     navigationInfo.connect();
     return navigationInfo;
   }
 
   private getVersionInfo(navigationInfo: Observable<NavigationResponse>) {
-    const versionInfo = navigationInfo.map(response => response.__versionInfo).publishReplay(1);
+    const versionInfo = navigationInfo
+      .map(response => response.__versionInfo)
+      .publishLast();
     versionInfo.connect();
     return versionInfo;
   }
 
   private getNavigationViews(navigationInfo: Observable<NavigationResponse>): Observable<NavigationViews> {
-    const navigationViews = navigationInfo.map(response => unpluck(response, '__versionInfo')).publishReplay(1);
+    const navigationViews = navigationInfo
+      .map(response => {
+        const views = Object.assign({}, response);
+        Object.keys(views).forEach(key => {
+          if (key[0] === '_') { delete views[key]; }
+        });
+        return views as NavigationViews;
+      })
+      .publishLast();
     navigationViews.connect();
     return navigationViews;
   }
 
   /**
-   * Get an observable of the current node (the one that matches the current URL)
+   * Get an observable of the current nodes (the ones that match the current URL)
    * We use `publishReplay(1)` because otherwise subscribers will have to wait until the next
    * URL change before they receive an emission.
    * See above for discussion of using `connect`.
    */
-  private getCurrentNode(navigationViews: Observable<NavigationViews>): Observable<CurrentNode> {
-    const currentNode = combineLatest(
-      navigationViews.map(this.computeUrlToNavNodesMap),
-      this.location.currentUrl,
+  private getCurrentNodes(navigationViews: Observable<NavigationViews>): Observable<CurrentNodes> {
+    const currentNodes = combineLatest(
+      navigationViews.map(views => this.computeUrlToNavNodesMap(views)),
+      this.location.currentPath,
+
       (navMap, url) => {
-        let urlKey = cleanUrl(url);
-        urlKey = urlKey.startsWith('api/') ? 'api' : urlKey;
-        return navMap[urlKey] || { view: '', url: urlKey, nodes: [] };
+        const urlKey = url.startsWith('api/') ? 'api' : url;
+        return navMap[urlKey] || { '' : { view: '', url: urlKey, nodes: [] }};
       })
       .publishReplay(1);
-    currentNode.connect();
-    return currentNode;
+    currentNodes.connect();
+    return currentNodes;
   }
 
   /**
@@ -109,29 +113,46 @@ export class NavigationService {
    * @param navigation - A collection of navigation nodes that are to be mapped
    */
   private computeUrlToNavNodesMap(navigation: NavigationViews) {
-    const navMap = new Map<string, CurrentNode>();
+    const navMap = new Map<string, CurrentNodes>();
     Object.keys(navigation)
-      .forEach(view => navigation[view].forEach(node => walkNodes(view, node)));
+      .forEach(view => navigation[view]
+        .forEach(node => this.walkNodes(view, navMap, node)));
     return navMap;
+  }
 
-    function walkNodes(view: string, node: NavigationNode, ancestors: NavigationNode[] = []) {
-      const nodes = [node, ...ancestors];
-      const url = node.url;
-
-      // only map to this node if it has a url associated with it
-      if (url) {
-        // Strip off trailing slashes from nodes in the navMap - they are not relevant to matching
-        navMap[url.replace(/\/$/, '')] = { url, view, nodes };
-      }
-      if (node.children) {
-        node.children.forEach(child => walkNodes(view, child, nodes));
-      }
+  /**
+   * Add tooltip to node if it doesn't have one and have title.
+   * If don't want tooltip, specify `"tooltip": ""` in navigation.json
+   */
+  private ensureHasTooltip(node: NavigationNode) {
+    const title = node.title;
+    const tooltip = node.tooltip;
+    if (tooltip == null && title ) {
+      // add period if no trailing punctuation
+      node.tooltip = title + (/[a-zA-Z0-9]$/.test(title) ? '.' : '');
     }
   }
-}
+  /**
+   * Walk the nodes of a navigation tree-view,
+   * patching them and computing their ancestor nodes
+   */
+  private walkNodes(
+    view: string, navMap: Map<string, CurrentNodes>,
+    node: NavigationNode, ancestors: NavigationNode[] = []) {
+      const nodes = [node, ...ancestors];
+      const url = node.url;
+      this.ensureHasTooltip(node);
 
-function unpluck(obj: any, property: string) {
-  const result = Object.assign({}, obj);
-  delete result[property];
-  return result;
+      // only map to this node if it has a url
+      if (url) {
+        // Strip off trailing slashes from nodes in the navMap - they are not relevant to matching
+        const cleanedUrl = url.replace(/\/$/, '');
+        const navMapItem = navMap[cleanedUrl] = navMap[cleanedUrl] || {};
+        navMapItem[view] = { url, view, nodes };
+      }
+
+      if (node.children) {
+        node.children.forEach(child => this.walkNodes(view, navMap, child, nodes));
+      }
+    }
 }

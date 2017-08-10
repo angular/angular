@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/packages-dist/tsc-wrapped",
+    "types": [
+      "node",
+      "jasmine"
+    ]
+  }
+}

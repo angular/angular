@@ -2,45 +2,39 @@
 
 /**
  * Usage:
- *   node scripts/test-pwa-score [<url> [<min-score>]]
+ *   node scripts/test-pwa-score <url> <min-score> [<log-file>]
  *
- * Defaults:
- *   url: http://localhost:4200
- *   minScore: 90
+ * Fails if the score is below `<min-score>`.
+ * If `<log-file>` is defined, the full results will be logged there.
  *
  * (Ignores HTTPS-related audits, when run for HTTP URL.)
  */
 
 // Imports
 const lighthouse = require('lighthouse');
-const ChromeLauncher = require('lighthouse/lighthouse-cli/chrome-launcher').ChromeLauncher;
-const Printer = require('lighthouse/lighthouse-cli/printer');
-const config = require('lighthouse/lighthouse-core/config/default.json');
+const chromeLauncher = require('lighthouse/chrome-launcher/chrome-launcher');
+const printer = require('lighthouse/lighthouse-cli/printer');
+const config = require('lighthouse/lighthouse-core/config/default.js');
 
 // Constants
-const FLAGS = {output: 'json'};
-
-// Specify the path to Chrome on Travis
-if (process.env.TRAVIS) {
-  process.env.LIGHTHOUSE_CHROMIUM_PATH = process.env.CHROME_BIN;
-}
+const VIEWER_URL = 'https://googlechrome.github.io/lighthouse/viewer/';
 
 // Run
 _main(process.argv.slice(2));
 
 // Functions - Definitions
 function _main(args) {
-  const {url, minScore} = parseInput(args);
+  const {url, minScore, logFile} = parseInput(args);
   const isOnHttp = /^http:/.test(url);
 
   console.log(`Running PWA audit for '${url}'...`);
 
   if (isOnHttp) {
-    ignoreHttpsAudits(config.aggregations);
+    ignoreHttpsAudits(config);
   }
 
-  launchChromeAndRunLighthouse(url, FLAGS, config).
-    then(getScore).
+  launchChromeAndRunLighthouse(url, {}, config).
+    then(results => processResults(results, logFile)).
     then(score => evaluateScore(minScore, score)).
     catch(onError);
 }
@@ -55,36 +49,29 @@ function evaluateScore(expectedScore, actualScore) {
   }
 }
 
-function getScore(results) {
-  const scoredAggregations = results.aggregations.filter(a => a.scored);
-  const total = scoredAggregations.reduce((sum, a) => sum + a.total, 0);
-
-  return Math.round((total / scoredAggregations.length) * 100);
-}
-
-function ignoreHttpsAudits(aggregations) {
+function ignoreHttpsAudits(config) {
   const httpsAudits = [
-    'is-on-https',
     'redirects-http'
   ];
 
   console.info(`Ignoring HTTPS-related audits (${httpsAudits.join(', ')})...`);
 
-  aggregations.forEach(aggregation =>
-    aggregation.items.forEach(item =>
-      httpsAudits.map(key => item.audits[key]).forEach(audit =>
-        // Ugly hack to ignore HTTPS-related audits (i.e. simulate them passing).
-        // Only meant for use during development.
-        audit && (audit.expectedValue = !audit.expectedValue))));
+  config.categories.pwa.audits.forEach(audit => {
+    if (httpsAudits.indexOf(audit.id) !== -1) {
+      // Ugly hack to ignore HTTPS-related audits.
+      // Only meant for use during development.
+      audit.weight = 0;
+     }
+   });
 }
 
 function launchChromeAndRunLighthouse(url, flags, config) {
-  const launcher = new ChromeLauncher({autoSelectChrome: true});
-
-  return launcher.run().
-    then(() => lighthouse(url, flags, config)).
-    then(results => launcher.kill().then(() => results)).
-    catch(err => launcher.kill().then(() => { throw err; }, () => { throw err; }));
+  return chromeLauncher.launch().then(chrome => {
+    flags.port = chrome.port;
+    return lighthouse(url, flags, config).
+      then(results => chrome.kill().then(() => results)).
+      catch(err => chrome.kill().then(() => { throw err; }, () => { throw err; }));
+  });
 }
 
 function onError(err) {
@@ -95,6 +82,7 @@ function onError(err) {
 function parseInput(args) {
   const url = args[0];
   const minScore = Number(args[1]);
+  const logFile = args[2];
 
   if (!url) {
     onError('Invalid arguments: <URL> not specified.');
@@ -102,5 +90,19 @@ function parseInput(args) {
     onError('Invalid arguments: <MIN_SCORE> not specified or not a number.');
   }
 
-  return {url, minScore};
+  return {url, minScore, logFile};
+}
+
+function processResults(results, logFile) {
+  let promise = Promise.resolve();
+
+  if (logFile) {
+    console.log(`Saving results in '${logFile}'...`);
+    console.log(`(LightHouse viewer: ${VIEWER_URL})`);
+
+    results.artifacts = undefined;   // Too large for the logs.
+    promise = printer.write(results, 'json', logFile);
+  }
+
+  return promise.then(() => Math.round(results.score));
 }

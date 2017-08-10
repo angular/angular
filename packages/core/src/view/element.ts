@@ -10,7 +10,7 @@ import {RendererType2} from '../render/api';
 import {SecurityContext} from '../security';
 
 import {BindingDef, BindingFlags, ElementData, ElementHandleEventFn, NodeDef, NodeFlags, OutputDef, OutputType, QueryValueType, ViewData, ViewDefinitionFactory, asElementData} from './types';
-import {NOOP, calcBindingFlags, checkAndUpdateBinding, dispatchEvent, elementEventFullName, getParentRenderElement, resolveRendererType2, resolveViewDefinition, splitMatchedQueriesDsl, splitNamespace} from './util';
+import {NOOP, calcBindingFlags, checkAndUpdateBinding, dispatchEvent, elementEventFullName, getParentRenderElement, resolveDefinition, resolveRendererType2, splitMatchedQueriesDsl, splitNamespace} from './util';
 
 export function anchorDef(
     flags: NodeFlags, matchedQueriesDsl: [string | number, QueryValueType][],
@@ -18,7 +18,7 @@ export function anchorDef(
     templateFactory?: ViewDefinitionFactory): NodeDef {
   flags |= NodeFlags.TypeElement;
   const {matchedQueries, references, matchedQueryIds} = splitMatchedQueriesDsl(matchedQueriesDsl);
-  const template = templateFactory ? resolveViewDefinition(templateFactory) : null;
+  const template = templateFactory ? resolveDefinition(templateFactory) : null;
 
   return {
     // will bet set by the view definition
@@ -273,7 +273,8 @@ function setElementClass(view: ViewData, renderNode: any, name: string, value: b
 
 function setElementStyle(
     view: ViewData, binding: BindingDef, renderNode: any, name: string, value: any) {
-  let renderValue: string|null = view.root.sanitizer.sanitize(SecurityContext.STYLE, value);
+  let renderValue: string|null =
+      view.root.sanitizer.sanitize(SecurityContext.STYLE, value as{} | string);
   if (renderValue != null) {
     renderValue = renderValue.toString();
     const unit = binding.suffix;

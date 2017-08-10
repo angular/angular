@@ -20,7 +20,7 @@ export class Hero {
 // #docregion FancyService
 @Injectable()
 export class FancyService {
-  protected value: string = 'real value';
+  protected value = 'real value';
 
   getValue() { return this.value; }
   setValue(value: string) { this.value = value; }
@@ -163,7 +163,7 @@ export class InputComponent {
 //   valueChange: EventEmitter<any> = new EventEmitter();
 // }
 
-// As the style-guide recommends
+// As the styleguide recommends
 @Directive({ selector: 'input[value]' })
 export class InputValueBinderDirective {
   @HostBinding()
@@ -273,7 +273,7 @@ export class InnerCompWithExternalTemplateComponent { }
 
 @Component({
   selector: 'bad-template-comp',
-  templateUrl: './non-existant.html'
+  templateUrl: './non-existent.html'
 })
 export class BadTemplateUrlComponent { }
 

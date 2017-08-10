@@ -15,11 +15,14 @@ export * from '../common/test_helpers';
 
 export function bootstrap(
     platform: PlatformRef, Ng2Module: Type<{}>, element: Element, ng1Module: angular.IModule) {
-  // We bootstrap the Angular module first; then when it is ready (async)
-  // We bootstrap the AngularJS module on the bootstrap element
+  // We bootstrap the Angular module first; then when it is ready (async) we bootstrap the AngularJS
+  // module on the bootstrap element (also ensuring that AngularJS errors will fail the test).
   return platform.bootstrapModule(Ng2Module).then(ref => {
-    const upgrade = ref.injector.get(UpgradeModule) as UpgradeModule;
-    upgrade.bootstrap(element, [ng1Module.name]);
+    const upgrade = ref.injector.get(UpgradeModule);
+    const failHardModule: any = ($provide: angular.IProvideService) => {
+      $provide.value('$exceptionHandler', (err: any) => { throw err; });
+    };
+    upgrade.bootstrap(element, [failHardModule, ng1Module.name]);
     return upgrade;
   });
 }

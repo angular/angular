@@ -9,10 +9,11 @@
       "outDir": "dist",
       "assets": [
         "assets",
-        "content",
+        "generated",
         "app/search/search-worker.js",
         "favicon.ico",
-        "pwa-manifest.json"
+        "pwa-manifest.json",
+        "google385281288605d160.html"
       ],
       "index": "index.html",
       "main": "main.ts",
@@ -21,17 +22,18 @@
       "tsconfig": "tsconfig.app.json",
       "testTsconfig": "tsconfig.spec.json",
       "prefix": "aio",
-      "serviceWorker": true,
+      "serviceWorker": false,
       "styles": [
         "styles.scss"
       ],
       "scripts": [
-
       ],
       "environmentSource": "environments/environment.ts",
       "environments": {
         "dev": "environments/environment.ts",
-        "prod": "environments/environment.prod.ts"
+        "next": "environments/environment.next.ts",
+        "stable": "environments/environment.stable.ts",
+        "archive": "environments/environment.archive.ts"
       }
     }
   ],

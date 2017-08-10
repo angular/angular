@@ -8,7 +8,7 @@
 
 
 import * as cdAst from '../expression_parser/ast';
-import {Identifiers, createIdentifier} from '../identifiers';
+import {Identifiers} from '../identifiers';
 import * as o from '../output/output_ast';
 
 export class EventHandlerVars { static event = o.variable('$event'); }
@@ -35,10 +35,16 @@ export function convertActionBinding(
           // Note: no caching for literal arrays in actions.
           return (args: o.Expression[]) => o.literalArr(args);
         },
-        createLiteralMapConverter: (keys: string[]) => {
+        createLiteralMapConverter: (keys: {key: string, quoted: boolean}[]) => {
           // Note: no caching for literal maps in actions.
-          return (args: o.Expression[]) =>
-                     o.literalMap(<[string, o.Expression][]>keys.map((key, i) => [key, args[i]]));
+          return (values: o.Expression[]) => {
+            const entries = keys.map((k, i) => ({
+                                       key: k.key,
+                                       value: values[i],
+                                       quoted: k.quoted,
+                                     }));
+            return o.literalMap(entries);
+          };
         },
         createPipeConverter: (name: string) => {
           throw new Error(`Illegal State: Actions are not allowed to contain pipes. Pipe: ${name}`);
@@ -71,7 +77,7 @@ export interface BuiltinConverter { (args: o.Expression[]): o.Expression; }
 
 export interface BuiltinConverterFactory {
   createLiteralArrayConverter(argCount: number): BuiltinConverter;
-  createLiteralMapConverter(keys: string[]): BuiltinConverter;
+  createLiteralMapConverter(keys: {key: string, quoted: boolean}[]): BuiltinConverter;
   createPipeConverter(name: string, argCount: number): BuiltinConverter;
 }
 
@@ -169,6 +175,7 @@ class _BuiltinAstConverter extends cdAst.AstTransformer {
   }
   visitLiteralMap(ast: cdAst.LiteralMap, context: any): any {
     const args = ast.values.map(ast => ast.visit(this, context));
+
     return new BuiltinFunctionCall(
         ast.span, args, this._converterFactory.createLiteralMapConverter(ast.keys));
   }
@@ -239,7 +246,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     return convertToStatementIfNeeded(
         mode,
         new o.BinaryOperatorExpr(
-            op, this.visit(ast.left, _Mode.Expression), this.visit(ast.right, _Mode.Expression)));
+            op, this._visit(ast.left, _Mode.Expression), this._visit(ast.right, _Mode.Expression)));
   }
 
   visitChain(ast: cdAst.Chain, mode: _Mode): any {
@@ -248,11 +255,11 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   }
 
   visitConditional(ast: cdAst.Conditional, mode: _Mode): any {
-    const value: o.Expression = this.visit(ast.condition, _Mode.Expression);
+    const value: o.Expression = this._visit(ast.condition, _Mode.Expression);
     return convertToStatementIfNeeded(
-        mode,
-        value.conditional(
-            this.visit(ast.trueExp, _Mode.Expression), this.visit(ast.falseExp, _Mode.Expression)));
+        mode, value.conditional(
+                  this._visit(ast.trueExp, _Mode.Expression),
+                  this._visit(ast.falseExp, _Mode.Expression)));
   }
 
   visitPipe(ast: cdAst.BindingPipe, mode: _Mode): any {
@@ -266,7 +273,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     if (ast instanceof BuiltinFunctionCall) {
       fnResult = ast.converter(convertedArgs);
     } else {
-      fnResult = this.visit(ast.target !, _Mode.Expression).callFn(convertedArgs);
+      fnResult = this._visit(ast.target !, _Mode.Expression).callFn(convertedArgs);
     }
     return convertToStatementIfNeeded(mode, fnResult);
   }
@@ -281,15 +288,13 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     const args = [o.literal(ast.expressions.length)];
     for (let i = 0; i < ast.strings.length - 1; i++) {
       args.push(o.literal(ast.strings[i]));
-      args.push(this.visit(ast.expressions[i], _Mode.Expression));
+      args.push(this._visit(ast.expressions[i], _Mode.Expression));
     }
     args.push(o.literal(ast.strings[ast.strings.length - 1]));
 
     return ast.expressions.length <= 9 ?
-        o.importExpr(createIdentifier(Identifiers.inlineInterpolate)).callFn(args) :
-        o.importExpr(createIdentifier(Identifiers.interpolate)).callFn([
-          args[0], o.literalArr(args.slice(1))
-        ]);
+        o.importExpr(Identifiers.inlineInterpolate).callFn(args) :
+        o.importExpr(Identifiers.interpolate).callFn([args[0], o.literalArr(args.slice(1))]);
   }
 
   visitKeyedRead(ast: cdAst.KeyedRead, mode: _Mode): any {
@@ -298,14 +303,14 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       return this.convertSafeAccess(ast, leftMostSafe, mode);
     } else {
       return convertToStatementIfNeeded(
-          mode, this.visit(ast.obj, _Mode.Expression).key(this.visit(ast.key, _Mode.Expression)));
+          mode, this._visit(ast.obj, _Mode.Expression).key(this._visit(ast.key, _Mode.Expression)));
     }
   }
 
   visitKeyedWrite(ast: cdAst.KeyedWrite, mode: _Mode): any {
-    const obj: o.Expression = this.visit(ast.obj, _Mode.Expression);
-    const key: o.Expression = this.visit(ast.key, _Mode.Expression);
-    const value: o.Expression = this.visit(ast.value, _Mode.Expression);
+    const obj: o.Expression = this._visit(ast.obj, _Mode.Expression);
+    const key: o.Expression = this._visit(ast.key, _Mode.Expression);
+    const value: o.Expression = this._visit(ast.value, _Mode.Expression);
     return convertToStatementIfNeeded(mode, obj.key(key).set(value));
   }
 
@@ -330,7 +335,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     } else {
       const args = this.visitAll(ast.args, _Mode.Expression);
       let result: any = null;
-      const receiver = this.visit(ast.receiver, _Mode.Expression);
+      const receiver = this._visit(ast.receiver, _Mode.Expression);
       if (receiver === this._implicitReceiver) {
         const varExpr = this._getLocal(ast.name);
         if (varExpr) {
@@ -345,7 +350,12 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   }
 
   visitPrefixNot(ast: cdAst.PrefixNot, mode: _Mode): any {
-    return convertToStatementIfNeeded(mode, o.not(this.visit(ast.expression, _Mode.Expression)));
+    return convertToStatementIfNeeded(mode, o.not(this._visit(ast.expression, _Mode.Expression)));
+  }
+
+  visitNonNullAssert(ast: cdAst.NonNullAssert, mode: _Mode): any {
+    return convertToStatementIfNeeded(
+        mode, o.assertNotNull(this._visit(ast.expression, _Mode.Expression)));
   }
 
   visitPropertyRead(ast: cdAst.PropertyRead, mode: _Mode): any {
@@ -354,7 +364,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       return this.convertSafeAccess(ast, leftMostSafe, mode);
     } else {
       let result: any = null;
-      const receiver = this.visit(ast.receiver, _Mode.Expression);
+      const receiver = this._visit(ast.receiver, _Mode.Expression);
       if (receiver === this._implicitReceiver) {
         result = this._getLocal(ast.name);
       }
@@ -366,7 +376,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   }
 
   visitPropertyWrite(ast: cdAst.PropertyWrite, mode: _Mode): any {
-    const receiver: o.Expression = this.visit(ast.receiver, _Mode.Expression);
+    const receiver: o.Expression = this._visit(ast.receiver, _Mode.Expression);
     if (receiver === this._implicitReceiver) {
       const varExpr = this._getLocal(ast.name);
       if (varExpr) {
@@ -374,7 +384,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       }
     }
     return convertToStatementIfNeeded(
-        mode, receiver.prop(ast.name).set(this.visit(ast.value, _Mode.Expression)));
+        mode, receiver.prop(ast.name).set(this._visit(ast.value, _Mode.Expression)));
   }
 
   visitSafePropertyRead(ast: cdAst.SafePropertyRead, mode: _Mode): any {
@@ -385,14 +395,14 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     return this.convertSafeAccess(ast, this.leftMostSafeNode(ast), mode);
   }
 
-  visitAll(asts: cdAst.AST[], mode: _Mode): any { return asts.map(ast => this.visit(ast, mode)); }
+  visitAll(asts: cdAst.AST[], mode: _Mode): any { return asts.map(ast => this._visit(ast, mode)); }
 
   visitQuote(ast: cdAst.Quote, mode: _Mode): any {
     throw new Error(`Quotes are not supported for evaluation!
         Statement: ${ast.uninterpretedExpression} located at ${ast.location}`);
   }
 
-  private visit(ast: cdAst.AST, mode: _Mode): any {
+  private _visit(ast: cdAst.AST, mode: _Mode): any {
     const result = this._resultMap.get(ast);
     if (result) return result;
     return (this._nodeMap.get(ast) || ast).visit(this, mode);
@@ -439,7 +449,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     // Notice that the first guard condition is the left hand of the left most safe access node
     // which comes in as leftMostSafe to this routine.
 
-    let guardedExpression = this.visit(leftMostSafe.receiver, _Mode.Expression);
+    let guardedExpression = this._visit(leftMostSafe.receiver, _Mode.Expression);
     let temporary: o.ReadVarExpr = undefined !;
     if (this.needsTemporary(leftMostSafe.receiver)) {
       // If the expression has method calls or pipes then we need to save the result into a
@@ -468,7 +478,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     }
 
     // Recursively convert the node now without the guarded member access.
-    const access = this.visit(ast, _Mode.Expression);
+    const access = this._visit(ast, _Mode.Expression);
 
     // Remove the mapping. This is not strictly required as the converter only traverses each node
     // once but is safer if the conversion is changed to traverse the nodes more than once.
@@ -509,6 +519,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       visitMethodCall(ast: cdAst.MethodCall) { return visit(this, ast.receiver); },
       visitPipe(ast: cdAst.BindingPipe) { return null; },
       visitPrefixNot(ast: cdAst.PrefixNot) { return null; },
+      visitNonNullAssert(ast: cdAst.NonNullAssert) { return null; },
       visitPropertyRead(ast: cdAst.PropertyRead) { return visit(this, ast.receiver); },
       visitPropertyWrite(ast: cdAst.PropertyWrite) { return null; },
       visitQuote(ast: cdAst.Quote) { return null; },
@@ -547,6 +558,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       visitMethodCall(ast: cdAst.MethodCall) { return true; },
       visitPipe(ast: cdAst.BindingPipe) { return true; },
       visitPrefixNot(ast: cdAst.PrefixNot) { return visit(this, ast.expression); },
+      visitNonNullAssert(ast: cdAst.PrefixNot) { return visit(this, ast.expression); },
       visitPropertyRead(ast: cdAst.PropertyRead) { return false; },
       visitPropertyWrite(ast: cdAst.PropertyWrite) { return false; },
       visitQuote(ast: cdAst.Quote) { return false; },

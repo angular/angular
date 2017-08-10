@@ -16,5 +16,12 @@
       "es2016",
       "dom"
     ]
-  }
+  },
+  "exclude": [
+    "content",
+    "tools",
+    "aio-builds-setup",
+    "node_modules",
+    "scripts"
+  ]
 }

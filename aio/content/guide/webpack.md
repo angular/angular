@@ -1,11 +1,4 @@
-@title
-Webpack: an introduction
-
-@intro
-Create Angular applications with a Webpack based tooling.
-
-@description
-
+# Webpack: An Introduction
 
 <style>
   h4 {font-size: 17px !important; text-transform: none !important;}
@@ -24,6 +17,8 @@ This guide offers a taste of Webpack and explains how to use it with Angular app
 
 
 {@a top}
+
+<!--
 
 
 # Contents
@@ -52,12 +47,14 @@ This guide offers a taste of Webpack and explains how to use it with Angular app
   * [Development configuration](guide/webpack#development-configuration)
   * [Production configuration](guide/webpack#production-configuration)
   * [Test configuration](guide/webpack#test-configuration)
-  
+
 * [Trying it out](guide/webpack#try)
 * [Highlights](guide/webpack#highlights)
 * [Conclusion](guide/webpack#conclusion)
 
-You can also <a href="/resources/zips/webpack/webpack.zip">download the final result.</a>
+-->
+
+You can also <a href="generated/zips/webpack/webpack.zip" target="_blank">download the final result.</a>
 
 {@a what-is-webpack}
 
@@ -105,19 +102,12 @@ It opens the `@angular/core` file and follows _its_ network of `import` statemen
 
 Then it **outputs** these files to the `app.js` _bundle file_ designated in configuration:
 
+<code-example name="webpack.config.js (single output)" language="javascript">
+  output: {
+    filename: 'app.js'
+  }
 
-<div class='code-example'>
-
-  <code-example name="webpack.config.js (single output)" language="javascript">
-    output: {
-      filename: 'app.js'
-    }
-
-  </code-example>
-
-</div>
-
-
+</code-example>
 
 This `app.js` output bundle is a single JavaScript file that contains the application source and its dependencies.
 You'll load it later with a `<script>` tag in the `index.html`.
@@ -133,22 +123,17 @@ It's preferable to separate the volatile application app code from comparatively
 Change the configuration so that it has two entry points, `main.ts` and `vendor.ts`:
 
 
-<div class='code-example'>
+<code-example language="javascript">
+  entry: {
+    app: 'src/app.ts',
+    vendor: 'src/vendor.ts'
+  },
 
-  <code-example language="javascript">
-    entry: {
-      app: 'src/app.ts',
-      vendor: 'src/vendor.ts'
-    },
+  output: {
+    filename: '[name].js'
+  }
 
-    output: {
-      filename: '[name].js'
-    }
-
-  </code-example>
-
-</div>
-
+</code-example>
 
 
 Webpack constructs two separate dependency graphs
@@ -189,40 +174,32 @@ Teach it to transform non-JavaScript file into their JavaScript equivalents with
 Configure loaders for TypeScript and CSS as follows.
 
 
-<div class='code-example'>
+<code-example language="javascript">
+  rules: [
+    {
+      test: /\.ts$/,
+      loader: 'awesome-typescript-loader'
+    },
+    {
+      test: /\.css$/,
+      loaders: 'style-loader!css-loader'
+    }
+  ]
 
-  <code-example language="javascript">
-    rules: [
-      {
-        test: /\.ts$/,
-        loader: 'awesome-typescript-loader'
-      },
-      {
-        test: /\.css$/,
-        loaders: 'style-loader!css-loader'
-      }
-    ]
-
-  </code-example>
-
-</div>
+</code-example>
 
 
 
-When Webpack encounters `import` statements like the following, 
-it applies the `test` RegEx patterns. 
+When Webpack encounters `import` statements like the following,
+it applies the `test` RegEx patterns.
 
 
-<div class='code-example'>
+<code-example language="typescript">
+  import { AppComponent } from './app.component.ts';
 
-  <code-example language="typescript">
-    import { AppComponent } from './app.component.ts';
+  import 'uiframework/dist/uiframework.css';
 
-    import 'uiframework/dist/uiframework.css';
-
-  </code-example>
-
-</div>
+</code-example>
 
 
 
@@ -233,7 +210,7 @@ The imported file doesn't match the second pattern so its loader is ignored.
 
 The second `import` matches the second `.css` pattern for which you have *two* loaders chained by the (!) character.
 Webpack applies chained loaders *right to left*. So it applies
-the `css` loader first to flatten CSS `@import` and `url(...)` statements. 
+the `css` loader first to flatten CSS `@import` and `url(...)` statements.
 Then it applies the `style` loader to append the css inside `<style>` elements on the page.
 
 
@@ -246,17 +223,12 @@ Then it applies the `style` loader to append the css inside `<style>` elements o
 Webpack has a build pipeline with well-defined phases.
 Tap into that pipeline with plugins such as the `uglify` minification plugin:
 
+<code-example language="javascript">
+  plugins: [
+    new webpack.optimize.UglifyJsPlugin()
+  ]
 
-<div class='code-example'>
-
-  <code-example language="javascript">
-    plugins: [
-      new webpack.optimize.UglifyJsPlugin()
-    ]
-
-  </code-example>
-
-</div>
+</code-example>
 
 
 
@@ -402,7 +374,7 @@ The configuration imports dependencies with `require` statements
 and exports several objects as properties of a `module.exports` object.
 
 * [`entry`](guide/webpack#common-entries)&mdash;the entry-point files that define the bundles.
-* [`resolve`](guide/webpack#common-resolve)&mdash;how to resolve file names when they lack extensions.
+* [`resolve`](guide/webpack#common-resolves)&mdash;how to resolve file names when they lack extensions.
 * [`module.rules`](guide/webpack#common-rules)&mdash; `module` is an object with `rules` for deciding how files are loaded.
 * [`plugins`](guide/webpack#common-plugins)&mdash;creates instances of the plugins.
 
@@ -428,7 +400,7 @@ This `entry` object defines the three bundles:
 * `app`&mdash;the application code.
 
 
-{@a common-resolve}
+{@a common-resolves}
 
 
 #### _resolve_ extension-less imports
@@ -436,16 +408,10 @@ This `entry` object defines the three bundles:
 The app will `import` dozens if not hundreds of JavaScript and TypeScript files.
 You could write `import` statements with explicit extensions like this example:
 
+<code-example language="typescript">
+  import { AppComponent } from './app.component.ts';
 
-<div class='code-example'>
-
-  <code-example language="typescript">
-    import { AppComponent } from './app.component.ts';
-
-  </code-example>
-
-</div>
-
+</code-example>
 
 
 But most `import` statements don't mention the extension at all.
@@ -490,7 +456,7 @@ Rules tell Webpack which loaders to use for each file, or module:
 * `angular2-template-loader`&mdash;loads angular components' template and styles.
 * `html-loader`&mdash;for component templates.
 * images/fonts&mdash;Images and fonts are bundled as well.
-* CSS&mdash;the first pattern matches application-wide styles; the second handles 
+* CSS&mdash;the first pattern matches application-wide styles; the second handles
 component-scoped styles (the ones specified in a component's `styleUrls` metadata property).
 
 <div class="l-sub-section">
@@ -610,7 +576,7 @@ appropriate `<script>` and `<link>` tags into the `index.html`.
 The CSS styles are buried inside the Javascript bundles by default. The `ExtractTextPlugin` extracts them into
 external `.css` files that the `HtmlWebpackPlugin` inscribes as `<link>` tags into the `index.html`.
 
-Refer to the [Webpack documentation](https://webpack.github.io/docs/) for details on these and 
+Refer to the [Webpack documentation](https://webpack.github.io/docs/) for details on these and
 other configuration options in this file.
 
 Grab the app code at the end of this guide and try:
@@ -783,9 +749,9 @@ Webpack techniques covered in this guide.
 
 
 The <code>app.component.html</code> displays this downloadable Angular logo
-<a href="assets/images/logos/angular/angular.png" target="_blank">
+<a href="assets/images/logos/angular/angular.png">
 <img src="assets/images/logos/angular/angular.png" height="40px" title="download Angular logo"></a>.
-Create a folder called `images` under the project's `assets` folder, then right-click (Cmd+click on Mac) 
+Create a folder called `images` under the project's `assets` folder, then right-click (Cmd+click on Mac)
 on the image and download it to that folder.
 
 
@@ -808,7 +774,7 @@ Here again are the TypeScript entry-point files that define the `polyfills` and 
 
 {@a highlights}
 
-### Highlights
+<h3 class="no-toc">Highlights</h3>
 
 * There are no `<script>` or `<link>` tags in the `index.html`.
 The `HtmlWebpackPlugin` inserts them dynamically at runtime.

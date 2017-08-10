@@ -2,9 +2,11 @@ import { Component, ElementRef, ViewChild, OnChanges, OnDestroy, Input } from '@
 import { Logger } from 'app/shared/logger.service';
 import { PrettyPrinter } from './pretty-printer.service';
 import { CopierService } from 'app/shared/copier.service';
+import { MdSnackBar } from '@angular/material';
 
 const originalLabel = 'Copy Code';
 const copiedLabel = 'Copied!';
+const defaultLineNumsCount = 10; // by default, show linenums over this number
 
 /**
  * Formatted Code Block
@@ -16,21 +18,49 @@ const copiedLabel = 'Copied!';
  * Example usage:
  *
  * ```
- *   <aio-code [code]="variableContainingCode" [language]="ts" [linenums]="true"></aio-code>
+ * <aio-code
+ *   [code]="variableContainingCode"
+ *   [language]="ts"
+ *   [linenums]="true"
+ *   [path]="ts-to-js/ts/src/app/app.module.ts"
+ *   [region]="ng2import">
+ * </aio-code>
  * ```
- *
  */
 @Component({
   selector: 'aio-code',
   template: `
-
     <pre class="prettyprint lang-{{language}}">
-      <button *ngIf="code" class="material-icons copy-button" (click)="doCopy()">content_copy</button>
+      <button *ngIf="!hideCopy" class="material-icons copy-button"
+        title="Copy code snippet"
+        [attr.aria-label]="ariaLabel"
+        (click)="doCopy()">
+        <span aria-hidden="true">content_copy</span>
+      </button>
       <code class="animated fadeIn" #codeContainer></code>
     </pre>
     `
 })
 export class CodeComponent implements OnChanges {
+
+  ariaLabel = '';
+
+  /**
+   * The code to be formatted, this should already be HTML encoded
+   */
+  @Input()
+  code: string;
+
+  /**
+   * The code to be copied when clicking the copy button, this should not be HTML encoded
+   */
+  private codeText: string;
+
+  /**
+   * set to true if the copy button is not to be shown
+   */
+  @Input()
+  hideCopy: boolean;
 
   /**
    * The language of the code to render
@@ -49,15 +79,22 @@ export class CodeComponent implements OnChanges {
   linenums: boolean | number | string;
 
   /**
-   * The code to be formatted, this should already be HTML encoded
+   * path to the source of the code being displayed
    */
   @Input()
-  code: string;
+  path: string;
 
   /**
-   * The label to show on the copy button
+   * region of the source of the code being displayed
    */
-  buttonLabel = originalLabel;
+  @Input()
+  region: string;
+
+  /**
+   * title for this snippet (optional)
+   */
+  @Input()
+  title: string;
 
   /**
    * The element in the template that will display the formatted code
@@ -65,21 +102,26 @@ export class CodeComponent implements OnChanges {
   @ViewChild('codeContainer') codeContainer: ElementRef;
 
   constructor(
+    private snackbar: MdSnackBar,
     private pretty: PrettyPrinter,
     private copier: CopierService,
     private logger: Logger) {}
 
   ngOnChanges() {
     this.code = this.code && leftAlign(this.code);
+    this.ariaLabel = this.title ? `Copy code snippet from ${this.title}` : '';
 
     if (!this.code) {
-      this.setCodeHtml('<p class="code-missing">The code sample is missing.</p>');
+      const src = this.path ? this.path + (this.region ? '#' + this.region : '') : '';
+      const srcMsg = src ? ` for\n${src}` : '.';
+      this.setCodeHtml(`<p class="code-missing">The code sample is missing${srcMsg}</p>`);
       return;
     }
 
     const linenums = this.getLinenums();
 
     this.setCodeHtml(this.code); // start with unformatted code
+    this.codeText = this.getCodeText(); // store the unformatted code as text (for copying)
     this.pretty.formatCode(this.code, this.language, linenums).subscribe(
       formattedCode => this.setCodeHtml(formattedCode),
       err => { /* ignore failure to format */ }
@@ -92,16 +134,27 @@ export class CodeComponent implements OnChanges {
     this.codeContainer.nativeElement.innerHTML = formattedCode;
   }
 
+  private getCodeText() {
+    // `prettify` may remove newlines, e.g. when `linenums` are on. Retrieve the content of the
+    // container as text, before prettifying it.
+    // We take the textContent because we don't want it to be HTML encoded.
+    return this.codeContainer.nativeElement.textContent;
+  }
+
   doCopy() {
-    // We take the innerText because we don't want it to be HTML encoded
-    const code = this.codeContainer.nativeElement.innerText;
+    const code = this.codeText;
     if (this.copier.copyText(code)) {
       this.logger.log('Copied code to clipboard:', code);
-      // change the button label (for one second)
-      this.buttonLabel = copiedLabel;
-      setTimeout(() => this.buttonLabel = originalLabel, 1000);
+      // success snackbar alert
+      this.snackbar.open('Code Copied', '', {
+        duration: 800,
+      });
     } else {
       this.logger.error('ERROR copying code to clipboard:', code);
+      // failure snackbar alert
+      this.snackbar.open('Copy failed. Please try again!', '', {
+        duration: 800,
+      });
     }
   }
 
@@ -115,7 +168,7 @@ export class CodeComponent implements OnChanges {
 
     // if no linenums, enable line numbers if more than one line
     return linenums == null || linenums === NaN ?
-      (this.code.match(/\n/g) || []).length > 1 : linenums;
+      (this.code.match(/\n/g) || []).length > defaultLineNumsCount : linenums;
   }
 }
 

@@ -31,7 +31,7 @@ class FancyService {
 class ExternalTemplateComp {
 }
 
-@Component({selector: 'bad-template-comp', templateUrl: 'non-existant.html'})
+@Component({selector: 'bad-template-comp', templateUrl: 'non-existent.html'})
 class BadTemplateUrl {
 }
 
@@ -87,7 +87,7 @@ export function main() {
           reject = rej;
         });
         originalJasmineIt = jasmine.getEnv().it;
-        jasmine.getEnv().it = (description: string, fn: any /** TODO #9100 */) => {
+        jasmine.getEnv().it = (description: string, fn: any /** TODO #9100 */): any => {
           const done = () => { resolve(null); };
           (<any>done).fail = (err: any /** TODO #9100 */) => { reject(err); };
           fn(done);
@@ -110,7 +110,7 @@ export function main() {
             () => { done.fail('Expected test to fail, but it did not'); },
             (err: any) => {
               expect(err.message)
-                  .toEqual('Uncaught (in promise): Failed to load non-existant.html');
+                  .toEqual('Uncaught (in promise): Failed to load non-existent.html');
               done();
             });
         restoreJasmineIt();
