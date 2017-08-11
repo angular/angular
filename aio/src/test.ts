@@ -14,19 +14,19 @@ import {
 } from '@angular/platform-browser-dynamic/testing';
 
 // List vendors here to increase test rebuild performance.
+import '@angular/animations';
 import '@angular/common';
 import '@angular/common/testing';
+import '@angular/common/http';
+import '@angular/common/http/testing';
 import '@angular/core/';
 import '@angular/core/testing';
+import '@angular/material';
 import '@angular/platform-browser';
 import '@angular/platform-browser/testing';
 import '@angular/platform-browser/animations';
 import '@angular/platform-browser-dynamic';
 import '@angular/platform-browser-dynamic/testing';
-import '@angular/http';
-import '@angular/http/testing';
-import '@angular/animations';
-import '@angular/material';
 import '@angular/service-worker';
 import 'rxjs'; // tslint:disable-line
 

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
+import { HttpClient } from '@angular/common/http';
 
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
@@ -15,14 +15,12 @@ const knownGroups = ['Angular', 'GDE'];
 export class ContributorService {
   contributors: Observable<ContributorGroup[]>;
 
-  constructor(private http: Http) {
+  constructor(private http: HttpClient) {
     this.contributors = this.getContributors();
   }
 
   private getContributors() {
-    const contributors = this.http.get(contributorsPath)
-      .map(res => res.json())
-
+    const contributors = this.http.get<{[key: string]: Contributor}>(contributorsPath)
       // Create group map
       .map(contribs => {
         const contribMap = new Map<string, Contributor[]>();
