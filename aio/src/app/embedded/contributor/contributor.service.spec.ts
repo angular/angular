@@ -1,39 +1,33 @@
-import { ReflectiveInjector } from '@angular/core';
-import { Http, ConnectionBackend, RequestOptions, BaseRequestOptions, Response, ResponseOptions } from '@angular/http';
-import { MockBackend } from '@angular/http/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { Injector } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 
 import { ContributorService } from './contributor.service';
 import { Contributor, ContributorGroup } from './contributors.model';
 
 describe('ContributorService', () => {
 
-  let injector: ReflectiveInjector;
-  let backend: MockBackend;
+  let injector: Injector;
   let contribService: ContributorService;
-
-  function createResponse(body: any) {
-    return new Response(new ResponseOptions({ body: JSON.stringify(body) }));
-  }
+  let httpMock: HttpTestingController;
 
   beforeEach(() => {
-    injector = ReflectiveInjector.resolveAndCreate([
-        ContributorService,
-        { provide: ConnectionBackend, useClass: MockBackend },
-        { provide: RequestOptions, useClass: BaseRequestOptions },
-        Http
-    ]);
+    injector = TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+      providers: [
+        ContributorService
+      ]
+    });
 
-    backend = injector.get(ConnectionBackend);
     contribService = injector.get(ContributorService);
+    httpMock = injector.get(HttpTestingController);
   });
 
-  it('should be creatable', () => {
-    expect(contribService).toBeTruthy();
-  });
+  afterEach(() => httpMock.verify());
 
   it('should make a single connection to the server', () => {
-    expect(backend.connectionsArray.length).toEqual(1);
-    expect(backend.connectionsArray[0].request.url).toEqual('generated/contributors.json');
+    const req = httpMock.expectOne({});
+    expect(req.request.url).toBe('generated/contributors.json');
   });
 
   describe('#contributors', () => {
@@ -43,7 +37,7 @@ describe('ContributorService', () => {
 
     beforeEach(() => {
       testData = getTestContribs();
-      backend.connectionsArray[0].mockRespond(createResponse(testData));
+      httpMock.expectOne({}).flush(testData);
       contribService.contributors.subscribe(results => contribs = results);
     });
 
@@ -70,55 +64,54 @@ describe('ContributorService', () => {
 });
 
 function getTestContribs() {
-  // tslint:disable:quotemark
   return {
-    "kapunahelewong": {
-      "name": "Kapunahele Wong",
-      "picture": "kapunahelewong.jpg",
-      "website": " https://github.com/kapunahelewong",
-      "twitter": "kapunahele",
-      "bio": "Kapunahele is a front-end developer and contributor to angular.io",
-      "group": "GDE"
+    kapunahelewong: {
+      name: 'Kapunahele Wong',
+      picture: 'kapunahelewong.jpg',
+      website: 'https://github.com/kapunahelewong',
+      twitter: 'kapunahele',
+      bio: 'Kapunahele is a front-end developer and contributor to angular.io',
+      group: 'GDE'
     },
-    "misko": {
-      "name": "Miško Hevery",
-      "picture": "misko.jpg",
-      "twitter": "mhevery",
-      "website": "http://misko.hevery.com",
-      "bio": "Miško Hevery is the creator of AngularJS framework.",
-      "group": "Angular"
+    misko: {
+      name: 'Miško Hevery',
+      picture: 'misko.jpg',
+      twitter: 'mhevery',
+      website: 'http://misko.hevery.com',
+      bio: 'Miško Hevery is the creator of AngularJS framework.',
+      group: 'Angular'
     },
-    "igor": {
-      "name": "Igor Minar",
-      "picture": "igor-minar.jpg",
-      "twitter": "IgorMinar",
-      "website": "https://google.com/+IgorMinar",
-      "bio": "Igor is a software engineer at Angular.",
-      "group": "Angular"
+    igor: {
+      name: 'Igor Minar',
+      picture: 'igor-minar.jpg',
+      twitter: 'IgorMinar',
+      website: 'https://google.com/+IgorMinar',
+      bio: 'Igor is a software engineer at Angular.',
+      group: 'Angular'
     },
-    "kara": {
-      "name": "Kara Erickson",
-      "picture": "kara-erickson.jpg",
-      "twitter": "karaforthewin",
-      "website": "https://github.com/kara",
-      "bio": "Kara is a software engineer on the Angular team at Angular and a co-organizer of the Angular-SF Meetup. ",
-      "group": "Angular"
+    kara: {
+      name: 'Kara Erickson',
+      picture: 'kara-erickson.jpg',
+      twitter: 'karaforthewin',
+      website: 'https://github.com/kara',
+      bio: 'Kara is a software engineer on the Angular team at Angular and a co-organizer of the Angular-SF Meetup. ',
+      group: 'Angular'
     },
-    "jeffcross": {
-      "name": "Jeff Cross",
-      "picture": "jeff-cross.jpg",
-      "twitter": "jeffbcross",
-      "website": "https://twitter.com/jeffbcross",
-      "bio": "Jeff was one of the earliest core team members on AngularJS.",
-      "group": "GDE"
+    jeffcross: {
+      name: 'Jeff Cross',
+      picture: 'jeff-cross.jpg',
+      twitter: 'jeffbcross',
+      website: 'https://twitter.com/jeffbcross',
+      bio: 'Jeff was one of the earliest core team members on AngularJS.',
+      group: 'GDE'
     },
-    "naomi": {
-      "name": "Naomi Black",
-      "picture": "naomi.jpg",
-      "twitter": "naomitraveller",
-      "website": "http://google.com/+NaomiBlack",
-      "bio": "Naomi is Angular's TPM generalist and jack-of-all-trades.",
-      "group": "Angular"
+    naomi: {
+      name: 'Naomi Black',
+      picture: 'naomi.jpg',
+      twitter: 'naomitraveller',
+      website: 'http://google.com/+NaomiBlack',
+      bio: 'Naomi is Angular\'s TPM generalist and jack-of-all-trades.',
+      group: 'Angular'
     }
  };
 }

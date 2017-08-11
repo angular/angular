@@ -1,6 +1,6 @@
-import { ReflectiveInjector } from '@angular/core';
-import { Http, ConnectionBackend, RequestOptions, BaseRequestOptions, Response, ResponseOptions } from '@angular/http';
-import { MockBackend, MockConnection } from '@angular/http/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { Injector } from '@angular/core';
+import { TestBed, inject } from '@angular/core/testing';
 
 import { Logger } from 'app/shared/logger.service';
 
@@ -8,35 +8,27 @@ import { ApiService } from './api.service';
 
 describe('ApiService', () => {
 
-  let injector: ReflectiveInjector;
+  let injector: Injector;
   let service: ApiService;
-  let backend: MockBackend;
-
-  function createResponse(body: any) {
-    return new Response(new ResponseOptions({ body: JSON.stringify(body) }));
-  }
+  let httpMock: HttpTestingController;
 
   beforeEach(() => {
-    injector = ReflectiveInjector.resolveAndCreate([
-      ApiService,
-      { provide: ConnectionBackend, useClass: MockBackend },
-      { provide: RequestOptions, useClass: BaseRequestOptions },
-      Http,
-      { provide: Logger, useClass: TestLogger }
-    ]);
-  });
+    injector = TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+      providers: [
+        ApiService,
+        { provide: Logger, useClass: TestLogger }
+      ]
+    });
 
-  beforeEach(() => {
-    backend = injector.get(ConnectionBackend);
     service = injector.get(ApiService);
+    httpMock = injector.get(HttpTestingController);
   });
 
-  it('should be creatable', () => {
-    expect(service).toBeTruthy();
-  });
+  afterEach(() => httpMock.verify());
 
   it('should not immediately connect to the server', () => {
-    expect(backend.connectionsArray.length).toEqual(0);
+    httpMock.expectNone({});
   });
 
   it('subscribers should be completed/unsubscribed when service destroyed', () => {
@@ -50,9 +42,13 @@ describe('ApiService', () => {
 
       service.ngOnDestroy();
       expect(completed).toBe(true);
+
+      // Stop `httpMock.verify()` from complaining.
+      httpMock.expectOne({});
   });
 
   describe('#sections', () => {
+
     it('first subscriber should fetch sections', () => {
       const data = [{name: 'a', title: 'A', items: []}, {name: 'b', title: 'B', items: []}];
 
@@ -60,7 +56,7 @@ describe('ApiService', () => {
         expect(sections).toEqual(data);
       });
 
-      backend.connectionsArray[0].mockRespond(createResponse(data));
+      httpMock.expectOne({}).flush(data);
     });
 
     it('second subscriber should get previous sections and NOT trigger refetch', () => {
@@ -77,27 +73,20 @@ describe('ApiService', () => {
         expect(sections).toEqual(data);
       });
 
-      backend.connectionsArray[0].mockRespond(createResponse(data));
-
-      expect(backend.connectionsArray.length).toBe(1, 'server connections');
-      expect(subscriptions).toBe(2, 'subscriptions');
+      httpMock.expectOne({}).flush(data);
     });
-
   });
 
   describe('#fetchSections', () => {
 
     it('should connect to the server w/ expected URL', () => {
       service.fetchSections();
-      expect(backend.connectionsArray.length).toEqual(1);
-      expect(backend.connectionsArray[0].request.url).toEqual('generated/docs/api/api-list.json');
+      httpMock.expectOne('generated/docs/api/api-list.json');
     });
 
     it('should refresh the #sections observable w/ new content on second call', () => {
 
       let call = 0;
-      let connection: MockConnection;
-      backend.connections.subscribe(c => connection = c);
 
       let data = [{name: 'a', title: 'A', items: []}, {name: 'b', title: 'B', items: []}];
 
@@ -107,12 +96,13 @@ describe('ApiService', () => {
         // (2) after refresh
         expect(sections).toEqual(data, 'call ' + call++);
       });
-      connection.mockRespond(createResponse(data));
+
+      httpMock.expectOne({}).flush(data);
 
       // refresh/refetch
       data = [{name: 'c', title: 'C', items: []}];
       service.fetchSections();
-      connection.mockRespond(createResponse(data));
+      httpMock.expectOne({}).flush(data);
 
       expect(call).toBe(2, 'should be called twice');
     });

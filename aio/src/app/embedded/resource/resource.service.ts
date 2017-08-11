@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
+import { HttpClient } from '@angular/common/http';
 
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
@@ -14,14 +14,13 @@ const resourcesPath = CONTENT_URL_PREFIX + 'resources.json';
 export class ResourceService {
   categories: Observable<Category[]>;
 
-  constructor(private http: Http) {
+  constructor(private http: HttpClient) {
     this.categories = this.getCategories();
   }
 
   private getCategories(): Observable<Category[]> {
 
-    const categories = this.http.get(resourcesPath)
-      .map(res => res.json())
+    const categories = this.http.get<any>(resourcesPath)
       .map(data => mkCategories(data))
       .publishLast();
 

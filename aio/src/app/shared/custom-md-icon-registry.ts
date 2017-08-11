@@ -1,7 +1,7 @@
 import { InjectionToken, Inject, Injectable } from '@angular/core';
 import { of } from 'rxjs/observable/of';
 import { MdIconRegistry } from '@angular/material';
-import { Http } from '@angular/http';
+import { HttpClient } from '@angular/common/http';
 import { DomSanitizer } from '@angular/platform-browser';
 
 /**
@@ -27,6 +27,19 @@ interface SvgIconMap {
   [iconName: string]: SVGElement;
 }
 
+// <hack-alert>
+// @angular/material's `MdIconRegitry` currently (v2.0.0-beta.8) requires an instance of `Http`
+// (from @angular/http). It is only used to [get some text content][1], so we can create a wrapper
+// around `HttpClient` and pretend it is `Http`.
+// [1]: https://github.com/angular/material2/blob/2.0.0-beta.8/src/lib/icon/icon-registry.ts#L465-L466
+// </hack-alert>
+function createFakeHttp(http: HttpClient): any {
+  return {
+    get: (url: string) => http.get(url, {responseType: 'text'})
+      .map(data => ({text: () => data}))
+  };
+}
+
 /**
  * A custom replacement for Angular Material's `MdIconRegistry`, which allows
  * us to provide preloaded icon SVG sources.
@@ -35,14 +48,14 @@ interface SvgIconMap {
 export class CustomMdIconRegistry extends MdIconRegistry {
   private preloadedSvgElements: SvgIconMap = {};
 
-  constructor(http: Http, sanitizer: DomSanitizer, @Inject(SVG_ICONS) svgIcons: SvgIconInfo[]) {
-    super(http, sanitizer);
+  constructor(http: HttpClient, sanitizer: DomSanitizer, @Inject(SVG_ICONS) svgIcons: SvgIconInfo[]) {
+    super(createFakeHttp(http), sanitizer);
     this.loadSvgElements(svgIcons);
   }
 
-  getNamedSvgIcon(iconName, namespace) {
+  getNamedSvgIcon(iconName: string, namespace?: string) {
     if (this.preloadedSvgElements[iconName]) {
-      return of(this.preloadedSvgElements[iconName].cloneNode(true));
+      return of(this.preloadedSvgElements[iconName].cloneNode(true) as SVGElement);
     }
     return super.getNamedSvgIcon(iconName, namespace);
   }

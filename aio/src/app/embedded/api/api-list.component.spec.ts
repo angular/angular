@@ -26,10 +26,6 @@ describe('ApiListComponent', () => {
     sections = getApiSections();
   });
 
-  it('should be creatable', () => {
-    expect(component).toBeDefined();
-  });
-
   /**
    * Expectation Utility: Assert that filteredSections has the expected result for this test
    * @param itemTest - return true if the item passes the match test

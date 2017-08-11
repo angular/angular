@@ -2,7 +2,7 @@ import { NO_ERRORS_SCHEMA, DebugElement } from '@angular/core';
 import { async, inject, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { APP_BASE_HREF } from '@angular/common';
-import { Http } from '@angular/http';
+import { HttpClient } from '@angular/common/http';
 import { MdProgressBar, MdSidenav } from '@angular/material';
 import { By } from '@angular/platform-browser';
 
@@ -650,7 +650,7 @@ describe('AppComponent', () => {
     describe('footer', () => {
       it('should have version number', () => {
         const versionEl: HTMLElement = fixture.debugElement.query(By.css('aio-footer')).nativeElement;
-        expect(versionEl.textContent).toContain(TestHttp.versionInfo.full);
+        expect(versionEl.textContent).toContain(TestHttpClient.versionInfo.full);
       });
     });
 
@@ -1027,7 +1027,7 @@ function createTestingModule(initialUrl: string, mode: string = 'stable') {
     providers: [
       { provide: APP_BASE_HREF, useValue: '/' },
       { provide: GaService, useClass: TestGaService },
-      { provide: Http, useClass: TestHttp },
+      { provide: HttpClient, useClass: TestHttpClient },
       { provide: LocationService, useFactory: () => mockLocationService },
       { provide: Logger, useClass: MockLogger },
       { provide: SearchService, useClass: MockSearchService },
@@ -1049,7 +1049,7 @@ class TestSearchService {
   loadIndex  = jasmine.createSpy('loadIndex');
 }
 
-class TestHttp {
+class TestHttpClient {
 
   static versionInfo = {
     raw: '4.0.0-rc.6',
@@ -1105,9 +1105,9 @@ class TestHttp {
         "tooltip": "Details of the Angular classes and values."
       }
     ],
-    "docVersions": TestHttp.docVersions,
+    "docVersions": TestHttpClient.docVersions,
 
-    "__versionInfo": TestHttp.versionInfo,
+    "__versionInfo": TestHttpClient.versionInfo,
   };
 
   get(url: string) {
@@ -1123,6 +1123,6 @@ class TestHttp {
       const contents = `${h1}<h2 id="#somewhere">Some heading</h2>`;
       data = { id, contents };
     }
-    return of({ json: () => data });
+    return of(data);
   }
 }
