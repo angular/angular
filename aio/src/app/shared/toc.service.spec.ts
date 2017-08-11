@@ -31,10 +31,6 @@ describe('TocService', () => {
     tocService.tocList.subscribe(tocList => lastTocList = tocList);
   });
 
-  it('should be creatable', () => {
-    expect(tocService).toBeTruthy();
-  });
-
   describe('tocList', () => {
     it('should emit the latest value to new subscribers', () => {
       const expectedValue1 = tocItem('Heading A');
