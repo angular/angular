@@ -3,8 +3,8 @@
 set -u -e -o pipefail
 
 declare -A limitUncompressed
-limitUncompressed=(["inline"]=1600 ["main"]=550000 ["polyfills"]=35000)
+limitUncompressed=(["inline"]=1600 ["main"]=525000 ["polyfills"]=35000)
 declare -A limitGzip7
-limitGzip7=(["inline"]=1000 ["main"]=140000 ["polyfills"]=12500)
+limitGzip7=(["inline"]=1000 ["main"]=127000 ["polyfills"]=12500)
 declare -A limitGzip9
-limitGzip9=(["inline"]=1000 ["main"]=140000 ["polyfills"]=12500)
+limitGzip9=(["inline"]=1000 ["main"]=127000 ["polyfills"]=12500)
