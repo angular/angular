@@ -363,6 +363,10 @@ Those _npm_ commands are long and difficult to remember.
 
 Add the following _npm_ convenience script to the `package.json` so you can compile and rollup in one command.
 
+<code-example language="json">
+  "build:aot": "ngc -p tsconfig-aot.json && rollup -c rollup-config.js",
+</code-example>
+
 Open a terminal window and try it.
 
 <code-example language="none" class="code-shell">
@@ -526,10 +530,10 @@ Compiling with AOT presupposes certain supporting files, most of them discussed 
   </code-pane>
 </code-tabs>
 
-Extend the `scripts` section of the `package.json` with these npm scripts:
+With the following npm script in the `scripts` section of the `package.json`, you can easily serve
+the AOT-compiled application:
 
 <code-example language="json">
-  "build:aot": "ngc -p tsconfig-aot.json && rollup -c rollup-config.js",
   "serve:aot": "lite-server -c bs-config.aot.json",
 </code-example>
 
@@ -545,7 +549,7 @@ Copy the AOT distribution files into the `/aot` folder with the node script:
 
 </div>
 
-Now AOT-compile the app and launch it with the `lite-server`:
+Now AOT-compile the app and launch:
 
 <code-example language="none" class="code-shell">
   npm run build:aot && npm run serve:aot
