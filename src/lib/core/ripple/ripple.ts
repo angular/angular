@@ -18,10 +18,10 @@ import {
   InjectionToken,
   Optional,
 } from '@angular/core';
+import {ViewportRuler} from '@angular/cdk/overlay';
+import {Platform} from '@angular/cdk/platform';
 import {RippleConfig, RippleRenderer} from './ripple-renderer';
 import {RippleRef} from './ripple-ref';
-import {ViewportRuler} from '../overlay/position/viewport-ruler';
-import {Platform} from '../platform/platform';
 
 export interface RippleGlobalOptions {
   disabled?: boolean;

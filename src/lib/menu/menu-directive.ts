@@ -34,7 +34,7 @@ import {transformMenu, fadeInItems} from './menu-animations';
 import {ESCAPE, LEFT_ARROW, RIGHT_ARROW} from '../core/keyboard/keycodes';
 import {merge} from 'rxjs/observable/merge';
 import {Observable} from 'rxjs/Observable';
-import {Direction} from '../core';
+import {Direction} from '@angular/cdk/bidi';
 
 /** Default `md-menu` options that can be overridden. */
 export interface MdMenuDefaultOptions {

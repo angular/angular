@@ -19,7 +19,8 @@ import {
   ViewEncapsulation,
   Inject,
 } from '@angular/core';
-import {FocusOriginMonitor, Platform} from '../core';
+import {Platform} from '@angular/cdk/platform';
+import {FocusOriginMonitor} from '../core';
 import {mixinDisabled, CanDisable} from '../core/common-behaviors/disabled';
 import {CanColor, mixinColor} from '../core/common-behaviors/color';
 import {CanDisableRipple, mixinDisableRipple} from '../core/common-behaviors/disable-ripple';

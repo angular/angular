@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {Overlay, ScrollStrategy} from '@angular/material';
+import {Overlay, ScrollStrategy} from '@angular/cdk/overlay';
 
 @Component({
   moduleId: module.id,

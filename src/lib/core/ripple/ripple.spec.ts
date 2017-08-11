@@ -1,12 +1,12 @@
 import {TestBed, ComponentFixture, fakeAsync, tick, inject} from '@angular/core/testing';
 import {Component, ViewChild} from '@angular/core';
-import {ViewportRuler} from '../overlay/position/viewport-ruler';
-import {RIPPLE_FADE_OUT_DURATION, RIPPLE_FADE_IN_DURATION} from './ripple-renderer';
+import {Platform} from '@angular/cdk/platform';
+import {ViewportRuler} from '@angular/cdk/overlay';
 import {dispatchMouseEvent} from '@angular/cdk/testing';
+import {RIPPLE_FADE_OUT_DURATION, RIPPLE_FADE_IN_DURATION} from './ripple-renderer';
 import {
   MdRipple, MdRippleModule, MD_RIPPLE_GLOBAL_OPTIONS, RippleState, RippleGlobalOptions
 } from './index';
-import {Platform} from '@angular/cdk/platform';
 
 
 describe('MdRipple', () => {

@@ -7,7 +7,7 @@
  */
 
 import {NgZone} from '@angular/core';
-import {PortalHost, Portal} from '../portal/portal';
+import {PortalHost, Portal} from '@angular/cdk/portal';
 import {OverlayState} from './overlay-state';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';

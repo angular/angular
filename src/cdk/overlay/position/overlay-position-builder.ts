@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ElementRef, Injectable} from '@angular/core';
 import {ViewportRuler} from './viewport-ruler';
 import {ConnectedPositionStrategy} from './connected-position-strategy';
-import {ElementRef, Injectable} from '@angular/core';
 import {GlobalPositionStrategy} from './global-position-strategy';
 import {OverlayConnectionPosition, OriginConnectionPosition} from './connected-position';
 

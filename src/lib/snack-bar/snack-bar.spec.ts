@@ -10,7 +10,8 @@ import {
 import {NgModule, Component, Directive, ViewChild, ViewContainerRef, Inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {OverlayContainer, LiveAnnouncer} from '../core';
+import {OverlayContainer} from '@angular/cdk/overlay';
+import {LiveAnnouncer} from '@angular/cdk/a11y';
 import {
   MdSnackBarModule,
   MdSnackBar,

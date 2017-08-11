@@ -8,6 +8,8 @@
 
 import {
   AfterContentInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   Directive,
   ElementRef,
@@ -19,26 +21,26 @@ import {
   Renderer2,
   ViewChild,
   ViewEncapsulation,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
   ContentChildren,
   QueryList,
   forwardRef,
 } from '@angular/core';
-import {MdInkBar} from '../ink-bar';
-import {CanDisable, mixinDisabled} from '../../core/common-behaviors/disabled';
-import {MdRipple} from '../../core';
-import {ViewportRuler} from '../../core/overlay/position/viewport-ruler';
-import {Directionality, MD_RIPPLE_GLOBAL_OPTIONS, Platform, RippleGlobalOptions} from '../../core';
-import {CanColor, mixinColor, ThemePalette} from '../../core/common-behaviors/color';
+import {ViewportRuler} from '@angular/cdk/overlay';
+import {Directionality} from '@angular/cdk/bidi';
+import {Platform} from '@angular/cdk/platform';
+import {auditTime, takeUntil} from '@angular/cdk/rxjs';
 import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
-import {takeUntil, auditTime} from '../../core/rxjs/index';
 import {of as observableOf} from 'rxjs/observable/of';
 import {merge} from 'rxjs/observable/merge';
 import {fromEvent} from 'rxjs/observable/fromEvent';
 import {CanDisableRipple, mixinDisableRipple} from '../../core/common-behaviors/disable-ripple';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {CanDisable, mixinDisabled} from '../../core/common-behaviors/disabled';
+import {MD_RIPPLE_GLOBAL_OPTIONS, MdRipple, RippleGlobalOptions} from '../../core';
+import {CanColor, mixinColor, ThemePalette} from '../../core/common-behaviors/color';
+import {MdInkBar} from '../ink-bar';
+
 
 // Boilerplate for applying mixins to MdTabNav.
 /** @docs-private */

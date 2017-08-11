@@ -6,4 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from '@angular/cdk/overlay';
+export * from './public_api';

@@ -7,8 +7,8 @@
  */
 
 import {Directive, EventEmitter, Input, Output} from '@angular/core';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {SortDirection} from './sort-direction';
-import {coerceBooleanProperty} from '../core';
 import {getMdSortDuplicateMdSortableIdError, getMdSortHeaderMissingIdError} from './sort-errors';
 
 export interface MdSortable {

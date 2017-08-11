@@ -7,39 +7,37 @@
  */
 
 import {
-  Injector,
   ComponentRef,
+  Inject,
   Injectable,
+  InjectionToken,
+  Injector,
   Optional,
   SkipSelf,
   TemplateRef,
-  Inject,
-  InjectionToken,
 } from '@angular/core';
 import {Location} from '@angular/common';
-import {Observable} from 'rxjs/Observable';
-import {Subject} from 'rxjs/Subject';
+import {ComponentPortal, ComponentType, TemplatePortal} from '@angular/cdk/portal';
 import {
+  BlockScrollStrategy,
   Overlay,
   OverlayRef,
-  ComponentType,
   OverlayState,
-  ComponentPortal,
-  BlockScrollStrategy,
   // This import is only used to define a generic type. The current TypeScript version incorrectly
   // considers such imports as unused (https://github.com/Microsoft/TypeScript/issues/14953)
   // tslint:disable-next-line:no-unused-variable
   ScrollStrategy,
-} from '../core';
+} from '@angular/cdk/overlay';
+import {ESCAPE} from '@angular/cdk/keycodes';
+import {startWith} from '@angular/cdk/rxjs';
+import {Observable} from 'rxjs/Observable';
+import {Subject} from 'rxjs/Subject';
+import {defer} from 'rxjs/observable/defer';
 import {PortalInjector} from '../core/portal/portal-injector';
 import {extendObject} from '../core/util/object-extend';
-import {ESCAPE} from '../core/keyboard/keycodes';
 import {MdDialogConfig} from './dialog-config';
 import {MdDialogRef} from './dialog-ref';
 import {MdDialogContainer} from './dialog-container';
-import {TemplatePortal} from '../core/portal/portal';
-import {defer} from 'rxjs/observable/defer';
-import {startWith} from '../core/rxjs/index';
 
 export const MD_DIALOG_DATA = new InjectionToken<any>('MdDialogData');
 
@@ -49,7 +47,8 @@ export const MD_DIALOG_SCROLL_STRATEGY =
     new InjectionToken<() => ScrollStrategy>('md-dialog-scroll-strategy');
 
 /** @docs-private */
-export function MD_DIALOG_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay) {
+export function MD_DIALOG_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay):
+    () => BlockScrollStrategy {
   return () => overlay.scrollStrategies.block();
 }
 

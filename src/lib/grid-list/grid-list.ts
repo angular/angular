@@ -22,7 +22,7 @@ import {
 import {MdGridTile} from './grid-tile';
 import {TileCoordinator} from './tile-coordinator';
 import {TileStyler, FitTileStyler, RatioTileStyler, FixedTileStyler} from './tile-styler';
-import {Directionality} from '../core';
+import {Directionality} from '@angular/cdk/bidi';
 import {
   coerceToString,
   coerceToNumber,

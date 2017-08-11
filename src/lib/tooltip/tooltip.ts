@@ -7,49 +7,43 @@
  */
 
 import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   Directive,
-  Input,
   ElementRef,
-  ViewContainerRef,
-  NgZone,
-  Optional,
-  OnDestroy,
-  Renderer2,
-  ChangeDetectorRef,
-  ChangeDetectionStrategy,
-  ViewEncapsulation,
-  InjectionToken,
   Inject,
+  InjectionToken,
+  Input,
+  NgZone,
+  OnDestroy,
+  Optional,
+  Renderer2,
+  ViewContainerRef,
+  ViewEncapsulation,
 } from '@angular/core';
+import {animate, AnimationEvent, state, style, transition, trigger} from '@angular/animations';
+import {ComponentPortal} from '@angular/cdk/portal';
+import {Observable} from 'rxjs/Observable';
+import {Subject} from 'rxjs/Subject';
+import {Directionality} from '@angular/cdk/bidi';
+import {Platform} from '@angular/cdk/platform';
+import {first} from '@angular/cdk/rxjs';
 import {
-  style,
-  trigger,
-  state,
-  transition,
-  animate,
-  AnimationEvent,
-} from '@angular/animations';
-import {
-  Overlay,
-  OverlayState,
-  OverlayRef,
-  ComponentPortal,
-  OverlayConnectionPosition,
   OriginConnectionPosition,
+  Overlay,
+  OverlayConnectionPosition,
+  OverlayRef,
+  OverlayState,
   RepositionScrollStrategy,
+  ScrollDispatcher,
   // This import is only used to define a generic type. The current TypeScript version incorrectly
   // considers such imports as unused (https://github.com/Microsoft/TypeScript/issues/14953)
   // tslint:disable-next-line:no-unused-variable
   ScrollStrategy,
-} from '../core';
-import {Observable} from 'rxjs/Observable';
-import {Subject} from 'rxjs/Subject';
-import {Directionality} from '../core/bidi/index';
-import {Platform} from '../core/platform/index';
-import {first} from '../core/rxjs/index';
-import {ScrollDispatcher} from '../core/overlay/scroll/scroll-dispatcher';
+} from '@angular/cdk/overlay';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
+
 
 export type TooltipPosition = 'left' | 'right' | 'above' | 'below' | 'before' | 'after';
 
@@ -72,7 +66,8 @@ export const MD_TOOLTIP_SCROLL_STRATEGY =
     new InjectionToken<() => ScrollStrategy>('md-tooltip-scroll-strategy');
 
 /** @docs-private */
-export function MD_TOOLTIP_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay) {
+export function MD_TOOLTIP_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay):
+    () => RepositionScrollStrategy {
   return () => overlay.scrollStrategies.reposition({ scrollThrottle: SCROLL_THROTTLE_MS });
 }
 

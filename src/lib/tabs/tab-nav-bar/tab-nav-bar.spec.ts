@@ -1,13 +1,11 @@
 import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {MdTabsModule} from '../index';
-import {MdTabNav, MdTabLink} from './tab-nav-bar';
 import {Component, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {ViewportRuler} from '../../core/overlay/position/viewport-ruler';
-import {FakeViewportRuler} from '../../core/overlay/position/fake-viewport-ruler';
-import {dispatchFakeEvent, dispatchMouseEvent} from '@angular/cdk/testing';
-import {Direction, Directionality} from '../../core/bidi/index';
+import {ViewportRuler} from '@angular/cdk/overlay';
+import {dispatchFakeEvent, dispatchMouseEvent, FakeViewportRuler} from '@angular/cdk/testing';
+import {Direction, Directionality} from '@angular/cdk/bidi';
 import {Subject} from 'rxjs/Subject';
+import {MdTabNav, MdTabsModule, MdTabLink} from '../index';
 
 
 describe('MdTabNavBar', () => {

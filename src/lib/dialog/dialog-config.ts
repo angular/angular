@@ -7,7 +7,7 @@
  */
 
 import {ViewContainerRef} from '@angular/core';
-import {Direction} from '../core';
+import {Direction} from '@angular/cdk/bidi';
 
 /** Valid ARIA roles for a dialog element. */
 export type DialogRole = 'dialog' | 'alertdialog';

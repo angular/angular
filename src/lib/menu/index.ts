@@ -8,7 +8,8 @@
 
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {OverlayModule, MdCommonModule} from '../core';
+import {MdCommonModule} from '../core';
+import {OverlayModule} from '@angular/cdk/overlay';
 import {MdMenu, MD_MENU_DEFAULT_OPTIONS} from './menu-directive';
 import {MdMenuItem} from './menu-item';
 import {MdMenuTrigger, MD_MENU_SCROLL_STRATEGY_PROVIDER} from './menu-trigger';

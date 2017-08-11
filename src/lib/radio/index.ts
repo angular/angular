@@ -8,7 +8,7 @@
 
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {VIEWPORT_RULER_PROVIDER} from '../core/overlay/position/viewport-ruler';
+import {VIEWPORT_RULER_PROVIDER} from '@angular/cdk/overlay';
 import {
   MdRippleModule,
   MdCommonModule,

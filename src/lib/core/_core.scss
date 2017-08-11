@@ -1,7 +1,10 @@
+// We can use relative imports for imports from the cdk because we bundle everything
+// up into a single flat scss file for material.
+@import '../../cdk/overlay/overlay';
+
 // Core styles that can be used to apply material design treatments to any element.
 @import 'a11y/a11y';
 @import 'style/elevation';
-@import 'overlay/overlay';
 @import 'ripple/ripple';
 @import 'option/option';
 @import 'option/option-theme';

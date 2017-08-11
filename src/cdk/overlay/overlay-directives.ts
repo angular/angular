@@ -7,37 +7,37 @@
  */
 
 import {
-    Directive,
-    EventEmitter,
-    TemplateRef,
-    ViewContainerRef,
-    Optional,
-    Input,
-    OnDestroy,
-    Output,
-    ElementRef,
-    Renderer2,
-    OnChanges,
-    SimpleChanges,
-    InjectionToken,
-    Inject,
+  Directive,
+  ElementRef,
+  EventEmitter,
+  Inject,
+  InjectionToken,
+  Input,
+  OnChanges,
+  OnDestroy,
+  Optional,
+  Output,
+  Renderer2,
+  SimpleChanges,
+  TemplateRef,
+  ViewContainerRef,
 } from '@angular/core';
+import {Direction, Directionality} from '@angular/cdk/bidi';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {ESCAPE} from '@angular/cdk/keycodes';
+import {TemplatePortal} from '@angular/cdk/portal';
 import {Overlay} from './overlay';
 import {OverlayRef} from './overlay-ref';
-import {TemplatePortal} from '../portal/portal';
 import {OverlayState} from './overlay-state';
 import {
-    ConnectionPositionPair,
-    // This import is only used to define a generic type. The current TypeScript version incorrectly
-    // considers such imports as unused (https://github.com/Microsoft/TypeScript/issues/14953)
-    // tslint:disable-next-line:no-unused-variable
-    ConnectedOverlayPositionChange
+  // This import is only used to define a generic type. The current TypeScript version incorrectly
+  // considers such imports as unused (https://github.com/Microsoft/TypeScript/issues/14953)
+  // tslint:disable-next-line:no-unused-variable
+  ConnectedOverlayPositionChange,
+  ConnectionPositionPair,
 } from './position/connected-position';
 import {ConnectedPositionStrategy} from './position/connected-position-strategy';
-import {Directionality, Direction} from '../bidi/index';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {ScrollStrategy, RepositionScrollStrategy} from './scroll/index';
-import {ESCAPE} from '../keyboard/keycodes';
+import {RepositionScrollStrategy, ScrollStrategy} from './scroll/index';
 import {Subscription} from 'rxjs/Subscription';
 
 
@@ -56,7 +56,8 @@ export const MD_CONNECTED_OVERLAY_SCROLL_STRATEGY =
     new InjectionToken<() => ScrollStrategy>('md-connected-overlay-scroll-strategy');
 
 /** @docs-private */
-export function MD_CONNECTED_OVERLAY_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay) {
+export function MD_CONNECTED_OVERLAY_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay):
+    () => RepositionScrollStrategy {
   return () => overlay.scrollStrategies.reposition();
 }
 

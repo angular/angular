@@ -28,12 +28,11 @@ import {
   BasePortalHost,
   ComponentPortal,
   PortalHostDirective,
-} from '../core';
-import {MdSnackBarConfig} from './snack-bar-config';
+} from '@angular/cdk/portal';
+import {first} from '@angular/cdk/rxjs';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
-import {first} from '../core/rxjs/index';
-
+import {MdSnackBarConfig} from './snack-bar-config';
 
 
 export type SnackBarState = 'initial' | 'visible' | 'complete' | 'void';

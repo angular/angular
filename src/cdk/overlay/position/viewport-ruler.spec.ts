@@ -1,6 +1,6 @@
-import {ViewportRuler, VIEWPORT_RULER_PROVIDER} from './viewport-ruler';
 import {TestBed, inject} from '@angular/core/testing';
 import {ScrollDispatchModule} from '../scroll/index';
+import {ViewportRuler, VIEWPORT_RULER_PROVIDER} from './viewport-ruler';
 
 
 // For all tests, we assume the browser window is 1024x786 (outerWidth x outerHeight).

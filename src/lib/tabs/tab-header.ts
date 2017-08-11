@@ -25,20 +25,15 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef
 } from '@angular/core';
-import {
-  RIGHT_ARROW,
-  LEFT_ARROW,
-  ENTER,
-  Directionality,
-  Direction,
-} from '../core';
-import {MdTabLabelWrapper} from './tab-label-wrapper';
-import {MdInkBar} from './ink-bar';
+import {Directionality, Direction} from '@angular/cdk/bidi';
+import {RIGHT_ARROW, LEFT_ARROW, ENTER} from '@angular/cdk/keycodes';
+import {auditTime, startWith} from '@angular/cdk/rxjs';
 import {Subscription} from 'rxjs/Subscription';
-import {auditTime, startWith} from '../core/rxjs/index';
 import {of as observableOf} from 'rxjs/observable/of';
 import {merge} from 'rxjs/observable/merge';
 import {fromEvent} from 'rxjs/observable/fromEvent';
+import {MdTabLabelWrapper} from './tab-label-wrapper';
+import {MdInkBar} from './ink-bar';
 import {CanDisableRipple, mixinDisableRipple} from '../core/common-behaviors/disable-ripple';
 import {RxChain, debounceTime} from '@angular/cdk/rxjs';
 import {Platform} from '@angular/cdk/platform';

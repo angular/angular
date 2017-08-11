@@ -1,4 +1,4 @@
-import {TestBed, async, ComponentFixture, fakeAsync, tick} from '@angular/core/testing';
+import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {
@@ -8,24 +8,19 @@ import {
   Input,
   Output,
   TemplateRef,
-  ViewChild
+  ViewChild,
 } from '@angular/core';
+import {Direction, Directionality} from '@angular/cdk/bidi';
+import {OverlayContainer} from '@angular/cdk/overlay';
+import {ESCAPE, LEFT_ARROW, RIGHT_ARROW} from '@angular/cdk/keycodes';
 import {
-  OverlayContainer,
-  Directionality,
-  Direction,
-  ESCAPE,
-  RIGHT_ARROW,
-  LEFT_ARROW,
-} from '../core';
-import {
+  MD_MENU_DEFAULT_OPTIONS,
+  MdMenu,
   MdMenuModule,
-  MdMenuTrigger,
   MdMenuPanel,
+  MdMenuTrigger,
   MenuPositionX,
   MenuPositionY,
-  MdMenu,
-  MD_MENU_DEFAULT_OPTIONS,
 } from './index';
 import {MENU_PANEL_TOP_PADDING} from './menu-trigger';
 import {extendObject} from '../core/util/object-extend';

@@ -2,19 +2,19 @@ import {
   async, ComponentFixture, TestBed, fakeAsync, tick, discardPeriodicTasks
 } from '@angular/core/testing';
 import {Component, ViewChild, ViewContainerRef} from '@angular/core';
-import {Direction, Directionality} from '../core/bidi/index';
+import {CommonModule} from '@angular/common';
+import {By} from '@angular/platform-browser';
+import {ENTER, LEFT_ARROW, RIGHT_ARROW} from '@angular/cdk/keycodes';
+import {PortalModule} from '@angular/cdk/portal';
+import {ViewportRuler} from '@angular/cdk/overlay';
+import {Direction, Directionality} from '@angular/cdk/bidi';
+import {dispatchFakeEvent, dispatchKeyboardEvent, FakeViewportRuler} from '@angular/cdk/testing';
 import {MdTabHeader} from './tab-header';
 import {MdRippleModule} from '../core/ripple/index';
-import {CommonModule} from '@angular/common';
-import {PortalModule} from '../core';
 import {MdInkBar} from './ink-bar';
 import {MdTabLabelWrapper} from './tab-label-wrapper';
-import {RIGHT_ARROW, LEFT_ARROW, ENTER} from '../core/keyboard/keycodes';
-import {FakeViewportRuler} from '../core/overlay/position/fake-viewport-ruler';
-import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
-import {dispatchFakeEvent, dispatchKeyboardEvent} from '@angular/cdk/testing';
 import {Subject} from 'rxjs/Subject';
-import {By} from '@angular/platform-browser';
+
 
 
 describe('MdTabHeader', () => {

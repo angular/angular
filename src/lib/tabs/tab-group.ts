@@ -23,11 +23,11 @@ import {
   AfterContentChecked,
   OnDestroy,
 } from '@angular/core';
-import {coerceBooleanProperty} from '../core';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {map} from '@angular/cdk/rxjs';
 import {Observable} from 'rxjs/Observable';
 import {Subscription} from 'rxjs/Subscription';
 import {MdTab} from './tab';
-import {map} from '../core/rxjs/index';
 import {merge} from 'rxjs/observable/merge';
 import {CanDisableRipple, mixinDisableRipple} from '../core/common-behaviors/disable-ripple';
 import {CanColor, mixinColor, ThemePalette} from '../core/common-behaviors/color';

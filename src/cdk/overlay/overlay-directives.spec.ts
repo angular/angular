@@ -1,13 +1,13 @@
-import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {Component, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
+import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {Directionality} from '@angular/cdk/bidi';
+import {dispatchKeyboardEvent} from '@angular/cdk/testing';
+import {ESCAPE} from '@angular/cdk/keycodes';
 import {ConnectedOverlayDirective, OverlayModule, OverlayOrigin} from './index';
 import {OverlayContainer} from './overlay-container';
 import {ConnectedPositionStrategy} from './position/connected-position-strategy';
 import {ConnectedOverlayPositionChange} from './position/connected-position';
-import {Directionality} from '../bidi/index';
-import {dispatchKeyboardEvent} from '@angular/cdk/testing';
-import {ESCAPE} from '../keyboard/keycodes';
 
 
 describe('Overlay directives', () => {

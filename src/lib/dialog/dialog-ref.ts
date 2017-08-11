@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {OverlayRef, GlobalPositionStrategy} from '../core';
+import {OverlayRef, GlobalPositionStrategy} from '@angular/cdk/overlay';
+import {filter, first, RxChain} from '@angular/cdk/rxjs';
 import {DialogPosition} from './dialog-config';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {MdDialogContainer} from './dialog-container';
-import {RxChain, first, filter} from '../core/rxjs/index';
 
 
 // TODO(jelbourn): resizing

@@ -1,31 +1,27 @@
 import {
   async,
   ComponentFixture,
-  TestBed,
-  tick,
   fakeAsync,
-  flushMicrotasks
+  flushMicrotasks,
+  TestBed,
+  tick
 } from '@angular/core/testing';
-import {
-  Component,
-  DebugElement,
-  ViewChild,
-  ChangeDetectionStrategy
-} from '@angular/core';
-import {
-  TooltipPosition,
-  MdTooltip,
-  MdTooltipModule,
-  SCROLL_THROTTLE_MS,
-  TOOLTIP_PANEL_CLASS
-} from './index';
+import {ChangeDetectionStrategy, Component, DebugElement, ViewChild} from '@angular/core';
 import {AnimationEvent} from '@angular/animations';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {Directionality, Direction} from '../core/bidi/index';
-import {OverlayModule, Scrollable, OverlayContainer} from '../core/overlay/index';
-import {Platform} from '../core/platform/platform';
+import {Direction, Directionality} from '@angular/cdk/bidi';
+import {OverlayContainer, OverlayModule, Scrollable} from '@angular/cdk/overlay';
+import {Platform} from '@angular/cdk/platform';
 import {dispatchFakeEvent} from '@angular/cdk/testing';
+import {
+  MdTooltip,
+  MdTooltipModule,
+  SCROLL_THROTTLE_MS,
+  TOOLTIP_PANEL_CLASS,
+  TooltipPosition
+} from './index';
+
 
 const initialTooltipMessage = 'initial tooltip message';
 

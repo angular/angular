@@ -8,20 +8,18 @@
 
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {MdCommonModule} from '../core';
+import {PortalModule} from '@angular/cdk/portal';
 import {ObserversModule} from '@angular/cdk/observers';
-import {PortalModule} from '../core';
-import {MdRippleModule} from '../core/ripple/index';
+import {ScrollDispatchModule, VIEWPORT_RULER_PROVIDER} from '@angular/cdk/overlay';
+import {MdCommonModule, MdRippleModule} from '../core';
 import {MdTab} from './tab';
 import {MdTabGroup} from './tab-group';
 import {MdTabLabel} from './tab-label';
 import {MdTabLabelWrapper} from './tab-label-wrapper';
-import {MdTabNav, MdTabLink} from './tab-nav-bar/tab-nav-bar';
+import {MdTabLink, MdTabNav} from './tab-nav-bar/tab-nav-bar';
 import {MdInkBar} from './ink-bar';
 import {MdTabBody} from './tab-body';
-import {VIEWPORT_RULER_PROVIDER} from '../core/overlay/position/viewport-ruler';
 import {MdTabHeader} from './tab-header';
-import {ScrollDispatchModule} from '../core/overlay/scroll/index';
 
 
 @NgModule({

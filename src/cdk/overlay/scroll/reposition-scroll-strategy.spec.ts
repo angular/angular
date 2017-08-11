@@ -1,16 +1,15 @@
-import {inject, TestBed, async} from '@angular/core/testing';
-import {NgModule, Component} from '@angular/core';
+import {async, inject, TestBed} from '@angular/core/testing';
+import {Component, NgModule} from '@angular/core';
 import {Subject} from 'rxjs/Subject';
+import {ComponentPortal, PortalModule} from '@angular/cdk/portal';
 import {
-  PortalModule,
-  ComponentPortal,
   Overlay,
-  OverlayState,
-  OverlayRef,
-  OverlayModule,
   OverlayContainer,
+  OverlayModule,
+  OverlayRef,
+  OverlayState,
   ScrollDispatcher,
-} from '../../core';
+} from '../index';
 
 
 describe('RepositionScrollStrategy', () => {

@@ -8,7 +8,7 @@
 
 import {EventEmitter, TemplateRef} from '@angular/core';
 import {MenuPositionX, MenuPositionY} from './menu-positions';
-import {Direction} from '../core';
+import {Direction} from '@angular/cdk/bidi';
 
 export interface MdMenuPanel {
   xPosition: MenuPositionX;

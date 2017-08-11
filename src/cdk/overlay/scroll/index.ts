@@ -7,9 +7,9 @@
  */
 
 import {NgModule} from '@angular/core';
+import {PlatformModule} from '@angular/cdk/platform';
 import {SCROLL_DISPATCHER_PROVIDER} from './scroll-dispatcher';
 import {Scrollable} from './scrollable';
-import {PlatformModule} from '../../platform/index';
 import {ScrollStrategyOptions} from './scroll-strategy-options';
 
 export {Scrollable} from './scrollable';

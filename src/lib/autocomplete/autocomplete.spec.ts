@@ -1,34 +1,33 @@
-import {TestBed, async, fakeAsync, tick, ComponentFixture} from '@angular/core/testing';
+import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {
+  ChangeDetectionStrategy,
   Component,
   OnDestroy,
+  OnInit,
   QueryList,
   ViewChild,
   ViewChildren,
-  ChangeDetectionStrategy,
-  OnInit,
 } from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {OverlayContainer, ScrollDispatcher} from '@angular/cdk/overlay';
+import {Direction, Directionality} from '@angular/cdk/bidi';
+import {map, RxChain, startWith} from '@angular/cdk/rxjs';
+import {createKeyboardEvent, dispatchFakeEvent, typeInElement} from '@angular/cdk/testing';
 import {
+  getMdAutocompleteMissingPanelError,
+  MdAutocomplete,
   MdAutocompleteModule,
   MdAutocompleteTrigger,
-  MdAutocomplete,
-  getMdAutocompleteMissingPanelError,
 } from './index';
-import {OverlayContainer} from '../core/overlay/overlay-container';
 import {MdInputModule} from '../input/index';
-import {Directionality, Direction} from '../core/bidi/index';
 import {Subscription} from 'rxjs/Subscription';
-import {ENTER, DOWN_ARROW, SPACE, UP_ARROW, ESCAPE} from '../core/keyboard/keycodes';
+import {DOWN_ARROW, ENTER, ESCAPE, SPACE, UP_ARROW} from '../core/keyboard/keycodes';
 import {MdOption} from '../core/option/option';
 import {MdFormField, MdFormFieldModule} from '../form-field/index';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
-import {createKeyboardEvent, dispatchFakeEvent, typeInElement} from '@angular/cdk/testing';
-import {ScrollDispatcher} from '../core/overlay/scroll/scroll-dispatcher';
-import {RxChain, map, startWith} from '../core/rxjs/index';
 
 
 describe('MdAutocomplete', () => {

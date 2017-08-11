@@ -27,7 +27,9 @@ import {
   transition,
   AnimationEvent,
 } from '@angular/animations';
-import {TemplatePortal, PortalHostDirective, Directionality, Direction} from '../core';
+import {TemplatePortal, PortalHostDirective} from '@angular/cdk/portal';
+import {Directionality, Direction} from '@angular/cdk/bidi';
+
 
 /**
  * These position states are used internally as animation states for the tab body. Setting the

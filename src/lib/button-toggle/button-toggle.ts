@@ -26,7 +26,8 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
-import {UniqueSelectionDispatcher, coerceBooleanProperty, FocusOriginMonitor} from '../core';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {UniqueSelectionDispatcher, FocusOriginMonitor} from '../core';
 import {CanDisable, mixinDisabled} from '../core/common-behaviors/disabled';
 
 /** Acceptable types for a button toggle. */

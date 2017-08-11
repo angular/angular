@@ -25,10 +25,11 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import {animate, state, style, transition, trigger, AnimationEvent} from '@angular/animations';
-import {Directionality, coerceBooleanProperty} from '../core';
-import {FocusTrapFactory, FocusTrap} from '../core/a11y/focus-trap';
-import {ESCAPE} from '../core/keyboard/keycodes';
-import {first, takeUntil, startWith} from '../core/rxjs/index';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {Directionality} from '@angular/cdk/bidi';
+import {ESCAPE} from '@angular/cdk/keycodes';
+import {first, takeUntil, startWith} from '@angular/cdk/rxjs';
+import {FocusTrapFactory, FocusTrap} from '@angular/cdk/a11y';
 import {DOCUMENT} from '@angular/platform-browser';
 import {merge} from 'rxjs/observable/merge';
 

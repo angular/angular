@@ -24,7 +24,7 @@ $(npm bin)/ngc -p scripts/closure-compiler/tsconfig-rxjs.json
 rxjsSourceFiles=$(find dist/packages/rxjs -name '*.js');
 
 # List of entry points in the CDK package. Exclude "testing" since it's not an entry point.
-cdkEntryPoints=($(find src/cdk/* -type d ! -name testing -exec basename {} \;))
+cdkEntryPoints=($(find src/cdk -maxdepth 1 -mindepth 1 -type d -not -name testing -exec basename {} \;))
 
 # Due a Closure Compiler issue https://github.com/google/closure-compiler/issues/2247
 # we need to add exports to the different RxJS ES2015 files.

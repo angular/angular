@@ -8,14 +8,15 @@
 
 import {NgModule} from '@angular/core';
 import {HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
+import {PlatformModule} from '@angular/cdk/platform';
 import {MdSlideToggle} from './slide-toggle';
 import {
   FOCUS_ORIGIN_MONITOR_PROVIDER,
   GestureConfig,
   MdCommonModule,
   MdRippleModule,
-  PlatformModule,
 } from '../core';
+
 
 @NgModule({
   imports: [MdRippleModule, MdCommonModule, PlatformModule],

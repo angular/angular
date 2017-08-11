@@ -1,41 +1,39 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   DebugElement,
+  OnInit,
   QueryList,
   ViewChild,
   ViewChildren,
-  ChangeDetectionStrategy,
-  OnInit,
 } from '@angular/core';
 import {
   ControlValueAccessor,
   FormControl,
+  FormGroup,
+  FormGroupDirective,
   FormsModule,
   NG_VALUE_ACCESSOR,
   ReactiveFormsModule,
-  FormGroup,
-  FormGroupDirective,
   Validators,
 } from '@angular/forms';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {TestBed, async, ComponentFixture, fakeAsync, tick, inject} from '@angular/core/testing';
+import {async, ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
+import {Directionality} from '@angular/cdk/bidi';
+import {DOWN_ARROW, END, ENTER, HOME, SPACE, TAB, UP_ARROW} from '@angular/cdk/keycodes';
+import {OverlayContainer, ScrollDispatcher, ViewportRuler} from '@angular/cdk/overlay';
+import {dispatchFakeEvent, dispatchKeyboardEvent, wrappedErrorMessage} from '@angular/cdk/testing';
+import {Subject} from 'rxjs/Subject';
+import {map} from 'rxjs/operator/map';
 import {MdSelectModule} from './index';
-import {OverlayContainer} from '../core/overlay/overlay-container';
 import {MdSelect} from './select';
 import {getMdSelectDynamicMultipleError, getMdSelectNonArrayValueError} from './select-errors';
 import {MdOption} from '../core/option/option';
-import {Directionality} from '../core/bidi/index';
-import {DOWN_ARROW, UP_ARROW, ENTER, SPACE, HOME, END, TAB} from '../core/keyboard/keycodes';
-import {Subject} from 'rxjs/Subject';
-import {ViewportRuler} from '../core/overlay/position/viewport-ruler';
-import {dispatchFakeEvent, dispatchKeyboardEvent, wrappedErrorMessage} from '@angular/cdk/testing';
-import {ScrollDispatcher} from '../core/overlay/scroll/scroll-dispatcher';
 import {
   FloatPlaceholderType,
   MD_PLACEHOLDER_GLOBAL_OPTIONS
 } from '../core/placeholder/placeholder-options';
-import {map} from 'rxjs/operator/map';
 
 
 describe('MdSelect', () => {

@@ -9,27 +9,26 @@
 import {
   Component,
   ComponentRef,
-  ViewChild,
-  ViewEncapsulation,
-  NgZone,
   ElementRef,
   EventEmitter,
   Inject,
+  NgZone,
   Optional,
   ChangeDetectorRef,
+  ViewChild,
+  ViewEncapsulation,
 } from '@angular/core';
-import {
-  animate,
-  trigger,
-  state,
-  style,
-  transition,
-  AnimationEvent,
-} from '@angular/animations';
+import {animate, AnimationEvent, state, style, transition, trigger} from '@angular/animations';
 import {DOCUMENT} from '@angular/platform-browser';
-import {BasePortalHost, ComponentPortal, PortalHostDirective, TemplatePortal} from '../core';
+import {
+  BasePortalHost,
+  ComponentPortal,
+  PortalHostDirective,
+  TemplatePortal
+} from '@angular/cdk/portal';
+import {FocusTrap, FocusTrapFactory} from '@angular/cdk/a11y';
 import {MdDialogConfig} from './dialog-config';
-import {FocusTrapFactory, FocusTrap} from '../core/a11y/focus-trap';
+
 
 /**
  * Throws an exception for the case when a ComponentPortal is

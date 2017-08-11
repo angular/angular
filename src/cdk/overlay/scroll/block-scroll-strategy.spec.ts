@@ -1,16 +1,15 @@
 import {NgModule, Component} from '@angular/core';
 import {inject, TestBed, async} from '@angular/core/testing';
+import {ComponentPortal, PortalModule} from '@angular/cdk/portal';
+import {Platform} from '@angular/cdk/platform';
 import {
-  ComponentPortal,
   OverlayModule,
-  PortalModule,
-  Platform,
   ViewportRuler,
   OverlayState,
   Overlay,
   OverlayRef,
   OverlayContainer,
-} from '../../core';
+} from '../index';
 
 
 describe('BlockScrollStrategy', () => {

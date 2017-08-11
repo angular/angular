@@ -20,7 +20,6 @@ import {InputE2E} from './input/input-e2e';
 import {SidenavE2E} from './sidenav/sidenav-e2e';
 import {BlockScrollStrategyE2E} from './block-scroll-strategy/block-scroll-strategy-e2e';
 import {
-  FullscreenOverlayContainer,
   MdButtonModule,
   MdCheckboxModule,
   MdDialogModule,
@@ -37,8 +36,8 @@ import {
   MdSidenavModule,
   MdSlideToggleModule,
   MdTabsModule,
-  OverlayContainer,
 } from '@angular/material';
+import {FullscreenOverlayContainer, OverlayContainer} from '@angular/cdk/overlay';
 import {ExampleModule} from '@angular/material-examples';
 
 /**

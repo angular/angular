@@ -7,8 +7,9 @@
  */
 
 import {NgModule} from '@angular/core';
-import {MdOptionModule, OverlayModule, MdCommonModule} from '../core';
 import {CommonModule} from '@angular/common';
+import {OverlayModule} from '@angular/cdk/overlay';
+import {MdOptionModule, MdCommonModule} from '../core';
 import {MdAutocomplete} from './autocomplete';
 import {
   MdAutocompleteTrigger,

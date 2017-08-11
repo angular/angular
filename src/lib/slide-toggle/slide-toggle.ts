@@ -21,15 +21,15 @@ import {
   ViewChild,
   ViewEncapsulation
 } from '@angular/core';
+import {Platform} from '@angular/cdk/platform';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {
   applyCssTransform,
-  coerceBooleanProperty,
   FocusOrigin,
   FocusOriginMonitor,
   HammerInput,
   MdRipple,
   RippleRef,
-  Platform,
 } from '../core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {mixinDisabled, CanDisable} from '../core/common-behaviors/disabled';

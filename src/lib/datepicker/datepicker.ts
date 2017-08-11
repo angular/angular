@@ -12,41 +12,41 @@ import {
   Component,
   ComponentRef,
   EventEmitter,
+  Inject,
+  InjectionToken,
   Input,
+  NgZone,
   OnDestroy,
   Optional,
   Output,
   ViewChild,
   ViewContainerRef,
   ViewEncapsulation,
-  NgZone,
-  Inject,
-  InjectionToken,
 } from '@angular/core';
 import {DOCUMENT} from '@angular/platform-browser';
+import {first} from '@angular/cdk/rxjs';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {
   Overlay,
   OverlayRef,
   OverlayState,
+  PositionStrategy,
   RepositionScrollStrategy,
   // This import is only used to define a generic type. The current TypeScript version incorrectly
   // considers such imports as unused (https://github.com/Microsoft/TypeScript/issues/14953)
   // tslint:disable-next-line:no-unused-variable
   ScrollStrategy,
-} from '../core/overlay/index';
-import {ComponentPortal} from '../core/portal/portal';
-import {Directionality} from '../core/bidi/index';
+} from '@angular/cdk/overlay';
+import {ComponentPortal} from '@angular/cdk/portal';
+import {Directionality} from '@angular/cdk/bidi';
+import {ESCAPE} from '@angular/cdk/keycodes';
 import {MdDialog} from '../dialog/dialog';
 import {MdDialogRef} from '../dialog/dialog-ref';
-import {PositionStrategy} from '../core/overlay/position/position-strategy';
 import {MdDatepickerInput} from './datepicker-input';
 import {Subscription} from 'rxjs/Subscription';
 import {DateAdapter} from '../core/datetime/index';
 import {createMissingDateImplError} from './datepicker-errors';
-import {ESCAPE} from '../core/keyboard/keycodes';
 import {MdCalendar} from './calendar';
-import {first} from '../core/rxjs/index';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
 
 
 /** Used to generate a unique ID for each datepicker instance. */
@@ -57,7 +57,8 @@ export const MD_DATEPICKER_SCROLL_STRATEGY =
     new InjectionToken<() => ScrollStrategy>('md-datepicker-scroll-strategy');
 
 /** @docs-private */
-export function MD_DATEPICKER_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay) {
+export function MD_DATEPICKER_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay):
+    () => RepositionScrollStrategy {
   return () => overlay.scrollStrategies.reposition();
 }
 

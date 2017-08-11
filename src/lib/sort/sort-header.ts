@@ -14,13 +14,13 @@ import {
   Optional,
   ViewEncapsulation
 } from '@angular/core';
-import {MdSort, MdSortable} from './sort';
-import {MdSortHeaderIntl} from './sort-header-intl';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {CdkColumnDef} from '@angular/cdk/table';
-import {coerceBooleanProperty} from '../core';
-import {getMdSortHeaderNotContainedWithinMdSortError} from './sort-errors';
 import {Subscription} from 'rxjs/Subscription';
 import {merge} from 'rxjs/observable/merge';
+import {MdSort, MdSortable} from './sort';
+import {MdSortHeaderIntl} from './sort-header-intl';
+import {getMdSortHeaderNotContainedWithinMdSortError} from './sort-errors';
 
 /**
  * Applies sorting behavior (click to change sort) and styles to an element, including an

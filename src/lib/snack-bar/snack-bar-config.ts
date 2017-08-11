@@ -7,7 +7,8 @@
  */
 
 import {ViewContainerRef, InjectionToken} from '@angular/core';
-import {AriaLivePoliteness, Direction} from '../core';
+import {AriaLivePoliteness} from '@angular/cdk/a11y';
+import {Direction} from '@angular/cdk/bidi';
 
 export const MD_SNACK_BAR_DATA = new InjectionToken<any>('MdSnackBarData');
 
