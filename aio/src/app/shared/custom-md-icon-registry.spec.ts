@@ -12,7 +12,7 @@ describe('CustomMdIconRegistry', () => {
     ];
     const registry = new CustomMdIconRegistry(mockHttp, mockSanitizer, svgIcons);
     let svgElement: SVGElement;
-    registry.getNamedSvgIcon('test_icon', null).subscribe(el => svgElement = el as SVGElement);
+    registry.getNamedSvgIcon('test_icon').subscribe(el => svgElement = el);
     expect(svgElement).toEqual(createSvg(svgSrc));
   });
 
@@ -27,8 +27,12 @@ describe('CustomMdIconRegistry', () => {
     spyOn(MdIconRegistry.prototype, 'getNamedSvgIcon');
 
     const registry = new CustomMdIconRegistry(mockHttp, mockSanitizer, svgIcons);
-    registry.getNamedSvgIcon('other_icon', null);
-    expect(MdIconRegistry.prototype.getNamedSvgIcon).toHaveBeenCalledWith('other_icon', null);
+
+    registry.getNamedSvgIcon('other_icon');
+    expect(MdIconRegistry.prototype.getNamedSvgIcon).toHaveBeenCalledWith('other_icon', undefined);
+
+    registry.getNamedSvgIcon('other_icon', 'foo');
+    expect(MdIconRegistry.prototype.getNamedSvgIcon).toHaveBeenCalledWith('other_icon', 'foo');
   });
 });
 

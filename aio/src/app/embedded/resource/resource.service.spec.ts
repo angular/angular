@@ -1,39 +1,33 @@
-import { ReflectiveInjector } from '@angular/core';
-import { Http, ConnectionBackend, RequestOptions, BaseRequestOptions, Response, ResponseOptions } from '@angular/http';
-import { MockBackend } from '@angular/http/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { Injector } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 
 import { ResourceService } from './resource.service';
 import { Category, SubCategory, Resource } from './resource.model';
 
 describe('ResourceService', () => {
 
-  let injector: ReflectiveInjector;
-  let backend: MockBackend;
+  let injector: Injector;
   let resourceService: ResourceService;
-
-  function createResponse(body: any) {
-    return new Response(new ResponseOptions({ body: JSON.stringify(body) }));
-  }
+  let httpMock: HttpTestingController;
 
   beforeEach(() => {
-    injector = ReflectiveInjector.resolveAndCreate([
-      ResourceService,
-      { provide: ConnectionBackend, useClass: MockBackend },
-      { provide: RequestOptions, useClass: BaseRequestOptions },
-      Http
-    ]);
+    injector = TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+      providers: [
+        ResourceService
+      ]
+    });
 
-    backend = injector.get(ConnectionBackend);
     resourceService = injector.get(ResourceService);
+    httpMock = injector.get(HttpTestingController);
   });
 
-  it('should be creatable', () => {
-    expect(resourceService).toBeTruthy();
-  });
+  afterEach(() => httpMock.verify());
 
   it('should make a single connection to the server', () => {
-    expect(backend.connectionsArray.length).toEqual(1);
-    expect(backend.connectionsArray[0].request.url).toEqual('generated/resources.json');
+    const req = httpMock.expectOne({});
+    expect(req.request.url).toBe('generated/resources.json');
   });
 
   describe('#categories', () => {
@@ -43,7 +37,7 @@ describe('ResourceService', () => {
 
     beforeEach(() => {
       testData = getTestResources();
-      backend.connectionsArray[0].mockRespond(createResponse(testData));
+      httpMock.expectOne({}).flush(testData);
       resourceService.categories.subscribe(results => categories = results);
     });
 

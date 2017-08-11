@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
+import { HttpClient } from '@angular/common/http';
 
 import { Observable } from 'rxjs/Observable';
 import { AsyncSubject } from 'rxjs/AsyncSubject';
@@ -36,7 +36,7 @@ export class NavigationService {
    */
   currentNodes: Observable<CurrentNodes>;
 
-  constructor(private http: Http, private location: LocationService) {
+  constructor(private http: HttpClient, private location: LocationService) {
     const navigationInfo = this.fetchNavigationInfo();
     this.navigationViews = this.getNavigationViews(navigationInfo);
 
@@ -57,8 +57,7 @@ export class NavigationService {
    * We are not storing the subscription from connecting as we do not expect this service to be destroyed.
    */
   private fetchNavigationInfo(): Observable<NavigationResponse> {
-    const navigationInfo = this.http.get(navigationPath)
-      .map(res => res.json() as NavigationResponse)
+    const navigationInfo = this.http.get<NavigationResponse>(navigationPath)
       .publishLast();
     navigationInfo.connect();
     return navigationInfo;

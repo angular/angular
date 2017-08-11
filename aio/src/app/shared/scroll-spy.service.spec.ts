@@ -160,10 +160,6 @@ describe('ScrollSpyService', () => {
   });
 
 
-  it('should be creatable', () => {
-    expect(scrollSpyService).toBeTruthy();
-  });
-
   describe('#spyOn()', () => {
     let getSpiedElemGroups: () => ScrollSpiedElementGroup[];
 
