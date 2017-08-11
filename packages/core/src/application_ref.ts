@@ -455,17 +455,22 @@ export class ApplicationRef_ extends ApplicationRef {
     });
 
     const isStable = new Observable<boolean>((observer: Observer<boolean>) => {
-      const stableSub: Subscription = this._zone.onStable.subscribe(() => {
-        NgZone.assertNotInAngularZone();
+      // Create the subscription to onStable outside the Angular Zone so that
+      // the callback is run outside the Angular Zone.
+      let stableSub: Subscription;
+      this._zone.runOutsideAngular(() => {
+        stableSub = this._zone.onStable.subscribe(() => {
+          NgZone.assertNotInAngularZone();
 
-        // Check whether there are no pending macro/micro tasks in the next tick
-        // to allow for NgZone to update the state.
-        scheduleMicroTask(() => {
-          if (!this._stable && !this._zone.hasPendingMacrotasks &&
-              !this._zone.hasPendingMicrotasks) {
-            this._stable = true;
-            observer.next(true);
-          }
+          // Check whether there are no pending macro/micro tasks in the next tick
+          // to allow for NgZone to update the state.
+          scheduleMicroTask(() => {
+            if (!this._stable && !this._zone.hasPendingMacrotasks &&
+                !this._zone.hasPendingMicrotasks) {
+              this._stable = true;
+              observer.next(true);
+            }
+          });
         });
       });
 
