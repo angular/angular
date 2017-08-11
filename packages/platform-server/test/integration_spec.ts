@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {animate, style, transition, trigger} from '@angular/animations';
+import {AnimationBuilder, animate, style, transition, trigger} from '@angular/animations';
 import {APP_BASE_HREF, PlatformLocation, isPlatformServer} from '@angular/common';
 import {ApplicationRef, CompilerFactory, Component, HostListener, Input, NgModule, NgModuleRef, NgZone, PLATFORM_ID, PlatformRef, ViewEncapsulation, destroyPlatform, getPlatform} from '@angular/core';
 import {TestBed, async, inject} from '@angular/core/testing';
@@ -98,6 +98,8 @@ class SVGServerModule {
       [transition('void => *', [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))])])],
 })
 class MyAnimationApp {
+  constructor(private builder: AnimationBuilder) {}
+
   text = 'Works!';
 }
 
