@@ -310,13 +310,11 @@ describe('AppComponent', () => {
         expect(locationService.go).toHaveBeenCalledWith(versionWithUrl.url);
       });
 
-      // The current docs version should not have an href
-      // This may change when we perfect our docs versioning approach
       it('should not navigate when change to a version without a url', () => {
         setupSelectorForTesting();
-        const versionWithoutUrlIndex = component.docVersions.findIndex(v => !v.url);
-        const versionWithoutUrl = component.docVersions[versionWithoutUrlIndex];
-        selectElement.triggerEventHandler('change', { option: versionWithoutUrl, index: versionWithoutUrlIndex});
+        const versionWithoutUrlIndex = component.docVersions.length;
+        const versionWithoutUrl = component.docVersions[versionWithoutUrlIndex] = { title: 'foo', url: null };
+        selectElement.triggerEventHandler('change', { option: versionWithoutUrl, index: versionWithoutUrlIndex });
         expect(locationService.go).not.toHaveBeenCalled();
       });
     });
