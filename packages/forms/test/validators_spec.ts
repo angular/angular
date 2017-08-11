@@ -161,6 +161,9 @@ export function main() {
     describe('email', () => {
       it('should error on invalid email',
          () => expect(Validators.email(new FormControl('some text'))).toEqual({'email': true}));
+      
+      it('should error on invalid email without TLD',
+         () => expect(Validators.email(new FormControl('test@gmail'))).toEqual({'email': true}));
 
       it('should not error on valid email',
          () => expect(Validators.email(new FormControl('test@gmail.com'))).toBeNull());
