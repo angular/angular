@@ -43,6 +43,14 @@ $mat-dense-list-icon-size: 20px;
     position: relative;
   }
 
+  .mat-list-item-content-reverse {
+    display: flex;
+    align-items: center;
+    padding: 0 $mat-list-side-padding;
+    flex-direction: row-reverse;
+    justify-content: space-around;
+  }
+
   .mat-list-item-ripple {
     position: absolute;
     left: 0;
@@ -128,7 +136,7 @@ $mat-dense-list-icon-size: 20px;
   }
 }
 
-.mat-list, .mat-nav-list {
+.mat-list, .mat-nav-list, .mat-selection-list {
   padding-top: $mat-list-top-padding;
   display: block;
 
@@ -145,10 +153,21 @@ $mat-dense-list-icon-size: 20px;
       $mat-list-icon-size
     );
   }
+
+  .mat-list-option {
+    @include mat-list-item-base(
+      $mat-list-base-height,
+      $mat-list-avatar-height,
+      $mat-list-two-line-height,
+      $mat-list-three-line-height,
+      $mat-list-icon-size
+    );
+  }
 }
 
 
-.mat-list[dense], .mat-nav-list[dense] {
+.mat-list[dense], .mat-nav-list[dense], .mat-selection-list[dense] {
+
   padding-top: $mat-dense-top-padding;
   display: block;
 
@@ -157,6 +176,16 @@ $mat-dense-list-icon-size: 20px;
   }
 
   .mat-list-item {
+    @include mat-list-item-base(
+      $mat-dense-base-height,
+      $mat-dense-avatar-height,
+      $mat-dense-two-line-height,
+      $mat-dense-three-line-height,
+      $mat-dense-list-icon-size
+    );
+  }
+
+  .mat-list-option {
     @include mat-list-item-base(
       $mat-dense-base-height,
       $mat-dense-avatar-height,
