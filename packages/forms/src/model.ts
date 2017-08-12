@@ -518,7 +518,7 @@ export abstract class AbstractControl {
   get(path: Array<string|number>|string): AbstractControl|null { return _find(this, path, '.'); }
 
   /**
-   * Returns true if the control with the given path has the error specified. Otherwise
+   * Returns error data if the control with the given path has the error specified. Otherwise
    * returns null or undefined.
    *
    * If no path is given, it checks for the error on the present control.
