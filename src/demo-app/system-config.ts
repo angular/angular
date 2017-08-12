@@ -32,7 +32,7 @@ System.config({
     '@angular/cdk/coercion': 'dist/bundles/cdk-coercion.umd.js',
     '@angular/cdk/keycodes': 'dist/bundles/cdk-keycodes.umd.js',
     '@angular/cdk/observers': 'dist/bundles/cdk-observers.umd.js',
-    '@angular/cdk/overlay': 'dist/bundles/cdk-overlay-content.umd.js',
+    '@angular/cdk/overlay': 'dist/bundles/cdk-overlay.umd.js',
     '@angular/cdk/platform': 'dist/bundles/cdk-platform.umd.js',
     '@angular/cdk/portal': 'dist/bundles/cdk-portal.umd.js',
     '@angular/cdk/rxjs': 'dist/bundles/cdk-rxjs.umd.js',
