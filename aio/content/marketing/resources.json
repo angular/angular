@@ -130,6 +130,13 @@
             "rev": true,
             "title": "Apollo",
             "url": "http://docs.apollostack.com/apollo-client/angular2.html"
+          },
+          "ab4": {
+            "desc": "Angular Commerce is a solution for building modern e-commerce applications with power of Google Firebase. Set of components is design agnostic and allows to easily extend functionality.",
+            "logo": "",
+            "rev": true,
+            "title": "AngularCommerce",
+            "url": "https://github.com/NodeArt/angular-commerce"
           }
         }
       },
