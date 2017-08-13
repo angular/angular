@@ -1134,7 +1134,7 @@ The reactive forms approach both emphasizes and facilitates this distinction.
 The default form displays a nameless hero with no addresses.
 
 You need a method to populate (or repopulate) the _secretLairs_ with actual hero addresses whenever
-the parent `HeroListComponent` sets the `HeroListComponent.hero` input property to a new `Hero`.
+the parent `HeroListComponent` sets the `HeroDetailComponent.hero` input property to a new `Hero`.
 
 The following `setAddresses` method replaces the _secretLairs_ `FormArray` with a new `FormArray`,
 initialized by an array of hero address `FormGroups`.
