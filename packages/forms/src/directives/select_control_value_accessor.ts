@@ -129,8 +129,8 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
 
   registerOnChange(fn: (value: any) => any): void {
     this.onChange = (valueString: string) => {
-      this.value = valueString;
-      fn(this._getOptionValue(valueString));
+      this.value = this._getOptionValue(valueString);
+      fn(this.value);
     };
   }
   registerOnTouched(fn: () => any): void { this.onTouched = fn; }

@@ -8,7 +8,7 @@
 
 import {Component, Directive, EventEmitter, Input, Output, Type} from '@angular/core';
 import {ComponentFixture, TestBed, async, fakeAsync, tick} from '@angular/core/testing';
-import {AbstractControl, ControlValueAccessor, FormControl, FormGroup, FormsModule, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgControl, NgForm, ReactiveFormsModule, Validators} from '@angular/forms';
+import {AbstractControl, ControlValueAccessor, FormControl, FormGroup, FormsModule, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgControl, NgForm, NgModel, ReactiveFormsModule, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 
@@ -210,6 +210,31 @@ export function main() {
           expect(sfOption.nativeElement.selected).toBe(true);
         });
 
+        it('should support re-assigning the options array with compareWith', () => {
+          const fixture = initTest(FormControlSelectWithCompareFn);
+          fixture.detectChanges();
+
+          // Option IDs start out as 0 and 1, so setting the select value to "1: Object"
+          // will select the second option (NY).
+          const select = fixture.debugElement.query(By.css('select'));
+          select.nativeElement.value = '1: Object';
+          dispatchEvent(select.nativeElement, 'change');
+          fixture.detectChanges();
+
+          expect(fixture.componentInstance.form.value).toEqual({city: {id: 2, name: 'NY'}});
+
+          fixture.componentInstance.cities = [{id: 1, name: 'SF'}, {id: 2, name: 'NY'}];
+          fixture.detectChanges();
+
+          // Now that the options array has been re-assigned, new option instances will
+          // be created by ngFor. These instances will have different option IDs, subsequent
+          // to the first: 2 and 3. For the second option to stay selected, the select
+          // value will need to have the ID of the current second option: 3.
+          const nyOption = fixture.debugElement.queryAll(By.css('option'))[1];
+          expect(select.nativeElement.value).toEqual('3: Object');
+          expect(nyOption.nativeElement.selected).toBe(true);
+        });
+
       });
 
       describe('in template-driven forms', () => {
@@ -334,6 +359,37 @@ export function main() {
              expect(select.nativeElement.value).toEqual('0: Object');
              expect(sfOption.nativeElement.selected).toBe(true);
            }));
+
+        it('should support re-assigning the options array with compareWith', fakeAsync(() => {
+             const fixture = initTest(NgModelSelectWithCustomCompareFnForm);
+             fixture.componentInstance.selectedCity = {id: 1, name: 'SF'};
+             fixture.componentInstance.cities = [{id: 1, name: 'SF'}, {id: 2, name: 'NY'}];
+             fixture.detectChanges();
+             tick();
+
+             // Option IDs start out as 0 and 1, so setting the select value to "1: Object"
+             // will select the second option (NY).
+             const select = fixture.debugElement.query(By.css('select'));
+             select.nativeElement.value = '1: Object';
+             dispatchEvent(select.nativeElement, 'change');
+             fixture.detectChanges();
+
+             const model = fixture.debugElement.children[0].injector.get(NgModel);
+             expect(model.value).toEqual({id: 2, name: 'NY'});
+
+             fixture.componentInstance.cities = [{id: 1, name: 'SF'}, {id: 2, name: 'NY'}];
+             fixture.detectChanges();
+             tick();
+
+             // Now that the options array has been re-assigned, new option instances will
+             // be created by ngFor. These instances will have different option IDs, subsequent
+             // to the first: 2 and 3. For the second option to stay selected, the select
+             // value will need to have the ID of the current second option: 3.
+             const nyOption = fixture.debugElement.queryAll(By.css('option'))[1];
+             expect(select.nativeElement.value).toEqual('3: Object');
+             expect(nyOption.nativeElement.selected).toBe(true);
+           }));
+
 
       });
 
