@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompiler, AotCompilerOptions, GeneratedFile, NgAnalyzedModules, createAotCompiler, getParseErrors, isSyntaxError, toTypeScript} from '@angular/compiler';
+import {AotCompiler, AotCompilerHost, AotCompilerOptions, GeneratedFile, NgAnalyzedModules, createAotCompiler, getParseErrors, isSyntaxError, toTypeScript} from '@angular/compiler';
 import {MissingTranslationStrategy} from '@angular/core';
 import {createBundleIndexHost} from '@angular/tsc-wrapped';
 import * as fs from 'fs';
@@ -14,7 +14,7 @@ import * as path from 'path';
 import * as tsickle from 'tsickle';
 import * as ts from 'typescript';
 
-import {CompilerHost as AotCompilerHost} from '../compiler_host';
+import {BaseAotCompilerHost} from '../compiler_host';
 import {TypeChecker} from '../diagnostics/check_types';
 
 import {CompilerHost, CompilerOptions, Diagnostic, EmitFlags, EmitResult, Program} from './api';
@@ -73,11 +73,8 @@ class AngularCompilerProgram implements Program {
             .map(sf => sf.fileName)
             .filter(f => !f.match(/\.ngfactory\.[\w.]+$|\.ngstyle\.[\w.]+$|\.ngsummary\.[\w.]+$/));
     this.metadataCache = new LowerMetadataCache({quotedNames: true}, !!options.strictMetadataEmit);
-    this.aotCompilerHost = new AotCompilerHost(
-        this.tsProgram, options, host, /* collectorOptions */ undefined, this.metadataCache);
-    if (host.readResource) {
-      this.aotCompilerHost.loadResource = host.readResource.bind(host);
-    }
+    this.aotCompilerHost =
+        new AotCompilerHostImpl(this.tsProgram, options, host, this.metadataCache);
 
     const aotOptions = getAotCompilerOptions(options);
     this.compiler = createAotCompiler(this.aotCompilerHost, aotOptions).compiler;
@@ -306,6 +303,16 @@ class AngularCompilerProgram implements Program {
         this.tsProgram :
         ts.createProgram(
             [...this.rootNames, ...this.stubFiles], this.options, this.programWithStubsHost);
+  }
+}
+
+class AotCompilerHostImpl extends BaseAotCompilerHost<CompilerHost> {
+  moduleNameToFileName(m: string, containingFile: string): string|null {
+    return this.context.moduleNameToFileName(m, containingFile);
+  }
+
+  fileNameToModuleName(importedFile: string, containingFile: string): string|null {
+    return this.context.fileNameToModuleName(importedFile, containingFile);
   }
 }
 
