@@ -348,7 +348,7 @@ export abstract class AbstractControl {
   /**
    * Marks the control as `pending`.
    */
-  markAsPending(opts: {onlySelf?: boolean} = {}): void {
+  markAsPending(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     this._status = PENDING;
 
     if (this._parent && !opts.onlySelf) {

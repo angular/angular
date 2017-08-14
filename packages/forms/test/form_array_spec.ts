@@ -622,6 +622,30 @@ export function main() {
         expect(c.pending).toEqual(true);
         expect(a.pending).toEqual(false);
       });
+
+      describe('status change events', () => {
+        let logger: string[];
+
+        beforeEach(() => {
+          logger = [];
+          a.statusChanges.subscribe((status) => logger.push(status));
+        });
+
+        it('should emit event after changing the value of the control', () => {
+          c.markAsPending();
+          expect(logger).toEqual(['PENDING']);
+        });
+
+        it('should not emit event when onlySelf = true', () => {
+          c.markAsPending({onlySelf: true});
+          expect(logger).toEqual([]);
+        });
+
+        it('should not emit event when emitEvent = false', () => {
+          c.markAsPending({emitEvent: false});
+          expect(logger).toEqual([]);
+        });
+      });
     });
 
     describe('valueChanges', () => {
