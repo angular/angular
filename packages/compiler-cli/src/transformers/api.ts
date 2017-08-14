@@ -117,34 +117,24 @@ export interface CompilerOptions extends ts.CompilerOptions {
   preserveWhitespaces?: boolean;
 }
 
-export interface ModuleFilenameResolver {
+export interface CompilerHost extends ts.CompilerHost {
   /**
    * Converts a module name that is used in an `import` to a file path.
    * I.e. `path/to/containingFile.ts` containing `import {...} from 'module-name'`.
    */
   moduleNameToFileName(moduleName: string, containingFile?: string): string|null;
-
   /**
-   * Converts a file path to a module name that can be used as an `import.
+   * Converts a file path to a module name that can be used as an `import ...`
    * I.e. `path/to/importedFile.ts` should be imported by `path/to/containingFile.ts`.
    *
    * See ImportResolver.
    */
   fileNameToModuleName(importedFilePath: string, containingFilePath: string): string|null;
-
-  getNgCanonicalFileName(fileName: string): string;
-
-  assumeFileExists(fileName: string): void;
-}
-
-export interface CompilerHost extends ts.CompilerHost, ModuleFilenameResolver {
   /**
    * Load a referenced resource either statically or asynchronously. If the host returns a
    * `Promise<string>` it is assumed the user of the corresponding `Program` will call
    * `loadNgStructureAsync()`. Returing  `Promise<string>` outside `loadNgStructureAsync()` will
    * cause a diagnostics diagnostic error or an exception to be thrown.
-   *
-   * If `loadResource()` is not provided, `readFile()` will be called to load the resource.
    */
   readResource?(fileName: string): Promise<string>|string;
 }
