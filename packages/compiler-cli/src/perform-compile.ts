@@ -131,7 +131,7 @@ export function performCompilation(
   let emitResult: api.EmitResult|undefined;
   try {
     if (!host) {
-      host = ng.createNgCompilerHost({options});
+      host = ng.createCompilerHost({options});
     }
 
     program = ng.createProgram({rootNames, host, options, oldProgram});
