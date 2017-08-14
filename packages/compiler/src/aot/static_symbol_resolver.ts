@@ -172,6 +172,10 @@ export class StaticSymbolResolver {
     this.importAs.set(sourceSymbol, targetSymbol);
   }
 
+  recordModuleNameForFileName(fileName: string, moduleName: string) {
+    this.knownFileNameToModuleNames.set(fileName, moduleName);
+  }
+
   /**
    * Invalidate all information derived from the given file.
    *

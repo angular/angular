@@ -82,12 +82,11 @@ export class StaticReflector implements CompileReflector {
   }
 
   resolveExternalReference(ref: o.ExternalReference): StaticSymbol {
-    const importSymbol = this.getStaticSymbol(ref.moduleName !, ref.name !);
-    const rootSymbol = this.findDeclaration(ref.moduleName !, ref.name !);
-    if (importSymbol != rootSymbol) {
-      this.symbolResolver.recordImportAs(rootSymbol, importSymbol);
-    }
-    return rootSymbol;
+    const refSymbol = this.symbolResolver.getSymbolByModule(ref.moduleName !, ref.name !);
+    const declarationSymbol = this.findSymbolDeclaration(refSymbol);
+    this.symbolResolver.recordModuleNameForFileName(refSymbol.filePath, ref.moduleName !);
+    this.symbolResolver.recordImportAs(declarationSymbol, refSymbol);
+    return declarationSymbol;
   }
 
   findDeclaration(moduleUrl: string, name: string, containingFile?: string): StaticSymbol {

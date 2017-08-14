@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompilerHost, StaticSymbol} from '@angular/compiler';
+import {AotCompilerHost, StaticSymbol, syntaxError} from '@angular/compiler';
 import {AngularCompilerOptions, CollectorOptions, MetadataCollector, ModuleMetadata} from '@angular/tsc-wrapped';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -131,6 +131,9 @@ export abstract class BaseAotCompilerHost<C extends BaseAotCompilerHostContext> 
 
   loadResource(filePath: string): Promise<string>|string {
     if (this.context.readResource) return this.context.readResource(filePath);
+    if (!this.context.fileExists(filePath)) {
+      throw syntaxError(`Error: Resource file not found: ${filePath}`);
+    }
     return this.context.readFile(filePath);
   }
 
