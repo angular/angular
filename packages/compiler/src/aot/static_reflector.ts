@@ -376,7 +376,6 @@ export class StaticReflector implements CompileReflector {
           if (calling.get(functionSymbol)) {
             throw new Error('Recursion not supported');
           }
-          calling.set(functionSymbol, true);
           try {
             const value = targetFunction['value'];
             if (value && (depth != 0 || value.__symbolic != 'error')) {
@@ -387,6 +386,7 @@ export class StaticReflector implements CompileReflector {
               if (defaults && defaults.length > args.length) {
                 args.push(...defaults.slice(args.length).map((value: any) => simplify(value)));
               }
+              calling.set(functionSymbol, true);
               const functionScope = BindingScope.build();
               for (let i = 0; i < parameters.length; i++) {
                 functionScope.define(parameters[i], args[i]);
@@ -621,7 +621,7 @@ export class StaticReflector implements CompileReflector {
               }
               return simplifyInContext(context, value, depth, references + 1);
             }
-            return simplify(value)
+            return simplify(value);
           });
         }
         return IGNORE;

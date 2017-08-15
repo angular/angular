@@ -11,7 +11,7 @@ import {ChangeDetectionStrategy, Component, Injectable, NgModule, NgModuleFactor
 import {ComponentFixture, TestBed, fakeAsync, inject, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, ParamMap, Params, PreloadAllModules, PreloadingStrategy, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RouteReuseStrategy, Router, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '@angular/router';
+import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, ParamMap, Params, PreloadAllModules, PreloadingStrategy, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RouteEvent, RouteReuseStrategy, Router, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '@angular/router';
 import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
 import {of } from 'rxjs/observable/of';
@@ -428,7 +428,7 @@ describe('Integration', () => {
        }]);
 
        const recordedEvents: any[] = [];
-       router.events.forEach(e => recordedEvents.push(e));
+       router.events.forEach(e => e instanceof RouteEvent || recordedEvents.push(e));
 
        router.navigateByUrl('/team/22/user/victor');
        advance(fixture);
@@ -986,7 +986,7 @@ describe('Integration', () => {
              [{path: 'simple', component: SimpleCmp, resolve: {error: 'resolveError'}}]);
 
          const recordedEvents: any[] = [];
-         router.events.subscribe(e => recordedEvents.push(e));
+         router.events.subscribe(e => e instanceof RouteEvent || recordedEvents.push(e));
 
          let e: any = null;
          router.navigateByUrl('/simple') !.catch(error => e = error);
@@ -1070,7 +1070,7 @@ describe('Integration', () => {
                 return map.call(of (null), () => {
                   log.push('resolver2');
                   observer.next(null);
-                  observer.complete()
+                  observer.complete();
                 });
               }
             },
@@ -1820,7 +1820,7 @@ describe('Integration', () => {
 
         function delayPromise(delay: number): Promise<boolean> {
           let resolve: (val: boolean) => void;
-          const promise = new Promise(res => resolve = res);
+          const promise = new Promise<boolean>(res => resolve = res);
           setTimeout(() => resolve(true), delay);
           return promise;
         }
@@ -2388,9 +2388,11 @@ describe('Integration', () => {
                  [RouteConfigLoadEnd],
                  [RoutesRecognized, '/lazyTrue/loaded'],
                  [GuardsCheckStart, '/lazyTrue/loaded'],
+                 [ChildActivationStart],
                  [GuardsCheckEnd, '/lazyTrue/loaded'],
                  [ResolveStart, '/lazyTrue/loaded'],
                  [ResolveEnd, '/lazyTrue/loaded'],
+                 [ChildActivationEnd],
                  [NavigationEnd, '/lazyTrue/loaded'],
                ]);
              })));
@@ -3342,7 +3344,7 @@ describe('Integration', () => {
            }]);
 
            const events: any[] = [];
-           router.events.subscribe(e => events.push(e));
+           router.events.subscribe(e => e instanceof RouteEvent || events.push(e));
 
            // supported URL
            router.navigateByUrl('/include/user/kate');
@@ -3406,7 +3408,7 @@ describe('Integration', () => {
            }]);
 
            const events: any[] = [];
-           router.events.subscribe(e => events.push(e));
+           router.events.subscribe(e => e instanceof RouteEvent || events.push(e));
 
            location.go('/include/user/kate(aux:excluded)');
            advance(fixture);

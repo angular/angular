@@ -55,6 +55,10 @@ export class LocationService {
     window.location.assign(url);
   }
 
+  replace(url: string) {
+    window.location.replace(url);
+  }
+
   private stripSlashes(url: string) {
     return url.replace(/^\/+/, '').replace(/\/+(\?|#|$)/, '$1');
   }

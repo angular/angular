@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, ɵPLATFORM_WORKER_UI_ID as PLATFORM_WORKER_UI_ID} from '@angular/common';
-import {ErrorHandler, Injectable, InjectionToken, Injector, NgZone, PLATFORM_ID, PLATFORM_INITIALIZER, PlatformRef, Provider, RendererFactory2, RootRenderer, Testability, createPlatformFactory, isDevMode, platformCore, ɵAPP_ID_RANDOM_PROVIDER as APP_ID_RANDOM_PROVIDER} from '@angular/core';
+import {ErrorHandler, Injectable, InjectionToken, Injector, NgZone, PLATFORM_ID, PLATFORM_INITIALIZER, PlatformRef, RendererFactory2, RootRenderer, StaticProvider, Testability, createPlatformFactory, isDevMode, platformCore, ɵAPP_ID_RANDOM_PROVIDER as APP_ID_RANDOM_PROVIDER} from '@angular/core';
 import {DOCUMENT, EVENT_MANAGER_PLUGINS, EventManager, HAMMER_GESTURE_CONFIG, HammerGestureConfig, ɵBROWSER_SANITIZATION_PROVIDERS as BROWSER_SANITIZATION_PROVIDERS, ɵBrowserDomAdapter as BrowserDomAdapter, ɵBrowserGetTestability as BrowserGetTestability, ɵDomEventsPlugin as DomEventsPlugin, ɵDomRendererFactory2 as DomRendererFactory2, ɵDomSharedStylesHost as DomSharedStylesHost, ɵHammerGesturesPlugin as HammerGesturesPlugin, ɵKeyEventsPlugin as KeyEventsPlugin, ɵSharedStylesHost as SharedStylesHost, ɵgetDOM as getDOM} from '@angular/platform-browser';
 
 import {ON_WEB_WORKER} from './web_workers/shared/api';
@@ -18,6 +18,7 @@ import {RenderStore} from './web_workers/shared/render_store';
 import {Serializer} from './web_workers/shared/serializer';
 import {ServiceMessageBrokerFactory, ServiceMessageBrokerFactory_} from './web_workers/shared/service_message_broker';
 import {MessageBasedRenderer2} from './web_workers/ui/renderer';
+
 
 
 /**
@@ -52,32 +53,53 @@ export const WORKER_SCRIPT = new InjectionToken<string>('WebWorkerScript');
 export const WORKER_UI_STARTABLE_MESSAGING_SERVICE =
     new InjectionToken<({start: () => void})[]>('WorkerRenderStartableMsgService');
 
-export const _WORKER_UI_PLATFORM_PROVIDERS: Provider[] = [
+export const _WORKER_UI_PLATFORM_PROVIDERS: StaticProvider[] = [
   {provide: NgZone, useFactory: createNgZone, deps: []},
-  MessageBasedRenderer2,
+  {
+    provide: MessageBasedRenderer2,
+    deps: [ServiceMessageBrokerFactory, MessageBus, Serializer, RenderStore, RendererFactory2]
+  },
   {provide: WORKER_UI_STARTABLE_MESSAGING_SERVICE, useExisting: MessageBasedRenderer2, multi: true},
   BROWSER_SANITIZATION_PROVIDERS,
   {provide: ErrorHandler, useFactory: _exceptionHandler, deps: []},
   {provide: DOCUMENT, useFactory: _document, deps: []},
   // TODO(jteplitz602): Investigate if we definitely need EVENT_MANAGER on the render thread
   // #5298
-  {provide: EVENT_MANAGER_PLUGINS, useClass: DomEventsPlugin, multi: true},
-  {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true},
-  {provide: EVENT_MANAGER_PLUGINS, useClass: HammerGesturesPlugin, multi: true},
-  {provide: HAMMER_GESTURE_CONFIG, useClass: HammerGestureConfig},
+  {
+    provide: EVENT_MANAGER_PLUGINS,
+    useClass: DomEventsPlugin,
+    deps: [DOCUMENT, NgZone],
+    multi: true
+  },
+  {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, deps: [DOCUMENT], multi: true},
+  {
+    provide: EVENT_MANAGER_PLUGINS,
+    useClass: HammerGesturesPlugin,
+    deps: [DOCUMENT, HAMMER_GESTURE_CONFIG],
+    multi: true
+  },
+  {provide: HAMMER_GESTURE_CONFIG, useClass: HammerGestureConfig, deps: []},
   APP_ID_RANDOM_PROVIDER,
-  DomRendererFactory2,
+  {provide: DomRendererFactory2, deps: [EventManager, DomSharedStylesHost]},
   {provide: RendererFactory2, useExisting: DomRendererFactory2},
   {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
-  {provide: ServiceMessageBrokerFactory, useClass: ServiceMessageBrokerFactory_},
-  {provide: ClientMessageBrokerFactory, useClass: ClientMessageBrokerFactory_},
-  Serializer,
+  {
+    provide: ServiceMessageBrokerFactory,
+    useClass: ServiceMessageBrokerFactory_,
+    deps: [MessageBus, Serializer]
+  },
+  {
+    provide: ClientMessageBrokerFactory,
+    useClass: ClientMessageBrokerFactory_,
+    deps: [MessageBus, Serializer]
+  },
+  {provide: Serializer, deps: [RenderStore]},
   {provide: ON_WEB_WORKER, useValue: false},
-  RenderStore,
-  DomSharedStylesHost,
-  Testability,
-  EventManager,
-  WebWorkerInstance,
+  {provide: RenderStore, deps: []},
+  {provide: DomSharedStylesHost, deps: [DOCUMENT]},
+  {provide: Testability, deps: [NgZone]},
+  {provide: EventManager, deps: [EVENT_MANAGER_PLUGINS, NgZone]},
+  {provide: WebWorkerInstance, deps: []},
   {
     provide: PLATFORM_INITIALIZER,
     useFactory: initWebWorkerRenderPlatform,

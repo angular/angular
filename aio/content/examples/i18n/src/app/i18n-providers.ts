@@ -1,15 +1,15 @@
 // #docplaster
 // #docregion without-missing-translation
-import { TRANSLATIONS, TRANSLATIONS_FORMAT, LOCALE_ID, MissingTranslationStrategy } from '@angular/core';
+import { TRANSLATIONS, TRANSLATIONS_FORMAT, LOCALE_ID, MissingTranslationStrategy, StaticProvider } from '@angular/core';
 import { CompilerConfig } from '@angular/compiler';
 
-export function getTranslationProviders(): Promise<Object[]> {
+export function getTranslationProviders(): Promise<StaticProvider[]> {
 
   // Get the locale id from the global
   const locale = document['locale'] as string;
 
   // return no providers if fail to get translation file for locale
-  const noProviders: Object[] = [];
+  const noProviders: StaticProvider[] = [];
 
   // No locale or U.S. English: no translation providers
   if (!locale || locale === 'en-US') {

@@ -120,7 +120,10 @@ export interface HttpUserEvent<T> { type: HttpEventType.User; }
  *
  * @experimental
  */
-export interface HttpJsonParseError { error: Error, text: string, }
+export interface HttpJsonParseError {
+  error: Error;
+  text: string;
+}
 
 /**
  * Union type for all possible events on the response stream.
@@ -233,7 +236,7 @@ export class HttpHeaderResponse extends HttpResponseBase {
       status: update.status !== undefined ? update.status : this.status,
       statusText: update.statusText || this.statusText,
       url: update.url || this.url || undefined,
-    })
+    });
   }
 }
 

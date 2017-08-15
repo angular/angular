@@ -6,25 +6,26 @@
     "public": "dist",
     "cleanUrls": true,
     "redirects": [
-      // cli-quickstart.html glossary.html, quickstart.html, http.html, style-guide.html, styleguide
+      // cli-quickstart.html, glossary.html, quickstart.html, server-communication.html, style-guide.html
       {"type": 301, "source": "/docs/ts/latest/cli-quickstart.html",             "destination": "/guide/quickstart"},
-      {"type": 301, "source": "/guide/cli-quickstart",                           "destination": "/guide/quickstart"},
       {"type": 301, "source": "/docs/ts/latest/glossary.html",                   "destination": "/guide/glossary"},
       {"type": 301, "source": "/docs/ts/latest/quickstart.html",                 "destination": "/guide/quickstart"},
       {"type": 301, "source": "/docs/ts/latest/guide/server-communication.html", "destination": "/guide/http"},
       {"type": 301, "source": "/docs/ts/latest/guide/style-guide.html",          "destination": "/guide/styleguide"},
-      {"type": 301, "source": "/styleguide",                                     "destination": "/guide/styleguide"},
 
-      // cookbook/component-communication.html
+      // guide/cli-quickstart, styleguide
+      {"type": 301, "source": "/guide/cli-quickstart", "destination": "/guide/quickstart"},
+      {"type": 301, "source": "/styleguide",           "destination": "/guide/styleguide"},
+
+      // cookbook/a1-a2-quick-reference.html, cookbook/component-communication.html, cookbook/dependency-injection.html
+      {"type": 301, "source": "/docs/ts/latest/cookbook/a1-a2-quick-reference.html", "destination": "/guide/ajs-quick-reference"},
       {"type": 301, "source": "/docs/ts/latest/cookbook/component-communication.html", "destination": "/guide/component-interaction"},
+      {"type": 301, "source": "/docs/ts/latest/cookbook/dependency-injection.html", "destination": "/guide/dependency-injection-in-action"},
 
       // cookbook, cookbook/, cookbook/index.html
       {"type": 301, "source": "/docs/ts/latest/cookbook",            "destination": "/docs"},
       {"type": 301, "source": "/docs/ts/latest/cookbook/",           "destination": "/docs"},
       {"type": 301, "source": "/docs/ts/latest/cookbook/index.html", "destination": "/docs"},
-
-      // cookbook/dependency-injection.html
-      {"type": 301, "source": "/docs/ts/latest/cookbook/dependency-injection.html", "destination": "/guide/dependency-injection-in-action"},
 
       // cookbook/*.html
       {"type": 301, "source": "/docs/ts/latest/cookbook/:cookbook.html", "destination": "/guide/:cookbook"},

@@ -38,23 +38,10 @@ export function setUpControl(control: FormControl, dir: NgControl): void {
   control.asyncValidator = Validators.composeAsync([control.asyncValidator !, dir.asyncValidator]);
   dir.valueAccessor !.writeValue(control.value);
 
-  // view -> model
-  dir.valueAccessor !.registerOnChange((newValue: any) => {
-    dir.viewToModelUpdate(newValue);
-    control.markAsDirty();
-    control.setValue(newValue, {emitModelToViewChange: false});
-  });
+  setUpViewChangePipeline(control, dir);
+  setUpModelChangePipeline(control, dir);
 
-  // touched
-  dir.valueAccessor !.registerOnTouched(() => control.markAsTouched());
-
-  control.registerOnChange((newValue: any, emitModelEvent: boolean) => {
-    // control -> view
-    dir.valueAccessor !.writeValue(newValue);
-
-    // control -> ngModel
-    if (emitModelEvent) dir.viewToModelUpdate(newValue);
-  });
+  setUpBlurPipeline(control, dir);
 
   if (dir.valueAccessor !.setDisabledState) {
     control.registerOnDisabledChange(
@@ -90,6 +77,40 @@ export function cleanUpControl(control: FormControl, dir: NgControl) {
   });
 
   if (control) control._clearChangeFns();
+}
+
+function setUpViewChangePipeline(control: FormControl, dir: NgControl): void {
+  dir.valueAccessor !.registerOnChange((newValue: any) => {
+    control._pendingValue = newValue;
+    control._pendingDirty = true;
+
+    if (control.updateOn === 'change') updateControl(control, dir);
+  });
+}
+
+function setUpBlurPipeline(control: FormControl, dir: NgControl): void {
+  dir.valueAccessor !.registerOnTouched(() => {
+    control._pendingTouched = true;
+
+    if (control.updateOn === 'blur') updateControl(control, dir);
+    if (control.updateOn !== 'submit') control.markAsTouched();
+  });
+}
+
+function updateControl(control: FormControl, dir: NgControl): void {
+  dir.viewToModelUpdate(control._pendingValue);
+  if (control._pendingDirty) control.markAsDirty();
+  control.setValue(control._pendingValue, {emitModelToViewChange: false});
+}
+
+function setUpModelChangePipeline(control: FormControl, dir: NgControl): void {
+  control.registerOnChange((newValue: any, emitModelEvent: boolean) => {
+    // control -> view
+    dir.valueAccessor !.writeValue(newValue);
+
+    // control -> ngModel
+    if (emitModelEvent) dir.viewToModelUpdate(newValue);
+  });
 }
 
 export function setUpFormContainer(

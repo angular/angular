@@ -13,7 +13,7 @@ import {PerfLogEvent, PerfLogFeatures, WebDriverExtension} from '../web_driver_e
 
 @Injectable()
 export class IOsDriverExtension extends WebDriverExtension {
-  static PROVIDERS = [IOsDriverExtension];
+  static PROVIDERS = [{provide: IOsDriverExtension, deps: [WebDriverAdapter]}];
 
   constructor(private _driver: WebDriverAdapter) { super(); }
 

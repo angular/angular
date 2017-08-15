@@ -62,6 +62,12 @@
     },
 
     {
+      "url": "guide/webpack",
+      "title": "Webpack: An Introduction",
+      "hidden": true
+    },
+
+    {
       "url": "guide/quickstart",
       "title": "Getting Started",
       "tooltip": "A gentle introduction to Angular."
@@ -402,7 +408,7 @@
           "tooltip": "Press contacts, logos, and branding."
         },
         {
-          "url": "https://blog.angularjs.org/",
+          "url": "https://blog.angular.io/",
           "title": "Blog",
           "tooltip": "Angular Blog"
         }

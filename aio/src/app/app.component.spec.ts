@@ -12,6 +12,7 @@ import { of } from 'rxjs/observable/of';
 import { AppComponent } from './app.component';
 import { AppModule } from './app.module';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
+import { Deployment } from 'app/shared/deployment.service';
 import { GaService } from 'app/shared/ga.service';
 import { LocationService } from 'app/shared/location.service';
 import { Logger } from 'app/shared/logger.service';
@@ -273,26 +274,49 @@ describe('AppComponent', () => {
     describe('SideNav version selector', () => {
       let selectElement: DebugElement;
       let selectComponent: SelectComponent;
-      beforeEach(() => {
+
+      function setupSelectorForTesting(mode?: string) {
+        createTestingModule('a/b', mode);
+        initializeTest();
         component.onResize(sideBySideBreakPoint + 1); // side-by-side
         selectElement = fixture.debugElement.query(By.directive(SelectComponent));
         selectComponent = selectElement.componentInstance;
+      }
+
+      it('should select the version that matches the deploy mode', () => {
+        setupSelectorForTesting();
+        expect(selectComponent.selected.title).toContain('stable');
+        setupSelectorForTesting('next');
+        expect(selectComponent.selected.title).toContain('next');
+        setupSelectorForTesting('archive');
+        expect(selectComponent.selected.title).toContain('v4');
       });
 
-      it('should pick first (current) version by default', () => {
-        expect(selectComponent.selected.title).toEqual(component.versionInfo.raw);
+      it('should add the current raw version string to the selected version', () => {
+        setupSelectorForTesting();
+        expect(selectComponent.selected.title).toContain(`(v${component.versionInfo.raw})`);
+        setupSelectorForTesting('next');
+        expect(selectComponent.selected.title).toContain(`(v${component.versionInfo.raw})`);
+        setupSelectorForTesting('archive');
+        expect(selectComponent.selected.title).toContain(`(v${component.versionInfo.raw})`);
       });
 
       // Older docs versions have an href
-      it('should navigate when change to a version with an href', () => {
-        selectElement.triggerEventHandler('change', { option: component.docVersions[1] as Option, index: 1});
-        expect(locationService.go).toHaveBeenCalledWith(TestHttp.docVersions[0].url);
+      it('should navigate when change to a version with a url', () => {
+        setupSelectorForTesting();
+        const versionWithUrlIndex = component.docVersions.findIndex(v => !!v.url);
+        const versionWithUrl = component.docVersions[versionWithUrlIndex];
+        selectElement.triggerEventHandler('change', { option: versionWithUrl, index: versionWithUrlIndex});
+        expect(locationService.go).toHaveBeenCalledWith(versionWithUrl.url);
       });
 
       // The current docs version should not have an href
       // This may change when we perfect our docs versioning approach
-      it('should not navigate when change to a version without an href', () => {
-        selectElement.triggerEventHandler('change', { option: component.docVersions[0] as Option, index: 0});
+      it('should not navigate when change to a version without a url', () => {
+        setupSelectorForTesting();
+        const versionWithoutUrlIndex = component.docVersions.findIndex(v => !v.url);
+        const versionWithoutUrl = component.docVersions[versionWithoutUrlIndex];
+        selectElement.triggerEventHandler('change', { option: versionWithoutUrl, index: versionWithoutUrlIndex});
         expect(locationService.go).not.toHaveBeenCalled();
       });
     });
@@ -332,10 +356,6 @@ describe('AppComponent', () => {
     });
 
     describe('hostClasses', () => {
-      let host: DebugElement;
-      beforeEach(() => {
-        host = fixture.debugElement;
-      });
 
       it('should set the css classes of the host container based on the current doc and navigation view', () => {
         locationService.go('guide/pipes');
@@ -359,7 +379,7 @@ describe('AppComponent', () => {
       });
 
       it('should set the css class of the host container based on the open/closed state of the side nav', () => {
-        const sideNav = host.query(By.directive(MdSidenav));
+        const sideNav = fixture.debugElement.query(By.directive(MdSidenav));
 
         locationService.go('guide/pipes');
         fixture.detectChanges();
@@ -376,7 +396,14 @@ describe('AppComponent', () => {
         checkHostClass('sidenav', 'open');
       });
 
+      it('should set the css class of the host container based on the initial deployment mode', () => {
+        createTestingModule('a/b', 'archive');
+        initializeTest();
+        checkHostClass('mode', 'archive');
+      });
+
       function checkHostClass(type, value) {
+        const host = fixture.debugElement;
         const classes = host.properties['className'];
         const classArray = classes.split(' ').filter(c => c.indexOf(`${type}-`) === 0);
         expect(classArray.length).toBeLessThanOrEqual(1, `"${classes}" should have only one class matching ${type}-*`);
@@ -623,7 +650,25 @@ describe('AppComponent', () => {
     describe('footer', () => {
       it('should have version number', () => {
         const versionEl: HTMLElement = fixture.debugElement.query(By.css('aio-footer')).nativeElement;
-        expect(versionEl.textContent).toContain(TestHttp.versionFull);
+        expect(versionEl.textContent).toContain(TestHttp.versionInfo.full);
+      });
+    });
+
+    describe('deployment banner', () => {
+      it('should show a message if the deployment mode is "archive"', () => {
+        createTestingModule('a/b', 'archive');
+        initializeTest();
+        fixture.detectChanges();
+        const banner: HTMLElement = fixture.debugElement.query(By.css('aio-mode-banner')).nativeElement;
+        expect(banner.textContent).toContain('archived documentation for Angular v4');
+      });
+
+      it('should show no message if the deployment mode is not "archive"', () => {
+        createTestingModule('a/b', 'stable');
+        initializeTest();
+        fixture.detectChanges();
+        const banner: HTMLElement = fixture.debugElement.query(By.css('aio-mode-banner')).nativeElement;
+        expect(banner.textContent.trim()).toEqual('');
       });
     });
 
@@ -720,6 +765,97 @@ describe('AppComponent', () => {
       });
     });
 
+    describe('archive redirection', () => {
+      it('should redirect to `docs` if deployment mode is `archive` and not at a docs page', () => {
+        createTestingModule('', 'archive');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).toHaveBeenCalledWith('docs');
+
+        createTestingModule('resources', 'archive');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).toHaveBeenCalledWith('docs');
+
+        createTestingModule('guide/aot-compiler', 'archive');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+
+        createTestingModule('tutorial', 'archive');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+
+        createTestingModule('tutorial/toh-pt1', 'archive');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+
+        createTestingModule('docs', 'archive');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+
+        createTestingModule('api', 'archive');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+      });
+
+      it('should redirect to `docs` if deployment mode is `next` and not at a docs page', () => {
+        createTestingModule('', 'next');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).toHaveBeenCalledWith('docs');
+
+        createTestingModule('resources', 'next');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).toHaveBeenCalledWith('docs');
+
+        createTestingModule('guide/aot-compiler', 'next');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+
+        createTestingModule('tutorial', 'next');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+
+        createTestingModule('tutorial/toh-pt1', 'next');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+
+        createTestingModule('docs', 'next');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+
+        createTestingModule('api', 'next');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+      });
+
+      it('should not redirect to `docs` if deployment mode is `stable` and not at a docs page', () => {
+        createTestingModule('', 'stable');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+
+        createTestingModule('resources', 'stable');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+
+        createTestingModule('guide/aot-compiler', 'stable');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+
+        createTestingModule('tutorial', 'stable');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+
+        createTestingModule('tutorial/toh-pt1', 'stable');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+
+        createTestingModule('docs', 'stable');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+
+        createTestingModule('api', 'stable');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+      });
+    });
   });
 
   describe('with mocked DocViewer', () => {
@@ -883,7 +1019,8 @@ describe('AppComponent', () => {
 
 //// test helpers ////
 
-function createTestingModule(initialUrl: string) {
+function createTestingModule(initialUrl: string, mode: string = 'stable') {
+  const mockLocationService = new MockLocationService(initialUrl);
   TestBed.resetTestingModule();
   TestBed.configureTestingModule({
     imports: [ AppModule ],
@@ -891,9 +1028,14 @@ function createTestingModule(initialUrl: string) {
       { provide: APP_BASE_HREF, useValue: '/' },
       { provide: GaService, useClass: TestGaService },
       { provide: Http, useClass: TestHttp },
-      { provide: LocationService, useFactory: () => new MockLocationService(initialUrl) },
+      { provide: LocationService, useFactory: () => mockLocationService },
       { provide: Logger, useClass: MockLogger },
       { provide: SearchService, useClass: MockSearchService },
+      { provide: Deployment, useFactory: () => {
+        const deployment = new Deployment(mockLocationService as any);
+        deployment.mode = mode;
+        return deployment;
+      }},
     ]
   });
 }
@@ -908,7 +1050,21 @@ class TestSearchService {
 }
 
 class TestHttp {
-  static versionFull = '4.0.0-local+sha.73808dd';
+
+  static versionInfo = {
+    raw: '4.0.0-rc.6',
+    major: 4,
+    minor: 0,
+    patch: 0,
+    prerelease: [ 'local' ],
+    build: 'sha.73808dd',
+    version: '4.0.0-local',
+    codeName: 'snapshot',
+    isSnapshot: true,
+    full: '4.0.0-local+sha.73808dd',
+    branch: 'master',
+    commitSHA: '73808dd38b5ccd729404936834d1568bd066de81'
+  };
 
   static docVersions: NavigationNode[] = [
     { title: 'v2', url: 'https://v2.angular.io' }
@@ -951,22 +1107,7 @@ class TestHttp {
     ],
     "docVersions": TestHttp.docVersions,
 
-    "__versionInfo": {
-      "raw": "4.0.0-rc.6",
-      "major": 4,
-      "minor": 0,
-      "patch": 0,
-      "prerelease": [
-        "local"
-      ],
-      "build": "sha.73808dd",
-      "version": "4.0.0-local",
-      "codeName": "snapshot",
-      "isSnapshot": true,
-      "full": TestHttp.versionFull,
-      "branch": "master",
-      "commitSHA": "73808dd38b5ccd729404936834d1568bd066de81"
-    }
+    "__versionInfo": TestHttp.versionInfo,
   };
 
   get(url: string) {

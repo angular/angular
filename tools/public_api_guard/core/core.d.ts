@@ -164,17 +164,6 @@ export declare abstract class ChangeDetectorRef {
 }
 
 /** @stable */
-export declare function Class(clsDef: ClassDefinition): Type<any>;
-
-/** @stable */
-export declare type ClassDefinition = {
-    extends?: Type<any>;
-    constructor: Function | any[];
-} & {
-    [x: string]: Type<any> | Function | any[];
-};
-
-/** @stable */
 export interface ClassProvider {
     multi?: boolean;
     provide: any;
@@ -209,9 +198,10 @@ export declare type CompilerOptions = {
     /** @deprecated */ useDebug?: boolean;
     useJit?: boolean;
     defaultEncapsulation?: ViewEncapsulation;
-    providers?: any[];
+    providers?: StaticProvider[];
     missingTranslation?: MissingTranslationStrategy;
     enableLegacyTemplate?: boolean;
+    preserveWhitespaces?: boolean;
 };
 
 /** @stable */
@@ -289,7 +279,7 @@ export interface ContentChildrenDecorator {
 export declare function createPlatform(injector: Injector): PlatformRef;
 
 /** @experimental */
-export declare function createPlatformFactory(parentPlatformFactory: ((extraProviders?: Provider[]) => PlatformRef) | null, name: string, providers?: Provider[]): (extraProviders?: Provider[]) => PlatformRef;
+export declare function createPlatformFactory(parentPlatformFactory: ((extraProviders?: StaticProvider[]) => PlatformRef) | null, name: string, providers?: StaticProvider[]): (extraProviders?: StaticProvider[]) => PlatformRef;
 
 /** @stable */
 export declare const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata;
@@ -491,6 +481,7 @@ export declare abstract class Injector {
     /** @deprecated */ abstract get(token: any, notFoundValue?: any): any;
     static NULL: Injector;
     static THROW_IF_NOT_FOUND: Object;
+    static create(providers: StaticProvider[], parent?: Injector): Injector;
 }
 
 /** @stable */
@@ -536,7 +527,7 @@ export declare class IterableDiffers {
     constructor(factories: IterableDifferFactory[]);
     find(iterable: any): IterableDifferFactory;
     static create(factories: IterableDifferFactory[], parent?: IterableDiffers): IterableDiffers;
-    static extend(factories: IterableDifferFactory[]): Provider;
+    static extend(factories: IterableDifferFactory[]): StaticProvider;
 }
 
 /** @deprecated */
@@ -579,7 +570,7 @@ export declare class KeyValueDiffers {
     constructor(factories: KeyValueDifferFactory[]);
     find(kv: any): KeyValueDifferFactory;
     static create<S>(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers;
-    static extend<S>(factories: KeyValueDifferFactory[]): Provider;
+    static extend<S>(factories: KeyValueDifferFactory[]): StaticProvider;
 }
 
 /** @experimental */
@@ -714,7 +705,7 @@ export declare const PLATFORM_ID: InjectionToken<Object>;
 export declare const PLATFORM_INITIALIZER: InjectionToken<(() => void)[]>;
 
 /** @experimental */
-export declare const platformCore: (extraProviders?: Provider[] | undefined) => PlatformRef;
+export declare const platformCore: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
 
 /** @stable */
 export declare abstract class PlatformRef {
@@ -758,7 +749,7 @@ export declare class QueryList<T> {
     toString(): string;
 }
 
-/** @stable */
+/** @deprecated */
 export declare abstract class ReflectiveInjector implements Injector {
     readonly abstract parent: Injector | null;
     abstract createChildFromResolved(providers: ResolvedReflectiveProvider[]): ReflectiveInjector;
@@ -771,7 +762,7 @@ export declare abstract class ReflectiveInjector implements Injector {
     static resolveAndCreate(providers: Provider[], parent?: Injector): ReflectiveInjector;
 }
 
-/** @experimental */
+/** @deprecated */
 export declare class ReflectiveKey {
     readonly displayName: string;
     id: number;
@@ -951,6 +942,9 @@ export interface SkipSelfDecorator {
 /** @deprecated */
 export declare function state(name: string, styles: AnimationStyleMetadata): AnimationStateMetadata;
 
+/** @stable */
+export declare type StaticProvider = ValueProvider | ExistingProvider | StaticClassProvider | ConstructorProvider | FactoryProvider | any[];
+
 /** @deprecated */
 export declare function style(tokens: {
     [key: string]: string | number;
@@ -1025,10 +1019,8 @@ export declare const Type: FunctionConstructor;
 
 /** @stable */
 export interface TypeDecorator {
-    annotations: any[];
     (target: Object, propertyKey?: string | symbol, parameterIndex?: number): void;
     <T extends Type<any>>(type: T): T;
-    Class(obj: ClassDefinition): Type<any>;
 }
 
 /** @stable */

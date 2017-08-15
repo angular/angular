@@ -10,9 +10,9 @@ import {ɵAnimationEngine} from '@angular/animations/browser';
 import {PlatformLocation, ɵPLATFORM_SERVER_ID as PLATFORM_SERVER_ID} from '@angular/common';
 import {HttpClientModule} from '@angular/common/http';
 import {platformCoreDynamic} from '@angular/compiler';
-import {Injectable, InjectionToken, Injector, NgModule, NgZone, PLATFORM_ID, PLATFORM_INITIALIZER, PlatformRef, Provider, RendererFactory2, RootRenderer, Testability, createPlatformFactory, isDevMode, platformCore, ɵALLOW_MULTIPLE_PLATFORMS as ALLOW_MULTIPLE_PLATFORMS} from '@angular/core';
+import {Injectable, InjectionToken, Injector, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, PlatformRef, Provider, RendererFactory2, RootRenderer, StaticProvider, Testability, createPlatformFactory, isDevMode, platformCore, ɵALLOW_MULTIPLE_PLATFORMS as ALLOW_MULTIPLE_PLATFORMS} from '@angular/core';
 import {HttpModule} from '@angular/http';
-import {BrowserModule, DOCUMENT, ɵSharedStylesHost as SharedStylesHost, ɵgetDOM as getDOM} from '@angular/platform-browser';
+import {BrowserModule, DOCUMENT, ɵSharedStylesHost as SharedStylesHost, ɵTRANSITION_ID, ɵgetDOM as getDOM} from '@angular/platform-browser';
 import {NoopAnimationsModule, ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
 
 import {SERVER_HTTP_PROVIDERS} from './http';
@@ -27,11 +27,15 @@ function notSupported(feature: string): Error {
   throw new Error(`platform-server does not support '${feature}'.`);
 }
 
-export const INTERNAL_SERVER_PLATFORM_PROVIDERS: Array<any /*Type | Provider | any[]*/> = [
+export const INTERNAL_SERVER_PLATFORM_PROVIDERS: StaticProvider[] = [
   {provide: DOCUMENT, useFactory: _document, deps: [Injector]},
   {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID},
-  {provide: PLATFORM_INITIALIZER, useFactory: initParse5Adapter, multi: true, deps: [Injector]},
-  {provide: PlatformLocation, useClass: ServerPlatformLocation}, PlatformState,
+  {provide: PLATFORM_INITIALIZER, useFactory: initParse5Adapter, multi: true, deps: [Injector]}, {
+    provide: PlatformLocation,
+    useClass: ServerPlatformLocation,
+    deps: [DOCUMENT, [Optional, INITIAL_CONFIG]]
+  },
+  {provide: PlatformState, deps: [DOCUMENT]},
   // Add special provider that allows multiple instances of platformServer* to be created.
   {provide: ALLOW_MULTIPLE_PLATFORMS, useValue: true}
 ];

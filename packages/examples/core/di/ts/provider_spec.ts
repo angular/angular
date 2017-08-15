@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, InjectionToken, Optional, ReflectiveInjector} from '@angular/core';
+import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from '@angular/core';
 
 export function main() {
   describe('Provider examples', () => {
@@ -30,8 +30,7 @@ export function main() {
     describe('ValueProvider', () => {
       it('works', () => {
         // #docregion ValueProvider
-        const injector =
-            ReflectiveInjector.resolveAndCreate([{provide: String, useValue: 'Hello'}]);
+        const injector = Injector.create([{provide: String, useValue: 'Hello'}]);
 
         expect(injector.get(String)).toEqual('Hello');
         // #enddocregion
@@ -41,12 +40,13 @@ export function main() {
     describe('MultiProviderAspect', () => {
       it('works', () => {
         // #docregion MultiProviderAspect
-        const injector = ReflectiveInjector.resolveAndCreate([
-          {provide: 'local', multi: true, useValue: 'en'},
-          {provide: 'local', multi: true, useValue: 'sk'},
+        const locale = new InjectionToken<string[]>('locale');
+        const injector = Injector.create([
+          {provide: locale, multi: true, useValue: 'en'},
+          {provide: locale, multi: true, useValue: 'sk'},
         ]);
 
-        const locales: string[] = injector.get('local');
+        const locales: string[] = injector.get(locale);
         expect(locales).toEqual(['en', 'sk']);
         // #enddocregion
       });
@@ -89,6 +89,61 @@ export function main() {
       });
     });
 
+    describe('StaticClassProvider', () => {
+      it('works', () => {
+        // #docregion StaticClassProvider
+        abstract class Shape { name: string; }
+
+        class Square extends Shape {
+          name = 'square';
+        }
+
+        const injector = Injector.create([{provide: Shape, useClass: Square, deps: []}]);
+
+        const shape: Shape = injector.get(Shape);
+        expect(shape.name).toEqual('square');
+        expect(shape instanceof Square).toBe(true);
+        // #enddocregion
+      });
+
+      it('is different then useExisting', () => {
+        // #docregion StaticClassProviderDifference
+        class Greeting {
+          salutation = 'Hello';
+        }
+
+        class FormalGreeting extends Greeting {
+          salutation = 'Greetings';
+        }
+
+        const injector = Injector.create([
+          {provide: FormalGreeting, useClass: FormalGreeting, deps: []},
+          {provide: Greeting, useClass: FormalGreeting, deps: []}
+        ]);
+
+        // The injector returns different instances.
+        // See: {provide: ?, useExisting: ?} if you want the same instance.
+        expect(injector.get(FormalGreeting)).not.toBe(injector.get(Greeting));
+        // #enddocregion
+      });
+    });
+
+    describe('ConstructorProvider', () => {
+      it('works', () => {
+        // #docregion ConstructorProvider
+        class Square {
+          name = 'square';
+        }
+
+        const injector = Injector.create([{provide: Square, deps: []}]);
+
+        const shape: Square = injector.get(Square);
+        expect(shape.name).toEqual('square');
+        expect(shape instanceof Square).toBe(true);
+        // #enddocregion
+      });
+    });
+
     describe('ExistingProvider', () => {
       it('works', () => {
         // #docregion ExistingProvider
@@ -100,8 +155,9 @@ export function main() {
           salutation = 'Greetings';
         }
 
-        const injector = ReflectiveInjector.resolveAndCreate(
-            [FormalGreeting, {provide: Greeting, useExisting: FormalGreeting}]);
+        const injector = Injector.create([
+          {provide: FormalGreeting, deps: []}, {provide: Greeting, useExisting: FormalGreeting}
+        ]);
 
         expect(injector.get(Greeting).salutation).toEqual('Greetings');
         expect(injector.get(FormalGreeting).salutation).toEqual('Greetings');
@@ -116,7 +172,7 @@ export function main() {
         const Location = new InjectionToken('location');
         const Hash = new InjectionToken('hash');
 
-        const injector = ReflectiveInjector.resolveAndCreate([
+        const injector = Injector.create([
           {provide: Location, useValue: 'http://angular.io/#someLocation'}, {
             provide: Hash,
             useFactory: (location: string) => location.split('#')[1],
@@ -133,7 +189,7 @@ export function main() {
         const Location = new InjectionToken('location');
         const Hash = new InjectionToken('hash');
 
-        const injector = ReflectiveInjector.resolveAndCreate([{
+        const injector = Injector.create([{
           provide: Hash,
           useFactory: (location: string) => `Hash for: ${location}`,
           // use a nested array to define metadata for dependencies.

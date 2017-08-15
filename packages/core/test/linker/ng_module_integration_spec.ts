@@ -720,7 +720,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
       it('should throw when the aliased provider does not exist', () => {
         const injector = createInjector([{provide: 'car', useExisting: SportsCar}]);
-        const e = `No provider for ${stringify(SportsCar)}!`;
+        const e = `NullInjectorError: No provider for ${stringify(SportsCar)}!`;
         expect(() => injector.get('car')).toThrowError(e);
       });
 
@@ -830,7 +830,8 @@ function declareTests({useJit}: {useJit: boolean}) {
 
       it('should throw when no provider defined', () => {
         const injector = createInjector([]);
-        expect(() => injector.get('NonExisting')).toThrowError('No provider for NonExisting!');
+        expect(() => injector.get('NonExisting'))
+            .toThrowError('NullInjectorError: No provider for NonExisting!');
       });
 
       it('should throw when trying to instantiate a cyclic dependency', () => {

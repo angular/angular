@@ -8,10 +8,10 @@ export interface PlatformConfig {
 }
 
 /** @experimental */
-export declare const platformDynamicServer: (extraProviders?: Provider[] | undefined) => PlatformRef;
+export declare const platformDynamicServer: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
 
 /** @experimental */
-export declare const platformServer: (extraProviders?: Provider[] | undefined) => PlatformRef;
+export declare const platformServer: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
 
 /** @experimental */
 export declare class PlatformState {
@@ -24,14 +24,14 @@ export declare class PlatformState {
 export declare function renderModule<T>(module: Type<T>, options: {
     document?: string;
     url?: string;
-    extraProviders?: Provider[];
+    extraProviders?: StaticProvider[];
 }): Promise<string>;
 
 /** @experimental */
 export declare function renderModuleFactory<T>(moduleFactory: NgModuleFactory<T>, options: {
     document?: string;
     url?: string;
-    extraProviders?: Provider[];
+    extraProviders?: StaticProvider[];
 }): Promise<string>;
 
 /** @experimental */

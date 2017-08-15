@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import * as fs from 'fs';
 import * as ts from 'typescript';
 
@@ -70,7 +78,7 @@ export class MockNode implements ts.Node {
       public kind: ts.SyntaxKind = ts.SyntaxKind.Identifier, public flags: ts.NodeFlags = 0,
       public pos: number = 0, public end: number = 0) {}
   getSourceFile(): ts.SourceFile { return null as any as ts.SourceFile; }
-  getChildCount(sourceFile?: ts.SourceFile): number { return 0 }
+  getChildCount(sourceFile?: ts.SourceFile): number { return 0; }
   getChildAt(index: number, sourceFile?: ts.SourceFile): ts.Node { return null as any as ts.Node; }
   getChildren(sourceFile?: ts.SourceFile): ts.Node[] { return []; }
   getStart(sourceFile?: ts.SourceFile): number { return 0; }
@@ -90,12 +98,14 @@ export class MockNode implements ts.Node {
 
 export class MockIdentifier extends MockNode implements ts.Identifier {
   public text: string;
+  // tslint:disable
   public _primaryExpressionBrand: any;
   public _memberExpressionBrand: any;
   public _leftHandSideExpressionBrand: any;
   public _incrementExpressionBrand: any;
   public _unaryExpressionBrand: any;
   public _expressionBrand: any;
+  // tslint:enable
 
   constructor(
       public name: string, public kind: ts.SyntaxKind.Identifier = ts.SyntaxKind.Identifier,
@@ -106,6 +116,7 @@ export class MockIdentifier extends MockNode implements ts.Identifier {
 }
 
 export class MockVariableDeclaration extends MockNode implements ts.VariableDeclaration {
+  // tslint:disable-next-line
   public _declarationBrand: any;
 
   constructor(
@@ -130,7 +141,7 @@ export class MockSymbol implements ts.Symbol {
   getDeclarations(): ts.Declaration[] { return [this.node]; }
   getDocumentationComment(): ts.SymbolDisplayPart[] { return []; }
   // TODO(vicb): removed in TS 2.2
-  getJsDocTags(): any[]{return []};
+  getJsDocTags(): any[] { return []; }
 
   static of (name: string): MockSymbol { return new MockSymbol(name); }
 }
@@ -139,6 +150,7 @@ export function expectNoDiagnostics(diagnostics: ts.Diagnostic[]) {
   for (const diagnostic of diagnostics) {
     const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
     const {line, character} = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
+    // tslint:disable-next-line:no-console
     console.log(`${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`);
   }
   expect(diagnostics.length).toBe(0);
@@ -159,7 +171,7 @@ export function allChildren<T>(node: ts.Node, cb: (node: ts.Node) => T): T {
       return result;
     }
     return allChildren(child, cb);
-  })
+  });
 }
 
 export function findClass(sourceFile: ts.SourceFile, name: string): ts.ClassDeclaration|undefined {

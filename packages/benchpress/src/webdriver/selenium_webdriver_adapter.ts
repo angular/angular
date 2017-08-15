@@ -6,15 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {StaticProvider} from '@angular/core';
+
 import {WebDriverAdapter} from '../web_driver_adapter';
+
 
 /**
  * Adapter for the selenium-webdriver.
  */
 export class SeleniumWebDriverAdapter extends WebDriverAdapter {
-  static PROTRACTOR_PROVIDERS = [{
+  static PROTRACTOR_PROVIDERS = <StaticProvider[]>[{
     provide: WebDriverAdapter,
-    useFactory: () => new SeleniumWebDriverAdapter((<any>global).browser)
+    useFactory: () => new SeleniumWebDriverAdapter((<any>global).browser),
+    deps: []
   }];
 
   constructor(private _driver: any) { super(); }

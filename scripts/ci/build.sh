@@ -40,6 +40,16 @@ if [[ ${CI_MODE:-} == "aio" ]]; then
   exit 0;
 fi
 
+# Build the Angular packages then exit (no further build required)
+if [[ ${CI_MODE:-} == "aio_e2e" ]]; then
+  travisFoldStart "build.aio_e2e"
+  (
+    ./build.sh
+  )
+  travisFoldEnd "build.aio_e2e"
+  exit 0;
+fi
+
 travisFoldStart "tsc tools"
   $(npm bin)/tsc -p tools
   $(npm bin)/tsc -p packages/tsc-wrapped/tsconfig-build.json

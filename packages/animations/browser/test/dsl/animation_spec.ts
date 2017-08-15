@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimationMetadata, AnimationMetadataType, animate, animation, group, keyframes, query, sequence, style, transition, trigger, useAnimation, ɵStyleData} from '@angular/animations';
+import {AUTO_STYLE, AnimationMetadata, AnimationMetadataType, animate, animation, group, keyframes, query, sequence, state, style, transition, trigger, useAnimation, ɵStyleData} from '@angular/animations';
 import {AnimationOptions} from '@angular/core/src/animation/dsl';
 
 import {Animation} from '../../src/dsl/animation';
@@ -174,6 +174,30 @@ export function main() {
           validateAndThrowAnimationSequence(steps2);
         }).toThrowError(/keyframes\(\) must be placed inside of a call to animate\(\)/);
       });
+
+      it('should throw if dynamic style substitutions are used without defaults within state() definitions',
+         () => {
+           const steps = [state('final', style({
+                                  'width': '{{ one }}px',
+                                  'borderRadius': '{{ two }}px {{ three }}px',
+                                }))];
+
+           expect(() => { validateAndThrowAnimationSequence(steps); })
+               .toThrowError(
+                   /state\("final", ...\) must define default values for all the following style substitutions: one, two, three/);
+
+           const steps2 = [state(
+               'panfinal', style({
+                 'color': '{{ greyColor }}',
+                 'borderColor': '1px solid {{ greyColor }}',
+                 'backgroundColor': '{{ redColor }}',
+               }),
+               {params: {redColor: 'maroon'}})];
+
+           expect(() => { validateAndThrowAnimationSequence(steps2); })
+               .toThrowError(
+                   /state\("panfinal", ...\) must define default values for all the following style substitutions: greyColor/);
+         });
     });
 
     describe('keyframe building', () => {
@@ -427,17 +451,17 @@ export function main() {
 
         it('should throw an error when an input variable is not provided when invoked and is not a default value',
            () => {
-             expect(() => {invokeAnimationSequence(rootElement, [style({color: '{{ color }}'})])})
+             expect(() => invokeAnimationSequence(rootElement, [style({color: '{{ color }}'})]))
                  .toThrowError(/Please provide a value for the animation param color/);
 
              expect(
-                 () => {invokeAnimationSequence(
+                 () => invokeAnimationSequence(
                      rootElement,
                      [
                        style({color: '{{ start }}'}),
                        animate('{{ time }}', style({color: '{{ end }}'})),
                      ],
-                     buildParams({start: 'blue', end: 'red'}))})
+                     buildParams({start: 'blue', end: 'red'})))
                  .toThrowError(/Please provide a value for the animation param time/);
            });
       });

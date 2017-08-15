@@ -6,20 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompiler, GeneratedFile, NgAnalyzedModules, createAotCompiler, getParseErrors, isSyntaxError, toTypeScript} from '@angular/compiler';
-import {MetadataCollector, ModuleMetadata} from '@angular/tsc-wrapped';
-import {writeFileSync} from 'fs';
+import {AotCompiler, AotCompilerOptions, GeneratedFile, NgAnalyzedModules, createAotCompiler, getParseErrors, isSyntaxError, toTypeScript} from '@angular/compiler';
+import {MissingTranslationStrategy} from '@angular/core';
+import {createBundleIndexHost} from '@angular/tsc-wrapped';
+import * as fs from 'fs';
 import * as path from 'path';
+import * as tsickle from 'tsickle';
 import * as ts from 'typescript';
 
-import {CompilerHost as AotCompilerHost, CompilerHostContext} from '../compiler_host';
+import {CompilerHost as AotCompilerHost} from '../compiler_host';
 import {TypeChecker} from '../diagnostics/check_types';
 
-import {CompilerHost, CompilerOptions, DiagnosticCategory} from './api';
-import {Diagnostic, EmitFlags, Program} from './api';
+import {CompilerHost, CompilerOptions, Diagnostic, EmitFlags, EmitResult, Program} from './api';
+import {LowerMetadataCache, getExpressionLoweringTransformFactory} from './lower_expressions';
 import {getAngularEmitterTransformFactory} from './node_emitter_transform';
 
 const GENERATED_FILES = /\.ngfactory\.js$|\.ngstyle\.js$|\.ngsummary\.js$/;
+
 const SUMMARY_JSON_FILES = /\.ngsummary.json$/;
 
 const emptyModules: NgAnalyzedModules = {
@@ -29,13 +32,11 @@ const emptyModules: NgAnalyzedModules = {
 };
 
 class AngularCompilerProgram implements Program {
-  // Initialized in the constructor
-  private oldTsProgram: ts.Program|undefined;
   private tsProgram: ts.Program;
   private aotCompilerHost: AotCompilerHost;
   private compiler: AotCompiler;
   private srcNames: string[];
-  private collector: MetadataCollector;
+  private metadataCache: LowerMetadataCache;
   // Lazily initialized fields
   private _analyzedModules: NgAnalyzedModules|undefined;
   private _structuralDiagnostics: Diagnostic[] = [];
@@ -47,21 +48,39 @@ class AngularCompilerProgram implements Program {
   private _generatedFileDiagnostics: Diagnostic[]|undefined;
   private _typeChecker: TypeChecker|undefined;
   private _semanticDiagnostics: Diagnostic[]|undefined;
+  private _optionsDiagnostics: Diagnostic[] = [];
 
   constructor(
       private rootNames: string[], private options: CompilerOptions, private host: CompilerHost,
       private oldProgram?: Program) {
-    this.oldTsProgram = oldProgram ? oldProgram.getTsProgram() : undefined;
+    if (options.flatModuleOutFile && !options.skipMetadataEmit) {
+      const {host: bundleHost, indexName, errors} = createBundleIndexHost(options, rootNames, host);
+      if (errors) {
+        // TODO(tbosch): once we move MetadataBundler from tsc_wrapped into compiler_cli,
+        // directly create ng.Diagnostic instead of using ts.Diagnostic here.
+        this._optionsDiagnostics.push(
+            ...errors.map(e => ({category: e.category, message: e.messageText as string})));
+      } else {
+        rootNames.push(indexName !);
+        this.host = host = bundleHost;
+      }
+    }
 
-    this.tsProgram = ts.createProgram(rootNames, options, host, this.oldTsProgram);
-    this.srcNames = this.tsProgram.getSourceFiles().map(sf => sf.fileName);
-    this.aotCompilerHost = new AotCompilerHost(this.tsProgram, options, host);
+    const oldTsProgram = oldProgram ? oldProgram.getTsProgram() : undefined;
+    this.tsProgram = ts.createProgram(rootNames, options, host, oldTsProgram);
+    this.srcNames =
+        this.tsProgram.getSourceFiles()
+            .map(sf => sf.fileName)
+            .filter(f => !f.match(/\.ngfactory\.[\w.]+$|\.ngstyle\.[\w.]+$|\.ngsummary\.[\w.]+$/));
+    this.metadataCache = new LowerMetadataCache({quotedNames: true}, !!options.strictMetadataEmit);
+    this.aotCompilerHost = new AotCompilerHost(
+        this.tsProgram, options, host, /* collectorOptions */ undefined, this.metadataCache);
     if (host.readResource) {
       this.aotCompilerHost.loadResource = host.readResource.bind(host);
     }
-    const {compiler} = createAotCompiler(this.aotCompilerHost, options);
-    this.compiler = compiler;
-    this.collector = new MetadataCollector({quotedNames: true});
+
+    const aotOptions = getAotCompilerOptions(options);
+    this.compiler = createAotCompiler(this.aotCompilerHost, aotOptions).compiler;
   }
 
   // Program implementation
@@ -72,7 +91,7 @@ class AngularCompilerProgram implements Program {
   }
 
   getNgOptionDiagnostics(cancellationToken?: ts.CancellationToken): Diagnostic[] {
-    return getNgOptionDiagnostics(this.options);
+    return [...this._optionsDiagnostics, ...getNgOptionDiagnostics(this.options)];
   }
 
   getTsSyntacticDiagnostics(sourceFile?: ts.SourceFile, cancellationToken?: ts.CancellationToken):
@@ -114,27 +133,56 @@ class AngularCompilerProgram implements Program {
   getLazyRoutes(cancellationToken?: ts.CancellationToken): {[route: string]: string} { return {}; }
 
   emit({emitFlags = EmitFlags.Default, cancellationToken}:
-           {emitFlags?: EmitFlags, cancellationToken?: ts.CancellationToken}): ts.EmitResult {
+           {emitFlags?: EmitFlags, cancellationToken?: ts.CancellationToken}): EmitResult {
     const emitMap = new Map<string, string>();
-    const result = this.programWithStubs.emit(
+
+    const tsickleCompilerHostOptions: tsickle.TransformerOptions = {
+      googmodule: false,
+      untyped: true,
+      convertIndexImportShorthand: true,
+      transformDecorators: this.options.annotationsAs !== 'decorators',
+      transformTypesToClosure: this.options.annotateForClosureCompiler,
+    };
+
+    const tsickleHost: tsickle.TransformerHost = {
+      shouldSkipTsickleProcessing: (fileName) => /\.d\.ts$/.test(fileName),
+      pathToModuleName: (context, importPath) => '',
+      shouldIgnoreWarningsForPath: (filePath) => false,
+      fileNameToModuleId: (fileName) => fileName,
+    };
+
+    const expectedOut = this.options.expectedOut ?
+        this.options.expectedOut.map(f => path.resolve(process.cwd(), f)) :
+        undefined;
+
+    const result = tsickle.emitWithTsickle(
+        this.programWithStubs, tsickleHost, tsickleCompilerHostOptions, this.host, this.options,
         /* targetSourceFile */ undefined,
-        createWriteFileCallback(emitFlags, this.host, this.collector, this.options, emitMap),
-        cancellationToken, (emitFlags & (EmitFlags.DTS | EmitFlags.JS)) == EmitFlags.DTS, {
-          after: this.options.skipTemplateCodegen ? [] : [getAngularEmitterTransformFactory(
-                                                             this.generatedFiles)]
-        });
+        createWriteFileCallback(emitFlags, this.host, this.metadataCache, emitMap, expectedOut),
+        cancellationToken, (emitFlags & (EmitFlags.DTS | EmitFlags.JS)) == EmitFlags.DTS,
+        this.calculateTransforms());
 
     this.generatedFiles.forEach(file => {
+      // In order not to replicate the TS calculation of the out folder for files
+      // derive the out location for .json files from the out location of the .ts files
       if (file.source && file.source.length && SUMMARY_JSON_FILES.test(file.genFileUrl)) {
         // If we have emitted the ngsummary.ts file, ensure the ngsummary.json file is emitted to
         // the same location.
+
         const emittedFile = emitMap.get(file.srcFileUrl);
-        const fileName = emittedFile ?
-            path.join(path.dirname(emittedFile), path.basename(file.genFileUrl)) :
-            file.genFileUrl;
-        this.host.writeFile(fileName, file.source, false, error => {});
+
+        if (emittedFile) {
+          const fileName = path.join(path.dirname(emittedFile), path.basename(file.genFileUrl));
+          this.host.writeFile(fileName, file.source, false, error => {});
+        }
       }
     });
+
+    // Ensure that expected output files exist.
+    for (const out of expectedOut || []) {
+      fs.appendFileSync(out, '', 'utf8');
+    }
+
     return result;
   }
 
@@ -144,7 +192,7 @@ class AngularCompilerProgram implements Program {
   }
 
   private get structuralDiagnostics(): Diagnostic[] {
-    return this.analyzedModules && this._structuralDiagnostics
+    return this.analyzedModules && this._structuralDiagnostics;
   }
 
   private get stubs(): GeneratedFile[] {
@@ -171,7 +219,7 @@ class AngularCompilerProgram implements Program {
   }
 
   private get generatedFiles(): GeneratedFile[] {
-    return this._generatedFiles || (this._generatedFiles = this.generateFiles())
+    return this._generatedFiles || (this._generatedFiles = this.generateFiles());
   }
 
   private get typeChecker(): TypeChecker {
@@ -184,6 +232,17 @@ class AngularCompilerProgram implements Program {
     return this.generatedFiles && this._generatedFileDiagnostics !;
   }
 
+  private calculateTransforms(): tsickle.EmitTransformers {
+    const beforeTs: ts.TransformerFactory<ts.SourceFile>[] = [];
+    if (!this.options.disableExpressionLowering) {
+      beforeTs.push(getExpressionLoweringTransformFactory(this.metadataCache));
+    }
+    if (!this.options.skipTemplateCodegen) {
+      beforeTs.push(getAngularEmitterTransformFactory(this.generatedFiles));
+    }
+    return {beforeTs};
+  }
+
   private catchAnalysisError(e: any): NgAnalyzedModules {
     if (isSyntaxError(e)) {
       const parserErrors = getParseErrors(e);
@@ -191,11 +250,11 @@ class AngularCompilerProgram implements Program {
         this._structuralDiagnostics =
             parserErrors.map<Diagnostic>(e => ({
                                            message: e.contextualMessage(),
-                                           category: DiagnosticCategory.Error,
+                                           category: ts.DiagnosticCategory.Error,
                                            span: e.span
                                          }));
       } else {
-        this._structuralDiagnostics = [{message: e.message, category: DiagnosticCategory.Error}];
+        this._structuralDiagnostics = [{message: e.message, category: ts.DiagnosticCategory.Error}];
       }
       this._analyzedModules = emptyModules;
       return emptyModules;
@@ -214,8 +273,8 @@ class AngularCompilerProgram implements Program {
   private generateStubs() {
     return this.options.skipTemplateCodegen ? [] :
                                               this.options.generateCodeForLibraries === false ?
-                                              this.compiler.emitAllStubs(this.analyzedModules) :
-                                              this.compiler.emitPartialStubs(this.analyzedModules);
+                                              this.compiler.emitPartialStubs(this.analyzedModules) :
+                                              this.compiler.emitAllStubs(this.analyzedModules);
   }
 
   private generateFiles() {
@@ -226,7 +285,8 @@ class AngularCompilerProgram implements Program {
       return this.options.skipTemplateCodegen ? [] : result;
     } catch (e) {
       if (isSyntaxError(e)) {
-        this._generatedFileDiagnostics = [{message: e.message, category: DiagnosticCategory.Error}];
+        this._generatedFileDiagnostics =
+            [{message: e.message, category: ts.DiagnosticCategory.Error}];
         return [];
       }
       throw e;
@@ -256,9 +316,43 @@ export function createProgram(
   return new AngularCompilerProgram(rootNames, options, host, oldProgram);
 }
 
+// Compute the AotCompiler options
+function getAotCompilerOptions(options: CompilerOptions): AotCompilerOptions {
+  let missingTranslation = MissingTranslationStrategy.Warning;
+
+  switch (options.i18nInMissingTranslations) {
+    case 'ignore':
+      missingTranslation = MissingTranslationStrategy.Ignore;
+      break;
+    case 'error':
+      missingTranslation = MissingTranslationStrategy.Error;
+      break;
+  }
+
+  let translations: string = '';
+
+  if (options.i18nInFile) {
+    if (!options.locale) {
+      throw new Error(`The translation file (${options.i18nInFile}) locale must be provided.`);
+    }
+    translations = fs.readFileSync(options.i18nInFile, 'utf8');
+  } else {
+    // No translations are provided, ignore any errors
+    // We still go through i18n to remove i18n attributes
+    missingTranslation = MissingTranslationStrategy.Ignore;
+  }
+
+  return {
+    locale: options.i18nInLocale,
+    i18nFormat: options.i18nInFormat || options.i18nOutFormat, translations, missingTranslation,
+    enableLegacyTemplate: options.enableLegacyTemplate,
+    enableSummariesForJit: true,
+    preserveWhitespaces: options.preserveWhitespaces,
+  };
+}
+
 function writeMetadata(
-    emitFilePath: string, sourceFile: ts.SourceFile, collector: MetadataCollector,
-    ngOptions: CompilerOptions) {
+    emitFilePath: string, sourceFile: ts.SourceFile, metadataCache: LowerMetadataCache) {
   if (/\.js$/.test(emitFilePath)) {
     const path = emitFilePath.replace(/\.js$/, '.metadata.json');
 
@@ -271,41 +365,39 @@ function writeMetadata(
       collectableFile = (collectableFile as any).original;
     }
 
-    const metadata = collector.getMetadata(collectableFile, !!ngOptions.strictMetadataEmit);
+    const metadata = metadataCache.getMetadata(collectableFile);
     if (metadata) {
       const metadataText = JSON.stringify([metadata]);
-      writeFileSync(path, metadataText, {encoding: 'utf-8'});
+      fs.writeFileSync(path, metadataText, {encoding: 'utf-8'});
     }
   }
 }
 
 function createWriteFileCallback(
-    emitFlags: EmitFlags, host: ts.CompilerHost, collector: MetadataCollector,
-    ngOptions: CompilerOptions, emitMap: Map<string, string>) {
-  const withMetadata =
-      (fileName: string, data: string, writeByteOrderMark: boolean,
-       onError?: (message: string) => void, sourceFiles?: ts.SourceFile[]) => {
-        const generatedFile = GENERATED_FILES.test(fileName);
-        if (!generatedFile || data != '') {
-          host.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
-        }
-        if (!generatedFile && sourceFiles && sourceFiles.length == 1) {
-          emitMap.set(sourceFiles[0].fileName, fileName);
-          writeMetadata(fileName, sourceFiles[0], collector, ngOptions);
-        }
-      };
-  const withoutMetadata =
-      (fileName: string, data: string, writeByteOrderMark: boolean,
-       onError?: (message: string) => void, sourceFiles?: ts.SourceFile[]) => {
-        const generatedFile = GENERATED_FILES.test(fileName);
-        if (!generatedFile || data != '') {
-          host.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
-        }
-        if (!generatedFile && sourceFiles && sourceFiles.length == 1) {
-          emitMap.set(sourceFiles[0].fileName, fileName);
-        }
-      };
-  return (emitFlags & EmitFlags.Metadata) != 0 ? withMetadata : withoutMetadata;
+    emitFlags: EmitFlags, host: ts.CompilerHost, metadataCache: LowerMetadataCache,
+    emitMap: Map<string, string>, expectedOut?: string[]) {
+  return (fileName: string, data: string, writeByteOrderMark: boolean,
+          onError?: (message: string) => void, sourceFiles?: ts.SourceFile[]) => {
+
+    let srcFile: ts.SourceFile|undefined;
+
+    if (sourceFiles && sourceFiles.length == 1) {
+      srcFile = sourceFiles[0];
+      emitMap.set(srcFile.fileName, fileName);
+    }
+
+    const absFile = path.resolve(process.cwd(), fileName);
+    const generatedFile = GENERATED_FILES.test(fileName);
+
+    // Don't emit unexpected files nor empty generated files
+    if ((!expectedOut || expectedOut.indexOf(absFile) > -1) && (!generatedFile || data)) {
+      host.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
+
+      if (srcFile && !generatedFile && (emitFlags & EmitFlags.Metadata) != 0) {
+        writeMetadata(fileName, srcFile, metadataCache);
+      }
+    }
+  };
 }
 
 function getNgOptionDiagnostics(options: CompilerOptions): Diagnostic[] {
@@ -318,7 +410,7 @@ function getNgOptionDiagnostics(options: CompilerOptions): Diagnostic[] {
         return [{
           message:
               'Angular compiler options "annotationsAs" only supports "static fields" and "decorators"',
-          category: DiagnosticCategory.Error
+          category: ts.DiagnosticCategory.Error
         }];
     }
   }
@@ -329,7 +421,7 @@ function createProgramWithStubsHost(
     generatedFiles: GeneratedFile[], originalProgram: ts.Program,
     originalHost: ts.CompilerHost): ts.CompilerHost {
   interface FileData {
-    g: GeneratedFile
+    g: GeneratedFile;
     s?: ts.SourceFile;
   }
   return new class implements ts.CompilerHost {

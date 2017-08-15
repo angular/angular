@@ -39,7 +39,7 @@ function runE2e() {
   if (argv.setup) {
     // Run setup.
     console.log('runE2e: copy boilerplate');
-    const spawnInfo = spawnExt('yarn', ['boilerplate:add', argv.local ? '-- --local': ''], { cwd: AIO_PATH });
+    const spawnInfo = spawnExt('yarn', ['boilerplate:add', '--', argv.local ? '--local' : ''], { cwd: AIO_PATH });
     promise = spawnInfo.promise
       .then(() => {
         console.log('runE2e: update webdriver');

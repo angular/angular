@@ -10,17 +10,66 @@ import {Route} from './config';
 import {RouterStateSnapshot} from './router_state';
 
 /**
- * @whatItDoes Represents an event triggered when a navigation starts.
+ * @whatItDoes Base for events the Router goes through, as opposed to events tied to a specific
+ * Route. `RouterEvent`s will only be fired one time for any given navigation.
  *
- * @stable
+ * Example:
+ *
+ * ```
+ * class MyService {
+ *   constructor(public router: Router, logger: Logger) {
+ *     router.events.filter(e => e instanceof RouterEvent).subscribe(e => {
+ *       logger.log(e.id, e.url);
+ *     });
+ *   }
+ * }
+ * ```
+ *
+ * @experimental
  */
-export class NavigationStart {
+export class RouterEvent {
   constructor(
       /** @docsNotRequired */
       public id: number,
       /** @docsNotRequired */
       public url: string) {}
+}
 
+/**
+ * @whatItDoes Base for events tied to a specific `Route`, as opposed to events for the Router
+ * lifecycle. `RouteEvent`s may be fired multiple times during a single navigation and will
+ * always receive the `Route` they pertain to.
+ *
+ * Example:
+ *
+ * ```
+ * class MyService {
+ *   constructor(public router: Router, spinner: Spinner) {
+ *     router.events.filter(e => e instanceof RouteEvent).subscribe(e => {
+ *       if (e instanceof ChildActivationStart) {
+ *         spinner.start(e.route);
+ *       } else if (e instanceof ChildActivationEnd) {
+ *         spinner.end(e.route);
+ *       }
+ *     });
+ *   }
+ * }
+ * ```
+ *
+ * @experimental
+ */
+export class RouteEvent {
+  constructor(
+      /** @docsNotRequired */
+      public route: Route) {}
+}
+
+/**
+ * @whatItDoes Represents an event triggered when a navigation starts.
+ *
+ * @stable
+ */
+export class NavigationStart extends RouterEvent {
   /** @docsNotRequired */
   toString(): string { return `NavigationStart(id: ${this.id}, url: '${this.url}')`; }
 }
@@ -30,14 +79,16 @@ export class NavigationStart {
  *
  * @stable
  */
-export class NavigationEnd {
+export class NavigationEnd extends RouterEvent {
   constructor(
       /** @docsNotRequired */
-      public id: number,
+      id: number,
       /** @docsNotRequired */
-      public url: string,
+      url: string,
       /** @docsNotRequired */
-      public urlAfterRedirects: string) {}
+      public urlAfterRedirects: string) {
+    super(id, url);
+  }
 
   /** @docsNotRequired */
   toString(): string {
@@ -50,14 +101,16 @@ export class NavigationEnd {
  *
  * @stable
  */
-export class NavigationCancel {
+export class NavigationCancel extends RouterEvent {
   constructor(
       /** @docsNotRequired */
-      public id: number,
+      id: number,
       /** @docsNotRequired */
-      public url: string,
+      url: string,
       /** @docsNotRequired */
-      public reason: string) {}
+      public reason: string) {
+    super(id, url);
+  }
 
   /** @docsNotRequired */
   toString(): string { return `NavigationCancel(id: ${this.id}, url: '${this.url}')`; }
@@ -68,14 +121,16 @@ export class NavigationCancel {
  *
  * @stable
  */
-export class NavigationError {
+export class NavigationError extends RouterEvent {
   constructor(
       /** @docsNotRequired */
-      public id: number,
+      id: number,
       /** @docsNotRequired */
-      public url: string,
+      url: string,
       /** @docsNotRequired */
-      public error: any) {}
+      public error: any) {
+    super(id, url);
+  }
 
   /** @docsNotRequired */
   toString(): string {
@@ -88,16 +143,18 @@ export class NavigationError {
  *
  * @stable
  */
-export class RoutesRecognized {
+export class RoutesRecognized extends RouterEvent {
   constructor(
       /** @docsNotRequired */
-      public id: number,
+      id: number,
       /** @docsNotRequired */
-      public url: string,
+      url: string,
       /** @docsNotRequired */
       public urlAfterRedirects: string,
       /** @docsNotRequired */
-      public state: RouterStateSnapshot) {}
+      public state: RouterStateSnapshot) {
+    super(id, url);
+  }
 
   /** @docsNotRequired */
   toString(): string {
@@ -106,42 +163,22 @@ export class RoutesRecognized {
 }
 
 /**
- * @whatItDoes Represents an event triggered before lazy loading a route config.
- *
- * @experimental
- */
-export class RouteConfigLoadStart {
-  constructor(public route: Route) {}
-
-  toString(): string { return `RouteConfigLoadStart(path: ${this.route.path})`; }
-}
-
-/**
- * @whatItDoes Represents an event triggered when a route has been lazy loaded.
- *
- * @experimental
- */
-export class RouteConfigLoadEnd {
-  constructor(public route: Route) {}
-
-  toString(): string { return `RouteConfigLoadEnd(path: ${this.route.path})`; }
-}
-
-/**
  * @whatItDoes Represents the start of the Guard phase of routing.
  *
  * @experimental
  */
-export class GuardsCheckStart {
+export class GuardsCheckStart extends RouterEvent {
   constructor(
       /** @docsNotRequired */
-      public id: number,
+      id: number,
       /** @docsNotRequired */
-      public url: string,
+      url: string,
       /** @docsNotRequired */
       public urlAfterRedirects: string,
       /** @docsNotRequired */
-      public state: RouterStateSnapshot) {}
+      public state: RouterStateSnapshot) {
+    super(id, url);
+  }
 
   toString(): string {
     return `GuardsCheckStart(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${this.urlAfterRedirects}', state: ${this.state})`;
@@ -153,18 +190,20 @@ export class GuardsCheckStart {
  *
  * @experimental
  */
-export class GuardsCheckEnd {
+export class GuardsCheckEnd extends RouterEvent {
   constructor(
       /** @docsNotRequired */
-      public id: number,
+      id: number,
       /** @docsNotRequired */
-      public url: string,
+      url: string,
       /** @docsNotRequired */
       public urlAfterRedirects: string,
       /** @docsNotRequired */
       public state: RouterStateSnapshot,
       /** @docsNotRequired */
-      public shouldActivate: boolean) {}
+      public shouldActivate: boolean) {
+    super(id, url);
+  }
 
   toString(): string {
     return `GuardsCheckEnd(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${this.urlAfterRedirects}', state: ${this.state}, shouldActivate: ${this.shouldActivate})`;
@@ -179,16 +218,18 @@ export class GuardsCheckEnd {
  *
  * @experimental
  */
-export class ResolveStart {
+export class ResolveStart extends RouterEvent {
   constructor(
       /** @docsNotRequired */
-      public id: number,
+      id: number,
       /** @docsNotRequired */
-      public url: string,
+      url: string,
       /** @docsNotRequired */
       public urlAfterRedirects: string,
       /** @docsNotRequired */
-      public state: RouterStateSnapshot) {}
+      public state: RouterStateSnapshot) {
+    super(id, url);
+  }
 
   toString(): string {
     return `ResolveStart(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${this.urlAfterRedirects}', state: ${this.state})`;
@@ -201,20 +242,60 @@ export class ResolveStart {
  *
  * @experimental
  */
-export class ResolveEnd {
+export class ResolveEnd extends RouterEvent {
   constructor(
       /** @docsNotRequired */
-      public id: number,
+      id: number,
       /** @docsNotRequired */
-      public url: string,
+      url: string,
       /** @docsNotRequired */
       public urlAfterRedirects: string,
       /** @docsNotRequired */
-      public state: RouterStateSnapshot) {}
+      public state: RouterStateSnapshot) {
+    super(id, url);
+  }
 
   toString(): string {
     return `ResolveEnd(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${this.urlAfterRedirects}', state: ${this.state})`;
   }
+}
+
+/**
+ * @whatItDoes Represents an event triggered before lazy loading a route config.
+ *
+ * @experimental
+ */
+export class RouteConfigLoadStart extends RouteEvent {
+  toString(): string { return `RouteConfigLoadStart(path: ${this.route.path})`; }
+}
+
+/**
+ * @whatItDoes Represents an event triggered when a route has been lazy loaded.
+ *
+ * @experimental
+ */
+export class RouteConfigLoadEnd extends RouteEvent {
+  toString(): string { return `RouteConfigLoadEnd(path: ${this.route.path})`; }
+}
+
+/**
+ * @whatItDoes Represents the start of end of the Resolve phase of routing. See note on
+ * {@link ChildActivationEnd} for use of this experimental API.
+ *
+ * @experimental
+ */
+export class ChildActivationStart extends RouteEvent {
+  toString(): string { return `ChildActivationStart(path: '${this.route.path}')`; }
+}
+
+/**
+ * @whatItDoes Represents the start of end of the Resolve phase of routing. See note on
+ * {@link ChildActivationStart} for use of this experimental API.
+ *
+ * @experimental
+ */
+export class ChildActivationEnd extends RouteEvent {
+  toString(): string { return `ChildActivationEnd(path: '${this.route.path}')`; }
 }
 
 /**
@@ -227,15 +308,15 @@ export class ResolveEnd {
  * - {@link RouteConfigLoadEnd},
  * - {@link RoutesRecognized},
  * - {@link GuardsCheckStart},
+ * - {@link ChildActivationStart},
  * - {@link GuardsCheckEnd},
  * - {@link ResolveStart},
  * - {@link ResolveEnd},
+ * - {@link ChildActivationEnd}
  * - {@link NavigationEnd},
  * - {@link NavigationCancel},
  * - {@link NavigationError}
  *
  * @stable
  */
-export type Event = NavigationStart | NavigationEnd | NavigationCancel | NavigationError |
-    RoutesRecognized | RouteConfigLoadStart | RouteConfigLoadEnd | GuardsCheckStart |
-    GuardsCheckEnd | ResolveStart | ResolveEnd;
+export type Event = RouterEvent | RouteEvent;

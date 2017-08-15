@@ -42,7 +42,7 @@ if [[ ${CI_MODE} != "aio" && ${CI_MODE} != 'docs_test' ]]; then
 fi
 
 
-if [[ ${TRAVIS} && (${CI_MODE} == "e2e" || ${CI_MODE} == "e2e_2" || ${CI_MODE} == "aio" || ${CI_MODE} == "aio_e2e" || ${CI_MODE} == "docs_test") ]]; then
+if [[ ${TRAVIS} && (${CI_MODE} == "e2e" || ${CI_MODE} == "e2e_2" || ${CI_MODE} == "aio" || ${CI_MODE} == "aio_e2e" || ${CI_MODE} == "aio_tools_test") ]]; then
   # Install version of yarn that we are locked against
   travisFoldStart "install-yarn"
     curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version "${YARN_VERSION}"
@@ -50,7 +50,7 @@ if [[ ${TRAVIS} && (${CI_MODE} == "e2e" || ${CI_MODE} == "e2e_2" || ${CI_MODE} =
 fi
 
 
-if [[ ${TRAVIS} && (${CI_MODE} == "aio" || ${CI_MODE} == "aio_e2e" || ${CI_MODE} == "docs_test") ]]; then
+if [[ ${TRAVIS} && (${CI_MODE} == "aio" || ${CI_MODE} == "aio_e2e" || ${CI_MODE} == "aio_tools_test") ]]; then
   # angular.io: Install all yarn dependencies according to angular.io/yarn.lock
   travisFoldStart "yarn-install.aio"
     (
@@ -75,18 +75,11 @@ if [[ ${TRAVIS} && ${CI_MODE} == "bazel" ]]; then
   travisFoldEnd "bazel-install"
 fi
 
-# Install Chromium
-if [[ ${CI_MODE} == "js" || ${CI_MODE} == "e2e" || ${CI_MODE} == "e2e_2" || ${CI_MODE} == "aio" || ${CI_MODE} == "aio_e2e" ]]; then
-  travisFoldStart "install-chromium"
-    (
-      # Start xvfb for local Chrome used for testing
-      if [[ ${TRAVIS} ]]; then
-        travisFoldStart "install-chromium.xvfb-start"
-          sh -e /etc/init.d/xvfb start
-        travisFoldEnd "install-chromium.xvfb-start"
-      fi
-    )
-  travisFoldEnd "install-chromium"
+# Start xvfb for local Chrome testing
+if [[ ${TRAVIS} && (${CI_MODE} == "js" || ${CI_MODE} == "e2e" || ${CI_MODE} == "e2e_2" || ${CI_MODE} == "aio" || ${CI_MODE} == "aio_e2e") ]]; then
+  travisFoldStart "xvfb-start"
+    sh -e /etc/init.d/xvfb start
+  travisFoldEnd "xvfb-start"
 fi
 
 

@@ -322,9 +322,10 @@ export class AotCompiler {
     const pipes = ngModule.transitiveModule.pipes.map(
         pipe => this._metadataResolver.getPipeSummary(pipe.reference));
 
+    const preserveWhitespaces = compMeta !.template !.preserveWhitespaces;
     const {template: parsedTemplate, pipes: usedPipes} = this._templateParser.parse(
         compMeta, compMeta.template !.template !, directives, pipes, ngModule.schemas,
-        templateSourceUrl(ngModule.type, compMeta, compMeta.template !));
+        templateSourceUrl(ngModule.type, compMeta, compMeta.template !), preserveWhitespaces);
     const stylesExpr = componentStyles ? o.variable(componentStyles.stylesVar) : o.literalArr([]);
     const viewResult = this._viewCompiler.compileComponent(
         outputCtx, compMeta, parsedTemplate, stylesExpr, usedPipes);

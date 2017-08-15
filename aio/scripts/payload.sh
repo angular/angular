@@ -61,7 +61,8 @@ else
   # Nothing changed in aio/
   exit 0
 fi
-payloadData="$payloadData\"change\": \"$change\""
+message=$(echo $TRAVIS_COMMIT_MESSAGE | sed 's/"/\\"/g' | sed 's/\\/\\\\/g')
+payloadData="$payloadData\"change\": \"$change\", \"message\": \"$message\""
 
 payloadData="{${payloadData}}"
 

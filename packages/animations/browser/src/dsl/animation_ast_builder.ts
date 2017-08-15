@@ -8,7 +8,7 @@
 import {AUTO_STYLE, AnimateTimings, AnimationAnimateChildMetadata, AnimationAnimateMetadata, AnimationAnimateRefMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationMetadataType, AnimationOptions, AnimationQueryMetadata, AnimationQueryOptions, AnimationReferenceMetadata, AnimationSequenceMetadata, AnimationStaggerMetadata, AnimationStateMetadata, AnimationStyleMetadata, AnimationTransitionMetadata, AnimationTriggerMetadata, style, ɵStyleData} from '@angular/animations';
 
 import {getOrSetAsInMap} from '../render/shared';
-import {ENTER_SELECTOR, LEAVE_SELECTOR, NG_ANIMATING_SELECTOR, NG_TRIGGER_SELECTOR, copyObj, normalizeAnimationEntry, resolveTiming, validateStyleParams} from '../util';
+import {ENTER_SELECTOR, LEAVE_SELECTOR, NG_ANIMATING_SELECTOR, NG_TRIGGER_SELECTOR, SUBSTITUTION_EXPR_START, copyObj, extractStyleParams, iteratorToArray, normalizeAnimationEntry, resolveTiming, validateStyleParams} from '../util';
 
 import {AnimateAst, AnimateChildAst, AnimateRefAst, Ast, DynamicTimingAst, GroupAst, KeyframesAst, QueryAst, ReferenceAst, SequenceAst, StaggerAst, StateAst, StyleAst, TimingAst, TransitionAst, TriggerAst} from './animation_ast';
 import {AnimationDslVisitor, visitAnimationNode} from './animation_dsl_visitor';
@@ -112,7 +112,35 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
   }
 
   visitState(metadata: AnimationStateMetadata, context: AnimationAstBuilderContext): StateAst {
-    return new StateAst(metadata.name, this.visitStyle(metadata.styles, context));
+    const styleAst = this.visitStyle(metadata.styles, context);
+    const astParams = (metadata.options && metadata.options.params) || null;
+    if (styleAst.containsDynamicStyles) {
+      const missingSubs = new Set<string>();
+      const params = astParams || {};
+      styleAst.styles.forEach(value => {
+        if (isObject(value)) {
+          const stylesObj = value as any;
+          Object.keys(stylesObj).forEach(prop => {
+            extractStyleParams(stylesObj[prop]).forEach(sub => {
+              if (!params.hasOwnProperty(sub)) {
+                missingSubs.add(sub);
+              }
+            });
+          });
+        }
+      });
+      if (missingSubs.size) {
+        const missingSubsArr = iteratorToArray(missingSubs.values());
+        context.errors.push(
+            `state("${metadata.name}", ...) must define default values for all the following style substitutions: ${missingSubsArr.join(', ')}`);
+      }
+    }
+
+    const stateAst = new StateAst(metadata.name, styleAst);
+    if (astParams) {
+      stateAst.options = {params: astParams};
+    }
+    return stateAst;
   }
 
   visitTransition(metadata: AnimationTransitionMetadata, context: AnimationAstBuilderContext):
@@ -201,11 +229,12 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
         } else {
           styles.push(styleTuple as ɵStyleData);
         }
-      })
+      });
     } else {
       styles.push(metadata.styles);
     }
 
+    let containsDynamicStyles = false;
     let collectedEasing: string|null = null;
     styles.forEach(styleData => {
       if (isObject(styleData)) {
@@ -215,9 +244,21 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
           collectedEasing = easing as string;
           delete styleMap['easing'];
         }
+        if (!containsDynamicStyles) {
+          for (let prop in styleMap) {
+            const value = styleMap[prop];
+            if (value.toString().indexOf(SUBSTITUTION_EXPR_START) >= 0) {
+              containsDynamicStyles = true;
+              break;
+            }
+          }
+        }
       }
     });
-    return new StyleAst(styles, collectedEasing, metadata.offset);
+
+    const ast = new StyleAst(styles, collectedEasing, metadata.offset);
+    ast.containsDynamicStyles = containsDynamicStyles;
+    return ast;
   }
 
   private _validateStyleAst(ast: StyleAst, context: AnimationAstBuilderContext): void {

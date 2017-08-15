@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, PlatformLocation, ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
-import {APP_ID, ApplicationModule, ErrorHandler, ModuleWithProviders, NgModule, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, PlatformRef, Provider, RendererFactory2, RootRenderer, Sanitizer, SkipSelf, Testability, createPlatformFactory, platformCore} from '@angular/core';
+import {APP_ID, ApplicationModule, ErrorHandler, ModuleWithProviders, NgModule, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, PlatformRef, RendererFactory2, RootRenderer, Sanitizer, SkipSelf, StaticProvider, Testability, createPlatformFactory, platformCore} from '@angular/core';
 
 import {BrowserDomAdapter} from './browser/browser_adapter';
 import {BrowserPlatformLocation} from './browser/location/browser_platform_location';
@@ -26,10 +26,10 @@ import {KeyEventsPlugin} from './dom/events/key_events';
 import {DomSharedStylesHost, SharedStylesHost} from './dom/shared_styles_host';
 import {DomSanitizer, DomSanitizerImpl} from './security/dom_sanitization_service';
 
-export const INTERNAL_BROWSER_PLATFORM_PROVIDERS: Provider[] = [
+export const INTERNAL_BROWSER_PLATFORM_PROVIDERS: StaticProvider[] = [
   {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
   {provide: PLATFORM_INITIALIZER, useValue: initDomAdapter, multi: true},
-  {provide: PlatformLocation, useClass: BrowserPlatformLocation},
+  {provide: PlatformLocation, useClass: BrowserPlatformLocation, deps: [DOCUMENT]},
   {provide: DOCUMENT, useFactory: _document, deps: []},
 ];
 
@@ -39,15 +39,15 @@ export const INTERNAL_BROWSER_PLATFORM_PROVIDERS: Provider[] = [
  * application to XSS risks. For more detail, see the [Security Guide](http://g.co/ng/security).
  * @experimental
  */
-export const BROWSER_SANITIZATION_PROVIDERS: Array<any> = [
+export const BROWSER_SANITIZATION_PROVIDERS: StaticProvider[] = [
   {provide: Sanitizer, useExisting: DomSanitizer},
-  {provide: DomSanitizer, useClass: DomSanitizerImpl},
+  {provide: DomSanitizer, useClass: DomSanitizerImpl, deps: [DOCUMENT]},
 ];
 
 /**
  * @stable
  */
-export const platformBrowser: (extraProviders?: Provider[]) => PlatformRef =
+export const platformBrowser: (extraProviders?: StaticProvider[]) => PlatformRef =
     createPlatformFactory(platformCore, 'browser', INTERNAL_BROWSER_PLATFORM_PROVIDERS);
 
 export function initDomAdapter() {
