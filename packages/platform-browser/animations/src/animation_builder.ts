@@ -21,7 +21,7 @@ export class BrowserAnimationBuilder extends AnimationBuilder {
       id: '0',
       encapsulation: ViewEncapsulation.None,
       styles: [],
-      data: {animation: []}
+      data: {'animation': []}
     } as RendererType2;
     this._renderer = rootRenderer.createRenderer(document.body, typeData) as AnimationRenderer;
   }
