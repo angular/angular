@@ -31,8 +31,11 @@ import {
   OverlayRef,
   OverlayState,
   RepositionScrollStrategy,
-  ScrollStrategy,
   VerticalConnectionPos,
+  // This import is only used to define a generic type. The current TypeScript version incorrectly
+  // considers such imports as unused (https://github.com/Microsoft/TypeScript/issues/14953)
+  // tslint:disable-next-line:no-unused-variable
+  ScrollStrategy,
 } from '@angular/cdk/overlay';
 import {filter, RxChain} from '@angular/cdk/rxjs';
 import {MdMenu} from './menu-directive';
