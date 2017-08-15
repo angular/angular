@@ -206,7 +206,8 @@ export class AnimationRenderer extends BaseAnimationRenderer implements Renderer
   setProperty(el: any, name: string, value: any): void {
     if (name.charAt(0) == ANIMATION_PREFIX) {
       if (name.charAt(1) == '.' && name == DISABLE_ANIMATIONS_FLAG) {
-        this.disableAnimations(el, !!value);
+        value = value === undefined ? true : !!value;
+        this.disableAnimations(el, value as boolean);
       } else {
         this.engine.process(this.namespaceId, el, name.substr(1), value);
       }
