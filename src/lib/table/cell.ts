@@ -53,6 +53,11 @@ export class MdHeaderCellDef extends _MdHeaderCellDef { }
 export class MdColumnDef extends _MdColumnDef {
   /** Unique name for this column. */
   @Input('mdColumnDef') name: string;
+
+  // Properties with `mat-` prefix for noconflict mode.
+  @Input('matColumnDef')
+  get _matColumnDefName() { return this.name; }
+  set _matColumnDefName(name) { this.name = name; }
 }
 
 /** Header cell template container that adds the right classes and role. */
