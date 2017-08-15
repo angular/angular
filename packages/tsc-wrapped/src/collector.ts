@@ -693,17 +693,8 @@ function validateMetadata(
           error.character != undefined ? `:${error.line + 1}:${error.character + 1}` :
                                          `:${error.line + 1}` :
           '';
-      throw new Error(`${
-             sourceFile.fileName
-           }${
-              lineInfo
-            }: Metadata collected contains an error that will be reported at runtime: ${
-                                                                                        expandedMessage(
-                                                                                            error)
-                                                                                      }.\n  ${
-                                                                                              JSON.stringify(
-                                                                                                  error)
-                                                                                            }`);
+      throw new Error(
+          `${sourceFile.fileName}${lineInfo}: Metadata collected contains an error that will be reported at runtime: ${expandedMessage(error)}.\n  ${JSON.stringify(error)}`);
     }
   }
 
@@ -718,17 +709,8 @@ function validateMetadata(
       if (shouldReportNode(node)) {
         if (node) {
           const {line, character} = sourceFile.getLineAndCharacterOfPosition(node.getStart());
-          throw new Error(`${
-                 sourceFile.fileName
-               }:${
-                   line + 1
-                 }:${
-                     character + 1
-                   }: Error encountered in metadata generated for exported symbol '${
-                                                                                     name
-                                                                                   }': \n ${
-                                                                                            e.message
-                                                                                          }`);
+          throw new Error(
+              `${sourceFile.fileName}:${line + 1}:${character + 1}: Error encountered in metadata generated for exported symbol '${name}': \n ${e.message}`);
         }
         throw new Error(
             `Error encountered in metadata generated for exported symbol ${name}: \n ${e.message}`);
@@ -767,9 +749,7 @@ function expandedMessage(error: any): string {
   switch (error.message) {
     case 'Reference to non-exported class':
       if (error.context && error.context.className) {
-        return `Reference to a non-exported class ${
-                                                    error.context.className
-                                                  }. Consider exporting the class`;
+        return `Reference to a non-exported class ${error.context.className}. Consider exporting the class`;
       }
       break;
     case 'Variable not initialized':
@@ -788,9 +768,7 @@ function expandedMessage(error: any): string {
           'unction calls are not supported. Consider replacing the function or lambda with a reference to an exported function';
     case 'Reference to a local symbol':
       if (error.context && error.context.name) {
-        return `Reference to a local (non-exported) symbol '${
-                                                              error.context.name
-                                                            }'. Consider exporting the symbol`;
+        return `Reference to a local (non-exported) symbol '${error.context.name}'. Consider exporting the symbol`;
       }
   }
   return error.message;
