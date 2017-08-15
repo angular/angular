@@ -28,7 +28,7 @@ export class TimelineAnimationEngine {
 
   register(id: string, metadata: AnimationMetadata|AnimationMetadata[]) {
     const errors: any[] = [];
-    const ast = buildAnimationAst(metadata, errors);
+    const ast = buildAnimationAst(this._driver, metadata, errors);
     if (errors.length) {
       throw new Error(
           `Unable to build the animation due to the following errors: ${errors.join("\n")}`);

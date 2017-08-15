@@ -16,7 +16,7 @@ import {AnimationStyleNormalizer} from '../dsl/style_normalization/animation_sty
 import {ENTER_CLASSNAME, LEAVE_CLASSNAME, NG_ANIMATING_CLASSNAME, NG_ANIMATING_SELECTOR, NG_TRIGGER_CLASSNAME, NG_TRIGGER_SELECTOR, copyObj, eraseStyles, setStyles} from '../util';
 
 import {AnimationDriver} from './animation_driver';
-import {getOrSetAsInMap, listenOnPlayer, makeAnimationEvent, normalizeKeyframes, optimizeGroupPlayer} from './shared';
+import {getBodyNode, getOrSetAsInMap, listenOnPlayer, makeAnimationEvent, normalizeKeyframes, optimizeGroupPlayer} from './shared';
 
 const QUEUED_CLASSNAME = 'ng-animate-queued';
 const QUEUED_SELECTOR = '.ng-animate-queued';
@@ -1523,13 +1523,6 @@ function removeClass(element: any, className: string) {
       delete classes[className];
     }
   }
-}
-
-function getBodyNode(): any|null {
-  if (typeof document != 'undefined') {
-    return document.body;
-  }
-  return null;
 }
 
 function removeNodesAfterAnimationDone(
