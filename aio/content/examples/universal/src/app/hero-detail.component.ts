@@ -1,4 +1,3 @@
-// #docregion
 import 'rxjs/add/operator/switchMap';
 import { Component, OnInit }      from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
@@ -27,12 +26,11 @@ export class HeroDetailComponent implements OnInit {
       .subscribe(hero => this.hero = hero);
   }
 
-  // #docregion save
   save(): void {
-    this.heroService.update(this.hero)
-      .then(() => this.goBack());
+    this.heroService
+      .update(this.hero)
+      .subscribe(() => this.goBack());
   }
-  // #enddocregion save
 
   goBack(): void {
     this.location.back();

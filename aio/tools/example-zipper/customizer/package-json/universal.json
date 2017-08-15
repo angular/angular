@@ -1,0 +1,41 @@
+{
+  "scripts": [
+    { "name": "build" },
+    { "name": "build:watch" },
+    { "name": "serve" },
+    { "name": "build:aot" },
+    { "name": "serve:aot" },
+    { "name": "build:uni" },
+    { "name": "serve:uni" },
+    { "name": "copy-dist-files" },
+    { "name": "i18n" }
+  ],
+  "dependencies": [
+    "systemjs",
+    "@angular/compiler-cli",
+    "@angular/platform-server",
+    "express"
+  ],
+  "devDependencies": [
+    "@ngtools/webpack",
+    "@types/angular",
+    "@types/angular-animate",
+    "@types/angular-cookies",
+    "@types/angular-mocks",
+    "@types/angular-resource",
+    "@types/angular-route",
+    "@types/angular-sanitize",
+    "@types/express",
+    "canonical-path",
+    "http-server",
+    "concurrently",
+    "lite-server",
+    "raw-loader",
+    "rollup",
+    "rollup-plugin-commonjs",
+    "rollup-plugin-node-resolve",
+    "rollup-plugin-uglify",
+    "source-map-explorer",
+    "webpack"
+  ]
+}
