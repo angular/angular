@@ -26,7 +26,7 @@ describe('MdChipList', () => {
     TestBed.configureTestingModule({
       imports: [MdChipsModule, MdFormFieldModule, MdInputModule, NoopAnimationsModule],
       declarations: [
-        StandardChipList, InputContainerChipList
+        StandardChipList, FormFieldChipList
       ],
       providers: [{
         provide: Directionality, useFactory: () => {
@@ -234,7 +234,7 @@ describe('MdChipList', () => {
     });
   });
 
-  describe('InputContainerChipList', () => {
+  describe('FormFieldChipList', () => {
 
     beforeEach(() => {
       setupInputList();
@@ -298,7 +298,7 @@ describe('MdChipList', () => {
   }
 
   function setupInputList() {
-    fixture = TestBed.createComponent(InputContainerChipList);
+    fixture = TestBed.createComponent(FormFieldChipList);
     fixture.detectChanges();
 
     chipListDebugElement = fixture.debugElement.query(By.directive(MdChipList));
@@ -332,15 +332,15 @@ class StandardChipList {
 
 @Component({
   template: `
-    <md-input-container>
+    <md-form-field>
       <md-chip-list #chipList>
         <md-chip>Chip 1</md-chip>
         <md-chip>Chip 1</md-chip>
         <md-chip>Chip 1</md-chip>
       </md-chip-list>
       <input mdInput name="test" [mdChipInputFor]="chipList"/>
-    </md-input-container>
+    </md-form-field>
   `
 })
-class InputContainerChipList {
+class FormFieldChipList {
 }

@@ -9,9 +9,9 @@ Start by adding a regular `mdInput` to the page. Let's assume you're using the `
 
 *my-comp.html*
 ```html
-<md-input-container>
+<md-form-field>
    <input type="text" mdInput [formControl]="myControl">
-</md-input-container>
+</md-form-field>
 ```
 
 Next, create the autocomplete panel and the options displayed inside it. Each option should be defined by an 
@@ -32,9 +32,9 @@ local template variable (here we called it "auto"), and binding that variable to
 
 *my-comp.html*
 ```html
-<md-input-container>
+<md-form-field>
    <input type="text" mdInput [formControl]="myControl" [mdAutocomplete]="auto">
-</md-input-container>
+</md-form-field>
 
 <md-autocomplete #auto="mdAutocomplete">
    <md-option *ngFor="let option of options" [value]="option">

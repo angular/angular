@@ -1,5 +1,5 @@
-<md-input-container>
+<md-form-field>
   <input mdInput [mdDatepicker]="picker" placeholder="Choose a date">
   <md-datepicker-toggle mdSuffix [for]="picker"></md-datepicker-toggle>
-</md-input-container>
-<md-datepicker #picker startView="year" [startAt]="startDate"></md-datepicker>
+  <md-datepicker #picker startView="year" [startAt]="startDate"></md-datepicker>
+</md-form-field>

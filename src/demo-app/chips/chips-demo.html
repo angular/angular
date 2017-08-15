@@ -38,15 +38,15 @@
     <md-toolbar color="primary">Dynamic Chips</md-toolbar>
 
     <md-card-content>
-      <h4>Input Container</h4>
+      <h4>Form Field</h4>
 
       <p>
         You can easily put the the <code>&lt;md-chip-list&gt;</code> inside of an
-        <code>&lt;md-input-container&gt;</code>.
+        <code>&lt;md-form-field&gt;</code>.
       </p>
 
 
-      <md-input-container>
+      <md-form-field>
         <md-chip-list mdPrefix #chipList1>
           <md-chip *ngFor="let person of people" [color]="color" [selectable]="selectable"
                    [removable]="removable" (remove)="remove(person)">
@@ -59,12 +59,12 @@
                [mdChipInputSeparatorKeyCodes]="separatorKeysCodes"
                [mdChipInputAddOnBlur]="addOnBlur"
                (mdChipInputTokenEnd)="add($event)" />
-      </md-input-container>
+      </md-form-field>
 
 
 
       <p>
-        You can also put <code>&lt;md-input-container&gt;</code> outside of an <code>md-chip-list</code>.
+        You can also put <code>&lt;md-form-field&gt;</code> outside of an <code>md-chip-list</code>.
         With <code>mdChipInput</code> the input work with chip-list
       </p>
 
@@ -75,13 +75,13 @@
           <md-icon mdChipRemove *ngIf="removable">cancel</md-icon>
         </md-chip>
       </md-chip-list>
-      <md-input-container>
+      <md-form-field>
         <input mdInput placeholder="New Contributor..."
                [mdChipInputFor]="chipList2"
                [mdChipInputSeparatorKeyCodes]="separatorKeysCodes"
                [mdChipInputAddOnBlur]="addOnBlur"
                (mdChipInputTokenEnd)="add($event)" />
-      </md-input-container>
+      </md-form-field>
 
       <p>
         The example above has overridden the <code>[separatorKeys]</code> input to allow for

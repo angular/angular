@@ -1,9 +1,9 @@
-<md-input-container>
+<md-form-field>
   <input mdInput value="Disco party!" placeholder="Message" #message>
-</md-input-container>
+</md-form-field>
 
-<md-input-container>
+<md-form-field>
   <input mdInput value="Dance" placeholder="Action" #action>
-</md-input-container>
+</md-form-field>
 
 <button md-button (click)="openSnackBar(message.value, action.value)">Show snack-bar</button>

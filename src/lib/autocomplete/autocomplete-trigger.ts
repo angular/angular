@@ -248,12 +248,12 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
       fromEvent(this._document, 'touchend')
     )).call(filter, (event: MouseEvent | TouchEvent) => {
       const clickTarget = event.target as HTMLElement;
-      const inputContainer = this._formField ?
+      const formField = this._formField ?
           this._formField._elementRef.nativeElement : null;
 
       return this._panelOpen &&
              clickTarget !== this._element.nativeElement &&
-             (!inputContainer || !inputContainer.contains(clickTarget)) &&
+             (!formField || !formField.contains(clickTarget)) &&
              (!!this._overlayRef && !this._overlayRef.overlayElement.contains(clickTarget));
     }).result();
   }

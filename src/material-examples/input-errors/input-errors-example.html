@@ -1,5 +1,5 @@
 <form class="example-form">
-  <md-input-container class="example-full-width">
+  <md-form-field class="example-full-width">
     <input mdInput placeholder="Email" [formControl]="emailFormControl">
     <md-error *ngIf="emailFormControl.hasError('pattern')">
       Please enter a valid email address
@@ -7,5 +7,5 @@
     <md-error *ngIf="emailFormControl.hasError('required')">
       Email is <strong>required</strong>
     </md-error>
-  </md-input-container>
+  </md-form-field>
 </form>

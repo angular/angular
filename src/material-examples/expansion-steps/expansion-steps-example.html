@@ -10,13 +10,13 @@
       </md-panel-description>
     </md-expansion-panel-header>
 
-    <md-input-container>
+    <md-form-field>
       <input mdInput placeholder="First name">
-    </md-input-container>
+    </md-form-field>
 
-    <md-input-container>
+    <md-form-field>
       <input mdInput type="number" min="1" placeholder="Age">
-    </md-input-container>
+    </md-form-field>
 
     <md-action-row>
       <button md-button color="primary" (click)="nextStep()">Next</button>
@@ -34,9 +34,9 @@
       </md-panel-description>
     </md-expansion-panel-header>
 
-    <md-input-container>
+    <md-form-field>
       <input mdInput placeholder="Country">
-    </md-input-container>
+    </md-form-field>
 
     <md-action-row>
       <button md-button color="warn" (click)="prevStep()">Previous</button>
@@ -55,9 +55,9 @@
       </md-panel-description>
     </md-expansion-panel-header>
 
-    <md-input-container>
+    <md-form-field>
       <input mdInput placeholder="Date" [mdDatepicker]="picker" (focus)="picker.open()" readonly>
-    </md-input-container>
+    </md-form-field>
     <md-datepicker #picker></md-datepicker>
 
     <md-action-row>

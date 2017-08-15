@@ -275,7 +275,7 @@ describe('MdAutocomplete', () => {
 
     it('should keep the label floating until the panel closes', async(() => {
       fixture.componentInstance.trigger.openPanel();
-      expect(fixture.componentInstance.inputContainer.floatPlaceholder)
+      expect(fixture.componentInstance.formField.floatPlaceholder)
           .toEqual('always', 'Expected placeholder to float as soon as panel opens.');
 
       fixture.whenStable().then(() => {
@@ -286,7 +286,7 @@ describe('MdAutocomplete', () => {
         options[1].click();
         fixture.detectChanges();
 
-        expect(fixture.componentInstance.inputContainer.floatPlaceholder)
+        expect(fixture.componentInstance.formField.floatPlaceholder)
             .toEqual('auto', 'Expected placeholder to return to auto state after panel closes.');
       });
     }));
@@ -308,7 +308,7 @@ describe('MdAutocomplete', () => {
       fixture.detectChanges();
 
       fixture.componentInstance.trigger.openPanel();
-      expect(fixture.componentInstance.inputContainer.floatPlaceholder)
+      expect(fixture.componentInstance.formField.floatPlaceholder)
           .toEqual('never', 'Expected placeholder to stay static.');
 
       fixture.whenStable().then(() => {
@@ -319,7 +319,7 @@ describe('MdAutocomplete', () => {
         options[1].click();
         fixture.detectChanges();
 
-        expect(fixture.componentInstance.inputContainer.floatPlaceholder)
+        expect(fixture.componentInstance.formField.floatPlaceholder)
             .toEqual('never', 'Expected placeholder to stay in static state after close.');
       });
     }));
@@ -329,7 +329,7 @@ describe('MdAutocomplete', () => {
       fixture.detectChanges();
 
       fixture.componentInstance.trigger.openPanel();
-      expect(fixture.componentInstance.inputContainer.floatPlaceholder)
+      expect(fixture.componentInstance.formField.floatPlaceholder)
           .toEqual('always', 'Expected placeholder to stay elevated on open.');
 
       fixture.whenStable().then(() => {
@@ -340,7 +340,7 @@ describe('MdAutocomplete', () => {
         options[1].click();
         fixture.detectChanges();
 
-        expect(fixture.componentInstance.inputContainer.floatPlaceholder)
+        expect(fixture.componentInstance.formField.floatPlaceholder)
             .toEqual('always', 'Expected placeholder to stay elevated after close.');
       });
     }));
@@ -1397,9 +1397,9 @@ describe('MdAutocomplete', () => {
 
 @Component({
   template: `
-    <md-input-container [floatPlaceholder]="placeholder" [style.width.px]="width">
+    <md-form-field [floatPlaceholder]="placeholder" [style.width.px]="width">
       <input mdInput placeholder="State" [mdAutocomplete]="auto" [formControl]="stateCtrl">
-    </md-input-container>
+    </md-form-field>
 
     <md-autocomplete #auto="mdAutocomplete" [displayWith]="displayFn">
       <md-option *ngFor="let state of filteredStates" [value]="state">
@@ -1417,7 +1417,7 @@ class SimpleAutocomplete implements OnDestroy {
 
   @ViewChild(MdAutocompleteTrigger) trigger: MdAutocompleteTrigger;
   @ViewChild(MdAutocomplete) panel: MdAutocomplete;
-  @ViewChild(MdFormField) inputContainer: MdFormField;
+  @ViewChild(MdFormField) formField: MdFormField;
   @ViewChildren(MdOption) options: QueryList<MdOption>;
 
   states = [
@@ -1455,9 +1455,9 @@ class SimpleAutocomplete implements OnDestroy {
 
 @Component({
   template: `
-    <md-input-container *ngIf="isVisible">
+    <md-form-field *ngIf="isVisible">
       <input mdInput placeholder="Choose" [mdAutocomplete]="auto" [formControl]="optionCtrl">
-    </md-input-container>
+    </md-form-field>
 
     <md-autocomplete #auto="mdAutocomplete">
       <md-option *ngFor="let option of filteredOptions | async" [value]="option">
@@ -1489,10 +1489,10 @@ class NgIfAutocomplete {
 
 @Component({
   template: `
-    <md-input-container>
+    <md-form-field>
       <input mdInput placeholder="State" [mdAutocomplete]="auto"
       (input)="onInput($event.target?.value)">
-    </md-input-container>
+    </md-form-field>
 
     <md-autocomplete #auto="mdAutocomplete">
       <md-option *ngFor="let state of filteredStates" [value]="state">
@@ -1517,10 +1517,10 @@ class AutocompleteWithoutForms {
 
 @Component({
   template: `
-    <md-input-container>
+    <md-form-field>
       <input mdInput placeholder="State" [mdAutocomplete]="auto" [(ngModel)]="selectedState"
       (ngModelChange)="onInput($event)">
-    </md-input-container>
+    </md-form-field>
 
     <md-autocomplete #auto="mdAutocomplete">
       <md-option *ngFor="let state of filteredStates" [value]="state">
@@ -1545,9 +1545,9 @@ class AutocompleteWithNgModel {
 
 @Component({
   template: `
-    <md-input-container>
+    <md-form-field>
       <input mdInput placeholder="Number" [mdAutocomplete]="auto" [(ngModel)]="selectedNumber">
-    </md-input-container>
+    </md-form-field>
 
     <md-autocomplete #auto="mdAutocomplete">
       <md-option *ngFor="let number of numbers" [value]="number">
@@ -1564,9 +1564,9 @@ class AutocompleteWithNumbers {
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <md-input-container>
+    <md-form-field>
       <input type="text" mdInput [mdAutocomplete]="auto">
-    </md-input-container>
+    </md-form-field>
 
     <md-autocomplete #auto="mdAutocomplete">
       <md-option *ngFor="let option of options" [value]="option">{{ option }}</md-option>
@@ -1624,9 +1624,9 @@ class AutocompleteWithoutPanel {
 
 @Component({
   template: `
-    <md-input-container floatPlaceholder="never">
+    <md-form-field floatPlaceholder="never">
       <input placeholder="State" mdInput [mdAutocomplete]="auto" [formControl]="formControl">
-    </md-input-container>
+    </md-form-field>
 
     <md-autocomplete #auto="mdAutocomplete">
       <md-option value="California">California</md-option>

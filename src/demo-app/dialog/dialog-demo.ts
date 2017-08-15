@@ -74,9 +74,9 @@ export class DialogDemo {
   template: `
   <p>It's Jazz!</p>
 
-  <md-input-container>
+  <md-form-field>
     <input mdInput placeholder="How much?" #howMuch>
-  </md-input-container>
+  </md-form-field>
 
   <p> {{ data.message }} </p>
   <button type="button" (click)="dialogRef.close(howMuch.value)">Close dialog</button>

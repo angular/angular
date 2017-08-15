@@ -1,7 +1,7 @@
 <div class="example-header" [style.display]="selection.isEmpty() ? '' : 'none'">
-  <md-input-container floatPlaceholder="never">
+  <md-form-field floatPlaceholder="never">
     <input mdInput #filter placeholder="Filter users">
-  </md-input-container>
+  </md-form-field>
 </div>
 <div class="example-header example-selection-header"
      *ngIf="!selection.isEmpty()">

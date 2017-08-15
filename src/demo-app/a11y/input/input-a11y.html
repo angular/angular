@@ -1,16 +1,16 @@
 <section>
   <h2>Basic input box (e.g. name field)</h2>
-  <md-input-container floatPlaceholder="never">
+  <md-form-field floatPlaceholder="never">
     <input mdInput placeholder="First name" [(ngModel)]="firstName">
-  </md-input-container>
-  <md-input-container floatPlaceholder="never">
+  </md-form-field>
+  <md-form-field floatPlaceholder="never">
     <input mdInput placeholder="Last name" [(ngModel)]="lastName">
-  </md-input-container>
+  </md-form-field>
 </section>
 
 <section>
   <h2>Input with hint (e.g. password field)</h2>
-  <md-input-container hideRequiredMarker>
+  <md-form-field hideRequiredMarker>
     <input mdInput [type]="passwordType" placeholder="Password" [(ngModel)]="password" required
            #passwordModel="ngModel">
     <button md-icon-button mdSuffix [attr.aria-label]="passwordToggleLabel"
@@ -19,39 +19,39 @@
     </button>
     <md-hint>Hint: favorite color</md-hint>
     <md-error *ngIf="passwordModel.hasError('required')">You must enter your password.</md-error>
-  </md-input-container>
+  </md-form-field>
 </section>
 
 <section>
   <h2>Input with error message (e.g. email field)</h2>
-  <md-input-container>
+  <md-form-field>
     <input mdInput type="email" placeholder="Email" [(ngModel)]="email" required email
            #emailModel="ngModel">
     <md-error *ngIf="emailModel.hasError('required')">You must enter your email.</md-error>
     <md-error *ngIf="emailModel.hasError('email')">Not a valid email address.</md-error>
-  </md-input-container>
+  </md-form-field>
 </section>
 
 <section>
   <h2>Input with prefix & suffix (e.g. currency converter)</h2>
-  <md-input-container floatPlaceholder="always">
+  <md-form-field floatPlaceholder="always">
     <input mdInput type="number" placeholder="USD" [(ngModel)]="usd">
     <span mdPrefix>$</span>
-  </md-input-container>
+  </md-form-field>
   =
-  <md-input-container floatPlaceholder="always">
+  <md-form-field floatPlaceholder="always">
     <input mdInput type="number" placeholder="JPY" [(ngModel)]="jpy">
     <span mdPrefix>‎¥‎</span>
-  </md-input-container>
+  </md-form-field>
   (as of 7/31/2017)
 </section>
 
 <section>
   <h2>Textarea input (e.g.  comment box)</h2>
-  <md-input-container>
+  <md-form-field>
     <textarea mdInput aria-label="Comment" [(ngModel)]="comment" mdTextareaAutosize
               [maxlength]="commentMax" #commentModel="ngModel"></textarea>
     <md-hint>Leave us a comment!</md-hint>
     <md-hint align="end">{{commentCount}}/{{commentMax}}</md-hint>
-  </md-input-container>
+  </md-form-field>
 </section>

@@ -6,30 +6,30 @@
   <md-checkbox [(ngModel)]="datepickerDisabled">Disable datepicker</md-checkbox>
 </p>
 <p>
-  <md-input-container>
+  <md-form-field>
     <input mdInput [mdDatepicker]="minDatePicker" [(ngModel)]="minDate" placeholder="Min date">
     <md-datepicker-toggle mdSuffix [for]="minDatePicker"></md-datepicker-toggle>
     <md-datepicker #minDatePicker [touchUi]="touch" [disabled]="datepickerDisabled"></md-datepicker>
-  </md-input-container>
-  <md-input-container>
+  </md-form-field>
+  <md-form-field>
     <input mdInput [mdDatepicker]="maxDatePicker" [(ngModel)]="maxDate" placeholder="Max date">
     <md-datepicker-toggle mdSuffix [for]="maxDatePicker"></md-datepicker-toggle>
     <md-datepicker #maxDatePicker [touchUi]="touch" [disabled]="datepickerDisabled"></md-datepicker>
-  </md-input-container>
+  </md-form-field>
 </p>
 <p>
-  <md-input-container>
+  <md-form-field>
     <input mdInput [mdDatepicker]="startAtPicker" [(ngModel)]="startAt" placeholder="Start at date">
     <md-datepicker-toggle mdSuffix [for]="startAtPicker"></md-datepicker-toggle>
     <md-datepicker #startAtPicker [touchUi]="touch" [disabled]="datepickerDisabled"></md-datepicker>
-  </md-input-container>
+  </md-form-field>
 </p>
 
 <h2>Result</h2>
 
 <p>
   <md-datepicker-toggle [for]="resultPicker"></md-datepicker-toggle>
-  <md-input-container>
+  <md-form-field>
     <input mdInput
            #resultPickerModel="ngModel"
            [mdDatepicker]="resultPicker"
@@ -53,7 +53,7 @@
     <md-error *ngIf="resultPickerModel.hasError('mdDatepickerMin')">Too early!</md-error>
     <md-error *ngIf="resultPickerModel.hasError('mdDatepickerMax')">Too late!</md-error>
     <md-error *ngIf="resultPickerModel.hasError('mdDatepickerFilter')">Date unavailable!</md-error>
-  </md-input-container>
+  </md-form-field>
 </p>
 <p>Last input: {{lastDateInput}}</p>
 <p>Last change: {{lastDateChange}}</p>
@@ -79,23 +79,23 @@
 <h2>Input disabled datepicker</h2>
 <p>
   <md-datepicker-toggle [for]="datePicker1"></md-datepicker-toggle>
-  <md-input-container>
+  <md-form-field>
     <input mdInput [mdDatepicker]="datePicker1" [(ngModel)]="date" [min]="minDate" [max]="maxDate"
            [mdDatepickerFilter]="filterOdd ? dateFilter : null" [disabled]="true"
            placeholder="Input disabled">
     <md-datepicker #datePicker1 [touchUi]="touch" [startAt]="startAt"
                    [startView]="yearView ? 'year' : 'month'"></md-datepicker>
-  </md-input-container>
+  </md-form-field>
 </p>
 
 <h2>Input disabled, datepicker popup enabled</h2>
 <p>
   <md-datepicker-toggle [for]="datePicker2"></md-datepicker-toggle>
-  <md-input-container>
+  <md-form-field>
     <input mdInput disabled [mdDatepicker]="datePicker2" [(ngModel)]="date" [min]="minDate"
            [max]="maxDate" [mdDatepickerFilter]="filterOdd ? dateFilter : null"
            placeholder="Input disabled, datepicker enabled">
     <md-datepicker #datePicker2 [touchUi]="touch" [disabled]="false" [startAt]="startAt"
                    [startView]="yearView ? 'year' : 'month'"></md-datepicker>
-  </md-input-container>
+  </md-form-field>
 </p>

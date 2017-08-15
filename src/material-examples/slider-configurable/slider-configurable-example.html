@@ -3,18 +3,18 @@
     <h2 class="example-h2">Slider configuration</h2>
 
     <section class="example-section">
-      <md-input-container class="example-margin">
+      <md-form-field class="example-margin">
         <input mdInput type="number" placeholder="Value" [(ngModel)]="value">
-      </md-input-container>
-      <md-input-container class="example-margin">
+      </md-form-field>
+      <md-form-field class="example-margin">
         <input mdInput type="number" placeholder="Min value" [(ngModel)]="min">
-      </md-input-container>
-      <md-input-container class="example-margin">
+      </md-form-field>
+      <md-form-field class="example-margin">
         <input mdInput type="number" placeholder="Max value" [(ngModel)]="max">
-      </md-input-container>
-      <md-input-container class="example-margin">
+      </md-form-field>
+      <md-form-field class="example-margin">
         <input mdInput type="number" placeholder="Step size" [(ngModel)]="step">
-      </md-input-container>
+      </md-form-field>
     </section>
 
     <section class="example-section">
@@ -22,9 +22,9 @@
       <md-checkbox class="example-margin" [(ngModel)]="autoTicks" *ngIf="showTicks">
         Auto ticks
       </md-checkbox>
-      <md-input-container class="example-margin" *ngIf="showTicks && !autoTicks">
+      <md-form-field class="example-margin" *ngIf="showTicks && !autoTicks">
         <input mdInput type="number" placeholder="Tick interval" [(ngModel)]="tickInterval">
-      </md-input-container>
+      </md-form-field>
     </section>
 
     <section class="example-section">

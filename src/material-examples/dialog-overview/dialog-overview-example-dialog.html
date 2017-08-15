@@ -1,9 +1,9 @@
 <h1 md-dialog-title>Hi {{data.name}}</h1>
 <div md-dialog-content>
   <p>What's your favorite animal?</p>
-  <md-input-container>
+  <md-form-field>
     <input mdInput tabindex="1" [(ngModel)]="data.animal">
-  </md-input-container>
+  </md-form-field>
 </div>
 <div md-dialog-actions>
   <button md-button [md-dialog-close]="data.animal" tabindex="2">Ok</button>

@@ -6,9 +6,15 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
     <div>Reactive value: {{ stateCtrl.value | json }}</div>
     <div>Reactive dirty: {{ stateCtrl.dirty }}</div>
 
-    <md-input-container floatPlaceholder="never">
+    <md-form-field floatPlaceholder="never">
       <input mdInput placeholder="State" [mdAutocomplete]="reactiveAuto" [formControl]="stateCtrl">
-    </md-input-container>
+      <md-autocomplete #reactiveAuto="mdAutocomplete" [displayWith]="displayFn">
+        <md-option *ngFor="let state of reactiveStates | async" [value]="state">
+          <span>{{ state.name }}</span>
+          <span class="demo-secondary-text"> ({{state.code}}) </span>
+        </md-option>
+      </md-autocomplete>
+    </md-form-field>
 
     <md-card-actions>
       <button md-button (click)="stateCtrl.reset()">RESET</button>
@@ -26,10 +32,15 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
     <div>Template-driven dirty: {{ modelDir?.dirty }}</div>
 
     <!-- Added an ngIf below to test that autocomplete works with ngIf -->
-    <md-input-container *ngIf="true">
+    <md-form-field *ngIf="true">
       <input mdInput placeholder="State" [mdAutocomplete]="tdAuto" [(ngModel)]="currentState"
         (ngModelChange)="tdStates = filterStates(currentState)" [disabled]="tdDisabled">
-    </md-input-container>
+      <md-autocomplete #tdAuto="mdAutocomplete">
+        <md-option *ngFor="let state of tdStates" [value]="state.name">
+          <span>{{ state.name }}</span>
+        </md-option>
+      </md-autocomplete>
+    </md-form-field>
 
     <md-card-actions>
       <button md-button (click)="modelDir.reset()">RESET</button>
@@ -41,16 +52,3 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
 
   </md-card>
 </div>
-
-<md-autocomplete #reactiveAuto="mdAutocomplete" [displayWith]="displayFn">
-  <md-option *ngFor="let state of reactiveStates | async" [value]="state">
-    <span>{{ state.name }}</span>
-    <span class="demo-secondary-text"> ({{state.code}}) </span>
-  </md-option>
-</md-autocomplete>
-
-<md-autocomplete #tdAuto="mdAutocomplete">
-  <md-option *ngFor="let state of tdStates" [value]="state.name">
-    <span>{{ state.name }}</span>
-  </md-option>
-</md-autocomplete>

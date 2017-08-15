@@ -29,15 +29,15 @@ An optional datepicker toggle button is available. A toggle can be added to the 
 <md-datepicker #myDatepicker></md-datepicker>
 ```
 
-This works exactly the same with an input that is part of an `<md-input-container>` and the toggle
+This works exactly the same with an input that is part of an `<md-form-field>` and the toggle
 can easily be used as a prefix or suffix on the material input:
 
 ```html
-<md-input-container>
+<md-form-field>
   <input mdInput [mdDatepicker]="myDatepicker">
   <md-datepicker-toggle mdSuffix [for]="myDatepicker"></md-datepicker-toggle>
-</md-input-container>
-<md-datepicker #myDatepicker></md-datepicker>
+  <md-datepicker #myDatepicker></md-datepicker>
+</md-form-field>
 ```
 
 ### Setting the calendar starting view
