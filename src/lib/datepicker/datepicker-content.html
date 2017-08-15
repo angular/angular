@@ -6,5 +6,6 @@
     [maxDate]="datepicker._maxDate"
     [dateFilter]="datepicker._dateFilter"
     [selected]="datepicker._selected"
-    (selectedChange)="datepicker._selectAndClose($event)">
+    (selectedChange)="datepicker._select($event)"
+    (userSelection)="datepicker.close()">
 </md-calendar>

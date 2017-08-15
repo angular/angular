@@ -48,7 +48,8 @@
       [activeDate]="_activeDate"
       [selected]="selected"
       [dateFilter]="_dateFilterForViews"
-      (selectedChange)="_dateSelected($event)">
+      (selectedChange)="_dateSelected($event)"
+      (userSelection)="_userSelected()">
   </md-month-view>
 
   <md-year-view

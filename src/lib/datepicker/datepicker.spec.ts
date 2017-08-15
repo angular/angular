@@ -189,6 +189,30 @@ describe('MdDatepicker', () => {
         });
       });
 
+      it('clicking the currently selected date should close the calendar ' +
+          'without firing selectedChanged', () => {
+        const selectedChangedSpy =
+            spyOn(testComponent.datepicker.selectedChanged, 'emit').and.callThrough();
+        for (let changeCount = 1; changeCount < 3; changeCount++) {
+          const currentDay = changeCount;
+          testComponent.datepicker.open();
+          fixture.detectChanges();
+
+          expect(document.querySelector('md-datepicker-content')).not.toBeNull();
+          expect(testComponent.datepickerInput.value).toEqual(new Date(2020, JAN, currentDay));
+
+          let cells = document.querySelectorAll('.mat-calendar-body-cell');
+          dispatchMouseEvent(cells[1], 'click');
+          fixture.detectChanges();
+        }
+
+        fixture.whenStable().then(() => {
+          expect(selectedChangedSpy.calls.count()).toEqual(1);
+          expect(document.querySelector('md-dialog-container')).toBeNull();
+          expect(testComponent.datepickerInput.value).toEqual(new Date(2020, JAN, 2));
+        });
+      });
+
       it('startAt should fallback to input value', () => {
         expect(testComponent.datepicker.startAt).toEqual(new Date(2020, JAN, 1));
       });
@@ -361,7 +385,7 @@ describe('MdDatepicker', () => {
         expect(testComponent.datepickerInput.value).toBeNull();
 
         let selected = new Date(2017, JAN, 1);
-        testComponent.datepicker._selectAndClose(selected);
+        testComponent.datepicker._select(selected);
         fixture.detectChanges();
 
         fixture.whenStable().then(() => {
@@ -388,7 +412,7 @@ describe('MdDatepicker', () => {
 
         expect(inputEl.classList).toContain('ng-pristine');
 
-        testComponent.datepicker._selectAndClose(new Date(2017, JAN, 1));
+        testComponent.datepicker._select(new Date(2017, JAN, 1));
         fixture.detectChanges();
 
         fixture.whenStable().then(() => {
@@ -434,7 +458,7 @@ describe('MdDatepicker', () => {
 
         expect(inputEl.classList).toContain('ng-untouched');
 
-        testComponent.datepicker._selectAndClose(new Date(2017, JAN, 1));
+        testComponent.datepicker._select(new Date(2017, JAN, 1));
         fixture.detectChanges();
 
         fixture.whenStable().then(() => {
@@ -478,7 +502,7 @@ describe('MdDatepicker', () => {
         expect(testComponent.datepickerInput.value).toBeNull();
 
         let selected = new Date(2017, JAN, 1);
-        testComponent.datepicker._selectAndClose(selected);
+        testComponent.datepicker._select(selected);
         fixture.detectChanges();
 
         expect(testComponent.formControl.value).toEqual(selected);
