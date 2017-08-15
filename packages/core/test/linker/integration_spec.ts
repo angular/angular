@@ -469,6 +469,20 @@ function declareTests({useJit}: {useJit: boolean}) {
               .toBeAnInstanceOf(ExportDir);
         });
 
+        it('should assign a directive to a ref when it has multiple exportAs names', () => {
+          TestBed.configureTestingModule(
+              {declarations: [MyComp, DirectiveWithMultipleExportAsNames]});
+
+          const template = '<div multiple-export-as #x="dirX" #y="dirY"></div>';
+          TestBed.overrideComponent(MyComp, {set: {template}});
+
+          const fixture = TestBed.createComponent(MyComp);
+          expect(fixture.debugElement.children[0].references !['x'])
+              .toBeAnInstanceOf(DirectiveWithMultipleExportAsNames);
+          expect(fixture.debugElement.children[0].references !['y'])
+              .toBeAnInstanceOf(DirectiveWithMultipleExportAsNames);
+        });
+
         it('should make the assigned component accessible in property bindings, even if they were declared before the component',
            () => {
              TestBed.configureTestingModule({declarations: [MyComp, ChildComp]});
@@ -2440,6 +2454,10 @@ class SomeImperativeViewport {
 
 @Directive({selector: '[export-dir]', exportAs: 'dir'})
 class ExportDir {
+}
+
+@Directive({selector: '[multiple-export-as]', exportAs: 'dirX, dirY'})
+export class DirectiveWithMultipleExportAsNames {
 }
 
 @Component({selector: 'comp'})

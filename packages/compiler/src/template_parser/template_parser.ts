@@ -580,7 +580,7 @@ class TemplateParseVisitor implements html.Visitor {
           directive.inputs, props, directiveProperties, targetBoundDirectivePropNames);
       elementOrDirectiveRefs.forEach((elOrDirRef) => {
         if ((elOrDirRef.value.length === 0 && directive.isComponent) ||
-            (directive.exportAs == elOrDirRef.value)) {
+            (elOrDirRef.isReferenceToDirective(directive))) {
           targetReferences.push(new ReferenceAst(
               elOrDirRef.name, createTokenForReference(directive.type.reference),
               elOrDirRef.sourceSpan));
@@ -805,8 +805,25 @@ class NonBindableVisitor implements html.Visitor {
   visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any { return expansionCase; }
 }
 
+/**
+ * A reference to an element or directive in a template. E.g., the reference in this template:
+ *
+ * <div #myMenu="coolMenu">
+ *
+ * would be {name: 'myMenu', value: 'coolMenu', sourceSpan: ...}
+ */
 class ElementOrDirectiveRef {
   constructor(public name: string, public value: string, public sourceSpan: ParseSourceSpan) {}
+
+  /** Gets whether this is a reference to the given directive. */
+  isReferenceToDirective(directive: CompileDirectiveSummary) {
+    return splitExportAs(directive.exportAs).indexOf(this.value) !== -1;
+  }
+}
+
+/** Splits a raw, potentially comma-delimted `exportAs` value into an array of names. */
+function splitExportAs(exportAs: string | null): string[] {
+  return exportAs ? exportAs.split(',').map(e => e.trim()) : [];
 }
 
 export function splitClasses(classAttrValue: string): string[] {
