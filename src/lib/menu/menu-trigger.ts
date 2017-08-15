@@ -214,9 +214,10 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
   /** Closes the menu. */
   closeMenu(): void {
     if (this._overlayRef && this.menuOpen) {
+      this._resetMenu();
       this._overlayRef.detach();
       this._closeSubscription.unsubscribe();
-      this._resetMenu();
+      this.menu.close.emit();
 
       if (this.menu instanceof MdMenu) {
         this.menu._resetAnimation();

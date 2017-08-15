@@ -961,6 +961,28 @@ describe('MdMenu', () => {
           .not.toContain('mat-elevation-z3', 'Expected no stacked elevation.');
     });
 
+    it('should close all of the menus when the root is closed programmatically', () => {
+      compileTestComponent();
+      instance.rootTrigger.openMenu();
+      fixture.detectChanges();
+
+      instance.levelOneTrigger.openMenu();
+      fixture.detectChanges();
+
+      instance.levelTwoTrigger.openMenu();
+      fixture.detectChanges();
+
+      const menus = overlay.querySelectorAll('.mat-menu-panel');
+
+      expect(menus.length).toBe(3, 'Expected three open menus');
+
+      instance.rootTrigger.closeMenu();
+      fixture.detectChanges();
+
+      expect(overlay.querySelectorAll('.mat-menu-panel').length).toBe(0, 'Expected no open menus');
+    });
+
+
   });
 
 });
