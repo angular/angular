@@ -7,6 +7,7 @@ const entrypoints = [
   //'dist/packages-dist/compiler/index.d.ts',
   //'dist/packages-dist/compiler/testing.d.ts',
   'dist/packages-dist/upgrade/index.d.ts', 'dist/packages-dist/upgrade/static.d.ts',
+  'dist/packages-dist/platform/platform.d.ts', 'dist/packages-dist/platform/dom.d.ts',
   'dist/packages-dist/platform-browser/index.d.ts',
   'dist/packages-dist/platform-browser/testing.d.ts',
   'dist/packages-dist/platform-browser-dynamic/index.d.ts',
