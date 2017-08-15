@@ -8,11 +8,13 @@
 import {AnimationPlayer, ɵStyleData} from '@angular/animations';
 
 import {AnimationDriver} from '../animation_driver';
-import {containsElement, invokeQuery, matchesElement} from '../shared';
+import {containsElement, invokeQuery, matchesElement, validateStyleProperty} from '../shared';
 
 import {WebAnimationsPlayer} from './web_animations_player';
 
 export class WebAnimationsDriver implements AnimationDriver {
+  validateStyleProperty(prop: string): boolean { return validateStyleProperty(prop); }
+
   matchesElement(element: any, selector: string): boolean {
     return matchesElement(element, selector);
   }

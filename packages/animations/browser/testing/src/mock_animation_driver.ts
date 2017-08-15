@@ -8,14 +8,17 @@
 import {AUTO_STYLE, AnimationPlayer, NoopAnimationPlayer, ɵStyleData} from '@angular/animations';
 
 import {AnimationDriver} from '../../src/render/animation_driver';
-import {containsElement, invokeQuery, matchesElement} from '../../src/render/shared';
+import {containsElement, invokeQuery, matchesElement, validateStyleProperty} from '../../src/render/shared';
 import {allowPreviousPlayerStylesMerge} from '../../src/util';
+
 
 /**
  * @experimental Animation support is experimental.
  */
 export class MockAnimationDriver implements AnimationDriver {
   static log: AnimationPlayer[] = [];
+
+  validateStyleProperty(prop: string): boolean { return validateStyleProperty(prop); }
 
   matchesElement(element: any, selector: string): boolean {
     return matchesElement(element, selector);
