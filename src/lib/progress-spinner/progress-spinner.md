@@ -21,3 +21,6 @@ In "indeterminate" mode, the `value` property is ignored.
 ### Theming
 The color of a progress-spinner can be changed by using the `color` property. By default, 
 progress-spinners use the theme's primary color. This can be changed to `'accent'` or `'warn'`.
+
+### Accessibility
+Each progress spinner should be given a meaningful label via `aria-label` or `aria-labelledby`.

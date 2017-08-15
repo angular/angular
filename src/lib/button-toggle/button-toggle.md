@@ -15,8 +15,15 @@ mode the values of the the toggles are not used, the `md-button-toggle-group` do
 and `ngModel` is not supported.
 
 ### Accessibility
-The button-toggles will present themselves as either checkboxes or radio-buttons based on the 
+The button-toggles will present themselves as either checkboxes or radio-buttons based on the
 presence of the `multiple` attribute. 
+
+For button toggles containing only icons, each button toggle should be given a meaningful label via
+`aria-label` or `aria-labelledby`.
+
+For button toggle groups, each group should be given a meaningful label via `aria-label` or
+`aria-labelledby`.
+
 
 ### Orientation
 The button-toggles can be rendered in a vertical orientation by adding the `vertical` attribute.

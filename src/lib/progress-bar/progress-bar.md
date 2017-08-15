@@ -28,3 +28,6 @@ In both "indeterminate" and "query" modes, the `value` property is ignored.
 ### Theming
 The color of a progress-bar can be changed by using the `color` property. By default, progress-bars
 use the theme's primary color. This can be changed to `'accent'` or `'warn'`.  
+
+### Accessibility
+Each progress bar should be given a meaningful label via `aria-label` or `aria-labelledby`.

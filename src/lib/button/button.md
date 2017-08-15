@@ -31,3 +31,12 @@ to capitalize buttons automatically via `text-transform: uppercase`, because it 
 certain locales. It is also worth noting that using ALL CAPS in the text itself causes issues for
 screen-readers, which will read the text character-by-character. We leave the decision of how to
 approach this to the consuming app.
+
+### Accessibility
+Angular Material uses native `<button>` and `<a>` elements to ensure an accessible experience by
+default. The `<button>` element should be used for any interaction that _performs an action on the
+current page_. The `<a>` element should be used for any interaction that _navigates to another
+view_.
+
+Buttons or links containing only icons (such as `md-fab`, `md-mini-fab`, and `md-icon-button`) should
+be given a meaningful label via `aria-label` or `aria-labelledby`.
