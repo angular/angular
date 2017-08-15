@@ -29,7 +29,7 @@ import {MD_DATE_FORMATS, MdDateFormats} from '../core/datetime/date-formats';
  */
 @Component({
   moduleId: module.id,
-  selector: 'md-year-view',
+  selector: 'md-year-view, mat-year-view',
   templateUrl: 'year-view.html',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -47,7 +47,7 @@ import {Subscription} from 'rxjs/Subscription';
  */
 @Component({
   moduleId: module.id,
-  selector: 'md-calendar',
+  selector: 'md-calendar, mat-calendar',
   templateUrl: 'calendar.html',
   styleUrls: ['calendar.css'],
   host: {
