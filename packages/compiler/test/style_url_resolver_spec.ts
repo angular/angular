@@ -36,6 +36,16 @@ export function main() {
       expect(styleWithImports.styleUrls).toEqual(['http://ng.io/1.css', 'http://ng.io/2.css']);
     });
 
+    it('should remove multiline css comments', () => {
+      const css = `
+      /*align-items: center;
+      max-width:100%;/*text*/
+      `;
+      const styleWithImports = extractStyleUrls(urlResolver, 'http://ng.io', css);
+      expect(styleWithImports.style.trim()).toEqual('');
+      expect(styleWithImports.styleUrls.length).toEqual(0);
+    });
+
     it('should ignore "@import" in comments', () => {
       const css = `
       @import '1.css';
