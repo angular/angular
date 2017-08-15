@@ -2691,6 +2691,43 @@ export function main() {
              fixture.detectChanges();
              expect(getLog().length).toEqual(1);
            });
+
+        it('should treat the property as true when the expression is missing', () => {
+          @Component({
+            selector: 'parent-cmp',
+            animations: [
+              trigger(
+                  'myAnimation',
+                  [
+                    transition(
+                        '* => go',
+                        [
+                          style({opacity: 0}),
+                          animate(500, style({opacity: 1})),
+                        ]),
+                  ]),
+            ],
+            template: `
+              <div @.disabled>
+                <div [@myAnimation]="exp"></div>
+              </div>
+                `
+          })
+          class Cmp {
+            exp = '';
+          }
+
+          TestBed.configureTestingModule({declarations: [Cmp]});
+
+          const fixture = TestBed.createComponent(Cmp);
+          const cmp = fixture.componentInstance;
+          fixture.detectChanges();
+          resetLog();
+
+          cmp.exp = 'go';
+          fixture.detectChanges();
+          expect(getLog().length).toEqual(0);
+        });
       });
     });
 
