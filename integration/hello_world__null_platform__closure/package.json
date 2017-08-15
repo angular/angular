@@ -8,13 +8,12 @@
     "@angular/compiler": "file:../../dist/packages-dist/compiler",
     "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
     "@angular/core": "file:../../dist/packages-dist/core",
-    "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
-    "@angular/platform-server": "file:../../dist/packages-dist/platform-server",
+    "@angular/platform": "file:../../dist/packages-dist/platform",
     "@angular/tsc-wrapped": "file:../../dist/packages-dist/tsc-wrapped",
-    "google-closure-compiler": "git+https://github.com/alexeagle/closure-compiler.git#packagejson.dist",
-    "rxjs": "file:../../node_modules/rxjs",
-    "typescript": "file:../../node_modules/typescript",
-    "zone.js": "file:../../node_modules/zone.js"
+    "google-closure-compiler": "20170409.0.0",
+    "rxjs": "5.3.1",
+    "typescript": "2.1.6",
+    "zone.js": "0.8.16"
   },
   "devDependencies": {
     "@types/jasmine": "2.5.41",
