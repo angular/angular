@@ -131,6 +131,20 @@ export interface CompilerHost extends ts.CompilerHost {
    */
   fileNameToModuleName(importedFilePath: string, containingFilePath: string): string|null;
   /**
+   * Converts a file name into a representation that should be stored in a summary file.
+   * This has to include changing the suffix as well.
+   * E.g.
+   * `some_file.ts` -> `some_file.d.ts`
+   *
+   * @param referringSrcFileName the soure file that refers to fileName
+   */
+  toSummaryFileName(fileName: string, referringSrcFileName: string): string;
+  /**
+   * Converts a fileName that was processed by `toSummaryFileName` back into a real fileName
+   * given the fileName of the library that is referrig to it.
+   */
+  fromSummaryFileName(fileName: string, referringLibFileName: string): string;
+  /**
    * Load a referenced resource either statically or asynchronously. If the host returns a
    * `Promise<string>` it is assumed the user of the corresponding `Program` will call
    * `loadNgStructureAsync()`. Returing  `Promise<string>` outside `loadNgStructureAsync()` will

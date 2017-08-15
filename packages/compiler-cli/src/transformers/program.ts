@@ -314,6 +314,14 @@ class AotCompilerHostImpl extends BaseAotCompilerHost<CompilerHost> {
   fileNameToModuleName(importedFile: string, containingFile: string): string|null {
     return this.context.fileNameToModuleName(importedFile, containingFile);
   }
+
+  toSummaryFileName(fileName: string, referringSrcFileName: string): string {
+    return this.context.toSummaryFileName(fileName, referringSrcFileName);
+  }
+
+  fromSummaryFileName(fileName: string, referringLibFileName: string): string {
+    return this.context.fromSummaryFileName(fileName, referringLibFileName);
+  }
 }
 
 export function createProgram(

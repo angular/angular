@@ -67,8 +67,13 @@ describe('NgCompilerHost', () => {
           ]
         }
       });
+      // both files are in the rootDirs
       expect(ngHostWithMultipleRoots.fileNameToModuleName('/tmp/src/b/b.ts', '/tmp/src/a/a.ts'))
           .toBe('./b');
+
+      // one file is not in the rootDirs
+      expect(ngHostWithMultipleRoots.fileNameToModuleName('/tmp/src/c/c.ts', '/tmp/src/a/a.ts'))
+          .toBe('../c/c');
     });
 
     it('should error if accessing a source file from a package', () => {

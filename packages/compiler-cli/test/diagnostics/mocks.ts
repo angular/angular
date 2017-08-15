@@ -105,7 +105,8 @@ const summaryResolver = new AotSummaryResolver(
     {
       loadSummary(filePath: string) { return null; },
       isSourceFile(sourceFilePath: string) { return true; },
-      getOutputFileName(sourceFilePath: string) { return sourceFilePath; }
+      toSummaryFileName(sourceFilePath: string) { return sourceFilePath; },
+      fromSummaryFileName(filePath: string): string{return filePath;},
     },
     staticSymbolCache);
 
