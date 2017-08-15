@@ -278,7 +278,9 @@ export class MdDatepicker<D> implements OnDestroy {
     if (this._calendarPortal && this._calendarPortal.isAttached) {
       this._calendarPortal.detach();
     }
-    if (this._focusedElementBeforeOpen && 'focus' in this._focusedElementBeforeOpen) {
+    if (this._focusedElementBeforeOpen &&
+      typeof this._focusedElementBeforeOpen.focus === 'function') {
+
       this._focusedElementBeforeOpen.focus();
       this._focusedElementBeforeOpen = null;
     }

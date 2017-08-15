@@ -699,7 +699,7 @@ describe('MdSlideToggle with forms', () => {
     }));
 
     it('should prevent the form from submit when being required', () => {
-      if ('reportValidity' in inputElement === false) {
+      if (typeof (inputElement as any).reportValidity === 'undefined') {
         // If the browser does not report the validity then the tests will break.
         // e.g Safari 8 on Mobile.
         return;

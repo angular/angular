@@ -150,7 +150,7 @@ export class MdDialogContainer extends BasePortalHost {
     const toFocus = this._elementFocusedBeforeDialogWasOpened;
 
     // We need the extra check, because IE can set the `activeElement` to null in some cases.
-    if (toFocus && 'focus' in toFocus) {
+    if (toFocus && typeof toFocus.focus === 'function') {
       toFocus.focus();
     }
 

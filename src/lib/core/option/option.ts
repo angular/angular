@@ -145,7 +145,7 @@ export class MdOption {
   focus(): void {
     const element = this._getHostElement();
 
-    if ('focus' in element) {
+    if (typeof element.focus === 'function') {
       element.focus();
     }
   }
