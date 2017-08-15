@@ -259,7 +259,7 @@ describe('MdTabHeader', () => {
       spyOn(inkBar, 'alignToElement');
 
       dispatchFakeEvent(window, 'resize');
-      tick(10);
+      tick(150);
       fixture.detectChanges();
 
       expect(inkBar.alignToElement).toHaveBeenCalled();
