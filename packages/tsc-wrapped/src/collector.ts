@@ -8,9 +8,10 @@
 
 import * as ts from 'typescript';
 
-import {errorSymbol, Evaluator} from './evaluator';
-import {ClassMetadata, ConstructorMetadata, FunctionMetadata, InterfaceMetadata, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataSymbolicExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSelectExpression, isMethodMetadata, MemberMetadata, MetadataEntry, MetadataError, MetadataMap, MetadataSymbolicBinaryExpression, MetadataSymbolicCallExpression, MetadataSymbolicExpression, MetadataSymbolicIfExpression, MetadataSymbolicIndexExpression, MetadataSymbolicPrefixExpression, MetadataSymbolicReferenceExpression, MetadataSymbolicSelectExpression, MetadataSymbolicSpreadExpression, MetadataValue, MethodMetadata, ModuleExportMetadata, ModuleMetadata, VERSION} from './schema';
+import {Evaluator, errorSymbol} from './evaluator';
+import {ClassMetadata, ConstructorMetadata, FunctionMetadata, InterfaceMetadata, MemberMetadata, MetadataEntry, MetadataError, MetadataMap, MetadataSymbolicBinaryExpression, MetadataSymbolicCallExpression, MetadataSymbolicExpression, MetadataSymbolicIfExpression, MetadataSymbolicIndexExpression, MetadataSymbolicPrefixExpression, MetadataSymbolicReferenceExpression, MetadataSymbolicSelectExpression, MetadataSymbolicSpreadExpression, MetadataValue, MethodMetadata, ModuleExportMetadata, ModuleMetadata, VERSION, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataSymbolicExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSelectExpression, isMethodMetadata} from './schema';
 import {Symbols} from './symbols';
+
 
 // In TypeScript 2.1 these flags moved
 // These helpers work for both 2.0 and 2.1.
@@ -94,9 +95,9 @@ export class MetadataCollector {
       return errorSymbol(message, node, context, sourceFile);
     }
 
-    function maybeGetSimpleFunction(functionDeclaration: ts.FunctionDeclaration|
-                                    ts.MethodDeclaration): {func: FunctionMetadata, name: string}|
-        undefined {
+    function maybeGetSimpleFunction(
+        functionDeclaration: ts.FunctionDeclaration |
+        ts.MethodDeclaration): {func: FunctionMetadata, name: string}|undefined {
       if (functionDeclaration.name && functionDeclaration.name.kind == ts.SyntaxKind.Identifier) {
         const nameNode = <ts.Identifier>functionDeclaration.name;
         const functionName = nameNode.text;
@@ -125,7 +126,7 @@ export class MetadataCollector {
     function classMetadataOf(classDeclaration: ts.ClassDeclaration): ClassMetadata {
       const result: ClassMetadata = {__symbolic: 'class'};
 
-      function getDecorators(decorators: ts.Decorator[]|undefined): MetadataSymbolicExpression[]|
+      function getDecorators(decorators: ts.Decorator[] | undefined): MetadataSymbolicExpression[]|
           undefined {
         if (decorators && decorators.length)
           return decorators.map(decorator => objFromDecorator(decorator));
@@ -174,7 +175,7 @@ export class MetadataCollector {
 
       // static member
       let statics: {[name: string]: MetadataValue | FunctionMetadata}|null = null;
-      function recordStaticMember(name: string, value: MetadataValue|FunctionMetadata) {
+      function recordStaticMember(name: string, value: MetadataValue | FunctionMetadata) {
         if (!statics) statics = {};
         statics[name] = value;
       }
@@ -195,10 +196,11 @@ export class MetadataCollector {
             }
             const methodDecorators = getDecorators(method.decorators);
             const parameters = method.parameters;
-            const parameterDecoratorData: ((MetadataSymbolicExpression | MetadataError)[]|
-                                           undefined)[] = [];
-            const parametersData: (MetadataSymbolicReferenceExpression|MetadataError|
-                                   MetadataSymbolicSelectExpression|null)[] = [];
+            const parameterDecoratorData:
+                ((MetadataSymbolicExpression | MetadataError)[] | undefined)[] = [];
+            const parametersData:
+                (MetadataSymbolicReferenceExpression | MetadataError |
+                 MetadataSymbolicSelectExpression | null)[] = [];
             let hasDecoratorData: boolean = false;
             let hasParameterData: boolean = false;
             for (const parameter of parameters) {
@@ -274,7 +276,7 @@ export class MetadataCollector {
 
           if (!moduleSpecifier) {
             // If there is a module specifier there is also an exportClause
-            exportClause!.elements.forEach(spec => {
+            exportClause !.elements.forEach(spec => {
               const exportedAs = spec.name.text;
               const name = (spec.propertyName || spec.name).text;
               exportMap.set(name, exportedAs);
@@ -456,8 +458,7 @@ export class MetadataCollector {
                   operator: '+',
                   left: {
                     __symbolic: 'select',
-                    expression: recordEntry({__symbolic: 'reference', name: enumName}, node),
-                    name
+                    expression: recordEntry({__symbolic: 'reference', name: enumName}, node), name
                   }
                 };
               } else {
@@ -556,8 +557,7 @@ export class MetadataCollector {
       }
       const result: ModuleMetadata = {
         __symbolic: 'module',
-        version: this.options.version || VERSION,
-        metadata
+        version: this.options.version || VERSION, metadata
       };
       if (exports) result.exports = exports;
       return result;
@@ -571,7 +571,8 @@ function validateMetadata(
     metadata: {[name: string]: MetadataEntry}) {
   let locals: Set<string> = new Set(['Array', 'Object', 'Set', 'Map', 'string', 'number', 'any']);
 
-  function validateExpression(expression: MetadataValue|MetadataSymbolicExpression|MetadataError) {
+  function validateExpression(
+      expression: MetadataValue | MetadataSymbolicExpression | MetadataError) {
     if (!expression) {
       return;
     } else if (Array.isArray(expression)) {
@@ -648,11 +649,11 @@ function validateMetadata(
     }
     if (classData.members) {
       Object.getOwnPropertyNames(classData.members)
-          .forEach(name => classData.members![name].forEach((m) => validateMember(classData, m)));
+          .forEach(name => classData.members ![name].forEach((m) => validateMember(classData, m)));
     }
     if (classData.statics) {
       Object.getOwnPropertyNames(classData.statics).forEach(name => {
-        const staticMember = classData.statics![name];
+        const staticMember = classData.statics ![name];
         if (isFunctionMetadata(staticMember)) {
           validateExpression(staticMember.value);
         } else {
@@ -675,7 +676,7 @@ function validateMetadata(
     }
   }
 
-  function shouldReportNode(node: ts.Node|undefined) {
+  function shouldReportNode(node: ts.Node | undefined) {
     if (node) {
       const nodeStart = node.getStart();
       return !(
@@ -688,12 +689,11 @@ function validateMetadata(
   function reportError(error: MetadataError) {
     const node = nodeMap.get(error);
     if (shouldReportNode(node)) {
-      const lineInfo = error.line != undefined ? error.character != undefined ?
-                                                 `:${error.line + 1}:${error.character + 1}` :
-                                                 `:${error.line + 1}` :
-                                                 '';
-      throw new Error(
-          `${
+      const lineInfo = error.line != undefined ?
+          error.character != undefined ? `:${error.line + 1}:${error.character + 1}` :
+                                         `:${error.line + 1}` :
+          '';
+      throw new Error(`${
              sourceFile.fileName
            }${
               lineInfo
@@ -718,8 +718,7 @@ function validateMetadata(
       if (shouldReportNode(node)) {
         if (node) {
           const {line, character} = sourceFile.getLineAndCharacterOfPosition(node.getStart());
-          throw new Error(
-              `${
+          throw new Error(`${
                  sourceFile.fileName
                }:${
                    line + 1
@@ -742,7 +741,7 @@ function validateMetadata(
 function namesOf(parameters: ts.NodeArray<ts.ParameterDeclaration>): string[] {
   const result: string[] = [];
 
-  function addNamesOf(name: ts.Identifier|ts.BindingPattern) {
+  function addNamesOf(name: ts.Identifier | ts.BindingPattern) {
     if (name.kind == ts.SyntaxKind.Identifier) {
       const identifier = <ts.Identifier>name;
       result.push(identifier.text);
