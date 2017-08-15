@@ -15,8 +15,8 @@
   },
 
   "files": [
-    "src/uni/app.server.ts",
-    "src/uni/server-aot.ts"
+    "src/universal/app-server.module.ts",
+    "src/universal/server.ts"
   ],
 
   "angularCompilerOptions": {

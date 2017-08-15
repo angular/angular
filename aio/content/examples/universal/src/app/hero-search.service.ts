@@ -1,20 +1,28 @@
-// #docregion
-import { Injectable } from '@angular/core';
-import { Http }       from '@angular/http';
+import { Inject, Injectable, Optional } from '@angular/core';
+import { APP_BASE_HREF } from '@angular/common';
+import { HttpClient }    from '@angular/common/http';
 
-import { Observable }     from 'rxjs/Observable';
+import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 
-import { Hero }           from './hero';
+import { Hero } from './hero';
 
+// #docregion class
 @Injectable()
 export class HeroSearchService {
 
-  constructor(private http: Http) {}
+  private searchUrl = 'api/heroes/?name=';  // URL to web api
+
+  constructor(
+    private http: HttpClient,
+    @Optional() @Inject(APP_BASE_HREF) origin: string) {
+    this.searchUrl = (origin || '') + this.searchUrl;
+  }
 
   search(term: string): Observable<Hero[]> {
     return this.http
-               .get(`api/heroes/?name=${term}`)
-               .map(response => response.json().data as Hero[]);
+    .get(this.searchUrl + term)
+    .map((data: any) => data.data as Hero[]);
   }
 }
+// #enddocregion class
