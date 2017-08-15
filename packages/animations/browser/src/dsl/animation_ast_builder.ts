@@ -7,6 +7,7 @@
  */
 import {AUTO_STYLE, AnimateTimings, AnimationAnimateChildMetadata, AnimationAnimateMetadata, AnimationAnimateRefMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationMetadataType, AnimationOptions, AnimationQueryMetadata, AnimationQueryOptions, AnimationReferenceMetadata, AnimationSequenceMetadata, AnimationStaggerMetadata, AnimationStateMetadata, AnimationStyleMetadata, AnimationTransitionMetadata, AnimationTriggerMetadata, style, ɵStyleData} from '@angular/animations';
 
+import {AnimationDriver} from '../render/animation_driver';
 import {getOrSetAsInMap} from '../render/shared';
 import {ENTER_SELECTOR, LEAVE_SELECTOR, NG_ANIMATING_SELECTOR, NG_TRIGGER_SELECTOR, SUBSTITUTION_EXPR_START, copyObj, extractStyleParams, iteratorToArray, normalizeAnimationEntry, resolveTiming, validateStyleParams} from '../util';
 
@@ -54,8 +55,9 @@ const SELF_TOKEN_REGEX = new RegExp(`\s*${SELF_TOKEN}\s*,?`, 'g');
  * Otherwise an error will be thrown.
  */
 export function buildAnimationAst(
-    metadata: AnimationMetadata | AnimationMetadata[], errors: any[]): Ast {
-  return new AnimationAstBuilderVisitor().build(metadata, errors);
+    driver: AnimationDriver, metadata: AnimationMetadata | AnimationMetadata[],
+    errors: any[]): Ast {
+  return new AnimationAstBuilderVisitor(driver).build(metadata, errors);
 }
 
 const LEAVE_TOKEN = ':leave';
@@ -65,6 +67,8 @@ const ENTER_TOKEN_REGEX = new RegExp(ENTER_TOKEN, 'g');
 const ROOT_SELECTOR = '';
 
 export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
+  constructor(private _driver: AnimationDriver) {}
+
   build(metadata: AnimationMetadata|AnimationMetadata[], errors: any[]): Ast {
     const context = new AnimationAstBuilderContext(errors);
     this._resetContextStyleTimingState(context);
@@ -273,6 +277,12 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
       if (typeof tuple == 'string') return;
 
       Object.keys(tuple).forEach(prop => {
+        if (!this._driver.validateStyleProperty(prop)) {
+          context.errors.push(
+              `The provided animation property "${prop}" is not a supported CSS property for animations`);
+          return;
+        }
+
         const collectedStyles = context.collectedStyles[context.currentQuerySelector !];
         const collectedEntry = collectedStyles[prop];
         let updateCollectedStyle = true;

@@ -2330,7 +2330,7 @@ export function main() {
             trigger('child', [
               transition(':enter', [
                 style({ opacity: 0 }),
-                animate(1500, style({ opactiy: 1 }))
+                animate(1500, style({ opacity: 1 }))
               ])
             ])
           ]

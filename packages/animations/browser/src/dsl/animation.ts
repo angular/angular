@@ -20,7 +20,7 @@ export class Animation {
   private _animationAst: Ast;
   constructor(private _driver: AnimationDriver, input: AnimationMetadata|AnimationMetadata[]) {
     const errors: any[] = [];
-    const ast = buildAnimationAst(input, errors);
+    const ast = buildAnimationAst(_driver, input, errors);
     if (errors.length) {
       const errorMessage = `animation validation failed:\n${errors.join("\n")}`;
       throw new Error(errorMessage);
