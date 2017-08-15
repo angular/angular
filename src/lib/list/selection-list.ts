@@ -202,10 +202,10 @@ export class MdSelectionList extends _MdSelectionListMixinBase
   private _optionDestroyStream: Subscription;
 
   /** The FocusKeyManager which handles focus. */
-  _keyManager: FocusKeyManager;
+  _keyManager: FocusKeyManager<MdListOption>;
 
   /** The option components contained within this selection-list. */
-  @ContentChildren(MdListOption) options;
+  @ContentChildren(MdListOption) options: QueryList<MdListOption>;
 
   /** options which are selected. */
   selectedOptions: SelectionModel<MdListOption> = new SelectionModel<MdListOption>(true);
@@ -223,7 +223,7 @@ export class MdSelectionList extends _MdSelectionListMixinBase
   }
 
   ngAfterContentInit(): void {
-    this._keyManager = new FocusKeyManager(this.options).withWrap();
+    this._keyManager = new FocusKeyManager<MdListOption>(this.options).withWrap();
 
     if (this.disabled) {
       this._tabIndex = -1;

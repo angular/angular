@@ -3,13 +3,14 @@ import {Component, DebugElement, QueryList} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MdChipList, MdChipsModule} from './index';
-import {FocusKeyManager} from '../core/a11y/focus-key-manager';
+import {FocusKeyManager} from '@angular/cdk/a11y';
 import {createKeyboardEvent} from '@angular/cdk/testing';
 
 import {MdInputModule} from '../input/index';
 import {LEFT_ARROW, RIGHT_ARROW, BACKSPACE, DELETE, TAB} from '../core/keyboard/keycodes';
 import {Directionality} from '../core';
 import {MdFormFieldModule} from '../form-field/index';
+import {MdChip} from './chip';
 
 describe('MdChipList', () => {
   let fixture: ComponentFixture<any>;
@@ -18,8 +19,7 @@ describe('MdChipList', () => {
   let chipListInstance: MdChipList;
   let testComponent: StandardChipList;
   let chips: QueryList<any>;
-  let manager: FocusKeyManager;
-
+  let manager: FocusKeyManager<MdChip>;
   let dir = 'ltr';
 
   beforeEach(async(() => {

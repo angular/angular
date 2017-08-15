@@ -27,7 +27,7 @@ import {AnimationEvent} from '@angular/animations';
 import {MenuPositionX, MenuPositionY} from './menu-positions';
 import {throwMdMenuInvalidPositionX, throwMdMenuInvalidPositionY} from './menu-errors';
 import {MdMenuItem} from './menu-item';
-import {FocusKeyManager} from '../core/a11y/focus-key-manager';
+import {FocusKeyManager} from '@angular/cdk/a11y';
 import {MdMenuPanel} from './menu-panel';
 import {Subscription} from 'rxjs/Subscription';
 import {transformMenu, fadeInItems} from './menu-animations';
@@ -68,7 +68,7 @@ const MD_MENU_BASE_ELEVATION = 2;
   exportAs: 'mdMenu'
 })
 export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
-  private _keyManager: FocusKeyManager;
+  private _keyManager: FocusKeyManager<MdMenuItem>;
   private _xPosition: MenuPositionX = this._defaultOptions.xPosition;
   private _yPosition: MenuPositionY = this._defaultOptions.yPosition;
   private _previousElevation: string;
@@ -145,7 +145,7 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
     @Inject(MD_MENU_DEFAULT_OPTIONS) private _defaultOptions: MdMenuDefaultOptions) { }
 
   ngAfterContentInit() {
-    this._keyManager = new FocusKeyManager(this.items).withWrap();
+    this._keyManager = new FocusKeyManager<MdMenuItem>(this.items).withWrap();
     this._tabSubscription = this._keyManager.tabOut.subscribe(() => this.close.emit('keydown'));
   }
 

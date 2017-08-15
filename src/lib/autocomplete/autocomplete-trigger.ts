@@ -231,7 +231,7 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   /** The currently active option, coerced to MdOption type. */
   get activeOption(): MdOption | null {
     if (this.autocomplete && this.autocomplete._keyManager) {
-      return this.autocomplete._keyManager.activeItem as MdOption;
+      return this.autocomplete._keyManager.activeItem;
     }
 
     return null;
@@ -439,7 +439,7 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
    * Clear any previous selected option and emit a selection change event for this option
    */
   private _clearPreviousSelectedOption(skip: MdOption) {
-    this.autocomplete.options.forEach((option) => {
+    this.autocomplete.options.forEach(option => {
       if (option != skip && option.selected) {
         option.deselect();
       }

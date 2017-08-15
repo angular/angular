@@ -451,11 +451,11 @@ describe('Key managers', () => {
   });
 
   describe('FocusKeyManager', () => {
-    let keyManager: FocusKeyManager;
+    let keyManager: FocusKeyManager<FakeFocusable>;
 
     beforeEach(() => {
       itemList.items = [new FakeFocusable(), new FakeFocusable(), new FakeFocusable()];
-      keyManager = new FocusKeyManager(itemList);
+      keyManager = new FocusKeyManager<FakeFocusable>(itemList);
 
       // first item is already focused
       keyManager.setFirstItemActive();
@@ -503,11 +503,11 @@ describe('Key managers', () => {
   });
 
   describe('ActiveDescendantKeyManager', () => {
-    let keyManager: ActiveDescendantKeyManager;
+    let keyManager: ActiveDescendantKeyManager<FakeHighlightable>;
 
     beforeEach(fakeAsync(() => {
       itemList.items = [new FakeHighlightable(), new FakeHighlightable(), new FakeHighlightable()];
-      keyManager = new ActiveDescendantKeyManager(itemList);
+      keyManager = new ActiveDescendantKeyManager<FakeHighlightable>(itemList);
 
       // first item is already focused
       keyManager.setFirstItemActive();

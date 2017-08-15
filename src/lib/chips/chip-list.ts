@@ -21,7 +21,7 @@ import {
 } from '@angular/core';
 
 import {MdChip} from './chip';
-import {FocusKeyManager} from '../core/a11y/focus-key-manager';
+import {FocusKeyManager} from '@angular/cdk/a11y';
 import {BACKSPACE, DELETE, LEFT_ARROW, RIGHT_ARROW, UP_ARROW} from '../core/keyboard/keycodes';
 import {Directionality} from '@angular/cdk/bidi';
 import {Subscription} from 'rxjs/Subscription';
@@ -77,7 +77,7 @@ export class MdChipList implements AfterContentInit, OnDestroy {
   _tabIndex = 0;
 
   /** The FocusKeyManager which handles focus. */
-  _keyManager: FocusKeyManager;
+  _keyManager: FocusKeyManager<MdChip>;
 
   /** The chip components contained within this chip list. */
   chips: QueryList<MdChip>;
@@ -87,7 +87,7 @@ export class MdChipList implements AfterContentInit, OnDestroy {
   }
 
   ngAfterContentInit(): void {
-    this._keyManager = new FocusKeyManager(this.chips).withWrap();
+    this._keyManager = new FocusKeyManager<MdChip>(this.chips).withWrap();
 
     // Prevents the chip list from capturing focus and redirecting
     // it back to the first chip when the user tabs out.

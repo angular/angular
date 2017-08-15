@@ -239,7 +239,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
   _triggerWidth: number;
 
   /** Manages keyboard events for options in the panel. */
-  _keyManager: FocusKeyManager;
+  _keyManager: FocusKeyManager<MdOption>;
 
   /**
    * The width of the selected option's value. Must be set programmatically
@@ -737,7 +737,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
 
   /** Sets up a key manager to listen to keyboard events on the overlay panel. */
   private _initKeyManager() {
-    this._keyManager = new FocusKeyManager(this.options).withTypeAhead();
+    this._keyManager = new FocusKeyManager<MdOption>(this.options).withTypeAhead();
     this._tabSubscription = this._keyManager.tabOut.subscribe(() => this.close());
   }
 

@@ -17,7 +17,7 @@ export interface FocusableOption extends ListKeyManagerOption {
   focus(): void;
 }
 
-export class FocusKeyManager extends ListKeyManager<FocusableOption> {
+export class FocusKeyManager<T> extends ListKeyManager<FocusableOption & T> {
   /**
    * This method sets the active item to the item at the specified index.
    * It also adds focuses the newly active item.
