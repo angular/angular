@@ -817,6 +817,7 @@ export class TransitionAnimationEngine {
 
     const disabledElementsSet = new Set<any>();
     this.disabledNodes.forEach(node => {
+      disabledElementsSet.add(node);
       const nodesThatAreDisabled = this.driver.query(node, QUEUED_SELECTOR, true);
       for (let i = 0; i < nodesThatAreDisabled.length; i++) {
         disabledElementsSet.add(nodesThatAreDisabled[i]);
