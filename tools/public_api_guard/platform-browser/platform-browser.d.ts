@@ -43,6 +43,15 @@ export declare class EventManager {
     getZone(): NgZone;
 }
 
+/** @stable */
+export declare abstract class EventManagerPlugin {
+    manager: EventManager;
+    constructor(_doc: any);
+    abstract addEventListener(element: HTMLElement, eventName: string, handler: Function): Function;
+    addGlobalEventListener(element: string, eventName: string, handler: Function): Function;
+    abstract supports(eventName: string): boolean;
+}
+
 /** @experimental */
 export declare const HAMMER_GESTURE_CONFIG: InjectionToken<HammerGestureConfig>;
 
