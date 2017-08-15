@@ -1209,6 +1209,24 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
           ]);
         });
 
+        it('should assign references to directives via exportAs with multiple names', () => {
+          const pizzaTestDirective =
+              compileDirectiveMetadataCreate({
+                selector: 'pizza-test',
+                type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'Pizza'}}),
+                exportAs: 'pizza, cheeseSauceBread'
+              }).toSummary();
+
+          const template = '<pizza-test #food="pizza" #yum="cheeseSauceBread"></pizza-test>';
+
+          expect(humanizeTplAst(parse(template, [pizzaTestDirective]))).toEqual([
+            [ElementAst, 'pizza-test'],
+            [ReferenceAst, 'food', createTokenForReference(pizzaTestDirective.type.reference)],
+            [ReferenceAst, 'yum', createTokenForReference(pizzaTestDirective.type.reference)],
+            [DirectiveAst, pizzaTestDirective],
+          ]);
+        });
+
         it('should report references with values that dont match a directive as errors', () => {
           expect(() => parse('<div #a="dirA"></div>', [])).toThrowError(`Template parse errors:
 There is no directive with "exportAs" set to "dirA" ("<div [ERROR ->]#a="dirA"></div>"): TestComp@0:5`);
@@ -1229,6 +1247,31 @@ There is no directive with "exportAs" set to "dirA" ("<div [ERROR ->]#a="dirA"><
               .toThrowError(`Template parse errors:
 Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>"): TestComp@0:19`);
 
+        });
+
+        it('should report duplicate reference names when using mutliple exportAs names', () => {
+          const pizzaDirective =
+              compileDirectiveMetadataCreate({
+                selector: '[dessert-pizza]',
+                type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'Pizza'}}),
+                exportAs: 'dessertPizza, chocolate'
+              }).toSummary();
+
+          const chocolateDirective =
+              compileDirectiveMetadataCreate({
+                selector: '[chocolate]',
+                type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'Chocolate'}}),
+                exportAs: 'chocolate'
+              }).toSummary();
+
+          const template = '<div dessert-pizza chocolate #snack="chocolate"></div>';
+          const compileTemplate = () => parse(template, [pizzaDirective, chocolateDirective]);
+          const duplicateReferenceError = 'Template parse errors:\n' +
+              'Reference "#snack" is defined several times ' +
+              '("<div dessert-pizza chocolate [ERROR ->]#snack="chocolate"></div>")' +
+              ': TestComp@0:29';
+
+          expect(compileTemplate).toThrowError(duplicateReferenceError);
         });
 
         it('should not throw error when there is same reference name in different templates',
