@@ -52,6 +52,12 @@
     color: mat-color($foreground, text);
   }
 
+  .mat-select-panel {
+    .mat-option.mat-selected:not(.mat-option-multiple) {
+      background: mat-color($background, hover, 0.12);
+    }
+  }
+
   .mat-select:focus:not(.mat-select-disabled) {
     &.mat-primary {
       @include _mat-select-inner-content-theme($primary);
