@@ -55,10 +55,6 @@ dist/
 !testing/src/browser-test-shim.js
 !testing/karma*.js
 
-# TS to JS
-!ts-to-js/js*/**/*.js
-ts-to-js/js*/**/system*.js
-
 # webpack
 !webpack/**/config/*.js
 !webpack/**/*webpack*.js
