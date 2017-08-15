@@ -405,7 +405,8 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
           {
             loadSummary(filePath: string) { return null; },
             isSourceFile(sourceFilePath: string) { return true; },
-            getOutputFileName(sourceFilePath: string) { return sourceFilePath; }
+            toSummaryFileName(sourceFilePath: string) { return sourceFilePath; },
+            fromSummaryFileName(filePath: string): string{return filePath;},
           },
           this._staticSymbolCache);
       result = this._staticSymbolResolver = new StaticSymbolResolver(

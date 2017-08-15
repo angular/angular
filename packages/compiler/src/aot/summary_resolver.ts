@@ -23,11 +23,20 @@ export interface AotSummaryResolverHost {
    */
   isSourceFile(sourceFilePath: string): boolean;
   /**
-   * Returns the output file path of a source file.
+   * Converts a file name into a representation that should be stored in a summary file.
+   * This has to include changing the suffix as well.
    * E.g.
    * `some_file.ts` -> `some_file.d.ts`
+   *
+   * @param referringSrcFileName the soure file that refers to fileName
    */
-  getOutputFileName(sourceFilePath: string): string;
+  toSummaryFileName(fileName: string, referringSrcFileName: string): string;
+
+  /**
+   * Converts a fileName that was processed by `toSummaryFileName` back into a real fileName
+   * given the fileName of the library that is referrig to it.
+   */
+  fromSummaryFileName(fileName: string, referringLibFileName: string): string;
 }
 
 export class AotSummaryResolver implements SummaryResolver<StaticSymbol> {
@@ -46,7 +55,13 @@ export class AotSummaryResolver implements SummaryResolver<StaticSymbol> {
     return !this.host.isSourceFile(stripGeneratedFileSuffix(filePath));
   }
 
-  getLibraryFileName(filePath: string) { return this.host.getOutputFileName(filePath); }
+  toSummaryFileName(filePath: string, referringSrcFileName: string) {
+    return this.host.toSummaryFileName(filePath, referringSrcFileName);
+  }
+
+  fromSummaryFileName(fileName: string, referringLibFileName: string) {
+    return this.host.fromSummaryFileName(fileName, referringLibFileName);
+  }
 
   resolveSummary(staticSymbol: StaticSymbol): Summary<StaticSymbol> {
     staticSymbol.assertNoMembers();
@@ -85,7 +100,8 @@ export class AotSummaryResolver implements SummaryResolver<StaticSymbol> {
         throw e;
       }
       if (json) {
-        const {summaries, importAs} = deserializeSummaries(this.staticSymbolCache, json);
+        const {summaries, importAs} =
+            deserializeSummaries(this.staticSymbolCache, this, filePath, json);
         summaries.forEach((summary) => this.summaryCache.set(summary.symbol, summary));
         importAs.forEach((importAs) => {
           this.importAs.set(

@@ -24,6 +24,8 @@ export function createCompilerHost(
 
   host.moduleNameToFileName = mixin.moduleNameToFileName.bind(mixin);
   host.fileNameToModuleName = mixin.fileNameToModuleName.bind(mixin);
+  host.toSummaryFileName = mixin.toSummaryFileName.bind(mixin);
+  host.fromSummaryFileName = mixin.fromSummaryFileName.bind(mixin);
 
   // Make sure we do not `host.realpath()` from TS as we do not want to resolve symlinks.
   // https://github.com/Microsoft/TypeScript/issues/9552
@@ -109,9 +111,15 @@ class CompilerHostMixin {
 
     let moduleName: string;
     if (importedFilePackagName === containingFilePackageName) {
-      moduleName = dotRelative(
-          path.dirname(stripRootDir(this.rootDirs, containingFile)),
-          stripRootDir(this.rootDirs, importedFile));
+      const rootedContainingFile = stripRootDir(this.rootDirs, containingFile);
+      const rootedImportedFile = stripRootDir(this.rootDirs, importedFile);
+
+      if (rootedContainingFile !== containingFile && rootedImportedFile !== importedFile) {
+        // if both files are contained in the `rootDirs`, then strip the rootDirs
+        containingFile = rootedContainingFile;
+        importedFile = rootedImportedFile;
+      }
+      moduleName = dotRelative(path.dirname(containingFile), importedFile);
     } else if (importedFilePackagName) {
       moduleName = stripNodeModulesPrefix(importedFile);
     } else {
@@ -119,6 +127,18 @@ class CompilerHostMixin {
           `Trying to import a source file from a node_modules package: import ${originalImportedFile} from ${containingFile}`);
     }
     return moduleName;
+  }
+
+  toSummaryFileName(fileName: string, referringSrcFileName: string): string {
+    return this.fileNameToModuleName(fileName, referringSrcFileName);
+  }
+
+  fromSummaryFileName(fileName: string, referringLibFileName: string): string {
+    const resolved = this.moduleNameToFileName(fileName, referringLibFileName);
+    if (!resolved) {
+      throw new Error(`Could not resolve ${fileName} from ${referringLibFileName}`);
+    }
+    return resolved;
   }
 }
 
@@ -187,6 +207,11 @@ function stripRootDir(rootDirs: string[], fileName: string): string {
 
 function stripNodeModulesPrefix(filePath: string): string {
   return filePath.replace(/.*node_modules\//, '');
+}
+
+function getNodeModulesPrefix(filePath: string): string|null {
+  const match = /.*node_modules\//.exec(filePath);
+  return match ? match[1] : null;
 }
 
 function normalizePath(p: string): string {

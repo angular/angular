@@ -207,10 +207,10 @@ export class AotCompiler {
   }
 
   private _createSummary(
-      srcFileUrl: string, directives: StaticSymbol[], pipes: StaticSymbol[],
+      srcFileName: string, directives: StaticSymbol[], pipes: StaticSymbol[],
       ngModules: StaticSymbol[], injectables: StaticSymbol[],
       ngFactoryCtx: OutputContext): GeneratedFile[] {
-    const symbolSummaries = this._symbolResolver.getSymbolsOf(srcFileUrl)
+    const symbolSummaries = this._symbolResolver.getSymbolsOf(srcFileName)
                                 .map(symbol => this._symbolResolver.resolveSymbol(symbol));
     const typeData: {
       summary: CompileTypeSummary,
@@ -235,18 +235,19 @@ export class AotCompiler {
                                metadata: this._metadataResolver.getInjectableSummary(ref) !.type
                              }))
         ];
-    const forJitOutputCtx = this._createOutputContext(summaryForJitFileName(srcFileUrl, true));
+    const forJitOutputCtx = this._createOutputContext(summaryForJitFileName(srcFileName, true));
     const {json, exportAs} = serializeSummaries(
-        forJitOutputCtx, this._summaryResolver, this._symbolResolver, symbolSummaries, typeData);
+        srcFileName, forJitOutputCtx, this._summaryResolver, this._symbolResolver, symbolSummaries,
+        typeData);
     exportAs.forEach((entry) => {
       ngFactoryCtx.statements.push(
           o.variable(entry.exportAs).set(ngFactoryCtx.importExpr(entry.symbol)).toDeclStmt(null, [
             o.StmtModifier.Exported
           ]));
     });
-    const summaryJson = new GeneratedFile(srcFileUrl, summaryFileName(srcFileUrl), json);
+    const summaryJson = new GeneratedFile(srcFileName, summaryFileName(srcFileName), json);
     if (this._enableSummariesForJit) {
-      return [summaryJson, this._codegenSourceModule(srcFileUrl, forJitOutputCtx)];
+      return [summaryJson, this._codegenSourceModule(srcFileName, forJitOutputCtx)];
     };
 
     return [summaryJson];

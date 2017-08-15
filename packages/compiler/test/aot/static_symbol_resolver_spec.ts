@@ -386,7 +386,8 @@ export class MockSummaryResolver implements SummaryResolver<StaticSymbol> {
   }
 
   isLibraryFile(filePath: string): boolean { return filePath.endsWith('.d.ts'); }
-  getLibraryFileName(filePath: string): string { return filePath.replace(/(\.d)?\.ts$/, '.d.ts'); }
+  toSummaryFileName(filePath: string): string { return filePath.replace(/(\.d)?\.ts$/, '.d.ts'); }
+  fromSummaryFileName(filePath: string): string { return filePath; }
 }
 
 export class MockStaticSymbolResolverHost implements StaticSymbolResolverHost {

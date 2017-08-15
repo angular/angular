@@ -42,6 +42,10 @@ export abstract class BaseAotCompilerHost<C extends BaseAotCompilerHostContext> 
 
   abstract fileNameToModuleName(importedFile: string, containingFile: string): string|null;
 
+  abstract toSummaryFileName(fileName: string, referringSrcFileName: string): string;
+
+  abstract fromSummaryFileName(fileName: string, referringLibFileName: string): string;
+
   protected getSourceFile(filePath: string): ts.SourceFile {
     const sf = this.program.getSourceFile(filePath);
     if (!sf) {
@@ -142,10 +146,6 @@ export abstract class BaseAotCompilerHost<C extends BaseAotCompilerHostContext> 
       return this.context.readFile(filePath);
     }
     return null;
-  }
-
-  getOutputFileName(sourceFilePath: string): string {
-    return sourceFilePath.replace(EXT, '') + '.d.ts';
   }
 
   isSourceFile(filePath: string): boolean {
@@ -267,6 +267,12 @@ export class CompilerHost extends BaseAotCompilerHost<CompilerHostContext> {
       return false;
     };
   }
+
+  toSummaryFileName(fileName: string, referringSrcFileName: string): string {
+    return fileName.replace(EXT, '') + '.d.ts';
+  }
+
+  fromSummaryFileName(fileName: string, referringLibFileName: string): string { return fileName; }
 
   calculateEmitPath(filePath: string): string {
     // Write codegen in a directory structure matching the sources.
