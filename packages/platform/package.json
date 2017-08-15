@@ -1,0 +1,21 @@
+{
+  "name": "@angular/platform",
+  "version": "0.0.0-PLACEHOLDER",
+  "description": "Angular - the platform framework",
+  "main": "./bundles/platform.umd.js",
+  "module": "./@angular/platform.es5.js",
+  "es2015": "./@angular/platform.js",
+  "typings": "./platform.d.ts",
+  "author": "angular",
+  "license": "MIT",
+  "dependencies": {
+    "tslib": "^1.7.1"
+  },
+  "peerDependencies": {
+    "@angular/core": "0.0.0-PLACEHOLDER"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/angular.git"
+  }
+}
