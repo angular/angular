@@ -60,6 +60,9 @@ export class EventManager {
   }
 }
 
+/**
+ * @stable
+ */
 export abstract class EventManagerPlugin {
   constructor(private _doc: any) {}
 
