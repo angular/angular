@@ -1,0 +1,9 @@
+{
+  "files":[
+    "!**/*.d.ts",
+    "!**/src/**/*.js",
+    "!**/universal/**/*.js"
+  ],
+  "removeSystemJsConfig": false,
+  "type": "universal"
+}
