@@ -2,7 +2,7 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {RouterModule} from '@angular/router';
-import {DemoApp, DemoAppOnPush, Home} from './demo-app';
+import {DemoApp, Home} from './demo-app';
 import {DEMO_APP_ROUTES} from './routes';
 import {ProgressBarDemo} from '../progress-bar/progress-bar-demo';
 import {ContentElementDialog, DialogDemo, IFrameDialog, JazzDialog} from '../dialog/dialog-demo';
@@ -65,7 +65,6 @@ import {TableHeaderDemo} from '../table/table-header-demo';
     CheckboxDemo,
     DatepickerDemo,
     DemoApp,
-    DemoAppOnPush,
     DialogDemo,
     GesturesDemo,
     GridListDemo,

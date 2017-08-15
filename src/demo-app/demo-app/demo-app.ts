@@ -2,12 +2,9 @@ import {
   Component,
   ViewEncapsulation,
   ElementRef,
-  ChangeDetectionStrategy,
   Renderer2,
 } from '@angular/core';
 import {OverlayContainer} from '@angular/material';
-
-const changeDetectionKey = 'mdDemoChangeDetection';
 
 /**
  * The entry app for demo site. Routes under `accessibility` will use AccessibilityDemo component,
@@ -35,15 +32,6 @@ export class EntryApp {}
 })
 export class Home {}
 
-@Component({
-  moduleId: module.id,
-  selector: 'demo-app-on-push',
-  template: '<ng-content></ng-content>',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  encapsulation: ViewEncapsulation.None,
-})
-export class DemoAppOnPush {}
-
 /**
  * DemoApp with toolbar and sidenav.
  */
@@ -56,7 +44,6 @@ export class DemoAppOnPush {}
 })
 export class DemoApp {
   dark = false;
-  changeDetectionStrategy: string;
   navItems = [
     {name: 'Autocomplete', route: '/autocomplete'},
     {name: 'Button', route: '/button'},
@@ -97,14 +84,7 @@ export class DemoApp {
   constructor(
     private _element: ElementRef,
     private _renderer: Renderer2,
-    private _overlayContainer: OverlayContainer) {
-    // Some browsers will throw when trying to access localStorage in incognito.
-    try {
-      this.changeDetectionStrategy = window.localStorage.getItem(changeDetectionKey) || 'Default';
-    } catch (error) {
-      console.error(error);
-    }
-  }
+    private _overlayContainer: OverlayContainer) {}
 
   toggleFullscreen() {
     let elem = this._element.nativeElement.querySelector('.demo-content');
@@ -116,17 +96,6 @@ export class DemoApp {
       elem.mozRequestFullScreen();
     } else if (elem.msRequestFullScreen) {
       elem.msRequestFullScreen();
-    }
-  }
-
-  toggleChangeDetection() {
-    try {
-      this.changeDetectionStrategy = this.changeDetectionStrategy === 'Default' ?
-          'OnPush' : 'Default';
-      window.localStorage.setItem(changeDetectionKey, this.changeDetectionStrategy);
-      window.location.reload();
-    } catch (error) {
-      console.error(error);
     }
   }
 
