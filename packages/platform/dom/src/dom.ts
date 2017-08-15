@@ -12,3 +12,4 @@
 // names.
 
 export {VERSION} from './version';
+export {DomRendererModule} from './renderer/dom_renderer_module'
