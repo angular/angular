@@ -15,7 +15,7 @@ import {ResolvedStaticSymbol, StaticSymbolResolver} from './static_symbol_resolv
 import {summaryForJitFileName, summaryForJitName} from './util';
 
 export function serializeSummaries(
-    forJitCtx: OutputContext, summaryResolver: SummaryResolver<StaticSymbol>,
+    srcFileName: string, forJitCtx: OutputContext, summaryResolver: SummaryResolver<StaticSymbol>,
     symbolResolver: StaticSymbolResolver, symbols: ResolvedStaticSymbol[], types: {
       summary: CompileTypeSummary,
       metadata: CompileNgModuleMetadata | CompileDirectiveMetadata | CompilePipeMetadata |
@@ -76,15 +76,17 @@ export function serializeSummaries(
       });
     }
   });
-  const {json, exportAs} = toJsonSerializer.serialize();
+  const {json, exportAs} = toJsonSerializer.serialize(srcFileName);
   forJitSerializer.serialize(exportAs);
   return {json, exportAs};
 }
 
-export function deserializeSummaries(symbolCache: StaticSymbolCache, json: string):
+export function deserializeSummaries(
+    symbolCache: StaticSymbolCache, summaryResolver: SummaryResolver<StaticSymbol>,
+    libraryFileName: string, json: string):
     {summaries: Summary<StaticSymbol>[], importAs: {symbol: StaticSymbol, importAs: string}[]} {
-  const deserializer = new FromJsonDeserializer(symbolCache);
-  return deserializer.deserialize(json);
+  const deserializer = new FromJsonDeserializer(symbolCache, summaryResolver);
+  return deserializer.deserialize(libraryFileName, json);
 }
 
 export function createForJitStub(outputCtx: OutputContext, reference: StaticSymbol) {
@@ -151,7 +153,8 @@ class ToJsonSerializer extends ValueTransformer {
     }
   }
 
-  serialize(): {json: string, exportAs: {symbol: StaticSymbol, exportAs: string}[]} {
+  serialize(srcFileName: string):
+      {json: string, exportAs: {symbol: StaticSymbol, exportAs: string}[]} {
     const exportAs: {symbol: StaticSymbol, exportAs: string}[] = [];
     const json = JSON.stringify({
       summaries: this.processedSummaries,
@@ -165,10 +168,7 @@ class ToJsonSerializer extends ValueTransformer {
         return {
           __symbol: index,
           name: symbol.name,
-          // We convert the source filenames tinto output filenames,
-          // as the generated summary file will be used when the current
-          // compilation unit is used as a library
-          filePath: this.summaryResolver.getLibraryFileName(symbol.filePath),
+          filePath: this.summaryResolver.toSummaryFileName(symbol.filePath, srcFileName),
           importAs: importAs
         };
       })
@@ -317,15 +317,21 @@ class ForJitSerializer {
 class FromJsonDeserializer extends ValueTransformer {
   private symbols: StaticSymbol[];
 
-  constructor(private symbolCache: StaticSymbolCache) { super(); }
+  constructor(
+      private symbolCache: StaticSymbolCache,
+      private summaryResolver: SummaryResolver<StaticSymbol>) {
+    super();
+  }
 
-  deserialize(json: string):
+  deserialize(libraryFileName: string, json: string):
       {summaries: Summary<StaticSymbol>[], importAs: {symbol: StaticSymbol, importAs: string}[]} {
     const data: {summaries: any[], symbols: any[]} = JSON.parse(json);
     const importAs: {symbol: StaticSymbol, importAs: string}[] = [];
     this.symbols = [];
     data.symbols.forEach((serializedSymbol) => {
-      const symbol = this.symbolCache.get(serializedSymbol.filePath, serializedSymbol.name);
+      const symbol = this.symbolCache.get(
+          this.summaryResolver.fromSummaryFileName(serializedSymbol.filePath, libraryFileName),
+          serializedSymbol.name);
       this.symbols.push(symbol);
       if (serializedSymbol.importAs) {
         importAs.push({symbol: symbol, importAs: serializedSymbol.importAs});

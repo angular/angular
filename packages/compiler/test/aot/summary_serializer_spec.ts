@@ -43,7 +43,7 @@ export function main() {
     it('should serialize various data correctly', () => {
       init();
       const serializedData = serializeSummaries(
-          createMockOutputContext(), summaryResolver, symbolResolver,
+          'someFile.ts', createMockOutputContext(), summaryResolver, symbolResolver,
           [
             {
               symbol: symbolCache.get('/tmp/some_values.ts', 'Values'),
@@ -77,7 +77,9 @@ export function main() {
           }]);
 
 
-      const summaries = deserializeSummaries(symbolCache, serializedData.json).summaries;
+      const summaries =
+          deserializeSummaries(symbolCache, summaryResolver, 'someFile.d.ts', serializedData.json)
+              .summaries;
       expect(summaries.length).toBe(2);
 
       // Note: change from .ts to .d.ts is expected
@@ -105,8 +107,8 @@ export function main() {
     it('should automatically add exported directives / pipes of NgModules that are not source files',
        () => {
          init();
-         const externalSerialized =
-             serializeSummaries(createMockOutputContext(), summaryResolver, symbolResolver, [], [
+         const externalSerialized = serializeSummaries(
+             'someFile.ts', createMockOutputContext(), summaryResolver, symbolResolver, [], [
                {
                  summary: {
                    summaryKind: CompileSummaryKind.Pipe,
@@ -133,7 +135,7 @@ export function main() {
          });
 
          const serialized = serializeSummaries(
-             createMockOutputContext(), summaryResolver, symbolResolver, [], [{
+             'someFile.ts', createMockOutputContext(), summaryResolver, symbolResolver, [], [{
                summary: <any>{
                  summaryKind: CompileSummaryKind.NgModule,
                  type: {reference: symbolCache.get('/tmp/some_module.ts', 'SomeModule')},
@@ -151,7 +153,9 @@ export function main() {
                metadata: null as any
              }]);
 
-         const summaries = deserializeSummaries(symbolCache, serialized.json).summaries;
+         const summaries =
+             deserializeSummaries(symbolCache, summaryResolver, 'someFile.d.ts', serialized.json)
+                 .summaries;
          expect(summaries.length).toBe(3);
          expect(summaries[0].symbol).toBe(symbolCache.get('/tmp/some_module.d.ts', 'SomeModule'));
          expect(summaries[1].symbol).toBe(symbolCache.get('/tmp/external.d.ts', 'SomeExternalDir'));
@@ -163,7 +167,7 @@ export function main() {
        () => {
          init();
          const externalSerialized = serializeSummaries(
-             createMockOutputContext(), summaryResolver, symbolResolver,
+             'someFile.ts', createMockOutputContext(), summaryResolver, symbolResolver,
              [
                {
                  symbol: symbolCache.get('/tmp/external.ts', 'PROVIDERS'),
@@ -195,7 +199,7 @@ export function main() {
                    {__symbolic: 'module', version: 3, metadata: {'external': 'b'}}
              });
          const serialized = serializeSummaries(
-             createMockOutputContext(), summaryResolver, symbolResolver, [{
+             'someFile.ts', createMockOutputContext(), summaryResolver, symbolResolver, [{
                symbol: symbolCache.get('/tmp/test.ts', 'main'),
                metadata: {
                  local: symbolCache.get('/tmp/local.ts', 'local'),
@@ -205,7 +209,9 @@ export function main() {
              }],
              []);
 
-         const summaries = deserializeSummaries(symbolCache, serialized.json).summaries;
+         const summaries =
+             deserializeSummaries(symbolCache, summaryResolver, 'someFile.d.ts', serialized.json)
+                 .summaries;
          // Note: local should not show up!
          expect(summaries.length).toBe(4);
          expect(summaries[0].symbol).toBe(symbolCache.get('/tmp/test.d.ts', 'main'));
@@ -230,7 +236,7 @@ export function main() {
     it('should create "importAs" names for non source symbols', () => {
       init();
       const serialized = serializeSummaries(
-          createMockOutputContext(), summaryResolver, symbolResolver, [{
+          'someFile.ts', createMockOutputContext(), summaryResolver, symbolResolver, [{
             symbol: symbolCache.get('/tmp/test.ts', 'main'),
             metadata: [
               symbolCache.get('/tmp/external.d.ts', 'lib'),
@@ -243,7 +249,8 @@ export function main() {
         {symbol: symbolCache.get('/tmp/external.d.ts', 'lib'), exportAs: 'lib_1'}
       ]);
 
-      const deserialized = deserializeSummaries(symbolCache, serialized.json);
+      const deserialized =
+          deserializeSummaries(symbolCache, summaryResolver, 'someFile.d.ts', serialized.json);
       // Note: no entry for the symbol with members!
       expect(deserialized.importAs).toEqual([
         {symbol: symbolCache.get('/tmp/external.d.ts', 'lib'), importAs: 'lib_1'}

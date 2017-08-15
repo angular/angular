@@ -382,9 +382,9 @@ export class MockAotCompilerHost implements AotCompilerHost {
         (this.dtsAreSource || !DTS.test(sourceFilePath));
   }
 
-  getOutputFileName(sourceFilePath: string): string {
-    return sourceFilePath.replace(EXT, '') + '.d.ts';
-  }
+  toSummaryFileName(filePath: string): string { return filePath.replace(EXT, '') + '.d.ts'; }
+
+  fromSummaryFileName(filePath: string): string { return filePath; }
 
   // AotCompilerHost
   fileNameToModuleName(importedFile: string, containingFile: string): string|null {

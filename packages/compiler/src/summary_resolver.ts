@@ -17,7 +17,8 @@ export interface Summary<T> {
 
 export abstract class SummaryResolver<T> {
   abstract isLibraryFile(fileName: string): boolean;
-  abstract getLibraryFileName(fileName: string): string|null;
+  abstract toSummaryFileName(fileName: string, referringSrcFileName: string): string;
+  abstract fromSummaryFileName(fileName: string, referringLibFileName: string): string;
   abstract resolveSummary(reference: T): Summary<T>|null;
   abstract getSymbolsOf(filePath: string): T[];
   abstract getImportAs(reference: T): T;
@@ -28,12 +29,13 @@ export abstract class SummaryResolver<T> {
 export class JitSummaryResolver implements SummaryResolver<Type<any>> {
   private _summaries = new Map<Type<any>, Summary<Type<any>>>();
 
-  isLibraryFile(fileName: string): boolean { return false; };
-  getLibraryFileName(fileName: string): string|null { return null; }
+  isLibraryFile(): boolean { return false; };
+  toSummaryFileName(fileName: string): string { return fileName; }
+  fromSummaryFileName(fileName: string): string { return fileName; }
   resolveSummary(reference: Type<any>): Summary<Type<any>>|null {
     return this._summaries.get(reference) || null;
   };
-  getSymbolsOf(filePath: string): Type<any>[] { return []; }
+  getSymbolsOf(): Type<any>[] { return []; }
   getImportAs(reference: Type<any>): Type<any> { return reference; }
   addSummary(summary: Summary<Type<any>>) { this._summaries.set(summary.symbol, summary); };
 }
