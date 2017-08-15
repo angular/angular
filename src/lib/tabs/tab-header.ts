@@ -25,7 +25,7 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import {Directionality, Direction} from '@angular/cdk/bidi';
-import {RIGHT_ARROW, LEFT_ARROW, ENTER} from '@angular/cdk/keycodes';
+import {RIGHT_ARROW, LEFT_ARROW, ENTER, SPACE} from '@angular/cdk/keycodes';
 import {auditTime, startWith} from '@angular/cdk/rxjs';
 import {Subscription} from 'rxjs/Subscription';
 import {of as observableOf} from 'rxjs/observable/of';
@@ -172,7 +172,9 @@ export class MdTabHeader extends _MdTabHeaderMixinBase
         this._focusPreviousTab();
         break;
       case ENTER:
+      case SPACE:
         this.selectFocusedIndex.emit(this.focusIndex);
+        event.preventDefault();
         break;
     }
   }
