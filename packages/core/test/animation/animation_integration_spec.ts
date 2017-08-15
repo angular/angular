@@ -2441,7 +2441,7 @@ export function main() {
           expect(players[0].totalTime).toEqual(1234);
         });
 
-        it('should not disable animations for the element that they are disabled on', () => {
+        it('should disable animations for the element that they are disabled on', () => {
           @Component({
             selector: 'if-cmp',
             template: `
@@ -2476,8 +2476,7 @@ export function main() {
           fixture.detectChanges();
 
           let players = getLog();
-          expect(players.length).toEqual(1);
-          expect(players[0].totalTime).toEqual(1234);
+          expect(players.length).toEqual(0);
           resetLog();
 
           cmp.disableExp = false;
