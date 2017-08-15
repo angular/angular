@@ -85,7 +85,7 @@ describe('MdExpansionPanel', () => {
     let panel = fixture.debugElement.query(By.css('md-expansion-panel'));
     let styles = getComputedStyle(panel.nativeElement);
 
-    expect(panel.componentInstance._getDisplayMode()).toBe('void');
+    expect(panel.componentInstance._hasSpacing()).toBe(false);
     expect(styles.marginTop).toBe('13px');
     expect(styles.marginBottom).toBe('13px');
     expect(styles.marginLeft).toBe('37px');
@@ -97,7 +97,7 @@ describe('MdExpansionPanel', () => {
 
     styles = getComputedStyle(panel.nativeElement);
 
-    expect(panel.componentInstance._getDisplayMode()).toBe('void');
+    expect(panel.componentInstance._hasSpacing()).toBe(false);
     expect(styles.marginTop).toBe('13px');
     expect(styles.marginBottom).toBe('13px');
     expect(styles.marginLeft).toBe('37px');

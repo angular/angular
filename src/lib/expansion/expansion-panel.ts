@@ -27,7 +27,7 @@ import {
   transition,
   animate,
 } from '@angular/animations';
-import {MdAccordion, MdAccordionDisplayMode} from './accordion';
+import {MdAccordion} from './accordion';
 import {AccordionItem} from './accordion-item';
 import {UniqueSelectionDispatcher} from '../core';
 import {Subject} from 'rxjs/Subject';
@@ -57,7 +57,7 @@ export const EXPANSION_PANEL_ANIMATION_TIMING = '225ms cubic-bezier(0.4,0.0,0.2,
   host: {
     'class': 'mat-expansion-panel',
     '[class.mat-expanded]': 'expanded',
-    '[@displayMode]': '_getDisplayMode()',
+    '[class.mat-expansion-panel-spacing]': '_hasSpacing()',
   },
   providers: [
     {provide: AccordionItem, useExisting: forwardRef(() => MdExpansionPanel)}
@@ -67,12 +67,6 @@ export const EXPANSION_PANEL_ANIMATION_TIMING = '225ms cubic-bezier(0.4,0.0,0.2,
       state('collapsed', style({height: '0px', visibility: 'hidden'})),
       state('expanded', style({height: '*', visibility: 'visible'})),
       transition('expanded <=> collapsed', animate(EXPANSION_PANEL_ANIMATION_TIMING)),
-    ]),
-    trigger('displayMode', [
-      state('flat, collapsed', style({margin: '0'})),
-      state('default', style({margin: '16px 0'})),
-      transition('flat <=> collapsed, default <=> collapsed, flat <=> default',
-                 animate(EXPANSION_PANEL_ANIMATION_TIMING)),
     ]),
   ],
 })
@@ -98,13 +92,13 @@ export class MdExpansionPanel extends AccordionItem implements OnChanges, OnDest
     return this.hideToggle;
   }
 
-  /** Gets the panel's display mode. */
-  _getDisplayMode(): MdAccordionDisplayMode | MdExpansionPanelState | 'void' {
+  /** Determines whether the expansion panel should have spacing between it and its siblings. */
+  _hasSpacing(): boolean {
     if (this.accordion) {
-      return this.expanded ? this.accordion.displayMode : this._getExpandedState();
+      return (this.expanded ? this.accordion.displayMode : this._getExpandedState()) === 'default';
     }
 
-    return 'void';
+    return false;
   }
 
   /** Gets the expanded state string. */
