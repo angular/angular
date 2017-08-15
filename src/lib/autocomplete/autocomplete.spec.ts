@@ -640,6 +640,13 @@ describe('MdAutocomplete', () => {
       tick();
       fixture.detectChanges();
 
+      expect(fixture.componentInstance.trigger.panelOpen)
+          .toBe(true, 'Expected first down press to open the pane.');
+
+      fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+      tick();
+      fixture.detectChanges();
+
       expect(fixture.componentInstance.trigger.activeOption)
           .toBe(fixture.componentInstance.options.first, 'Expected first option to be active.');
       expect(optionEls[0].classList).toContain('mat-active');
@@ -660,6 +667,13 @@ describe('MdAutocomplete', () => {
       tick();
       const optionEls =
           overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+
+      fixture.componentInstance.trigger._handleKeydown(UP_ARROW_EVENT);
+      tick();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.trigger.panelOpen)
+          .toBe(true, 'Expected first up press to open the pane.');
 
       fixture.componentInstance.trigger._handleKeydown(UP_ARROW_EVENT);
       tick();
@@ -686,6 +700,8 @@ describe('MdAutocomplete', () => {
       fixture.detectChanges();
 
       typeInElement('o', input);
+      fixture.detectChanges();
+
       fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
       tick();
       fixture.detectChanges();
@@ -812,7 +828,7 @@ describe('MdAutocomplete', () => {
       expect(scrollContainer.scrollTop).toEqual(0, `Expected panel not to scroll.`);
 
       // These down arrows will set the 6th option active, below the fold.
-      [1, 2, 3, 4, 5].forEach(() => {
+      [1, 2, 3, 4, 5, 6].forEach(() => {
         fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
         tick();
       });
@@ -848,7 +864,7 @@ describe('MdAutocomplete', () => {
       expect(scrollContainer.scrollTop).toEqual(0, `Expected panel not to scroll.`);
 
       // These down arrows will set the 6th option active, below the fold.
-      [1, 2, 3, 4, 5].forEach(() => {
+      [1, 2, 3, 4, 5, 6].forEach(() => {
         fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
         tick();
       });
@@ -879,12 +895,12 @@ describe('MdAutocomplete', () => {
       expect(scrollContainer.scrollTop).toEqual(0, `Expected panel not to scroll.`);
 
       // These down arrows will set the 7th option active, below the fold.
-      [1, 2, 3, 4, 5, 6].forEach(() => {
+      [1, 2, 3, 4, 5, 6, 7].forEach(() => {
         fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
         tick();
       });
 
-      // These up arrows will set the 2nd option active
+      // These up arrows will set the 2nd option as active
       [5, 4, 3, 2, 1].forEach(() => {
         fixture.componentInstance.trigger._handleKeydown(UP_ARROW_EVENT);
         tick();
@@ -912,6 +928,60 @@ describe('MdAutocomplete', () => {
         expect(trigger.panelOpen).toBe(false, 'Expected panel to be closed.');
         expect(stopPropagationSpy).toHaveBeenCalled();
       });
+    }));
+
+    it('should reset the active option when closing with the escape key', fakeAsync(() => {
+      const trigger = fixture.componentInstance.trigger;
+
+      trigger.openPanel();
+      fixture.detectChanges();
+      tick();
+
+      expect(trigger.panelOpen).toBe(true, 'Expected panel to be open.');
+      expect(!!trigger.activeOption).toBe(false, 'Expected no active option.');
+
+      // Press the down arrow a few times.
+      [1, 2, 3].forEach(() => {
+        trigger._handleKeydown(DOWN_ARROW_EVENT);
+        tick();
+        fixture.detectChanges();
+      });
+
+      // Note that this casts to a boolean, in order to prevent Jasmine
+      // from crashing when trying to stringify the option if the test fails.
+      expect(!!trigger.activeOption).toBe(true, 'Expected to find an active option.');
+
+      trigger._handleKeydown(createKeyboardEvent('keydown', ESCAPE));
+      tick();
+
+      expect(!!trigger.activeOption).toBe(false, 'Expected no active options.');
+    }));
+
+    it('should reset the active option when closing by selecting with enter', fakeAsync(() => {
+      const trigger = fixture.componentInstance.trigger;
+
+      trigger.openPanel();
+      fixture.detectChanges();
+      tick();
+
+      expect(trigger.panelOpen).toBe(true, 'Expected panel to be open.');
+      expect(!!trigger.activeOption).toBe(false, 'Expected no active option.');
+
+      // Press the down arrow a few times.
+      [1, 2, 3].forEach(() => {
+        trigger._handleKeydown(DOWN_ARROW_EVENT);
+        tick();
+        fixture.detectChanges();
+      });
+
+      // Note that this casts to a boolean, in order to prevent Jasmine
+      // from crashing when trying to stringify the option if the test fails.
+      expect(!!trigger.activeOption).toBe(true, 'Expected to find an active option.');
+
+      trigger._handleKeydown(ENTER_EVENT);
+      tick();
+
+      expect(!!trigger.activeOption).toBe(false, 'Expected no active options.');
     }));
 
   });

@@ -292,18 +292,20 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
 
   _handleKeydown(event: KeyboardEvent): void {
     if (event.keyCode === ESCAPE && this.panelOpen) {
+      this._resetActiveItem();
       this.closePanel();
       event.stopPropagation();
     } else if (this.activeOption && event.keyCode === ENTER && this.panelOpen) {
       this.activeOption._selectViaInteraction();
+      this._resetActiveItem();
       event.preventDefault();
     } else {
       const prevActiveItem = this.autocomplete._keyManager.activeItem;
       const isArrowKey = event.keyCode === UP_ARROW || event.keyCode === DOWN_ARROW;
 
-      this.autocomplete._keyManager.onKeydown(event);
-
-      if (isArrowKey) {
+      if (this.panelOpen) {
+        this.autocomplete._keyManager.onKeydown(event);
+      } else if (isArrowKey) {
         this.openPanel();
       }
 
