@@ -54,7 +54,8 @@ export interface DirectiveDecorator {
    *
    * **Metadata Properties:**
    *
-   * * **exportAs** - name under which the component instance is exported in a template
+   * * **exportAs** - name under which the component instance is exported in a template. Can be
+   * given a single name or a comma-delimited list of names.
    * * **host** - map of class property to host element bindings for events, properties and
    * attributes
    * * **inputs** - list of class property names to data-bind as component inputs
