@@ -2,7 +2,10 @@
 # Built-in directives
 
 Angular offers two kinds of built-in directives; attribute 
-directives and structural directives.
+directives and structural directives. For information on how to 
+build your own custom directives, see 
+[Attribute Directives](guide/attribute-directives) and
+[Structural Directives](guide/structural-directives).
 
 ## Prerequisites
 
@@ -20,7 +23,7 @@ Attribute directives listen to and modify the behavior of
 other HTML elements, attributes, properties, and components.
 You usually apply them to elements as if they were HTML attributes, hence the name.
 
-The [_Attribute Directives_](guide/attribute-directives) guide covers this topic in-depth.
+The [Attribute Directives](guide/attribute-directives) guide covers this topic in-depth.
 Many NgModules such as the [`RouterModule`](guide/router "Routing and Navigation")
 and the [`FormsModule`](guide/forms "Forms") define their own attribute directives.
 The most common attribute directives are as follows:
@@ -400,6 +403,7 @@ The next example captures the `index` in a variable named `i` and displays it wi
 <!-- <code-example path="template-syntax/src/app/app.component.html" region="NgFor-3" title="src/app/app.component.html" linenums="false">
 </code-example> -->
 
+<!-- API Flagged -->
 `NgFor` is implemented by the `NgForOf` directive. Read more about the other `NgFor` context values such as `last`, `even`,
 and `odd` in the [NgForOf API reference](api/common/NgForOf).
 
@@ -418,7 +422,7 @@ trackByItems(index: number, item: Item): number { return item.id; }
 <!-- <code-example path="template-syntax/src/app/app.component.ts" region="trackByHeroes" title="src/app/app.component.ts" linenums="false">
 </code-example> -->
 
-In the microsyntax expression, set `trackBy` to this method.
+In the microsyntax expression, set `trackBy` to `trackByItems()` method.
 ```html
 <div *ngFor="let item of items; trackBy: trackByItems">
   ({{item.id}}) {{item.name}}
@@ -442,13 +446,13 @@ Here is an illustration of the `trackBy` effect.
 
 <hr/>
 
-### The _NgSwitch_ directives
+## The `NgSwitch` directives
 
-*NgSwitch* is like the JavaScript `switch` statement.
-It can display _one_ element from among several possible elements, based on a _switch condition_.
+NgSwitch is like the JavaScript `switch` statement.
+It can display one element from among several possible elements, based on a switch condition.
 Angular puts only the *selected* element into the DOM.
 <!-- API Flagged -->
-*NgSwitch* is actually a set of three, cooperating directives:
+`NgSwitch` is actually a set of three, cooperating directives:
 `NgSwitch`, `NgSwitchCase`, and `NgSwitchDefault` as in the following example.
 
 <!-- KW--Need item version of this. -->
@@ -497,4 +501,13 @@ For example, you could replace the `<confused-hero>` switch case with the follow
 <code-example path="template-syntax/src/app/app.component.html" region="NgSwitch-div" title="src/app/app.component.html" linenums="false">
 </code-example>
 
-<hr/>
+<hr />
+
+
+## More information
+
+You may also like:
+
+* [Attribute Directives](guide/attribute-directives) for writing custom attribute directives.
+* [Structural Directives](guide/attribute-directives) for writing custom structural directives.
+
