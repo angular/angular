@@ -1,0 +1,19 @@
+{
+  "extends": "../tsconfig-build",
+
+  "compilerOptions": {
+    "paths": {
+      "@angular/platform": ["../../dist/packages/platform"],
+      "@angular/core": ["../../dist/packages/core"]
+    }
+  },
+  "files": [
+    "public_api.ts"
+  ],
+  "angularCompilerOptions": {
+    "annotateForClosureCompiler": true,
+    "strictMetadataEmit": true,
+    "flatModuleOutFile": "index.js",
+    "flatModuleId": "@angular/platform/dom"
+  }
+}

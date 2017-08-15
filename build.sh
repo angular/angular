@@ -12,6 +12,7 @@ PACKAGES=(core
   compiler
   common
   animations
+  platform
   platform-browser
   platform-browser-dynamic
   forms
