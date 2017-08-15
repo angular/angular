@@ -287,13 +287,14 @@ export class MetadataCollector {
     const isExportedIdentifier = (identifier?: ts.Identifier) =>
         identifier && exportMap.has(identifier.text);
     const isExported =
-        (node: ts.FunctionDeclaration | ts.ClassDeclaration | ts.InterfaceDeclaration |
-         ts.EnumDeclaration) => isExport(node) || isExportedIdentifier(node.name);
+        (node: ts.FunctionDeclaration | ts.ClassDeclaration | ts.TypeAliasDeclaration |
+         ts.InterfaceDeclaration | ts.EnumDeclaration) =>
+            isExport(node) || isExportedIdentifier(node.name);
     const exportedIdentifierName = (identifier?: ts.Identifier) =>
         identifier && (exportMap.get(identifier.text) || identifier.text);
     const exportedName =
         (node: ts.FunctionDeclaration | ts.ClassDeclaration | ts.InterfaceDeclaration |
-         ts.EnumDeclaration) => exportedIdentifierName(node.name);
+         ts.TypeAliasDeclaration | ts.EnumDeclaration) => exportedIdentifierName(node.name);
 
 
     // Predeclare classes and functions
@@ -388,6 +389,17 @@ export class MetadataCollector {
             }
           }
           // Otherwise don't record metadata for the class.
+          break;
+
+        case ts.SyntaxKind.TypeAliasDeclaration:
+          const typeDeclaration = <ts.TypeAliasDeclaration>node;
+          if (typeDeclaration.name && isExported(typeDeclaration)) {
+            const name = exportedName(typeDeclaration);
+            if (name) {
+              if (!metadata) metadata = {};
+              metadata[name] = {__symbolic: 'interface'};
+            }
+          }
           break;
 
         case ts.SyntaxKind.InterfaceDeclaration:

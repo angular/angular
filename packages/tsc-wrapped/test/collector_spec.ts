@@ -34,6 +34,7 @@ describe('Collector', () => {
       'exported-classes.ts',
       'exported-functions.ts',
       'exported-enum.ts',
+      'exported-type.ts',
       'exported-consts.ts',
       'local-symbol-ref.ts',
       'local-function-ref.ts',
@@ -64,6 +65,13 @@ describe('Collector', () => {
     const sourceFile = program.getSourceFile('app/empty.ts');
     const metadata = collector.getMetadata(sourceFile);
     expect(metadata).toBeUndefined();
+  });
+
+  it('should return an interface reference for types', () => {
+    const sourceFile = program.getSourceFile('/exported-type.ts');
+    const metadata = collector.getMetadata(sourceFile);
+    expect(metadata).toEqual(
+        {__symbolic: 'module', version: 3, metadata: {SomeType: {__symbolic: 'interface'}}});
   });
 
   it('should return an interface reference for interfaces', () => {
@@ -945,7 +953,7 @@ describe('Collector', () => {
     it('should be able to substitute a lambda', () => {
       const source = createSource(`
         const b = 1;
-        export const a = () => b; 
+        export const a = () => b;
       `);
       const metadata = collector.getMetadata(source, /* strict */ false, (value, node) => {
         if (node.kind === ts.SyntaxKind.ArrowFunction) {
@@ -965,7 +973,7 @@ describe('Collector', () => {
       });
       const source = createSource(`
         const b = 1;
-        export const a = () => b; 
+        export const a = () => b;
       `);
       const metadata = collector.getMetadata(source, /* strict */ false, (value, node) => {
         if (node.kind === ts.SyntaxKind.ArrowFunction) {
@@ -1271,6 +1279,9 @@ const FILES: Directory = {
       }
     }
     export declare function declaredFn();
+  `,
+  'exported-type.ts': `
+    export type SomeType = 'a' | 'b';
   `,
   'exported-enum.ts': `
     import {constValue} from './exported-consts';
