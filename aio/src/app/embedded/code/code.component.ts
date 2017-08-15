@@ -22,8 +22,8 @@ const defaultLineNumsCount = 10; // by default, show linenums over this number
  *   [code]="variableContainingCode"
  *   [language]="ts"
  *   [linenums]="true"
- *   [path]="ts-to-js/ts/src/app/app.module.ts"
- *   [region]="ng2import">
+ *   [path]="router/src/app/app.module.ts"
+ *   [region]="animations-module">
  * </aio-code>
  * ```
  */
