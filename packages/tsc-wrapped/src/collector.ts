@@ -269,12 +269,12 @@ export class MetadataCollector {
     const isExportedIdentifier = (identifier?: ts.Identifier) =>
         identifier && exportMap.has(identifier.text);
     const isExported =
-        (node: ts.FunctionDeclaration | ts.ClassDeclaration | ts.InterfaceDeclaration |
+        (node: ts.FunctionDeclaration | ts.ClassDeclaration | ts.TypeAliasDeclaration | ts.InterfaceDeclaration |
          ts.EnumDeclaration) => isExport(node) || isExportedIdentifier(node.name);
     const exportedIdentifierName = (identifier?: ts.Identifier) =>
         identifier && (exportMap.get(identifier.text) || identifier.text);
     const exportedName =
-        (node: ts.FunctionDeclaration | ts.ClassDeclaration | ts.InterfaceDeclaration |
+        (node: ts.FunctionDeclaration | ts.ClassDeclaration | ts.InterfaceDeclaration | ts.TypeAliasDeclaration |
          ts.EnumDeclaration) => exportedIdentifierName(node.name);
 
 
@@ -372,7 +372,18 @@ export class MetadataCollector {
           // Otherwise don't record metadata for the class.
           break;
 
-        case ts.SyntaxKind.InterfaceDeclaration:
+        case ts.SyntaxKind.TypeAliasDeclaration:
+          const typeDeclaration = <ts.TypeAliasDeclaration>node;
+          if (typeDeclaration.name && isExported(typeDeclaration)) {
+            const name = exportedName(typeDeclaration);
+            if (name) {
+              if (!metadata) metadata = {};
+              metadata[name] = {__symbolic: 'type'};
+            }
+          }
+          break;
+
+          case ts.SyntaxKind.InterfaceDeclaration:
           const interfaceDeclaration = <ts.InterfaceDeclaration>node;
           if (interfaceDeclaration.name && isExported(interfaceDeclaration)) {
             const name = exportedName(interfaceDeclaration);
@@ -469,7 +480,7 @@ export class MetadataCollector {
                   typeof varValue == 'boolean') {
                 locals.define(nameNode.text, varValue);
                 if (exported) {
-                  locals.defineReference(
+                    locals.defineReference(
                       nameNode.text, {__symbolic: 'reference', name: nameNode.text});
                 }
               } else if (!exported) {
