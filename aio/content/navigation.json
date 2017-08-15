@@ -299,11 +299,6 @@
           "tooltip": "Developing for content security in Angular applications."
         },
         {
-          "url": "guide/ts-to-js",
-          "title": "TypeScript to JavaScript",
-          "tooltip": "Convert Angular TypeScript examples into ES6 and ES5 JavaScript."
-        },
-        {
           "title": "Setup & Deployment",
           "tooltip": "Setup and Deployment",
           "children": [
