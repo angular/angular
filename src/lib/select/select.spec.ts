@@ -1838,6 +1838,31 @@ describe('MdSelect', () => {
         expect(fixture.componentInstance.options.toArray()[6].selected).toBe(true);
       });
 
+      it('should not shift focus when the selected options are updated programmatically ' +
+        'in a multi select', () => {
+          fixture.destroy();
+
+          const multiFixture = TestBed.createComponent(MultiSelect);
+          const instance = multiFixture.componentInstance;
+
+          multiFixture.detectChanges();
+          select = multiFixture.debugElement.query(By.css('md-select')).nativeElement;
+          multiFixture.componentInstance.select.open();
+          multiFixture.detectChanges();
+
+          const options =
+              overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+
+          options[3].focus();
+          expect(document.activeElement).toBe(options[3], 'Expected fourth option to be focused.');
+
+          multiFixture.componentInstance.control.setValue(['steak-0', 'sushi-7']);
+          multiFixture.detectChanges();
+
+          expect(document.activeElement)
+              .toBe(options[3], 'Expected fourth option to remain focused.');
+        });
+
       it('should not cycle through the options if the control is disabled', () => {
         const formControl = fixture.componentInstance.control;
 
