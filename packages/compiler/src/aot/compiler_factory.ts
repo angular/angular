@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MissingTranslationStrategy, ViewEncapsulation, ɵConsole as Console} from '@angular/core';
-
 import {CompilerConfig} from '../config';
+import {MissingTranslationStrategy, ViewEncapsulation} from '../core';
 import {DirectiveNormalizer} from '../directive_normalizer';
 import {DirectiveResolver} from '../directive_resolver';
 import {Lexer} from '../expression_parser/lexer';
@@ -61,7 +60,6 @@ export function createAotCompiler(compilerHost: AotCompilerHost, options: AotCom
   const summaryResolver = new AotSummaryResolver(compilerHost, symbolCache);
   const symbolResolver = new StaticSymbolResolver(compilerHost, symbolCache, summaryResolver);
   const staticReflector = new StaticReflector(summaryResolver, symbolResolver);
-  const console = new Console();
   const htmlParser = new I18NHtmlParser(
       new HtmlParser(), translations, options.i18nFormat, options.missingTranslation, console);
   const config = new CompilerConfig({

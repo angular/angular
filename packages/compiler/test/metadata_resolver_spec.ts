@@ -7,7 +7,6 @@
  */
 
 import {LIFECYCLE_HOOKS_VALUES, LifecycleHooks} from '@angular/compiler/src/lifecycle_reflector';
-import {TEST_COMPILER_PROVIDERS} from '@angular/compiler/testing/src/test_bindings';
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, Component, Directive, DoCheck, Injectable, NgModule, OnChanges, OnDestroy, OnInit, Pipe, SimpleChanges, ViewEncapsulation, ɵstringify as stringify} from '@angular/core';
 import {TestBed, async, inject} from '@angular/core/testing';
 
@@ -17,6 +16,7 @@ import {ResourceLoader} from '../src/resource_loader';
 import {MockResourceLoader} from '../testing/src/resource_loader_mock';
 
 import {MalformedStylesComponent} from './metadata_resolver_fixture';
+import {TEST_COMPILER_PROVIDERS} from './test_bindings';
 
 export function main() {
   describe('CompileMetadataResolver', () => {

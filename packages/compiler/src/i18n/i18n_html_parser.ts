@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MissingTranslationStrategy, ɵConsole as Console} from '@angular/core';
-
+import {MissingTranslationStrategy} from '../core';
 import {HtmlParser} from '../ml_parser/html_parser';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../ml_parser/interpolation_config';
 import {ParseTreeResult} from '../ml_parser/parser';
+import {Console} from '../util';
 
 import {digest} from './digest';
 import {mergeTranslations} from './extractor_merger';

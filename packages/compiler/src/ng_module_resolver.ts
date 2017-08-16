@@ -6,27 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModule, Type, ɵstringify as stringify} from '@angular/core';
-
 import {CompileReflector} from './compile_reflector';
+import {NgModule, Type, createNgModule} from './core';
 import {findLast} from './directive_resolver';
-import {CompilerInjectable} from './injectable';
+import {stringify} from './util';
 
-function _isNgModuleMetadata(obj: any): obj is NgModule {
-  return obj instanceof NgModule;
-}
 
 /**
  * Resolves types to {@link NgModule}.
  */
-@CompilerInjectable()
 export class NgModuleResolver {
   constructor(private _reflector: CompileReflector) {}
 
-  isNgModule(type: any) { return this._reflector.annotations(type).some(_isNgModuleMetadata); }
+  isNgModule(type: any) { return this._reflector.annotations(type).some(createNgModule.isTypeOf); }
 
-  resolve(type: Type<any>, throwIfNotFound = true): NgModule|null {
-    const ngModuleMeta: NgModule = findLast(this._reflector.annotations(type), _isNgModuleMetadata);
+  resolve(type: Type, throwIfNotFound = true): NgModule|null {
+    const ngModuleMeta: NgModule =
+        findLast(this._reflector.annotations(type), createNgModule.isTypeOf);
 
     if (ngModuleMeta) {
       return ngModuleMeta;

@@ -45,6 +45,12 @@ export class TestingCompiler extends Compiler {
    * `compileModuleAndAllComponents*`.
    */
   getComponentFactory<T>(component: Type<T>): ComponentFactory<T> { throw unimplemented(); }
+
+  /**
+   * Returns the component type that is stored in the given error.
+   * This can be used for errors created by compileModule...
+   */
+  getComponentFromError(error: Error): Type<any>|null { throw unimplemented(); }
 }
 
 /**

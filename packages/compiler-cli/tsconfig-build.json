@@ -8,12 +8,7 @@
     "module": "commonjs",
     "outDir": "../../dist/packages/compiler-cli",
     "paths": {
-      "@angular/core": ["../../dist/packages/core"],
-      "@angular/common": ["../../dist/packages/common"],
       "@angular/compiler": ["../../dist/packages/compiler"],
-      "@angular/http": ["../../dist/packages/http"],
-      "@angular/platform-server": ["../../dist/packages/platform-server"],
-      "@angular/platform-browser": ["../../dist/packages/platform-browser"],
       "@angular/tsc-wrapped": ["../../dist/packages-dist/tsc-wrapped"]
     },
     "rootDir": ".",

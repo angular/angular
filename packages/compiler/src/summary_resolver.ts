@@ -5,9 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Type} from '@angular/core';
 import {CompileTypeSummary} from './compile_metadata';
-import {CompilerInjectable} from './injectable';
+import {Type} from './core';
 
 export interface Summary<T> {
   symbol: T;
@@ -25,17 +24,16 @@ export abstract class SummaryResolver<T> {
   abstract addSummary(summary: Summary<T>): void;
 }
 
-@CompilerInjectable()
-export class JitSummaryResolver implements SummaryResolver<Type<any>> {
-  private _summaries = new Map<Type<any>, Summary<Type<any>>>();
+export class JitSummaryResolver implements SummaryResolver<Type> {
+  private _summaries = new Map<Type, Summary<Type>>();
 
   isLibraryFile(): boolean { return false; };
   toSummaryFileName(fileName: string): string { return fileName; }
   fromSummaryFileName(fileName: string): string { return fileName; }
-  resolveSummary(reference: Type<any>): Summary<Type<any>>|null {
+  resolveSummary(reference: Type): Summary<Type>|null {
     return this._summaries.get(reference) || null;
   };
-  getSymbolsOf(): Type<any>[] { return []; }
-  getImportAs(reference: Type<any>): Type<any> { return reference; }
-  addSummary(summary: Summary<Type<any>>) { this._summaries.set(summary.symbol, summary); };
+  getSymbolsOf(): Type[] { return []; }
+  getImportAs(reference: Type): Type { return reference; }
+  addSummary(summary: Summary<Type>) { this._summaries.set(summary.symbol, summary); };
 }

@@ -459,6 +459,11 @@ describe('compiler (unbundled Angular)', () => {
   });
 
   describe('inheritance with summaries', () => {
+    let angularSummaryFiles: MockDirectory;
+    beforeEach(() => {
+      angularSummaryFiles = compile(angularFiles, {useSummaries: false, emit: true}).outDir;
+    });
+
     function compileParentAndChild(
         {parentClassDecorator, parentModuleDecorator, childClassDecorator, childModuleDecorator}: {
           parentClassDecorator: string,
@@ -494,8 +499,8 @@ describe('compiler (unbundled Angular)', () => {
         }
       };
 
-      const {outDir: libOutDir} = compile([libInput, angularFiles], {useSummaries: true});
-      const {genFiles} = compile([libOutDir, appInput, angularFiles], {useSummaries: true});
+      const {outDir: libOutDir} = compile([libInput, angularSummaryFiles], {useSummaries: true});
+      const {genFiles} = compile([libOutDir, appInput, angularSummaryFiles], {useSummaries: true});
       return genFiles.find(gf => gf.srcFileUrl === '/app/main.ts');
     }
 
@@ -529,8 +534,8 @@ describe('compiler (unbundled Angular)', () => {
         }
       };
 
-      const {outDir: libOutDir} = compile([libInput, angularFiles], {useSummaries: true});
-      const {genFiles} = compile([libOutDir, appInput, angularFiles], {useSummaries: true});
+      const {outDir: libOutDir} = compile([libInput, angularSummaryFiles], {useSummaries: true});
+      const {genFiles} = compile([libOutDir, appInput, angularSummaryFiles], {useSummaries: true});
       const mainNgFactory = genFiles.find(gf => gf.srcFileUrl === '/app/main.ts');
       const flags = NodeFlags.TypeDirective | NodeFlags.Component | NodeFlags.OnDestroy;
       expect(toTypeScript(mainNgFactory))
@@ -578,10 +583,12 @@ describe('compiler (unbundled Angular)', () => {
           `
            }
          };
-         const {outDir: lib1OutDir} = compile([lib1Input, angularFiles], {useSummaries: true});
+         const {outDir: lib1OutDir} =
+             compile([lib1Input, angularSummaryFiles], {useSummaries: true});
          const {outDir: lib2OutDir} =
-             compile([lib1OutDir, lib2Input, angularFiles], {useSummaries: true});
-         const {genFiles} = compile([lib2OutDir, appInput, angularFiles], {useSummaries: true});
+             compile([lib1OutDir, lib2Input, angularSummaryFiles], {useSummaries: true});
+         const {genFiles} =
+             compile([lib2OutDir, appInput, angularSummaryFiles], {useSummaries: true});
          const mainNgFactory = genFiles.find(gf => gf.srcFileUrl === '/app/main.ts');
          const flags = NodeFlags.TypeDirective | NodeFlags.Component | NodeFlags.OnDestroy;
          expect(toTypeScript(mainNgFactory))

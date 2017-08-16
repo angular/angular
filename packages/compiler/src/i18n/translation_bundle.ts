@@ -6,12 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MissingTranslationStrategy, ɵConsole as Console} from '@angular/core';
+import {MissingTranslationStrategy} from '../core';
 import * as html from '../ml_parser/ast';
 import {HtmlParser} from '../ml_parser/html_parser';
+import {Console} from '../util';
+
 import * as i18n from './i18n_ast';
 import {I18nError} from './parse_util';
 import {PlaceholderMapper, Serializer} from './serializers/serializer';
+
 
 /**
  * A container for translated messages

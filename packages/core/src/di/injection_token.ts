@@ -64,4 +64,7 @@ export class InjectionToken<T> extends OpaqueToken {
   constructor(desc: string) { super(desc); }
 
   toString(): string { return `InjectionToken ${this._desc}`; }
+
+  /** @internal */
+  get ngMetadataName() { return 'InjectionToken'; }
 }
