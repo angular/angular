@@ -13,7 +13,7 @@ ts_library(
 
 nodejs_binary(
     name = "ngc-wrapped",
-    entry_point = "__main__/tools/ngc-wrapped/index.js",
+    entry_point = "__main__/packages/bazel/src/ngc-wrapped/index.js",
     data = [":ngc_lib"],
     visibility = ["//visibility:public"],
 )

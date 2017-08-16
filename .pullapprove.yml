@@ -70,7 +70,6 @@ groups:
           - "tools/*"
         exclude:
           - "tools/public_api_guard/*"
-          - "tools/ngc-wrapped/*"
           - "aio/*"
     users:
       - IgorMinar #primary
@@ -138,7 +137,7 @@ groups:
       files:
         - "packages/tsc-wrapped/*"
         - "packages/compiler-cli/*"
-        - "tools/ngc-wrapped/*"
+        - "packages/bazel/*"
     users:
       - alexeagle
       - chuckjaz
