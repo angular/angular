@@ -1843,7 +1843,6 @@ describe('MdSelect', () => {
           fixture.destroy();
 
           const multiFixture = TestBed.createComponent(MultiSelect);
-          const instance = multiFixture.componentInstance;
 
           multiFixture.detectChanges();
           select = multiFixture.debugElement.query(By.css('md-select')).nativeElement;
