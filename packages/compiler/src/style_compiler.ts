@@ -6,10 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ViewEncapsulation} from '@angular/core';
-
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileStylesheetMetadata, identifierModuleUrl, identifierName} from './compile_metadata';
-import {CompilerInjectable} from './injectable';
+import {ViewEncapsulation} from './core';
 import * as o from './output/output_ast';
 import {ShadowCss} from './shadow_css';
 import {UrlResolver} from './url_resolver';
@@ -31,7 +29,6 @@ export class CompiledStylesheet {
       public meta: CompileStylesheetMetadata) {}
 }
 
-@CompilerInjectable()
 export class StyleCompiler {
   private _shadowCss: ShadowCss = new ShadowCss();
 

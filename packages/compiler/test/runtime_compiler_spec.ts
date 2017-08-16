@@ -7,7 +7,7 @@
  */
 
 import {DirectiveResolver, ResourceLoader} from '@angular/compiler';
-import {Compiler, Component, Injector, NgModule, NgModuleFactory, ɵViewMetadata as ViewMetadata, ɵstringify as stringify} from '@angular/core';
+import {Compiler, Component, Injector, NgModule, NgModuleFactory, ɵstringify as stringify} from '@angular/core';
 import {TestBed, async, fakeAsync, inject, tick} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {MockDirectiveResolver} from '../testing';
@@ -137,8 +137,9 @@ export function main() {
            }
 
            resourceLoader.spy('get').and.callFake(() => Promise.resolve(''));
-           dirResolver.setView(SomeComp, new ViewMetadata({template: ''}));
-           dirResolver.setView(ChildComp, new ViewMetadata({templateUrl: '/someTpl.html'}));
+           dirResolver.setDirective(SomeComp, new Component({selector: 'some-cmp', template: ''}));
+           dirResolver.setDirective(
+               ChildComp, new Component({selector: 'child-cmp', templateUrl: '/someTpl.html'}));
            expect(() => compiler.compileModuleSync(SomeModule))
                .toThrowError(
                    `Can't compile synchronously as ${stringify(ChildComp)} is still being loaded!`);

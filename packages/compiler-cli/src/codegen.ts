@@ -11,7 +11,6 @@
  * Intended to be used in a build step.
  */
 import * as compiler from '@angular/compiler';
-import {MissingTranslationStrategy} from '@angular/core';
 import {AngularCompilerOptions, NgcCliOptions} from '@angular/tsc-wrapped';
 import {readFileSync} from 'fs';
 import * as ts from 'typescript';
@@ -78,17 +77,17 @@ export class CodeGenerator {
       }
       transContent = readFileSync(cliOptions.i18nFile, 'utf8');
     }
-    let missingTranslation = MissingTranslationStrategy.Warning;
+    let missingTranslation = compiler.core.MissingTranslationStrategy.Warning;
     if (cliOptions.missingTranslation) {
       switch (cliOptions.missingTranslation) {
         case 'error':
-          missingTranslation = MissingTranslationStrategy.Error;
+          missingTranslation = compiler.core.MissingTranslationStrategy.Error;
           break;
         case 'warning':
-          missingTranslation = MissingTranslationStrategy.Warning;
+          missingTranslation = compiler.core.MissingTranslationStrategy.Warning;
           break;
         case 'ignore':
-          missingTranslation = MissingTranslationStrategy.Ignore;
+          missingTranslation = compiler.core.MissingTranslationStrategy.Ignore;
           break;
         default:
           throw new Error(
@@ -96,7 +95,7 @@ export class CodeGenerator {
       }
     }
     if (!transContent) {
-      missingTranslation = MissingTranslationStrategy.Ignore;
+      missingTranslation = compiler.core.MissingTranslationStrategy.Ignore;
     }
     const {compiler: aotCompiler} = compiler.createAotCompiler(ngCompilerHost, {
       translations: transContent,

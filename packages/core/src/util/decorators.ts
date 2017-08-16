@@ -71,7 +71,7 @@ export function makeDecorator(
     DecoratorFactory.prototype = Object.create(parentClass.prototype);
   }
 
-  DecoratorFactory.prototype.toString = () => `@${name}`;
+  DecoratorFactory.prototype.ngMetadataName = name;
   (<any>DecoratorFactory).annotationCls = DecoratorFactory;
   return DecoratorFactory as any;
 }
@@ -120,7 +120,7 @@ export function makeParamDecorator(
   if (parentClass) {
     ParamDecoratorFactory.prototype = Object.create(parentClass.prototype);
   }
-  ParamDecoratorFactory.prototype.toString = () => `@${name}`;
+  ParamDecoratorFactory.prototype.ngMetadataName = name;
   (<any>ParamDecoratorFactory).annotationCls = ParamDecoratorFactory;
   return ParamDecoratorFactory;
 }
@@ -153,7 +153,7 @@ export function makePropDecorator(
     PropDecoratorFactory.prototype = Object.create(parentClass.prototype);
   }
 
-  PropDecoratorFactory.prototype.toString = () => `@${name}`;
+  PropDecoratorFactory.prototype.ngMetadataName = name;
   (<any>PropDecoratorFactory).annotationCls = PropDecoratorFactory;
   return PropDecoratorFactory;
 }

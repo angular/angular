@@ -353,7 +353,8 @@ export class ExternalExpr extends Expression {
 }
 
 export class ExternalReference {
-  constructor(public moduleName: string|null, public name: string|null, public runtime: any|null) {}
+  constructor(public moduleName: string|null, public name: string|null, public runtime?: any|null) {
+  }
 }
 
 export class ConditionalExpr extends Expression {
