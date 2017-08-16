@@ -29,3 +29,19 @@ import {COMMON_PIPES} from './pipes/index';
 })
 export class CommonModule {
 }
+
+/**
+ * I18N pipes are being changed to move away from using the JS Intl API.
+ *
+ * The former pipes relying on the Intl API will be moved to this module while the `CommonModule`
+ * will contain the new pipes that do not rely on Intl.
+ *
+ * As a first step this module is created empty to ease the migration.
+ *
+ * see https://github.com/angular/angular/pull/18284
+ *
+ * @deprecated from v5
+ */
+@NgModule({declarations: [], exports: []})
+export class DeprecatedI18NPipesModule {
+}
