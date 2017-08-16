@@ -33,6 +33,10 @@ export declare class DecimalPipe implements PipeTransform {
     transform(value: any, digits?: string): string | null;
 }
 
+/** @deprecated */
+export declare class DeprecatedI18NPipesModule {
+}
+
 /** @stable */
 export declare const DOCUMENT: InjectionToken<Document>;
 
