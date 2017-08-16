@@ -18,12 +18,6 @@ source ${thisDir}/_travis-fold.sh
   travisFoldEnd "test.aio.lint"
 
 
-  # Run unit tests for boilerplate tools
-  travisFoldStart "test.aio.boilerplate.unit"
-    yarn boilerplate:test
-  travisFoldEnd "test.aio.boilerplate.unit"
-
-
   # Run unit tests
   travisFoldStart "test.aio.unit"
     yarn test -- --single-run
@@ -38,7 +32,7 @@ source ${thisDir}/_travis-fold.sh
 
   # Run PWA-score tests
   travisFoldStart "test.aio.pwaScore"
-    yarn test-pwa-score-local
+    yarn test-pwa-score-localhost
   travisFoldEnd "test.aio.pwaScore"
 
 

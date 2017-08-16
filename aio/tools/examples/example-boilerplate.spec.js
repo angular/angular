@@ -1,50 +1,54 @@
-const exampleBoilerPlate = require('./example-boilerplate');
-const shelljs = require('shelljs');
+const path = require('canonical-path');
 const fs = require('fs-extra');
 const glob = require('glob');
-const path = require('canonical-path');
+const shelljs = require('shelljs');
+
+const ngPackagesInstaller = require('../ng-packages-installer');
+const exampleBoilerPlate = require('./example-boilerplate');
 
 describe('example-boilerplate tool', () => {
   describe('add', () => {
+    const sharedDir = path.resolve(__dirname, 'shared');
+    const sharedNodeModulesDir = path.resolve(sharedDir, 'node_modules');
     const numberOfBoilerPlateFiles = 8;
     const numberOfBoilerPlateTestFiles = 3;
     const exampleFolders = ['a/b', 'c/d'];
 
     beforeEach(() => {
-      spyOn(exampleBoilerPlate, 'installNodeModules');
-      spyOn(exampleBoilerPlate, 'overridePackage');
-      spyOn(exampleBoilerPlate, 'getFoldersContaining').and.returnValue(exampleFolders);
       spyOn(fs, 'ensureSymlinkSync');
       spyOn(exampleBoilerPlate, 'copyFile');
+      spyOn(exampleBoilerPlate, 'getFoldersContaining').and.returnValue(exampleFolders);
+      spyOn(exampleBoilerPlate, 'installNodeModules');
       spyOn(exampleBoilerPlate, 'loadJsonFile').and.returnValue({});
     });
 
-    it('should install the node modules', () => {
+    it('should install the npm dependencies into `sharedDir` (and pass the `useLocal` argument through)', () => {
       exampleBoilerPlate.add();
-      expect(exampleBoilerPlate.installNodeModules).toHaveBeenCalledWith(path.resolve(__dirname, 'shared'));
-    });
+      expect(exampleBoilerPlate.installNodeModules).toHaveBeenCalledWith(sharedDir, undefined);
 
-    it('should override the Angular node_modules with the locally built Angular packages if `useLocal` is true', () => {
-      const numberOfAngularPackages = 12;
-      const numberOfAngularToolsPackages = 1;
+      exampleBoilerPlate.installNodeModules.calls.reset();
+
       exampleBoilerPlate.add(true);
-      expect(exampleBoilerPlate.overridePackage).toHaveBeenCalledTimes(numberOfAngularPackages + numberOfAngularToolsPackages);
-      // for example
-      expect(exampleBoilerPlate.overridePackage).toHaveBeenCalledWith(path.resolve(__dirname, '../../../dist/packages-dist'), 'common');
-      expect(exampleBoilerPlate.overridePackage).toHaveBeenCalledWith(path.resolve(__dirname, '../../../dist/packages-dist'), 'core');
-      expect(exampleBoilerPlate.overridePackage).toHaveBeenCalledWith(path.resolve(__dirname, '../../../dist/tools/@angular'), 'tsc-wrapped');
+      expect(exampleBoilerPlate.installNodeModules).toHaveBeenCalledWith(sharedDir, true);
+
+      exampleBoilerPlate.installNodeModules.calls.reset();
+
+      exampleBoilerPlate.add(false);
+      expect(exampleBoilerPlate.installNodeModules).toHaveBeenCalledWith(sharedDir, false);
     });
 
     it('should process all the example folders', () => {
+      const examplesDir = path.resolve(__dirname, '../../content/examples');
       exampleBoilerPlate.add();
-      expect(exampleBoilerPlate.getFoldersContaining).toHaveBeenCalledWith(path.resolve(__dirname, '../../content/examples'), 'example-config.json', 'node_modules');
+      expect(exampleBoilerPlate.getFoldersContaining)
+          .toHaveBeenCalledWith(examplesDir, 'example-config.json', 'node_modules');
     });
 
     it('should symlink the node_modules', () => {
       exampleBoilerPlate.add();
       expect(fs.ensureSymlinkSync).toHaveBeenCalledTimes(exampleFolders.length);
-      expect(fs.ensureSymlinkSync).toHaveBeenCalledWith(path.resolve(__dirname, 'shared/node_modules'), path.resolve('a/b/node_modules'));
-      expect(fs.ensureSymlinkSync).toHaveBeenCalledWith(path.resolve(__dirname, 'shared/node_modules'), path.resolve('c/d/node_modules'));
+      expect(fs.ensureSymlinkSync).toHaveBeenCalledWith(sharedNodeModulesDir, path.resolve('a/b/node_modules'));
+      expect(fs.ensureSymlinkSync).toHaveBeenCalledWith(sharedNodeModulesDir, path.resolve('c/d/node_modules'));
     });
 
     it('should copy all the source boilerplate files', () => {
@@ -81,27 +85,33 @@ describe('example-boilerplate tool', () => {
   });
 
   describe('installNodeModules', () => {
-    it('should run `yarn` in the base path', () => {
+    beforeEach(() => {
       spyOn(shelljs, 'exec');
+      spyOn(ngPackagesInstaller, 'overwritePackages');
+      spyOn(ngPackagesInstaller, 'restorePackages');
+    });
+
+    it('should run `yarn` in the base path', () => {
       exampleBoilerPlate.installNodeModules('some/base/path');
       expect(shelljs.exec).toHaveBeenCalledWith('yarn', { cwd: 'some/base/path' });
     });
-  });
 
-  describe('overridePackage', () => {
-    beforeEach(() => {
-      spyOn(shelljs, 'rm');
-      spyOn(fs, 'copySync');
+    it('should overwrite the Angular packages if `useLocal` is true', () => {
+      ngPackagesInstaller.overwritePackages.and.callFake(() => expect(shelljs.exec).toHaveBeenCalled());
+
+      exampleBoilerPlate.installNodeModules('some/base/path', true);
+      expect(ngPackagesInstaller.overwritePackages).toHaveBeenCalledWith('some/base/path');
+      expect(ngPackagesInstaller.restorePackages).not.toHaveBeenCalled();
     });
 
-    it('should remove the original package from the shared node_modules folder', () => {
-      exampleBoilerPlate.overridePackage('base/path', 'somePackage');
-      expect(shelljs.rm).toHaveBeenCalledWith('-rf', path.resolve(__dirname, 'shared/node_modules/@angular/somePackage'));
-    });
+    it('should restore the Angular packages if `useLocal` is not true', () => {
+      exampleBoilerPlate.installNodeModules('some/base/path1');
+      expect(ngPackagesInstaller.restorePackages).toHaveBeenCalledWith('some/base/path1');
 
-    it('should copy the source folder to the shared node_modules folder', () => {
-      exampleBoilerPlate.overridePackage('base/path', 'somePackage');
-      expect(fs.copySync).toHaveBeenCalledWith(path.resolve('base/path/somePackage'), path.resolve(__dirname, 'shared/node_modules/@angular/somePackage'));
+      exampleBoilerPlate.installNodeModules('some/base/path2', false);
+      expect(ngPackagesInstaller.restorePackages).toHaveBeenCalledWith('some/base/path2');
+
+      expect(ngPackagesInstaller.overwritePackages).not.toHaveBeenCalled();
     });
   });
 
