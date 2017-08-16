@@ -47,7 +47,7 @@ export class MdTextareaAutosize implements AfterViewInit {
     this._setMaxHeight();
   }
 
-  @Input('matAutosizeMaxRows')
+  @Input('matAutosizeMinRows')
   get _matAutosizeMinRows() { return this.minRows; }
   set _matAutosizeMinRows(v) { this.minRows = v; }
 
