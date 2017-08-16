@@ -27,7 +27,7 @@ export const TRANSLATIONS_FORMAT = new InjectionToken<string>('TranslationsForma
  * @experimental i18n support is experimental.
  */
 export enum MissingTranslationStrategy {
-  Error,
-  Warning,
-  Ignore,
+  Error = 0,
+  Warning = 1,
+  Ignore = 2,
 }

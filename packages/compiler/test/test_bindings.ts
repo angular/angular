@@ -7,9 +7,9 @@
  */
 
 import {ElementSchemaRegistry, ResourceLoader, UrlResolver} from '@angular/compiler';
+import {MockResourceLoader} from '@angular/compiler/testing/src/resource_loader_mock';
+import {MockSchemaRegistry} from '@angular/compiler/testing/src/schema_registry_mock';
 import {Provider} from '@angular/core';
-import {MockResourceLoader} from './resource_loader_mock';
-import {MockSchemaRegistry} from './schema_registry_mock';
 
 export function createUrlResolverWithoutPackagePrefix(): UrlResolver {
   return new UrlResolver();

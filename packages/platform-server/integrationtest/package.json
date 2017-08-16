@@ -15,6 +15,7 @@
     "@angular/core": "file:../../../dist/packages-dist/core",
     "@angular/http": "file:../../../dist/packages-dist/http",
     "@angular/platform-browser": "file:../../../dist/packages-dist/platform-browser",
+    "@angular/platform-browser-dynamic": "file:../../../dist/packages-dist/platform-browser-dynamic",
     "@angular/platform-server": "file:../../../dist/packages-dist/platform-server",
     "express": "^4.14.1",
     "rxjs": "file:../../../node_modules/rxjs",

@@ -6,15 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isDevMode} from '@angular/core';
 import {identifierName} from '../compile_metadata';
+import {CompileReflector} from '../compile_reflector';
 
 import {EmitterVisitorContext} from './abstract_emitter';
 import {AbstractJsEmitterVisitor} from './abstract_js_emitter';
 import * as o from './output_ast';
 
 function evalExpression(
-    sourceUrl: string, ctx: EmitterVisitorContext, vars: {[key: string]: any}): any {
+    sourceUrl: string, ctx: EmitterVisitorContext, vars: {[key: string]: any},
+    createSourceMap: boolean): any {
   let fnBody = `${ctx.toSource()}\n//# sourceURL=${sourceUrl}`;
   const fnArgNames: string[] = [];
   const fnArgValues: any[] = [];
@@ -22,7 +23,7 @@ function evalExpression(
     fnArgNames.push(argName);
     fnArgValues.push(vars[argName]);
   }
-  if (isDevMode()) {
+  if (createSourceMap) {
     // using `new Function(...)` generates a header, 1 line of no arguments, 2 lines otherwise
     // E.g. ```
     // function anonymous(a,b,c
@@ -35,18 +36,22 @@ function evalExpression(
   return new Function(...fnArgNames.concat(fnBody))(...fnArgValues);
 }
 
-export function jitStatements(sourceUrl: string, statements: o.Statement[]): {[key: string]: any} {
-  const converter = new JitEmitterVisitor();
+export function jitStatements(
+    sourceUrl: string, statements: o.Statement[], reflector: CompileReflector,
+    createSourceMaps: boolean): {[key: string]: any} {
+  const converter = new JitEmitterVisitor(reflector);
   const ctx = EmitterVisitorContext.createRoot();
   converter.visitAllStatements(statements, ctx);
   converter.createReturnStmt(ctx);
-  return evalExpression(sourceUrl, ctx, converter.getArgs());
+  return evalExpression(sourceUrl, ctx, converter.getArgs(), createSourceMaps);
 }
 
 export class JitEmitterVisitor extends AbstractJsEmitterVisitor {
   private _evalArgNames: string[] = [];
   private _evalArgValues: any[] = [];
   private _evalExportedVars: string[] = [];
+
+  constructor(private reflector: CompileReflector) { super(); }
 
   createReturnStmt(ctx: EmitterVisitorContext) {
     const stmt = new o.ReturnStatement(new o.LiteralMapExpr(this._evalExportedVars.map(
@@ -63,12 +68,12 @@ export class JitEmitterVisitor extends AbstractJsEmitterVisitor {
   }
 
   visitExternalExpr(ast: o.ExternalExpr, ctx: EmitterVisitorContext): any {
-    const value = ast.value.runtime;
+    const value = this.reflector.resolveExternalReference(ast.value);
     let id = this._evalArgValues.indexOf(value);
     if (id === -1) {
       id = this._evalArgValues.length;
       this._evalArgValues.push(value);
-      const name = identifierName({reference: ast.value.runtime}) || 'val';
+      const name = identifierName({reference: value}) || 'val';
       this._evalArgNames.push(`jit_${name}_${id}`);
     }
     ctx.print(ast, this._evalArgNames[id]);

@@ -11,9 +11,6 @@
   "dependencies": {
     "tslib": "^1.7.1"
   },
-  "peerDependencies": {
-    "@angular/core": "0.0.0-PLACEHOLDER"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.git"

@@ -5,8 +5,6 @@
     // Test that we rely on decorator downleveling
     "emitDecoratorMetadata": false,
     "paths": {
-      "@angular/core": ["../../dist/packages/core"],
-      "@angular/core/testing": ["../../dist/packages/core/testing"],
       "@angular/compiler": ["../../dist/packages/compiler"]
     }
   },

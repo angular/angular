@@ -6,33 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {COMPILER_OPTIONS, Compiler, CompilerFactory, CompilerOptions, Inject, InjectionToken, Injector, MissingTranslationStrategy, Optional, PACKAGE_ROOT_URL, PlatformRef, StaticProvider, TRANSLATIONS, TRANSLATIONS_FORMAT, Type, ViewEncapsulation, createPlatformFactory, isDevMode, platformCore, ɵConsole as Console} from '@angular/core';
+import {Compiler, CompilerFactory, ComponentFactory, CompilerOptions, ModuleWithComponentFactories, Inject, InjectionToken, Optional, PACKAGE_ROOT_URL, PlatformRef, StaticProvider, TRANSLATIONS, Type, isDevMode, platformCore, ɵConsole as Console, ViewEncapsulation, Injector, NgModuleFactory, TRANSLATIONS_FORMAT, MissingTranslationStrategy,} from '@angular/core';
 
-import {StaticSymbolCache} from '../aot/static_symbol';
-import {CompileReflector} from '../compile_reflector';
-import {CompilerConfig} from '../config';
-import {DirectiveNormalizer} from '../directive_normalizer';
-import {DirectiveResolver} from '../directive_resolver';
-import {Lexer} from '../expression_parser/lexer';
-import {Parser} from '../expression_parser/parser';
-import * as i18n from '../i18n/index';
-import {CompilerInjectable} from '../injectable';
-import {CompileMetadataResolver, ERROR_COLLECTOR_TOKEN} from '../metadata_resolver';
-import {HtmlParser} from '../ml_parser/html_parser';
-import {NgModuleCompiler} from '../ng_module_compiler';
-import {NgModuleResolver} from '../ng_module_resolver';
-import {PipeResolver} from '../pipe_resolver';
-import {ResourceLoader} from '../resource_loader';
-import {DomElementSchemaRegistry} from '../schema/dom_element_schema_registry';
-import {ElementSchemaRegistry} from '../schema/element_schema_registry';
-import {StyleCompiler} from '../style_compiler';
-import {JitSummaryResolver, SummaryResolver} from '../summary_resolver';
-import {TEMPLATE_TRANSFORMS, TemplateParser} from '../template_parser/template_parser';
-import {DEFAULT_PACKAGE_URL_PROVIDER, UrlResolver} from '../url_resolver';
-import {ViewCompiler} from '../view_compiler/view_compiler';
+import {StaticSymbolCache, JitCompiler, ProviderMeta, ExternalReference, I18NHtmlParser, Identifiers, ViewCompiler, CompileMetadataResolver, UrlResolver, TemplateParser, NgModuleCompiler, JitSummaryResolver, SummaryResolver, StyleCompiler, PipeResolver, ElementSchemaRegistry, DomElementSchemaRegistry, ResourceLoader, NgModuleResolver, HtmlParser, CompileReflector, CompilerConfig, DirectiveNormalizer, DirectiveResolver, Lexer, Parser} from '@angular/compiler';
 
-import {JitCompiler} from './compiler';
-import {JitReflector} from './jit_reflector';
+import {JitReflector} from './compiler_reflector';
+
+export const ERROR_COLLECTOR_TOKEN = new InjectionToken('ErrorCollector');
+
+/**
+ * A default provider for {@link PACKAGE_ROOT_URL} that maps to '/'.
+ */
+export const DEFAULT_PACKAGE_URL_PROVIDER = {
+  provide: PACKAGE_ROOT_URL,
+  useValue: '/'
+};
 
 const _NO_RESOURCE_LOADER: ResourceLoader = {
   get(url: string): Promise<string>{
@@ -41,6 +29,59 @@ const _NO_RESOURCE_LOADER: ResourceLoader = {
 };
 
 const baseHtmlParser = new InjectionToken('HtmlParser');
+
+export class CompilerImpl implements Compiler {
+  private _delegate: JitCompiler;
+  constructor(
+      private _injector: Injector, private _metadataResolver: CompileMetadataResolver,
+      templateParser: TemplateParser, styleCompiler: StyleCompiler, viewCompiler: ViewCompiler,
+      ngModuleCompiler: NgModuleCompiler, summaryResolver: SummaryResolver<Type<any>>,
+      compileReflector: CompileReflector, compilerConfig: CompilerConfig, console: Console) {
+    this._delegate = new JitCompiler(
+        _metadataResolver, templateParser, styleCompiler, viewCompiler, ngModuleCompiler,
+        summaryResolver, compileReflector, compilerConfig, console,
+        this.getExtraNgModuleProviders.bind(this));
+  }
+
+  get injector(): Injector { return this._injector; }
+
+  private getExtraNgModuleProviders() {
+    return [this._metadataResolver.getProviderMetadata(
+        new ProviderMeta(Compiler, {useValue: this}))];
+  }
+
+  compileModuleSync<T>(moduleType: Type<T>): NgModuleFactory<T> {
+    return this._delegate.compileModuleSync(moduleType) as NgModuleFactory<T>;
+  }
+  compileModuleAsync<T>(moduleType: Type<T>): Promise<NgModuleFactory<T>> {
+    return this._delegate.compileModuleAsync(moduleType) as Promise<NgModuleFactory<T>>;
+  }
+  compileModuleAndAllComponentsSync<T>(moduleType: Type<T>): ModuleWithComponentFactories<T> {
+    const result = this._delegate.compileModuleAndAllComponentsSync(moduleType);
+    return {
+      ngModuleFactory: result.ngModuleFactory as NgModuleFactory<T>,
+      componentFactories: result.componentFactories as ComponentFactory<any>[],
+    };
+  }
+  compileModuleAndAllComponentsAsync<T>(moduleType: Type<T>):
+      Promise<ModuleWithComponentFactories<T>> {
+    return this._delegate.compileModuleAndAllComponentsAsync(moduleType)
+        .then((result) => ({
+                ngModuleFactory: result.ngModuleFactory as NgModuleFactory<T>,
+                componentFactories: result.componentFactories as ComponentFactory<any>[],
+              }));
+  }
+  getNgContentSelectors(component: Type<any>): string[] {
+    return this._delegate.getNgContentSelectors(component);
+  }
+  loadAotSummaries(summaries: () => any[]) { this._delegate.loadAotSummaries(summaries); }
+  hasAotSummary(ref: Type<any>): boolean { return this._delegate.hasAotSummary(ref); }
+  getComponentFactory<T>(component: Type<T>): ComponentFactory<T> {
+    return this._delegate.getComponentFactory(component) as ComponentFactory<T>;
+  }
+  clearCache(): void { this._delegate.clearCache(); }
+  clearCacheFor(type: Type<any>) { this._delegate.clearCacheFor(type); }
+}
 
 /**
  * A set of providers that provide `JitCompiler` and its dependencies to use for
@@ -60,13 +101,13 @@ export const COMPILER_PROVIDERS = <StaticProvider[]>[
     deps: [],
   },
   {
-    provide: i18n.I18NHtmlParser,
+    provide: I18NHtmlParser,
     useFactory: (parser: HtmlParser, translations: string | null, format: string,
                  config: CompilerConfig, console: Console) => {
       translations = translations || '';
       const missingTranslation =
           translations ? config.missingTranslation ! : MissingTranslationStrategy.Ignore;
-      return new i18n.I18NHtmlParser(parser, translations, format, missingTranslation, console);
+      return new I18NHtmlParser(parser, translations, format, missingTranslation, console);
     },
     deps: [
       baseHtmlParser,
@@ -78,12 +119,12 @@ export const COMPILER_PROVIDERS = <StaticProvider[]>[
   },
   {
     provide: HtmlParser,
-    useExisting: i18n.I18NHtmlParser,
+    useExisting: I18NHtmlParser,
   },
   {
     provide: TemplateParser, deps: [CompilerConfig, CompileReflector,
     Parser, ElementSchemaRegistry,
-    i18n.I18NHtmlParser, Console, [Optional, TEMPLATE_TRANSFORMS]]
+    I18NHtmlParser, Console]
   },
   { provide: DirectiveNormalizer, deps: [ResourceLoader, UrlResolver, HtmlParser, CompilerConfig]},
   { provide: CompileMetadataResolver, deps: [CompilerConfig, NgModuleResolver,
@@ -99,12 +140,11 @@ export const COMPILER_PROVIDERS = <StaticProvider[]>[
   { provide: ViewCompiler, deps: [CompilerConfig, CompileReflector, ElementSchemaRegistry]},
   { provide: NgModuleCompiler, deps: [CompileReflector] },
   { provide: CompilerConfig, useValue: new CompilerConfig()},
-  { provide: JitCompiler, deps: [Injector, CompileMetadataResolver,
+  { provide: Compiler, useClass: CompilerImpl, deps: [Injector, CompileMetadataResolver,
                                 TemplateParser, StyleCompiler,
                                 ViewCompiler, NgModuleCompiler,
-                                SummaryResolver,  CompilerConfig,
+                                SummaryResolver, CompileReflector, CompilerConfig,
                                 Console]},
-  { provide: Compiler, useExisting: JitCompiler},
   { provide: DomElementSchemaRegistry, deps: []},
   { provide: ElementSchemaRegistry, useExisting: DomElementSchemaRegistry},
   { provide: UrlResolver, deps: [PACKAGE_ROOT_URL]},
@@ -113,10 +153,9 @@ export const COMPILER_PROVIDERS = <StaticProvider[]>[
   { provide: NgModuleResolver, deps: [CompileReflector]},
 ];
 
-@CompilerInjectable()
 export class JitCompilerFactory implements CompilerFactory {
   private _defaultOptions: CompilerOptions[];
-  constructor(@Inject(COMPILER_OPTIONS) defaultOptions: CompilerOptions[]) {
+  constructor(defaultOptions: CompilerOptions[]) {
     const compilerOptions: CompilerOptions = {
       useDebug: isDevMode(),
       useJit: true,
@@ -138,6 +177,7 @@ export class JitCompilerFactory implements CompilerFactory {
             // let explicit values from the compiler options overwrite options
             // from the app providers
             useJit: opts.useJit,
+            jitDevMode: isDevMode(),
             // let explicit values from the compiler options overwrite options
             // from the app providers
             defaultEncapsulation: opts.defaultEncapsulation,
@@ -153,16 +193,6 @@ export class JitCompilerFactory implements CompilerFactory {
     return injector.get(Compiler);
   }
 }
-
-/**
- * A platform that included corePlatform and the compiler.
- *
- * @experimental
- */
-export const platformCoreDynamic = createPlatformFactory(platformCore, 'coreDynamic', [
-  {provide: COMPILER_OPTIONS, useValue: {}, multi: true},
-  {provide: CompilerFactory, useClass: JitCompilerFactory, deps: [COMPILER_OPTIONS]},
-]);
 
 function _mergeOptions(optionsArr: CompilerOptions[]): CompilerOptions {
   return {

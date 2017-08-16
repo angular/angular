@@ -6,22 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, InjectionToken, PACKAGE_ROOT_URL} from '@angular/core';
-
-import {CompilerInjectable} from './injectable';
-
+/**
+ * Create a {@link UrlResolver} with no package prefix.
+ */
+export function createUrlResolverWithoutPackagePrefix(): UrlResolver {
+  return new UrlResolver();
+}
 
 export function createOfflineCompileUrlResolver(): UrlResolver {
   return new UrlResolver('.');
 }
-
-/**
- * A default provider for {@link PACKAGE_ROOT_URL} that maps to '/'.
- */
-export const DEFAULT_PACKAGE_URL_PROVIDER = {
-  provide: PACKAGE_ROOT_URL,
-  useValue: '/'
-};
 
 /**
  * Used by the {@link Compiler} when resolving HTML and CSS template URLs.

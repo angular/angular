@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {JitReflector} from '@angular/compiler';
+import {core} from '@angular/compiler';
 import {DirectiveResolver} from '@angular/compiler/src/directive_resolver';
 import {Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, Input, Output, ViewChild, ViewChildren} from '@angular/core/src/metadata';
+import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_reflector';
 
 @Directive({selector: 'someDirective'})
 class SomeDirective {
@@ -119,7 +120,7 @@ export function main() {
 
     it('should read out the Directive metadata', () => {
       const directiveMetadata = resolver.resolve(SomeDirective);
-      expect(directiveMetadata).toEqual(new Directive({
+      expect(directiveMetadata).toEqual(core.createDirective({
         selector: 'someDirective',
         inputs: [],
         outputs: [],
@@ -147,7 +148,7 @@ export function main() {
       class ChildWithDecorator extends Parent {
       }
 
-      expect(resolver.resolve(ChildNoDecorator)).toEqual(new Directive({
+      expect(resolver.resolve(ChildNoDecorator)).toEqual(core.createDirective({
         selector: 'p',
         inputs: [],
         outputs: [],
@@ -157,7 +158,7 @@ export function main() {
         providers: undefined
       }));
 
-      expect(resolver.resolve(ChildWithDecorator)).toEqual(new Directive({
+      expect(resolver.resolve(ChildWithDecorator)).toEqual(core.createDirective({
         selector: 'c',
         inputs: [],
         outputs: [],

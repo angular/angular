@@ -6,16 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, InjectionToken, Optional, SchemaMetadata, ɵConsole as Console} from '@angular/core';
-
 import {CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeSummary, CompileTokenMetadata, CompileTypeMetadata, identifierName} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
 import {CompilerConfig} from '../config';
+import {SchemaMetadata} from '../core';
 import {AST, ASTWithSource, EmptyExpr} from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
 import {I18NHtmlParser} from '../i18n/i18n_html_parser';
 import {Identifiers, createTokenForExternalReference, createTokenForReference} from '../identifiers';
-import {CompilerInjectable} from '../injectable';
 import * as html from '../ml_parser/ast';
 import {ParseTreeResult} from '../ml_parser/html_parser';
 import {removeWhitespaces} from '../ml_parser/html_whitespaces';
@@ -27,7 +25,7 @@ import {ProviderElementContext, ProviderViewContext} from '../provider_analyzer'
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {CssSelector, SelectorMatcher} from '../selector';
 import {isStyleUrlResolvable} from '../style_url_resolver';
-import {syntaxError} from '../util';
+import {Console, syntaxError} from '../util';
 
 import {BindingParser, BoundProperty} from './binding_parser';
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from './template_ast';
@@ -83,15 +81,6 @@ function warnOnlyOnce(warnings: string[]): (warning: ParseError) => boolean {
   };
 }
 
-/**
- * Provides an array of {@link TemplateAstVisitor}s which will be used to transform
- * parsed templates before compilation is invoked, allowing custom expression syntax
- * and other advanced transformations.
- *
- * This is currently an internal-only feature and not meant for general use.
- */
-export const TEMPLATE_TRANSFORMS = new InjectionToken('TemplateTransforms');
-
 export class TemplateParseError extends ParseError {
   constructor(message: string, span: ParseSourceSpan, level: ParseErrorLevel) {
     super(span, message, level);
@@ -104,13 +93,12 @@ export class TemplateParseResult {
       public errors?: ParseError[]) {}
 }
 
-@CompilerInjectable()
 export class TemplateParser {
   constructor(
       private _config: CompilerConfig, private _reflector: CompileReflector,
       private _exprParser: Parser, private _schemaRegistry: ElementSchemaRegistry,
       private _htmlParser: I18NHtmlParser, private _console: Console,
-      @Optional() @Inject(TEMPLATE_TRANSFORMS) public transforms: TemplateAstVisitor[]) {}
+      public transforms: TemplateAstVisitor[]) {}
 
   parse(
       component: CompileDirectiveMetadata, template: string, directives: CompileDirectiveSummary[],
