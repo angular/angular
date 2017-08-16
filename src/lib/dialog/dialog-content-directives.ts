@@ -17,8 +17,8 @@ let dialogElementUid = 0;
  * Button that will close the current dialog.
  */
 @Directive({
-  selector: 'button[md-dialog-close], button[mat-dialog-close],' +
-            'button[mdDialogClose], button[matDialogClose]',
+  selector: `button[md-dialog-close], button[mat-dialog-close],
+             button[mdDialogClose], button[matDialogClose]`,
   host: {
     '(click)': 'dialogRef.close(dialogResult)',
     '[attr.aria-label]': 'ariaLabel',
@@ -75,8 +75,8 @@ export class MdDialogTitle implements OnInit {
  * Scrollable content container of a dialog.
  */
 @Directive({
-  selector: '[md-dialog-content], md-dialog-content, [mat-dialog-content], mat-dialog-content,' +
-            '[mdDialogContent], [matDialogContent]',
+  selector: `[md-dialog-content], md-dialog-content, [mat-dialog-content], mat-dialog-content,
+             [mdDialogContent], [matDialogContent]`,
   host: {'class': 'mat-dialog-content'}
 })
 export class MdDialogContent { }
@@ -87,8 +87,8 @@ export class MdDialogContent { }
  * Stays fixed to the bottom when scrolling.
  */
 @Directive({
-  selector: '[md-dialog-actions], md-dialog-actions, [mat-dialog-actions], mat-dialog-actions,' +
-            '[mdDialogActions], [matDialogActions]',
+  selector: `[md-dialog-actions], md-dialog-actions, [mat-dialog-actions], mat-dialog-actions,
+             [mdDialogActions], [matDialogActions]`,
   host: {'class': 'mat-dialog-actions'}
 })
 export class MdDialogActions { }

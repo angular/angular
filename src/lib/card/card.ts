@@ -30,8 +30,8 @@ export class MdCardContent {}
  * @docs-private
  */
 @Directive({
-  selector: 'md-card-title, mat-card-title, [md-card-title], [mat-card-title],' +
-  '[mdCardTitle], [matCardTitle]',
+  selector: `md-card-title, mat-card-title, [md-card-title], [mat-card-title],
+             [mdCardTitle], [matCardTitle]`,
   host: {
     'class': 'mat-card-title'
   }
@@ -43,8 +43,8 @@ export class MdCardTitle {}
  * @docs-private
  */
 @Directive({
-  selector: 'md-card-subtitle, mat-card-subtitle, [md-card-subtitle], [mat-card-subtitle],' +
-  '[mdCardSubtitle], [matCardSubtitle]',
+  selector: `md-card-subtitle, mat-card-subtitle, [md-card-subtitle], [mat-card-subtitle],
+             [mdCardSubtitle], [matCardSubtitle]`,
   host: {
     'class': 'mat-card-subtitle'
   }

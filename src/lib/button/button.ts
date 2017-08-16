@@ -112,10 +112,10 @@ export const _MdButtonMixinBase = mixinColor(mixinDisabled(mixinDisableRipple(Md
  */
 @Component({
   moduleId: module.id,
-  selector: 'button[md-button], button[md-raised-button], button[md-icon-button],' +
-            'button[md-fab], button[md-mini-fab],' +
-            'button[mat-button], button[mat-raised-button], button[mat-icon-button],' +
-            'button[mat-fab], button[mat-mini-fab]',
+  selector: `button[md-button], button[md-raised-button], button[md-icon-button],
+             button[md-fab], button[md-mini-fab],
+             button[mat-button], button[mat-raised-button], button[mat-icon-button],
+             button[mat-fab], button[mat-mini-fab]`,
   host: {
     '[disabled]': 'disabled || null',
   },
