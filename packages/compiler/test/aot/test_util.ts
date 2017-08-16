@@ -330,8 +330,15 @@ export class MockAotCompilerHost implements AotCompilerHost {
   private metadataCollector = new MetadataCollector();
   private metadataVisible: boolean = true;
   private dtsAreSource: boolean = true;
+  private resolveModuleNameHost: ts.ModuleResolutionHost;
 
-  constructor(private tsHost: MockCompilerHost) {}
+  constructor(private tsHost: MockCompilerHost) {
+    this.resolveModuleNameHost = Object.create(tsHost);
+    this.resolveModuleNameHost.fileExists = (fileName) => {
+      fileName = stripNgResourceSuffix(fileName);
+      return tsHost.fileExists(fileName);
+    };
+  }
 
   hideMetadata() { this.metadataVisible = false; }
 
@@ -369,9 +376,20 @@ export class MockAotCompilerHost implements AotCompilerHost {
     moduleName = moduleName.replace(EXT, '');
     const resolved = ts.resolveModuleName(
                            moduleName, containingFile.replace(/\\/g, '/'),
-                           {baseDir: '/', genDir: '/'}, this.tsHost)
+                           {baseDir: '/', genDir: '/'}, this.resolveModuleNameHost)
                          .resolvedModule;
     return resolved ? resolved.resolvedFileName : null;
+  }
+
+  resourceNameToFileName(resourceName: string, containingFile: string) {
+    // Note: we convert package paths into relative paths to be compatible with the the
+    // previous implementation of UrlResolver.
+    if (resourceName && resourceName.charAt(0) !== '.' && !path.isAbsolute(resourceName)) {
+      resourceName = `./${resourceName}`;
+    }
+    const filePathWithNgResource =
+        this.moduleNameToFileName(addNgResourceSuffix(resourceName), containingFile);
+    return filePathWithNgResource ? stripNgResourceSuffix(filePathWithNgResource) : null;
   }
 
   // AotSummaryResolverHost
@@ -646,4 +664,12 @@ export function compile(
                             ]).filter((entry) => !isSource(entry.fileName)));
   }
   return {genFiles, outDir};
+}
+
+function stripNgResourceSuffix(fileName: string): string {
+  return fileName.replace(/\.\$ngresource\$.*/, '');
+}
+
+function addNgResourceSuffix(fileName: string): string {
+  return `${fileName}.$ngresource$`;
 }

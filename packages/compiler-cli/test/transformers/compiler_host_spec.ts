@@ -100,4 +100,27 @@ describe('NgCompilerHost', () => {
           .toBe('/tmp/src/a/child.d.ts');
     });
   });
+
+  describe('resourceNameToFileName', () => {
+    it('should resolve a relative import', () => {
+      const ngHost = createHost({files: {'tmp': {'src': {'a': {'child.html': '<div>'}}}}});
+      expect(ngHost.resourceNameToFileName('./a/child.html', '/tmp/src/index.ts'))
+          .toBe('/tmp/src/a/child.html');
+
+      expect(ngHost.resourceNameToFileName('./a/non-existing.html', '/tmp/src/index.ts'))
+          .toBe(null);
+    });
+
+    it('should resolve package paths as relative paths', () => {
+      const ngHost = createHost({files: {'tmp': {'src': {'a': {'child.html': '<div>'}}}}});
+      expect(ngHost.resourceNameToFileName('a/child.html', '/tmp/src/index.ts'))
+          .toBe('/tmp/src/a/child.html');
+    });
+
+    it('should resolve absolute paths', () => {
+      const ngHost = createHost({files: {'tmp': {'src': {'a': {'child.html': '<div>'}}}}});
+      expect(ngHost.resourceNameToFileName('/tmp/src/a/child.html', '/tmp/src/index.ts'))
+          .toBe('/tmp/src/a/child.html');
+    });
+  });
 });

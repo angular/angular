@@ -26,6 +26,7 @@ export function createCompilerHost(
   host.fileNameToModuleName = mixin.fileNameToModuleName.bind(mixin);
   host.toSummaryFileName = mixin.toSummaryFileName.bind(mixin);
   host.fromSummaryFileName = mixin.fromSummaryFileName.bind(mixin);
+  host.resourceNameToFileName = mixin.resourceNameToFileName.bind(mixin);
 
   // Make sure we do not `host.realpath()` from TS as we do not want to resolve symlinks.
   // https://github.com/Microsoft/TypeScript/issues/9552
@@ -35,26 +36,23 @@ export function createCompilerHost(
 }
 
 class CompilerHostMixin {
-  private moduleFileNames = new Map<string, string|null>();
   private rootDirs: string[];
   private basePath: string;
   private moduleResolutionHost: ModuleFilenameResolutionHost;
+  private moduleResolutionCache: ts.ModuleResolutionCache;
 
-  constructor(private context: ts.ModuleResolutionHost, private options: CompilerOptions) {
+  constructor(private context: ts.CompilerHost, private options: CompilerOptions) {
     // normalize the path so that it never ends with '/'.
     this.basePath = normalizePath(this.options.basePath !);
     this.rootDirs = (this.options.rootDirs || [
                       this.options.basePath !
                     ]).map(p => path.resolve(this.basePath, normalizePath(p)));
     this.moduleResolutionHost = createModuleFilenameResolverHost(context);
+    this.moduleResolutionCache = ts.createModuleResolutionCache(
+        this.context.getCurrentDirectory !(), this.context.getCanonicalFileName.bind(this.context));
   }
 
   moduleNameToFileName(m: string, containingFile: string): string|null {
-    const key = m + ':' + (containingFile || '');
-    let result: string|null = this.moduleFileNames.get(key) || null;
-    if (result) {
-      return result;
-    }
     if (!containingFile) {
       if (m.indexOf('.') === 0) {
         throw new Error('Resolution of relative paths requires a containing file.');
@@ -62,17 +60,17 @@ class CompilerHostMixin {
       // Any containing file gives the same result for absolute imports
       containingFile = path.join(this.basePath, 'index.ts');
     }
-    const resolved =
-        ts.resolveModuleName(m, containingFile, this.options, this.moduleResolutionHost)
-            .resolvedModule;
+    const resolved = ts.resolveModuleName(
+                           m, containingFile, this.options, this.moduleResolutionHost,
+                           this.moduleResolutionCache)
+                         .resolvedModule;
     if (resolved) {
       if (this.options.traceResolution) {
         console.error('resolve', m, containingFile, '=>', resolved.resolvedFileName);
       }
-      result = resolved.resolvedFileName;
+      return resolved.resolvedFileName;
     }
-    this.moduleFileNames.set(key, result);
-    return result;
+    return null;
   }
 
   /**
@@ -140,6 +138,17 @@ class CompilerHostMixin {
     }
     return resolved;
   }
+
+  resourceNameToFileName(resourceName: string, containingFile: string): string|null {
+    // Note: we convert package paths into relative paths to be compatible with the the
+    // previous implementation of UrlResolver.
+    if (resourceName && resourceName.charAt(0) !== '.' && !path.isAbsolute(resourceName)) {
+      resourceName = `./${resourceName}`;
+    }
+    const filePathWithNgResource =
+        this.moduleNameToFileName(addNgResourceSuffix(resourceName), containingFile);
+    return filePathWithNgResource ? stripNgResourceSuffix(filePathWithNgResource) : null;
+  }
 }
 
 interface ModuleFilenameResolutionHost extends ts.ModuleResolutionHost {
@@ -156,6 +165,7 @@ function createModuleFilenameResolverHost(host: ts.ModuleResolutionHost):
   // This is needed as we use ts.resolveModuleName in DefaultModuleFilenameResolver
   // and it should be able to resolve summary file names.
   resolveModuleNameHost.fileExists = (fileName: string): boolean => {
+    fileName = stripNgResourceSuffix(fileName);
     if (assumedExists.has(fileName)) {
       return true;
     }
@@ -216,4 +226,12 @@ function getNodeModulesPrefix(filePath: string): string|null {
 
 function normalizePath(p: string): string {
   return path.normalize(path.join(p, '.')).replace(/\\/g, '/');
+}
+
+function stripNgResourceSuffix(fileName: string): string {
+  return fileName.replace(/\.\$ngresource\$.*/, '');
+}
+
+function addNgResourceSuffix(fileName: string): string {
+  return `${fileName}.$ngresource$`;
 }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompilerHost, StaticSymbol, syntaxError} from '@angular/compiler';
+import {AotCompilerHost, StaticSymbol, UrlResolver, createOfflineCompileUrlResolver, syntaxError} from '@angular/compiler';
 import {AngularCompilerOptions, CollectorOptions, MetadataCollector, ModuleMetadata} from '@angular/tsc-wrapped';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -39,6 +39,8 @@ export abstract class BaseAotCompilerHost<C extends BaseAotCompilerHostContext> 
       protected metadataProvider: MetadataProvider = new MetadataCollector()) {}
 
   abstract moduleNameToFileName(m: string, containingFile: string): string|null;
+
+  abstract resourceNameToFileName(m: string, containingFile: string): string|null;
 
   abstract fileNameToModuleName(importedFile: string, containingFile: string): string|null;
 
@@ -234,6 +236,7 @@ export class CompilerHost extends BaseAotCompilerHost<CompilerHostContext> {
   private isGenDirChildOfRootDir: boolean;
   private genDir: string;
   protected resolveModuleNameHost: CompilerHostContext;
+  private urlResolver: UrlResolver;
 
   constructor(
       program: ts.Program, options: AngularCompilerOptions, context: CompilerHostContext,
@@ -266,6 +269,7 @@ export class CompilerHost extends BaseAotCompilerHost<CompilerHostContext> {
       }
       return false;
     };
+    this.urlResolver = createOfflineCompileUrlResolver();
   }
 
   toSummaryFileName(fileName: string, referringSrcFileName: string): string {
@@ -380,6 +384,10 @@ export class CompilerHost extends BaseAotCompilerHost<CompilerHostContext> {
         return this.dotRelative(containingDir, importedFile);
       }
     }
+  }
+
+  resourceNameToFileName(m: string, containingFile: string): string {
+    return this.urlResolver.resolve(containingFile, m);
   }
 
   /**
