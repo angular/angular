@@ -1,3 +1,31 @@
+<a name="5.0.0-beta.4"></a>
+# [5.0.0-beta.4](https://github.com/angular/angular/compare/5.0.0-beta.3...5.0.0-beta.4) (2017-08-16)
+
+
+### Bug Fixes
+
+* **aio:** fix compilation error by using the correct type for `providers` ([4d523fd](https://github.com/angular/angular/commit/4d523fd))
+* **aio:** skip PWA test when redeploying non-public commit ([06faac8](https://github.com/angular/angular/commit/06faac8))
+* **compiler:** Don't strip CSS source maps ([64b4be9](https://github.com/angular/angular/commit/64b4be9))
+* **forms:** re-assigning options should not clear select ([32ff21c](https://github.com/angular/angular/commit/32ff21c)), closes [#18330](https://github.com/angular/angular/issues/18330)
+* **language-service:** remove tsickle dependency ([bc22ff1](https://github.com/angular/angular/commit/bc22ff1))
+
+
+### Features
+
+* **common:** mark NgTemplateOutlet API as stable ([0a73e8d](https://github.com/angular/angular/commit/0a73e8d))
+* **forms:** add status to `AbstractControlDirective` ([233ef93](https://github.com/angular/angular/commit/233ef93))
+* **forms:** add updateOn support to ngModelOptions ([1cfa79c](https://github.com/angular/angular/commit/1cfa79c))
+
+
+### Performance Improvements
+
+* **aio:** update to new version of build-optimizer ([088532b](https://github.com/angular/angular/commit/088532b))
+* **core:** add option to remove blank text nodes from compiled templates ([d2c0d98](https://github.com/angular/angular/commit/d2c0d98))
+* **core:** Remove decorator DSL which depends on Reflect ([cac130e](https://github.com/angular/angular/commit/cac130e))
+
+
+
 <a name="4.3.5"></a>
 ## [4.3.5](https://github.com/angular/angular/compare/4.3.4...4.3.5) (2017-08-16)
 
