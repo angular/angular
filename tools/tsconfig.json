@@ -22,7 +22,6 @@
   },
   "exclude": [
     "node_modules",
-    "ngc-wrapped",
     "typings-test",
     "public_api_guard",
     "docs"

@@ -24,5 +24,5 @@ ng_module(
   write_ng_outputs_only = True,
   module_name = "@angular/core",
   tsconfig = ":tsconfig-build.json",
-  compiler = "//tools/ngc-wrapped"
+  compiler = "//packages/bazel/src/ngc-wrapped"
 )
