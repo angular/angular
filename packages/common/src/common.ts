@@ -14,7 +14,7 @@
 export * from './location/index';
 export {NgLocaleLocalization, NgLocalization} from './localization';
 export {parseCookieValue as ɵparseCookieValue} from './cookie';
-export {CommonModule} from './common_module';
+export {CommonModule, DeprecatedI18NPipesModule} from './common_module';
 export {NgClass, NgFor, NgForOf, NgForOfContext, NgIf, NgIfContext, NgPlural, NgPluralCase, NgStyle, NgSwitch, NgSwitchCase, NgSwitchDefault, NgTemplateOutlet, NgComponentOutlet} from './directives/index';
 export {DOCUMENT} from './dom_tokens';
 export {AsyncPipe, DatePipe, I18nPluralPipe, I18nSelectPipe, JsonPipe, LowerCasePipe, CurrencyPipe, DecimalPipe, PercentPipe, SlicePipe, UpperCasePipe, TitleCasePipe} from './pipes/index';
