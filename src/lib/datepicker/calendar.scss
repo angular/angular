@@ -1,3 +1,5 @@
+@import '../core/style/layout-common';
+
 $mat-calendar-padding: 8px !default;
 $mat-calendar-header-divider-width: 1px !default;
 $mat-calendar-controls-vertical-padding: 5%;
@@ -68,12 +70,8 @@ $mat-calendar-next-icon-transform: translateX(-2px) rotate(45deg);
   position: relative;
 
   &::after {
+    @include mat-fill;
     content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
     margin: $mat-calendar-prev-next-icon-margin;
     border: 0 solid currentColor;
     border-top-width: $mat-calendar-prev-next-icon-border-width;

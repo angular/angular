@@ -2,6 +2,7 @@
 @import '../core/style/elevation';
 @import '../core/style/checkbox-common';
 @import '../core/ripple/ripple';
+@import '../core/style/layout-common';
 
 // Manual calculation done on SVG
 $_mat-checkbox-mark-path-length: 22.910259;
@@ -161,15 +162,6 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * $mat-checkbox-size !default;
   }
 }
 
-// Applied to elements that cover the checkbox's entire inner container.
-%mat-checkbox-cover-element {
-  bottom: 0;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-}
-
 // Applied to elements that are considered "marks" within the checkbox, e.g. the checkmark and
 // the mixedmark.
 %mat-checkbox-mark {
@@ -180,7 +172,7 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * $mat-checkbox-size !default;
 // Applied to elements that appear to make up the outer box of the checkmark, such as the frame
 // that contains the border and the actual background element that contains the marks.
 %mat-checkbox-outer-box {
-  @extend %mat-checkbox-cover-element;
+  @include mat-fill;
   border-radius: 2px;
   box-sizing: border-box;
   pointer-events: none;
@@ -255,7 +247,7 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * $mat-checkbox-size !default;
 }
 
 .mat-checkbox-checkmark {
-  @extend %mat-checkbox-cover-element;
+  @include mat-fill;
   @extend %mat-checkbox-mark;
 
   width: 100%;

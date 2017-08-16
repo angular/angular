@@ -1,6 +1,7 @@
 @import '../style/menu-common';
 @import '../style/vendor-prefixes';
 @import '../a11y/a11y';
+@import '../style/layout-common';
 
 /**
  * This mixin contains shared option styles between the select and
@@ -29,11 +30,7 @@
   }
 
   .mat-option-ripple {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
+    @include mat-fill;
 
     // Disable pointer events for the ripple container because the container will overlay the
     // user content and we don't want to disable mouse events on the user content.

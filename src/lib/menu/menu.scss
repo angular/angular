@@ -4,6 +4,7 @@
 @import '../core/style/layout-common';
 @import '../core/style/menu-common';
 @import '../core/a11y/a11y';
+@import '../core/style/layout-common';
 
 $mat-menu-vertical-padding: 8px !default;
 $mat-menu-border-radius: 2px !default;
@@ -80,9 +81,5 @@ button.mat-menu-item {
 }
 
 .mat-menu-ripple {
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
+  @include mat-fill;
 }

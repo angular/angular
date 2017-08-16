@@ -1,5 +1,6 @@
 @import '../core/style/variables';
 @import '../core/style/list-common';
+@import '../core/style/layout-common';
 
 
 $mat-list-side-padding: 16px;
@@ -52,11 +53,7 @@ $mat-dense-list-icon-size: 20px;
   }
 
   .mat-list-item-ripple {
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
+    @include mat-fill;
 
     // Disable pointer events for the ripple container because the container will overlay the
     // user content and we don't want to disable mouse events on the user content.

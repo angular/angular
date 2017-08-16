@@ -2,6 +2,7 @@
 // TODO(jelbourn): Figure out if anchor hover underline actually happens in any browser.
 @import 'button-base';
 @import '../core/a11y/a11y';
+@import '../core/style/layout-common';
 
 .mat-button, .mat-icon-button {
   @extend %mat-button-base;
@@ -59,11 +60,7 @@
 
 // The ripple container should match the bounds of the entire button.
 .mat-button-ripple, .mat-button-focus-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
+  @include mat-fill;
 
   // Disable pointer events for the ripple container and focus overlay because the container
   // will overlay the user content and we don't want to disable mouse events on the user content.
