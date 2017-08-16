@@ -408,9 +408,9 @@ describe('Key managers', () => {
       });
 
       it('should debounce the input key presses', fakeAsync(() => {
-        keyManager.onKeydown(createKeyboardEvent('keydown', 79)); // types "o"
-        keyManager.onKeydown(createKeyboardEvent('keydown', 78)); // types "n"
-        keyManager.onKeydown(createKeyboardEvent('keydown', 69)); // types "e"
+        keyManager.onKeydown(createKeyboardEvent('keydown', 79, undefined, 'o')); // types "o"
+        keyManager.onKeydown(createKeyboardEvent('keydown', 78, undefined, 'n')); // types "n"
+        keyManager.onKeydown(createKeyboardEvent('keydown', 69, undefined, 'e')); // types "e"
 
         expect(keyManager.activeItem).not.toBe(itemList.items[0]);
 
@@ -420,7 +420,7 @@ describe('Key managers', () => {
       }));
 
       it('should focus the first item that starts with a letter', fakeAsync(() => {
-        keyManager.onKeydown(createKeyboardEvent('keydown', 84)); // types "t"
+        keyManager.onKeydown(createKeyboardEvent('keydown', 84, undefined, 't')); // types "t"
 
         tick(debounceInterval);
 
@@ -428,8 +428,8 @@ describe('Key managers', () => {
       }));
 
       it('should focus the first item that starts with sequence of letters', fakeAsync(() => {
-        keyManager.onKeydown(createKeyboardEvent('keydown', 84)); // types "t"
-        keyManager.onKeydown(createKeyboardEvent('keydown', 72)); // types "h"
+        keyManager.onKeydown(createKeyboardEvent('keydown', 84, undefined, 't')); // types "t"
+        keyManager.onKeydown(createKeyboardEvent('keydown', 72, undefined, 'h')); // types "h"
 
         tick(debounceInterval);
 
@@ -437,13 +437,28 @@ describe('Key managers', () => {
       }));
 
       it('should cancel any pending timers if a navigation key is pressed', fakeAsync(() => {
-        keyManager.onKeydown(createKeyboardEvent('keydown', 84)); // types "t"
-        keyManager.onKeydown(createKeyboardEvent('keydown', 72)); // types "h"
+        keyManager.onKeydown(createKeyboardEvent('keydown', 84, undefined, 't')); // types "t"
+        keyManager.onKeydown(createKeyboardEvent('keydown', 72, undefined, 'h')); // types "h"
         keyManager.onKeydown(fakeKeyEvents.downArrow);
 
         tick(debounceInterval);
 
         expect(keyManager.activeItem).toBe(itemList.items[0]);
+      }));
+
+      it('should handle non-English input', fakeAsync(() => {
+        itemList.items = [
+          new FakeFocusable('едно'),
+          new FakeFocusable('две'),
+          new FakeFocusable('три')
+        ];
+
+        const keyboardEvent = createKeyboardEvent('keydown', 68, undefined, 'д');
+
+        keyManager.onKeydown(keyboardEvent); // types "д"
+        tick(debounceInterval);
+
+        expect(keyManager.activeItem).toBe(itemList.items[1]);
       }));
 
     });
