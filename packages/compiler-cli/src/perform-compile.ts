@@ -105,10 +105,16 @@ export function readConfiguration(
 }
 
 export function performCompilation(
-    rootNames: string[], options: api.CompilerOptions, host?: api.CompilerHost,
-    oldProgram?: api.Program): {
+    {rootNames, options, host, oldProgram, emitCallback, customTransformers}: {
+      rootNames: string[],
+      options: api.CompilerOptions,
+      host?: api.CompilerHost,
+      oldProgram?: api.Program,
+      emitCallback?: api.TsEmitCallback,
+      customTransformers?: api.CustomTransformers
+    }): {
   program?: api.Program,
-  emitResult?: api.EmitResult,
+  emitResult?: ts.EmitResult,
   diagnostics: Diagnostics,
 } {
   const [major, minor] = ts.version.split('.');
@@ -128,7 +134,7 @@ export function performCompilation(
   }
 
   let program: api.Program|undefined;
-  let emitResult: api.EmitResult|undefined;
+  let emitResult: ts.EmitResult|undefined;
   try {
     if (!host) {
       host = ng.createCompilerHost({options});
@@ -155,7 +161,9 @@ export function performCompilation(
     shouldEmit = shouldEmit && checkDiagnostics(program !.getNgSemanticDiagnostics());
 
     if (shouldEmit) {
-      const emitResult = program !.emit({
+      emitResult = program !.emit({
+        emitCallback,
+        customTransformers,
         emitFlags: api.EmitFlags.Default |
             ((options.skipMetadataEmit || options.flatModuleOutFile) ? 0 : api.EmitFlags.Metadata)
       });

@@ -14,6 +14,7 @@ import * as ts from 'typescript';
 import * as tsc from '@angular/tsc-wrapped';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as tsickle from 'tsickle';
 import * as api from './transformers/api';
 import * as ngc from './transformers/entry_points';
 import {performCompilation, readConfiguration, formatDiagnostics, Diagnostics, ParsedConfiguration} from './perform-compile';
@@ -31,7 +32,8 @@ export function main(
   if (options.disableTransformerPipeline) {
     return disabledTransformerPipelineNgcMain(parsedArgs, consoleError);
   }
-  const {diagnostics: compileDiags} = performCompilation(rootNames, options);
+  const {diagnostics: compileDiags} =
+      performCompilation({rootNames, options, emitCallback: createEmitCallback(options)});
   return Promise.resolve(reportErrorsAndExit(options, compileDiags, consoleError));
 }
 
@@ -42,8 +44,43 @@ export function mainSync(
   if (configErrors.length) {
     return reportErrorsAndExit(options, configErrors, consoleError);
   }
-  const {diagnostics: compileDiags} = performCompilation(rootNames, options);
+  const {diagnostics: compileDiags} =
+      performCompilation({rootNames, options, emitCallback: createEmitCallback(options)});
   return reportErrorsAndExit(options, compileDiags, consoleError);
+}
+
+function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback {
+  const tsickleOptions: tsickle.TransformerOptions = {
+    googmodule: false,
+    untyped: true,
+    convertIndexImportShorthand: true,
+    transformDecorators: options.annotationsAs !== 'decorators',
+    transformTypesToClosure: options.annotateForClosureCompiler,
+  };
+
+  const tsickleHost: tsickle.TransformerHost = {
+    shouldSkipTsickleProcessing: (fileName) => /\.d\.ts$/.test(fileName),
+    pathToModuleName: (context, importPath) => '',
+    shouldIgnoreWarningsForPath: (filePath) => false,
+    fileNameToModuleId: (fileName) => fileName,
+  };
+
+  return ({
+           program,
+           targetSourceFile,
+           writeFile,
+           cancellationToken,
+           emitOnlyDtsFiles,
+           customTransformers = {},
+           host,
+           options
+         }) =>
+             tsickle.emitWithTsickle(
+                 program, tsickleHost, tsickleOptions, host, options, targetSourceFile, writeFile,
+                 cancellationToken, emitOnlyDtsFiles, {
+                   beforeTs: customTransformers.before,
+                   afterTs: customTransformers.after,
+                 });
 }
 
 function readCommandLineAndConfiguration(args: any): ParsedConfiguration {
