@@ -67,7 +67,7 @@ export function createAotCompiler(compilerHost: AotCompilerHost, options: AotCom
       new PipeResolver(staticReflector), summaryResolver, elementSchemaRegistry, normalizer,
       console, symbolCache, staticReflector);
   // TODO(vicb): do not pass options.i18nFormat here
-  const viewCompiler = new ViewCompiler(config, staticReflector, elementSchemaRegistry);
+  const viewCompiler = new ViewCompiler(staticReflector);
   const compiler = new AotCompiler(
       config, compilerHost, staticReflector, resolver, tmplParser, new StyleCompiler(urlResolver),
       viewCompiler, new NgModuleCompiler(staticReflector), new TypeScriptEmitter(), summaryResolver,
