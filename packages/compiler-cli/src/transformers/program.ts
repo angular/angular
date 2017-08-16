@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompiler, AotCompilerHost, AotCompilerOptions, GeneratedFile, NgAnalyzedModules, createAotCompiler, getParseErrors, isSyntaxError, toTypeScript} from '@angular/compiler';
-import {MissingTranslationStrategy} from '@angular/core';
+import {AotCompiler, AotCompilerHost, AotCompilerOptions, GeneratedFile, NgAnalyzedModules, core, createAotCompiler, getParseErrors, isSyntaxError, toTypeScript} from '@angular/compiler';
 import {createBundleIndexHost} from '@angular/tsc-wrapped';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -337,14 +336,14 @@ export function createProgram(
 
 // Compute the AotCompiler options
 function getAotCompilerOptions(options: CompilerOptions): AotCompilerOptions {
-  let missingTranslation = MissingTranslationStrategy.Warning;
+  let missingTranslation = core.MissingTranslationStrategy.Warning;
 
   switch (options.i18nInMissingTranslations) {
     case 'ignore':
-      missingTranslation = MissingTranslationStrategy.Ignore;
+      missingTranslation = core.MissingTranslationStrategy.Ignore;
       break;
     case 'error':
-      missingTranslation = MissingTranslationStrategy.Error;
+      missingTranslation = core.MissingTranslationStrategy.Error;
       break;
   }
 
@@ -358,7 +357,7 @@ function getAotCompilerOptions(options: CompilerOptions): AotCompilerOptions {
   } else {
     // No translations are provided, ignore any errors
     // We still go through i18n to remove i18n attributes
-    missingTranslation = MissingTranslationStrategy.Ignore;
+    missingTranslation = core.MissingTranslationStrategy.Ignore;
   }
 
   return {

@@ -11,7 +11,6 @@ import {CompilerConfig, preserveWhitespacesDefault} from '@angular/compiler/src/
 import {DirectiveNormalizer} from '@angular/compiler/src/directive_normalizer';
 import {ResourceLoader} from '@angular/compiler/src/resource_loader';
 import {MockResourceLoader} from '@angular/compiler/testing/src/resource_loader_mock';
-import {TEST_COMPILER_PROVIDERS} from '@angular/compiler/testing/src/test_bindings';
 import {ViewEncapsulation} from '@angular/core/src/metadata/view';
 import {TestBed} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
@@ -19,6 +18,7 @@ import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@ang
 import {noUndefined} from '../src/util';
 
 import {SpyResourceLoader} from './spies';
+import {TEST_COMPILER_PROVIDERS} from './test_bindings';
 
 const SOME_MODULE_URL = 'package:some/module/a.js';
 const SOME_HTTP_MODULE_URL = 'http://some/module/a.js';

@@ -6,11 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ViewEncapsulation, ɵstringify as stringify} from '@angular/core';
-
 import {CompileAnimationEntryMetadata, CompileDirectiveMetadata, CompileStylesheetMetadata, CompileTemplateMetadata, templateSourceUrl} from './compile_metadata';
 import {CompilerConfig, preserveWhitespacesDefault} from './config';
-import {CompilerInjectable} from './injectable';
+import {ViewEncapsulation} from './core';
 import * as html from './ml_parser/ast';
 import {HtmlParser} from './ml_parser/html_parser';
 import {InterpolationConfig} from './ml_parser/interpolation_config';
@@ -18,7 +16,7 @@ import {ResourceLoader} from './resource_loader';
 import {extractStyleUrls, isStyleUrlResolvable} from './style_url_resolver';
 import {PreparsedElementType, preparseElement} from './template_parser/template_preparser';
 import {UrlResolver} from './url_resolver';
-import {SyncAsync, isDefined, syntaxError} from './util';
+import {SyncAsync, isDefined, stringify, syntaxError} from './util';
 
 export interface PrenormalizedTemplateMetadata {
   ngModuleType: any;
@@ -34,7 +32,6 @@ export interface PrenormalizedTemplateMetadata {
   preserveWhitespaces: boolean|null;
 }
 
-@CompilerInjectable()
 export class DirectiveNormalizer {
   private _resourceLoaderCache = new Map<string, SyncAsync<string>>();
 

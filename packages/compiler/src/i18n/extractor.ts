@@ -10,8 +10,6 @@
 /**
  * Extract i18n messages from source code
  */
-import {ViewEncapsulation, ɵConsole as Console} from '@angular/core';
-
 import {analyzeAndValidateNgModules, extractProgramSymbols} from '../aot/compiler';
 import {createAotUrlResolver} from '../aot/compiler_factory';
 import {StaticReflector} from '../aot/static_reflector';
@@ -20,6 +18,7 @@ import {StaticSymbolResolver, StaticSymbolResolverHost} from '../aot/static_symb
 import {AotSummaryResolver, AotSummaryResolverHost} from '../aot/summary_resolver';
 import {CompileDirectiveMetadata} from '../compile_metadata';
 import {CompilerConfig} from '../config';
+import {ViewEncapsulation} from '../core';
 import {DirectiveNormalizer} from '../directive_normalizer';
 import {DirectiveResolver} from '../directive_resolver';
 import {CompileMetadataResolver} from '../metadata_resolver';
@@ -32,6 +31,7 @@ import {DomElementSchemaRegistry} from '../schema/dom_element_schema_registry';
 import {syntaxError} from '../util';
 
 import {MessageBundle} from './message_bundle';
+
 
 
 /**
@@ -110,7 +110,7 @@ export class Extractor {
     const resolver = new CompileMetadataResolver(
         config, new NgModuleResolver(staticReflector), new DirectiveResolver(staticReflector),
         new PipeResolver(staticReflector), summaryResolver, elementSchemaRegistry, normalizer,
-        new Console(), symbolCache, staticReflector);
+        console, symbolCache, staticReflector);
 
     // TODO(vicb): implicit tags & attributes
     const messageBundle = new MessageBundle(htmlParser, [], {}, locale);

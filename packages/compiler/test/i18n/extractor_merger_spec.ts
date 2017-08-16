@@ -253,7 +253,7 @@ export function main() {
       });
 
       it('should extract from attributes in translatable ICUs', () => {
-        expect(extract(`<!-- i18n -->{count, plural, =0 {<p><b i18n-title="m|d@@i" 
+        expect(extract(`<!-- i18n -->{count, plural, =0 {<p><b i18n-title="m|d@@i"
                  title="msg"></b></p>}}<!-- /i18n -->`))
             .toEqual([
               [['msg'], 'm', 'd', 'i'],

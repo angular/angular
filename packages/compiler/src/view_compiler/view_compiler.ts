@@ -6,15 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, ɵArgumentType as ArgumentType, ɵBindingFlags as BindingFlags, ɵDepFlags as DepFlags, ɵNodeFlags as NodeFlags, ɵQueryBindingType as QueryBindingType, ɵQueryValueType as QueryValueType, ɵViewFlags as ViewFlags, ɵelementEventFullName as elementEventFullName} from '@angular/core';
-
 import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompilePipeSummary, CompileProviderMetadata, CompileTokenMetadata, CompileTypeMetadata, rendererTypeName, tokenReference, viewClassName} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
 import {BuiltinConverter, EventHandlerVars, LocalResolver, convertActionBinding, convertPropertyBinding, convertPropertyBindingBuiltins} from '../compiler_util/expression_converter';
 import {CompilerConfig} from '../config';
+import {ArgumentType, BindingFlags, ChangeDetectionStrategy, DepFlags, NodeFlags, QueryBindingType, QueryValueType, ViewFlags} from '../core';
 import {AST, ASTWithSource, Interpolation} from '../expression_parser/ast';
 import {Identifiers} from '../identifiers';
-import {CompilerInjectable} from '../injectable';
 import {LifecycleHooks} from '../lifecycle_reflector';
 import {isNgContainer} from '../ml_parser/tags';
 import * as o from '../output/output_ast';
@@ -35,7 +33,6 @@ export class ViewCompileResult {
   constructor(public viewClassVar: string, public rendererTypeVar: string) {}
 }
 
-@CompilerInjectable()
 export class ViewCompiler {
   constructor(
       private _config: CompilerConfig, private _reflector: CompileReflector,
@@ -1071,4 +1068,8 @@ function calcStaticDynamicQueryFlags(
     flags |= NodeFlags.DynamicQuery;
   }
   return flags;
+}
+
+export function elementEventFullName(target: string | null, name: string): string {
+  return target ? `${target}:${name}` : name;
 }

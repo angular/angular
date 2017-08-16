@@ -7,8 +7,8 @@
  */
 
 import {DatePipe} from '@angular/common';
-import {JitReflector} from '@angular/compiler';
 import {PipeResolver} from '@angular/compiler/src/pipe_resolver';
+import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_reflector';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 
 export function main() {

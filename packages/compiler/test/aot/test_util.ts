@@ -611,7 +611,15 @@ export function expectNoDiagnostics(program: ts.Program) {
 }
 
 export function isSource(fileName: string): boolean {
-  return !/\.d\.ts$/.test(fileName) && /\.ts$/.test(fileName);
+  return !isDts(fileName) && /\.ts$/.test(fileName);
+}
+
+function isDts(fileName: string): boolean {
+  return /\.d.ts$/.test(fileName);
+}
+
+function isSourceOrDts(fileName: string): boolean {
+  return /\.ts$/.test(fileName);
 }
 
 export function compile(
@@ -628,7 +636,8 @@ export function compile(
   const preCompile = options.preCompile || (() => {});
   const postCompile = options.postCompile || expectNoDiagnostics;
   const rootDirArr = toMockFileArray(rootDirs);
-  const scriptNames = rootDirArr.map(entry => entry.fileName).filter(isSource);
+  const scriptNames = rootDirArr.map(entry => entry.fileName)
+                          .filter(options.useSummaries ? isSource : isSourceOrDts);
 
   const host = new MockCompilerHost(scriptNames, arrayToMockDir(rootDirArr));
   const aotHost = new MockAotCompilerHost(host);
@@ -659,9 +668,11 @@ export function compile(
   }
   let outDir: MockDirectory = {};
   if (emit) {
-    outDir = arrayToMockDir(toMockFileArray([
-                              host.writtenFiles, host.overrides
-                            ]).filter((entry) => !isSource(entry.fileName)));
+    const dtsFilesWithGenFiles = new Set<string>(genFiles.map(gf => gf.srcFileUrl).filter(isDts));
+    outDir =
+        arrayToMockDir(toMockFileArray([host.writtenFiles, host.overrides])
+                           .filter((entry) => !isSource(entry.fileName))
+                           .concat(rootDirArr.filter(e => dtsFilesWithGenFiles.has(e.fileName))));
   }
   return {genFiles, outDir};
 }

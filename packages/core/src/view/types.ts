@@ -82,7 +82,7 @@ export interface NodeCheckFn {
    v3?: any, v4?: any, v5?: any, v6?: any, v7?: any, v8?: any, v9?: any): any;
 }
 
-export const enum ArgumentType {Inline, Dynamic}
+export const enum ArgumentType {Inline = 0, Dynamic = 1}
 
 export interface ViewHandleEventFn {
   (view: ViewData, nodeIndex: number, eventName: string, event: any): boolean;
@@ -225,11 +225,11 @@ export interface OutputDef {
 export const enum OutputType {ElementOutput, DirectiveOutput}
 
 export const enum QueryValueType {
-  ElementRef,
-  RenderElement,
-  TemplateRef,
-  ViewContainerRef,
-  Provider
+  ElementRef = 0,
+  RenderElement = 1,
+  TemplateRef = 2,
+  ViewContainerRef = 3,
+  Provider = 4
 }
 
 export interface ElementDef {
@@ -301,7 +301,7 @@ export interface QueryBindingDef {
   bindingType: QueryBindingType;
 }
 
-export const enum QueryBindingType {First, All}
+export const enum QueryBindingType {First = 0, All = 1}
 
 export interface NgContentDef {
   /**
