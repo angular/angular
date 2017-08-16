@@ -17,6 +17,7 @@ import {
   ChangeDetectorRef,
   ViewChild,
   ViewEncapsulation,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import {animate, AnimationEvent, state, style, transition, trigger} from '@angular/animations';
 import {DOCUMENT} from '@angular/platform-browser';
@@ -50,6 +51,7 @@ export function throwMdDialogContentAlreadyAttachedError() {
   templateUrl: 'dialog-container.html',
   styleUrls: ['dialog.css'],
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger('slideDialog', [
       // Note: The `enter` animation doesn't transition to something like `translate3d(0, 0, 0)
@@ -117,7 +119,13 @@ export class MdDialogContainer extends BasePortalHost {
     }
 
     this._savePreviouslyFocusedElement();
-    return this._portalHost.attachComponentPortal(portal);
+
+    const componentRef = this._portalHost.attachComponentPortal(portal);
+
+    // Ensure that the initial view change are picked up.
+    componentRef.changeDetectorRef.markForCheck();
+
+    return componentRef;
   }
 
   /**
@@ -130,7 +138,12 @@ export class MdDialogContainer extends BasePortalHost {
     }
 
     this._savePreviouslyFocusedElement();
-    return this._portalHost.attachTemplatePortal(portal);
+
+    const locals = this._portalHost.attachTemplatePortal(portal);
+
+    this._changeDetectorRef.markForCheck();
+
+    return locals;
   }
 
   /** Moves the focus inside the focus trap. */
