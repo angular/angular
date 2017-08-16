@@ -137,7 +137,7 @@ export const COMPILER_PROVIDERS = <StaticProvider[]>[
                       [Optional, ERROR_COLLECTOR_TOKEN]]},
   DEFAULT_PACKAGE_URL_PROVIDER,
   { provide: StyleCompiler, deps: [UrlResolver]},
-  { provide: ViewCompiler, deps: [CompilerConfig, CompileReflector, ElementSchemaRegistry]},
+  { provide: ViewCompiler, deps: [CompileReflector]},
   { provide: NgModuleCompiler, deps: [CompileReflector] },
   { provide: CompilerConfig, useValue: new CompilerConfig()},
   { provide: Compiler, useClass: CompilerImpl, deps: [Injector, CompileMetadataResolver,
