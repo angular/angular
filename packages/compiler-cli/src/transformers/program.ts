@@ -10,13 +10,12 @@ import {AotCompiler, AotCompilerHost, AotCompilerOptions, GeneratedFile, NgAnaly
 import {createBundleIndexHost} from '@angular/tsc-wrapped';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as tsickle from 'tsickle';
 import * as ts from 'typescript';
 
 import {BaseAotCompilerHost} from '../compiler_host';
 import {TypeChecker} from '../diagnostics/check_types';
 
-import {CompilerHost, CompilerOptions, Diagnostic, EmitFlags, EmitResult, Program} from './api';
+import {CompilerHost, CompilerOptions, CustomTransformers, Diagnostic, EmitFlags, Program, TsEmitArguments, TsEmitCallback} from './api';
 import {LowerMetadataCache, getExpressionLoweringTransformFactory} from './lower_expressions';
 import {getAngularEmitterTransformFactory} from './node_emitter_transform';
 
@@ -29,6 +28,13 @@ const emptyModules: NgAnalyzedModules = {
   ngModuleByPipeOrDirective: new Map(),
   files: []
 };
+
+const defaultEmitCallback: TsEmitCallback =
+    ({program, targetSourceFile, writeFile, cancellationToken, emitOnlyDtsFiles,
+      customTransformers}) =>
+        program.emit(
+            targetSourceFile, writeFile, cancellationToken, emitOnlyDtsFiles, customTransformers);
+
 
 class AngularCompilerProgram implements Program {
   private tsProgram: ts.Program;
@@ -128,35 +134,35 @@ class AngularCompilerProgram implements Program {
 
   getLazyRoutes(cancellationToken?: ts.CancellationToken): {[route: string]: string} { return {}; }
 
-  emit({emitFlags = EmitFlags.Default, cancellationToken}:
-           {emitFlags?: EmitFlags, cancellationToken?: ts.CancellationToken}): EmitResult {
+  emit({emitFlags = EmitFlags.Default, cancellationToken, customTransformers,
+        emitCallback = defaultEmitCallback}: {
+    emitFlags?: EmitFlags,
+    cancellationToken?: ts.CancellationToken,
+    customTransformers?: CustomTransformers,
+    emitCallback?: TsEmitCallback
+  }): ts.EmitResult {
     const emitMap = new Map<string, string>();
-
-    const tsickleCompilerHostOptions: tsickle.TransformerOptions = {
-      googmodule: false,
-      untyped: true,
-      convertIndexImportShorthand: true,
-      transformDecorators: this.options.annotationsAs !== 'decorators',
-      transformTypesToClosure: this.options.annotateForClosureCompiler,
-    };
-
-    const tsickleHost: tsickle.TransformerHost = {
-      shouldSkipTsickleProcessing: (fileName) => /\.d\.ts$/.test(fileName),
-      pathToModuleName: (context, importPath) => '',
-      shouldIgnoreWarningsForPath: (filePath) => false,
-      fileNameToModuleId: (fileName) => fileName,
-    };
 
     const expectedOut = this.options.expectedOut ?
         this.options.expectedOut.map(f => path.resolve(process.cwd(), f)) :
         undefined;
 
-    const result = tsickle.emitWithTsickle(
-        this.programWithStubs, tsickleHost, tsickleCompilerHostOptions, this.host, this.options,
-        /* targetSourceFile */ undefined,
-        createWriteFileCallback(emitFlags, this.host, this.metadataCache, emitMap, expectedOut),
-        cancellationToken, (emitFlags & (EmitFlags.DTS | EmitFlags.JS)) == EmitFlags.DTS,
-        this.calculateTransforms());
+    // Ensure that expected output files exist.
+    for (const out of expectedOut || []) {
+      this.host.writeFile(out, '', false);
+    }
+
+    const emitResult = emitCallback({
+      program: this.programWithStubs,
+      host: this.host,
+      options: this.options,
+      targetSourceFile: undefined,
+      writeFile:
+          createWriteFileCallback(emitFlags, this.host, this.metadataCache, emitMap, expectedOut),
+      cancellationToken,
+      emitOnlyDtsFiles: (emitFlags & (EmitFlags.DTS | EmitFlags.JS)) == EmitFlags.DTS,
+      customTransformers: this.calculateTransforms(customTransformers)
+    });
 
     this.generatedFiles.forEach(file => {
       // In order not to replicate the TS calculation of the out folder for files
@@ -174,12 +180,7 @@ class AngularCompilerProgram implements Program {
       }
     });
 
-    // Ensure that expected output files exist.
-    for (const out of expectedOut || []) {
-      fs.appendFileSync(out, '', 'utf8');
-    }
-
-    return result;
+    return emitResult;
   }
 
   // Private members
@@ -228,7 +229,7 @@ class AngularCompilerProgram implements Program {
     return this.generatedFiles && this._generatedFileDiagnostics !;
   }
 
-  private calculateTransforms(): tsickle.EmitTransformers {
+  private calculateTransforms(customTransformers?: CustomTransformers): ts.CustomTransformers {
     const beforeTs: ts.TransformerFactory<ts.SourceFile>[] = [];
     if (!this.options.disableExpressionLowering) {
       beforeTs.push(getExpressionLoweringTransformFactory(this.metadataCache));
@@ -236,7 +237,11 @@ class AngularCompilerProgram implements Program {
     if (!this.options.skipTemplateCodegen) {
       beforeTs.push(getAngularEmitterTransformFactory(this.generatedFiles));
     }
-    return {beforeTs};
+    if (customTransformers && customTransformers.beforeTs) {
+      beforeTs.push(...customTransformers.beforeTs);
+    }
+    const afterTs = customTransformers ? customTransformers.afterTs : undefined;
+    return {before: beforeTs, after: afterTs};
   }
 
   private catchAnalysisError(e: any): NgAnalyzedModules {
@@ -370,7 +375,8 @@ function getAotCompilerOptions(options: CompilerOptions): AotCompilerOptions {
 }
 
 function writeMetadata(
-    emitFilePath: string, sourceFile: ts.SourceFile, metadataCache: LowerMetadataCache) {
+    host: ts.CompilerHost, emitFilePath: string, sourceFile: ts.SourceFile,
+    metadataCache: LowerMetadataCache) {
   if (/\.js$/.test(emitFilePath)) {
     const path = emitFilePath.replace(/\.js$/, '.metadata.json');
 
@@ -386,7 +392,7 @@ function writeMetadata(
     const metadata = metadataCache.getMetadata(collectableFile);
     if (metadata) {
       const metadataText = JSON.stringify([metadata]);
-      fs.writeFileSync(path, metadataText, {encoding: 'utf-8'});
+      host.writeFile(path, metadataText, false);
     }
   }
 }
@@ -412,7 +418,7 @@ function createWriteFileCallback(
       host.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
 
       if (srcFile && !generatedFile && (emitFlags & EmitFlags.Metadata) != 0) {
-        writeMetadata(fileName, srcFile, metadataCache);
+        writeMetadata(host, fileName, srcFile, metadataCache);
       }
     }
   };

@@ -23,7 +23,7 @@ function main(args: string[]) {
   const {basePath} = calcProjectFileAndBasePath(project);
   const ngOptions = createNgCompilerOptions(basePath, config, tsOptions);
 
-  const {diagnostics} = performCompilation(files, ngOptions);
+  const {diagnostics} = performCompilation({rootNames: files, options: ngOptions});
   if (diagnostics.length) {
     console.error(formatDiagnostics(ngOptions, diagnostics));
   }
