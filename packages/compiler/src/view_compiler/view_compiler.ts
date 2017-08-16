@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, ɵArgumentType as ArgumentType, ɵBindingFlags as BindingFlags, ɵDepFlags as DepFlags, ɵNodeFlags as NodeFlags, ɵQueryBindingType as QueryBindingType, ɵQueryValueType as QueryValueType, ɵViewFlags as ViewFlags, ɵelementEventFullName as elementEventFullName} from '@angular/core';
+import {ChangeDetectionStrategy, ɵArgumentType as ArgumentType, ɵBindingFlags as BindingFlags, ɵNodeFlags as NodeFlags, ɵQueryBindingType as QueryBindingType, ɵQueryValueType as QueryValueType, ɵViewFlags as ViewFlags, ɵelementEventFullName as elementEventFullName} from '@angular/core';
 
-import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompilePipeSummary, CompileProviderMetadata, CompileTokenMetadata, CompileTypeMetadata, rendererTypeName, tokenReference, viewClassName} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompilePipeSummary, rendererTypeName, tokenReference, viewClassName} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
 import {BuiltinConverter, EventHandlerVars, LocalResolver, convertActionBinding, convertPropertyBinding, convertPropertyBindingBuiltins} from '../compiler_util/expression_converter';
-import {CompilerConfig} from '../config';
 import {AST, ASTWithSource, Interpolation} from '../expression_parser/ast';
 import {Identifiers} from '../identifiers';
 import {CompilerInjectable} from '../injectable';
@@ -20,8 +19,7 @@ import {isNgContainer} from '../ml_parser/tags';
 import * as o from '../output/output_ast';
 import {convertValueToOutputAst} from '../output/value_util';
 import {ParseSourceSpan} from '../parse_util';
-import {ElementSchemaRegistry} from '../schema/element_schema_registry';
-import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ProviderAst, ProviderAstType, QueryMatch, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '../template_parser/template_ast';
+import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ProviderAst, QueryMatch, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '../template_parser/template_ast';
 import {OutputContext} from '../util';
 
 import {componentFactoryResolverProviderDef, depDef, lifecycleHookToNodeFlag, providerDef} from './provider_compiler';
@@ -37,9 +35,7 @@ export class ViewCompileResult {
 
 @CompilerInjectable()
 export class ViewCompiler {
-  constructor(
-      private _config: CompilerConfig, private _reflector: CompileReflector,
-      private _schemaRegistry: ElementSchemaRegistry) {}
+  constructor(private _reflector: CompileReflector) {}
 
   compileComponent(
       outputCtx: OutputContext, component: CompileDirectiveMetadata, template: TemplateAst[],
@@ -689,7 +685,8 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     return null;
   }
 
-  createLiteralArrayConverter(sourceSpan: ParseSourceSpan, argCount: number): BuiltinConverter {
+  private _createLiteralArrayConverter(sourceSpan: ParseSourceSpan, argCount: number):
+      BuiltinConverter {
     if (argCount === 0) {
       const valueExpr = o.importExpr(Identifiers.EMPTY_ARRAY);
       return () => valueExpr;
@@ -706,8 +703,8 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     return (args: o.Expression[]) => callCheckStmt(nodeIndex, args);
   }
 
-  createLiteralMapConverter(sourceSpan: ParseSourceSpan, keys: {key: string, quoted: boolean}[]):
-      BuiltinConverter {
+  private _createLiteralMapConverter(
+      sourceSpan: ParseSourceSpan, keys: {key: string, quoted: boolean}[]): BuiltinConverter {
     if (keys.length === 0) {
       const valueExpr = o.importExpr(Identifiers.EMPTY_MAP);
       return () => valueExpr;
@@ -725,7 +722,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     return (args: o.Expression[]) => callCheckStmt(nodeIndex, args);
   }
 
-  createPipeConverter(expression: UpdateExpression, name: string, argCount: number):
+  private _createPipeConverter(expression: UpdateExpression, name: string, argCount: number):
       BuiltinConverter {
     const pipe = this.usedPipes.find((pipeSummary) => pipeSummary.name === name) !;
     if (pipe.pure) {
@@ -786,7 +783,13 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     return nodeIndex;
   }
 
-  // Attention: This might create new nodeDefs (for pipes and literal arrays and literal maps)!
+  /**
+   * For the AST in `UpdateExpression.value`:
+   * - create nodes for pipes, literal arrays and, literal maps,
+   * - update the AST to replace pipes, literal arrays and, literal maps with calls to check fn.
+   *
+   * WARNING: This might create new nodeDefs (for pipes and literal arrays and literal maps)!
+   */
   private _preprocessUpdateExpression(expression: UpdateExpression): UpdateExpression {
     return {
       nodeIndex: expression.nodeIndex,
@@ -795,13 +798,13 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
       context: expression.context,
       value: convertPropertyBindingBuiltins(
           {
-            createLiteralArrayConverter: (argCount: number) => this.createLiteralArrayConverter(
+            createLiteralArrayConverter: (argCount: number) => this._createLiteralArrayConverter(
                                              expression.sourceSpan, argCount),
             createLiteralMapConverter:
                 (keys: {key: string, quoted: boolean}[]) =>
-                    this.createLiteralMapConverter(expression.sourceSpan, keys),
+                    this._createLiteralMapConverter(expression.sourceSpan, keys),
             createPipeConverter: (name: string, argCount: number) =>
-                                     this.createPipeConverter(expression, name, argCount)
+                                     this._createPipeConverter(expression, name, argCount)
           },
           expression.value)
     };
