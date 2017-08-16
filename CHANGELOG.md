@@ -1,3 +1,20 @@
+<a name="4.3.5"></a>
+## [4.3.5](https://github.com/angular/angular/compare/4.3.4...4.3.5) (2017-08-16)
+
+
+### Bug Fixes
+
+* **aio:** skip PWA test when redeploying non-public commit ([b9c1c91](https://github.com/angular/angular/commit/b9c1c91))
+* **core:** forbid destroyed views to be inserted or moved in VC ([972538b](https://github.com/angular/angular/commit/972538b)), closes [#18615](https://github.com/angular/angular/issues/18615)
+* **forms:** re-assigning options should not clear select ([a1624f2](https://github.com/angular/angular/commit/a1624f2)), closes [#18330](https://github.com/angular/angular/issues/18330)
+
+
+### Performance Improvements
+
+* **aio:** update to new version of build-optimizer ([d7be4f1](https://github.com/angular/angular/commit/d7be4f1))
+
+
+
 <a name="4.3.4"></a>
 ## [4.3.4](https://github.com/angular/angular/compare/4.3.3...4.3.4) (2017-08-10)
 
