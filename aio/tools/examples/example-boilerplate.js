@@ -4,6 +4,8 @@ const path = require('canonical-path');
 const shelljs = require('shelljs');
 const yargs = require('yargs');
 
+const ngPackagesInstaller = require('../ng-packages-installer');
+
 const SHARED_PATH = path.resolve(__dirname, 'shared');
 const SHARED_NODE_MODULES_PATH = path.resolve(SHARED_PATH, 'node_modules');
 const BOILERPLATE_BASE_PATH = path.resolve(SHARED_PATH, 'boilerplate');
@@ -46,23 +48,6 @@ const BOILERPLATE_PATHS = {
   ]
 };
 
-const ANGULAR_DIST_PATH = path.resolve(__dirname, '../../../dist');
-const ANGULAR_PACKAGES_PATH = path.resolve(ANGULAR_DIST_PATH, 'packages-dist');
-const ANGULAR_PACKAGES = [
-  'animations',
-  'common',
-  'compiler',
-  'compiler-cli',
-  'core',
-  'forms',
-  'http',
-  'platform-browser',
-  'platform-browser-dynamic',
-  'platform-server',
-  'router',
-  'upgrade',
-];
-
 const EXAMPLE_CONFIG_FILENAME = 'example-config.json';
 
 class ExampleBoilerPlate {
@@ -72,13 +57,8 @@ class ExampleBoilerPlate {
    * @param useLocal if true then overwrite the Angular library files with locally built ones
    */
   add(useLocal) {
-    // first install the shared node_modules
-    this.installNodeModules(SHARED_PATH);
-
-    // Replace the Angular packages with those from the dist folder, if necessary
-    if (useLocal) {
-      ANGULAR_PACKAGES.forEach(packageName => this.overridePackage(ANGULAR_PACKAGES_PATH, packageName));
-    }
+    // Install the shared `node_modules/` (if necessary overwrite Angular packages from npm with local ones).
+    this.installNodeModules(SHARED_PATH, useLocal);
 
     // Get all the examples folders, indicated by those that contain a `example-config.json` file
     const exampleFolders = this.getFoldersContaining(EXAMPLES_BASE_PATH, EXAMPLE_CONFIG_FILENAME, 'node_modules');
@@ -118,15 +98,14 @@ class ExampleBoilerPlate {
       .argv;
   }
 
-  installNodeModules(basePath) {
+  installNodeModules(basePath, useLocal) {
     shelljs.exec('yarn', {cwd: basePath});
-  }
 
-  overridePackage(basePath, packageName) {
-    const sourceFolder = path.resolve(basePath, packageName);
-    const destinationFolder = path.resolve(SHARED_NODE_MODULES_PATH, '@angular', packageName);
-    shelljs.rm('-rf', destinationFolder);
-    fs.copySync(sourceFolder, destinationFolder);
+    if (useLocal) {
+      ngPackagesInstaller.overwritePackages(basePath);
+    } else {
+      ngPackagesInstaller.restorePackages(basePath);
+    }
   }
 
   getFoldersContaining(basePath, filename, ignore) {
