@@ -1,5 +1,5 @@
 import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {Component, ViewChild} from '@angular/core';
+import {Component, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {By} from '@angular/platform-browser';
 import {ViewportRuler} from '@angular/cdk/overlay';
@@ -168,6 +168,23 @@ describe('MdTabGroup', () => {
 
       expect(testElement.querySelectorAll('.mat-ripple-element').length)
         .toBe(0, 'Expected no ripple to show up on label mousedown.');
+    });
+
+    it('should set the isActive flag on each of the tabs', () => {
+      fixture.detectChanges();
+
+      const tabs = fixture.componentInstance.tabs.toArray();
+
+      expect(tabs[0].isActive).toBe(false);
+      expect(tabs[1].isActive).toBe(true);
+      expect(tabs[2].isActive).toBe(false);
+
+      fixture.componentInstance.selectedIndex = 2;
+      fixture.detectChanges();
+
+      expect(tabs[0].isActive).toBe(false);
+      expect(tabs[1].isActive).toBe(false);
+      expect(tabs[2].isActive).toBe(true);
     });
   });
 
@@ -364,6 +381,7 @@ describe('nested MdTabGroup with enabled animations', () => {
   `
 })
 class SimpleTabsTestApp {
+  @ViewChildren(MdTab) tabs: QueryList<MdTab>;
   selectedIndex: number = 1;
   focusEvent: any;
   selectEvent: any;

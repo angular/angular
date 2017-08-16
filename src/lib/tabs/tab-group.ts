@@ -170,6 +170,7 @@ export class MdTabGroup extends _MdTabGroupMixinBase implements AfterContentInit
     // Setup the position for each tab and optionally setup an origin on the next selected tab.
     this._tabs.forEach((tab: MdTab, index: number) => {
       tab.position = index - indexToSelect;
+      tab.isActive = index === indexToSelect;
 
       // If there is already a selected tab, then set up an origin for the next selected tab
       // if it doesn't have one already.
