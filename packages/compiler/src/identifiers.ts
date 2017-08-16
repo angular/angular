@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileIdentifierMetadata, CompileTokenMetadata} from './compile_metadata';
+import {CompileTokenMetadata} from './compile_metadata';
 import {CompileReflector} from './compile_reflector';
-import {Attribute, Component, Directive, HostBinding, HostListener, Inject, Input, NgModule, Output, Pipe, Query} from './core';
 import * as o from './output/output_ast';
 
 const CORE = '@angular/core';
