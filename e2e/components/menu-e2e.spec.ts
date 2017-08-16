@@ -76,7 +76,8 @@ describe('menu', () => {
 
   it('should mirror classes on host to menu template in overlay', () => {
     page.trigger().click();
-    expect(page.menu().getAttribute('class')).toContain('mat-menu-panel custom');
+    expect(page.menu().getAttribute('class')).toContain('mat-menu-panel');
+    expect(page.menu().getAttribute('class')).toContain('custom');
   });
 
   describe('keyboard events', () => {

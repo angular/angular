@@ -31,7 +31,6 @@ describe('MdSidenav', () => {
       let fixture = TestBed.createComponent(BasicTestApp);
 
       fixture.detectChanges();
-      tick();
 
       let testComponent: BasicTestApp = fixture.debugElement.componentInstance;
       let sidenav = fixture.debugElement.query(By.directive(MdSidenav));
@@ -44,6 +43,7 @@ describe('MdSidenav', () => {
       expect(testComponent.closeCount).toBe(0);
 
       tick();
+      fixture.detectChanges();
 
       expect(sidenav.componentInstance._isAnimating).toBe(false);
       expect(testComponent.openCount).toBe(1);
@@ -58,6 +58,7 @@ describe('MdSidenav', () => {
       expect(testComponent.closeCount).toBe(0);
 
       tick();
+      fixture.detectChanges();
 
       expect(testComponent.openCount).toBe(1);
       expect(testComponent.closeCount).toBe(1);
@@ -105,7 +106,6 @@ describe('MdSidenav', () => {
       let fixture = TestBed.createComponent(BasicTestApp);
 
       fixture.detectChanges();
-      tick();
 
       let testComponent: BasicTestApp = fixture.debugElement.componentInstance;
       let sidenav = fixture.debugElement.query(By.directive(MdSidenav));
@@ -162,7 +162,6 @@ describe('MdSidenav', () => {
       let fixture = TestBed.createComponent(BasicTestApp);
 
       fixture.detectChanges();
-      tick();
 
       let sidenav = fixture.debugElement.query(By.directive(MdSidenav)).componentInstance;
       let openButton = fixture.componentInstance.openButton.nativeElement;

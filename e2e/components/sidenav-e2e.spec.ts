@@ -20,7 +20,9 @@ describe('sidenav', () => {
 
     it('should close again', () => {
       element(by.buttonText('Open sidenav')).click();
+      browser.sleep(50);
       element(by.buttonText('Open sidenav')).click();
+
       expect(sidenav.isDisplayed()).toBeFalsy();
     });
   });

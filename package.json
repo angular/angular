@@ -22,28 +22,29 @@
   "version": "2.0.0-beta.8",
   "license": "MIT",
   "engines": {
-    "node": ">= 5.4.1 < 7"
+    "node": ">= 5.4.1"
   },
   "dependencies": {
-    "@angular/animations": "~4.1.0",
-    "@angular/common": "~4.1.0",
-    "@angular/compiler": "~4.1.0",
-    "@angular/core": "~4.1.0",
-    "@angular/forms": "~4.1.0",
-    "@angular/http": "~4.1.0",
-    "@angular/platform-browser": "~4.1.0",
+    "@angular/animations": "~4.3.0",
+    "@angular/common": "~4.3.0",
+    "@angular/compiler": "~4.3.0",
+    "@angular/core": "~4.3.0",
+    "@angular/forms": "~4.3.0",
+    "@angular/http": "~4.3.0",
+    "@angular/platform-browser": "~4.3.0",
     "core-js": "^2.4.1",
     "rxjs": "^5.0.1",
     "systemjs": "0.19.43",
+    "tsickle": "^0.23.5",
     "tslib": "^1.7.1",
-    "zone.js": "^0.8.4"
+    "zone.js": "^0.8.12"
   },
   "devDependencies": {
-    "@angular/compiler-cli": "~4.1.0",
-    "@angular/platform-browser-dynamic": "~4.1.0",
-    "@angular/platform-server": "~4.1.0",
-    "@angular/router": "~4.1.0",
-    "@angular/tsc-wrapped": "~4.1.0",
+    "@angular/compiler-cli": "~4.3.0",
+    "@angular/platform-browser-dynamic": "~4.3.0",
+    "@angular/platform-server": "~4.3.0",
+    "@angular/router": "~4.3.0",
+    "@angular/tsc-wrapped": "~4.3.0",
     "@google-cloud/storage": "^1.1.1",
     "@types/chalk": "^0.4.31",
     "@types/fs-extra": "^3.0.1",

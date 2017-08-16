@@ -71,12 +71,13 @@ export class MdSidenavToggleResult {
         visibility: 'hidden',
       })),
       transition('void => open-instant', animate('0ms')),
-      transition('void <=> open', animate('400ms cubic-bezier(0.25, 0.8, 0.25, 1)'))
+      transition('void <=> open, open-instant => void',
+        animate('400ms cubic-bezier(0.25, 0.8, 0.25, 1)'))
     ])
   ],
   host: {
     'class': 'mat-sidenav',
-    '[@transform]': '_getAnimationState()',
+    '[@transform]': '_animationState',
     '(@transform.start)': '_onAnimationStart()',
     '(@transform.done)': '_onAnimationEnd($event)',
     '(keydown)': 'handleKeydown($event)',
@@ -128,6 +129,9 @@ export class MdSidenav implements AfterContentInit, OnDestroy {
 
   /** Whether the sidenav is animating. Used to prevent overlapping animations. */
   _isAnimating = false;
+
+  /** Current state of the sidenav animation. */
+  _animationState: 'open-instant' | 'open' | 'void' = 'void';
 
   /**
    * Promise that resolves when the open/close animation completes. It is here for backwards
@@ -186,7 +190,7 @@ export class MdSidenav implements AfterContentInit, OnDestroy {
   ngAfterContentInit() {
     this._focusTrap = this._focusTrapFactory.create(this._elementRef.nativeElement);
     this._focusTrap.enabled = this.isFocusTrapEnabled;
-    Promise.resolve().then(() => this._enableAnimations = true);
+    this._enableAnimations = true;
   }
 
   ngOnDestroy() {
@@ -223,6 +227,13 @@ export class MdSidenav implements AfterContentInit, OnDestroy {
   toggle(isOpen: boolean = !this.opened): Promise<MdSidenavToggleResult> {
     if (!this._isAnimating) {
       this._opened = isOpen;
+
+      if (isOpen) {
+        this._animationState = this._enableAnimations ? 'open' : 'open-instant';
+      } else {
+        this._animationState = 'void';
+      }
+
       this._currentTogglePromise = new Promise(resolve => {
         first.call(isOpen ? this.onOpen : this.onClose).subscribe(resolve);
       });
@@ -232,7 +243,7 @@ export class MdSidenav implements AfterContentInit, OnDestroy {
       }
     }
 
-    // TODO(crisbeto): This promise is here backwards-compatibility.
+    // TODO(crisbeto): This promise is here for backwards-compatibility.
     // It should be removed next time we do breaking changes in the sidenav.
     return this._currentTogglePromise!;
   }
@@ -246,17 +257,6 @@ export class MdSidenav implements AfterContentInit, OnDestroy {
       this.close();
       event.stopPropagation();
     }
-  }
-
-  /**
-   * Figures out the state of the sidenav animation.
-   */
-  _getAnimationState(): 'open-instant' | 'open' | 'void' {
-    if (this.opened) {
-      return this._enableAnimations ? 'open' : 'open-instant';
-    }
-
-    return 'void';
   }
 
   _onAnimationStart() {
@@ -273,8 +273,13 @@ export class MdSidenav implements AfterContentInit, OnDestroy {
       this.onClose.emit(new MdSidenavToggleResult('close', true));
     }
 
-    this._isAnimating = false;
-    this._currentTogglePromise = null;
+    // Note: as of Angular 4.3, the animations module seems to fire the `start` callback before
+    // the end if animations are disabled. Make this call async to ensure that it still fires
+    // at the appropriate time.
+    Promise.resolve().then(() => {
+      this._isAnimating = false;
+      this._currentTogglePromise = null;
+    });
   }
 
   get _width() {

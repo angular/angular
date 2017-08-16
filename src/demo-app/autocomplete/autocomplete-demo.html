@@ -29,7 +29,7 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
   <md-card>
 
     <div>Template-driven value (currentState): {{ currentState }}</div>
-    <div>Template-driven dirty: {{ modelDir?.dirty }}</div>
+    <div>Template-driven dirty: {{ modelDir ? modelDir.dirty : false }}</div>
 
     <!-- Added an ngIf below to test that autocomplete works with ngIf -->
     <md-form-field *ngIf="true">
