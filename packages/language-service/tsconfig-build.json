@@ -17,6 +17,7 @@
       "@angular/common": ["../../dist/packages/common"],
       "@angular/compiler": ["../../dist/packages/compiler"],
       "@angular/compiler-cli": ["../../dist/packages/compiler-cli"],
+      "@angular/compiler-cli/*": ["../../dist/packages/compiler-cli/*"],
       "@angular/http": ["../../dist/packages/http"],
       "@angular/platform-server": ["../../dist/packages/platform-server"],
       "@angular/platform-browser": ["../../dist/packages/platform-browser"],

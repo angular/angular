@@ -7,7 +7,7 @@
  */
 
 import {NgAnalyzedModules, StaticSymbol} from '@angular/compiler';
-import {DiagnosticTemplateInfo, getTemplateExpressionDiagnostics} from '@angular/compiler-cli';
+import {DiagnosticTemplateInfo, getTemplateExpressionDiagnostics} from '@angular/compiler-cli/src/language_services';
 
 import {AstResult} from './common';
 import {Declarations, Diagnostic, DiagnosticKind, Diagnostics, Span, TemplateSource} from './types';
