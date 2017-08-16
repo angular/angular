@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AngularCompilerOptions, AotCompilerHost, CompilerHost, ModuleResolutionHostAdapter} from '@angular/compiler-cli';
+import {AotCompilerHost} from '@angular/compiler';
+import {AngularCompilerOptions, CompilerHost, ModuleResolutionHostAdapter} from '@angular/compiler-cli/src/language_services';
 import * as ts from 'typescript';
 
 class ReflectorModuleModuleResolutionHost implements ts.ModuleResolutionHost {

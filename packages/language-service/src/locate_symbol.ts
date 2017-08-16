@@ -7,7 +7,7 @@
  */
 
 import {AST, Attribute, BoundDirectivePropertyAst, BoundEventAst, ElementAst, TemplateAst, TemplateAstPath, findNode, tokenReference} from '@angular/compiler';
-import {getExpressionScope} from '@angular/compiler-cli';
+import {getExpressionScope} from '@angular/compiler-cli/src/language_services';
 
 import {TemplateInfo} from './common';
 import {getExpressionSymbol} from './expressions';

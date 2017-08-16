@@ -7,7 +7,7 @@
  */
 
 import {AotSummaryResolver, CompileMetadataResolver, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, InterpolationConfig, JitSummaryResolver, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, SummaryResolver, analyzeNgModules, createOfflineCompileUrlResolver, extractProgramSymbols} from '@angular/compiler';
-import {AngularCompilerOptions, getClassMembersFromDeclaration, getPipesTable, getSymbolQuery} from '@angular/compiler-cli';
+import {AngularCompilerOptions, getClassMembersFromDeclaration, getPipesTable, getSymbolQuery} from '@angular/compiler-cli/src/language_services';
 import {ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 import * as fs from 'fs';
 import * as path from 'path';
