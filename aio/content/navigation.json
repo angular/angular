@@ -178,6 +178,11 @@
               "url": "guide/input-output",
               "title": "@Input and @Output Properties",
               "tooltip": "How to use @Input and @Output."
+            },
+            {
+              "url": "guide/template-expression-operators",
+              "title": "Template Expression Operators",
+              "tooltip": "Template expression operators and how to use them."
             }
           ]
         },

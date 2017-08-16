@@ -49,8 +49,6 @@ of a known directive, as it does in the following example:
 If the name fails to match an element event or an output property of a known directive,
 Angular reports an “unknown directive” error.
 
-For more on the `myClick` directive see the section
-on [aliasing input/output properties](guide/input-output#aliasing-inputoutput-properties).
 
 ## *$event* and event handling statements
 <!-- KW--This section could use a diagram (in progress- question about receiver)-->

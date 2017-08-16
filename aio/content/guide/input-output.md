@@ -70,11 +70,15 @@ of the directive metadata, as in this example:
 <code-example path="template-syntax/src/app/hero-detail.component.ts" region="input-output-2" title="src/app/hero-detail.component.ts" linenums="false">
 </code-example>
 
-You can specify an input/output property either with a decorator or in a metadata array,
-but there is no need to do both.
+Though you can specify an input/output property either with a decorator or in a metadata array, there is no need to do both. 
+
+While declaring inputs and outputs in the `@Directive` and `@Component` 
+metadata is possible, it is a better practice to use the `@Input` and `@Output` 
+class decorators instead. See the [Decorate input and output properties](guide/styleguide#decorate-input-and-output-properties) section of the 
+[Style Guide](guide/styleguide) for details.
 
 
-### `@Input` or `@Output`?
+### `@Input` vs. `@Output`
 <!-- KW--Is there a way to elaborate just a little on the difference? -->
 *Input* properties usually receive data values.
 *Output* properties expose event producers, such as `EventEmitter` objects.
@@ -93,17 +97,19 @@ because events stream *out* of that property and toward the handler in a templat
 
 ### Aliasing input/output properties
 
-Sometimes the public name of an input/output property should be different from the internal name.
+Sometimes the public name of an input/output property should be different from the internal name. While it is preferable to avoid this situation, Angular does 
+offer a solution.
 
-This is frequently the case with [attribute directives](guide/attribute-directives).
-Directive consumers expect to bind to the name of the directive.
+Sometimes you may find a need to alias input or output properties when using 
+[attribute directives](guide/attribute-directives).
 For example, when you apply a directive with a `myClick` selector to a `<div>` tag,
-you expect to bind to an event property that is also called `myClick`.
+you'd expect to bind to an event property that is also called `myClick`.
 
 <code-example path="template-syntax/src/app/app.component.html" region="myClick" title="src/app/app.component.html" linenums="false">
 </code-example>
 
-However, the directive name is often a poor choice for the name of a property within the directive class.
+However, the directive name isn't often the best choice for the 
+name of a property within the directive class.
 The directive name rarely describes what the property does.
 The `myClick` directive name is not a good name for a property that emits click messages.
 
