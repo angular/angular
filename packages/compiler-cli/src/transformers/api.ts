@@ -126,10 +126,13 @@ export interface CompilerHost extends ts.CompilerHost {
   /**
    * Converts a file path to a module name that can be used as an `import ...`
    * I.e. `path/to/importedFile.ts` should be imported by `path/to/containingFile.ts`.
-   *
-   * See ImportResolver.
    */
   fileNameToModuleName(importedFilePath: string, containingFilePath: string): string|null;
+  /**
+   * Converts a file path for a resource that is used in a source file or another resource
+   * into a filepath.
+   */
+  resourceNameToFileName(resourceName: string, containingFilePath: string): string|null;
   /**
    * Converts a file name into a representation that should be stored in a summary file.
    * This has to include changing the suffix as well.

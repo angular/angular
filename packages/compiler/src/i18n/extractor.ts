@@ -13,6 +13,7 @@
 import {ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 
 import {analyzeAndValidateNgModules, extractProgramSymbols} from '../aot/compiler';
+import {createAotUrlResolver} from '../aot/compiler_factory';
 import {StaticReflector} from '../aot/static_reflector';
 import {StaticSymbolCache} from '../aot/static_symbol';
 import {StaticSymbolResolver, StaticSymbolResolverHost} from '../aot/static_symbol_resolver';
@@ -28,14 +29,21 @@ import {NgModuleResolver} from '../ng_module_resolver';
 import {ParseError} from '../parse_util';
 import {PipeResolver} from '../pipe_resolver';
 import {DomElementSchemaRegistry} from '../schema/dom_element_schema_registry';
-import {createOfflineCompileUrlResolver} from '../url_resolver';
+import {syntaxError} from '../util';
+
 import {MessageBundle} from './message_bundle';
+
 
 /**
  * The host of the Extractor disconnects the implementation from TypeScript / other language
  * services and from underlying file systems.
  */
 export interface ExtractorHost extends StaticSymbolResolverHost, AotSummaryResolverHost {
+  /**
+   * Converts a path that refers to a resource into an absolute filePath
+   * that can be lateron used for loading the resource via `loadResource.
+   */
+  resourceNameToFileName(path: string, containingFile: string): string|null;
   /**
    * Loads a resource (e.g. html / css)
    */
@@ -87,7 +95,7 @@ export class Extractor {
       {extractor: Extractor, staticReflector: StaticReflector} {
     const htmlParser = new HtmlParser();
 
-    const urlResolver = createOfflineCompileUrlResolver();
+    const urlResolver = createAotUrlResolver(host);
     const symbolCache = new StaticSymbolCache();
     const summaryResolver = new AotSummaryResolver(host, symbolCache);
     const staticSymbolResolver = new StaticSymbolResolver(host, symbolCache, summaryResolver);
