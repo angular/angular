@@ -14,6 +14,17 @@ rm_cache
 mkdir $cache
 trap rm_cache EXIT
 
+# We need to install `ng` but don't want to do it globally so we plate it into `.ng-cli` folder.
+# This check prevents constant re-installing.
+if [ ! -d ".ng-cli" ]; then
+  (
+    mkdir -p .ng-cli
+    cd .ng-cli
+    yarn add https://github.com/angular/cli-builds --cache-folder ../$cache
+  )
+fi
+./ng-cli-create.sh cli-hello-world
+
 for testDir in $(ls | grep -v node_modules) ; do
   [[ -d "$testDir" ]] || continue
   echo "#################################"
