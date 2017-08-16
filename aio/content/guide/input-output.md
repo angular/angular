@@ -1,9 +1,51 @@
 
 # `@Input` and `@Output` properties
 
+`@Input` and `@Output` let parent and child components share data with one 
+another. 
 
-So far, you've focused mainly on binding to component members within template expressions and statements
-that appear on the *right side of the binding declaration*.
+
+
+## `@Input`
+
+Use the `@Input` decorator in a child component to let Angular know 
+that a property in that component can receive its value from its parent component. 
+It helps to remember that the data flow is from the perspective of the 
+child component. So an input is allowing data to be input _into_ the 
+child component from the parent component.
+
+
+<figure>
+  <img src='generated/images/guide/input-output/input.gif' alt="Input diagram">
+</figure>
+
+## `@Output`
+
+Use the `@Output` decorator in the child component to allow data to flow from 
+the child _out_ to the parent.
+<figure>
+  <img src='generated/images/guide/input-output/output.gif' alt="Output diagram">
+</figure>
+
+
+### `EventEmitter`
+
+Info here 
+
+This one needs demo just for inputs and outputs.
+
+
+
+
+
+
+
+
+
+
+## ****From existing documentation
+Template expressions and statements
+ appear on the *right side of the binding declaration*.
 A member in that position is a data binding **source**.
 
 This section concentrates on binding to **targets**, which are directive
