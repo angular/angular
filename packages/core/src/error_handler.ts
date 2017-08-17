@@ -42,13 +42,6 @@ export class ErrorHandler {
    */
   _console: Console = console;
 
-  constructor(
-      /**
-       * @deprecated since v4.0 parameter no longer has an effect, as ErrorHandler will never
-       * rethrow.
-       */
-      deprecatedParameter?: boolean) {}
-
   handleError(error: any): void {
     const originalError = this._findOriginalError(error);
     const context = this._findContext(error);
