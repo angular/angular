@@ -8,7 +8,7 @@
 
 import {NgModule} from '@angular/core';
 
-import {COMMON_DEPRECATED_DIRECTIVES, COMMON_DIRECTIVES} from './directives/index';
+import {COMMON_DIRECTIVES} from './directives/index';
 import {NgLocaleLocalization, NgLocalization} from './localization';
 import {COMMON_PIPES} from './pipes/index';
 

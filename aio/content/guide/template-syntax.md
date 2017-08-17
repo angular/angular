@@ -1361,8 +1361,8 @@ to group elements when there is no suitable host element for the directive.
 _This_ section is an introduction to the common structural directives:
 
 * [`NgIf`](guide/template-syntax#ngIf) - conditionally add or remove an element from the DOM
-* [`NgFor`](guide/template-syntax#ngFor) - repeat a template for each item in a list
 * [`NgSwitch`](guide/template-syntax#ngSwitch) - a set of directives that switch among alternative views
+* [NgForOf](guide/template-syntax#ngFor) - repeat a template for each item in a list
 
 <hr/>
 
@@ -1437,18 +1437,18 @@ described below.
 
 {@a ngFor}
 
-### NgFor
+### NgForOf
 
-`NgFor` is a _repeater_ directive &mdash; a way to present a list of items.
+`NgForOf` is a _repeater_ directive &mdash; a way to present a list of items.
 You define a block of HTML that defines how a single item should be displayed.
 You tell Angular to use that block as a template for rendering each item in the list.
 
-Here is an example of `NgFor` applied to a simple `<div>`:
+Here is an example of `NgForOf` applied to a simple `<div>`:
 
 <code-example path="template-syntax/src/app/app.component.html" region="NgFor-1" title="src/app/app.component.html" linenums="false">
 </code-example>
 
-You can also apply an `NgFor` to a component element, as in this example:
+You can also apply an `NgForOf` to a component element, as in this example:
 
 <code-example path="template-syntax/src/app/app.component.html" region="NgFor-2" title="src/app/app.component.html" linenums="false">
 </code-example>
@@ -1485,10 +1485,10 @@ Learn about the _microsyntax_ in the [_Structural Directives_](guide/structural-
 ### Template input variables
 
 The `let` keyword before `hero` creates a _template input variable_ called `hero`.
-The `ngFor` directive iterates over the `heroes` array returned by the parent component's `heroes` property
+The `NgForOf` directive iterates over the `heroes` array returned by the parent component's `heroes` property
 and sets `hero` to the current item from the array during each iteration.
 
-You reference the `hero` input variable within the `ngFor` host element
+You reference the `hero` input variable within the `NgForOf` host element
 (and within its descendents) to access the hero's properties.
 Here it is referenced first in an interpolation
 and then passed in a binding to the `hero` property of the `<hero-detail>` component.
@@ -1501,7 +1501,7 @@ Learn more about _template input variables_ in the
 
 #### *ngFor with _index_
 
-The `index` property of the `NgFor` directive context  returns the zero-based index of the item in each iteration.
+The `index` property of the `NgForOf` directive context returns the zero-based index of the item in each iteration.
 You can capture the `index` in a template input variable and use it in the template.
 
 The next example captures the `index` in a variable named `i` and displays it with the hero name like this.
@@ -1511,8 +1511,8 @@ The next example captures the `index` in a variable named `i` and displays it wi
 
 <div class="l-sub-section">
 
-Learn about the other `NgFor` context values such as `last`, `even`,
-and `odd` in the [NgFor API reference](api/common/NgFor).
+Learn about the other `NgForOf` context values such as `last`, `even`,
+and `odd` in the [NgForOf API reference](api/common/NgForOf).
 
 </div>
 
@@ -1520,7 +1520,7 @@ and `odd` in the [NgFor API reference](api/common/NgFor).
 
 #### *ngFor with _trackBy_
 
-The `NgFor` directive may perform poorly, especially with large lists.
+The `NgForOf` directive may perform poorly, especially with large lists.
 A small change to one item, an item removed, or an item added can trigger a cascade of DOM manipulations.
 
 For example, re-querying the server could reset the list with all new hero objects.
@@ -1531,7 +1531,7 @@ But Angular sees only a fresh list of new object references.
 It has no choice but to tear down the old DOM elements and insert all new DOM elements.
 
 Angular can avoid this churn with `trackBy`.
-Add a method to the component that returns the value `NgFor` _should_ track.
+Add a method to the component that returns the value `NgForOf` _should_ track.
 In this case, that value is the hero's `id`.
 
 <code-example path="template-syntax/src/app/app.component.ts" region="trackByHeroes" title="src/app/app.component.ts" linenums="false">
