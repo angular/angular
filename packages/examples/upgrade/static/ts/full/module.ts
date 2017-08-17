@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
+// #docplaster
 import {Component, Directive, ElementRef, EventEmitter, Inject, Injectable, Injector, Input, NgModule, Output} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -18,6 +18,12 @@ interface Hero {
   description: string;
 }
 
+// #docregion ng1-text-formatter-service
+class TextFormatter {
+  titleCase(value: string) { return value.replace(/((^|\s)[a-z])/g, (_, c) => c.toUpperCase()); }
+}
+
+// #enddocregion
 // #docregion Angular Stuff
 // #docregion ng2-heroes
 // This Angular component will be "downgraded" to be used in AngularJS
@@ -51,9 +57,9 @@ class HeroesService {
   ];
 
   // #docregion use-ng1-upgraded-service
-  constructor(@Inject('titleCase') titleCase: (v: string) => string) {
+  constructor(textFormatter: TextFormatter) {
     // Change all the hero names to title case, using the "upgraded" AngularJS service
-    this.heroes.forEach((hero: Hero) => hero.name = titleCase(hero.name));
+    this.heroes.forEach((hero: Hero) => hero.name = textFormatter.titleCase(hero.name));
   }
   // #enddocregion
 
@@ -92,7 +98,7 @@ class Ng1HeroComponentWrapper extends UpgradeComponent {
     HeroesService,
     // #docregion upgrade-ng1-service
     // Register an Angular provider whose value is the "upgraded" AngularJS service
-    {provide: 'titleCase', useFactory: (i: any) => i.get('titleCase'), deps: ['$injector']}
+    {provide: TextFormatter, useFactory: (i: any) => i.get('textFormatter'), deps: ['$injector']}
     // #enddocregion
   ],
   // All components that are to be "downgraded" must be declared as `entryComponents`
@@ -134,11 +140,9 @@ ng1AppModule.component('ng1Hero', {
 });
 // #enddocregion
 
-// #docregion ng1-title-case-service
+// #docregion ng1-text-formatter-service
 // This AngularJS service will be "upgraded" to be used in Angular
-ng1AppModule.factory(
-    'titleCase',
-    () => (value: string) => value.replace(/((^|\s)[a-z])/g, (_, c) => c.toUpperCase()));
+ng1AppModule.service('textFormatter', [TextFormatter]);
 // #enddocregion
 
 // #docregion downgrade-ng2-heroes-service
