@@ -11,7 +11,6 @@ export {Meta, MetaDefinition} from './browser/meta';
 export {Title} from './browser/title';
 export {disableDebugTools, enableDebugTools} from './browser/tools/tools';
 export {By} from './dom/debug/by';
-export {NgProbeToken} from './dom/debug/ng_probe';
 export {DOCUMENT} from './dom/dom_tokens';
 export {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
 export {HAMMER_GESTURE_CONFIG, HammerGestureConfig} from './dom/events/hammer_gestures';
