@@ -158,9 +158,9 @@ export class WebAnimationsPlayer implements AnimationPlayer {
 
   destroy(): void {
     if (!this._destroyed) {
+      this._destroyed = true;
       this._resetDomPlayerState();
       this._onFinish();
-      this._destroyed = true;
       this._onDestroyFns.forEach(fn => fn());
       this._onDestroyFns = [];
     }
