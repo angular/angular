@@ -82,13 +82,6 @@ export declare type MetaDefinition = {
     [prop: string]: string;
 };
 
-/** @deprecated */
-export declare class NgProbeToken {
-    name: string;
-    token: any;
-    constructor(name: string, token: any);
-}
-
 /** @stable */
 export declare const platformBrowser: (extraProviders?: StaticProvider[]) => PlatformRef;
 
