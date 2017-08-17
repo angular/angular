@@ -47,9 +47,6 @@ export declare const platformWorkerApp: (extraProviders?: StaticProvider[] | und
 export declare const platformWorkerUi: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
 
 /** @experimental */
-export declare const PRIMITIVE: SerializerTypes;
-
-/** @experimental */
 export interface ReceivedMessage {
     args: any[];
     id: string;
