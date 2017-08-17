@@ -101,7 +101,7 @@ export class CodeGenerator {
       translations: transContent,
       i18nFormat: cliOptions.i18nFormat || undefined,
       locale: cliOptions.locale || undefined, missingTranslation,
-      enableLegacyTemplate: options.enableLegacyTemplate !== false,
+      enableLegacyTemplate: options.enableLegacyTemplate === true,
       enableSummariesForJit: options.enableSummariesForJit !== false,
       preserveWhitespaces: options.preserveWhitespaces,
     });

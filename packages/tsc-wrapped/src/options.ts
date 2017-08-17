@@ -76,7 +76,7 @@ interface Options extends ts.CompilerOptions {
   // Print extra information while running the compiler
   trace?: boolean;
 
-  // Whether to enable support for <template> and the template attribute (true by default)
+  // Whether to enable support for <template> and the template attribute (false by default)
   enableLegacyTemplate?: boolean;
 
   // Whether to generate .ngsummary.ts files that allow to use AOTed artifacts

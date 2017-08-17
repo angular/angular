@@ -18,9 +18,9 @@ describe('Structural Directives', function () {
     expect(allLis.get(0).getText()).toEqual('Mr. Nice');
   });
 
-  it('ngSwitch have three <happy-hero> instances', function () {
+  it('ngSwitch have two <happy-hero> instances', function () {
     const happyHeroEls = element.all(by.tagName('happy-hero'));
-    expect(happyHeroEls.count()).toEqual(3);
+    expect(happyHeroEls.count()).toEqual(2);
   });
 
   it('should toggle *ngIf="hero" with a button', function () {

@@ -7,6 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
+import {CompilerConfig} from '@angular/compiler';
 import {Compiler, ComponentFactory, ComponentRef, ErrorHandler, EventEmitter, Host, Inject, Injectable, InjectionToken, Injector, NO_ERRORS_SCHEMA, NgModule, NgModuleRef, OnDestroy, SkipSelf, ViewRef} from '@angular/core';
 import {ChangeDetectionStrategy, ChangeDetectorRef, PipeTransform} from '@angular/core/src/change_detection/change_detection';
 import {getDebugContext} from '@angular/core/src/errors';
@@ -37,7 +38,14 @@ export function main() {
 function declareTests({useJit}: {useJit: boolean}) {
   describe('integration tests', function() {
 
-    beforeEach(() => { TestBed.configureCompiler({useJit}); });
+    beforeEach(() => {
+      TestBed.configureCompiler({
+        useJit,
+        providers: [
+          {provide: CompilerConfig, useValue: new CompilerConfig({enableLegacyTemplate: true})}
+        ]
+      });
+    });
 
     describe('react to record changes', function() {
       it('should consume text node changes', () => {
