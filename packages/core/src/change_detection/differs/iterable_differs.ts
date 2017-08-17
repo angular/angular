@@ -7,7 +7,6 @@
  */
 
 import {Optional, SkipSelf, StaticProvider} from '../../di';
-import {ChangeDetectorRef} from '../change_detector_ref';
 
 
 /**
@@ -127,12 +126,6 @@ export interface TrackByFunction<T> { (index: number, item: T): any; }
 export interface IterableDifferFactory {
   supports(objects: any): boolean;
   create<V>(trackByFn?: TrackByFunction<V>): IterableDiffer<V>;
-
-  /**
-   * @deprecated v4.0.0 - ChangeDetectorRef is not used and is no longer a parameter
-   */
-  create<V>(_cdr?: ChangeDetectorRef|TrackByFunction<V>, trackByFn?: TrackByFunction<V>):
-      IterableDiffer<V>;
 }
 
 /**
