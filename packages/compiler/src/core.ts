@@ -15,7 +15,7 @@
 export interface Inject { token: any; }
 export const createInject = makeMetadataFactory<Inject>('Inject', (token: any) => ({token}));
 export const createInjectionToken =
-    makeMetadataFactory<object>('InjectionToken', (token: any) => token);
+    makeMetadataFactory<object>('InjectionToken', (desc: string) => ({_desc: desc}));
 
 export interface Attribute { attributeName?: string; }
 export const createAttribute =
