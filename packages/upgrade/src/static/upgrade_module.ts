@@ -73,12 +73,12 @@ import {NgAdapterInjector} from './util';
  * 7. Whenever an "upgraded"/"downgraded" component is instantiated the host element is owned by
  *    the framework doing the instantiation. The other framework then instantiates and owns the
  *    view for that component.
- *    a. This implies that the component bindings will always follow the semantics of the
+ *    1. This implies that the component bindings will always follow the semantics of the
  *       instantiation framework.
- *    b. The DOM attributes are parsed by the framework that owns the current template. So
+ *    2. The DOM attributes are parsed by the framework that owns the current template. So
  *       attributes in AngularJS templates must use kebab-case, while AngularJS templates must use
  *       camelCase.
- *    c. However the template binding syntax will always use the Angular style, e.g. square
+ *    3. However the template binding syntax will always use the Angular style, e.g. square
  *       brackets (`[...]`) for property binding.
  * 8. Angular is bootstrapped first; AngularJS is bootstrapped second. AngularJS always owns the
  *    root component of the application.
