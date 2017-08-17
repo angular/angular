@@ -115,12 +115,7 @@ export interface KeyValueDifferFactory {
  * @stable
  */
 export class KeyValueDiffers {
-  /**
-   * @deprecated v4.0.0 - Should be private.
-   */
-  factories: KeyValueDifferFactory[];
-
-  constructor(factories: KeyValueDifferFactory[]) { this.factories = factories; }
+  constructor(private factories: KeyValueDifferFactory[]) {}
 
   static create<S>(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers {
     if (parent) {

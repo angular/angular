@@ -133,11 +133,7 @@ export interface IterableDifferFactory {
  * @stable
  */
 export class IterableDiffers {
-  /**
-   * @deprecated v4.0.0 - Should be private
-   */
-  factories: IterableDifferFactory[];
-  constructor(factories: IterableDifferFactory[]) { this.factories = factories; }
+  constructor(private factories: IterableDifferFactory[]) {}
 
   static create(factories: IterableDifferFactory[], parent?: IterableDiffers): IterableDiffers {
     if (parent != null) {

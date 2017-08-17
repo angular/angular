@@ -22,9 +22,6 @@ export class DefaultIterableDifferFactory implements IterableDifferFactory {
 
 const trackByIdentity = (index: number, item: any) => item;
 
-/**
- * @deprecated v4.0.0 - Should not be part of public API.
- */
 export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChanges<V> {
   private _length: number = 0;
   private _collection: NgIterable<V>|null = null;
