@@ -1087,59 +1087,61 @@ export function main() {
             .toBeTruthy();
       });
 
-      it('should animate removals of nodes to the `void` state for each animation trigger', () => {
-        @Component({
-          selector: 'ani-cmp',
-          template: `
+      it('should animate removals of nodes to the `void` state for each animation trigger, but treat all auto styles as pre styles',
+         () => {
+           @Component({
+             selector: 'ani-cmp',
+             template: `
             <div *ngIf="exp" class="ng-if" [@trig1]="exp2" @trig2></div>
           `,
-          animations: [
-            trigger('trig1', [transition('state => void', [animate(1000, style({opacity: 0}))])]),
-            trigger('trig2', [transition(':leave', [animate(1000, style({width: '0px'}))])])
-          ]
-        })
-        class Cmp {
-          public exp = true;
-          public exp2 = 'state';
-        }
+             animations: [
+               trigger(
+                   'trig1', [transition('state => void', [animate(1000, style({opacity: 0}))])]),
+               trigger('trig2', [transition(':leave', [animate(1000, style({width: '0px'}))])])
+             ]
+           })
+           class Cmp {
+             public exp = true;
+             public exp2 = 'state';
+           }
 
-        TestBed.configureTestingModule({declarations: [Cmp]});
+           TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
-        const fixture = TestBed.createComponent(Cmp);
-        const cmp = fixture.componentInstance;
-        cmp.exp = true;
-        fixture.detectChanges();
-        engine.flush();
-        resetLog();
+           const engine = TestBed.get(ɵAnimationEngine);
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
+           cmp.exp = true;
+           fixture.detectChanges();
+           engine.flush();
+           resetLog();
 
-        const element = getDOM().querySelector(fixture.nativeElement, '.ng-if');
-        assertHasParent(element, true);
+           const element = getDOM().querySelector(fixture.nativeElement, '.ng-if');
+           assertHasParent(element, true);
 
-        cmp.exp = false;
-        fixture.detectChanges();
-        engine.flush();
+           cmp.exp = false;
+           fixture.detectChanges();
+           engine.flush();
 
-        assertHasParent(element, true);
+           assertHasParent(element, true);
 
-        expect(getLog().length).toEqual(2);
+           expect(getLog().length).toEqual(2);
 
-        const player2 = getLog().pop() !;
-        const player1 = getLog().pop() !;
+           const player2 = getLog().pop() !;
+           const player1 = getLog().pop() !;
 
-        expect(player2.keyframes).toEqual([
-          {width: AUTO_STYLE, offset: 0},
-          {width: '0px', offset: 1},
-        ]);
+           expect(player2.keyframes).toEqual([
+             {width: PRE_STYLE, offset: 0},
+             {width: '0px', offset: 1},
+           ]);
 
-        expect(player1.keyframes).toEqual([
-          {opacity: AUTO_STYLE, offset: 0}, {opacity: '0', offset: 1}
-        ]);
+           expect(player1.keyframes).toEqual([
+             {opacity: PRE_STYLE, offset: 0}, {opacity: '0', offset: 1}
+           ]);
 
-        player2.finish();
-        player1.finish();
-        assertHasParent(element, false);
-      });
+           player2.finish();
+           player1.finish();
+           assertHasParent(element, false);
+         });
 
       it('should properly cancel all existing animations when a removal occurs', () => {
         @Component({
