@@ -967,15 +967,38 @@ export class TransitionAnimationEngine {
       });
     });
 
-    // PRE STAGE: fill the ! styles
-    const preStylesMap = allPreStyleElements.size ?
-        cloakAndComputeStyles(
-            this.driver, enterNodesWithoutAnimations, allPreStyleElements, PRE_STYLE) :
-        new Map<any, ɵStyleData>();
+    // this is a special case for nodes that will be removed (either by)
+    // having their own leave animations or by being queried in a container
+    // that will be removed once a parent animation is complete. The idea
+    // here is that * styles must be identical to ! styles because of
+    // backwards compatibility (* is also filled in by default in many places).
+    // Otherwise * styles will return an empty value or auto since the element
+    // that is being getComputedStyle'd will not be visible (since * = destination)
+    const replaceNodes = allLeaveNodes.filter(node => {
+      return replacePostStylesAsPre(node, allPreStyleElements, allPostStyleElements);
+    });
 
     // POST STAGE: fill the * styles
-    const postStylesMap = cloakAndComputeStyles(
+    const [postStylesMap, allLeaveQueriedNodes] = cloakAndComputeStyles(
         this.driver, leaveNodesWithoutAnimations, allPostStyleElements, AUTO_STYLE);
+
+    allLeaveQueriedNodes.forEach(node => {
+      if (replacePostStylesAsPre(node, allPreStyleElements, allPostStyleElements)) {
+        replaceNodes.push(node);
+      }
+    });
+
+    // PRE STAGE: fill the ! styles
+    const [preStylesMap] = allPreStyleElements.size ?
+        cloakAndComputeStyles(
+            this.driver, enterNodesWithoutAnimations, allPreStyleElements, PRE_STYLE) :
+        [new Map<any, ɵStyleData>()];
+
+    replaceNodes.forEach(node => {
+      const post = postStylesMap.get(node);
+      const pre = preStylesMap.get(node);
+      postStylesMap.set(node, { ...post, ...pre } as any);
+    });
 
     const rootPlayers: TransitionAnimationPlayer[] = [];
     const subPlayers: TransitionAnimationPlayer[] = [];
@@ -1413,9 +1436,10 @@ function cloakElement(element: any, value?: string) {
 
 function cloakAndComputeStyles(
     driver: AnimationDriver, elements: any[], elementPropsMap: Map<any, Set<string>>,
-    defaultStyle: string): Map<any, ɵStyleData> {
+    defaultStyle: string): [Map<any, ɵStyleData>, any[]] {
   const cloakVals = elements.map(element => cloakElement(element));
   const valuesMap = new Map<any, ɵStyleData>();
+  const failedElements: any[] = [];
 
   elementPropsMap.forEach((props: Set<string>, element: any) => {
     const styles: ɵStyleData = {};
@@ -1426,13 +1450,14 @@ function cloakAndComputeStyles(
       // by a parent animation element being detached.
       if (!value || value.length == 0) {
         element[REMOVAL_FLAG] = NULL_REMOVED_QUERIED_STATE;
+        failedElements.push(element);
       }
     });
     valuesMap.set(element, styles);
   });
 
   elements.forEach((element, i) => cloakElement(element, cloakVals[i]));
-  return valuesMap;
+  return [valuesMap, failedElements];
 }
 
 /*
@@ -1537,5 +1562,22 @@ function objEquals(a: {[key: string]: any}, b: {[key: string]: any}): boolean {
     const prop = k1[i];
     if (!b.hasOwnProperty(prop) || a[prop] !== b[prop]) return false;
   }
+  return true;
+}
+
+function replacePostStylesAsPre(
+    element: any, allPreStyleElements: Map<any, Set<string>>,
+    allPostStyleElements: Map<any, Set<string>>): boolean {
+  const postEntry = allPostStyleElements.get(element);
+  if (!postEntry) return false;
+
+  let preEntry = allPreStyleElements.get(element);
+  if (preEntry) {
+    postEntry.forEach(data => preEntry !.add(data));
+  } else {
+    allPreStyleElements.set(element, postEntry);
+  }
+
+  allPostStyleElements.delete(element);
   return true;
 }
