@@ -160,7 +160,7 @@ export class JitCompilerFactory implements CompilerFactory {
       useJit: true,
       defaultEncapsulation: ViewEncapsulation.Emulated,
       missingTranslation: MissingTranslationStrategy.Warning,
-      enableLegacyTemplate: true,
+      enableLegacyTemplate: false,
     };
 
     this._defaultOptions = [compilerOptions, ...defaultOptions];

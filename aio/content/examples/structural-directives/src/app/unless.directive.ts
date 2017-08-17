@@ -19,8 +19,7 @@ import { Directive, Input, TemplateRef, ViewContainerRef } from '@angular/core';
  * ### Syntax
  *
  * - `<div *myUnless="condition">...</div>`
- * - `<div template="myUnless condition">...</div>`
- * - `<template [myUnless]="condition"><div>...</div></template>`
+ * - `<ng-template [myUnless]="condition"><div>...</div></ng-template>`
  *
 // #docregion no-docs
  */
