@@ -17,7 +17,7 @@ import {Optional, SkipSelf, StaticProvider} from '../../di';
 export type NgIterable<T> = Array<T>| Iterable<T>;
 
 /**
- * A strategy for tracking changes over time to an iterable. Used by {@link NgFor} to
+ * A strategy for tracking changes over time to an iterable. Used by {@link NgForOf} to
  * respond to changes in an iterable by effecting equivalent changes in the DOM.
  *
  * @stable

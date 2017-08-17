@@ -199,16 +199,6 @@ class RecordViewTuple<T> {
   constructor(public record: any, public view: EmbeddedViewRef<NgForOfContext<T>>) {}
 }
 
-/**
- * @deprecated from v4.0.0 - Use NgForOf<any> instead.
- */
-export type NgFor = NgForOf<any>;
-
-/**
- * @deprecated from v4.0.0 - Use NgForOf instead.
- */
-export const NgFor = NgForOf;
-
 export function getTypeNameForDebugging(type: any): string {
   return type['name'] || typeof type;
 }

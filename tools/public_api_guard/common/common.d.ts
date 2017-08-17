@@ -153,9 +153,6 @@ export declare class NgComponentOutlet implements OnChanges, OnDestroy {
     ngOnDestroy(): void;
 }
 
-/** @deprecated */
-export declare const NgFor: typeof NgForOf;
-
 /** @stable */
 export declare class NgForOf<T> implements DoCheck, OnChanges {
     ngForOf: NgIterable<T>;
