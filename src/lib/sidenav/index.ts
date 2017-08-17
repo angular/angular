@@ -11,15 +11,17 @@ import {CommonModule} from '@angular/common';
 import {A11yModule} from '@angular/cdk/a11y';
 import {OverlayModule} from '@angular/cdk/overlay';
 import {MdCommonModule} from '../core';
+import {MdDrawer, MdDrawerContainer} from './drawer';
 import {MdSidenav, MdSidenavContainer} from './sidenav';
 
 
 @NgModule({
   imports: [CommonModule, MdCommonModule, A11yModule, OverlayModule],
-  exports: [MdSidenavContainer, MdSidenav, MdCommonModule],
-  declarations: [MdSidenavContainer, MdSidenav],
+  exports: [MdDrawerContainer, MdDrawer, MdSidenavContainer, MdSidenav, MdCommonModule],
+  declarations: [MdDrawerContainer, MdDrawer, MdSidenavContainer, MdSidenav],
 })
 export class MdSidenavModule {}
 
 
+export * from './drawer';
 export * from './sidenav';

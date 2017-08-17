@@ -12,27 +12,27 @@
   // We use invert() here to have the darken the background color expected to be used. If the
   // background is light, we use a dark backdrop. If the background is dark,
   // we use a light backdrop.
-  $sidenav-backdrop-color: invert(mat-color($background, card, 0.6)) !default;
-  $sidenav-background-color: mat-color($background, dialog) !default;
-  $sidenav-container-background-color:  mat-color($background, background) !default;
-  $sidenav-push-background-color: mat-color($background, dialog) !default;
+  $drawer-backdrop-color: invert(mat-color($background, card, 0.6)) !default;
+  $drawer-background-color: mat-color($background, dialog) !default;
+  $drawer-container-background-color:  mat-color($background, background) !default;
+  $drawer-push-background-color: mat-color($background, dialog) !default;
 
-  .mat-sidenav-container {
-    background-color: $sidenav-container-background-color;
+  .mat-drawer-container {
+    background-color: $drawer-container-background-color;
     color: mat-color($foreground, text);
   }
 
-  .mat-sidenav {
-    background-color: $sidenav-background-color;
+  .mat-drawer {
+    background-color: $drawer-background-color;
     color: mat-color($foreground, text);
 
-    &.mat-sidenav-push {
-      background-color: $sidenav-push-background-color;
+    &.mat-drawer-push {
+      background-color: $drawer-push-background-color;
     }
   }
 
-  .mat-sidenav-backdrop.mat-sidenav-shown {
-    background-color: $sidenav-backdrop-color;
+  .mat-drawer-backdrop.mat-drawer-shown {
+    background-color: $drawer-backdrop-color;
   }
 }
 

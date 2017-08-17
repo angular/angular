@@ -31,7 +31,7 @@ Using the `side` mode on mobile devices can affect the performance and is also n
 [Material Design specification](https://material.io/guidelines/patterns/navigation-drawer.html#navigation-drawer-behavior).
 
 ### Positioning the sidenav
-The `align` property determines whether the sidenav appears at the `"start"` or `"end"` of the
+The `position` property determines whether the sidenav appears at the `"start"` or `"end"` of the
 container. This is affected by the current text direction ("ltr" or "rtl"). By default, the sidenav
 appears at the start of the container.
 

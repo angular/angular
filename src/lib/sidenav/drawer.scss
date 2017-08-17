@@ -7,19 +7,19 @@
 // Mixin that creates a new stacking context.
 // see https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index/The_stacking_context
 // stylelint-enable
-@mixin mat-sidenav-stacking-context() {
+@mixin mat-drawer-stacking-context() {
   position: relative;
 
   // Use a transform to create a new stacking context.
   transform: translate3d(0, 0, 0);
 }
 
-.mat-sidenav-container {
+.mat-drawer-container {
   // We need a stacking context here so that the backdrop and drawers are clipped to the
-  // MdSidenavContainer. This creates a new z-index stack so we use low numbered z-indices.
-  // We create another stacking context in the '.mat-sidenav-content' and in each sidenav so that
+  // MdDrawerContainer. This creates a new z-index stack so we use low numbered z-indices.
+  // We create another stacking context in the '.mat-drawer-content' and in each drawer so that
   // the application content does not get messed up with our own CSS.
-  @include mat-sidenav-stacking-context();
+  @include mat-drawer-stacking-context();
 
   box-sizing: border-box;
   -webkit-overflow-scrolling: touch;
@@ -27,20 +27,20 @@
   // Need this to take up space in the layout.
   display: block;
 
-  // Hide the sidenavs when they're closed.
+  // Hide the drawers when they're closed.
   overflow: hidden;
 
   // TODO(hansl): Update this with a more robust solution.
   &[fullscreen] {
     @include mat-fill();
 
-    &.mat-sidenav-opened {
+    &.mat-drawer-opened {
       overflow: hidden;
     }
   }
 }
 
-.mat-sidenav-backdrop {
+.mat-drawer-backdrop {
   @include mat-fill();
 
   display: block;
@@ -55,7 +55,7 @@
   // section.
   visibility: hidden;
 
-  &.mat-sidenav-shown {
+  &.mat-drawer-shown {
     visibility: visible;
   }
 
@@ -64,16 +64,16 @@
   }
 }
 
-.mat-sidenav-content {
-  @include mat-sidenav-stacking-context();
+.mat-drawer-content {
+  @include mat-drawer-stacking-context();
 
   display: block;
   height: 100%;
   overflow: auto;
 }
 
-.mat-sidenav {
-  @include mat-sidenav-stacking-context();
+.mat-drawer {
+  @include mat-drawer-stacking-context();
 
   display: block;
   position: absolute;
@@ -84,14 +84,14 @@
   outline: 0;
   box-sizing: border-box;
   height: 100%;
-  overflow-y: auto; // TODO(kara): revisit scrolling behavior for sidenavs
+  overflow-y: auto; // TODO(kara): revisit scrolling behavior for drawers
   transform: translate3d(-100%, 0, 0);
 
-  &.mat-sidenav-side {
+  &.mat-drawer-side {
     z-index: 1;
   }
 
-  &.mat-sidenav-end {
+  &.mat-drawer-end {
     right: 0;
     transform: translate3d(100%, 0, 0);
   }
@@ -99,15 +99,15 @@
   [dir='rtl'] & {
     transform: translate3d(100%, 0, 0);
 
-    &.mat-sidenav-end {
+    &.mat-drawer-end {
       left: 0;
       right: auto;
       transform: translate3d(-100%, 0, 0);
     }
   }
 
-  &.mat-sidenav-opening, &.mat-sidenav-opened {
-    &:not(.mat-sidenav-side) {
+  &.mat-drawer-opening, &.mat-drawer-opened {
+    &:not(.mat-drawer-side) {
       // The elevation of z-16 is noted in the design specifications.
       // See https://material.io/guidelines/patterns/navigation-drawer.html#
       @include mat-elevation(16);

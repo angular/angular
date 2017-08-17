@@ -2,24 +2,24 @@ import {fakeAsync, async, tick, ComponentFixture, TestBed} from '@angular/core/t
 import {Component, ElementRef, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {MdDrawer, MdSidenavModule, MdDrawerContainer} from './index';
 import {A11yModule} from '@angular/cdk/a11y';
 import {PlatformModule} from '@angular/cdk/platform';
 import {ESCAPE} from '@angular/cdk/keycodes';
 import {dispatchKeyboardEvent} from '@angular/cdk/testing';
-import {MdSidenav, MdSidenavModule, MdSidenavContainer} from './index';
 
 
-describe('MdSidenav', () => {
+describe('MdDrawer', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [MdSidenavModule, A11yModule, PlatformModule, NoopAnimationsModule],
       declarations: [
         BasicTestApp,
-        SidenavContainerNoSidenavTestApp,
-        SidenavSetToOpenedFalse,
-        SidenavSetToOpenedTrue,
-        SidenavDynamicAlign,
-        SidenavWitFocusableElements,
+        DrawerContainerNoDrawerTestApp,
+        DrawerSetToOpenedFalse,
+        DrawerSetToOpenedTrue,
+        DrawerDynamicPosition,
+        DrawerWitFocusableElements,
       ],
     });
 
@@ -33,8 +33,8 @@ describe('MdSidenav', () => {
       fixture.detectChanges();
 
       let testComponent: BasicTestApp = fixture.debugElement.componentInstance;
-      let sidenav = fixture.debugElement.query(By.directive(MdSidenav));
-      let sidenavBackdropElement = fixture.debugElement.query(By.css('.mat-sidenav-backdrop'));
+      let drawer = fixture.debugElement.query(By.directive(MdDrawer));
+      let drawerBackdropElement = fixture.debugElement.query(By.css('.mat-drawer-backdrop'));
 
       fixture.debugElement.query(By.css('.open')).nativeElement.click();
       fixture.detectChanges();
@@ -45,11 +45,11 @@ describe('MdSidenav', () => {
       tick();
       fixture.detectChanges();
 
-      expect(sidenav.componentInstance._isAnimating).toBe(false);
+      expect(drawer.componentInstance._isAnimating).toBe(false);
       expect(testComponent.openCount).toBe(1);
       expect(testComponent.closeCount).toBe(0);
-      expect(getComputedStyle(sidenav.nativeElement).visibility).toBe('visible');
-      expect(getComputedStyle(sidenavBackdropElement.nativeElement).visibility).toBe('visible');
+      expect(getComputedStyle(drawer.nativeElement).visibility).toBe('visible');
+      expect(getComputedStyle(drawerBackdropElement.nativeElement).visibility).toBe('visible');
 
       fixture.debugElement.query(By.css('.close')).nativeElement.click();
       fixture.detectChanges();
@@ -62,11 +62,11 @@ describe('MdSidenav', () => {
 
       expect(testComponent.openCount).toBe(1);
       expect(testComponent.closeCount).toBe(1);
-      expect(getComputedStyle(sidenav.nativeElement).visibility).toBe('hidden');
-      expect(getComputedStyle(sidenavBackdropElement.nativeElement).visibility).toBe('hidden');
+      expect(getComputedStyle(drawer.nativeElement).visibility).toBe('hidden');
+      expect(getComputedStyle(drawerBackdropElement.nativeElement).visibility).toBe('hidden');
     }));
 
-    it('does not throw when created without a sidenav', fakeAsync(() => {
+    it('does not throw when created without a drawer', fakeAsync(() => {
       expect(() => {
         let fixture = TestBed.createComponent(BasicTestApp);
         fixture.detectChanges();
@@ -85,7 +85,7 @@ describe('MdSidenav', () => {
 
       expect(testComponent.backdropClickedCount).toBe(0);
 
-      fixture.debugElement.query(By.css('.mat-sidenav-backdrop')).nativeElement.click();
+      fixture.debugElement.query(By.css('.mat-drawer-backdrop')).nativeElement.click();
       fixture.detectChanges();
       tick();
 
@@ -108,16 +108,16 @@ describe('MdSidenav', () => {
       fixture.detectChanges();
 
       let testComponent: BasicTestApp = fixture.debugElement.componentInstance;
-      let sidenav = fixture.debugElement.query(By.directive(MdSidenav));
+      let drawer = fixture.debugElement.query(By.directive(MdDrawer));
 
-      sidenav.componentInstance.open();
+      drawer.componentInstance.open();
       fixture.detectChanges();
       tick();
 
       expect(testComponent.openCount).toBe(1, 'Expected one open event.');
       expect(testComponent.closeCount).toBe(0, 'Expected no close events.');
 
-      dispatchKeyboardEvent(sidenav.nativeElement, 'keydown', ESCAPE);
+      dispatchKeyboardEvent(drawer.nativeElement, 'keydown', ESCAPE);
       fixture.detectChanges();
       tick();
 
@@ -127,14 +127,14 @@ describe('MdSidenav', () => {
     it('should not close by pressing escape when disableClose is set', fakeAsync(() => {
       let fixture = TestBed.createComponent(BasicTestApp);
       let testComponent = fixture.debugElement.componentInstance;
-      let sidenav = fixture.debugElement.query(By.directive(MdSidenav));
+      let drawer = fixture.debugElement.query(By.directive(MdDrawer));
 
-      sidenav.componentInstance.disableClose = true;
-      sidenav.componentInstance.open();
+      drawer.componentInstance.disableClose = true;
+      drawer.componentInstance.open();
       fixture.detectChanges();
       tick();
 
-      dispatchKeyboardEvent(sidenav.nativeElement, 'keydown', ESCAPE);
+      dispatchKeyboardEvent(drawer.nativeElement, 'keydown', ESCAPE);
       fixture.detectChanges();
       tick();
 
@@ -144,36 +144,36 @@ describe('MdSidenav', () => {
     it('should not close by clicking on the backdrop when disableClose is set', fakeAsync(() => {
       let fixture = TestBed.createComponent(BasicTestApp);
       let testComponent = fixture.debugElement.componentInstance;
-      let sidenav = fixture.debugElement.query(By.directive(MdSidenav)).componentInstance;
+      let drawer = fixture.debugElement.query(By.directive(MdDrawer)).componentInstance;
 
-      sidenav.disableClose = true;
-      sidenav.open();
+      drawer.disableClose = true;
+      drawer.open();
       fixture.detectChanges();
       tick();
 
-      fixture.debugElement.query(By.css('.mat-sidenav-backdrop')).nativeElement.click();
+      fixture.debugElement.query(By.css('.mat-drawer-backdrop')).nativeElement.click();
       fixture.detectChanges();
       tick();
 
       expect(testComponent.closeCount).toBe(0);
     }));
 
-    it('should restore focus on close if focus is inside sidenav', fakeAsync(() => {
+    it('should restore focus on close if focus is inside drawer', fakeAsync(() => {
       let fixture = TestBed.createComponent(BasicTestApp);
 
       fixture.detectChanges();
 
-      let sidenav = fixture.debugElement.query(By.directive(MdSidenav)).componentInstance;
+      let drawer = fixture.debugElement.query(By.directive(MdDrawer)).componentInstance;
       let openButton = fixture.componentInstance.openButton.nativeElement;
-      let sidenavButton = fixture.componentInstance.sidenavButton.nativeElement;
+      let drawerButton = fixture.componentInstance.drawerButton.nativeElement;
 
       openButton.focus();
-      sidenav.open();
+      drawer.open();
       fixture.detectChanges();
       tick();
-      sidenavButton.focus();
+      drawerButton.focus();
 
-      sidenav.close();
+      drawer.close();
       fixture.detectChanges();
       tick();
 
@@ -181,21 +181,21 @@ describe('MdSidenav', () => {
           .toBe(openButton, 'Expected focus to be restored to the open button on close.');
     }));
 
-    it('should not restore focus on close if focus is outside sidenav', fakeAsync(() => {
+    it('should not restore focus on close if focus is outside drawer', fakeAsync(() => {
       let fixture = TestBed.createComponent(BasicTestApp);
-      let sidenav: MdSidenav = fixture.debugElement
-          .query(By.directive(MdSidenav)).componentInstance;
+      let drawer: MdDrawer = fixture.debugElement
+          .query(By.directive(MdDrawer)).componentInstance;
       let openButton = fixture.componentInstance.openButton.nativeElement;
       let closeButton = fixture.componentInstance.closeButton.nativeElement;
 
       openButton.focus();
-      sidenav.open();
+      drawer.open();
 
       fixture.detectChanges();
       tick();
       closeButton.focus();
 
-      sidenav.close();
+      drawer.close();
       fixture.detectChanges();
       tick();
 
@@ -206,68 +206,68 @@ describe('MdSidenav', () => {
 
   describe('attributes', () => {
     it('should correctly parse opened="false"', () => {
-      let fixture = TestBed.createComponent(SidenavSetToOpenedFalse);
+      let fixture = TestBed.createComponent(DrawerSetToOpenedFalse);
 
       fixture.detectChanges();
 
-      let sidenav = fixture.debugElement.query(By.directive(MdSidenav)).componentInstance;
+      let drawer = fixture.debugElement.query(By.directive(MdDrawer)).componentInstance;
 
-      expect((sidenav as MdSidenav).opened).toBe(false);
+      expect((drawer as MdDrawer).opened).toBe(false);
     });
 
     it('should correctly parse opened="true"', () => {
-      let fixture = TestBed.createComponent(SidenavSetToOpenedTrue);
+      let fixture = TestBed.createComponent(DrawerSetToOpenedTrue);
 
       fixture.detectChanges();
 
-      let sidenav = fixture.debugElement.query(By.directive(MdSidenav)).componentInstance;
+      let drawer = fixture.debugElement.query(By.directive(MdDrawer)).componentInstance;
 
-      expect((sidenav as MdSidenav).opened).toBe(true);
+      expect((drawer as MdDrawer).opened).toBe(true);
     });
 
     it('should remove align attr from DOM', () => {
       const fixture = TestBed.createComponent(BasicTestApp);
       fixture.detectChanges();
 
-      const sidenavEl = fixture.debugElement.query(By.css('md-sidenav')).nativeElement;
-      expect(sidenavEl.hasAttribute('align'))
-          .toBe(false, 'Expected sidenav not to have a native align attribute.');
+      const drawerEl = fixture.debugElement.query(By.css('md-drawer')).nativeElement;
+      expect(drawerEl.hasAttribute('align'))
+          .toBe(false, 'Expected drawer not to have a native align attribute.');
     });
 
-    it('should throw when multiple sidenavs have the same align', fakeAsync(() => {
-      const fixture = TestBed.createComponent(SidenavDynamicAlign);
+    it('should throw when multiple drawers have the same position', fakeAsync(() => {
+      const fixture = TestBed.createComponent(DrawerDynamicPosition);
       fixture.detectChanges();
       tick();
 
-      const testComponent: SidenavDynamicAlign = fixture.debugElement.componentInstance;
-      testComponent.sidenav1Align = 'end';
+      const testComponent: DrawerDynamicPosition = fixture.debugElement.componentInstance;
+      testComponent.drawer1Position = 'end';
 
       expect(() => fixture.detectChanges()).toThrow();
     }));
 
-    it('should not throw when sidenavs swap sides', () => {
-      const fixture = TestBed.createComponent(SidenavDynamicAlign);
+    it('should not throw when drawers swap positions', () => {
+      const fixture = TestBed.createComponent(DrawerDynamicPosition);
       fixture.detectChanges();
 
-      const testComponent: SidenavDynamicAlign = fixture.debugElement.componentInstance;
-      testComponent.sidenav1Align = 'end';
-      testComponent.sidenav2Align = 'start';
+      const testComponent: DrawerDynamicPosition = fixture.debugElement.componentInstance;
+      testComponent.drawer1Position = 'end';
+      testComponent.drawer2Position = 'start';
 
       expect(() => fixture.detectChanges()).not.toThrow();
     });
   });
 
   describe('focus trapping behavior', () => {
-    let fixture: ComponentFixture<SidenavWitFocusableElements>;
-    let testComponent: SidenavWitFocusableElements;
-    let sidenav: MdSidenav;
+    let fixture: ComponentFixture<DrawerWitFocusableElements>;
+    let testComponent: DrawerWitFocusableElements;
+    let drawer: MdDrawer;
     let firstFocusableElement: HTMLElement;
     let lastFocusableElement: HTMLElement;
 
     beforeEach(() => {
-      fixture = TestBed.createComponent(SidenavWitFocusableElements);
+      fixture = TestBed.createComponent(DrawerWitFocusableElements);
       testComponent = fixture.debugElement.componentInstance;
-      sidenav = fixture.debugElement.query(By.directive(MdSidenav)).componentInstance;
+      drawer = fixture.debugElement.query(By.directive(MdDrawer)).componentInstance;
       firstFocusableElement = fixture.debugElement.query(By.css('.link1')).nativeElement;
       lastFocusableElement = fixture.debugElement.query(By.css('.link1')).nativeElement;
       lastFocusableElement.focus();
@@ -277,7 +277,7 @@ describe('MdSidenav', () => {
       testComponent.mode = 'over';
       lastFocusableElement.focus();
 
-      sidenav.open();
+      drawer.open();
       fixture.detectChanges();
       tick();
 
@@ -288,7 +288,7 @@ describe('MdSidenav', () => {
       testComponent.mode = 'push';
       lastFocusableElement.focus();
 
-      sidenav.open();
+      drawer.open();
       fixture.detectChanges();
       tick();
 
@@ -299,7 +299,7 @@ describe('MdSidenav', () => {
       testComponent.mode = 'side';
       lastFocusableElement.focus();
 
-      sidenav.open();
+      drawer.open();
       fixture.detectChanges();
       tick();
 
@@ -308,53 +308,53 @@ describe('MdSidenav', () => {
   });
 });
 
-describe('MdSidenavContainer', () => {
+describe('MdDrawerContainer', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [MdSidenavModule, A11yModule, PlatformModule, NoopAnimationsModule],
-      declarations: [SidenavContainerTwoSidenavTestApp, SidenavDelayed],
+      declarations: [DrawerContainerTwoDrawerTestApp, DrawerDelayed],
     });
 
     TestBed.compileComponents();
   }));
 
-  it('should be able to open and close all sidenavs', fakeAsync(() => {
-    const fixture = TestBed.createComponent(SidenavContainerTwoSidenavTestApp);
+  it('should be able to open and close all drawers', fakeAsync(() => {
+    const fixture = TestBed.createComponent(DrawerContainerTwoDrawerTestApp);
 
     fixture.detectChanges();
 
-    const testComponent: SidenavContainerTwoSidenavTestApp =
+    const testComponent: DrawerContainerTwoDrawerTestApp =
       fixture.debugElement.componentInstance;
-    const sidenavs = fixture.debugElement.queryAll(By.directive(MdSidenav));
+    const drawers = fixture.debugElement.queryAll(By.directive(MdDrawer));
 
-    expect(sidenavs.every(sidenav => sidenav.componentInstance.opened)).toBe(false);
+    expect(drawers.every(drawer => drawer.componentInstance.opened)).toBe(false);
 
-    testComponent.sidenavContainer.open();
+    testComponent.drawerContainer.open();
     fixture.detectChanges();
     tick();
 
-    expect(sidenavs.every(sidenav => sidenav.componentInstance.opened)).toBe(true);
+    expect(drawers.every(drawer => drawer.componentInstance.opened)).toBe(true);
 
-    testComponent.sidenavContainer.close();
+    testComponent.drawerContainer.close();
     fixture.detectChanges();
     tick();
 
-    expect(sidenavs.every(sidenav => sidenav.componentInstance.opened)).toBe(false);
+    expect(drawers.every(drawer => drawer.componentInstance.opened)).toBe(false);
   }));
 
-  it('should animate the content when a sidenav is added at a later point', fakeAsync(() => {
-    const fixture = TestBed.createComponent(SidenavDelayed);
+  it('should animate the content when a drawer is added at a later point', fakeAsync(() => {
+    const fixture = TestBed.createComponent(DrawerDelayed);
 
     fixture.detectChanges();
 
-    const contentElement = fixture.debugElement.nativeElement.querySelector('.mat-sidenav-content');
+    const contentElement = fixture.debugElement.nativeElement.querySelector('.mat-drawer-content');
 
     expect(parseInt(contentElement.style.marginLeft)).toBeFalsy();
 
-    fixture.componentInstance.showSidenav = true;
+    fixture.componentInstance.showDrawer = true;
     fixture.detectChanges();
 
-    fixture.componentInstance.sidenav.open();
+    fixture.componentInstance.drawer.open();
     fixture.detectChanges();
     tick();
     fixture.detectChanges();
@@ -364,41 +364,41 @@ describe('MdSidenavContainer', () => {
 });
 
 
-/** Test component that contains an MdSidenavContainer but no MdSidenav. */
-@Component({template: `<md-sidenav-container></md-sidenav-container>`})
-class SidenavContainerNoSidenavTestApp { }
+/** Test component that contains an MdDrawerContainer but no MdDrawer. */
+@Component({template: `<md-drawer-container></md-drawer-container>`})
+class DrawerContainerNoDrawerTestApp { }
 
-/** Test component that contains an MdSidenavContainer and 2 MdSidenav on the same side. */
+/** Test component that contains an MdDrawerContainer and 2 MdDrawer in the same position. */
 @Component({
   template: `
-    <md-sidenav-container>
-      <md-sidenav align="start"> </md-sidenav>
-      <md-sidenav align="end"> </md-sidenav>
-    </md-sidenav-container>`,
+    <md-drawer-container>
+      <md-drawer position="start"></md-drawer>
+      <md-drawer position="end"></md-drawer>
+    </md-drawer-container>`,
 })
-class SidenavContainerTwoSidenavTestApp {
-  @ViewChild(MdSidenavContainer) sidenavContainer: MdSidenavContainer;
+class DrawerContainerTwoDrawerTestApp {
+  @ViewChild(MdDrawerContainer) drawerContainer: MdDrawerContainer;
 }
 
-/** Test component that contains an MdSidenavContainer and one MdSidenav. */
+/** Test component that contains an MdDrawerContainer and one MdDrawer. */
 @Component({
   template: `
-    <md-sidenav-container (backdropClick)="backdropClicked()">
-      <md-sidenav #sidenav align="start"
-                  (open)="open()"
-                  (close)="close()">
-        <button #sidenavButton>Content.</button>
-      </md-sidenav>
-      <button (click)="sidenav.open()" class="open" #openButton></button>
-      <button (click)="sidenav.close()" class="close" #closeButton></button>
-    </md-sidenav-container>`,
+    <md-drawer-container (backdropClick)="backdropClicked()">
+      <md-drawer #drawer position="start"
+                 (open)="open()"
+                 (close)="close()">
+        <button #drawerButton>Content.</button>
+      </md-drawer>
+      <button (click)="drawer.open()" class="open" #openButton></button>
+      <button (click)="drawer.close()" class="close" #closeButton></button>
+    </md-drawer-container>`,
 })
 class BasicTestApp {
   openCount: number = 0;
   closeCount: number = 0;
   backdropClickedCount: number = 0;
 
-  @ViewChild('sidenavButton') sidenavButton: ElementRef;
+  @ViewChild('drawerButton') drawerButton: ElementRef;
   @ViewChild('openButton') openButton: ElementRef;
   @ViewChild('closeButton') closeButton: ElementRef;
 
@@ -417,58 +417,58 @@ class BasicTestApp {
 
 @Component({
   template: `
-    <md-sidenav-container>
-      <md-sidenav #sidenav mode="side" opened="false">
-        Closed Sidenav.
-      </md-sidenav>
-    </md-sidenav-container>`,
+    <md-drawer-container>
+      <md-drawer #drawer mode="side" opened="false">
+        Closed Drawer.
+      </md-drawer>
+    </md-drawer-container>`,
 })
-class SidenavSetToOpenedFalse { }
+class DrawerSetToOpenedFalse { }
 
 @Component({
   template: `
-    <md-sidenav-container>
-      <md-sidenav #sidenav mode="side" opened="true">
-        Closed Sidenav.
-      </md-sidenav>
-    </md-sidenav-container>`,
+    <md-drawer-container>
+      <md-drawer #drawer mode="side" opened="true">
+        Closed Drawer.
+      </md-drawer>
+    </md-drawer-container>`,
 })
-class SidenavSetToOpenedTrue { }
+class DrawerSetToOpenedTrue { }
 
 @Component({
   template: `
-    <md-sidenav-container>
-      <md-sidenav #sidenav1 [align]="sidenav1Align"></md-sidenav>
-      <md-sidenav #sidenav2 [align]="sidenav2Align"></md-sidenav>
-    </md-sidenav-container>`,
+    <md-drawer-container>
+      <md-drawer #drawer1 [position]="drawer1Position"></md-drawer>
+      <md-drawer #drawer2 [position]="drawer2Position"></md-drawer>
+    </md-drawer-container>`,
 })
-class SidenavDynamicAlign {
-  sidenav1Align = 'start';
-  sidenav2Align = 'end';
+class DrawerDynamicPosition {
+  drawer1Position = 'start';
+  drawer2Position = 'end';
 }
 
 @Component({
   template: `
-    <md-sidenav-container>
-      <md-sidenav align="start" [mode]="mode">
+    <md-drawer-container>
+      <md-drawer position="start" [mode]="mode">
         <a class="link1" href="#">link1</a>
-      </md-sidenav>
+      </md-drawer>
       <a class="link2" href="#">link2</a>
-    </md-sidenav-container>`,
+    </md-drawer-container>`,
 })
-class SidenavWitFocusableElements {
+class DrawerWitFocusableElements {
   mode: string = 'over';
 }
 
 
 @Component({
   template: `
-    <md-sidenav-container>
-      <md-sidenav *ngIf="showSidenav" #sidenav mode="side">Sidenav</md-sidenav>
-    </md-sidenav-container>
+    <md-drawer-container>
+      <md-drawer *ngIf="showDrawer" #drawer mode="side">Drawer</md-drawer>
+    </md-drawer-container>
   `,
 })
-class SidenavDelayed {
-  @ViewChild(MdSidenav) sidenav: MdSidenav;
-  showSidenav = false;
+class DrawerDelayed {
+  @ViewChild(MdDrawer) drawer: MdDrawer;
+  showDrawer = false;
 }
