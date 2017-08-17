@@ -961,11 +961,11 @@ export class TransitionAnimationEngine {
       const element = player.element;
       const previousPlayers =
           this._getPreviousPlayers(element, false, player.namespaceId, player.triggerName, null);
-      previousPlayers.forEach(
-          prevPlayer => { getOrSetAsInMap(allPreviousPlayersMap, element, []).push(prevPlayer); });
+      previousPlayers.forEach(prevPlayer => {
+        getOrSetAsInMap(allPreviousPlayersMap, element, []).push(prevPlayer);
+        prevPlayer.destroy();
+      });
     });
-
-    allPreviousPlayersMap.forEach(players => players.forEach(player => player.destroy()));
 
     // PRE STAGE: fill the ! styles
     const preStylesMap = allPreStyleElements.size ?
@@ -1153,10 +1153,6 @@ export class TransitionAnimationEngine {
   private _beforeAnimationBuild(
       namespaceId: string, instruction: AnimationTransitionInstruction,
       allPreviousPlayersMap: Map<any, TransitionAnimationPlayer[]>) {
-    // it's important to do this step before destroying the players
-    // so that the onDone callback below won't fire before this
-    eraseStyles(instruction.element, instruction.fromStyles);
-
     const triggerName = instruction.triggerName;
     const rootElement = instruction.element;
 
@@ -1178,9 +1174,14 @@ export class TransitionAnimationEngine {
         if (realPlayer.beforeDestroy) {
           realPlayer.beforeDestroy();
         }
+        player.destroy();
         players.push(player);
       });
     });
+
+    // this needs to be done so that the PRE/POST styles can be
+    // computed properly without interfering with the previous animation
+    eraseStyles(rootElement, instruction.fromStyles);
   }
 
   private _buildAnimation(
