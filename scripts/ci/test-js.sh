@@ -30,8 +30,8 @@ travisFoldEnd "test.unit.node"
 # rebuild to revert files in @angular/compiler/test
 # TODO(tbosch): remove this and teach karma to serve the right files
 travisFoldStart "test.unit.rebuildHack"
-  node dist/packages-dist/tsc-wrapped/src/main -p packages/tsconfig.json
-  node dist/packages-dist/tsc-wrapped/src/main -p modules/tsconfig.json
+  node --max-old-space-size=3000 dist/packages-dist/tsc-wrapped/src/main -p packages/tsconfig.json
+  node --max-old-space-size=3000 dist/packages-dist/tsc-wrapped/src/main -p modules/tsconfig.json
 travisFoldStart "test.unit.rebuildHack"
 
 
