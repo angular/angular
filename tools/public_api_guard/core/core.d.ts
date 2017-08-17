@@ -989,11 +989,6 @@ export declare class TestabilityRegistry {
     registerApplication(token: any, testability: Testability): void;
 }
 
-/** @deprecated */
-export interface TrackByFn {
-    (index: number, item: any): any;
-}
-
 /** @stable */
 export interface TrackByFunction<T> {
     (index: number, item: T): any;

@@ -82,7 +82,8 @@ export interface IterableChanges<V> {
   /** Iterate over all removed items. */
   forEachRemovedItem(fn: (record: IterableChangeRecord<V>) => void): void;
 
-  /** Iterate over all items which had their identity (as computed by the `trackByFn`) changed. */
+  /** Iterate over all items which had their identity (as computed by the `TrackByFunction`)
+   * changed. */
   forEachIdentityChange(fn: (record: IterableChangeRecord<V>) => void): void;
 }
 
@@ -101,7 +102,7 @@ export interface IterableChangeRecord<V> {
   /** The item. */
   readonly item: V;
 
-  /** Track by identity as computed by the `trackByFn`. */
+  /** Track by identity as computed by the `TrackByFunction`. */
   readonly trackById: any;
 }
 
@@ -109,14 +110,6 @@ export interface IterableChangeRecord<V> {
  * @deprecated v4.0.0 - Use IterableChangeRecord instead.
  */
 export interface CollectionChangeRecord<V> extends IterableChangeRecord<V> {}
-
-
-/**
- * Nolonger used.
- *
- * @deprecated v4.0.0 - Use TrackByFunction instead
- */
-export interface TrackByFn { (index: number, item: any): any; }
 
 /**
  * An optional function passed into {@link NgForOf} that defines how to track
