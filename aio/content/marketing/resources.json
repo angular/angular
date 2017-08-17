@@ -202,7 +202,7 @@
             "url": "https://cli.angular.io"
           },
           "d1": {
-            "desc": "A set of tslint rules for static code analysis of Angular TypeScript projects.",
+            "desc": "Static analysis for Angular projects.",
             "logo": "",
             "rev": true,
             "title": "Codelyzer",
