@@ -36,7 +36,7 @@ export class CompilerConfig {
     this.useJit = !!useJit;
     this.jitDevMode = !!jitDevMode;
     this.missingTranslation = missingTranslation || null;
-    this.enableLegacyTemplate = enableLegacyTemplate !== false;
+    this.enableLegacyTemplate = enableLegacyTemplate === true;
     this.preserveWhitespaces = preserveWhitespacesDefault(noUndefined(preserveWhitespaces));
   }
 }
