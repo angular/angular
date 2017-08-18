@@ -23,6 +23,7 @@
     "zone.js": "0.7.6"
   },
   "scripts": {
+    "build": "echo noop",
     "test": "tsc"
   }
 }

@@ -2,9 +2,13 @@
 
 set -u -e -o pipefail
 
-declare -A limitUncompressed
-limitUncompressed=(["inline"]=1600 ["main"]=525000 ["polyfills"]=38000)
-declare -A limitGzip7
-limitGzip7=(["inline"]=1000 ["main"]=127000 ["polyfills"]=12500)
-declare -A limitGzip9
-limitGzip9=(["inline"]=1000 ["main"]=127000 ["polyfills"]=12500)
+declare -A payloadLimits
+payloadLimits["aio", "uncompressed", "inline"]=1600
+payloadLimits["aio", "uncompressed", "main"]=525000
+payloadLimits["aio", "uncompressed", "polyfills"]=38000
+payloadLimits["aio", "gzip7", "inline"]=1000
+payloadLimits["aio", "gzip7", "main"]=127000
+payloadLimits["aio", "gzip7", "polyfills"]=12500
+payloadLimits["aio", "gzip9", "inline"]=1000
+payloadLimits["aio", "gzip9", "main"]=127000
+payloadLimits["aio", "gzip9", "polyfills"]=12500

@@ -21,6 +21,7 @@
     "zone.js": "0.7.6"
   },
   "scripts": {
+    "build": "echo noop",
     "postinstall": "scripts/install.sh",
     "test": "tsc -p tools && scripts/test.sh"
   }
