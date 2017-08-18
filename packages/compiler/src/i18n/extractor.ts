@@ -57,8 +57,8 @@ export class Extractor {
 
   extract(rootFiles: string[]): Promise<MessageBundle> {
     const programSymbols = extractProgramSymbols(this.staticSymbolResolver, rootFiles, this.host);
-    const {files, ngModules} =
-        analyzeAndValidateNgModules(programSymbols, this.host, this.metadataResolver);
+    const {files, ngModules} = analyzeAndValidateNgModules(
+        programSymbols, this.host, this.staticSymbolResolver, this.metadataResolver);
     return Promise
         .all(ngModules.map(
             ngModule => this.metadataResolver.loadNgModuleDirectiveAndPipeMetadata(
