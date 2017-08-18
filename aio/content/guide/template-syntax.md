@@ -1155,13 +1155,13 @@ other HTML elements, attributes, properties, and components.
 They are usually applied to elements as if they were HTML attributes, hence the name.
 
 Many details are covered in the [_Attribute Directives_](guide/attribute-directives) guide.
-Many NgMdules such as the [`RouterModule`](guide/router "Routing and Navigation")
-and the [`FormsModule`](guide/forms "Forms") define their own attribute directives.
+Many NgModules such as the [RouterModule](guide/router "Routing and Navigation")
+and the [FormsModule](guide/forms "Forms") define their own attribute directives.
 This section is an introduction to the most commonly used attribute directives:
 
-* [`NgClass`](guide/template-syntax#ngClass) - add and remove a set of CSS classes
-* [`NgStyle`](guide/template-syntax#ngStyle) - add and remove a set of HTML styles
-* [`NgModel`](guide/template-syntax#ngModel) - two-way data binding to an HTML form element
+* [NgClass](guide/template-syntax#ngClass) - add and remove a set of CSS classes
+* [NgStyle](guide/template-syntax#ngStyle) - add and remove a set of HTML styles
+* [NgModel](guide/template-syntax#ngModel) - two-way data binding to an HTML form element
 <a href="#top-of-page">back to top</a>
 
 <hr/>
@@ -1360,9 +1360,9 @@ to group elements when there is no suitable host element for the directive.
 
 _This_ section is an introduction to the common structural directives:
 
-* [`NgIf`](guide/template-syntax#ngIf) - conditionally add or remove an element from the DOM
-* [`NgFor`](guide/template-syntax#ngFor) - repeat a template for each item in a list
-* [`NgSwitch`](guide/template-syntax#ngSwitch) - a set of directives that switch among alternative views
+* [NgIf](guide/template-syntax#ngIf) - conditionally add or remove an element from the DOM
+* [NgFor](guide/template-syntax#ngFor) - repeat a template for each item in a list
+* [NgSwitch](guide/template-syntax#ngSwitch) - a set of directives that switch among alternative views
 
 <hr/>
 
