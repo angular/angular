@@ -36,4 +36,11 @@ describe('autoLinkCode post-processor', () => {
     processor.$process([doc]);
     expect(doc.renderedContent).toEqual('<code>MyClass</code>');
   });
+
+  it('should ignore code items that are already inside a link', () => {
+    aliasMap.addDoc({ docType: 'class', id: 'MyClass', aliases: ['MyClass'], path: 'a/b/myclass' });
+    const doc = { docType: 'test-doc', renderedContent: '<a href="..."><div><code>MyClass</code></div></a>' };
+    processor.$process([doc]);
+    expect(doc.renderedContent).toEqual('<a href="..."><div><code>MyClass</code></div></a>');
+  });
 });
