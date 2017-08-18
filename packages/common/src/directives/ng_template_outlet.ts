@@ -42,12 +42,6 @@ export class NgTemplateOutlet implements OnChanges {
 
   constructor(private _viewContainerRef: ViewContainerRef) {}
 
-  /**
-   * @deprecated v4.0.0 - Renamed to ngTemplateOutletContext.
-   */
-  @Input()
-  set ngOutletContext(context: Object) { this.ngTemplateOutletContext = context; }
-
   ngOnChanges(changes: SimpleChanges) {
     const recreateView = this._shouldRecreateView(changes);
 
