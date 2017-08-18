@@ -61,8 +61,8 @@ class CompilerHostMixin {
       containingFile = path.join(this.basePath, 'index.ts');
     }
     const resolved = ts.resolveModuleName(
-                           m, containingFile, this.options, this.moduleResolutionHost,
-                           this.moduleResolutionCache)
+                           m, containingFile.replace(/\\/g, '/'), this.options,
+                           this.moduleResolutionHost, this.moduleResolutionCache)
                          .resolvedModule;
     if (resolved) {
       if (this.options.traceResolution) {
