@@ -157,7 +157,6 @@ export class JitCompilerFactory implements CompilerFactory {
   private _defaultOptions: CompilerOptions[];
   constructor(defaultOptions: CompilerOptions[]) {
     const compilerOptions: CompilerOptions = {
-      useDebug: isDevMode(),
       useJit: true,
       defaultEncapsulation: ViewEncapsulation.Emulated,
       missingTranslation: MissingTranslationStrategy.Warning,
