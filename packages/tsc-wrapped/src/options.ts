@@ -76,9 +76,6 @@ interface Options extends ts.CompilerOptions {
   // Print extra information while running the compiler
   trace?: boolean;
 
-  /** @deprecated since v4 this option has no effect anymore. */
-  debug?: boolean;
-
   // Whether to enable support for <template> and the template attribute (true by default)
   enableLegacyTemplate?: boolean;
 
