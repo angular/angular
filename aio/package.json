@@ -124,6 +124,7 @@
     "unist-util-filter": "^0.2.1",
     "unist-util-source": "^1.0.1",
     "unist-util-visit": "^1.1.1",
+    "unist-util-visit-parents": "^1.1.1",
     "vrsource-tslint-rules": "^4.0.1",
     "watchr": "^3.0.1",
     "yargs": "^7.0.2"

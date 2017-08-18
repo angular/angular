@@ -1,4 +1,4 @@
-const visit = require('unist-util-visit');
+const visit = require('unist-util-visit-parents');
 const is = require('hast-util-is-element');
 const textContent = require('hast-util-to-string');
 
@@ -17,8 +17,8 @@ module.exports = function autoLinkCode(getDocFromAlias) {
 
   function autoLinkCodeImpl()  {
     return (ast) => {
-      visit(ast, node => {
-        if (is(node, 'code')) {
+      visit(ast, (node, ancestors) => {
+        if (is(node, 'code') && ancestors.every(ancestor => !is(ancestor, 'a'))) {
           const docs = getDocFromAlias(textContent(node));
           if (docs.length === 1 && autoLinkCodeImpl.docTypes.indexOf(docs[0].docType) !== -1) {
             const link = {
