@@ -161,7 +161,6 @@ export class JitCompilerFactory implements CompilerFactory {
       defaultEncapsulation: ViewEncapsulation.Emulated,
       missingTranslation: MissingTranslationStrategy.Warning,
       enableLegacyTemplate: true,
-      preserveWhitespaces: true,
     };
 
     this._defaultOptions = [compilerOptions, ...defaultOptions];
