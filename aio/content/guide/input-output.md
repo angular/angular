@@ -19,6 +19,46 @@ child component from the parent component.
   <img src='generated/images/guide/input-output/input.gif' alt="Input diagram">
 </figure>
 
+### `@Input()` in the child component
+
+Use the `@Input()` decorator in a child component as follows:
+
+```ts
+import { Input } from '@angular/core'; // First, import Input.
+
+@Component({
+  // ... not included for brevity
+})
+
+export class ChildComponent {
+  @Input() counter: number = 0; // decorate the property with @Input()
+}
+
+```
+
+Be sure to import the `Input` interface and then, inside the class, decorate 
+the property, in this case `counter` with `@Input`. You can write it 
+all on one line or on two lines. 
+<!-- KW--Is there a preference? -->
+
+### In the parent component
+The next step is to use the property in the parent component.
+
+INSERT EXAMPLE HERE
+
+In the parent component, use property binding by surrounding the binding target in square brackets. The target in the square brackets is the same as the property you decorate in the child component.
+Set the binding source, the part to the right of the equal sign to to the data that the parent component wants to pass to the nested component. 
+
+SHOW TARGET AND SOURCE DIAGRAM
+
+To use a child component's property like this in a parent component, you must 
+decorate the property with `@Input` in the child component.
+
+
+From Deborah's course:
+"`OnChanges` only watches for changes to `@Input()` properties."
+"You can use @Input() to decorate any property type in the child class."
+
 ## `@Output`
 
 Use the `@Output` decorator in the child component to allow data to flow from 
