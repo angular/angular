@@ -191,7 +191,7 @@ export class DiagnosticContext {
           analyzeHost);
 
       analyzedModules = this._analyzedModules =
-          analyzeNgModules(programSymbols, analyzeHost, this.resolver);
+          analyzeNgModules(programSymbols, analyzeHost, this.staticSymbolResolver, this.resolver);
     }
     return analyzedModules;
   }
