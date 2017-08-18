@@ -14,6 +14,7 @@ export interface Node { sourceSpan: ParseSourceSpan|null; }
 const METHOD_THIS_NAME = 'this';
 const CATCH_ERROR_NAME = 'error';
 const CATCH_STACK_NAME = 'stack';
+const _VALID_IDENTIFIER_RE = /^[$A-Z_][0-9A-Z_$]*$/i;
 
 export class TypeScriptNodeEmitter {
   updateSourceFile(sourceFile: ts.SourceFile, stmts: Statement[], preamble?: string):
@@ -421,7 +422,9 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
     return this.record(
         expr, ts.createObjectLiteral(expr.entries.map(
                   entry => ts.createPropertyAssignment(
-                      entry.quoted ? ts.createLiteral(entry.key) : entry.key,
+                      entry.quoted || !_VALID_IDENTIFIER_RE.test(entry.key) ?
+                          ts.createLiteral(entry.key) :
+                          entry.key,
                       entry.value.visitExpression(this, null)))));
   }
 

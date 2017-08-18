@@ -169,10 +169,11 @@ describe('TypeScriptNodeEmitter', () => {
     expect(emitStmt(o.literalMap([
                        {key: 'someKey', value: o.literal(1), quoted: false},
                        {key: 'a', value: o.literal('a'), quoted: false},
-                       {key: '*', value: o.literal('star'), quoted: true},
+                       {key: 'b', value: o.literal('b'), quoted: true},
+                       {key: '*', value: o.literal('star'), quoted: false},
                      ]).toStmt())
                .replace(/\s+/gm, ''))
-        .toEqual(`({someKey:1,a:"a","*":"star"});`);
+        .toEqual(`({someKey:1,a:"a","b":"b","*":"star"});`);
   });
 
   it('should support blank literals', () => {
