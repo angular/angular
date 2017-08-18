@@ -38,11 +38,6 @@ export class DebugNode {
   get references(): {[key: string]: any} { return this._debugContext.references; }
 
   get providerTokens(): any[] { return this._debugContext.providerTokens; }
-
-  /**
-   * @deprecated since v4
-   */
-  get source(): string { return 'Deprecated since v4'; }
 }
 
 /**
