@@ -109,12 +109,6 @@ export class Testability implements PublicTestability {
 
   getPendingRequestCount(): number { return this._pendingCount; }
 
-  /** @deprecated use findProviders */
-  findBindings(using: any, provider: string, exactMatch: boolean): any[] {
-    // TODO(juliemr): implement.
-    return [];
-  }
-
   findProviders(using: any, provider: string, exactMatch: boolean): any[] {
     // TODO(juliemr): implement.
     return [];
