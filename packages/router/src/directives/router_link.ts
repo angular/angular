@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LocationStrategy} from '@angular/common';
-import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, Renderer2, isDevMode} from '@angular/core';
-import {Subscription} from 'rxjs/Subscription';
+import { LocationStrategy } from '@angular/common';
+import { Attribute, Directive, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, Renderer2, isDevMode } from '@angular/core';
+import { Subscription } from 'rxjs/Subscription';
 
-import {QueryParamsHandling} from '../config';
-import {NavigationEnd} from '../events';
-import {Router} from '../router';
-import {ActivatedRoute} from '../router_state';
-import {UrlTree} from '../url_tree';
+import { QueryParamsHandling } from '../config';
+import { NavigationEnd } from '../events';
+import { Router } from '../router';
+import { ActivatedRoute } from '../router_state';
+import { UrlTree } from '../url_tree';
 
 /**
  * @whatItDoes Lets you link to specific parts of your app.
@@ -93,27 +93,28 @@ import {UrlTree} from '../url_tree';
  *
  * @stable
  */
-@Directive({selector: ':not(a)[routerLink]'})
+@Directive({ selector: ':not(a)[routerLink]' })
 export class RouterLink {
-  @Input() queryParams: {[k: string]: any};
+  @Input() queryParams: { [k: string]: any };
   @Input() fragment: string;
   @Input() queryParamsHandling: QueryParamsHandling;
   @Input() preserveFragment: boolean;
   @Input() skipLocationChange: boolean;
   @Input() replaceUrl: boolean;
+  @Input() relativeTo: ActivatedRoute;
   private commands: any[] = [];
   private preserve: boolean;
 
   constructor(
-      private router: Router, private route: ActivatedRoute,
-      @Attribute('tabindex') tabIndex: string, renderer: Renderer2, el: ElementRef) {
+    private router: Router, private route: ActivatedRoute,
+    @Attribute('tabindex') tabIndex: string, renderer: Renderer2, el: ElementRef) {
     if (tabIndex == null) {
       renderer.setAttribute(el.nativeElement, 'tabindex', '0');
     }
   }
 
   @Input()
-  set routerLink(commands: any[]|string) {
+  set routerLink(commands: any[] | string) {
     if (commands != null) {
       this.commands = Array.isArray(commands) ? commands : [commands];
     } else {
@@ -144,7 +145,7 @@ export class RouterLink {
 
   get urlTree(): UrlTree {
     return this.router.createUrlTree(this.commands, {
-      relativeTo: this.route,
+      relativeTo: this.relativeTo || this.route,
       queryParams: this.queryParams,
       fragment: this.fragment,
       preserveQueryParams: attrBoolValue(this.preserve),
@@ -163,15 +164,16 @@ export class RouterLink {
  *
  * @stable
  */
-@Directive({selector: 'a[routerLink]'})
+@Directive({ selector: 'a[routerLink]' })
 export class RouterLinkWithHref implements OnChanges, OnDestroy {
   @HostBinding('attr.target') @Input() target: string;
-  @Input() queryParams: {[k: string]: any};
+  @Input() queryParams: { [k: string]: any };
   @Input() fragment: string;
   @Input() queryParamsHandling: QueryParamsHandling;
   @Input() preserveFragment: boolean;
   @Input() skipLocationChange: boolean;
   @Input() replaceUrl: boolean;
+  @Input() relativeTo: ActivatedRoute;
   private commands: any[] = [];
   private subscription: Subscription;
   private preserve: boolean;
@@ -180,8 +182,8 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   @HostBinding() href: string;
 
   constructor(
-      private router: Router, private route: ActivatedRoute,
-      private locationStrategy: LocationStrategy) {
+    private router: Router, private route: ActivatedRoute,
+    private locationStrategy: LocationStrategy) {
     this.subscription = router.events.subscribe(s => {
       if (s instanceof NavigationEnd) {
         this.updateTargetUrlAndHref();
@@ -190,7 +192,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   }
 
   @Input()
-  set routerLink(commands: any[]|string) {
+  set routerLink(commands: any[] | string) {
     if (commands != null) {
       this.commands = Array.isArray(commands) ? commands : [commands];
     } else {
@@ -233,7 +235,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
 
   get urlTree(): UrlTree {
     return this.router.createUrlTree(this.commands, {
-      relativeTo: this.route,
+      relativeTo: this.relativeTo || this.route,
       queryParams: this.queryParams,
       fragment: this.fragment,
       preserveQueryParams: attrBoolValue(this.preserve),
