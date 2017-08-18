@@ -324,7 +324,6 @@ export declare class DebugNode {
     readonly references: {
         [key: string]: any;
     };
-    /** @deprecated */ readonly source: string;
     constructor(nativeNode: any, parent: DebugNode | null, _debugContext: DebugContext);
 }
 
