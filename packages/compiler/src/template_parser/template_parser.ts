@@ -16,7 +16,7 @@ import {I18NHtmlParser} from '../i18n/i18n_html_parser';
 import {Identifiers, createTokenForExternalReference, createTokenForReference} from '../identifiers';
 import * as html from '../ml_parser/ast';
 import {ParseTreeResult} from '../ml_parser/html_parser';
-import {removeWhitespaces} from '../ml_parser/html_whitespaces';
+import {removeWhitespaces, replaceNgsp} from '../ml_parser/html_whitespaces';
 import {expandNodes} from '../ml_parser/icu_ast_expander';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {isNgTemplate, splitNsName} from '../ml_parser/tags';
@@ -248,9 +248,10 @@ class TemplateParseVisitor implements html.Visitor {
 
   visitText(text: html.Text, parent: ElementContext): any {
     const ngContentIndex = parent.findNgContentIndex(TEXT_CSS_SELECTOR) !;
-    const expr = this._bindingParser.parseInterpolation(text.value, text.sourceSpan !);
+    const valueNoNgsp = replaceNgsp(text.value);
+    const expr = this._bindingParser.parseInterpolation(valueNoNgsp, text.sourceSpan !);
     return expr ? new BoundTextAst(expr, ngContentIndex, text.sourceSpan !) :
-                  new TextAst(text.value, ngContentIndex, text.sourceSpan !);
+                  new TextAst(valueNoNgsp, ngContentIndex, text.sourceSpan !);
   }
 
   visitAttribute(attribute: html.Attribute, context: any): any {

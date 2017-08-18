@@ -2071,6 +2071,12 @@ The pipe 'test' could not be found ("{{[ERROR ->]a | test}}"): TestComp@0:2`);
 
   describe('whitespaces removal', () => {
 
+    beforeEach(() => {
+      TestBed.configureCompiler({providers: [TEST_COMPILER_PROVIDERS, MOCK_SCHEMA_REGISTRY]});
+    });
+
+    commonBeforeEach();
+
     it('should not remove whitespaces by default', () => {
       expect(humanizeTplAst(parse(' <br>  <br>\t<br>\n<br> ', []))).toEqual([
         [TextAst, ' '],
@@ -2082,6 +2088,18 @@ The pipe 'test' could not be found ("{{[ERROR ->]a | test}}"): TestComp@0:2`);
         [TextAst, '\n'],
         [ElementAst, 'br'],
         [TextAst, ' '],
+      ]);
+    });
+
+    it('should replace each &ngsp; with a space when preserveWhitespaces is true', () => {
+      expect(humanizeTplAst(parse('foo&ngsp;&ngsp;&ngsp;bar', [], [], [], true))).toEqual([
+        [TextAst, 'foo   bar'],
+      ]);
+    });
+
+    it('should replace every &ngsp; with a single space when preserveWhitespaces is false', () => {
+      expect(humanizeTplAst(parse('foo&ngsp;&ngsp;&ngsp;bar', [], [], [], false))).toEqual([
+        [TextAst, 'foo bar'],
       ]);
     });
 
