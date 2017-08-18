@@ -7,7 +7,6 @@
  */
 
 import {Optional, SkipSelf, StaticProvider} from '../../di';
-import {ChangeDetectorRef} from '../change_detector_ref';
 
 
 /**
@@ -82,7 +81,8 @@ export interface IterableChanges<V> {
   /** Iterate over all removed items. */
   forEachRemovedItem(fn: (record: IterableChangeRecord<V>) => void): void;
 
-  /** Iterate over all items which had their identity (as computed by the `trackByFn`) changed. */
+  /** Iterate over all items which had their identity (as computed by the `TrackByFunction`)
+   * changed. */
   forEachIdentityChange(fn: (record: IterableChangeRecord<V>) => void): void;
 }
 
@@ -101,7 +101,7 @@ export interface IterableChangeRecord<V> {
   /** The item. */
   readonly item: V;
 
-  /** Track by identity as computed by the `trackByFn`. */
+  /** Track by identity as computed by the `TrackByFunction`. */
   readonly trackById: any;
 }
 
@@ -109,14 +109,6 @@ export interface IterableChangeRecord<V> {
  * @deprecated v4.0.0 - Use IterableChangeRecord instead.
  */
 export interface CollectionChangeRecord<V> extends IterableChangeRecord<V> {}
-
-
-/**
- * Nolonger used.
- *
- * @deprecated v4.0.0 - Use TrackByFunction instead
- */
-export interface TrackByFn { (index: number, item: any): any; }
 
 /**
  * An optional function passed into {@link NgForOf} that defines how to track
@@ -134,12 +126,6 @@ export interface TrackByFunction<T> { (index: number, item: T): any; }
 export interface IterableDifferFactory {
   supports(objects: any): boolean;
   create<V>(trackByFn?: TrackByFunction<V>): IterableDiffer<V>;
-
-  /**
-   * @deprecated v4.0.0 - ChangeDetectorRef is not used and is no longer a parameter
-   */
-  create<V>(_cdr?: ChangeDetectorRef|TrackByFunction<V>, trackByFn?: TrackByFunction<V>):
-      IterableDiffer<V>;
 }
 
 /**
@@ -147,11 +133,7 @@ export interface IterableDifferFactory {
  * @stable
  */
 export class IterableDiffers {
-  /**
-   * @deprecated v4.0.0 - Should be private
-   */
-  factories: IterableDifferFactory[];
-  constructor(factories: IterableDifferFactory[]) { this.factories = factories; }
+  constructor(private factories: IterableDifferFactory[]) {}
 
   static create(factories: IterableDifferFactory[], parent?: IterableDiffers): IterableDiffers {
     if (parent != null) {

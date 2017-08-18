@@ -38,31 +38,12 @@ export function main() {
       expect(differs.find('some object')).toBe(factory2);
     });
 
-    it('should copy over differs from the parent repo', () => {
-      factory1.spy('supports').and.returnValue(true);
-      factory2.spy('supports').and.returnValue(false);
-
-      const parent = IterableDiffers.create(<any>[factory1]);
-      const child = IterableDiffers.create(<any>[factory2], parent);
-
-      expect(child.factories).toEqual([factory2, factory1]);
-    });
-
     describe('.extend()', () => {
       it('should throw if calling extend when creating root injector', () => {
         const injector = Injector.create([IterableDiffers.extend([])]);
 
         expect(() => injector.get(IterableDiffers))
             .toThrowError(/Cannot extend IterableDiffers without a parent injector/);
-      });
-
-      it('should extend di-inherited differs', () => {
-        const parent = new IterableDiffers([factory1]);
-        const injector = Injector.create([{provide: IterableDiffers, useValue: parent}]);
-        const childInjector = Injector.create([IterableDiffers.extend([factory2])], injector);
-
-        expect(injector.get(IterableDiffers).factories).toEqual([factory1]);
-        expect(childInjector.get(IterableDiffers).factories).toEqual([factory2, factory1]);
       });
     });
   });

@@ -329,24 +329,6 @@ export declare class DebugNode {
     constructor(nativeNode: any, parent: DebugNode | null, _debugContext: DebugContext);
 }
 
-/** @deprecated */
-export declare class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChanges<V> {
-    readonly collection: V[] | Iterable<V> | null;
-    readonly isDirty: boolean;
-    readonly length: number;
-    constructor(trackByFn?: TrackByFunction<V>);
-    check(collection: NgIterable<V>): boolean;
-    diff(collection: NgIterable<V>): DefaultIterableDiffer<V> | null;
-    forEachAddedItem(fn: (record: IterableChangeRecord_<V>) => void): void;
-    forEachIdentityChange(fn: (record: IterableChangeRecord_<V>) => void): void;
-    forEachItem(fn: (record: IterableChangeRecord_<V>) => void): void;
-    forEachMovedItem(fn: (record: IterableChangeRecord_<V>) => void): void;
-    forEachOperation(fn: (item: IterableChangeRecord<V>, previousIndex: number | null, currentIndex: number | null) => void): void;
-    forEachPreviousItem(fn: (record: IterableChangeRecord_<V>) => void): void;
-    forEachRemovedItem(fn: (record: IterableChangeRecord_<V>) => void): void;
-    onDestroy(): void;
-}
-
 /** @experimental */
 export declare function destroyPlatform(): void;
 
@@ -514,13 +496,11 @@ export interface IterableDiffer<V> {
 /** @stable */
 export interface IterableDifferFactory {
     create<V>(trackByFn?: TrackByFunction<V>): IterableDiffer<V>;
-    /** @deprecated */ create<V>(_cdr?: ChangeDetectorRef | TrackByFunction<V>, trackByFn?: TrackByFunction<V>): IterableDiffer<V>;
     supports(objects: any): boolean;
 }
 
 /** @stable */
 export declare class IterableDiffers {
-    /** @deprecated */ factories: IterableDifferFactory[];
     constructor(factories: IterableDifferFactory[]);
     find(iterable: any): IterableDifferFactory;
     static create(factories: IterableDifferFactory[], parent?: IterableDiffers): IterableDiffers;
@@ -557,13 +537,11 @@ export interface KeyValueDiffer<K, V> {
 /** @stable */
 export interface KeyValueDifferFactory {
     create<K, V>(): KeyValueDiffer<K, V>;
-    /** @deprecated */ create<K, V>(_cdr?: ChangeDetectorRef): KeyValueDiffer<K, V>;
     supports(objects: any): boolean;
 }
 
 /** @stable */
 export declare class KeyValueDiffers {
-    /** @deprecated */ factories: KeyValueDifferFactory[];
     constructor(factories: KeyValueDifferFactory[]);
     find(kv: any): KeyValueDifferFactory;
     static create<S>(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers;
@@ -987,11 +965,6 @@ export declare class TestabilityRegistry {
     getAllTestabilities(): Testability[];
     getTestability(elem: any): Testability | null;
     registerApplication(token: any, testability: Testability): void;
-}
-
-/** @deprecated */
-export interface TrackByFn {
-    (index: number, item: any): any;
 }
 
 /** @stable */

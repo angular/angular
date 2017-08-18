@@ -8,8 +8,6 @@
 
 import {looseIdentical, stringify} from '../../util';
 import {isListLikeIterable, iterateListLike} from '../change_detection_util';
-import {ChangeDetectorRef} from '../change_detector_ref';
-
 import {IterableChangeRecord, IterableChanges, IterableDiffer, IterableDifferFactory, NgIterable, TrackByFunction} from './iterable_differs';
 
 
@@ -17,22 +15,13 @@ export class DefaultIterableDifferFactory implements IterableDifferFactory {
   constructor() {}
   supports(obj: Object|null|undefined): boolean { return isListLikeIterable(obj); }
 
-  create<V>(trackByFn?: TrackByFunction<V>): DefaultIterableDiffer<V>;
-
-  /**
-   * @deprecated v4.0.0 - ChangeDetectorRef is not used and is no longer a parameter
-   */
-  create<V>(cdRefOrTrackBy?: ChangeDetectorRef|TrackByFunction<V>, trackByFn?: TrackByFunction<V>):
-      DefaultIterableDiffer<V> {
-    return new DefaultIterableDiffer<V>(trackByFn || <TrackByFunction<any>>cdRefOrTrackBy);
+  create<V>(trackByFn?: TrackByFunction<V>): DefaultIterableDiffer<V> {
+    return new DefaultIterableDiffer<V>(trackByFn);
   }
 }
 
 const trackByIdentity = (index: number, item: any) => item;
 
-/**
- * @deprecated v4.0.0 - Should not be part of public API.
- */
 export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChanges<V> {
   private _length: number = 0;
   private _collection: NgIterable<V>|null = null;
