@@ -18,12 +18,12 @@ let inertElement: HTMLElement|null = null;
 let DOM: DomAdapter = null !;
 
 /** Returns an HTML element that is guaranteed to not execute code when creating elements in it. */
-function getInertElement() {
+function getInertElement(defaultDoc: Document) {
   if (inertElement) return inertElement;
   DOM = getDOM();
 
   // Prefer using <template> element if supported.
-  const templateEl = DOM.createElement('template');
+  const templateEl = DOM.createElement('template', defaultDoc);
   if ('content' in templateEl) return templateEl;
 
   const doc = DOM.createHtmlDocument();
@@ -256,7 +256,7 @@ function stripCustomNsAttrs(el: Element) {
  */
 export function sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): string {
   try {
-    const containerEl = getInertElement();
+    const containerEl = getInertElement(defaultDoc);
     // Make sure unsafeHtml is actually a string (TypeScript types are not enforced at runtime).
     let unsafeHtml = unsafeHtmlInput ? String(unsafeHtmlInput) : '';
 

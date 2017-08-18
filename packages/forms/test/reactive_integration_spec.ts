@@ -11,6 +11,7 @@ import {ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing'
 import {AbstractControl, AsyncValidator, AsyncValidatorFn, COMPOSITION_BUFFER_MODE, FormArray, FormControl, FormGroup, FormGroupDirective, FormsModule, NG_ASYNC_VALIDATORS, NG_VALIDATORS, ReactiveFormsModule, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 import {merge} from 'rxjs/observable/merge';
 import {timer} from 'rxjs/observable/timer';
@@ -20,10 +21,11 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
 export function main() {
   describe('reactive forms integration tests', () => {
-
+    let doc: Document;
     function initTest<T>(component: Type<T>, ...directives: Type<any>[]): ComponentFixture<T> {
       TestBed.configureTestingModule(
           {declarations: [component, ...directives], imports: [FormsModule, ReactiveFormsModule]});
+      doc = TestBed.get(DOCUMENT);
       return TestBed.createComponent(component);
     }
 
@@ -39,7 +41,7 @@ export function main() {
         expect(input.nativeElement.value).toEqual('old value');
 
         input.nativeElement.value = 'updated value';
-        dispatchEvent(input.nativeElement, 'input');
+        dispatchEvent(input.nativeElement, 'input', doc);
 
         // view -> model
         expect(control.value).toEqual('updated value');
@@ -71,7 +73,7 @@ export function main() {
 
         const input = fixture.debugElement.query(By.css('input'));
         input.nativeElement.value = 'updatedValue';
-        dispatchEvent(input.nativeElement, 'input');
+        dispatchEvent(input.nativeElement, 'input', doc);
 
         expect(form.value).toEqual({'login': 'updatedValue'});
       });
@@ -103,7 +105,7 @@ export function main() {
 
         const input = fixture.debugElement.query(By.css('input'));
         input.nativeElement.value = 'Nancy';
-        dispatchEvent(input.nativeElement, 'input');
+        dispatchEvent(input.nativeElement, 'input', doc);
         fixture.detectChanges();
 
         expect(newForm.value).toEqual({login: 'Nancy'});
@@ -131,7 +133,7 @@ export function main() {
         expect(inputs[1].nativeElement.value).toEqual('secret');
 
         inputs[0].nativeElement.value = 'Carson';
-        dispatchEvent(inputs[0].nativeElement, 'input');
+        dispatchEvent(inputs[0].nativeElement, 'input', doc);
         fixture.detectChanges();
 
         expect(newForm.value).toEqual({signin: {login: 'Carson', password: 'secret'}});
@@ -253,7 +255,7 @@ export function main() {
           expect(input.nativeElement.value).toEqual('newValue');
 
           input.nativeElement.value = 'user input';
-          dispatchEvent(input.nativeElement, 'input');
+          dispatchEvent(input.nativeElement, 'input', doc);
           fixture.detectChanges();
 
           expect(form.value).toEqual({login: 'user input'});
@@ -284,7 +286,7 @@ export function main() {
           expect(inputs[1].nativeElement.value).toEqual('newPassword');
 
           inputs[0].nativeElement.value = 'user input';
-          dispatchEvent(inputs[0].nativeElement, 'input');
+          dispatchEvent(inputs[0].nativeElement, 'input', doc);
           fixture.detectChanges();
 
           expect(form.value).toEqual({signin: {login: 'user input', password: 'newPassword'}});
@@ -311,7 +313,7 @@ export function main() {
           expect(input.nativeElement.value).toEqual('LA');
 
           input.nativeElement.value = 'MTV';
-          dispatchEvent(input.nativeElement, 'input');
+          dispatchEvent(input.nativeElement, 'input', doc);
           fixture.detectChanges();
 
           expect(form.value).toEqual({cities: ['MTV']});
@@ -342,7 +344,7 @@ export function main() {
         expect(form.value).toEqual({cities: ['SF', 'NY']});
 
         inputs[0].nativeElement.value = 'LA';
-        dispatchEvent(inputs[0].nativeElement, 'input');
+        dispatchEvent(inputs[0].nativeElement, 'input', doc);
         fixture.detectChanges();
 
         //  view -> model
@@ -386,7 +388,7 @@ export function main() {
         });
 
         inputs[0].nativeElement.value = 'LA';
-        dispatchEvent(inputs[0].nativeElement, 'input');
+        dispatchEvent(inputs[0].nativeElement, 'input', doc);
         fixture.detectChanges();
 
         expect(form.value).toEqual({
@@ -508,7 +510,7 @@ export function main() {
         const loginEl = fixture.debugElement.query(By.css('input'));
         expect(login.touched).toBe(false);
 
-        dispatchEvent(loginEl.nativeElement, 'blur');
+        dispatchEvent(loginEl.nativeElement, 'blur', doc);
 
         expect(login.touched).toBe(true);
       });
@@ -523,7 +525,7 @@ export function main() {
         fixture.detectChanges();
 
         const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
-        dispatchEvent(formEl, 'submit');
+        dispatchEvent(formEl, 'submit', doc);
 
         fixture.detectChanges();
         expect(fixture.componentInstance.event.type).toEqual('submit');
@@ -538,7 +540,7 @@ export function main() {
         expect(formGroupDir.submitted).toBe(false);
 
         const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
-        dispatchEvent(formEl, 'submit');
+        dispatchEvent(formEl, 'submit', doc);
 
         fixture.detectChanges();
         expect(formGroupDir.submitted).toEqual(true);
@@ -587,7 +589,7 @@ export function main() {
         const loginEl = fixture.debugElement.query(By.css('input')).nativeElement;
         loginEl.value = 'newValue';
 
-        dispatchEvent(loginEl, 'input');
+        dispatchEvent(loginEl, 'input', doc);
       });
 
       it('should mark control as pristine before emitting a value change event when resetting ',
@@ -600,7 +602,7 @@ export function main() {
 
            const loginEl = fixture.debugElement.query(By.css('input')).nativeElement;
            loginEl.value = 'newValue';
-           dispatchEvent(loginEl, 'input');
+           dispatchEvent(loginEl, 'input', doc);
 
            expect(login.pristine).toBe(false);
 
@@ -621,13 +623,13 @@ export function main() {
         const input = fixture.debugElement.query(By.css('input')).nativeElement;
         expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
 
-        dispatchEvent(input, 'blur');
+        dispatchEvent(input, 'blur', doc);
         fixture.detectChanges();
 
         expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-touched']);
 
         input.value = 'updatedValue';
-        dispatchEvent(input, 'input');
+        dispatchEvent(input, 'input', doc);
         fixture.detectChanges();
 
         expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
@@ -642,12 +644,12 @@ export function main() {
            const input = fixture.debugElement.query(By.css('input')).nativeElement;
            expect(sortedClassList(input)).toEqual(['ng-pending', 'ng-pristine', 'ng-untouched']);
 
-           dispatchEvent(input, 'blur');
+           dispatchEvent(input, 'blur', doc);
            fixture.detectChanges();
            expect(sortedClassList(input)).toEqual(['ng-pending', 'ng-pristine', 'ng-touched']);
 
            input.value = 'good';
-           dispatchEvent(input, 'input');
+           dispatchEvent(input, 'input', doc);
            tick();
            fixture.detectChanges();
 
@@ -664,12 +666,12 @@ export function main() {
            const input = fixture.debugElement.query(By.css('input')).nativeElement;
            expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
 
-           dispatchEvent(input, 'blur');
+           dispatchEvent(input, 'blur', doc);
            fixture.detectChanges();
            expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-touched']);
 
            input.value = 'bad';
-           dispatchEvent(input, 'input');
+           dispatchEvent(input, 'input', doc);
            fixture.detectChanges();
 
            expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-pending', 'ng-touched']);
@@ -680,7 +682,7 @@ export function main() {
            expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-invalid', 'ng-touched']);
 
            input.value = 'good';
-           dispatchEvent(input, 'input');
+           dispatchEvent(input, 'input', doc);
            tick();
            fixture.detectChanges();
 
@@ -696,13 +698,13 @@ export function main() {
         const input = fixture.debugElement.query(By.css('input')).nativeElement;
         expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
 
-        dispatchEvent(input, 'blur');
+        dispatchEvent(input, 'blur', doc);
         fixture.detectChanges();
 
         expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-touched']);
 
         input.value = 'updatedValue';
-        dispatchEvent(input, 'input');
+        dispatchEvent(input, 'input', doc);
         fixture.detectChanges();
 
         expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
@@ -719,13 +721,13 @@ export function main() {
 
         expect(sortedClassList(formEl)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
 
-        dispatchEvent(input, 'blur');
+        dispatchEvent(input, 'blur', doc);
         fixture.detectChanges();
 
         expect(sortedClassList(formEl)).toEqual(['ng-invalid', 'ng-pristine', 'ng-touched']);
 
         input.value = 'updatedValue';
-        dispatchEvent(input, 'input');
+        dispatchEvent(input, 'input', doc);
         fixture.detectChanges();
 
         expect(sortedClassList(formEl)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
@@ -745,13 +747,13 @@ export function main() {
 
           const input = fixture.debugElement.query(By.css('input')).nativeElement;
           input.value = 'Nancy';
-          dispatchEvent(input, 'input');
+          dispatchEvent(input, 'input', doc);
           fixture.detectChanges();
 
           expect(control.value).toEqual('', 'Expected value to remain unchanged until blur.');
           expect(control.valid).toBe(false, 'Expected no validation to occur until blur.');
 
-          dispatchEvent(input, 'blur');
+          dispatchEvent(input, 'blur', doc);
           fixture.detectChanges();
 
           expect(control.value)
@@ -768,14 +770,14 @@ export function main() {
 
           const input = fixture.debugElement.query(By.css('input')).nativeElement;
           input.value = 'Nancy';
-          dispatchEvent(input, 'input');
+          dispatchEvent(input, 'input', doc);
           fixture.detectChanges();
 
           expect(form.value)
               .toEqual({login: ''}, 'Expected group value to remain unchanged until blur.');
           expect(form.valid).toBe(false, 'Expected no validation to occur on group until blur.');
 
-          dispatchEvent(input, 'blur');
+          dispatchEvent(input, 'blur', doc);
           fixture.detectChanges();
 
           expect(form.value)
@@ -808,12 +810,12 @@ export function main() {
 
           const input = fixture.debugElement.query(By.css('input')).nativeElement;
           input.value = 'Nancy';
-          dispatchEvent(input, 'input');
+          dispatchEvent(input, 'input', doc);
           fixture.detectChanges();
 
           expect(control.dirty).toBe(false, 'Expected control to stay pristine until blurred.');
 
-          dispatchEvent(input, 'blur');
+          dispatchEvent(input, 'blur', doc);
           fixture.detectChanges();
 
           expect(control.dirty).toBe(true, 'Expected control to update dirty state when blurred.');
@@ -843,19 +845,19 @@ export function main() {
           fixture.detectChanges();
 
           const input = fixture.debugElement.query(By.css('input')).nativeElement;
-          dispatchEvent(input, 'blur');
+          dispatchEvent(input, 'blur', doc);
           fixture.detectChanges();
 
-          dispatchEvent(input, 'focus');
+          dispatchEvent(input, 'focus', doc);
           input.value = '';
-          dispatchEvent(input, 'input');
+          dispatchEvent(input, 'input', doc);
           fixture.detectChanges();
 
           expect(control.value)
               .toEqual('Nancy', 'Expected value to remain unchanged until second blur.');
           expect(control.valid).toBe(true, 'Expected validation not to run until second blur.');
 
-          dispatchEvent(input, 'blur');
+          dispatchEvent(input, 'blur', doc);
           fixture.detectChanges();
 
           expect(control.value).toEqual('', 'Expected value to update when blur occurs again.');
@@ -870,13 +872,13 @@ export function main() {
 
           const input = fixture.debugElement.query(By.css('input')).nativeElement;
           input.value = 'aa';
-          dispatchEvent(input, 'input');
+          dispatchEvent(input, 'input', doc);
           fixture.detectChanges();
 
           control.setValue('Nancy');
           fixture.detectChanges();
 
-          dispatchEvent(input, 'blur');
+          dispatchEvent(input, 'blur', doc);
           fixture.detectChanges();
 
           expect(input.value).toEqual('Nancy', 'Expected programmatic value to stick after blur.');
@@ -904,16 +906,16 @@ export function main() {
 
           const input = fixture.debugElement.query(By.css('input')).nativeElement;
           input.value = 'aa';
-          dispatchEvent(input, 'input');
+          dispatchEvent(input, 'input', doc);
           fixture.detectChanges();
 
-          dispatchEvent(input, 'blur');
+          dispatchEvent(input, 'blur', doc);
           fixture.detectChanges();
           expect(control.dirty).toBe(true, 'Expected control to be dirty on blur.');
 
           control.reset();
 
-          dispatchEvent(input, 'blur');
+          dispatchEvent(input, 'blur', doc);
           fixture.detectChanges();
 
           expect(input.value).toEqual('', 'Expected view value to reset');
@@ -933,12 +935,12 @@ export function main() {
 
           const input = fixture.debugElement.query(By.css('input')).nativeElement;
           input.value = 'Nancy';
-          dispatchEvent(input, 'input');
+          dispatchEvent(input, 'input', doc);
           fixture.detectChanges();
 
           expect(values).toEqual([], 'Expected no valueChanges or statusChanges on input.');
 
-          dispatchEvent(input, 'blur');
+          dispatchEvent(input, 'blur', doc);
           fixture.detectChanges();
 
           expect(values).toEqual(
@@ -955,16 +957,16 @@ export function main() {
 
           const input = fixture.debugElement.query(By.css('input')).nativeElement;
           input.value = 'aa';
-          dispatchEvent(input, 'input');
+          dispatchEvent(input, 'input', doc);
           fixture.detectChanges();
 
-          dispatchEvent(input, 'blur');
+          dispatchEvent(input, 'blur', doc);
           fixture.detectChanges();
 
           control.markAsPristine();
           expect(control.dirty).toBe(false, 'Expected control to become pristine.');
 
-          dispatchEvent(input, 'blur');
+          dispatchEvent(input, 'blur', doc);
           fixture.detectChanges();
 
           expect(control.dirty).toBe(false, 'Expected pending dirty value to reset.');
@@ -1086,14 +1088,14 @@ export function main() {
 
           const input = fixture.debugElement.query(By.css('input')).nativeElement;
           input.value = 'Nancy';
-          dispatchEvent(input, 'input');
+          dispatchEvent(input, 'input', doc);
           fixture.detectChanges();
 
           expect(formGroup.value)
               .toEqual({login: ''}, 'Expected form value to remain unchanged on input.');
           expect(formGroup.valid).toBe(false, 'Expected form validation not to run on input.');
 
-          dispatchEvent(input, 'blur');
+          dispatchEvent(input, 'blur', doc);
           fixture.detectChanges();
 
           expect(formGroup.value)
@@ -1101,7 +1103,7 @@ export function main() {
           expect(formGroup.valid).toBe(false, 'Expected form validation not to run on blur.');
 
           const form = fixture.debugElement.query(By.css('form')).nativeElement;
-          dispatchEvent(form, 'submit');
+          dispatchEvent(form, 'submit', doc);
           fixture.detectChanges();
 
           expect(formGroup.value)
@@ -1118,15 +1120,15 @@ export function main() {
 
           const input = fixture.debugElement.query(By.css('input')).nativeElement;
           input.value = 'Nancy';
-          dispatchEvent(input, 'input');
+          dispatchEvent(input, 'input', doc);
           fixture.detectChanges();
 
           const form = fixture.debugElement.query(By.css('form')).nativeElement;
-          dispatchEvent(form, 'submit');
+          dispatchEvent(form, 'submit', doc);
           fixture.detectChanges();
 
           input.value = '';
-          dispatchEvent(input, 'input');
+          dispatchEvent(input, 'input', doc);
           fixture.detectChanges();
 
           expect(formGroup.value)
@@ -1134,7 +1136,7 @@ export function main() {
           expect(formGroup.valid)
               .toBe(true, 'Expected validation not to run until a second submit.');
 
-          dispatchEvent(form, 'submit');
+          dispatchEvent(form, 'submit', doc);
           fixture.detectChanges();
 
           expect(formGroup.value)
@@ -1166,18 +1168,18 @@ export function main() {
           fixture.detectChanges();
 
           const input = fixture.debugElement.query(By.css('input')).nativeElement;
-          dispatchEvent(input, 'input');
+          dispatchEvent(input, 'input', doc);
           fixture.detectChanges();
 
           expect(formGroup.dirty).toBe(false, 'Expected dirty not to change on input.');
 
-          dispatchEvent(input, 'blur');
+          dispatchEvent(input, 'blur', doc);
           fixture.detectChanges();
 
           expect(formGroup.dirty).toBe(false, 'Expected dirty not to change on blur.');
 
           const form = fixture.debugElement.query(By.css('form')).nativeElement;
-          dispatchEvent(form, 'submit');
+          dispatchEvent(form, 'submit', doc);
           fixture.detectChanges();
 
           expect(formGroup.dirty).toBe(true, 'Expected dirty to update on submit.');
@@ -1190,13 +1192,13 @@ export function main() {
           fixture.detectChanges();
 
           const input = fixture.debugElement.query(By.css('input')).nativeElement;
-          dispatchEvent(input, 'blur');
+          dispatchEvent(input, 'blur', doc);
           fixture.detectChanges();
 
           expect(formGroup.touched).toBe(false, 'Expected touched not to change until submit.');
 
           const form = fixture.debugElement.query(By.css('form')).nativeElement;
-          dispatchEvent(form, 'submit');
+          dispatchEvent(form, 'submit', doc);
           fixture.detectChanges();
 
           expect(formGroup.touched).toBe(true, 'Expected touched to update on submit.');
@@ -1211,10 +1213,10 @@ export function main() {
 
           const input = fixture.debugElement.query(By.css('input')).nativeElement;
           input.value = 'Nancy';
-          dispatchEvent(input, 'input');
+          dispatchEvent(input, 'input', doc);
           fixture.detectChanges();
 
-          dispatchEvent(input, 'blur');
+          dispatchEvent(input, 'blur', doc);
           fixture.detectChanges();
 
           formGroup.reset();
@@ -1226,7 +1228,7 @@ export function main() {
           expect(formGroup.touched).toBe(false, 'Expected touched to stay false on reset.');
 
           const form = fixture.debugElement.query(By.css('form')).nativeElement;
-          dispatchEvent(form, 'submit');
+          dispatchEvent(form, 'submit', doc);
           fixture.detectChanges();
 
           expect(formGroup.value)
@@ -1251,18 +1253,18 @@ export function main() {
 
           const input = fixture.debugElement.query(By.css('input')).nativeElement;
           input.value = 'Nancy';
-          dispatchEvent(input, 'input');
+          dispatchEvent(input, 'input', doc);
           fixture.detectChanges();
 
           expect(values).toEqual([], 'Expected no valueChanges or statusChanges on input');
 
-          dispatchEvent(input, 'blur');
+          dispatchEvent(input, 'blur', doc);
           fixture.detectChanges();
 
           expect(values).toEqual([], 'Expected no valueChanges or statusChanges on blur');
 
           const form = fixture.debugElement.query(By.css('form')).nativeElement;
-          dispatchEvent(form, 'submit');
+          dispatchEvent(form, 'submit', doc);
           fixture.detectChanges();
 
           expect(values).toEqual(
@@ -1288,7 +1290,7 @@ export function main() {
           formGroup.get('signin') !.setValidators(groupValidatorSpy);
 
           const form = fixture.debugElement.query(By.css('form')).nativeElement;
-          dispatchEvent(form, 'submit');
+          dispatchEvent(form, 'submit', doc);
           fixture.detectChanges();
 
           expect(validatorSpy).not.toHaveBeenCalled();
@@ -1303,7 +1305,7 @@ export function main() {
           fixture.detectChanges();
 
           const input = fixture.debugElement.query(By.css('input')).nativeElement;
-          dispatchEvent(input, 'blur');
+          dispatchEvent(input, 'blur', doc);
           fixture.detectChanges();
 
           formGroup.markAsUntouched();
@@ -1312,7 +1314,7 @@ export function main() {
           expect(formGroup.touched).toBe(false, 'Expected group to become untouched.');
 
           const form = fixture.debugElement.query(By.css('form')).nativeElement;
-          dispatchEvent(form, 'submit');
+          dispatchEvent(form, 'submit', doc);
           fixture.detectChanges();
 
           expect(formGroup.touched).toBe(false, 'Expected touched to stay false on submit.');
@@ -1428,7 +1430,7 @@ export function main() {
            expect(input.value).toEqual('oldValue');
 
            input.value = 'updatedValue';
-           dispatchEvent(input, 'input');
+           dispatchEvent(input, 'input', doc);
 
            tick();
            expect(fixture.componentInstance.login).toEqual('updatedValue');
@@ -1445,7 +1447,7 @@ export function main() {
            expect(input.value).toEqual('oldValue');
 
            input.value = 'updatedValue';
-           dispatchEvent(input, 'input');
+           dispatchEvent(input, 'input', doc);
            tick();
 
            expect(fixture.componentInstance.login).toEqual('updatedValue');
@@ -1460,7 +1462,7 @@ export function main() {
            const input = fixture.debugElement.query(By.css('input')).nativeElement;
            input.value = 'aa';
            input.setSelectionRange(1, 2);
-           dispatchEvent(input, 'input');
+           dispatchEvent(input, 'input', doc);
 
            fixture.detectChanges();
            tick();
@@ -1479,7 +1481,7 @@ export function main() {
 
            const input = fixture.debugElement.query(By.css('input')).nativeElement;
            input.value = 'Nancy';
-           dispatchEvent(input, 'input');
+           dispatchEvent(input, 'input', doc);
            fixture.detectChanges();
            tick();
 
@@ -1487,7 +1489,7 @@ export function main() {
                .toEqual('initial', 'Expected ngModel value to remain unchanged on input.');
 
            const form = fixture.debugElement.query(By.css('form')).nativeElement;
-           dispatchEvent(form, 'submit');
+           dispatchEvent(form, 'submit', doc);
            fixture.detectChanges();
            tick();
 
@@ -1510,7 +1512,7 @@ export function main() {
         expect(control.hasError('required')).toEqual(true);
 
         checkbox.nativeElement.checked = true;
-        dispatchEvent(checkbox.nativeElement, 'change');
+        dispatchEvent(checkbox.nativeElement, 'change', doc);
         fixture.detectChanges();
 
         expect(checkbox.nativeElement.checked).toBe(true);
@@ -1538,10 +1540,10 @@ export function main() {
         maxLength.nativeElement.value = '1234';
         pattern.nativeElement.value = '12';
 
-        dispatchEvent(required.nativeElement, 'input');
-        dispatchEvent(minLength.nativeElement, 'input');
-        dispatchEvent(maxLength.nativeElement, 'input');
-        dispatchEvent(pattern.nativeElement, 'input');
+        dispatchEvent(required.nativeElement, 'input', doc);
+        dispatchEvent(minLength.nativeElement, 'input', doc);
+        dispatchEvent(maxLength.nativeElement, 'input', doc);
+        dispatchEvent(pattern.nativeElement, 'input', doc);
 
         expect(form.hasError('required', ['login'])).toEqual(true);
         expect(form.hasError('minlength', ['min'])).toEqual(true);
@@ -1554,10 +1556,10 @@ export function main() {
         maxLength.nativeElement.value = '123';
         pattern.nativeElement.value = '123';
 
-        dispatchEvent(required.nativeElement, 'input');
-        dispatchEvent(minLength.nativeElement, 'input');
-        dispatchEvent(maxLength.nativeElement, 'input');
-        dispatchEvent(pattern.nativeElement, 'input');
+        dispatchEvent(required.nativeElement, 'input', doc);
+        dispatchEvent(minLength.nativeElement, 'input', doc);
+        dispatchEvent(maxLength.nativeElement, 'input', doc);
+        dispatchEvent(pattern.nativeElement, 'input', doc);
 
         expect(form.valid).toEqual(true);
       });
@@ -1587,10 +1589,10 @@ export function main() {
         maxLength.nativeElement.value = '1234';
         pattern.nativeElement.value = '12';
 
-        dispatchEvent(required.nativeElement, 'input');
-        dispatchEvent(minLength.nativeElement, 'input');
-        dispatchEvent(maxLength.nativeElement, 'input');
-        dispatchEvent(pattern.nativeElement, 'input');
+        dispatchEvent(required.nativeElement, 'input', doc);
+        dispatchEvent(minLength.nativeElement, 'input', doc);
+        dispatchEvent(maxLength.nativeElement, 'input', doc);
+        dispatchEvent(pattern.nativeElement, 'input', doc);
 
         expect(form.hasError('required', ['login'])).toEqual(true);
         expect(form.hasError('minlength', ['min'])).toEqual(true);
@@ -1602,10 +1604,10 @@ export function main() {
         maxLength.nativeElement.value = '123';
         pattern.nativeElement.value = '123';
 
-        dispatchEvent(required.nativeElement, 'input');
-        dispatchEvent(minLength.nativeElement, 'input');
-        dispatchEvent(maxLength.nativeElement, 'input');
-        dispatchEvent(pattern.nativeElement, 'input');
+        dispatchEvent(required.nativeElement, 'input', doc);
+        dispatchEvent(minLength.nativeElement, 'input', doc);
+        dispatchEvent(maxLength.nativeElement, 'input', doc);
+        dispatchEvent(pattern.nativeElement, 'input', doc);
 
         expect(form.valid).toEqual(true);
       });
@@ -1631,10 +1633,10 @@ export function main() {
         maxLength.nativeElement.value = '1234';
         pattern.nativeElement.value = '12';
 
-        dispatchEvent(required.nativeElement, 'input');
-        dispatchEvent(minLength.nativeElement, 'input');
-        dispatchEvent(maxLength.nativeElement, 'input');
-        dispatchEvent(pattern.nativeElement, 'input');
+        dispatchEvent(required.nativeElement, 'input', doc);
+        dispatchEvent(minLength.nativeElement, 'input', doc);
+        dispatchEvent(maxLength.nativeElement, 'input', doc);
+        dispatchEvent(pattern.nativeElement, 'input', doc);
 
         expect(form.hasError('required', ['login'])).toEqual(false);
         expect(form.hasError('minlength', ['min'])).toEqual(false);
@@ -1648,10 +1650,10 @@ export function main() {
         fixture.componentInstance.pattern = '.{3,}';
         fixture.detectChanges();
 
-        dispatchEvent(required.nativeElement, 'input');
-        dispatchEvent(minLength.nativeElement, 'input');
-        dispatchEvent(maxLength.nativeElement, 'input');
-        dispatchEvent(pattern.nativeElement, 'input');
+        dispatchEvent(required.nativeElement, 'input', doc);
+        dispatchEvent(minLength.nativeElement, 'input', doc);
+        dispatchEvent(maxLength.nativeElement, 'input', doc);
+        dispatchEvent(pattern.nativeElement, 'input', doc);
 
         expect(form.hasError('required', ['login'])).toEqual(true);
         expect(form.hasError('minlength', ['min'])).toEqual(true);
@@ -1736,7 +1738,7 @@ export function main() {
 
            const input = fixture.debugElement.query(By.css('input'));
            input.nativeElement.value = 'expected';
-           dispatchEvent(input.nativeElement, 'input');
+           dispatchEvent(input.nativeElement, 'input', doc);
            tick(100);
 
            expect(form.valid).toEqual(true);
@@ -1751,7 +1753,7 @@ export function main() {
 
         const input = fixture.debugElement.query(By.css('input'));
         input.nativeElement.value = '';
-        dispatchEvent(input.nativeElement, 'input');
+        dispatchEvent(input.nativeElement, 'input', doc);
 
         expect(form.valid).toEqual(false);
       });
@@ -1769,7 +1771,7 @@ export function main() {
 
            const input = fixture.debugElement.query(By.css('input'));
            input.nativeElement.value = 'wrong value';
-           dispatchEvent(input.nativeElement, 'input');
+           dispatchEvent(input.nativeElement, 'input', doc);
 
            expect(form.pending).toEqual(true);
            tick();
@@ -1777,7 +1779,7 @@ export function main() {
            expect(form.hasError('uniqLogin', ['login'])).toEqual(true);
 
            input.nativeElement.value = 'expected';
-           dispatchEvent(input.nativeElement, 'input');
+           dispatchEvent(input.nativeElement, 'input', doc);
            tick();
 
            expect(form.valid).toEqual(true);
@@ -1795,12 +1797,12 @@ export function main() {
 
            const input = fixture.debugElement.query(By.css('input'));
            input.nativeElement.value = 'expected';
-           dispatchEvent(input.nativeElement, 'input');
+           dispatchEvent(input.nativeElement, 'input', doc);
 
            expect(control.pending).toEqual(true);
 
            input.nativeElement.value = '';
-           dispatchEvent(input.nativeElement, 'input');
+           dispatchEvent(input.nativeElement, 'input', doc);
            tick(110);
 
            expect(control.valid).toEqual(false);
@@ -1818,11 +1820,11 @@ export function main() {
 
            const input = fixture.debugElement.query(By.css('input'));
            input.nativeElement.value = 'a';
-           dispatchEvent(input.nativeElement, 'input');
+           dispatchEvent(input.nativeElement, 'input', doc);
            fixture.detectChanges();
 
            input.nativeElement.value = 'aa';
-           dispatchEvent(input.nativeElement, 'input');
+           dispatchEvent(input.nativeElement, 'input', doc);
            fixture.detectChanges();
 
            tick(100);
@@ -2051,7 +2053,7 @@ export function main() {
         inputEl.triggerEventHandler('compositionstart', null);
 
         inputNativeEl.value = 'updatedValue';
-        dispatchEvent(inputNativeEl, 'input');
+        dispatchEvent(inputNativeEl, 'input', doc);
         const isAndroid = /android (\d+)/.test(getDOM().getUserAgent().toLowerCase());
 
         if (isAndroid) {
@@ -2082,7 +2084,7 @@ export function main() {
         inputEl.triggerEventHandler('compositionstart', null);
 
         inputNativeEl.value = 'updatedValue';
-        dispatchEvent(inputNativeEl, 'input');
+        dispatchEvent(inputNativeEl, 'input', doc);
 
         // should not update when compositionstart
         expect(fixture.componentInstance.control.value).toEqual('oldValue');
@@ -2110,7 +2112,7 @@ export function main() {
         inputEl.triggerEventHandler('compositionstart', null);
 
         inputNativeEl.value = 'updatedValue';
-        dispatchEvent(inputNativeEl, 'input');
+        dispatchEvent(inputNativeEl, 'input', doc);
         fixture.detectChanges();
 
         // formControl should update normally

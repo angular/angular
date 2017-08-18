@@ -17,10 +17,7 @@ import {el} from '../../testing/src/browser_util';
 
 export function main() {
   describe('BrowserAnimationBuilder', () => {
-    let element: any;
     beforeEach(() => {
-      element = el('<div></div>');
-
       TestBed.configureTestingModule({
         imports: [NoopAnimationsModule],
         providers: [{provide: AnimationDriver, useClass: MockAnimationDriver}]

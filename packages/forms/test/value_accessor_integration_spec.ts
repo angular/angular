@@ -10,14 +10,16 @@ import {Component, Directive, EventEmitter, Input, Output, Type} from '@angular/
 import {ComponentFixture, TestBed, async, fakeAsync, tick} from '@angular/core/testing';
 import {AbstractControl, ControlValueAccessor, FormControl, FormGroup, FormsModule, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgControl, NgForm, NgModel, ReactiveFormsModule, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
+import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 
 export function main() {
   describe('value accessors', () => {
-
+    let doc: Document;
     function initTest<T>(component: Type<T>, ...directives: Type<any>[]): ComponentFixture<T> {
       TestBed.configureTestingModule(
           {declarations: [component, ...directives], imports: [FormsModule, ReactiveFormsModule]});
+      doc = TestBed.get(DOCUMENT);
       return TestBed.createComponent(component);
     }
 
@@ -34,7 +36,7 @@ export function main() {
       expect(input.nativeElement.value).toEqual('old');
 
       input.nativeElement.value = 'new';
-      dispatchEvent(input.nativeElement, 'input');
+      dispatchEvent(input.nativeElement, 'input', doc);
 
       // view -> model
       expect(control.value).toEqual('new');
@@ -51,7 +53,7 @@ export function main() {
       expect(input.nativeElement.value).toEqual('old');
 
       input.nativeElement.value = 'new';
-      dispatchEvent(input.nativeElement, 'input');
+      dispatchEvent(input.nativeElement, 'input', doc);
 
       // view -> model
       expect(form.value).toEqual({'login': 'new'});
@@ -67,7 +69,7 @@ export function main() {
       form.valueChanges.subscribe({next: (value) => { throw 'Should not happen'; }});
       input.nativeElement.value = 'updatedValue';
 
-      dispatchEvent(input.nativeElement, 'change');
+      dispatchEvent(input.nativeElement, 'change', doc);
     });
 
     it('should support <textarea>', () => {
@@ -83,7 +85,7 @@ export function main() {
       expect(textarea.nativeElement.value).toEqual('old');
 
       textarea.nativeElement.value = 'new';
-      dispatchEvent(textarea.nativeElement, 'input');
+      dispatchEvent(textarea.nativeElement, 'input', doc);
 
       // view -> model
       expect(control.value).toEqual('new');
@@ -102,7 +104,7 @@ export function main() {
       expect(input.nativeElement.checked).toBe(true);
 
       input.nativeElement.checked = false;
-      dispatchEvent(input.nativeElement, 'change');
+      dispatchEvent(input.nativeElement, 'change', doc);
 
       // view -> model
       expect(control.value).toBe(false);
@@ -120,7 +122,7 @@ export function main() {
         expect(input.nativeElement.value).toEqual('10');
 
         input.nativeElement.value = '20';
-        dispatchEvent(input.nativeElement, 'input');
+        dispatchEvent(input.nativeElement, 'input', doc);
 
         // view -> model
         expect(control.value).toEqual(20);
@@ -134,13 +136,13 @@ export function main() {
 
         const input = fixture.debugElement.query(By.css('input'));
         input.nativeElement.value = '';
-        dispatchEvent(input.nativeElement, 'input');
+        dispatchEvent(input.nativeElement, 'input', doc);
 
         expect(control.valid).toBe(false);
         expect(control.value).toEqual(null);
 
         input.nativeElement.value = '0';
-        dispatchEvent(input.nativeElement, 'input');
+        dispatchEvent(input.nativeElement, 'input', doc);
 
         expect(control.valid).toBe(true);
         expect(control.value).toEqual(0);
@@ -174,7 +176,7 @@ export function main() {
           expect(sfOption.nativeElement.selected).toBe(true);
 
           select.nativeElement.value = 'NY';
-          dispatchEvent(select.nativeElement, 'change');
+          dispatchEvent(select.nativeElement, 'change', doc);
           fixture.detectChanges();
 
           // view -> model
@@ -254,7 +256,7 @@ export function main() {
              expect(nycOption.nativeElement.selected).toBe(true);
 
              select.nativeElement.value = '2: Object';
-             dispatchEvent(select.nativeElement, 'change');
+             dispatchEvent(select.nativeElement, 'change', doc);
              fixture.detectChanges();
              tick();
 
@@ -326,13 +328,13 @@ export function main() {
              const select = fixture.debugElement.query(By.css('select'));
 
              select.nativeElement.value = '2: Object';
-             dispatchEvent(select.nativeElement, 'change');
+             dispatchEvent(select.nativeElement, 'change', doc);
              fixture.detectChanges();
              tick();
              expect(comp.selectedCity['name']).toEqual('NYC');
 
              select.nativeElement.value = '0: null';
-             dispatchEvent(select.nativeElement, 'change');
+             dispatchEvent(select.nativeElement, 'change', doc);
              fixture.detectChanges();
              tick();
              expect(comp.selectedCity).toEqual(null);
@@ -462,7 +464,7 @@ export function main() {
         const selectOptionViaUI = (valueString: string): void => {
           const select = fixture.debugElement.query(By.css('select'));
           select.nativeElement.value = valueString;
-          dispatchEvent(select.nativeElement, 'change');
+          dispatchEvent(select.nativeElement, 'change', doc);
           detectChangesAndTick();
         };
 
@@ -543,7 +545,7 @@ export function main() {
           expect(inputs[0].nativeElement.checked).toEqual(false);
           expect(inputs[1].nativeElement.checked).toEqual(true);
 
-          dispatchEvent(inputs[0].nativeElement, 'change');
+          dispatchEvent(inputs[0].nativeElement, 'change', doc);
           fixture.detectChanges();
 
           // view -> model
@@ -618,7 +620,7 @@ export function main() {
           expect(inputs[2].nativeElement.checked).toEqual(false);
           expect(inputs[3].nativeElement.checked).toEqual(true);
 
-          dispatchEvent(inputs[0].nativeElement, 'change');
+          dispatchEvent(inputs[0].nativeElement, 'change', doc);
           inputs[0].nativeElement.checked = true;
           fixture.detectChanges();
 
@@ -651,7 +653,7 @@ export function main() {
           fixture.detectChanges();
 
           const input = fixture.debugElement.query(By.css('[value="no"]'));
-          dispatchEvent(input.nativeElement, 'change');
+          dispatchEvent(input.nativeElement, 'change', doc);
 
           fixture.detectChanges();
           expect(form.value).toEqual({drink: 'sprite'});
@@ -687,7 +689,7 @@ export function main() {
           expect(inputs[2].nativeElement.checked).toEqual(false);
           expect(inputs[3].nativeElement.checked).toEqual(true);
 
-          dispatchEvent(inputs[0].nativeElement, 'change');
+          dispatchEvent(inputs[0].nativeElement, 'change', doc);
           fixture.detectChanges();
 
           // view -> model
@@ -780,7 +782,7 @@ export function main() {
              expect(inputs[0].nativeElement.checked).toEqual(false);
              expect(inputs[1].nativeElement.checked).toEqual(true);
 
-             dispatchEvent(inputs[0].nativeElement, 'change');
+             dispatchEvent(inputs[0].nativeElement, 'change', doc);
              tick();
 
              // view -> model
@@ -801,7 +803,7 @@ export function main() {
              expect(inputs[2].nativeElement.checked).toEqual(false);
              expect(inputs[3].nativeElement.checked).toEqual(true);
 
-             dispatchEvent(inputs[0].nativeElement, 'change');
+             dispatchEvent(inputs[0].nativeElement, 'change', doc);
              tick();
 
              expect(fixture.componentInstance.food).toEqual('chicken');
@@ -830,7 +832,7 @@ export function main() {
              tick();
 
              const form = fixture.debugElement.query(By.css('form'));
-             dispatchEvent(form.nativeElement, 'reset');
+             dispatchEvent(form.nativeElement, 'reset', doc);
              fixture.detectChanges();
              tick();
 
@@ -916,7 +918,7 @@ export function main() {
           expect(input.nativeElement.value).toEqual('10');
 
           input.nativeElement.value = '20';
-          dispatchEvent(input.nativeElement, 'input');
+          dispatchEvent(input.nativeElement, 'input', doc);
 
           // view -> model
           expect(control.value).toEqual(20);
@@ -930,13 +932,13 @@ export function main() {
 
           const input = fixture.debugElement.query(By.css('input'));
           input.nativeElement.value = '';
-          dispatchEvent(input.nativeElement, 'input');
+          dispatchEvent(input.nativeElement, 'input', doc);
 
           expect(control.valid).toBe(false);
           expect(control.value).toEqual(null);
 
           input.nativeElement.value = '0';
-          dispatchEvent(input.nativeElement, 'input');
+          dispatchEvent(input.nativeElement, 'input', doc);
 
           expect(control.valid).toBe(true);
           expect(control.value).toEqual(0);
@@ -993,7 +995,7 @@ export function main() {
           expect(input.nativeElement.value).toEqual('!aa!');
 
           input.nativeElement.value = '!bb!';
-          dispatchEvent(input.nativeElement, 'input');
+          dispatchEvent(input.nativeElement, 'input', doc);
 
           // view -> model
           expect(form.value).toEqual({'login': 'bb'});
@@ -1055,7 +1057,7 @@ export function main() {
                  expect(customInput.nativeElement.value).toEqual('Nancy');
 
                  customInput.nativeElement.value = 'Carson';
-                 dispatchEvent(customInput.nativeElement, 'input');
+                 dispatchEvent(customInput.nativeElement, 'input', doc);
                  fixture.detectChanges();
 
                  // view -> model

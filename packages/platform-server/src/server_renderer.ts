@@ -69,15 +69,19 @@ class DefaultServerRenderer2 implements Renderer2 {
 
   createElement(name: string, namespace?: string, debugInfo?: any): any {
     if (namespace) {
-      return getDOM().createElementNS(NAMESPACE_URIS[namespace], name);
+      return getDOM().createElementNS(NAMESPACE_URIS[namespace], name, this.document);
     }
 
-    return getDOM().createElement(name);
+    return getDOM().createElement(name, this.document);
   }
 
-  createComment(value: string, debugInfo?: any): any { return getDOM().createComment(value); }
+  createComment(value: string, debugInfo?: any): any {
+    return getDOM().createComment(value, this.document);
+  }
 
-  createText(value: string, debugInfo?: any): any { return getDOM().createTextNode(value); }
+  createText(value: string, debugInfo?: any): any {
+    return getDOM().createTextNode(value, this.document);
+  }
 
   appendChild(parent: any, newChild: any): void { getDOM().appendChild(parent, newChild); }
 

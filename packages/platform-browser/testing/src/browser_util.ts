@@ -72,12 +72,13 @@ export class BrowserDetection {
 
 BrowserDetection.setup();
 
-export function dispatchEvent(element: any, eventType: any): void {
-  getDOM().dispatchEvent(element, getDOM().createEvent(eventType));
+export function dispatchEvent(element: any, eventType: any, defaultDoc: Document): void {
+  getDOM().dispatchEvent(element, getDOM().createEvent(eventType, defaultDoc));
 }
 
-export function el(html: string): HTMLElement {
-  return <HTMLElement>getDOM().firstChild(getDOM().content(getDOM().createTemplate(html)));
+export function el(html: string, defaultDoc: Document): HTMLElement {
+  return <HTMLElement>getDOM().firstChild(
+      getDOM().content(getDOM().createTemplate(html, defaultDoc)));
 }
 
 export function normalizeCSS(css: string): string {

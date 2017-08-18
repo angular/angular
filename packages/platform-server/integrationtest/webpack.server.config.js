@@ -9,6 +9,7 @@
 module.exports = {
   target: 'node',
   entry: './built/src/server.js',
-  output: {filename: './built/server-bundle.js'},
+  output: {filename: './built/server-bundle.js', libraryTarget: 'commonjs2'},
   resolve: {extensions: ['.js']},
+  externals: ['canvas', 'jsdom']
 };

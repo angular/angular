@@ -128,13 +128,13 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return () => { el.removeEventListener(evt, listener, false); };
   }
   dispatchEvent(el: Node, evt: any) { el.dispatchEvent(evt); }
-  createMouseEvent(eventType: string): MouseEvent {
-    const evt: MouseEvent = document.createEvent('MouseEvent');
+  createMouseEvent(eventType: string, doc: Document): MouseEvent {
+    const evt: MouseEvent = doc.createEvent('MouseEvent');
     evt.initEvent(eventType, true, true);
     return evt;
   }
-  createEvent(eventType: any): Event {
-    const evt: Event = document.createEvent('Event');
+  createEvent(eventType: any, doc: Document): Event {
+    const evt: Event = doc.createEvent('Event');
     evt.initEvent(eventType, true, true);
     return evt;
   }
@@ -147,7 +147,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
   getInnerHTML(el: HTMLElement): string { return el.innerHTML; }
   getTemplateContent(el: Node): Node|null {
-    return 'content' in el && el instanceof HTMLTemplateElement ? el.content : null;
+    return 'content' in el && this.isTemplateElement(el) ? (<any>el).content : null;
   }
   getOuterHTML(el: HTMLElement): string { return el.outerHTML; }
   nodeName(node: Node): string { return node.nodeName; }
@@ -198,25 +198,25 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   setValue(el: any, value: string) { el.value = value; }
   getChecked(el: any): boolean { return el.checked; }
   setChecked(el: any, value: boolean) { el.checked = value; }
-  createComment(text: string): Comment { return document.createComment(text); }
-  createTemplate(html: any): HTMLElement {
-    const t = document.createElement('template');
+  createComment(text: string, doc: Document): Comment { return doc.createComment(text); }
+  createTemplate(html: any, doc: Document): HTMLElement {
+    const t = doc.createElement('template');
     t.innerHTML = html;
     return t;
   }
-  createElement(tagName: string, doc = document): HTMLElement { return doc.createElement(tagName); }
-  createElementNS(ns: string, tagName: string, doc = document): Element {
+  createElement(tagName: string, doc: Document): HTMLElement { return doc.createElement(tagName); }
+  createElementNS(ns: string, tagName: string, doc: Document): Element {
     return doc.createElementNS(ns, tagName);
   }
-  createTextNode(text: string, doc = document): Text { return doc.createTextNode(text); }
+  createTextNode(text: string, doc: Document): Text { return doc.createTextNode(text); }
   createScriptTag(attrName: string, attrValue: string, doc = document): HTMLScriptElement {
     const el = <HTMLScriptElement>doc.createElement('SCRIPT');
     el.setAttribute(attrName, attrValue);
     return el;
   }
-  createStyleElement(css: string, doc = document): HTMLStyleElement {
+  createStyleElement(css: string, doc: Document): HTMLStyleElement {
     const style = <HTMLStyleElement>doc.createElement('style');
-    this.appendChild(style, this.createTextNode(css));
+    this.appendChild(style, this.createTextNode(css, doc));
     return style;
   }
   createShadowRoot(el: HTMLElement): DocumentFragment { return (<any>el).createShadowRoot(); }
@@ -289,10 +289,10 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
       return {top: 0, bottom: 0, left: 0, right: 0, width: 0, height: 0};
     }
   }
-  getTitle(doc: Document): string { return document.title; }
-  setTitle(doc: Document, newTitle: string) { document.title = newTitle || ''; }
+  getTitle(doc: Document): string { return doc.title; }
+  setTitle(doc: Document, newTitle: string) { doc.title = newTitle || ''; }
   elementMatches(n: any, selector: string): boolean {
-    if (n instanceof HTMLElement) {
+    if (this.isElementNode(n)) {
       return n.matches && n.matches(selector) ||
           n.msMatchesSelector && n.msMatchesSelector(selector) ||
           n.webkitMatchesSelector && n.webkitMatchesSelector(selector);
@@ -301,7 +301,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return false;
   }
   isTemplateElement(el: Node): boolean {
-    return el instanceof HTMLElement && el.nodeName == 'TEMPLATE';
+    return this.isElementNode(el) && el.nodeName === 'TEMPLATE';
   }
   isTextNode(node: Node): boolean { return node.nodeType === Node.TEXT_NODE; }
   isCommentNode(node: Node): boolean { return node.nodeType === Node.COMMENT_NODE; }
@@ -342,10 +342,10 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
       return window;
     }
     if (target === 'document') {
-      return document;
+      return doc;
     }
     if (target === 'body') {
-      return document.body;
+      return doc.body;
     }
     return null;
   }
