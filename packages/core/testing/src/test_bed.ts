@@ -330,8 +330,7 @@ export class TestBed implements Injector {
 
     const compilerFactory: TestingCompilerFactory =
         this.platform.injector.get(TestingCompilerFactory);
-    this._compiler =
-        compilerFactory.createTestingCompiler(this._compilerOptions.concat([{useDebug: true}]));
+    this._compiler = compilerFactory.createTestingCompiler(this._compilerOptions);
     this._compiler.loadAotSummaries(this._aotSummaries);
     this._moduleOverrides.forEach((entry) => this._compiler.overrideModule(entry[0], entry[1]));
     this._componentOverrides.forEach(
