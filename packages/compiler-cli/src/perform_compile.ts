@@ -20,7 +20,7 @@ const TS_EXT = /\.ts$/;
 export type Diagnostics = Array<ts.Diagnostic|api.Diagnostic>;
 
 function isTsDiagnostic(diagnostic: any): diagnostic is ts.Diagnostic {
-  return diagnostic && (diagnostic.file || diagnostic.messageText);
+  return diagnostic && diagnostic.source != 'angular';
 }
 
 export function formatDiagnostics(options: api.CompilerOptions, diags: Diagnostics): string {
@@ -41,9 +41,9 @@ export function formatDiagnostics(options: api.CompilerOptions, diags: Diagnosti
                   ` at ${d.span.start.file.url}(${d.span.start.line + 1},${d.span.start.col + 1})`;
             }
             if (d.span && d.span.details) {
-              res += `: ${d.span.details}, ${d.message}\n`;
+              res += `: ${d.span.details}, ${d.messageText}\n`;
             } else {
-              res += `: ${d.message}\n`;
+              res += `: ${d.messageText}\n`;
             }
             return res;
           }
@@ -54,6 +54,7 @@ export function formatDiagnostics(options: api.CompilerOptions, diags: Diagnosti
 }
 
 export interface ParsedConfiguration {
+  project: string;
   options: api.CompilerOptions;
   rootNames: string[];
   errors: Diagnostics;
@@ -81,7 +82,7 @@ export function readConfiguration(
     let {config, error} = ts.readConfigFile(projectFile, ts.sys.readFile);
 
     if (error) {
-      return {errors: [error], rootNames: [], options: {}};
+      return {project, errors: [error], rootNames: [], options: {}};
     }
     const parseConfigHost = {
       useCaseSensitiveFileNames: true,
@@ -94,14 +95,38 @@ export function readConfiguration(
     const rootNames = parsed.fileNames.map(f => path.normalize(f));
 
     const options = createNgCompilerOptions(basePath, config, parsed.options);
-    return {rootNames, options, errors: parsed.errors};
+    return {project: projectFile, rootNames, options, errors: parsed.errors};
   } catch (e) {
     const errors: Diagnostics = [{
       category: ts.DiagnosticCategory.Error,
-      message: e.stack,
+      messageText: e.stack,
+      source: api.SOURCE,
+      code: api.UNKNOWN_ERROR_CODE
     }];
-    return {errors, rootNames: [], options: {}};
+    return {project: '', errors, rootNames: [], options: {}};
   }
+}
+
+export interface PerformCompilationResult {
+  diagnostics: Diagnostics;
+  program?: api.Program;
+  emitResult?: ts.EmitResult;
+}
+
+export function exitCodeFromResult(result: PerformCompilationResult | undefined): number {
+  if (!result) {
+    // If we didn't get a result we should return failure.
+    return 1;
+  }
+  if (!result.diagnostics || result.diagnostics.length === 0) {
+    // If we have a result and didn't get any errors, we succeeded.
+    return 0;
+  }
+
+  // Return 2 if any of the errors were unknown.
+  return result.diagnostics.some(d => d.source === 'angular' && d.code === api.UNKNOWN_ERROR_CODE) ?
+      2 :
+      1;
 }
 
 export function performCompilation(
@@ -112,11 +137,7 @@ export function performCompilation(
       oldProgram?: api.Program,
       emitCallback?: api.TsEmitCallback,
       customTransformers?: api.CustomTransformers
-    }): {
-  program?: api.Program,
-  emitResult?: ts.EmitResult,
-  diagnostics: Diagnostics,
-} {
+    }): PerformCompilationResult {
   const [major, minor] = ts.version.split('.');
 
   if (Number(major) < 2 || (Number(major) === 2 && Number(minor) < 3)) {
@@ -168,19 +189,24 @@ export function performCompilation(
             ((options.skipMetadataEmit || options.flatModuleOutFile) ? 0 : api.EmitFlags.Metadata)
       });
       allDiagnostics.push(...emitResult.diagnostics);
+      return {diagnostics: allDiagnostics, program, emitResult};
     }
+    return {diagnostics: allDiagnostics, program};
   } catch (e) {
     let errMsg: string;
+    let code: number;
     if (isSyntaxError(e)) {
       // don't report the stack for syntax errors as they are well known errors.
       errMsg = e.message;
+      code = api.DEFAULT_ERROR_CODE;
     } else {
       errMsg = e.stack;
+      // It is not a syntax error we might have a program with unknown state, discard it.
+      program = undefined;
+      code = api.UNKNOWN_ERROR_CODE;
     }
-    allDiagnostics.push({
-      category: ts.DiagnosticCategory.Error,
-      message: errMsg,
-    });
+    allDiagnostics.push(
+        {category: ts.DiagnosticCategory.Error, messageText: errMsg, code, source: api.SOURCE});
+    return {diagnostics: allDiagnostics, program};
   }
-  return {program, emitResult, diagnostics: allDiagnostics};
 }

@@ -38,12 +38,13 @@ describe('ng type checker', () => {
     if (!diagnostics || !diagnostics.length) {
       throw new Error('Expected a diagnostic erorr message');
     } else {
-      const matches: (d: Diagnostic) => boolean =
-          typeof message === 'string' ? d => d.message == message : d => message.test(d.message);
+      const matches: (d: Diagnostic) => boolean = typeof message === 'string' ?
+          d => d.messageText == message :
+          d => message.test(d.messageText);
       const matchingDiagnostics = diagnostics.filter(matches);
       if (!matchingDiagnostics || !matchingDiagnostics.length) {
         throw new Error(
-            `Expected a diagnostics matching ${message}, received\n  ${diagnostics.map(d => d.message).join('\n  ')}`);
+            `Expected a diagnostics matching ${message}, received\n  ${diagnostics.map(d => d.messageText).join('\n  ')}`);
       }
     }
   }
@@ -136,6 +137,6 @@ const QUICKSTART: MockDirectory = {
 
 function expectNoDiagnostics(diagnostics: Diagnostic[]) {
   if (diagnostics && diagnostics.length) {
-    throw new Error(diagnostics.map(d => `${d.span}: ${d.message}`).join('\n'));
+    throw new Error(diagnostics.map(d => `${d.span}: ${d.messageText}`).join('\n'));
   }
 }

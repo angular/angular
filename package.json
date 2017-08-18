@@ -34,6 +34,7 @@
     "@bazel/typescript": "0.0.7",
     "@types/angularjs": "^1.5.13-alpha",
     "@types/base64-js": "^1.2.5",
+    "@types/chokidar": "^1.1.0",
     "@types/fs-extra": "0.0.22-alpha",
     "@types/hammerjs": "^2.0.33",
     "@types/jasmine": "^2.2.22-alpha",
