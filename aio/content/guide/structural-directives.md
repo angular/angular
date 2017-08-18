@@ -100,7 +100,7 @@ Technically it's a directive with a template.
 
 An [*attribute* directive](guide/attribute-directives) changes the appearance or behavior
 of an element, component, or another directive.
-For example, the built-in [`NgStyle`](guide/template-syntax#ngStyle) directive
+For example, the built-in [NgStyle](guide/template-syntax#ngStyle) directive
 changes several element styles at the same time.
 
 You can apply many _attribute_ directives to one host element.
@@ -243,7 +243,7 @@ Only the finished product ends up in the DOM.
 Angular consumed the `<ng-template>` content during its actual rendering and
 replaced the `<ng-template>` with a diagnostic comment.
 
-The [`NgFor`](guide/structural-directives#ngFor) and [`NgSwitch...`](guide/structural-directives#ngSwitch) directives follow the same pattern.
+The [NgFor](guide/structural-directives#ngFor) and [NgSwitch](guide/structural-directives#ngSwitch)... directives follow the same pattern.
 
 
 {@a ngFor}
@@ -317,9 +317,9 @@ which `NgFor` has initialized with the hero for the current iteration.
 describes additional `NgFor` directive properties and context properties.
 
 These microsyntax mechanisms are available to you when you write your own structural directives.
-Studying the
-[source code for `NgIf`](https://github.com/angular/angular/blob/master/packages/common/src/directives/ng_if.ts "Source: NgIf")
-and [`NgFor`](https://github.com/angular/angular/blob/master/packages/common/src/directives/ng_for_of.ts "Source: NgFor")
+Studying the source code for
+[NgIf](https://github.com/angular/angular/blob/master/packages/common/src/directives/ng_if.ts "Source: NgIf")
+and [NgFor](https://github.com/angular/angular/blob/master/packages/common/src/directives/ng_for_of.ts "Source: NgFor")
 is a great way to learn more.
 
 
@@ -689,10 +689,7 @@ from the Angular-generated `<ng-template>` and inserts that view in a
 [_view container_](api/core/ViewContainerRef "API: ViewContainerRef")
 adjacent to the directive's original `<p>` host element.
 
-You'll acquire the `<ng-template>` contents with a
-[`TemplateRef`](api/core/TemplateRef "API: TemplateRef")
-and access the _view container_ through a
-[`ViewContainerRef`](api/core/ViewContainerRef "API: ViewContainerRef").
+You'll acquire the `<ng-template>` contents with a `TemplateRef` and access the _view container_ through a `ViewContainerRef`.
 
 You inject both in the directive constructor as private variables of the class.
 
