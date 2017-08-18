@@ -17,14 +17,19 @@ import * as path from 'path';
 import * as tsickle from 'tsickle';
 import * as api from './transformers/api';
 import * as ngc from './transformers/entry_points';
-import {performCompilation, readConfiguration, formatDiagnostics, Diagnostics, ParsedConfiguration} from './perform-compile';
 
+import {calcProjectFileAndBasePath, exitCodeFromResult, performCompilation, readConfiguration, formatDiagnostics, Diagnostics, ParsedConfiguration, PerformCompilationResult} from './perform_compile';
+import {performWatchCompilation, createPerformWatchHost} from './perform_watch';
 import {isSyntaxError} from '@angular/compiler';
 import {CodeGenerator} from './codegen';
 
 export function main(
     args: string[], consoleError: (s: string) => void = console.error): Promise<number> {
   const parsedArgs = require('minimist')(args);
+  if (parsedArgs.w || parsedArgs.watch) {
+    const result = watchMode(parsedArgs, consoleError);
+    return Promise.resolve(exitCodeFromResult(result.firstCompileResult));
+  }
   const {rootNames, options, errors: configErrors} = readCommandLineAndConfiguration(parsedArgs);
   if (configErrors.length) {
     return Promise.resolve(reportErrorsAndExit(options, configErrors, consoleError));
@@ -83,12 +88,16 @@ function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback {
                  });
 }
 
+function projectOf(args: any): string {
+  return (args && (args.p || args.project)) || '.';
+}
+
 function readCommandLineAndConfiguration(args: any): ParsedConfiguration {
-  const project = args.p || args.project || '.';
+  const project = projectOf(args);
   const allDiagnostics: Diagnostics = [];
   const config = readConfiguration(project);
   const options = mergeCommandLineParams(args, config.options);
-  return {rootNames: config.rootNames, options, errors: config.errors};
+  return {project, rootNames: config.rootNames, options, errors: config.errors};
 }
 
 function reportErrorsAndExit(
@@ -99,6 +108,15 @@ function reportErrorsAndExit(
     consoleError(formatDiagnostics(options, allDiagnostics));
   }
   return exitCode;
+}
+
+export function watchMode(args: any, consoleError: (s: string) => void) {
+  const project = projectOf(args);
+  const {projectFile, basePath} = calcProjectFileAndBasePath(project);
+  const config = readConfiguration(project);
+  return performWatchCompilation(createPerformWatchHost(projectFile, diagnostics => {
+    consoleError(formatDiagnostics(config.options, diagnostics));
+  }, options => createEmitCallback(options)));
 }
 
 function mergeCommandLineParams(
