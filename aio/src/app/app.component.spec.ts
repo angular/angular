@@ -792,6 +792,10 @@ describe('AppComponent', () => {
         createTestingModule('api', 'archive');
         initializeTest();
         expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+
+        createTestingModule('api/core/getPlatform', 'archive');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
       });
 
       it('should redirect to `docs` if deployment mode is `next` and not at a docs page', () => {
@@ -822,6 +826,10 @@ describe('AppComponent', () => {
         createTestingModule('api', 'next');
         initializeTest();
         expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+
+        createTestingModule('api/core/getPlatform', 'next');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
       });
 
       it('should not redirect to `docs` if deployment mode is `stable` and not at a docs page', () => {
@@ -850,6 +858,10 @@ describe('AppComponent', () => {
         expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
 
         createTestingModule('api', 'stable');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+
+        createTestingModule('api/core/getPlatform', 'stable');
         initializeTest();
         expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
       });
