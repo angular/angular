@@ -1,0 +1,53 @@
+<div class="demo-menu">
+  
+  <section>
+    <h2>Icon Trigger</h2>
+    <md-menu #menu1="mdMenu">
+      <button md-menu-item> Settings </button>
+      <button md-menu-item> Help </button>
+    </md-menu>
+
+    <button md-icon-button [mdMenuTriggerFor]="menu1" aria-label="Open Menu">
+      <md-icon>more_vert</md-icon>
+    </button>
+  </section>
+
+  <section>
+    <h2>Menu with Icons</h2>
+    <button md-icon-button [mdMenuTriggerFor]="menu2" aria-label="Open Menu">
+      <md-icon>more_vert</md-icon>
+    </button>
+
+    <md-menu #menu2="mdMenu">
+      <button md-menu-item>
+        <md-icon>dialpad</md-icon>
+        <span>Redial</span>
+      </button>
+      <button md-menu-item>
+        <md-icon>voicemail</md-icon>
+        <span>Check voicemail</span>
+      </button>
+      <button md-menu-item>
+        <md-icon>notifications_off</md-icon>
+        <span>Disable alerts</span>
+      </button>
+    </md-menu>
+  </section>
+
+  <section>
+    <h2>Menu with links</h2>
+    <button md-icon-button [mdMenuTriggerFor]="menu2" aria-label="Learn more about Angular">
+      <md-icon>more_vert</md-icon>
+    </button>
+    
+    <md-menu #menu2="mdMenu">
+      <a href="http://angular.io" md-menu-item>
+        Angular
+      </a>
+      <a href="http://material.angular.io" md-menu-item>
+        Angular Material
+      </a>
+    </md-menu>
+  </section>
+
+</div>

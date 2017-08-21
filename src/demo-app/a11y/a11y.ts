@@ -26,6 +26,7 @@ export class AccessibilityDemo {
     {name: 'Grid list', route: 'grid-list'},
     {name: 'Icon', route: 'icon'},
     {name: 'Input', route: 'input'},
+    {name: 'Menu', route: 'menu'},
     {name: 'Progress spinner', route: 'progress-spinner'},
     {name: 'Radio buttons', route: 'radio'},
     {name: 'Slider', route: 'slider'},
