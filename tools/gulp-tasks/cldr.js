@@ -25,5 +25,15 @@ module.exports = {
       fs.mkdirSync(cldrDataFolder);
     }
     cldrDownloader(path.join(__dirname, 'cldr/cldr-urls.json'), cldrDataFolder, done);
-  }
+  },
+
+  'locale-all': gulp => done => {
+    const {RELATIVE_I18N_DATA_FOLDER} = require('./cldr/extract');
+    console.log(RELATIVE_I18N_DATA_FOLDER, fs.existsSync(RELATIVE_I18N_DATA_FOLDER));
+    if (!fs.existsSync(RELATIVE_I18N_DATA_FOLDER)) {
+      throw new Error(`You must run "gulp cldr:extract" before you can create the all.ts file`);
+    }
+    const localeAll = require('./cldr/locale-all');
+    return localeAll(gulp, done);
+  },
 };
