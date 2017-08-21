@@ -57,6 +57,7 @@
     "dgeni": "^0.4.2",
     "dgeni-packages": "^0.16.5",
     "entities": "^1.1.1",
+    "firebase-tools": "^3.9.2",
     "firefox-profile": "^0.3.4",
     "fs-extra": "^0.26.3",
     "glob": "^4.0.6",

@@ -85,7 +85,7 @@ uploadData() {
 
     # WARNING: FIREBASE_TOKEN should NOT be printed.
     set +x
-    firebase database:update --data "$payloadData" --project $PROJECT_NAME --confirm --token "$ANGULAR_PAYLOAD_FIREBASE_TOKEN" $dbPath
+    ${PRODUCT_ROOT}/node_modules/.bin/firebase database:update --data "$payloadData" --project $PROJECT_NAME --confirm --token "$ANGULAR_PAYLOAD_FIREBASE_TOKEN" $dbPath
   fi
 }
 
