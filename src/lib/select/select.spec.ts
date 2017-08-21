@@ -28,12 +28,17 @@ import {Subject} from 'rxjs/Subject';
 import {map} from 'rxjs/operator/map';
 import {MdSelectModule} from './index';
 import {MdSelect} from './select';
-import {getMdSelectDynamicMultipleError, getMdSelectNonArrayValueError} from './select-errors';
+import {
+  getMdSelectDynamicMultipleError,
+  getMdSelectNonArrayValueError,
+  getMdSelectNonFunctionValueError
+} from './select-errors';
 import {MdOption} from '../core/option/option';
 import {
   FloatPlaceholderType,
   MD_PLACEHOLDER_GLOBAL_OPTIONS
 } from '../core/placeholder/placeholder-options';
+import {extendObject} from '../core/util/object-extend';
 
 
 describe('MdSelect', () => {
@@ -73,7 +78,10 @@ describe('MdSelect', () => {
         BasicSelectWithoutFormsPreselected,
         BasicSelectWithoutFormsMultiple,
         SelectInsideFormGroup,
-        SelectWithCustomTrigger
+        SelectWithCustomTrigger,
+        FalsyValueSelect,
+        SelectInsideFormGroup,
+        NgModelCompareWithSelect,
       ],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
@@ -2714,8 +2722,78 @@ describe('MdSelect', () => {
 
   });
 
-});
+  describe('compareWith behavior', () => {
+    let fixture: ComponentFixture<NgModelCompareWithSelect>;
+    let instance: NgModelCompareWithSelect;
 
+    beforeEach(async(() => {
+      fixture = TestBed.createComponent(NgModelCompareWithSelect);
+      instance = fixture.componentInstance;
+      fixture.detectChanges();
+    }));
+
+    describe('when comparing by value', () => {
+
+      it('should have a selection', () => {
+        const selectedOption = instance.select.selected as MdOption;
+        expect(selectedOption.value.value).toEqual('pizza-1');
+      });
+
+      it('should update when making a new selection', async(() => {
+        instance.options.last._selectViaInteraction();
+        fixture.detectChanges();
+        fixture.whenStable().then(() => {
+          const selectedOption = instance.select.selected as MdOption;
+          expect(instance.selectedFood.value).toEqual('tacos-2');
+          expect(selectedOption.value.value).toEqual('tacos-2');
+        });
+      }));
+
+    });
+
+    describe('when comparing by reference', () => {
+      beforeEach(async(() => {
+        spyOn(instance, 'compareByReference').and.callThrough();
+        instance.useCompareByReference();
+        fixture.detectChanges();
+      }));
+
+      it('should use the comparator', () => {
+        expect(instance.compareByReference).toHaveBeenCalled();
+      });
+
+      it('should initialize with no selection despite having a value', () => {
+        expect(instance.selectedFood.value).toBe('pizza-1');
+        expect(instance.select.selected).toBeUndefined();
+      });
+
+      it('should not update the selection if value is copied on change', async(() => {
+        instance.options.first._selectViaInteraction();
+        fixture.detectChanges();
+        fixture.whenStable().then(() => {
+          expect(instance.selectedFood.value).toEqual('steak-0');
+          expect(instance.select.selected).toBeUndefined();
+        });
+      }));
+
+    });
+
+    describe('when using a non-function comparator', () => {
+      beforeEach(() => {
+        instance.useNullComparator();
+      });
+
+      it('should throw an error', () => {
+        expect(() => {
+          fixture.detectChanges();
+        }).toThrowError(wrappedErrorMessage(getMdSelectNonFunctionValueError()));
+      });
+
+    });
+
+  });
+
+});
 
 @Component({
   selector: 'basic-select',
@@ -3250,6 +3328,7 @@ class BasicSelectWithoutFormsMultiple {
   @ViewChild(MdSelect) select: MdSelect;
 }
 
+
 @Component({
   selector: 'select-with-custom-trigger',
   template: `
@@ -3269,4 +3348,41 @@ class SelectWithCustomTrigger {
     { value: 'pizza-1', viewValue: 'Pizza' },
   ];
   control = new FormControl();
+}
+
+
+@Component({
+  selector: 'ng-model-compare-with',
+  template: `
+    <md-select [ngModel]="selectedFood" (ngModelChange)="setFoodByCopy($event)"
+               [compareWith]="comparator">
+      <md-option *ngFor="let food of foods" [value]="food">{{ food.viewValue }}</md-option>
+    </md-select>
+  `
+})
+class NgModelCompareWithSelect {
+  foods: ({value: string, viewValue: string})[] = [
+    { value: 'steak-0', viewValue: 'Steak' },
+    { value: 'pizza-1', viewValue: 'Pizza' },
+    { value: 'tacos-2', viewValue: 'Tacos' },
+  ];
+  selectedFood: {value: string, viewValue: string} = { value: 'pizza-1', viewValue: 'Pizza' };
+  comparator: ((f1: any, f2: any) => boolean)|null = this.compareByValue;
+
+  @ViewChild(MdSelect) select: MdSelect;
+  @ViewChildren(MdOption) options: QueryList<MdOption>;
+
+  useCompareByValue() { this.comparator = this.compareByValue; }
+
+  useCompareByReference() { this.comparator = this.compareByReference; }
+
+  useNullComparator() { this.comparator = null; }
+
+  compareByValue(f1: any, f2: any) { return f1 && f2 && f1.value === f2.value; }
+
+  compareByReference(f1: any, f2: any) { return f1 === f2; }
+
+  setFoodByCopy(newValue: {value: string, viewValue: string}) {
+    this.selectedFood = extendObject({}, newValue);
+  }
 }

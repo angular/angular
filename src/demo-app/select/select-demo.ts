@@ -10,11 +10,13 @@ import {MdSelectChange} from '@angular/material';
 })
 export class SelectDemo {
   drinksRequired = false;
+  drinkObjectRequired = false;
   pokemonRequired = false;
   drinksDisabled = false;
   pokemonDisabled = false;
   showSelect = false;
   currentDrink: string;
+  currentDrinkObject: {}|undefined = {value: 'tea-5', viewValue: 'Tea'};
   currentPokemon: string[];
   currentPokemonFromGroup: string;
   currentDigimon: string;
@@ -24,6 +26,7 @@ export class SelectDemo {
   topHeightCtrl = new FormControl(0);
   drinksTheme = 'primary';
   pokemonTheme = 'primary';
+  compareByValue = true;
 
   foods = [
     {value: null, viewValue: 'None'},
@@ -110,5 +113,17 @@ export class SelectDemo {
 
   setPokemonValue() {
     this.currentPokemon = ['eevee-4', 'psyduck-6'];
+  }
+
+  reassignDrinkByCopy() {
+    this.currentDrinkObject = {...this.currentDrinkObject};
+  }
+
+  compareDrinkObjectsByValue(d1: {value: string}, d2: {value: string}) {
+    return d1 && d2 && d1.value === d2.value;
+  }
+
+  compareByReference(o1: any, o2: any) {
+    return o1 === o2;
   }
 }

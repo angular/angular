@@ -29,6 +29,7 @@ import {
   ViewChild,
   ViewEncapsulation,
   Directive,
+  isDevMode,
 } from '@angular/core';
 import {ControlValueAccessor, FormGroupDirective, NgControl, NgForm} from '@angular/forms';
 import {DOWN_ARROW, END, ENTER, HOME, SPACE, UP_ARROW} from '@angular/cdk/keycodes';
@@ -51,7 +52,11 @@ import {Observable} from 'rxjs/Observable';
 import {Subscription} from 'rxjs/Subscription';
 import {fadeInContent, transformPanel, transformPlaceholder} from './select-animations';
 import {SelectionModel} from '../core/selection/selection';
-import {getMdSelectDynamicMultipleError, getMdSelectNonArrayValueError} from './select-errors';
+import {
+  getMdSelectDynamicMultipleError,
+  getMdSelectNonArrayValueError,
+  getMdSelectNonFunctionValueError
+} from './select-errors';
 import {CanColor, mixinColor} from '../core/common-behaviors/color';
 import {CanDisable, mixinDisabled} from '../core/common-behaviors/disabled';
 import {MdOptgroup, MdOption, MdOptionSelectionChange} from '../core/option/index';
@@ -220,6 +225,9 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
   /** Whether the component is in multiple selection mode. */
   private _multiple: boolean = false;
 
+  /** Comparison function to specify which option is displayed. Defaults to object equality. */
+  private _compareWith = (o1: any, o2: any) => o1 === o2;
+
   /** Deals with the selection logic. */
   _selectionModel: SelectionModel<MdOption>;
 
@@ -337,6 +345,24 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
     this._multiple = coerceBooleanProperty(value);
   }
 
+  /**
+   * A function to compare the option values with the selected values. The first argument
+   * is a value from an option. The second is a value from the selection. A boolean
+   * should be returned.
+   */
+  @Input()
+  get compareWith() { return this._compareWith; }
+  set compareWith(fn: (o1: any, o2: any) => boolean) {
+    if (typeof fn !== 'function') {
+      throw getMdSelectNonFunctionValueError();
+    }
+    this._compareWith = fn;
+    if (this._selectionModel) {
+      // A different comparator means the selection could change.
+      this._initializeSelection();
+    }
+  }
+
   /** Whether to float the placeholder text. */
   @Input()
   get floatPlaceholder(): FloatPlaceholderType { return this._floatPlaceholder; }
@@ -434,12 +460,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
 
     this._changeSubscription = startWith.call(this.options.changes, null).subscribe(() => {
       this._resetOptions();
-
-      // Defer setting the value in order to avoid the "Expression
-      // has changed after it was checked" errors from Angular.
-      Promise.resolve().then(() => {
-        this._setSelectionByValue(this._control ? this._control.value : this._value);
-      });
+      this._initializeSelection();
     });
   }
 
@@ -670,6 +691,14 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
     scrollContainer!.scrollTop = this._scrollTop;
   }
 
+  private _initializeSelection(): void {
+    // Defer setting the value in order to avoid the "Expression
+    // has changed after it was checked" errors from Angular.
+    Promise.resolve().then(() => {
+      this._setSelectionByValue(this._control ? this._control.value : this._value);
+    });
+  }
+
   /**
    * Sets the selected option based on a value. If no option can be
    * found with the designated value, the select trigger is cleared.
@@ -710,8 +739,17 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
    * @returns Option that has the corresponding value.
    */
   private _selectValue(value: any, isUserInput = false): MdOption | undefined {
-    let correspondingOption = this.options.find(option => {
-      return option.value != null && option.value === value;
+    const correspondingOption = this.options.find((option: MdOption) => {
+      try {
+        // Treat null as a special reset value.
+        return option.value != null && this._compareWith(option.value,  value);
+      } catch (error) {
+        if (isDevMode()) {
+          // Notify developers of errors in their comparator.
+          console.warn(error);
+        }
+        return false;
+      }
     });
 
     if (correspondingOption) {
@@ -721,6 +759,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
 
     return correspondingOption;
   }
+
 
   /**
    * Clears the select trigger and deselects every option in the list.

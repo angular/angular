@@ -96,6 +96,35 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
     </md-card-content>
   </md-card>
 
+
+  <md-card>
+    <md-card-subtitle>compareWith</md-card-subtitle>
+    <md-card-content>
+      <md-select placeholder="Drink" [color]="drinksTheme"
+                 [(ngModel)]="currentDrinkObject"
+                 [required]="drinkObjectRequired"
+                 [compareWith]="compareByValue ? compareDrinkObjectsByValue : compareByReference"
+                 #drinkObjectControl="ngModel">
+        <md-option *ngFor="let drink of drinks" [value]="drink" [disabled]="drink.disabled">
+          {{ drink.viewValue }}
+        </md-option>
+      </md-select>
+      <p> Value: {{ currentDrinkObject | json }} </p>
+      <p> Touched: {{ drinkObjectControl.touched }} </p>
+      <p> Dirty: {{ drinkObjectControl.dirty }} </p>
+      <p> Status: {{ drinkObjectControl.control?.status }} </p>
+      <p> Comparison Mode: {{ compareByValue ? 'VALUE' : 'REFERENCE' }} </p>
+
+      <button md-button (click)="reassignDrinkByCopy()"
+              mdTooltip="This action should clear the display value when comparing by reference.">
+        REASSIGN DRINK BY COPY
+      </button>
+      <button md-button (click)="drinkObjectRequired=!drinkObjectRequired">TOGGLE REQUIRED</button>
+      <button md-button (click)="compareByValue=!compareByValue">TOGGLE COMPARE BY VALUE</button>
+      <button md-button (click)="drinkObjectControl.reset()">RESET</button>
+    </md-card-content>
+  </md-card>
+
   <div *ngIf="showSelect">
     <md-card>
       <md-card-subtitle>formControl</md-card-subtitle>
