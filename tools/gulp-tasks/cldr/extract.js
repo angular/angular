@@ -518,3 +518,5 @@ function removeDuplicates(data) {
 
 module.exports.I18N_FOLDER = I18N_FOLDER;
 module.exports.I18N_DATA_FOLDER = I18N_DATA_FOLDER;
+module.exports.RELATIVE_I18N_DATA_FOLDER = RELATIVE_I18N_DATA_FOLDER;
+module.exports.HEADER = HEADER;
