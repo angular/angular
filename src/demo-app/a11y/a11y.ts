@@ -23,6 +23,7 @@ export class AccessibilityDemo {
     {name: 'Checkbox', route: 'checkbox'},
     {name: 'Chips', route: 'chips'},
     {name: 'Datepicker', route: 'datepicker'},
+    {name: 'Dialog', route: 'dialog'},
     {name: 'Grid list', route: 'grid-list'},
     {name: 'Icon', route: 'icon'},
     {name: 'Input', route: 'input'},

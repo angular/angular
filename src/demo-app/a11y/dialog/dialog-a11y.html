@@ -1,0 +1,31 @@
+<section>
+  <h2>Welcome message</h2>
+  <p>Activate the button to see a welcome dialog with a simple message and a close button.</p>
+  <button md-button (click)="openWelcomeDialog()">Welcome</button>
+</section>
+
+<section>
+  <h2>Choose a fruit</h2>
+  <p>Active the button to choose apple or peach in a dialog.</p>
+  <button md-button (click)="openFruitDialog()">Fruit</button>
+  <p *ngIf="fruitSelectedOption">
+    You chose: {{fruitSelectedOption}}
+  </p>
+</section>
+
+<section>
+  <h2>Neptune</h2>
+  <p>
+    Active the button to see a dialog showing information of Neptune.
+    A Wikipedia page can be opened either in a new tab or in a stacked dialog.
+  </p>
+  <button md-button (click)="openNeptuneDialog()">Learn Neptune</button>
+</section>
+
+<section>
+  <h2>Address form</h2>
+  <p>
+    Active the button to fill out shipping address information in a dialog.
+  </p>
+  <button md-button (click)="openAddressDialog()">Add address</button>
+</section>

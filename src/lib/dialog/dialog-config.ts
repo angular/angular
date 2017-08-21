@@ -69,5 +69,6 @@ export class MdDialogConfig {
   /** ID of the element that describes the dialog.  */
   ariaDescribedBy?: string | null = null;
 
+
   // TODO(jelbourn): add configuration for lifecycle hooks, ARIA labelling.
 }

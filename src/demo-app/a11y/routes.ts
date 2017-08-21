@@ -4,6 +4,7 @@ import {ButtonAccessibilityDemo} from './button/button-a11y';
 import {ButtonToggleAccessibilityDemo} from './button-toggle/button-toggle-a11y';
 import {CheckboxAccessibilityDemo} from './checkbox/checkbox-a11y';
 import {ChipsAccessibilityDemo} from './chips/chips-a11y';
+import {DialogAccessibilityDemo} from './dialog/dialog-a11y';
 import {GridListAccessibilityDemo} from './grid-list/grid-list-a11y';
 import {RadioAccessibilityDemo} from './radio/radio-a11y';
 import {AccessibilityHome} from './a11y';
@@ -25,6 +26,7 @@ export const ACCESSIBILITY_DEMO_ROUTES: Routes = [
   {path: 'checkbox', component: CheckboxAccessibilityDemo},
   {path: 'chips', component: ChipsAccessibilityDemo},
   {path: 'datepicker', component: DatepickerAccessibilityDemo},
+  {path: 'dialog', component: DialogAccessibilityDemo},
   {path: 'grid-list', component: GridListAccessibilityDemo},
   {path: 'icon', component: IconAccessibilityDemo},
   {path: 'input', component: InputAccessibilityDemo},
