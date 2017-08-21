@@ -143,22 +143,13 @@ class AngularCompilerProgram implements Program {
   }): ts.EmitResult {
     const emitMap = new Map<string, string>();
 
-    const expectedOut = this.options.expectedOut ?
-        this.options.expectedOut.map(f => path.resolve(process.cwd(), f)) :
-        undefined;
-
-    // Ensure that expected output files exist.
-    for (const out of expectedOut || []) {
-      this.host.writeFile(out, '', false);
-    }
-
     const emitResult = emitCallback({
       program: this.programWithStubs,
       host: this.host,
       options: this.options,
       targetSourceFile: undefined,
-      writeFile:
-          createWriteFileCallback(emitFlags, this.host, this.metadataCache, emitMap, expectedOut),
+      writeFile: createWriteFileCallback(
+          emitFlags, this.host, this.metadataCache, emitMap, this.generatedFiles),
       cancellationToken,
       emitOnlyDtsFiles: (emitFlags & (EmitFlags.DTS | EmitFlags.JS)) == EmitFlags.DTS,
       customTransformers: this.calculateTransforms(customTransformers)
@@ -399,7 +390,9 @@ function writeMetadata(
 
 function createWriteFileCallback(
     emitFlags: EmitFlags, host: ts.CompilerHost, metadataCache: LowerMetadataCache,
-    emitMap: Map<string, string>, expectedOut?: string[]) {
+    emitMap: Map<string, string>, generatedFiles: GeneratedFile[]) {
+  const genFileToSrcFile = new Map<string, string>();
+  generatedFiles.forEach(f => genFileToSrcFile.set(f.genFileUrl, f.srcFileUrl));
   return (fileName: string, data: string, writeByteOrderMark: boolean,
           onError?: (message: string) => void, sourceFiles?: ts.SourceFile[]) => {
 
@@ -407,14 +400,15 @@ function createWriteFileCallback(
 
     if (sourceFiles && sourceFiles.length == 1) {
       srcFile = sourceFiles[0];
-      emitMap.set(srcFile.fileName, fileName);
+      const originalSrcFile = genFileToSrcFile.get(srcFile.fileName) || srcFile.fileName;
+      emitMap.set(originalSrcFile, fileName);
     }
 
     const absFile = path.resolve(process.cwd(), fileName);
     const generatedFile = GENERATED_FILES.test(fileName);
 
-    // Don't emit unexpected files nor empty generated files
-    if ((!expectedOut || expectedOut.indexOf(absFile) > -1) && (!generatedFile || data)) {
+    // Don't emit empty generated files
+    if (!generatedFile || data) {
       host.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
 
       if (srcFile && !generatedFile && (emitFlags & EmitFlags.Metadata) != 0) {
