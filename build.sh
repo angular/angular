@@ -485,7 +485,7 @@ do
 
       if [[ ${PACKAGE} == "common" ]]; then
         echo "======      Copy i18n locale data"
-        rsync -a --exclude=*.d.ts --exclude=*.metadata.json ${OUT_DIR}/i18n_data/ ${NPM_DIR}/i18n_data
+        rsync -a --exclude=*.d.ts --exclude=*.metadata.json ${OUT_DIR}/locales/ ${NPM_DIR}/locales
       fi
     else
       echo "======        Copy ${PACKAGE} node tool"
