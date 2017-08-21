@@ -17,6 +17,7 @@ import {IconAccessibilityDemo} from './icon/icon-a11y';
 import {InputAccessibilityDemo} from './input/input-a11y';
 import {ProgressSpinnerAccessibilityDemo} from './progress-spinner/progress-spinner-a11y';
 import {SliderAccessibilityDemo} from './slider/slider-a11y';
+import {SlideToggleAccessibilityDemo} from './slide-toggle/slide-toggle-a11y';
 import {SnackBarAccessibilityDemo} from './snack-bar/snack-bar-a11y';
 import {SelectAccessibilityDemo} from './select/select-a11y';
 
@@ -54,6 +55,7 @@ export class AccessibilityRoutingModule {}
     ProgressSpinnerAccessibilityDemo,
     RadioAccessibilityDemo,
     SliderAccessibilityDemo,
+    SlideToggleAccessibilityDemo,
     SnackBarAccessibilityDemo,
     SelectAccessibilityDemo,
   ]

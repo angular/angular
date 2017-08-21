@@ -29,6 +29,7 @@ export class AccessibilityDemo {
     {name: 'Progress spinner', route: 'progress-spinner'},
     {name: 'Radio buttons', route: 'radio'},
     {name: 'Slider', route: 'slider'},
+    {name: 'Slide toggle', route: 'slide-toggle'},
     {name: 'Snack bar', route: 'snack-bar'},
     {name: 'Select', route: 'select'},
   ];
