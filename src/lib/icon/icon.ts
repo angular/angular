@@ -118,24 +118,24 @@ export class MdIcon extends _MdIconMixinBase implements OnChanges, OnInit, CanCo
     }
     const parts = iconName.split(':');
     switch (parts.length) {
-      case 1:
-        // Use default namespace.
-        return ['', parts[0]];
-      case 2:
-        return <[string, string]>parts;
-      default:
-        throw Error(`Invalid icon name: "${iconName}"`);
+      case 1: return ['', parts[0]]; // Use default namespace.
+      case 2: return <[string, string]>parts;
+      default: throw Error(`Invalid icon name: "${iconName}"`);
     }
   }
 
   ngOnChanges(changes: SimpleChanges) {
     // Only update the inline SVG icon if the inputs changed, to avoid unnecessary DOM operations.
-    if (changes.svgIcon && this.svgIcon) {
-      const [namespace, iconName] = this._splitIconName(this.svgIcon);
+    if (changes.svgIcon) {
+      if (this.svgIcon) {
+        const [namespace, iconName] = this._splitIconName(this.svgIcon);
 
-      first.call(this._mdIconRegistry.getNamedSvgIcon(iconName, namespace)).subscribe(
-          svg => this._setSvgElement(svg),
-          (err: Error) => console.log(`Error retrieving icon: ${err.message}`));
+        first.call(this._mdIconRegistry.getNamedSvgIcon(iconName, namespace)).subscribe(
+            svg => this._setSvgElement(svg),
+            (err: Error) => console.log(`Error retrieving icon: ${err.message}`));
+      } else {
+        this._clearSvgElement();
+      }
     }
 
     if (this._usingFontIcon()) {
@@ -156,6 +156,11 @@ export class MdIcon extends _MdIconMixinBase implements OnChanges, OnInit, CanCo
   }
 
   private _setSvgElement(svg: SVGElement) {
+    this._clearSvgElement();
+    this._renderer.appendChild(this._elementRef.nativeElement, svg);
+  }
+
+  private _clearSvgElement() {
     const layoutElement = this._elementRef.nativeElement;
     const childCount = layoutElement.childNodes.length;
 
@@ -164,8 +169,6 @@ export class MdIcon extends _MdIconMixinBase implements OnChanges, OnInit, CanCo
     for (let i = 0; i < childCount; i++) {
       this._renderer.removeChild(layoutElement, layoutElement.childNodes[i]);
     }
-
-    this._renderer.appendChild(layoutElement, svg);
   }
 
   private _updateFontIconClasses() {

@@ -331,6 +331,25 @@ describe('MdIcon', () => {
       }).not.toThrow();
     });
 
+    it('should remove the SVG element from the DOM when the binding is cleared', () => {
+      mdIconRegistry.addSvgIconSet(trust('arrow-set.svg'));
+
+      let fixture = TestBed.createComponent(IconFromSvgName);
+
+      const testComponent = fixture.componentInstance;
+      const icon = fixture.debugElement.nativeElement.querySelector('md-icon');
+
+      testComponent.iconName = 'left-arrow';
+      fixture.detectChanges();
+
+      expect(icon.querySelector('svg')).toBeTruthy();
+
+      testComponent.iconName = undefined;
+      fixture.detectChanges();
+
+      expect(icon.querySelector('svg')).toBeFalsy();
+    });
+
   });
 
   describe('custom fonts', () => {
@@ -418,7 +437,7 @@ class IconWithCustomFontCss {
 
 @Component({template: `<md-icon [svgIcon]="iconName"></md-icon>`})
 class IconFromSvgName {
-  iconName = '';
+  iconName: string | undefined = '';
 }
 
 @Component({template: '<md-icon aria-hidden="false">face</md-icon>'})
