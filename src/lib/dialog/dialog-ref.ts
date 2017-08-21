@@ -15,7 +15,7 @@ import {MdDialogContainer} from './dialog-container';
 
 
 // TODO(jelbourn): resizing
-// TODO(jelbourn): afterOpen and beforeClose
+// TODO(jelbourn): afterOpen
 
 // Counter for unique dialog ids.
 let uniqueId = 0;
@@ -32,6 +32,9 @@ export class MdDialogRef<T> {
 
   /** Subject for notifying the user that the dialog has finished closing. */
   private _afterClosed: Subject<any> = new Subject();
+
+  /** Subject for notifying the user that the dialog has started closing. */
+  private _beforeClose: Subject<any> = new Subject();
 
   /** Result to be passed to afterClosed. */
   private _result: any;
@@ -63,7 +66,11 @@ export class MdDialogRef<T> {
     RxChain.from(this._containerInstance._animationStateChanged)
       .call(filter, event => event.phaseName === 'start')
       .call(first)
-      .subscribe(() => this._overlayRef.detachBackdrop());
+      .subscribe(() => {
+        this._beforeClose.next(dialogResult);
+        this._beforeClose.complete();
+        this._overlayRef.detachBackdrop();
+      });
 
     this._containerInstance._startExitAnimation();
   }
@@ -73,6 +80,13 @@ export class MdDialogRef<T> {
    */
   afterClosed(): Observable<any> {
     return this._afterClosed.asObservable();
+  }
+
+  /**
+   * Gets an observable that is notified when the dialog has started closing.
+   */
+  beforeClose(): Observable<any> {
+    return this._beforeClose.asObservable();
   }
 
   /**

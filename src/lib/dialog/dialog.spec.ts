@@ -140,6 +140,25 @@ describe('MdDialog', () => {
     });
   }));
 
+  it('should close a dialog and get back a result before it is closed', async(() => {
+    const dialogRef = dialog.open(PizzaMsg, {viewContainerRef: testViewContainerRef});
+
+    // beforeClose should emit before dialog container is destroyed
+    const beforeCloseHandler = jasmine.createSpy('beforeClose callback').and.callFake(() => {
+      expect(overlayContainerElement.querySelector('md-dialog-container'))
+          .not.toBeNull('dialog container exists when beforeClose is called');
+    });
+
+    dialogRef.beforeClose().subscribe(beforeCloseHandler);
+    dialogRef.close('Bulbasaurus');
+    viewContainerFixture.detectChanges();
+
+    viewContainerFixture.whenStable().then(() => {
+      expect(beforeCloseHandler).toHaveBeenCalledWith('Bulbasaurus');
+      expect(overlayContainerElement.querySelector('md-dialog-container')).toBeNull();
+    });
+  }));
+
   it('should close a dialog via the escape key', async(() => {
     dialog.open(PizzaMsg, {
       viewContainerRef: testViewContainerRef
