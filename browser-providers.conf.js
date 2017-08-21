@@ -14,11 +14,11 @@
 var CIconfiguration = {
   'Chrome': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
   'Firefox': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
-  // FirefoxBeta and ChromeBeta should be target:'BS' or target:'SL', and required:true
+  'ChromeBeta': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: false}},
+  'ChromeDev': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
+  // FirefoxBeta and FirefoxDev should be target:'BS' or target:'SL', and required:true
   // Currently deactivated due to https://github.com/angular/angular/issues/7560
-  'ChromeBeta': {unitTest: {target: null, required: true}, e2e: {target: null, required: false}},
-  'FirefoxBeta': {unitTest: {target: null, required: false}, e2e: {target: null, required: false}},
-  'ChromeDev': {unitTest: {target: null, required: true}, e2e: {target: null, required: true}},
+  'FirefoxBeta': {unitTest: {target: null, required: true}, e2e: {target: null, required: false}},
   'FirefoxDev': {unitTest: {target: null, required: true}, e2e: {target: null, required: true}},
   'IE9': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'IE10': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
@@ -45,8 +45,10 @@ var customLaunchers = {
   'SL_CHROMEBETA': {base: 'SauceLabs', browserName: 'chrome', version: 'beta'},
   'SL_CHROMEDEV': {base: 'SauceLabs', browserName: 'chrome', version: 'dev'},
   'SL_FIREFOX': {base: 'SauceLabs', browserName: 'firefox', version: '50'},
-  'SL_FIREFOXBETA': {base: 'SauceLabs', browserName: 'firefox', version: 'beta'},
-  'SL_FIREFOXDEV': {base: 'SauceLabs', browserName: 'firefox', version: 'dev'},
+  'SL_FIREFOXBETA':
+      {base: 'SauceLabs', platform: 'Windows 10', browserName: 'firefox', version: 'beta'},
+  'SL_FIREFOXDEV':
+      {base: 'SauceLabs', platform: 'Windows 10', browserName: 'firefox', version: 'dev'},
   'SL_SAFARI7': {base: 'SauceLabs', browserName: 'safari', platform: 'OS X 10.9', version: '7.0'},
   'SL_SAFARI8': {base: 'SauceLabs', browserName: 'safari', platform: 'OS X 10.10', version: '8.0'},
   'SL_SAFARI9': {base: 'SauceLabs', browserName: 'safari', platform: 'OS X 10.11', version: '9.0'},
