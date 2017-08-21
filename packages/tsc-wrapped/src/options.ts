@@ -87,6 +87,10 @@ interface Options extends ts.CompilerOptions {
   // matched by the `files` / `includes` in the `tsconfig.json`.
   // This is off by default.
   alwaysCompileGeneratedCode?: boolean;
+
+  // Whether to remove blank text nodes from compiled templates. It is `true` by default
+  // in Angular 5 and will be re-visited in Angular 6.
+  preserveWhitespaces?: boolean;
 }
 
 export default Options;
