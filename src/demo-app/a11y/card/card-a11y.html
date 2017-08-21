@@ -1,0 +1,93 @@
+<section>
+  <h2>Dogs group</h2>
+  <p>Showing a card with a group of content</p>
+  <md-card class="example-card" role="group">
+    <md-card-content>
+      <p>Herding Group</p>
+      <p>Hound Group</p>
+      <p>Non-Sporting Group</p>
+      <p>Sporting Group</p>
+      <p>Terrier Group</p>
+      <p>Toy Group</p>
+      <p>Working Group</p>
+      <p>Foundation Stock Service</p>
+      <p>Miscellaneous Class</p>
+    </md-card-content>
+  </md-card>
+</section>
+
+<section>
+  <h2>Husky</h2>
+  <p>Showing a card with title only</p>
+  <md-card class="example-card">
+    Siberian Husky
+  </md-card>
+</section>
+
+<section>
+  <h2>Malamute</h2>
+  <p>Showing a Card with title and subtitle. </p>
+  <md-card class="example-card">
+    <md-card-title>Alaskan Malamute</md-card-title>
+    <md-card-subtitle>Dog breed</md-card-subtitle>
+  </md-card>
+</section>
+
+
+<section>
+  <h2>German Shepherd</h2>
+  <p>
+    Showing a card with title, subtitle, and a footer.
+  </p>
+  <md-card class="example-card">
+    <md-card-subtitle>Dog breed</md-card-subtitle>
+    <md-card-title>German Shepherd</md-card-title>
+    <md-card-content>
+      The German Shepherd is a breed of medium to large-sized working dog that originated in
+      Germany. The breed's officially recognized name is German Shepherd Dog in the English
+      language. The breed is also known as the Alsatian in Britain and Ireland.
+    </md-card-content>
+    <md-card-footer>
+      People also search for Rottweiler, Siberian Husky, Labrador Retriever, Doberman Pinscher
+    </md-card-footer>
+  </md-card>
+</section>
+
+<section>
+  <h2>Dachshund</h2>
+  <p>Showing a card with title, subtitle, and avatar as header and a card image.</p>
+  <md-card class="example-card">
+    <md-card-header>
+      <img md-card-avatar src="a11y/card/assets/dachshund-avatar.jpg" aria-label="Dachshund avatar">
+      <md-card-title>Dachshund</md-card-title>
+      <md-card-subtitle>Dog breed</md-card-subtitle>
+    </md-card-header>
+    <img md-card-image src="a11y/card/assets/dachshund.jpg"
+         aria-label="Dachshund">
+    <md-card-content>
+      The dachshund is a short-legged, long-bodied, hound-type dog breed.
+    </md-card-content>
+  </md-card>
+</section>
+
+<section>
+  <h2>Shiba Inu</h2>
+  <p>Showing a card with header, content, image, and two action buttons: "share" and "like".</p>
+  <md-card class="example-card">
+    <md-card-header>
+      <img md-card-avatar src="a11y/card/assets/shiba-inu-avatar.jpg" aria-label="Shiba Inu avatar">
+      <md-card-title>Shiba Inu</md-card-title>
+      <md-card-subtitle>Dog Breed</md-card-subtitle>
+    </md-card-header>
+    <img md-card-image  src="a11y/card/assets/shiba-inu.jpg" aria-label="Shiba Inu">
+    <md-card-content>
+      The Shiba Inu is the smallest of the six original and distinct spitz breeds of dog from Japan.
+      A small, agile dog that copes very well with mountainous terrain, the Shiba Inu was originally
+      bred for hunting.
+    </md-card-content>
+    <md-card-actions align="end">
+      <button md-button (click)="openSnackbar('Liked Shiba Inu')">like</button>
+      <button md-button (click)="openSnackbar('Shared Shiba Inu')">share</button>
+    </md-card-actions>
+  </md-card>
+</section>

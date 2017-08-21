@@ -20,6 +20,7 @@ export class AccessibilityDemo {
     {name: 'Autocomplete', route: 'autocomplete'},
     {name: 'Button', route: 'button'},
     {name: 'Button toggle', route: 'button-toggle'},
+    {name: 'Card', route: 'card'},
     {name: 'Checkbox', route: 'checkbox'},
     {name: 'Chips', route: 'chips'},
     {name: 'Datepicker', route: 'datepicker'},

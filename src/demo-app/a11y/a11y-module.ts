@@ -8,6 +8,7 @@ import {AccessibilityDemo, AccessibilityHome} from './a11y';
 import {AutocompleteAccessibilityDemo} from './autocomplete/autocomplete-a11y';
 import {ButtonAccessibilityDemo} from './button/button-a11y';
 import {ButtonToggleAccessibilityDemo} from './button-toggle/button-toggle-a11y';
+import {CardAccessibilityDemo} from './card/card-a11y';
 import {CheckboxAccessibilityDemo} from './checkbox/checkbox-a11y';
 import {ChipsAccessibilityDemo} from './chips/chips-a11y';
 import {
@@ -56,6 +57,7 @@ export class AccessibilityRoutingModule {}
     AutocompleteAccessibilityDemo,
     ButtonAccessibilityDemo,
     ButtonToggleAccessibilityDemo,
+    CardAccessibilityDemo,
     CheckboxAccessibilityDemo,
     ChipsAccessibilityDemo,
     DatepickerAccessibilityDemo,

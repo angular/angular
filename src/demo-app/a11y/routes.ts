@@ -2,6 +2,7 @@ import {Routes} from '@angular/router';
 import {AutocompleteAccessibilityDemo} from './autocomplete/autocomplete-a11y';
 import {ButtonAccessibilityDemo} from './button/button-a11y';
 import {ButtonToggleAccessibilityDemo} from './button-toggle/button-toggle-a11y';
+import {CardAccessibilityDemo} from './card/card-a11y';
 import {CheckboxAccessibilityDemo} from './checkbox/checkbox-a11y';
 import {ChipsAccessibilityDemo} from './chips/chips-a11y';
 import {DialogAccessibilityDemo} from './dialog/dialog-a11y';
@@ -23,6 +24,7 @@ export const ACCESSIBILITY_DEMO_ROUTES: Routes = [
   {path: 'autocomplete', component: AutocompleteAccessibilityDemo},
   {path: 'button', component: ButtonAccessibilityDemo},
   {path: 'button-toggle', component: ButtonToggleAccessibilityDemo},
+  {path: 'card', component: CardAccessibilityDemo},
   {path: 'checkbox', component: CheckboxAccessibilityDemo},
   {path: 'chips', component: ChipsAccessibilityDemo},
   {path: 'datepicker', component: DatepickerAccessibilityDemo},
