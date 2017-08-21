@@ -1,5 +1,5 @@
 {
-"compilerOptions": {
+  "compilerOptions": {
     "baseUrl": ".",
     "declaration": true,
     "stripInternal": true,
@@ -16,5 +16,8 @@
     "target": "es5",
     "skipLibCheck": true,
     "lib": ["es2015", "dom"]
-  }
+  },
+  "exclude": [
+    "./closure-locale.ts"
+  ]
 }
