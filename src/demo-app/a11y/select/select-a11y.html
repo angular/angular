@@ -1,0 +1,72 @@
+<section>
+  <h2>Single selection</h2>
+  <p>Select your favorite color</p>
+
+  <md-select placeholder="Colors" [(ngModel)]="selectedColor">
+    <md-option *ngFor="let color of colors" [value]="color.value">
+      {{ color.label }}
+    </md-option>
+  </md-select>
+</section>
+
+<section>
+  <h2>Multiple selection</h2>
+  <p>Pick toppings for your pizza</p>
+
+  <md-select placeholder="Toppings" [(ngModel)]="selectedTopping" multiple>
+    <md-option *ngFor="let topping of toppings" [value]="topping.value">
+      {{ topping.label }}
+    </md-option>
+  </md-select>
+</section>
+
+<section>
+  <h2>Grouped options</h2>
+  <p>Pick your Pokemon</p>
+
+  <md-select placeholder="Pokemon" [(ngModel)]="selectedPokemon">
+    <md-optgroup *ngFor="let group of pokemon" [label]="group.label">
+      <md-option *ngFor="let creature of group.pokemon" [value]="creature.value">
+        {{ creature.label }}
+      </md-option>
+    </md-optgroup>
+  </md-select>
+</section>
+
+<section>
+  <h2>Colors</h2>
+
+  <div class="select-a11y-spacer">
+    <md-select placeholder="ZIP code" color="primary">
+      <md-option value="2000">2000</md-option>
+      <md-option value="2100">2100</md-option>
+    </md-select>
+
+    <md-select placeholder="State" color="accent">
+      <md-option value="alaska">Alaska</md-option>
+      <md-option value="alabama">Alabama</md-option>
+    </md-select>
+
+    <md-select placeholder="Language" color="warn">
+      <md-option value="english">English</md-option>
+      <md-option value="spanish">Spanish</md-option>
+    </md-select>
+  </div>
+
+  <div class="select-a11y-spacer">
+    <md-select placeholder="Digimon" color="primary" multiple>
+      <md-option value="mihiramon">Mihiramon</md-option>
+      <md-option value="sandiramon">Sandiramon</md-option>
+    </md-select>
+
+    <md-select placeholder="Drink" color="accent" multiple>
+      <md-option value="water">Water</md-option>
+      <md-option value="coke">Coke</md-option>
+    </md-select>
+
+    <md-select placeholder="Theme" color="warn" multiple>
+      <md-option value="light">Light</md-option>
+      <md-option value="dark">Dark</md-option>
+    </md-select>
+  </div>
+</section>

@@ -18,6 +18,7 @@ import {InputAccessibilityDemo} from './input/input-a11y';
 import {ProgressSpinnerAccessibilityDemo} from './progress-spinner/progress-spinner-a11y';
 import {SliderAccessibilityDemo} from './slider/slider-a11y';
 import {SnackBarAccessibilityDemo} from './snack-bar/snack-bar-a11y';
+import {SelectAccessibilityDemo} from './select/select-a11y';
 
 
 @NgModule({
@@ -54,6 +55,7 @@ export class AccessibilityRoutingModule {}
     RadioAccessibilityDemo,
     SliderAccessibilityDemo,
     SnackBarAccessibilityDemo,
+    SelectAccessibilityDemo,
   ]
 })
 export class AccessibilityDemoModule {}
