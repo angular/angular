@@ -13,23 +13,14 @@ import {
   ConnectionPositionPair,
   OriginConnectionPosition,
   OverlayConnectionPosition,
-  ConnectedOverlayPositionChange, ScrollableViewProperties
+  ConnectedOverlayPositionChange,
+  ScrollingVisibility,
 } from './connected-position';
 import {Subject} from 'rxjs/Subject';
 import {Observable} from 'rxjs/Observable';
 import {Scrollable} from '../scroll/scrollable';
+import {isElementScrolledOutsideView, isElementClippedByScrolling} from './scroll-clip';
 
-/**
- * Container to hold the bounding positions of a particular element with respect to the viewport,
- * where top and bottom are the y-axis coordinates of the bounding rectangle and left and right are
- * the x-axis coordinates.
- */
-type ElementBoundingPositions = {
-  top: number;
-  right: number;
-  bottom: number;
-  left: number;
-};
 
 /**
  * A strategy for positioning overlays. Using this strategy, an overlay is given an
@@ -306,47 +297,18 @@ export class ConnectedPositionStrategy implements PositionStrategy {
    * Gets the view properties of the trigger and overlay, including whether they are clipped
    * or completely outside the view of any of the strategy's scrollables.
    */
-  private getScrollableViewProperties(overlay: HTMLElement): ScrollableViewProperties {
-    const originBounds = this._getElementBounds(this._origin);
-    const overlayBounds = this._getElementBounds(overlay);
-    const scrollContainerBounds = this.scrollables.map((scrollable: Scrollable) => {
-      return this._getElementBounds(scrollable.getElementRef().nativeElement);
-    });
+  private _getScrollVisibility(overlay: HTMLElement): ScrollingVisibility {
+    const originBounds = this._origin.getBoundingClientRect();
+    const overlayBounds = overlay.getBoundingClientRect();
+    const scrollContainerBounds =
+        this.scrollables.map(s => s.getElementRef().nativeElement.getBoundingClientRect());
 
     return {
-      isOriginClipped: this.isElementClipped(originBounds, scrollContainerBounds),
-      isOriginOutsideView: this.isElementOutsideView(originBounds, scrollContainerBounds),
-      isOverlayClipped: this.isElementClipped(overlayBounds, scrollContainerBounds),
-      isOverlayOutsideView: this.isElementOutsideView(overlayBounds, scrollContainerBounds),
+      isOriginClipped: isElementClippedByScrolling(originBounds, scrollContainerBounds),
+      isOriginOutsideView: isElementScrolledOutsideView(originBounds, scrollContainerBounds),
+      isOverlayClipped: isElementClippedByScrolling(overlayBounds, scrollContainerBounds),
+      isOverlayOutsideView: isElementScrolledOutsideView(overlayBounds, scrollContainerBounds),
     };
-  }
-
-  /** Whether the element is completely out of the view of any of the containers. */
-  private isElementOutsideView(
-      elementBounds: ElementBoundingPositions,
-      containersBounds: ElementBoundingPositions[]): boolean {
-    return containersBounds.some((containerBounds: ElementBoundingPositions) => {
-      const outsideAbove = elementBounds.bottom < containerBounds.top;
-      const outsideBelow = elementBounds.top > containerBounds.bottom;
-      const outsideLeft = elementBounds.right < containerBounds.left;
-      const outsideRight = elementBounds.left > containerBounds.right;
-
-      return outsideAbove || outsideBelow || outsideLeft || outsideRight;
-    });
-  }
-
-  /** Whether the element is clipped by any of the containers. */
-  private isElementClipped(
-      elementBounds: ElementBoundingPositions,
-      containersBounds: ElementBoundingPositions[]): boolean {
-    return containersBounds.some((containerBounds: ElementBoundingPositions) => {
-      const clippedAbove = elementBounds.top < containerBounds.top;
-      const clippedBelow = elementBounds.bottom > containerBounds.bottom;
-      const clippedLeft = elementBounds.left < containerBounds.left;
-      const clippedRight = elementBounds.right > containerBounds.right;
-
-      return clippedAbove || clippedBelow || clippedLeft || clippedRight;
-    });
   }
 
   /** Physically positions the overlay element to the given coordinate. */
@@ -392,20 +354,9 @@ export class ConnectedPositionStrategy implements PositionStrategy {
     element.style[horizontalStyleProperty] = `${x}px`;
 
     // Notify that the position has been changed along with its change properties.
-    const scrollableViewProperties = this.getScrollableViewProperties(element);
+    const scrollableViewProperties = this._getScrollVisibility(element);
     const positionChange = new ConnectedOverlayPositionChange(pos, scrollableViewProperties);
     this._onPositionChange.next(positionChange);
-  }
-
-  /** Returns the bounding positions of the provided element with respect to the viewport. */
-  private _getElementBounds(element: HTMLElement): ElementBoundingPositions {
-    const boundingClientRect = element.getBoundingClientRect();
-    return {
-      top: boundingClientRect.top,
-      right: boundingClientRect.left + boundingClientRect.width,
-      bottom: boundingClientRect.top + boundingClientRect.height,
-      left: boundingClientRect.left
-    };
   }
 
   /**

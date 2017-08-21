@@ -64,7 +64,7 @@ export class ConnectionPositionPair {
  *  |                        |
  *  --------------------------
  */
-export class ScrollableViewProperties {
+export class ScrollingVisibility {
   isOriginClipped: boolean;
   isOriginOutsideView: boolean;
   isOverlayClipped: boolean;
@@ -74,5 +74,5 @@ export class ScrollableViewProperties {
 /** The change event emitted by the strategy when a fallback position is used. */
 export class ConnectedOverlayPositionChange {
   constructor(public connectionPair: ConnectionPositionPair,
-              @Optional() public scrollableViewProperties: ScrollableViewProperties) {}
+              @Optional() public scrollableViewProperties: ScrollingVisibility) {}
 }
