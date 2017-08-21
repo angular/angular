@@ -47,7 +47,8 @@ module.exports = function(config) {
         pattern: 'packages/platform-browser/test/browser/static_assets/**',
         included: false,
         watched: false,
-      }
+      },
+      {pattern: 'packages/common/i18n/**', included: false, watched: false, served: true},
     ],
 
     exclude: [

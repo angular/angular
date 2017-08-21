@@ -28,7 +28,7 @@ describe('Pipes', function () {
 
   it('should be able to toggle birthday formats', function () {
     let birthDayEle = element(by.css('hero-birthday2 > p'));
-    expect(birthDayEle.getText()).toEqual(`The hero's birthday is 4/15/1988`);
+    expect(birthDayEle.getText()).toEqual(`The hero's birthday is 4/15/88`);
     let buttonEle = element(by.cssContainingText('hero-birthday2 > button', 'Toggle Format'));
     expect(buttonEle.isDisplayed()).toBe(true);
     buttonEle.click().then(function() {
