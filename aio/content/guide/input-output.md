@@ -2,7 +2,21 @@
 # `@Input` and `@Output` properties
 
 `@Input` and `@Output` let parent and child components share data with one 
-another. 
+another. A child component such as a ________ is embedded 
+within a parent component using the child selector.
+
+
+
+<!-- KW--Would you ever use Output without Input? Yes. If the nested component is such that its only use is to send data back, you wouldn't need an Input. The API, application programming interface, of the child component. How the child tells the universe how it will communicate. How it will understand data passed to it by way of the inputs and how it will respond via outputs. Put this in first part - before input section.-->
+
+<!-- KW--emphasis on selector -->
+```html
+<parent-component>
+  <child-component></child-component>
+</parent-component>
+
+```
+<!-- KW--Need real example here. -->
 
 
 
@@ -31,23 +45,24 @@ import { Input } from '@angular/core'; // First, import Input.
 })
 
 export class ChildComponent {
-  @Input() counter: number = 0; // decorate the property with @Input()
+  @Input() name: string; // decorate the property with @Input()
 }
 
 ```
 
-Be sure to import the `Input` interface and then, inside the class, decorate 
-the property, in this case `counter` with `@Input`. You can write it 
-all on one line or on two lines. 
-<!-- KW--Is there a preference? -->
+Be sure to import `Input` and then, inside the class, decorate 
+the property, in this case `name` with the `@Input` decorator. 
 
 ### In the parent component
-The next step is to use the property in the parent component.
+
+The next step is to bind the property in the parent component's template.
 
 INSERT EXAMPLE HERE
 
-In the parent component, use property binding by surrounding the binding target in square brackets. The target in the square brackets is the same as the property you decorate in the child component.
-Set the binding source, the part to the right of the equal sign to to the data that the parent component wants to pass to the nested component. 
+In the parent component, use property binding by surrounding the binding target in square brackets. The target in the square brackets is the property you decorate in the child component.
+Set the binding source, the part to the right of the equal sign, to the data that the parent component wants to pass to the nested component. 
+
+<!-- KW--pare down words^^ -->
 
 SHOW TARGET AND SOURCE DIAGRAM
 
@@ -55,22 +70,87 @@ To use a child component's property like this in a parent component, you must
 decorate the property with `@Input` in the child component.
 
 
+Lifecycle hooks. 
+
 From Deborah's course:
-"`OnChanges` only watches for changes to `@Input()` properties."
+"`OnChanges` only watches for changes to `@Input()` properties." Doesn't watch changes to any other properties, 
+only on input properties.
+
 "You can use @Input() to decorate any property type in the child class."
 
 ## `@Output`
 
-Use the `@Output` decorator in the child component to allow data to flow from 
-the child _out_ to the parent.
+
+Be sure to explain this
+https://blogs.msmvps.com/deborahk/passing-data-to-and-raising-an-event-from-a-nested-component/
+
+
+example of something that makes sense with something changing in the child that 
+notifies the parent. (output)
+
+so if parent notifies child, use onchanges, (input)
+
+Use the `@Output()` decorator in the child component to allow data to flow from 
+the child _out_ to the parent. 
 <figure>
   <img src='generated/images/guide/input-output/output.gif' alt="Output diagram">
 </figure>
 
+Just like with `@Input()`, you can use `@Output()`
+on any property of the child component. 
+
+"Usually you bind to the value of property, and when it changes, the child component 
+is notified via the `onChanges` lifecycle hook."
+
+A child component has to raise 
+an event to let its parent component know about a change. 
+
+To do this, `@Output()` works hand in hand with `EventEmitter`.
+First, be sure to import 
+`Output` and `EventEmitter` in the child component:
+
+```js
+import { Input, Output, EventEmitter } from '@angular/core';
+
+```
 
 ### `EventEmitter`
 
-Info here 
+`EventEmitter` is a class in `@angular/core` that you can use 
+to emit custom events.
+<!-- KW--Is this always in the context of nested components? EventEmitter, no. Output, yes. -->
+
+To use `EventEmitter` with `@Output`, add them to the child 
+component class like this:
+
+```ts
+...
+export class ChildComponent {
+  @Output() update: EventEmitter<string> = new EventEmitter<string>();
+}
+```
+
+Explain syntax. Can use any data type. 
+
+The data type specifies what data type that is passed with the event, 
+often referred to as its payload.
+
+
+Then, setup an event in the same component class:
+
+```ts
+export class ChildComponent {
+  @Output() update: EventEmitter<string> = new EventEmitter<string>();
+
+  onSubmit() {
+    this.notify.emit()
+  }
+}
+
+```
+
+
+Event binding 
 
 This one needs demo just for inputs and outputs.
 
