@@ -39,8 +39,8 @@ export class MdTab extends _MdTabMixinBase implements OnInit, CanDisable, OnChan
   @Input('label') textLabel: string = '';
 
   /** The portal that will be the hosted content of the tab */
-  private _contentPortal: TemplatePortal | null = null;
-  get content(): TemplatePortal | null { return this._contentPortal; }
+  private _contentPortal: TemplatePortal<any> | null = null;
+  get content(): TemplatePortal<any> | null { return this._contentPortal; }
 
   /** Emits whenever the label changes. */
   _labelChange = new Subject<void>();

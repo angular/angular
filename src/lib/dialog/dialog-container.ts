@@ -10,6 +10,7 @@ import {
   Component,
   ComponentRef,
   ElementRef,
+  EmbeddedViewRef,
   EventEmitter,
   Inject,
   NgZone,
@@ -124,7 +125,7 @@ export class MdDialogContainer extends BasePortalHost {
    * Attach a TemplatePortal as content to this dialog container.
    * @param portal Portal to be attached as the dialog content.
    */
-  attachTemplatePortal(portal: TemplatePortal): Map<string, any> {
+  attachTemplatePortal<C>(portal: TemplatePortal<C>): EmbeddedViewRef<C> {
     if (this._portalHost.hasAttached()) {
       throwMdDialogContentAlreadyAttachedError();
     }

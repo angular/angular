@@ -69,9 +69,9 @@ export class DomPortalHost extends BasePortalHost {
    * Attaches a template portal to the DOM as an embedded view.
    * @param portal Portal to be attached.
    */
-  attachTemplatePortal(portal: TemplatePortal): Map<string, any> {
+  attachTemplatePortal<C>(portal: TemplatePortal<C>): EmbeddedViewRef<C> {
     let viewContainer = portal.viewContainerRef;
-    let viewRef = viewContainer.createEmbeddedView(portal.templateRef);
+    let viewRef = viewContainer.createEmbeddedView(portal.templateRef, portal.context);
     viewRef.detectChanges();
 
     // The method `createEmbeddedView` will add the view as a child of the viewContainer.
@@ -87,7 +87,7 @@ export class DomPortalHost extends BasePortalHost {
     }));
 
     // TODO(jelbourn): Return locals from view.
-    return new Map<string, any>();
+    return viewRef;
   }
 
   /**

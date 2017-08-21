@@ -10,6 +10,7 @@ import {
     NgModule,
     ComponentRef,
     Directive,
+    EmbeddedViewRef,
     TemplateRef,
     ComponentFactoryResolver,
     ViewContainerRef,
@@ -32,7 +33,7 @@ import {Portal, TemplatePortal, ComponentPortal, BasePortalHost} from './portal'
   selector: '[cdk-portal], [cdkPortal], [portal]',
   exportAs: 'cdkPortal',
 })
-export class TemplatePortalDirective extends TemplatePortal {
+export class TemplatePortalDirective extends TemplatePortal<any> {
   constructor(templateRef: TemplateRef<any>, viewContainerRef: ViewContainerRef) {
     super(templateRef, viewContainerRef);
   }
@@ -117,16 +118,14 @@ export class PortalHostDirective extends BasePortalHost implements OnDestroy {
    * Attach the given TemplatePortal to this PortlHost as an embedded View.
    * @param portal Portal to be attached.
    */
-  attachTemplatePortal(portal: TemplatePortal): Map<string, any> {
+  attachTemplatePortal<C>(portal: TemplatePortal<C>): EmbeddedViewRef<C> {
     portal.setAttachedHost(this);
-
-    this._viewContainerRef.createEmbeddedView(portal.templateRef);
+    const viewRef = this._viewContainerRef.createEmbeddedView(portal.templateRef, portal.context);
     super.setDisposeFn(() => this._viewContainerRef.clear());
 
     this._portal = portal;
 
-    // TODO(jelbourn): return locals from view
-    return new Map<string, any>();
+    return viewRef;
   }
 }
 

@@ -16,6 +16,7 @@ import {
   Injector,
   Inject,
   ChangeDetectionStrategy,
+  TemplateRef
 } from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
@@ -77,6 +78,28 @@ describe('MdDialog', () => {
     viewContainerFixture.detectChanges();
     let dialogContainerElement = overlayContainerElement.querySelector('md-dialog-container')!;
     expect(dialogContainerElement.getAttribute('role')).toBe('dialog');
+  });
+
+  it('should open a dialog with a template', () => {
+    const templateRefFixture = TestBed.createComponent(ComponentWithTemplateRef);
+    templateRefFixture.componentInstance.localValue = 'Bees';
+    templateRefFixture.detectChanges();
+
+    const data = {value: 'Knees'};
+
+    let dialogRef = dialog.open(templateRefFixture.componentInstance.templateRef, { data });
+
+    viewContainerFixture.detectChanges();
+
+    expect(overlayContainerElement.textContent).toContain('Cheese Bees Knees');
+    expect(templateRefFixture.componentInstance.dialogRef).toBe(dialogRef);
+
+    viewContainerFixture.detectChanges();
+
+    let dialogContainerElement = overlayContainerElement.querySelector('md-dialog-container')!;
+    expect(dialogContainerElement.getAttribute('role')).toBe('dialog');
+
+    dialogRef.close();
   });
 
   it('should use injector from viewContainerRef for DialogInjector', () => {
@@ -876,6 +899,23 @@ class ComponentWithChildViewContainer {
   }
 }
 
+@Component({
+  selector: 'arbitrary-component-with-template-ref',
+  template: `<ng-template let-data let-dialogRef="dialogRef">
+      Cheese {{localValue}} {{data?.value}}{{setDialogRef(dialogRef)}}</ng-template>`,
+})
+class ComponentWithTemplateRef {
+  localValue: string;
+  dialogRef: MdDialogRef<any>;
+
+  @ViewChild(TemplateRef) templateRef: TemplateRef<any>;
+
+  setDialogRef(dialogRef: MdDialogRef<any>): string {
+    this.dialogRef = dialogRef;
+    return '';
+  }
+}
+
 /** Simple component for testing ComponentPortal. */
 @Component({template: '<p>Pizza</p> <input> <button>Close</button>'})
 class PizzaMsg {
@@ -916,6 +956,7 @@ class DialogWithInjectedData {
 // https://github.com/angular/angular/issues/10760
 const TEST_DIRECTIVES = [
   ComponentWithChildViewContainer,
+  ComponentWithTemplateRef,
   PizzaMsg,
   DirectiveWithViewContainer,
   ComponentWithOnPushViewContainer,
@@ -929,6 +970,7 @@ const TEST_DIRECTIVES = [
   declarations: TEST_DIRECTIVES,
   entryComponents: [
     ComponentWithChildViewContainer,
+    ComponentWithTemplateRef,
     PizzaMsg,
     ContentElementDialog,
     DialogWithInjectedData

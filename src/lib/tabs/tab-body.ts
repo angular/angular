@@ -98,7 +98,7 @@ export class MdTabBody implements OnInit, AfterViewChecked {
   @Output() onCentered: EventEmitter<void> = new EventEmitter<void>(true);
 
   /** The tab body content to display. */
-  @Input('content') _content: TemplatePortal;
+  @Input('content') _content: TemplatePortal<any>;
 
   /** The shifted index position of the tab body, where zero represents the active center tab. */
   _position: MdTabBodyPositionState;

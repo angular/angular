@@ -93,7 +93,7 @@ export class OverlayOrigin {
 })
 export class ConnectedOverlayDirective implements OnDestroy, OnChanges {
   private _overlayRef: OverlayRef;
-  private _templatePortal: TemplatePortal;
+  private _templatePortal: TemplatePortal<any>;
   private _hasBackdrop = false;
   private _backdropSubscription: Subscription | null;
   private _positionSubscription: Subscription;

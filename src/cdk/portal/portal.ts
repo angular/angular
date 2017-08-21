@@ -11,6 +11,7 @@ import {
     ViewContainerRef,
     ElementRef,
     ComponentRef,
+    EmbeddedViewRef,
     Injector
 } from '@angular/core';
 import {
@@ -103,42 +104,43 @@ export class ComponentPortal<T> extends Portal<ComponentRef<T>> {
   }
 }
 
-
 /**
  * A `TemplatePortal` is a portal that represents some embedded template (TemplateRef).
  */
-export class TemplatePortal extends Portal<Map<string, any>> {
+export class TemplatePortal<C> extends Portal<C> {
   /** The embedded template that will be used to instantiate an embedded View in the host. */
-  templateRef: TemplateRef<any>;
+  templateRef: TemplateRef<C>;
 
   /** Reference to the ViewContainer into which the template will be stamped out. */
   viewContainerRef: ViewContainerRef;
 
-  /**
-   * Additional locals for the instantiated embedded view.
-   * These locals can be seen as "exports" for the template, such as how ngFor has
-   * index / event / odd.
-   * See https://angular.io/docs/ts/latest/api/core/EmbeddedViewRef-class.html
-   */
-  locals: Map<string, any> = new Map<string, any>();
+  context: C | undefined;
 
-  constructor(template: TemplateRef<any>, viewContainerRef: ViewContainerRef) {
+  constructor(template: TemplateRef<any>, viewContainerRef: ViewContainerRef, context?: C) {
     super();
     this.templateRef = template;
     this.viewContainerRef = viewContainerRef;
+    if (context) {
+      this.context = context;
+    }
   }
 
   get origin(): ElementRef {
     return this.templateRef.elementRef;
   }
 
-  attach(host: PortalHost, locals?: Map<string, any>): Map<string, any> {
-    this.locals = locals == null ? new Map<string, any>() : locals;
+  /**
+   * Attach the the portal to the provided `PortalHost`.
+   * When a context is provided it will override the `context` property of the `TemplatePortal`
+   * instance.
+   */
+  attach(host: PortalHost, context: C | undefined = this.context): C {
+    this.context = context;
     return super.attach(host);
   }
 
   detach(): void {
-    this.locals = new Map<string, any>();
+    this.context = undefined;
     return super.detach();
   }
 }
@@ -203,7 +205,7 @@ export abstract class BasePortalHost implements PortalHost {
 
   abstract attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T>;
 
-  abstract attachTemplatePortal(portal: TemplatePortal): Map<string, any>;
+  abstract attachTemplatePortal<C>(portal: TemplatePortal<C>): EmbeddedViewRef<C>;
 
   detach(): void {
     if (this._attachedPortal) {

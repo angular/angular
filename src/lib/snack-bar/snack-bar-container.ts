@@ -9,12 +9,13 @@
 import {
   Component,
   ComponentRef,
+  EmbeddedViewRef,
   ViewChild,
   NgZone,
   OnDestroy,
   Renderer2,
   ElementRef,
-  ChangeDetectionStrategy,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {
   trigger,
@@ -109,7 +110,7 @@ export class MdSnackBarContainer extends BasePortalHost implements OnDestroy {
   }
 
   /** Attach a template portal as content to this snack bar container. */
-  attachTemplatePortal(): Map<string, any> {
+  attachTemplatePortal(): EmbeddedViewRef<any> {
     throw Error('Not yet implemented');
   }
 

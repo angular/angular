@@ -180,7 +180,7 @@ describe('MdTabBody', () => {
   `
 })
 class SimpleTabBodyApp {
-  content: TemplatePortal;
+  content: TemplatePortal<any>;
   position: number;
   origin: number;
 

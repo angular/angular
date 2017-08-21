@@ -86,7 +86,7 @@ export const MENU_PANEL_TOP_PADDING = 8;
   exportAs: 'mdMenuTrigger'
 })
 export class MdMenuTrigger implements AfterViewInit, OnDestroy {
-  private _portal: TemplatePortal;
+  private _portal: TemplatePortal<any>;
   private _overlayRef: OverlayRef | null = null;
   private _menuOpen: boolean = false;
   private _closeSubscription: Subscription;

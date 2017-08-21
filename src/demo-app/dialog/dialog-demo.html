@@ -78,6 +78,16 @@
 <p>Last afterClosed result: {{lastAfterClosedResult}}</p>
 <p>Last beforeClose result: {{lastBeforeCloseResult}}</p>
 
-<ng-template>
+<ng-template let-data let-dialogRef="dialogRef">
   I'm a template dialog. I've been opened {{numTemplateOpens}} times!
+
+  <p>It's Jazz!</p>
+
+  <md-input-container>
+    <input mdInput placeholder="How much?" #howMuch>
+  </md-input-container>
+
+  <p> {{ data.message }} </p>
+  <button type="button" (click)="dialogRef.close(lastCloseResult = howMuch.value)">Close dialog</button>
+  <button (click)="dialogRef.updateSize('500px', '500px').updatePosition({ top: '25px', left: '25px' });">Change dimensions</button>`
 </ng-template>

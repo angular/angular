@@ -10,10 +10,11 @@ import {
   Optional,
   Injector,
   ApplicationRef,
+  TemplateRef
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {TemplatePortalDirective, PortalHostDirective, PortalModule} from './portal-directives';
-import {Portal, ComponentPortal} from './portal';
+import {Portal, ComponentPortal, TemplatePortal} from './portal';
 import {DomPortalHost} from './dom-portal-host';
 
 
@@ -43,6 +44,57 @@ describe('Portals', () => {
       // Expect that the content of the attached portal is present.
       let hostContainer = fixture.nativeElement.querySelector('.portal-container');
       expect(hostContainer.textContent).toContain('Pizza');
+    });
+
+    it('should load a template into the portal', () => {
+      let testAppComponent = fixture.debugElement.componentInstance;
+      let hostContainer = fixture.nativeElement.querySelector('.portal-container');
+
+      let templatePortal = new TemplatePortal(testAppComponent.templateRef, null!);
+      testAppComponent.selectedPortal = templatePortal;
+      fixture.detectChanges();
+      // Expect that the content of the attached portal is present and no context is projected
+      expect(hostContainer.textContent).toContain('Banana');
+    });
+
+    it('should project template context bindings in the portal', () => {
+      let testAppComponent = fixture.debugElement.componentInstance;
+      let hostContainer = fixture.nativeElement.querySelector('.portal-container');
+
+      // TemplatePortal without context:
+      let templatePortal = new TemplatePortal(testAppComponent.templateRef, null!);
+      testAppComponent.selectedPortal = templatePortal;
+      fixture.detectChanges();
+      // Expect that the content of the attached portal is present and NO context is projected
+      expect(hostContainer.textContent).toContain('Banana - !');
+
+      // using TemplatePortal.attach method to set context
+      testAppComponent.selectedPortal = undefined;
+      fixture.detectChanges();
+      templatePortal.attach(testAppComponent.portalHost, {$implicit: {status: 'rotten'}});
+      fixture.detectChanges();
+      // Expect that the content of the attached portal is present and context given via the
+      // attach method is projected
+      expect(hostContainer.textContent).toContain('Banana - rotten!');
+
+      // using TemplatePortal constructor to set the context
+      templatePortal =
+        new TemplatePortal(testAppComponent.templateRef, null!, {$implicit: {status: 'fresh'}});
+      testAppComponent.selectedPortal = templatePortal;
+      fixture.detectChanges();
+      // Expect that the content of the attached portal is present and context given via the
+      // constructor is projected
+      expect(hostContainer.textContent).toContain('Banana - fresh!');
+
+      // using TemplatePortal constructor to set the context but also calling attach method with
+      // context, the latter should take precedence:
+      testAppComponent.selectedPortal = undefined;
+      fixture.detectChanges();
+      templatePortal.attach(testAppComponent.portalHost, {$implicit: {status: 'rotten'}});
+      fixture.detectChanges();
+      // Expect that the content of the attached portal is present and and context given via the
+      // attach method is projected and get precedence over constructor context
+      expect(hostContainer.textContent).toContain('Banana - rotten!');
     });
 
     it('should dispose the host when destroyed', () => {
@@ -299,7 +351,7 @@ describe('Portals', () => {
       fixture.detectChanges();
 
       // Attach the TemplatePortal.
-      testAppComponent.portalWithBinding.attach(host);
+      testAppComponent.portalWithBinding.attach(host, {$implicit: {status: 'fresh'}});
       fixture.detectChanges();
 
       // Now that the portal is attached, change detection has to happen again in order
@@ -307,7 +359,7 @@ describe('Portals', () => {
       fixture.detectChanges();
 
       // Expect that the content of the attached portal is present.
-      expect(someDomElement.textContent).toContain('Banana');
+      expect(someDomElement.textContent).toContain('Banana - fresh');
 
       // When updating the binding value.
       testAppComponent.fruit = 'Mango';
@@ -416,18 +468,22 @@ class ArbitraryViewContainerRefComponent {
   <ng-template cdk-portal>Cake</ng-template>
 
   <div *cdk-portal>Pie</div>
-  <ng-template cdk-portal> {{fruit}} </ng-template>
+  <ng-template cdk-portal let-data> {{fruit}} - {{ data?.status }} </ng-template>
 
   <ng-template cdk-portal>
     <ul>
       <li *ngFor="let fruitName of fruits"> {{fruitName}} </li>
     </ul>
   </ng-template>
+
+  <ng-template #templateRef let-data> {{fruit}} - {{ data?.status }}!</ng-template>
   `,
 })
 class PortalTestApp {
   @ViewChildren(TemplatePortalDirective) portals: QueryList<TemplatePortalDirective>;
   @ViewChild(PortalHostDirective) portalHost: PortalHostDirective;
+  @ViewChild('templateRef', { read: TemplateRef }) templateRef: TemplateRef<any>;
+
   selectedPortal: Portal<any>;
   fruit: string = 'Banana';
   fruits = ['Apple', 'Pineapple', 'Durian'];
@@ -449,6 +505,7 @@ class PortalTestApp {
   get portalWithTemplate() {
     return this.portals.toArray()[3];
   }
+
 }
 
 // Create a real (non-test) NgModule as a workaround for

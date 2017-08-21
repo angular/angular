@@ -118,7 +118,7 @@ export function getMdAutocompleteMissingPanelError(): Error {
 })
 export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   private _overlayRef: OverlayRef | null;
-  private _portal: TemplatePortal;
+  private _portal: TemplatePortal<any>;
   private _panelOpen: boolean = false;
 
   /** Strategy that is used to position the panel. */
