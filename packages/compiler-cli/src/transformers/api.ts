@@ -91,11 +91,6 @@ export interface CompilerOptions extends ts.CompilerOptions {
   // position.
   disableExpressionLowering?: boolean;
 
-  // The list of expected files, when provided:
-  // - extra files are filtered out,
-  // - missing files are created empty.
-  expectedOut?: string[];
-
   // Locale of the application
   i18nOutLocale?: string;
   // Export format (xlf, xlf2 or xmb)

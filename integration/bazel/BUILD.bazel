@@ -1,0 +1,10 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "node_modules",
+    srcs = glob([
+        "node_modules/**/*.js",
+        "node_modules/**/*.d.ts",
+        "node_modules/**/*.json",
+    ])
+)
