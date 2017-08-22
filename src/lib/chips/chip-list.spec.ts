@@ -230,6 +230,24 @@ describe('MdChipList', () => {
 
           expect(chipListInstance._tabIndex).toBe(0, 'Expected tabIndex to be reset back to 0');
         }));
+
+        it(`should use user defined tabIndex`, fakeAsync(() => {
+          chipListInstance.tabIndex = 4;
+
+          fixture.detectChanges();
+
+          expect(chipListInstance._tabIndex)
+            .toBe(4, 'Expected tabIndex to be set to user defined value 4.');
+
+          chipListInstance._keyManager.onKeydown(createKeyboardEvent('keydown', TAB));
+
+          expect(chipListInstance._tabIndex)
+            .toBe(-1, 'Expected tabIndex to be set to -1 temporarily.');
+
+          tick();
+
+          expect(chipListInstance._tabIndex).toBe(4, 'Expected tabIndex to be reset back to 4');
+        }));
       });
     });
   });
@@ -312,7 +330,7 @@ describe('MdChipList', () => {
 
 @Component({
   template: `
-    <md-chip-list>
+    <md-chip-list [tabIndex]="tabIndex">
       <div *ngFor="let i of [0,1,2,3,4]">
        <div *ngIf="remove != i">
           <md-chip (select)="chipSelect(i)" (deselect)="chipDeselect(i)">
@@ -328,6 +346,7 @@ class StandardChipList {
   remove: number;
   chipSelect: (index?: number) => void = () => {};
   chipDeselect: (index?: number) => void = () => {};
+  tabIndex: number = 0;
 }
 
 @Component({

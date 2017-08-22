@@ -76,6 +76,12 @@ export class MdChipList implements AfterContentInit, OnDestroy {
   /** Tab index for the chip list. */
   _tabIndex = 0;
 
+  /**
+   * User defined tab index.
+   * When it is not null, use user defined tab index. Otherwise use _tabIndex
+   */
+  _userTabIndex: number | null = null;
+
   /** The FocusKeyManager which handles focus. */
   _keyManager: FocusKeyManager<MdChip>;
 
@@ -93,7 +99,7 @@ export class MdChipList implements AfterContentInit, OnDestroy {
     // it back to the first chip when the user tabs out.
     this._tabOutSubscription = this._keyManager.tabOut.subscribe(() => {
       this._tabIndex = -1;
-      setTimeout(() => this._tabIndex = 0);
+      setTimeout(() => this._tabIndex = this._userTabIndex || 0);
     });
 
     // Go ahead and subscribe all of the initial chips
@@ -136,6 +142,12 @@ export class MdChipList implements AfterContentInit, OnDestroy {
 
   set selectable(value: boolean) {
     this._selectable = coerceBooleanProperty(value);
+  }
+
+  @Input()
+  set tabIndex(value: number) {
+    this._userTabIndex = value;
+    this._tabIndex = value;
   }
 
   /** Associates an HTML input element with this chip list. */
@@ -212,7 +224,7 @@ export class MdChipList implements AfterContentInit, OnDestroy {
    */
   protected _updateTabIndex(): void {
     // If we have 0 chips, we should not allow keyboard focus
-    this._tabIndex = (this.chips.length === 0 ? -1 : 0);
+    this._tabIndex = this._userTabIndex || (this.chips.length === 0 ? -1 : 0);
   }
 
   /**
