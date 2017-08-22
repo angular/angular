@@ -72,11 +72,6 @@ export class RouterOutlet implements OnDestroy, OnInit {
     }
   }
 
-  /** @deprecated since v4 **/
-  get locationInjector(): Injector { return this.location.injector; }
-  /** @deprecated since v4 **/
-  get locationFactoryResolver(): ComponentFactoryResolver { return this.resolver; }
-
   get isActivated(): boolean { return !!this.activated; }
 
   get component(): Object {

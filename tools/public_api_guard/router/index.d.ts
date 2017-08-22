@@ -409,8 +409,6 @@ export declare class RouterOutlet implements OnDestroy, OnInit {
     readonly component: Object;
     deactivateEvents: EventEmitter<any>;
     readonly isActivated: boolean;
-    /** @deprecated */ readonly locationFactoryResolver: ComponentFactoryResolver;
-    /** @deprecated */ readonly locationInjector: Injector;
     constructor(parentContexts: ChildrenOutletContexts, location: ViewContainerRef, resolver: ComponentFactoryResolver, name: string, changeDetector: ChangeDetectorRef);
     activateWith(activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver | null): void;
     attach(ref: ComponentRef<any>, activatedRoute: ActivatedRoute): void;
