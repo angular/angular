@@ -13,7 +13,7 @@ import {
 import { Hero } from './hero.service';
 
 @Component({
-  selector: 'hero-list-auto',
+  selector: 'app-hero-list-auto',
   // #docregion template
   template: `
     <ul>

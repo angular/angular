@@ -1,8 +1,22 @@
 # boilerplate files
+**/src/environments/environment.prod.ts
+**/src/environments/environment.ts
+**/src/assets/.gitkeep
 **/src/styles.css
 **/src/systemjs-angular-loader.js
 **/src/systemjs.config.js
 **/src/tsconfig.json
+**/src/favicon.ico
+**/src/polyfills.ts
+**/src/test.ts
+**/src/tsconfig.app.json
+**/src/tsconfig.spec.json
+**/src/typings.d.ts
+**/e2e/app.po.ts
+**/e2e/tsconfig.e2e.json
+**/.angular-cli.json
+**/.editorconfig
+**/tsconfig.json
 **/bs-config.e2e.json
 **/bs-config.json
 **/package.json
@@ -53,14 +67,18 @@ dist/
 
 # testing
 !testing/src/browser-test-shim.js
-!testing/karma*.js
 
 # webpack
 !webpack/**/config/*.js
 !webpack/**/*webpack*.js
+!webpack/src/polyfills.ts
 
 # styleguide
 !styleguide/src/systemjs.custom.js
 
 # plunkers
 *plnkr.no-link.html
+
+# ngUpgrade testing
+!upgrade-phonecat-*/**/karma.conf.js
+!upgrade-phonecat-*/**/karma-test-shim.js

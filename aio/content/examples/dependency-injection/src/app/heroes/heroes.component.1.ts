@@ -9,13 +9,13 @@ import { HeroService }        from './hero.service';
 // #docregion full, v1
 
 @Component({
-  selector: 'my-heroes',
+  selector: 'app-heroes',
     // #enddocregion v1
   providers: [HeroService],
   // #docregion v1
   template: `
   <h2>Heroes</h2>
-  <hero-list></hero-list>
+  <app-hero-list></app-hero-list>
   `
 })
 export class HeroesComponent { }

@@ -2,7 +2,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'click-me2',
+  selector: 'app-click-me2',
   template: `
     <button (click)="onClickMe2($event)">No! .. Click me!</button>
     {{clickMessage}}`

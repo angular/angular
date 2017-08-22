@@ -5,7 +5,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 // #enddocregion imports
 
 @Component({
-  selector: 'hero-detail-3',
+  selector: 'app-hero-detail-3',
   templateUrl: './hero-detail-3.component.html'
 })
 // #docregion v3

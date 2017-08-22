@@ -1,3 +1,4 @@
 {
-  "build": "build:aot"
+  "build": "build:aot",
+  "projectType": "systemjs"
 }
