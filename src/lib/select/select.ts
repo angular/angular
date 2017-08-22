@@ -939,7 +939,8 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
     if (this._hasValue()) {
       let selectedOptionOffset = this._getOptionIndex(this._selectionModel.selected[0])!;
 
-      selectedOptionOffset += this._getLabelCountBeforeOption(selectedOptionOffset);
+      selectedOptionOffset += MdOption.countGroupLabelsBeforeOption(selectedOptionOffset,
+          this.options, this.optionGroups);
 
       // We must maintain a scroll buffer so the selected option will be scrolled to the
       // center of the overlay panel rather than the top.
@@ -951,8 +952,10 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
       // we must only adjust for the height difference between the option element
       // and the trigger element, then multiply it by -1 to ensure the panel moves
       // in the correct direction up the page.
+      let groupLabels = MdOption.countGroupLabelsBeforeOption(0, this.options, this.optionGroups);
+
       this._offsetY = (SELECT_ITEM_HEIGHT - SELECT_TRIGGER_HEIGHT) / 2 * -1 -
-          (this._getLabelCountBeforeOption(0) * SELECT_ITEM_HEIGHT);
+          (groupLabels * SELECT_ITEM_HEIGHT);
     }
 
     this._checkOverlayWithinViewport(maxScroll);
@@ -1197,30 +1200,6 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
   private _getItemCount(): number {
     return this.options.length + this.optionGroups.length;
   }
-
-  /**
-   * Calculates the amount of option group labels that precede the specified option.
-   * Useful when positioning the panel, because the labels will offset the index of the
-   * currently-selected option.
-   */
-  private _getLabelCountBeforeOption(optionIndex: number): number {
-    if (this.optionGroups.length) {
-      let options = this.options.toArray();
-      let groups = this.optionGroups.toArray();
-      let groupCounter = 0;
-
-      for (let i = 0; i < optionIndex + 1; i++) {
-        if (options[i].group && options[i].group === groups[groupCounter]) {
-          groupCounter++;
-        }
-      }
-
-      return groupCounter;
-    }
-
-    return 0;
-  }
-
 }
 
 /** Clamps a value n between min and max values. */

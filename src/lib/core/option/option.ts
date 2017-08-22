@@ -17,6 +17,7 @@ import {
   Optional,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
+  QueryList,
 } from '@angular/core';
 import {ENTER, SPACE} from '../keyboard/keycodes';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
@@ -214,6 +215,32 @@ export class MdOption {
   /** Emits the selection change event. */
   private _emitSelectionChangeEvent(isUserInput = false): void {
     this.onSelectionChange.emit(new MdOptionSelectionChange(this, isUserInput));
+  }
+
+  /**
+   * Counts the amount of option group labels that precede the specified option.
+   * @param optionIndex Index of the option at which to start counting.
+   * @param options Flat list of all of the options.
+   * @param optionGroups Flat list of all of the option groups.
+   */
+  static countGroupLabelsBeforeOption(optionIndex: number, options: QueryList<MdOption>,
+    optionGroups: QueryList<MdOptgroup>): number {
+
+    if (optionGroups.length) {
+      let optionsArray = options.toArray();
+      let groups = optionGroups.toArray();
+      let groupCounter = 0;
+
+      for (let i = 0; i < optionIndex + 1; i++) {
+        if (optionsArray[i].group && optionsArray[i].group === groups[groupCounter]) {
+          groupCounter++;
+        }
+      }
+
+      return groupCounter;
+    }
+
+    return 0;
   }
 
 }

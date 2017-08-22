@@ -357,8 +357,10 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
    * not adjusted.
    */
   private _scrollToOption(): void {
-    const optionOffset = this.autocomplete._keyManager.activeItemIndex ?
-        this.autocomplete._keyManager.activeItemIndex * AUTOCOMPLETE_OPTION_HEIGHT : 0;
+    const activeOptionIndex = this.autocomplete._keyManager.activeItemIndex || 0;
+    const labelCount = MdOption.countGroupLabelsBeforeOption(activeOptionIndex,
+        this.autocomplete.options, this.autocomplete.optionGroups);
+    const optionOffset = (activeOptionIndex + labelCount) * AUTOCOMPLETE_OPTION_HEIGHT;
     const panelTop = this.autocomplete._getScrollTop();
 
     if (optionOffset < panelTop) {

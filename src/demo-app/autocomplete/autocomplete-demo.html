@@ -51,4 +51,37 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
     </md-card-actions>
 
   </md-card>
+
+  <md-card>
+    <div>Option groups (currentGroupedState): {{ currentGroupedState }}</div>
+
+    <md-input-container>
+      <input
+        mdInput
+        placeholder="State"
+        [mdAutocomplete]="groupedAuto"
+        [(ngModel)]="currentGroupedState"
+        (ngModelChange)="filteredGroupedStates = filterStateGroups(currentGroupedState)">
+    </md-input-container>
+  </md-card>
 </div>
+
+<md-autocomplete #reactiveAuto="mdAutocomplete" [displayWith]="displayFn">
+  <md-option *ngFor="let state of reactiveStates | async" [value]="state">
+    <span>{{ state.name }}</span>
+    <span class="demo-secondary-text"> ({{state.code}}) </span>
+  </md-option>
+</md-autocomplete>
+
+<md-autocomplete #tdAuto="mdAutocomplete">
+  <md-option *ngFor="let state of tdStates" [value]="state.name">
+    <span>{{ state.name }}</span>
+  </md-option>
+</md-autocomplete>
+
+<md-autocomplete #groupedAuto="mdAutocomplete">
+  <md-optgroup *ngFor="let group of filteredGroupedStates"
+    [label]="'States starting with ' + group.letter">
+    <md-option *ngFor="let state of group.states" [value]="state.name">{{ state.name }}</md-option>
+  </md-optgroup>
+</md-autocomplete>

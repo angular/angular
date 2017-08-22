@@ -19,7 +19,7 @@ import {
   ChangeDetectorRef,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import {MdOption} from '../core';
+import {MdOption, MdOptgroup} from '../core';
 import {ActiveDescendantKeyManager} from '@angular/cdk/a11y';
 
 /**
@@ -55,7 +55,10 @@ export class MdAutocomplete implements AfterContentInit {
   @ViewChild('panel') panel: ElementRef;
 
   /** @docs-private */
-  @ContentChildren(MdOption) options: QueryList<MdOption>;
+  @ContentChildren(MdOption, { descendants: true }) options: QueryList<MdOption>;
+
+  /** @docs-private */
+  @ContentChildren(MdOptgroup) optionGroups: QueryList<MdOptgroup>;
 
   /** Function that maps an option's control value to its display value in the trigger. */
   @Input() displayWith: ((value: any) => string) | null = null;
