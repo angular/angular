@@ -716,11 +716,13 @@ describe('ngc transformer command-line', () => {
         }
       };
       beforeEach(() => {
-        const writeConfig = (dir: string) => {
-          write(path.join(dir, 'tsconfig.json'), `
+        const writeConfig =
+            (dir: string, generateCodeForLibraries = false, includes: string[] = [],
+             excludes: string[] = []) => {
+              write(path.join(dir, 'tsconfig.json'), `
           {
             "angularCompilerOptions": {
-              "generateCodeForLibraries": true,
+              "generateCodeForLibraries": ${generateCodeForLibraries},
               "enableSummariesForJit": true
             },
             "compilerOptions": {
@@ -735,11 +737,18 @@ describe('ngc transformer command-line', () => {
               "paths": { "lib1/*": ["../lib1/*"], "lib2/*": ["../lib2/*"] },
               "typeRoots": []
             }
+            ${includes.length?',"include":["' + includes.join('","')+'"]':''}
+            ${excludes.length?',"exclude":["' + excludes.join('","')+'"]':''}
           }`);
-        };
+            };
+
+        // Angular
+        writeConfig(
+            'ng', /* generateCodeForLibraries */ true, ['../node_modules/@angular/core/**/*'],
+            ['../node_modules/@angular/core/test/**', '../node_modules/@angular/core/testing/**']);
 
         // Lib 1
-        writeConfig('lib1');
+        writeConfig('lib1', /* generateCodeForLibraries */ false);
         write('lib1/module.ts', `
           import {NgModule} from '@angular/core';
 
@@ -752,7 +761,7 @@ describe('ngc transformer command-line', () => {
         `);
 
         // Lib 2
-        writeConfig('lib2');
+        writeConfig('lib2', /* generateCodeForLibraries */ false);
         write('lib2/module.ts', `
           export {Module} from 'lib1/module';
         `);
@@ -773,6 +782,7 @@ describe('ngc transformer command-line', () => {
       });
 
       it('should be able to compile library 1', () => {
+        expect(mainSync(['-p', path.join(basePath, 'ng')], errorSpy)).toBe(0);
         expect(mainSync(['-p', path.join(basePath, 'lib1')], errorSpy)).toBe(0);
         shouldExist('lib1/module.js');
         shouldExist('lib1/module.ngsummary.json');
@@ -783,6 +793,7 @@ describe('ngc transformer command-line', () => {
       });
 
       it('should be able to compile library 2', () => {
+        expect(mainSync(['-p', path.join(basePath, 'ng')], errorSpy)).toBe(0);
         expect(mainSync(['-p', path.join(basePath, 'lib1')], errorSpy)).toBe(0);
         expect(mainSync(['-p', path.join(basePath, 'lib2')], errorSpy)).toBe(0);
         shouldExist('lib2/module.js');
@@ -795,6 +806,7 @@ describe('ngc transformer command-line', () => {
 
       describe('building an application', () => {
         beforeEach(() => {
+          expect(mainSync(['-p', path.join(basePath, 'ng')], errorSpy)).toBe(0);
           expect(mainSync(['-p', path.join(basePath, 'lib1')], errorSpy)).toBe(0);
           expect(mainSync(['-p', path.join(basePath, 'lib2')], errorSpy)).toBe(0);
         });

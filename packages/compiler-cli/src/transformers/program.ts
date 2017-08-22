@@ -263,10 +263,7 @@ class AngularCompilerProgram implements Program {
   }
 
   private generateStubs() {
-    return this.options.skipTemplateCodegen ? [] :
-                                              this.options.generateCodeForLibraries === false ?
-                                              this.compiler.emitPartialStubs(this.analyzedModules) :
-                                              this.compiler.emitAllStubs(this.analyzedModules);
+    return this.options.skipTemplateCodegen ? [] : this.compiler.emitAllStubs(this.analyzedModules);
   }
 
   private generateFiles() {
