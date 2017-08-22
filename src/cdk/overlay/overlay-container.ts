@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, Optional, SkipSelf} from '@angular/core';
+import {Injectable, Optional, SkipSelf, OnDestroy} from '@angular/core';
 
 
 /**
@@ -14,7 +14,7 @@ import {Injectable, Optional, SkipSelf} from '@angular/core';
  * It should be provided in the root component to ensure it is properly shared.
  */
 @Injectable()
-export class OverlayContainer {
+export class OverlayContainer implements OnDestroy {
   protected _containerElement: HTMLElement;
 
   private _themeClass: string;
@@ -35,6 +35,12 @@ export class OverlayContainer {
     }
 
     this._themeClass = value;
+  }
+
+  ngOnDestroy() {
+    if (this._containerElement && this._containerElement.parentNode) {
+      this._containerElement.parentNode.removeChild(this._containerElement);
+    }
   }
 
   /**
