@@ -1,7 +1,18 @@
 {
   "name": "angular-srcs",
-  "version": "5.0.0-beta.0",
+  "version": "5.0.0-beta.4",
   "dependencies": {
+    "@bazel/typescript": {
+      "version": "0.0.7",
+      "dependencies": {
+        "@types/node": {
+          "version": "7.0.18"
+        },
+        "tsickle": {
+          "version": "0.23.6"
+        }
+      }
+    },
     "@types/angularjs": {
       "version": "1.5.13-alpha"
     },
