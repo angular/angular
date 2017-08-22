@@ -15,7 +15,8 @@ import {
   OnDestroy,
   Renderer2,
   ElementRef,
-  ChangeDetectionStrategy
+  ChangeDetectionStrategy,
+  ViewEncapsulation,
 } from '@angular/core';
 import {
   trigger,
@@ -53,8 +54,10 @@ export const HIDE_ANIMATION = '195ms cubic-bezier(0.0,0.0,0.2,1)';
   templateUrl: 'snack-bar-container.html',
   styleUrls: ['snack-bar-container.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
   host: {
     'role': 'alert',
+    'class': 'mat-snack-bar-container',
     '[@state]': 'animationState',
     '(@state.done)': 'onAnimationEnd($event)'
   },

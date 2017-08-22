@@ -7,7 +7,6 @@ $mat-snack-bar-button-margin: 48px !default;
 .mat-simple-snackbar {
   display: flex;
   justify-content: space-between;
-  color: white;
   line-height: 20px;
 }
 
@@ -15,7 +14,6 @@ $mat-snack-bar-button-margin: 48px !default;
   @include mat-button-reset;
 
   background: none;
-  color: inherit;
   flex-shrink: 0;
   margin-left: $mat-snack-bar-button-margin;
 

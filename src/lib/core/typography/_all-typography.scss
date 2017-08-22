@@ -25,7 +25,7 @@
 @import '../../tabs/tabs-theme';
 @import '../../toolbar/toolbar-theme';
 @import '../../tooltip/tooltip-theme';
-@import '../../snack-bar/simple-snack-bar-theme';
+@import '../../snack-bar/snack-bar-theme';
 @import '../option/option-theme';
 @import '../option/optgroup-theme';
 @import '../../form-field/form-field-theme';
@@ -67,5 +67,5 @@
   @include mat-list-typography($config);
   @include mat-option-typography($config);
   @include mat-optgroup-typography($config);
-  @include mat-simple-snack-bar-typography($config);
+  @include mat-snack-bar-typography($config);
 }

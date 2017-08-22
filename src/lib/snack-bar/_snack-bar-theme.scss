@@ -1,0 +1,34 @@
+@import '../core/typography/typography-utils';
+@import '../core/theming/palette';
+
+@mixin mat-snack-bar-theme($theme) {
+  $is-dark-theme: map-get($theme, is-dark);
+  $accent: map-get($theme, accent);
+
+  .mat-snack-bar-container {
+    background: if($is-dark-theme, map-get($mat-grey, 50), #323232);
+    color: if($is-dark-theme, $black-87-opacity, white);
+  }
+
+  .mat-simple-snackbar-action {
+    color: if($is-dark-theme, inherit, mat-color($accent));
+  }
+}
+
+@mixin mat-snack-bar-typography($config) {
+  .mat-simple-snackbar {
+    font: {
+      family: mat-font-family($config, body-1);
+      size: mat-font-size($config, body-1);
+    }
+  }
+
+  .mat-simple-snackbar-action {
+    line-height: 1;
+    font: {
+      family: inherit;
+      size: inherit;
+      weight: mat-font-weight($config, button);
+    }
+  }
+}

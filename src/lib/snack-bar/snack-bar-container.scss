@@ -1,4 +1,3 @@
-@import '../core/style/elevation';
 @import '../core/a11y/a11y';
 
 $mat-snack-bar-padding: 14px 24px !default;
@@ -6,9 +5,7 @@ $mat-snack-bar-min-width: 288px !default;
 $mat-snack-bar-max-width: 568px !default;
 
 
-:host {
-  @include mat-elevation(6);
-  background: #323232;
+.mat-snack-bar-container {
   border-radius: 2px;
   box-sizing: content-box;
   display: block;
