@@ -1,9 +1,6 @@
-import {
-  inject,
-  fakeAsync,
-  flushMicrotasks,
-} from '@angular/core/testing';
+import {fakeAsync, flushMicrotasks, inject} from '@angular/core/testing';
 import {GlobalPositionStrategy} from './global-position-strategy';
+import {OverlayRef} from '../overlay-ref';
 
 
 describe('GlobalPositonStrategy', () => {
@@ -14,6 +11,7 @@ describe('GlobalPositonStrategy', () => {
     element = document.createElement('div');
     strategy = new GlobalPositionStrategy();
     document.body.appendChild(element);
+    strategy.attach({overlayElement: element} as OverlayRef);
   });
 
   afterEach(() => {
@@ -22,7 +20,7 @@ describe('GlobalPositonStrategy', () => {
   });
 
   it('should position the element to the (top, left) with an offset', fakeAsyncTest(() => {
-    strategy.top('10px').left('40px').apply(element);
+    strategy.top('10px').left('40px').apply();
 
     flushMicrotasks();
 
@@ -39,7 +37,7 @@ describe('GlobalPositonStrategy', () => {
   }));
 
   it('should position the element to the (bottom, right) with an offset', fakeAsyncTest(() => {
-    strategy.bottom('70px').right('15em').apply(element);
+    strategy.bottom('70px').right('15em').apply();
 
     flushMicrotasks();
 
@@ -56,10 +54,10 @@ describe('GlobalPositonStrategy', () => {
   }));
 
   it('should overwrite previously applied positioning', fakeAsyncTest(() => {
-    strategy.centerHorizontally().centerVertically().apply(element);
+    strategy.centerHorizontally().centerVertically().apply();
     flushMicrotasks();
 
-    strategy.top('10px').left('40%').apply(element);
+    strategy.top('10px').left('40%').apply();
     flushMicrotasks();
 
     let elementStyle = element.style;
@@ -73,7 +71,7 @@ describe('GlobalPositonStrategy', () => {
     expect(parentStyle.justifyContent).toBe('flex-start');
     expect(parentStyle.alignItems).toBe('flex-start');
 
-    strategy.bottom('70px').right('15em').apply(element);
+    strategy.bottom('70px').right('15em').apply();
 
     flushMicrotasks();
 
@@ -87,7 +85,7 @@ describe('GlobalPositonStrategy', () => {
   }));
 
   it('should center the element', fakeAsyncTest(() => {
-    strategy.centerHorizontally().centerVertically().apply(element);
+    strategy.centerHorizontally().centerVertically().apply();
 
     flushMicrotasks();
 
@@ -98,7 +96,7 @@ describe('GlobalPositonStrategy', () => {
   }));
 
   it('should center the element with an offset', fakeAsyncTest(() => {
-    strategy.centerHorizontally('10px').centerVertically('15px').apply(element);
+    strategy.centerHorizontally('10px').centerVertically('15px').apply();
 
     flushMicrotasks();
 
@@ -113,7 +111,7 @@ describe('GlobalPositonStrategy', () => {
   }));
 
   it('should make the element position: static', fakeAsyncTest(() => {
-    strategy.apply(element);
+    strategy.apply();
 
     flushMicrotasks();
 
@@ -121,7 +119,7 @@ describe('GlobalPositonStrategy', () => {
   }));
 
   it('should wrap the element in a `cdk-global-overlay-wrapper`', fakeAsyncTest(() => {
-    strategy.apply(element);
+    strategy.apply();
 
     flushMicrotasks();
 
@@ -132,7 +130,7 @@ describe('GlobalPositonStrategy', () => {
 
 
   it('should remove the parent wrapper from the DOM', fakeAsync(() => {
-    strategy.apply(element);
+    strategy.apply();
 
     flushMicrotasks();
 
@@ -144,7 +142,7 @@ describe('GlobalPositonStrategy', () => {
   }));
 
   it('should set the element width', fakeAsync(() => {
-    strategy.width('100px').apply(element);
+    strategy.width('100px').apply();
 
     flushMicrotasks();
 
@@ -152,7 +150,7 @@ describe('GlobalPositonStrategy', () => {
   }));
 
   it('should set the element height', fakeAsync(() => {
-    strategy.height('100px').apply(element);
+    strategy.height('100px').apply();
 
     flushMicrotasks();
 
@@ -160,7 +158,7 @@ describe('GlobalPositonStrategy', () => {
   }));
 
   it('should reset the horizontal position and offset when the width is 100%', fakeAsync(() => {
-    strategy.centerHorizontally().width('100%').apply(element);
+    strategy.centerHorizontally().width('100%').apply();
 
     flushMicrotasks();
 
@@ -169,7 +167,7 @@ describe('GlobalPositonStrategy', () => {
   }));
 
   it('should reset the vertical position and offset when the height is 100%', fakeAsync(() => {
-    strategy.centerVertically().height('100%').apply(element);
+    strategy.centerVertically().height('100%').apply();
 
     flushMicrotasks();
 

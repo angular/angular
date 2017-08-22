@@ -20,6 +20,8 @@ import {Subject} from 'rxjs/Subject';
 import {Observable} from 'rxjs/Observable';
 import {Scrollable} from '../scroll/scrollable';
 import {isElementScrolledOutsideView, isElementClippedByScrolling} from './scroll-clip';
+import {OverlayRef} from '../overlay-ref';
+
 
 
 /**
@@ -30,6 +32,9 @@ import {isElementScrolledOutsideView, isElementClippedByScrolling} from './scrol
  * of the overlay.
  */
 export class ConnectedPositionStrategy implements PositionStrategy {
+  /** The overlay to which this strategy is attached. */
+  private _overlayRef: OverlayRef;
+
   private _dir = 'ltr';
 
   /** The offset in pixels for the overlay connection point on the x-axis */
@@ -80,9 +85,12 @@ export class ConnectedPositionStrategy implements PositionStrategy {
     return this._preferredPositions;
   }
 
-  /**
-   * To be used to for any cleanup after the element gets destroyed.
-   */
+  attach(overlayRef: OverlayRef): void {
+    this._overlayRef = overlayRef;
+    this._pane = overlayRef.overlayElement;
+  }
+
+  /** Performs any cleanup after the element is destroyed. */
   dispose() { }
 
   /**
@@ -90,15 +98,12 @@ export class ConnectedPositionStrategy implements PositionStrategy {
    * to the origin fits on-screen.
    * @docs-private
    *
-   * @param element Element to which to apply the CSS styles.
    * @returns Resolves when the styles have been applied.
    */
-  apply(element: HTMLElement): void {
-    // Cache the overlay pane element in case re-calculating position is necessary
-    this._pane = element;
-
+  apply(): void {
     // We need the bounding rects for the origin and the overlay to determine how to position
     // the overlay relative to the origin.
+    const element = this._pane;
     const originRect = this._origin.getBoundingClientRect();
     const overlayRect = element.getBoundingClientRect();
 

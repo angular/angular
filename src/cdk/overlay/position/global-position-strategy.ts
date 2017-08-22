@@ -7,6 +7,7 @@
  */
 
 import {PositionStrategy} from './position-strategy';
+import {OverlayRef} from '../overlay-ref';
 
 
 /**
@@ -16,6 +17,9 @@ import {PositionStrategy} from './position-strategy';
  * element to become blurry.
  */
 export class GlobalPositionStrategy implements PositionStrategy {
+  /** The overlay to which this strategy is attached. */
+  private _overlayRef: OverlayRef;
+
   private _cssPosition: string = 'static';
   private _topOffset: string = '';
   private _bottomOffset: string = '';
@@ -28,6 +32,10 @@ export class GlobalPositionStrategy implements PositionStrategy {
 
   /* A lazily-created wrapper for the overlay element that is used as a flex container.  */
   private _wrapper: HTMLElement | null = null;
+
+  attach(overlayRef: OverlayRef): void {
+    this._overlayRef = overlayRef;
+  }
 
   /**
    * Sets the top position of the overlay. Clears any previously set vertical position.
@@ -133,10 +141,11 @@ export class GlobalPositionStrategy implements PositionStrategy {
    * Apply the position to the element.
    * @docs-private
    *
-   * @param element Element to which to apply the CSS.
    * @returns Resolved when the styles have been applied.
    */
-  apply(element: HTMLElement): void {
+  apply(): void {
+    const element = this._overlayRef.overlayElement;
+
     if (!this._wrapper && element.parentNode) {
       this._wrapper = document.createElement('div');
       this._wrapper.classList.add('cdk-global-overlay-wrapper');
@@ -159,9 +168,7 @@ export class GlobalPositionStrategy implements PositionStrategy {
     parentStyles.alignItems = this._alignItems;
   }
 
-  /**
-   * Removes the wrapper element from the DOM.
-   */
+  /** Removes the wrapper element from the DOM. */
   dispose(): void {
     if (this._wrapper && this._wrapper.parentNode) {
       this._wrapper.parentNode.removeChild(this._wrapper);

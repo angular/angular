@@ -7,6 +7,7 @@ import {ConnectedOverlayPositionChange} from './connected-position';
 import {Scrollable} from '../scroll/scrollable';
 import {Subscription} from 'rxjs/Subscription';
 import {ScrollDispatchModule} from '../scroll/index';
+import {OverlayRef} from '../overlay-ref';
 
 
 // Default width and height of the overlay and origin panels throughout these tests.
@@ -142,7 +143,8 @@ describe('ConnectedPositionStrategy', () => {
                 {originX: 'start', originY: 'bottom'},
                 {overlayX: 'start', overlayY: 'top'});
 
-        strategy.apply(overlayElement);
+        strategy.attach(fakeOverlayRef(overlayElement));
+        strategy.apply();
 
         let overlayRect = overlayElement.getBoundingClientRect();
         expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect.bottom));
@@ -166,7 +168,8 @@ describe('ConnectedPositionStrategy', () => {
                 {originX: 'end', originY: 'center'},
                 {overlayX: 'start', overlayY: 'center'});
 
-        strategy.apply(overlayElement);
+        strategy.attach(fakeOverlayRef(overlayElement));
+        strategy.apply();
 
         let overlayRect = overlayElement.getBoundingClientRect();
         expect(Math.floor(overlayRect.top)).toBe(Math.floor(originCenterY - (OVERLAY_HEIGHT / 2)));
@@ -188,7 +191,8 @@ describe('ConnectedPositionStrategy', () => {
                 {originX: 'end', originY: 'top'},
                 {overlayX: 'end', overlayY: 'bottom'});
 
-        strategy.apply(overlayElement);
+        strategy.attach(fakeOverlayRef(overlayElement));
+        strategy.apply();
 
         let overlayRect = overlayElement.getBoundingClientRect();
         expect(Math.floor(overlayRect.bottom)).toBe(Math.floor(originRect.top));
@@ -210,7 +214,8 @@ describe('ConnectedPositionStrategy', () => {
                 {originX: 'start', originY: 'bottom'},
                 {overlayX: 'end', overlayY: 'top'});
 
-        strategy.apply(overlayElement);
+        strategy.attach(fakeOverlayRef(overlayElement));
+        strategy.apply();
 
         let overlayRect = overlayElement.getBoundingClientRect();
 
@@ -234,7 +239,8 @@ describe('ConnectedPositionStrategy', () => {
                 {overlayX: 'start', overlayY: 'bottom'});
 
         // This should apply the fallback position, as the original position won't fit.
-        strategy.apply(overlayElement);
+        strategy.attach(fakeOverlayRef(overlayElement));
+        strategy.apply();
 
         // Now make the overlay small enough to fit in the first preferred position.
         overlayElement.style.height = '15px';
@@ -260,7 +266,8 @@ describe('ConnectedPositionStrategy', () => {
             {originX: 'start', originY: 'top'},
             {overlayX: 'start', overlayY: 'bottom'});
 
-        strategy.apply(overlayElement);
+        strategy.attach(fakeOverlayRef(overlayElement));
+        strategy.apply();
         strategy.recalculateLastPosition();
 
         let overlayRect = overlayElement.getBoundingClientRect();
@@ -279,7 +286,8 @@ describe('ConnectedPositionStrategy', () => {
             {overlayX: 'start', overlayY: 'top'})
             .withDirection('rtl');
 
-        strategy.apply(overlayElement);
+        strategy.attach(fakeOverlayRef(overlayElement));
+        strategy.apply();
 
         let overlayRect = overlayElement.getBoundingClientRect();
         expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect.bottom));
@@ -294,7 +302,8 @@ describe('ConnectedPositionStrategy', () => {
             {overlayX: 'start', overlayY: 'top'});
 
         strategy.withOffsetX(10);
-        strategy.apply(overlayElement);
+        strategy.attach(fakeOverlayRef(overlayElement));
+        strategy.apply();
 
         let overlayRect = overlayElement.getBoundingClientRect();
         expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect.top));
@@ -309,7 +318,8 @@ describe('ConnectedPositionStrategy', () => {
             {overlayX: 'start', overlayY: 'top'});
 
         strategy.withOffsetY(50);
-        strategy.apply(overlayElement);
+        strategy.attach(fakeOverlayRef(overlayElement));
+        strategy.apply();
 
         let overlayRect = overlayElement.getBoundingClientRect();
         expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect.top + 50));
@@ -334,7 +344,8 @@ describe('ConnectedPositionStrategy', () => {
       const positionChangeHandler = jasmine.createSpy('positionChangeHandler');
       const subscription = strategy.onPositionChange.subscribe(positionChangeHandler);
 
-      strategy.apply(overlayElement);
+      strategy.attach(fakeOverlayRef(overlayElement));
+      strategy.apply();
 
       const latestCall = positionChangeHandler.calls.mostRecent();
 
@@ -346,7 +357,8 @@ describe('ConnectedPositionStrategy', () => {
       // the position change event should be emitted again.
       originElement.style.top = '200px';
       originElement.style.left = '200px';
-      strategy.apply(overlayElement);
+      strategy.attach(fakeOverlayRef(overlayElement));
+      strategy.apply();
 
       expect(positionChangeHandler).toHaveBeenCalledTimes(2);
 
@@ -369,7 +381,8 @@ describe('ConnectedPositionStrategy', () => {
       const positionChangeHandler = jasmine.createSpy('positionChangeHandler');
       const subscription = strategy.onPositionChange.subscribe(positionChangeHandler);
 
-      strategy.apply(overlayElement);
+      strategy.attach(fakeOverlayRef(overlayElement));
+      strategy.apply();
 
       expect(positionChangeHandler).toHaveBeenCalled();
 
@@ -394,7 +407,8 @@ describe('ConnectedPositionStrategy', () => {
               {originX: 'end', originY: 'top'},
               {overlayX: 'end', overlayY: 'top'});
 
-      strategy.apply(overlayElement);
+      strategy.attach(fakeOverlayRef(overlayElement));
+      strategy.apply();
 
       let overlayRect = overlayElement.getBoundingClientRect();
 
@@ -415,7 +429,8 @@ describe('ConnectedPositionStrategy', () => {
             {originX: 'start', originY: 'bottom'},
             {overlayX: 'start', overlayY: 'top'});
 
-        strategy.apply(overlayElement);
+        strategy.attach(fakeOverlayRef(overlayElement));
+        strategy.apply();
 
         let overlayRect = overlayElement.getBoundingClientRect();
         expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect!.bottom));
@@ -428,7 +443,8 @@ describe('ConnectedPositionStrategy', () => {
             {originX: 'end', originY: 'center'},
             {overlayX: 'start', overlayY: 'center'});
 
-        strategy.apply(overlayElement);
+        strategy.attach(fakeOverlayRef(overlayElement));
+        strategy.apply();
 
         let overlayRect = overlayElement.getBoundingClientRect();
         expect(Math.floor(overlayRect.top)).toBe(Math.floor(originCenterY! - (OVERLAY_HEIGHT / 2)));
@@ -441,7 +457,8 @@ describe('ConnectedPositionStrategy', () => {
             {originX: 'start', originY: 'bottom'},
             {overlayX: 'end', overlayY: 'top'});
 
-        strategy.apply(overlayElement);
+        strategy.attach(fakeOverlayRef(overlayElement));
+        strategy.apply();
 
         let overlayRect = overlayElement.getBoundingClientRect();
 
@@ -455,7 +472,8 @@ describe('ConnectedPositionStrategy', () => {
             {originX: 'end', originY: 'top'},
             {overlayX: 'end', overlayY: 'bottom'});
 
-        strategy.apply(overlayElement);
+        strategy.attach(fakeOverlayRef(overlayElement));
+        strategy.apply();
 
         let overlayRect = overlayElement.getBoundingClientRect();
         expect(Math.round(overlayRect.bottom)).toBe(Math.round(originRect!.top));
@@ -468,7 +486,8 @@ describe('ConnectedPositionStrategy', () => {
             {originX: 'center', originY: 'bottom'},
             {overlayX: 'center', overlayY: 'top'});
 
-        strategy.apply(overlayElement);
+        strategy.attach(fakeOverlayRef(overlayElement));
+        strategy.apply();
 
         let overlayRect = overlayElement.getBoundingClientRect();
         expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect!.bottom));
@@ -481,7 +500,8 @@ describe('ConnectedPositionStrategy', () => {
             {originX: 'center', originY: 'center'},
             {overlayX: 'center', overlayY: 'center'});
 
-        strategy.apply(overlayElement);
+        strategy.attach(fakeOverlayRef(overlayElement));
+        strategy.apply();
 
         let overlayRect = overlayElement.getBoundingClientRect();
         expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect!.top));
@@ -526,7 +546,7 @@ describe('ConnectedPositionStrategy', () => {
 
       strategy.withScrollableContainers([
           new Scrollable(new FakeElementRef(scrollable), null!, null!, null!)]);
-
+      strategy.attach(fakeOverlayRef(overlayElement));
       positionChangeHandler = jasmine.createSpy('positionChangeHandler');
       onPositionChangeSubscription = strategy.onPositionChange.subscribe(positionChangeHandler);
     });
@@ -538,7 +558,7 @@ describe('ConnectedPositionStrategy', () => {
     });
 
     it('should not have origin or overlay clipped or out of view without scroll', () => {
-      strategy.apply(overlayElement);
+      strategy.apply();
 
       expect(positionChangeHandler).toHaveBeenCalled();
       positionChange = positionChangeHandler.calls.mostRecent().args[0];
@@ -552,7 +572,7 @@ describe('ConnectedPositionStrategy', () => {
 
     it('should evaluate if origin is clipped if scrolled slightly down', () => {
       scrollable.scrollTop = 10;  // Clip the origin by 10 pixels
-      strategy.apply(overlayElement);
+      strategy.apply();
 
       expect(positionChangeHandler).toHaveBeenCalled();
       positionChange = positionChangeHandler.calls.mostRecent().args[0];
@@ -566,7 +586,7 @@ describe('ConnectedPositionStrategy', () => {
 
     it('should evaluate if origin is out of view and overlay is clipped if scrolled enough', () => {
       scrollable.scrollTop = 31;  // Origin is 30 pixels, move out of view and clip the overlay 1px
-      strategy.apply(overlayElement);
+      strategy.apply();
 
       expect(positionChangeHandler).toHaveBeenCalled();
       positionChange = positionChangeHandler.calls.mostRecent().args[0];
@@ -580,7 +600,7 @@ describe('ConnectedPositionStrategy', () => {
 
     it('should evaluate the overlay and origin are both out of the view', () => {
       scrollable.scrollTop = 61;  // Scroll by overlay height + origin height + 1px buffer
-      strategy.apply(overlayElement);
+      strategy.apply();
 
       expect(positionChangeHandler).toHaveBeenCalled();
       positionChange = positionChangeHandler.calls.mostRecent().args[0];
@@ -626,7 +646,8 @@ describe('ConnectedPositionStrategy', () => {
             {originX: 'start', originY: 'top'},
             {overlayX: 'start', overlayY: 'top'});
 
-        strategy.apply(overlayElement);
+        strategy.attach(fakeOverlayRef(overlayElement));
+        strategy.apply();
         expect(overlayElement.style.left).toBeTruthy();
         expect(overlayElement.style.right).toBeFalsy();
       });
@@ -637,7 +658,8 @@ describe('ConnectedPositionStrategy', () => {
             {originX: 'end', originY: 'top'},
             {overlayX: 'end', overlayY: 'top'});
 
-        strategy.apply(overlayElement);
+        strategy.attach(fakeOverlayRef(overlayElement));
+        strategy.apply();
         expect(overlayElement.style.right).toBeTruthy();
         expect(overlayElement.style.left).toBeFalsy();
       });
@@ -653,7 +675,8 @@ describe('ConnectedPositionStrategy', () => {
         )
         .withDirection('rtl');
 
-        strategy.apply(overlayElement);
+        strategy.attach(fakeOverlayRef(overlayElement));
+        strategy.apply();
         expect(overlayElement.style.right).toBeTruthy();
         expect(overlayElement.style.left).toBeFalsy();
       });
@@ -665,7 +688,8 @@ describe('ConnectedPositionStrategy', () => {
             {overlayX: 'end', overlayY: 'top'}
         ).withDirection('rtl');
 
-        strategy.apply(overlayElement);
+        strategy.attach(fakeOverlayRef(overlayElement));
+        strategy.apply();
         expect(overlayElement.style.left).toBeTruthy();
         expect(overlayElement.style.right).toBeFalsy();
       });
@@ -679,7 +703,8 @@ describe('ConnectedPositionStrategy', () => {
             {overlayX: 'start', overlayY: 'top'}
         );
 
-        strategy.apply(overlayElement);
+        strategy.attach(fakeOverlayRef(overlayElement));
+        strategy.apply();
         expect(overlayElement.style.top).toBeTruthy();
         expect(overlayElement.style.bottom).toBeFalsy();
       });
@@ -691,7 +716,8 @@ describe('ConnectedPositionStrategy', () => {
             {overlayX: 'start', overlayY: 'bottom'}
         );
 
-        strategy.apply(overlayElement);
+        strategy.attach(fakeOverlayRef(overlayElement));
+        strategy.apply();
         expect(overlayElement.style.bottom).toBeTruthy();
         expect(overlayElement.style.top).toBeFalsy();
       });
@@ -740,4 +766,8 @@ function createOverflowContainerElement() {
 /** Fake implementation of ElementRef that is just a simple container for nativeElement. */
 class FakeElementRef implements ElementRef {
   constructor(public nativeElement: HTMLElement) { }
+}
+
+function fakeOverlayRef(overlayElement: HTMLElement) {
+  return {overlayElement} as OverlayRef;
 }

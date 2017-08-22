@@ -532,9 +532,14 @@ class OverlayTestModule { }
 class OverlayContainerThemingTestModule { }
 
 class FakePositionStrategy implements PositionStrategy {
-  apply(element: Element): Promise<null> {
-    element.classList.add('fake-positioned');
-    return Promise.resolve(null);
+  element: HTMLElement;
+
+  apply(): void {
+    this.element.classList.add('fake-positioned');
+  }
+
+  attach(overlayRef: OverlayRef) {
+    this.element = overlayRef.overlayElement;
   }
 
   dispose() {}
