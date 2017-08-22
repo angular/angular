@@ -6,15 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, Directive, DoCheck, EmbeddedViewRef, Input, IterableChangeRecord, IterableChanges, IterableDiffer, IterableDiffers, NgIterable, OnChanges, SimpleChanges, TemplateRef, TrackByFunction, ViewContainerRef, forwardRef, isDevMode} from '@angular/core';
+import { ChangeDetectorRef, Directive, DoCheck, EmbeddedViewRef, Input, IterableChangeRecord, IterableChanges, IterableDiffer, IterableDiffers, NgIterable, OnChanges, SimpleChanges, TemplateRef, TrackByFunction, ViewContainerRef, forwardRef, isDevMode } from '@angular/core';
+import { ViewSyncerContext, ViewSyncer } from './../utilities/view_syncer';
 
 /**
  * @stable
  */
-export class NgForOfContext<T> {
+export class NgForOfContext<T> implements ViewSyncerContext<T>{
   constructor(
-      public $implicit: T, public ngForOf: NgIterable<T>, public index: number,
-      public count: number) {}
+    public $implicit: T, public ngForOf: NgIterable<T>, public index: number,
+    public count: number) { }
 
   get first(): boolean { return this.index === 0; }
 
@@ -96,7 +97,7 @@ export class NgForOfContext<T> {
  *
  * @stable
  */
-@Directive({selector: '[ngFor][ngForOf]'})
+@Directive({ selector: '[ngFor][ngForOf]' })
 export class NgForOf<T> implements DoCheck, OnChanges {
   @Input() ngForOf: NgIterable<T>;
   @Input()
@@ -105,8 +106,8 @@ export class NgForOf<T> implements DoCheck, OnChanges {
       // TODO(vicb): use a log service once there is a public one available
       if (<any>console && <any>console.warn) {
         console.warn(
-            `trackBy must be a function, but received ${JSON.stringify(fn)}. ` +
-            `See https://angular.io/docs/ts/latest/api/common/index/NgFor-directive.html#!#change-propagation for more information.`);
+          `trackBy must be a function, but received ${JSON.stringify(fn)}. ` +
+          `See https://angular.io/docs/ts/latest/api/common/index/NgFor-directive.html#!#change-propagation for more information.`);
       }
     }
     this._trackByFn = fn;
@@ -114,12 +115,22 @@ export class NgForOf<T> implements DoCheck, OnChanges {
 
   get ngForTrackBy(): TrackByFunction<T> { return this._trackByFn; }
 
-  private _differ: IterableDiffer<T>|null = null;
+  private _differ: IterableDiffer<T> | null = null;
   private _trackByFn: TrackByFunction<T>;
+  private _viewSyncer: ViewSyncer<T>;
 
   constructor(
-      private _viewContainer: ViewContainerRef, private _template: TemplateRef<NgForOfContext<T>>,
-      private _differs: IterableDiffers) {}
+    private _viewContainer: ViewContainerRef, private _template: TemplateRef<NgForOfContext<T>>,
+    private _differs: IterableDiffers) {
+    const viewSyncerContextFactory = () => new NgForOfContext<T>(null!, this.ngForOf, -1, -1);
+    const contextUpdate = (index: number, count: number, viewRef: EmbeddedViewRef<ViewSyncerContext<T>>) => {
+      viewRef.context.index = index;
+      viewRef.context.count = count;
+    }
+    this._viewSyncer = new ViewSyncer(
+      this._viewContainer, _template, viewSyncerContextFactory.bind(this), contextUpdate
+    )
+  }
 
   @Input()
   set ngForTemplate(value: TemplateRef<NgForOfContext<T>>) {
@@ -127,6 +138,7 @@ export class NgForOf<T> implements DoCheck, OnChanges {
     // The current type is too restrictive; a template that just uses index, for example,
     // should be acceptable.
     if (value) {
+      this._viewSyncer.setTemplate(value);
       this._template = value;
     }
   }
@@ -140,7 +152,7 @@ export class NgForOf<T> implements DoCheck, OnChanges {
           this._differ = this._differs.find(value).create(this.ngForTrackBy);
         } catch (e) {
           throw new Error(
-              `Cannot find a differ supporting object '${value}' of type '${getTypeNameForDebugging(value)}'. NgFor only supports binding to Iterables such as Arrays.`);
+            `Cannot find a differ supporting object '${value}' of type '${getTypeNameForDebugging(value)}'. NgFor only supports binding to Iterables such as Arrays.`);
         }
       }
     }
@@ -149,54 +161,9 @@ export class NgForOf<T> implements DoCheck, OnChanges {
   ngDoCheck(): void {
     if (this._differ) {
       const changes = this._differ.diff(this.ngForOf);
-      if (changes) this._applyChanges(changes);
+      if (changes) this._viewSyncer.applyChanges(changes);
     }
   }
-
-  private _applyChanges(changes: IterableChanges<T>) {
-    const insertTuples: RecordViewTuple<T>[] = [];
-    changes.forEachOperation(
-        (item: IterableChangeRecord<any>, adjustedPreviousIndex: number, currentIndex: number) => {
-          if (item.previousIndex == null) {
-            const view = this._viewContainer.createEmbeddedView(
-                this._template, new NgForOfContext<T>(null !, this.ngForOf, -1, -1), currentIndex);
-            const tuple = new RecordViewTuple<T>(item, view);
-            insertTuples.push(tuple);
-          } else if (currentIndex == null) {
-            this._viewContainer.remove(adjustedPreviousIndex);
-          } else {
-            const view = this._viewContainer.get(adjustedPreviousIndex) !;
-            this._viewContainer.move(view, currentIndex);
-            const tuple = new RecordViewTuple(item, <EmbeddedViewRef<NgForOfContext<T>>>view);
-            insertTuples.push(tuple);
-          }
-        });
-
-    for (let i = 0; i < insertTuples.length; i++) {
-      this._perViewChange(insertTuples[i].view, insertTuples[i].record);
-    }
-
-    for (let i = 0, ilen = this._viewContainer.length; i < ilen; i++) {
-      const viewRef = <EmbeddedViewRef<NgForOfContext<T>>>this._viewContainer.get(i);
-      viewRef.context.index = i;
-      viewRef.context.count = ilen;
-    }
-
-    changes.forEachIdentityChange((record: any) => {
-      const viewRef =
-          <EmbeddedViewRef<NgForOfContext<T>>>this._viewContainer.get(record.currentIndex);
-      viewRef.context.$implicit = record.item;
-    });
-  }
-
-  private _perViewChange(
-      view: EmbeddedViewRef<NgForOfContext<T>>, record: IterableChangeRecord<any>) {
-    view.context.$implicit = record.item;
-  }
-}
-
-class RecordViewTuple<T> {
-  constructor(public record: any, public view: EmbeddedViewRef<NgForOfContext<T>>) {}
 }
 
 /**
