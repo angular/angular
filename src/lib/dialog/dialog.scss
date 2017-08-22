@@ -17,6 +17,7 @@ $mat-dialog-button-margin: 8px !default;
   box-sizing: border-box;
   overflow: auto;
   max-width: $mat-dialog-max-width;
+  outline: 0;
 
   // The dialog container should completely fill its parent overlay element.
   width: 100%;
