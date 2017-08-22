@@ -295,6 +295,22 @@ describe('Overlay', () => {
       expect(pane.style.minHeight).toEqual('500px');
     });
 
+    it('should apply the max width set in the config', () => {
+      state.maxWidth = 200;
+
+      overlay.create(state).attach(componentPortal);
+      const pane = overlayContainerElement.children[0] as HTMLElement;
+      expect(pane.style.maxWidth).toEqual('200px');
+    });
+
+
+    it('should apply the max height set in the config', () => {
+      state.maxHeight = 500;
+
+      overlay.create(state).attach(componentPortal);
+      const pane = overlayContainerElement.children[0] as HTMLElement;
+      expect(pane.style.maxHeight).toEqual('500px');
+    });
 
     it('should support zero widths and heights', () => {
       state.width = 0;
@@ -305,7 +321,6 @@ describe('Overlay', () => {
       expect(pane.style.width).toEqual('0px');
       expect(pane.style.height).toEqual('0px');
     });
-
   });
 
   describe('backdrop', () => {
