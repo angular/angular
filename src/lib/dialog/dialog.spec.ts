@@ -237,6 +237,30 @@ describe('MdDialog', () => {
     });
   }));
 
+  it('should emit the backdropClick stream when clicking on the overlay backdrop', async(() => {
+    const dialogRef = dialog.open(PizzaMsg, {
+      viewContainerRef: testViewContainerRef
+    });
+
+    const spy = jasmine.createSpy('backdropClick spy');
+    dialogRef.backdropClick().subscribe(spy);
+
+    viewContainerFixture.detectChanges();
+
+    let backdrop = overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
+
+    backdrop.click();
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    viewContainerFixture.detectChanges();
+
+    viewContainerFixture.whenStable().then(() => {
+      // Additional clicks after the dialog has closed should not be emitted
+      backdrop.click();
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+  }));
+
   it('should notify the observers if a dialog has been opened', () => {
     dialog.afterOpen.subscribe(ref => {
       expect(dialog.open(PizzaMsg, {
