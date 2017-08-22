@@ -432,8 +432,6 @@ if [[ ${BUILD_TOOLS} == true || ${BUILD_ALL} == true ]]; then
   updateVersionReferences dist/packages-dist/tsc-wrapped
 
   rsync -a packages/bazel/ ./dist/packages-dist/bazel
-  # Re-write nodejs import paths
-  perl -p -i -e "s#__main__/packages/bazel#angular#g" $(grep -ril __main__ dist/packages-dist/bazel) < /dev/null 2> /dev/null
   # Remove BEGIN-INTERNAL...END-INTERAL blocks
   # https://stackoverflow.com/questions/24175271/how-can-i-match-multi-line-patterns-in-the-command-line-with-perl-style-regex
   perl -0777 -n -i -e "s/(?m)^.*BEGIN-INTERNAL[\w\W]*END-INTERNAL.*\n//g; print" $(grep -ril BEGIN-INTERNAL dist/packages-dist/bazel) < /dev/null 2> /dev/null

@@ -5,15 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-// TODO(chuckj): Remove the requirment for a fake 'reflect` implementation from
-// the compiler
-import 'reflect-metadata'; // from //third_party/javascript/node_modules/reflect_decorators:ts
-
 import * as ng from '@angular/compiler-cli';
+import {CompilerHost, UncachedFileLoader, parseTsconfig} from '@bazel/typescript';
 import * as fs from 'fs';
 import * as path from 'path';
-// Note, the tsc_wrapped module comes from rules_typescript, not from npm
-import {CompilerHost, UncachedFileLoader, parseTsconfig} from 'tsc_wrapped';
 import * as tsickle from 'tsickle';
 import * as ts from 'typescript';
 

@@ -31,6 +31,7 @@
     "fsevents": "^1.0.14"
   },
   "devDependencies": {
+    "@bazel/typescript": "0.0.7",
     "@types/angularjs": "^1.5.13-alpha",
     "@types/base64-js": "^1.2.5",
     "@types/fs-extra": "0.0.22-alpha",
@@ -80,7 +81,6 @@
     "nan": "^2.4.0",
     "node-uuid": "1.4.x",
     "parse5": "^3.0.1",
-    "protobufjs": "^5.0.0",
     "protractor": "^4.0.14",
     "react": "^0.14.0",
     "rewire": "^2.3.3",
