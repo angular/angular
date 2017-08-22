@@ -12,6 +12,8 @@ export enum NumberFormatStyle {
   Currency,
 }
 
+const NUMBER_FORMAT_CACHE: Map<string, Intl.NumberFormat> = new Map();
+
 export class NumberFormatter {
   static format(num: number, locale: string, style: NumberFormatStyle, opts: {
     minimumIntegerDigits?: number,
@@ -33,7 +35,16 @@ export class NumberFormatter {
       options.currency = typeof currency == 'string' ? currency : undefined;
       options.currencyDisplay = currencyAsSymbol ? 'symbol' : 'code';
     }
-    return new Intl.NumberFormat(locale, options).format(num);
+
+    // For performance cache Intl.NumberFormat instances. The constructor is very expensive
+    let key = locale + JSON.stringify(options);
+    let formatter = NUMBER_FORMAT_CACHE.get(key);
+    if (!formatter) {
+      formatter = new Intl.NumberFormat(locale, options);
+      NUMBER_FORMAT_CACHE.set(key, formatter);
+    }
+
+    return formatter.format(num);
   }
 }
 
@@ -134,8 +145,18 @@ function hourExtractor(inner: DateFormatterFn): DateFormatterFn {
   return function(date: Date, locale: string): string { return inner(date, locale).split(' ')[0]; };
 }
 
+const DATE_FORMAT_CACHE: Map<string, Intl.DateTimeFormat> = new Map();
+
 function intlDateFormat(date: Date, locale: string, options: Intl.DateTimeFormatOptions): string {
-  return new Intl.DateTimeFormat(locale, options).format(date).replace(/[\u200e\u200f]/g, '');
+  // For performance cache Intl.DateTimeFormat instances. The constructor is very expensive
+  let key = locale + JSON.stringify(options);
+  let formatter = DATE_FORMAT_CACHE.get(key);
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat(locale, options);
+    DATE_FORMAT_CACHE.set(key, formatter);
+  }
+
+  return formatter.format(date).replace(/[\u200e\u200f]/g, '');
 }
 
 function timeZoneGetter(timezone: string): DateFormatterFn {
