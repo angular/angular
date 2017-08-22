@@ -1,7 +1,24 @@
 {
   "name": "angular-srcs",
-  "version": "5.0.0-beta.0",
+  "version": "5.0.0-beta.4",
   "dependencies": {
+    "@bazel/typescript": {
+      "version": "0.0.7",
+      "from": "@bazel/typescript@latest",
+      "resolved": "https://registry.npmjs.org/@bazel/typescript/-/typescript-0.0.7.tgz",
+      "dependencies": {
+        "@types/node": {
+          "version": "7.0.18",
+          "from": "@types/node@7.0.18",
+          "resolved": "https://registry.npmjs.org/@types/node/-/node-7.0.18.tgz"
+        },
+        "tsickle": {
+          "version": "0.23.6",
+          "from": "tsickle@0.23.6",
+          "resolved": "https://registry.npmjs.org/tsickle/-/tsickle-0.23.6.tgz"
+        }
+      }
+    },
     "@types/angularjs": {
       "version": "1.5.13-alpha",
       "from": "@types/angularjs@latest",

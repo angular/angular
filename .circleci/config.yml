@@ -41,7 +41,7 @@ jobs:
       - restore_cache:
           key: angular-{{ .Branch }}-{{ checksum "npm-shrinkwrap.json" }}
 
-      - run: bazel run @build_bazel_rules_typescript_node//:bin/npm install
+      - run: bazel run @nodejs//:npm install
       - run: bazel build packages/...
       - save_cache:
           key: angular-{{ .Branch }}-{{ checksum "npm-shrinkwrap.json" }}
