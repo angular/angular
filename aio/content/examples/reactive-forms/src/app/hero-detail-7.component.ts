@@ -11,7 +11,7 @@ import { Address, Hero, states } from './data-model';
 // #enddocregion imports
 
 @Component({
-  selector: 'hero-detail-7',
+  selector: 'app-hero-detail-7',
   templateUrl: './hero-detail-5.component.html'
 })
 // #docregion v7

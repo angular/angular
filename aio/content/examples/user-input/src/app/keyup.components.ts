@@ -5,7 +5,7 @@ import { Component } from '@angular/core';
 
 // #docregion key-up-component-1
 @Component({
-  selector: 'key-up1',
+  selector: 'app-key-up1',
 // #docregion key-up-component-1-template
   template: `
     <input (keyup)="onKey($event)">
@@ -38,7 +38,7 @@ export class KeyUpComponent_v1 {
 
 // #docregion key-up-component-2
 @Component({
-  selector: 'key-up2',
+  selector: 'app-key-up2',
   template: `
     <input #box (keyup)="onKey(box.value)">
     <p>{{values}}</p>
@@ -56,7 +56,7 @@ export class KeyUpComponent_v2 {
 
 // #docregion key-up-component-3
 @Component({
-  selector: 'key-up3',
+  selector: 'app-key-up3',
   template: `
     <input #box (keyup.enter)="onEnter(box.value)">
     <p>{{value}}</p>
@@ -72,7 +72,7 @@ export class KeyUpComponent_v3 {
 
 // #docregion key-up-component-4
 @Component({
-  selector: 'key-up4',
+  selector: 'app-key-up4',
   template: `
     <input #box
       (keyup.enter)="update(box.value)"

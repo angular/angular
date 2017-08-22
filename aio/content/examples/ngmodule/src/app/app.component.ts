@@ -3,7 +3,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'my-app',
+  selector: 'app-root',
   template: `
     <app-title [subtitle]="subtitle"></app-title>
     <nav>

@@ -16,7 +16,7 @@ import {
 import { Hero } from './hero.service';
 
 @Component({
- selector: 'hero-list-combined-transitions',
+ selector: 'app-hero-list-combined-transitions',
  // #docregion template
  template: `
    <ul>

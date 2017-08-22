@@ -15,7 +15,7 @@ import {
 import { Hero } from './hero.service';
 
 @Component({
-  selector: 'hero-list-multistep',
+  selector: 'app-hero-list-multistep',
   // #docregion template
   template: `
     <ul>

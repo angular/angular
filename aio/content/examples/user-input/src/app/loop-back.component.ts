@@ -2,7 +2,7 @@
 import { Component } from '@angular/core';
 // #docregion loop-back-component
 @Component({
-  selector: 'loop-back',
+  selector: 'app-loop-back',
   template: `
     <input #box (keyup)="0">
     <p>{{box.value}}</p>

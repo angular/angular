@@ -8,7 +8,7 @@ const packageFolder = path.resolve(__dirname);
 class PackageJsonCustomizer {
   constructor() {
     this.dependenciesPackageJson = require(path.join(examplesPath, '/shared/package.json'));
-    this.scriptsPackageJson = require(path.join(examplesPath, '/shared/boilerplate/package.json'));
+    this.scriptsPackageJson = require(path.join(examplesPath, '/shared/boilerplate/systemjs/package.json'));
     this.basePackageJson = require(`${packageFolder}/base.json`);
   }
 

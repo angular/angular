@@ -2,7 +2,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'inner-html-binding',
+  selector: 'app-inner-html-binding',
   templateUrl: './inner-html-binding.component.html',
 })
 // #docregion class

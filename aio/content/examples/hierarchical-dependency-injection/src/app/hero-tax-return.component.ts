@@ -4,7 +4,7 @@ import { HeroTaxReturn }        from './hero';
 import { HeroTaxReturnService } from './hero-tax-return.service';
 
 @Component({
-  selector: 'hero-tax-return',
+  selector: 'app-hero-tax-return',
   templateUrl: './hero-tax-return.component.html',
   styleUrls: [ './hero-tax-return.component.css' ],
   // #docregion providers
