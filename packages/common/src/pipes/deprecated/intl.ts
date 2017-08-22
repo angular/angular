@@ -5,12 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-export enum NumberFormatStyle {
-  Decimal,
-  Percent,
-  Currency,
-}
+import {NumberFormatStyle} from '../../i18n/locale_data_api';
 
 export class NumberFormatter {
   static format(num: number, locale: string, style: NumberFormatStyle, opts: {
