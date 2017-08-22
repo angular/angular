@@ -104,9 +104,18 @@ describe('StaticSymbolResolver', () => {
   });
 
   it('should use summaries in resolveSymbol and prefer them over regular metadata', () => {
-    const someSymbol = symbolCache.get('/test.ts', 'a');
-    init({'/test.ts': 'export var a = 2'}, [{symbol: someSymbol, metadata: 1}]);
-    expect(symbolResolver.resolveSymbol(someSymbol).metadata).toBe(1);
+    const symbolA = symbolCache.get('/test.ts', 'a');
+    const symbolB = symbolCache.get('/test.ts', 'b');
+    const symbolC = symbolCache.get('/test.ts', 'c');
+    init({'/test.ts': 'export var a = 2; export var b = 2; export var c = 2;'}, [
+      {symbol: symbolA, metadata: 1},
+      {symbol: symbolB, metadata: 1},
+    ]);
+    // reading the metadata of a symbol without a summary first,
+    // to test whether summaries are still preferred after this.
+    expect(symbolResolver.resolveSymbol(symbolC).metadata).toBe(2);
+    expect(symbolResolver.resolveSymbol(symbolA).metadata).toBe(1);
+    expect(symbolResolver.resolveSymbol(symbolB).metadata).toBe(1);
   });
 
   it('should be able to get all exported symbols of a file', () => {

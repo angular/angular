@@ -78,20 +78,22 @@ export class StaticSymbolResolver {
     if (staticSymbol.members.length > 0) {
       return this._resolveSymbolMembers(staticSymbol) !;
     }
-    let result = this.resolvedSymbols.get(staticSymbol);
-    if (result) {
-      return result;
+    // Note: always ask for a summary first,
+    // as we might have read shallow metadata via a .d.ts file
+    // for the symbol.
+    const resultFromSummary = this._resolveSymbolFromSummary(staticSymbol) !;
+    if (resultFromSummary) {
+      return resultFromSummary;
     }
-    result = this._resolveSymbolFromSummary(staticSymbol) !;
-    if (result) {
-      return result;
+    const resultFromCache = this.resolvedSymbols.get(staticSymbol);
+    if (resultFromCache) {
+      return resultFromCache;
     }
     // Note: Some users use libraries that were not compiled with ngc, i.e. they don't
     // have summaries, only .d.ts files. So we always need to check both, the summary
     // and metadata.
     this._createSymbolsOf(staticSymbol.filePath);
-    result = this.resolvedSymbols.get(staticSymbol) !;
-    return result;
+    return this.resolvedSymbols.get(staticSymbol) !;
   }
 
   /**
