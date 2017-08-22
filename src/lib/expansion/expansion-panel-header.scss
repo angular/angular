@@ -1,6 +1,5 @@
 
 .mat-expansion-panel-header {
-  cursor: pointer;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -14,6 +13,10 @@
   &.mat-expanded:focus,
   &.mat-expanded:hover, {
     background: inherit;
+  }
+
+  &:not([aria-disabled='true']) {
+    cursor: pointer;
   }
 }
 

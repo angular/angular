@@ -17,16 +17,22 @@ import {
 } from '@angular/core';
 import {UniqueSelectionDispatcher} from '../core';
 import {CdkAccordion} from './accordion';
+import {mixinDisabled, CanDisable} from '../core/common-behaviors/disabled';
 
 /** Used to generate unique ID for each expansion panel. */
 let nextId = 0;
+
+// Boilerplate for applying mixins to MdSlider.
+/** @docs-private */
+export class AccordionItemBase { }
+export const _AccordionItemMixinBase = mixinDisabled(AccordionItemBase);
 
 /**
  * An abstract class to be extended and decorated as a component.  Sets up all
  * events and attributes needed to be managed by a CdkAccordion parent.
  */
 @Injectable()
-export class AccordionItem implements OnDestroy {
+export class AccordionItem extends _AccordionItemMixinBase implements OnDestroy, CanDisable {
   /** Event emitted every time the MdAccordionChild is closed. */
   @Output() closed = new EventEmitter<void>();
   /** Event emitted every time the MdAccordionChild is opened. */
@@ -68,6 +74,9 @@ export class AccordionItem implements OnDestroy {
   constructor(@Optional() public accordion: CdkAccordion,
               private _changeDetectorRef: ChangeDetectorRef,
               protected _expansionDispatcher: UniqueSelectionDispatcher) {
+
+    super();
+
     this._removeUniqueSelectionListener =
       _expansionDispatcher.listen((id: string, accordionId: string) => {
         if (this.accordion && !this.accordion.multi &&

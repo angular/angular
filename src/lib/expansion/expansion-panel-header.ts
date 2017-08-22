@@ -49,9 +49,10 @@ import {Subscription} from 'rxjs/Subscription';
   host: {
     'class': 'mat-expansion-panel-header',
     'role': 'button',
-    'tabindex': '0',
+    '[attr.tabindex]': 'panel.disabled ? -1 : 0',
     '[attr.aria-controls]': '_getPanelId()',
     '[attr.aria-expanded]': '_isExpanded()',
+    '[attr.aria-disabled]': 'panel.disabled',
     '[class.mat-expanded]': '_isExpanded()',
     '(click)': '_toggle()',
     '(keyup)': '_keyup($event)',
@@ -85,7 +86,7 @@ export class MdExpansionPanelHeader implements OnDestroy {
     this._parentChangeSubscription = merge(
       panel.opened,
       panel.closed,
-      filter.call(panel._inputChanges, changes => !!changes.hideToggle)
+      filter.call(panel._inputChanges, changes => !!(changes.hideToggle || changes.disabled))
     )
     .subscribe(() => this._changeDetectorRef.markForCheck());
 
@@ -94,7 +95,9 @@ export class MdExpansionPanelHeader implements OnDestroy {
 
   /** Toggles the expanded state of the panel. */
   _toggle(): void {
-    this.panel.toggle();
+    if (!this.panel.disabled) {
+      this.panel.toggle();
+    }
   }
 
   /** Gets whether the panel is expanded. */
@@ -112,9 +115,9 @@ export class MdExpansionPanelHeader implements OnDestroy {
     return this.panel.id;
   }
 
-  /** Gets whether the expand indicator is hidden. */
-  _getHideToggle(): boolean {
-    return this.panel.hideToggle;
+  /** Gets whether the expand indicator should be shown. */
+  _showToggle(): boolean {
+    return !this.panel.hideToggle && !this.panel.disabled;
   }
 
   /** Handle keyup event calling to toggle() if appropriate. */

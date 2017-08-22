@@ -17,6 +17,7 @@
   <div>
     <md-slide-toggle [(ngModel)]="multi">Allow Multi Expansion</md-slide-toggle>
     <md-slide-toggle [(ngModel)]="hideToggle">Hide Indicators</md-slide-toggle>
+    <md-slide-toggle [(ngModel)]="disabled">Disable Panel 2</md-slide-toggle>
     <md-slide-toggle [(ngModel)]="showPanel3">Show Panel 3</md-slide-toggle>
   </div>
   <p>Accordion Style</p>
@@ -37,7 +38,7 @@
     <md-expansion-panel-header>Section 1</md-expansion-panel-header>
     <p>This is the content text that makes sense here.</p>
   </md-expansion-panel>
-  <md-expansion-panel #panel2 [hideToggle]="hideToggle">
+  <md-expansion-panel #panel2 [hideToggle]="hideToggle" [disabled]="disabled">
     <md-expansion-panel-header>Section 2</md-expansion-panel-header>
     <p>This is the content text that makes sense here.</p>
   </md-expansion-panel>

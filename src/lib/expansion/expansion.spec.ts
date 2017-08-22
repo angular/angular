@@ -1,8 +1,8 @@
-import {async, TestBed, fakeAsync, tick} from '@angular/core/testing';
-import {Component} from '@angular/core';
+import {async, TestBed, fakeAsync, tick, ComponentFixture} from '@angular/core/testing';
+import {Component, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {MdExpansionModule} from './index';
+import {MdExpansionModule, MdExpansionPanel} from './index';
 
 
 describe('MdExpansionPanel', () => {
@@ -137,6 +137,66 @@ describe('MdExpansionPanel', () => {
 
       expect(arrow.style.transform).toBe('rotate(180deg)', 'Expected 180 degree rotation.');
     }));
+
+  describe('disabled state', () => {
+    let fixture: ComponentFixture<PanelWithContent>;
+    let panel: HTMLElement;
+    let header: HTMLElement;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(PanelWithContent);
+      fixture.detectChanges();
+      panel = fixture.debugElement.query(By.css('md-expansion-panel')).nativeElement;
+      header = fixture.debugElement.query(By.css('md-expansion-panel-header')).nativeElement;
+    });
+
+    it('should toggle the aria-disabled attribute on the header', () => {
+      expect(header.getAttribute('aria-disabled')).toBe('false');
+
+      fixture.componentInstance.disabled = true;
+      fixture.detectChanges();
+
+      expect(header.getAttribute('aria-disabled')).toBe('true');
+    });
+
+    it('should toggle the expansion indicator', () => {
+      expect(panel.querySelector('.mat-expansion-indicator')).toBeTruthy();
+
+      fixture.componentInstance.disabled = true;
+      fixture.detectChanges();
+
+      expect(panel.querySelector('.mat-expansion-indicator')).toBeFalsy();
+    });
+
+    it('should not be able to toggle the panel via a user action if disabled', () => {
+      expect(fixture.componentInstance.panel.expanded).toBe(false);
+      expect(header.classList).not.toContain('mat-expanded');
+
+      fixture.componentInstance.disabled = true;
+      fixture.detectChanges();
+
+      header.click();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.panel.expanded).toBe(false);
+      expect(header.classList).not.toContain('mat-expanded');
+    });
+
+    it('should be able to toggle a disabled expansion panel programmatically', () => {
+      expect(fixture.componentInstance.panel.expanded).toBe(false);
+      expect(header.classList).not.toContain('mat-expanded');
+
+      fixture.componentInstance.disabled = true;
+      fixture.detectChanges();
+
+      fixture.componentInstance.expanded = true;
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.panel.expanded).toBe(true);
+      expect(header.classList).toContain('mat-expanded');
+    });
+
+  });
 });
 
 
@@ -144,6 +204,7 @@ describe('MdExpansionPanel', () => {
   template: `
   <md-expansion-panel [expanded]="expanded"
                       [hideToggle]="hideToggle"
+                      [disabled]="disabled"
                       (opened)="openCallback()"
                       (closed)="closeCallback()">
     <md-expansion-panel-header>Panel Title</md-expansion-panel-header>
@@ -152,10 +213,12 @@ describe('MdExpansionPanel', () => {
   </md-expansion-panel>`
 })
 class PanelWithContent {
-  expanded: boolean = false;
-  hideToggle: boolean = false;
+  expanded = false;
+  hideToggle = false;
+  disabled = false;
   openCallback = jasmine.createSpy('openCallback');
   closeCallback = jasmine.createSpy('closeCallback');
+  @ViewChild(MdExpansionPanel) panel: MdExpansionPanel;
 }
 
 
