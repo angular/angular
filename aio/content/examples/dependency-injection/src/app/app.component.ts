@@ -9,20 +9,20 @@ import { UserService } from './user.service';
 // #enddocregion imports
 
 @Component({
-  selector: 'my-app',
+  selector: 'app-root',
   template:  `
     <h1>{{title}}</h1>
-    <my-car></my-car>
-    <my-injectors></my-injectors>
-    <my-tests></my-tests>
+    <app-car></app-car>
+    <app-injectors></app-injectors>
+    <app-tests></app-tests>
     <h2>User</h2>
     <p id="user">
       {{userInfo}}
       <button (click)="nextUser()">Next User</button>
     <p>
-    <my-heroes id="authorized" *ngIf="isAuthorized"></my-heroes>
-    <my-heroes id="unauthorized" *ngIf="!isAuthorized"></my-heroes>
-    <my-providers></my-providers>
+    <app-heroes id="authorized" *ngIf="isAuthorized"></app-heroes>
+    <app-heroes id="unauthorized" *ngIf="!isAuthorized"></app-heroes>
+    <app-providers></app-providers>
   `,
   providers: [Logger]
 })

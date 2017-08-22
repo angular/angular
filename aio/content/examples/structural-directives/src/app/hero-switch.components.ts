@@ -3,7 +3,7 @@ import { Component, Input } from '@angular/core';
 import { Hero } from './hero';
 
 @Component({
-  selector: 'happy-hero',
+  selector: 'app-happy-hero',
   template: `Wow. You like {{hero.name}}. What a happy hero ... just like you.`
 })
 export class HappyHeroComponent {
@@ -11,7 +11,7 @@ export class HappyHeroComponent {
 }
 
 @Component({
-  selector: 'sad-hero',
+  selector: 'app-sad-hero',
   template: `You like {{hero.name}}? Such a sad hero. Are you sad too?`
 })
 export class SadHeroComponent {
@@ -19,7 +19,7 @@ export class SadHeroComponent {
 }
 
 @Component({
-  selector: 'confused-hero',
+  selector: 'app-confused-hero',
   template: `Are you as confused as {{hero.name}}?`
 })
 export class ConfusedHeroComponent {
@@ -27,7 +27,7 @@ export class ConfusedHeroComponent {
 }
 
 @Component({
-  selector: 'unknown-hero',
+  selector: 'app-unknown-hero',
   template: `{{message}}`
 })
 export class UnknownHeroComponent {

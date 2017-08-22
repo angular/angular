@@ -1208,12 +1208,6 @@ Here's an excerpt:
 
 Create the file <code>styles.css</code>.
 Ensure that the file contains the [master styles provided here](https://raw.githubusercontent.com/angular/angular/master/aio/tools/examples/shared/boilerplate/src/styles.css).
-Also edit <code>index.html</code> to refer to this stylesheet.
-
-
-<code-example path="toh-pt5/src/index.html" region="css" title="src/index.html (link ref)">
-
-</code-example>
 
 
 

@@ -15,7 +15,7 @@ import {
 import { Hero } from './hero.service';
 
 @Component({
- selector: 'hero-list-inline-styles',
+ selector: 'app-hero-list-inline-styles',
  // #docregion template
  template: `
    <ul>

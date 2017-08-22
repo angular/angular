@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'my-app',
+  selector: 'app-root',
   // #docregion template
   template: `
     <app-title [subtitle]="subtitle"></app-title>

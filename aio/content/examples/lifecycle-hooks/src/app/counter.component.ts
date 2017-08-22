@@ -7,7 +7,7 @@ import {
 import { LoggerService }  from './logger.service';
 
 @Component({
-  selector: 'my-counter',
+  selector: 'app-counter',
   template: `
   <div class="counter">
     Counter = {{counter}}
@@ -49,7 +49,7 @@ export class MyCounterComponent implements OnChanges {
     <button (click)="updateCounter()">Update counter</button>
     <button (click)="reset()">Reset Counter</button>
 
-    <my-counter [counter]="value"></my-counter>
+    <app-counter [counter]="value"></app-counter>
 
     <h4>-- Spy Lifecycle Hook Log --</h4>
     <div *ngFor="let msg of spyLog">{{msg}}</div>
