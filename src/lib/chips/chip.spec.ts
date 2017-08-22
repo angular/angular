@@ -194,13 +194,8 @@ describe('Chips', () => {
           expect(testComponent.chipSelect).not.toHaveBeenCalled();
         });
 
-        it('should have empty aria-selected', () => {
-          expect(chipNativeElement.getAttribute('aria-selected')).toBeFalsy();
-
-          testComponent.selectable = true;
-          fixture.detectChanges();
-
-          expect(chipNativeElement.getAttribute('aria-selected')).toBe('false');
+        it('should not have the aria-selected attribute', () => {
+          expect(chipNativeElement.hasAttribute('aria-selected')).toBe(false);
         });
       });
 

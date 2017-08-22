@@ -121,8 +121,8 @@ export class MdChip extends _MdChipMixinBase implements FocusableOption, OnDestr
   /** Emitted when the chip is destroyed. */
   @Output() destroy = new EventEmitter<MdChipEvent>();
 
-  get ariaSelected(): string {
-    return this.selectable ? this.selected.toString() : '';
+  get ariaSelected(): string | null {
+    return this.selectable ? this.selected.toString() : null;
   }
 
   constructor(renderer: Renderer2, elementRef: ElementRef) {
