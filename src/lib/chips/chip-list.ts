@@ -230,7 +230,7 @@ export class MdChipList implements AfterContentInit, OnDestroy {
     }
 
     // Watch for focus events outside of the keyboard navigation
-    chip.onFocus.subscribe(() => {
+    chip._onFocus.subscribe(() => {
       let chipIndex: number = this.chips.toArray().indexOf(chip);
 
       if (this._isValidIndex(chipIndex)) {

@@ -17,7 +17,7 @@ import {
   Renderer2,
   forwardRef,
 } from '@angular/core';
-
+import {Subject} from 'rxjs/Subject';
 import {FocusableOption} from '../core/a11y/focus-key-manager';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {CanColor, mixinColor} from '../core/common-behaviors/color';
@@ -109,8 +109,8 @@ export class MdChip extends _MdChipMixinBase implements FocusableOption, OnDestr
   /** Whether the chip has focus. */
   _hasFocus: boolean = false;
 
-  /** Emitted when the chip is focused. */
-  onFocus = new EventEmitter<MdChipEvent>();
+  /** Emits when the chip is focused. */
+  _onFocus = new Subject<MdChipEvent>();
 
   /** Emitted when the chip is selected. */
   @Output() select = new EventEmitter<MdChipEvent>();
@@ -145,7 +145,7 @@ export class MdChip extends _MdChipMixinBase implements FocusableOption, OnDestr
   /** Allows for programmatic focusing of the chip. */
   focus(): void {
     this._elementRef.nativeElement.focus();
-    this.onFocus.emit({chip: this});
+    this._onFocus.next({chip: this});
   }
 
   /**
