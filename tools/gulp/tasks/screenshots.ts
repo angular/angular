@@ -45,14 +45,46 @@ task('screenshots', () => {
     const firebaseApp = connectFirebaseScreenshots();
     const database = firebaseApp.database();
 
+    // If this task hasn't completed in 8 minutes, close the firebase connection.
+    const timeoutId = setTimeout(() => {
+      console.error('Screenshot tests did not finish in 8 minutes, closing Firebase connection.');
+      return firebaseApp.delete();
+    }, 60 * 1000 * 8);
+
+    let lastActionTime = Date.now();
     return uploadTravisJobInfo(database, prNumber)
-      .then(() => downloadGoldScreenshotFiles(database))
-      .then(() => compareScreenshotFiles(database, prNumber))
-      .then(passedAll => setPullRequestResult(database, prNumber, passedAll))
-      .then(() => uploadScreenshotsData(database, 'diff', prNumber))
-      .then(() => uploadScreenshotsData(database, 'test', prNumber))
-      .catch((err: any) => console.error(err))
-      .then(() => firebaseApp.delete());
+      .then(() => {
+        console.log(`  Downloading screenshot golds from Firebase...`);
+        lastActionTime = Date.now();
+        return downloadGoldScreenshotFiles(database);
+      })
+      .then(() => {
+        console.log(`  Downloading golds done (took ${Date.now() - lastActionTime}ms)`);
+        console.log(`  Comparing screenshots golds to test result screenshots...`);
+        lastActionTime = Date.now();
+        return compareScreenshotFiles(database, prNumber);
+      })
+      .then(passedAll => {
+        console.log(`  Comparison done (took ${Date.now() - lastActionTime}ms)`);
+        console.log(`  Uploading screenshot diff results to Firebase and GitHub...`);
+        lastActionTime = Date.now();
+        return Promise.all([
+          setPullRequestResult(database, prNumber, passedAll),
+          uploadScreenshotsData(database, 'diff', prNumber),
+          uploadScreenshotsData(database, 'test', prNumber),
+        ]);
+      })
+      .then(() => {
+        console.log(`  Uploading results done (took ${Date.now() - lastActionTime}ms)`);
+        firebaseApp.delete();
+        clearTimeout(timeoutId);
+      })
+      .catch((err: any) => {
+        console.error(`  Screenshot tests encountered an error!`);
+        console.error(err);
+        firebaseApp.delete();
+        clearTimeout(timeoutId);
+      });
   }
 });
 
