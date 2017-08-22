@@ -64,16 +64,7 @@ export class AotCompiler {
   emitAllStubs(analyzeResult: NgAnalyzedModules): GeneratedFile[] {
     const {files} = analyzeResult;
     const sourceModules = files.map(
-        file =>
-            this._compileStubFile(file.srcUrl, file.directives, file.pipes, file.ngModules, false));
-    return flatten(sourceModules);
-  }
-
-  emitPartialStubs(analyzeResult: NgAnalyzedModules): GeneratedFile[] {
-    const {files} = analyzeResult;
-    const sourceModules = files.map(
-        file =>
-            this._compileStubFile(file.srcUrl, file.directives, file.pipes, file.ngModules, true));
+        file => this._compileStubFile(file.srcUrl, file.directives, file.pipes, file.ngModules));
     return flatten(sourceModules);
   }
 
@@ -88,18 +79,7 @@ export class AotCompiler {
 
   private _compileStubFile(
       srcFileUrl: string, directives: StaticSymbol[], pipes: StaticSymbol[],
-      ngModules: StaticSymbol[], partial: boolean): GeneratedFile[] {
-    // partial is true when we only need the files we are certain will produce a factory and/or
-    // summary.
-    // This is the normal case for `ngc` but if we assume libraryies are generating their own
-    // factories
-    // then we might need a factory for a file that re-exports a module or factory which we cannot
-    // know
-    // ahead of time so we need a stub generate for all non-.d.ts files. The .d.ts files do not need
-    // to
-    // be excluded here because they are excluded when the modules are analyzed. If a factory ends
-    // up
-    // not being needed, the factory file is not written in writeFile callback.
+      ngModules: StaticSymbol[]): GeneratedFile[] {
     const fileSuffix = splitTypescriptSuffix(srcFileUrl, true)[1];
     const generatedFiles: GeneratedFile[] = [];
 
@@ -112,15 +92,10 @@ export class AotCompiler {
       createForJitStub(jitSummaryOutputCtx, ngModuleReference);
     });
 
-    let partialJitStubRequired = false;
-    let partialFactoryStubRequired = false;
-
     // create stubs for external stylesheets (always empty, as users should not import anything from
     // the generated code)
     directives.forEach((dirType) => {
       const compMeta = this._metadataResolver.getDirectiveMetadata(<any>dirType);
-
-      partialJitStubRequired = true;
 
       if (!compMeta.isComponent) {
         return;
@@ -129,20 +104,16 @@ export class AotCompiler {
       compMeta.template !.externalStylesheets.forEach((stylesheetMeta) => {
         const styleContext = this._createOutputContext(_stylesModuleUrl(
             stylesheetMeta.moduleUrl !, this._styleCompiler.needsStyleShim(compMeta), fileSuffix));
-        _createTypeReferenceStub(styleContext, Identifiers.ComponentFactory);
+        _createStub(styleContext);
         generatedFiles.push(this._codegenSourceModule(stylesheetMeta.moduleUrl !, styleContext));
       });
-
-      partialFactoryStubRequired = true;
     });
 
-    // If we need all the stubs to be generated then insert an arbitrary reference into the stub
-    if ((partialFactoryStubRequired || !partial) && ngFactoryOutputCtx.statements.length <= 0) {
-      _createTypeReferenceStub(ngFactoryOutputCtx, Identifiers.ComponentFactory);
+    if (ngFactoryOutputCtx.statements.length <= 0) {
+      _createStub(ngFactoryOutputCtx);
     }
-    if ((partialJitStubRequired || !partial || (pipes && pipes.length > 0)) &&
-        jitSummaryOutputCtx.statements.length <= 0) {
-      _createTypeReferenceStub(jitSummaryOutputCtx, Identifiers.ComponentFactory);
+    if (jitSummaryOutputCtx.statements.length <= 0) {
+      _createStub(jitSummaryOutputCtx);
     }
 
     // Note: we are creating stub ngfactory/ngsummary for all source files,
@@ -390,8 +361,11 @@ export class AotCompiler {
   }
 }
 
-function _createTypeReferenceStub(outputCtx: OutputContext, reference: o.ExternalReference) {
-  outputCtx.statements.push(o.importExpr(reference).toStmt());
+function _createStub(outputCtx: OutputContext) {
+  // Note: We need to produce at least one import statement so that
+  // TypeScript knows that the file is an es6 module. Otherwise our generated
+  // exports / imports won't be emitted properly by TypeScript.
+  outputCtx.statements.push(o.importExpr(Identifiers.ComponentFactory).toStmt());
 }
 
 function _resolveStyleStatements(
