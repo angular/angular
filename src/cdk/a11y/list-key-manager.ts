@@ -9,7 +9,7 @@
 import {QueryList} from '@angular/core';
 import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
-import {UP_ARROW, DOWN_ARROW, TAB, A, Z} from '@angular/cdk/keycodes';
+import {UP_ARROW, DOWN_ARROW, TAB, A, Z, ZERO, NINE} from '@angular/cdk/keycodes';
 import {RxChain, debounceTime, filter, map, doOperator} from '@angular/cdk/rxjs';
 
 /**
@@ -107,17 +107,19 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
       case UP_ARROW: this.setPreviousItemActive(); break;
       case TAB: this.tabOut.next(); return;
       default:
-        if (event.keyCode >= A && event.keyCode <= Z) {
-          // Attempt to use the `event.key` which also maps it to the user's keyboard language,
-          // otherwise fall back to `keyCode` and `fromCharCode` which always resolve to English.
-          this._letterKeyStream.next(event.key ?
-              event.key.toLocaleUpperCase() :
-              String.fromCharCode(event.keyCode));
+        const keyCode = event.keyCode;
+
+        // Attempt to use the `event.key` which also maps it to the user's keyboard language,
+        // otherwise fall back to resolving alphanumeric characters via the keyCode.
+        if (event.key && event.key.length === 1) {
+          this._letterKeyStream.next(event.key.toLocaleUpperCase());
+        } else if ((keyCode >= A && keyCode <= Z) || (keyCode >= ZERO && keyCode <= NINE)) {
+          this._letterKeyStream.next(String.fromCharCode(keyCode));
         }
 
-      // Note that we return here, in order to avoid preventing
-      // the default action of non-navigational keys.
-      return;
+        // Note that we return here, in order to avoid preventing
+        // the default action of non-navigational keys.
+        return;
     }
 
     this._pressedLetters = [];

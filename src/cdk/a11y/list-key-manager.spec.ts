@@ -461,6 +461,26 @@ describe('Key managers', () => {
         expect(keyManager.activeItem).toBe(itemList.items[1]);
       }));
 
+      it('should handle non-letter characters', fakeAsync(() => {
+        itemList.items = [
+          new FakeFocusable('[]'),
+          new FakeFocusable('321'),
+          new FakeFocusable('`!?')
+        ];
+
+        keyManager.onKeydown(createKeyboardEvent('keydown', 192, undefined, '`')); // types "`"
+        tick(debounceInterval);
+        expect(keyManager.activeItem).toBe(itemList.items[2]);
+
+        keyManager.onKeydown(createKeyboardEvent('keydown', 51, undefined, '3')); // types "3"
+        tick(debounceInterval);
+        expect(keyManager.activeItem).toBe(itemList.items[1]);
+
+        keyManager.onKeydown(createKeyboardEvent('keydown', 219, undefined, '[')); // types "["
+        tick(debounceInterval);
+        expect(keyManager.activeItem).toBe(itemList.items[0]);
+      }));
+
     });
 
   });
