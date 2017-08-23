@@ -108,7 +108,12 @@ export function main() {
        () => {
          init();
          const externalSerialized = serializeSummaries(
-             'someFile.ts', createMockOutputContext(), summaryResolver, symbolResolver, [], [
+             'someFile.ts', createMockOutputContext(), summaryResolver, symbolResolver,
+             [
+               {symbol: symbolCache.get('/tmp/external.ts', 'SomeExternalPipe'), metadata: null},
+               {symbol: symbolCache.get('/tmp/external.ts', 'SomeExternalDir'), metadata: null},
+             ],
+             [
                {
                  summary: {
                    summaryKind: CompileSummaryKind.Pipe,
@@ -135,7 +140,11 @@ export function main() {
          });
 
          const serialized = serializeSummaries(
-             'someFile.ts', createMockOutputContext(), summaryResolver, symbolResolver, [], [{
+             'someFile.ts', createMockOutputContext(), summaryResolver, symbolResolver,
+             [
+               {symbol: symbolCache.get('/tmp/some_module.ts', 'SomeModule'), metadata: null},
+             ],
+             [{
                summary: <any>{
                  summaryKind: CompileSummaryKind.NgModule,
                  type: {reference: symbolCache.get('/tmp/some_module.ts', 'SomeModule')},
@@ -152,14 +161,41 @@ export function main() {
                },
                metadata: null as any
              }]);
-
          const summaries =
              deserializeSummaries(symbolCache, summaryResolver, 'someFile.d.ts', serialized.json)
                  .summaries;
+         init({
+           '/tmp/some_module.ngsummary.json': serialized.json,
+         });
+
+         const serializedReexport = serializeSummaries(
+             'someFile.ts', createMockOutputContext(), summaryResolver, symbolResolver,
+             [
+               {
+                 symbol: symbolCache.get('/tmp/some_reexport.ts', 'ReexportModule'),
+                 metadata: symbolCache.get('/tmp/some_module.d.ts', 'SomeModule')
+               },
+             ],
+             []);
+
          expect(summaries.length).toBe(3);
          expect(summaries[0].symbol).toBe(symbolCache.get('/tmp/some_module.d.ts', 'SomeModule'));
          expect(summaries[1].symbol).toBe(symbolCache.get('/tmp/external.d.ts', 'SomeExternalDir'));
          expect(summaries[2].symbol)
+             .toBe(symbolCache.get('/tmp/external.d.ts', 'SomeExternalPipe'));
+
+         const reexportSummaries =
+             deserializeSummaries(
+                 symbolCache, summaryResolver, 'someFile.d.ts', serializedReexport.json)
+                 .summaries;
+         expect(reexportSummaries.length).toBe(4);
+         expect(reexportSummaries[0].symbol)
+             .toBe(symbolCache.get('/tmp/some_reexport.d.ts', 'ReexportModule'));
+         expect(reexportSummaries[1].symbol)
+             .toBe(symbolCache.get('/tmp/some_module.d.ts', 'SomeModule'));
+         expect(reexportSummaries[2].symbol)
+             .toBe(symbolCache.get('/tmp/external.d.ts', 'SomeExternalDir'));
+         expect(reexportSummaries[3].symbol)
              .toBe(symbolCache.get('/tmp/external.d.ts', 'SomeExternalPipe'));
        });
 
@@ -176,6 +212,16 @@ export function main() {
                {
                  symbol: symbolCache.get('/tmp/external_svc.ts', 'SomeService'),
                  metadata: {__symbolic: 'class'}
+               },
+               // Note: This is an important usecase when using ng1 and ng2 together via
+               // goog.module.
+               // In these cases, users write the following to get a referrable symbol in metadata
+               // collection:
+               //   import UsernameService from 'goog:somePackage.UsernameService';
+               //   export {UsernameService};
+               {
+                 symbol: symbolCache.get('/tmp/external.ts', 'ReexportNonExistent'),
+                 metadata: symbolCache.get('/tmp/external.ts', 'NonExistent'),
                }
              ],
              [{
@@ -204,7 +250,8 @@ export function main() {
                metadata: {
                  local: symbolCache.get('/tmp/local.ts', 'local'),
                  external: symbolCache.get('/tmp/external.d.ts', 'PROVIDERS'),
-                 externalNonSummary: symbolCache.get('/tmp/non_summary.d.ts', 'external')
+                 externalNonSummary: symbolCache.get('/tmp/non_summary.d.ts', 'external'),
+                 reexportNonExistent: symbolCache.get('/tmp/external.ts', 'ReexportNonExistent'),
                }
              }],
              []);
@@ -218,20 +265,86 @@ export function main() {
          expect(summaries[0].metadata).toEqual({
            local: symbolCache.get('/tmp/local.d.ts', 'local'),
            external: symbolCache.get('/tmp/external.d.ts', 'PROVIDERS'),
-           externalNonSummary: symbolCache.get('/tmp/non_summary.d.ts', 'external')
+           externalNonSummary: symbolCache.get('/tmp/non_summary.d.ts', 'external'),
+           reexportNonExistent: symbolCache.get('/tmp/external.d.ts', 'ReexportNonExistent'),
          });
          expect(summaries[1].symbol).toBe(symbolCache.get('/tmp/external.d.ts', 'PROVIDERS'));
          expect(summaries[1].metadata).toEqual([symbolCache.get(
              '/tmp/external_svc.d.ts', 'SomeService')]);
+         // SomService is a transitive dep, but should have been serialized as well.
+         expect(summaries[2].symbol).toBe(symbolCache.get('/tmp/external_svc.d.ts', 'SomeService'));
+         expect(summaries[2].type !.type.reference)
+             .toBe(symbolCache.get('/tmp/external_svc.d.ts', 'SomeService'));
          // there was no summary for non_summary, but it should have
          // been serialized as well.
-         expect(summaries[2].symbol).toBe(symbolCache.get('/tmp/non_summary.d.ts', 'external'));
-         expect(summaries[2].metadata).toEqual('b');
-         // SomService is a transitive dep, but should have been serialized as well.
-         expect(summaries[3].symbol).toBe(symbolCache.get('/tmp/external_svc.d.ts', 'SomeService'));
-         expect(summaries[3].type !.type.reference)
-             .toBe(symbolCache.get('/tmp/external_svc.d.ts', 'SomeService'));
+         expect(summaries[3].symbol).toBe(symbolCache.get('/tmp/non_summary.d.ts', 'external'));
+         expect(summaries[3].metadata).toEqual('b');
        });
+
+    it('should resolve reexported values in libraries', () => {
+      init();
+      const externalSerialized = serializeSummaries(
+          'someFile.ts', createMockOutputContext(), summaryResolver, symbolResolver,
+          [
+            {symbol: symbolCache.get('/tmp/external.ts', 'value'), metadata: 'someString'},
+            {
+              symbol: symbolCache.get('/tmp/external.ts', 'reexportValue'),
+              metadata: symbolCache.get('/tmp/external.ts', 'value')
+            },
+          ],
+          []);
+      init({
+        '/tmp/external.ngsummary.json': externalSerialized.json,
+      });
+      const serialized = serializeSummaries(
+          'someFile.ts', createMockOutputContext(), summaryResolver, symbolResolver,
+          [
+            {
+              symbol: symbolCache.get('/tmp/test.ts', 'mainValue'),
+              metadata: symbolCache.get('/tmp/external.d.ts', 'reexportValue'),
+            },
+          ],
+          []);
+
+      const summaries =
+          deserializeSummaries(symbolCache, summaryResolver, 'someFile.d.ts', serialized.json)
+              .summaries;
+      expect(summaries.length).toBe(2);
+      expect(summaries[0].symbol).toBe(symbolCache.get('/tmp/test.d.ts', 'mainValue'));
+      expect(summaries[0].metadata).toBe(symbolCache.get('/tmp/external.d.ts', 'value'));
+      expect(summaries[1].symbol).toBe(symbolCache.get('/tmp/external.d.ts', 'value'));
+      expect(summaries[1].metadata).toBe('someString');
+    });
+
+    it('should not create "importAs" names for reexported types in libraries', () => {
+      init();
+      const externalSerialized = serializeSummaries(
+          'someFile.ts', createMockOutputContext(), summaryResolver, symbolResolver,
+          [
+            {
+              symbol: symbolCache.get('/tmp/external.ts', 'type'),
+              metadata: {__symbolic: 'interface'}
+            },
+            {
+              symbol: symbolCache.get('/tmp/external.ts', 'reexportType'),
+              metadata: symbolCache.get('/tmp/external.ts', 'type')
+            },
+          ],
+          []);
+      init({
+        '/tmp/external.ngsummary.json': externalSerialized.json,
+      });
+      const serialized = serializeSummaries(
+          'someFile.ts', createMockOutputContext(), summaryResolver, symbolResolver, [{
+            symbol: symbolCache.get('/tmp/test.ts', 'mainType'),
+            metadata: symbolCache.get('/tmp/external.d.ts', 'reexportType'),
+          }],
+          []);
+      const importAs =
+          deserializeSummaries(symbolCache, summaryResolver, 'someFile.d.ts', serialized.json)
+              .importAs;
+      expect(importAs).toEqual([]);
+    });
 
     it('should create "importAs" names for non source symbols', () => {
       init();
