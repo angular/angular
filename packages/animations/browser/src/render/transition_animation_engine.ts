@@ -837,7 +837,7 @@ export class TransitionAnimationEngine {
     }
 
     const allLeaveNodes: any[] = [];
-    const leaveNodesWithoutAnimations: any[] = [];
+    const leaveNodesWithoutAnimations = new Set<any>();
     for (let i = 0; i < this.collectedLeaveElements.length; i++) {
       const element = this.collectedLeaveElements[i];
       const details = element[REMOVAL_FLAG] as ElementAnimationState;
@@ -845,7 +845,7 @@ export class TransitionAnimationEngine {
         addClass(element, LEAVE_CLASSNAME);
         allLeaveNodes.push(element);
         if (!details.hasAnimation) {
-          leaveNodesWithoutAnimations.push(element);
+          leaveNodesWithoutAnimations.add(element);
         }
       }
     }
@@ -937,12 +937,14 @@ export class TransitionAnimationEngine {
     }
 
     // these can only be detected here since we have a map of all the elements
-    // that have animations attached to them...
-    const enterNodesWithoutAnimations: any[] = [];
+    // that have animations attached to them... We use a set here in the event
+    // multiple enter captures on the same element were caught in different
+    // renderer namespaces (e.g. when a @trigger was on a host binding that had *ngIf)
+    const enterNodesWithoutAnimations = new Set<any>();
     for (let i = 0; i < allEnterNodes.length; i++) {
       const element = allEnterNodes[i];
       if (!subTimelines.has(element)) {
-        enterNodesWithoutAnimations.push(element);
+        enterNodesWithoutAnimations.add(element);
       }
     }
 
@@ -1435,9 +1437,11 @@ function cloakElement(element: any, value?: string) {
 }
 
 function cloakAndComputeStyles(
-    driver: AnimationDriver, elements: any[], elementPropsMap: Map<any, Set<string>>,
+    driver: AnimationDriver, elements: Set<any>, elementPropsMap: Map<any, Set<string>>,
     defaultStyle: string): [Map<any, ɵStyleData>, any[]] {
-  const cloakVals = elements.map(element => cloakElement(element));
+  const cloakVals: string[] = [];
+  elements.forEach(element => cloakVals.push(cloakElement(element)));
+
   const valuesMap = new Map<any, ɵStyleData>();
   const failedElements: any[] = [];
 
@@ -1456,7 +1460,10 @@ function cloakAndComputeStyles(
     valuesMap.set(element, styles);
   });
 
-  elements.forEach((element, i) => cloakElement(element, cloakVals[i]));
+  // we use a index variable here since Set.forEach(a, i) does not return
+  // an index value for the closure (but instead just the value)
+  let i = 0;
+  elements.forEach(element => cloakElement(element, cloakVals[i++]));
   return [valuesMap, failedElements];
 }
 
