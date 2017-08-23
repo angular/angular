@@ -4,7 +4,7 @@
 source ./scripts/ci/sources/retry-call.sh
 
 # Variable the specifies how often the wait script should be invoked if it fails.
-WAIT_RETRIES=1
+WAIT_RETRIES=2
 
 start_tunnel() {
   case "$MODE" in

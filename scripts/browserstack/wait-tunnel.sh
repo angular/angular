@@ -1,7 +1,7 @@
 #!/bin/bash
 
 TUNNEL_LOG="$LOGS_DIR/browserstack-tunnel.log"
-WAIT_DELAY=60
+WAIT_DELAY=30
 
 # Method that prints the logfile output of the browserstack tunnel.
 printLog() {
