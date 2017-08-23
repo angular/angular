@@ -2184,6 +2184,13 @@ describe('MdSelect', () => {
         expect(() => fixture.detectChanges()).not.toThrow();
       }));
 
+
+    it('should not throw when the triggerValue is accessed when there is no selected value', () => {
+      const fixture = TestBed.createComponent(BasicSelect);
+      fixture.detectChanges();
+
+      expect(() => fixture.componentInstance.select.triggerValue).not.toThrow();
+    });
   });
 
   describe('change event', () => {

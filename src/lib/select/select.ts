@@ -568,8 +568,12 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
 
   /** The value displayed in the trigger. */
   get triggerValue(): string {
+    if (!this._selectionModel || this._selectionModel.isEmpty()) {
+      return '';
+    }
+
     if (this._multiple) {
-      let selectedOptions = this._selectionModel.selected.map(option => option.viewValue);
+      const selectedOptions = this._selectionModel.selected.map(option => option.viewValue);
 
       if (this._isRtl()) {
         selectedOptions.reverse();
