@@ -21,6 +21,7 @@ import {
   MdAutocomplete,
   MdAutocompleteModule,
   MdAutocompleteTrigger,
+  MdAutocompleteSelectedEvent,
 } from './index';
 import {MdInputModule} from '../input/index';
 import {Subscription} from 'rxjs/Subscription';
@@ -57,7 +58,8 @@ describe('MdAutocomplete', () => {
         AutocompleteWithNativeInput,
         AutocompleteWithoutPanel,
         AutocompleteWithFormsAndNonfloatingPlaceholder,
-        AutocompleteWithGroups
+        AutocompleteWithGroups,
+        AutocompleteWithSelectEvent,
       ],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
@@ -1548,6 +1550,55 @@ describe('MdAutocomplete', () => {
         expect(panel.classList).toContain(visibleClass, `Expected panel to be visible.`);
       });
     }));
+
+  it('should emit an event when an option is selected', fakeAsync(() => {
+    let fixture = TestBed.createComponent(AutocompleteWithSelectEvent);
+
+    fixture.detectChanges();
+    fixture.componentInstance.trigger.openPanel();
+    tick();
+    fixture.detectChanges();
+
+    let options = overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+    let spy = fixture.componentInstance.optionSelected;
+
+    options[1].click();
+    tick();
+    fixture.detectChanges();
+
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    let event = spy.calls.mostRecent().args[0] as MdAutocompleteSelectedEvent;
+
+    expect(event.source).toBe(fixture.componentInstance.autocomplete);
+    expect(event.option.value).toBe('Washington');
+  }));
+
+  it('should emit an event when a newly-added option is selected', fakeAsync(() => {
+    let fixture = TestBed.createComponent(AutocompleteWithSelectEvent);
+
+    fixture.detectChanges();
+    fixture.componentInstance.trigger.openPanel();
+    tick();
+    fixture.detectChanges();
+
+    fixture.componentInstance.states.push('Puerto Rico');
+    fixture.detectChanges();
+
+    let options = overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+    let spy = fixture.componentInstance.optionSelected;
+
+    options[3].click();
+    tick();
+    fixture.detectChanges();
+
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    let event = spy.calls.mostRecent().args[0] as MdAutocompleteSelectedEvent;
+
+    expect(event.source).toBe(fixture.componentInstance.autocomplete);
+    expect(event.option.value).toBe('Puerto Rico');
+  }));
 });
 
 @Component({
@@ -1825,4 +1876,26 @@ class AutocompleteWithGroups {
       states: ['Tennessee', 'Virginia', 'Wyoming', 'Alaska']
     }
   ];
+}
+
+@Component({
+  template: `
+    <md-input-container>
+      <input mdInput placeholder="State" [mdAutocomplete]="auto" [(ngModel)]="selectedState">
+    </md-input-container>
+
+    <md-autocomplete #auto="mdAutocomplete" (optionSelected)="optionSelected($event)">
+      <md-option *ngFor="let state of states" [value]="state">
+        <span>{{ state }}</span>
+      </md-option>
+    </md-autocomplete>
+  `
+})
+class AutocompleteWithSelectEvent {
+  selectedState: string;
+  states = ['New York', 'Washington', 'Oregon'];
+  optionSelected = jasmine.createSpy('optionSelected callback');
+
+  @ViewChild(MdAutocompleteTrigger) trigger: MdAutocompleteTrigger;
+  @ViewChild(MdAutocomplete) autocomplete: MdAutocomplete;
 }

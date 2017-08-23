@@ -427,6 +427,7 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
       this._setTriggerValue(event.source.value);
       this._onChange(event.source.value);
       this._element.nativeElement.focus();
+      this.autocomplete._emitSelectEvent(event.source);
     }
 
     this.closePanel();
