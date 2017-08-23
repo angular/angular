@@ -15,13 +15,13 @@ $mat-grid-list-text-padding: 16px;
 }
 
 .mat-grid-tile {
-  @include mat-fill;
   display: block;
+  position: absolute;
   overflow: hidden;
 
   .mat-figure {
+    @include mat-fill;
     display: flex;
-    position: absolute;
 
     align-items: center;
     justify-content: center;
