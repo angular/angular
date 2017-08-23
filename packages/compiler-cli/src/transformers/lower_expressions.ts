@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CollectorOptions, MetadataCollector, MetadataValue, ModuleMetadata} from '@angular/tsc-wrapped';
+import {CollectorOptions, MetadataCollector, MetadataValue, ModuleMetadata, isMetadataGlobalReferenceExpression} from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
 
 export interface LoweringRequest {
@@ -181,6 +181,30 @@ function shouldLower(node: ts.Node | undefined): boolean {
   return true;
 }
 
+const REWRITE_PREFIX = '\u0275';
+
+function isPrimitive(value: any): boolean {
+  return Object(value) !== value;
+}
+
+function isRewritten(value: any): boolean {
+  return isMetadataGlobalReferenceExpression(value) && value.name.startsWith(REWRITE_PREFIX);
+}
+
+function isLiteralFieldNamed(node: ts.Node, names: Set<string>): boolean {
+  if (node.parent && node.parent.kind == ts.SyntaxKind.PropertyAssignment) {
+    const property = node.parent as ts.PropertyAssignment;
+    if (property.parent && property.parent.kind == ts.SyntaxKind.ObjectLiteralExpression &&
+        property.name && property.name.kind == ts.SyntaxKind.Identifier) {
+      const propertyName = property.name as ts.Identifier;
+      return names.has(propertyName.text);
+    }
+  }
+  return false;
+}
+
+const LOWERABLE_FIELD_NAMES = new Set(['useValue', 'useFactory', 'data']);
+
 export class LowerMetadataCache implements RequestsMap {
   private collector: MetadataCollector;
   private metadataCache = new Map<string, MetadataAndLoweringRequests>();
@@ -208,8 +232,24 @@ export class LowerMetadataCache implements RequestsMap {
 
   private getMetadataAndRequests(sourceFile: ts.SourceFile): MetadataAndLoweringRequests {
     let identNumber = 0;
-    const freshIdent = () => '\u0275' + identNumber++;
+    const freshIdent = () => REWRITE_PREFIX + identNumber++;
     const requests = new Map<number, LoweringRequest>();
+
+    const isExportedSymbol = (() => {
+      let exportTable: Set<string>;
+      return (node: ts.Node) => {
+        if (node.kind == ts.SyntaxKind.Identifier) {
+          const ident = node as ts.Identifier;
+
+          if (!exportTable) {
+            exportTable = createExportTableFor(sourceFile);
+          }
+          return exportTable.has(ident.text);
+        }
+        return false;
+      };
+    })();
+
     const replaceNode = (node: ts.Node) => {
       const name = freshIdent();
       requests.set(node.pos, {name, kind: node.kind, location: node.pos, end: node.end});
@@ -217,10 +257,16 @@ export class LowerMetadataCache implements RequestsMap {
     };
 
     const substituteExpression = (value: MetadataValue, node: ts.Node): MetadataValue => {
-      if ((node.kind === ts.SyntaxKind.ArrowFunction ||
-           node.kind === ts.SyntaxKind.FunctionExpression) &&
-          shouldLower(node)) {
-        return replaceNode(node);
+      if (!isPrimitive(value) && !isRewritten(value)) {
+        if ((node.kind === ts.SyntaxKind.ArrowFunction ||
+             node.kind === ts.SyntaxKind.FunctionExpression) &&
+            shouldLower(node)) {
+          return replaceNode(node);
+        }
+        if (isLiteralFieldNamed(node, LOWERABLE_FIELD_NAMES) && shouldLower(node) &&
+            !isExportedSymbol(node)) {
+          return replaceNode(node);
+        }
       }
       return value;
     };
@@ -229,4 +275,44 @@ export class LowerMetadataCache implements RequestsMap {
 
     return {metadata, requests};
   }
+}
+
+function createExportTableFor(sourceFile: ts.SourceFile): Set<string> {
+  const exportTable = new Set<string>();
+  // Lazily collect all the exports from the source file
+  ts.forEachChild(sourceFile, function scan(node) {
+    switch (node.kind) {
+      case ts.SyntaxKind.ClassDeclaration:
+      case ts.SyntaxKind.FunctionDeclaration:
+      case ts.SyntaxKind.InterfaceDeclaration:
+        if ((ts.getCombinedModifierFlags(node) & ts.ModifierFlags.Export) != 0) {
+          const classDeclaration =
+              node as(ts.ClassDeclaration | ts.FunctionDeclaration | ts.InterfaceDeclaration);
+          const name = classDeclaration.name;
+          if (name) exportTable.add(name.text);
+        }
+        break;
+      case ts.SyntaxKind.VariableStatement:
+        const variableStatement = node as ts.VariableStatement;
+        for (const declaration of variableStatement.declarationList.declarations) {
+          scan(declaration);
+        }
+        break;
+      case ts.SyntaxKind.VariableDeclaration:
+        const variableDeclaration = node as ts.VariableDeclaration;
+        if ((ts.getCombinedModifierFlags(node) & ts.ModifierFlags.Export) != 0 &&
+            variableDeclaration.name.kind == ts.SyntaxKind.Identifier) {
+          const name = variableDeclaration.name as ts.Identifier;
+          exportTable.add(name.text);
+        }
+        break;
+      case ts.SyntaxKind.ExportDeclaration:
+        const exportDeclaration = node as ts.ExportDeclaration;
+        const {moduleSpecifier, exportClause} = exportDeclaration;
+        if (!moduleSpecifier && exportClause) {
+          exportClause.elements.forEach(spec => { exportTable.add(spec.name.text); });
+        }
+    }
+  });
+  return exportTable;
 }
