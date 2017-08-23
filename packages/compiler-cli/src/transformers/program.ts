@@ -19,9 +19,7 @@ import {CompilerHost, CompilerOptions, CustomTransformers, Diagnostic, EmitFlags
 import {LowerMetadataCache, getExpressionLoweringTransformFactory} from './lower_expressions';
 import {getAngularEmitterTransformFactory} from './node_emitter_transform';
 
-const GENERATED_FILES = /\.ngfactory\.js$|\.ngstyle\.js$|\.ngsummary\.js$/;
-
-const SUMMARY_JSON_FILES = /\.ngsummary.json$/;
+const GENERATED_FILES = /(.*?)\.(ngfactory|shim\.ngstyle|ngstyle|ngsummary)\.(js|d\.ts|ts)$/;
 
 const emptyModules: NgAnalyzedModules = {
   ngModules: [],
@@ -141,37 +139,17 @@ class AngularCompilerProgram implements Program {
     customTransformers?: CustomTransformers,
     emitCallback?: TsEmitCallback
   }): ts.EmitResult {
-    const emitMap = new Map<string, string>();
-
-    const emitResult = emitCallback({
+    return emitCallback({
       program: this.programWithStubs,
       host: this.host,
       options: this.options,
       targetSourceFile: undefined,
-      writeFile: createWriteFileCallback(
-          emitFlags, this.host, this.metadataCache, emitMap, this.generatedFiles),
+      writeFile:
+          createWriteFileCallback(emitFlags, this.host, this.metadataCache, this.generatedFiles),
       cancellationToken,
       emitOnlyDtsFiles: (emitFlags & (EmitFlags.DTS | EmitFlags.JS)) == EmitFlags.DTS,
       customTransformers: this.calculateTransforms(customTransformers)
     });
-
-    this.generatedFiles.forEach(file => {
-      // In order not to replicate the TS calculation of the out folder for files
-      // derive the out location for .json files from the out location of the .ts files
-      if (file.source && file.source.length && SUMMARY_JSON_FILES.test(file.genFileUrl)) {
-        // If we have emitted the ngsummary.ts file, ensure the ngsummary.json file is emitted to
-        // the same location.
-
-        const emittedFile = emitMap.get(file.srcFileUrl);
-
-        if (emittedFile) {
-          const fileName = path.join(path.dirname(emittedFile), path.basename(file.genFileUrl));
-          this.host.writeFile(fileName, file.source, false, error => {});
-        }
-      }
-    });
-
-    return emitResult;
   }
 
   // Private members
@@ -364,7 +342,7 @@ function getAotCompilerOptions(options: CompilerOptions): AotCompilerOptions {
 
 function writeMetadata(
     host: ts.CompilerHost, emitFilePath: string, sourceFile: ts.SourceFile,
-    metadataCache: LowerMetadataCache) {
+    metadataCache: LowerMetadataCache, onError?: (message: string) => void) {
   if (/\.js$/.test(emitFilePath)) {
     const path = emitFilePath.replace(/\.js$/, '.metadata.json');
 
@@ -380,38 +358,54 @@ function writeMetadata(
     const metadata = metadataCache.getMetadata(collectableFile);
     if (metadata) {
       const metadataText = JSON.stringify([metadata]);
-      host.writeFile(path, metadataText, false);
+      host.writeFile(path, metadataText, false, onError, [sourceFile]);
+    }
+  }
+}
+
+function writeNgSummaryJson(
+    host: ts.CompilerHost, emitFilePath: string, sourceFile: ts.SourceFile,
+    generatedFilesByName: Map<string, GeneratedFile>, onError?: (message: string) => void) {
+  // Note: some files have an empty .ngfactory.js/.d.ts file but still need
+  // .ngsummary.json files (e.g. directives / pipes).
+  // We write the ngSummary when we try to emit the .ngfactory.js files
+  // and not the regular .js files as the latter are not emitted when
+  // we generate code for a npm library which ships .js / .d.ts / .metadata.json files.
+  if (/\.ngfactory.js$/.test(emitFilePath)) {
+    const emitPath = emitFilePath.replace(/\.ngfactory\.js$/, '.ngsummary.json');
+    const genFilePath = sourceFile.fileName.replace(/\.ngfactory\.ts$/, '.ngsummary.json');
+    const genFile = generatedFilesByName.get(genFilePath);
+    if (genFile) {
+      host.writeFile(emitPath, genFile.source !, false, onError, [sourceFile]);
     }
   }
 }
 
 function createWriteFileCallback(
     emitFlags: EmitFlags, host: ts.CompilerHost, metadataCache: LowerMetadataCache,
-    emitMap: Map<string, string>, generatedFiles: GeneratedFile[]) {
-  const genFileToSrcFile = new Map<string, string>();
-  generatedFiles.forEach(f => genFileToSrcFile.set(f.genFileUrl, f.srcFileUrl));
+    generatedFiles: GeneratedFile[]) {
+  const generatedFilesByName = new Map<string, GeneratedFile>();
+  generatedFiles.forEach(f => generatedFilesByName.set(f.genFileUrl, f));
   return (fileName: string, data: string, writeByteOrderMark: boolean,
           onError?: (message: string) => void, sourceFiles?: ts.SourceFile[]) => {
-
-    let srcFile: ts.SourceFile|undefined;
-
-    if (sourceFiles && sourceFiles.length == 1) {
-      srcFile = sourceFiles[0];
-      const originalSrcFile = genFileToSrcFile.get(srcFile.fileName) || srcFile.fileName;
-      emitMap.set(originalSrcFile, fileName);
-    }
-
-    const absFile = path.resolve(process.cwd(), fileName);
-    const generatedFile = GENERATED_FILES.test(fileName);
-
-    // Don't emit empty generated files
-    if (!generatedFile || data) {
-      host.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
-
-      if (srcFile && !generatedFile && (emitFlags & EmitFlags.Metadata) != 0) {
-        writeMetadata(host, fileName, srcFile, metadataCache);
+    const sourceFile = sourceFiles && sourceFiles.length == 1 ? sourceFiles[0] : null;
+    if (sourceFile) {
+      const isGenerated = GENERATED_FILES.test(fileName);
+      if (isGenerated) {
+        writeNgSummaryJson(host, fileName, sourceFile, generatedFilesByName, onError);
+      }
+      if (!isGenerated && (emitFlags & EmitFlags.Metadata)) {
+        writeMetadata(host, fileName, sourceFile, metadataCache, onError);
+      }
+      if (isGenerated) {
+        const genFile = generatedFilesByName.get(sourceFile.fileName);
+        if (!genFile || !genFile.stmts || !genFile.stmts.length) {
+          // Don't emit empty generated files
+          return;
+        }
       }
     }
+    host.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
   };
 }
 
