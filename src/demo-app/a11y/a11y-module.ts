@@ -22,6 +22,7 @@ import {
 
 import {GridListAccessibilityDemo} from './grid-list/grid-list-a11y';
 import {RadioAccessibilityDemo} from './radio/radio-a11y';
+import {ToolbarAccessibilityDemo} from './toolbar/toolbar-a11y';
 import {DatepickerAccessibilityDemo} from './datepicker/datepicker-a11y';
 import {IconAccessibilityDemo} from './icon/icon-a11y';
 import {InputAccessibilityDemo} from './input/input-a11y';
@@ -73,6 +74,7 @@ export class AccessibilityRoutingModule {}
     MenuAccessibilityDemo,
     ProgressSpinnerAccessibilityDemo,
     RadioAccessibilityDemo,
+    ToolbarAccessibilityDemo,
     SliderAccessibilityDemo,
     SlideToggleAccessibilityDemo,
     SnackBarAccessibilityDemo,

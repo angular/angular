@@ -9,6 +9,7 @@ import {DialogAccessibilityDemo} from './dialog/dialog-a11y';
 import {GridListAccessibilityDemo} from './grid-list/grid-list-a11y';
 import {RadioAccessibilityDemo} from './radio/radio-a11y';
 import {AccessibilityHome} from './a11y';
+import {ToolbarAccessibilityDemo} from './toolbar/toolbar-a11y';
 import {DatepickerAccessibilityDemo} from './datepicker/datepicker-a11y';
 import {IconAccessibilityDemo} from './icon/icon-a11y';
 import {InputAccessibilityDemo} from './input/input-a11y';
@@ -39,4 +40,5 @@ export const ACCESSIBILITY_DEMO_ROUTES: Routes = [
   {path: 'slide-toggle', component: SlideToggleAccessibilityDemo},
   {path: 'snack-bar', component: SnackBarAccessibilityDemo},
   {path: 'select', component: SelectAccessibilityDemo},
+  {path: 'toolbar', component: ToolbarAccessibilityDemo},
 ];

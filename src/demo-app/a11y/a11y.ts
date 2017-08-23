@@ -35,5 +35,6 @@ export class AccessibilityDemo {
     {name: 'Slide toggle', route: 'slide-toggle'},
     {name: 'Snack bar', route: 'snack-bar'},
     {name: 'Select', route: 'select'},
+    {name: 'Toolbar', route: 'toolbar'},
   ];
 }
