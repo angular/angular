@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {GeneratedFile, toTypeScript} from '@angular/compiler';
+import {AotSummaryResolver, GeneratedFile, StaticSymbolCache, StaticSymbolResolver, toTypeScript} from '@angular/compiler';
 import {NodeFlags} from '@angular/core/src/view/index';
 import {MetadataBundler, privateEntriesToIndex} from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
 
 import {extractSourceMap, originalPositionFor} from '../output/source_map_util';
 
-import {EmittingCompilerHost, MockDirectory, MockMetadataBundlerHost, arrayToMockDir, compile, expectNoDiagnostics, settings, setup, toMockFileArray} from './test_util';
+import {EmittingCompilerHost, MockAotCompilerHost, MockCompilerHost, MockDirectory, MockMetadataBundlerHost, arrayToMockDir, compile, expectNoDiagnostics, settings, setup, toMockFileArray} from './test_util';
 
 describe('compiler (unbundled Angular)', () => {
   let angularFiles = setup();
@@ -458,12 +458,43 @@ describe('compiler (unbundled Angular)', () => {
     });
   });
 
-  describe('inheritance with summaries', () => {
+  describe('summaries', () => {
     let angularSummaryFiles: MockDirectory;
-    beforeEach(() => {
+    beforeAll(() => {
       angularSummaryFiles = compile(angularFiles, {useSummaries: false, emit: true}).outDir;
     });
 
+    inheritanceWithSummariesSpecs(() => angularSummaryFiles);
+
+    it('should not reexport type symbols mentioned in constructors', () => {
+      const libInput: MockDirectory = {
+        'lib': {
+          'base.ts': `
+            export type AType = {};
+
+            export class AClass {
+              constructor(a: AType) {}
+            }
+          `
+        }
+      };
+      const appInput: MockDirectory = {
+        'app': {
+          'main.ts': `
+            export * from '../lib/base';
+          `
+        }
+      };
+
+      const {outDir: libOutDir} = compile([libInput, angularSummaryFiles], {useSummaries: true});
+      const {genFiles: appGenFiles} =
+          compile([appInput, libOutDir, angularSummaryFiles], {useSummaries: true});
+      const appNgFactory = appGenFiles.find((f) => f.genFileUrl === '/app/main.ngfactory.ts');
+      expect(toTypeScript(appNgFactory)).not.toContain('AType');
+    });
+  });
+
+  function inheritanceWithSummariesSpecs(getAngularSummaryFiles: () => MockDirectory) {
     function compileParentAndChild(
         {parentClassDecorator, parentModuleDecorator, childClassDecorator, childModuleDecorator}: {
           parentClassDecorator: string,
@@ -499,8 +530,10 @@ describe('compiler (unbundled Angular)', () => {
         }
       };
 
-      const {outDir: libOutDir} = compile([libInput, angularSummaryFiles], {useSummaries: true});
-      const {genFiles} = compile([libOutDir, appInput, angularSummaryFiles], {useSummaries: true});
+      const {outDir: libOutDir} =
+          compile([libInput, getAngularSummaryFiles()], {useSummaries: true});
+      const {genFiles} =
+          compile([libOutDir, appInput, getAngularSummaryFiles()], {useSummaries: true});
       return genFiles.find(gf => gf.srcFileUrl === '/app/main.ts');
     }
 
@@ -534,8 +567,10 @@ describe('compiler (unbundled Angular)', () => {
         }
       };
 
-      const {outDir: libOutDir} = compile([libInput, angularSummaryFiles], {useSummaries: true});
-      const {genFiles} = compile([libOutDir, appInput, angularSummaryFiles], {useSummaries: true});
+      const {outDir: libOutDir} =
+          compile([libInput, getAngularSummaryFiles()], {useSummaries: true});
+      const {genFiles} =
+          compile([libOutDir, appInput, getAngularSummaryFiles()], {useSummaries: true});
       const mainNgFactory = genFiles.find(gf => gf.srcFileUrl === '/app/main.ts');
       const flags = NodeFlags.TypeDirective | NodeFlags.Component | NodeFlags.OnDestroy;
       expect(toTypeScript(mainNgFactory))
@@ -584,11 +619,11 @@ describe('compiler (unbundled Angular)', () => {
            }
          };
          const {outDir: lib1OutDir} =
-             compile([lib1Input, angularSummaryFiles], {useSummaries: true});
+             compile([lib1Input, getAngularSummaryFiles()], {useSummaries: true});
          const {outDir: lib2OutDir} =
-             compile([lib1OutDir, lib2Input, angularSummaryFiles], {useSummaries: true});
+             compile([lib1OutDir, lib2Input, getAngularSummaryFiles()], {useSummaries: true});
          const {genFiles} =
-             compile([lib2OutDir, appInput, angularSummaryFiles], {useSummaries: true});
+             compile([lib2OutDir, appInput, getAngularSummaryFiles()], {useSummaries: true});
          const mainNgFactory = genFiles.find(gf => gf.srcFileUrl === '/app/main.ts');
          const flags = NodeFlags.TypeDirective | NodeFlags.Component | NodeFlags.OnDestroy;
          expect(toTypeScript(mainNgFactory))
@@ -714,7 +749,7 @@ describe('compiler (unbundled Angular)', () => {
                 'Please add a NgModule decorator to the class.');
       });
     });
-  });
+  }
 });
 
 describe('compiler (bundled Angular)', () => {
