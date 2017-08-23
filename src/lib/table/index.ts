@@ -10,7 +10,7 @@ import {NgModule} from '@angular/core';
 import {MdTable} from './table';
 import {CdkTableModule} from '@angular/cdk/table';
 import {MdCell, MdHeaderCell, MdCellDef, MdHeaderCellDef, MdColumnDef} from './cell';
-import {MdHeaderRow, MdRow, MdHeaderRowDef, MdRowDef} from './row';
+import {MdHeaderRow, MdRow, MdHeaderRowDef, MdRowDef, MatHeaderRowDef, MatRowDef} from './row';
 import {CommonModule} from '@angular/common';
 import {MdCommonModule} from '../core';
 
@@ -22,9 +22,11 @@ export * from './row';
   imports: [CdkTableModule, CommonModule, MdCommonModule],
   exports: [MdTable, MdCellDef, MdHeaderCellDef, MdColumnDef,
     MdHeaderRowDef, MdRowDef,
-    MdHeaderCell, MdCell, MdHeaderRow, MdRow],
+    MdHeaderCell, MdCell, MdHeaderRow, MdRow,
+    MatHeaderRowDef, MatRowDef],
   declarations: [MdTable, MdCellDef, MdHeaderCellDef, MdColumnDef,
     MdHeaderRowDef, MdRowDef,
-    MdHeaderCell, MdCell, MdHeaderRow, MdRow],
+    MdHeaderCell, MdCell, MdHeaderRow, MdRow,
+    MatHeaderRowDef, MatRowDef],
 })
 export class MdTableModule {}

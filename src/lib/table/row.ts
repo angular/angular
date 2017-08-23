@@ -26,22 +26,38 @@ export const _MdRow = CdkRow;
  * Captures the header row's template and other header properties such as the columns to display.
  */
 @Directive({
-  selector: '[mdHeaderRowDef], [matHeaderRowDef]',
+  selector: '[mdHeaderRowDef]',
   providers: [{provide: CdkHeaderRowDef, useExisting: MdHeaderRowDef}],
   inputs: ['columns: mdHeaderRowDef'],
 })
 export class MdHeaderRowDef extends _MdHeaderRowDef { }
+
+/** Mat-compatible version of MdHeaderRowDef */
+@Directive({
+  selector: '[matHeaderRowDef]',
+  providers: [{provide: CdkHeaderRowDef, useExisting: MatHeaderRowDef}],
+  inputs: ['columns: matHeaderRowDef'],
+})
+export class MatHeaderRowDef extends _MdHeaderRowDef { }
 
 /**
  * Data row definition for the md-table.
  * Captures the header row's template and other row properties such as the columns to display.
  */
 @Directive({
-  selector: '[mdRowDef], [matRowDef]',
+  selector: '[mdRowDef]',
   providers: [{provide: CdkRowDef, useExisting: MdRowDef}],
   inputs: ['columns: mdRowDefColumns'],
 })
 export class MdRowDef extends _MdCdkRowDef { }
+
+/** Mat-compatible version of MdRowDef */
+@Directive({
+  selector: '[matRowDef]',
+  providers: [{provide: CdkRowDef, useExisting: MatRowDef}],
+  inputs: ['columns: matRowDefColumns'],
+})
+export class MatRowDef extends _MdCdkRowDef { }
 
 /** Header template container that contains the cell outlet. Adds the right class and role. */
 @Component({
