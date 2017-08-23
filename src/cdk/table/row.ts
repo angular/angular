@@ -15,7 +15,8 @@ import {
   IterableDiffers,
   SimpleChanges,
   TemplateRef,
-  ViewContainerRef
+  ViewContainerRef,
+  ViewEncapsulation,
 } from '@angular/core';
 import {CdkCellDef} from './cell';
 
@@ -147,6 +148,7 @@ export class CdkCellOutlet {
     'role': 'row',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
 })
 export class CdkHeaderRow { }
 
@@ -159,5 +161,6 @@ export class CdkHeaderRow { }
     'role': 'row',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
 })
 export class CdkRow { }

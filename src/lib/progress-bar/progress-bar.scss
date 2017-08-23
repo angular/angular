@@ -5,7 +5,7 @@ $mat-progress-bar-full-animation-duration: 2000ms !default;
 $mat-progress-bar-piece-animation-duration: 250ms !default;
 
 
-:host {
+.mat-progress-bar {
   display: block;
   // Height is provided for md-progress-bar to act as a default.
   height: $mat-progress-bar-height;
@@ -59,6 +59,12 @@ $mat-progress-bar-piece-animation-duration: 250ms !default;
     left: 0;
   }
 
+  // Reverse the apparent directionality of progress vars for rtl.
+  &[dir='rtl'],
+  [dir='rtl'] & {
+    transform: rotateY(180deg);
+  }
+
   &[mode='query'] {
     transform: rotateZ(180deg);
   }
@@ -98,11 +104,6 @@ $mat-progress-bar-piece-animation-duration: 250ms !default;
   }
 }
 
-
-// Reverse the apparent directionality of progress vars for rtl.
-:host-context([dir='rtl']) {
-  transform: rotateY(180deg);
-}
 
 // The values used for animations in md-progress-bar, both timing and transformation, can be
 // considered magic values. They are sourced from the Material Design example spec and duplicate

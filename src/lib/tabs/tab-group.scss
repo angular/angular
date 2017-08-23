@@ -2,7 +2,7 @@
 @import '../core/style/layout-common';
 @import 'tabs-common';
 
-:host {
+.mat-tab-group {
   display: flex;
   flex-direction: column;
 
@@ -23,8 +23,8 @@
   }
 }
 
-:host[md-stretch-tabs] .mat-tab-label,
-:host[mat-stretch-tabs] .mat-tab-label {
+.mat-tab-group[md-stretch-tabs] .mat-tab-label,
+.mat-tab-group[mat-stretch-tabs] .mat-tab-label {
   flex-basis: 0;
   flex-grow: 1;
 }
@@ -51,7 +51,7 @@
     flex-grow: 1;
   }
 
-  :host.mat-tab-group-dynamic-height &.mat-tab-body-active {
+  .mat-tab-group.mat-tab-group-dynamic-height &.mat-tab-body-active {
     overflow-y: hidden;
   }
 }

@@ -12,7 +12,7 @@ $mat-progress-spinner-stroke-width: 10px !default;
 $mat-progress-spinner-viewport-size: 100px !default;
 
 
-:host {
+.mat-progress-spinner {
   display: block;
   // Height and width are provided for mat-progress-spinner to act as a default.
   // The height and width are expected to be overwritten by application css.

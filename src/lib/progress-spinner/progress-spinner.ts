@@ -16,6 +16,7 @@ import {
   Renderer2,
   Directive,
   ViewChild,
+  ViewEncapsulation,
 } from '@angular/core';
 import {CanColor, mixinColor} from '../core/common-behaviors/color';
 
@@ -70,6 +71,7 @@ export const _MdProgressSpinnerMixinBase = mixinColor(MdProgressSpinnerBase, 'pr
   selector: 'md-progress-spinner, mat-progress-spinner',
   host: {
     'role': 'progressbar',
+    'class': 'mat-progress-spinner',
     '[attr.aria-valuemin]': '_ariaValueMin',
     '[attr.aria-valuemax]': '_ariaValueMax',
     '[attr.aria-valuenow]': 'value',
@@ -79,6 +81,7 @@ export const _MdProgressSpinnerMixinBase = mixinColor(MdProgressSpinnerBase, 'pr
   templateUrl: 'progress-spinner.html',
   styleUrls: ['progress-spinner.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
 })
 export class MdProgressSpinner extends _MdProgressSpinnerMixinBase
     implements OnDestroy, CanColor {
@@ -279,12 +282,13 @@ export class MdProgressSpinner extends _MdProgressSpinnerMixinBase
   host: {
     'role': 'progressbar',
     'mode': 'indeterminate',
-    'class': 'mat-spinner',
+    'class': 'mat-spinner mat-progress-spinner',
   },
   inputs: ['color'],
   templateUrl: 'progress-spinner.html',
   styleUrls: ['progress-spinner.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
 })
 export class MdSpinner extends MdProgressSpinner {
   constructor(elementRef: ElementRef, ngZone: NgZone, renderer: Renderer2) {

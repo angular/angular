@@ -62,6 +62,7 @@ export class MdGridTile {
   selector: 'md-grid-tile-header, mat-grid-tile-header, md-grid-tile-footer, mat-grid-tile-footer',
   templateUrl: 'grid-tile-text.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
 })
 export class MdGridTileText implements AfterContentInit {
   /**

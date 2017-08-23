@@ -22,6 +22,7 @@ import {
   AfterContentInit,
   AfterContentChecked,
   OnDestroy,
+  ViewEncapsulation,
 } from '@angular/core';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {map} from '@angular/cdk/rxjs';
@@ -62,6 +63,7 @@ export const _MdTabGroupMixinBase = mixinColor(mixinDisableRipple(MdTabGroupBase
   selector: 'md-tab-group, mat-tab-group',
   templateUrl: 'tab-group.html',
   styleUrls: ['tab-group.css'],
+  encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   inputs: ['color', 'disableRipple'],
   host: {

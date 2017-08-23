@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, Component, Directive} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Directive, ViewEncapsulation} from '@angular/core';
 import {
   CdkHeaderRow,
   CdkRow,
@@ -52,6 +52,7 @@ export class MdRowDef extends _MdCdkRowDef { }
     'role': 'row',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
 })
 export class MdHeaderRow extends _MdHeaderRow { }
 
@@ -64,5 +65,6 @@ export class MdHeaderRow extends _MdHeaderRow { }
     'role': 'row',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
 })
 export class MdRow extends _MdRow { }

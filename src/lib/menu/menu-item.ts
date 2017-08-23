@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ElementRef, OnDestroy, ChangeDetectionStrategy} from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnDestroy,
+  ChangeDetectionStrategy,
+  ViewEncapsulation,
+} from '@angular/core';
 import {FocusableOption} from '../core/a11y/focus-key-manager';
 import {CanDisable, mixinDisabled} from '../core/common-behaviors/disabled';
 import {Subject} from 'rxjs/Subject';
@@ -36,6 +42,7 @@ export const _MdMenuItemMixinBase = mixinDisabled(MdMenuItemBase);
     '(mouseenter)': '_emitHoverEvent()',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
   templateUrl: 'menu-item.html',
   exportAs: 'mdMenuItem',
 })

@@ -8,8 +8,18 @@
 
 import {TemplatePortal} from '../core/portal/portal';
 import {
-  ViewContainerRef, Input, TemplateRef, ViewChild, OnInit, ContentChild,
-  Component, ChangeDetectionStrategy, OnDestroy, OnChanges, SimpleChanges,
+  ChangeDetectionStrategy,
+  Component,
+  ContentChild,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  SimpleChanges,
+  TemplateRef,
+  ViewChild,
+  ViewContainerRef,
+  ViewEncapsulation,
 } from '@angular/core';
 import {CanDisable, mixinDisabled} from '../core/common-behaviors/disabled';
 import {MdTabLabel} from './tab-label';
@@ -26,6 +36,7 @@ export const _MdTabMixinBase = mixinDisabled(MdTabBase);
   templateUrl: 'tab.html',
   inputs: ['disabled'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
   exportAs: 'mdTab',
 })
 export class MdTab extends _MdTabMixinBase implements OnInit, CanDisable, OnChanges, OnDestroy {

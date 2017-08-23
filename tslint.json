@@ -79,6 +79,10 @@
       "check-type",
       "check-preblock"
     ],
+    "no-view-encapsulation": [
+      true,
+      "(lib|cdk)\/((?!spec.ts).)*.ts$"
+    ],
     // Bans jasmine helper functions that will prevent the CI from properly running tests.
     "ban": [
       true,

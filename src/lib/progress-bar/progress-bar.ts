@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ChangeDetectionStrategy, Input} from '@angular/core';
+import {Component, ChangeDetectionStrategy, Input, ViewEncapsulation} from '@angular/core';
 
 // TODO(josephperrott): Benchpress tests.
 // TODO(josephperrott): Add ARIA attributes for progressbar "for".
@@ -32,6 +32,7 @@ import {Component, ChangeDetectionStrategy, Input} from '@angular/core';
   templateUrl: 'progress-bar.html',
   styleUrls: ['progress-bar.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
 })
 export class MdProgressBar {
   /** Color of the progress bar. */
