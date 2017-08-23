@@ -7,7 +7,7 @@
  */
 
 import {AotCompilerHost, StaticSymbol, UrlResolver, createOfflineCompileUrlResolver, syntaxError} from '@angular/compiler';
-import {AngularCompilerOptions, CollectorOptions, MetadataCollector, ModuleMetadata} from '@angular/tsc-wrapped';
+import {AngularCompilerOptions, CollectorOptions, MetadataCollector, ModuleMetadata, VERSION} from '@angular/tsc-wrapped';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
@@ -74,9 +74,9 @@ export abstract class BaseAotCompilerHost<C extends BaseAotCompilerHostContext> 
         return this.readMetadata(metadataPath, filePath);
       } else {
         // If there is a .d.ts file but no metadata file we need to produce a
-        // v3 metadata from the .d.ts file as v3 includes the exports we need
-        // to resolve symbols.
-        return [this.upgradeVersion1Metadata(
+        // metadata from the .d.ts file as metadata files capture reexports
+        // (starting with v3).
+        return [this.upgradeMetadataWithDtsData(
             {'__symbolic': 'module', 'version': 1, 'metadata': {}}, filePath)];
       }
     }
@@ -96,10 +96,16 @@ export abstract class BaseAotCompilerHost<C extends BaseAotCompilerHostContext> 
       const metadatas: ModuleMetadata[] = metadataOrMetadatas ?
           (Array.isArray(metadataOrMetadatas) ? metadataOrMetadatas : [metadataOrMetadatas]) :
           [];
-      const v1Metadata = metadatas.find(m => m.version === 1);
-      let v3Metadata = metadatas.find(m => m.version === 3);
-      if (!v3Metadata && v1Metadata) {
-        metadatas.push(this.upgradeVersion1Metadata(v1Metadata, dtsFilePath));
+      if (metadatas.length) {
+        let maxMetadata: ModuleMetadata = metadatas[0];
+        metadatas.forEach((md) => {
+          if (md['version'] > maxMetadata['version']) {
+            maxMetadata = md;
+          }
+        });
+        if (maxMetadata['version'] < VERSION) {
+          metadatas.push(this.upgradeMetadataWithDtsData(maxMetadata, dtsFilePath));
+        }
       }
       this.resolverCache.set(filePath, metadatas);
       return metadatas;
@@ -109,30 +115,30 @@ export abstract class BaseAotCompilerHost<C extends BaseAotCompilerHostContext> 
     }
   }
 
-  private upgradeVersion1Metadata(v1Metadata: ModuleMetadata, dtsFilePath: string): ModuleMetadata {
-    // patch up v1 to v3 by merging the metadata with metadata collected from the d.ts file
-    // as the only difference between the versions is whether all exports are contained in
-    // the metadata and the `extends` clause.
-    let v3Metadata: ModuleMetadata = {'__symbolic': 'module', 'version': 3, 'metadata': {}};
-    if (v1Metadata.exports) {
-      v3Metadata.exports = v1Metadata.exports;
+  private upgradeMetadataWithDtsData(oldMetadata: ModuleMetadata, dtsFilePath: string):
+      ModuleMetadata {
+    // patch v1 to v3 by adding exports and the `extends` clause.
+    // patch v3 to v4 by adding `interface` symbols for TypeAlias
+    let newMetadata: ModuleMetadata = {
+      '__symbolic': 'module',
+      'version': VERSION,
+      'metadata': {...oldMetadata.metadata},
+    };
+    if (oldMetadata.exports) {
+      newMetadata.exports = oldMetadata.exports;
     }
-    for (let prop in v1Metadata.metadata) {
-      v3Metadata.metadata[prop] = v1Metadata.metadata[prop];
-    }
-
-    const exports = this.metadataProvider.getMetadata(this.getSourceFile(dtsFilePath));
-    if (exports) {
-      for (let prop in exports.metadata) {
-        if (!v3Metadata.metadata[prop]) {
-          v3Metadata.metadata[prop] = exports.metadata[prop];
+    const dtsMetadata = this.metadataProvider.getMetadata(this.getSourceFile(dtsFilePath));
+    if (dtsMetadata) {
+      for (let prop in dtsMetadata.metadata) {
+        if (!newMetadata.metadata[prop]) {
+          newMetadata.metadata[prop] = dtsMetadata.metadata[prop];
         }
       }
-      if (exports.exports) {
-        v3Metadata.exports = exports.exports;
+      if (dtsMetadata.exports) {
+        newMetadata.exports = dtsMetadata.exports;
       }
     }
-    return v3Metadata;
+    return newMetadata;
   }
 
   loadResource(filePath: string): Promise<string>|string {

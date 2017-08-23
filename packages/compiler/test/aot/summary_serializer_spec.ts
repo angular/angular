@@ -9,6 +9,7 @@
 import {AotSummaryResolver, AotSummaryResolverHost, CompileSummaryKind, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, StaticSymbolResolverHost} from '@angular/compiler';
 import {deserializeSummaries, serializeSummaries} from '@angular/compiler/src/aot/summary_serializer';
 import {summaryFileName} from '@angular/compiler/src/aot/util';
+import {VERSION} from '@angular/tsc-wrapped';
 
 import {MockStaticSymbolResolverHost} from './static_symbol_resolver_spec';
 import {MockAotSummaryResolverHost, createMockOutputContext} from './summary_resolver_spec';
@@ -196,7 +197,7 @@ export function main() {
           export var local = 'a';
         `,
                '/tmp/non_summary.d.ts':
-                   {__symbolic: 'module', version: 3, metadata: {'external': 'b'}}
+                   {__symbolic: 'module', version: VERSION, metadata: {'external': 'b'}}
              });
          const serialized = serializeSummaries(
              'someFile.ts', createMockOutputContext(), summaryResolver, symbolResolver, [{
