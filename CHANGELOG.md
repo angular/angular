@@ -1,3 +1,25 @@
+<a name="4.3.6"></a>
+## [4.3.6](https://github.com/angular/angular/compare/4.3.5...4.3.6) (2017-08-23)
+
+
+### Bug Fixes
+
+* **animations:** ensure animations are disabled on the element containing the @.disabled flag ([#18714](https://github.com/angular/angular/issues/18714)) ([5d68c83](https://github.com/angular/angular/commit/5d68c83))
+* **animations:** make sure @.disabled respects disabled parent/sub animation sequences ([#18715](https://github.com/angular/angular/issues/18715)) ([c3dcbf9](https://github.com/angular/angular/commit/c3dcbf9))
+* **animations:** make sure animation cancellations respect AUTO style values ([#18787](https://github.com/angular/angular/issues/18787)) ([9a754f9](https://github.com/angular/angular/commit/9a754f9)), closes [#17450](https://github.com/angular/angular/issues/17450)
+* **animations:** resolve error when using AnimationBuilder with platform-server ([#18642](https://github.com/angular/angular/issues/18642)) ([f9b2905](https://github.com/angular/angular/commit/f9b2905)), closes [#18635](https://github.com/angular/angular/issues/18635)
+* **animations:** restore auto-style support for removed DOM nodes ([#18787](https://github.com/angular/angular/issues/18787)) ([e1f45a3](https://github.com/angular/angular/commit/e1f45a3))
+* **core:** correct order in ContentChildren query result ([#18326](https://github.com/angular/angular/issues/18326)) ([fec3b1a](https://github.com/angular/angular/commit/fec3b1a)), closes [#16568](https://github.com/angular/angular/issues/16568)
+* **core:** make sure onStable runs in the right zone ([#18706](https://github.com/angular/angular/issues/18706)) ([ee5591d](https://github.com/angular/angular/commit/ee5591d))
+
+
+### Features
+
+* **animations:** allow @.disabled property to work without an expression ([#18713](https://github.com/angular/angular/issues/18713)) ([ac58914](https://github.com/angular/angular/commit/ac58914))
+* **common:** add an empty DeprecatedI18NPipesModule module ([793f31b](https://github.com/angular/angular/commit/793f31b))
+
+
+
 <a name="5.0.0-beta.4"></a>
 # [5.0.0-beta.4](https://github.com/angular/angular/compare/5.0.0-beta.3...5.0.0-beta.4) (2017-08-16)
 
