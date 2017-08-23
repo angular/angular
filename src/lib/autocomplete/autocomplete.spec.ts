@@ -377,6 +377,16 @@ describe('MdAutocomplete', () => {
           .toContain('mat-autocomplete-visible', 'Expected panel to be visible.');
     }));
 
+    it('should animate the placeholder when the input is focused', () => {
+      const inputContainer = fixture.componentInstance.formField;
+
+      spyOn(inputContainer, '_animateAndLockPlaceholder');
+      expect(inputContainer._animateAndLockPlaceholder).not.toHaveBeenCalled();
+
+      dispatchFakeEvent(fixture.debugElement.query(By.css('input')).nativeElement, 'focusin');
+      expect(inputContainer._animateAndLockPlaceholder).toHaveBeenCalled();
+    });
+
   });
 
   it('should have the correct text direction in RTL', () => {

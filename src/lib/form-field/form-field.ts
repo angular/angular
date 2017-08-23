@@ -35,13 +35,14 @@ import {
   MD_PLACEHOLDER_GLOBAL_OPTIONS,
   PlaceholderOptions
 } from '../core/placeholder/placeholder-options';
-import {startWith} from '@angular/cdk/rxjs';
+import {startWith, first} from '@angular/cdk/rxjs';
 import {MdError} from './error';
 import {MdFormFieldControl} from './form-field-control';
 import {MdHint} from './hint';
 import {MdPlaceholder} from './placeholder';
 import {MdPrefix} from './prefix';
 import {MdSuffix} from './suffix';
+import {fromEvent} from 'rxjs/observable/fromEvent';
 
 
 let nextUniqueId = 0;
@@ -104,8 +105,13 @@ export class MdFormField implements AfterViewInit, AfterContentInit, AfterConten
   }
   private _hideRequiredMarker: boolean;
 
+  /** Override for the logic that disables the placeholder animation in certain cases. */
+  private _showAlwaysAnimate = false;
+
   /** Whether the floating label should always float or not. */
-  get _shouldAlwaysFloat() { return this._floatPlaceholder === 'always'; }
+  get _shouldAlwaysFloat() {
+    return this._floatPlaceholder === 'always' && !this._showAlwaysAnimate;
+  }
 
   /** Whether the placeholder can float or not. */
   get _canPlaceholderFloat() { return this._floatPlaceholder !== 'never'; }
@@ -139,6 +145,7 @@ export class MdFormField implements AfterViewInit, AfterContentInit, AfterConten
   /** Reference to the form field's underline element. */
   @ViewChild('underline') underlineRef: ElementRef;
   @ViewChild('connectionContainer') _connectionContainerRef: ElementRef;
+  @ViewChild('placeholder') private _placeholder: ElementRef;
   @ContentChild(MdFormFieldControl) _control: MdFormFieldControl<any>;
   @ContentChild(MdPlaceholder) _placeholderChild: MdPlaceholder;
   @ContentChildren(MdError) _errorChildren: QueryList<MdError>;
@@ -208,6 +215,20 @@ export class MdFormField implements AfterViewInit, AfterContentInit, AfterConten
   _getDisplayedMessages(): 'error' | 'hint' {
     return (this._errorChildren && this._errorChildren.length > 0 &&
         this._control.errorState) ? 'error' : 'hint';
+  }
+
+  /** Animates the placeholder up and locks it in position. */
+  _animateAndLockPlaceholder(): void {
+    if (this._placeholder && this._canPlaceholderFloat) {
+      this._showAlwaysAnimate = true;
+      this._floatPlaceholder = 'always';
+
+      first.call(fromEvent(this._placeholder.nativeElement, 'transitionend')).subscribe(() => {
+        this._showAlwaysAnimate = false;
+      });
+
+      this._changeDetectorRef.markForCheck();
+    }
   }
 
   /**

@@ -16,6 +16,7 @@
                [class.mat-form-field-float]="_canPlaceholderFloat"
                [class.mat-accent]="color == 'accent'"
                [class.mat-warn]="color == 'warn'"
+               #placeholder
                *ngIf="_hasPlaceholder()">
           <ng-content select="md-placeholder, mat-placeholder"></ng-content>
           {{_control.placeholder}}
