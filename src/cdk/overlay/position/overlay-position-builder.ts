@@ -7,7 +7,7 @@
  */
 
 import {ElementRef, Injectable} from '@angular/core';
-import {ViewportRuler} from './viewport-ruler';
+import {ViewportRuler} from '@angular/cdk/scrolling';
 import {ConnectedPositionStrategy} from './connected-position-strategy';
 import {GlobalPositionStrategy} from './global-position-strategy';
 import {OverlayConnectionPosition, OriginConnectionPosition} from './connected-position';

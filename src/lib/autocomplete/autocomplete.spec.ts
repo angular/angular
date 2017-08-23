@@ -11,7 +11,8 @@ import {
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {OverlayContainer, ScrollDispatcher} from '@angular/cdk/overlay';
+import {ScrollDispatcher} from '@angular/cdk/scrolling';
+import {OverlayContainer} from '@angular/cdk/overlay';
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {map, RxChain, startWith} from '@angular/cdk/rxjs';
 import {createKeyboardEvent, dispatchFakeEvent, typeInElement} from '@angular/cdk/testing';

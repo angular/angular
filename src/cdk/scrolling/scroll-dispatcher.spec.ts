@@ -1,7 +1,7 @@
 import {inject, TestBed, async, fakeAsync, ComponentFixture, tick} from '@angular/core/testing';
 import {NgModule, Component, ViewChild, ElementRef} from '@angular/core';
+import {Scrollable, ScrollDispatcher, ScrollDispatchModule} from './public_api';
 import {dispatchFakeEvent} from '@angular/cdk/testing';
-import {OverlayModule, Scrollable, ScrollDispatcher} from '../index';
 
 describe('Scroll Dispatcher', () => {
 
@@ -176,7 +176,7 @@ class NestedScrollingComponent {
 
 const TEST_COMPONENTS = [ScrollingComponent, NestedScrollingComponent];
 @NgModule({
-  imports: [OverlayModule],
+  imports: [ScrollDispatchModule],
   providers: [ScrollDispatcher],
   exports: TEST_COMPONENTS,
   declarations: TEST_COMPONENTS,

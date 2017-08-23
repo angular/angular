@@ -25,7 +25,7 @@ import {
   QueryList,
   forwardRef,
 } from '@angular/core';
-import {ViewportRuler} from '@angular/cdk/overlay';
+import {ViewportRuler} from '@angular/cdk/scrolling';
 import {Directionality} from '@angular/cdk/bidi';
 import {Platform} from '@angular/cdk/platform';
 import {auditTime, takeUntil} from '@angular/cdk/rxjs';

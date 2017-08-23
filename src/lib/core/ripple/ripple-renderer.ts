@@ -8,7 +8,7 @@
 
 import {ElementRef, NgZone} from '@angular/core';
 import {Platform} from '@angular/cdk/platform';
-import {ViewportRuler} from '@angular/cdk/overlay';
+import {ViewportRuler} from '@angular/cdk/scrolling';
 import {RippleRef, RippleState} from './ripple-ref';
 
 

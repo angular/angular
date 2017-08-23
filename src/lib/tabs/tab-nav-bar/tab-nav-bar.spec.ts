@@ -1,7 +1,7 @@
 import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {Component, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {ViewportRuler} from '@angular/cdk/overlay';
+import {ViewportRuler} from '@angular/cdk/scrolling';
 import {dispatchFakeEvent, dispatchMouseEvent, FakeViewportRuler} from '@angular/cdk/testing';
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {Subject} from 'rxjs/Subject';

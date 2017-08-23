@@ -1,7 +1,7 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {ViewportRuler} from '@angular/cdk/overlay';
+import {ViewportRuler} from '@angular/cdk/scrolling';
 import {FakeViewportRuler} from '@angular/cdk/testing';
 import {MdButtonModule} from './index';
 import {MdRipple} from '../core/ripple/index';

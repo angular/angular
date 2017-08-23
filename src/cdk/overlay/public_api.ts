@@ -8,15 +8,15 @@
 import {NgModule, Provider} from '@angular/core';
 import {PortalModule} from '@angular/cdk/portal';
 import {Overlay} from './overlay';
-import {ScrollDispatchModule} from './scroll/index';
+import {ScrollDispatchModule, VIEWPORT_RULER_PROVIDER} from '@angular/cdk/scrolling';
 import {
   ConnectedOverlayDirective,
-  OverlayOrigin,
   MD_CONNECTED_OVERLAY_SCROLL_STRATEGY_PROVIDER,
+  OverlayOrigin,
 } from './overlay-directives';
 import {OverlayPositionBuilder} from './position/overlay-position-builder';
-import {VIEWPORT_RULER_PROVIDER} from './position/viewport-ruler';
 import {OVERLAY_CONTAINER_PROVIDER} from './overlay-container';
+import {ScrollStrategyOptions} from './scroll/scroll-strategy-options';
 
 
 export const OVERLAY_PROVIDERS: Provider[] = [
@@ -31,7 +31,7 @@ export const OVERLAY_PROVIDERS: Provider[] = [
   imports: [PortalModule, ScrollDispatchModule],
   exports: [ConnectedOverlayDirective, OverlayOrigin, ScrollDispatchModule],
   declarations: [ConnectedOverlayDirective, OverlayOrigin],
-  providers: [OVERLAY_PROVIDERS],
+  providers: [OVERLAY_PROVIDERS, ScrollStrategyOptions],
 })
 export class OverlayModule {}
 
@@ -42,7 +42,7 @@ export {FullscreenOverlayContainer} from './fullscreen-overlay-container';
 export {OverlayRef} from './overlay-ref';
 export {OverlayState} from './overlay-state';
 export {ConnectedOverlayDirective, OverlayOrigin} from './overlay-directives';
-export {ViewportRuler} from './position/viewport-ruler';
+export {ViewportRuler} from '@angular/cdk/scrolling';
 export {ComponentType} from '@angular/cdk/portal';
 
 export * from './position/connected-position';
@@ -52,4 +52,4 @@ export * from './scroll/index';
 export {PositionStrategy} from './position/position-strategy';
 export {GlobalPositionStrategy} from './position/global-position-strategy';
 export {ConnectedPositionStrategy} from './position/connected-position-strategy';
-export {VIEWPORT_RULER_PROVIDER} from './position/viewport-ruler';
+export {VIEWPORT_RULER_PROVIDER} from '@angular/cdk/scrolling';

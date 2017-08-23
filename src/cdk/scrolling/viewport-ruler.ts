@@ -7,7 +7,7 @@
  */
 
 import {Injectable, Optional, SkipSelf} from '@angular/core';
-import {ScrollDispatcher} from '../scroll/scroll-dispatcher';
+import {ScrollDispatcher} from './scroll-dispatcher';
 
 
 /**

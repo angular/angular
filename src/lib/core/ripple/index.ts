@@ -7,7 +7,7 @@
  */
 
 import {NgModule} from '@angular/core';
-import {ScrollDispatchModule, VIEWPORT_RULER_PROVIDER} from '@angular/cdk/overlay';
+import {ScrollDispatchModule, VIEWPORT_RULER_PROVIDER} from '@angular/cdk/scrolling';
 import {PlatformModule} from '@angular/cdk/platform';
 import {MdCommonModule} from '../common-behaviors/common-module';
 import {MdRipple} from './ripple';

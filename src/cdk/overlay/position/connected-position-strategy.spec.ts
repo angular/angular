@@ -1,12 +1,12 @@
 import {ElementRef} from '@angular/core';
 import {TestBed, inject} from '@angular/core/testing';
 import {ConnectedPositionStrategy} from './connected-position-strategy';
-import {ViewportRuler, VIEWPORT_RULER_PROVIDER} from './viewport-ruler';
+import {ViewportRuler, VIEWPORT_RULER_PROVIDER} from '@angular/cdk/scrolling';
 import {OverlayPositionBuilder} from './overlay-position-builder';
 import {ConnectedOverlayPositionChange} from './connected-position';
-import {Scrollable} from '../scroll/scrollable';
+import {Scrollable} from '@angular/cdk/scrolling';
 import {Subscription} from 'rxjs/Subscription';
-import {ScrollDispatchModule} from '../scroll/index';
+import {ScrollDispatchModule} from '@angular/cdk/scrolling';
 import {OverlayRef} from '../overlay-ref';
 
 

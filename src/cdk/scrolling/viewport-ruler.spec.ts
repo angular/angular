@@ -1,5 +1,5 @@
 import {TestBed, inject} from '@angular/core/testing';
-import {ScrollDispatchModule} from '../scroll/index';
+import {ScrollDispatchModule} from './public_api';
 import {ViewportRuler, VIEWPORT_RULER_PROVIDER} from './viewport-ruler';
 
 

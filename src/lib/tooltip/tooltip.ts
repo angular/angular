@@ -24,6 +24,7 @@ import {
 } from '@angular/core';
 import {animate, AnimationEvent, state, style, transition, trigger} from '@angular/animations';
 import {ComponentPortal} from '@angular/cdk/portal';
+import {ScrollDispatcher} from '@angular/cdk/scrolling';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {Directionality} from '@angular/cdk/bidi';
@@ -36,7 +37,6 @@ import {
   OverlayRef,
   OverlayState,
   RepositionScrollStrategy,
-  ScrollDispatcher,
   // This import is only used to define a generic type. The current TypeScript version incorrectly
   // considers such imports as unused (https://github.com/Microsoft/TypeScript/issues/14953)
   // tslint:disable-next-line:no-unused-variable

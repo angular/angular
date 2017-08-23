@@ -6,14 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModule} from '@angular/core';
-import {PlatformModule} from '@angular/cdk/platform';
-import {SCROLL_DISPATCHER_PROVIDER} from './scroll-dispatcher';
-import {Scrollable} from './scrollable';
-import {ScrollStrategyOptions} from './scroll-strategy-options';
-
-export {Scrollable} from './scrollable';
-export {ScrollDispatcher} from './scroll-dispatcher';
+export {Scrollable, ScrollDispatcher} from '@angular/cdk/scrolling';
 
 // Export pre-defined scroll strategies and interface to build custom ones.
 export {ScrollStrategy} from './scroll-strategy';
@@ -22,11 +15,3 @@ export {RepositionScrollStrategy} from './reposition-scroll-strategy';
 export {CloseScrollStrategy} from './close-scroll-strategy';
 export {NoopScrollStrategy} from './noop-scroll-strategy';
 export {BlockScrollStrategy} from './block-scroll-strategy';
-
-@NgModule({
-  imports: [PlatformModule],
-  exports: [Scrollable],
-  declarations: [Scrollable],
-  providers: [SCROLL_DISPATCHER_PROVIDER, ScrollStrategyOptions],
-})
-export class ScrollDispatchModule { }

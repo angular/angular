@@ -2,7 +2,7 @@ import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/t
 import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {ViewportRuler} from '@angular/cdk/overlay';
+import {ViewportRuler} from '@angular/cdk/scrolling';
 import {dispatchFakeEvent, FakeViewportRuler} from '@angular/cdk/testing';
 import {RIPPLE_FADE_IN_DURATION, RIPPLE_FADE_OUT_DURATION} from '../core/ripple/ripple-renderer';
 import {MdRadioButton, MdRadioChange, MdRadioGroup, MdRadioModule} from './index';

@@ -18,7 +18,7 @@ import {
   InjectionToken,
   Optional,
 } from '@angular/core';
-import {ViewportRuler} from '@angular/cdk/overlay';
+import {ViewportRuler} from '@angular/cdk/scrolling';
 import {Platform} from '@angular/cdk/platform';
 import {RippleConfig, RippleRenderer} from './ripple-renderer';
 import {RippleRef} from './ripple-ref';
