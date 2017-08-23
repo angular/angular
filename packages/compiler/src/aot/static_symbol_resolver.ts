@@ -48,7 +48,7 @@ export interface StaticSymbolResolverHost {
   fileNameToModuleName(importedFilePath: string, containingFilePath: string): string;
 }
 
-const SUPPORTED_SCHEMA_VERSION = 3;
+const SUPPORTED_SCHEMA_VERSION = 4;
 
 /**
  * This class is responsible for loading metadata per symbol,

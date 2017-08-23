@@ -8,14 +8,15 @@
 
 // Metadata Schema
 
-// If you make a backwards incompatible change to the schema, increment the VERSION number.
+// If you make a backwards incompatible change to the schema, increment the METADTA_VERSION number.
 
 // If you make a backwards compatible change to the metadata (such as adding an option field) then
-// leave VERSION the same. If possible, as many versions of the metadata that can represent the
-// semantics of the file in an array. For example, when generating a version 2 file, if version 1
-// can accurately represent the metadata, generate both version 1 and version 2 in an array.
+// leave METADATA_VERSION the same. If possible, supply as many versions of the metadata that can
+// represent the semantics of the file in an array. For example, when generating a version 2 file,
+// if version 1 can accurately represent the metadata, generate both version 1 and version 2 in
+// an array.
 
-export const VERSION = 3;
+export const METADATA_VERSION = 4;
 
 export type MetadataEntry = ClassMetadata | InterfaceMetadata | FunctionMetadata | MetadataValue;
 
