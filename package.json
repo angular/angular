@@ -31,7 +31,7 @@
     "fsevents": "^1.0.14"
   },
   "devDependencies": {
-    "@types/angularjs": "^1.5.13-alpha",
+    "@types/angular": "^1.6.28",
     "@types/base64-js": "^1.2.5",
     "@types/fs-extra": "0.0.22-alpha",
     "@types/hammerjs": "^2.0.33",

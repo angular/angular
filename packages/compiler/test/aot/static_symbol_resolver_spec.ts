@@ -55,7 +55,7 @@ describe('StaticSymbolResolver', () => {
   });
 
   it('should be able to produce a symbol for a module with no file', () => {
-    expect(symbolResolver.getStaticSymbol('angularjs', 'SomeAngularSymbol')).toBeDefined();
+    expect(symbolResolver.getStaticSymbol('angular', 'SomeAngularSymbol')).toBeDefined();
   });
 
   it('should be able to split the metadata per symbol', () => {

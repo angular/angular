@@ -2,10 +2,10 @@
   "name": "angular-srcs",
   "version": "5.0.0-beta.0",
   "dependencies": {
-    "@types/angularjs": {
-      "version": "1.5.13-alpha",
-      "from": "@types/angularjs@latest",
-      "resolved": "https://registry.npmjs.org/@types/angularjs/-/angularjs-1.5.13-alpha.tgz"
+    "@types/angular": {
+      "version": "1.6.28",
+      "from": "@types/angular@latest",
+      "resolved": "https://registry.npmjs.org/@types/angular/-/angular-1.6.28.tgz"
     },
     "@types/base64-js": {
       "version": "1.2.5",
