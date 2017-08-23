@@ -3,7 +3,7 @@ sudo: false
 dist: trusty
 
 node_js:
-  - '--lts'
+  - '8'
 
 addons:
   jwt:
@@ -43,7 +43,6 @@ env:
 
 before_install:
   - source ./scripts/ci/travis-env.sh
-  - npm i -g npm@^5.3.0
 
 install:
   - npm install
