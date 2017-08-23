@@ -575,7 +575,6 @@ $mat-brown: (
 );
 
 $mat-grey: (
-  0: #ffffff,
   50: #fafafa,
   100: #f5f5f5,
   200: #eeeeee,
@@ -586,13 +585,11 @@ $mat-grey: (
   700: #616161,
   800: #424242,
   900: #212121,
-  1000: #000000,
   A100: #ffffff,
   A200: #eeeeee,
   A400: #bdbdbd,
   A700: #616161,
   contrast: (
-    0: $black-87-opacity,
     50: $black-87-opacity,
     100: $black-87-opacity,
     200: $black-87-opacity,
@@ -603,7 +600,6 @@ $mat-grey: (
     700: $white-87-opacity,
     800: $white-87-opacity,
     900: $white-87-opacity,
-    1000: $white-87-opacity,
     A100: $black-87-opacity,
     A200: $black-87-opacity,
     A400: $black-87-opacity,
