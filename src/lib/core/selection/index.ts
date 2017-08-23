@@ -14,7 +14,7 @@ import {MdPseudoCheckbox} from './pseudo-checkbox/pseudo-checkbox';
   exports: [MdPseudoCheckbox],
   declarations: [MdPseudoCheckbox]
 })
-export class MdSelectionModule { }
+export class MdPseudoCheckboxModule { }
 
 
 export * from './pseudo-checkbox/pseudo-checkbox';

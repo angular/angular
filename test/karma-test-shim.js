@@ -52,6 +52,7 @@ System.config({
     '@angular/cdk/a11y': 'dist/packages/cdk/a11y/index.js',
     '@angular/cdk/bidi': 'dist/packages/cdk/bidi/index.js',
     '@angular/cdk/coercion': 'dist/packages/cdk/coercion/index.js',
+    '@angular/cdk/collections': 'dist/packages/cdk/collections/index.js',
     '@angular/cdk/keycodes': 'dist/packages/cdk/keycodes/index.js',
     '@angular/cdk/observers': 'dist/packages/cdk/observers/index.js',
     '@angular/cdk/overlay': 'dist/packages/cdk/overlay/index.js',

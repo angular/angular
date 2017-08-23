@@ -1,6 +1,7 @@
 import {Component, ElementRef, ViewChild} from '@angular/core';
-import {DataSource} from '@angular/cdk/table';
-import {MdPaginator, MdSort, SelectionModel} from '@angular/material';
+import {DataSource} from '@angular/cdk/collections';
+import {MdPaginator, MdSort} from '@angular/material';
+import {SelectionModel} from '@angular/cdk/collections';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/startWith';

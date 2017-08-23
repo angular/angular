@@ -29,7 +29,7 @@ import {
   ViewContainerRef,
   ViewEncapsulation,
 } from '@angular/core';
-import {CollectionViewer, DataSource} from './data-source';
+import {CollectionViewer, DataSource} from '@angular/cdk/collections';
 import {CdkCellOutlet, CdkCellOutletRowContext, CdkHeaderRowDef, CdkRowDef} from './row';
 import {takeUntil} from 'rxjs/operator/takeUntil';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';

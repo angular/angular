@@ -51,7 +51,7 @@ import {merge} from 'rxjs/observable/merge';
 import {Observable} from 'rxjs/Observable';
 import {Subscription} from 'rxjs/Subscription';
 import {fadeInContent, transformPanel, transformPlaceholder} from './select-animations';
-import {SelectionModel} from '../core/selection/selection';
+import {SelectionModel} from '@angular/cdk/collections';
 import {
   getMdSelectDynamicMultipleError,
   getMdSelectNonArrayValueError,

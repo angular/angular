@@ -30,6 +30,7 @@ System.config({
     '@angular/cdk/a11y': 'dist/bundles/cdk-a11y.umd.js',
     '@angular/cdk/bidi': 'dist/bundles/cdk-bidi.umd.js',
     '@angular/cdk/coercion': 'dist/bundles/cdk-coercion.umd.js',
+    '@angular/cdk/collections': 'dist/bundles/cdk-collections.umd.js',
     '@angular/cdk/keycodes': 'dist/bundles/cdk-keycodes.umd.js',
     '@angular/cdk/observers': 'dist/bundles/cdk-observers.umd.js',
     '@angular/cdk/overlay': 'dist/bundles/cdk-overlay.umd.js',

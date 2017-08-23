@@ -2,7 +2,8 @@ import {async, ComponentFixture, TestBed, inject} from '@angular/core/testing';
 import {Component, ElementRef, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {MdSort, MdSortHeader, Sort, SortDirection, MdSortModule, MdSortHeaderIntl} from './index';
-import {CdkTableModule, DataSource, CollectionViewer} from '@angular/cdk/table';
+import {DataSource, CollectionViewer} from '@angular/cdk/collections';
+import {CdkTableModule} from '@angular/cdk/table';
 import {Observable} from 'rxjs/Observable';
 import {
   getMdSortDuplicateMdSortableIdError,

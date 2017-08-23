@@ -8,10 +8,8 @@
 
 import {Subject} from 'rxjs/Subject';
 
-
 /**
  * Class to be used to power selecting one or more options from a list.
- * @docs-private
  */
 export class SelectionModel<T> {
   /** Currently-selected values. */
