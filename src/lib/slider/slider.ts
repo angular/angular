@@ -37,6 +37,7 @@ import {
 import {HammerInput} from '../core';
 import {FocusOrigin, FocusOriginMonitor} from '../core/style/focus-origin-monitor';
 import {CanDisable, mixinDisabled} from '../core/common-behaviors/disabled';
+import {CanColor, mixinColor} from '../core/common-behaviors/color';
 
 
 /**
@@ -76,8 +77,10 @@ export class MdSliderChange {
 
 // Boilerplate for applying mixins to MdSlider.
 /** @docs-private */
-export class MdSliderBase { }
-export const _MdSliderMixinBase = mixinDisabled(MdSliderBase);
+export class MdSliderBase {
+  constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
+}
+export const _MdSliderMixinBase = mixinColor(mixinDisabled(MdSliderBase), 'accent');
 
 /**
  * Allows users to select from a range of values by moving the slider thumb. It is similar in
@@ -105,9 +108,6 @@ export const _MdSliderMixinBase = mixinDisabled(MdSliderBase);
     '[attr.aria-valuemin]': 'min',
     '[attr.aria-valuenow]': 'value',
     '[attr.aria-orientation]': 'vertical ? "vertical" : "horizontal"',
-    '[class.mat-primary]': 'color == "primary"',
-    '[class.mat-accent]': 'color != "primary" && color != "warn"',
-    '[class.mat-warn]': 'color == "warn"',
     '[class.mat-slider-disabled]': 'disabled',
     '[class.mat-slider-has-ticks]': 'tickInterval',
     '[class.mat-slider-horizontal]': '!vertical',
@@ -120,12 +120,12 @@ export const _MdSliderMixinBase = mixinDisabled(MdSliderBase);
   },
   templateUrl: 'slider.html',
   styleUrls: ['slider.css'],
-  inputs: ['disabled'],
+  inputs: ['disabled', 'color'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdSlider extends _MdSliderMixinBase
-    implements ControlValueAccessor, OnDestroy, CanDisable {
+    implements ControlValueAccessor, OnDestroy, CanDisable, CanColor {
   /** Whether the slider is inverted. */
   @Input()
   get invert() { return this._invert; }
@@ -238,8 +238,6 @@ export class MdSlider extends _MdSliderMixinBase
     this._vertical = coerceBooleanProperty(value);
   }
   private _vertical = false;
-
-  @Input() color: 'primary' | 'accent' | 'warn' = 'accent';
 
   /** Event emitted when the slider value has changed. */
   @Output() change = new EventEmitter<MdSliderChange>();
@@ -406,11 +404,12 @@ export class MdSlider extends _MdSliderMixinBase
     return (this._dir && this._dir.value == 'rtl') ? 'rtl' : 'ltr';
   }
 
-  constructor(renderer: Renderer2, private _elementRef: ElementRef,
+  constructor(renderer: Renderer2,
+              elementRef: ElementRef,
               private _focusOriginMonitor: FocusOriginMonitor,
               private _changeDetectorRef: ChangeDetectorRef,
               @Optional() private _dir: Directionality) {
-    super();
+    super(renderer, elementRef);
     this._focusOriginMonitor
         .monitor(this._elementRef.nativeElement, renderer, true)
         .subscribe((origin: FocusOrigin) => this._isActive = !!origin && origin !== 'keyboard');
