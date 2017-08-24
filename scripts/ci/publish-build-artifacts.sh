@@ -89,7 +89,7 @@ function publishRepo {
     git config user.name "${COMMITTER_USER_NAME}" && \
     git config user.email "${COMMITTER_USER_EMAIL}" && \
     git add --all && \
-    git commit -m "${COMMIT_MSG}" && \
+    git commit -m "${COMMIT_MSG}" --quiet && \
     git tag "${BUILD_VER}" && \
     git push origin "${BRANCH}" --tags --force
   )
@@ -101,7 +101,7 @@ function publishPackages {
   PKGS_DIST=$2
   BRANCH=$3
 
-  for dir in $PKGS_DIST/*/ 
+  for dir in $PKGS_DIST/*/
   do
     COMPONENT="$(basename ${dir})"
 

@@ -21,7 +21,7 @@ else
     cd $INTEGRATION_DIR
     rm -rf $PROJECT
     $NG set --global packageManager=yarn
-    $NG new $PROJECT --skip-install
+    $NG new $PROJECT --skip-install --skip-git
     echo "==================="
     echo $PROJECT created
     echo "==================="

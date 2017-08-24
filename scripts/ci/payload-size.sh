@@ -39,7 +39,10 @@ addTimestamp() {
 
 # Write travis commit message to global variable $payloadData
 addMessage() {
-  message=$(git log --oneline $TRAVIS_COMMIT_RANGE)
+  # Grab the set of SHAs for the message. This can fail when you force push or do initial build
+  # because $TRAVIS_COMMIT_RANGE will contain the previous SHA which will not be in the
+  # force push or commit, hence we default to last commit.
+  message=$(git log --oneline $TRAVIS_COMMIT_RANGE -- || git log --oneline -n1)
   message=$(echo $message | sed 's/"/\\"/g' | sed 's/\\/\\\\/g')
   payloadData="$payloadData\"message\": \"$message\""
 }
@@ -85,7 +88,7 @@ uploadData() {
 
     # WARNING: FIREBASE_TOKEN should NOT be printed.
     set +x
-    firebase database:update --data "$payloadData" --project $PROJECT_NAME --confirm --token "$ANGULAR_PAYLOAD_FIREBASE_TOKEN" $dbPath
+    $PROJECT_ROOT/node_modules/.bin/firebase database:update --data "$payloadData" --project $PROJECT_NAME --confirm --token "$ANGULAR_PAYLOAD_FIREBASE_TOKEN" $dbPath
   fi
 }
 
