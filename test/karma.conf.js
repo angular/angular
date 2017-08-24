@@ -61,12 +61,9 @@ module.exports = (config) => {
       startConnect: false,
       recordVideo: false,
       recordScreenshots: false,
-      options: {
-        'selenium-version': '2.48.2',
-        'command-timeout': 600,
-        'idle-timeout': 600,
-        'max-duration': 5400
-      }
+      idleTimeout: 600,
+      commandTimeout: 600,
+      maxDuration: 5400,
     },
 
     browserStack: {
@@ -74,7 +71,8 @@ module.exports = (config) => {
       startTunnel: false,
       retryLimit: 1,
       timeout: 600,
-      pollingTimeout: 20000
+      pollingTimeout: 20000,
+      video: false,
     },
 
     browserDisconnectTimeout: 20000,
