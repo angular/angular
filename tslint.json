@@ -27,19 +27,9 @@
     "no-shadowed-variable": true,
     "no-unused-expression": true,
     "no-var-keyword": true,
-    "no-exposed-todo": true,
     "member-access": [true, "no-public"],
     "no-debugger": true,
     "no-unused-variable": [true, {"ignore-pattern": "^_"}],
-    "no-rxjs-patch-imports": [
-      true,
-      "src/+(lib|cdk)/**/*.ts"
-    ],
-    "missing-rollup-globals": [
-      true,
-      "./tools/package-tools/rollup-globals.ts",
-      "src/+(lib|cdk|material-examples)/**/*.ts"
-    ],
     "one-line": [
       true,
       "check-catch",
@@ -79,10 +69,6 @@
       "check-type",
       "check-preblock"
     ],
-    "no-view-encapsulation": [
-      true,
-      "(lib|cdk)\/((?!spec.ts).)*.ts$"
-    ],
     // Bans jasmine helper functions that will prevent the CI from properly running tests.
     "ban": [
       true,
@@ -97,6 +83,26 @@
     "import-blacklist": [true, "rxjs"],
     // Avoids inconsistent linebreak styles in source files. Forces developers to use LF linebreaks.
     "linebreak-style": [true, "LF"],
-    "require-license-banner": [true, "src/+(lib|cdk)/**/!(*.spec).ts"]
+
+    // Custom Rules
+
+    "no-exposed-todo": true,
+    "no-view-encapsulation": [
+      true,
+      "src/+(lib|cdk)/**/!(*.spec).ts"
+    ],
+    "require-license-banner": [
+      true,
+      "src/+(lib|cdk)/**/!(*.spec).ts"
+    ],
+    "no-rxjs-patch-imports": [
+      true,
+      "src/+(lib|cdk)/**/*.ts"
+    ],
+    "missing-rollup-globals": [
+      true,
+      "./tools/package-tools/rollup-globals.ts",
+      "src/+(lib|cdk|material-examples)/**/*.ts"
+    ]
   }
 }

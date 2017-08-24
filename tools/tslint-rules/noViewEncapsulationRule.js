@@ -1,4 +1,7 @@
 const Lint = require('tslint');
+const path = require('path');
+const minimatch = require('minimatch');
+
 const ERROR_MESSAGE = 'Components must turn off view encapsulation.';
 
 // TODO(crisbeto): combine this with the OnPush rule when it gets in.
@@ -17,11 +20,14 @@ class Walker extends Lint.RuleWalker {
   constructor(file, options) {
     super(...arguments);
 
-    // Whitelist with regular expressions to use when determining which files to lint.
-    const whitelist = options.ruleArguments;
+    // Globs that are used to determine which files to lint.
+    const fileGlobs = options.ruleArguments || [];
+
+    // Relative path for the current TypeScript source file.
+    const relativeFilePath = path.relative(process.cwd(), file.fileName);
 
     // Whether the file should be checked at all.
-    this._enabled = !whitelist.length || whitelist.some(p => new RegExp(p).test(file.fileName));
+    this._enabled = fileGlobs.some(p => minimatch(relativeFilePath, p));
   }
 
   visitClassDeclaration(node) {
