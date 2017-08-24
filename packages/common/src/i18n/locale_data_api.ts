@@ -9,7 +9,7 @@
 import {AVAILABLE_LOCALES} from './available_locales';
 import {CURRENCIES} from './currencies';
 import localeEn from './locale_en';
-import {LOCALE_DATA, Plural} from './locale_data';
+import {LOCALE_DATA, LocaleDataIndex, ExtraLocaleDataIndex} from './locale_data';
 
 /**
  * The different format styles that can be used to represent numbers.
@@ -22,6 +22,16 @@ export enum NumberFormatStyle {
   Percent,
   Currency,
   Scientific
+}
+
+/** @experimental */
+export enum Plural {
+  Zero = 0,
+  One = 1,
+  Two = 2,
+  Few = 3,
+  Many = 4,
+  Other = 5,
 }
 
 /**
@@ -129,40 +139,6 @@ export enum WeekDay {
   Thursday,
   Friday,
   Saturday
-}
-
-/**
- * Use this enum to find the index of each type of locale data from the locale data array
- */
-enum LocaleDataIndex {
-  LocaleId = 0,
-  DayPeriodsFormat,
-  DayPeriodsStandalone,
-  DaysFormat,
-  DaysStandalone,
-  MonthsFormat,
-  MonthsStandalone,
-  Eras,
-  FirstDayOfWeek,
-  WeekendRange,
-  DateFormat,
-  TimeFormat,
-  DateTimeFormat,
-  NumberSymbols,
-  NumberFormats,
-  CurrencySymbol,
-  CurrencyName,
-  PluralCase,
-  ExtraData
-}
-
-/**
- * Use this enum to find the index of each type of locale data from the extra locale data array
- */
-enum ExtraLocaleDataIndex {
-  ExtraDayPeriodFormats = 0,
-  ExtraDayPeriodStandalone,
-  ExtraDayPeriodsRules
 }
 
 /**
@@ -539,8 +515,7 @@ export function findLocaleData(locale: string): any {
     return match;
   }
 
-  throw new Error(
-      `Missing locale data for the locale "${locale}". Use "registerLocaleData" to load new data. See the "I18n guide" on angular.io to know more.`);
+  throw new Error(`No data registered for the locale "${locale}".`);
 }
 
 const NORMALIZED_LOCALES: any = {};
@@ -571,12 +546,11 @@ function getNormalizedLocale(locale: string): string {
     return parentLocale;
   }
 
-  throw new Error(
-      `"${locale}" is not a valid LOCALE_ID value. See https://github.com/unicode-cldr/cldr-core/blob/master/availableLocales.json for a list of valid locales`);
+  throw new Error(`"${locale}" is not a valid locale code.`);
 }
 
 function toCamelCase(str: string): string {
-  return str.replace(/-+([a-z0-9A-Z])/g, (...m: string[]) => m[1].toUpperCase());
+  return str.replace(/-+([a-z])/g, (...m: string[]) => m[1].toUpperCase());
 }
 
 /**
@@ -589,18 +563,4 @@ export function findCurrencySymbol(code: string, format: 'wide' | 'narrow') {
   const currency = CURRENCIES[code] || {};
   const symbol = currency[0] || code;
   return format === 'wide' ? symbol : currency[1] || symbol;
-}
-
-/**
- * Register global data to be used internally by Angular. See the
- * {@linkDocs guide/i18n#i18n-pipes "I18n guide"} to know how to import additional locale data.
- *
- * @experimental i18n support is experimental.
- */
-export function registerLocaleData(data: any, extraData?: any) {
-  const localeId = toCamelCase(data[LocaleDataIndex.LocaleId]);
-  LOCALE_DATA[localeId] = data;
-  if (extraData) {
-    LOCALE_DATA[localeId][LocaleDataIndex.ExtraData] = extraData;
-  }
 }
