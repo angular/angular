@@ -68,9 +68,6 @@ module.exports = (gulp, done) => {
   console.log(`Writing file ${I18N_FOLDER}/locale_en.ts`);
   fs.writeFileSync(`${RELATIVE_I18N_FOLDER}/locale_en.ts`, generateLocale('en', new cldrJs('en'), './locale_data'));
 
-  console.log(`Writing file ${I18N_FOLDER}/available_locales.ts`);
-  fs.writeFileSync(`${RELATIVE_I18N_FOLDER}/available_locales.ts`, generateAvailableLocales(LOCALES));
-
   console.log(`Writing file ${I18N_FOLDER}/currencies.ts`);
   fs.writeFileSync(`${RELATIVE_I18N_FOLDER}/currencies.ts`, generateCurrencies());
 
@@ -80,7 +77,6 @@ module.exports = (gulp, done) => {
   return gulp
     .src([
         `${I18N_DATA_FOLDER}/**/*.ts`,
-        `${I18N_FOLDER}/available_locales.ts`,
         `${I18N_FOLDER}/currencies.ts`,
         `${I18N_FOLDER}/locale_en.ts`
       ], {base: '.'})
@@ -148,16 +144,6 @@ function generateLocaleExtra(locale, localeData) {
 
   return `${HEADER}
 export default ${stringify(dayPeriodsSupplemental).replace(/undefined/g, '')};
-`;
-}
-
-/**
- * Generate a file that contains the complete list of locales
- */
-function generateAvailableLocales(LOCALES) {
-  return `${HEADER}
-/** @experimental */
-export const AVAILABLE_LOCALES = ${stringify(LOCALES)};
 `;
 }
 
