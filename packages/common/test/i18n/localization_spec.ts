@@ -13,7 +13,7 @@ import localeFr from '../../i18n_data/locale_fr';
 import {LOCALE_ID} from '@angular/core';
 import {TestBed, inject} from '@angular/core/testing';
 import {NgLocaleLocalization, NgLocalization, getPluralCategory} from '../../src/i18n/localization';
-import {registerLocaleData} from '../../src/i18n/locale_data_api';
+import {registerLocaleData} from '../../src/i18n/locale_data';
 
 export function main() {
   describe('l10n', () => {

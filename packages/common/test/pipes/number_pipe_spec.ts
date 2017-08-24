@@ -56,7 +56,7 @@ export function main() {
       });
 
       describe('transform with custom locales', () => {
-        it('should return the correct format for es-US in IE11', () => {
+        it('should return the correct format for es-US', () => {
           const pipe = new DecimalPipe('es-US');
           expect(pipe.transform('9999999.99', '1.2-2')).toEqual('9,999,999.99');
         });

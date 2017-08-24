@@ -70,9 +70,6 @@ export declare class DeprecatedPercentPipe implements PipeTransform {
 export declare const DOCUMENT: InjectionToken<Document>;
 
 /** @experimental */
-export declare function findLocaleData(locale: string): any;
-
-/** @experimental */
 export declare enum FormatWidth {
     Short = 0,
     Medium = 1,
@@ -181,11 +178,6 @@ export declare function isPlatformWorkerUi(platformId: Object): boolean;
 export declare class JsonPipe implements PipeTransform {
     transform(value: any): string;
 }
-
-/** @experimental */
-export declare const LOCALE_DATA: {
-    [localeId: string]: any;
-};
 
 /** @stable */
 export declare class Location {
