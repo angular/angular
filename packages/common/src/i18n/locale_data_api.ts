@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AVAILABLE_LOCALES} from './available_locales';
 import {CURRENCIES} from './currencies';
 import localeEn from './locale_en';
 import {LOCALE_DATA, Plural} from './locale_data';
@@ -528,55 +527,26 @@ function extractTime(time: string): Time {
  * @experimental i18n support is experimental.
  */
 export function findLocaleData(locale: string): any {
-  const normalizedLocale = getNormalizedLocale(locale);
+  const normalizedLocale = locale.toLowerCase().replace(/_/g, '-');
 
-  if (normalizedLocale === 'en') {
-    return LOCALE_DATA['en'] || localeEn;
-  }
-
-  const match = LOCALE_DATA[toCamelCase(normalizedLocale)];
+  let match = LOCALE_DATA[normalizedLocale];
   if (match) {
     return match;
+  }
+
+  // let's try to find a parent locale
+  const parentLocale = normalizedLocale.split('-')[0];
+  match = LOCALE_DATA[parentLocale];
+  if (match) {
+    return match;
+  }
+
+  if (parentLocale === 'en') {
+    return localeEn;
   }
 
   throw new Error(
       `Missing locale data for the locale "${locale}". Use "registerLocaleData" to load new data. See the "I18n guide" on angular.io to know more.`);
-}
-
-const NORMALIZED_LOCALES: any = {};
-
-/**
- * Returns the closest matching locale that exists or throw
- * e.g.: "en-US" will return "en", and "fr_ca" will return "fr-CA"
- * Rules for locale id equivalences are defined in
- * http://cldr.unicode.org/index/cldr-spec/language-tag-equivalences
- * and in https://tools.ietf.org/html/rfc4647#section-3.4
- */
-function getNormalizedLocale(locale: string): string {
-  if (NORMALIZED_LOCALES[locale]) {
-    return NORMALIZED_LOCALES[locale];
-  }
-
-  const normalizedLocale = locale.toLowerCase().replace(/_/g, '-');
-  const match = AVAILABLE_LOCALES.find((l: string) => l.toLowerCase() === normalizedLocale);
-
-  if (match) {
-    NORMALIZED_LOCALES[locale] = match;
-    return match;
-  }
-
-  const parentLocale = normalizedLocale.split('-')[0];
-  if (AVAILABLE_LOCALES.find((l: string) => l.toLowerCase() === parentLocale)) {
-    NORMALIZED_LOCALES[locale] = parentLocale;
-    return parentLocale;
-  }
-
-  throw new Error(
-      `"${locale}" is not a valid LOCALE_ID value. See https://github.com/unicode-cldr/cldr-core/blob/master/availableLocales.json for a list of valid locales`);
-}
-
-function toCamelCase(str: string): string {
-  return str.replace(/-+([a-z0-9A-Z])/g, (...m: string[]) => m[1].toUpperCase());
 }
 
 /**
@@ -598,7 +568,7 @@ export function findCurrencySymbol(code: string, format: 'wide' | 'narrow') {
  * @experimental i18n support is experimental.
  */
 export function registerLocaleData(data: any, extraData?: any) {
-  const localeId = toCamelCase(data[LocaleDataIndex.LocaleId]);
+  const localeId = data[LocaleDataIndex.LocaleId].toLowerCase();
   LOCALE_DATA[localeId] = data;
   if (extraData) {
     LOCALE_DATA[localeId][LocaleDataIndex.ExtraData] = extraData;
