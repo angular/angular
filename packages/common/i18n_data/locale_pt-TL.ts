@@ -9,8 +9,6 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
-import {Plural} from '@angular/common';
-
 export default [
   'pt-TL', [['a.m.', 'p.m.'], , ['da manhã', 'da tarde']], [['a.m.', 'p.m.'], , ['manhã', 'tarde']],
   [
@@ -42,9 +40,9 @@ export default [
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'US$', 'Dólar dos Estados Unidos',
   function(n: number):
-      Plural {
+      number {
         let i = Math.floor(Math.abs(n));
-        if (i === Math.floor(i) && i >= 0 && i <= 1) return Plural.One;
-        return Plural.Other;
+        if (i === Math.floor(i) && i >= 0 && i <= 1) return 1;
+        return 5;
       }
 ];

@@ -9,8 +9,6 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
-import {Plural} from '@angular/common';
-
 export default [
   'shi-Tfng',
   [
@@ -43,10 +41,10 @@ export default [
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0%', '#,##0.00¤', '#E0'], 'MAD', 'ⴰⴷⵔⵉⵎ ⵏ ⵍⵎⵖⵔⵉⴱ',
   function(n: number):
-      Plural {
+      number {
         let i = Math.floor(Math.abs(n));
-        if (i === 0 || n === 1) return Plural.One;
-        if (n === Math.floor(n) && n >= 2 && n <= 10) return Plural.Few;
-        return Plural.Other;
+        if (i === 0 || n === 1) return 1;
+        if (n === Math.floor(n) && n >= 2 && n <= 10) return 3;
+        return 5;
       }
 ];

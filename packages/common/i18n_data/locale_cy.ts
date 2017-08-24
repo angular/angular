@@ -9,8 +9,6 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
-import {Plural} from '@angular/common';
-
 export default [
   'cy',
   [
@@ -63,17 +61,12 @@ export default [
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '£', 'Punt Prydain', function(n: number):
-                                                                        Plural {
-                                                                          if (n === 0)
-                                                                            return Plural.Zero;
-                                                                          if (n === 1)
-                                                                            return Plural.One;
-                                                                          if (n === 2)
-                                                                            return Plural.Two;
-                                                                          if (n === 3)
-                                                                            return Plural.Few;
-                                                                          if (n === 6)
-                                                                            return Plural.Many;
-                                                                          return Plural.Other;
+                                                                        number {
+                                                                          if (n === 0) return 0;
+                                                                          if (n === 1) return 1;
+                                                                          if (n === 2) return 2;
+                                                                          if (n === 3) return 3;
+                                                                          if (n === 6) return 4;
+                                                                          return 5;
                                                                         }
 ];
