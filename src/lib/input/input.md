@@ -14,7 +14,7 @@ elements inside `md-form-field` as well. This includes Angular directives such a
 
 The only limitations are that the `type` attribute can only be one of the values supported by
 `mdInput` and the native element cannot specify a `placeholder` attribute if the `md-form-field`
-also contains a `md-placeholder` element.
+also contains an `md-placeholder` element.
 
 ### Supported `input` types
 
@@ -56,7 +56,7 @@ text. When text is present, the indicative text will float above this input zone
 The `floatPlaceholder` attribute of `md-form-field` can be set to `never` to hide the
 indicative text instead when text is present in the input.
 
-When setting `floatPlaceholder` to `always` the floating label will always show above the input.
+When setting `floatPlaceholder` to `always`, the floating label will always show above the input.
 
 A placeholder for the input can be specified in one of two ways: either using the `placeholder`
 attribute on the `input` or `textarea`, or using an `md-placeholder` element in the
@@ -68,7 +68,7 @@ provider. This setting will apply to all components that support the floating pl
 ```ts
 @NgModule({
   providers: [
-    {provide: MD_PLACEHOLDER_GLOBAL_OPTIONS, useValue: { float: 'always' }}
+    {provide: MD_PLACEHOLDER_GLOBAL_OPTIONS, useValue: {float: 'always'}}
   ]
 })
 ```
@@ -81,8 +81,8 @@ Here are the available global options:
 
 ### Prefix and Suffix
 
-HTML can be included before, and after the input tag, as prefix or suffix. It will be underlined as
-per the Material specification, and clicking it will focus the input.
+HTML can be included before and after the input tag, as a prefix or suffix. It will be underlined
+as per the Material specification, and clicking it will focus the input.
 
 Adding the `mdPrefix` attribute to an element inside the `md-form-field` will designate it as
 the prefix. Similarly, adding `mdSuffix` will designate it as the suffix.
@@ -129,18 +129,18 @@ the error messages.
 function myErrorStateMatcher(control: FormControl, form: FormGroupDirective | NgForm): boolean {
   // Error when invalid control is dirty, touched, or submitted
   const isSubmitted = form && form.submitted;
-  return !!(control.invalid && (control.dirty || control.touched || isSubmitted)));
+  return !!(control.invalid && (control.dirty || control.touched || isSubmitted));
 }
 ```
 
 A global error state matcher can be specified by setting the `MD_ERROR_GLOBAL_OPTIONS` provider. This applies
-to all inputs. For convenience, `showOnDirtyErrorStateMatcher` is available in order to globally cause
+to all inputs. For convenience, `showOnDirtyErrorStateMatcher` is available in order to globally set
 input errors to show when the input is dirty and invalid.
 
 ```ts
 @NgModule({
   providers: [
-    {provide: MD_ERROR_GLOBAL_OPTIONS, useValue: { errorStateMatcher: showOnDirtyErrorStateMatcher }}
+    {provide: MD_ERROR_GLOBAL_OPTIONS, useValue: {errorStateMatcher: showOnDirtyErrorStateMatcher}}
   ]
 })
 ```
