@@ -10,7 +10,8 @@ import localeCaESVALENCIA from '../../i18n_data/locale_ca-ES-VALENCIA';
 import localeEn from '../../i18n_data/locale_en';
 import localeFr from '../../i18n_data/locale_fr';
 import localeFrCA from '../../i18n_data/locale_fr-CA';
-import {registerLocaleData, findLocaleData} from '../../src/i18n/locale_data_api';
+import {findLocaleData} from '../../src/i18n/locale_data_api';
+import {registerLocaleData} from '../../src/i18n/locale_data';
 
 export function main() {
   describe('locale data api', () => {

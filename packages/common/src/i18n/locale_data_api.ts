@@ -8,7 +8,7 @@
 
 import {CURRENCIES} from './currencies';
 import localeEn from './locale_en';
-import {LOCALE_DATA, Plural} from './locale_data';
+import {LOCALE_DATA, LocaleDataIndex, ExtraLocaleDataIndex} from './locale_data';
 
 /**
  * The different format styles that can be used to represent numbers.
@@ -21,6 +21,16 @@ export enum NumberFormatStyle {
   Percent,
   Currency,
   Scientific
+}
+
+/** @experimental */
+export enum Plural {
+  Zero = 0,
+  One = 1,
+  Two = 2,
+  Few = 3,
+  Many = 4,
+  Other = 5,
 }
 
 /**
@@ -128,40 +138,6 @@ export enum WeekDay {
   Thursday,
   Friday,
   Saturday
-}
-
-/**
- * Use this enum to find the index of each type of locale data from the locale data array
- */
-enum LocaleDataIndex {
-  LocaleId = 0,
-  DayPeriodsFormat,
-  DayPeriodsStandalone,
-  DaysFormat,
-  DaysStandalone,
-  MonthsFormat,
-  MonthsStandalone,
-  Eras,
-  FirstDayOfWeek,
-  WeekendRange,
-  DateFormat,
-  TimeFormat,
-  DateTimeFormat,
-  NumberSymbols,
-  NumberFormats,
-  CurrencySymbol,
-  CurrencyName,
-  PluralCase,
-  ExtraData
-}
-
-/**
- * Use this enum to find the index of each type of locale data from the extra locale data array
- */
-enum ExtraLocaleDataIndex {
-  ExtraDayPeriodFormats = 0,
-  ExtraDayPeriodStandalone,
-  ExtraDayPeriodsRules
 }
 
 /**
@@ -537,6 +513,7 @@ export function findLocaleData(locale: string): any {
   // let's try to find a parent locale
   const parentLocale = normalizedLocale.split('-')[0];
   match = LOCALE_DATA[parentLocale];
+
   if (match) {
     return match;
   }
@@ -545,8 +522,7 @@ export function findLocaleData(locale: string): any {
     return localeEn;
   }
 
-  throw new Error(
-      `Missing locale data for the locale "${locale}". Use "registerLocaleData" to load new data. See the "I18n guide" on angular.io to know more.`);
+  throw new Error(`Missing locale data for the locale "${locale}".`);
 }
 
 /**
@@ -559,18 +535,4 @@ export function findCurrencySymbol(code: string, format: 'wide' | 'narrow') {
   const currency = CURRENCIES[code] || {};
   const symbol = currency[0] || code;
   return format === 'wide' ? symbol : currency[1] || symbol;
-}
-
-/**
- * Register global data to be used internally by Angular. See the
- * {@linkDocs guide/i18n#i18n-pipes "I18n guide"} to know how to import additional locale data.
- *
- * @experimental i18n support is experimental.
- */
-export function registerLocaleData(data: any, extraData?: any) {
-  const localeId = data[LocaleDataIndex.LocaleId].toLowerCase();
-  LOCALE_DATA[localeId] = data;
-  if (extraData) {
-    LOCALE_DATA[localeId][LocaleDataIndex.ExtraData] = extraData;
-  }
 }
