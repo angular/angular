@@ -9,8 +9,6 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
-import {Plural} from '@angular/common';
-
 export default [
   'ksh', [['v.M.', 'n.M.'], , ['Uhr vörmiddaachs', 'Uhr nommendaachs']],
   [['v.M.', 'n.M.'], , ['Vörmeddaach', 'Nommendaach']],
@@ -46,9 +44,9 @@ export default [
   ],
   [',', ' ', ';', '%', '+', '−', '×10^', '×', '‰', '∞', '¤¤¤', ':'],
   ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'Euro', function(n: number):
-                                                                  Plural {
-                                                                    if (n === 0) return Plural.Zero;
-                                                                    if (n === 1) return Plural.One;
-                                                                    return Plural.Other;
+                                                                  number {
+                                                                    if (n === 0) return 0;
+                                                                    if (n === 1) return 1;
+                                                                    return 5;
                                                                   }
 ];

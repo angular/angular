@@ -9,8 +9,6 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
-import {Plural} from '@angular/common';
-
 export default [
   'uz-Latn',
   [
@@ -49,10 +47,10 @@ export default [
     ,
   ],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'haqiqiy son emas', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'soʻm', 'O‘zbekiston so‘mi',
-  function(n: number):
-      Plural {
-        if (n === 1) return Plural.One;
-        return Plural.Other;
-      }
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'soʻm', 'O‘zbekiston so‘mi', function(n: number):
+                                                                                 number {
+                                                                                   if (n === 1)
+                                                                                     return 1;
+                                                                                   return 5;
+                                                                                 }
 ];
