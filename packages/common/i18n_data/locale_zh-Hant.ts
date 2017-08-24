@@ -9,8 +9,6 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
-import {Plural} from '@angular/common';
-
 export default [
   'zh-Hant',
   [
@@ -43,5 +41,5 @@ export default [
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', '非數值', ':'],
   ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '$', '新台幣',
-  function(n: number): Plural { return Plural.Other;}
+  function(n: number): number { return 5;}
 ];

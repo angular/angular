@@ -9,8 +9,6 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
-import {Plural} from '@angular/common';
-
 export default [
   'lag',
   [
@@ -46,10 +44,10 @@ export default [
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], 'TSh', 'Shilíingi ya Taansanía',
   function(n: number):
-      Plural {
+      number {
         let i = Math.floor(Math.abs(n));
-        if (n === 0) return Plural.Zero;
-        if ((i === 0 || i === 1) && !(n === 0)) return Plural.One;
-        return Plural.Other;
+        if (n === 0) return 0;
+        if ((i === 0 || i === 1) && !(n === 0)) return 1;
+        return 5;
       }
 ];

@@ -9,8 +9,6 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
-import {Plural} from '@angular/common';
-
 export default [
   'ro-MD',
   [
@@ -45,12 +43,12 @@ export default [
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'L', 'leu moldovenesc',
   function(n: number):
-      Plural {
+      number {
         let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
-        if (i === 1 && v === 0) return Plural.One;
+        if (i === 1 && v === 0) return 1;
         if (!(v === 0) || n === 0 ||
             !(n === 1) && n % 100 === Math.floor(n % 100) && n % 100 >= 1 && n % 100 <= 19)
-          return Plural.Few;
-        return Plural.Other;
+          return 3;
+        return 5;
       }
 ];
