@@ -177,7 +177,7 @@ First time, you need to create the github repositories:
 
 ``` shell
 $ export TOKEN=[get one from https://github.com/settings/tokens]
-$ CREATE_REPOS=1 ./scripts/publish/publish-build-artifacts.sh [github username]
+$ CREATE_REPOS=1 TRAVIS= ./scripts/ci/publish-build-artifacts.sh [github username]
 ```
 
 For subsequent snapshots, just run
