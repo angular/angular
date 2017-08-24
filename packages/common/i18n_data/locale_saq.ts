@@ -9,8 +9,6 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
-import {Plural} from '@angular/common';
-
 export default [
   'saq',
   [
@@ -45,10 +43,10 @@ export default [
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'Ksh', 'Njilingi eel Kenya',
-  function(n: number):
-      Plural {
-        if (n === 1) return Plural.One;
-        return Plural.Other;
-      }
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'Ksh', 'Njilingi eel Kenya', function(n: number):
+                                                                                number {
+                                                                                  if (n === 1)
+                                                                                    return 1;
+                                                                                  return 5;
+                                                                                }
 ];
