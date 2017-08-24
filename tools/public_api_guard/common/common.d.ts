@@ -11,9 +11,6 @@ export declare class AsyncPipe implements OnDestroy, PipeTransform {
     transform<T>(obj: null): null;
 }
 
-/** @experimental */
-export declare const AVAILABLE_LOCALES: string[];
-
 /** @stable */
 export declare class CommonModule {
 }
