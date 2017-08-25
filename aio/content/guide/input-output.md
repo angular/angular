@@ -108,14 +108,15 @@ with `@Input` in the child component. The binding source, the part
 to the right of the equal sign, is the data that the parent 
 component passes to the nested component. 
 
-To use a child component's property in a binding in a parent component, you must 
+To use a child component's property in a binding in a parent component&mdash;that is, what's 
+in square brackets&mdash;you must 
 decorate the property with `@Input` in the child component.
 
 ### `OnChanges` and `@Input`
 
-To watch for changes on an input property, use `OnChanges`, one of Angular's [lifecycle hooks](guide/lifecycle-hooks). Said another way, 
-if a parent notifies a child, use `OnChanges`. `OnChanges` 
-is specifically designed to work with `@Input`. In fact, 
+To watch for changes on an input property, use 
+`OnChanges`, one of Angular's [lifecycle hooks](guide/lifecycle-hooks). `OnChanges` 
+is specifically designed to work with `@Input` when a parent notifies a child. In fact, 
 it will only watch for changes to a property that has the 
 `@Input` decorator.
 
@@ -137,11 +138,29 @@ an event.
 `@Output()` marks a property in a child component as a doorway 
 through which data can travel from the child to the parent. 
 The child component then has to raise an event so the 
-parent knows something has changed.
+parent knows something has changed. To raise an event, 
+`@Output()` works hand in hand with `EventEmitter`, 
+which is a class in `@angular/core` that you can 
+use to emit custom events.
 
-To do this, `@Output()` works hand in hand with `EventEmitter`. 
-`EventEmitter` is a class in `@angular/core` that you can 
-use to emit custom events. First, be sure to import `Output` and `EventEmitter` 
+Any time you use `@Output()`, you need to edit four files:
+
+* [The child component](guide/input-output#in-the-child-component) 
+* [The child's template]()
+* [The parent component]()
+* [The parent's template]()
+
+The following example shows you how to set up an `@Output()` in a child 
+component that pushes data you enter in an HTML text `<input>` to an array in the 
+parent component. The HTML element `<input>` and the Angular decorator `@Input()` 
+are different and have nothing with each other.
+
+ADD GIF HERE
+
+
+### In the child component
+
+First, be sure to import `Output` and `EventEmitter` 
 in the child component:
 
 ```js
@@ -149,152 +168,146 @@ import { Output, EventEmitter } from '@angular/core';
 
 ```
 
-Next, decorate a property with `@Output()` in the child component class. 
-The following output is called `dataForParent` and its type is 
-`EventEmitter`, that is, it's an event.  
+Next, still in the child, decorate a property with `@Output()` in the component class. 
+The following example `@Output()` is called `dataForParent` and its type is 
+`EventEmitter`, which means it's an event.
 
 ```ts
-    @Output() dataForParent: EventEmitter<string> = new EventEmitter<string>();
+    @Output() newItemEvent: EventEmitter<string> = new EventEmitter<string>();
 ```
 The different parts of the above declaration are as follows:
 
 * `@Output()`&mdash;a decorator function marking the property as a way for data to go from the child to the parent.
 * `dataForParent`&mdash;the name of the property.
 * `EventEmitter<string>`&mdash;the property's type.
-* `new EventEmitter<string>()`&mdash;tells Angular to create a new event and that the data it emits is of type string. The type could be any type, such as `number`, `boolean`, and so on.
-
-For more information on `EventEmitter`, see the [EventEmitter API documentation](api/core/EventEmitter).
+* `new EventEmitter<string>()`&mdash;tells Angular to create a new event and that the data it emits is of type string. The type could be any type, such as `number`, `boolean`, and so on. For more information on `EventEmitter`, see the [EventEmitter API documentation](api/core/EventEmitter).
 
 
-Then, set up an event in the same component class:
+Next, set up an event in the same component class:
 
 ```ts
 export class ChildComponent {
-  @Output() update: EventEmitter<string> = new EventEmitter<string>();
+  @Output() newItemEvent: EventEmitter<string> = new EventEmitter<string>(); //same as above
 
-  onSubmit() {
-    this.notify.emit()
-  }
+  addNewItem(value:string) {
+    this.newItemEvent.emit(value);
 }
 
 ```
+The `addNewItem()` function uses the `@Output()` `newItemEvent` to raise an event in 
+which it emits the value the user types into the `<input>`. In other words, when 
+the user clicks the add button in the UI, the child lets the parent know 
+about the event and gives that data to the parent.
 
 
-Event binding 
+### In the child's template
 
-This one needs demo just for inputs and outputs.
+The child's template is straightforward:
+
+```html
+<input #newItem>
+<button (click)="addNewItem(newItem.value)">Add</button>
+
+```
+
+It has two elements. The first is an HTML `<input>` with a 
+[template reference variable](guide/template-ref-variables) , `#newItem`,
+where the user types in an item name. Whatever the user types 
+into the `<input>` gets stored in the `#newItem` variable.
+
+The second element is a `<button>` 
+with an [event binding](guide/event-binding). You know it's 
+an event binding because the part to the left of the equal 
+sign is in parentheses, `(click)`.
+
+The `(click)` event is bound to the `addNewItem()` method which 
+takes as its argument whatever the value of `#newItem` is. Remember 
+that the `addNewItem()` method in the child component class.
+
+These two steps have prepared the child component with an `@Output()` 
+for sending data to the parent, and method for raising an event. 
+The next step is to prepare the parent.
+
+### In the parent component
+
+In this example, the parent component is `AppComponent`, but you could use 
+any component in which you could nest the child.
+
+<!-- Should we include instructions on how to nest a component? -->
+
+The `AppComponent` in this example features a list of `items` 
+in an array and a method for adding more items to the array.
+
+```ts
+
+export class AppComponent {
+
+  items = ['item1', 'item2', 'item3', 'item4'];
+
+  addItem(newItem: string) {
+    this.items.push(newItem);
+  }
+}
+```
+
+The `addItem()` method takes an argument in the form of a string 
+and then pushes, or adds, that string to the `items` array.
+
+
+### In the parent's template
+
+In the parent's template, it's time to bind, or tie, the parent's 
+method to the child's method. Within the parent component's 
+template, `app.component.html`, be sure to put the 
+child selector, in this case `<app-child>`. This works because 
+all components are directives. 
+
+<!-- KW--Need to find place to link to info on directives. -->
+
+```ts
+
+  <app-child (newItemEvent)='addItem($event)'></app-child>
+
+```
+
+The event binding, `(newItemEvent)='addItem($event)'`, tells 
+Angular to connect the method in the child, `newItemEvent()` to 
+the method in parent, `addItem()` and that the event that `newItemEvent()` 
+is notifying the parent about is to be the argument of `addItem()`. 
+In other words, this is where the actual hand off of data takes place. 
+The `$event` contains the data that the user types into the `<input>` 
+in the child template UI.
 
 
 
 
-
-Be sure to explain this
-https://blogs.msmvps.com/deborahk/passing-data-to-and-raising-an-event-from-a-nested-component/
+## `@Input()` and `@Output()` and style
 
 
-
-
-
-
-
-
-
-
-## ****From existing documentation
-Template expressions and statements
- appear on the *right side of the binding declaration*.
-A member in that position is a data binding **source**.
-
-This section concentrates on binding to **targets**, which are directive
-properties on the *left side of the binding declaration*.
-These directive properties must be declared as **inputs** or **outputs**.
-
-<div class="alert is-important">
-
-Remember: All **components** are **directives**.
-
-</div>
-
-<div class="l-sub-section">
-
-Note the important distinction between a data binding **target** and a data binding **source**.
-
-The *target* of a binding is to the *left* of the `=`.
-The *source* is on the *right* of the `=`.
-
-The *target* of a binding is the property or event inside the binding punctuation: `[]`, `()` or `[()]`.
-The *source* is either inside quotes (`" "`) or within an interpolation (`{{}}`).
-
-Every member of a **source** directive is automatically available for binding.
-You don't have to do anything special to access a directive member in a template expression or statement.
-
-You have *limited* access to members of a **target** directive.
-You can only bind to properties that are explicitly identified as *inputs* and *outputs*.
-
-</div>
-
-In the following snippet, `iconUrl` and `onSave` are data-bound members of the `AppComponent`
-and are referenced within quoted syntax to the _right_ of the equals&nbsp;(`=`).
-
-<code-example path="template-syntax/src/app/app.component.html" region="io-1" title="src/app/app.component.html" linenums="false">
-</code-example>
-
-They are *neither inputs nor outputs* of the component. They are **sources** for their bindings.
-The targets are the native `<img>` and `<button>` elements.
-
-Now look at a another snippet in which the `HeroDetailComponent`
-is the **target** of a binding on the _left_ of the equals&nbsp;(`=`).
-
-<!-- KW--This needs an illustration. I get lost in the words and have to read them slowly.
-Simple arrows would help. -->
-<code-example path="template-syntax/src/app/app.component.html" region="io-2" title="src/app/app.component.html" linenums="false">
-</code-example>
-
-Both `HeroDetailComponent.hero` and `HeroDetailComponent.deleteRequest` are on the **left side** of binding declarations.
-`HeroDetailComponent.hero` is inside brackets; it is the target of a property binding.
-`HeroDetailComponent.deleteRequest` is inside parentheses; it is the target of an event binding.
-
-### Declaring `@Input` and `@Output` properties
-
-You must explicitly mark target properties as inputs or outputs.
-
-In the `HeroDetailComponent`, you mark such properties as input or output properties using decorators.
-
-<code-example path="template-syntax/src/app/hero-detail.component.ts" region="input-output-1" title="src/app/hero-detail.component.ts" linenums="false">
-</code-example>
-
-Alternatively, you can identify members in the `inputs` and `outputs` arrays
+Instead of using the `@Input()` and `@Output()` decorators 
+to declare inputs and outputs, you can identify 
+members in the `inputs` and `outputs` arrays
 of the directive metadata, as in this example:
 
-<code-example path="template-syntax/src/app/hero-detail.component.ts" region="input-output-2" title="src/app/hero-detail.component.ts" linenums="false">
-</code-example>
+```ts
 
-Though you can specify an input/output property either with a decorator or in a metadata array, there is no need to do both. 
+@Component({
+  inputs: ['nameFromParent'],
+  outputs: ['newItemEvent'],
+})
+
+```
+
+<!-- 
+<code-example path="template-syntax/src/app/hero-detail.component.ts" region="input-output-2" title="src/app/hero-detail.component.ts" linenums="false">
+</code-example> -->
 
 While declaring inputs and outputs in the `@Directive` and `@Component` 
 metadata is possible, it is a better practice to use the `@Input` and `@Output` 
 class decorators instead. See the [Decorate input and output properties](guide/styleguide#decorate-input-and-output-properties) section of the 
 [Style Guide](guide/styleguide) for details.
 
-
-### `@Input` vs. `@Output`
-<!-- KW--Is there a way to elaborate just a little on the difference? -->
-*Input* properties usually receive data values.
-*Output* properties expose event producers, such as `EventEmitter` objects.
-
-The terms _input_ and _output_ reflect the perspective of the target directive.
-
-<figure>
-  <img src="generated/images/guide/template-syntax/input-output.png" alt="Inputs and outputs">
-</figure>
-
-`HeroDetailComponent.hero` is an **input** property from the perspective of `HeroDetailComponent`
-because data flows *into* that property from a template binding expression.
-
-`HeroDetailComponent.deleteRequest` is an **output** property from the perspective of `HeroDetailComponent`
-because events stream *out* of that property and toward the handler in a template binding statement.
-
-### Aliasing input/output properties
+## Aliasing inputs and outputs
 
 Sometimes the public name of an input/output property should be different from the internal name. While it is preferable to avoid this situation, Angular does 
 offer a solution.
@@ -329,4 +342,52 @@ the directive property name on the *left* and the public alias on the *right*:
 <code-example path="template-syntax/src/app/click.directive.ts" region="output-myClick2" title="src/app/click.directive.ts" linenums="false">
 </code-example>
 
-<hr/>
+
+
+
+
+
+
+
+
+
+
+
+
+## ****From existing documentation
+
+
+<div class="l-sub-section">
+
+Note the important distinction between a data binding **target** and a data binding **source**.
+
+The *target* of a binding is the property or event inside the binding punctuation: `[]`, `()` or `[()]`.
+The *source* is either inside quotes (`" "`) or within an interpolation (`{{}}`).
+
+Every member of a **source** directive is automatically available for binding.
+You don't have to do anything special to access a directive member in a template expression or statement.
+
+
+</div>
+
+In the following snippet, `iconUrl` and `onSave` are data-bound members of the `AppComponent`
+and are referenced within quoted syntax to the _right_ of the equals&nbsp;(`=`).
+
+<code-example path="template-syntax/src/app/app.component.html" region="io-1" title="src/app/app.component.html" linenums="false">
+</code-example>
+
+They are *neither inputs nor outputs* of the component. They are **sources** for their bindings.
+The targets are the native `<img>` and `<button>` elements.
+
+Now look at a another snippet in which the `HeroDetailComponent`
+is the **target** of a binding on the _left_ of the equals&nbsp;(`=`).
+
+<!-- KW--This needs an illustration. I get lost in the words and have to read them slowly.
+Simple arrows would help. -->
+<code-example path="template-syntax/src/app/app.component.html" region="io-2" title="src/app/app.component.html" linenums="false">
+</code-example>
+
+Both `HeroDetailComponent.hero` and `HeroDetailComponent.deleteRequest` are on the **left side** of binding declarations.
+`HeroDetailComponent.hero` is inside brackets; it is the target of a property binding.
+`HeroDetailComponent.deleteRequest` is inside parentheses; it is the target of an event binding.
+
