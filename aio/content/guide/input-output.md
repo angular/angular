@@ -145,10 +145,10 @@ use to emit custom events.
 
 Any time you use `@Output()`, you need to edit four files:
 
-* [The child component](guide/input-output#in-the-child-component) 
-* [The child's template]()
-* [The parent component]()
-* [The parent's template]()
+* [The child component](guide/input-output#in-the-child-component).
+* [The child's template]().
+* [The parent component]().
+* [The parent's template]().
 
 The following example shows you how to set up an `@Output()` in a child 
 component that pushes data you enter in an HTML text `<input>` to an array in the 
@@ -178,8 +178,8 @@ The following example `@Output()` is called `dataForParent` and its type is
 The different parts of the above declaration are as follows:
 
 * `@Output()`&mdash;a decorator function marking the property as a way for data to go from the child to the parent.
-* `dataForParent`&mdash;the name of the property.
-* `EventEmitter<string>`&mdash;the property's type.
+* `newItemEvent`&mdash;the name of the `@Output()`.
+* `EventEmitter<string>`&mdash;the `@Output()`'s type.
 * `new EventEmitter<string>()`&mdash;tells Angular to create a new event and that the data it emits is of type string. The type could be any type, such as `number`, `boolean`, and so on. For more information on `EventEmitter`, see the [EventEmitter API documentation](api/core/EventEmitter).
 
 
@@ -194,8 +194,9 @@ export class ChildComponent {
 }
 
 ```
-The `addNewItem()` function uses the `@Output()` `newItemEvent` to raise an event in 
-which it emits the value the user types into the `<input>`. In other words, when 
+The `addNewItem()` function uses the `@Output()` `newItemEvent` 
+to raise an event in which it emits the value the user 
+types into the `<input>`. In other words, when 
 the user clicks the add button in the UI, the child lets the parent know 
 about the event and gives that data to the parent.
 
@@ -279,10 +280,21 @@ The `$event` contains the data that the user types into the `<input>`
 in the child template UI.
 
 
+## `@Input()` and `@Output()` together
+
+You can use `@Input()` and `@Output()` on the same child component.
+The following example is of an `@Input()` and an `@Output()` on the same 
+child component and shows the different parts of each:
+
+<figure>
+  <img src='generated/images/guide/input-output/input-output-diagram.gif' alt="Input diagram">
+</figure>
+
+To combine property and event bindings using the banana-in-a-box 
+syntax, `[()]`, see [Two-way Binding](guide/two-way-binding).
 
 
-## `@Input()` and `@Output()` and style
-
+## `@Input()` and `@Output()` declarations
 
 Instead of using the `@Input()` and `@Output()` decorators 
 to declare inputs and outputs, you can identify 
@@ -330,7 +342,7 @@ while using a different name internally.
 In the example immediately above, you are actually binding *through the* `myClick` *alias* to
 the directive's own `clicks` property.
 
-You can specify the alias for the property name by passing it into the input/output decorator like this:
+You can specify the alias for the property name by passing it into the `@Input()`/`@Output()` decorator like this:
 <!-- KW--A diagram might be helpful here. -->
 <code-example path="template-syntax/src/app/click.directive.ts" region="output-myClick" title="src/app/click.directive.ts" linenums="false">
 </code-example>
@@ -353,28 +365,4 @@ the directive property name on the *left* and the public alias on the *right*:
 
 
 
-
-## ****From existing documentation
-
-
-In the following snippet, `iconUrl` and `onSave` are data-bound members of the `AppComponent`
-and are referenced within quoted syntax to the _right_ of the equals&nbsp;(`=`).
-
-<code-example path="template-syntax/src/app/app.component.html" region="io-1" title="src/app/app.component.html" linenums="false">
-</code-example>
-
-They are *neither inputs nor outputs* of the component. They are **sources** for their bindings.
-The targets are the native `<img>` and `<button>` elements.
-
-Now look at a another snippet in which the `HeroDetailComponent`
-is the **target** of a binding on the _left_ of the equals&nbsp;(`=`).
-
-<!-- KW--This needs an illustration. I get lost in the words and have to read them slowly.
-Simple arrows would help. -->
-<code-example path="template-syntax/src/app/app.component.html" region="io-2" title="src/app/app.component.html" linenums="false">
-</code-example>
-
-Both `HeroDetailComponent.hero` and `HeroDetailComponent.deleteRequest` are on the **left side** of binding declarations.
-`HeroDetailComponent.hero` is inside brackets; it is the target of a property binding.
-`HeroDetailComponent.deleteRequest` is inside parentheses; it is the target of an event binding.
 
