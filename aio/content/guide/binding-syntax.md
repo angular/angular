@@ -103,6 +103,15 @@ Angular provides many kinds of data binding. Binding types can be grouped into t
 Binding types other than interpolation have a **target name** to the left of the equal sign, either surrounded by punctuation, `[]` or `()`, 
 or preceded by a prefix, `bind-`, `on-`, `bindon-`.
 
+Note the important distinction between a data binding **target** and a data binding **source**.
+
+The *target* of a binding is the property or event inside the binding punctuation: `[]`, `()` or `[()]`.
+The *source* is either inside quotes (`" "`) or within an interpolation (`{{}}`).
+
+Every member of a **source** directive is automatically available for binding.
+You don't have to do anything special to access a directive member in a template expression or statement.
+
+
 
 
 ## Data binding and HTML

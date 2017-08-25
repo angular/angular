@@ -357,19 +357,6 @@ the directive property name on the *left* and the public alias on the *right*:
 ## ****From existing documentation
 
 
-<div class="l-sub-section">
-
-Note the important distinction between a data binding **target** and a data binding **source**.
-
-The *target* of a binding is the property or event inside the binding punctuation: `[]`, `()` or `[()]`.
-The *source* is either inside quotes (`" "`) or within an interpolation (`{{}}`).
-
-Every member of a **source** directive is automatically available for binding.
-You don't have to do anything special to access a directive member in a template expression or statement.
-
-
-</div>
-
 In the following snippet, `iconUrl` and `onSave` are data-bound members of the `AppComponent`
 and are referenced within quoted syntax to the _right_ of the equals&nbsp;(`=`).
 
