@@ -86,7 +86,7 @@ done
 #######################################
 isIgnoredDirectory() {
   name=$(basename ${1})
-  if [[ -f "${1}" || "${name}" == "src" || "${name}" == "test" || "${name}" == "integrationtest" ]]; then
+  if [[ -f "${1}" || "${name}" == "src" || "${name}" == "test" || "${name}" == "integrationtest" || "${name}" == "i18n_data" ]]; then
     return 0
   else
     return 1
@@ -327,6 +327,16 @@ mapSources() {
   fi
 }
 
+updateVersionReferences() {
+  NPM_DIR="$1"
+  (
+    echo "======      VERSION: Updating version references in ${NPM_DIR}"
+    cd ${NPM_DIR}
+    echo "======       EXECUTE: perl -p -i -e \"s/0\.0\.0\-PLACEHOLDER/${VERSION}/g\" $""(grep -ril 0\.0\.0\-PLACEHOLDER .)"
+    perl -p -i -e "s/0\.0\.0\-PLACEHOLDER/${VERSION}/g" $(grep -ril 0\.0\.0\-PLACEHOLDER .) < /dev/null 2> /dev/null
+  )
+}
+
 VERSION="${VERSION_PREFIX}${VERSION_SUFFIX}"
 echo "====== BUILDING: Version ${VERSION}"
 
@@ -419,11 +429,13 @@ if [[ ${BUILD_TOOLS} == true || ${BUILD_ALL} == true ]]; then
   $(npm bin)/tsc -p packages/tsc-wrapped/tsconfig-build.json
   cp ./packages/tsc-wrapped/package.json ./dist/packages-dist/tsc-wrapped
   cp ./packages/tsc-wrapped/README.md ./dist/packages-dist/tsc-wrapped
-  (
-    cd dist/packages-dist/tsc-wrapped
-    echo "======       EXECUTE: perl -p -i -e \"s/0\.0\.0\-PLACEHOLDER/${VERSION}/g\" $""(grep -ril 0\.0\.0\-PLACEHOLDER .)"
-    perl -p -i -e "s/0\.0\.0\-PLACEHOLDER/${VERSION}/g" $(grep -ril 0\.0\.0\-PLACEHOLDER .) < /dev/null 2> /dev/null
-  )
+  updateVersionReferences dist/packages-dist/tsc-wrapped
+
+  rsync -a packages/bazel/ ./dist/packages-dist/bazel
+  # Remove BEGIN-INTERNAL...END-INTERAL blocks
+  # https://stackoverflow.com/questions/24175271/how-can-i-match-multi-line-patterns-in-the-command-line-with-perl-style-regex
+  perl -0777 -n -i -e "s/(?m)^.*BEGIN-INTERNAL[\w\W]*END-INTERNAL.*\n//g; print" $(grep -ril BEGIN-INTERNAL dist/packages-dist/bazel) < /dev/null 2> /dev/null
+  updateVersionReferences dist/packages-dist/bazel
 fi
 
 for PACKAGE in ${PACKAGES[@]}
@@ -470,6 +482,11 @@ do
         minify ${BUNDLES_DIR}
 
       ) 2>&1 | grep -v "as external dependency"
+
+      if [[ ${PACKAGE} == "common" ]]; then
+        echo "======      Copy i18n locale data"
+        rsync -a --exclude=*.d.ts --exclude=*.metadata.json ${OUT_DIR}/i18n_data/ ${NPM_DIR}/i18n_data
+      fi
     else
       echo "======        Copy ${PACKAGE} node tool"
       rsync -a ${OUT_DIR}/ ${NPM_DIR}
@@ -484,12 +501,7 @@ do
 
 
   if [[ -d ${NPM_DIR} ]]; then
-    (
-      echo "======      VERSION: Updating version references"
-      cd ${NPM_DIR}
-      echo "======       EXECUTE: perl -p -i -e \"s/0\.0\.0\-PLACEHOLDER/${VERSION}/g\" $""(grep -ril 0\.0\.0\-PLACEHOLDER .)"
-      perl -p -i -e "s/0\.0\.0\-PLACEHOLDER/${VERSION}/g" $(grep -ril 0\.0\.0\-PLACEHOLDER .) < /dev/null 2> /dev/null
-    )
+    updateVersionReferences ${NPM_DIR}
   fi
 
   travisFoldEnd "build package: ${PACKAGE}"

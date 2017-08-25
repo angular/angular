@@ -24,7 +24,7 @@ if [ ! -d ".ng-cli" ]; then
   (
     mkdir -p .ng-cli
     cd .ng-cli
-    yarn add https://github.com/angular/cli-builds --cache-folder ../$cache
+    yarn add @angular/cli@$ANGULAR_CLI_VERSION --cache-folder ../$cache
   )
 fi
 ./ng-cli-create.sh cli-hello-world

@@ -1,0 +1,27 @@
+load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
+
+licenses(["notice"])  # Apache 2.0
+
+ts_library(
+    name = "ngc_lib",
+    srcs = ["index.ts"],
+    deps = [
+        # BEGIN-INTERNAL
+        # Only needed when compiling within the Angular repo.
+        # Users will get this dependency from node_modules.
+        "@//packages/compiler-cli",
+        # END-INTERNAL
+        "@build_bazel_rules_typescript//internal/tsc_wrapped"
+    ],
+    tsconfig = ":tsconfig.json",
+)
+
+nodejs_binary(
+    name = "ngc-wrapped",
+    # Entry point assumes the user is outside this WORKSPACE,
+    # and references our rules with @angular//src/ngc-wrapped
+    entry_point = "angular/src/ngc-wrapped/index.js",
+    data = [":ngc_lib"],
+    visibility = ["//visibility:public"],
+)
