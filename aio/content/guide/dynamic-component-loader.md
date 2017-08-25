@@ -2,12 +2,11 @@
 
 Component templates are not always fixed. An application may need to load new components at runtime.
 
-This cookbook shows you how to use `ComponentFactoryResolver` to add components dynamically.
+This page shows you how to use `ComponentFactoryResolver` to add components dynamically.
 
 See the <live-example name="dynamic-component-loader"></live-example>
 of the code in this cookbook.
 
-{@a dynamic-loading}
 
 ## Dynamic component loading
 
@@ -23,8 +22,6 @@ reference to the component in the ad banner's template.
 
 Angular comes with its own API for loading components dynamically.
 
-
-{@a directive}
 
 ## The anchor directive
 
@@ -48,14 +45,16 @@ In the `@Directive` decorator, notice the selector name, `ad-host`;
 that's what you use to apply the directive to the element.
 The next section shows you how.
 
-{@a loading-components}
-
 ## Loading components
 
 Most of the ad banner implementation is in `ad-banner.component.ts`.
 To keep things simple in this example, the HTML is in the `@Component`
 decorator's `template` property as a template string.
-
+<!-- 
+KW--Why? What is <ng-template> and where can I learn about it? We should 
+introduce it and link to an explanation about what it is.
+Discussed in: guide/structural-directives#what-are-structural-directives
+ -->
 The `<ng-template>` element is where you apply the directive you just made.
 To apply the `AdDirective`, recall the selector from `ad.directive.ts`,
 `ad-host`. Apply that to `<ng-template>` without the square brackets. Now Angular knows
@@ -72,10 +71,9 @@ The `<ng-template>` element is a good choice for dynamic components
 because it doesn't render any additional output.
 
 
-{@a resolving-components}
-
-
 ## Resolving components
+
+<!-- KW--What does it mean to resolve a component? -->
 
 Take a closer look at the methods in `ad-banner.component.ts`.
 
@@ -87,7 +85,8 @@ component.`AdService` returns the actual ads making up the ad campaign.
 Passing an array of components to `AdBannerComponent` allows for a
 dynamic list of ads without static elements in the template.
 
-With its `getAds()` method, `AdBannerComponent` cycles through the array of `AdItems`
+With its `getAds()` method, `AdBannerComponent` cycles through the 
+`AdItem` array
 and loads a new component every 3 seconds by calling `loadComponent()`.
 
 
@@ -95,14 +94,10 @@ and loads a new component every 3 seconds by calling `loadComponent()`.
 
 </code-example>
 
-
-
 The `loadComponent()` method is doing a lot of the heavy lifting here.
 Take it step by step. First, it picks an ad.
 
-
 <div class="l-sub-section">
-
 
 
 **How _loadComponent()_ chooses an ad**
@@ -114,10 +109,11 @@ currently is plus one, dividing that by the length of the `AdItem` array, and
 using the _remainder_ as the new `currentAddIndex` value. Then, it uses that
 value to select an `adItem` from the array.
 
-
 </div>
 
-
+<!-- 
+KW--this next line will make more sense, and sound less 
+like jargon if we explain what resolving a component means in definitive terms. -->
 
 After `loadComponent()` selects an ad, it uses `ComponentFactoryResolver`
 to resolve a `ComponentFactory` for each specific component.
@@ -128,22 +124,23 @@ exists on this specific instance of the component. How do you know it's
 this specific instance? Because it's referring to `adHost` and `adHost` is the
 directive you set up earlier to tell Angular where to insert dynamic components.
 
-As you may recall, `AdDirective` injects `ViewContainerRef` into its constructor.
-This is how the directive accesses the element that you want to use to host the dynamic component.
+Remember, `AdDirective` injects `ViewContainerRef` into its constructor.
+This is how the directive accesses the element that you want 
+to use to host the dynamic component.
 
-To add the component to the template, you call `createComponent()` on `ViewContainerRef`.
+The `ViewContainerRef.createComponent()` method adds the component 
+to the template.
+
+<!-- 
+KW--How do we know that it's returning a reference to the loaded component? Where is it? Are we using this reference in the example? -->
 
 The `createComponent()` method returns a reference to the loaded component.
 Use that reference to interact with the component by assigning to its properties or calling its methods.
 
-
-{@a selector-references}
-
-
 #### Selector references
 
 Generally, the Angular compiler generates a `ComponentFactory`
-for any component referenced in a template. However, there are
+for any component reference in a template. However, there are
 no selector references in the templates for
 dynamically loaded components since they load at runtime.
 
@@ -154,9 +151,6 @@ add dynamically loaded components to the `NgModule`'s `entryComponents` array:
 
 </code-example>
 
-
-
-{@a common-interface}
 
 
 ## The _AdComponent_ interface
@@ -183,9 +177,6 @@ Here are two sample components and the `AdComponent` interface for reference:
 
 </code-tabs>
 
-
-
-{@a final-ad-baner}
 
 
 ## Final ad banner

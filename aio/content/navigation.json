@@ -125,11 +125,73 @@
           "tooltip": "The basic building blocks of Angular applications."
         },
         {
+          "title": "Template Syntax",
+          "tooltip": "Template Syntax",
+          "url": "guide/template-syntax",
+          "children": [
+            {
+              "url": "guide/interpolation",
+              "title": "Interpolation",
+              "tooltip": "Learn how to use interpolation in your templates."
+            },
+            {
+              "url": "guide/template-statements",
+              "title": "Template Statements",
+              "tooltip": "Learn how to respond to events in your templates."
+            },
+            {
+              "url": "guide/binding-syntax",
+              "title": "Binding Syntax",
+              "tooltip": "Use data binding syntax to make your templates dynamic."
+            },
+            {
+              "url": "guide/property-binding",
+              "title": "Property Binding",
+              "tooltip": "Bind to properties to empower your templates."
+            },
+            {
+              "url": "guide/attribute-class-style-bindings",
+              "title": "Attribute, Class, and Style Bindings",
+              "tooltip": "Bind with attributes, classes, and styles."
+            },
+            {
+              "url": "guide/event-binding",
+              "title": "Event Binding",
+              "tooltip": "Attribute directives attach behavior to elements."
+            },
+            {
+              "url": "guide/two-way-binding",
+              "title": "Two-way Binding",
+              "tooltip": "Display and update data."
+            },
+            {
+              "url": "guide/built-in-directives",
+              "title": "Built-in Directives",
+              "tooltip": "Built-in directives save you time on common tasks."
+            },
+            {
+              "url": "guide/template-ref-variables",
+              "title": "Template Reference Variables",
+              "tooltip": "How to declare and use template reference variables."
+            },
+            {
+              "url": "guide/input-output",
+              "title": "@Input and @Output Properties",
+              "tooltip": "How to use @Input and @Output."
+            },
+            {
+              "url": "guide/template-expression-operators",
+              "title": "Template Expression Operators",
+              "tooltip": "Template expression operators and how to use them."
+            }
+          ]
+        },
+        {
           "title": "Template & Data Binding",
           "tooltip": "Template & Data Binding",
           "children": [
-            {
-              "url": "guide/displaying-data",
+                        {
+              "url": "guide/displaying-data-cli",
               "title": "Displaying Data",
               "tooltip": "Property binding helps show app data in the UI."
             },
