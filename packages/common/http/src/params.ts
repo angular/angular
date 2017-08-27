@@ -77,7 +77,7 @@ interface Update {
  * An HTTP request/response body that represents serialized parameters,
  * per the MIME type `application/x-www-form-urlencoded`.
  *
- * This class is immuatable - all mutation operations return a new instance.
+ * This class is immutable - all mutation operations return a new instance.
  *
  * @experimental
  */
