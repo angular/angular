@@ -22,16 +22,11 @@ export function main() {
     });
 
     describe('findLocaleData', () => {
-      it('should throw if the locale provided is not a valid LOCALE_ID', () => {
-        expect(() => findLocaleData('invalid'))
-            .toThrow(new Error(
-                `"invalid" is not a valid LOCALE_ID value. See https://github.com/unicode-cldr/cldr-core/blob/master/availableLocales.json for a list of valid locales`));
-      });
-
-      it('should throw if the LOCALE_DATA for the chosen locale if not available', () => {
-        expect(() => findLocaleData('fr-BE'))
-            .toThrowError(/Missing locale data for the locale "fr-BE"/);
-      });
+      it('should throw if the LOCALE_DATA for the chosen locale or its parent locale is not available',
+         () => {
+           expect(() => findLocaleData('pt-AO'))
+               .toThrowError(/Missing locale data for the locale "pt-AO"/);
+         });
 
       it('should return english data if the locale is en-US',
          () => { expect(findLocaleData('en-US')).toEqual(localeEn); });
@@ -40,7 +35,7 @@ export function main() {
          () => { expect(findLocaleData('fr-CA')).toEqual(localeFrCA); });
 
       it('should return the parent LOCALE_DATA if it exists and exact locale is not available',
-         () => { expect(findLocaleData('fr-FR')).toEqual(localeFr); });
+         () => { expect(findLocaleData('fr-BE')).toEqual(localeFr); });
 
       it(`should find the LOCALE_DATA even if the locale id is badly formatted`, () => {
         expect(findLocaleData('ca-ES-VALENCIA')).toEqual(localeCaESVALENCIA);
