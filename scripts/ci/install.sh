@@ -39,6 +39,18 @@ if [[ ${CI_MODE} != "aio" && ${CI_MODE} != 'docs_test' ]]; then
   travisFoldStart "npm-install"
     node tools/npm/check-node-modules --purge || npm install
   travisFoldEnd "npm-install"
+
+
+  # Install Selenium WebDriver
+  travisFoldStart "webdriver-manager-update"
+    $(npm bin)/webdriver-manager update
+  travisFoldEnd "webdriver-manager-update"
+
+
+  # Install bower packages
+  travisFoldStart "bower-install"
+    $(npm bin)/bower install
+  travisFoldEnd "bower-install"
 fi
 
 
@@ -101,19 +113,6 @@ if [[ ${TRAVIS} && (${CI_MODE} == "browserstack_required" || ${CI_MODE} == "brow
     )
   travisFoldEnd "install-browserstack"
 fi
-
-
-# Install Selenium WebDriver
-travisFoldStart "webdriver-manager-update"
-  $(npm bin)/webdriver-manager update
-travisFoldEnd "webdriver-manager-update"
-
-
-# Install bower packages
-travisFoldStart "bower-install"
-  $(npm bin)/bower install
-travisFoldEnd "bower-install"
-
 
 # Print return arrows as a log separator
 travisFoldReturnArrows
