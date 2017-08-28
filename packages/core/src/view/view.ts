@@ -530,6 +530,8 @@ function destroyViewNodes(view: ViewData) {
       view.renderer.destroyNode !(asElementData(view, i).renderElement);
     } else if (def.flags & NodeFlags.TypeText) {
       view.renderer.destroyNode !(asTextData(view, i).renderText);
+    } else if (def.flags & NodeFlags.TypeContentQuery || def.flags & NodeFlags.TypeViewQuery) {
+      asQueryList(view, i).destroy();
     }
   }
 }
