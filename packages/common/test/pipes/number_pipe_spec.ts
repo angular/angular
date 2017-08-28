@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import localeEn from '../../i18n_data/locale_en';
-import localeEsUS from '../../i18n_data/locale_es-US';
+import localeEn from '../../locales/en';
+import localeEsUS from '../../locales/es-US';
 import {registerLocaleData, CurrencyPipe, DecimalPipe, PercentPipe} from '@angular/common';
 import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 

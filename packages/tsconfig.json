@@ -29,6 +29,6 @@
     "compiler-cli/integrationtest",
     "platform-server/integrationtest",
     "tsc-wrapped",
-    "common/i18n_data"
+    "common/locales"
   ]
 }
