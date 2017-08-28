@@ -2,11 +2,18 @@
 
 {%- macro renderHeritage(exportDoc) -%}
   {%- if exportDoc.extendsClauses.length %} extends {% for clause in exportDoc.extendsClauses -%}
-  {$ clause $}{% if not loop.last %}, {% endif -%}
+  <a class="code-anchor" href="{$ clause.doc.path $}">{$ clause.text $}</a>{% if not loop.last %}, {% endif -%}
   {% endfor %}{% endif %}
   {%- if exportDoc.implementsClauses.length %} implements {% for clause in exportDoc.implementsClauses -%}
-  {$ clause $}{% if not loop.last %}, {% endif -%}
+  <a class="code-anchor" href="{$ clause.doc.path $}">{$ clause.text $}</a>{% if not loop.last %}, {% endif -%}
   {% endfor %}{% endif %}
+{%- endmacro -%}
+
+{%- macro renderMembers(doc) -%}
+{%- if doc.members.length %}{% for member in doc.members %}{% if not member.internal %}
+  <a class="code-anchor" href="{$ doc.path $}#{$ member.anchor $}">{$ renderMember(member, 1) $}</a>{% endif %}{% endfor %}{% endif %}
+{%- for ancestor in doc.extendsClauses %}{% if ancestor.doc %}
+  // inherited from <a class="code-anchor" href="{$ ancestor.doc.path $}">{$ ancestor.doc.id $}</a>{$ renderMembers(ancestor.doc) $}{% endif %}{% endfor %}
 {%- endmacro -%}
 
 {%- macro renderMember(member, truncateLines) -%}
