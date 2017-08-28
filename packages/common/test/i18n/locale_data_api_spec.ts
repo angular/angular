@@ -10,7 +10,8 @@ import localeCaESVALENCIA from '../../i18n_data/locale_ca-ES-VALENCIA';
 import localeEn from '../../i18n_data/locale_en';
 import localeFr from '../../i18n_data/locale_fr';
 import localeFrCA from '../../i18n_data/locale_fr-CA';
-import {registerLocaleData, findLocaleData} from '../../src/i18n/locale_data_api';
+import {findLocaleData} from '../../src/i18n/locale_data_api';
+import {registerLocaleData} from '../../src/i18n/locale_data';
 
 export function main() {
   describe('locale data api', () => {
@@ -24,13 +25,12 @@ export function main() {
     describe('findLocaleData', () => {
       it('should throw if the locale provided is not a valid LOCALE_ID', () => {
         expect(() => findLocaleData('invalid'))
-            .toThrow(new Error(
-                `"invalid" is not a valid LOCALE_ID value. See https://github.com/unicode-cldr/cldr-core/blob/master/availableLocales.json for a list of valid locales`));
+            .toThrowError(`"invalid" is not a valid locale code.`);
       });
 
       it('should throw if the LOCALE_DATA for the chosen locale if not available', () => {
         expect(() => findLocaleData('fr-BE'))
-            .toThrowError(/Missing locale data for the locale "fr-BE"/);
+            .toThrowError(/No data registered for the locale "fr-BE"/);
       });
 
       it('should return english data if the locale is en-US',

@@ -9,8 +9,6 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
-import {Plural} from '@angular/common';
-
 export default [
   'gsw-FR', [['vorm.', 'nam.'], , ['am Vormittag', 'am Namittag']],
   [['vorm.', 'nam.'], , ['Vormittag', 'Namittag']],
@@ -42,8 +40,8 @@ export default [
   ],
   ['.', '’', ';', '%', '+', '−', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'Euro', function(n: number):
-                                                                  Plural {
-                                                                    if (n === 1) return Plural.One;
-                                                                    return Plural.Other;
+                                                                  number {
+                                                                    if (n === 1) return 1;
+                                                                    return 5;
                                                                   }
 ];

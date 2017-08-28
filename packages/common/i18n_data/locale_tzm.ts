@@ -9,8 +9,6 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
-import {Plural} from '@angular/common';
-
 export default [
   'tzm',
   [
@@ -43,9 +41,9 @@ export default [
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'MAD', 'Derhem Umeṛṛuki',
   function(n: number):
-      Plural {
+      number {
         if (n === Math.floor(n) && n >= 0 && n <= 1 || n === Math.floor(n) && n >= 11 && n <= 99)
-          return Plural.One;
-        return Plural.Other;
+          return 1;
+        return 5;
       }
 ];
