@@ -10,6 +10,8 @@ import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, 
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
+import {Subject} from 'rxjs/Subject';
+
 import {stringify} from '../../src/util';
 
 export function main() {
@@ -348,16 +350,26 @@ export function main() {
            view.componentInstance.shouldShow = true;
            view.detectChanges();
 
+           let isQueryListCompleted = false;
+
            const q: NeedsQuery = view.debugElement.children[0].references !['q'];
+           const changes = <Subject<any>>q.query.changes;
            expect(q.query.length).toEqual(1);
+           expect(changes.closed).toBeFalsy();
+           changes.subscribe(() => {}, () => {}, () => { isQueryListCompleted = true; });
 
            view.componentInstance.shouldShow = false;
            view.detectChanges();
+           expect(changes.closed).toBeTruthy();
+           expect(isQueryListCompleted).toBeTruthy();
+
            view.componentInstance.shouldShow = true;
            view.detectChanges();
            const q2: NeedsQuery = view.debugElement.children[0].references !['q'];
 
            expect(q2.query.length).toEqual(1);
+           expect(changes.closed).toBeTruthy();
+           expect((<Subject<any>>q2.query.changes).closed).toBeFalsy();
          });
     });
 
