@@ -108,6 +108,12 @@ export class QueryList<T>/* implements Iterable<T> */ {
 
   /** internal */
   get dirty() { return this._dirty; }
+
+  /** internal */
+  destroy(): void {
+    this._emitter.complete();
+    this._emitter.unsubscribe();
+  }
 }
 
 function flatten<T>(list: Array<T|T[]>): T[] {
