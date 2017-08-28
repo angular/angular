@@ -40,7 +40,7 @@ export function jsonpFactory(jsonpBackend: JSONPBackend, requestOptions: Request
 /**
  * The module that includes http's providers
  *
- * @experimental
+ * @deprecated use @angular/common/http instead
  */
 @NgModule({
   providers: [
@@ -60,7 +60,7 @@ export class HttpModule {
 /**
  * The module that includes jsonp's providers
  *
- * @experimental
+ * @deprecated use @angular/common/http instead
  */
 @NgModule({
   providers: [

@@ -1,12 +1,12 @@
-/** @experimental */
+/** @stable */
 export declare const HTTP_INTERCEPTORS: InjectionToken<HttpInterceptor[]>;
 
-/** @experimental */
+/** @stable */
 export declare abstract class HttpBackend implements HttpHandler {
     abstract handle(req: HttpRequest<any>): Observable<HttpEvent<any>>;
 }
 
-/** @experimental */
+/** @stable */
 export declare class HttpClient {
     constructor(handler: HttpHandler);
     delete<T>(url: string, options?: {
@@ -996,15 +996,15 @@ export declare class HttpClient {
     }): Observable<any>;
 }
 
-/** @experimental */
+/** @stable */
 export declare class HttpClientJsonpModule {
 }
 
-/** @experimental */
+/** @stable */
 export declare class HttpClientModule {
 }
 
-/** @experimental */
+/** @stable */
 export declare class HttpClientXsrfModule {
     static disable(): ModuleWithProviders;
     static withOptions(options?: {
@@ -1013,13 +1013,13 @@ export declare class HttpClientXsrfModule {
     }): ModuleWithProviders;
 }
 
-/** @experimental */
+/** @stable */
 export interface HttpDownloadProgressEvent extends HttpProgressEvent {
     partialText?: string;
     type: HttpEventType.DownloadProgress;
 }
 
-/** @experimental */
+/** @stable */
 export declare class HttpErrorResponse extends HttpResponseBase implements Error {
     readonly error: any | null;
     readonly message: string;
@@ -1034,10 +1034,10 @@ export declare class HttpErrorResponse extends HttpResponseBase implements Error
     });
 }
 
-/** @experimental */
+/** @stable */
 export declare type HttpEvent<T> = HttpSentEvent | HttpHeaderResponse | HttpResponse<T> | HttpProgressEvent | HttpUserEvent<T>;
 
-/** @experimental */
+/** @stable */
 export declare enum HttpEventType {
     Sent = 0,
     UploadProgress = 1,
@@ -1047,12 +1047,12 @@ export declare enum HttpEventType {
     User = 5,
 }
 
-/** @experimental */
+/** @stable */
 export declare abstract class HttpHandler {
     abstract handle(req: HttpRequest<any>): Observable<HttpEvent<any>>;
 }
 
-/** @experimental */
+/** @stable */
 export declare class HttpHeaderResponse extends HttpResponseBase {
     readonly type: HttpEventType.ResponseHeader;
     constructor(init?: {
@@ -1069,7 +1069,7 @@ export declare class HttpHeaderResponse extends HttpResponseBase {
     }): HttpHeaderResponse;
 }
 
-/** @experimental */
+/** @stable */
 export declare class HttpHeaders {
     constructor(headers?: string | {
         [name: string]: string | string[];
@@ -1083,12 +1083,12 @@ export declare class HttpHeaders {
     set(name: string, value: string | string[]): HttpHeaders;
 }
 
-/** @experimental */
+/** @stable */
 export interface HttpInterceptor {
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>>;
 }
 
-/** @experimental */
+/** @stable */
 export interface HttpParameterCodec {
     decodeKey(key: string): string;
     decodeValue(value: string): string;
@@ -1096,7 +1096,7 @@ export interface HttpParameterCodec {
     encodeValue(value: string): string;
 }
 
-/** @experimental */
+/** @stable */
 export declare class HttpParams {
     constructor(options?: {
         fromString?: string;
@@ -1112,14 +1112,14 @@ export declare class HttpParams {
     toString(): string;
 }
 
-/** @experimental */
+/** @stable */
 export interface HttpProgressEvent {
     loaded: number;
     total?: number;
     type: HttpEventType.DownloadProgress | HttpEventType.UploadProgress;
 }
 
-/** @experimental */
+/** @stable */
 export declare class HttpRequest<T> {
     readonly body: T | null;
     readonly headers: HttpHeaders;
@@ -1188,7 +1188,7 @@ export declare class HttpRequest<T> {
     serializeBody(): ArrayBuffer | Blob | FormData | string | null;
 }
 
-/** @experimental */
+/** @stable */
 export declare class HttpResponse<T> extends HttpResponseBase {
     readonly body: T | null;
     readonly type: HttpEventType.Response;
@@ -1215,7 +1215,7 @@ export declare class HttpResponse<T> extends HttpResponseBase {
     }): HttpResponse<V>;
 }
 
-/** @experimental */
+/** @stable */
 export declare abstract class HttpResponseBase {
     readonly headers: HttpHeaders;
     readonly ok: boolean;
@@ -1231,12 +1231,12 @@ export declare abstract class HttpResponseBase {
     }, defaultStatus?: number, defaultStatusText?: string);
 }
 
-/** @experimental */
+/** @stable */
 export interface HttpSentEvent {
     type: HttpEventType.Sent;
 }
 
-/** @experimental */
+/** @stable */
 export declare class HttpUrlEncodingCodec implements HttpParameterCodec {
     decodeKey(k: string): string;
     decodeValue(v: string): string;
@@ -1244,35 +1244,35 @@ export declare class HttpUrlEncodingCodec implements HttpParameterCodec {
     encodeValue(v: string): string;
 }
 
-/** @experimental */
+/** @stable */
 export interface HttpUserEvent<T> {
     type: HttpEventType.User;
 }
 
-/** @experimental */
+/** @stable */
 export declare class HttpXhrBackend implements HttpBackend {
     constructor(xhrFactory: XhrFactory);
     handle(req: HttpRequest<any>): Observable<HttpEvent<any>>;
 }
 
-/** @experimental */
+/** @stable */
 export declare abstract class HttpXsrfTokenExtractor {
     abstract getToken(): string | null;
 }
 
-/** @experimental */
+/** @stable */
 export declare class JsonpClientBackend implements HttpBackend {
     constructor(callbackMap: JsonpCallbackContext, document: any);
     handle(req: HttpRequest<never>): Observable<HttpEvent<any>>;
 }
 
-/** @experimental */
+/** @stable */
 export declare class JsonpInterceptor {
     constructor(jsonp: JsonpClientBackend);
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>>;
 }
 
-/** @experimental */
+/** @stable */
 export declare abstract class XhrFactory {
     abstract build(): XMLHttpRequest;
 }
