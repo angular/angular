@@ -8,7 +8,7 @@
 
 /**
  * Supported http methods.
- * @experimental
+ * @deprecated use @angular/common/http instead
  */
 export enum RequestMethod {
   Get,
@@ -24,7 +24,7 @@ export enum RequestMethod {
  * All possible states in which a connection can be, based on
  * [States](http://www.w3.org/TR/XMLHttpRequest/#states) from the `XMLHttpRequest` spec, but with an
  * additional "CANCELLED" state.
- * @experimental
+ * @deprecated use @angular/common/http instead
  */
 export enum ReadyState {
   Unsent,
@@ -38,7 +38,7 @@ export enum ReadyState {
 /**
  * Acceptable response types to be associated with a {@link Response}, based on
  * [ResponseType](https://fetch.spec.whatwg.org/#responsetype) from the Fetch spec.
- * @experimental
+ * @deprecated use @angular/common/http instead
  */
 export enum ResponseType {
   Basic,
@@ -50,7 +50,7 @@ export enum ResponseType {
 
 /**
  * Supported content type to be automatically associated with a {@link Request}.
- * @experimental
+ * @deprecated use @angular/common/http instead
  */
 export enum ContentType {
   NONE,
@@ -64,7 +64,7 @@ export enum ContentType {
 
 /**
  * Define which buffer to use to store the response
- * @experimental
+ * @deprecated use @angular/common/http instead
  */
 export enum ResponseContentType {
   Text,
