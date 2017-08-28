@@ -24,7 +24,7 @@ const JSONP_ERR_WRONG_METHOD = 'JSONP requests must use GET request method.';
 /**
  * Abstract base class for an in-flight JSONP request.
  *
- * @experimental
+ * @deprecated use @angular/common/http instead
  */
 export abstract class JSONPConnection implements Connection {
   /**
@@ -141,7 +141,7 @@ export class JSONPConnection_ extends JSONPConnection {
 /**
  * A {@link ConnectionBackend} that uses the JSONP strategy of making requests.
  *
- * @experimental
+ * @deprecated use @angular/common/http instead
  */
 export abstract class JSONPBackend extends ConnectionBackend {}
 

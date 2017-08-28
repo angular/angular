@@ -17,7 +17,7 @@ import {take} from 'rxjs/operator/take';
  *
  * Mock Connection to represent a {@link Connection} for tests.
  *
- * @experimental
+ * @deprecated use @angular/common/http instead
  */
 export class MockConnection implements Connection {
   // TODO Name `readyState` should change to be more generic, and states could be made to be more
@@ -190,7 +190,7 @@ export class MockConnection implements Connection {
  *
  * This method only exists in the mock implementation, not in real Backends.
  *
- * @experimental
+ * @deprecated use @angular/common/http instead
  */
 @Injectable()
 export class MockBackend implements ConnectionBackend {

@@ -25,7 +25,7 @@ import {TestRequest} from './request';
  * requests were made and then flush them. In the end, a verify() method asserts
  * that no unexpected requests were made.
  *
- * @experimental
+ * @stable
  */
 @Injectable()
 export class HttpClientTestingBackend implements HttpBackend, HttpTestingController {
