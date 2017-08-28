@@ -1,13 +1,9 @@
-const Lint = require('tslint');
-const path = require('path');
-const minimatch = require('minimatch');
-const buildConfig = require('../../build-config');
+import * as path from 'path';
+import * as ts from 'typescript';
+import * as Lint from 'tslint';
+import * as minimatch from 'minimatch';
 
-/** Paths to the directories that are public packages and should be validated. */
-const packageDirs = [
-  path.join(buildConfig.packagesDir, 'lib'),
-  path.join(buildConfig.packagesDir, 'cdk')
-];
+const buildConfig = require('../../build-config');
 
 /** License banner that is placed at the top of every public TypeScript file. */
 const licenseBanner = buildConfig.licenseBanner;
@@ -23,29 +19,32 @@ const tslintFix = Lint.Replacement.appendText(0, licenseBanner + '\n\n');
  * Rule that walks through all TypeScript files of public packages and shows failures if a
  * file does not have the license banner at the top of the file.
  */
-class Rule extends Lint.Rules.AbstractRule {
+export class Rule extends Lint.Rules.AbstractRule {
 
-  apply(sourceFile) {
+  apply(sourceFile: ts.SourceFile) {
     return this.applyWithWalker(new RequireLicenseBannerWalker(sourceFile, this.getOptions()));
   }
 }
 
 class RequireLicenseBannerWalker extends Lint.RuleWalker {
 
-  constructor(file, options) {
-    super(...arguments);
+  /** Whether the walker should check the current source file. */
+  private _enabled: boolean;
+
+  constructor(sourceFile: ts.SourceFile, options: Lint.IOptions) {
+    super(sourceFile, options);
 
     // Globs that are used to determine which files to lint.
     const fileGlobs = options.ruleArguments;
 
     // Relative path for the current TypeScript source file.
-    const relativeFilePath = path.relative(process.cwd(), file.fileName);
+    const relativeFilePath = path.relative(process.cwd(), sourceFile.fileName);
 
     // Whether the file should be checked at all.
     this._enabled = fileGlobs.some(p => minimatch(relativeFilePath, p));
   }
 
-  visitSourceFile(sourceFile) {
+  visitSourceFile(sourceFile: ts.SourceFile) {
     if (!this._enabled) {
       return;
     }
@@ -60,5 +59,3 @@ class RequireLicenseBannerWalker extends Lint.RuleWalker {
     super.visitSourceFile(sourceFile);
   }
 }
-
-exports.Rule = Rule;
