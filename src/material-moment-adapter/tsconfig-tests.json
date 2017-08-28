@@ -1,0 +1,16 @@
+// TypeScript config file that extends the default tsconfig file for the moment-adapter.
+// This config is used to compile the tests for Karma. Since the code will run inside of the
+// browser, the target needs to be ES5. The format needs to be CommonJS for Karma.
+{
+  "extends": "./tsconfig-build",
+  "compilerOptions": {
+    "importHelpers": false,
+    "module": "commonjs",
+    "target": "es5",
+    "types": ["jasmine"]
+  },
+  "include": [
+    "**/*.spec.ts",
+    "index.ts"
+  ]
+}

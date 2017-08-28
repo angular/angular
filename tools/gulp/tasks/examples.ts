@@ -34,7 +34,7 @@ const examplesPath = path.join(packagesDir, 'material-examples');
 /** Output path of the module that is being created */
 const outputModuleFilename = path.join(examplesPath, 'example-module.ts');
 
-/** Build ecmascript module import statements */
+/** Build ES module import statements */
 function buildImportsTemplate(metadata: ExampleMetadata): string {
   const components = metadata.additionalComponents.concat(metadata.component);
 
