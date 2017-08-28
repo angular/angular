@@ -678,12 +678,60 @@ export interface Component extends Directive {
   entryComponents?: Array<Type<any>|any[]>;
 
   /**
-   * If preserveWhitespaces is set to `false` potentially superfluous blank characters (space, tab,
-   * new line) will be removed from compiled templates. This can greatly reduce generated code size
-   * as well as speed up components' creation. The whitespace removal algorithm will drop all
-   * the blank text nodes and collapse series of whitespaces to just one space.
-   * Those transformations can potentially influence layout of the generated markup so
-   * the `preserveWhitespaces` should be used with care.
+   * If {@link Component#preserveWhitespaces `Component.preserveWhitespaces`} is set to `false`
+   * potentially superfluous whitespace characters (ones matching the `\s` character class in
+   * JavaScript regular expressions) will be removed from a compiled template. This can greatly
+   * reduce AOT-generated code size as well as speed up view creation.
+   *
+   * Current implementation works according to the following rules:
+   * - all whitespaces at the beginning and the end of a template are removed (trimmed);
+   * - text nodes consisting of whitespaces only are removed (ex.:
+   *   `<button>Action 1</button>  <button>Action 2</button>` will be converted to
+   *   `<button>Action 1</button><button>Action 2</button>` (no whitespaces between buttons);
+   * - series of whitespaces in text nodes are replaced with one space (ex.:
+   *   `<span>\n some text\n</span>` will be converted to `<span> some text </span>`);
+   * - text nodes are left as-is inside HTML tags where whitespaces are significant (ex. `<pre>`,
+   *   `<textarea>`).
+   *
+   * Described transformations can (potentially) influence DOM nodes layout so the
+   * `preserveWhitespaces` option is `true` be default (no whitespace removal).
+   * In Angular 5 you need to opt-in for whitespace removal (but we might revisit the default
+   * setting in Angular 6 or later). If you want to change the default setting for all components
+   * in your application you can use the `preserveWhitespaces` option of the AOT compiler.
+   *
+   * Even if you decide to opt-in for whitespace removal there are ways of preserving whitespaces
+   * in certain fragments of a template. You can either exclude entire DOM sub-tree by using the
+   * `ngPreserveWhitespaces` attribute, ex.:
+   *
+   * ```html
+   * <div ngPreserveWhitespaces>
+   *     whitespaces are preserved here
+   *     <span>    and here </span>
+   * </div>
+   * ```
+   *
+   * Alternatively you can force a space to be preserved in a text node by using the `&ngsp;`
+   * pseudo-entity. `&ngsp;` will be replaced with a space character by Angular's template
+   * compiler, ex.:
+   *
+   * ```html
+   * <a>Spaces</a>&ngsp;<a>between</a>&ngsp;<a>links.</a>
+   * ```
+   *
+   * will be compiled to the equivalent of:
+   *
+   * * ```html
+   * <a>Spaces</a> <a>between</a> <a>links.</a>
+   * ```
+   *
+   * Please note that sequences of `&ngsp;` are still collapsed to just one space character when
+   * the `preserveWhitespaces` option is set to `false` (ex.:
+   * `<a>before</a>&ngsp;&ngsp;&ngsp;<a>after</a>` would be equivalent to
+   * `<a>before</a> <a>after</a>`). The `&ngsp;` pseudo-entity is useful for forcing presence of
+   * one space (a text node having `&ngsp;` pseudo-entities will never be removed), but it is not
+   * meant to mark sequences of whitespace characters. The previously described
+   * `ngPreserveWhitespaces` attribute is more useful for preserving sequences of whitespace
+   * characters.
    */
   preserveWhitespaces?: boolean;
 }
