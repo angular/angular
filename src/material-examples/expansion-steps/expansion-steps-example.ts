@@ -1,6 +1,8 @@
 import {Component} from '@angular/core';
 
-
+/**
+ * @title Expansion panel as accordion
+ */
 @Component({
   selector: 'expansion-steps-example',
   templateUrl: 'expansion-steps-example.html',

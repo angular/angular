@@ -38,6 +38,8 @@ import {DialogContentExampleDialog,DialogContentExample} from './dialog-content/
 import {DialogDataExampleDialog,DialogDataExample} from './dialog-data/dialog-data-example';
 import {DialogElementsExampleDialog,DialogElementsExample} from './dialog-elements/dialog-elements-example';
 import {DialogOverviewExampleDialog,DialogOverviewExample} from './dialog-overview/dialog-overview-example';
+import {ExpansionOverviewExample} from './expansion-overview/expansion-overview-example';
+import {ExpansionStepsExample} from './expansion-steps/expansion-steps-example';
 import {GridListDynamicExample} from './grid-list-dynamic/grid-list-dynamic-example';
 import {GridListOverviewExample} from './grid-list-overview/grid-list-overview-example';
 import {IconOverviewExample} from './icon-overview/icon-overview-example';
@@ -235,6 +237,18 @@ export const EXAMPLE_COMPONENTS = {
     component: DialogOverviewExample,
     additionalFiles: ["dialog-overview-example-dialog.html"],
     selectorName: 'DialogOverviewExample, DialogOverviewExampleDialog'
+  },
+  'expansion-overview': {
+    title: 'Basic expansion panel',
+    component: ExpansionOverviewExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'expansion-steps': {
+    title: 'Expansion panel as accordion',
+    component: ExpansionStepsExample,
+    additionalFiles: null,
+    selectorName: null
   },
   'grid-list-dynamic': {
     title: 'Dynamic grid-list',
@@ -540,6 +554,8 @@ export const EXAMPLE_LIST = [
   DialogDataExampleDialog,DialogDataExample,
   DialogElementsExampleDialog,DialogElementsExample,
   DialogOverviewExampleDialog,DialogOverviewExample,
+  ExpansionOverviewExample,
+  ExpansionStepsExample,
   GridListDynamicExample,
   GridListOverviewExample,
   IconOverviewExample,
