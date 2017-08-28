@@ -86,7 +86,7 @@ done
 #######################################
 isIgnoredDirectory() {
   name=$(basename ${1})
-  if [[ -f "${1}" || "${name}" == "src" || "${name}" == "test" || "${name}" == "integrationtest" || "${name}" == "i18n_data" ]]; then
+  if [[ -f "${1}" || "${name}" == "src" || "${name}" == "test" || "${name}" == "integrationtest" || "${name}" == "locales" ]]; then
     return 0
   else
     return 1
@@ -485,7 +485,7 @@ do
 
       if [[ ${PACKAGE} == "common" ]]; then
         echo "======      Copy i18n locale data"
-        rsync -a --exclude=*.d.ts --exclude=*.metadata.json ${OUT_DIR}/i18n_data/ ${NPM_DIR}/i18n_data
+        rsync -a --exclude=*.d.ts --exclude=*.metadata.json ${OUT_DIR}/locales/ ${NPM_DIR}/locales
       fi
     else
       echo "======        Copy ${PACKAGE} node tool"

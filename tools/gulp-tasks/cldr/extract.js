@@ -16,7 +16,7 @@ const cldrJs = require('cldrjs');
 
 const PACKAGE_FOLDER = 'packages/common';
 const I18N_FOLDER = `${PACKAGE_FOLDER}/src/i18n`;
-const I18N_DATA_FOLDER = `${PACKAGE_FOLDER}/i18n_data`;
+const I18N_DATA_FOLDER = `${PACKAGE_FOLDER}/locales`;
 const I18N_DATA_EXTRA_FOLDER = `${I18N_DATA_FOLDER}/extra`;
 const RELATIVE_I18N_FOLDER = path.resolve(__dirname, `../../../${I18N_FOLDER}`);
 const RELATIVE_I18N_DATA_FOLDER = path.resolve(__dirname, `../../../${I18N_DATA_FOLDER}`);
@@ -57,19 +57,16 @@ module.exports = (gulp, done) => {
     const localeData = new cldrJs(locale);
 
     console.log(`${index + 1}/${LOCALES.length}`);
-    console.log(`\t${I18N_DATA_FOLDER}/locale_${locale}.ts`);
-    fs.writeFileSync(`${RELATIVE_I18N_DATA_FOLDER}/locale_${locale}.ts`, generateLocale(locale, localeData, '@angular/common'));
-    console.log(`\t${I18N_DATA_EXTRA_FOLDER}/locale_${locale}.ts`);
-    fs.writeFileSync(`${RELATIVE_I18N_DATA_EXTRA_FOLDER}/locale_${locale}.ts`, generateLocaleExtra(locale, localeData));
+    console.log(`\t${I18N_DATA_FOLDER}/${locale}.ts`);
+    fs.writeFileSync(`${RELATIVE_I18N_DATA_FOLDER}/${locale}.ts`, generateLocale(locale, localeData));
+    console.log(`\t${I18N_DATA_EXTRA_FOLDER}/${locale}.ts`);
+    fs.writeFileSync(`${RELATIVE_I18N_DATA_EXTRA_FOLDER}/${locale}.ts`, generateLocaleExtra(locale, localeData));
   });
   console.log(`${LOCALES.length} locale files generated.`);
 
   // additional "en" file that will be included in common
   console.log(`Writing file ${I18N_FOLDER}/locale_en.ts`);
-  fs.writeFileSync(`${RELATIVE_I18N_FOLDER}/locale_en.ts`, generateLocale('en', new cldrJs('en'), './locale_data'));
-
-  console.log(`Writing file ${I18N_FOLDER}/available_locales.ts`);
-  fs.writeFileSync(`${RELATIVE_I18N_FOLDER}/available_locales.ts`, generateAvailableLocales(LOCALES));
+  fs.writeFileSync(`${RELATIVE_I18N_FOLDER}/locale_en.ts`, generateLocale('en', new cldrJs('en')));
 
   console.log(`Writing file ${I18N_FOLDER}/currencies.ts`);
   fs.writeFileSync(`${RELATIVE_I18N_FOLDER}/currencies.ts`, generateCurrencies());
@@ -80,7 +77,6 @@ module.exports = (gulp, done) => {
   return gulp
     .src([
         `${I18N_DATA_FOLDER}/**/*.ts`,
-        `${I18N_FOLDER}/available_locales.ts`,
         `${I18N_FOLDER}/currencies.ts`,
         `${I18N_FOLDER}/locale_en.ts`
       ], {base: '.'})
@@ -91,7 +87,7 @@ module.exports = (gulp, done) => {
 /**
  * Generate file that contains basic locale data
  */
-function generateLocale(locale, localeData, ngLocalePath) {
+function generateLocale(locale, localeData) {
   // [ localeId, dateTime, number, currency, pluralCase ]
   let data = stringify([
     locale,
@@ -107,8 +103,6 @@ function generateLocale(locale, localeData, ngLocalePath) {
   data = data.substring(0, data.lastIndexOf(']')) + `, ${getPluralFunction(locale)}]`;
 
   return `${HEADER}
-import {Plural} from '${ngLocalePath}';
-
 export default ${data};
 `;
 }
@@ -148,16 +142,6 @@ function generateLocaleExtra(locale, localeData) {
 
   return `${HEADER}
 export default ${stringify(dayPeriodsSupplemental).replace(/undefined/g, '')};
-`;
-}
-
-/**
- * Generate a file that contains the complete list of locales
- */
-function generateAvailableLocales(LOCALES) {
-  return `${HEADER}
-/** @experimental */
-export const AVAILABLE_LOCALES = ${stringify(LOCALES)};
 `;
 }
 
@@ -464,24 +448,28 @@ function toRegExp(s) {
  */
 function getPluralFunction(locale) {
   let fn = cldr.extractPluralRuleFunction(locale).toString();
+
   if (fn === EMPTY_RULE) {
     fn = DEFAULT_RULE;
   }
 
-  return fn
+  fn = fn
     .replace(
       toRegExp('function anonymous(n\n/**/) {\n'),
-      'function(n: number): Plural {\n  ')
+      'function(n: number): number {\n  ')
     .replace(toRegExp('var'), 'let')
     .replace(toRegExp('if(typeof n==="string")n=parseInt(n,10);'), '')
-    .replace(toRegExp('"zero"'), ' Plural.Zero')
-    .replace(toRegExp('"one"'), ' Plural.One')
-    .replace(toRegExp('"two"'), ' Plural.Two')
-    .replace(toRegExp('"few"'), ' Plural.Few')
-    .replace(toRegExp('"many"'), ' Plural.Many')
-    .replace(toRegExp('"other"'), ' Plural.Other')
     .replace(toRegExp('\n}'), ';\n}');
-  return normalizePluralRule();
+
+  // The replacement values must match the `Plural` enum from common.
+  // We do not use the enum directly to avoid depending on that package.
+  return fn
+    .replace(toRegExp('"zero"'), ' 0')
+    .replace(toRegExp('"one"'), ' 1')
+    .replace(toRegExp('"two"'), ' 2')
+    .replace(toRegExp('"few"'), ' 3')
+    .replace(toRegExp('"many"'), ' 4')
+    .replace(toRegExp('"other"'), ' 5');
 }
 
 /**
@@ -496,13 +484,6 @@ function objectValues(obj) {
  */
 function stringify(obj) {
   return util.inspect(obj, {depth: null, maxArrayLength: null})
-}
-
-/**
- * Transform a string to camelCase
- */
-function toCamelCase(str) {
-  return str.replace(/-+([a-z0-9A-Z])/g, (...m) => m[1].toUpperCase());
 }
 
 /**
@@ -537,3 +518,5 @@ function removeDuplicates(data) {
 
 module.exports.I18N_FOLDER = I18N_FOLDER;
 module.exports.I18N_DATA_FOLDER = I18N_DATA_FOLDER;
+module.exports.RELATIVE_I18N_DATA_FOLDER = RELATIVE_I18N_DATA_FOLDER;
+module.exports.HEADER = HEADER;

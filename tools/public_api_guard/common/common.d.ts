@@ -11,9 +11,6 @@ export declare class AsyncPipe implements OnDestroy, PipeTransform {
     transform<T>(obj: null): null;
 }
 
-/** @experimental */
-export declare const AVAILABLE_LOCALES: string[];
-
 /** @stable */
 export declare class CommonModule {
 }
@@ -71,9 +68,6 @@ export declare class DeprecatedPercentPipe implements PipeTransform {
 
 /** @stable */
 export declare const DOCUMENT: InjectionToken<Document>;
-
-/** @experimental */
-export declare function findLocaleData(locale: string): any;
 
 /** @experimental */
 export declare enum FormatWidth {
@@ -184,11 +178,6 @@ export declare function isPlatformWorkerUi(platformId: Object): boolean;
 export declare class JsonPipe implements PipeTransform {
     transform(value: any): string;
 }
-
-/** @experimental */
-export declare const LOCALE_DATA: {
-    [localeId: string]: any;
-};
 
 /** @stable */
 export declare class Location {

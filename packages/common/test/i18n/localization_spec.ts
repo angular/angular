@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import localeRo from '../../i18n_data/locale_ro';
-import localeSr from '../../i18n_data/locale_sr';
-import localeZgh from '../../i18n_data/locale_zgh';
-import localeFr from '../../i18n_data/locale_fr';
+import localeRo from '../../locales/ro';
+import localeSr from '../../locales/sr';
+import localeZgh from '../../locales/zgh';
+import localeFr from '../../locales/fr';
 import {LOCALE_ID} from '@angular/core';
 import {TestBed, inject} from '@angular/core/testing';
 import {NgLocaleLocalization, NgLocalization, getPluralCategory} from '../../src/i18n/localization';
-import {registerLocaleData} from '../../src/i18n/locale_data_api';
+import {registerLocaleData} from '../../src/i18n/locale_data';
 
 export function main() {
   describe('l10n', () => {

@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AVAILABLE_LOCALES} from './available_locales';
 import {CURRENCIES} from './currencies';
 import localeEn from './locale_en';
-import {LOCALE_DATA, Plural} from './locale_data';
+import {LOCALE_DATA, LocaleDataIndex, ExtraLocaleDataIndex} from './locale_data';
 
 /**
  * The different format styles that can be used to represent numbers.
@@ -22,6 +21,16 @@ export enum NumberFormatStyle {
   Percent,
   Currency,
   Scientific
+}
+
+/** @experimental */
+export enum Plural {
+  Zero = 0,
+  One = 1,
+  Two = 2,
+  Few = 3,
+  Many = 4,
+  Other = 5,
 }
 
 /**
@@ -129,40 +138,6 @@ export enum WeekDay {
   Thursday,
   Friday,
   Saturday
-}
-
-/**
- * Use this enum to find the index of each type of locale data from the locale data array
- */
-enum LocaleDataIndex {
-  LocaleId = 0,
-  DayPeriodsFormat,
-  DayPeriodsStandalone,
-  DaysFormat,
-  DaysStandalone,
-  MonthsFormat,
-  MonthsStandalone,
-  Eras,
-  FirstDayOfWeek,
-  WeekendRange,
-  DateFormat,
-  TimeFormat,
-  DateTimeFormat,
-  NumberSymbols,
-  NumberFormats,
-  CurrencySymbol,
-  CurrencyName,
-  PluralCase,
-  ExtraData
-}
-
-/**
- * Use this enum to find the index of each type of locale data from the extra locale data array
- */
-enum ExtraLocaleDataIndex {
-  ExtraDayPeriodFormats = 0,
-  ExtraDayPeriodStandalone,
-  ExtraDayPeriodsRules
 }
 
 /**
@@ -528,55 +503,26 @@ function extractTime(time: string): Time {
  * @experimental i18n support is experimental.
  */
 export function findLocaleData(locale: string): any {
-  const normalizedLocale = getNormalizedLocale(locale);
-
-  if (normalizedLocale === 'en') {
-    return LOCALE_DATA['en'] || localeEn;
-  }
-
-  const match = LOCALE_DATA[toCamelCase(normalizedLocale)];
-  if (match) {
-    return match;
-  }
-
-  throw new Error(
-      `Missing locale data for the locale "${locale}". Use "registerLocaleData" to load new data. See the "I18n guide" on angular.io to know more.`);
-}
-
-const NORMALIZED_LOCALES: any = {};
-
-/**
- * Returns the closest matching locale that exists or throw
- * e.g.: "en-US" will return "en", and "fr_ca" will return "fr-CA"
- * Rules for locale id equivalences are defined in
- * http://cldr.unicode.org/index/cldr-spec/language-tag-equivalences
- * and in https://tools.ietf.org/html/rfc4647#section-3.4
- */
-function getNormalizedLocale(locale: string): string {
-  if (NORMALIZED_LOCALES[locale]) {
-    return NORMALIZED_LOCALES[locale];
-  }
-
   const normalizedLocale = locale.toLowerCase().replace(/_/g, '-');
-  const match = AVAILABLE_LOCALES.find((l: string) => l.toLowerCase() === normalizedLocale);
 
+  let match = LOCALE_DATA[normalizedLocale];
   if (match) {
-    NORMALIZED_LOCALES[locale] = match;
     return match;
   }
 
+  // let's try to find a parent locale
   const parentLocale = normalizedLocale.split('-')[0];
-  if (AVAILABLE_LOCALES.find((l: string) => l.toLowerCase() === parentLocale)) {
-    NORMALIZED_LOCALES[locale] = parentLocale;
-    return parentLocale;
+  match = LOCALE_DATA[parentLocale];
+
+  if (match) {
+    return match;
   }
 
-  throw new Error(
-      `"${locale}" is not a valid LOCALE_ID value. See https://github.com/unicode-cldr/cldr-core/blob/master/availableLocales.json for a list of valid locales`);
-}
+  if (parentLocale === 'en') {
+    return localeEn;
+  }
 
-function toCamelCase(str: string): string {
-  return str.replace(/-+([a-z0-9A-Z])/g, (...m: string[]) => m[1].toUpperCase());
+  throw new Error(`Missing locale data for the locale "${locale}".`);
 }
 
 /**
@@ -589,18 +535,4 @@ export function findCurrencySymbol(code: string, format: 'wide' | 'narrow') {
   const currency = CURRENCIES[code] || {};
   const symbol = currency[0] || code;
   return format === 'wide' ? symbol : currency[1] || symbol;
-}
-
-/**
- * Register global data to be used internally by Angular. See the
- * {@linkDocs guide/i18n#i18n-pipes "I18n guide"} to know how to import additional locale data.
- *
- * @experimental i18n support is experimental.
- */
-export function registerLocaleData(data: any, extraData?: any) {
-  const localeId = toCamelCase(data[LocaleDataIndex.LocaleId]);
-  LOCALE_DATA[localeId] = data;
-  if (extraData) {
-    LOCALE_DATA[localeId][LocaleDataIndex.ExtraData] = extraData;
-  }
 }
