@@ -6,8 +6,10 @@
   "license": "MIT",
   "peerDependencies": {
     "@angular/compiler-cli": "0.0.0-PLACEHOLDER",
-    "@bazel/typescript": "~0.0.7",
     "typescript": "~2.3"
+  },
+  "dependencies": {
+    "@bazel/typescript": "~0.0.7"
   },
   "repository": {
     "type": "git",
