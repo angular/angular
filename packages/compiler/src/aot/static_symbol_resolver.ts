@@ -269,17 +269,20 @@ export class StaticSymbolResolver {
   }
 
   getSymbolsOf(filePath: string): StaticSymbol[] {
+    const summarySymbols = this.summaryResolver.getSymbolsOf(filePath);
+    if (summarySymbols) {
+      return summarySymbols;
+    }
     // Note: Some users use libraries that were not compiled with ngc, i.e. they don't
-    // have summaries, only .d.ts files. So we always need to check both, the summary
-    // and metadata.
-    let symbols = new Set<StaticSymbol>(this.summaryResolver.getSymbolsOf(filePath));
+    // have summaries, only .d.ts files, but `summaryResolver.isLibraryFile` returns true.
     this._createSymbolsOf(filePath);
+    const metadataSymbols: StaticSymbol[] = [];
     this.resolvedSymbols.forEach((resolvedSymbol) => {
       if (resolvedSymbol.symbol.filePath === filePath) {
-        symbols.add(resolvedSymbol.symbol);
+        metadataSymbols.push(resolvedSymbol.symbol);
       }
     });
-    return Array.from(symbols);
+    return metadataSymbols;
   }
 
   private _createSymbolsOf(filePath: string) {

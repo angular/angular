@@ -136,15 +136,14 @@ describe('StaticSymbolResolver', () => {
     ]);
   });
 
-  it('should merge the exported symbols of a file with the exported symbols of its summary', () => {
-    const someSymbol = symbolCache.get('/test.ts', 'a');
-    init(
-        {'/test.ts': 'export var b = 2'},
-        [{symbol: symbolCache.get('/test.ts', 'a'), metadata: 1}]);
-    expect(symbolResolver.getSymbolsOf('/test.ts')).toEqual([
-      symbolCache.get('/test.ts', 'a'), symbolCache.get('/test.ts', 'b')
-    ]);
-  });
+  it('should read the exported symbols of a file from the summary and ignore exports in the source',
+     () => {
+       const someSymbol = symbolCache.get('/test.ts', 'a');
+       init(
+           {'/test.ts': 'export var b = 2'},
+           [{symbol: symbolCache.get('/test.ts', 'a'), metadata: 1}]);
+       expect(symbolResolver.getSymbolsOf('/test.ts')).toEqual([symbolCache.get('/test.ts', 'a')]);
+     });
 
   describe('importAs', () => {
 
@@ -385,9 +384,10 @@ export class MockSummaryResolver implements SummaryResolver<StaticSymbol> {
   resolveSummary(reference: StaticSymbol): Summary<StaticSymbol> {
     return this.summaries.find(summary => summary.symbol === reference);
   };
-  getSymbolsOf(filePath: string): StaticSymbol[] {
-    return this.summaries.filter(summary => summary.symbol.filePath === filePath)
-        .map(summary => summary.symbol);
+  getSymbolsOf(filePath: string): StaticSymbol[]|null {
+    const symbols = this.summaries.filter(summary => summary.symbol.filePath === filePath)
+                        .map(summary => summary.symbol);
+    return symbols.length ? symbols : null;
   }
   getImportAs(symbol: StaticSymbol): StaticSymbol {
     const entry = this.importAs.find(entry => entry.symbol === symbol);
