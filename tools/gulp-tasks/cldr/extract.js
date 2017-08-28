@@ -16,7 +16,7 @@ const cldrJs = require('cldrjs');
 
 const PACKAGE_FOLDER = 'packages/common';
 const I18N_FOLDER = `${PACKAGE_FOLDER}/src/i18n`;
-const I18N_DATA_FOLDER = `${PACKAGE_FOLDER}/i18n_data`;
+const I18N_DATA_FOLDER = `${PACKAGE_FOLDER}/locales`;
 const I18N_DATA_EXTRA_FOLDER = `${I18N_DATA_FOLDER}/extra`;
 const RELATIVE_I18N_FOLDER = path.resolve(__dirname, `../../../${I18N_FOLDER}`);
 const RELATIVE_I18N_DATA_FOLDER = path.resolve(__dirname, `../../../${I18N_DATA_FOLDER}`);
@@ -57,10 +57,10 @@ module.exports = (gulp, done) => {
     const localeData = new cldrJs(locale);
 
     console.log(`${index + 1}/${LOCALES.length}`);
-    console.log(`\t${I18N_DATA_FOLDER}/locale_${locale}.ts`);
-    fs.writeFileSync(`${RELATIVE_I18N_DATA_FOLDER}/locale_${locale}.ts`, generateLocale(locale, localeData));
-    console.log(`\t${I18N_DATA_EXTRA_FOLDER}/locale_${locale}.ts`);
-    fs.writeFileSync(`${RELATIVE_I18N_DATA_EXTRA_FOLDER}/locale_${locale}.ts`, generateLocaleExtra(locale, localeData));
+    console.log(`\t${I18N_DATA_FOLDER}/${locale}.ts`);
+    fs.writeFileSync(`${RELATIVE_I18N_DATA_FOLDER}/${locale}.ts`, generateLocale(locale, localeData));
+    console.log(`\t${I18N_DATA_EXTRA_FOLDER}/${locale}.ts`);
+    fs.writeFileSync(`${RELATIVE_I18N_DATA_EXTRA_FOLDER}/${locale}.ts`, generateLocaleExtra(locale, localeData));
   });
   console.log(`${LOCALES.length} locale files generated.`);
 

@@ -6,7 +6,7 @@
     "experimentalDecorators": true,
     "module": "es2015",
     "moduleResolution": "node",
-    "outDir": "../../../dist/packages/common/i18n_data",
+    "outDir": "../../../dist/packages/common/locales",
     "paths": {
       "@angular/common": ["../../../dist/packages/common"],
       "@angular/core": ["../../../dist/packages/core"]
