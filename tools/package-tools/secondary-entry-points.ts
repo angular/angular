@@ -2,6 +2,7 @@ import {join} from 'path';
 import {readdirSync, lstatSync, existsSync} from 'fs';
 import {spawnSync} from 'child_process';
 import {BuildPackage} from './build-package';
+import {platform} from 'os';
 
 
 /**
@@ -36,14 +37,12 @@ export function getSecondaryEntryPointsForPackage(pkg: BuildPackage) {
 
   // Update the deps for each node to point to the appropriate BuildNodes.
   buildNodes.forEach(node => {
+    const importStatementFindCommand = buildPackageImportStatementFindCommand(
+        join(packageDir, node.name), packageName);
+
     // Look for any imports that reference this same umbrella package and get the corresponding
     // BuildNode for each by looking at the import statements with grep.
-    node.deps = spawnSync('grep', [
-      '-Eroh',
-      '--include', '*.ts',
-      `from '@angular/${packageName}/.+';`,
-      `${packageDir}/${node.name}/`
-    ])
+    node.deps = spawnSync(importStatementFindCommand.binary, importStatementFindCommand.args)
     .stdout
     .toString()
     .split('\n')
@@ -85,4 +84,20 @@ interface BuildNode {
   name: string;
   deps: BuildNode[];
   visited?: boolean;
+}
+
+
+/** Builds the command that will be executed to find all import statements for a package. */
+function buildPackageImportStatementFindCommand(searchDirectory: string, packageName: string) {
+  if (platform() === 'win32') {
+    return {
+      binary: 'findstr',
+      args: ['/r', `from.'@angular/${packageName}/.*'`, `${searchDirectory}\\*`]
+    };
+  } else {
+    return {
+      binary: 'grep',
+      args: ['-Eroh', '--include', '*.ts', `from '@angular/${packageName}/.+';`, searchDirectory]
+    };
+  }
 }
