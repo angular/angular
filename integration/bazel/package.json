@@ -15,6 +15,7 @@
   "devDependencies": {
     "@angular/bazel": "file:../../dist/packages-dist/bazel",
     "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
+    "@angular/tsc-wrapped": "file:../../dist/packages-dist/tsc-wrapped",
     "@bazel/typescript": "0.0.7",
     "typescript": "~2.3.1"
   },
