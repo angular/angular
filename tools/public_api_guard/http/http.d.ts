@@ -27,6 +27,17 @@ export declare abstract class ConnectionBackend {
 }
 
 /** @experimental */
+export declare enum ContentType {
+    NONE = 0,
+    JSON = 1,
+    FORM = 2,
+    FORM_DATA = 3,
+    TEXT = 4,
+    BLOB = 5,
+    ARRAY_BUFFER = 6,
+}
+
+/** @experimental */
 export declare class CookieXSRFStrategy implements XSRFStrategy {
     constructor(_cookieName?: string, _headerName?: string);
     configureRequest(req: Request): void;
