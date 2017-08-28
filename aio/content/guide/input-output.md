@@ -237,7 +237,10 @@ any component in which you could nest the child.
 <!-- Should we include instructions on how to nest a component? -->
 
 The `AppComponent` in this example features a list of `items` 
-in an array and a method for adding more items to the array.
+in an array and a method for adding more items to the array. 
+The items in the `items` array are displayed in the 
+parent's template with an `ngFor`. For more information on how 
+to use `NgFor`, see the [`NgFor`](guide/built-in-directives#ngfor) section of [Built-in Directives](guide/built-in-directives).
 
 ```ts
 
@@ -279,6 +282,15 @@ In other words, this is where the actual hand off of data takes place.
 The `$event` contains the data that the user types into the `<input>` 
 in the child template UI.
 
+### Diagrams of `@Output()` flow
+
+The following diagrams may help you conceptualize the way outputs 
+work. When the user clicks on the add button, 
+
+<figure>
+  <img src='generated/images/guide/input-output/input-output-diagram.gif' alt="Input/Output diagram">
+</figure>
+
 
 ## `@Input()` and `@Output()` together
 
@@ -287,7 +299,7 @@ The following example is of an `@Input()` and an `@Output()` on the same
 child component and shows the different parts of each:
 
 <figure>
-  <img src='generated/images/guide/input-output/input-output-diagram.gif' alt="Input diagram">
+  <img src='generated/images/guide/input-output/input-output-diagram.gif' alt="Input/Output diagram">
 </figure>
 
 To combine property and event bindings using the banana-in-a-box 
