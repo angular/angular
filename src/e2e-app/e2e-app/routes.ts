@@ -43,6 +43,6 @@ export const E2E_APP_ROUTES: Routes = [
   {path: 'sidenav', component: SidenavE2E},
   {path: 'slide-toggle', component: SlideToggleE2E},
   {path: 'tabs', component: BasicTabs},
-  {path: 'card-fancy', component: CardFancyExample},
+  {path: 'cards', component: CardFancyExample},
   {path: 'toolbar', component: ToolbarMultirowExample},
 ];
