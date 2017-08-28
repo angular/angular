@@ -149,6 +149,8 @@ export function serverFactory() {
 })
 ```
 
+Beginning in version 5, this rewritting is performed automatically by the compiler while emitting the .js file.
+
 ### Limited function calls
 
 The _collector_ can represent a function call or object creation with `new` as long as the syntax is valid. The _collector_ only cares about proper syntax.
@@ -181,7 +183,7 @@ const template = '<div>{{hero.name}}</div>';
   selector: 'app-hero',
   template: template
 })
-class HeroComponent {
+export class HeroComponent {
   @Input() hero: Hero;
 }
 ```
@@ -196,7 +198,7 @@ The effect is the same as if you had written:
   selector: 'app-hero',
   template: '<div>{{hero.name}}</div>'
 })
-class HeroComponent {
+export class HeroComponent {
   @Input() hero: Hero;
 }
 ```
@@ -212,7 +214,7 @@ const template = '<div>{{hero.name}}</div>';
   selector: 'app-hero',
   template: template + '<div>{{hero.title}}</div>'
 })
-class HeroComponent {
+export class HeroComponent {
   @Input() hero: Hero;
 }
 ```
@@ -269,7 +271,7 @@ Data bound properties must also be public.
   selector: 'app-root',
   template: '<h1>{{title}}</h1>'
 })
-class AppComponent {
+export class AppComponent {
   private title = 'My App'; // Bad
 }
 ```
@@ -329,7 +331,7 @@ You might use  `wrapInArray()` like this:
 @NgModule({
   declarations: wrapInArray(TypicalComponent)
 })
-class TypicalModule {}
+export class TypicalModule {}
 ```
 
 The compiler treats this usage as if you had written:
@@ -338,7 +340,7 @@ The compiler treats this usage as if you had written:
 @NgModule({
   declarations: [TypicalComponent]
 })
-class TypicalModule {}
+export class TypicalModule {}
 ```
 
 The collector is simplistic in its determination of what qualifies as a macro
@@ -347,6 +349,48 @@ function; it can only contain a single `return` statement.
 The Angular [`RouterModule`](api/router/RouterModule) exports two macro static methods, `forRoot` and `forChild`, to help declare root and child routes.
 Review the [source code](https://github.com/angular/angular/blob/master/packages/router/src/router_module.ts#L139 "RouterModule.forRoot source code") 
 for these methods to see how macros can simplify configuration of complex Angular modules.
+
+### Metadata Rewritting
+
+The compiler treats object literals containing the fields `useClass`, `useValue`, `useFactory`, and `data` specially. The expression initializing
+one of these fields is converted into an exported variable and the expression is replaced with the variable. By rewritting these expression, the compiler
+removes all the restrictions on what can be in these expressions as the compiler does not need to know the expression's value, it just needs to be able
+to generate a reference to the value.
+
+You might write something like:
+
+```ts
+class TypicalServer {
+
+}
+
+@NgModule({
+  providers: [{provide: SERVER, useFactory: () => TypicalServer}]
+})
+export class TypicalModule {}
+```
+
+Without rewritting, this would be invalid because lambdas are not supported and `TypicalServer` is not exported.
+
+To allow this, the compiler automatically rewrites this to something like:
+
+```ts
+class TypicalServer {
+
+}
+
+export const ɵ0 = () => new TypicalServer();
+
+@NgModule({
+  providers: [{provide: SERVER, useFactory: ɵ0}]
+})
+export class TypicalModule {}
+```
+
+Allowing the compiler to generate a reference to `ɵ0` in the factory without having to know what value `ɵ0` contains.
+
+The rewritting is done during the emit of the .js and the rewritting does not rewrite the .d.ts file so TypeScript does not recognize
+it as being an export and, therefore, it does not pollute the modules exported API.
 
 ## Metadata Errors
 
