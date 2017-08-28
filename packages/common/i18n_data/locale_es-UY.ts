@@ -9,8 +9,6 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
-import {Plural} from '@angular/common';
-
 export default [
   'es-UY',
   [
@@ -58,9 +56,8 @@ export default [
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0 %', '¤ #,##0.00', '#E0'], '$', 'peso uruguayo', function(n: number):
-                                                                           Plural {
-                                                                             if (n === 1)
-                                                                               return Plural.One;
-                                                                             return Plural.Other;
+                                                                           number {
+                                                                             if (n === 1) return 1;
+                                                                             return 5;
                                                                            }
 ];
