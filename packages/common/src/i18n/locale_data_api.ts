@@ -325,7 +325,7 @@ export function getLocaleNumberSymbol(locale: string, symbol: NumberSymbol): str
     if (symbol === NumberSymbol.CurrencyDecimal) {
       return data[LocaleDataIndex.NumberSymbols][NumberSymbol.Decimal];
     } else if (symbol === NumberSymbol.CurrencyGroup) {
-      return data[LocaleDataIndex.NumberSymbols][NumberSymbol.Decimal];
+      return data[LocaleDataIndex.NumberSymbols][NumberSymbol.Group];
     }
   }
   return res;
