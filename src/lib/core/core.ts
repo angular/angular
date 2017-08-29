@@ -129,6 +129,7 @@ export {
   showOnDirtyErrorStateMatcher
 } from './error/error-options';
 
+/** @deprecated */
 @NgModule({
   imports: [
     MdLineModule,
