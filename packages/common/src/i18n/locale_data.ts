@@ -18,7 +18,7 @@ export const LOCALE_DATA: {[localeId: string]: any} = {};
  * @experimental i18n support is experimental.
  */
 export function registerLocaleData(data: any, extraData?: any) {
-  const localeId = data[LocaleDataIndex.LocaleId].toLowerCase();
+  const localeId = data[LocaleDataIndex.LocaleId].toLowerCase().replace(/_/g, '-');
   LOCALE_DATA[localeId] = data;
   if (extraData) {
     LOCALE_DATA[localeId][LocaleDataIndex.ExtraData] = extraData;
