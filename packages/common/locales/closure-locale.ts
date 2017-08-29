@@ -13,7 +13,7 @@ import {registerLocaleData} from '../src/i18n/locale_data';
 
 let l: any;
 
-switch (goog.LOCALE.replace(/_/g, '-')) {
+switch (goog.LOCALE) {
   case 'af':
     l = [
       'af',
@@ -3058,6 +3058,7 @@ switch (goog.LOCALE.replace(/_/g, '-')) {
     break;
   case 'mo':
   case 'ro-MD':
+  case 'ro_MD':
     l = [
       'ro-MD',
       [
@@ -3373,6 +3374,7 @@ switch (goog.LOCALE.replace(/_/g, '-')) {
   case 'no':
   case 'nb':
   case 'no-NO':
+  case 'no_NO':
     l = [
       'nb',
       [
@@ -3570,6 +3572,7 @@ switch (goog.LOCALE.replace(/_/g, '-')) {
     break;
   case 'pt':
   case 'pt-BR':
+  case 'pt_BR':
     l = [
       'pt',
       [
@@ -3772,6 +3775,7 @@ switch (goog.LOCALE.replace(/_/g, '-')) {
     break;
   case 'sh':
   case 'sr-Latn':
+  case 'sr_Latn':
     l = [
       'sr-Latn',
       [
@@ -4640,7 +4644,9 @@ switch (goog.LOCALE.replace(/_/g, '-')) {
   case 'zh-CN':
   case 'zh_CN':
   case 'zh-Hans-CN':
+  case 'zh_Hans_CN':
   case 'zh-Hans':
+  case 'zh_Hans':
     l = [
       'zh-Hans',
       [
@@ -4683,7 +4689,9 @@ switch (goog.LOCALE.replace(/_/g, '-')) {
   case 'zh-HK':
   case 'zh_HK':
   case 'zh-Hant-HK':
+  case 'zh_Hant_HK':
   case 'zh-Hant':
+  case 'zh_Hant':
     l = [
       'zh-Hant',
       [
@@ -4722,7 +4730,9 @@ switch (goog.LOCALE.replace(/_/g, '-')) {
   case 'zh-TW':
   case 'zh_TW':
   case 'zh-Hant-TW':
+  case 'zh_Hant_TW':
   case 'zh-Hant':
+  case 'zh_Hant':
     l = [
       'zh-Hant',
       [
