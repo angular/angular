@@ -1,3 +1,144 @@
+<a name="5.0.0-beta.5"></a>
+# [5.0.0-beta.5](https://github.com/angular/angular/compare/5.0.0-beta.4...5.0.0-beta.5) (2017-08-23)
+
+
+### Bug Fixes
+
+* **animations:** ensure animations are disabled on the element containing the @.disabled flag ([#18714](https://github.com/angular/angular/issues/18714)) ([791c7ef](https://github.com/angular/angular/commit/791c7ef))
+* **animations:** make sure @.disabled respects disabled parent/sub animation sequences ([#18715](https://github.com/angular/angular/issues/18715)) ([e25f05a](https://github.com/angular/angular/commit/e25f05a))
+* **animations:** make sure animation cancellations respect AUTO style values ([#18787](https://github.com/angular/angular/issues/18787)) ([29aa8b3](https://github.com/angular/angular/commit/29aa8b3)), closes [#17450](https://github.com/angular/angular/issues/17450)
+* **animations:** resolve error when using AnimationBuilder with platform-server ([#18642](https://github.com/angular/angular/issues/18642)) ([845c68f](https://github.com/angular/angular/commit/845c68f)), closes [#18635](https://github.com/angular/angular/issues/18635)
+* **animations:** restore auto-style support for removed DOM nodes ([#18787](https://github.com/angular/angular/issues/18787)) ([7062811](https://github.com/angular/angular/commit/7062811))
+* **compiler-cli:** propagate preserveWhitespaces option to codegen ([#18773](https://github.com/angular/angular/issues/18773)) ([8ea6c56](https://github.com/angular/angular/commit/8ea6c56))
+* **compiler-cli:** use forward slashes for ts.resolveModuleName ([#18784](https://github.com/angular/angular/issues/18784)) ([e228f2c](https://github.com/angular/angular/commit/e228f2c))
+* **core:** correct order in ContentChildren query result ([#18326](https://github.com/angular/angular/issues/18326)) ([f53f724](https://github.com/angular/angular/commit/f53f724)), closes [#16568](https://github.com/angular/angular/issues/16568)
+* **core:** make sure onStable runs in the right zone ([#18706](https://github.com/angular/angular/issues/18706)) ([713d7c2](https://github.com/angular/angular/commit/713d7c2))
+* **tsc-wrapped:** add metadata for `type` declarations ([#18704](https://github.com/angular/angular/issues/18704)) ([6e3498c](https://github.com/angular/angular/commit/6e3498c)), closes [#18675](https://github.com/angular/angular/issues/18675)
+* **tsc-wrapped:** make `test.sh tools` run the tsc-wrapped tests again ([#18683](https://github.com/angular/angular/issues/18683)) ([2da45e6](https://github.com/angular/angular/commit/2da45e6))
+
+
+### Code Refactoring
+
+* **common:** remove deprecated `NgFor` ([#18758](https://github.com/angular/angular/issues/18758)) ([ec56760](https://github.com/angular/angular/commit/ec56760))
+* **common:** remove deprecated `NgTemplateOutlet#ngOutletContext` ([#18780](https://github.com/angular/angular/issues/18780)) ([7522987](https://github.com/angular/angular/commit/7522987))
+* **compiler:** remove option `useDebug` ([#18778](https://github.com/angular/angular/issues/18778)) ([499d05d](https://github.com/angular/angular/commit/499d05d))
+* **compiler:** split compiler and core ([#18683](https://github.com/angular/angular/issues/18683)) ([0cc77b4](https://github.com/angular/angular/commit/0cc77b4))
+* **core:** remove deprecated `ChangeDetectionRef` argument in `DifferFactory#create` ([#18757](https://github.com/angular/angular/issues/18757)) ([be9713c](https://github.com/angular/angular/commit/be9713c))
+* **core:** remove deprecated `DebugNode#source` ([#18779](https://github.com/angular/angular/issues/18779)) ([d61b902](https://github.com/angular/angular/commit/d61b902))
+* **core:** remove deprecated `Testability#findBindings` ([#18782](https://github.com/angular/angular/issues/18782)) ([f2a2a6b](https://github.com/angular/angular/commit/f2a2a6b))
+* **core:** remove deprecated `TrackByFn` ([#18757](https://github.com/angular/angular/issues/18757)) ([596e9f4](https://github.com/angular/angular/commit/596e9f4))
+* **core:** remove deprecated parameter for `ErrorHandler` ([#18759](https://github.com/angular/angular/issues/18759)) ([8f41326](https://github.com/angular/angular/commit/8f41326))
+* **platform-browser:** remove deprecated `NgProbeToken` ([#18760](https://github.com/angular/angular/issues/18760)) ([d7f42bf](https://github.com/angular/angular/commit/d7f42bf))
+* **platform-webworker:** remove deprecated `PRIMITIVE` ([#18761](https://github.com/angular/angular/issues/18761)) ([a56468c](https://github.com/angular/angular/commit/a56468c))
+* **router:** remove deprecated `initialNavigation` options ([#18781](https://github.com/angular/angular/issues/18781)) ([d76761b](https://github.com/angular/angular/commit/d76761b))
+* **router:** remove deprecated `RouterOutlet` properties ([#18781](https://github.com/angular/angular/issues/18781)) ([d1c4a94](https://github.com/angular/angular/commit/d1c4a94))
+
+
+### Features
+
+* **animations:** allow @.disabled property to work without an expression ([#18713](https://github.com/angular/angular/issues/18713)) ([2159342](https://github.com/angular/angular/commit/2159342))
+* **animations:** report errors when invalid CSS properties are detected ([#18718](https://github.com/angular/angular/issues/18718)) ([409688f](https://github.com/angular/angular/commit/409688f)), closes [#18701](https://github.com/angular/angular/issues/18701)
+* **common:** add an empty DeprecatedI18NPipesModule module ([#18737](https://github.com/angular/angular/issues/18737)) ([83713dd](https://github.com/angular/angular/commit/83713dd))
+* **common:** drop use of the Intl API to improve browser support ([#18284](https://github.com/angular/angular/issues/18284)) ([079d884](https://github.com/angular/angular/commit/079d884)), closes [#10809](https://github.com/angular/angular/issues/10809) [#9524](https://github.com/angular/angular/issues/9524) [#7008](https://github.com/angular/angular/issues/7008) [#9324](https://github.com/angular/angular/issues/9324) [#7590](https://github.com/angular/angular/issues/7590) [#6724](https://github.com/angular/angular/issues/6724) [#3429](https://github.com/angular/angular/issues/3429) [#17576](https://github.com/angular/angular/issues/17576) [#17478](https://github.com/angular/angular/issues/17478) [#17319](https://github.com/angular/angular/issues/17319) [#17200](https://github.com/angular/angular/issues/17200) [#16838](https://github.com/angular/angular/issues/16838) [#16624](https://github.com/angular/angular/issues/16624) [#16625](https://github.com/angular/angular/issues/16625) [#16591](https://github.com/angular/angular/issues/16591) [#14131](https://github.com/angular/angular/issues/14131) [#12632](https://github.com/angular/angular/issues/12632) [#11376](https://github.com/angular/angular/issues/11376) [#11187](https://github.com/angular/angular/issues/11187)
+* **compiler:** allow multiple exportAs names ([3a50098](https://github.com/angular/angular/commit/3a50098))
+* **compiler:** make `.ngsummary.json` files portable ([2572bf5](https://github.com/angular/angular/commit/2572bf5))
+* **compiler:** use typescript for resolving resource paths ([43226cb](https://github.com/angular/angular/commit/43226cb))
+* **forms:** add updateOn and ngFormOptions to NgForm ([0d45828](https://github.com/angular/angular/commit/0d45828))
+
+
+### BREAKING CHANGES
+
+* router: `RouterOutlet` properties `locationInjector` and `locationFactoryResolver` have been removed as they were deprecated since v4.
+* compiler: - `@angular/platform-server` now additionally depends on
+  `@angular/platform-browser-dynamic` as a peer dependency.
+* common: Because of multiple bugs and browser inconsistencies, we have dropped the intl api in favor of data exported from the Unicode Common Locale Data Repository (CLDR).
+Unfortunately we had to change the i18n pipes (date, number, currency, percent) and there are some breaking changes.
+
+1. I18n pipes
+* Breaking change:
+  - By default Angular now only contains locale data for the language `en-US`, if you set the value of `LOCALE_ID` to another locale, you will have to import new locale data for this language because we don't use the intl API anymore.
+
+* Features:
+  - you don't need to use the intl polyfill for Angular anymore.
+  - all i18n pipes now have an additional last parameter `locale` which allows you to use a specific locale instead of the one defined in the token `LOCALE_ID` (whose value is `en-US` by default).
+  - the new locale data extracted from CLDR are now available to developers as well and can be used through an API (which should be especially useful for library authors).
+  - you can still use the old pipes for now, but their names have been changed and they are no longer included in the `CommonModule`. To use them, you will have to import the `DeprecatedI18NPipesModule` after the `CommonModule` (the order is important):
+
+  ```ts
+  import { NgModule } from '@angular/core';
+  import { CommonModule, DeprecatedI18NPipesModule } from '@angular/common';
+
+  @NgModule({
+    imports: [
+      CommonModule,
+      // import deprecated module after
+      DeprecatedI18NPipesModule
+    ]
+  })
+  export class AppModule { }
+  ```
+
+  Dont forget that you will still need to import the intl API polyfill if you want to use those deprecated pipes.
+
+2. Date pipe
+* Breaking changes:
+  - the predefined formats (`short`, `shortTime`, `shortDate`, `medium`, ...) now use the patterns given by CLDR (like it was in AngularJS) instead of the ones from the intl API. You might notice some changes, e.g. `shortDate` will be `8/15/17` instead of `8/15/2017` for `en-US`.
+  - the narrow version of eras is now `GGGGG` instead of `G`, the format `G` is now similar to `GG` and `GGG`.
+  - the narrow version of months is now `MMMMM` instead of `L`, the format `L` is now the short standalone version of months.
+  - the narrow version of the week day is now `EEEEE` instead of `E`, the format `E` is now similar to `EE` and `EEE`.
+  - the timezone `z` will now fallback to `O` and output `GMT+1` instead of the complete zone name (e.g. `Pacific Standard Time`), this is because the quantity of data required to have all the zone names in all of the existing locales is too big.
+  - the timezone `Z` will now output the ISO8601 basic format, e.g. `+0100`, you should now use `ZZZZ` to get `GMT+01:00`.
+
+  | Field type | Format        | Example value         | v4 | v5            |
+  |------------|---------------|-----------------------|----|---------------|
+  | Eras       | Narrow        | A for AD              | G  | GGGGG         |
+  | Months     | Narrow        | S for September       | L  | MMMMM         |
+  | Week day   | Narrow        | M for Monday          | E  | EEEEE         |
+  | Timezone   | Long location | Pacific Standard Time | z  | Not available |
+  | Timezone   | Long GMT      | GMT+01:00             | Z  | ZZZZ          |
+
+* Features
+  - new predefined formats `long`, `full`, `longTime`, `fullTime`.
+  - the format `yyy` is now supported, e.g. the year `52` will be `052` and the year `2017` will be `2017`.
+  - standalone months are now supported with the formats `L` to `LLLLL`.
+  - week of the year is now supported with the formats `w` and `ww`, e.g. weeks `5` and `05`.
+  - week of the month is now supported with the format `W`, e.g. week `3`.
+  - fractional seconds are now supported with the format `S` to `SSS`.
+  - day periods for AM/PM now supports additional formats `aa`, `aaa`, `aaaa` and `aaaaa`. The formats `a` to `aaa` are similar, while `aaaa` is the wide version if available (e.g. `ante meridiem` for `am`), or equivalent to `a` otherwise, and `aaaaa` is the narrow version (e.g. `a` for `am`).
+  - extra day periods are now supported with the formats `b` to `bbbbb` (and `B` to `BBBBB` for the standalone equivalents), e.g. `morning`, `noon`, `afternoon`, ....
+  - the short non-localized timezones are now available with the format `O` to `OOOO`. The formats `O` to `OOO` will output `GMT+1` while the format `OOOO` will be `GMT+01:00`.
+  - the ISO8601 basic time zones are now available with the formats `Z` to `ZZZZZ`. The formats `Z` to `ZZZ` will output `+0100`, while the format `ZZZZ` will be `GMT+01:00` and `ZZZZZ` will be `+01:00`.
+
+* Bug fixes
+  - the date pipe will now work exactly the same across all browsers, which will fix a lot of bugs for safari and IE.
+  - eras can now be used on their own without the date, e.g. the format `GG` will be `AD` instead of `8 15, 2017 AD`.
+
+3. Currency pipe
+* Breaking change:
+  - the default value for `symbolDisplay` is now `symbol` instead of `code`. This means that by default you will see `$4.99` for `en-US` instead of `USD4.99` previously.
+
+* Deprecation:
+  - the second parameter of the currency pipe (`symbolDisplay`) is no longer a boolean, it now takes the values `code`, `symbol` or `symbol-narrow`. A boolean value is still valid for now, but it is deprecated and it will print a warning message in the console.
+
+* Features:
+  - you can now choose between `code`, `symbol` or `symbol-narrow` which gives you access to more options for some currencies (e.g. the canadian dollar with the code `CAD` has the symbol `CA$` and the symbol-narrow `$`).
+
+4. Percent pipe
+* Breaking change
+  - if you don't specify the number of digits to round to, the local format will be used (and it usually rounds numbers to 0 digits, instead of not rounding previously), e.g. `{{ 3.141592 | percent }}` will output `314%` for the locale `en-US` instead of `314.1592%` previously.
+* common: `NgFor` has been removed as it was deprecated since v4. Use `NgForOf` instead. This does not impact the use of`*ngFor` in your templates.
+* common: `NgTemplateOutlet#ngOutletContext` has been removed as it was deprecated since v4. Use `NgTemplateOutlet#ngTemplateOutletContext` instead.
+* core: `Testability#findBindings` has been removed as it was deprecated since v4. Use `Testability#findProviders` instead.
+* core: `DebugNode#source` has been removed as it was deprecated since v4.
+* router: the values `true`, `false`, `legacy_enabled` and `legacy_disabled` for the router parameter `initialNavigation` have been removed as they were deprecated. Use `enabled` or `disabled` instead.
+* core: `DifferFactory.create` no longer takes ChangeDetectionRef as a first argument as it was not used and deprecated since v4.
+* core: `TrackByFn` has been removed because it was deprecated since v4. Use `TrackByFunction` instead.
+* platform-webworker: `PRIMITIVE` has been removed as it was deprecated since v4. Use `SerializerTypes.PRIMITIVE` instead.
+* platform-browser: `NgProbeToken` has been removed from `@angular/platform-browser` as it was deprecated since v4. Import it from `@angular/core` instead.
+* core: `ErrorHandler` no longer takes a parameter as it was not used and deprecated since v4.
+* compiler: the option `useDebug` for the compiler has been removed as it had no effect and was deprecated since v4.
+
+
 <a name="4.3.6"></a>
 ## [4.3.6](https://github.com/angular/angular/compare/4.3.5...4.3.6) (2017-08-23)
 
