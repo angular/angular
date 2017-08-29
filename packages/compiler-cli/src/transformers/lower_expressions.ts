@@ -67,7 +67,7 @@ function transformSourceFile(
   }
 
   function visitSourceFile(sourceFile: ts.SourceFile): ts.SourceFile {
-    function topLevelStatement(node: ts.Node): ts.Node {
+    function topLevelStatement(node: ts.Statement): ts.Statement {
       const declarations: Declaration[] = [];
 
       function visitNode(node: ts.Node): ts.Node {
@@ -99,12 +99,11 @@ function transformSourceFile(
       return result;
     }
 
-    const traversedSource = ts.visitEachChild(sourceFile, topLevelStatement, context);
+    const newStatements = sourceFile.statements.map(topLevelStatement);
 
     if (inserts.length) {
       // Insert the declarations before the rewritten statement that references them.
       const insertMap = toMap(inserts, i => i.priorTo);
-      const newStatements: ts.Statement[] = [...traversedSource.statements];
       for (let i = newStatements.length; i >= 0; i--) {
         const statement = newStatements[i];
         const insert = insertMap.get(statement);
@@ -131,9 +130,16 @@ function transformSourceFile(
                   .map(
                       declaration => ts.createExportSpecifier(
                           /* propertyName */ undefined, declaration.name)))));
-      return ts.updateSourceFileNode(traversedSource, newStatements);
     }
-    return traversedSource;
+    // Note: We cannot use ts.updateSourcefile here as
+    // it does not work well with decorators.
+    // See https://github.com/Microsoft/TypeScript/issues/17384
+    const newSf = ts.getMutableClone(sourceFile);
+    if (!(sourceFile.flags & ts.NodeFlags.Synthesized)) {
+      newSf.flags &= ~ts.NodeFlags.Synthesized;
+    }
+    newSf.statements = ts.setTextRange(ts.createNodeArray(newStatements), sourceFile.statements);
+    return newSf;
   }
 
   return visitSourceFile(sourceFile);
