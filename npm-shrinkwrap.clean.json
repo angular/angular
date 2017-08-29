@@ -1825,13 +1825,22 @@
       "version": "0.3.3"
     },
     "clang-format": {
-      "version": "1.0.41",
+      "version": "1.0.55",
       "dependencies": {
         "async": {
           "version": "1.5.2"
         },
+        "balanced-match": {
+          "version": "1.0.0"
+        },
+        "brace-expansion": {
+          "version": "1.1.8"
+        },
         "glob": {
-          "version": "7.0.3"
+          "version": "7.1.2"
+        },
+        "minimatch": {
+          "version": "3.0.4"
         }
       }
     },

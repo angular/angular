@@ -2869,19 +2869,34 @@
       "resolved": "https://registry.npmjs.org/cjson/-/cjson-0.3.3.tgz"
     },
     "clang-format": {
-      "version": "1.0.41",
-      "from": "clang-format@1.0.41",
-      "resolved": "https://registry.npmjs.org/clang-format/-/clang-format-1.0.41.tgz",
+      "version": "1.0.55",
+      "from": "clang-format@1.0.55",
+      "resolved": "https://registry.npmjs.org/clang-format/-/clang-format-1.0.55.tgz",
       "dependencies": {
         "async": {
           "version": "1.5.2",
           "from": "async@>=1.5.2 <2.0.0",
           "resolved": "https://registry.npmjs.org/async/-/async-1.5.2.tgz"
         },
+        "balanced-match": {
+          "version": "1.0.0",
+          "from": "balanced-match@>=1.0.0 <2.0.0",
+          "resolved": "https://registry.npmjs.org/balanced-match/-/balanced-match-1.0.0.tgz"
+        },
+        "brace-expansion": {
+          "version": "1.1.8",
+          "from": "brace-expansion@>=1.1.7 <2.0.0",
+          "resolved": "https://registry.npmjs.org/brace-expansion/-/brace-expansion-1.1.8.tgz"
+        },
         "glob": {
-          "version": "7.0.3",
+          "version": "7.1.2",
           "from": "glob@>=7.0.0 <8.0.0",
-          "resolved": "https://registry.npmjs.org/glob/-/glob-7.0.3.tgz"
+          "resolved": "https://registry.npmjs.org/glob/-/glob-7.1.2.tgz"
+        },
+        "minimatch": {
+          "version": "3.0.4",
+          "from": "minimatch@>=3.0.4 <4.0.0",
+          "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-3.0.4.tgz"
         }
       }
     },
