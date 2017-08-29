@@ -8,6 +8,7 @@
 
 import localeEn from '../../locales/en';
 import localeEsUS from '../../locales/es-US';
+import localeFr from '../../locales/fr';
 import {registerLocaleData, CurrencyPipe, DecimalPipe, PercentPipe} from '@angular/common';
 import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 
@@ -16,6 +17,7 @@ export function main() {
     beforeAll(() => {
       registerLocaleData(localeEn);
       registerLocaleData(localeEsUS);
+      registerLocaleData(localeFr);
     });
 
     function isNumeric(value: any): boolean { return !isNaN(value - parseFloat(value)); }
@@ -72,6 +74,8 @@ export function main() {
         it('should return correct value for numbers', () => {
           expect(pipe.transform(1.23)).toEqual('123%');
           expect(pipe.transform(1.2, '.2')).toEqual('120.00%');
+          expect(pipe.transform(1.2, '4.2')).toEqual('0,120.00%');
+          expect(pipe.transform(1.2, '4.2', 'fr')).toEqual('0 120,00 %');
         });
 
         it('should not support other objects',
@@ -93,6 +97,9 @@ export function main() {
           expect(pipe.transform(5.1234, 'USD', 'symbol')).toEqual('$5.12');
           expect(pipe.transform(5.1234, 'CAD', 'symbol')).toEqual('CA$5.12');
           expect(pipe.transform(5.1234, 'CAD', 'symbol-narrow')).toEqual('$5.12');
+          expect(pipe.transform(5.1234, 'CAD', 'symbol-narrow', '5.2-2')).toEqual('$00,005.12');
+          expect(pipe.transform(5.1234, 'CAD', 'symbol-narrow', '5.2-2', 'fr'))
+              .toEqual('00 005,12 $');
         });
 
         it('should not support other objects',
