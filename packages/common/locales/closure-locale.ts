@@ -10,2397 +10,4811 @@
 // See angular/tools/gulp-tasks/cldr/extract.js
 
 import {registerLocaleData} from '../src/i18n/locale_data';
-import af from './af';
-import afNA from './af-NA';
-import agq from './agq';
-import ak from './ak';
-import am from './am';
-import ar from './ar';
-import arAE from './ar-AE';
-import arBH from './ar-BH';
-import arDJ from './ar-DJ';
-import arDZ from './ar-DZ';
-import arEG from './ar-EG';
-import arEH from './ar-EH';
-import arER from './ar-ER';
-import arIL from './ar-IL';
-import arIQ from './ar-IQ';
-import arJO from './ar-JO';
-import arKM from './ar-KM';
-import arKW from './ar-KW';
-import arLB from './ar-LB';
-import arLY from './ar-LY';
-import arMA from './ar-MA';
-import arMR from './ar-MR';
-import arOM from './ar-OM';
-import arPS from './ar-PS';
-import arQA from './ar-QA';
-import arSA from './ar-SA';
-import arSD from './ar-SD';
-import arSO from './ar-SO';
-import arSS from './ar-SS';
-import arSY from './ar-SY';
-import arTD from './ar-TD';
-import arTN from './ar-TN';
-import arYE from './ar-YE';
-import as from './as';
-import asa from './asa';
-import ast from './ast';
-import az from './az';
-import azCyrl from './az-Cyrl';
-import azLatn from './az-Latn';
-import bas from './bas';
-import be from './be';
-import bem from './bem';
-import bez from './bez';
-import bg from './bg';
-import bm from './bm';
-import bn from './bn';
-import bnIN from './bn-IN';
-import bo from './bo';
-import boIN from './bo-IN';
-import br from './br';
-import brx from './brx';
-import bs from './bs';
-import bsCyrl from './bs-Cyrl';
-import bsLatn from './bs-Latn';
-import ca from './ca';
-import caAD from './ca-AD';
-import caESVALENCIA from './ca-ES-VALENCIA';
-import caFR from './ca-FR';
-import caIT from './ca-IT';
-import ce from './ce';
-import cgg from './cgg';
-import chr from './chr';
-import ckb from './ckb';
-import ckbIR from './ckb-IR';
-import cs from './cs';
-import cu from './cu';
-import cy from './cy';
-import da from './da';
-import daGL from './da-GL';
-import dav from './dav';
-import de from './de';
-import deAT from './de-AT';
-import deBE from './de-BE';
-import deCH from './de-CH';
-import deIT from './de-IT';
-import deLI from './de-LI';
-import deLU from './de-LU';
-import dje from './dje';
-import dsb from './dsb';
-import dua from './dua';
-import dyo from './dyo';
-import dz from './dz';
-import ebu from './ebu';
-import ee from './ee';
-import eeTG from './ee-TG';
-import el from './el';
-import elCY from './el-CY';
-import en from './en';
-import en001 from './en-001';
-import en150 from './en-150';
-import enAG from './en-AG';
-import enAI from './en-AI';
-import enAS from './en-AS';
-import enAT from './en-AT';
-import enAU from './en-AU';
-import enBB from './en-BB';
-import enBE from './en-BE';
-import enBI from './en-BI';
-import enBM from './en-BM';
-import enBS from './en-BS';
-import enBW from './en-BW';
-import enBZ from './en-BZ';
-import enCA from './en-CA';
-import enCC from './en-CC';
-import enCH from './en-CH';
-import enCK from './en-CK';
-import enCM from './en-CM';
-import enCX from './en-CX';
-import enCY from './en-CY';
-import enDE from './en-DE';
-import enDG from './en-DG';
-import enDK from './en-DK';
-import enDM from './en-DM';
-import enER from './en-ER';
-import enFI from './en-FI';
-import enFJ from './en-FJ';
-import enFK from './en-FK';
-import enFM from './en-FM';
-import enGB from './en-GB';
-import enGD from './en-GD';
-import enGG from './en-GG';
-import enGH from './en-GH';
-import enGI from './en-GI';
-import enGM from './en-GM';
-import enGU from './en-GU';
-import enGY from './en-GY';
-import enHK from './en-HK';
-import enIE from './en-IE';
-import enIL from './en-IL';
-import enIM from './en-IM';
-import enIN from './en-IN';
-import enIO from './en-IO';
-import enJE from './en-JE';
-import enJM from './en-JM';
-import enKE from './en-KE';
-import enKI from './en-KI';
-import enKN from './en-KN';
-import enKY from './en-KY';
-import enLC from './en-LC';
-import enLR from './en-LR';
-import enLS from './en-LS';
-import enMG from './en-MG';
-import enMH from './en-MH';
-import enMO from './en-MO';
-import enMP from './en-MP';
-import enMS from './en-MS';
-import enMT from './en-MT';
-import enMU from './en-MU';
-import enMW from './en-MW';
-import enMY from './en-MY';
-import enNA from './en-NA';
-import enNF from './en-NF';
-import enNG from './en-NG';
-import enNL from './en-NL';
-import enNR from './en-NR';
-import enNU from './en-NU';
-import enNZ from './en-NZ';
-import enPG from './en-PG';
-import enPH from './en-PH';
-import enPK from './en-PK';
-import enPN from './en-PN';
-import enPR from './en-PR';
-import enPW from './en-PW';
-import enRW from './en-RW';
-import enSB from './en-SB';
-import enSC from './en-SC';
-import enSD from './en-SD';
-import enSE from './en-SE';
-import enSG from './en-SG';
-import enSH from './en-SH';
-import enSI from './en-SI';
-import enSL from './en-SL';
-import enSS from './en-SS';
-import enSX from './en-SX';
-import enSZ from './en-SZ';
-import enTC from './en-TC';
-import enTK from './en-TK';
-import enTO from './en-TO';
-import enTT from './en-TT';
-import enTV from './en-TV';
-import enTZ from './en-TZ';
-import enUG from './en-UG';
-import enUM from './en-UM';
-import enUSPOSIX from './en-US-POSIX';
-import enVC from './en-VC';
-import enVG from './en-VG';
-import enVI from './en-VI';
-import enVU from './en-VU';
-import enWS from './en-WS';
-import enZA from './en-ZA';
-import enZM from './en-ZM';
-import enZW from './en-ZW';
-import eo from './eo';
-import es from './es';
-import es419 from './es-419';
-import esAR from './es-AR';
-import esBO from './es-BO';
-import esBR from './es-BR';
-import esBZ from './es-BZ';
-import esCL from './es-CL';
-import esCO from './es-CO';
-import esCR from './es-CR';
-import esCU from './es-CU';
-import esDO from './es-DO';
-import esEA from './es-EA';
-import esEC from './es-EC';
-import esGQ from './es-GQ';
-import esGT from './es-GT';
-import esHN from './es-HN';
-import esIC from './es-IC';
-import esMX from './es-MX';
-import esNI from './es-NI';
-import esPA from './es-PA';
-import esPE from './es-PE';
-import esPH from './es-PH';
-import esPR from './es-PR';
-import esPY from './es-PY';
-import esSV from './es-SV';
-import esUS from './es-US';
-import esUY from './es-UY';
-import esVE from './es-VE';
-import et from './et';
-import eu from './eu';
-import ewo from './ewo';
-import fa from './fa';
-import faAF from './fa-AF';
-import ff from './ff';
-import ffCM from './ff-CM';
-import ffGN from './ff-GN';
-import ffMR from './ff-MR';
-import fi from './fi';
-import fil from './fil';
-import fo from './fo';
-import foDK from './fo-DK';
-import fr from './fr';
-import frBE from './fr-BE';
-import frBF from './fr-BF';
-import frBI from './fr-BI';
-import frBJ from './fr-BJ';
-import frBL from './fr-BL';
-import frCA from './fr-CA';
-import frCD from './fr-CD';
-import frCF from './fr-CF';
-import frCG from './fr-CG';
-import frCH from './fr-CH';
-import frCI from './fr-CI';
-import frCM from './fr-CM';
-import frDJ from './fr-DJ';
-import frDZ from './fr-DZ';
-import frGA from './fr-GA';
-import frGF from './fr-GF';
-import frGN from './fr-GN';
-import frGP from './fr-GP';
-import frGQ from './fr-GQ';
-import frHT from './fr-HT';
-import frKM from './fr-KM';
-import frLU from './fr-LU';
-import frMA from './fr-MA';
-import frMC from './fr-MC';
-import frMF from './fr-MF';
-import frMG from './fr-MG';
-import frML from './fr-ML';
-import frMQ from './fr-MQ';
-import frMR from './fr-MR';
-import frMU from './fr-MU';
-import frNC from './fr-NC';
-import frNE from './fr-NE';
-import frPF from './fr-PF';
-import frPM from './fr-PM';
-import frRE from './fr-RE';
-import frRW from './fr-RW';
-import frSC from './fr-SC';
-import frSN from './fr-SN';
-import frSY from './fr-SY';
-import frTD from './fr-TD';
-import frTG from './fr-TG';
-import frTN from './fr-TN';
-import frVU from './fr-VU';
-import frWF from './fr-WF';
-import frYT from './fr-YT';
-import fur from './fur';
-import fy from './fy';
-import ga from './ga';
-import gd from './gd';
-import gl from './gl';
-import gsw from './gsw';
-import gswFR from './gsw-FR';
-import gswLI from './gsw-LI';
-import gu from './gu';
-import guz from './guz';
-import gv from './gv';
-import ha from './ha';
-import haGH from './ha-GH';
-import haNE from './ha-NE';
-import haw from './haw';
-import he from './he';
-import hi from './hi';
-import hr from './hr';
-import hrBA from './hr-BA';
-import hsb from './hsb';
-import hu from './hu';
-import hy from './hy';
-import id from './id';
-import ig from './ig';
-import ii from './ii';
-import is from './is';
-import it from './it';
-import itCH from './it-CH';
-import itSM from './it-SM';
-import itVA from './it-VA';
-import ja from './ja';
-import jgo from './jgo';
-import jmc from './jmc';
-import ka from './ka';
-import kab from './kab';
-import kam from './kam';
-import kde from './kde';
-import kea from './kea';
-import khq from './khq';
-import ki from './ki';
-import kk from './kk';
-import kkj from './kkj';
-import kl from './kl';
-import kln from './kln';
-import km from './km';
-import kn from './kn';
-import ko from './ko';
-import koKP from './ko-KP';
-import kok from './kok';
-import ks from './ks';
-import ksb from './ksb';
-import ksf from './ksf';
-import ksh from './ksh';
-import kw from './kw';
-import ky from './ky';
-import lag from './lag';
-import lb from './lb';
-import lg from './lg';
-import lkt from './lkt';
-import ln from './ln';
-import lnAO from './ln-AO';
-import lnCF from './ln-CF';
-import lnCG from './ln-CG';
-import lo from './lo';
-import lrc from './lrc';
-import lrcIQ from './lrc-IQ';
-import lt from './lt';
-import lu from './lu';
-import luo from './luo';
-import luy from './luy';
-import lv from './lv';
-import mas from './mas';
-import masTZ from './mas-TZ';
-import mer from './mer';
-import mfe from './mfe';
-import mg from './mg';
-import mgh from './mgh';
-import mgo from './mgo';
-import mk from './mk';
-import ml from './ml';
-import mn from './mn';
-import mr from './mr';
-import ms from './ms';
-import msBN from './ms-BN';
-import msSG from './ms-SG';
-import mt from './mt';
-import mua from './mua';
-import my from './my';
-import mzn from './mzn';
-import naq from './naq';
-import nb from './nb';
-import nbSJ from './nb-SJ';
-import nd from './nd';
-import nds from './nds';
-import ndsNL from './nds-NL';
-import ne from './ne';
-import neIN from './ne-IN';
-import nl from './nl';
-import nlAW from './nl-AW';
-import nlBE from './nl-BE';
-import nlBQ from './nl-BQ';
-import nlCW from './nl-CW';
-import nlSR from './nl-SR';
-import nlSX from './nl-SX';
-import nmg from './nmg';
-import nn from './nn';
-import nnh from './nnh';
-import nus from './nus';
-import nyn from './nyn';
-import om from './om';
-import omKE from './om-KE';
-import or from './or';
-import os from './os';
-import osRU from './os-RU';
-import pa from './pa';
-import paArab from './pa-Arab';
-import paGuru from './pa-Guru';
-import pl from './pl';
-import prg from './prg';
-import ps from './ps';
-import pt from './pt';
-import ptAO from './pt-AO';
-import ptCH from './pt-CH';
-import ptCV from './pt-CV';
-import ptGQ from './pt-GQ';
-import ptGW from './pt-GW';
-import ptLU from './pt-LU';
-import ptMO from './pt-MO';
-import ptMZ from './pt-MZ';
-import ptPT from './pt-PT';
-import ptST from './pt-ST';
-import ptTL from './pt-TL';
-import qu from './qu';
-import quBO from './qu-BO';
-import quEC from './qu-EC';
-import rm from './rm';
-import rn from './rn';
-import ro from './ro';
-import roMD from './ro-MD';
-import rof from './rof';
-import root from './root';
-import ru from './ru';
-import ruBY from './ru-BY';
-import ruKG from './ru-KG';
-import ruKZ from './ru-KZ';
-import ruMD from './ru-MD';
-import ruUA from './ru-UA';
-import rw from './rw';
-import rwk from './rwk';
-import sah from './sah';
-import saq from './saq';
-import sbp from './sbp';
-import se from './se';
-import seFI from './se-FI';
-import seSE from './se-SE';
-import seh from './seh';
-import ses from './ses';
-import sg from './sg';
-import shi from './shi';
-import shiLatn from './shi-Latn';
-import shiTfng from './shi-Tfng';
-import si from './si';
-import sk from './sk';
-import sl from './sl';
-import smn from './smn';
-import sn from './sn';
-import so from './so';
-import soDJ from './so-DJ';
-import soET from './so-ET';
-import soKE from './so-KE';
-import sq from './sq';
-import sqMK from './sq-MK';
-import sqXK from './sq-XK';
-import sr from './sr';
-import srCyrl from './sr-Cyrl';
-import srCyrlBA from './sr-Cyrl-BA';
-import srCyrlME from './sr-Cyrl-ME';
-import srCyrlXK from './sr-Cyrl-XK';
-import srLatn from './sr-Latn';
-import srLatnBA from './sr-Latn-BA';
-import srLatnME from './sr-Latn-ME';
-import srLatnXK from './sr-Latn-XK';
-import sv from './sv';
-import svAX from './sv-AX';
-import svFI from './sv-FI';
-import sw from './sw';
-import swCD from './sw-CD';
-import swKE from './sw-KE';
-import swUG from './sw-UG';
-import ta from './ta';
-import taLK from './ta-LK';
-import taMY from './ta-MY';
-import taSG from './ta-SG';
-import te from './te';
-import teo from './teo';
-import teoKE from './teo-KE';
-import th from './th';
-import ti from './ti';
-import tiER from './ti-ER';
-import tk from './tk';
-import to from './to';
-import tr from './tr';
-import trCY from './tr-CY';
-import twq from './twq';
-import tzm from './tzm';
-import ug from './ug';
-import uk from './uk';
-import ur from './ur';
-import urIN from './ur-IN';
-import uz from './uz';
-import uzArab from './uz-Arab';
-import uzCyrl from './uz-Cyrl';
-import uzLatn from './uz-Latn';
-import vai from './vai';
-import vaiLatn from './vai-Latn';
-import vaiVaii from './vai-Vaii';
-import vi from './vi';
-import vo from './vo';
-import vun from './vun';
-import wae from './wae';
-import xog from './xog';
-import yav from './yav';
-import yi from './yi';
-import yo from './yo';
-import yoBJ from './yo-BJ';
-import yue from './yue';
-import zgh from './zgh';
-import zh from './zh';
-import zhHans from './zh-Hans';
-import zhHansHK from './zh-Hans-HK';
-import zhHansMO from './zh-Hans-MO';
-import zhHansSG from './zh-Hans-SG';
-import zhHant from './zh-Hant';
-import zhHantHK from './zh-Hant-HK';
-import zhHantMO from './zh-Hant-MO';
-import zu from './zu';
-
 
 let l: any;
 
-switch (goog.LOCALE) {
+switch (goog.LOCALE.replace(/_/g, '-')) {
   case 'af':
-    l = af;
-    break;
-  case 'af_NA':
-  case 'af-NA':
-    l = afNA;
-    break;
-  case 'agq':
-    l = agq;
-    break;
-  case 'ak':
-    l = ak;
+    l = [
+      'af',
+      [
+        ['v', 'n'],
+        ['vm.', 'nm.'],
+      ],
+      ,
+      [
+        ['S', 'M', 'D', 'W', 'D', 'V', 'S'], ['So.', 'Ma.', 'Di.', 'Wo.', 'Do.', 'Vr.', 'Sa.'],
+        ['Sondag', 'Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrydag', 'Saterdag'],
+        ['So.', 'Ma.', 'Di.', 'Wo.', 'Do.', 'Vr.', 'Sa.']
+      ],
+      ,
+      [
+        ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+        [
+          'Jan.', 'Feb.', 'Mrt.', 'Apr.', 'Mei', 'Jun.', 'Jul.', 'Aug.', 'Sep.', 'Okt.', 'Nov.',
+          'Des.'
+        ],
+        [
+          'Januarie', 'Februarie', 'Maart', 'April', 'Mei', 'Junie', 'Julie', 'Augustus',
+          'September', 'Oktober', 'November', 'Desember'
+        ]
+      ],
+      , [['v.C.', 'n.C.'], , ['voor Christus', 'na Christus']], 0, [6, 0],
+      ['y-MM-dd', 'dd MMM y', 'dd MMMM y', 'EEEE, dd MMMM y'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'R', 'Suid-Afrikaanse rand', function(n: number):
+                                                                                    number {
+                                                                                      if (n === 1)
+                                                                                        return 1;
+                                                                                      return 5;
+                                                                                    }
+    ];
     break;
   case 'am':
-    l = am;
+    l = [
+      'am',
+      [
+        ['ጠ', 'ከ'],
+        ['ጥዋት', 'ከሰዓት'],
+      ],
+      ,
+      [
+        ['እ', 'ሰ', 'ማ', 'ረ', 'ሐ', 'ዓ', 'ቅ'], ['እሑድ', 'ሰኞ', 'ማክሰ', 'ረቡዕ', 'ሐሙስ', 'ዓርብ', 'ቅዳሜ'],
+        ['እሑድ', 'ሰኞ', 'ማክሰኞ', 'ረቡዕ', 'ሐሙስ', 'ዓርብ', 'ቅዳሜ'], ['እ', 'ሰ', 'ማ', 'ረ', 'ሐ', 'ዓ', 'ቅ']
+      ],
+      ,
+      [
+        ['ጃ', 'ፌ', 'ማ', 'ኤ', 'ሜ', 'ጁ', 'ጁ', 'ኦ', 'ሴ', 'ኦ', 'ኖ', 'ዲ'],
+        ['ጃንዩ', 'ፌብሩ', 'ማርች', 'ኤፕሪ', 'ሜይ', 'ጁን', 'ጁላይ', 'ኦገስ', 'ሴፕቴ', 'ኦክቶ', 'ኖቬም', 'ዲሴም'],
+        [
+          'ጃንዩወሪ', 'ፌብሩወሪ', 'ማርች', 'ኤፕሪል', 'ሜይ', 'ጁን', 'ጁላይ', 'ኦገስት', 'ሴፕቴምበር', 'ኦክቶበር', 'ኖቬምበር',
+          'ዲሴምበር'
+        ]
+      ],
+      , [['ዓ/ዓ', 'ዓ/ም'], , ['ዓመተ ዓለም', 'ዓመተ ምሕረት']], 0, [6, 0],
+      ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE ፣d MMMM y'],
+      ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'ብር', 'የኢትዮጵያ ብር',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n));
+            if (i === 0 || n === 1) return 1;
+            return 5;
+          }
+    ];
     break;
   case 'ar':
-    l = ar;
+    l = [
+      'ar',
+      [
+        ['ص', 'م'],
+        ,
+      ],
+      [['ص', 'م'], , ['صباحًا', 'مساءً']],
+      [
+        ['ح', 'ن', 'ث', 'ر', 'خ', 'ج', 'س'],
+        ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'],
+        ,
+      ],
+      ,
+      [
+        ['ي', 'ف', 'م', 'أ', 'و', 'ن', 'ل', 'غ', 'س', 'ك', 'ب', 'د'],
+        [
+          'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر',
+          'نوفمبر', 'ديسمبر'
+        ],
+      ],
+      , [['ق.م', 'م'], , ['قبل الميلاد', 'ميلادي']], 6, [5, 6],
+      ['d‏/M‏/y', 'dd‏/MM‏/y', 'd MMMM، y', 'EEEE، d MMMM، y'],
+      ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      ['.', ',', ';', '‎%‎', '‎+', '‎-', 'E', '×', '‰', '∞', 'ليس رقمًا', ':'],
+      ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], 'ج.م.‏', 'جنيه مصري',
+      function(n: number):
+          number {
+            if (n === 0) return 0;
+            if (n === 1) return 1;
+            if (n === 2) return 2;
+            if (n % 100 === Math.floor(n % 100) && n % 100 >= 3 && n % 100 <= 10) return 3;
+            if (n % 100 === Math.floor(n % 100) && n % 100 >= 11 && n % 100 <= 99) return 4;
+            return 5;
+          }
+    ];
     break;
-  case 'ar_AE':
-  case 'ar-AE':
-    l = arAE;
-    break;
-  case 'ar_BH':
-  case 'ar-BH':
-    l = arBH;
-    break;
-  case 'ar_DJ':
-  case 'ar-DJ':
-    l = arDJ;
-    break;
-  case 'ar_DZ':
   case 'ar-DZ':
-    l = arDZ;
-    break;
-  case 'ar_EG':
-  case 'ar-EG':
-    l = arEG;
-    break;
-  case 'ar_EH':
-  case 'ar-EH':
-    l = arEH;
-    break;
-  case 'ar_ER':
-  case 'ar-ER':
-    l = arER;
-    break;
-  case 'ar_IL':
-  case 'ar-IL':
-    l = arIL;
-    break;
-  case 'ar_IQ':
-  case 'ar-IQ':
-    l = arIQ;
-    break;
-  case 'ar_JO':
-  case 'ar-JO':
-    l = arJO;
-    break;
-  case 'ar_KM':
-  case 'ar-KM':
-    l = arKM;
-    break;
-  case 'ar_KW':
-  case 'ar-KW':
-    l = arKW;
-    break;
-  case 'ar_LB':
-  case 'ar-LB':
-    l = arLB;
-    break;
-  case 'ar_LY':
-  case 'ar-LY':
-    l = arLY;
-    break;
-  case 'ar_MA':
-  case 'ar-MA':
-    l = arMA;
-    break;
-  case 'ar_MR':
-  case 'ar-MR':
-    l = arMR;
-    break;
-  case 'ar_OM':
-  case 'ar-OM':
-    l = arOM;
-    break;
-  case 'ar_PS':
-  case 'ar-PS':
-    l = arPS;
-    break;
-  case 'ar_QA':
-  case 'ar-QA':
-    l = arQA;
-    break;
-  case 'ar_SA':
-  case 'ar-SA':
-    l = arSA;
-    break;
-  case 'ar_SD':
-  case 'ar-SD':
-    l = arSD;
-    break;
-  case 'ar_SO':
-  case 'ar-SO':
-    l = arSO;
-    break;
-  case 'ar_SS':
-  case 'ar-SS':
-    l = arSS;
-    break;
-  case 'ar_SY':
-  case 'ar-SY':
-    l = arSY;
-    break;
-  case 'ar_TD':
-  case 'ar-TD':
-    l = arTD;
-    break;
-  case 'ar_TN':
-  case 'ar-TN':
-    l = arTN;
-    break;
-  case 'ar_YE':
-  case 'ar-YE':
-    l = arYE;
-    break;
-  case 'as':
-    l = as;
-    break;
-  case 'asa':
-    l = asa;
-    break;
-  case 'ast':
-    l = ast;
+  case 'ar_DZ':
+    l = [
+      'ar-DZ',
+      [
+        ['ص', 'م'],
+        ,
+      ],
+      [['ص', 'م'], , ['صباحًا', 'مساءً']],
+      [
+        ['ح', 'ن', 'ث', 'ر', 'خ', 'ج', 'س'],
+        ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'],
+        ,
+      ],
+      ,
+      [
+        ['ج', 'ف', 'م', 'أ', 'م', 'ج', 'ج', 'أ', 'س', 'أ', 'ن', 'د'],
+        [
+          'جانفي', 'فيفري', 'مارس', 'أفريل', 'ماي', 'جوان', 'جويلية', 'أوت', 'سبتمبر', 'أكتوبر',
+          'نوفمبر', 'ديسمبر'
+        ],
+      ],
+      , [['ق.م', 'م'], , ['قبل الميلاد', 'ميلادي']], 6, [5, 6],
+      ['d‏/M‏/y', 'dd‏/MM‏/y', 'd MMMM، y', 'EEEE، d MMMM، y'],
+      ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      [',', '.', ';', '‎%‎', '‎+', '‎-', 'E', '×', '‰', '∞', 'ليس رقمًا', ':'],
+      ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], 'د.ج.‏', 'دينار جزائري',
+      function(n: number):
+          number {
+            if (n === 0) return 0;
+            if (n === 1) return 1;
+            if (n === 2) return 2;
+            if (n % 100 === Math.floor(n % 100) && n % 100 >= 3 && n % 100 <= 10) return 3;
+            if (n % 100 === Math.floor(n % 100) && n % 100 >= 11 && n % 100 <= 99) return 4;
+            return 5;
+          }
+    ];
     break;
   case 'az':
-    l = az;
-    break;
-  case 'az_Cyrl':
-  case 'az-Cyrl':
-    l = azCyrl;
-    break;
-  case 'az_Latn':
-  case 'az-Latn':
-    l = azLatn;
-    break;
-  case 'bas':
-    l = bas;
+    l = [
+      'az',
+      [
+        ['a', 'p'],
+        ['AM', 'PM'],
+      ],
+      [
+        ['AM', 'PM'],
+        ,
+      ],
+      [
+        ['7', '1', '2', '3', '4', '5', '6'], ['B.', 'B.E.', 'Ç.A.', 'Ç.', 'C.A.', 'C.', 'Ş.'],
+        ['bazar', 'bazar ertəsi', 'çərşənbə axşamı', 'çərşənbə', 'cümə axşamı', 'cümə', 'şənbə'],
+        ['B.', 'B.E.', 'Ç.A.', 'Ç.', 'C.A.', 'C.', 'Ş.']
+      ],
+      ,
+      [
+        ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+        ['yan', 'fev', 'mar', 'apr', 'may', 'iyn', 'iyl', 'avq', 'sen', 'okt', 'noy', 'dek'],
+        [
+          'yanvar', 'fevral', 'mart', 'aprel', 'may', 'iyun', 'iyul', 'avqust', 'sentyabr',
+          'oktyabr', 'noyabr', 'dekabr'
+        ]
+      ],
+      [
+        ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+        ['yan', 'fev', 'mar', 'apr', 'may', 'iyn', 'iyl', 'avq', 'sen', 'okt', 'noy', 'dek'],
+        [
+          'Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'İyun', 'İyul', 'Avqust', 'Sentyabr',
+          'Oktyabr', 'Noyabr', 'Dekabr'
+        ]
+      ],
+      [['e.ə.', 'y.e.'], , ['eramızdan əvvəl', 'yeni era']], 1, [6, 0],
+      ['dd.MM.yy', 'd MMM y', 'd MMMM y', 'd MMMM y, EEEE'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], '₼', 'Azərbaycan Manatı', function(n: number):
+                                                                                    number {
+                                                                                      if (n === 1)
+                                                                                        return 1;
+                                                                                      return 5;
+                                                                                    }
+    ];
     break;
   case 'be':
-    l = be;
-    break;
-  case 'bem':
-    l = bem;
-    break;
-  case 'bez':
-    l = bez;
+    l = [
+      'be',
+      [
+        ['am', 'pm'],
+        ['AM', 'PM'],
+      ],
+      [
+        ['AM', 'PM'],
+        ,
+      ],
+      [
+        ['н', 'п', 'а', 'с', 'ч', 'п', 'с'], ['нд', 'пн', 'аў', 'ср', 'чц', 'пт', 'сб'],
+        ['нядзеля', 'панядзелак', 'аўторак', 'серада', 'чацвер', 'пятніца', 'субота'],
+        ['нд', 'пн', 'аў', 'ср', 'чц', 'пт', 'сб']
+      ],
+      ,
+      [
+        ['с', 'л', 'с', 'к', 'м', 'ч', 'л', 'ж', 'в', 'к', 'л', 'с'],
+        ['сту', 'лют', 'сак', 'кра', 'мая', 'чэр', 'ліп', 'жні', 'вер', 'кас', 'ліс', 'сне'],
+        [
+          'студзеня', 'лютага', 'сакавіка', 'красавіка', 'мая', 'чэрвеня', 'ліпеня', 'жніўня',
+          'верасня', 'кастрычніка', 'лістапада', 'снежня'
+        ]
+      ],
+      [
+        ['с', 'л', 'с', 'к', 'м', 'ч', 'л', 'ж', 'в', 'к', 'л', 'с'],
+        ['сту', 'лют', 'сак', 'кра', 'май', 'чэр', 'ліп', 'жні', 'вер', 'кас', 'ліс', 'сне'],
+        [
+          'студзень', 'люты', 'сакавік', 'красавік', 'май', 'чэрвень', 'ліпень', 'жнівень',
+          'верасень', 'кастрычнік', 'лістапад', 'снежань'
+        ]
+      ],
+      [['да н.э.', 'н.э.'], , ['да нараджэння Хрыстова', 'ад нараджэння Хрыстова']], 1, [6, 0],
+      ['d.MM.yy', 'd.MM.y', 'd MMMM y \'г\'.', 'EEEE, d MMMM y \'г\'.'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss, zzzz'],
+      [
+        '{1}, {0}',
+        ,
+        '{1} \'у\' {0}',
+      ],
+      [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'Br', 'беларускі рубель',
+      function(n: number):
+          number {
+            if (n % 10 === 1 && !(n % 100 === 11)) return 1;
+            if (n % 10 === Math.floor(n % 10) && n % 10 >= 2 && n % 10 <= 4 &&
+                !(n % 100 >= 12 && n % 100 <= 14))
+              return 3;
+            if (n % 10 === 0 || n % 10 === Math.floor(n % 10) && n % 10 >= 5 && n % 10 <= 9 ||
+                n % 100 === Math.floor(n % 100) && n % 100 >= 11 && n % 100 <= 14)
+              return 4;
+            return 5;
+          }
+    ];
     break;
   case 'bg':
-    l = bg;
-    break;
-  case 'bm':
-    l = bm;
+    l = [
+      'bg', [['am', 'pm'], , ['пр.об.', 'сл.об.']],
+      [
+        ['am', 'pm'],
+        ,
+      ],
+      [
+        ['н', 'п', 'в', 'с', 'ч', 'п', 'с'], ['нд', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'],
+        ['неделя', 'понеделник', 'вторник', 'сряда', 'четвъртък', 'петък', 'събота'],
+        ['нд', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
+      ],
+      ,
+      [
+        ['я', 'ф', 'м', 'а', 'м', 'ю', 'ю', 'а', 'с', 'о', 'н', 'д'],
+        ['яну', 'фев', 'март', 'апр', 'май', 'юни', 'юли', 'авг', 'сеп', 'окт', 'ное', 'дек'],
+        [
+          'януари', 'февруари', 'март', 'април', 'май', 'юни', 'юли', 'август', 'септември',
+          'октомври', 'ноември', 'декември'
+        ]
+      ],
+      , [['пр.Хр.', 'сл.Хр.'], , ['преди Христа', 'след Христа']], 1, [6, 0],
+      ['d.MM.yy \'г\'.', 'd.MM.y \'г\'.', 'd MMMM y \'г\'.', 'EEEE, d MMMM y \'г\'.'],
+      ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'],
+      [
+        '{1}, {0}',
+        ,
+        ,
+      ],
+      [',', ' ', ';', '%', '+', '-', 'E', '·', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '0.00 ¤', '#E0'], 'лв.', 'Български лев', function(n: number):
+                                                                            number {
+                                                                              if (n === 1) return 1;
+                                                                              return 5;
+                                                                            }
+    ];
     break;
   case 'bn':
-    l = bn;
-    break;
-  case 'bn_IN':
-  case 'bn-IN':
-    l = bnIN;
-    break;
-  case 'bo':
-    l = bo;
-    break;
-  case 'bo_IN':
-  case 'bo-IN':
-    l = boIN;
+    l = [
+      'bn',
+      [
+        ['AM', 'PM'],
+        ,
+      ],
+      ,
+      [
+        ['র', 'সো', 'ম', 'বু', 'বৃ', 'শু', 'শ'], ['রবি', 'সোম', 'মঙ্গল', 'বুধ', 'বৃহস্পতি', 'শুক্র', 'শনি'],
+        ['রবিবার', 'সোমবার', 'মঙ্গলবার', 'বুধবার', 'বৃহস্পতিবার', 'শুক্রবার', 'শনিবার'],
+        ['রঃ', 'সোঃ', 'মঃ', 'বুঃ', 'বৃঃ', 'শুঃ', 'শোঃ']
+      ],
+      [
+        ['র', 'সো', 'ম', 'বু', 'বৃ', 'শু', 'শ'], ['রবি', 'সোম', 'মঙ্গল', 'বুধ', 'বৃহস্পতি', 'শুক্র', 'শনি'],
+        ['রবিবার', 'সোমবার', 'মঙ্গলবার', 'বুধবার', 'বৃহষ্পতিবার', 'শুক্রবার', 'শনিবার'],
+        ['রঃ', 'সোঃ', 'মঃ', 'বুঃ', 'বৃঃ', 'শুঃ', 'শনি']
+      ],
+      [
+        ['জা', 'ফে', 'মা', 'এ', 'মে', 'জুন', 'জু', 'আ', 'সে', 'অ', 'ন', 'ডি'],
+        [
+          'জানু', 'ফেব', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর',
+          'ডিসেম্বর'
+        ],
+        [
+          'জানুয়ারী', 'ফেব্রুয়ারী', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর',
+          'নভেম্বর', 'ডিসেম্বর'
+        ]
+      ],
+      [
+        ['জা', 'ফে', 'মা', 'এ', 'মে', 'জুন', 'জু', 'আ', 'সে', 'অ', 'ন', 'ডি'],
+        [
+          'জানুয়ারী', 'ফেব্রুয়ারী', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর',
+          'নভেম্বর', 'ডিসেম্বর'
+        ],
+      ],
+      [
+        ['খ্রিস্টপূর্ব', 'খৃষ্টাব্দ'],
+        ,
+      ],
+      5, [6, 0], ['d/M/yy', 'd MMM, y', 'd MMMM, y', 'EEEE, d MMMM, y'],
+      ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##,##0.###', '#,##,##0%', '#,##,##0.00¤', '#E0'], '৳', 'বাংলাদেশী টাকা',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n));
+            if (i === 0 || n === 1) return 1;
+            return 5;
+          }
+    ];
     break;
   case 'br':
-    l = br;
-    break;
-  case 'brx':
-    l = brx;
+    l = [
+      'br',
+      [
+        ['am', 'gm'],
+        ['A.M.', 'G.M.'],
+      ],
+      [
+        ['A.M.', 'G.M.'],
+        ,
+      ],
+      [
+        ['Su', 'L', 'Mz', 'Mc', 'Y', 'G', 'Sa'],
+        ['Sul', 'Lun', 'Meu.', 'Mer.', 'Yaou', 'Gwe.', 'Sad.'],
+        ['Sul', 'Lun', 'Meurzh', 'Mercʼher', 'Yaou', 'Gwener', 'Sadorn'],
+        ['Sul', 'Lun', 'Meu.', 'Mer.', 'Yaou', 'Gwe.', 'Sad.']
+      ],
+      ,
+      [
+        ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'],
+        [
+          'Gen.', 'Cʼhwe.', 'Meur.', 'Ebr.', 'Mae', 'Mezh.', 'Goue.', 'Eost', 'Gwen.', 'Here', 'Du',
+          'Kzu.'
+        ],
+        [
+          'Genver', 'Cʼhwevrer', 'Meurzh', 'Ebrel', 'Mae', 'Mezheven', 'Gouere', 'Eost', 'Gwengolo',
+          'Here', 'Du', 'Kerzu'
+        ]
+      ],
+      [
+        ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'],
+        [
+          'Gen.', 'Cʼhwe.', 'Meur.', 'Ebr.', 'Mae', 'Mezh.', 'Goue.', 'Eost', 'Gwen.', 'Here', 'Du',
+          'Ker.'
+        ],
+        [
+          'Genver', 'Cʼhwevrer', 'Meurzh', 'Ebrel', 'Mae', 'Mezheven', 'Gouere', 'Eost', 'Gwengolo',
+          'Here', 'Du', 'Kerzu'
+        ]
+      ],
+      [['a-raok J.K.', 'goude J.K.'], , ['a-raok Jezuz-Krist', 'goude Jezuz-Krist']], 1, [6, 0],
+      ['y-MM-dd', 'y MMM d', 'y MMMM d', 'y MMMM d, EEEE'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1} {0}',
+        ,
+        '{1} \'da\' {0}',
+      ],
+      [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro',
+      function(n: number):
+          number {
+            if (n % 10 === 1 && !(n % 100 === 11 || n % 100 === 71 || n % 100 === 91)) return 1;
+            if (n % 10 === 2 && !(n % 100 === 12 || n % 100 === 72 || n % 100 === 92)) return 2;
+            if (n % 10 === Math.floor(n % 10) && (n % 10 >= 3 && n % 10 <= 4 || n % 10 === 9) &&
+                !(n % 100 >= 10 && n % 100 <= 19 || n % 100 >= 70 && n % 100 <= 79 ||
+                  n % 100 >= 90 && n % 100 <= 99))
+              return 3;
+            if (!(n === 0) && n % 1e6 === 0) return 4;
+            return 5;
+          }
+    ];
     break;
   case 'bs':
-    l = bs;
-    break;
-  case 'bs_Cyrl':
-  case 'bs-Cyrl':
-    l = bsCyrl;
-    break;
-  case 'bs_Latn':
-  case 'bs-Latn':
-    l = bsLatn;
+    l = [
+      'bs',
+      [
+        ['prijepodne', 'popodne'],
+        ,
+      ],
+      ,
+      [
+        ['N', 'P', 'U', 'S', 'Č', 'P', 'S'], ['ned', 'pon', 'uto', 'sri', 'čet', 'pet', 'sub'],
+        ['nedjelja', 'ponedjeljak', 'utorak', 'srijeda', 'četvrtak', 'petak', 'subota'],
+        ['ned', 'pon', 'uto', 'sri', 'čet', 'pet', 'sub']
+      ],
+      [
+        ['n', 'p', 'u', 's', 'č', 'p', 's'], ['ned', 'pon', 'uto', 'sri', 'čet', 'pet', 'sub'],
+        ['nedjelja', 'ponedjeljak', 'utorak', 'srijeda', 'četvrtak', 'petak', 'subota'],
+        ['ned', 'pon', 'uto', 'sri', 'čet', 'pet', 'sub']
+      ],
+      [
+        ['j', 'f', 'm', 'a', 'm', 'j', 'j', 'a', 's', 'o', 'n', 'd'],
+        ['jan', 'feb', 'mar', 'apr', 'maj', 'jun', 'jul', 'avg', 'sep', 'okt', 'nov', 'dec'],
+        [
+          'januar', 'februar', 'mart', 'april', 'maj', 'juni', 'juli', 'avgust', 'septembar',
+          'oktobar', 'novembar', 'decembar'
+        ]
+      ],
+      , [['p. n. e.', 'n. e.'], , ['prije nove ere', 'nove ere']], 1, [6, 0],
+      ['d.M.yy.', 'd. MMM. y.', 'd. MMMM y.', 'EEEE, d. MMMM y.'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1} {0}',
+        ,
+        '{1} \'u\' {0}',
+      ],
+      [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'KM',
+      'Bosanskohercegovačka konvertibilna marka',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length,
+                f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
+            if (v === 0 && i % 10 === 1 && !(i % 100 === 11) || f % 10 === 1 && !(f % 100 === 11))
+              return 1;
+            if (v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 2 && i % 10 <= 4 &&
+                    !(i % 100 >= 12 && i % 100 <= 14) ||
+                f % 10 === Math.floor(f % 10) && f % 10 >= 2 && f % 10 <= 4 &&
+                    !(f % 100 >= 12 && f % 100 <= 14))
+              return 3;
+            return 5;
+          }
+    ];
     break;
   case 'ca':
-    l = ca;
-    break;
-  case 'ca_AD':
-  case 'ca-AD':
-    l = caAD;
-    break;
-  case 'ca_ES-VALENCIA':
-  case 'ca-ES-VALENCIA':
-    l = caESVALENCIA;
-    break;
-  case 'ca_FR':
-  case 'ca-FR':
-    l = caFR;
-    break;
-  case 'ca_IT':
-  case 'ca-IT':
-    l = caIT;
-    break;
-  case 'ce':
-    l = ce;
-    break;
-  case 'cgg':
-    l = cgg;
+    l = [
+      'ca',
+      [
+        ['a. m.', 'p. m.'],
+        ,
+      ],
+      ,
+      [
+        ['dg', 'dl', 'dt', 'dc', 'dj', 'dv', 'ds'],
+        ['dg.', 'dl.', 'dt.', 'dc.', 'dj.', 'dv.', 'ds.'],
+        ['diumenge', 'dilluns', 'dimarts', 'dimecres', 'dijous', 'divendres', 'dissabte'],
+        ['dg.', 'dl.', 'dt.', 'dc.', 'dj.', 'dv.', 'ds.']
+      ],
+      ,
+      [
+        ['GN', 'FB', 'MÇ', 'AB', 'MG', 'JN', 'JL', 'AG', 'ST', 'OC', 'NV', 'DS'],
+        [
+          'de gen.', 'de febr.', 'de març', 'd’abr.', 'de maig', 'de juny', 'de jul.', 'd’ag.',
+          'de set.', 'd’oct.', 'de nov.', 'de des.'
+        ],
+        [
+          'de gener', 'de febrer', 'de març', 'd’abril', 'de maig', 'de juny', 'de juliol',
+          'd’agost', 'de setembre', 'd’octubre', 'de novembre', 'de desembre'
+        ]
+      ],
+      [
+        ['GN', 'FB', 'MÇ', 'AB', 'MG', 'JN', 'JL', 'AG', 'ST', 'OC', 'NV', 'DS'],
+        [
+          'gen.', 'febr.', 'març', 'abr.', 'maig', 'juny', 'jul.', 'ag.', 'set.', 'oct.', 'nov.',
+          'des.'
+        ],
+        [
+          'gener', 'febrer', 'març', 'abril', 'maig', 'juny', 'juliol', 'agost', 'setembre',
+          'octubre', 'novembre', 'desembre'
+        ]
+      ],
+      [['aC', 'dC'], , ['abans de Crist', 'després de Crist']], 1, [6, 0],
+      ['d/M/yy', 'd MMM y', 'd MMMM \'de\' y', 'EEEE, d MMMM \'de\' y'],
+      ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'],
+      [
+        '{1} {0}',
+        '{1}, {0}',
+        '{1} \'a\' \'les\' {0}',
+      ],
+      [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '€', 'euro',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+            if (i === 1 && v === 0) return 1;
+            return 5;
+          }
+    ];
     break;
   case 'chr':
-    l = chr;
-    break;
-  case 'ckb':
-    l = ckb;
-    break;
-  case 'ckb_IR':
-  case 'ckb-IR':
-    l = ckbIR;
+    l = [
+      'chr',
+      [
+        ['Ꮜ', 'Ꮢ'],
+        ['ᏌᎾᎴ', 'ᏒᎯᏱᎢᏗᏢ'],
+      ],
+      [
+        ['ᏌᎾᎴ', 'ᏒᎯᏱᎢᏗᏢ'],
+        ,
+      ],
+      [
+        ['Ꮖ', 'Ꮙ', 'Ꮤ', 'Ꮶ', 'Ꮕ', 'Ꮷ', 'Ꭴ'], ['ᏆᏍᎬ', 'ᏉᏅᎯ', 'ᏔᎵᏁ', 'ᏦᎢᏁ', 'ᏅᎩᏁ', 'ᏧᎾᎩ', 'ᏈᏕᎾ'],
+        ['ᎤᎾᏙᏓᏆᏍᎬ', 'ᎤᎾᏙᏓᏉᏅᎯ', 'ᏔᎵᏁᎢᎦ', 'ᏦᎢᏁᎢᎦ', 'ᏅᎩᏁᎢᎦ', 'ᏧᎾᎩᎶᏍᏗ', 'ᎤᎾᏙᏓᏈᏕᎾ'],
+        ['ᏍᎬ', 'ᏅᎯ', 'ᏔᎵ', 'ᏦᎢ', 'ᏅᎩ', 'ᏧᎾ', 'ᏕᎾ']
+      ],
+      ,
+      [
+        ['Ꭴ', 'Ꭷ', 'Ꭰ', 'Ꭷ', 'Ꭰ', 'Ꮥ', 'Ꭻ', 'Ꭶ', 'Ꮪ', 'Ꮪ', 'Ꮕ', 'Ꭵ'],
+        ['ᎤᏃ', 'ᎧᎦ', 'ᎠᏅ', 'ᎧᏬ', 'ᎠᏂ', 'ᏕᎭ', 'ᎫᏰ', 'ᎦᎶ', 'ᏚᎵ', 'ᏚᏂ', 'ᏅᏓ', 'ᎥᏍ'],
+        [
+          'ᎤᏃᎸᏔᏅ', 'ᎧᎦᎵ', 'ᎠᏅᏱ', 'ᎧᏬᏂ', 'ᎠᏂᏍᎬᏘ', 'ᏕᎭᎷᏱ', 'ᎫᏰᏉᏂ', 'ᎦᎶᏂ', 'ᏚᎵᏍᏗ', 'ᏚᏂᏅᏗ', 'ᏅᏓᏕᏆ',
+          'ᎥᏍᎩᏱ'
+        ]
+      ],
+      , [['BC', 'AD'], , ['ᏧᏓᎷᎸ ᎤᎷᎯᏍᏗ ᎦᎶᏁᏛ', 'ᎠᏃ ᏙᎻᏂ']], 0, [6, 0],
+      ['M/d/yy', 'MMM d, y', 'MMMM d, y', 'EEEE, MMMM d, y'],
+      ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+      [
+        '{1}, {0}',
+        ,
+        '{1} ᎤᎾᎢ {0}',
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '$', 'US ᎠᏕᎳ', function(n: number):
+                                                                      number {
+                                                                        if (n === 1) return 1;
+                                                                        return 5;
+                                                                      }
+    ];
     break;
   case 'cs':
-    l = cs;
-    break;
-  case 'cu':
-    l = cu;
+    l = [
+      'cs',
+      [
+        ['dop.', 'odp.'],
+        ,
+      ],
+      ,
+      [
+        ['N', 'P', 'Ú', 'S', 'Č', 'P', 'S'], ['ne', 'po', 'út', 'st', 'čt', 'pá', 'so'],
+        ['neděle', 'pondělí', 'úterý', 'středa', 'čtvrtek', 'pátek', 'sobota'],
+        ['ne', 'po', 'út', 'st', 'čt', 'pá', 'so']
+      ],
+      ,
+      [
+        ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+        ['led', 'úno', 'bře', 'dub', 'kvě', 'čvn', 'čvc', 'srp', 'zář', 'říj', 'lis', 'pro'],
+        [
+          'ledna', 'února', 'března', 'dubna', 'května', 'června', 'července', 'srpna', 'září',
+          'října', 'listopadu', 'prosince'
+        ]
+      ],
+      [
+        ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+        ['led', 'úno', 'bře', 'dub', 'kvě', 'čvn', 'čvc', 'srp', 'zář', 'říj', 'lis', 'pro'],
+        [
+          'leden', 'únor', 'březen', 'duben', 'květen', 'červen', 'červenec', 'srpen', 'září',
+          'říjen', 'listopad', 'prosinec'
+        ]
+      ],
+      [
+        ['př.n.l.', 'n.l.'],
+        ['př. n. l.', 'n. l.'],
+      ],
+      1, [6, 0], ['dd.MM.yy', 'd. M. y', 'd. MMMM y', 'EEEE d. MMMM y'],
+      ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'Kč', 'česká koruna',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+            if (i === 1 && v === 0) return 1;
+            if (i === Math.floor(i) && i >= 2 && i <= 4 && v === 0) return 3;
+            if (!(v === 0)) return 4;
+            return 5;
+          }
+    ];
     break;
   case 'cy':
-    l = cy;
+    l = [
+      'cy',
+      [
+        ['b', 'h'],
+        ['yb', 'yh'],
+      ],
+      [
+        ['yb', 'yh'],
+        ,
+      ],
+      [
+        ['S', 'Ll', 'M', 'M', 'I', 'G', 'S'], ['Sul', 'Llun', 'Maw', 'Mer', 'Iau', 'Gwen', 'Sad'],
+        [
+          'Dydd Sul', 'Dydd Llun', 'Dydd Mawrth', 'Dydd Mercher', 'Dydd Iau', 'Dydd Gwener',
+          'Dydd Sadwrn'
+        ],
+        ['Su', 'Ll', 'Ma', 'Me', 'Ia', 'Gw', 'Sa']
+      ],
+      [
+        ['S', 'Ll', 'M', 'M', 'I', 'G', 'S'], ['Sul', 'Llun', 'Maw', 'Mer', 'Iau', 'Gwe', 'Sad'],
+        [
+          'Dydd Sul', 'Dydd Llun', 'Dydd Mawrth', 'Dydd Mercher', 'Dydd Iau', 'Dydd Gwener',
+          'Dydd Sadwrn'
+        ],
+        ['Su', 'Ll', 'Ma', 'Me', 'Ia', 'Gw', 'Sa']
+      ],
+      [
+        ['I', 'Ch', 'M', 'E', 'M', 'M', 'G', 'A', 'M', 'H', 'T', 'Rh'],
+        [
+          'Ion', 'Chwef', 'Maw', 'Ebrill', 'Mai', 'Meh', 'Gorff', 'Awst', 'Medi', 'Hyd', 'Tach',
+          'Rhag'
+        ],
+        [
+          'Ionawr', 'Chwefror', 'Mawrth', 'Ebrill', 'Mai', 'Mehefin', 'Gorffennaf', 'Awst', 'Medi',
+          'Hydref', 'Tachwedd', 'Rhagfyr'
+        ]
+      ],
+      [
+        ['I', 'Ch', 'M', 'E', 'M', 'M', 'G', 'A', 'M', 'H', 'T', 'Rh'],
+        ['Ion', 'Chw', 'Maw', 'Ebr', 'Mai', 'Meh', 'Gor', 'Awst', 'Medi', 'Hyd', 'Tach', 'Rhag'],
+        [
+          'Ionawr', 'Chwefror', 'Mawrth', 'Ebrill', 'Mai', 'Mehefin', 'Gorffennaf', 'Awst', 'Medi',
+          'Hydref', 'Tachwedd', 'Rhagfyr'
+        ]
+      ],
+      [['C', 'O'], ['CC', 'OC'], ['Cyn Crist', 'Oed Crist']], 1, [6, 0],
+      ['dd/MM/yy', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1} {0}',
+        ,
+        '{1} \'am\' {0}',
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '£', 'Punt Prydain', function(n: number):
+                                                                            number {
+                                                                              if (n === 0) return 0;
+                                                                              if (n === 1) return 1;
+                                                                              if (n === 2) return 2;
+                                                                              if (n === 3) return 3;
+                                                                              if (n === 6) return 4;
+                                                                              return 5;
+                                                                            }
+    ];
     break;
   case 'da':
-    l = da;
-    break;
-  case 'da_GL':
-  case 'da-GL':
-    l = daGL;
-    break;
-  case 'dav':
-    l = dav;
+    l = [
+      'da',
+      [
+        ['a', 'p'],
+        ['AM', 'PM'],
+      ],
+      [
+        ['AM', 'PM'],
+        ,
+      ],
+      [
+        ['S', 'M', 'T', 'O', 'T', 'F', 'L'],
+        ['søn.', 'man.', 'tir.', 'ons.', 'tor.', 'fre.', 'lør.'],
+        ['søndag', 'mandag', 'tirsdag', 'onsdag', 'torsdag', 'fredag', 'lørdag'],
+        ['sø', 'ma', 'ti', 'on', 'to', 'fr', 'lø']
+      ],
+      [
+        ['S', 'M', 'T', 'O', 'T', 'F', 'L'], ['søn', 'man', 'tir', 'ons', 'tor', 'fre', 'lør'],
+        ['søndag', 'mandag', 'tirsdag', 'onsdag', 'torsdag', 'fredag', 'lørdag'],
+        ['sø', 'ma', 'ti', 'on', 'to', 'fr', 'lø']
+      ],
+      [
+        ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+        [
+          'jan.', 'feb.', 'mar.', 'apr.', 'maj', 'jun.', 'jul.', 'aug.', 'sep.', 'okt.', 'nov.',
+          'dec.'
+        ],
+        [
+          'januar', 'februar', 'marts', 'april', 'maj', 'juni', 'juli', 'august', 'september',
+          'oktober', 'november', 'december'
+        ]
+      ],
+      ,
+      [
+        ['fKr', 'eKr'],
+        ['f.Kr.', 'e.Kr.'],
+      ],
+      1, [6, 0], ['dd/MM/y', 'd. MMM y', 'd. MMMM y', 'EEEE \'den\' d. MMMM y'],
+      ['HH.mm', 'HH.mm.ss', 'HH.mm.ss z', 'HH.mm.ss zzzz'],
+      [
+        '{1} {0}',
+        ,
+        '{1} \'kl\'. {0}',
+      ],
+      [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', '.'],
+      ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'kr.', 'dansk krone',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n)),
+                t = parseInt(n.toString().replace(/^[^.]*\.?|0+$/g, ''), 10) || 0;
+            if (n === 1 || !(t === 0) && (i === 0 || i === 1)) return 1;
+            return 5;
+          }
+    ];
     break;
   case 'de':
-    l = de;
+    l = [
+      'de',
+      [
+        ['vm.', 'nm.'],
+        ['vorm.', 'nachm.'],
+      ],
+      [
+        ['vorm.', 'nachm.'],
+        ,
+      ],
+      [
+        ['S', 'M', 'D', 'M', 'D', 'F', 'S'], ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.'],
+        ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
+        ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.']
+      ],
+      [
+        ['S', 'M', 'D', 'M', 'D', 'F', 'S'], ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
+        ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
+        ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.']
+      ],
+      [
+        ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+        [
+          'Jan.', 'Feb.', 'März', 'Apr.', 'Mai', 'Juni', 'Juli', 'Aug.', 'Sep.', 'Okt.', 'Nov.',
+          'Dez.'
+        ],
+        [
+          'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September',
+          'Oktober', 'November', 'Dezember'
+        ]
+      ],
+      [
+        ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+        ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
+        [
+          'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September',
+          'Oktober', 'November', 'Dezember'
+        ]
+      ],
+      [
+        ['v. Chr.', 'n. Chr.'],
+        ,
+      ],
+      1, [6, 0], ['dd.MM.yy', 'dd.MM.y', 'd. MMMM y', 'EEEE, d. MMMM y'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1}, {0}',
+        ,
+        '{1} \'um\' {0}',
+      ],
+      [',', '.', ';', '%', '+', '-', 'E', '·', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'Euro',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+            if (i === 1 && v === 0) return 1;
+            return 5;
+          }
+    ];
     break;
-  case 'de_AT':
   case 'de-AT':
-    l = deAT;
+  case 'de_AT':
+    l = [
+      'de-AT',
+      [
+        ['vm.', 'nm.'],
+        ['vorm.', 'nachm.'],
+      ],
+      ,
+      [
+        ['S', 'M', 'D', 'M', 'D', 'F', 'S'], ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.'],
+        ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
+        ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.']
+      ],
+      [
+        ['S', 'M', 'D', 'M', 'D', 'F', 'S'], ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
+        ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
+        ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.']
+      ],
+      [
+        ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+        [
+          'Jän.', 'Feb.', 'März', 'Apr.', 'Mai', 'Juni', 'Juli', 'Aug.', 'Sep.', 'Okt.', 'Nov.',
+          'Dez.'
+        ],
+        [
+          'Jänner', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September',
+          'Oktober', 'November', 'Dezember'
+        ]
+      ],
+      [
+        ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+        ['Jän', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
+        [
+          'Jänner', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September',
+          'Oktober', 'November', 'Dezember'
+        ]
+      ],
+      [
+        ['v. Chr.', 'n. Chr.'],
+        ,
+      ],
+      1, [6, 0], ['dd.MM.yy', 'dd.MM.y', 'd. MMMM y', 'EEEE, d. MMMM y'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1}, {0}',
+        ,
+        '{1} \'um\' {0}',
+      ],
+      [',', ' ', ';', '%', '+', '-', 'E', '·', '‰', '∞', 'NaN', ':', '.'],
+      ['#,##0.###', '#,##0 %', '¤ #,##0.00', '#E0'], '€', 'Euro',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+            if (i === 1 && v === 0) return 1;
+            return 5;
+          }
+    ];
     break;
-  case 'de_BE':
-  case 'de-BE':
-    l = deBE;
-    break;
-  case 'de_CH':
   case 'de-CH':
-    l = deCH;
-    break;
-  case 'de_IT':
-  case 'de-IT':
-    l = deIT;
-    break;
-  case 'de_LI':
-  case 'de-LI':
-    l = deLI;
-    break;
-  case 'de_LU':
-  case 'de-LU':
-    l = deLU;
-    break;
-  case 'dje':
-    l = dje;
-    break;
-  case 'dsb':
-    l = dsb;
-    break;
-  case 'dua':
-    l = dua;
-    break;
-  case 'dyo':
-    l = dyo;
-    break;
-  case 'dz':
-    l = dz;
-    break;
-  case 'ebu':
-    l = ebu;
-    break;
-  case 'ee':
-    l = ee;
-    break;
-  case 'ee_TG':
-  case 'ee-TG':
-    l = eeTG;
+  case 'de_CH':
+    l = [
+      'de-CH',
+      [
+        ['vm.', 'nm.'],
+        ['vorm.', 'nachm.'],
+      ],
+      [
+        ['vorm.', 'nachm.'],
+        ,
+      ],
+      [
+        ['S', 'M', 'D', 'M', 'D', 'F', 'S'], ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.'],
+        ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
+        ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.']
+      ],
+      [
+        ['S', 'M', 'D', 'M', 'D', 'F', 'S'], ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
+        ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
+        ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.']
+      ],
+      [
+        ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+        [
+          'Jan.', 'Feb.', 'März', 'Apr.', 'Mai', 'Juni', 'Juli', 'Aug.', 'Sep.', 'Okt.', 'Nov.',
+          'Dez.'
+        ],
+        [
+          'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September',
+          'Oktober', 'November', 'Dezember'
+        ]
+      ],
+      [
+        ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+        ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
+        [
+          'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September',
+          'Oktober', 'November', 'Dezember'
+        ]
+      ],
+      [
+        ['v. Chr.', 'n. Chr.'],
+        ,
+      ],
+      1, [6, 0], ['dd.MM.yy', 'dd.MM.y', 'd. MMMM y', 'EEEE, d. MMMM y'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1}, {0}',
+        ,
+        '{1} \'um\' {0}',
+      ],
+      ['.', '’', ';', '%', '+', '-', 'E', '·', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '¤ #,##0.00;¤-#,##0.00', '#E0'], 'CHF', 'Schweizer Franken',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+            if (i === 1 && v === 0) return 1;
+            return 5;
+          }
+    ];
     break;
   case 'el':
-    l = el;
+    l = [
+      'el',
+      [
+        ['πμ', 'μμ'],
+        ['π.μ.', 'μ.μ.'],
+      ],
+      [
+        ['π.μ.', 'μ.μ.'],
+        ,
+      ],
+      [
+        ['Κ', 'Δ', 'Τ', 'Τ', 'Π', 'Π', 'Σ'], ['Κυρ', 'Δευ', 'Τρί', 'Τετ', 'Πέμ', 'Παρ', 'Σάβ'],
+        ['Κυριακή', 'Δευτέρα', 'Τρίτη', 'Τετάρτη', 'Πέμπτη', 'Παρασκευή', 'Σάββατο'],
+        ['Κυ', 'Δε', 'Τρ', 'Τε', 'Πέ', 'Πα', 'Σά']
+      ],
+      ,
+      [
+        ['Ι', 'Φ', 'Μ', 'Α', 'Μ', 'Ι', 'Ι', 'Α', 'Σ', 'Ο', 'Ν', 'Δ'],
+        ['Ιαν', 'Φεβ', 'Μαρ', 'Απρ', 'Μαΐ', 'Ιουν', 'Ιουλ', 'Αυγ', 'Σεπ', 'Οκτ', 'Νοε', 'Δεκ'],
+        [
+          'Ιανουαρίου', 'Φεβρουαρίου', 'Μαρτίου', 'Απριλίου', 'Μαΐου', 'Ιουνίου', 'Ιουλίου',
+          'Αυγούστου', 'Σεπτεμβρίου', 'Οκτωβρίου', 'Νοεμβρίου', 'Δεκεμβρίου'
+        ]
+      ],
+      [
+        ['Ι', 'Φ', 'Μ', 'Α', 'Μ', 'Ι', 'Ι', 'Α', 'Σ', 'Ο', 'Ν', 'Δ'],
+        ['Ιαν', 'Φεβ', 'Μάρ', 'Απρ', 'Μάι', 'Ιούν', 'Ιούλ', 'Αύγ', 'Σεπ', 'Οκτ', 'Νοέ', 'Δεκ'],
+        [
+          'Ιανουάριος', 'Φεβρουάριος', 'Μάρτιος', 'Απρίλιος', 'Μάιος', 'Ιούνιος', 'Ιούλιος',
+          'Αύγουστος', 'Σεπτέμβριος', 'Οκτώβριος', 'Νοέμβριος', 'Δεκέμβριος'
+        ]
+      ],
+      [['π.Χ.', 'μ.Χ.'], , ['προ Χριστού', 'μετά Χριστόν']], 1, [6, 0],
+      ['d/M/yy', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
+      ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+      [
+        '{1}, {0}',
+        ,
+        '{1} - {0}',
+      ],
+      [',', '.', ';', '%', '+', '-', 'e', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '€', 'Ευρώ', function(n: number):
+                                                                     number {
+                                                                       if (n === 1) return 1;
+                                                                       return 5;
+                                                                     }
+    ];
     break;
-  case 'el_CY':
-  case 'el-CY':
-    l = elCY;
-    break;
-  case 'en':
-    l = en;
-    break;
-  case 'en_001':
-  case 'en-001':
-    l = en001;
-    break;
-  case 'en_150':
-  case 'en-150':
-    l = en150;
-    break;
-  case 'en_AG':
-  case 'en-AG':
-    l = enAG;
-    break;
-  case 'en_AI':
-  case 'en-AI':
-    l = enAI;
-    break;
-  case 'en_AS':
-  case 'en-AS':
-    l = enAS;
-    break;
-  case 'en_AT':
-  case 'en-AT':
-    l = enAT;
-    break;
-  case 'en_AU':
   case 'en-AU':
-    l = enAU;
+  case 'en_AU':
+    l = [
+      'en-AU',
+      [
+        ['am', 'pm'],
+        ,
+      ],
+      [['am', 'pm'], ['AM', 'PM'], ['am', 'pm']],
+      [
+        ['Su.', 'M.', 'Tu.', 'W.', 'Th.', 'F.', 'Sa.'],
+        ['Sun.', 'Mon.', 'Tue.', 'Wed.', 'Thu.', 'Fri.', 'Sat.'],
+        ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+        ['Su.', 'Mon.', 'Tu.', 'Wed.', 'Th.', 'Fri.', 'Sat.']
+      ],
+      ,
+      [
+        ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+        [
+          'Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'Jun.', 'Jul.', 'Aug.', 'Sep.', 'Oct.', 'Nov.',
+          'Dec.'
+        ],
+        [
+          'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
+          'October', 'November', 'December'
+        ]
+      ],
+      , [['B', 'A'], ['BC', 'AD'], ['Before Christ', 'Anno Domini']], 0, [6, 0],
+      ['d/M/yy', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
+      ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+      [
+        '{1}, {0}',
+        ,
+        '{1} \'at\' {0}',
+      ],
+      ['.', ',', ';', '%', '+', '-', 'e', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '$', 'Australian Dollar',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+            if (i === 1 && v === 0) return 1;
+            return 5;
+          }
+    ];
     break;
-  case 'en_BB':
-  case 'en-BB':
-    l = enBB;
-    break;
-  case 'en_BE':
-  case 'en-BE':
-    l = enBE;
-    break;
-  case 'en_BI':
-  case 'en-BI':
-    l = enBI;
-    break;
-  case 'en_BM':
-  case 'en-BM':
-    l = enBM;
-    break;
-  case 'en_BS':
-  case 'en-BS':
-    l = enBS;
-    break;
-  case 'en_BW':
-  case 'en-BW':
-    l = enBW;
-    break;
-  case 'en_BZ':
-  case 'en-BZ':
-    l = enBZ;
-    break;
-  case 'en_CA':
   case 'en-CA':
-    l = enCA;
+  case 'en_CA':
+    l = [
+      'en-CA',
+      [
+        ['a', 'p'],
+        ['AM', 'PM'],
+      ],
+      [
+        ['AM', 'PM'],
+        ,
+      ],
+      [
+        ['S', 'M', 'T', 'W', 'T', 'F', 'S'], ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+        ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
+      ],
+      ,
+      [
+        ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+        ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        [
+          'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
+          'October', 'November', 'December'
+        ]
+      ],
+      , [['B', 'A'], ['BC', 'AD'], ['Before Christ', 'Anno Domini']], 0, [6, 0],
+      ['y-MM-dd', 'MMM d, y', 'MMMM d, y', 'EEEE, MMMM d, y'],
+      ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+      [
+        '{1}, {0}',
+        ,
+        '{1} \'at\' {0}',
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '$', 'Canadian Dollar',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+            if (i === 1 && v === 0) return 1;
+            return 5;
+          }
+    ];
     break;
-  case 'en_CC':
-  case 'en-CC':
-    l = enCC;
-    break;
-  case 'en_CH':
-  case 'en-CH':
-    l = enCH;
-    break;
-  case 'en_CK':
-  case 'en-CK':
-    l = enCK;
-    break;
-  case 'en_CM':
-  case 'en-CM':
-    l = enCM;
-    break;
-  case 'en_CX':
-  case 'en-CX':
-    l = enCX;
-    break;
-  case 'en_CY':
-  case 'en-CY':
-    l = enCY;
-    break;
-  case 'en_DE':
-  case 'en-DE':
-    l = enDE;
-    break;
-  case 'en_DG':
-  case 'en-DG':
-    l = enDG;
-    break;
-  case 'en_DK':
-  case 'en-DK':
-    l = enDK;
-    break;
-  case 'en_DM':
-  case 'en-DM':
-    l = enDM;
-    break;
-  case 'en_ER':
-  case 'en-ER':
-    l = enER;
-    break;
-  case 'en_FI':
-  case 'en-FI':
-    l = enFI;
-    break;
-  case 'en_FJ':
-  case 'en-FJ':
-    l = enFJ;
-    break;
-  case 'en_FK':
-  case 'en-FK':
-    l = enFK;
-    break;
-  case 'en_FM':
-  case 'en-FM':
-    l = enFM;
-    break;
-  case 'en_GB':
   case 'en-GB':
-    l = enGB;
+  case 'en_GB':
+    l = [
+      'en-GB',
+      [
+        ['a', 'p'],
+        ['am', 'pm'],
+      ],
+      [
+        ['am', 'pm'],
+        ,
+      ],
+      [
+        ['S', 'M', 'T', 'W', 'T', 'F', 'S'], ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+        ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
+      ],
+      ,
+      [
+        ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+        ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        [
+          'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
+          'October', 'November', 'December'
+        ]
+      ],
+      , [['B', 'A'], ['BC', 'AD'], ['Before Christ', 'Anno Domini']], 1, [6, 0],
+      ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1}, {0}',
+        ,
+        '{1} \'at\' {0}',
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '£', 'British Pound',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+            if (i === 1 && v === 0) return 1;
+            return 5;
+          }
+    ];
     break;
-  case 'en_GD':
-  case 'en-GD':
-    l = enGD;
-    break;
-  case 'en_GG':
-  case 'en-GG':
-    l = enGG;
-    break;
-  case 'en_GH':
-  case 'en-GH':
-    l = enGH;
-    break;
-  case 'en_GI':
-  case 'en-GI':
-    l = enGI;
-    break;
-  case 'en_GM':
-  case 'en-GM':
-    l = enGM;
-    break;
-  case 'en_GU':
-  case 'en-GU':
-    l = enGU;
-    break;
-  case 'en_GY':
-  case 'en-GY':
-    l = enGY;
-    break;
-  case 'en_HK':
-  case 'en-HK':
-    l = enHK;
-    break;
-  case 'en_IE':
   case 'en-IE':
-    l = enIE;
+  case 'en_IE':
+    l = [
+      'en-IE', [['a', 'p'], ['AM', 'PM'], ['a.m.', 'p.m.']],
+      [
+        ['AM', 'PM'],
+        ,
+      ],
+      [
+        ['S', 'M', 'T', 'W', 'T', 'F', 'S'], ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+        ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
+      ],
+      ,
+      [
+        ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+        ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        [
+          'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
+          'October', 'November', 'December'
+        ]
+      ],
+      , [['B', 'A'], ['BC', 'AD'], ['Before Christ', 'Anno Domini']], 0, [6, 0],
+      ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1}, {0}',
+        ,
+        '{1} \'at\' {0}',
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '€', 'Euro',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+            if (i === 1 && v === 0) return 1;
+            return 5;
+          }
+    ];
     break;
-  case 'en_IL':
-  case 'en-IL':
-    l = enIL;
-    break;
-  case 'en_IM':
-  case 'en-IM':
-    l = enIM;
-    break;
-  case 'en_IN':
   case 'en-IN':
-    l = enIN;
+  case 'en_IN':
+    l = [
+      'en-IN',
+      [
+        ['a', 'p'],
+        ['AM', 'PM'],
+      ],
+      [
+        ['AM', 'PM'],
+        ,
+      ],
+      [
+        ['S', 'M', 'T', 'W', 'T', 'F', 'S'], ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+        ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
+      ],
+      ,
+      [
+        ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+        ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        [
+          'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
+          'October', 'November', 'December'
+        ]
+      ],
+      , [['B', 'A'], ['BC', 'AD'], ['Before Christ', 'Anno Domini']], 0, [0, 0],
+      ['dd/MM/yy', 'dd-MMM-y', 'd MMMM y', 'EEEE d MMMM y'],
+      ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+      [
+        '{1}, {0}',
+        ,
+        '{1} \'at\' {0}',
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##,##0.###', '#,##,##0%', '¤ #,##,##0.00', '#E0'], '₹', 'Indian Rupee',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+            if (i === 1 && v === 0) return 1;
+            return 5;
+          }
+    ];
     break;
-  case 'en_IO':
-  case 'en-IO':
-    l = enIO;
-    break;
-  case 'en_JE':
-  case 'en-JE':
-    l = enJE;
-    break;
-  case 'en_JM':
-  case 'en-JM':
-    l = enJM;
-    break;
-  case 'en_KE':
-  case 'en-KE':
-    l = enKE;
-    break;
-  case 'en_KI':
-  case 'en-KI':
-    l = enKI;
-    break;
-  case 'en_KN':
-  case 'en-KN':
-    l = enKN;
-    break;
-  case 'en_KY':
-  case 'en-KY':
-    l = enKY;
-    break;
-  case 'en_LC':
-  case 'en-LC':
-    l = enLC;
-    break;
-  case 'en_LR':
-  case 'en-LR':
-    l = enLR;
-    break;
-  case 'en_LS':
-  case 'en-LS':
-    l = enLS;
-    break;
-  case 'en_MG':
-  case 'en-MG':
-    l = enMG;
-    break;
-  case 'en_MH':
-  case 'en-MH':
-    l = enMH;
-    break;
-  case 'en_MO':
-  case 'en-MO':
-    l = enMO;
-    break;
-  case 'en_MP':
-  case 'en-MP':
-    l = enMP;
-    break;
-  case 'en_MS':
-  case 'en-MS':
-    l = enMS;
-    break;
-  case 'en_MT':
-  case 'en-MT':
-    l = enMT;
-    break;
-  case 'en_MU':
-  case 'en-MU':
-    l = enMU;
-    break;
-  case 'en_MW':
-  case 'en-MW':
-    l = enMW;
-    break;
-  case 'en_MY':
-  case 'en-MY':
-    l = enMY;
-    break;
-  case 'en_NA':
-  case 'en-NA':
-    l = enNA;
-    break;
-  case 'en_NF':
-  case 'en-NF':
-    l = enNF;
-    break;
-  case 'en_NG':
-  case 'en-NG':
-    l = enNG;
-    break;
-  case 'en_NL':
-  case 'en-NL':
-    l = enNL;
-    break;
-  case 'en_NR':
-  case 'en-NR':
-    l = enNR;
-    break;
-  case 'en_NU':
-  case 'en-NU':
-    l = enNU;
-    break;
-  case 'en_NZ':
-  case 'en-NZ':
-    l = enNZ;
-    break;
-  case 'en_PG':
-  case 'en-PG':
-    l = enPG;
-    break;
-  case 'en_PH':
-  case 'en-PH':
-    l = enPH;
-    break;
-  case 'en_PK':
-  case 'en-PK':
-    l = enPK;
-    break;
-  case 'en_PN':
-  case 'en-PN':
-    l = enPN;
-    break;
-  case 'en_PR':
-  case 'en-PR':
-    l = enPR;
-    break;
-  case 'en_PW':
-  case 'en-PW':
-    l = enPW;
-    break;
-  case 'en_RW':
-  case 'en-RW':
-    l = enRW;
-    break;
-  case 'en_SB':
-  case 'en-SB':
-    l = enSB;
-    break;
-  case 'en_SC':
-  case 'en-SC':
-    l = enSC;
-    break;
-  case 'en_SD':
-  case 'en-SD':
-    l = enSD;
-    break;
-  case 'en_SE':
-  case 'en-SE':
-    l = enSE;
-    break;
-  case 'en_SG':
   case 'en-SG':
-    l = enSG;
+  case 'en_SG':
+    l = [
+      'en-SG',
+      [
+        ['a', 'p'],
+        ['AM', 'PM'],
+      ],
+      [
+        ['AM', 'PM'],
+        ,
+      ],
+      [
+        ['S', 'M', 'T', 'W', 'T', 'F', 'S'], ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+        ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
+      ],
+      ,
+      [
+        ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+        ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        [
+          'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
+          'October', 'November', 'December'
+        ]
+      ],
+      , [['B', 'A'], ['BC', 'AD'], ['Before Christ', 'Anno Domini']], 0, [6, 0],
+      ['d/M/yy', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
+      ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+      [
+        '{1}, {0}',
+        ,
+        '{1} \'at\' {0}',
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '$', 'Singapore Dollar',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+            if (i === 1 && v === 0) return 1;
+            return 5;
+          }
+    ];
     break;
-  case 'en_SH':
-  case 'en-SH':
-    l = enSH;
-    break;
-  case 'en_SI':
-  case 'en-SI':
-    l = enSI;
-    break;
-  case 'en_SL':
-  case 'en-SL':
-    l = enSL;
-    break;
-  case 'en_SS':
-  case 'en-SS':
-    l = enSS;
-    break;
-  case 'en_SX':
-  case 'en-SX':
-    l = enSX;
-    break;
-  case 'en_SZ':
-  case 'en-SZ':
-    l = enSZ;
-    break;
-  case 'en_TC':
-  case 'en-TC':
-    l = enTC;
-    break;
-  case 'en_TK':
-  case 'en-TK':
-    l = enTK;
-    break;
-  case 'en_TO':
-  case 'en-TO':
-    l = enTO;
-    break;
-  case 'en_TT':
-  case 'en-TT':
-    l = enTT;
-    break;
-  case 'en_TV':
-  case 'en-TV':
-    l = enTV;
-    break;
-  case 'en_TZ':
-  case 'en-TZ':
-    l = enTZ;
-    break;
-  case 'en_UG':
-  case 'en-UG':
-    l = enUG;
-    break;
-  case 'en_UM':
-  case 'en-UM':
-    l = enUM;
-    break;
-  case 'en_US-POSIX':
-  case 'en-US-POSIX':
-    l = enUSPOSIX;
-    break;
-  case 'en_VC':
-  case 'en-VC':
-    l = enVC;
-    break;
-  case 'en_VG':
-  case 'en-VG':
-    l = enVG;
-    break;
-  case 'en_VI':
-  case 'en-VI':
-    l = enVI;
-    break;
-  case 'en_VU':
-  case 'en-VU':
-    l = enVU;
-    break;
-  case 'en_WS':
-  case 'en-WS':
-    l = enWS;
-    break;
-  case 'en_ZA':
   case 'en-ZA':
-    l = enZA;
-    break;
-  case 'en_ZM':
-  case 'en-ZM':
-    l = enZM;
-    break;
-  case 'en_ZW':
-  case 'en-ZW':
-    l = enZW;
-    break;
-  case 'eo':
-    l = eo;
+  case 'en_ZA':
+    l = [
+      'en-ZA',
+      [
+        ['a', 'p'],
+        ['AM', 'PM'],
+      ],
+      [
+        ['AM', 'PM'],
+        ,
+      ],
+      [
+        ['S', 'M', 'T', 'W', 'T', 'F', 'S'], ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+        ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
+      ],
+      ,
+      [
+        ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+        ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        [
+          'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
+          'October', 'November', 'December'
+        ]
+      ],
+      , [['B', 'A'], ['BC', 'AD'], ['Before Christ', 'Anno Domini']], 0, [6, 0],
+      ['y/MM/dd', 'dd MMM y', 'dd MMMM y', 'EEEE, dd MMMM y'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1}, {0}',
+        ,
+        '{1} \'at\' {0}',
+      ],
+      [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'R', 'South African Rand',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+            if (i === 1 && v === 0) return 1;
+            return 5;
+          }
+    ];
     break;
   case 'es':
-    l = es;
+    l = [
+      'es',
+      [
+        ['a. m.', 'p. m.'],
+        ,
+      ],
+      ,
+      [
+        ['D', 'L', 'M', 'X', 'J', 'V', 'S'],
+        ['dom.', 'lun.', 'mar.', 'mié.', 'jue.', 'vie.', 'sáb.'],
+        ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'],
+        ['DO', 'LU', 'MA', 'MI', 'JU', 'VI', 'SA']
+      ],
+      ,
+      [
+        ['E', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+        [
+          'ene.', 'feb.', 'mar.', 'abr.', 'may.', 'jun.', 'jul.', 'ago.', 'sept.', 'oct.', 'nov.',
+          'dic.'
+        ],
+        [
+          'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre',
+          'octubre', 'noviembre', 'diciembre'
+        ]
+      ],
+      , [['a. C.', 'd. C.'], , ['antes de Cristo', 'después de Cristo']], 1, [6, 0],
+      ['d/M/yy', 'd MMM y', 'd \'de\' MMMM \'de\' y', 'EEEE, d \'de\' MMMM \'de\' y'],
+      ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss (zzzz)'],
+      [
+        '{1} {0}',
+        ,
+        '{1}, {0}',
+      ],
+      [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro', function(n: number):
+                                                                      number {
+                                                                        if (n === 1) return 1;
+                                                                        return 5;
+                                                                      }
+    ];
     break;
-  case 'es_419':
   case 'es-419':
-    l = es419;
+  case 'es_419':
+    l = [
+      'es-419',
+      [
+        ['a. m.', 'p. m.'],
+        ['a.m.', 'p.m.'],
+      ],
+      [
+        ['a.m.', 'p.m.'],
+        ,
+      ],
+      [
+        ['d', 'l', 'm', 'm', 'j', 'v', 's'],
+        ['dom.', 'lun.', 'mar.', 'mié.', 'jue.', 'vie.', 'sáb.'],
+        ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'],
+        ['DO', 'LU', 'MA', 'MI', 'JU', 'VI', 'SA']
+      ],
+      [
+        ['D', 'L', 'M', 'M', 'J', 'V', 'S'],
+        ['dom.', 'lun.', 'mar.', 'mié.', 'jue.', 'vie.', 'sáb.'],
+        ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'],
+        ['DO', 'LU', 'MA', 'MI', 'JU', 'VI', 'SA']
+      ],
+      [
+        ['e', 'f', 'm', 'a', 'm', 'j', 'j', 'a', 's', 'o', 'n', 'd'],
+        [
+          'ene.', 'feb.', 'mar.', 'abr.', 'may.', 'jun.', 'jul.', 'ago.', 'sep.', 'oct.', 'nov.',
+          'dic.'
+        ],
+        [
+          'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre',
+          'octubre', 'noviembre', 'diciembre'
+        ]
+      ],
+      [
+        ['E', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+        [
+          'ene.', 'feb.', 'mar.', 'abr.', 'may.', 'jun.', 'jul.', 'ago.', 'sep.', 'oct.', 'nov.',
+          'dic.'
+        ],
+        [
+          'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre',
+          'octubre', 'noviembre', 'diciembre'
+        ]
+      ],
+      [['a. C.', 'd. C.'], , ['antes de Cristo', 'después de Cristo']], 1, [6, 0],
+      ['d/M/yy', 'd MMM y', 'd \'de\' MMMM \'de\' y', 'EEEE, d \'de\' MMMM \'de\' y'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1} {0}',
+        ,
+        '{1}, {0}',
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0 %', '¤#,##0.00', '#E0'], 'EUR', 'euro', function(n: number):
+                                                                       number {
+                                                                         if (n === 1) return 1;
+                                                                         return 5;
+                                                                       }
+    ];
     break;
-  case 'es_AR':
-  case 'es-AR':
-    l = esAR;
-    break;
-  case 'es_BO':
-  case 'es-BO':
-    l = esBO;
-    break;
-  case 'es_BR':
-  case 'es-BR':
-    l = esBR;
-    break;
-  case 'es_BZ':
-  case 'es-BZ':
-    l = esBZ;
-    break;
-  case 'es_CL':
-  case 'es-CL':
-    l = esCL;
-    break;
-  case 'es_CO':
-  case 'es-CO':
-    l = esCO;
-    break;
-  case 'es_CR':
-  case 'es-CR':
-    l = esCR;
-    break;
-  case 'es_CU':
-  case 'es-CU':
-    l = esCU;
-    break;
-  case 'es_DO':
-  case 'es-DO':
-    l = esDO;
-    break;
-  case 'es_EA':
-  case 'es-EA':
-    l = esEA;
-    break;
-  case 'es_EC':
-  case 'es-EC':
-    l = esEC;
-    break;
-  case 'es_GQ':
-  case 'es-GQ':
-    l = esGQ;
-    break;
-  case 'es_GT':
-  case 'es-GT':
-    l = esGT;
-    break;
-  case 'es_HN':
-  case 'es-HN':
-    l = esHN;
-    break;
-  case 'es_IC':
-  case 'es-IC':
-    l = esIC;
-    break;
-  case 'es_MX':
   case 'es-MX':
-    l = esMX;
+  case 'es_MX':
+    l = [
+      'es-MX',
+      [
+        ['a. m.', 'p. m.'],
+        ,
+      ],
+      ,
+      [
+        ['D', 'L', 'M', 'M', 'J', 'V', 'S'],
+        ['dom.', 'lun.', 'mar.', 'mié.', 'jue.', 'vie.', 'sáb.'],
+        ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'],
+        ['do', 'lu', 'ma', 'mi', 'ju', 'vi', 'sá']
+      ],
+      [
+        ['D', 'L', 'M', 'M', 'J', 'V', 'S'],
+        ['dom.', 'lun.', 'mar.', 'mié.', 'jue.', 'vie.', 'sáb.'],
+        ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'],
+        ['DO', 'LU', 'MA', 'MI', 'JU', 'VI', 'SA']
+      ],
+      [
+        ['e', 'f', 'm', 'a', 'm', 'j', 'j', 'a', 's', 'o', 'n', 'd'],
+        ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'],
+        [
+          'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre',
+          'octubre', 'noviembre', 'diciembre'
+        ]
+      ],
+      [
+        ['E', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+        [
+          'ene.', 'feb.', 'mar.', 'abr.', 'may.', 'jun.', 'jul.', 'ago.', 'sep.', 'oct.', 'nov.',
+          'dic.'
+        ],
+        [
+          'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre',
+          'octubre', 'noviembre', 'diciembre'
+        ]
+      ],
+      [['a. C.', 'd. C.'], , ['antes de Cristo', 'después de Cristo']], 0, [6, 0],
+      ['dd/MM/yy', 'dd/MM/y', 'd \'de\' MMMM \'de\' y', 'EEEE, d \'de\' MMMM \'de\' y'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1} {0}',
+        ,
+        '{1}, {0}',
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '$', 'peso mexicano', function(n: number):
+                                                                             number {
+                                                                               if (n === 1)
+                                                                                 return 1;
+                                                                               return 5;
+                                                                             }
+    ];
     break;
-  case 'es_NI':
-  case 'es-NI':
-    l = esNI;
-    break;
-  case 'es_PA':
-  case 'es-PA':
-    l = esPA;
-    break;
-  case 'es_PE':
-  case 'es-PE':
-    l = esPE;
-    break;
-  case 'es_PH':
-  case 'es-PH':
-    l = esPH;
-    break;
-  case 'es_PR':
-  case 'es-PR':
-    l = esPR;
-    break;
-  case 'es_PY':
-  case 'es-PY':
-    l = esPY;
-    break;
-  case 'es_SV':
-  case 'es-SV':
-    l = esSV;
-    break;
-  case 'es_US':
   case 'es-US':
-    l = esUS;
-    break;
-  case 'es_UY':
-  case 'es-UY':
-    l = esUY;
-    break;
-  case 'es_VE':
-  case 'es-VE':
-    l = esVE;
+  case 'es_US':
+    l = [
+      'es-US',
+      [
+        ['a. m.', 'p. m.'],
+        ,
+      ],
+      ,
+      [
+        ['d', 'l', 'm', 'm', 'j', 'v', 's'],
+        ['dom.', 'lun.', 'mar.', 'mié.', 'jue.', 'vie.', 'sáb.'],
+        ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'],
+        ['DO', 'LU', 'MA', 'MI', 'JU', 'VI', 'SA']
+      ],
+      [
+        ['D', 'L', 'M', 'M', 'J', 'V', 'S'],
+        ['dom.', 'lun.', 'mar.', 'mié.', 'jue.', 'vie.', 'sáb.'],
+        ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'],
+        ['DO', 'LU', 'MA', 'MI', 'JU', 'VI', 'SA']
+      ],
+      [
+        ['e', 'f', 'm', 'a', 'm', 'j', 'j', 'a', 's', 'o', 'n', 'd'],
+        [
+          'ene.', 'feb.', 'mar.', 'abr.', 'may.', 'jun.', 'jul.', 'ago.', 'sep.', 'oct.', 'nov.',
+          'dic.'
+        ],
+        [
+          'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre',
+          'octubre', 'noviembre', 'diciembre'
+        ]
+      ],
+      [
+        ['E', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+        [
+          'ene.', 'feb.', 'mar.', 'abr.', 'may.', 'jun.', 'jul.', 'ago.', 'sep.', 'oct.', 'nov.',
+          'dic.'
+        ],
+        [
+          'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre',
+          'octubre', 'noviembre', 'diciembre'
+        ]
+      ],
+      [['a. C.', 'd. C.'], , ['antes de Cristo', 'después de Cristo']], 0, [6, 0],
+      ['d/M/yy', 'd MMM y', 'd \'de\' MMMM \'de\' y', 'EEEE, d \'de\' MMMM \'de\' y'],
+      ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+      [
+        '{1} {0}',
+        ,
+        '{1}, {0}',
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0 %', '¤#,##0.00', '#E0'], '$', 'dólar estadounidense',
+      function(n: number):
+          number {
+            if (n === 1) return 1;
+            return 5;
+          }
+    ];
     break;
   case 'et':
-    l = et;
+    l = [
+      'et',
+      [
+        ['AM', 'PM'],
+        ,
+      ],
+      ,
+      [
+        ['P', 'E', 'T', 'K', 'N', 'R', 'L'], ,
+        ['pühapäev', 'esmaspäev', 'teisipäev', 'kolmapäev', 'neljapäev', 'reede', 'laupäev'],
+        ['P', 'E', 'T', 'K', 'N', 'R', 'L']
+      ],
+      ,
+      [
+        ['J', 'V', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+        [
+          'jaan', 'veebr', 'märts', 'apr', 'mai', 'juuni', 'juuli', 'aug', 'sept', 'okt', 'nov',
+          'dets'
+        ],
+        [
+          'jaanuar', 'veebruar', 'märts', 'aprill', 'mai', 'juuni', 'juuli', 'august', 'september',
+          'oktoober', 'november', 'detsember'
+        ]
+      ],
+      , [['eKr', 'pKr'], , ['enne Kristust', 'pärast Kristust']], 1, [6, 0],
+      ['dd.MM.yy', 'd. MMM y', 'd. MMMM y', 'EEEE, d. MMMM y'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      [',', ' ', ';', '%', '+', '−', '×10^', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '€', 'euro',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+            if (i === 1 && v === 0) return 1;
+            return 5;
+          }
+    ];
     break;
   case 'eu':
-    l = eu;
-    break;
-  case 'ewo':
-    l = ewo;
+    l = [
+      'eu',
+      [
+        ['AM', 'PM'],
+        ,
+      ],
+      ,
+      [
+        ['I', 'A', 'A', 'A', 'O', 'O', 'L'], ['ig.', 'al.', 'ar.', 'az.', 'og.', 'or.', 'lr.'],
+        ['igandea', 'astelehena', 'asteartea', 'asteazkena', 'osteguna', 'ostirala', 'larunbata'],
+        ['ig.', 'al.', 'ar.', 'az.', 'og.', 'or.', 'lr.']
+      ],
+      [
+        ['I', 'A', 'A', 'A', 'O', 'O', 'L'], ['ig.', 'al.', 'ar.', 'az.', 'og.', 'or.', 'lr.'],
+        ['Igandea', 'Astelehena', 'Asteartea', 'Asteazkena', 'Osteguna', 'Ostirala', 'Larunbata'],
+        ['ig.', 'al.', 'ar.', 'az.', 'og.', 'or.', 'lr.']
+      ],
+      [
+        ['U', 'O', 'M', 'A', 'M', 'E', 'U', 'A', 'I', 'U', 'A', 'A'],
+        [
+          'urt.', 'ots.', 'mar.', 'api.', 'mai.', 'eka.', 'uzt.', 'abu.', 'ira.', 'urr.', 'aza.',
+          'abe.'
+        ],
+        [
+          'urtarrila', 'otsaila', 'martxoa', 'apirila', 'maiatza', 'ekaina', 'uztaila', 'abuztua',
+          'iraila', 'urria', 'azaroa', 'abendua'
+        ]
+      ],
+      [
+        ['U', 'O', 'M', 'A', 'M', 'E', 'U', 'A', 'I', 'U', 'A', 'A'],
+        [
+          'urt.', 'ots.', 'mar.', 'api.', 'mai.', 'eka.', 'uzt.', 'abu.', 'ira.', 'urr.', 'aza.',
+          'abe.'
+        ],
+        [
+          'urtarrila', 'Otsaila', 'Martxoa', 'Apirila', 'Maiatza', 'Ekaina', 'Uztaila', 'Abuztua',
+          'Iraila', 'Urria', 'Azaroa', 'Abendua'
+        ]
+      ],
+      [['K.a.', 'K.o.'], , ['K.a.', 'Kristo ondoren']], 1, [6, 0],
+      ['yy/M/d', 'y MMM d', 'y(\'e\')\'ko\' MMMM d', 'y(\'e\')\'ko\' MMMM d, EEEE'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss (z)', 'HH:mm:ss (zzzz)'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '% #,##0', '#,##0.00 ¤', '#E0'], '€', 'euroa', function(n: number):
+                                                                       number {
+                                                                         if (n === 1) return 1;
+                                                                         return 5;
+                                                                       }
+    ];
     break;
   case 'fa':
-    l = fa;
-    break;
-  case 'fa_AF':
-  case 'fa-AF':
-    l = faAF;
-    break;
-  case 'ff':
-    l = ff;
-    break;
-  case 'ff_CM':
-  case 'ff-CM':
-    l = ffCM;
-    break;
-  case 'ff_GN':
-  case 'ff-GN':
-    l = ffGN;
-    break;
-  case 'ff_MR':
-  case 'ff-MR':
-    l = ffMR;
+    l = [
+      'fa', [['ق', 'ب'], ['ق.ظ.', 'ب.ظ.'], ['قبل‌ازظهر', 'بعدازظهر']],
+      [['ق.ظ.', 'ب.ظ.'], , ['قبل‌ازظهر', 'بعدازظهر']],
+      [
+        ['ی', 'د', 'س', 'چ', 'پ', 'ج', 'ش'],
+        ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'], ,
+        ['۱ش', '۲ش', '۳ش', '۴ش', '۵ش', 'ج', 'ش']
+      ],
+      ,
+      [
+        ['ژ', 'ف', 'م', 'آ', 'م', 'ژ', 'ژ', 'ا', 'س', 'ا', 'ن', 'د'],
+        [
+          'ژانویهٔ', 'فوریهٔ', 'مارس', 'آوریل', 'مهٔ', 'ژوئن', 'ژوئیهٔ', 'اوت', 'سپتامبر', 'اکتبر',
+          'نوامبر', 'دسامبر'
+        ],
+      ],
+      [
+        ['ژ', 'ف', 'م', 'آ', 'م', 'ژ', 'ژ', 'ا', 'س', 'ا', 'ن', 'د'],
+        [
+          'ژانویه', 'فوریه', 'مارس', 'آوریل', 'مه', 'ژوئن', 'ژوئیه', 'اوت', 'سپتامبر', 'اکتبر',
+          'نوامبر', 'دسامبر'
+        ],
+      ],
+      [['ق', 'م'], ['ق.م.', 'م.'], ['قبل از میلاد', 'میلادی']], 6, [5, 5],
+      ['y/M/d', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
+      ['H:mm', 'H:mm:ss', 'H:mm:ss (z)', 'H:mm:ss (zzzz)'],
+      [
+        '{1}،‏ {0}',
+        ,
+        '{1}، ساعت {0}',
+      ],
+      ['.', ',', ';', '%', '‎+', '‎−', 'E', '×', '‰', '∞', 'ناعدد', ':'],
+      ['#,##0.###', '#,##0%', '‎¤ #,##0.00', '#E0'], 'ریال', 'ریال ایران',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n));
+            if (i === 0 || n === 1) return 1;
+            return 5;
+          }
+    ];
     break;
   case 'fi':
-    l = fi;
-    break;
-  case 'fil':
-    l = fil;
-    break;
-  case 'fo':
-    l = fo;
-    break;
-  case 'fo_DK':
-  case 'fo-DK':
-    l = foDK;
+    l = [
+      'fi',
+      [
+        ['ap.', 'ip.'],
+        ,
+      ],
+      ,
+      [
+        ['S', 'M', 'T', 'K', 'T', 'P', 'L'], ['su', 'ma', 'ti', 'ke', 'to', 'pe', 'la'],
+        [
+          'sunnuntaina', 'maanantaina', 'tiistaina', 'keskiviikkona', 'torstaina', 'perjantaina',
+          'lauantaina'
+        ],
+        ['su', 'ma', 'ti', 'ke', 'to', 'pe', 'la']
+      ],
+      [
+        ['S', 'M', 'T', 'K', 'T', 'P', 'L'], ['su', 'ma', 'ti', 'ke', 'to', 'pe', 'la'],
+        ['sunnuntai', 'maanantai', 'tiistai', 'keskiviikko', 'torstai', 'perjantai', 'lauantai'],
+        ['su', 'ma', 'ti', 'ke', 'to', 'pe', 'la']
+      ],
+      [
+        ['T', 'H', 'M', 'H', 'T', 'K', 'H', 'E', 'S', 'L', 'M', 'J'],
+        [
+          'tammik.', 'helmik.', 'maalisk.', 'huhtik.', 'toukok.', 'kesäk.', 'heinäk.', 'elok.',
+          'syysk.', 'lokak.', 'marrask.', 'jouluk.'
+        ],
+        [
+          'tammikuuta', 'helmikuuta', 'maaliskuuta', 'huhtikuuta', 'toukokuuta', 'kesäkuuta',
+          'heinäkuuta', 'elokuuta', 'syyskuuta', 'lokakuuta', 'marraskuuta', 'joulukuuta'
+        ]
+      ],
+      [
+        ['T', 'H', 'M', 'H', 'T', 'K', 'H', 'E', 'S', 'L', 'M', 'J'],
+        [
+          'tammi', 'helmi', 'maalis', 'huhti', 'touko', 'kesä', 'heinä', 'elo', 'syys', 'loka',
+          'marras', 'joulu'
+        ],
+        [
+          'tammikuu', 'helmikuu', 'maaliskuu', 'huhtikuu', 'toukokuu', 'kesäkuu', 'heinäkuu',
+          'elokuu', 'syyskuu', 'lokakuu', 'marraskuu', 'joulukuu'
+        ]
+      ],
+      [
+        ['eKr', 'jKr'], ['eKr.', 'jKr.'],
+        ['ennen Kristuksen syntymää', 'jälkeen Kristuksen syntymän']
+      ],
+      1, [6, 0], ['d.M.y', , 'd. MMMM y', 'cccc d. MMMM y'],
+      ['H.mm', 'H.mm.ss', 'H.mm.ss z', 'H.mm.ss zzzz'],
+      [
+        '{1} {0}',
+        '{1} \'klo\' {0}',
+        ,
+      ],
+      [',', ' ', ';', '%', '+', '−', 'E', '×', '‰', '∞', 'epäluku', '.'],
+      ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+            if (i === 1 && v === 0) return 1;
+            return 5;
+          }
+    ];
     break;
   case 'fr':
-    l = fr;
+    l = [
+      'fr',
+      [
+        ['AM', 'PM'],
+        ,
+      ],
+      ,
+      [
+        ['D', 'L', 'M', 'M', 'J', 'V', 'S'],
+        ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'],
+        ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'],
+        ['di', 'lu', 'ma', 'me', 'je', 've', 'sa']
+      ],
+      ,
+      [
+        ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+        [
+          'janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.',
+          'déc.'
+        ],
+        [
+          'janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre',
+          'octobre', 'novembre', 'décembre'
+        ]
+      ],
+      , [['av. J.-C.', 'ap. J.-C.'], , ['avant Jésus-Christ', 'après Jésus-Christ']], 1, [6, 0],
+      ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1} {0}',
+        '{1} \'à\' {0}',
+        ,
+      ],
+      [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro', function(n: number):
+                                                                      number {
+                                                                        let i =
+                                                                            Math.floor(Math.abs(n));
+                                                                        if (i === 0 || i === 1)
+                                                                          return 1;
+                                                                        return 5;
+                                                                      }
+    ];
     break;
-  case 'fr_BE':
-  case 'fr-BE':
-    l = frBE;
-    break;
-  case 'fr_BF':
-  case 'fr-BF':
-    l = frBF;
-    break;
-  case 'fr_BI':
-  case 'fr-BI':
-    l = frBI;
-    break;
-  case 'fr_BJ':
-  case 'fr-BJ':
-    l = frBJ;
-    break;
-  case 'fr_BL':
-  case 'fr-BL':
-    l = frBL;
-    break;
-  case 'fr_CA':
   case 'fr-CA':
-    l = frCA;
-    break;
-  case 'fr_CD':
-  case 'fr-CD':
-    l = frCD;
-    break;
-  case 'fr_CF':
-  case 'fr-CF':
-    l = frCF;
-    break;
-  case 'fr_CG':
-  case 'fr-CG':
-    l = frCG;
-    break;
-  case 'fr_CH':
-  case 'fr-CH':
-    l = frCH;
-    break;
-  case 'fr_CI':
-  case 'fr-CI':
-    l = frCI;
-    break;
-  case 'fr_CM':
-  case 'fr-CM':
-    l = frCM;
-    break;
-  case 'fr_DJ':
-  case 'fr-DJ':
-    l = frDJ;
-    break;
-  case 'fr_DZ':
-  case 'fr-DZ':
-    l = frDZ;
-    break;
-  case 'fr_GA':
-  case 'fr-GA':
-    l = frGA;
-    break;
-  case 'fr_GF':
-  case 'fr-GF':
-    l = frGF;
-    break;
-  case 'fr_GN':
-  case 'fr-GN':
-    l = frGN;
-    break;
-  case 'fr_GP':
-  case 'fr-GP':
-    l = frGP;
-    break;
-  case 'fr_GQ':
-  case 'fr-GQ':
-    l = frGQ;
-    break;
-  case 'fr_HT':
-  case 'fr-HT':
-    l = frHT;
-    break;
-  case 'fr_KM':
-  case 'fr-KM':
-    l = frKM;
-    break;
-  case 'fr_LU':
-  case 'fr-LU':
-    l = frLU;
-    break;
-  case 'fr_MA':
-  case 'fr-MA':
-    l = frMA;
-    break;
-  case 'fr_MC':
-  case 'fr-MC':
-    l = frMC;
-    break;
-  case 'fr_MF':
-  case 'fr-MF':
-    l = frMF;
-    break;
-  case 'fr_MG':
-  case 'fr-MG':
-    l = frMG;
-    break;
-  case 'fr_ML':
-  case 'fr-ML':
-    l = frML;
-    break;
-  case 'fr_MQ':
-  case 'fr-MQ':
-    l = frMQ;
-    break;
-  case 'fr_MR':
-  case 'fr-MR':
-    l = frMR;
-    break;
-  case 'fr_MU':
-  case 'fr-MU':
-    l = frMU;
-    break;
-  case 'fr_NC':
-  case 'fr-NC':
-    l = frNC;
-    break;
-  case 'fr_NE':
-  case 'fr-NE':
-    l = frNE;
-    break;
-  case 'fr_PF':
-  case 'fr-PF':
-    l = frPF;
-    break;
-  case 'fr_PM':
-  case 'fr-PM':
-    l = frPM;
-    break;
-  case 'fr_RE':
-  case 'fr-RE':
-    l = frRE;
-    break;
-  case 'fr_RW':
-  case 'fr-RW':
-    l = frRW;
-    break;
-  case 'fr_SC':
-  case 'fr-SC':
-    l = frSC;
-    break;
-  case 'fr_SN':
-  case 'fr-SN':
-    l = frSN;
-    break;
-  case 'fr_SY':
-  case 'fr-SY':
-    l = frSY;
-    break;
-  case 'fr_TD':
-  case 'fr-TD':
-    l = frTD;
-    break;
-  case 'fr_TG':
-  case 'fr-TG':
-    l = frTG;
-    break;
-  case 'fr_TN':
-  case 'fr-TN':
-    l = frTN;
-    break;
-  case 'fr_VU':
-  case 'fr-VU':
-    l = frVU;
-    break;
-  case 'fr_WF':
-  case 'fr-WF':
-    l = frWF;
-    break;
-  case 'fr_YT':
-  case 'fr-YT':
-    l = frYT;
-    break;
-  case 'fur':
-    l = fur;
-    break;
-  case 'fy':
-    l = fy;
+  case 'fr_CA':
+    l = [
+      'fr-CA',
+      [
+        ['a', 'p'],
+        ['a.m.', 'p.m.'],
+      ],
+      [
+        ['AM', 'PM'],
+        ['a.m.', 'p.m.'],
+      ],
+      [
+        ['D', 'L', 'M', 'M', 'J', 'V', 'S'],
+        ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'],
+        ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'],
+        ['di', 'lu', 'ma', 'me', 'je', 've', 'sa']
+      ],
+      ,
+      [
+        ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+        [
+          'janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juill.', 'août', 'sept.', 'oct.',
+          'nov.', 'déc.'
+        ],
+        [
+          'janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre',
+          'octobre', 'novembre', 'décembre'
+        ]
+      ],
+      , [['av. J.-C.', 'ap. J.-C.'], , ['avant Jésus-Christ', 'après Jésus-Christ']], 0, [6, 0],
+      ['yy-MM-dd', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
+      ['HH \'h\' mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1} {0}',
+        ,
+        '{1} \'à\' {0}',
+      ],
+      [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '$', 'dollar canadien',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n));
+            if (i === 0 || i === 1) return 1;
+            return 5;
+          }
+    ];
     break;
   case 'ga':
-    l = ga;
-    break;
-  case 'gd':
-    l = gd;
+    l = [
+      'ga',
+      [
+        ['a', 'p'],
+        ['a.m.', 'p.m.'],
+      ],
+      ,
+      [
+        ['D', 'L', 'M', 'C', 'D', 'A', 'S'],
+        ['Domh', 'Luan', 'Máirt', 'Céad', 'Déar', 'Aoine', 'Sath'],
+        [
+          'Dé Domhnaigh', 'Dé Luain', 'Dé Máirt', 'Dé Céadaoin', 'Déardaoin', 'Dé hAoine',
+          'Dé Sathairn'
+        ],
+        ['Do', 'Lu', 'Má', 'Cé', 'Dé', 'Ao', 'Sa']
+      ],
+      ,
+      [
+        ['E', 'F', 'M', 'A', 'B', 'M', 'I', 'L', 'M', 'D', 'S', 'N'],
+        [
+          'Ean', 'Feabh', 'Márta', 'Aib', 'Beal', 'Meith', 'Iúil', 'Lún', 'MFómh', 'DFómh', 'Samh',
+          'Noll'
+        ],
+        [
+          'Eanáir', 'Feabhra', 'Márta', 'Aibreán', 'Bealtaine', 'Meitheamh', 'Iúil', 'Lúnasa',
+          'Meán Fómhair', 'Deireadh Fómhair', 'Samhain', 'Nollaig'
+        ]
+      ],
+      , [['RC', 'AD'], , ['Roimh Chríost', 'Anno Domini']], 0, [6, 0],
+      ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '€', 'Euro',
+      function(n: number):
+          number {
+            if (n === 1) return 1;
+            if (n === 2) return 2;
+            if (n === Math.floor(n) && n >= 3 && n <= 6) return 3;
+            if (n === Math.floor(n) && n >= 7 && n <= 10) return 4;
+            return 5;
+          }
+    ];
     break;
   case 'gl':
-    l = gl;
+    l = [
+      'gl',
+      [
+        ['a.m.', 'p.m.'],
+        ,
+      ],
+      ,
+      [
+        ['d.', 'l.', 'm.', 'm.', 'x.', 'v.', 's.'],
+        ['dom.', 'luns', 'mar.', 'mér.', 'xov.', 'ven.', 'sáb.'],
+        ['domingo', 'luns', 'martes', 'mércores', 'xoves', 'venres', 'sábado'],
+        ['dom.', 'luns', 'mar.', 'mér.', 'xov.', 'ven.', 'sáb.']
+      ],
+      [
+        ['D', 'L', 'M', 'M', 'X', 'V', 'S'],
+        ['Dom.', 'Luns', 'Mar.', 'Mér.', 'Xov.', 'Ven.', 'Sáb.'],
+        ['Domingo', 'Luns', 'Martes', 'Mércores', 'Xoves', 'Venres', 'Sábado'],
+        ['Do', 'Lu', 'Ma', 'Mé', 'Xo', 'Ve', 'Sá']
+      ],
+      [
+        ['x.', 'f.', 'm.', 'a.', 'm.', 'x.', 'x.', 'a.', 's.', 'o.', 'n.', 'd.'],
+        [
+          'xan.', 'feb.', 'mar.', 'abr.', 'maio', 'xuño', 'xul.', 'ago.', 'set.', 'out.', 'nov.',
+          'dec.'
+        ],
+        [
+          'xaneiro', 'febreiro', 'marzo', 'abril', 'maio', 'xuño', 'xullo', 'agosto', 'setembro',
+          'outubro', 'novembro', 'decembro'
+        ]
+      ],
+      [
+        ['X', 'F', 'M', 'A', 'M', 'X', 'X', 'A', 'S', 'O', 'N', 'D'],
+        [
+          'Xan.', 'Feb.', 'Mar.', 'Abr.', 'Maio', 'Xuño', 'Xul.', 'Ago.', 'Set.', 'Out.', 'Nov.',
+          'Dec.'
+        ],
+        [
+          'Xaneiro', 'Febreiro', 'Marzo', 'Abril', 'Maio', 'Xuño', 'Xullo', 'Agosto', 'Setembro',
+          'Outubro', 'Novembro', 'Decembro'
+        ]
+      ],
+      [['a.C.', 'd.C.'], , ['antes de Cristo', 'despois de Cristo']], 1, [6, 0],
+      [
+        'dd/MM/yy', 'd \'de\' MMM \'de\' y', 'd \'de\' MMMM \'de\' y',
+        'EEEE, d \'de\' MMMM \'de\' y'
+      ],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{0}, {1}',
+        ,
+        '{0} \'do\' {1}',
+      ],
+      [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'Euro',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+            if (i === 1 && v === 0) return 1;
+            return 5;
+          }
+    ];
     break;
   case 'gsw':
-    l = gsw;
-    break;
-  case 'gsw_FR':
-  case 'gsw-FR':
-    l = gswFR;
-    break;
-  case 'gsw_LI':
-  case 'gsw-LI':
-    l = gswLI;
+    l = [
+      'gsw', [['vorm.', 'nam.'], , ['am Vormittag', 'am Namittag']],
+      [['vorm.', 'nam.'], , ['Vormittag', 'Namittag']],
+      [
+        ['S', 'M', 'D', 'M', 'D', 'F', 'S'], ['Su.', 'Mä.', 'Zi.', 'Mi.', 'Du.', 'Fr.', 'Sa.'],
+        ['Sunntig', 'Määntig', 'Ziischtig', 'Mittwuch', 'Dunschtig', 'Friitig', 'Samschtig'],
+        ['Su.', 'Mä.', 'Zi.', 'Mi.', 'Du.', 'Fr.', 'Sa.']
+      ],
+      ,
+      [
+        ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+        ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
+        [
+          'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'Auguscht', 'Septämber',
+          'Oktoober', 'Novämber', 'Dezämber'
+        ]
+      ],
+      ,
+      [
+        ['v. Chr.', 'n. Chr.'],
+        ,
+      ],
+      1, [6, 0], ['dd.MM.yy', 'dd.MM.y', 'd. MMMM y', 'EEEE, d. MMMM y'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      ['.', '’', ';', '%', '+', '−', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'CHF', 'Schwiizer Franke', function(n: number):
+                                                                                    number {
+                                                                                      if (n === 1)
+                                                                                        return 1;
+                                                                                      return 5;
+                                                                                    }
+    ];
     break;
   case 'gu':
-    l = gu;
-    break;
-  case 'guz':
-    l = guz;
-    break;
-  case 'gv':
-    l = gv;
-    break;
-  case 'ha':
-    l = ha;
-    break;
-  case 'ha_GH':
-  case 'ha-GH':
-    l = haGH;
-    break;
-  case 'ha_NE':
-  case 'ha-NE':
-    l = haNE;
+    l = [
+      'gu',
+      [
+        ['AM', 'PM'],
+        ,
+      ],
+      ,
+      [
+        ['ર', 'સો', 'મં', 'બુ', 'ગુ', 'શુ', 'શ'], ['રવિ', 'સોમ', 'મંગળ', 'બુધ', 'ગુરુ', 'શુક્ર', 'શનિ'],
+        ['રવિવાર', 'સોમવાર', 'મંગળવાર', 'બુધવાર', 'ગુરુવાર', 'શુક્રવાર', 'શનિવાર'],
+        ['ર', 'સો', 'મં', 'બુ', 'ગુ', 'શુ', 'શ']
+      ],
+      ,
+      [
+        ['જા', 'ફે', 'મા', 'એ', 'મે', 'જૂ', 'જુ', 'ઑ', 'સ', 'ઑ', 'ન', 'ડિ'],
+        ['જાન્યુ', 'ફેબ્રુ', 'માર્ચ', 'એપ્રિલ', 'મે', 'જૂન', 'જુલાઈ', 'ઑગસ્ટ', 'સપ્ટે', 'ઑક્ટો', 'નવે', 'ડિસે'],
+        [
+          'જાન્યુઆરી', 'ફેબ્રુઆરી', 'માર્ચ', 'એપ્રિલ', 'મે', 'જૂન', 'જુલાઈ', 'ઑગસ્ટ', 'સપ્ટેમ્બર', 'ઑક્ટોબર',
+          'નવેમ્બર', 'ડિસેમ્બર'
+        ]
+      ],
+      , [['ઇ સ પુ', 'ઇસ'], ['ઈ.સ.પૂર્વે', 'ઈ.સ.'], ['ઈસવીસન પૂર્વે', 'ઇસવીસન']], 0, [0, 0],
+      ['d/M/yy', 'd MMM, y', 'd MMMM, y', 'EEEE, d MMMM, y'],
+      ['hh:mm a', 'hh:mm:ss a', 'hh:mm:ss a z', 'hh:mm:ss a zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##,##0.###', '#,##,##0%', '¤#,##,##0.00', '[#E0]'], '₹', 'ભારતીય રૂપિયા',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n));
+            if (i === 0 || n === 1) return 1;
+            return 5;
+          }
+    ];
     break;
   case 'haw':
-    l = haw;
-    break;
-  case 'he':
-    l = he;
+    l = [
+      'haw',
+      [
+        ['AM', 'PM'],
+        ,
+      ],
+      ,
+      [
+        ['S', 'M', 'T', 'W', 'T', 'F', 'S'], ['LP', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6'],
+        ['Lāpule', 'Poʻakahi', 'Poʻalua', 'Poʻakolu', 'Poʻahā', 'Poʻalima', 'Poʻaono'],
+        ['LP', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6']
+      ],
+      ,
+      [
+        ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+        [
+          'Ian.', 'Pep.', 'Mal.', 'ʻAp.', 'Mei', 'Iun.', 'Iul.', 'ʻAu.', 'Kep.', 'ʻOk.', 'Now.',
+          'Kek.'
+        ],
+        [
+          'Ianuali', 'Pepeluali', 'Malaki', 'ʻApelila', 'Mei', 'Iune', 'Iulai', 'ʻAukake',
+          'Kepakemapa', 'ʻOkakopa', 'Nowemapa', 'Kekemapa'
+        ]
+      ],
+      ,
+      [
+        ['BCE', 'CE'],
+        ,
+      ],
+      0, [6, 0], ['d/M/yy', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
+      ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '$', 'USD', function(n: number):
+                                                                   number {
+                                                                     if (n === 1) return 1;
+                                                                     return 5;
+                                                                   }
+    ];
     break;
   case 'hi':
-    l = hi;
+    l = [
+      'hi',
+      [
+        ['पू', 'अ'],
+        ['पूर्वाह्न', 'अपराह्न'],
+      ],
+      ,
+      [
+        ['र', 'सो', 'मं', 'बु', 'गु', 'शु', 'श'], ['रवि', 'सोम', 'मंगल', 'बुध', 'गुरु', 'शुक्र', 'शनि'],
+        ['रविवार', 'सोमवार', 'मंगलवार', 'बुधवार', 'गुरुवार', 'शुक्रवार', 'शनिवार'],
+        ['र', 'सो', 'मं', 'बु', 'गु', 'शु', 'श']
+      ],
+      ,
+      [
+        ['ज', 'फ़', 'मा', 'अ', 'म', 'जू', 'जु', 'अ', 'सि', 'अ', 'न', 'दि'],
+        ['जन॰', 'फ़र॰', 'मार्च', 'अप्रैल', 'मई', 'जून', 'जुल॰', 'अग॰', 'सित॰', 'अक्तू॰', 'नव॰', 'दिस॰'],
+        [
+          'जनवरी', 'फ़रवरी', 'मार्च', 'अप्रैल', 'मई', 'जून', 'जुलाई', 'अगस्त', 'सितंबर', 'अक्तूबर', 'नवंबर',
+          'दिसंबर'
+        ]
+      ],
+      , [['ईसा-पूर्व', 'ईस्वी'], , ['ईसा-पूर्व', 'ईसवी सन']], 0, [0, 0],
+      ['d/M/yy', 'dd/MM/y', 'd MMMM y', 'EEEE, d MMMM y'],
+      ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+      [
+        '{1}, {0}',
+        ,
+        '{1} को {0}',
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##,##0.###', '#,##,##0%', '¤#,##,##0.00', '[#E0]'], '₹', 'भारतीय रुपया',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n));
+            if (i === 0 || n === 1) return 1;
+            return 5;
+          }
+    ];
     break;
   case 'hr':
-    l = hr;
-    break;
-  case 'hr_BA':
-  case 'hr-BA':
-    l = hrBA;
-    break;
-  case 'hsb':
-    l = hsb;
+    l = [
+      'hr',
+      [
+        ['AM', 'PM'],
+        ,
+      ],
+      ,
+      [
+        ['N', 'P', 'U', 'S', 'Č', 'P', 'S'], ['ned', 'pon', 'uto', 'sri', 'čet', 'pet', 'sub'],
+        ['nedjelja', 'ponedjeljak', 'utorak', 'srijeda', 'četvrtak', 'petak', 'subota'],
+        ['ned', 'pon', 'uto', 'sri', 'čet', 'pet', 'sub']
+      ],
+      [
+        ['n', 'p', 'u', 's', 'č', 'p', 's'], ['ned', 'pon', 'uto', 'sri', 'čet', 'pet', 'sub'],
+        ['nedjelja', 'ponedjeljak', 'utorak', 'srijeda', 'četvrtak', 'petak', 'subota'],
+        ['ned', 'pon', 'uto', 'sri', 'čet', 'pet', 'sub']
+      ],
+      [
+        ['1.', '2.', '3.', '4.', '5.', '6.', '7.', '8.', '9.', '10.', '11.', '12.'],
+        ['sij', 'velj', 'ožu', 'tra', 'svi', 'lip', 'srp', 'kol', 'ruj', 'lis', 'stu', 'pro'],
+        [
+          'siječnja', 'veljače', 'ožujka', 'travnja', 'svibnja', 'lipnja', 'srpnja', 'kolovoza',
+          'rujna', 'listopada', 'studenoga', 'prosinca'
+        ]
+      ],
+      [
+        ['1.', '2.', '3.', '4.', '5.', '6.', '7.', '8.', '9.', '10.', '11.', '12.'],
+        ['sij', 'velj', 'ožu', 'tra', 'svi', 'lip', 'srp', 'kol', 'ruj', 'lis', 'stu', 'pro'],
+        [
+          'siječanj', 'veljača', 'ožujak', 'travanj', 'svibanj', 'lipanj', 'srpanj', 'kolovoz',
+          'rujan', 'listopad', 'studeni', 'prosinac'
+        ]
+      ],
+      [['pr.n.e.', 'AD'], ['pr. Kr.', 'po. Kr.'], ['prije Krista', 'poslije Krista']], 1, [6, 0],
+      ['dd. MM. y.', 'd. MMM y.', 'd. MMMM y.', 'EEEE, d. MMMM y.'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss (zzzz)'],
+      [
+        '{1} {0}',
+        ,
+        '{1} \'u\' {0}',
+      ],
+      [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'HRK', 'hrvatska kuna',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length,
+                f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
+            if (v === 0 && i % 10 === 1 && !(i % 100 === 11) || f % 10 === 1 && !(f % 100 === 11))
+              return 1;
+            if (v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 2 && i % 10 <= 4 &&
+                    !(i % 100 >= 12 && i % 100 <= 14) ||
+                f % 10 === Math.floor(f % 10) && f % 10 >= 2 && f % 10 <= 4 &&
+                    !(f % 100 >= 12 && f % 100 <= 14))
+              return 3;
+            return 5;
+          }
+    ];
     break;
   case 'hu':
-    l = hu;
+    l = [
+      'hu',
+      [
+        ['de.', 'du.'],
+        ,
+      ],
+      ,
+      [
+        ['V', 'H', 'K', 'Sz', 'Cs', 'P', 'Sz'], ['V', 'H', 'K', 'Sze', 'Cs', 'P', 'Szo'],
+        ['vasárnap', 'hétfő', 'kedd', 'szerda', 'csütörtök', 'péntek', 'szombat'],
+        ['V', 'H', 'K', 'Sze', 'Cs', 'P', 'Szo']
+      ],
+      ,
+      [
+        ['J', 'F', 'M', 'Á', 'M', 'J', 'J', 'A', 'Sz', 'O', 'N', 'D'],
+        [
+          'jan.', 'febr.', 'márc.', 'ápr.', 'máj.', 'jún.', 'júl.', 'aug.', 'szept.', 'okt.',
+          'nov.', 'dec.'
+        ],
+        [
+          'január', 'február', 'március', 'április', 'május', 'június', 'július', 'augusztus',
+          'szeptember', 'október', 'november', 'december'
+        ]
+      ],
+      , [['ie.', 'isz.'], ['i. e.', 'i. sz.'], ['időszámításunk előtt', 'időszámításunk szerint']],
+      1, [6, 0], ['y. MM. dd.', 'y. MMM d.', 'y. MMMM d.', 'y. MMMM d., EEEE'],
+      ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'Ft', 'magyar forint', function(n: number):
+                                                                               number {
+                                                                                 if (n === 1)
+                                                                                   return 1;
+                                                                                 return 5;
+                                                                               }
+    ];
     break;
   case 'hy':
-    l = hy;
+    l = [
+      'hy', [['ա', 'հ'], ['ԿԱ', 'ԿՀ'], ['AM', 'PM']], [['ԿԱ', 'ԿՀ'], , ['AM', 'PM']],
+      [
+        ['Կ', 'Ե', 'Ե', 'Չ', 'Հ', 'Ո', 'Շ'], ['կիր', 'երկ', 'երք', 'չրք', 'հնգ', 'ուր', 'շբթ'],
+        ['կիրակի', 'երկուշաբթի', 'երեքշաբթի', 'չորեքշաբթի', 'հինգշաբթի', 'ուրբաթ', 'շաբաթ'],
+        ['կր', 'եկ', 'եք', 'չք', 'հգ', 'ու', 'շբ']
+      ],
+      ,
+      [
+        ['Հ', 'Փ', 'Մ', 'Ա', 'Մ', 'Հ', 'Հ', 'Օ', 'Ս', 'Հ', 'Ն', 'Դ'],
+        ['հնվ', 'փտվ', 'մրտ', 'ապր', 'մյս', 'հնս', 'հլս', 'օգս', 'սեպ', 'հոկ', 'նոյ', 'դեկ'],
+        [
+          'հունվարի', 'փետրվարի', 'մարտի', 'ապրիլի', 'մայիսի', 'հունիսի', 'հուլիսի', 'օգոստոսի',
+          'սեպտեմբերի', 'հոկտեմբերի', 'նոյեմբերի', 'դեկտեմբերի'
+        ]
+      ],
+      [
+        ['Հ', 'Փ', 'Մ', 'Ա', 'Մ', 'Հ', 'Հ', 'Օ', 'Ս', 'Հ', 'Ն', 'Դ'],
+        ['հնվ', 'փտվ', 'մրտ', 'ապր', 'մյս', 'հնս', 'հլս', 'օգս', 'սեպ', 'հոկ', 'նոյ', 'դեկ'],
+        [
+          'հունվար', 'փետրվար', 'մարտ', 'ապրիլ', 'մայիս', 'հունիս', 'հուլիս', 'օգոստոս',
+          'սեպտեմբեր', 'հոկտեմբեր', 'նոյեմբեր', 'դեկտեմբեր'
+        ]
+      ],
+      [['մ.թ.ա.', 'մ.թ.'], , ['Քրիստոսից առաջ', 'Քրիստոսից հետո']], 1, [6, 0],
+      ['dd.MM.yy', 'dd MMM, y թ.', 'dd MMMM, y թ.', 'y թ. MMMM d, EEEE'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1}, {0}',
+        ,
+        ,
+      ],
+      [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'ՈչԹ', ':'],
+      ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], '֏', 'Հայկական դրամ',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n));
+            if (i === 0 || i === 1) return 1;
+            return 5;
+          }
+    ];
     break;
+  case 'in':
   case 'id':
-    l = id;
-    break;
-  case 'ig':
-    l = ig;
-    break;
-  case 'ii':
-    l = ii;
+    l = [
+      'id',
+      [
+        ['AM', 'PM'],
+        ,
+      ],
+      ,
+      [
+        ['M', 'S', 'S', 'R', 'K', 'J', 'S'], ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
+        ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
+        ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab']
+      ],
+      ,
+      [
+        ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+        ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'],
+        [
+          'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September',
+          'Oktober', 'November', 'Desember'
+        ]
+      ],
+      , [['SM', 'M'], , ['Sebelum Masehi', 'Masehi']], 0, [6, 0],
+      ['dd/MM/yy', 'd MMM y', 'd MMMM y', 'EEEE, dd MMMM y'],
+      ['HH.mm', 'HH.mm.ss', 'HH.mm.ss z', 'HH.mm.ss zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', '.'],
+      ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'Rp', 'Rupiah Indonesia',
+      function(n: number): number { return 5; }
+    ];
     break;
   case 'is':
-    l = is;
+    l = [
+      'is',
+      [
+        ['f.', 'e.'],
+        ['f.h.', 'e.h.'],
+      ],
+      [
+        ['f.h.', 'e.h.'],
+        ,
+      ],
+      [
+        ['S', 'M', 'Þ', 'M', 'F', 'F', 'L'],
+        ['sun.', 'mán.', 'þri.', 'mið.', 'fim.', 'fös.', 'lau.'],
+        [
+          'sunnudagur', 'mánudagur', 'þriðjudagur', 'miðvikudagur', 'fimmtudagur', 'föstudagur',
+          'laugardagur'
+        ],
+        ['su.', 'má.', 'þr.', 'mi.', 'fi.', 'fö.', 'la.']
+      ],
+      ,
+      [
+        ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'Á', 'S', 'O', 'N', 'D'],
+        [
+          'jan.', 'feb.', 'mar.', 'apr.', 'maí', 'jún.', 'júl.', 'ágú.', 'sep.', 'okt.', 'nóv.',
+          'des.'
+        ],
+        [
+          'janúar', 'febrúar', 'mars', 'apríl', 'maí', 'júní', 'júlí', 'ágúst', 'september',
+          'október', 'nóvember', 'desember'
+        ]
+      ],
+      , [['f.k.', 'e.k.'], ['f.Kr.', 'e.Kr.'], ['fyrir Krist', 'eftir Krist']], 1, [6, 0],
+      ['d.M.y', 'd. MMM y', 'd. MMMM y', 'EEEE, d. MMMM y'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1}, {0}',
+        ,
+        '{1} \'kl\'. {0}',
+      ],
+      [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'ISK', 'íslensk króna',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n)),
+                t = parseInt(n.toString().replace(/^[^.]*\.?|0+$/g, ''), 10) || 0;
+            if (t === 0 && i % 10 === 1 && !(i % 100 === 11) || !(t === 0)) return 1;
+            return 5;
+          }
+    ];
     break;
   case 'it':
-    l = it;
+    l = [
+      'it',
+      [
+        ['m.', 'p.'],
+        ['AM', 'PM'],
+      ],
+      ,
+      [
+        ['D', 'L', 'M', 'M', 'G', 'V', 'S'], ['dom', 'lun', 'mar', 'mer', 'gio', 'ven', 'sab'],
+        ['domenica', 'lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato'],
+        ['dom', 'lun', 'mar', 'mer', 'gio', 'ven', 'sab']
+      ],
+      ,
+      [
+        ['G', 'F', 'M', 'A', 'M', 'G', 'L', 'A', 'S', 'O', 'N', 'D'],
+        ['gen', 'feb', 'mar', 'apr', 'mag', 'giu', 'lug', 'ago', 'set', 'ott', 'nov', 'dic'],
+        [
+          'gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto',
+          'settembre', 'ottobre', 'novembre', 'dicembre'
+        ]
+      ],
+      , [['aC', 'dC'], ['a.C.', 'd.C.'], ['avanti Cristo', 'dopo Cristo']], 1, [6, 0],
+      ['dd/MM/yy', 'dd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1}, {0}',
+        ,
+        '{1} {0}',
+      ],
+      [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '€', 'euro',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+            if (i === 1 && v === 0) return 1;
+            return 5;
+          }
+    ];
     break;
-  case 'it_CH':
-  case 'it-CH':
-    l = itCH;
-    break;
-  case 'it_SM':
-  case 'it-SM':
-    l = itSM;
-    break;
-  case 'it_VA':
-  case 'it-VA':
-    l = itVA;
+  case 'iw':
+  case 'he':
+    l = [
+      'he',
+      [
+        ['לפנה״צ', 'אחה״צ'],
+        ,
+      ],
+      ,
+      [
+        ['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'ש׳'],
+        ['יום א׳', 'יום ב׳', 'יום ג׳', 'יום ד׳', 'יום ה׳', 'יום ו׳', 'שבת'],
+        ['יום ראשון', 'יום שני', 'יום שלישי', 'יום רביעי', 'יום חמישי', 'יום שישי', 'יום שבת'],
+        ['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'ש׳']
+      ],
+      ,
+      [
+        ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+        [
+          'ינו׳', 'פבר׳', 'מרץ', 'אפר׳', 'מאי', 'יוני', 'יולי', 'אוג׳', 'ספט׳', 'אוק׳', 'נוב׳',
+          'דצמ׳'
+        ],
+        [
+          'ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני', 'יולי', 'אוגוסט', 'ספטמבר', 'אוקטובר',
+          'נובמבר', 'דצמבר'
+        ]
+      ],
+      , [['לפנה״ס', 'לספירה'], , ['לפני הספירה', 'לספירה']], 0, [5, 6],
+      ['d.M.y', 'd בMMM y', 'd בMMMM y', 'EEEE, d בMMMM y'],
+      ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'],
+      [
+        '{1}, {0}',
+        ,
+        '{1} בשעה {0}',
+      ],
+      ['.', ',', ';', '%', '‎+', '‎-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '‏#,##0.00 ¤;‏-#,##0.00 ¤', '#E0'], '₪', 'שקל חדש',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+            if (i === 1 && v === 0) return 1;
+            if (i === 2 && v === 0) return 2;
+            if (v === 0 && !(n >= 0 && n <= 10) && n % 10 === 0) return 4;
+            return 5;
+          }
+    ];
     break;
   case 'ja':
-    l = ja;
-    break;
-  case 'jgo':
-    l = jgo;
-    break;
-  case 'jmc':
-    l = jmc;
+    l = [
+      'ja',
+      [
+        ['午前', '午後'],
+        ,
+      ],
+      ,
+      [
+        ['日', '月', '火', '水', '木', '金', '土'], ,
+        ['日曜日', '月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日'],
+        ['日', '月', '火', '水', '木', '金', '土']
+      ],
+      ,
+      [
+        ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+        ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+      ],
+      ,
+      [
+        ['BC', 'AD'],
+        ['紀元前', '西暦'],
+      ],
+      0, [6, 0], ['y/MM/dd', , 'y年M月d日', 'y年M月d日EEEE'],
+      ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H時mm分ss秒 zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '￥', '日本円',
+      function(n: number): number { return 5; }
+    ];
     break;
   case 'ka':
-    l = ka;
-    break;
-  case 'kab':
-    l = kab;
-    break;
-  case 'kam':
-    l = kam;
-    break;
-  case 'kde':
-    l = kde;
-    break;
-  case 'kea':
-    l = kea;
-    break;
-  case 'khq':
-    l = khq;
-    break;
-  case 'ki':
-    l = ki;
+    l = [
+      'ka',
+      [
+        ['a', 'p'],
+        ['AM', 'PM'],
+      ],
+      [['AM', 'PM'], , ['AM', 'შუადღ. შემდეგ']],
+      [
+        ['კ', 'ო', 'ს', 'ო', 'ხ', 'პ', 'შ'], ['კვი', 'ორშ', 'სამ', 'ოთხ', 'ხუთ', 'პარ', 'შაბ'],
+        ['კვირა', 'ორშაბათი', 'სამშაბათი', 'ოთხშაბათი', 'ხუთშაბათი', 'პარასკევი', 'შაბათი'],
+        ['კვ', 'ორ', 'სმ', 'ოთ', 'ხთ', 'პრ', 'შბ']
+      ],
+      ,
+      [
+        ['ი', 'თ', 'მ', 'ა', 'მ', 'ი', 'ი', 'ა', 'ს', 'ო', 'ნ', 'დ'],
+        ['იან', 'თებ', 'მარ', 'აპრ', 'მაი', 'ივნ', 'ივლ', 'აგვ', 'სექ', 'ოქტ', 'ნოე', 'დეკ'],
+        [
+          'იანვარი', 'თებერვალი', 'მარტი', 'აპრილი', 'მაისი', 'ივნისი', 'ივლისი', 'აგვისტო',
+          'სექტემბერი', 'ოქტომბერი', 'ნოემბერი', 'დეკემბერი'
+        ]
+      ],
+      , [['ძვ. წ.', 'ახ. წ.'], , ['ძველი წელთაღრიცხვით', 'ახალი წელთაღრიცხვით']], 1, [6, 0],
+      ['dd.MM.yy', 'd MMM. y', 'd MMMM, y', 'EEEE, dd MMMM, y'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1}, {0}',
+        ,
+        ,
+      ],
+      [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'არ არის რიცხვი', ':'],
+      ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '₾', 'ქართული ლარი', function(n: number):
+                                                                                number {
+                                                                                  if (n === 1)
+                                                                                    return 1;
+                                                                                  return 5;
+                                                                                }
+    ];
     break;
   case 'kk':
-    l = kk;
-    break;
-  case 'kkj':
-    l = kkj;
-    break;
-  case 'kl':
-    l = kl;
-    break;
-  case 'kln':
-    l = kln;
+    l = [
+      'kk',
+      [
+        ['AM', 'PM'],
+        ,
+      ],
+      ,
+      [
+        ['Ж', 'Д', 'С', 'С', 'Б', 'Ж', 'С'], ['Жс', 'Дс', 'Сс', 'Ср', 'Бс', 'Жм', 'Сб'],
+        ['жексенбі', 'дүйсенбі', 'сейсенбі', 'сәрсенбі', 'бейсенбі', 'жұма', 'сенбі'],
+        ['Жс', 'Дс', 'Сс', 'Ср', 'Бс', 'Жм', 'Сб']
+      ],
+      [
+        ['Ж', 'Д', 'С', 'С', 'Б', 'Ж', 'С'], ['Жс', 'Дс', 'Сс', 'Ср', 'Бс', 'Жм', 'Сб'],
+        ['Жексенбі', 'Дүйсенбі', 'Сейсенбі', 'Сәрсенбі', 'Бейсенбі', 'Жұма', 'Сенбі'],
+        ['Жс', 'Дс', 'Сс', 'Ср', 'Бс', 'Жм', 'Сб']
+      ],
+      [
+        ['Қ', 'А', 'Н', 'С', 'М', 'М', 'Ш', 'Т', 'Қ', 'Қ', 'Қ', 'Ж'],
+        [
+          'қаң.', 'ақп.', 'нау.', 'сәу.', 'мам.', 'мау.', 'шіл.', 'там.', 'қыр.', 'қаз.', 'қар.',
+          'жел.'
+        ],
+        [
+          'қаңтар', 'ақпан', 'наурыз', 'сәуір', 'мамыр', 'маусым', 'шілде', 'тамыз', 'қыркүйек',
+          'қазан', 'қараша', 'желтоқсан'
+        ]
+      ],
+      [
+        ['Қ', 'А', 'Н', 'С', 'М', 'М', 'Ш', 'Т', 'Қ', 'Қ', 'Қ', 'Ж'],
+        [
+          'Қаң.', 'Ақп.', 'Нау.', 'Сәу.', 'Мам.', 'Мау.', 'Шіл.', 'Там.', 'Қыр.', 'Қаз.', 'Қар.',
+          'Жел.'
+        ],
+        [
+          'Қаңтар', 'Ақпан', 'Наурыз', 'Сәуір', 'Мамыр', 'Маусым', 'Шілде', 'Тамыз', 'Қыркүйек',
+          'Қазан', 'Қараша', 'Желтоқсан'
+        ]
+      ],
+      [['б.з.д.', 'б.з.'], , ['Біздің заманымызға дейін', 'Біздің заманымыз']], 1, [6, 0],
+      ['dd.MM.yy', 'y \'ж\'. dd MMM', 'y \'ж\'. d MMMM', 'y \'ж\'. d MMMM, EEEE'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1}, {0}',
+        ,
+        ,
+      ],
+      [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'сан емес', ':'],
+      ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '₸', 'Қазақстан теңгесі', function(n: number):
+                                                                                  number {
+                                                                                    if (n === 1)
+                                                                                      return 1;
+                                                                                    return 5;
+                                                                                  }
+    ];
     break;
   case 'km':
-    l = km;
+    l = [
+      'km',
+      [
+        ['a', 'p'],
+        ['AM', 'PM'],
+      ],
+      [
+        ['AM', 'PM'],
+        ,
+      ],
+      [
+        ['អ', 'ច', 'អ', 'ព', 'ព', 'ស', 'ស'],
+        ['អាទិត្យ', 'ច័ន្ទ', 'អង្គារ', 'ពុធ', 'ព្រហស្បតិ៍', 'សុក្រ', 'សៅរ៍'], ,
+        ['អា', 'ច', 'អ', 'ពុ', 'ព្រ', 'សុ', 'ស']
+      ],
+      ,
+      [
+        ['ម', 'ក', 'ម', 'ម', 'ឧ', 'ម', 'ក', 'ស', 'ក', 'ត', 'វ', 'ធ'],
+        [
+          'មករា', 'កុម្ភៈ', 'មីនា', 'មេសា', 'ឧសភា', 'មិថុនា', 'កក្កដា', 'សីហា', 'កញ្ញា', 'តុលា', 'វិច្ឆិកា',
+          'ធ្នូ'
+        ],
+      ],
+      , [['មុន គ.ស.', 'គ.ស.'], , ['មុន​គ្រិស្តសករាជ', 'គ្រិស្តសករាជ']],
+      0, [6, 0], ['d/M/yy', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
+      ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+      [
+        '{1}, {0}',
+        ,
+        '{1} នៅ​ម៉ោង {0}',
+      ],
+      [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '#,##0.00¤', '#E0'], '៛', 'រៀល​កម្ពុជា',
+      function(n: number): number { return 5; }
+    ];
     break;
   case 'kn':
-    l = kn;
+    l = [
+      'kn',
+      [
+        ['ಪೂ', 'ಅ'],
+        ['ಪೂರ್ವಾಹ್ನ', 'ಅಪರಾಹ್ನ'],
+      ],
+      [
+        ['ಪೂರ್ವಾಹ್ನ', 'ಅಪರಾಹ್ನ'],
+        ,
+      ],
+      [
+        ['ಭಾ', 'ಸೋ', 'ಮಂ', 'ಬು', 'ಗು', 'ಶು', 'ಶ'],
+        ['ಭಾನು', 'ಸೋಮ', 'ಮಂಗಳ', 'ಬುಧ', 'ಗುರು', 'ಶುಕ್ರ', 'ಶನಿ'],
+        ['ಭಾನುವಾರ', 'ಸೋಮವಾರ', 'ಮಂಗಳವಾರ', 'ಬುಧವಾರ', 'ಗುರುವಾರ', 'ಶುಕ್ರವಾರ', 'ಶನಿವಾರ'],
+        ['ಭಾನು', 'ಸೋಮ', 'ಮಂಗಳ', 'ಬುಧ', 'ಗುರು', 'ಶುಕ್ರ', 'ಶನಿ']
+      ],
+      ,
+      [
+        ['ಜ', 'ಫೆ', 'ಮಾ', 'ಏ', 'ಮೇ', 'ಜೂ', 'ಜು', 'ಆ', 'ಸೆ', 'ಅ', 'ನ', 'ಡಿ'],
+        ['ಜನ', 'ಫೆಬ್ರ', 'ಮಾರ್ಚ್', 'ಏಪ್ರಿ', 'ಮೇ', 'ಜೂನ್', 'ಜುಲೈ', 'ಆಗ', 'ಸೆಪ್ಟೆಂ', 'ಅಕ್ಟೋ', 'ನವೆಂ', 'ಡಿಸೆಂ'],
+        [
+          'ಜನವರಿ', 'ಫೆಬ್ರವರಿ', 'ಮಾರ್ಚ್', 'ಏಪ್ರಿಲ್', 'ಮೇ', 'ಜೂನ್', 'ಜುಲೈ', 'ಆಗಸ್ಟ್', 'ಸೆಪ್ಟೆಂಬರ್', 'ಅಕ್ಟೋಬರ್', 'ನವೆಂಬರ್',
+          'ಡಿಸೆಂಬರ್'
+        ]
+      ],
+      , [['ಕ್ರಿ.ಪೂ', 'ಕ್ರಿ.ಶ'], , ['ಕ್ರಿಸ್ತ ಪೂರ್ವ', 'ಕ್ರಿಸ್ತ ಶಕ']], 0, [0, 0],
+      ['d/M/yy', 'MMM d, y', 'MMMM d, y', 'EEEE, MMMM d, y'],
+      ['hh:mm a', 'hh:mm:ss a', 'hh:mm:ss a z', 'hh:mm:ss a zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '₹', 'ಭಾರತೀಯ ರೂಪಾಯಿ',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n));
+            if (i === 0 || n === 1) return 1;
+            return 5;
+          }
+    ];
     break;
   case 'ko':
-    l = ko;
-    break;
-  case 'ko_KP':
-  case 'ko-KP':
-    l = koKP;
-    break;
-  case 'kok':
-    l = kok;
-    break;
-  case 'ks':
-    l = ks;
-    break;
-  case 'ksb':
-    l = ksb;
-    break;
-  case 'ksf':
-    l = ksf;
-    break;
-  case 'ksh':
-    l = ksh;
-    break;
-  case 'kw':
-    l = kw;
+    l = [
+      'ko', [['AM', 'PM'], , ['오전', '오후']], ,
+      [
+        ['일', '월', '화', '수', '목', '금', '토'], ,
+        ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'],
+        ['일', '월', '화', '수', '목', '금', '토']
+      ],
+      ,
+      [
+        ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+        ,
+      ],
+      , [['BC', 'AD'], , ['기원전', '서기']], 0, [6, 0],
+      ['yy. M. d.', 'y. M. d.', 'y년 M월 d일', 'y년 M월 d일 EEEE'],
+      ['a h:mm', 'a h:mm:ss', 'a h시 m분 s초 z', 'a h시 m분 s초 zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '₩', '대한민국 원',
+      function(n: number): number { return 5; }
+    ];
     break;
   case 'ky':
-    l = ky;
-    break;
-  case 'lag':
-    l = lag;
-    break;
-  case 'lb':
-    l = lb;
-    break;
-  case 'lg':
-    l = lg;
-    break;
-  case 'lkt':
-    l = lkt;
+    l = [
+      'ky', [['тң', 'тк'], , ['таңкы', 'түштөн кийинки']], ,
+      [
+        ['Ж', 'Д', 'Ш', 'Ш', 'Б', 'Ж', 'И'],
+        ['жек.', 'дүй.', 'шейш.', 'шарш.', 'бейш.', 'жума', 'ишм.'],
+        ['жекшемби', 'дүйшөмбү', 'шейшемби', 'шаршемби', 'бейшемби', 'жума', 'ишемби'],
+        ['жек.', 'дүй.', 'шейш.', 'шарш.', 'бейш.', 'жума', 'ишм.']
+      ],
+      [
+        ['Ж', 'Д', 'Ш', 'Ш', 'Б', 'Ж', 'И'],
+        ['жек.', 'дүй.', 'шейш.', 'шарш.', 'бейш.', 'жума', 'ишм.'],
+        ['жекшемби', 'дүйшөмбү', 'шейшемби', 'шаршемби', 'бейшемби', 'жума', 'ишемби'],
+        ['жк', 'дш.', 'шш.', 'шр.', 'бш.', 'жм.', 'иш.']
+      ],
+      [
+        ['Я', 'Ф', 'М', 'А', 'М', 'И', 'И', 'А', 'С', 'О', 'Н', 'Д'],
+        [
+          'янв.', 'фев.', 'мар.', 'апр.', 'май', 'июн.', 'июл.', 'авг.', 'сен.', 'окт.', 'ноя.',
+          'дек.'
+        ],
+        [
+          'январь', 'февраль', 'март', 'апрель', 'май', 'июнь', 'июль', 'август', 'сентябрь',
+          'октябрь', 'ноябрь', 'декабрь'
+        ]
+      ],
+      [
+        ['Я', 'Ф', 'М', 'А', 'М', 'И', 'И', 'А', 'С', 'О', 'Н', 'Д'],
+        ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
+        [
+          'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь',
+          'Октябрь', 'Ноябрь', 'Декабрь'
+        ]
+      ],
+      [['б.з.ч.', 'б.з.'], , ['биздин заманга чейин', 'биздин заман']], 1, [6, 0],
+      ['d/M/yy', 'y-\'ж\'., d-MMM', 'y-\'ж\'., d-MMMM', 'y-\'ж\'., d-MMMM, EEEE'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'сан эмес', ':'],
+      ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'сом', 'Кыргызстан сому', function(n: number):
+                                                                                  number {
+                                                                                    if (n === 1)
+                                                                                      return 1;
+                                                                                    return 5;
+                                                                                  }
+    ];
     break;
   case 'ln':
-    l = ln;
-    break;
-  case 'ln_AO':
-  case 'ln-AO':
-    l = lnAO;
-    break;
-  case 'ln_CF':
-  case 'ln-CF':
-    l = lnCF;
-    break;
-  case 'ln_CG':
-  case 'ln-CG':
-    l = lnCG;
+    l = [
+      'ln',
+      [
+        ['ntɔ́ngɔ́', 'mpókwa'],
+        ,
+      ],
+      ,
+      [
+        ['e', 'y', 'm', 'm', 'm', 'm', 'p'], ['eye', 'ybo', 'mbl', 'mst', 'min', 'mtn', 'mps'],
+        [
+          'eyenga', 'mokɔlɔ mwa yambo', 'mokɔlɔ mwa míbalé', 'mokɔlɔ mwa mísáto', 'mokɔlɔ ya mínéi',
+          'mokɔlɔ ya mítáno', 'mpɔ́sɔ'
+        ],
+        ['eye', 'ybo', 'mbl', 'mst', 'min', 'mtn', 'mps']
+      ],
+      ,
+      [
+        ['y', 'f', 'm', 'a', 'm', 'y', 'y', 'a', 's', 'ɔ', 'n', 'd'],
+        ['yan', 'fbl', 'msi', 'apl', 'mai', 'yun', 'yul', 'agt', 'stb', 'ɔtb', 'nvb', 'dsb'],
+        [
+          'sánzá ya yambo', 'sánzá ya míbalé', 'sánzá ya mísáto', 'sánzá ya mínei',
+          'sánzá ya mítáno', 'sánzá ya motóbá', 'sánzá ya nsambo', 'sánzá ya mwambe',
+          'sánzá ya libwa', 'sánzá ya zómi', 'sánzá ya zómi na mɔ̌kɔ́', 'sánzá ya zómi na míbalé'
+        ]
+      ],
+      , [['libóso ya', 'nsima ya Y'], , ['Yambo ya Yézu Krís', 'Nsima ya Yézu Krís']], 1, [6, 0],
+      ['d/M/y', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'FC', 'Falánga ya Kongó',
+      function(n: number):
+          number {
+            if (n === Math.floor(n) && n >= 0 && n <= 1) return 1;
+            return 5;
+          }
+    ];
     break;
   case 'lo':
-    l = lo;
-    break;
-  case 'lrc':
-    l = lrc;
-    break;
-  case 'lrc_IQ':
-  case 'lrc-IQ':
-    l = lrcIQ;
+    l = [
+      'lo',
+      [
+        ['ກທ', 'ຫຼທ'],
+        ['ກ່ອນທ່ຽງ', 'ຫຼັງທ່ຽງ'],
+      ],
+      ,
+      [
+        ['ອາ', 'ຈ', 'ອ', 'ພ', 'ພຫ', 'ສຸ', 'ສ'], ['ອາທິດ', 'ຈັນ', 'ອັງຄານ', 'ພຸດ', 'ພະຫັດ', 'ສຸກ', 'ເສົາ'],
+        ['ວັນອາທິດ', 'ວັນຈັນ', 'ວັນອັງຄານ', 'ວັນພຸດ', 'ວັນພະຫັດ', 'ວັນສຸກ', 'ວັນເສົາ'],
+        ['ອາ.', 'ຈ.', 'ອ.', 'ພ.', 'ພຫ.', 'ສຸ.', 'ສ.']
+      ],
+      ,
+      [
+        ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+        [
+          'ມ.ກ.', 'ກ.ພ.', 'ມ.ນ.', 'ມ.ສ.', 'ພ.ພ.', 'ມິ.ຖ.', 'ກ.ລ.', 'ສ.ຫ.', 'ກ.ຍ.', 'ຕ.ລ.', 'ພ.ຈ.',
+          'ທ.ວ.'
+        ],
+        [
+          'ມັງກອນ', 'ກຸມພາ', 'ມີນາ', 'ເມສາ', 'ພຶດສະພາ', 'ມິຖຸນາ', 'ກໍລະກົດ', 'ສິງຫາ', 'ກັນຍາ', 'ຕຸລາ', 'ພະຈິກ',
+          'ທັນວາ'
+        ]
+      ],
+      , [['ກ່ອນ ຄ.ສ.', 'ຄ.ສ.'], , ['ກ່ອນຄຣິດສັກກະລາດ', 'ຄຣິດສັກກະລາດ']], 0, [6, 0],
+      ['d/M/y', 'd MMM y', 'd MMMM y', 'EEEE ທີ d MMMM G y'],
+      ['H:mm', 'H:mm:ss', 'H ໂມງ m ນາທີ ss ວິນາທີ z', 'H ໂມງ m ນາທີ ss ວິນາທີ zzzz'],
+      [
+        '{1}, {0}',
+        ,
+        ,
+      ],
+      [
+        ',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞',
+        'ບໍ່​ແມ່ນ​ໂຕ​ເລກ', ':'
+      ],
+      ['#,##0.###', '#,##0%', '¤#,##0.00;¤-#,##0.00', '#'], '₭', 'ລາວ ກີບ',
+      function(n: number): number { return 5; }
+    ];
     break;
   case 'lt':
-    l = lt;
-    break;
-  case 'lu':
-    l = lu;
-    break;
-  case 'luo':
-    l = luo;
-    break;
-  case 'luy':
-    l = luy;
+    l = [
+      'lt',
+      [
+        ['pr. p.', 'pop.'],
+        ['priešpiet', 'popiet'],
+      ],
+      ,
+      [
+        ['S', 'P', 'A', 'T', 'K', 'P', 'Š'], ['sk', 'pr', 'an', 'tr', 'kt', 'pn', 'št'],
+        [
+          'sekmadienis', 'pirmadienis', 'antradienis', 'trečiadienis', 'ketvirtadienis',
+          'penktadienis', 'šeštadienis'
+        ],
+        ['Sk', 'Pr', 'An', 'Tr', 'Kt', 'Pn', 'Št']
+      ],
+      ,
+      [
+        ['S', 'V', 'K', 'B', 'G', 'B', 'L', 'R', 'R', 'S', 'L', 'G'],
+        [
+          'saus.', 'vas.', 'kov.', 'bal.', 'geg.', 'birž.', 'liep.', 'rugp.', 'rugs.', 'spal.',
+          'lapkr.', 'gruod.'
+        ],
+        [
+          'sausio', 'vasario', 'kovo', 'balandžio', 'gegužės', 'birželio', 'liepos', 'rugpjūčio',
+          'rugsėjo', 'spalio', 'lapkričio', 'gruodžio'
+        ]
+      ],
+      [
+        ['S', 'V', 'K', 'B', 'G', 'B', 'L', 'R', 'R', 'S', 'L', 'G'],
+        [
+          'saus.', 'vas.', 'kov.', 'bal.', 'geg.', 'birž.', 'liep.', 'rugp.', 'rugs.', 'spal.',
+          'lapkr.', 'gruod.'
+        ],
+        [
+          'sausis', 'vasaris', 'kovas', 'balandis', 'gegužė', 'birželis', 'liepa', 'rugpjūtis',
+          'rugsėjis', 'spalis', 'lapkritis', 'gruodis'
+        ]
+      ],
+      [['pr. Kr.', 'po Kr.'], , ['prieš Kristų', 'po Kristaus']], 1, [6, 0],
+      ['y-MM-dd', , 'y \'m\'. MMMM d \'d\'.', 'y \'m\'. MMMM d \'d\'., EEEE'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      [',', ' ', ';', '%', '+', '−', '×10^', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'Euras',
+      function(n: number):
+          number {
+            let f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
+            if (n % 10 === 1 && !(n % 100 >= 11 && n % 100 <= 19)) return 1;
+            if (n % 10 === Math.floor(n % 10) && n % 10 >= 2 && n % 10 <= 9 &&
+                !(n % 100 >= 11 && n % 100 <= 19))
+              return 3;
+            if (!(f === 0)) return 4;
+            return 5;
+          }
+    ];
     break;
   case 'lv':
-    l = lv;
-    break;
-  case 'mas':
-    l = mas;
-    break;
-  case 'mas_TZ':
-  case 'mas-TZ':
-    l = masTZ;
-    break;
-  case 'mer':
-    l = mer;
-    break;
-  case 'mfe':
-    l = mfe;
-    break;
-  case 'mg':
-    l = mg;
-    break;
-  case 'mgh':
-    l = mgh;
-    break;
-  case 'mgo':
-    l = mgo;
+    l = [
+      'lv', [['priekšp.', 'pēcp.'], , ['priekšpusdienā', 'pēcpusdienā']],
+      [['priekšp.', 'pēcp.'], ['priekšp.', 'pēcpusd.'], ['priekšpusdiena', 'pēcpusdiena']],
+      [
+        ['S', 'P', 'O', 'T', 'C', 'P', 'S'],
+        ['svētd.', 'pirmd.', 'otrd.', 'trešd.', 'ceturtd.', 'piektd.', 'sestd.'],
+        [
+          'svētdiena', 'pirmdiena', 'otrdiena', 'trešdiena', 'ceturtdiena', 'piektdiena',
+          'sestdiena'
+        ],
+        ['Sv', 'Pr', 'Ot', 'Tr', 'Ce', 'Pk', 'Se']
+      ],
+      [
+        ['S', 'P', 'O', 'T', 'C', 'P', 'S'],
+        ['Svētd.', 'Pirmd.', 'Otrd.', 'Trešd.', 'Ceturtd.', 'Piektd.', 'Sestd.'],
+        [
+          'Svētdiena', 'Pirmdiena', 'Otrdiena', 'Trešdiena', 'Ceturtdiena', 'Piektdiena',
+          'Sestdiena'
+        ],
+        ['Sv', 'Pr', 'Ot', 'Tr', 'Ce', 'Pk', 'Se']
+      ],
+      [
+        ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+        [
+          'janv.', 'febr.', 'marts', 'apr.', 'maijs', 'jūn.', 'jūl.', 'aug.', 'sept.', 'okt.',
+          'nov.', 'dec.'
+        ],
+        [
+          'janvāris', 'februāris', 'marts', 'aprīlis', 'maijs', 'jūnijs', 'jūlijs', 'augusts',
+          'septembris', 'oktobris', 'novembris', 'decembris'
+        ]
+      ],
+      , [['p.m.ē.', 'm.ē.'], , ['pirms mūsu ēras', 'mūsu ērā']], 1, [6, 0],
+      ['dd.MM.yy', 'y. \'gada\' d. MMM', 'y. \'gada\' d. MMMM', 'EEEE, y. \'gada\' d. MMMM'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NS', ':'],
+      ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '€', 'eiro',
+      function(n: number):
+          number {
+            let v = n.toString().replace(/^[^.]*\.?/, '').length,
+                f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
+            if (n % 10 === 0 || n % 100 === Math.floor(n % 100) && n % 100 >= 11 && n % 100 <= 19 ||
+                v === 2 && f % 100 === Math.floor(f % 100) && f % 100 >= 11 && f % 100 <= 19)
+              return 0;
+            if (n % 10 === 1 && !(n % 100 === 11) || v === 2 && f % 10 === 1 && !(f % 100 === 11) ||
+                !(v === 2) && f % 10 === 1)
+              return 1;
+            return 5;
+          }
+    ];
     break;
   case 'mk':
-    l = mk;
+    l = [
+      'mk', [['претпл.', 'попл.'], , ['претпладне', 'попладне']], ,
+      [
+        ['н', 'п', 'в', 'с', 'ч', 'п', 'с'],
+        ['нед.', 'пон.', 'вт.', 'сре.', 'чет.', 'пет.', 'саб.'],
+        ['недела', 'понеделник', 'вторник', 'среда', 'четврток', 'петок', 'сабота'],
+        ['нед.', 'пон.', 'вто.', 'сре.', 'чет.', 'пет.', 'саб.']
+      ],
+      [
+        ['н', 'п', 'в', 'с', 'ч', 'п', 'с'],
+        ['нед.', 'пон.', 'вто.', 'сре.', 'чет.', 'пет.', 'саб.'],
+        ['недела', 'понеделник', 'вторник', 'среда', 'четврток', 'петок', 'сабота'],
+        ['нед.', 'пон.', 'вто.', 'сре.', 'чет.', 'пет.', 'саб.']
+      ],
+      [
+        ['ј', 'ф', 'м', 'а', 'м', 'ј', 'ј', 'а', 'с', 'о', 'н', 'д'],
+        [
+          'јан.', 'фев.', 'мар.', 'апр.', 'мај', 'јун.', 'јул.', 'авг.', 'септ.', 'окт.', 'ноем.',
+          'дек.'
+        ],
+        [
+          'јануари', 'февруари', 'март', 'април', 'мај', 'јуни', 'јули', 'август', 'септември',
+          'октомври', 'ноември', 'декември'
+        ]
+      ],
+      , [['пр.н.е.', 'н.е.'], , ['пред нашата ера', 'од нашата ера']], 1, [6, 0],
+      ['dd.M.yy', 'dd.M.y', 'dd MMMM y', 'EEEE, dd MMMM y'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'ден', 'Македонски денар',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length,
+                f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
+            if (v === 0 && i % 10 === 1 || f % 10 === 1) return 1;
+            return 5;
+          }
+    ];
     break;
   case 'ml':
-    l = ml;
+    l = [
+      'ml',
+      [
+        ['AM', 'PM'],
+        ,
+      ],
+      ,
+      [
+        ['ഞ', 'തി', 'ചൊ', 'ബു', 'വ്യാ', 'വെ', 'ശ'],
+        ['ഞായർ', 'തിങ്കൾ', 'ചൊവ്വ', 'ബുധൻ', 'വ്യാഴം', 'വെള്ളി', 'ശനി'],
+        [
+          'ഞായറാഴ്‌ച', 'തിങ്കളാഴ്‌ച', 'ചൊവ്വാഴ്ച',
+          'ബുധനാഴ്‌ച', 'വ്യാഴാഴ്‌ച',
+          'വെള്ളിയാഴ്‌ച', 'ശനിയാഴ്‌ച'
+        ],
+        ['ഞാ', 'തി', 'ചൊ', 'ബു', 'വ്യാ', 'വെ', 'ശ']
+      ],
+      [
+        ['ഞാ', 'തി', 'ചൊ', 'ബു', 'വ്യാ', 'വെ', 'ശ'],
+        ['ഞായർ', 'തിങ്കൾ', 'ചൊവ്വ', 'ബുധൻ', 'വ്യാഴം', 'വെള്ളി', 'ശനി'],
+        [
+          'ഞായറാഴ്‌ച', 'തിങ്കളാഴ്‌ച',
+          'ചൊവ്വാഴ്‌ച', 'ബുധനാഴ്‌ച',
+          'വ്യാഴാഴ്‌ച', 'വെള്ളിയാഴ്‌ച',
+          'ശനിയാഴ്‌ച'
+        ],
+        ['ഞാ', 'തി', 'ചൊ', 'ബു', 'വ്യാ', 'വെ', 'ശ']
+      ],
+      [
+        ['ജ', 'ഫ', 'മാ', 'ഏ', 'മെ', 'ജൂൺ', 'ജൂ', 'ഓ', 'സെ', 'ഒ', 'ന', 'ഡി'],
+        ['ജനു', 'ഫെബ്രു', 'മാർ', 'ഏപ്രി', 'മേയ്', 'ജൂൺ', 'ജൂലൈ', 'ഓഗ', 'സെപ്റ്റം', 'ഒക്ടോ', 'നവം', 'ഡിസം'],
+        [
+          'ജനുവരി', 'ഫെബ്രുവരി', 'മാർച്ച്', 'ഏപ്രിൽ', 'മേയ്', 'ജൂൺ', 'ജൂലൈ', 'ഓഗസ്റ്റ്', 'സെപ്റ്റംബർ',
+          'ഒക്‌ടോബർ', 'നവംബർ', 'ഡിസംബർ'
+        ]
+      ],
+      [
+        ['ജ', 'ഫെ', 'മാ', 'ഏ', 'മെ', 'ജൂൺ', 'ജൂ', 'ഓ', 'സെ', 'ഒ', 'ന', 'ഡി'],
+        ['ജനു', 'ഫെബ്രു', 'മാർ', 'ഏപ്രി', 'മേയ്', 'ജൂൺ', 'ജൂലൈ', 'ഓഗ', 'സെപ്റ്റം', 'ഒക്ടോ', 'നവം', 'ഡിസം'],
+        [
+          'ജനുവരി', 'ഫെബ്രുവരി', 'മാർച്ച്', 'ഏപ്രിൽ', 'മേയ്', 'ജൂൺ', 'ജൂലൈ', 'ഓഗസ്റ്റ്', 'സെപ്റ്റംബർ',
+          'ഒക്‌ടോബർ', 'നവംബർ', 'ഡിസംബർ'
+        ]
+      ],
+      [
+        ['ക്രി.മു.', 'എഡി'], ,
+        ['ക്രിസ്‌തുവിന് മുമ്പ്', 'ആന്നോ ഡൊമിനി']
+      ],
+      0, [0, 0], ['d/M/yy', 'y, MMM d', 'y, MMMM d', 'y, MMMM d, EEEE'],
+      ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '₹', 'ഇന്ത്യൻ രൂപ', function(n: number):
+                                                                           number {
+                                                                             if (n === 1) return 1;
+                                                                             return 5;
+                                                                           }
+    ];
     break;
   case 'mn':
-    l = mn;
+    l = [
+      'mn', [['үө', 'үх'], ['ҮӨ', 'ҮХ'], ['ү.ө', 'ү.х']],
+      [
+        ['ҮӨ', 'ҮХ'],
+        ,
+      ],
+      [
+        ['Ня', 'Да', 'Мя', 'Лх', 'Пү', 'Ба', 'Бя'], ,
+        ['ням', 'даваа', 'мягмар', 'лхагва', 'пүрэв', 'баасан', 'бямба'],
+        ['Ня', 'Да', 'Мя', 'Лх', 'Пү', 'Ба', 'Бя']
+      ],
+      ,
+      [
+        ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+        [
+          '1-р сар', '2-р сар', '3-р сар', '4-р сар', '5-р сар', '6-р сар', '7-р сар', '8-р сар',
+          '9-р сар', '10-р сар', '11-р сар', '12-р сар'
+        ],
+        [
+          'Нэгдүгээр сар', 'Хоёрдугаар сар', 'Гуравдугаар сар', 'Дөрөвдүгээр сар', 'Тавдугаар сар',
+          'Зургадугаар сар', 'Долдугаар сар', 'Наймдугаар сар', 'Есдүгээр сар', 'Аравдугаар сар',
+          'Арван нэгдүгээр сар', 'Арван хоёрдугаар сар'
+        ]
+      ],
+      , [['МЭӨ', 'МЭ'], ['м.э.ө', 'м.э.'], ['манай эриний өмнөх', 'манай эриний']], 1, [6, 0],
+      ['y-MM-dd', 'y MMM d', 'y\'оны\' MMMM\'сарын\' d\'өдөр\'', 'EEEE, y \'оны\' MM \'сарын\' d'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1}, {0}',
+        '{1} {0}',
+        ,
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], '₮', 'төгрөг', function(n: number):
+                                                                       number {
+                                                                         if (n === 1) return 1;
+                                                                         return 5;
+                                                                       }
+    ];
+    break;
+  case 'mo':
+  case 'ro-MD':
+    l = [
+      'ro-MD',
+      [
+        ['a.m.', 'p.m.'],
+        ,
+      ],
+      ,
+      [
+        ['D', 'L', 'Ma', 'Mi', 'J', 'V', 'S'], ['Dum', 'Lun', 'Mar', 'Mie', 'Joi', 'Vin', 'Sâm'],
+        ['duminică', 'luni', 'marți', 'miercuri', 'joi', 'vineri', 'sâmbătă'],
+        ['Du', 'Lu', 'Ma', 'Mi', 'Jo', 'Vi', 'Sâ']
+      ],
+      ,
+      [
+        ['I', 'F', 'M', 'A', 'M', 'I', 'I', 'A', 'S', 'O', 'N', 'D'],
+        [
+          'ian.', 'feb.', 'mar.', 'apr.', 'mai', 'iun.', 'iul.', 'aug.', 'sept.', 'oct.', 'nov.',
+          'dec.'
+        ],
+        [
+          'ianuarie', 'februarie', 'martie', 'aprilie', 'mai', 'iunie', 'iulie', 'august',
+          'septembrie', 'octombrie', 'noiembrie', 'decembrie'
+        ]
+      ],
+      , [['î.Hr.', 'd.Hr.'], , ['înainte de Hristos', 'după Hristos']], 1, [6, 0],
+      ['dd.MM.y', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1}, {0}',
+        ,
+        ,
+      ],
+      [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'L', 'leu moldovenesc',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+            if (i === 1 && v === 0) return 1;
+            if (!(v === 0) || n === 0 ||
+                !(n === 1) && n % 100 === Math.floor(n % 100) && n % 100 >= 1 && n % 100 <= 19)
+              return 3;
+            return 5;
+          }
+    ];
     break;
   case 'mr':
-    l = mr;
+    l = [
+      'mr',
+      [
+        ['स', 'सं'],
+        ['म.पू.', 'म.उ.'],
+      ],
+      [
+        ['म.पू.', 'म.उ.'],
+        ,
+      ],
+      [
+        ['र', 'सो', 'मं', 'बु', 'गु', 'शु', 'श'], ['रवि', 'सोम', 'मंगळ', 'बुध', 'गुरु', 'शुक्र', 'शनि'],
+        ['रविवार', 'सोमवार', 'मंगळवार', 'बुधवार', 'गुरुवार', 'शुक्रवार', 'शनिवार'],
+        ['र', 'सो', 'मं', 'बु', 'गु', 'शु', 'श']
+      ],
+      ,
+      [
+        ['जा', 'फे', 'मा', 'ए', 'मे', 'जू', 'जु', 'ऑ', 'स', 'ऑ', 'नो', 'डि'],
+        ['जाने', 'फेब्रु', 'मार्च', 'एप्रि', 'मे', 'जून', 'जुलै', 'ऑग', 'सप्टें', 'ऑक्टो', 'नोव्हें', 'डिसें'],
+        [
+          'जानेवारी', 'फेब्रुवारी', 'मार्च', 'एप्रिल', 'मे', 'जून', 'जुलै', 'ऑगस्ट', 'सप्टेंबर', 'ऑक्टोबर',
+          'नोव्हेंबर', 'डिसेंबर'
+        ]
+      ],
+      , [['इ. स. पू.', 'इ. स.'], , ['ईसवीसनपूर्व', 'ईसवीसन']], 0, [0, 0],
+      ['d/M/yy', 'd MMM, y', 'd MMMM, y', 'EEEE, d MMMM, y'],
+      ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+      [
+        '{1}, {0}',
+        ,
+        '{1} रोजी {0}',
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##,##0.###', '#,##0%', '¤#,##0.00', '[#E0]'], '₹', 'भारतीय रुपया',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n));
+            if (i === 0 || n === 1) return 1;
+            return 5;
+          }
+    ];
     break;
   case 'ms':
-    l = ms;
-    break;
-  case 'ms_BN':
-  case 'ms-BN':
-    l = msBN;
-    break;
-  case 'ms_SG':
-  case 'ms-SG':
-    l = msSG;
+    l = [
+      'ms',
+      [
+        ['a', 'p'],
+        ['PG', 'PTG'],
+      ],
+      ,
+      [
+        ['A', 'I', 'S', 'R', 'K', 'J', 'S'], ['Ahd', 'Isn', 'Sel', 'Rab', 'Kha', 'Jum', 'Sab'],
+        ['Ahad', 'Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu'],
+        ['Ah', 'Is', 'Se', 'Ra', 'Kh', 'Ju', 'Sa']
+      ],
+      ,
+      [
+        ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'O', 'S', 'O', 'N', 'D'],
+        ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogo', 'Sep', 'Okt', 'Nov', 'Dis'],
+        [
+          'Januari', 'Februari', 'Mac', 'April', 'Mei', 'Jun', 'Julai', 'Ogos', 'September',
+          'Oktober', 'November', 'Disember'
+        ]
+      ],
+      ,
+      [
+        ['S.M.', 'TM'],
+        ,
+      ],
+      1, [6, 0], ['d/MM/yy', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
+      ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'RM', 'Ringgit Malaysia',
+      function(n: number): number { return 5; }
+    ];
     break;
   case 'mt':
-    l = mt;
-    break;
-  case 'mua':
-    l = mua;
+    l = [
+      'mt',
+      [
+        ['am', 'pm'],
+        ['AM', 'PM'],
+      ],
+      ,
+      [
+        ['Ħd', 'T', 'Tl', 'Er', 'Ħm', 'Ġm', 'Sb'],
+        ['Ħad', 'Tne', 'Tli', 'Erb', 'Ħam', 'Ġim', 'Sib'],
+        ['Il-Ħadd', 'It-Tnejn', 'It-Tlieta', 'L-Erbgħa', 'Il-Ħamis', 'Il-Ġimgħa', 'Is-Sibt'],
+        ['Ħad', 'Tne', 'Tli', 'Erb', 'Ħam', 'Ġim', 'Sib']
+      ],
+      [
+        ['Ħd', 'Tn', 'Tl', 'Er', 'Ħm', 'Ġm', 'Sb'],
+        ['Ħad', 'Tne', 'Tli', 'Erb', 'Ħam', 'Ġim', 'Sib'],
+        ['Il-Ħadd', 'It-Tnejn', 'It-Tlieta', 'L-Erbgħa', 'Il-Ħamis', 'Il-Ġimgħa', 'Is-Sibt'],
+        ['Ħad', 'Tne', 'Tli', 'Erb', 'Ħam', 'Ġim', 'Sib']
+      ],
+      [
+        ['J', 'F', 'M', 'A', 'M', 'Ġ', 'L', 'A', 'S', 'O', 'N', 'D'],
+        ['Jan', 'Fra', 'Mar', 'Apr', 'Mej', 'Ġun', 'Lul', 'Aww', 'Set', 'Ott', 'Nov', 'Diċ'],
+        [
+          'Jannar', 'Frar', 'Marzu', 'April', 'Mejju', 'Ġunju', 'Lulju', 'Awwissu', 'Settembru',
+          'Ottubru', 'Novembru', 'Diċembru'
+        ]
+      ],
+      [
+        ['Jn', 'Fr', 'Mz', 'Ap', 'Mj', 'Ġn', 'Lj', 'Aw', 'St', 'Ob', 'Nv', 'Dċ'],
+        ['Jan', 'Fra', 'Mar', 'Apr', 'Mej', 'Ġun', 'Lul', 'Aww', 'Set', 'Ott', 'Nov', 'Diċ'],
+        [
+          'Jannar', 'Frar', 'Marzu', 'April', 'Mejju', 'Ġunju', 'Lulju', 'Awwissu', 'Settembru',
+          'Ottubru', 'Novembru', 'Diċembru'
+        ]
+      ],
+      [['QK', 'WK'], , ['Qabel Kristu', 'Wara Kristu']], 0, [6, 0],
+      ['dd/MM/y', 'dd MMM y', 'd \'ta\'’ MMMM y', 'EEEE, d \'ta\'’ MMMM y'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '€', 'ewro',
+      function(n: number):
+          number {
+            if (n === 1) return 1;
+            if (n === 0 || n % 100 === Math.floor(n % 100) && n % 100 >= 2 && n % 100 <= 10)
+              return 3;
+            if (n % 100 === Math.floor(n % 100) && n % 100 >= 11 && n % 100 <= 19) return 4;
+            return 5;
+          }
+    ];
     break;
   case 'my':
-    l = my;
-    break;
-  case 'mzn':
-    l = mzn;
-    break;
-  case 'naq':
-    l = naq;
-    break;
-  case 'nb':
-    l = nb;
-    break;
-  case 'nb_SJ':
-  case 'nb-SJ':
-    l = nbSJ;
-    break;
-  case 'nd':
-    l = nd;
-    break;
-  case 'nds':
-    l = nds;
-    break;
-  case 'nds_NL':
-  case 'nds-NL':
-    l = ndsNL;
+    l = [
+      'my',
+      [
+        ['နံနက်', 'ညနေ'],
+        ,
+      ],
+      ,
+      [
+        ['တ', 'တ', 'အ', 'ဗ', 'က', 'သ', 'စ'],
+        ['တနင်္ဂနွေ', 'တနင်္လာ', 'အင်္ဂါ', 'ဗုဒ္ဓဟူး', 'ကြာသပတေး', 'သောကြာ', 'စနေ'],
+        ,
+      ],
+      ,
+      [
+        ['ဇ', 'ဖ', 'မ', 'ဧ', 'မ', 'ဇ', 'ဇ', 'ဩ', 'စ', 'အ', 'န', 'ဒ'],
+        ['ဇန်', 'ဖေ', 'မတ်', 'ဧ', 'မေ', 'ဇွန်', 'ဇူ', 'ဩ', 'စက်', 'အောက်', 'နို', 'ဒီ'],
+        [
+          'ဇန်နဝါရီ', 'ဖေဖော်ဝါရီ', 'မတ်', 'ဧပြီ', 'မေ', 'ဇွန်', 'ဇူလိုင်', 'ဩဂုတ်', 'စက်တင်ဘာ', 'အောက်တိုဘာ', 'နိုဝင်ဘာ',
+          'ဒီဇင်ဘာ'
+        ]
+      ],
+      , [['ဘီစီ', 'အေဒီ'], , ['ခရစ်တော် မပေါ်မီနှစ်', 'ခရစ်နှစ်']], 0, [6, 0],
+      ['dd-MM-yy', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
+      ['HH:mm', 'HH:mm:ss', 'z HH:mm:ss', 'zzzz HH:mm:ss'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'ဂဏန်းမဟုတ်သော', ':'],
+      ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'K', 'မြန်မာကျပ်',
+      function(n: number): number { return 5; }
+    ];
     break;
   case 'ne':
-    l = ne;
-    break;
-  case 'ne_IN':
-  case 'ne-IN':
-    l = neIN;
+    l = [
+      'ne',
+      [
+        ['पूर्वाह्न', 'अपराह्न'],
+        ,
+      ],
+      ,
+      [
+        ['आ', 'सो', 'म', 'बु', 'बि', 'शु', 'श'], ['आइत', 'सोम', 'मङ्गल', 'बुध', 'बिहि', 'शुक्र', 'शनि'],
+        ['आइतबार', 'सोमबार', 'मङ्गलबार', 'बुधबार', 'बिहिबार', 'शुक्रबार', 'शनिबार'],
+        ['आइत', 'सोम', 'मङ्गल', 'बुध', 'बिहि', 'शुक्र', 'शनि']
+      ],
+      ,
+      [
+        ['१', '२', '३', '४', '५', '६', '७', '८', '९', '१०', '११', '१२'],
+        [
+          'जनवरी', 'फेब्रुअरी', 'मार्च', 'अप्रिल', 'मे', 'जुन', 'जुलाई', 'अगस्ट', 'सेप्टेम्बर', 'अक्टोबर',
+          'नोभेम्बर', 'डिसेम्बर'
+        ],
+        [
+          'जनवरी', 'फेब्रुअरी', 'मार्च', 'अप्रिल', 'मई', 'जुन', 'जुलाई', 'अगस्ट', 'सेप्टेम्बर', 'अक्टोबर',
+          'नोभेम्बर', 'डिसेम्बर'
+        ]
+      ],
+      [
+        ['१', '२', '३', '४', '५', '६', '७', '८', '९', '१०', '११', '१२'],
+        [
+          'जनवरी', 'फेब्रुअरी', 'मार्च', 'अप्रिल', 'मे', 'जुन', 'जुलाई', 'अगस्ट', 'सेप्टेम्बर', 'अक्टोबर',
+          'नोभेम्बर', 'डिसेम्बर'
+        ],
+      ],
+      [
+        ['ईसा पूर्व', 'सन्'],
+        ,
+      ],
+      0, [6, 0], ['y-MM-dd', 'y MMM d', 'y MMMM d', 'y MMMM d, EEEE'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1}, {0}',
+        ,
+        '{1} {0}',
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], 'नेरू', 'नेपाली रूपैयाँ', function(n: number):
+                                                                            number {
+                                                                              if (n === 1) return 1;
+                                                                              return 5;
+                                                                            }
+    ];
     break;
   case 'nl':
-    l = nl;
+    l = [
+      'nl',
+      [
+        ['a.m.', 'p.m.'],
+        ,
+      ],
+      ,
+      [
+        ['Z', 'M', 'D', 'W', 'D', 'V', 'Z'], ['zo', 'ma', 'di', 'wo', 'do', 'vr', 'za'],
+        ['zondag', 'maandag', 'dinsdag', 'woensdag', 'donderdag', 'vrijdag', 'zaterdag'],
+        ['zo', 'ma', 'di', 'wo', 'do', 'vr', 'za']
+      ],
+      ,
+      [
+        ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+        [
+          'jan.', 'feb.', 'mrt.', 'apr.', 'mei', 'jun.', 'jul.', 'aug.', 'sep.', 'okt.', 'nov.',
+          'dec.'
+        ],
+        [
+          'januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus', 'september',
+          'oktober', 'november', 'december'
+        ]
+      ],
+      , [['v.C.', 'n.C.'], ['v.Chr.', 'n.Chr.'], ['voor Christus', 'na Christus']], 1, [6, 0],
+      ['dd-MM-yy', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1} {0}',
+        ,
+        '{1} \'om\' {0}',
+      ],
+      [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '¤ #,##0.00;¤ -#,##0.00', '#E0'], '€', 'Euro',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+            if (i === 1 && v === 0) return 1;
+            return 5;
+          }
+    ];
     break;
-  case 'nl_AW':
-  case 'nl-AW':
-    l = nlAW;
-    break;
-  case 'nl_BE':
-  case 'nl-BE':
-    l = nlBE;
-    break;
-  case 'nl_BQ':
-  case 'nl-BQ':
-    l = nlBQ;
-    break;
-  case 'nl_CW':
-  case 'nl-CW':
-    l = nlCW;
-    break;
-  case 'nl_SR':
-  case 'nl-SR':
-    l = nlSR;
-    break;
-  case 'nl_SX':
-  case 'nl-SX':
-    l = nlSX;
-    break;
-  case 'nmg':
-    l = nmg;
-    break;
-  case 'nn':
-    l = nn;
-    break;
-  case 'nnh':
-    l = nnh;
-    break;
-  case 'nus':
-    l = nus;
-    break;
-  case 'nyn':
-    l = nyn;
-    break;
-  case 'om':
-    l = om;
-    break;
-  case 'om_KE':
-  case 'om-KE':
-    l = omKE;
+  case 'no':
+  case 'nb':
+  case 'no-NO':
+    l = [
+      'nb',
+      [
+        ['a', 'p'],
+        ['a.m.', 'p.m.'],
+      ],
+      [
+        ['a.m.', 'p.m.'],
+        ,
+      ],
+      [
+        ['S', 'M', 'T', 'O', 'T', 'F', 'L'],
+        ['søn.', 'man.', 'tir.', 'ons.', 'tor.', 'fre.', 'lør.'],
+        ['søndag', 'mandag', 'tirsdag', 'onsdag', 'torsdag', 'fredag', 'lørdag'],
+        ['sø.', 'ma.', 'ti.', 'on.', 'to.', 'fr.', 'lø.']
+      ],
+      ,
+      [
+        ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+        [
+          'jan.', 'feb.', 'mar.', 'apr.', 'mai', 'jun.', 'jul.', 'aug.', 'sep.', 'okt.', 'nov.',
+          'des.'
+        ],
+        [
+          'januar', 'februar', 'mars', 'april', 'mai', 'juni', 'juli', 'august', 'september',
+          'oktober', 'november', 'desember'
+        ]
+      ],
+      [
+        ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+        ['jan', 'feb', 'mar', 'apr', 'mai', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'des'],
+        [
+          'januar', 'februar', 'mars', 'april', 'mai', 'juni', 'juli', 'august', 'september',
+          'oktober', 'november', 'desember'
+        ]
+      ],
+      [['f.Kr.', 'e.Kr.'], , ['før Kristus', 'etter Kristus']], 1, [6, 0],
+      ['dd.MM.y', 'd. MMM y', 'd. MMMM y', 'EEEE d. MMMM y'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      ['{1}, {0}', , '{1} \'kl\'. {0}', '{1} {0}'],
+      [',', ' ', ';', '%', '+', '−', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0 %', '¤ #,##0.00', '#E0'], 'kr', 'norske kroner', function(n: number):
+                                                                                number {
+                                                                                  if (n === 1)
+                                                                                    return 1;
+                                                                                  return 5;
+                                                                                }
+    ];
     break;
   case 'or':
-    l = or;
-    break;
-  case 'os':
-    l = os;
-    break;
-  case 'os_RU':
-  case 'os-RU':
-    l = osRU;
+    l = [
+      'or',
+      [
+        ['am', 'pm'],
+        ,
+      ],
+      ,
+      [
+        ['ର', 'ସୋ', 'ମ', 'ବୁ', 'ଗୁ', 'ଶୁ', 'ଶ'], ['ରବି', 'ସୋମ', 'ମଙ୍ଗଳ', 'ବୁଧ', 'ଗୁରୁ', 'ଶୁକ୍ର', 'ଶନି'],
+        ['ରବିବାର', 'ସୋମବାର', 'ମଙ୍ଗଳବାର', 'ବୁଧବାର', 'ଗୁରୁବାର', 'ଶୁକ୍ରବାର', 'ଶନିବାର'],
+        ['ରବି', 'ସୋମ', 'ମଙ୍ଗଳ', 'ବୁଧ', 'ଗୁରୁ', 'ଶୁକ୍ର', 'ଶନି']
+      ],
+      ,
+      [
+        ['ଜା', 'ଫେ', 'ମା', 'ଅ', 'ମଇ', 'ଜୁ', 'ଜୁ', 'ଅ', 'ସେ', 'ଅ', 'ନ', 'ଡି'],
+        [
+          'ଜାନୁଆରୀ', 'ଫେବୃଆରୀ', 'ମାର୍ଚ୍ଚ', 'ଅପ୍ରେଲ', 'ମଇ', 'ଜୁନ', 'ଜୁଲାଇ', 'ଅଗଷ୍ଟ', 'ସେପ୍ଟେମ୍ବର', 'ଅକ୍ଟୋବର',
+          'ନଭେମ୍ବର', 'ଡିସେମ୍ବର'
+        ],
+      ],
+      ,
+      [
+        ['BCE', 'CE'],
+        ,
+      ],
+      0, [0, 0], ['d-M-yy', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
+      ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##,##0.###', '#,##,##0%', '¤ #,##,##0.00', '#E0'], '₹', 'ଟଙକା', function(n: number):
+                                                                              number {
+                                                                                if (n === 1)
+                                                                                  return 1;
+                                                                                return 5;
+                                                                              }
+    ];
     break;
   case 'pa':
-    l = pa;
-    break;
-  case 'pa_Arab':
-  case 'pa-Arab':
-    l = paArab;
-    break;
-  case 'pa_Guru':
-  case 'pa-Guru':
-    l = paGuru;
+    l = [
+      'pa',
+      [
+        ['ਸ.', 'ਸ਼.'],
+        ['ਪੂ.ਦੁ.', 'ਬਾ.ਦੁ.'],
+      ],
+      [
+        ['ਪੂ.ਦੁ.', 'ਬਾ.ਦੁ.'],
+        ,
+      ],
+      [
+        ['ਐ', 'ਸੋ', 'ਮੰ', 'ਬੁੱ', 'ਵੀ', 'ਸ਼ੁੱ', 'ਸ਼'], ['ਐਤ', 'ਸੋਮ', 'ਮੰਗਲ', 'ਬੁੱਧ', 'ਵੀਰ', 'ਸ਼ੁੱਕਰ', 'ਸ਼ਨਿੱਚਰ'],
+        ['ਐਤਵਾਰ', 'ਸੋਮਵਾਰ', 'ਮੰਗਲਵਾਰ', 'ਬੁੱਧਵਾਰ', 'ਵੀਰਵਾਰ', 'ਸ਼ੁੱਕਰਵਾਰ', 'ਸ਼ਨਿੱਚਰਵਾਰ'],
+        ['ਐਤ', 'ਸੋਮ', 'ਮੰਗ', 'ਬੁੱਧ', 'ਵੀਰ', 'ਸ਼ੁੱਕ', 'ਸ਼ਨਿੱ']
+      ],
+      ,
+      [
+        ['ਜ', 'ਫ਼', 'ਮਾ', 'ਅ', 'ਮ', 'ਜੂ', 'ਜੁ', 'ਅ', 'ਸ', 'ਅ', 'ਨ', 'ਦ'],
+        ['ਜਨ', 'ਫ਼ਰ', 'ਮਾਰਚ', 'ਅਪ੍ਰੈ', 'ਮਈ', 'ਜੂਨ', 'ਜੁਲਾ', 'ਅਗ', 'ਸਤੰ', 'ਅਕਤੂ', 'ਨਵੰ', 'ਦਸੰ'],
+        [
+          'ਜਨਵਰੀ', 'ਫ਼ਰਵਰੀ', 'ਮਾਰਚ', 'ਅਪ੍ਰੈਲ', 'ਮਈ', 'ਜੂਨ', 'ਜੁਲਾਈ', 'ਅਗਸਤ', 'ਸਤੰਬਰ', 'ਅਕਤੂਬਰ', 'ਨਵੰਬਰ',
+          'ਦਸੰਬਰ'
+        ]
+      ],
+      , [['ਈ.ਪੂ.', 'ਸੰਨ'], ['ਈ. ਪੂ.', 'ਸੰਨ'], ['ਈਸਵੀ ਪੂਰਵ', 'ਈਸਵੀ ਸੰਨ']], 0, [0, 0],
+      ['d/M/yy', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
+      ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+      [
+        '{1}, {0}',
+        ,
+        '{1} {0}',
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##,##0.###', '#,##,##0%', '¤ #,##,##0.00', '[#E0]'], '₹', 'ਭਾਰਤੀ ਰੁਪਇਆ',
+      function(n: number):
+          number {
+            if (n === Math.floor(n) && n >= 0 && n <= 1) return 1;
+            return 5;
+          }
+    ];
     break;
   case 'pl':
-    l = pl;
-    break;
-  case 'prg':
-    l = prg;
-    break;
-  case 'ps':
-    l = ps;
+    l = [
+      'pl',
+      [
+        ['a', 'p'],
+        ['AM', 'PM'],
+      ],
+      ,
+      [
+        ['n', 'p', 'w', 'ś', 'c', 'p', 's'],
+        ['niedz.', 'pon.', 'wt.', 'śr.', 'czw.', 'pt.', 'sob.'],
+        ['niedziela', 'poniedziałek', 'wtorek', 'środa', 'czwartek', 'piątek', 'sobota'],
+        ['nie', 'pon', 'wto', 'śro', 'czw', 'pią', 'sob']
+      ],
+      [
+        ['N', 'P', 'W', 'Ś', 'C', 'P', 'S'],
+        ['niedz.', 'pon.', 'wt.', 'śr.', 'czw.', 'pt.', 'sob.'],
+        ['niedziela', 'poniedziałek', 'wtorek', 'środa', 'czwartek', 'piątek', 'sobota'],
+        ['nie', 'pon', 'wto', 'śro', 'czw', 'pią', 'sob']
+      ],
+      [
+        ['s', 'l', 'm', 'k', 'm', 'c', 'l', 's', 'w', 'p', 'l', 'g'],
+        ['sty', 'lut', 'mar', 'kwi', 'maj', 'cze', 'lip', 'sie', 'wrz', 'paź', 'lis', 'gru'],
+        [
+          'stycznia', 'lutego', 'marca', 'kwietnia', 'maja', 'czerwca', 'lipca', 'sierpnia',
+          'września', 'października', 'listopada', 'grudnia'
+        ]
+      ],
+      [
+        ['S', 'L', 'M', 'K', 'M', 'C', 'L', 'S', 'W', 'P', 'L', 'G'],
+        ['sty', 'lut', 'mar', 'kwi', 'maj', 'cze', 'lip', 'sie', 'wrz', 'paź', 'lis', 'gru'],
+        [
+          'styczeń', 'luty', 'marzec', 'kwiecień', 'maj', 'czerwiec', 'lipiec', 'sierpień',
+          'wrzesień', 'październik', 'listopad', 'grudzień'
+        ]
+      ],
+      [['p.n.e.', 'n.e.'], , ['przed naszą erą', 'naszej ery']], 1, [6, 0],
+      ['dd.MM.y', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1}, {0}',
+        ,
+        '{1} {0}',
+      ],
+      [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'zł', 'złoty polski',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+            if (i === 1 && v === 0) return 1;
+            if (v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 2 && i % 10 <= 4 &&
+                !(i % 100 >= 12 && i % 100 <= 14))
+              return 3;
+            if (v === 0 && !(i === 1) && i % 10 === Math.floor(i % 10) && i % 10 >= 0 &&
+                    i % 10 <= 1 ||
+                v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 5 && i % 10 <= 9 ||
+                v === 0 && i % 100 === Math.floor(i % 100) && i % 100 >= 12 && i % 100 <= 14)
+              return 4;
+            return 5;
+          }
+    ];
     break;
   case 'pt':
-    l = pt;
+  case 'pt-BR':
+    l = [
+      'pt',
+      [
+        ['AM', 'PM'],
+        ,
+      ],
+      ,
+      [
+        ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'], ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'],
+        [
+          'domingo', 'segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira',
+          'sábado'
+        ],
+        ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb']
+      ],
+      ,
+      [
+        ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+        ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'],
+        [
+          'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro',
+          'outubro', 'novembro', 'dezembro'
+        ]
+      ],
+      , [['a.C.', 'd.C.'], , ['antes de Cristo', 'depois de Cristo']], 0, [6, 0],
+      [
+        'dd/MM/y', 'd \'de\' MMM \'de\' y', 'd \'de\' MMMM \'de\' y', 'EEEE, d \'de\' MMMM \'de\' y'
+      ],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'R$', 'Real brasileiro',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n));
+            if (i === Math.floor(i) && i >= 0 && i <= 1) return 1;
+            return 5;
+          }
+    ];
     break;
-  case 'pt_AO':
-  case 'pt-AO':
-    l = ptAO;
-    break;
-  case 'pt_CH':
-  case 'pt-CH':
-    l = ptCH;
-    break;
-  case 'pt_CV':
-  case 'pt-CV':
-    l = ptCV;
-    break;
-  case 'pt_GQ':
-  case 'pt-GQ':
-    l = ptGQ;
-    break;
-  case 'pt_GW':
-  case 'pt-GW':
-    l = ptGW;
-    break;
-  case 'pt_LU':
-  case 'pt-LU':
-    l = ptLU;
-    break;
-  case 'pt_MO':
-  case 'pt-MO':
-    l = ptMO;
-    break;
-  case 'pt_MZ':
-  case 'pt-MZ':
-    l = ptMZ;
-    break;
-  case 'pt_PT':
   case 'pt-PT':
-    l = ptPT;
-    break;
-  case 'pt_ST':
-  case 'pt-ST':
-    l = ptST;
-    break;
-  case 'pt_TL':
-  case 'pt-TL':
-    l = ptTL;
-    break;
-  case 'qu':
-    l = qu;
-    break;
-  case 'qu_BO':
-  case 'qu-BO':
-    l = quBO;
-    break;
-  case 'qu_EC':
-  case 'qu-EC':
-    l = quEC;
-    break;
-  case 'rm':
-    l = rm;
-    break;
-  case 'rn':
-    l = rn;
+  case 'pt_PT':
+    l = [
+      'pt-PT', [['a.m.', 'p.m.'], , ['da manhã', 'da tarde']],
+      [['a.m.', 'p.m.'], , ['manhã', 'tarde']],
+      [
+        ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'],
+        ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'],
+        [
+          'domingo', 'segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira',
+          'sábado'
+        ],
+        ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb']
+      ],
+      ,
+      [
+        ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+        ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'],
+        [
+          'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro',
+          'outubro', 'novembro', 'dezembro'
+        ]
+      ],
+      , [['a.C.', 'd.C.'], , ['antes de Cristo', 'depois de Cristo']], 1, [6, 0],
+      ['dd/MM/yy', 'dd/MM/y', 'd \'de\' MMMM \'de\' y', 'EEEE, d \'de\' MMMM \'de\' y'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1}, {0}',
+        ,
+        '{1} \'às\' {0}',
+      ],
+      [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '€', 'Euro',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n));
+            if (i === Math.floor(i) && i >= 0 && i <= 1) return 1;
+            return 5;
+          }
+    ];
     break;
   case 'ro':
-    l = ro;
-    break;
-  case 'ro_MD':
-  case 'ro-MD':
-    l = roMD;
-    break;
-  case 'rof':
-    l = rof;
-    break;
-  case 'root':
-    l = root;
+    l = [
+      'ro',
+      [
+        ['a.m.', 'p.m.'],
+        ,
+      ],
+      ,
+      [
+        ['D', 'L', 'M', 'M', 'J', 'V', 'S'],
+        ['dum.', 'lun.', 'mar.', 'mie.', 'joi', 'vin.', 'sâm.'],
+        ['duminică', 'luni', 'marți', 'miercuri', 'joi', 'vineri', 'sâmbătă'],
+        ['du.', 'lu.', 'ma.', 'mi.', 'joi', 'vi.', 'sâ.']
+      ],
+      ,
+      [
+        ['I', 'F', 'M', 'A', 'M', 'I', 'I', 'A', 'S', 'O', 'N', 'D'],
+        [
+          'ian.', 'feb.', 'mar.', 'apr.', 'mai', 'iun.', 'iul.', 'aug.', 'sept.', 'oct.', 'nov.',
+          'dec.'
+        ],
+        [
+          'ianuarie', 'februarie', 'martie', 'aprilie', 'mai', 'iunie', 'iulie', 'august',
+          'septembrie', 'octombrie', 'noiembrie', 'decembrie'
+        ]
+      ],
+      , [['î.Hr.', 'd.Hr.'], , ['înainte de Hristos', 'după Hristos']], 1, [6, 0],
+      ['dd.MM.y', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1}, {0}',
+        ,
+        ,
+      ],
+      [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'RON', 'leu românesc',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+            if (i === 1 && v === 0) return 1;
+            if (!(v === 0) || n === 0 ||
+                !(n === 1) && n % 100 === Math.floor(n % 100) && n % 100 >= 1 && n % 100 <= 19)
+              return 3;
+            return 5;
+          }
+    ];
     break;
   case 'ru':
-    l = ru;
+    l = [
+      'ru',
+      [
+        ['ДП', 'ПП'],
+        ,
+      ],
+      ,
+      [
+        ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'], ,
+        ['воскресенье', 'понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота'],
+        ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
+      ],
+      [
+        ['В', 'П', 'В', 'С', 'Ч', 'П', 'С'], ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'],
+        ['воскресенье', 'понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота'],
+        ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
+      ],
+      [
+        ['Я', 'Ф', 'М', 'А', 'М', 'И', 'И', 'А', 'С', 'О', 'Н', 'Д'],
+        [
+          'янв.', 'февр.', 'мар.', 'апр.', 'мая', 'июн.', 'июл.', 'авг.', 'сент.', 'окт.', 'нояб.',
+          'дек.'
+        ],
+        [
+          'января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября',
+          'октября', 'ноября', 'декабря'
+        ]
+      ],
+      [
+        ['Я', 'Ф', 'М', 'А', 'М', 'И', 'И', 'А', 'С', 'О', 'Н', 'Д'],
+        [
+          'янв.', 'февр.', 'март', 'апр.', 'май', 'июнь', 'июль', 'авг.', 'сент.', 'окт.', 'нояб.',
+          'дек.'
+        ],
+        [
+          'январь', 'февраль', 'март', 'апрель', 'май', 'июнь', 'июль', 'август', 'сентябрь',
+          'октябрь', 'ноябрь', 'декабрь'
+        ]
+      ],
+      [
+        ['до н.э.', 'н.э.'], ['до н. э.', 'н. э.'],
+        ['до Рождества Христова', 'от Рождества Христова']
+      ],
+      1, [6, 0], ['dd.MM.y', 'd MMM y \'г\'.', 'd MMMM y \'г\'.', 'EEEE, d MMMM y \'г\'.'],
+      ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'],
+      [
+        '{1}, {0}',
+        ,
+        ,
+      ],
+      [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'не число', ':'],
+      ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '₽', 'Российский рубль',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+            if (v === 0 && i % 10 === 1 && !(i % 100 === 11)) return 1;
+            if (v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 2 && i % 10 <= 4 &&
+                !(i % 100 >= 12 && i % 100 <= 14))
+              return 3;
+            if (v === 0 && i % 10 === 0 ||
+                v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 5 && i % 10 <= 9 ||
+                v === 0 && i % 100 === Math.floor(i % 100) && i % 100 >= 11 && i % 100 <= 14)
+              return 4;
+            return 5;
+          }
+    ];
     break;
-  case 'ru_BY':
-  case 'ru-BY':
-    l = ruBY;
-    break;
-  case 'ru_KG':
-  case 'ru-KG':
-    l = ruKG;
-    break;
-  case 'ru_KZ':
-  case 'ru-KZ':
-    l = ruKZ;
-    break;
-  case 'ru_MD':
-  case 'ru-MD':
-    l = ruMD;
-    break;
-  case 'ru_UA':
-  case 'ru-UA':
-    l = ruUA;
-    break;
-  case 'rw':
-    l = rw;
-    break;
-  case 'rwk':
-    l = rwk;
-    break;
-  case 'sah':
-    l = sah;
-    break;
-  case 'saq':
-    l = saq;
-    break;
-  case 'sbp':
-    l = sbp;
-    break;
-  case 'se':
-    l = se;
-    break;
-  case 'se_FI':
-  case 'se-FI':
-    l = seFI;
-    break;
-  case 'se_SE':
-  case 'se-SE':
-    l = seSE;
-    break;
-  case 'seh':
-    l = seh;
-    break;
-  case 'ses':
-    l = ses;
-    break;
-  case 'sg':
-    l = sg;
-    break;
-  case 'shi':
-    l = shi;
-    break;
-  case 'shi_Latn':
-  case 'shi-Latn':
-    l = shiLatn;
-    break;
-  case 'shi_Tfng':
-  case 'shi-Tfng':
-    l = shiTfng;
+  case 'sh':
+  case 'sr-Latn':
+    l = [
+      'sr-Latn',
+      [
+        ['a', 'p'],
+        ['pre podne', 'po podne'],
+      ],
+      [
+        ['pre podne', 'po podne'],
+        ,
+      ],
+      [
+        ['n', 'p', 'u', 's', 'č', 'p', 's'], ['ned', 'pon', 'uto', 'sre', 'čet', 'pet', 'sub'],
+        ['nedelja', 'ponedeljak', 'utorak', 'sreda', 'četvrtak', 'petak', 'subota'],
+        ['ne', 'po', 'ut', 'sr', 'če', 'pe', 'su']
+      ],
+      ,
+      [
+        ['j', 'f', 'm', 'a', 'm', 'j', 'j', 'a', 's', 'o', 'n', 'd'],
+        ['jan', 'feb', 'mar', 'apr', 'maj', 'jun', 'jul', 'avg', 'sep', 'okt', 'nov', 'dec'],
+        [
+          'januar', 'februar', 'mart', 'april', 'maj', 'jun', 'jul', 'avgust', 'septembar',
+          'oktobar', 'novembar', 'decembar'
+        ]
+      ],
+      , [['p.n.e.', 'n.e.'], ['p. n. e.', 'n. e.'], ['pre nove ere', 'nove ere']], 1, [6, 0],
+      ['d.M.yy.', 'dd.MM.y.', 'dd. MMMM y.', 'EEEE, dd. MMMM y.'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'RSD', 'Srpski dinar',
+      function(n: number): number { return 5; }
+    ];
     break;
   case 'si':
-    l = si;
+    l = [
+      'si',
+      [
+        ['පෙ', 'ප'],
+        ['පෙ.ව.', 'ප.ව.'],
+      ],
+      [
+        ['පෙ.ව.', 'ප.ව.'],
+        ,
+      ],
+      [
+        ['ඉ', 'ස', 'අ', 'බ', 'බ්‍ර', 'සි', 'සෙ'],
+        ['ඉරිදා', 'සඳුදා', 'අඟහ', 'බදාදා', 'බ්‍රහස්', 'සිකු', 'සෙන'],
+        [
+          'ඉරිදා', 'සඳුදා', 'අඟහරුවාදා', 'බදාදා', 'බ්‍රහස්පතින්දා',
+          'සිකුරාදා', 'සෙනසුරාදා'
+        ],
+        ['ඉරි', 'සඳු', 'අඟ', 'බදා', 'බ්‍රහ', 'සිකු', 'සෙන']
+      ],
+      ,
+      [
+        ['ජ', 'පෙ', 'මා', 'අ', 'මැ', 'ජූ', 'ජූ', 'අ', 'සැ', 'ඔ', 'නෙ', 'දෙ'],
+        [
+          'ජන', 'පෙබ', 'මාර්තු', 'අප්‍රේල්', 'මැයි', 'ජූනි', 'ජූලි', 'අගෝ', 'සැප්', 'ඔක්',
+          'නොවැ', 'දෙසැ'
+        ],
+        [
+          'ජනවාරි', 'පෙබරවාරි', 'මාර්තු', 'අප්‍රේල්', 'මැයි', 'ජූනි', 'ජූලි', 'අගෝස්තු',
+          'සැප්තැම්බර්', 'ඔක්තෝබර්', 'නොවැම්බර්', 'දෙසැම්බර්'
+        ]
+      ],
+      [
+        ['ජ', 'පෙ', 'මා', 'අ', 'මැ', 'ජූ', 'ජූ', 'අ', 'සැ', 'ඔ', 'නෙ', 'දෙ'],
+        [
+          'ජන', 'පෙබ', 'මාර්', 'අප්‍රේල්', 'මැයි', 'ජූනි', 'ජූලි', 'අගෝ', 'සැප්', 'ඔක්',
+          'නොවැ', 'දෙසැ'
+        ],
+        [
+          'ජනවාරි', 'පෙබරවාරි', 'මාර්තු', 'අප්‍රේල්', 'මැයි', 'ජූනි', 'ජූලි', 'අගෝස්තු',
+          'සැප්තැම්බර්', 'ඔක්තෝබර්', 'නොවැම්බර්', 'දෙසැම්බර්'
+        ]
+      ],
+      [
+        ['ක්‍රි.පූ.', 'ක්‍රි.ව.'], ,
+        [
+          'ක්‍රිස්තු පූර්ව', 'ක්‍රිස්තු වර්ෂ'
+        ]
+      ],
+      1, [6, 0], ['y-MM-dd', 'y MMM d', 'y MMMM d', 'y MMMM d, EEEE'],
+      ['HH.mm', 'HH.mm.ss', 'HH.mm.ss z', 'HH.mm.ss zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', '.'],
+      ['#,##0.###', '#,##0%', '¤#,##0.00', '#'], 'රු.',
+      'ශ්‍රී ලංකා රුපියල',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n)),
+                f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
+            if (n === 0 || n === 1 || i === 0 && f === 1) return 1;
+            return 5;
+          }
+    ];
     break;
   case 'sk':
-    l = sk;
+    l = [
+      'sk',
+      [
+        ['AM', 'PM'],
+        ,
+      ],
+      ,
+      [
+        ['n', 'p', 'u', 's', 'š', 'p', 's'], ['ne', 'po', 'ut', 'st', 'št', 'pi', 'so'],
+        ['nedeľa', 'pondelok', 'utorok', 'streda', 'štvrtok', 'piatok', 'sobota'],
+        ['ne', 'po', 'ut', 'st', 'št', 'pi', 'so']
+      ],
+      ,
+      [
+        ['j', 'f', 'm', 'a', 'm', 'j', 'j', 'a', 's', 'o', 'n', 'd'],
+        ['jan', 'feb', 'mar', 'apr', 'máj', 'jún', 'júl', 'aug', 'sep', 'okt', 'nov', 'dec'],
+        [
+          'januára', 'februára', 'marca', 'apríla', 'mája', 'júna', 'júla', 'augusta', 'septembra',
+          'októbra', 'novembra', 'decembra'
+        ]
+      ],
+      [
+        ['j', 'f', 'm', 'a', 'm', 'j', 'j', 'a', 's', 'o', 'n', 'd'],
+        ['jan', 'feb', 'mar', 'apr', 'máj', 'jún', 'júl', 'aug', 'sep', 'okt', 'nov', 'dec'],
+        [
+          'január', 'február', 'marec', 'apríl', 'máj', 'jún', 'júl', 'august', 'september',
+          'október', 'november', 'december'
+        ]
+      ],
+      [['pred Kr.', 'po Kr.'], , ['pred Kristom', 'po Kristovi']], 1, [6, 0],
+      ['d. M. y', , 'd. MMMM y', 'EEEE, d. MMMM y'],
+      ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'],
+      [
+        '{1} {0}',
+        '{1}, {0}',
+        ,
+      ],
+      [',', ' ', ';', '%', '+', '-', 'e', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+            if (i === 1 && v === 0) return 1;
+            if (i === Math.floor(i) && i >= 2 && i <= 4 && v === 0) return 3;
+            if (!(v === 0)) return 4;
+            return 5;
+          }
+    ];
     break;
   case 'sl':
-    l = sl;
-    break;
-  case 'smn':
-    l = smn;
-    break;
-  case 'sn':
-    l = sn;
-    break;
-  case 'so':
-    l = so;
-    break;
-  case 'so_DJ':
-  case 'so-DJ':
-    l = soDJ;
-    break;
-  case 'so_ET':
-  case 'so-ET':
-    l = soET;
-    break;
-  case 'so_KE':
-  case 'so-KE':
-    l = soKE;
+    l = [
+      'sl',
+      [
+        ['d', 'p'],
+        ['dop.', 'pop.'],
+      ],
+      [['d', 'p'], ['dop.', 'pop.'], ['dopoldne', 'popoldne']],
+      [
+        ['n', 'p', 't', 's', 'č', 'p', 's'],
+        ['ned.', 'pon.', 'tor.', 'sre.', 'čet.', 'pet.', 'sob.'],
+        ['nedelja', 'ponedeljek', 'torek', 'sreda', 'četrtek', 'petek', 'sobota'],
+        ['ned.', 'pon.', 'tor.', 'sre.', 'čet.', 'pet.', 'sob.']
+      ],
+      ,
+      [
+        ['j', 'f', 'm', 'a', 'm', 'j', 'j', 'a', 's', 'o', 'n', 'd'],
+        [
+          'jan.', 'feb.', 'mar.', 'apr.', 'maj', 'jun.', 'jul.', 'avg.', 'sep.', 'okt.', 'nov.',
+          'dec.'
+        ],
+        [
+          'januar', 'februar', 'marec', 'april', 'maj', 'junij', 'julij', 'avgust', 'september',
+          'oktober', 'november', 'december'
+        ]
+      ],
+      , [['pr. Kr.', 'po Kr.'], , ['pred Kristusom', 'po Kristusu']], 1, [6, 0],
+      ['d. MM. yy', 'd. MMM y', 'dd. MMMM y', 'EEEE, dd. MMMM y'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      [',', '.', ';', '%', '+', '−', 'e', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'evro',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+            if (v === 0 && i % 100 === 1) return 1;
+            if (v === 0 && i % 100 === 2) return 2;
+            if (v === 0 && i % 100 === Math.floor(i % 100) && i % 100 >= 3 && i % 100 <= 4 ||
+                !(v === 0))
+              return 3;
+            return 5;
+          }
+    ];
     break;
   case 'sq':
-    l = sq;
-    break;
-  case 'sq_MK':
-  case 'sq-MK':
-    l = sqMK;
-    break;
-  case 'sq_XK':
-  case 'sq-XK':
-    l = sqXK;
+    l = [
+      'sq',
+      [
+        ['e paradites', 'e pasdites'],
+        ,
+      ],
+      [
+        ['paradite', 'pasdite'],
+        ,
+      ],
+      [
+        ['D', 'H', 'M', 'M', 'E', 'P', 'S'], ['Die', 'Hën', 'Mar', 'Mër', 'Enj', 'Pre', 'Sht'],
+        ['e diel', 'e hënë', 'e martë', 'e mërkurë', 'e enjte', 'e premte', 'e shtunë'],
+        ['Die', 'Hën', 'Mar', 'Mër', 'Enj', 'Pre', 'Sht']
+      ],
+      [
+        ['D', 'H', 'M', 'M', 'E', 'P', 'S'], ['Die', 'Hën', 'Mar', 'Mër', 'Enj', 'Pre', 'Sht'],
+        ['E diel', 'E hënë', 'E martë', 'E mërkurë', 'E enjte', 'E premte', 'E shtunë'],
+        ['Die', 'Hën', 'Mar', 'Mër', 'Enj', 'Pre', 'Sht']
+      ],
+      [
+        ['j', 's', 'm', 'p', 'm', 'q', 'k', 'g', 's', 't', 'n', 'd'],
+        ['jan', 'shk', 'mar', 'pri', 'maj', 'qer', 'kor', 'gsh', 'sht', 'tet', 'nën', 'dhj'],
+        [
+          'janar', 'shkurt', 'mars', 'prill', 'maj', 'qershor', 'korrik', 'gusht', 'shtator',
+          'tetor', 'nëntor', 'dhjetor'
+        ]
+      ],
+      [
+        ['J', 'S', 'M', 'P', 'M', 'Q', 'K', 'G', 'S', 'T', 'N', 'D'],
+        ['Jan', 'Shk', 'Mar', 'Pri', 'Maj', 'Qer', 'Kor', 'Gsh', 'Sht', 'Tet', 'Nën', 'Dhj'],
+        [
+          'Janar', 'Shkurt', 'Mars', 'Prill', 'Maj', 'Qershor', 'Korrik', 'Gusht', 'Shtator',
+          'Tetor', 'Nëntor', 'Dhjetor'
+        ]
+      ],
+      [['p.K.', 'mb.K.'], , ['para Krishtit', 'mbas Krishtit']], 1, [6, 0],
+      ['d.M.yy', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
+      ['h:mm a', 'h:mm:ss a', 'h:mm:ss a, z', 'h:mm:ss a, zzzz'],
+      [
+        '{1}, {0}',
+        ,
+        '{1} \'në\' {0}',
+      ],
+      [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'Lekë', 'Leku shqiptar', function(n: number):
+                                                                                 number {
+                                                                                   if (n === 1)
+                                                                                     return 1;
+                                                                                   return 5;
+                                                                                 }
+    ];
     break;
   case 'sr':
-    l = sr;
-    break;
-  case 'sr_Cyrl':
-  case 'sr-Cyrl':
-    l = srCyrl;
-    break;
-  case 'sr_Cyrl-BA':
-  case 'sr-Cyrl-BA':
-    l = srCyrlBA;
-    break;
-  case 'sr_Cyrl-ME':
-  case 'sr-Cyrl-ME':
-    l = srCyrlME;
-    break;
-  case 'sr_Cyrl-XK':
-  case 'sr-Cyrl-XK':
-    l = srCyrlXK;
-    break;
-  case 'sr_Latn':
-  case 'sr-Latn':
-    l = srLatn;
-    break;
-  case 'sr_Latn-BA':
-  case 'sr-Latn-BA':
-    l = srLatnBA;
-    break;
-  case 'sr_Latn-ME':
-  case 'sr-Latn-ME':
-    l = srLatnME;
-    break;
-  case 'sr_Latn-XK':
-  case 'sr-Latn-XK':
-    l = srLatnXK;
+    l = [
+      'sr',
+      [
+        ['a', 'p'],
+        ['пре подне', 'по подне'],
+      ],
+      [
+        ['пре подне', 'по подне'],
+        ,
+      ],
+      [
+        ['н', 'п', 'у', 'с', 'ч', 'п', 'с'], ['нед', 'пон', 'уто', 'сре', 'чет', 'пет', 'суб'],
+        ['недеља', 'понедељак', 'уторак', 'среда', 'четвртак', 'петак', 'субота'],
+        ['не', 'по', 'ут', 'ср', 'че', 'пе', 'су']
+      ],
+      ,
+      [
+        ['ј', 'ф', 'м', 'а', 'м', 'ј', 'ј', 'а', 'с', 'о', 'н', 'д'],
+        ['јан', 'феб', 'мар', 'апр', 'мај', 'јун', 'јул', 'авг', 'сеп', 'окт', 'нов', 'дец'],
+        [
+          'јануар', 'фебруар', 'март', 'април', 'мај', 'јун', 'јул', 'август', 'септембар',
+          'октобар', 'новембар', 'децембар'
+        ]
+      ],
+      , [['п.н.е.', 'н.е.'], ['п. н. е.', 'н. е.'], ['пре нове ере', 'нове ере']], 1, [6, 0],
+      ['d.M.yy.', 'dd.MM.y.', 'dd. MMMM y.', 'EEEE, dd. MMMM y.'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'RSD', 'Српски динар',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length,
+                f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
+            if (v === 0 && i % 10 === 1 && !(i % 100 === 11) || f % 10 === 1 && !(f % 100 === 11))
+              return 1;
+            if (v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 2 && i % 10 <= 4 &&
+                    !(i % 100 >= 12 && i % 100 <= 14) ||
+                f % 10 === Math.floor(f % 10) && f % 10 >= 2 && f % 10 <= 4 &&
+                    !(f % 100 >= 12 && f % 100 <= 14))
+              return 3;
+            return 5;
+          }
+    ];
     break;
   case 'sv':
-    l = sv;
-    break;
-  case 'sv_AX':
-  case 'sv-AX':
-    l = svAX;
-    break;
-  case 'sv_FI':
-  case 'sv-FI':
-    l = svFI;
+    l = [
+      'sv',
+      [
+        ['fm', 'em'],
+        ,
+      ],
+      [['fm', 'em'], ['f.m.', 'e.m.'], ['förmiddag', 'eftermiddag']],
+      [
+        ['S', 'M', 'T', 'O', 'T', 'F', 'L'], ['sön', 'mån', 'tis', 'ons', 'tors', 'fre', 'lör'],
+        ['söndag', 'måndag', 'tisdag', 'onsdag', 'torsdag', 'fredag', 'lördag'],
+        ['sö', 'må', 'ti', 'on', 'to', 'fr', 'lö']
+      ],
+      ,
+      [
+        ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+        [
+          'jan.', 'feb.', 'mars', 'apr.', 'maj', 'juni', 'juli', 'aug.', 'sep.', 'okt.', 'nov.',
+          'dec.'
+        ],
+        [
+          'januari', 'februari', 'mars', 'april', 'maj', 'juni', 'juli', 'augusti', 'september',
+          'oktober', 'november', 'december'
+        ]
+      ],
+      , [['f.Kr.', 'e.Kr.'], , ['före Kristus', 'efter Kristus']], 1, [6, 0],
+      ['y-MM-dd', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', '\'kl\'. HH:mm:ss zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      [',', ' ', ';', '%', '+', '−', '×10^', '×', '‰', '∞', '¤¤¤', ':'],
+      ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'kr', 'svensk krona',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+            if (i === 1 && v === 0) return 1;
+            return 5;
+          }
+    ];
     break;
   case 'sw':
-    l = sw;
-    break;
-  case 'sw_CD':
-  case 'sw-CD':
-    l = swCD;
-    break;
-  case 'sw_KE':
-  case 'sw-KE':
-    l = swKE;
-    break;
-  case 'sw_UG':
-  case 'sw-UG':
-    l = swUG;
+    l = [
+      'sw', [['am', 'pm'], ['AM', 'PM'], ['Asubuhi', 'Mchana']],
+      [
+        ['am', 'pm'],
+        ['AM', 'PM'],
+      ],
+      [
+        ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+        ['Jumapili', 'Jumatatu', 'Jumanne', 'Jumatano', 'Alhamisi', 'Ijumaa', 'Jumamosi'],
+        ,
+      ],
+      ,
+      [
+        ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+        ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ago', 'Sep', 'Okt', 'Nov', 'Des'],
+        [
+          'Januari', 'Februari', 'Machi', 'Aprili', 'Mei', 'Juni', 'Julai', 'Agosti', 'Septemba',
+          'Oktoba', 'Novemba', 'Desemba'
+        ]
+      ],
+      , [['KK', 'BK'], , ['Kabla ya Kristo', 'Baada ya Kristo']], 1, [6, 0],
+      ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'TSh', 'Shilingi ya Tanzania',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+            if (i === 1 && v === 0) return 1;
+            return 5;
+          }
+    ];
     break;
   case 'ta':
-    l = ta;
-    break;
-  case 'ta_LK':
-  case 'ta-LK':
-    l = taLK;
-    break;
-  case 'ta_MY':
-  case 'ta-MY':
-    l = taMY;
-    break;
-  case 'ta_SG':
-  case 'ta-SG':
-    l = taSG;
+    l = [
+      'ta',
+      [
+        ['மு.ப', 'பி.ப'],
+        ['முற்பகல்', 'பிற்பகல்'],
+      ],
+      ,
+      [
+        ['ஞா', 'தி', 'செ', 'பு', 'வி', 'வெ', 'ச'],
+        ['ஞாயி.', 'திங்.', 'செவ்.', 'புத.', 'வியா.', 'வெள்.', 'சனி'],
+        ['ஞாயிறு', 'திங்கள்', 'செவ்வாய்', 'புதன்', 'வியாழன்', 'வெள்ளி', 'சனி'],
+        ['ஞா', 'தி', 'செ', 'பு', 'வி', 'வெ', 'ச']
+      ],
+      ,
+      [
+        ['ஜ', 'பி', 'மா', 'ஏ', 'மே', 'ஜூ', 'ஜூ', 'ஆ', 'செ', 'அ', 'ந', 'டி'],
+        ['ஜன.', 'பிப்.', 'மார்.', 'ஏப்.', 'மே', 'ஜூன்', 'ஜூலை', 'ஆக.', 'செப்.', 'அக்.', 'நவ.', 'டிச.'],
+        [
+          'ஜனவரி', 'பிப்ரவரி', 'மார்ச்', 'ஏப்ரல்', 'மே', 'ஜூன்', 'ஜூலை', 'ஆகஸ்ட்', 'செப்டம்பர்', 'அக்டோபர்',
+          'நவம்பர்', 'டிசம்பர்'
+        ]
+      ],
+      , [['கி.மு.', 'கி.பி.'], , ['கிறிஸ்துவுக்கு முன்', 'அன்னோ டோமினி']], 0, [0, 0],
+      ['d/M/yy', 'd MMM, y', 'd MMMM, y', 'EEEE, d MMMM, y'],
+      ['a h:mm', 'a h:mm:ss', 'a h:mm:ss z', 'a h:mm:ss zzzz'],
+      [
+        '{1}, {0}',
+        ,
+        '{1} ’அன்று’ {0}',
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##,##0.###', '#,##,##0%', '¤ #,##,##0.00', '#E0'], '₹', 'இந்திய ரூபாய்',
+      function(n: number):
+          number {
+            if (n === 1) return 1;
+            return 5;
+          }
+    ];
     break;
   case 'te':
-    l = te;
-    break;
-  case 'teo':
-    l = teo;
-    break;
-  case 'teo_KE':
-  case 'teo-KE':
-    l = teoKE;
+    l = [
+      'te',
+      [
+        ['ఉ', 'సా'],
+        ['AM', 'PM'],
+      ],
+      [
+        ['AM', 'PM'],
+        ,
+      ],
+      [
+        ['ఆ', 'సో', 'మ', 'బు', 'గు', 'శు', 'శ'], ['ఆది', 'సోమ', 'మంగళ', 'బుధ', 'గురు', 'శుక్ర', 'శని'],
+        ['ఆదివారం', 'సోమవారం', 'మంగళవారం', 'బుధవారం', 'గురువారం', 'శుక్రవారం', 'శనివారం'],
+        ['ఆది', 'సోమ', 'మం', 'బుధ', 'గురు', 'శుక్ర', 'శని']
+      ],
+      ,
+      [
+        ['జ', 'ఫి', 'మా', 'ఏ', 'మే', 'జూ', 'జు', 'ఆ', 'సె', 'అ', 'న', 'డి'],
+        ['జన', 'ఫిబ్ర', 'మార్చి', 'ఏప్రి', 'మే', 'జూన్', 'జులై', 'ఆగ', 'సెప్టెం', 'అక్టో', 'నవం', 'డిసెం'],
+        [
+          'జనవరి', 'ఫిబ్రవరి', 'మార్చి', 'ఏప్రిల్', 'మే', 'జూన్', 'జులై', 'ఆగస్టు', 'సెప్టెంబర్', 'అక్టోబర్', 'నవంబర్',
+          'డిసెంబర్'
+        ]
+      ],
+      [
+        ['జ', 'ఫి', 'మా', 'ఏ', 'మే', 'జూ', 'జు', 'ఆ', 'సె', 'అ', 'న', 'డి'],
+        ['జన', 'ఫిబ్ర', 'మార్చి', 'ఏప్రి', 'మే', 'జూన్', 'జులై', 'ఆగస్టు', 'సెప్టెం', 'అక్టో', 'నవం', 'డిసెం'],
+        [
+          'జనవరి', 'ఫిబ్రవరి', 'మార్చి', 'ఏప్రిల్', 'మే', 'జూన్', 'జులై', 'ఆగస్టు', 'సెప్టెంబర్', 'అక్టోబర్', 'నవంబర్',
+          'డిసెంబర్'
+        ]
+      ],
+      [['క్రీపూ', 'క్రీశ'], , ['క్రీస్తు పూర్వం', 'క్రీస్తు శకం']], 0, [0, 0],
+      ['dd-MM-yy', 'd MMM, y', 'd MMMM, y', 'd, MMMM y, EEEE'],
+      ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##,##0.###', '#,##0%', '¤#,##,##0.00', '#E0'], '₹', 'రూపాయి', function(n: number):
+                                                                          number {
+                                                                            if (n === 1) return 1;
+                                                                            return 5;
+                                                                          }
+    ];
     break;
   case 'th':
-    l = th;
+    l = [
+      'th',
+      [
+        ['a', 'p'],
+        ['ก่อนเที่ยง', 'หลังเที่ยง'],
+      ],
+      [
+        ['ก่อนเที่ยง', 'หลังเที่ยง'],
+        ,
+      ],
+      [
+        ['อา', 'จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส'], ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'],
+        ['วันอาทิตย์', 'วันจันทร์', 'วันอังคาร', 'วันพุธ', 'วันพฤหัสบดี', 'วันศุกร์', 'วันเสาร์'],
+        ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.']
+      ],
+      ,
+      [
+        [
+          'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.',
+          'ธ.ค.'
+        ],
+        ,
+        [
+          'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม',
+          'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
+        ]
+      ],
+      , [['ก่อน ค.ศ.', 'ค.ศ.'], ['ปีก่อน ค.ศ.', 'ค.ศ.'], ['ปีก่อนคริสต์ศักราช', 'คริสต์ศักราช']], 0, [6, 0],
+      ['d/M/yy', 'd MMM y', 'd MMMM G y', 'EEEEที่ d MMMM G y'],
+      ['HH:mm', 'HH:mm:ss', 'H นาฬิกา mm นาที ss วินาที z', 'H นาฬิกา mm นาที ss วินาที zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'THB', 'บาทไทย',
+      function(n: number): number { return 5; }
+    ];
     break;
-  case 'ti':
-    l = ti;
-    break;
-  case 'ti_ER':
-  case 'ti-ER':
-    l = tiER;
-    break;
-  case 'tk':
-    l = tk;
-    break;
-  case 'to':
-    l = to;
+  case 'tl':
+  case 'fil':
+    l = [
+      'fil',
+      [
+        ['am', 'pm'],
+        ['AM', 'PM'],
+      ],
+      [
+        ['AM', 'PM'],
+        ,
+      ],
+      [
+        ['Lin', 'Lun', 'Mar', 'Miy', 'Huw', 'Biy', 'Sab'], ,
+        ['Linggo', 'Lunes', 'Martes', 'Miyerkules', 'Huwebes', 'Biyernes', 'Sabado'],
+        ['Li', 'Lu', 'Ma', 'Mi', 'Hu', 'Bi', 'Sa']
+      ],
+      ,
+      [
+        ['Ene', 'Peb', 'Mar', 'Abr', 'May', 'Hun', 'Hul', 'Ago', 'Set', 'Okt', 'Nob', 'Dis'], ,
+        [
+          'Enero', 'Pebrero', 'Marso', 'Abril', 'Mayo', 'Hunyo', 'Hulyo', 'Agosto', 'Setyembre',
+          'Oktubre', 'Nobyembre', 'Disyembre'
+        ]
+      ],
+      [
+        ['E', 'P', 'M', 'A', 'M', 'Hun', 'Hul', 'Ago', 'Set', 'Okt', 'Nob', 'Dis'],
+        ['Ene', 'Peb', 'Mar', 'Abr', 'May', 'Hun', 'Hul', 'Ago', 'Set', 'Okt', 'Nob', 'Dis'],
+        [
+          'Enero', 'Pebrero', 'Marso', 'Abril', 'Mayo', 'Hunyo', 'Hulyo', 'Agosto', 'Setyembre',
+          'Oktubre', 'Nobyembre', 'Disyembre'
+        ]
+      ],
+      [
+        ['BC', 'AD'],
+        ,
+      ],
+      0, [6, 0], ['M/d/yy', 'MMM d, y', 'MMMM d, y', 'EEEE, MMMM d, y'],
+      ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+      [
+        '{1}, {0}',
+        ,
+        '{1} \'nang\' {0}',
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '₱', 'Piso ng Pilipinas',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length,
+                f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
+            if (v === 0 && (i === 1 || i === 2 || i === 3) ||
+                v === 0 && !(i % 10 === 4 || i % 10 === 6 || i % 10 === 9) ||
+                !(v === 0) && !(f % 10 === 4 || f % 10 === 6 || f % 10 === 9))
+              return 1;
+            return 5;
+          }
+    ];
     break;
   case 'tr':
-    l = tr;
-    break;
-  case 'tr_CY':
-  case 'tr-CY':
-    l = trCY;
-    break;
-  case 'twq':
-    l = twq;
-    break;
-  case 'tzm':
-    l = tzm;
-    break;
-  case 'ug':
-    l = ug;
+    l = [
+      'tr',
+      [
+        ['öö', 'ös'],
+        ['ÖÖ', 'ÖS'],
+      ],
+      [
+        ['ÖÖ', 'ÖS'],
+        ,
+      ],
+      [
+        ['P', 'P', 'S', 'Ç', 'P', 'C', 'C'], ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt'],
+        ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'],
+        ['Pa', 'Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct']
+      ],
+      ,
+      [
+        ['O', 'Ş', 'M', 'N', 'M', 'H', 'T', 'A', 'E', 'E', 'K', 'A'],
+        ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'],
+        [
+          'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül',
+          'Ekim', 'Kasım', 'Aralık'
+        ]
+      ],
+      , [['MÖ', 'MS'], , ['Milattan Önce', 'Milattan Sonra']], 1, [6, 0],
+      ['d.MM.y', 'd MMM y', 'd MMMM y', 'd MMMM y EEEE'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '%#,##0', '¤#,##0.00', '#E0'], '₺', 'Türk Lirası', function(n: number):
+                                                                           number {
+                                                                             if (n === 1) return 1;
+                                                                             return 5;
+                                                                           }
+    ];
     break;
   case 'uk':
-    l = uk;
+    l = [
+      'uk',
+      [
+        ['дп', 'пп'],
+        ,
+      ],
+      ,
+      [
+        ['Н', 'П', 'В', 'С', 'Ч', 'П', 'С'], ['нд', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'],
+        ['неділя', 'понеділок', 'вівторок', 'середа', 'четвер', 'пʼятниця', 'субота'],
+        ['нд', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
+      ],
+      ,
+      [
+        ['с', 'л', 'б', 'к', 'т', 'ч', 'л', 'с', 'в', 'ж', 'л', 'г'],
+        [
+          'січ.', 'лют.', 'бер.', 'квіт.', 'трав.', 'черв.', 'лип.', 'серп.', 'вер.', 'жовт.',
+          'лист.', 'груд.'
+        ],
+        [
+          'січня', 'лютого', 'березня', 'квітня', 'травня', 'червня', 'липня', 'серпня', 'вересня',
+          'жовтня', 'листопада', 'грудня'
+        ]
+      ],
+      [
+        ['С', 'Л', 'Б', 'К', 'Т', 'Ч', 'Л', 'С', 'В', 'Ж', 'Л', 'Г'],
+        ['січ', 'лют', 'бер', 'кві', 'тра', 'чер', 'лип', 'сер', 'вер', 'жов', 'лис', 'гру'],
+        [
+          'січень', 'лютий', 'березень', 'квітень', 'травень', 'червень', 'липень', 'серпень',
+          'вересень', 'жовтень', 'листопад', 'грудень'
+        ]
+      ],
+      [['до н.е.', 'н.е.'], ['до н. е.', 'н. е.'], ['до нашої ери', 'нашої ери']], 1, [6, 0],
+      ['dd.MM.yy', 'd MMM y \'р\'.', 'd MMMM y \'р\'.', 'EEEE, d MMMM y \'р\'.'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1}, {0}',
+        ,
+        '{1} \'о\' {0}',
+      ],
+      [',', ' ', ';', '%', '+', '-', 'Е', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '₴', 'українська гривня',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+            if (v === 0 && i % 10 === 1 && !(i % 100 === 11)) return 1;
+            if (v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 2 && i % 10 <= 4 &&
+                !(i % 100 >= 12 && i % 100 <= 14))
+              return 3;
+            if (v === 0 && i % 10 === 0 ||
+                v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 5 && i % 10 <= 9 ||
+                v === 0 && i % 100 === Math.floor(i % 100) && i % 100 >= 11 && i % 100 <= 14)
+              return 4;
+            return 5;
+          }
+    ];
     break;
   case 'ur':
-    l = ur;
-    break;
-  case 'ur_IN':
-  case 'ur-IN':
-    l = urIN;
+    l = [
+      'ur',
+      [
+        ['a', 'p'],
+        ['AM', 'PM'],
+      ],
+      [
+        ['AM', 'PM'],
+        ,
+      ],
+      [
+        ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+        ['اتوار', 'سوموار', 'منگل', 'بدھ', 'جمعرات', 'جمعہ', 'ہفتہ'],
+        ,
+      ],
+      ,
+      [
+        ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+        [
+          'جنوری', 'فروری', 'مارچ', 'اپریل', 'مئی', 'جون', 'جولائی', 'اگست', 'ستمبر', 'اکتوبر',
+          'نومبر', 'دسمبر'
+        ],
+      ],
+      ,
+      [
+        ['قبل مسیح', 'عیسوی'],
+        ,
+      ],
+      0, [6, 0], ['d/M/yy', 'y MMM d', 'd MMMM، y', 'EEEE، d MMMM، y'],
+      ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      ['.', ',', ';', '%', '‎+', '‎-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##,##0%', '¤ #,##,##0.00', '#E0'], 'Rs', 'پاکستانی روپیہ',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+            if (i === 1 && v === 0) return 1;
+            return 5;
+          }
+    ];
     break;
   case 'uz':
-    l = uz;
-    break;
-  case 'uz_Arab':
-  case 'uz-Arab':
-    l = uzArab;
-    break;
-  case 'uz_Cyrl':
-  case 'uz-Cyrl':
-    l = uzCyrl;
-    break;
-  case 'uz_Latn':
-  case 'uz-Latn':
-    l = uzLatn;
-    break;
-  case 'vai':
-    l = vai;
-    break;
-  case 'vai_Latn':
-  case 'vai-Latn':
-    l = vaiLatn;
-    break;
-  case 'vai_Vaii':
-  case 'vai-Vaii':
-    l = vaiVaii;
+    l = [
+      'uz',
+      [
+        ['TO', 'TK'],
+        ,
+      ],
+      ,
+      [
+        ['Y', 'D', 'S', 'C', 'P', 'J', 'S'], ['Yak', 'Dush', 'Sesh', 'Chor', 'Pay', 'Jum', 'Shan'],
+        ['yakshanba', 'dushanba', 'seshanba', 'chorshanba', 'payshanba', 'juma', 'shanba'],
+        ['Ya', 'Du', 'Se', 'Ch', 'Pa', 'Ju', 'Sh']
+      ],
+      ,
+      [
+        ['Y', 'F', 'M', 'A', 'M', 'I', 'I', 'A', 'S', 'O', 'N', 'D'],
+        ['yan', 'fev', 'mar', 'apr', 'may', 'iyn', 'iyl', 'avg', 'sen', 'okt', 'noy', 'dek'],
+        [
+          'yanvar', 'fevral', 'mart', 'aprel', 'may', 'iyun', 'iyul', 'avgust', 'sentabr', 'oktabr',
+          'noyabr', 'dekabr'
+        ]
+      ],
+      [
+        ['Y', 'F', 'M', 'A', 'M', 'I', 'I', 'A', 'S', 'O', 'N', 'D'],
+        ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'Iyn', 'Iyl', 'Avg', 'Sen', 'Okt', 'Noy', 'Dek'],
+        [
+          'Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'Iyun', 'Iyul', 'Avgust', 'Sentabr', 'Oktabr',
+          'Noyabr', 'Dekabr'
+        ]
+      ],
+      [['m.a.', 'milodiy'], , ['miloddan avvalgi', 'milodiy']], 1, [6, 0],
+      ['dd/MM/yy', 'd-MMM, y', 'd-MMMM, y', 'EEEE, d-MMMM, y'],
+      ['HH:mm', 'HH:mm:ss', 'H:mm:ss (z)', 'H:mm:ss (zzzz)'],
+      [
+        '{1}, {0}',
+        ,
+        ,
+      ],
+      [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'haqiqiy son emas', ':'],
+      ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'soʻm', 'O‘zbekiston so‘mi',
+      function(n: number):
+          number {
+            if (n === 1) return 1;
+            return 5;
+          }
+    ];
     break;
   case 'vi':
-    l = vi;
-    break;
-  case 'vo':
-    l = vo;
-    break;
-  case 'vun':
-    l = vun;
-    break;
-  case 'wae':
-    l = wae;
-    break;
-  case 'xog':
-    l = xog;
-    break;
-  case 'yav':
-    l = yav;
-    break;
-  case 'yi':
-    l = yi;
-    break;
-  case 'yo':
-    l = yo;
-    break;
-  case 'yo_BJ':
-  case 'yo-BJ':
-    l = yoBJ;
-    break;
-  case 'yue':
-    l = yue;
-    break;
-  case 'zgh':
-    l = zgh;
+    l = [
+      'vi',
+      [
+        ['s', 'c'],
+        ['SA', 'CH'],
+      ],
+      [
+        ['SA', 'CH'],
+        ,
+      ],
+      [
+        ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
+        ['CN', 'Th 2', 'Th 3', 'Th 4', 'Th 5', 'Th 6', 'Th 7'],
+        ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'],
+        ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7']
+      ],
+      ,
+      [
+        ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+        [
+          'thg 1', 'thg 2', 'thg 3', 'thg 4', 'thg 5', 'thg 6', 'thg 7', 'thg 8', 'thg 9', 'thg 10',
+          'thg 11', 'thg 12'
+        ],
+        [
+          'tháng 1', 'tháng 2', 'tháng 3', 'tháng 4', 'tháng 5', 'tháng 6', 'tháng 7', 'tháng 8',
+          'tháng 9', 'tháng 10', 'tháng 11', 'tháng 12'
+        ]
+      ],
+      [
+        ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+        [
+          'Thg 1', 'Thg 2', 'Thg 3', 'Thg 4', 'Thg 5', 'Thg 6', 'Thg 7', 'Thg 8', 'Thg 9', 'Thg 10',
+          'Thg 11', 'Thg 12'
+        ],
+        [
+          'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8',
+          'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'
+        ]
+      ],
+      [
+        ['tr. CN', 'sau CN'],
+        ['Trước CN', 'sau CN'],
+      ],
+      1, [6, 0], ['dd/MM/y', 'd MMM, y', 'd MMMM, y', 'EEEE, d MMMM, y'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{0}, {1}',
+        ,
+        '{0} {1}',
+      ],
+      [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], '₫', 'Đồng Việt Nam',
+      function(n: number): number { return 5; }
+    ];
     break;
   case 'zh':
-    l = zh;
+    l = [
+      'zh',
+      [
+        ['上午', '下午'],
+        ,
+      ],
+      ,
+      [
+        ['日', '一', '二', '三', '四', '五', '六'],
+        ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+        ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+        ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+      ],
+      ,
+      [
+        ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+        ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+        [
+          '一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月',
+          '十二月'
+        ]
+      ],
+      ,
+      [
+        ['公元前', '公元'],
+        ,
+      ],
+      0, [6, 0], ['y/M/d', 'y年M月d日', , 'y年M月d日EEEE'],
+      ['ah:mm', 'ah:mm:ss', 'z ah:mm:ss', 'zzzz ah:mm:ss'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '￥', '人民币',
+      function(n: number): number { return 5; }
+    ];
     break;
-  case 'zh_Hans':
+  case 'zh-CN':
+  case 'zh_CN':
+  case 'zh-Hans-CN':
   case 'zh-Hans':
-    l = zhHans;
+    l = [
+      'zh-Hans',
+      [
+        ['上午', '下午'],
+        ,
+      ],
+      ,
+      [
+        ['日', '一', '二', '三', '四', '五', '六'],
+        ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+        ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+        ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+      ],
+      ,
+      [
+        ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+        ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+        [
+          '一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月',
+          '十二月'
+        ]
+      ],
+      ,
+      [
+        ['公元前', '公元'],
+        ,
+      ],
+      0, [6, 0], ['y/M/d', 'y年M月d日', , 'y年M月d日EEEE'],
+      ['ah:mm', 'ah:mm:ss', 'z ah:mm:ss', 'zzzz ah:mm:ss'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '￥', '人民币',
+      function(n: number): number { return 5; }
+    ];
     break;
-  case 'zh_Hans-HK':
-  case 'zh-Hans-HK':
-    l = zhHansHK;
-    break;
-  case 'zh_Hans-MO':
-  case 'zh-Hans-MO':
-    l = zhHansMO;
-    break;
-  case 'zh_Hans-SG':
-  case 'zh-Hans-SG':
-    l = zhHansSG;
-    break;
-  case 'zh_Hant':
-  case 'zh-Hant':
-    l = zhHant;
-    break;
-  case 'zh_Hant-HK':
+  case 'zh-HK':
+  case 'zh_HK':
   case 'zh-Hant-HK':
-    l = zhHantHK;
+  case 'zh-Hant':
+    l = [
+      'zh-Hant',
+      [
+        ['上午', '下午'],
+        ,
+      ],
+      ,
+      [
+        ['日', '一', '二', '三', '四', '五', '六'],
+        ['週日', '週一', '週二', '週三', '週四', '週五', '週六'],
+        ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+        ['日', '一', '二', '三', '四', '五', '六']
+      ],
+      ,
+      [
+        ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+        ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+      ],
+      ,
+      [
+        ['西元前', '西元'],
+        ,
+      ],
+      0, [6, 0], ['y/M/d', 'y年M月d日', , 'y年M月d日 EEEE'],
+      ['ah:mm', 'ah:mm:ss', 'ah:mm:ss [z]', 'ah:mm:ss [zzzz]'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', '非數值', ':'],
+      ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '$', '新台幣',
+      function(n: number): number { return 5; }
+    ];
     break;
-  case 'zh_Hant-MO':
-  case 'zh-Hant-MO':
-    l = zhHantMO;
+  case 'zh-TW':
+  case 'zh_TW':
+  case 'zh-Hant-TW':
+  case 'zh-Hant':
+    l = [
+      'zh-Hant',
+      [
+        ['上午', '下午'],
+        ,
+      ],
+      ,
+      [
+        ['日', '一', '二', '三', '四', '五', '六'],
+        ['週日', '週一', '週二', '週三', '週四', '週五', '週六'],
+        ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+        ['日', '一', '二', '三', '四', '五', '六']
+      ],
+      ,
+      [
+        ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+        ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+      ],
+      ,
+      [
+        ['西元前', '西元'],
+        ,
+      ],
+      0, [6, 0], ['y/M/d', 'y年M月d日', , 'y年M月d日 EEEE'],
+      ['ah:mm', 'ah:mm:ss', 'ah:mm:ss [z]', 'ah:mm:ss [zzzz]'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', '非數值', ':'],
+      ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '$', '新台幣',
+      function(n: number): number { return 5; }
+    ];
     break;
   case 'zu':
-    l = zu;
+    l = [
+      'zu',
+      [
+        ['a', 'p'],
+        ['AM', 'PM'],
+      ],
+      ,
+      [
+        ['S', 'M', 'B', 'T', 'S', 'H', 'M'], ['Son', 'Mso', 'Bil', 'Tha', 'Sin', 'Hla', 'Mgq'],
+        [
+          'ISonto', 'UMsombuluko', 'ULwesibili', 'ULwesithathu', 'ULwesine', 'ULwesihlanu',
+          'UMgqibelo'
+        ],
+        ['Son', 'Mso', 'Bil', 'Tha', 'Sin', 'Hla', 'Mgq']
+      ],
+      ,
+      [
+        ['J', 'F', 'M', 'E', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+        ['Jan', 'Feb', 'Mas', 'Eph', 'Mey', 'Jun', 'Jul', 'Aga', 'Sep', 'Okt', 'Nov', 'Dis'],
+        [
+          'UMasingana', 'Februwari', 'Mashi', 'Ephreli', 'Meyi', 'Juni', 'Julayi', 'Agasti',
+          'Septhemba', 'Okthoba', 'Novemba', 'Disemba'
+        ]
+      ],
+      [
+        ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+        ['Jan', 'Feb', 'Mas', 'Eph', 'Mey', 'Jun', 'Jul', 'Aga', 'Sep', 'Okt', 'Nov', 'Dis'],
+        [
+          'Januwari', 'Februwari', 'Mashi', 'Ephreli', 'Meyi', 'Juni', 'Julayi', 'Agasti',
+          'Septhemba', 'Okthoba', 'Novemba', 'Disemba'
+        ]
+      ],
+      [
+        ['BC', 'AD'],
+        ,
+      ],
+      0, [6, 0], ['M/d/yy', 'MMM d, y', 'MMMM d, y', 'EEEE, MMMM d, y'],
+      ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+      [
+        '{1} {0}',
+        ,
+        ,
+      ],
+      ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+      ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'R', 'i-South African Rand',
+      function(n: number):
+          number {
+            let i = Math.floor(Math.abs(n));
+            if (i === 0 || n === 1) return 1;
+            return 5;
+          }
+    ];
     break;
-
-  default:
-    l = en;
 }
 
-registerLocaleData(l);
+if (l) {
+  l[0] = goog.LOCALE;
+  registerLocaleData(l);
+}
