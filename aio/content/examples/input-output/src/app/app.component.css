@@ -1,0 +1,43 @@
+body {
+  font-family: Roboto, Helvetica Neue Light, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;
+  color: #2A2A2A;
+}
+
+.parent {
+  border: 1px solid #dddddd;
+  width: 80%;
+  max-width: 900px;
+  margin: auto;
+  padding: 0 2rem 2rem 2rem;
+}
+
+h1 {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #1976d2;
+  text-transform: uppercase;
+}
+
+.child {
+  box-shadow: 0 2px 2px rgba(10,16,20,.24), 0 0 2px rgba(10,16,20,.12);
+  border-radius: 2px;
+  background: #fafafa;
+  padding: .5rem 1rem 1rem 1rem;
+}
+
+input {
+  padding: .5rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+button {
+  padding: .6rem;
+  color: #fff;
+  background-color: #1976d2;
+  border: none;
+  border-radius: 5px;
+  display: block;
+  margin-top: 1rem;
+}
+

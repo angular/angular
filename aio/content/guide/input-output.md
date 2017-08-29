@@ -143,7 +143,7 @@ parent knows something has changed. To raise an event,
 which is a class in `@angular/core` that you can 
 use to emit custom events.
 
-Any time you use `@Output()`, you need to edit four files:
+Any time you use `@Output()`, you need to edit four parts of your app:
 
 * [The child component](guide/input-output#in-the-child-component).
 * [The child's template]().
@@ -287,9 +287,9 @@ in the child template UI.
 The following diagrams may help you conceptualize the way outputs 
 work. When the user clicks on the add button, 
 
-<figure>
-  <img src='generated/images/guide/input-output/input-output-diagram.gif' alt="Input/Output diagram">
-</figure>
+<!-- <figure>
+  <img src='generated/images/guide/input-output/output-flow.gif' alt="Input/Output diagram">
+</figure> -->
 
 
 ## `@Input()` and `@Output()` together
