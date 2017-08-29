@@ -58,7 +58,9 @@ export function main() {
 
            wdAdapter.data['loadTime'] = 25;
            // Wait before setting 2nd property.
-           setTimeout(() => { wdAdapter.data['content'] = 250; }, 50);
+           setTimeout(() => {
+             wdAdapter.data['content'] = 250;
+           }, 50);
 
          }), 600);
     });

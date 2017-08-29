@@ -6,12 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {GetTestability, Testability, TestabilityRegistry, setTestabilityGetter, ɵglobal as global} from '@angular/core';
+import {GetTestability, setTestabilityGetter, Testability, TestabilityRegistry, ɵglobal as global} from '@angular/core';
 
 import {getDOM} from '../dom/dom_adapter';
 
 export class BrowserGetTestability implements GetTestability {
-  static init() { setTestabilityGetter(new BrowserGetTestability()); }
+  static init() {
+    setTestabilityGetter(new BrowserGetTestability());
+  }
 
   addToWindow(registry: TestabilityRegistry): void {
     global['getAngularTestability'] = (elem: any, findInAncestors: boolean = true) => {

@@ -26,11 +26,15 @@ const REMOVE_EVENT_LISTENER: 'removeEventListener' = __symbol__('removeEventList
 
 @Injectable()
 export class DomEventsPlugin extends EventManagerPlugin {
-  constructor(@Inject(DOCUMENT) doc: any, private ngZone: NgZone) { super(doc); }
+  constructor(@Inject(DOCUMENT) doc: any, private ngZone: NgZone) {
+    super(doc);
+  }
 
   // This plugin should come last in the list of plugins, because it accepts all
   // events.
-  supports(eventName: string): boolean { return true; }
+  supports(eventName: string): boolean {
+    return true;
+  }
 
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
     /**

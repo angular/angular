@@ -44,8 +44,9 @@ describe('plugin', () => {
     }
   });
 
-  it('should be able to get entity completions',
-     () => { contains('app/app.component.ts', 'entity-amp', '&amp;', '&gt;', '&lt;', '&iota;'); });
+  it('should be able to get entity completions', () => {
+    contains('app/app.component.ts', 'entity-amp', '&amp;', '&gt;', '&lt;', '&iota;');
+  });
 
   it('should be able to return html elements', () => {
     let htmlTags = ['h1', 'h2', 'div', 'span'];
@@ -55,18 +56,21 @@ describe('plugin', () => {
     }
   });
 
-  it('should be able to return element diretives',
-     () => { contains('app/app.component.ts', 'empty', 'my-app'); });
+  it('should be able to return element diretives', () => {
+    contains('app/app.component.ts', 'empty', 'my-app');
+  });
 
-  it('should be able to return h1 attributes',
-     () => { contains('app/app.component.ts', 'h1-after-space', 'id', 'dir', 'lang', 'onclick'); });
+  it('should be able to return h1 attributes', () => {
+    contains('app/app.component.ts', 'h1-after-space', 'id', 'dir', 'lang', 'onclick');
+  });
 
   it('should be able to find common angular attributes', () => {
     contains('app/app.component.ts', 'div-attributes', '(click)', '[ngClass]', '*ngIf', '*ngFor');
   });
 
-  it('should be able to returned attribute names with an incompete attribute',
-     () => { contains('app/parsing-cases.ts', 'no-value-attribute', 'id', 'dir', 'lang'); });
+  it('should be able to returned attribute names with an incompete attribute', () => {
+    contains('app/parsing-cases.ts', 'no-value-attribute', 'id', 'dir', 'lang');
+  });
 
   it('should be able to return attributes of an incomplete element', () => {
     contains('app/parsing-cases.ts', 'incomplete-open-lt', 'a');
@@ -74,23 +78,29 @@ describe('plugin', () => {
     contains('app/parsing-cases.ts', 'incomplete-open-attr', 'id', 'dir', 'lang');
   });
 
-  it('should be able to return completions with a missing closing tag',
-     () => { contains('app/parsing-cases.ts', 'missing-closing', 'h1', 'h2'); });
+  it('should be able to return completions with a missing closing tag', () => {
+    contains('app/parsing-cases.ts', 'missing-closing', 'h1', 'h2');
+  });
 
-  it('should be able to return common attributes of in an unknown tag',
-     () => { contains('app/parsing-cases.ts', 'unknown-element', 'id', 'dir', 'lang'); });
+  it('should be able to return common attributes of in an unknown tag', () => {
+    contains('app/parsing-cases.ts', 'unknown-element', 'id', 'dir', 'lang');
+  });
 
-  it('should be able to get the completions at the beginning of an interpolation',
-     () => { contains('app/app.component.ts', 'h2-hero', 'hero', 'title'); });
+  it('should be able to get the completions at the beginning of an interpolation', () => {
+    contains('app/app.component.ts', 'h2-hero', 'hero', 'title');
+  });
 
-  it('should not include private members of the of a class',
-     () => { contains('app/app.component.ts', 'h2-hero', '-internal'); });
+  it('should not include private members of the of a class', () => {
+    contains('app/app.component.ts', 'h2-hero', '-internal');
+  });
 
-  it('should be able to get the completions at the end of an interpolation',
-     () => { contains('app/app.component.ts', 'sub-end', 'hero', 'title'); });
+  it('should be able to get the completions at the end of an interpolation', () => {
+    contains('app/app.component.ts', 'sub-end', 'hero', 'title');
+  });
 
-  it('should be able to get the completions in a property read',
-     () => { contains('app/app.component.ts', 'h2-name', 'name', 'id'); });
+  it('should be able to get the completions in a property read', () => {
+    contains('app/app.component.ts', 'h2-name', 'name', 'id');
+  });
 
   it('should be able to get a list of pipe values', () => {
     contains('app/parsing-cases.ts', 'before-pipe', 'lowercase', 'uppercase');
@@ -98,32 +108,43 @@ describe('plugin', () => {
     contains('app/parsing-cases.ts', 'after-pipe', 'lowercase', 'uppercase');
   });
 
-  it('should be able get completions in an empty interpolation',
-     () => { contains('app/parsing-cases.ts', 'empty-interpolation', 'title', 'subTitle'); });
+  it('should be able get completions in an empty interpolation', () => {
+    contains('app/parsing-cases.ts', 'empty-interpolation', 'title', 'subTitle');
+  });
 
   describe('with attributes', () => {
-    it('should be able to complete property value',
-       () => { contains('app/parsing-cases.ts', 'property-binding-model', 'test'); });
-    it('should be able to complete an event',
-       () => { contains('app/parsing-cases.ts', 'event-binding-model', 'modelChanged'); });
-    it('should be able to complete a two-way binding',
-       () => { contains('app/parsing-cases.ts', 'two-way-binding-model', 'test'); });
+    it('should be able to complete property value', () => {
+      contains('app/parsing-cases.ts', 'property-binding-model', 'test');
+    });
+    it('should be able to complete an event', () => {
+      contains('app/parsing-cases.ts', 'event-binding-model', 'modelChanged');
+    });
+    it('should be able to complete a two-way binding', () => {
+      contains('app/parsing-cases.ts', 'two-way-binding-model', 'test');
+    });
   });
 
   describe('with a *ngFor', () => {
-    it('should include a let for empty attribute',
-       () => { contains('app/parsing-cases.ts', 'for-empty', 'let'); });
+    it('should include a let for empty attribute', () => {
+      contains('app/parsing-cases.ts', 'for-empty', 'let');
+    });
     it('should suggest NgForRow members for let initialization expression', () => {
       contains(
           'app/parsing-cases.ts', 'for-let-i-equal', 'index', 'count', 'first', 'last', 'even',
           'odd');
     });
-    it('should include a let', () => { contains('app/parsing-cases.ts', 'for-let', 'let'); });
-    it('should include an "of"', () => { contains('app/parsing-cases.ts', 'for-of', 'of'); });
-    it('should include field reference',
-       () => { contains('app/parsing-cases.ts', 'for-people', 'people'); });
-    it('should include person in the let scope',
-       () => { contains('app/parsing-cases.ts', 'for-interp-person', 'person'); });
+    it('should include a let', () => {
+      contains('app/parsing-cases.ts', 'for-let', 'let');
+    });
+    it('should include an "of"', () => {
+      contains('app/parsing-cases.ts', 'for-of', 'of');
+    });
+    it('should include field reference', () => {
+      contains('app/parsing-cases.ts', 'for-people', 'people');
+    });
+    it('should include person in the let scope', () => {
+      contains('app/parsing-cases.ts', 'for-interp-person', 'person');
+    });
     // TODO: Enable when we can infer the element type of the ngFor
     // it('should include determine person\'s type as Person', () => {
     //   contains('app/parsing-cases.ts', 'for-interp-name', 'name', 'age');
@@ -132,15 +153,18 @@ describe('plugin', () => {
   });
 
   describe('for pipes', () => {
-    it('should be able to resolve lowercase',
-       () => { contains('app/expression-cases.ts', 'string-pipe', 'substring'); });
+    it('should be able to resolve lowercase', () => {
+      contains('app/expression-cases.ts', 'string-pipe', 'substring');
+    });
   });
 
   describe('with references', () => {
-    it('should list references',
-       () => { contains('app/parsing-cases.ts', 'test-comp-content', 'test1', 'test2', 'div'); });
-    it('should reference the component',
-       () => { contains('app/parsing-cases.ts', 'test-comp-after-test', 'name'); });
+    it('should list references', () => {
+      contains('app/parsing-cases.ts', 'test-comp-content', 'test1', 'test2', 'div');
+    });
+    it('should reference the component', () => {
+      contains('app/parsing-cases.ts', 'test-comp-after-test', 'name');
+    });
     // TODO: Enable when we have a flag that indicates the project targets the DOM
     // it('should reference the element if no component', () => {
     //   contains('app/parsing-cases.ts', 'test-comp-after-div', 'innerText');
@@ -163,8 +187,9 @@ describe('plugin', () => {
           'app/expression-cases.ts', 'myField',
           'Identifier \'myField\' refers to a private member of the component');
     });
-    it('should report numeric operator errors',
-       () => { expectSemanticError('app/expression-cases.ts', 'mod', 'Expected a numeric type'); });
+    it('should report numeric operator errors', () => {
+      expectSemanticError('app/expression-cases.ts', 'mod', 'Expected a numeric type');
+    });
     describe('in ngFor', () => {
       function expectError(locationMarker: string, message: string) {
         expectSemanticError('app/ng-for-cases.ts', locationMarker, message);
@@ -195,7 +220,7 @@ describe('plugin', () => {
   });
 
   function getMarkerLocation(fileName: string, locationMarker: string): number {
-    const location = mockHost.getMarkerLocations(fileName) ![locationMarker];
+    const location = mockHost.getMarkerLocations(fileName)![locationMarker];
     if (location == null) {
       throw new Error(`No marker ${locationMarker} found.`);
     }
@@ -222,9 +247,8 @@ describe('plugin', () => {
         return;
       }
     }
-    throw new Error(`Expected error messages to contain ${message}, in messages:\n  ${errors
-                        .map(e => e.messageText.toString())
-                        .join(',\n  ')}`);
+    throw new Error(`Expected error messages to contain ${message}, in messages:\n  ${
+        errors.map(e => e.messageText.toString()).join(',\n  ')}`);
   }
 });
 
@@ -232,8 +256,8 @@ describe('plugin', () => {
 function expectEntries(locationMarker: string, info: ts.CompletionInfo, ...names: string[]) {
   let entries: {[name: string]: boolean} = {};
   if (!info) {
-    throw new Error(`Expected result from ${locationMarker} to include ${names.join(
-        ', ')} but no result provided`);
+    throw new Error(`Expected result from ${locationMarker} to include ${
+        names.join(', ')} but no result provided`);
   } else {
     for (let entry of info.entries) {
       entries[entry.name] = true;
@@ -243,15 +267,14 @@ function expectEntries(locationMarker: string, info: ts.CompletionInfo, ...names
     let missing = shouldContains.filter(name => !entries[name]);
     let present = shouldNotContain.map(name => name.substr(1)).filter(name => entries[name]);
     if (missing.length) {
-      throw new Error(`Expected result from ${locationMarker
-          } to include at least one of the following, ${missing
-              .join(', ')}, in the list of entries ${info.entries.map(entry => entry.name)
-              .join(', ')}`);
+      throw new Error(
+          `Expected result from ${locationMarker} to include at least one of the following, ${
+              missing.join(', ')}, in the list of entries ${
+              info.entries.map(entry => entry.name).join(', ')}`);
     }
     if (present.length) {
-      throw new Error(`Unexpected member${present.length > 1 ? 's' :
-                                                   ''
-                                                   } included in result: ${present.join(', ')}`);
+      throw new Error(`Unexpected member${present.length > 1 ? 's' : ''} included in result: ${
+          present.join(', ')}`);
     }
   }
 }

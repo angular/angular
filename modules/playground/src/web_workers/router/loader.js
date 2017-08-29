@@ -41,4 +41,6 @@ System.import('playground/src/web_workers/router/background_index')
             console.error(e);
           }
         },
-        function(error) { console.error('error loading background', error); });
+        function(error) {
+          console.error('error loading background', error);
+        });

@@ -24,6 +24,8 @@ import {FormControl, Validators} from '@angular/forms';
 export class SimpleFormControl {
   control: FormControl = new FormControl('value', Validators.minLength(2));
 
-  setValue() { this.control.setValue('new value'); }
+  setValue() {
+    this.control.setValue('new value');
+  }
 }
 // #enddocregion

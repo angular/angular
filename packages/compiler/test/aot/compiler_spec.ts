@@ -13,7 +13,7 @@ import * as ts from 'typescript';
 
 import {extractSourceMap, originalPositionFor} from '../output/source_map_util';
 
-import {EmittingCompilerHost, MockAotCompilerHost, MockCompilerHost, MockDirectory, MockMetadataBundlerHost, arrayToMockDir, compile, expectNoDiagnostics, settings, setup, toMockFileArray} from './test_util';
+import {arrayToMockDir, compile, EmittingCompilerHost, expectNoDiagnostics, MockAotCompilerHost, MockCompilerHost, MockDirectory, MockMetadataBundlerHost, settings, setup, toMockFileArray} from './test_util';
 
 describe('compiler (unbundled Angular)', () => {
   let angularFiles = setup();
@@ -57,7 +57,7 @@ describe('compiler (unbundled Angular)', () => {
     }
 
     function findLineAndColumn(
-        file: string, token: string): {line: number | null, column: number | null} {
+        file: string, token: string): {line: number|null, column: number|null} {
       const index = file.indexOf(token);
       if (index === -1) {
         return {line: null, column: null};
@@ -84,7 +84,9 @@ describe('compiler (unbundled Angular)', () => {
     describe('inline templates', () => {
       const ngUrl = `${ngComponentPath}.AppComponent.html`;
 
-      function templateDecorator(template: string) { return `template: \`${template}\`,`; }
+      function templateDecorator(template: string) {
+        return `template: \`${template}\`,`;
+      }
 
       declareTests({ngUrl, templateDecorator});
     });
@@ -125,7 +127,7 @@ describe('compiler (unbundled Angular)', () => {
 
         const genFile = compileApp();
         const genSource = toTypeScript(genFile);
-        const sourceMap = extractSourceMap(genSource) !;
+        const sourceMap = extractSourceMap(genSource)!;
         expect(sourceMap.file).toEqual(genFile.genFileUrl);
 
         // the generated file contains code that is not mapped to
@@ -146,7 +148,7 @@ describe('compiler (unbundled Angular)', () => {
 
         const genFile = compileApp();
         const genSource = toTypeScript(genFile);
-        const sourceMap = extractSourceMap(genSource) !;
+        const sourceMap = extractSourceMap(genSource)!;
         expect(originalPositionFor(sourceMap, findLineAndColumn(genSource, `'span'`)))
             .toEqual({line: 2, column: 3, source: ngUrl});
       });
@@ -158,7 +160,7 @@ describe('compiler (unbundled Angular)', () => {
 
         const genFile = compileApp();
         const genSource = toTypeScript(genFile);
-        const sourceMap = extractSourceMap(genSource) !;
+        const sourceMap = extractSourceMap(genSource)!;
         expect(originalPositionFor(sourceMap, findLineAndColumn(genSource, `someMethod()`)))
             .toEqual({line: 2, column: 9, source: ngUrl});
       });
@@ -170,7 +172,7 @@ describe('compiler (unbundled Angular)', () => {
 
         const genFile = compileApp();
         const genSource = toTypeScript(genFile);
-        const sourceMap = extractSourceMap(genSource) !;
+        const sourceMap = extractSourceMap(genSource)!;
         expect(originalPositionFor(sourceMap, findLineAndColumn(genSource, `someMethod()`)))
             .toEqual({line: 2, column: 9, source: ngUrl});
       });
@@ -180,7 +182,7 @@ describe('compiler (unbundled Angular)', () => {
 
         const genFile = compileApp();
         const genSource = toTypeScript(genFile);
-        const sourceMap = extractSourceMap(genSource) !;
+        const sourceMap = extractSourceMap(genSource)!;
         expect(originalPositionFor(sourceMap, {line: 1, column: 0}))
             .toEqual({line: 1, column: 0, source: ngComponentPath});
       });
@@ -422,7 +424,7 @@ describe('compiler (unbundled Angular)', () => {
       const {genFiles} = compile([FILES, angularFiles]);
       const genFile = genFiles.find(genFile => genFile.srcFileUrl === '/app/app.ts');
       const genSource = toTypeScript(genFile);
-      const createComponentFactoryCall = /ɵccf\([^)]*\)/m.exec(genSource) ![0].replace(/\s*/g, '');
+      const createComponentFactoryCall = /ɵccf\([^)]*\)/m.exec(genSource)![0].replace(/\s*/g, '');
       // selector
       expect(createComponentFactoryCall).toContain('my-comp');
       // inputs

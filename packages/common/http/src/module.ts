@@ -26,7 +26,7 @@ import {HttpXsrfCookieExtractor, HttpXsrfInterceptor, HttpXsrfTokenExtractor, XS
  * @stable
  */
 export function interceptingHandler(
-    backend: HttpBackend, interceptors: HttpInterceptor[] | null = []): HttpHandler {
+    backend: HttpBackend, interceptors: HttpInterceptor[]|null = []): HttpHandler {
   if (!interceptors) {
     return backend;
   }
@@ -131,8 +131,7 @@ export class HttpClientXsrfModule {
     {provide: XhrFactory, useExisting: BrowserXhr},
   ],
 })
-export class HttpClientModule {
-}
+export class HttpClientModule {}
 
 /**
  * `NgModule` which enables JSONP support in `HttpClient`.
@@ -149,5 +148,4 @@ export class HttpClientModule {
     {provide: HTTP_INTERCEPTORS, useClass: JsonpInterceptor, multi: true},
   ],
 })
-export class HttpClientJsonpModule {
-}
+export class HttpClientJsonpModule {}

@@ -9,7 +9,7 @@
 import {NgModuleFactory, ɵisObservable as isObservable, ɵisPromise as isPromise} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {fromPromise} from 'rxjs/observable/fromPromise';
-import {of } from 'rxjs/observable/of';
+import {of} from 'rxjs/observable/of';
 import {concatAll} from 'rxjs/operator/concatAll';
 import {every} from 'rxjs/operator/every';
 import * as l from 'rxjs/operator/last';
@@ -89,7 +89,7 @@ export function waitForMap<A, B>(
     }
   });
 
-  const concat$ = concatAll.call(of (...waitHead, ...waitTail));
+  const concat$ = concatAll.call(of(...waitHead, ...waitTail));
   const last$ = l.last.call(concat$);
   return map.call(last$, () => res);
 }
@@ -103,8 +103,8 @@ export function andObservables(observables: Observable<Observable<any>>): Observ
   return every.call(merged$, (result: any) => result === true);
 }
 
-export function wrapIntoObservable<T>(value: T | NgModuleFactory<T>| Promise<T>| Observable<T>):
-    Observable<T> {
+export function wrapIntoObservable<T>(value: T|NgModuleFactory<T>|Promise<T>|
+                                      Observable<T>): Observable<T> {
   if (isObservable(value)) {
     return value;
   }

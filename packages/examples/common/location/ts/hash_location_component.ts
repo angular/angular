@@ -21,6 +21,8 @@ import {Component} from '@angular/core';
 })
 export class HashLocationComponent {
   location: Location;
-  constructor(location: Location) { this.location = location; }
+  constructor(location: Location) {
+    this.location = location;
+  }
 }
 // #enddocregion

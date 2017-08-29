@@ -42,4 +42,6 @@ System.import('playground/src/web_workers/todo/background_index')
             console.error(e);
           }
         },
-        function(error) { console.error('error loading background', error); });
+        function(error) {
+          console.error('error loading background', error);
+        });

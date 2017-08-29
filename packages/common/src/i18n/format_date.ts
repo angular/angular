@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FormStyle, FormatWidth, NumberSymbol, Time, TranslationWidth, getLocaleDateFormat, getLocaleDateTimeFormat, getLocaleDayNames, getLocaleDayPeriods, getLocaleEraNames, getLocaleExtraDayPeriodRules, getLocaleExtraDayPeriods, getLocaleId, getLocaleMonthNames, getLocaleNumberSymbol, getLocaleTimeFormat} from './locale_data_api';
+import {FormatWidth, FormStyle, getLocaleDateFormat, getLocaleDateTimeFormat, getLocaleDayNames, getLocaleDayPeriods, getLocaleEraNames, getLocaleExtraDayPeriodRules, getLocaleExtraDayPeriods, getLocaleId, getLocaleMonthNames, getLocaleNumberSymbol, getLocaleTimeFormat, NumberSymbol, Time, TranslationWidth} from './locale_data_api';
 
 const NAMED_FORMATS: {[localeId: string]: {[format: string]: string}} = {};
 const DATE_FORMATS_SPLIT =
@@ -245,7 +245,7 @@ function getDateTranslation(
         const rules = getLocaleExtraDayPeriodRules(locale);
         const dayPeriods = getLocaleExtraDayPeriods(locale, form, width);
         let result;
-        rules.forEach((rule: Time | [Time, Time], index: number) => {
+        rules.forEach((rule: Time|[Time, Time], index: number) => {
           if (Array.isArray(rule)) {
             // morning, afternoon, evening, night
             const {hours: hoursFrom, minutes: minutesFrom} = rule[0];

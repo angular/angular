@@ -16,5 +16,4 @@ import {SelectControlComp} from './select_control_example';
   declarations: [SelectControlComp],
   bootstrap: [SelectControlComp]
 })
-export class AppModule {
-}
+export class AppModule {}

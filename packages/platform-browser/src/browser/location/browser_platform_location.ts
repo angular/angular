@@ -38,9 +38,13 @@ export class BrowserPlatformLocation extends PlatformLocation {
     this._history = getDOM().getHistory();
   }
 
-  get location(): Location { return this._location; }
+  get location(): Location {
+    return this._location;
+  }
 
-  getBaseHrefFromDOM(): string { return getDOM().getBaseHref(this._doc) !; }
+  getBaseHrefFromDOM(): string {
+    return getDOM().getBaseHref(this._doc)!;
+  }
 
   onPopState(fn: LocationChangeListener): void {
     getDOM().getGlobalEventTarget(this._doc, 'window').addEventListener('popstate', fn, false);
@@ -50,10 +54,18 @@ export class BrowserPlatformLocation extends PlatformLocation {
     getDOM().getGlobalEventTarget(this._doc, 'window').addEventListener('hashchange', fn, false);
   }
 
-  get pathname(): string { return this._location.pathname; }
-  get search(): string { return this._location.search; }
-  get hash(): string { return this._location.hash; }
-  set pathname(newPath: string) { this._location.pathname = newPath; }
+  get pathname(): string {
+    return this._location.pathname;
+  }
+  get search(): string {
+    return this._location.search;
+  }
+  get hash(): string {
+    return this._location.hash;
+  }
+  set pathname(newPath: string) {
+    this._location.pathname = newPath;
+  }
 
   pushState(state: any, title: string, url: string): void {
     if (supportsState()) {
@@ -71,7 +83,11 @@ export class BrowserPlatformLocation extends PlatformLocation {
     }
   }
 
-  forward(): void { this._history.forward(); }
+  forward(): void {
+    this._history.forward();
+  }
 
-  back(): void { this._history.back(); }
+  back(): void {
+    this._history.back();
+  }
 }

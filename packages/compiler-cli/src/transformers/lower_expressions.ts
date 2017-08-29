@@ -158,7 +158,7 @@ interface MetadataAndLoweringRequests {
   requests: RequestLocationMap;
 }
 
-function shouldLower(node: ts.Node | undefined): boolean {
+function shouldLower(node: ts.Node|undefined): boolean {
   if (node) {
     switch (node.kind) {
       case ts.SyntaxKind.SourceFile:

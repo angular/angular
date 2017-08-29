@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {Injector} from '@angular/core';
+
 import {APP_INITIALIZER, ApplicationInitStatus} from '../src/application_init';
-import {TestBed, async, inject} from '../testing';
+import {async, inject, TestBed} from '../testing';
 
 export function main() {
   describe('ApplicationInitStatus', () => {
@@ -22,7 +23,9 @@ export function main() {
       it('should return a promise that resolves immediately for `donePromise`',
          async(inject([ApplicationInitStatus], (status: ApplicationInitStatus) => {
            status.runInitializers();
-           status.donePromise.then(() => { expect(status.done).toBe(true); });
+           status.donePromise.then(() => {
+             expect(status.done).toBe(true);
+           });
          })));
     });
 
@@ -34,10 +37,14 @@ export function main() {
         let initializerFactory = (injector: Injector) => {
           return () => {
             const initStatus = injector.get(ApplicationInitStatus);
-            initStatus.donePromise.then(() => { expect(completerResolver).toBe(true); });
+            initStatus.donePromise.then(() => {
+              expect(completerResolver).toBe(true);
+            });
           };
         };
-        promise = new Promise((res) => { resolve = res; });
+        promise = new Promise((res) => {
+          resolve = res;
+        });
         TestBed.configureTestingModule({
           providers: [
             {provide: APP_INITIALIZER, multi: true, useValue: () => promise},

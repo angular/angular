@@ -7,7 +7,7 @@
  */
 
 import {LocationStrategy} from '@angular/common';
-import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, Renderer2, isDevMode} from '@angular/core';
+import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, isDevMode, OnChanges, OnDestroy, Renderer2} from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
 
 import {QueryParamsHandling} from '../config';
@@ -206,8 +206,12 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
     this.preserve = value;
   }
 
-  ngOnChanges(changes: {}): any { this.updateTargetUrlAndHref(); }
-  ngOnDestroy(): any { this.subscription.unsubscribe(); }
+  ngOnChanges(changes: {}): any {
+    this.updateTargetUrlAndHref();
+  }
+  ngOnDestroy(): any {
+    this.subscription.unsubscribe();
+  }
 
   @HostListener('click', ['$event.button', '$event.ctrlKey', '$event.metaKey', '$event.shiftKey'])
   onClick(button: number, ctrlKey: boolean, metaKey: boolean, shiftKey: boolean): boolean {

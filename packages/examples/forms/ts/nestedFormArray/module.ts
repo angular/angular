@@ -16,5 +16,4 @@ import {NestedFormArray} from './nested_form_array_example';
   declarations: [NestedFormArray],
   bootstrap: [NestedFormArray]
 })
-export class AppModule {
-}
+export class AppModule {}

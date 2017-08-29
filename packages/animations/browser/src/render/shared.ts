@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimationEvent, AnimationPlayer, NoopAnimationPlayer, ɵAnimationGroupPlayer, ɵPRE_STYLE as PRE_STYLE, ɵStyleData} from '@angular/animations';
+import {AnimationEvent, AnimationPlayer, AUTO_STYLE, NoopAnimationPlayer, ɵAnimationGroupPlayer, ɵPRE_STYLE as PRE_STYLE, ɵStyleData} from '@angular/animations';
 
 import {AnimationStyleNormalizer} from '../../src/dsl/style_normalization/animation_style_normalizer';
 import {AnimationDriver} from '../../src/render/animation_driver';
@@ -71,7 +71,7 @@ export function normalizeKeyframes(
 }
 
 export function listenOnPlayer(
-    player: AnimationPlayer, eventName: string, event: AnimationEvent | undefined,
+    player: AnimationPlayer, eventName: string, event: AnimationEvent|undefined,
     callback: (event: any) => any) {
   switch (eventName) {
     case 'start':
@@ -106,7 +106,7 @@ export function makeAnimationEvent(
 }
 
 export function getOrSetAsInMap(
-    map: Map<any, any>| {[key: string]: any}, key: any, defaultValue: any) {
+    map: Map<any, any>|{[key: string]: any}, key: any, defaultValue: any) {
   let value: any;
   if (map instanceof Map) {
     value = map.get(key);
@@ -139,7 +139,9 @@ let _query: (element: any, selector: string, multi: boolean) => any[] =
 
 if (typeof Element != 'undefined') {
   // this is well supported in all browsers
-  _contains = (elm1: any, elm2: any) => { return elm1.contains(elm2) as boolean; };
+  _contains = (elm1: any, elm2: any) => {
+    return elm1.contains(elm2) as boolean;
+  };
 
   if (Element.prototype.matches) {
     _matches = (element: any, selector: string) => element.matches(selector);
@@ -171,7 +173,7 @@ export function validateStyleProperty(prop: string): boolean {
   if (!_CACHED_BODY) {
     _CACHED_BODY = getBodyNode() || {};
   }
-  return _CACHED_BODY !.style ? prop in _CACHED_BODY !.style : true;
+  return _CACHED_BODY!.style ? prop in _CACHED_BODY!.style : true;
 }
 
 export function getBodyNode(): any|null {

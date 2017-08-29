@@ -107,7 +107,9 @@ export const expect: (actual: any) => NgMatchers = <any>_global.expect;
     return '' + m;
   }
   const res: any[] = [];
-  m.forEach((v: any, k: any) => { res.push(`${k}:${v}`); });
+  m.forEach((v: any, k: any) => {
+    res.push(`${k}:${v}`);
+  });
   return `{ ${res.join(',')} }`;
 };
 
@@ -125,12 +127,14 @@ _global.beforeEach(function() {
         if (actual instanceof Map) {
           let pass = actual.size === expected.size;
           if (pass) {
-            actual.forEach((v: any, k: any) => { pass = pass && util.equals(v, expected.get(k)); });
+            actual.forEach((v: any, k: any) => {
+              pass = pass && util.equals(v, expected.get(k));
+            });
           }
           return pass;
         } else {
           // TODO(misko): we should change the return, but jasmine.d.ts is not null safe
-          return undefined !;
+          return undefined!;
         }
       }
     },
@@ -139,7 +143,12 @@ _global.beforeEach(function() {
       return {
         compare: function(actual: any) {
           const pass = typeof actual === 'object' && typeof actual.then === 'function';
-          return {pass: pass, get message() { return 'Expected ' + actual + ' to be a promise'; }};
+          return {
+            pass: pass,
+            get message() {
+              return 'Expected ' + actual + ' to be a promise';
+            }
+          };
         }
       };
     },
@@ -164,7 +173,9 @@ _global.beforeEach(function() {
           const actualText = elementText(actual);
           return {
             pass: actualText == expectedText,
-            get message() { return 'Expected ' + actualText + ' to be equal to ' + expectedText; }
+            get message() {
+              return 'Expected ' + actualText + ' to be equal to ' + expectedText;
+            }
           };
         }
       };
@@ -178,7 +189,8 @@ _global.beforeEach(function() {
           return {
             pass: getDOM().hasClass(actual, className) == !isNot,
             get message() {
-              return `Expected ${actual.outerHTML} ${isNot ? 'not ' : ''}to contain the CSS class "${className}"`;
+              return `Expected ${actual.outerHTML} ${
+                  isNot ? 'not ' : ''}to contain the CSS class "${className}"`;
             }
           };
         };
@@ -203,7 +215,8 @@ _global.beforeEach(function() {
             get message() {
               const expectedValueStr = typeof styles === 'string' ? styles : JSON.stringify(styles);
               return `Expected ${actual.outerHTML} ${!allPassed ? ' ' : 'not '}to contain the
-                      CSS ${typeof styles === 'string' ? 'property' : 'styles'} "${expectedValueStr}"`;
+                      CSS ${typeof styles === 'string' ? 'property' : 'styles'} "${
+                  expectedValueStr}"`;
             }
           };
         }
@@ -216,7 +229,9 @@ _global.beforeEach(function() {
           const errorMessage = actual.toString();
           return {
             pass: errorMessage.indexOf(expectedText) > -1,
-            get message() { return 'Expected ' + errorMessage + ' to contain ' + expectedText; }
+            get message() {
+              return 'Expected ' + errorMessage + ' to contain ' + expectedText;
+            }
           };
         }
       };
@@ -235,8 +250,8 @@ _global.beforeEach(function() {
           return {
             pass: missedMethods.length == 0,
             get message() {
-              return 'Expected ' + actualObject + ' to have the following methods: ' +
-                  missedMethods.join(', ');
+              return 'Expected ' + actualObject +
+                  ' to have the following methods: ' + missedMethods.join(', ');
             }
           };
         }
@@ -271,5 +286,5 @@ function elementText(n: any): string {
     return elementText(getDOM().childNodesAsList(n));
   }
 
-  return getDOM().getText(n) !;
+  return getDOM().getText(n)!;
 }

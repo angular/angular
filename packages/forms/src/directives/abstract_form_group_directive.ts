@@ -34,7 +34,7 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
 
   ngOnInit(): void {
     this._checkParentType();
-    this.formDirective !.addFormGroup(this);
+    this.formDirective!.addFormGroup(this);
   }
 
   ngOnDestroy(): void {
@@ -46,19 +46,27 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
   /**
    * Get the {@link FormGroup} backing this binding.
    */
-  get control(): FormGroup { return this.formDirective !.getFormGroup(this); }
+  get control(): FormGroup {
+    return this.formDirective!.getFormGroup(this);
+  }
 
   /**
    * Get the path to this control group.
    */
-  get path(): string[] { return controlPath(this.name, this._parent); }
+  get path(): string[] {
+    return controlPath(this.name, this._parent);
+  }
 
   /**
    * Get the {@link Form} to which this group belongs.
    */
-  get formDirective(): Form|null { return this._parent ? this._parent.formDirective : null; }
+  get formDirective(): Form|null {
+    return this._parent ? this._parent.formDirective : null;
+  }
 
-  get validator(): ValidatorFn|null { return composeValidators(this._validators); }
+  get validator(): ValidatorFn|null {
+    return composeValidators(this._validators);
+  }
 
   get asyncValidator(): AsyncValidatorFn|null {
     return composeAsyncValidators(this._asyncValidators);

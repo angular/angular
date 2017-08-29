@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {COMPILER_OPTIONS, CompilerFactory, Injector, PlatformRef, StaticProvider, createPlatformFactory} from '@angular/core';
+import {COMPILER_OPTIONS, CompilerFactory, createPlatformFactory, Injector, PlatformRef, StaticProvider} from '@angular/core';
 import {TestComponentRenderer, ɵTestingCompilerFactory as TestingCompilerFactory} from '@angular/core/testing';
 import {ɵplatformCoreDynamic as platformCoreDynamic} from '@angular/platform-browser-dynamic';
 

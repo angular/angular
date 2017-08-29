@@ -150,7 +150,9 @@ export abstract class DomSanitizer implements Sanitizer {
 
 @Injectable()
 export class DomSanitizerImpl extends DomSanitizer {
-  constructor(@Inject(DOCUMENT) private _doc: any) { super(); }
+  constructor(@Inject(DOCUMENT) private _doc: any) {
+    super();
+  }
 
   sanitize(ctx: SecurityContext, value: SafeValue|string|null): string|null {
     if (value == null) return null;
@@ -196,10 +198,18 @@ export class DomSanitizerImpl extends DomSanitizer {
     }
   }
 
-  bypassSecurityTrustHtml(value: string): SafeHtml { return new SafeHtmlImpl(value); }
-  bypassSecurityTrustStyle(value: string): SafeStyle { return new SafeStyleImpl(value); }
-  bypassSecurityTrustScript(value: string): SafeScript { return new SafeScriptImpl(value); }
-  bypassSecurityTrustUrl(value: string): SafeUrl { return new SafeUrlImpl(value); }
+  bypassSecurityTrustHtml(value: string): SafeHtml {
+    return new SafeHtmlImpl(value);
+  }
+  bypassSecurityTrustStyle(value: string): SafeStyle {
+    return new SafeStyleImpl(value);
+  }
+  bypassSecurityTrustScript(value: string): SafeScript {
+    return new SafeScriptImpl(value);
+  }
+  bypassSecurityTrustUrl(value: string): SafeUrl {
+    return new SafeUrlImpl(value);
+  }
   bypassSecurityTrustResourceUrl(value: string): SafeResourceUrl {
     return new SafeResourceUrlImpl(value);
   }
@@ -219,17 +229,27 @@ abstract class SafeValueImpl implements SafeValue {
 }
 
 class SafeHtmlImpl extends SafeValueImpl implements SafeHtml {
-  getTypeName() { return 'HTML'; }
+  getTypeName() {
+    return 'HTML';
+  }
 }
 class SafeStyleImpl extends SafeValueImpl implements SafeStyle {
-  getTypeName() { return 'Style'; }
+  getTypeName() {
+    return 'Style';
+  }
 }
 class SafeScriptImpl extends SafeValueImpl implements SafeScript {
-  getTypeName() { return 'Script'; }
+  getTypeName() {
+    return 'Script';
+  }
 }
 class SafeUrlImpl extends SafeValueImpl implements SafeUrl {
-  getTypeName() { return 'URL'; }
+  getTypeName() {
+    return 'URL';
+  }
 }
 class SafeResourceUrlImpl extends SafeValueImpl implements SafeResourceUrl {
-  getTypeName() { return 'ResourceURL'; }
+  getTypeName() {
+    return 'ResourceURL';
+  }
 }

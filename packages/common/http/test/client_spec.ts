@@ -17,13 +17,15 @@ import {HttpClientTestingBackend} from '../testing/src/backend';
 
 export function main() {
   describe('HttpClient', () => {
-    let client: HttpClient = null !;
-    let backend: HttpClientTestingBackend = null !;
+    let client: HttpClient = null!;
+    let backend: HttpClientTestingBackend = null!;
     beforeEach(() => {
       backend = new HttpClientTestingBackend();
       client = new HttpClient(backend);
     });
-    afterEach(() => { backend.verify(); });
+    afterEach(() => {
+      backend.verify();
+    });
     describe('makes a basic request', () => {
       it('for JSON data', (done: DoneFn) => {
         client.get('/test').subscribe(res => {

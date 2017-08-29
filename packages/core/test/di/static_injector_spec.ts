@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, InjectionToken, Injector, Optional, ReflectiveKey, Self, SkipSelf, forwardRef} from '@angular/core';
+import {forwardRef, Inject, InjectionToken, Injector, Optional, ReflectiveKey, Self, SkipSelf} from '@angular/core';
 import {getOriginalError} from '@angular/core/src/errors';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -18,7 +18,9 @@ class Engine {
 
 class BrokenEngine {
   static PROVIDER = {provide: Engine, useClass: BrokenEngine, deps: []};
-  constructor() { throw new Error('Broken Engine'); }
+  constructor() {
+    throw new Error('Broken Engine');
+  }
 }
 
 class DashboardSoftware {
@@ -133,7 +135,9 @@ export function main() {
     });
 
     it('should provide to a factory', () => {
-      function sportsCarFactory(e: any) { return new SportsCar(e); }
+      function sportsCarFactory(e: any) {
+        return new SportsCar(e);
+      }
 
       const injector = Injector.create(
           [Engine.PROVIDER, {provide: Car, useFactory: sportsCarFactory, deps: [Engine]}]);
@@ -186,8 +190,8 @@ export function main() {
 
     it('should throw when the aliased provider does not exist', () => {
       const injector = Injector.create([{provide: 'car', useExisting: SportsCar}]);
-      const e =
-          `StaticInjectorError[car -> ${stringify(SportsCar)}]: \n  NullInjectorError: No provider for ${stringify(SportsCar)}!`;
+      const e = `StaticInjectorError[car -> ${
+          stringify(SportsCar)}]: \n  NullInjectorError: No provider for ${stringify(SportsCar)}!`;
       expect(() => injector.get('car')).toThrowError(e);
     });
 
@@ -248,9 +252,9 @@ export function main() {
     });
 
     it('should throw when missing deps', () => {
-      expect(() => Injector.create(<any>[{provide: Engine, useClass: Engine}]))
-          .toThrowError(
-              'StaticInjectorError[{provide:Engine, useClass:Engine}]: \'deps\' required');
+      expect(() => Injector.create(<any>[
+        {provide: Engine, useClass: Engine}
+      ])).toThrowError('StaticInjectorError[{provide:Engine, useClass:Engine}]: \'deps\' required');
     });
 
     it('should throw when using reflective API', () => {
@@ -287,8 +291,8 @@ export function main() {
       const injector =
           Injector.create([CarWithDashboard.PROVIDER, Engine.PROVIDER, Dashboard.PROVIDER]);
       expect(() => injector.get(CarWithDashboard))
-          .toThrowError(
-              `StaticInjectorError[${stringify(CarWithDashboard)} -> ${stringify(Dashboard)} -> DashboardSoftware]: 
+          .toThrowError(`StaticInjectorError[${stringify(CarWithDashboard)} -> ${
+              stringify(Dashboard)} -> DashboardSoftware]: 
   NullInjectorError: No provider for DashboardSoftware!`);
     });
 
@@ -296,14 +300,21 @@ export function main() {
       const injector = Injector.create([Car.PROVIDER, CyclicEngine.PROVIDER]);
 
       expect(() => injector.get(Car))
-          .toThrowError(
-              `StaticInjectorError[${stringify(Car)} -> ${stringify(Engine)} -> ${stringify(Car)}]: Circular dependency`);
+          .toThrowError(`StaticInjectorError[${stringify(Car)} -> ${stringify(Engine)} -> ${
+              stringify(Car)}]: Circular dependency`);
     });
 
     it('should show the full path when error happens in a constructor', () => {
       const error = new Error('MyError');
-      const injector = Injector.create(
-          [Car.PROVIDER, {provide: Engine, useFactory: () => { throw error; }, deps: []}]);
+      const injector = Injector.create([
+        Car.PROVIDER, {
+          provide: Engine,
+          useFactory: () => {
+            throw error;
+          },
+          deps: []
+        }
+      ]);
 
       try {
         injector.get(Car);

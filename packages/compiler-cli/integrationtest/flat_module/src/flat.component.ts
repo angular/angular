@@ -12,5 +12,4 @@ import {Component} from '@angular/core';
   selector: 'flat-comp',
   templateUrl: 'flat.component.html',
 })
-export class FlatComponent {
-}
+export class FlatComponent {}

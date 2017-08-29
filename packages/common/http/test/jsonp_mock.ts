@@ -18,7 +18,9 @@ export class MockScriptElement {
     this.listeners[event] = handler as any;
   }
 
-  removeEventListener(event: 'load'|'error'): void { delete this.listeners[event]; }
+  removeEventListener(event: 'load'|'error'): void {
+    delete this.listeners[event];
+  }
 }
 
 export class MockDocument {
@@ -28,9 +30,13 @@ export class MockDocument {
     return new MockScriptElement() as any as HTMLScriptElement;
   }
 
-  get body(): any { return this; }
+  get body(): any {
+    return this;
+  }
 
-  appendChild(node: any): void { this.mock = node; }
+  appendChild(node: any): void {
+    this.mock = node;
+  }
 
   removeNode(node: any): void {
     if (this.mock === node) {
@@ -38,7 +44,11 @@ export class MockDocument {
     }
   }
 
-  mockLoad(): void { this.mock !.listeners.load !(null as any); }
+  mockLoad(): void {
+    this.mock!.listeners.load!(null as any);
+  }
 
-  mockError(err: Error) { this.mock !.listeners.error !(err); }
+  mockError(err: Error) {
+    this.mock!.listeners.error!(err);
+  }
 }

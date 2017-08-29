@@ -9,7 +9,7 @@
 import {Injector} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {from} from 'rxjs/observable/from';
-import {of } from 'rxjs/observable/of';
+import {of} from 'rxjs/observable/of';
 import {concatMap} from 'rxjs/operator/concatMap';
 import {every} from 'rxjs/operator/every';
 import {first} from 'rxjs/operator/first';
@@ -21,13 +21,15 @@ import {reduce} from 'rxjs/operator/reduce';
 import {LoadedRouterConfig, ResolveData, RunGuardsAndResolvers} from './config';
 import {ChildActivationStart, RouteEvent} from './events';
 import {ChildrenOutletContexts, OutletContext} from './router_outlet_context';
-import {ActivatedRouteSnapshot, RouterStateSnapshot, equalParamsAndUrlSegments, inheritedParamsDataResolve} from './router_state';
+import {ActivatedRouteSnapshot, equalParamsAndUrlSegments, inheritedParamsDataResolve, RouterStateSnapshot} from './router_state';
 import {andObservables, forEach, shallowEqual, wrapIntoObservable} from './utils/collection';
-import {TreeNode, nodeChildrenAsMap} from './utils/tree';
+import {nodeChildrenAsMap, TreeNode} from './utils/tree';
 
 class CanActivate {
   constructor(public path: ActivatedRouteSnapshot[]) {}
-  get route(): ActivatedRouteSnapshot { return this.path[this.path.length - 1]; }
+  get route(): ActivatedRouteSnapshot {
+    return this.path[this.path.length - 1];
+  }
 }
 
 class CanDeactivate {
@@ -58,7 +60,7 @@ export class PreActivation {
     const canDeactivate$ = this.runCanDeactivateChecks();
     return mergeMap.call(
         canDeactivate$,
-        (canDeactivate: boolean) => canDeactivate ? this.runCanActivateChecks() : of (false));
+        (canDeactivate: boolean) => canDeactivate ? this.runCanActivateChecks() : of(false));
   }
 
   resolveData(): Observable<any> {
@@ -69,9 +71,13 @@ export class PreActivation {
     return reduce.call(runningChecks$, (_: any, __: any) => _);
   }
 
-  isDeactivating(): boolean { return this.canDeactivateChecks.length !== 0; }
+  isDeactivating(): boolean {
+    return this.canDeactivateChecks.length !== 0;
+  }
 
-  isActivating(): boolean { return this.canActivateChecks.length !== 0; }
+  isActivating(): boolean {
+    return this.canActivateChecks.length !== 0;
+  }
 
 
   /**
@@ -92,8 +98,9 @@ export class PreActivation {
 
     // Process any children left from the current route (not active for the future route)
     forEach(
-        prevChildren, (v: TreeNode<ActivatedRouteSnapshot>, k: string) =>
-                          this.deactivateRouteAndItsChildren(v, contexts !.getContext(k)));
+        prevChildren,
+        (v: TreeNode<ActivatedRouteSnapshot>, k: string) =>
+            this.deactivateRouteAndItsChildren(v, contexts!.getContext(k)));
   }
 
   /**
@@ -110,7 +117,7 @@ export class PreActivation {
     // reusing the node
     if (curr && future._routeConfig === curr._routeConfig) {
       const shouldRunGuardsAndResolvers = this.shouldRunGuardsAndResolvers(
-          curr, future, future._routeConfig !.runGuardsAndResolvers);
+          curr, future, future._routeConfig!.runGuardsAndResolvers);
       if (shouldRunGuardsAndResolvers) {
         this.canActivateChecks.push(new CanActivate(futurePath));
       } else {
@@ -130,7 +137,7 @@ export class PreActivation {
       }
 
       if (shouldRunGuardsAndResolvers) {
-        const outlet = context !.outlet !;
+        const outlet = context!.outlet!;
         this.canDeactivateChecks.push(new CanDeactivate(outlet.component, curr));
       }
     } else {
@@ -308,8 +315,9 @@ export class PreActivation {
     }
     if (keys.length === 1) {
       const key = keys[0];
-      return map.call(
-          this.getResolver(resolve[key], future), (value: any) => { return {[key]: value}; });
+      return map.call(this.getResolver(resolve[key], future), (value: any) => {
+        return {[key]: value};
+      });
     }
     const data: {[k: string]: any} = {};
     const runningResolvers$ = mergeMap.call(from(keys), (key: string) => {

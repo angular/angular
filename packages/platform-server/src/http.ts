@@ -27,7 +27,9 @@ function validateRequestUrl(url: string): void {
 
 @Injectable()
 export class ServerXhr implements BrowserXhr {
-  build(): XMLHttpRequest { return new xhr2.XMLHttpRequest(); }
+  build(): XMLHttpRequest {
+    return new xhr2.XMLHttpRequest();
+  }
 }
 
 @Injectable()
@@ -38,7 +40,7 @@ export class ServerXsrfStrategy implements XSRFStrategy {
 export abstract class ZoneMacroTaskWrapper<S, R> {
   wrap(request: S): Observable<R> {
     return new Observable((observer: Observer<R>) => {
-      let task: Task = null !;
+      let task: Task = null!;
       let scheduled: boolean = false;
       let sub: Subscription|null = null;
       let savedResult: any = null;
@@ -144,9 +146,13 @@ export class ZoneMacroTaskBackend implements ConnectionBackend {
 
 export class ZoneClientBackend extends
     ZoneMacroTaskWrapper<HttpRequest<any>, HttpEvent<any>> implements HttpBackend {
-  constructor(private backend: HttpBackend) { super(); }
+  constructor(private backend: HttpBackend) {
+    super();
+  }
 
-  handle(request: HttpRequest<any>): Observable<HttpEvent<any>> { return this.wrap(request); }
+  handle(request: HttpRequest<any>): Observable<HttpEvent<any>> {
+    return this.wrap(request);
+  }
 
   protected delegate(request: HttpRequest<any>): Observable<HttpEvent<any>> {
     return this.backend.handle(request);
@@ -159,7 +165,7 @@ export function httpFactory(xhrBackend: XHRBackend, options: RequestOptions) {
 }
 
 export function zoneWrappedInterceptingHandler(
-    backend: HttpBackend, interceptors: HttpInterceptor[] | null) {
+    backend: HttpBackend, interceptors: HttpInterceptor[]|null) {
   const realBackend: HttpBackend = interceptingHandler(backend, interceptors);
   return new ZoneClientBackend(realBackend);
 }

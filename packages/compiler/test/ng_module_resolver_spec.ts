@@ -24,8 +24,7 @@ class SomeClass5 {}
   providers: [SomeClass4],
   entryComponents: [SomeClass5]
 })
-class SomeModule {
-}
+class SomeModule {}
 
 class SimpleClass {}
 
@@ -33,7 +32,9 @@ export function main() {
   describe('NgModuleResolver', () => {
     let resolver: NgModuleResolver;
 
-    beforeEach(() => { resolver = new NgModuleResolver(new JitReflector()); });
+    beforeEach(() => {
+      resolver = new NgModuleResolver(new JitReflector());
+    });
 
     it('should read out the metadata from the class', () => {
       const moduleMetadata = resolver.resolve(SomeModule);
@@ -53,14 +54,12 @@ export function main() {
 
     it('should support inheriting the metadata', function() {
       @NgModule({id: 'p'})
-      class Parent {
-      }
+      class Parent {}
 
       class ChildNoDecorator extends Parent {}
 
       @NgModule({id: 'c'})
-      class ChildWithDecorator extends Parent {
-      }
+      class ChildWithDecorator extends Parent {}
 
       expect(resolver.resolve(ChildNoDecorator)).toEqual(new NgModule({id: 'p'}));
 

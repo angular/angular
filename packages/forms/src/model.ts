@@ -34,7 +34,7 @@ export const PENDING = 'PENDING';
  */
 export const DISABLED = 'DISABLED';
 
-function _find(control: AbstractControl, path: Array<string|number>| string, delimiter: string) {
+function _find(control: AbstractControl, path: Array<string|number>|string, delimiter: string) {
   if (path == null) return null;
 
   if (!(path instanceof Array)) {
@@ -55,9 +55,8 @@ function _find(control: AbstractControl, path: Array<string|number>| string, del
   }, control);
 }
 
-function coerceToValidator(
-    validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null): ValidatorFn|
-    null {
+function coerceToValidator(validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|
+                           null): ValidatorFn|null {
   const validator =
       (isOptionsObj(validatorOrOpts) ? (validatorOrOpts as AbstractControlOptions).validators :
                                        validatorOrOpts) as ValidatorFn |
@@ -67,8 +66,9 @@ function coerceToValidator(
 }
 
 function coerceToAsyncValidator(
-    asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null, validatorOrOpts?: ValidatorFn |
-        ValidatorFn[] | AbstractControlOptions | null): AsyncValidatorFn|null {
+    asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null,
+    validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null): AsyncValidatorFn|
+    null {
   const origAsyncValidator =
       (isOptionsObj(validatorOrOpts) ? (validatorOrOpts as AbstractControlOptions).asyncValidators :
                                        asyncValidator) as AsyncValidatorFn |
@@ -78,7 +78,7 @@ function coerceToAsyncValidator(
                                              origAsyncValidator || null;
 }
 
-export type FormHooks = 'change' | 'blur' | 'submit';
+export type FormHooks = 'change'|'blur'|'submit';
 
 export interface AbstractControlOptions {
   validators?: ValidatorFn|ValidatorFn[]|null;
@@ -87,8 +87,8 @@ export interface AbstractControlOptions {
 }
 
 
-function isOptionsObj(
-    validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null): boolean {
+function isOptionsObj(validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|
+                      null): boolean {
   return validatorOrOpts != null && !Array.isArray(validatorOrOpts) &&
       typeof validatorOrOpts === 'object';
 }
@@ -135,12 +135,16 @@ export abstract class AbstractControl {
   /**
    * The value of the control.
    */
-  get value(): any { return this._value; }
+  get value(): any {
+    return this._value;
+  }
 
   /**
    * The parent control.
    */
-  get parent(): FormGroup|FormArray { return this._parent; }
+  get parent(): FormGroup|FormArray {
+    return this._parent;
+  }
 
   /**
    * The validation status of the control. There are four possible
@@ -154,7 +158,9 @@ export abstract class AbstractControl {
    * These statuses are mutually exclusive, so a control cannot be
    * both valid AND invalid or invalid AND disabled.
    */
-  get status(): string { return this._status; }
+  get status(): string {
+    return this._status;
+  }
 
   /**
    * A control is `valid` when its `status === VALID`.
@@ -162,7 +168,9 @@ export abstract class AbstractControl {
    * In order to have this status, the control must have passed all its
    * validation checks.
    */
-  get valid(): boolean { return this._status === VALID; }
+  get valid(): boolean {
+    return this._status === VALID;
+  }
 
   /**
    * A control is `invalid` when its `status === INVALID`.
@@ -170,7 +178,9 @@ export abstract class AbstractControl {
    * In order to have this status, the control must have failed
    * at least one of its validation checks.
    */
-  get invalid(): boolean { return this._status === INVALID; }
+  get invalid(): boolean {
+    return this._status === INVALID;
+  }
 
   /**
    * A control is `pending` when its `status === PENDING`.
@@ -178,7 +188,9 @@ export abstract class AbstractControl {
    * In order to have this status, the control must be in the
    * middle of conducting a validation check.
    */
-  get pending(): boolean { return this._status == PENDING; }
+  get pending(): boolean {
+    return this._status == PENDING;
+  }
 
   /**
    * A control is `disabled` when its `status === DISABLED`.
@@ -187,7 +199,9 @@ export abstract class AbstractControl {
    * are not included in the aggregate value of their ancestor
    * controls.
    */
-  get disabled(): boolean { return this._status === DISABLED; }
+  get disabled(): boolean {
+    return this._status === DISABLED;
+  }
 
   /**
    * A control is `enabled` as long as its `status !== DISABLED`.
@@ -195,13 +209,17 @@ export abstract class AbstractControl {
    * In other words, it has a status of `VALID`, `INVALID`, or
    * `PENDING`.
    */
-  get enabled(): boolean { return this._status !== DISABLED; }
+  get enabled(): boolean {
+    return this._status !== DISABLED;
+  }
 
   /**
    * Returns any errors generated by failing validation. If there
    * are no errors, it will return null.
    */
-  get errors(): ValidationErrors|null { return this._errors; }
+  get errors(): ValidationErrors|null {
+    return this._errors;
+  }
 
   /**
    * A control is `pristine` if the user has not yet changed
@@ -210,7 +228,9 @@ export abstract class AbstractControl {
    * Note that programmatic changes to a control's value will
    * *not* mark it dirty.
    */
-  get pristine(): boolean { return this._pristine; }
+  get pristine(): boolean {
+    return this._pristine;
+  }
 
   /**
    * A control is `dirty` if the user has changed the value
@@ -219,31 +239,41 @@ export abstract class AbstractControl {
    * Note that programmatic changes to a control's value will
    * *not* mark it dirty.
    */
-  get dirty(): boolean { return !this.pristine; }
+  get dirty(): boolean {
+    return !this.pristine;
+  }
 
   /**
-  * A control is marked `touched` once the user has triggered
-  * a `blur` event on it.
-  */
-  get touched(): boolean { return this._touched; }
+   * A control is marked `touched` once the user has triggered
+   * a `blur` event on it.
+   */
+  get touched(): boolean {
+    return this._touched;
+  }
 
   /**
    * A control is `untouched` if the user has not yet triggered
    * a `blur` event on it.
    */
-  get untouched(): boolean { return !this._touched; }
+  get untouched(): boolean {
+    return !this._touched;
+  }
 
   /**
    * Emits an event every time the value of the control changes, in
    * the UI or programmatically.
    */
-  get valueChanges(): Observable<any> { return this._valueChanges; }
+  get valueChanges(): Observable<any> {
+    return this._valueChanges;
+  }
 
   /**
    * Emits an event every time the validation status of the control
    * is re-calculated.
    */
-  get statusChanges(): Observable<any> { return this._statusChanges; }
+  get statusChanges(): Observable<any> {
+    return this._statusChanges;
+  }
 
   /**
    * Returns the update strategy of the `AbstractControl` (i.e.
@@ -273,12 +303,16 @@ export abstract class AbstractControl {
   /**
    * Empties out the sync validator list.
    */
-  clearValidators(): void { this.validator = null; }
+  clearValidators(): void {
+    this.validator = null;
+  }
 
   /**
    * Empties out the async validator list.
    */
-  clearAsyncValidators(): void { this.asyncValidator = null; }
+  clearAsyncValidators(): void {
+    this.asyncValidator = null;
+  }
 
   /**
    * Marks the control as `touched`.
@@ -305,8 +339,9 @@ export abstract class AbstractControl {
     this._touched = false;
     this._pendingTouched = false;
 
-    this._forEachChild(
-        (control: AbstractControl) => { control.markAsUntouched({onlySelf: true}); });
+    this._forEachChild((control: AbstractControl) => {
+      control.markAsUntouched({onlySelf: true});
+    });
 
     if (this._parent && !opts.onlySelf) {
       this._parent._updateTouched(opts);
@@ -338,7 +373,9 @@ export abstract class AbstractControl {
     this._pristine = true;
     this._pendingDirty = false;
 
-    this._forEachChild((control: AbstractControl) => { control.markAsPristine({onlySelf: true}); });
+    this._forEachChild((control: AbstractControl) => {
+      control.markAsPristine({onlySelf: true});
+    });
 
     if (this._parent && !opts.onlySelf) {
       this._parent._updatePristine(opts);
@@ -365,7 +402,9 @@ export abstract class AbstractControl {
   disable(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     this._status = DISABLED;
     this._errors = null;
-    this._forEachChild((control: AbstractControl) => { control.disable({onlySelf: true}); });
+    this._forEachChild((control: AbstractControl) => {
+      control.disable({onlySelf: true});
+    });
     this._updateValue();
 
     if (opts.emitEvent !== false) {
@@ -386,7 +425,9 @@ export abstract class AbstractControl {
    */
   enable(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     this._status = VALID;
-    this._forEachChild((control: AbstractControl) => { control.enable({onlySelf: true}); });
+    this._forEachChild((control: AbstractControl) => {
+      control.enable({onlySelf: true});
+    });
     this.updateValueAndValidity({onlySelf: true, emitEvent: opts.emitEvent});
 
     this._updateAncestors(!!opts.onlySelf);
@@ -401,7 +442,9 @@ export abstract class AbstractControl {
     }
   }
 
-  setParent(parent: FormGroup|FormArray): void { this._parent = parent; }
+  setParent(parent: FormGroup|FormArray): void {
+    this._parent = parent;
+  }
 
   /**
    * Sets the value of the control. Abstract method (implemented in sub-classes).
@@ -453,7 +496,9 @@ export abstract class AbstractControl {
     this.updateValueAndValidity({onlySelf: true, emitEvent: opts.emitEvent});
   }
 
-  private _setInitialStatus() { this._status = this._allControlsDisabled() ? DISABLED : VALID; }
+  private _setInitialStatus() {
+    this._status = this._allControlsDisabled() ? DISABLED : VALID;
+  }
 
   private _runValidator(): ValidationErrors|null {
     return this.validator ? this.validator(this) : null;
@@ -464,7 +509,7 @@ export abstract class AbstractControl {
       this._status = PENDING;
       const obs = toObservable(this.asyncValidator(this));
       this._asyncValidationSubscription =
-          obs.subscribe((errors: ValidationErrors | null) => this.setErrors(errors, {emitEvent}));
+          obs.subscribe((errors: ValidationErrors|null) => this.setErrors(errors, {emitEvent}));
     }
   }
 
@@ -515,7 +560,9 @@ export abstract class AbstractControl {
    *
    * * `this.form.get(['person', 'name']);`
    */
-  get(path: Array<string|number>|string): AbstractControl|null { return _find(this, path, '.'); }
+  get(path: Array<string|number>|string): AbstractControl|null {
+    return _find(this, path, '.');
+  }
 
   /**
    * Returns error data if the control with the given path has the error specified. Otherwise
@@ -534,7 +581,9 @@ export abstract class AbstractControl {
    *
    * If no path is given, it checks for the error on the present control.
    */
-  hasError(errorCode: string, path?: string[]): boolean { return !!this.getError(errorCode, path); }
+  hasError(errorCode: string, path?: string[]): boolean {
+    return !!this.getError(errorCode, path);
+  }
 
   /**
    * Retrieves the top-level ancestor of this control.
@@ -635,12 +684,14 @@ export abstract class AbstractControl {
   }
 
   /** @internal */
-  _registerOnCollectionChange(fn: () => void): void { this._onCollectionChange = fn; }
+  _registerOnCollectionChange(fn: () => void): void {
+    this._onCollectionChange = fn;
+  }
 
   /** @internal */
   _setUpdateStrategy(opts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null): void {
     if (isOptionsObj(opts) && (opts as AbstractControlOptions).updateOn != null) {
-      this._updateOn = (opts as AbstractControlOptions).updateOn !;
+      this._updateOn = (opts as AbstractControlOptions).updateOn!;
     }
   }
 }
@@ -822,17 +873,23 @@ export class FormControl extends AbstractControl {
   /**
    * @internal
    */
-  _anyControls(condition: Function): boolean { return false; }
+  _anyControls(condition: Function): boolean {
+    return false;
+  }
 
   /**
    * @internal
    */
-  _allControlsDisabled(): boolean { return this.disabled; }
+  _allControlsDisabled(): boolean {
+    return this.disabled;
+  }
 
   /**
    * Register a listener for change events.
    */
-  registerOnChange(fn: Function): void { this._onChange.push(fn); }
+  registerOnChange(fn: Function): void {
+    this._onChange.push(fn);
+  }
 
   /**
    * @internal
@@ -1172,7 +1229,9 @@ export class FormGroup extends AbstractControl {
   }
 
   /** @internal */
-  _updateValue(): void { this._value = this._reduceValue(); }
+  _updateValue(): void {
+    this._value = this._reduceValue();
+  }
 
   /** @internal */
   _anyControls(condition: Function): boolean {
@@ -1197,8 +1256,9 @@ export class FormGroup extends AbstractControl {
   /** @internal */
   _reduceChildren(initValue: any, fn: Function) {
     let res = initValue;
-    this._forEachChild(
-        (control: AbstractControl, name: string) => { res = fn(res, control, name); });
+    this._forEachChild((control: AbstractControl, name: string) => {
+      res = fn(res, control, name);
+    });
     return res;
   }
 
@@ -1304,7 +1364,9 @@ export class FormArray extends AbstractControl {
   /**
    * Get the {@link AbstractControl} at the given `index` in the array.
    */
-  at(index: number): AbstractControl { return this.controls[index]; }
+  at(index: number): AbstractControl {
+    return this.controls[index];
+  }
 
   /**
    * Insert a new {@link AbstractControl} at the end of the array.
@@ -1356,7 +1418,9 @@ export class FormArray extends AbstractControl {
   /**
    * Length of the control array.
    */
-  get length(): number { return this.controls.length; }
+  get length(): number {
+    return this.controls.length;
+  }
 
   /**
    *  Sets the value of the {@link FormArray}. It accepts an array that matches
@@ -1493,7 +1557,9 @@ export class FormArray extends AbstractControl {
 
   /** @internal */
   _forEachChild(cb: Function): void {
-    this.controls.forEach((control: AbstractControl, index: number) => { cb(control, index); });
+    this.controls.forEach((control: AbstractControl, index: number) => {
+      cb(control, index);
+    });
   }
 
   /** @internal */

@@ -40,7 +40,7 @@ export function init(moduleRef: NgModuleRef<AppModule>) {
 
   const injector = moduleRef.injector;
   appRef = injector.get(ApplicationRef);
-  const numberOfChecksEl = document.getElementById('numberOfChecks') !;
+  const numberOfChecksEl = document.getElementById('numberOfChecks')!;
 
   tree = appRef.components[0].instance;
 

@@ -20,7 +20,7 @@ export function html(html: string): Element {
   return div;
 }
 
-export function multiTrim(text: string | null | undefined, allSpace = false): string {
+export function multiTrim(text: string|null|undefined, allSpace = false): string {
   if (typeof text == 'string') {
     const repl = allSpace ? '' : ' ';
     return text.replace(/\n/g, '').replace(/\s+/g, repl).trim();

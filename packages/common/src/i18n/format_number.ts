@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NumberFormatStyle, NumberSymbol, getLocaleNumberFormat, getLocaleNumberSymbol} from './locale_data_api';
+import {getLocaleNumberFormat, getLocaleNumberSymbol, NumberFormatStyle, NumberSymbol} from './locale_data_api';
 
 export const NUMBER_FORMAT_REGEXP = /^(\d+)?\.((\d+)(-(\d+))?)?$/;
 const MAX_DIGITS = 22;
@@ -20,7 +20,7 @@ const PERCENT_CHAR = '%';
 
 /** @internal */
 export type FormatNumberRes = {
-  str: string | null,
+  str: string|null,
   error?: string
 };
 
@@ -30,8 +30,8 @@ export type FormatNumberRes = {
  * @internal
  */
 export function formatNumber(
-    value: number | string, locale: string, style: NumberFormatStyle, digitsInfo?: string | null,
-    currency: string | null = null): FormatNumberRes {
+    value: number|string, locale: string, style: NumberFormatStyle, digitsInfo?: string|null,
+    currency: string|null = null): FormatNumberRes {
   const res: FormatNumberRes = {str: null};
   const format = getLocaleNumberFormat(locale, style);
   let num;
@@ -311,8 +311,8 @@ function parseNumber(numStr: string): ParsedNumber {
  */
 function roundNumber(parsedNumber: ParsedNumber, minFrac: number, maxFrac: number) {
   if (minFrac > maxFrac) {
-    throw new Error(
-        `The minimum number of digits after fraction (${minFrac}) is higher than the maximum (${maxFrac}).`);
+    throw new Error(`The minimum number of digits after fraction (${
+        minFrac}) is higher than the maximum (${maxFrac}).`);
   }
 
   let digits = parsedNumber.digits;

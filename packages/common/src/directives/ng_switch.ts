@@ -92,7 +92,9 @@ export class NgSwitch {
   }
 
   /** @internal */
-  _addCase(): number { return this._caseCount++; }
+  _addCase(): number {
+    return this._caseCount++;
+  }
 
   /** @internal */
   _addDefault(view: SwitchView) {
@@ -164,7 +166,9 @@ export class NgSwitchCase implements DoCheck {
     this._view = new SwitchView(viewContainer, templateRef);
   }
 
-  ngDoCheck() { this._view.enforceState(this.ngSwitch._matchCase(this.ngSwitchCase)); }
+  ngDoCheck() {
+    this._view.enforceState(this.ngSwitch._matchCase(this.ngSwitchCase));
+  }
 }
 
 /**

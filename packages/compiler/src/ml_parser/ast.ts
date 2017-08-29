@@ -16,14 +16,18 @@ export interface Node {
 
 export class Text implements Node {
   constructor(public value: string, public sourceSpan: ParseSourceSpan) {}
-  visit(visitor: Visitor, context: any): any { return visitor.visitText(this, context); }
+  visit(visitor: Visitor, context: any): any {
+    return visitor.visitText(this, context);
+  }
 }
 
 export class Expansion implements Node {
   constructor(
       public switchValue: string, public type: string, public cases: ExpansionCase[],
       public sourceSpan: ParseSourceSpan, public switchValueSourceSpan: ParseSourceSpan) {}
-  visit(visitor: Visitor, context: any): any { return visitor.visitExpansion(this, context); }
+  visit(visitor: Visitor, context: any): any {
+    return visitor.visitExpansion(this, context);
+  }
 }
 
 export class ExpansionCase implements Node {
@@ -31,14 +35,18 @@ export class ExpansionCase implements Node {
       public value: string, public expression: Node[], public sourceSpan: ParseSourceSpan,
       public valueSourceSpan: ParseSourceSpan, public expSourceSpan: ParseSourceSpan) {}
 
-  visit(visitor: Visitor, context: any): any { return visitor.visitExpansionCase(this, context); }
+  visit(visitor: Visitor, context: any): any {
+    return visitor.visitExpansionCase(this, context);
+  }
 }
 
 export class Attribute implements Node {
   constructor(
       public name: string, public value: string, public sourceSpan: ParseSourceSpan,
       public valueSpan?: ParseSourceSpan) {}
-  visit(visitor: Visitor, context: any): any { return visitor.visitAttribute(this, context); }
+  visit(visitor: Visitor, context: any): any {
+    return visitor.visitAttribute(this, context);
+  }
 }
 
 export class Element implements Node {
@@ -46,12 +54,16 @@ export class Element implements Node {
       public name: string, public attrs: Attribute[], public children: Node[],
       public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan|null = null,
       public endSourceSpan: ParseSourceSpan|null = null) {}
-  visit(visitor: Visitor, context: any): any { return visitor.visitElement(this, context); }
+  visit(visitor: Visitor, context: any): any {
+    return visitor.visitElement(this, context);
+  }
 }
 
 export class Comment implements Node {
   constructor(public value: string|null, public sourceSpan: ParseSourceSpan) {}
-  visit(visitor: Visitor, context: any): any { return visitor.visitComment(this, context); }
+  visit(visitor: Visitor, context: any): any {
+    return visitor.visitComment(this, context);
+  }
 }
 
 export interface Visitor {
@@ -71,7 +83,7 @@ export function visitAll(visitor: Visitor, nodes: Node[], context: any = null): 
   const result: any[] = [];
 
   const visit = visitor.visit ?
-      (ast: Node) => visitor.visit !(ast, context) || ast.visit(visitor, context) :
+      (ast: Node) => visitor.visit!(ast, context) || ast.visit(visitor, context) :
       (ast: Node) => ast.visit(visitor, context);
   nodes.forEach(ast => {
     const astResult = visit(ast);
@@ -97,7 +109,9 @@ export class RecursiveVisitor implements Visitor {
   visitComment(ast: Comment, context: any): any {}
 
   visitExpansion(ast: Expansion, context: any): any {
-    return this.visitChildren(context, visit => { visit(ast.cases); });
+    return this.visitChildren(context, visit => {
+      visit(ast.cases);
+    });
   }
 
   visitExpansionCase(ast: ExpansionCase, context: any): any {}
@@ -106,7 +120,7 @@ export class RecursiveVisitor implements Visitor {
       context: any, cb: (visit: (<V extends Node>(children: V[]|undefined) => void)) => void) {
     let results: any[][] = [];
     let t = this;
-    function visit<T extends Node>(children: T[] | undefined) {
+    function visit<T extends Node>(children: T[]|undefined) {
       if (children) results.push(visitAll(t, children, context));
     }
     cb(visit);

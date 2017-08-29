@@ -28,9 +28,13 @@ export function createLanguageService(host: LanguageServiceHost): LanguageServic
 class LanguageServiceImpl implements LanguageService {
   constructor(private host: LanguageServiceHost) {}
 
-  private get metadataResolver(): CompileMetadataResolver { return this.host.resolver; }
+  private get metadataResolver(): CompileMetadataResolver {
+    return this.host.resolver;
+  }
 
-  getTemplateReferences(): string[] { return this.host.getTemplateReferences(); }
+  getTemplateReferences(): string[] {
+    return this.host.getTemplateReferences();
+  }
 
   getDiagnostics(fileName: string): Diagnostics|undefined {
     let results: Diagnostics = [];
@@ -111,7 +115,7 @@ class LanguageServiceImpl implements LanguageService {
         const config = new CompilerConfig();
         const parser = new TemplateParser(
             config, this.host.resolver.getReflector(), expressionParser,
-            new DomElementSchemaRegistry(), htmlParser, null !, []);
+            new DomElementSchemaRegistry(), htmlParser, null!, []);
         const htmlResult = htmlParser.parse(template.source, '', true);
         const analyzedModules = this.host.getAnalyzedModules();
         let errors: Diagnostic[]|undefined = undefined;
@@ -131,8 +135,12 @@ class LanguageServiceImpl implements LanguageService {
           result = {
             htmlAst: htmlResult.rootNodes,
             templateAst: parseResult.templateAst,
-            directive: metadata, directives, pipes,
-            parseErrors: parseResult.errors, expressionParser, errors
+            directive: metadata,
+            directives,
+            pipes,
+            parseErrors: parseResult.errors,
+            expressionParser,
+            errors
           };
         }
       }
@@ -147,14 +155,14 @@ class LanguageServiceImpl implements LanguageService {
   }
 }
 
-function removeMissing<T>(values: (T | null | undefined)[]): T[] {
+function removeMissing<T>(values: (T|null|undefined)[]): T[] {
   return values.filter(e => !!e) as T[];
 }
 
 function uniqueBySpan < T extends {
   span: Span;
 }
-> (elements: T[] | undefined): T[]|undefined {
+> (elements: T[]|undefined): T[]|undefined {
   if (elements) {
     const result: T[] = [];
     const map = new Map<number, Set<number>>();

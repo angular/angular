@@ -8,7 +8,7 @@
 
 import {Type} from '@angular/core';
 
-let _DOM: DomAdapter = null !;
+let _DOM: DomAdapter = null!;
 
 export function getDOM() {
   return _DOM;
@@ -32,7 +32,7 @@ export function setRootDomAdapter(adapter: DomAdapter) {
  * can introduce XSS risks.
  */
 export abstract class DomAdapter {
-  public resourceLoaderType: Type<any> = null !;
+  public resourceLoaderType: Type<any> = null!;
   abstract hasProperty(element: any, name: string): boolean;
   abstract setProperty(el: Element, name: string, value: any): any;
   abstract getProperty(el: Element, name: string): any;
@@ -47,8 +47,12 @@ export abstract class DomAdapter {
    * Maps attribute names to their corresponding property names for cases
    * where attribute name doesn't match property name.
    */
-  get attrToPropMap(): {[key: string]: string} { return this._attrToPropMap; };
-  set attrToPropMap(value: {[key: string]: string}) { this._attrToPropMap = value; };
+  get attrToPropMap(): {[key: string]: string} {
+    return this._attrToPropMap;
+  };
+  set attrToPropMap(value: {[key: string]: string}) {
+    this._attrToPropMap = value;
+  };
   /** @internal */
   _attrToPropMap: {[key: string]: string};
 

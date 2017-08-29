@@ -212,7 +212,9 @@ export class UpgradeModule {
                                 // $rootScope.$apply, and running the callback in NgZone will
                                 // cause a '$digest already in progress' error if it's in the
                                 // same vm turn.
-                                setTimeout(() => { this.ngZone.run(() => fn(...args)); });
+                                setTimeout(() => {
+                                  this.ngZone.run(() => fn(...args));
+                                });
                               }, delay, count, invokeApply, ...pass);
                             });
                           };
@@ -235,7 +237,7 @@ export class UpgradeModule {
                 this.injector.get($INJECTOR);
 
                 // Put the injector on the DOM, so that it can be "required"
-                angular.element(element).data !(controllerKey(INJECTOR_KEY), this.injector);
+                angular.element(element).data!(controllerKey(INJECTOR_KEY), this.injector);
 
                 // Wire up the ng1 rootScope to run a digest cycle whenever the zone settles
                 // We need to do this in the next tick so that we don't prevent the bootup
@@ -244,7 +246,9 @@ export class UpgradeModule {
                   const $rootScope = $injector.get('$rootScope');
                   const subscription =
                       this.ngZone.onMicrotaskEmpty.subscribe(() => $rootScope.$digest());
-                  $rootScope.$on('$destroy', () => { subscription.unsubscribe(); });
+                  $rootScope.$on('$destroy', () => {
+                    subscription.unsubscribe();
+                  });
                 }, 0);
               }
             ]);
@@ -256,7 +260,9 @@ export class UpgradeModule {
     windowAngular.resumeBootstrap = undefined;
 
     // Bootstrap the AngularJS application inside our zone
-    this.ngZone.run(() => { angular.bootstrap(element, [upgradeModule.name], config); });
+    this.ngZone.run(() => {
+      angular.bootstrap(element, [upgradeModule.name], config);
+    });
 
     // Patch resumeBootstrap() to run inside the ngZone
     if (windowAngular.resumeBootstrap) {
@@ -265,7 +271,9 @@ export class UpgradeModule {
       windowAngular.resumeBootstrap = function() {
         let args = arguments;
         windowAngular.resumeBootstrap = originalResumeBootstrap;
-        ngZone.run(() => { windowAngular.resumeBootstrap.apply(this, args); });
+        ngZone.run(() => {
+          windowAngular.resumeBootstrap.apply(this, args);
+        });
       };
     }
   }

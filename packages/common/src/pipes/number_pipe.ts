@@ -7,8 +7,10 @@
  */
 
 import {Inject, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
+
 import {formatNumber} from '../i18n/format_number';
-import {NumberFormatStyle, findCurrencySymbol, getLocaleCurrencyName, getLocaleCurrencySymbol} from '../i18n/locale_data_api';
+import {findCurrencySymbol, getLocaleCurrencyName, getLocaleCurrencySymbol, NumberFormatStyle} from '../i18n/locale_data_api';
+
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 /**

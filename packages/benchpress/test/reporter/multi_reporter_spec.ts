@@ -54,7 +54,9 @@ export function main() {
 }
 
 class MockReporter extends Reporter {
-  constructor(private _id: string) { super(); }
+  constructor(private _id: string) {
+    super();
+  }
 
   reportMeasureValues(values: MeasureValues): Promise<{[key: string]: any}> {
     return Promise.resolve({'id': this._id, 'values': values});

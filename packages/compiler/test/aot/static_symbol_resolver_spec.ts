@@ -20,7 +20,9 @@ describe('StaticSymbolResolver', () => {
   let symbolResolver: StaticSymbolResolver;
   let symbolCache: StaticSymbolCache;
 
-  beforeEach(() => { symbolCache = new StaticSymbolCache(); });
+  beforeEach(() => {
+    symbolCache = new StaticSymbolCache();
+  });
 
   function init(
       testData: {[key: string]: any} = DEFAULT_TEST_DATA, summaries: Summary<StaticSymbol>[] = [],
@@ -381,7 +383,9 @@ export class MockSummaryResolver implements SummaryResolver<StaticSymbol> {
     symbol: StaticSymbol,
     importAs: StaticSymbol
   }[] = []) {}
-  addSummary(summary: Summary<StaticSymbol>) { this.summaries.push(summary); };
+  addSummary(summary: Summary<StaticSymbol>) {
+    this.summaries.push(summary);
+  };
   resolveSummary(reference: StaticSymbol): Summary<StaticSymbol> {
     return this.summaries.find(summary => summary.symbol === reference);
   };
@@ -391,12 +395,18 @@ export class MockSummaryResolver implements SummaryResolver<StaticSymbol> {
   }
   getImportAs(symbol: StaticSymbol): StaticSymbol {
     const entry = this.importAs.find(entry => entry.symbol === symbol);
-    return entry ? entry.importAs : undefined !;
+    return entry ? entry.importAs : undefined!;
   }
 
-  isLibraryFile(filePath: string): boolean { return filePath.endsWith('.d.ts'); }
-  toSummaryFileName(filePath: string): string { return filePath.replace(/(\.d)?\.ts$/, '.d.ts'); }
-  fromSummaryFileName(filePath: string): string { return filePath; }
+  isLibraryFile(filePath: string): boolean {
+    return filePath.endsWith('.d.ts');
+  }
+  toSummaryFileName(filePath: string): string {
+    return filePath.replace(/(\.d)?\.ts$/, '.d.ts');
+  }
+  fromSummaryFileName(filePath: string): string {
+    return filePath;
+  }
 }
 
 export class MockStaticSymbolResolverHost implements StaticSymbolResolverHost {
@@ -408,7 +418,9 @@ export class MockStaticSymbolResolverHost implements StaticSymbolResolverHost {
 
   // In tests, assume that symbols are not re-exported
   moduleNameToFileName(modulePath: string, containingFile?: string): string {
-    function splitPath(path: string): string[] { return path.split(/\/|\\/g); }
+    function splitPath(path: string): string[] {
+      return path.split(/\/|\\/g);
+    }
 
     function resolvePath(pathParts: string[]): string {
       const result: string[] = [];
@@ -439,7 +451,7 @@ export class MockStaticSymbolResolverHost implements StaticSymbolResolverHost {
     }
 
     if (modulePath.indexOf('.') === 0) {
-      const baseName = pathTo(containingFile !, modulePath);
+      const baseName = pathTo(containingFile!, modulePath);
       const tsName = baseName + '.ts';
       if (this._getMetadataFor(tsName)) {
         return tsName;
@@ -447,7 +459,7 @@ export class MockStaticSymbolResolverHost implements StaticSymbolResolverHost {
       return baseName + '.d.ts';
     }
     if (modulePath == 'unresolved') {
-      return undefined !;
+      return undefined!;
     }
     return '/tmp/' + modulePath + '.d.ts';
   }
@@ -456,7 +468,9 @@ export class MockStaticSymbolResolverHost implements StaticSymbolResolverHost {
     return filePath.replace(/(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/, '');
   }
 
-  getMetadataFor(moduleId: string): any { return this._getMetadataFor(moduleId); }
+  getMetadataFor(moduleId: string): any {
+    return this._getMetadataFor(moduleId);
+  }
 
   private _getMetadataFor(filePath: string): any {
     if (this.data[filePath] && filePath.match(TS_EXT)) {
@@ -466,13 +480,13 @@ export class MockStaticSymbolResolverHost implements StaticSymbolResolverHost {
             filePath, this.data[filePath], ts.ScriptTarget.ES5, /* setParentNodes */ true);
         const diagnostics: ts.Diagnostic[] = (<any>sf).parseDiagnostics;
         if (diagnostics && diagnostics.length) {
-          const errors =
-              diagnostics
-                  .map(d => {
-                    const {line, character} = ts.getLineAndCharacterOfPosition(d.file !, d.start !);
-                    return `(${line}:${character}): ${d.messageText}`;
-                  })
-                  .join('\n');
+          const errors = diagnostics
+                             .map(d => {
+                               const {line, character} =
+                                   ts.getLineAndCharacterOfPosition(d.file!, d.start!);
+                               return `(${line}:${character}): ${d.messageText}`;
+                             })
+                             .join('\n');
           throw Error(`Error encountered during parse of file ${filePath}\n${errors}`);
         }
         return [this.collector.getMetadata(sf)];

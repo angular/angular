@@ -31,11 +31,15 @@ export function main() {
         'prefixed/test/suffixed': {'NamedNgFactory': 'test module factory'}
       });
     });
-    afterEach(() => { global['System'] = oldSystem; });
+    afterEach(() => {
+      global['System'] = oldSystem;
+    });
 
     it('loads a default factory by appending the factory suffix', async(() => {
          const loader = new SystemJsNgModuleLoader(new Compiler());
-         loader.load('test').then(contents => { expect(contents).toBe('test module factory'); });
+         loader.load('test').then(contents => {
+           expect(contents).toBe('test module factory');
+         });
        }));
     it('loads a named factory by appending the factory suffix', async(() => {
          const loader = new SystemJsNgModuleLoader(new Compiler());

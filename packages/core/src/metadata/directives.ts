@@ -9,7 +9,7 @@
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {Provider} from '../di';
 import {Type} from '../type';
-import {TypeDecorator, makeDecorator, makePropDecorator} from '../util/decorators';
+import {makeDecorator, makePropDecorator, TypeDecorator} from '../util/decorators';
 
 import {ViewEncapsulation} from './view';
 
@@ -73,7 +73,7 @@ export interface DirectiveDecorator {
   /**
    * See the {@link Directive} decorator.
    */
-  new (obj: Directive): Directive;
+  new(obj: Directive): Directive;
 }
 
 export interface Directive {
@@ -469,7 +469,7 @@ export interface ComponentDecorator {
   /**
    * See the {@link Component} decorator.
    */
-  new (obj: Component): Component;
+  new(obj: Component): Component;
 }
 
 /**
@@ -716,7 +716,7 @@ export interface PipeDecorator {
   /**
    * See the {@link Pipe} decorator.
    */
-  new (obj: Pipe): Pipe;
+  new(obj: Pipe): Pipe;
 }
 
 /**
@@ -785,7 +785,7 @@ export interface InputDecorator {
    * @stable
    */
   (bindingPropertyName?: string): any;
-  new (bindingPropertyName?: string): any;
+  new(bindingPropertyName?: string): any;
 }
 
 /**
@@ -856,7 +856,7 @@ export interface OutputDecorator {
    * @stable
    */
   (bindingPropertyName?: string): any;
-  new (bindingPropertyName?: string): any;
+  new(bindingPropertyName?: string): any;
 }
 
 /**
@@ -916,7 +916,7 @@ export interface HostBindingDecorator {
    * @stable
    */
   (hostPropertyName?: string): any;
-  new (hostPropertyName?: string): any;
+  new(hostPropertyName?: string): any;
 }
 
 /**
@@ -975,7 +975,7 @@ export interface HostListenerDecorator {
    * @Annotation
    */
   (eventName: string, args?: string[]): any;
-  new (eventName: string, args?: string[]): any;
+  new(eventName: string, args?: string[]): any;
 }
 
 /**

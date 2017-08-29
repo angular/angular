@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, Attribute, BoundDirectivePropertyAst, BoundEventAst, ElementAst, TemplateAst, TemplateAstPath, findNode, tokenReference} from '@angular/compiler';
+import {AST, Attribute, BoundDirectivePropertyAst, BoundEventAst, ElementAst, findNode, TemplateAst, TemplateAstPath, tokenReference} from '@angular/compiler';
 import {getExpressionScope} from '@angular/compiler-cli/src/language_services';
 
 import {TemplateInfo} from './common';
@@ -79,7 +79,9 @@ export function locateSymbol(info: TemplateInfo): SymbolInfo|undefined {
               span = spanOf(ast);
             }
           },
-          visitElementProperty(ast) { attributeValueSymbol(ast.value); },
+          visitElementProperty(ast) {
+            attributeValueSymbol(ast.value);
+          },
           visitAttr(ast) {},
           visitBoundText(ast) {
             const expressionPosition = templatePosition - ast.sourceSpan.start.offset;
@@ -171,29 +173,55 @@ function invertMap(obj: {[name: string]: string}): {[name: string]: string} {
 class OverrideKindSymbol implements Symbol {
   constructor(private sym: Symbol, private kindOverride: string) {}
 
-  get name(): string { return this.sym.name; }
+  get name(): string {
+    return this.sym.name;
+  }
 
-  get kind(): string { return this.kindOverride; }
+  get kind(): string {
+    return this.kindOverride;
+  }
 
-  get language(): string { return this.sym.language; }
+  get language(): string {
+    return this.sym.language;
+  }
 
-  get type(): Symbol|undefined { return this.sym.type; }
+  get type(): Symbol|undefined {
+    return this.sym.type;
+  }
 
-  get container(): Symbol|undefined { return this.sym.container; }
+  get container(): Symbol|undefined {
+    return this.sym.container;
+  }
 
-  get public(): boolean { return this.sym.public; }
+  get public(): boolean {
+    return this.sym.public;
+  }
 
-  get callable(): boolean { return this.sym.callable; }
+  get callable(): boolean {
+    return this.sym.callable;
+  }
 
-  get nullable(): boolean { return this.sym.nullable; }
+  get nullable(): boolean {
+    return this.sym.nullable;
+  }
 
-  get definition(): Definition { return this.sym.definition; }
+  get definition(): Definition {
+    return this.sym.definition;
+  }
 
-  members() { return this.sym.members(); }
+  members() {
+    return this.sym.members();
+  }
 
-  signatures() { return this.sym.signatures(); }
+  signatures() {
+    return this.sym.signatures();
+  }
 
-  selectSignature(types: Symbol[]) { return this.sym.selectSignature(types); }
+  selectSignature(types: Symbol[]) {
+    return this.sym.selectSignature(types);
+  }
 
-  indexed(argument: Symbol) { return this.sym.indexed(argument); }
+  indexed(argument: Symbol) {
+    return this.sym.indexed(argument);
+  }
 }

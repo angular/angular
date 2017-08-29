@@ -46,7 +46,9 @@ export const RouterUpgradeInitializer = {
  * @internal
  */
 export function locationSyncBootstrapListener(ngUpgrade: UpgradeModule) {
-  return () => { setUpLocationSync(ngUpgrade); };
+  return () => {
+    setUpLocationSync(ngUpgrade);
+  };
 }
 
 /**

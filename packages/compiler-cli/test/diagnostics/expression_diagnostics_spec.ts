@@ -13,7 +13,7 @@ import * as ts from 'typescript';
 import {getExpressionDiagnostics, getTemplateExpressionDiagnostics} from '../../src/diagnostics/expression_diagnostics';
 import {Directory} from '../mocks';
 
-import {DiagnosticContext, MockLanguageServiceHost, getDiagnosticTemplateInfo} from './mocks';
+import {DiagnosticContext, getDiagnosticTemplateInfo, MockLanguageServiceHost} from './mocks';
 
 describe('expression diagnostics', () => {
   let registry: ts.DocumentRegistry;
@@ -38,7 +38,7 @@ describe('expression diagnostics', () => {
   });
 
   it('should have no diagnostics in default app', () => {
-    function messageToString(messageText: string | ts.DiagnosticMessageChain): string {
+    function messageToString(messageText: string|ts.DiagnosticMessageChain): string {
       if (typeof messageText == 'string') {
         return messageText;
       } else {
@@ -74,7 +74,7 @@ describe('expression diagnostics', () => {
     }
   }
 
-  function reject(template: string, expected: string | RegExp) {
+  function reject(template: string, expected: string|RegExp) {
     const info = getDiagnosticTemplateInfo(context, type, 'app/app.component.html', template);
     if (info) {
       const diagnostics = getTemplateExpressionDiagnostics(info);
@@ -106,13 +106,12 @@ describe('expression diagnostics', () => {
         {{p.name.first}} {{p.name.last}}
       </div>
     `));
-  it('should reject misspelled field in *ngFor', () => reject(
-                                                     `
+  it('should reject misspelled field in *ngFor',
+     () => reject(`
       <div *ngFor="let p of people">
         {{p.names.first}} {{p.name.last}}
       </div>
-    `,
-                                                     'Identifier \'names\' is not defined'));
+    `, 'Identifier \'names\' is not defined'));
   it('should accept an async expression',
      () => accept('{{(promised_person | async)?.name.first || ""}}'));
   it('should reject an async misspelled field',
@@ -123,13 +122,12 @@ describe('expression diagnostics', () => {
         {{p.name.first}} {{p.name.last}}
       </div>
     `));
-  it('should reject misspelled field an async *ngFor', () => reject(
-                                                           `
+  it('should reject misspelled field an async *ngFor',
+     () => reject(`
       <div *ngFor="let p of promised_people | async">
         {{p.name.first}} {{p.nume.last}}
       </div>
-    `,
-                                                           'Identifier \'nume\' is not defined'));
+    `, 'Identifier \'nume\' is not defined'));
   it('should reject access to potentially undefined field',
      () => reject(`<div>{{maybe_person.name.first}}`, 'The expression might be null'));
   it('should accept a safe accss to an undefined field',
@@ -148,8 +146,7 @@ describe('expression diagnostics', () => {
           <p>Form valid: {{ f.valid }}</p>
     `));
   it('should reject a misspelled field of a # reference',
-     () => reject(
-         `
+     () => reject(`
           <form #f="ngForm" novalidate>
             <input name="first" ngModel required #first="ngModel">
             <input name="last" ngModel>
@@ -159,8 +156,7 @@ describe('expression diagnostics', () => {
           <p>First name valid: {{ first.valid }}</p>
           <p>Form value: {{ f.value | json }}</p>
           <p>Form valid: {{ f.valid }}</p>
-    `,
-         'Identifier \'valwe\' is not defined'));
+    `, 'Identifier \'valwe\' is not defined'));
   it('should accept a call to a method', () => accept('{{getPerson().name.first}}'));
   it('should reject a misspelled field of a method result',
      () => reject('{{getPerson().nume.first}}', 'Identifier \'nume\' is not defined'));

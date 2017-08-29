@@ -46,7 +46,7 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  * ```
  * [{
  *   path: 'team/:id',
-  *  component: Team,
+ *  component: Team,
  *   children: [{
  *     path: 'user/:name',
  *     component: User
@@ -263,7 +263,8 @@ export type Routes = Route[];
  * @experimental
  */
 export type UrlMatchResult = {
-  consumed: UrlSegment[]; posParams?: {[name: string]: UrlSegment};
+  consumed: UrlSegment[];
+  posParams?: {[name: string]: UrlSegment};
 };
 
 /**
@@ -313,28 +314,28 @@ export type ResolveData = {
  * @stable
  */
 export type LoadChildrenCallback = () =>
-    Type<any>| NgModuleFactory<any>| Promise<Type<any>>| Observable<Type<any>>;
+    Type<any>|NgModuleFactory<any>|Promise<Type<any>>|Observable<Type<any>>;
 
 /**
  * @whatItDoes The type of `loadChildren`.
  * See {@link Routes} for more details.
  * @stable
  */
-export type LoadChildren = string | LoadChildrenCallback;
+export type LoadChildren = string|LoadChildrenCallback;
 
 /**
  * @whatItDoes The type of `queryParamsHandling`.
  * See {@link RouterLink} for more details.
  * @stable
  */
-export type QueryParamsHandling = 'merge' | 'preserve' | '';
+export type QueryParamsHandling = 'merge'|'preserve'|'';
 
 /**
  * @whatItDoes The type of `runGuardsAndResolvers`.
  * See {@link Routes} for more details.
  * @experimental
  */
-export type RunGuardsAndResolvers = 'paramsChange' | 'paramsOrQueryParamsChange' | 'always';
+export type RunGuardsAndResolvers = 'paramsChange'|'paramsOrQueryParamsChange'|'always';
 
 /**
  * See {@link Routes} for more details.
@@ -394,36 +395,36 @@ function validateNode(route: Route, fullPath: string): void {
     throw new Error(`Invalid configuration of route '${fullPath}': Array cannot be specified`);
   }
   if (!route.component && (route.outlet && route.outlet !== PRIMARY_OUTLET)) {
-    throw new Error(
-        `Invalid configuration of route '${fullPath}': a componentless route cannot have a named outlet set`);
+    throw new Error(`Invalid configuration of route '${
+        fullPath}': a componentless route cannot have a named outlet set`);
   }
   if (route.redirectTo && route.children) {
-    throw new Error(
-        `Invalid configuration of route '${fullPath}': redirectTo and children cannot be used together`);
+    throw new Error(`Invalid configuration of route '${
+        fullPath}': redirectTo and children cannot be used together`);
   }
   if (route.redirectTo && route.loadChildren) {
-    throw new Error(
-        `Invalid configuration of route '${fullPath}': redirectTo and loadChildren cannot be used together`);
+    throw new Error(`Invalid configuration of route '${
+        fullPath}': redirectTo and loadChildren cannot be used together`);
   }
   if (route.children && route.loadChildren) {
-    throw new Error(
-        `Invalid configuration of route '${fullPath}': children and loadChildren cannot be used together`);
+    throw new Error(`Invalid configuration of route '${
+        fullPath}': children and loadChildren cannot be used together`);
   }
   if (route.redirectTo && route.component) {
-    throw new Error(
-        `Invalid configuration of route '${fullPath}': redirectTo and component cannot be used together`);
+    throw new Error(`Invalid configuration of route '${
+        fullPath}': redirectTo and component cannot be used together`);
   }
   if (route.path && route.matcher) {
     throw new Error(
         `Invalid configuration of route '${fullPath}': path and matcher cannot be used together`);
   }
   if (route.redirectTo === void 0 && !route.component && !route.children && !route.loadChildren) {
-    throw new Error(
-        `Invalid configuration of route '${fullPath}'. One of the following must be provided: component, redirectTo, children or loadChildren`);
+    throw new Error(`Invalid configuration of route '${
+        fullPath}'. One of the following must be provided: component, redirectTo, children or loadChildren`);
   }
   if (route.path === void 0 && route.matcher === void 0) {
-    throw new Error(
-        `Invalid configuration of route '${fullPath}': routes must have either a path or a matcher specified`);
+    throw new Error(`Invalid configuration of route '${
+        fullPath}': routes must have either a path or a matcher specified`);
   }
   if (typeof route.path === 'string' && route.path.charAt(0) === '/') {
     throw new Error(`Invalid configuration of route '${fullPath}': path cannot start with a slash`);
@@ -431,12 +432,12 @@ function validateNode(route: Route, fullPath: string): void {
   if (route.path === '' && route.redirectTo !== void 0 && route.pathMatch === void 0) {
     const exp =
         `The default value of 'pathMatch' is 'prefix', but often the intent is to use 'full'.`;
-    throw new Error(
-        `Invalid configuration of route '{path: "${fullPath}", redirectTo: "${route.redirectTo}"}': please provide 'pathMatch'. ${exp}`);
+    throw new Error(`Invalid configuration of route '{path: "${fullPath}", redirectTo: "${
+        route.redirectTo}"}': please provide 'pathMatch'. ${exp}`);
   }
   if (route.pathMatch !== void 0 && route.pathMatch !== 'full' && route.pathMatch !== 'prefix') {
-    throw new Error(
-        `Invalid configuration of route '${fullPath}': pathMatch can only be set to 'prefix' or 'full'`);
+    throw new Error(`Invalid configuration of route '${
+        fullPath}': pathMatch can only be set to 'prefix' or 'full'`);
   }
   if (route.children) {
     validateConfig(route.children, fullPath);

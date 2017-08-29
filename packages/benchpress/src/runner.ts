@@ -17,7 +17,7 @@ import {Reporter} from './reporter';
 import {ConsoleReporter} from './reporter/console_reporter';
 import {MultiReporter} from './reporter/multi_reporter';
 import {SampleDescription} from './sample_description';
-import {SampleState, Sampler} from './sampler';
+import {Sampler, SampleState} from './sampler';
 import {Validator} from './validator';
 import {RegressionSlopeValidator} from './validator/regression_slope_validator';
 import {SizeValidator} from './validator/size_validator';

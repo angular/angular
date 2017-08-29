@@ -20,9 +20,7 @@ export function main() {
   selector: 'relative-app',
   template: `component = <my-cmp></my-cmp>`,
 })
-export class RelativeApp {
-}
+export class RelativeApp {}
 
 @NgModule({declarations: [RelativeApp, MyCmp], bootstrap: [RelativeApp], imports: [BrowserModule]})
-class ExampleModule {
-}
+class ExampleModule {}

@@ -68,7 +68,7 @@ export class AotSummaryResolver implements SummaryResolver<StaticSymbol> {
     let summary = this.summaryCache.get(staticSymbol);
     if (!summary) {
       this._loadSummaryFile(staticSymbol.filePath);
-      summary = this.summaryCache.get(staticSymbol) !;
+      summary = this.summaryCache.get(staticSymbol)!;
     }
     return summary;
   }
@@ -80,10 +80,12 @@ export class AotSummaryResolver implements SummaryResolver<StaticSymbol> {
 
   getImportAs(staticSymbol: StaticSymbol): StaticSymbol {
     staticSymbol.assertNoMembers();
-    return this.importAs.get(staticSymbol) !;
+    return this.importAs.get(staticSymbol)!;
   }
 
-  addSummary(summary: Summary<StaticSymbol>) { this.summaryCache.set(summary.symbol, summary); }
+  addSummary(summary: Summary<StaticSymbol>) {
+    this.summaryCache.set(summary.symbol, summary);
+  }
 
   private _loadSummaryFile(filePath: string) {
     if (this.loadedFilePaths.has(filePath)) {

@@ -19,6 +19,4 @@ import {Component} from '@angular/core';
     }
   `]
 })
-export class HelloWorldComponent {
-  name: string = 'world';
-}
+export class HelloWorldComponent { name: string = 'world'; }

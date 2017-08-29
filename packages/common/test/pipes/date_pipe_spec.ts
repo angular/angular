@@ -9,9 +9,10 @@
 import {DatePipe, registerLocaleData} from '@angular/common';
 import {PipeResolver} from '@angular/compiler/src/pipe_resolver';
 import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_reflector';
-import localeEn from '../../i18n_data/locale_en';
+
 import localeEnExtra from '../../i18n_data/extra/locale_en';
 import localeDe from '../../i18n_data/locale_de';
+import localeEn from '../../i18n_data/locale_en';
 import localeHu from '../../i18n_data/locale_hu';
 import localeSr from '../../i18n_data/locale_sr';
 import localeTh from '../../i18n_data/locale_th';
@@ -23,7 +24,7 @@ export function main() {
     let pipe: DatePipe;
 
     // Check the transformation of a date into a pattern
-    function expectDateFormatAs(date: Date | string, pattern: any, output: string): void {
+    function expectDateFormatAs(date: Date|string, pattern: any, output: string): void {
       expect(pipe.transform(date, pattern)).toEqual(output);
     }
 
@@ -41,19 +42,25 @@ export function main() {
     });
 
     it('should be marked as pure', () => {
-      expect(new PipeResolver(new JitReflector()).resolve(DatePipe) !.pure).toEqual(true);
+      expect(new PipeResolver(new JitReflector()).resolve(DatePipe)!.pure).toEqual(true);
     });
 
     describe('supports', () => {
-      it('should support date', () => { expect(() => pipe.transform(date)).not.toThrow(); });
+      it('should support date', () => {
+        expect(() => pipe.transform(date)).not.toThrow();
+      });
 
-      it('should support int', () => { expect(() => pipe.transform(123456789)).not.toThrow(); });
+      it('should support int', () => {
+        expect(() => pipe.transform(123456789)).not.toThrow();
+      });
 
-      it('should support numeric strings',
-         () => { expect(() => pipe.transform('123456789')).not.toThrow(); });
+      it('should support numeric strings', () => {
+        expect(() => pipe.transform('123456789')).not.toThrow();
+      });
 
-      it('should support decimal strings',
-         () => { expect(() => pipe.transform('123456789.11')).not.toThrow(); });
+      it('should support decimal strings', () => {
+        expect(() => pipe.transform('123456789.11')).not.toThrow();
+      });
 
       it('should support ISO string',
          () => expect(() => pipe.transform('2015-06-15T21:43:11Z')).not.toThrow());
@@ -62,8 +69,9 @@ export function main() {
 
       it('should return null for NaN', () => expect(pipe.transform(Number.NaN)).toEqual(null));
 
-      it('should support ISO string without time',
-         () => { expect(() => pipe.transform(isoStringWithoutTime)).not.toThrow(); });
+      it('should support ISO string without time', () => {
+        expect(() => pipe.transform(isoStringWithoutTime)).not.toThrow();
+      });
 
       it('should not support other objects',
          () => expect(() => pipe.transform({})).toThrowError(/InvalidPipeArgument/));
@@ -285,7 +293,7 @@ export function main() {
       });
 
       it('should remove bidi control characters',
-         () => expect(pipe.transform(date, 'MM/dd/yyyy') !.length).toEqual(10));
+         () => expect(pipe.transform(date, 'MM/dd/yyyy')!.length).toEqual(10));
 
       it(`should format the date correctly in various locales`, () => {
         expect(new DatePipe('de').transform(date, 'short')).toEqual('15.06.15, 09:03');

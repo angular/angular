@@ -7,7 +7,7 @@
  */
 
 import {ResourceLoader} from '@angular/compiler';
-import {CompilerFactory, PlatformRef, Provider, StaticProvider, createPlatformFactory, platformCore} from '@angular/core';
+import {CompilerFactory, createPlatformFactory, platformCore, PlatformRef, Provider, StaticProvider} from '@angular/core';
 
 import {platformCoreDynamic} from './platform_core_dynamic';
 import {INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS} from './platform_providers';

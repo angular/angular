@@ -16,5 +16,4 @@ import {Pane, ViewChildrenComp} from './view_children_example';
   declarations: [ViewChildrenComp, Pane],
   bootstrap: [ViewChildrenComp]
 })
-export class AppModule {
-}
+export class AppModule {}

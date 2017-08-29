@@ -28,13 +28,21 @@ export interface HttpParameterCodec {
  * @stable
  */
 export class HttpUrlEncodingCodec implements HttpParameterCodec {
-  encodeKey(k: string): string { return standardEncoding(k); }
+  encodeKey(k: string): string {
+    return standardEncoding(k);
+  }
 
-  encodeValue(v: string): string { return standardEncoding(v); }
+  encodeValue(v: string): string {
+    return standardEncoding(v);
+  }
 
-  decodeKey(k: string): string { return decodeURIComponent(k); }
+  decodeKey(k: string): string {
+    return decodeURIComponent(k);
+  }
 
-  decodeValue(v: string) { return decodeURIComponent(v); }
+  decodeValue(v: string) {
+    return decodeURIComponent(v);
+  }
 }
 
 
@@ -100,7 +108,7 @@ export class HttpParams {
    */
   has(param: string): boolean {
     this.init();
-    return this.map !.has(param);
+    return this.map!.has(param);
   }
 
   /**
@@ -108,7 +116,7 @@ export class HttpParams {
    */
   get(param: string): string|null {
     this.init();
-    const res = this.map !.get(param);
+    const res = this.map!.get(param);
     return !!res ? res[0] : null;
   }
 
@@ -117,7 +125,7 @@ export class HttpParams {
    */
   getAll(param: string): string[]|null {
     this.init();
-    return this.map !.get(param) || null;
+    return this.map!.get(param) || null;
   }
 
   /**
@@ -125,25 +133,31 @@ export class HttpParams {
    */
   keys(): string[] {
     this.init();
-    return Array.from(this.map !.keys());
+    return Array.from(this.map!.keys());
   }
 
   /**
    * Construct a new body with an appended value for the given parameter name.
    */
-  append(param: string, value: string): HttpParams { return this.clone({param, value, op: 'a'}); }
+  append(param: string, value: string): HttpParams {
+    return this.clone({param, value, op: 'a'});
+  }
 
   /**
    * Construct a new body with a new value for the given parameter name.
    */
-  set(param: string, value: string): HttpParams { return this.clone({param, value, op: 's'}); }
+  set(param: string, value: string): HttpParams {
+    return this.clone({param, value, op: 's'});
+  }
 
   /**
    * Construct a new body with either the given value for the given parameter
    * removed, if a value is given, or all values for the given parameter removed
    * if not.
    */
-  delete (param: string, value?: string): HttpParams { return this.clone({param, value, op: 'd'}); }
+  delete(param: string, value?: string): HttpParams {
+    return this.clone({param, value, op: 'd'});
+  }
 
   /**
    * Serialize the body to an encoded string, where key-value pairs (separated by `=`) are
@@ -154,7 +168,7 @@ export class HttpParams {
     return this.keys()
         .map(key => {
           const eKey = this.encoder.encodeKey(key);
-          return this.map !.get(key) !.map(value => eKey + '=' + this.encoder.encodeValue(value))
+          return this.map!.get(key)!.map(value => eKey + '=' + this.encoder.encodeValue(value))
               .join('&');
         })
         .join('&');
@@ -173,29 +187,29 @@ export class HttpParams {
     }
     if (this.cloneFrom !== null) {
       this.cloneFrom.init();
-      this.cloneFrom.keys().forEach(key => this.map !.set(key, this.cloneFrom !.map !.get(key) !));
-      this.updates !.forEach(update => {
+      this.cloneFrom.keys().forEach(key => this.map!.set(key, this.cloneFrom!.map!.get(key)!));
+      this.updates!.forEach(update => {
         switch (update.op) {
           case 'a':
           case 's':
-            const base = (update.op === 'a' ? this.map !.get(update.param) : undefined) || [];
-            base.push(update.value !);
-            this.map !.set(update.param, base);
+            const base = (update.op === 'a' ? this.map!.get(update.param) : undefined) || [];
+            base.push(update.value!);
+            this.map!.set(update.param, base);
             break;
           case 'd':
             if (update.value !== undefined) {
-              let base = this.map !.get(update.param) || [];
+              let base = this.map!.get(update.param) || [];
               const idx = base.indexOf(update.value);
               if (idx !== -1) {
                 base.splice(idx, 1);
               }
               if (base.length > 0) {
-                this.map !.set(update.param, base);
+                this.map!.set(update.param, base);
               } else {
-                this.map !.delete(update.param);
+                this.map!.delete(update.param);
               }
             } else {
-              this.map !.delete(update.param);
+              this.map!.delete(update.param);
               break;
             }
         }

@@ -72,8 +72,8 @@ export class CodeGenerator {
     let transContent: string = '';
     if (cliOptions.i18nFile) {
       if (!cliOptions.locale) {
-        throw new Error(
-            `The translation file (${cliOptions.i18nFile}) locale must be provided. Use the --locale option.`);
+        throw new Error(`The translation file (${
+            cliOptions.i18nFile}) locale must be provided. Use the --locale option.`);
       }
       transContent = readFileSync(cliOptions.i18nFile, 'utf8');
     }
@@ -90,8 +90,8 @@ export class CodeGenerator {
           missingTranslation = compiler.core.MissingTranslationStrategy.Ignore;
           break;
         default:
-          throw new Error(
-              `Unknown option for missingTranslation (${cliOptions.missingTranslation}). Use either error, warning or ignore.`);
+          throw new Error(`Unknown option for missingTranslation (${
+              cliOptions.missingTranslation}). Use either error, warning or ignore.`);
       }
     }
     if (!transContent) {
@@ -100,7 +100,8 @@ export class CodeGenerator {
     const {compiler: aotCompiler} = compiler.createAotCompiler(ngCompilerHost, {
       translations: transContent,
       i18nFormat: cliOptions.i18nFormat || undefined,
-      locale: cliOptions.locale || undefined, missingTranslation,
+      locale: cliOptions.locale || undefined,
+      missingTranslation,
       enableLegacyTemplate: options.enableLegacyTemplate !== false,
       enableSummariesForJit: options.enableSummariesForJit !== false,
       preserveWhitespaces: options.preserveWhitespaces,

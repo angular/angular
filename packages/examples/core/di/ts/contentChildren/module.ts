@@ -15,5 +15,4 @@ import {ContentChildrenComp, Pane, Tab} from './content_children_example';
   declarations: [ContentChildrenComp, Pane, Tab],
   bootstrap: [ContentChildrenComp]
 })
-export class AppModule {
-}
+export class AppModule {}

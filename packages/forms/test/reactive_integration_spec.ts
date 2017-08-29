@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, Input, Type, forwardRef} from '@angular/core';
-import {ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
+import {Component, Directive, forwardRef, Input, Type} from '@angular/core';
+import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {AbstractControl, AsyncValidator, AsyncValidatorFn, COMPOSITION_BUFFER_MODE, FormArray, FormControl, FormGroup, FormGroupDirective, FormsModule, NG_ASYNC_VALIDATORS, NG_VALIDATORS, ReactiveFormsModule, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -151,7 +151,7 @@ export function main() {
         });
         fixture.componentInstance.form = form;
         fixture.detectChanges();
-        expect(form.get('login') !.errors).toEqual({required: true});
+        expect(form.get('login')!.errors).toEqual({required: true});
 
         const newForm = new FormGroup({
           'login': new FormControl(''),
@@ -162,7 +162,7 @@ export function main() {
         fixture.componentInstance.form = newForm;
         fixture.detectChanges();
 
-        expect(newForm.get('login') !.errors).toEqual({required: true});
+        expect(newForm.get('login')!.errors).toEqual({required: true});
       });
 
       it('should pick up dir validators from nested form groups', () => {
@@ -173,7 +173,7 @@ export function main() {
         });
         fixture.componentInstance.form = form;
         fixture.detectChanges();
-        expect(form.get('signin') !.valid).toBe(false);
+        expect(form.get('signin')!.valid).toBe(false);
 
         const newForm = new FormGroup({
           'signin':
@@ -182,7 +182,7 @@ export function main() {
         fixture.componentInstance.form = newForm;
         fixture.detectChanges();
 
-        expect(form.get('signin') !.valid).toBe(false);
+        expect(form.get('signin')!.valid).toBe(false);
       });
 
       it('should strip named controls that are not found', () => {
@@ -519,7 +519,7 @@ export function main() {
       it('should emit ngSubmit event with the original submit event on submit', () => {
         const fixture = initTest(FormGroupComp);
         fixture.componentInstance.form = new FormGroup({'login': new FormControl('loginValue')});
-        fixture.componentInstance.event = null !;
+        fixture.componentInstance.event = null!;
         fixture.detectChanges();
 
         const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
@@ -582,7 +582,9 @@ export function main() {
         fixture.componentInstance.form = new FormGroup({'login': login});
         fixture.detectChanges();
 
-        login.valueChanges.subscribe(() => { expect(login.dirty).toBe(true); });
+        login.valueChanges.subscribe(() => {
+          expect(login.dirty).toBe(true);
+        });
 
         const loginEl = fixture.debugElement.query(By.css('input')).nativeElement;
         loginEl.value = 'newValue';
@@ -604,7 +606,9 @@ export function main() {
 
            expect(login.pristine).toBe(false);
 
-           login.valueChanges.subscribe(() => { expect(login.pristine).toBe(true); });
+           login.valueChanges.subscribe(() => {
+             expect(login.pristine).toBe(true);
+           });
 
            form.reset();
          });
@@ -635,7 +639,7 @@ export function main() {
 
       it('should work with single fields and async validators', fakeAsync(() => {
            const fixture = initTest(FormControlComp);
-           const control = new FormControl('', null !, uniqLoginAsyncValidator('good'));
+           const control = new FormControl('', null!, uniqLoginAsyncValidator('good'));
            fixture.debugElement.componentInstance.control = control;
            fixture.detectChanges();
 
@@ -1284,8 +1288,8 @@ export function main() {
           fixture.componentInstance.form = formGroup;
           fixture.detectChanges();
 
-          formGroup.get('signin.login') !.setValidators(validatorSpy);
-          formGroup.get('signin') !.setValidators(groupValidatorSpy);
+          formGroup.get('signin.login')!.setValidators(validatorSpy);
+          formGroup.get('signin')!.setValidators(groupValidatorSpy);
 
           const form = fixture.debugElement.query(By.css('form')).nativeElement;
           dispatchEvent(form, 'submit');
@@ -1668,9 +1672,9 @@ export function main() {
             .toEqual(pattern.nativeElement.getAttribute('pattern'));
 
         fixture.componentInstance.required = false;
-        fixture.componentInstance.minLen = null !;
-        fixture.componentInstance.maxLen = null !;
-        fixture.componentInstance.pattern = null !;
+        fixture.componentInstance.minLen = null!;
+        fixture.componentInstance.maxLen = null!;
+        fixture.componentInstance.pattern = null!;
         fixture.detectChanges();
 
         expect(form.hasError('required', ['login'])).toEqual(false);
@@ -1710,9 +1714,9 @@ export function main() {
         fixture.detectChanges();
 
         fixture.componentInstance.required = false;
-        fixture.componentInstance.minLen = null !;
-        fixture.componentInstance.maxLen = null !;
-        fixture.componentInstance.pattern = null !;
+        fixture.componentInstance.minLen = null!;
+        fixture.componentInstance.maxLen = null!;
+        fixture.componentInstance.pattern = null!;
         fixture.detectChanges();
 
         expect(newForm.hasError('required', ['login'])).toEqual(false);
@@ -1810,7 +1814,7 @@ export function main() {
            const fixture = initTest(FormControlComp);
            const resultArr: number[] = [];
            fixture.componentInstance.control =
-               new FormControl('', null !, observableValidator(resultArr));
+               new FormControl('', null!, observableValidator(resultArr));
            fixture.detectChanges();
            tick(100);
 
@@ -2125,7 +2129,9 @@ export function main() {
 function uniqLoginAsyncValidator(expectedValue: string, timeout: number = 0) {
   return (c: AbstractControl) => {
     let resolve: (result: any) => void;
-    const promise = new Promise(res => { resolve = res; });
+    const promise = new Promise(res => {
+      resolve = res;
+    });
     const res = (c.value == expectedValue) ? null : {'uniqLogin': true};
     setTimeout(() => resolve(res), timeout);
     return promise;
@@ -2146,8 +2152,7 @@ function loginIsEmptyGroupValidator(c: FormGroup) {
   selector: '[login-is-empty-validator]',
   providers: [{provide: NG_VALIDATORS, useValue: loginIsEmptyGroupValidator, multi: true}]
 })
-class LoginIsEmptyValidator {
-}
+class LoginIsEmptyValidator {}
 
 @Directive({
   selector: '[uniq-login-validator]',
@@ -2160,7 +2165,9 @@ class LoginIsEmptyValidator {
 class UniqLoginValidator implements AsyncValidator {
   @Input('uniq-login-validator') expected: any;
 
-  validate(c: AbstractControl) { return uniqLoginAsyncValidator(this.expected)(c); }
+  validate(c: AbstractControl) {
+    return uniqLoginAsyncValidator(this.expected)(c);
+  }
 }
 
 function sortedClassList(el: HTMLElement) {

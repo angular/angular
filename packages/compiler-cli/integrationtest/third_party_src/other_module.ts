@@ -13,5 +13,4 @@ import {AnotherThirdpartyComponent} from './other_comp';
   declarations: [AnotherThirdpartyComponent],
   exports: [AnotherThirdpartyComponent],
 })
-export class AnotherThirdPartyModule {
-}
+export class AnotherThirdPartyModule {}

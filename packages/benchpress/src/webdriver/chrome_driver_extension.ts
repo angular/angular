@@ -21,10 +21,9 @@ import {PerfLogEvent, PerfLogFeatures, WebDriverExtension} from '../web_driver_e
  */
 @Injectable()
 export class ChromeDriverExtension extends WebDriverExtension {
-  static PROVIDERS = <StaticProvider>[{
-    provide: ChromeDriverExtension,
-    deps: [WebDriverAdapter, Options.USER_AGENT]
-  }];
+  static PROVIDERS = <StaticProvider>[
+    {provide: ChromeDriverExtension, deps: [WebDriverAdapter, Options.USER_AGENT]}
+  ];
 
   private _majorChromeVersion: number;
   private _firstRun = true;
@@ -49,7 +48,9 @@ export class ChromeDriverExtension extends WebDriverExtension {
     return parseInt(v, 10);
   }
 
-  gc() { return this._driver.executeScript('window.gc()'); }
+  gc() {
+    return this._driver.executeScript('window.gc()');
+  }
 
   timeBegin(name: string): Promise<any> {
     if (this._firstRun) {
@@ -99,7 +100,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
     chromeEvents.forEach((event) => {
       const categories = this._parseCategories(event['cat']);
       const normalizedEvent = this._convertEvent(event, categories);
-      if (normalizedEvent != null) normalizedEvents !.push(normalizedEvent);
+      if (normalizedEvent != null) normalizedEvents!.push(normalizedEvent);
     });
     return normalizedEvents;
   }
@@ -173,7 +174,9 @@ export class ChromeDriverExtension extends WebDriverExtension {
     return null;  // nothing useful in this event
   }
 
-  private _parseCategories(categories: string): string[] { return categories.split(','); }
+  private _parseCategories(categories: string): string[] {
+    return categories.split(',');
+  }
 
   private _isEvent(
       eventCategories: string[], eventName: string, expectedCategories: string[],

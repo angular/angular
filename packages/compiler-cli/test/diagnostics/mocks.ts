@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompilerHost, AotSummaryResolver, CompileMetadataResolver, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, I18NHtmlParser, InterpolationConfig, JitSummaryResolver, Lexer, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, Parser, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, SummaryResolver, TemplateParser, analyzeNgModules, createOfflineCompileUrlResolver, extractProgramSymbols} from '@angular/compiler';
+import {analyzeNgModules, AotCompilerHost, AotSummaryResolver, CompileMetadataResolver, CompilerConfig, createOfflineCompileUrlResolver, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, extractProgramSymbols, HtmlParser, I18NHtmlParser, InterpolationConfig, JitSummaryResolver, Lexer, NgAnalyzedModules, NgModuleResolver, Parser, ParseTreeResult, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, SummaryResolver, TemplateParser} from '@angular/compiler';
 import {ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 import {CompilerHostContext} from 'compiler-cli';
 import * as fs from 'fs';
@@ -49,11 +49,17 @@ export class MockLanguageServiceHost implements ts.LanguageServiceHost, Compiler
     this.context = new MockAotContext(currentDirectory, files);
   }
 
-  getCompilationSettings(): ts.CompilerOptions { return this.options; }
+  getCompilationSettings(): ts.CompilerOptions {
+    return this.options;
+  }
 
-  getScriptFileNames(): string[] { return this.scripts; }
+  getScriptFileNames(): string[] {
+    return this.scripts;
+  }
 
-  getScriptVersion(fileName: string): string { return '0'; }
+  getScriptVersion(fileName: string): string {
+    return '0';
+  }
 
   getScriptSnapshot(fileName: string): ts.IScriptSnapshot|undefined {
     const content = this.internalReadFile(fileName);
@@ -62,15 +68,25 @@ export class MockLanguageServiceHost implements ts.LanguageServiceHost, Compiler
     }
   }
 
-  getCurrentDirectory(): string { return this.context.currentDirectory; }
+  getCurrentDirectory(): string {
+    return this.context.currentDirectory;
+  }
 
-  getDefaultLibFileName(options: ts.CompilerOptions): string { return 'lib.d.ts'; }
+  getDefaultLibFileName(options: ts.CompilerOptions): string {
+    return 'lib.d.ts';
+  }
 
-  readFile(fileName: string): string { return this.internalReadFile(fileName) as string; }
+  readFile(fileName: string): string {
+    return this.internalReadFile(fileName) as string;
+  }
 
-  readResource(fileName: string): Promise<string> { return Promise.resolve(''); }
+  readResource(fileName: string): Promise<string> {
+    return Promise.resolve('');
+  }
 
-  assumeFileExists(fileName: string): void { this.assumedExist.add(fileName); }
+  assumeFileExists(fileName: string): void {
+    this.assumedExist.add(fileName);
+  }
 
   fileExists(fileName: string): boolean {
     return this.assumedExist.has(fileName) || this.internalReadFile(fileName) != null;
@@ -103,10 +119,18 @@ export class MockLanguageServiceHost implements ts.LanguageServiceHost, Compiler
 const staticSymbolCache = new StaticSymbolCache();
 const summaryResolver = new AotSummaryResolver(
     {
-      loadSummary(filePath: string) { return null; },
-      isSourceFile(sourceFilePath: string) { return true; },
-      toSummaryFileName(sourceFilePath: string) { return sourceFilePath; },
-      fromSummaryFileName(filePath: string): string{return filePath;},
+      loadSummary(filePath: string) {
+        return null;
+      },
+      isSourceFile(sourceFilePath: string) {
+        return true;
+      },
+      toSummaryFileName(sourceFilePath: string) {
+        return sourceFilePath;
+      },
+      fromSummaryFileName(filePath: string): string {
+        return filePath;
+      },
     },
     staticSymbolCache);
 
@@ -124,7 +148,9 @@ export class DiagnosticContext {
       public service: ts.LanguageService, public program: ts.Program,
       public checker: ts.TypeChecker, public host: AotCompilerHost) {}
 
-  private collectError(e: any, path?: string) { this._errors.push({e, path}); }
+  private collectError(e: any, path?: string) {
+    this._errors.push({e, path});
+  }
 
   private get staticSymbolResolver(): StaticSymbolResolver {
     let result = this._staticSymbolResolver;
@@ -140,7 +166,7 @@ export class DiagnosticContext {
     if (!this._reflector) {
       const ssr = this.staticSymbolResolver;
       const result = this._reflector = new StaticReflector(
-          summaryResolver, ssr, [], [], (e, filePath) => this.collectError(e, filePath !));
+          summaryResolver, ssr, [], [], (e, filePath) => this.collectError(e, filePath!));
       this._reflector = result;
       return result;
     }
@@ -155,7 +181,9 @@ export class DiagnosticContext {
       const pipeResolver = new PipeResolver(this.reflector);
       const elementSchemaRegistry = new DomElementSchemaRegistry();
       const resourceLoader = new class extends ResourceLoader {
-        get(url: string): Promise<string> { return Promise.resolve(''); }
+        get(url: string): Promise<string> {
+          return Promise.resolve('');
+        }
       };
       const urlResolver = createOfflineCompileUrlResolver();
       const htmlParser = new class extends HtmlParser {
@@ -185,7 +213,11 @@ export class DiagnosticContext {
   get analyzedModules(): NgAnalyzedModules {
     let analyzedModules = this._analyzedModules;
     if (!analyzedModules) {
-      const analyzeHost = {isSourceFile(filePath: string) { return true; }};
+      const analyzeHost = {
+        isSourceFile(filePath: string) {
+          return true;
+        }
+      };
       const programSymbols = extractProgramSymbols(
           this.staticSymbolResolver, this.program.getSourceFiles().map(sf => sf.fileName),
           analyzeHost);
@@ -212,7 +244,7 @@ function compileTemplate(context: DiagnosticContext, type: StaticSymbol, templat
     const config = new CompilerConfig();
     const parser = new TemplateParser(
         config, context.reflector, expressionParser, new DomElementSchemaRegistry(), htmlParser,
-        null !, []);
+        null!, []);
     const htmlResult = htmlParser.parse(template, '', true);
     const analyzedModules = context.analyzedModules;
     // let errors: Diagnostic[]|undefined = undefined;
@@ -228,8 +260,11 @@ function compileTemplate(context: DiagnosticContext, type: StaticSymbol, templat
       return {
         htmlAst: htmlResult.rootNodes,
         templateAst: parseResult.templateAst,
-        directive: metadata, directives, pipes,
-        parseErrors: parseResult.errors, expressionParser
+        directive: metadata,
+        directives,
+        pipes,
+        parseErrors: parseResult.errors,
+        expressionParser
       };
     }
   }
@@ -249,7 +284,9 @@ export function getDiagnosticTemplateInfo(
               getPipesTable(sourceFile, context.program, context.checker, compiledTemplate.pipes));
       return {
         fileName: templateFile,
-        offset: 0, query, members,
+        offset: 0,
+        query,
+        members,
         htmlAst: compiledTemplate.htmlAst,
         templateAst: compiledTemplate.templateAst
       };
@@ -257,6 +294,6 @@ export function getDiagnosticTemplateInfo(
   }
 }
 
-function removeMissing<T>(values: (T | null | undefined)[]): T[] {
+function removeMissing<T>(values: (T|null|undefined)[]): T[] {
   return values.filter(e => !!e) as T[];
 }

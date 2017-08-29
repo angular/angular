@@ -15,7 +15,7 @@ import {sanitizeSrcset, sanitizeUrl} from './url_sanitizer';
 /** A <body> element that can be safely used to parse untrusted HTML. Lazily initialized below. */
 let inertElement: HTMLElement|null = null;
 /** Lazily initialized to make sure the DOM adapter gets set before use. */
-let DOM: DomAdapter = null !;
+let DOM: DomAdapter = null!;
 
 /** Returns an HTML element that is guaranteed to not execute code when creating elements in it. */
 function getInertElement() {
@@ -126,18 +126,18 @@ class SanitizingHtmlSerializer {
     // This cannot use a TreeWalker, as it has to run on Angular's various DOM adapters.
     // However this code never accesses properties off of `document` before deleting its contents
     // again, so it shouldn't be vulnerable to DOM clobbering.
-    let current: Node = el.firstChild !;
+    let current: Node = el.firstChild!;
     while (current) {
       if (DOM.isElementNode(current)) {
         this.startElement(current as Element);
       } else if (DOM.isTextNode(current)) {
-        this.chars(DOM.nodeValue(current) !);
+        this.chars(DOM.nodeValue(current)!);
       } else {
         // Strip non-element, non-text nodes.
         this.sanitizedSomething = true;
       }
       if (DOM.firstChild(current)) {
-        current = DOM.firstChild(current) !;
+        current = DOM.firstChild(current)!;
         continue;
       }
       while (current) {
@@ -146,14 +146,14 @@ class SanitizingHtmlSerializer {
           this.endElement(current as Element);
         }
 
-        let next = checkClobberedElement(current, DOM.nextSibling(current) !);
+        let next = checkClobberedElement(current, DOM.nextSibling(current)!);
 
         if (next) {
           current = next;
           break;
         }
 
-        current = checkClobberedElement(current, DOM.parentElement(current) !);
+        current = checkClobberedElement(current, DOM.parentElement(current)!);
       }
     }
     return this.buf.join('');
@@ -194,7 +194,9 @@ class SanitizingHtmlSerializer {
     }
   }
 
-  private chars(chars: string) { this.buf.push(encodeEntities(chars)); }
+  private chars(chars: string) {
+    this.buf.push(encodeEntities(chars));
+  }
 }
 
 function checkClobberedElement(node: Node, nextNode: Node): Node {
@@ -227,7 +229,9 @@ function encodeEntities(value: string) {
           })
       .replace(
           NON_ALPHANUMERIC_REGEXP,
-          function(match: string) { return '&#' + match.charCodeAt(0) + ';'; })
+          function(match: string) {
+            return '&#' + match.charCodeAt(0) + ';';
+          })
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
 }

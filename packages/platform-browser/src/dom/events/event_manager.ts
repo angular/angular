@@ -39,7 +39,9 @@ export class EventManager {
     return plugin.addGlobalEventListener(target, eventName, handler);
   }
 
-  getZone(): NgZone { return this._zone; }
+  getZone(): NgZone {
+    return this._zone;
+  }
 
   /** @internal */
   _findPluginFor(eventName: string): EventManagerPlugin {

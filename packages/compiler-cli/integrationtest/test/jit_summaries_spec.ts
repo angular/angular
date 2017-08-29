@@ -8,9 +8,9 @@
 
 import {Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {ServerTestingModule, platformServerTesting} from '@angular/platform-server/testing';
+import {platformServerTesting, ServerTestingModule} from '@angular/platform-server/testing';
 
-import {SomeDep, SomeDirective, SomeModule, SomePipe, SomePrivateComponent, SomeService, expectInstanceCreated} from '../src/jit_summaries';
+import {expectInstanceCreated, SomeDep, SomeDirective, SomeModule, SomePipe, SomePrivateComponent, SomeService} from '../src/jit_summaries';
 import {SomeModuleNgSummary} from '../src/jit_summaries.ngsummary';
 
 describe('Jit Summaries', () => {
@@ -18,12 +18,13 @@ describe('Jit Summaries', () => {
     TestBed.initTestEnvironment(ServerTestingModule, platformServerTesting(), SomeModuleNgSummary);
   });
 
-  afterEach(() => { TestBed.resetTestEnvironment(); });
+  afterEach(() => {
+    TestBed.resetTestEnvironment();
+  });
 
   it('should use directive metadata from summaries', () => {
     @Component({template: '<div someDir></div>'})
-    class TestComp {
-    }
+    class TestComp {}
 
     TestBed.configureTestingModule({providers: [SomeDep], declarations: [TestComp, SomeDirective]})
         .createComponent(TestComp);
@@ -32,8 +33,7 @@ describe('Jit Summaries', () => {
 
   it('should use pipe metadata from summaries', () => {
     @Component({template: '{{1 | somePipe}}'})
-    class TestComp {
-    }
+    class TestComp {}
 
     TestBed.configureTestingModule({providers: [SomeDep], declarations: [TestComp, SomePipe]})
         .createComponent(TestComp);

@@ -33,7 +33,7 @@ export function main() {
       const providers: StaticProvider[] = [
         ConsoleReporter.PROVIDERS, {
           provide: SampleDescription,
-          useValue: new SampleDescription(sampleId, descriptions, metrics !)
+          useValue: new SampleDescription(sampleId, descriptions, metrics!)
         },
         {provide: ConsoleReporter.PRINT, useValue: (line: string) => log.push(line)}
       ];

@@ -8,8 +8,8 @@
 
 import {AVAILABLE_LOCALES} from './available_locales';
 import {CURRENCIES} from './currencies';
-import localeEn from './locale_en';
 import {LOCALE_DATA, Plural} from './locale_data';
+import localeEn from './locale_en';
 
 /**
  * The different format styles that can be used to represent numbers.
@@ -182,9 +182,9 @@ export function getLocaleId(locale: string): string {
 export function getLocaleDayPeriods(
     locale: string, formStyle: FormStyle, width: TranslationWidth): [string, string] {
   const data = findLocaleData(locale);
-  const amPmData = <[
-    string, string
-  ][][]>[data[LocaleDataIndex.DayPeriodsFormat], data[LocaleDataIndex.DayPeriodsStandalone]];
+  const amPmData = <[string, string][][]>[
+    data[LocaleDataIndex.DayPeriodsFormat], data[LocaleDataIndex.DayPeriodsStandalone]
+  ];
   const amPm = getLastDefinedValue(amPmData, formStyle);
   return getLastDefinedValue(amPm, width);
 }
@@ -429,8 +429,9 @@ export function getLocalePluralCase(locale: string): (value: number) => Plural {
 
 function checkFullData(data: any) {
   if (!data[LocaleDataIndex.ExtraData]) {
-    throw new Error(
-        `Missing extra locale data for the locale "${data[LocaleDataIndex.LocaleId]}". Use "registerLocaleData" to load new data. See the "I18n guide" on angular.io to know more.`);
+    throw new Error(`Missing extra locale data for the locale "${
+        data[LocaleDataIndex
+                 .LocaleId]}". Use "registerLocaleData" to load new data. See the "I18n guide" on angular.io to know more.`);
   }
 }
 
@@ -449,11 +450,11 @@ function checkFullData(data: any) {
  *
  * @experimental i18n support is experimental.
  */
-export function getLocaleExtraDayPeriodRules(locale: string): (Time | [Time, Time])[] {
+export function getLocaleExtraDayPeriodRules(locale: string): (Time|[Time, Time])[] {
   const data = findLocaleData(locale);
   checkFullData(data);
   const rules = data[LocaleDataIndex.ExtraData][ExtraLocaleDataIndex.ExtraDayPeriodsRules] || [];
-  return rules.map((rule: string | [string, string]) => {
+  return rules.map((rule: string|[string, string]) => {
     if (typeof rule === 'string') {
       return extractTime(rule);
     }
@@ -539,8 +540,8 @@ export function findLocaleData(locale: string): any {
     return match;
   }
 
-  throw new Error(
-      `Missing locale data for the locale "${locale}". Use "registerLocaleData" to load new data. See the "I18n guide" on angular.io to know more.`);
+  throw new Error(`Missing locale data for the locale "${
+      locale}". Use "registerLocaleData" to load new data. See the "I18n guide" on angular.io to know more.`);
 }
 
 const NORMALIZED_LOCALES: any = {};
@@ -571,8 +572,8 @@ function getNormalizedLocale(locale: string): string {
     return parentLocale;
   }
 
-  throw new Error(
-      `"${locale}" is not a valid LOCALE_ID value. See https://github.com/unicode-cldr/cldr-core/blob/master/availableLocales.json for a list of valid locales`);
+  throw new Error(`"${
+      locale}" is not a valid LOCALE_ID value. See https://github.com/unicode-cldr/cldr-core/blob/master/availableLocales.json for a list of valid locales`);
 }
 
 function toCamelCase(str: string): string {
@@ -585,7 +586,7 @@ function toCamelCase(str: string): string {
  *
  * @internal
  */
-export function findCurrencySymbol(code: string, format: 'wide' | 'narrow') {
+export function findCurrencySymbol(code: string, format: 'wide'|'narrow') {
   const currency = CURRENCIES[code] || {};
   const symbol = currency[0] || code;
   return format === 'wide' ? symbol : currency[1] || symbol;

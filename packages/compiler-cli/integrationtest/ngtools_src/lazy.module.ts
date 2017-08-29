@@ -10,8 +10,7 @@ import {Component, NgModule} from '@angular/core';
 import {RouterModule} from '@angular/router';
 
 @Component({selector: 'lazy-comp', template: 'lazy!'})
-export class LazyComponent {
-}
+export class LazyComponent {}
 
 @NgModule({
   imports: [[RouterModule.forChild([
@@ -21,7 +20,6 @@ export class LazyComponent {
   ])]],
   declarations: [LazyComponent]
 })
-export class LazyModule {
-}
+export class LazyModule {}
 
 export class SecondModule {}

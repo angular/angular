@@ -12,7 +12,9 @@ export function main(): void {
   describe('PlaceholderRegistry', () => {
     let reg: PlaceholderRegistry;
 
-    beforeEach(() => { reg = new PlaceholderRegistry(); });
+    beforeEach(() => {
+      reg = new PlaceholderRegistry();
+    });
 
     describe('tag placeholder', () => {
       it('should generate names for well known tags', () => {

@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import commonjs from 'rollup-plugin-commonjs';
-import * as path from 'path';
-
 import 'reflect-metadata';
+
+import * as path from 'path';
+import commonjs from 'rollup-plugin-commonjs';
 
 var m = /^\@angular\/((\w|\-)+)(\/(\w|\d|\/|\-)+)?$/;
 var location = normalize('../../dist/packages-dist') + '/';
@@ -63,12 +63,13 @@ export default {
   format: 'umd',
   moduleName: 'ng.compiler_cli_browser',
   exports: 'named',
-  external: [
-    'fs',
-    'path',
-    'typescript',
-    'reflect-metadata',
-  ],
+  external:
+      [
+        'fs',
+        'path',
+        'typescript',
+        'reflect-metadata',
+      ],
   globals: {
     'typescript': 'ts',
     'path': 'path',

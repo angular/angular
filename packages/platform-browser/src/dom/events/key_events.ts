@@ -26,12 +26,16 @@ const MODIFIER_KEY_GETTERS: {[key: string]: (event: KeyboardEvent) => boolean} =
  */
 @Injectable()
 export class KeyEventsPlugin extends EventManagerPlugin {
-  constructor(@Inject(DOCUMENT) doc: any) { super(doc); }
+  constructor(@Inject(DOCUMENT) doc: any) {
+    super(doc);
+  }
 
-  supports(eventName: string): boolean { return KeyEventsPlugin.parseEventName(eventName) != null; }
+  supports(eventName: string): boolean {
+    return KeyEventsPlugin.parseEventName(eventName) != null;
+  }
 
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
-    const parsedEvent = KeyEventsPlugin.parseEventName(eventName) !;
+    const parsedEvent = KeyEventsPlugin.parseEventName(eventName)!;
 
     const outsideHandler =
         KeyEventsPlugin.eventCallback(parsedEvent['fullKey'], handler, this.manager.getZone());
@@ -49,7 +53,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
       return null;
     }
 
-    const key = KeyEventsPlugin._normalizeKey(parts.pop() !);
+    const key = KeyEventsPlugin._normalizeKey(parts.pop()!);
 
     let fullKey = '';
     MODIFIER_KEYS.forEach(modifierName => {

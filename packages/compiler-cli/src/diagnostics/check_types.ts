@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompiler, AotCompilerHost, AotCompilerOptions, EmitterVisitorContext, GeneratedFile, NgAnalyzedModules, ParseSourceSpan, Statement, StaticReflector, TypeScriptEmitter, createAotCompiler} from '@angular/compiler';
+import {AotCompiler, AotCompilerHost, AotCompilerOptions, createAotCompiler, EmitterVisitorContext, GeneratedFile, NgAnalyzedModules, ParseSourceSpan, Statement, StaticReflector, TypeScriptEmitter} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {Diagnostic} from '../transformers/api';
@@ -19,8 +19,10 @@ interface FactoryInfo {
 type FactoryInfoMap = Map<string, FactoryInfo>;
 
 const stubCancellationToken: ts.CancellationToken = {
-  isCancellationRequested(): boolean{return false;},
-  throwIfCancellationRequested(): void{}
+  isCancellationRequested(): boolean {
+    return false;
+  },
+  throwIfCancellationRequested(): void {}
 };
 
 export class TypeChecker {
@@ -50,11 +52,14 @@ export class TypeChecker {
     }
   }
 
-  get partialResults(): boolean { return this._partial; }
+  get partialResults(): boolean {
+    return this._partial;
+  }
 
   private get analyzedModules(): NgAnalyzedModules {
-    return this._analyzedModules || (this._analyzedModules = this.aotCompiler.analyzeModulesSync(
-                                         this.program.getSourceFiles().map(sf => sf.fileName)));
+    return this._analyzedModules ||
+        (this._analyzedModules = this.aotCompiler.analyzeModulesSync(
+             this.program.getSourceFiles().map(sf => sf.fileName)));
   }
 
   private get diagnosticsByFileName(): Map<string, Diagnostic[]> {
@@ -81,7 +86,7 @@ export class TypeChecker {
     let result = this._reflector;
     if (!result) {
       this.createCompilerAndReflector();
-      result = this._reflector !;
+      result = this._reflector!;
     }
     return result;
   }
@@ -91,7 +96,7 @@ export class TypeChecker {
   }
 
   private get factoryNames(): string[] {
-    return this._factoryNames || (this.createFactories() && this._factoryNames !);
+    return this._factoryNames || (this.createFactories() && this._factoryNames!);
   }
 
   private createCompilerAndReflector() {
@@ -143,7 +148,8 @@ export class TypeChecker {
           const diagnosticsList = diagnosticsFor(fileName);
           diagnosticsList.push({
             message: diagnosticMessageToString(diagnostic.messageText),
-            category: diagnostic.category, span
+            category: diagnostic.category,
+            span
           });
         }
       }
@@ -162,13 +168,13 @@ export class TypeChecker {
   }
 }
 
-function diagnosticMessageToString(message: ts.DiagnosticMessageChain | string): string {
+function diagnosticMessageToString(message: ts.DiagnosticMessageChain|string): string {
   return ts.flattenDiagnosticMessageText(message, '\n');
 }
 
 function createFactoryInfo(emitter: TypeScriptEmitter, file: GeneratedFile): FactoryInfo {
   const {sourceText, context} =
-      emitter.emitStatementsAndContext(file.srcFileUrl, file.genFileUrl, file.stmts !);
+      emitter.emitStatementsAndContext(file.srcFileUrl, file.genFileUrl, file.stmts!);
   const source = ts.createSourceFile(
       file.genFileUrl, sourceText, ts.ScriptTarget.Latest, /* setParentNodes */ true);
   return {source, context};
@@ -197,20 +203,29 @@ class TypeCheckingHost implements ts.CompilerHost {
     return this.host.getDefaultLibFileName(options);
   }
 
-  writeFile: ts.WriteFileCallback =
-      () => { throw new Error('Unexpected write in diagnostic program'); };
+  writeFile: ts.WriteFileCallback = () => {
+    throw new Error('Unexpected write in diagnostic program');
+  };
 
-  getCurrentDirectory(): string { return this.host.getCurrentDirectory(); }
+  getCurrentDirectory(): string {
+    return this.host.getCurrentDirectory();
+  }
 
-  getDirectories(path: string): string[] { return this.host.getDirectories(path); }
+  getDirectories(path: string): string[] {
+    return this.host.getDirectories(path);
+  }
 
   getCanonicalFileName(fileName: string): string {
     return this.host.getCanonicalFileName(fileName);
   }
 
-  useCaseSensitiveFileNames(): boolean { return this.host.useCaseSensitiveFileNames(); }
+  useCaseSensitiveFileNames(): boolean {
+    return this.host.useCaseSensitiveFileNames();
+  }
 
-  getNewLine(): string { return this.host.getNewLine(); }
+  getNewLine(): string {
+    return this.host.getNewLine();
+  }
 
   fileExists(fileName: string): boolean {
     return this.factories.has(fileName) || this.host.fileExists(fileName);

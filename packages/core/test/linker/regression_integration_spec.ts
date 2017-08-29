@@ -6,17 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, ApplicationRef, Component, ComponentRef, ContentChild, Directive, ErrorHandler, EventEmitter, HostListener, InjectionToken, Injector, Input, NgModule, NgModuleRef, NgZone, Output, Pipe, PipeTransform, Provider, QueryList, Renderer2, SimpleChanges, TemplateRef, ViewChildren, ViewContainerRef, destroyPlatform} from '@angular/core';
-import {TestBed, async, fakeAsync, inject, tick} from '@angular/core/testing';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, ApplicationRef, Component, ComponentRef, ContentChild, destroyPlatform, Directive, ErrorHandler, EventEmitter, HostListener, InjectionToken, Injector, Input, NgModule, NgModuleRef, NgZone, Output, Pipe, PipeTransform, Provider, QueryList, Renderer2, SimpleChanges, TemplateRef, ViewChildren, ViewContainerRef} from '@angular/core';
+import {async, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {BrowserModule, By, DOCUMENT} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 export function main() {
-  describe('jit', () => { declareTests({useJit: true}); });
+  describe('jit', () => {
+    declareTests({useJit: true});
+  });
 
-  describe('no jit', () => { declareTests({useJit: false}); });
+  describe('no jit', () => {
+    declareTests({useJit: false});
+  });
 
   declareTestsUsingBootstrap();
 }
@@ -25,10 +29,14 @@ function declareTests({useJit}: {useJit: boolean}) {
   // Place to put reproductions for regressions
   describe('regressions', () => {
 
-    beforeEach(() => { TestBed.configureTestingModule({declarations: [MyComp1, PlatformPipe]}); });
+    beforeEach(() => {
+      TestBed.configureTestingModule({declarations: [MyComp1, PlatformPipe]});
+    });
 
     describe('platform pipes', () => {
-      beforeEach(() => { TestBed.configureCompiler({useJit: useJit}); });
+      beforeEach(() => {
+        TestBed.configureCompiler({useJit: useJit});
+      });
 
       it('should overwrite them by custom pipes', () => {
         TestBed.configureTestingModule({declarations: [CustomPipe]});
@@ -84,11 +92,17 @@ function declareTests({useJit}: {useJit: boolean}) {
              changes: SimpleChanges;
 
              @Input()
-             set a(v: number) { this.setterCalls['a'] = v; }
+             set a(v: number) {
+               this.setterCalls['a'] = v;
+             }
              @Input()
-             set b(v: number) { this.setterCalls['b'] = v; }
+             set b(v: number) {
+               this.setterCalls['b'] = v;
+             }
 
-             ngOnChanges(changes: SimpleChanges) { this.changes = changes; }
+             ngOnChanges(changes: SimpleChanges) {
+               this.changes = changes;
+             }
            }
 
            TestBed.configureTestingModule({declarations: [MyDir, MyComp]});
@@ -237,8 +251,7 @@ function declareTests({useJit}: {useJit: boolean}) {
     it('should generate the correct output when constructors have the same name', () => {
       function ComponentFactory(selector: string, template: string) {
         @Component({selector, template})
-        class MyComponent {
-        }
+        class MyComponent {}
         return MyComponent;
       }
       const HeroComponent = ComponentFactory('my-hero', 'my hero');
@@ -267,8 +280,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
     it('should not recreate TemplateRef references during dirty checking', () => {
       @Component({template: '<div [someDir]="someRef"></div><ng-template #someRef></ng-template>'})
-      class MyComp {
-      }
+      class MyComp {}
 
       @Directive({selector: '[someDir]'})
       class MyDir {
@@ -314,8 +326,7 @@ function declareTests({useJit}: {useJit: boolean}) {
     describe('empty templates - #15143', () => {
       it('should allow empty components', () => {
         @Component({template: ''})
-        class MyComp {
-        }
+        class MyComp {}
 
         const fixture =
             TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
@@ -326,8 +337,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
       it('should allow empty embedded templates', () => {
         @Component({template: '<ng-template [ngIf]="true"></ng-template>'})
-        class MyComp {
-        }
+        class MyComp {}
 
         const fixture =
             TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
@@ -356,8 +366,7 @@ function declareTests({useJit}: {useJit: boolean}) {
           <test [tpl]="custom"></test><br>
         `
       })
-      class App {
-      }
+      class App {}
 
       const fixture =
           TestBed.configureTestingModule({declarations: [App, Test]}).createComponent(App);
@@ -372,15 +381,13 @@ function declareTests({useJit}: {useJit: boolean}) {
 
     it('should not add ng-version for dynamically created components', () => {
       @Component({template: ''})
-      class App {
-      }
+      class App {}
 
       @NgModule({declarations: [App], entryComponents: [App]})
-      class MyModule {
-      }
+      class MyModule {}
 
-      const modRef = TestBed.configureTestingModule({imports: [MyModule]})
-                         .get(NgModuleRef) as NgModuleRef<MyModule>;
+      const modRef = TestBed.configureTestingModule({imports: [MyModule]}).get(NgModuleRef) as
+          NgModuleRef<MyModule>;
       const compRef =
           modRef.componentFactoryResolver.resolveComponentFactory(App).create(Injector.NULL);
 
@@ -396,7 +403,9 @@ function declareTestsUsingBootstrap() {
 
     class MockConsole {
       errors: any[][] = [];
-      error(...s: any[]): void { this.errors.push(s); }
+      error(...s: any[]): void {
+        this.errors.push(s);
+      }
     }
 
     let logger: MockConsole;
@@ -412,7 +421,9 @@ function declareTestsUsingBootstrap() {
       errorHandler._console = logger as any;
     }));
 
-    afterEach(() => { destroyPlatform(); });
+    afterEach(() => {
+      destroyPlatform();
+    });
 
     if (getDOM().supportsDOMEvents()) {
       // This test needs a real DOM....
@@ -426,7 +437,9 @@ function declareTestsUsingBootstrap() {
         class ErrorComp {
           value = 0;
           thrownValue = 0;
-          next() { this.value++; }
+          next() {
+            this.value++;
+          }
           nextAndThrow() {
             this.value++;
             this.throwIfNeeded();
@@ -446,7 +459,9 @@ function declareTestsUsingBootstrap() {
           dirClick = new EventEmitter();
 
           @HostListener('click', ['$event'])
-          onClick(event: any) { this.dirClick.next(event); }
+          onClick(event: any) {
+            this.dirClick.next(event);
+          }
         }
 
         @NgModule({
@@ -455,8 +470,7 @@ function declareTestsUsingBootstrap() {
           bootstrap: [ErrorComp],
           providers: [{provide: ErrorHandler, useValue: errorHandler}],
         })
-        class TestModule {
-        }
+        class TestModule {}
 
         platformBrowserDynamic().bootstrapModule(TestModule).then((ref) => {
           NgZone.assertNotInAngularZone();
@@ -505,17 +519,20 @@ class MyComp1 {
 
 @Pipe({name: 'somePipe', pure: true})
 class PlatformPipe implements PipeTransform {
-  transform(value: any): any { return 'somePlatformPipe'; }
+  transform(value: any): any {
+    return 'somePlatformPipe';
+  }
 }
 
 @Pipe({name: 'somePipe', pure: true})
 class CustomPipe implements PipeTransform {
-  transform(value: any): any { return 'someCustomPipe'; }
+  transform(value: any): any {
+    return 'someCustomPipe';
+  }
 }
 
 @Component({selector: 'cmp-content', template: `<ng-content></ng-content>`})
-class CmpWithNgContent {
-}
+class CmpWithNgContent {}
 
 @Component({selector: 'counting-cmp', template: ''})
 class MyCountingComp {
@@ -524,7 +541,9 @@ class MyCountingComp {
     return {value: 'counting method value'};
   }
 
-  static reset() { MyCountingComp.calls = 0; }
+  static reset() {
+    MyCountingComp.calls = 0;
+  }
   static calls = 0;
 }
 
@@ -534,7 +553,9 @@ class CountingPipe implements PipeTransform {
     CountingPipe.calls++;
     return {value: 'counting pipe value'};
   }
-  static reset() { CountingPipe.calls = 0; }
+  static reset() {
+    CountingPipe.calls = 0;
+  }
   static calls = 0;
 }
 
@@ -542,19 +563,16 @@ class CountingPipe implements PipeTransform {
   selector: 'left',
   template: `L<right *ngIf="false"></right>`,
 })
-class LeftComp {
-}
+class LeftComp {}
 
 @Component({
   selector: 'right',
   template: `R<left *ngIf="false"></left>`,
 })
-class RightComp {
-}
+class RightComp {}
 
 @Component({
   selector: 'fakeRecursiveComp',
   template: `[<left *ngIf="false"></left><right *ngIf="false"></right>]`,
 })
-export class FakeRecursiveComp {
-}
+export class FakeRecursiveComp {}

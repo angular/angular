@@ -35,7 +35,7 @@ function main() {
           !/package\.json$/.test(fileName)) {
         // Only allow to read summaries and package.json files from node_modules
         // TODO (mhevery): Fix this. TypeScript.d.ts does not allow returning null.
-        return null !;
+        return null!;
       }
       readFiles.push(path.relative(basePath, fileName));
       return super.readFile(fileName);
@@ -100,8 +100,8 @@ function codegen(
 
   const program = ts.createProgram(config.parsed.fileNames, config.parsed.options, host);
 
-  return CodeGenerator.create(config.ngOptions, {
-                      } as any, program, host, hostContextFactory(host)).codegen();
+  return CodeGenerator.create(config.ngOptions, {} as any, program, host, hostContextFactory(host))
+      .codegen();
 }
 
 function assertSomeFileMatch(fileNames: string[], pattern: RegExp) {

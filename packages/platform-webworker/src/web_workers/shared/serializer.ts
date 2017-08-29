@@ -41,7 +41,7 @@ export class Serializer {
       return obj.map(v => this.serialize(v, type));
     }
     if (type === SerializerTypes.RENDER_STORE_OBJECT) {
-      return this._renderStore.serialize(obj) !;
+      return this._renderStore.serialize(obj)!;
     }
     if (type === RenderComponentType) {
       return this._serializeRenderComponentType(obj);

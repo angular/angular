@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken, Injector, NgModule, destroyPlatform} from '@angular/core';
+import {destroyPlatform, InjectionToken, Injector, NgModule} from '@angular/core';
 import {async} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import * as angular from '@angular/upgrade/src/common/angular1';
 import {$INJECTOR, INJECTOR_KEY} from '@angular/upgrade/src/common/constants';
-import {UpgradeModule, downgradeInjectable, getAngularLib, setAngularLib} from '@angular/upgrade/static';
+import {downgradeInjectable, getAngularLib, setAngularLib, UpgradeModule} from '@angular/upgrade/static';
 
 import {bootstrap, html} from '../test_helpers';
 
@@ -125,7 +125,9 @@ export function main() {
          const ng1Module = angular.module('ng1Module', []);
 
          bootstrap(platformBrowserDynamic(), Ng2Module, html('<div>'), ng1Module)
-             .then((upgrade) => { expect(wrappedBootstrapepedCalled).toEqual(true); });
+             .then((upgrade) => {
+               expect(wrappedBootstrapepedCalled).toEqual(true);
+             });
        }));
   });
 }

@@ -25,14 +25,18 @@ export class MockLocationStrategy extends LocationStrategy {
   urlChanges: string[] = [];
   /** @internal */
   _subject: EventEmitter<any> = new EventEmitter();
-  constructor() { super(); }
+  constructor() {
+    super();
+  }
 
   simulatePopState(url: string): void {
     this.internalPath = url;
     this._subject.emit(new _MockPopStateEvent(this.path()));
   }
 
-  path(includeHash: boolean = false): string { return this.internalPath; }
+  path(includeHash: boolean = false): string {
+    return this.internalPath;
+  }
 
   prepareExternalUrl(internal: string): string {
     if (internal.startsWith('/') && this.internalBaseHref.endsWith('/')) {
@@ -61,9 +65,13 @@ export class MockLocationStrategy extends LocationStrategy {
     this.urlChanges.push('replace: ' + externalUrl);
   }
 
-  onPopState(fn: (value: any) => void): void { this._subject.subscribe({next: fn}); }
+  onPopState(fn: (value: any) => void): void {
+    this._subject.subscribe({next: fn});
+  }
 
-  getBaseHref(): string { return this.internalBaseHref; }
+  getBaseHref(): string {
+    return this.internalBaseHref;
+  }
 
   back(): void {
     if (this.urlChanges.length > 0) {
@@ -73,7 +81,9 @@ export class MockLocationStrategy extends LocationStrategy {
     }
   }
 
-  forward(): void { throw 'not implemented'; }
+  forward(): void {
+    throw 'not implemented';
+  }
 }
 
 class _MockPopStateEvent {

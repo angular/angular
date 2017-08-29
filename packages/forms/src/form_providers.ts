@@ -22,8 +22,7 @@ import {FormBuilder} from './form_builder';
   providers: [RadioControlRegistry],
   exports: [InternalFormsSharedModule, TEMPLATE_DRIVEN_DIRECTIVES]
 })
-export class FormsModule {
-}
+export class FormsModule {}
 
 /**
  * The ng module for reactive forms.
@@ -34,5 +33,4 @@ export class FormsModule {
   providers: [FormBuilder, RadioControlRegistry],
   exports: [InternalFormsSharedModule, REACTIVE_DRIVEN_DIRECTIVES]
 })
-export class ReactiveFormsModule {
-}
+export class ReactiveFormsModule {}

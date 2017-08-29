@@ -7,7 +7,7 @@
  */
 
 import {describe, expect, it} from '../../../core/testing/src/testing_internal';
-import {CssLexer, CssLexerMode, CssToken, CssTokenType, cssScannerError, getRawMessage, getToken} from '../../src/css_parser/css_lexer';
+import {CssLexer, CssLexerMode, cssScannerError, CssToken, CssTokenType, getRawMessage, getToken} from '../../src/css_parser/css_lexer';
 
 export function main() {
   function tokenize(
@@ -142,7 +142,9 @@ export function main() {
     });
 
     it('should treat attribute operators as regular characters', () => {
-      tokenize('^|~+*').forEach((token) => { expect(token.type).toEqual(CssTokenType.Character); });
+      tokenize('^|~+*').forEach((token) => {
+        expect(token.type).toEqual(CssTokenType.Character);
+      });
     });
 
     it('should lex numbers properly and set them as numbers', () => {
@@ -274,7 +276,7 @@ export function main() {
       it('should throw an error if a selector is being parsed while in the wrong mode', () => {
         const cssCode = '.class > tag';
 
-        let capturedMessage: string = undefined !;
+        let capturedMessage: string = undefined!;
         try {
           tokenize(cssCode, false, CssLexerMode.STYLE_BLOCK);
         } catch (e) {
@@ -282,7 +284,7 @@ export function main() {
         }
 
         expect(capturedMessage).toMatch(/Unexpected character \[\>\] at column 0:7 in expression/g);
-        capturedMessage = null !;
+        capturedMessage = null!;
 
         try {
           tokenize(cssCode, false, CssLexerMode.SELECTOR);
@@ -309,7 +311,9 @@ export function main() {
            expect(tokenizeAttr('~').length).toEqual(4);
            expect(tokenizeAttr('').length).toEqual(3);
 
-           expect(() => { tokenizeAttr('+'); }).toThrow();
+           expect(() => {
+             tokenizeAttr('+');
+           }).toThrow();
          });
     });
 
@@ -327,9 +331,13 @@ export function main() {
         expect(tokenizeQuery('print and ((prop: value) or (prop2: value2))').length).toEqual(15);
         expect(tokenizeQuery('(content: \'something $ crazy inside &\')').length).toEqual(5);
 
-        expect(() => { tokenizeQuery('(max-height: 10 + 20)'); }).toThrow();
+        expect(() => {
+          tokenizeQuery('(max-height: 10 + 20)');
+        }).toThrow();
 
-        expect(() => { tokenizeQuery('(max-height: fifty < 100)'); }).toThrow();
+        expect(() => {
+          tokenizeQuery('(max-height: fifty < 100)');
+        }).toThrow();
       });
     });
 
@@ -346,9 +354,13 @@ export function main() {
            expect(tokenizePseudo('focus').length).toEqual(1);
            expect(tokenizePseudo('lang(en-us)', true).length).toEqual(4);
 
-           expect(() => { tokenizePseudo('lang(something:broken)', true); }).toThrow();
+           expect(() => {
+             tokenizePseudo('lang(something:broken)', true);
+           }).toThrow();
 
-           expect(() => { tokenizePseudo('not(.selector)', true); }).toThrow();
+           expect(() => {
+             tokenizePseudo('not(.selector)', true);
+           }).toThrow();
          });
     });
 

@@ -15,9 +15,13 @@ export function main() {
   const rootEl: any = document.querySelector('binary-tree');
   rootEl.data = emptyTree;
 
-  function destroyDom() { rootEl.data = emptyTree; }
+  function destroyDom() {
+    rootEl.data = emptyTree;
+  }
 
-  function createDom() { rootEl.data = buildTree(); }
+  function createDom() {
+    rootEl.data = buildTree();
+  }
 
   function noop() {}
 

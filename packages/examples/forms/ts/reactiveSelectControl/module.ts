@@ -16,5 +16,4 @@ import {ReactiveSelectComp} from './reactive_select_control_example';
   declarations: [ReactiveSelectComp],
   bootstrap: [ReactiveSelectComp]
 })
-export class AppModule {
-}
+export class AppModule {}

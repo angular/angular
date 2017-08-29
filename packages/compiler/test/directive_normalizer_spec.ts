@@ -24,7 +24,10 @@ const SOME_MODULE_URL = 'package:some/module/a.js';
 const SOME_HTTP_MODULE_URL = 'http://some/module/a.js';
 
 function normalizeTemplate(normalizer: DirectiveNormalizer, o: {
-  ngModuleType?: any; componentType?: any; moduleUrl?: string; template?: string | null;
+  ngModuleType?: any;
+  componentType?: any;
+  moduleUrl?: string;
+  template?: string | null;
   templateUrl?: string | null;
   styles?: string[];
   styleUrls?: string[];
@@ -49,7 +52,10 @@ function normalizeTemplate(normalizer: DirectiveNormalizer, o: {
 }
 
 function normalizeTemplateOnly(normalizer: DirectiveNormalizer, o: {
-  ngModuleType?: any; componentType?: any; moduleUrl?: string; template?: string | null;
+  ngModuleType?: any;
+  componentType?: any;
+  moduleUrl?: string;
+  template?: string | null;
   templateUrl?: string | null;
   styles?: string[];
   styleUrls?: string[];
@@ -73,20 +79,30 @@ function normalizeTemplateOnly(normalizer: DirectiveNormalizer, o: {
   });
 }
 
-function compileTemplateMetadata({encapsulation, template, templateUrl, styles, styleUrls,
-                                  externalStylesheets, animations, ngContentSelectors,
-                                  interpolation, isInline, preserveWhitespaces}: {
-  encapsulation?: ViewEncapsulation | null,
-  template?: string | null,
-  templateUrl?: string | null,
+function compileTemplateMetadata({
+  encapsulation,
+  template,
+  templateUrl,
+  styles,
+  styleUrls,
+  externalStylesheets,
+  animations,
+  ngContentSelectors,
+  interpolation,
+  isInline,
+  preserveWhitespaces
+}: {
+  encapsulation?: ViewEncapsulation|null,
+  template?: string|null,
+  templateUrl?: string|null,
   styles?: string[],
   styleUrls?: string[],
   externalStylesheets?: CompileStylesheetMetadata[],
   ngContentSelectors?: string[],
   animations?: any[],
-  interpolation?: [string, string] | null,
+  interpolation?: [string, string]|null,
   isInline?: boolean,
-  preserveWhitespaces?: boolean | null
+  preserveWhitespaces?: boolean|null
 }): CompileTemplateMetadata {
   return new CompileTemplateMetadata({
     encapsulation: encapsulation || null,
@@ -105,7 +121,10 @@ function compileTemplateMetadata({encapsulation, template, templateUrl, styles, 
 
 function normalizeLoadedTemplate(
     normalizer: DirectiveNormalizer, o: {
-      ngModuleType?: any; componentType?: any; moduleUrl?: string; template?: string | null;
+      ngModuleType?: any;
+      componentType?: any;
+      moduleUrl?: string;
+      template?: string | null;
       templateUrl?: string | null;
       styles?: string[];
       styleUrls?: string[];
@@ -134,7 +153,9 @@ function normalizeLoadedTemplate(
 
 export function main() {
   describe('DirectiveNormalizer', () => {
-    beforeEach(() => { TestBed.configureCompiler({providers: TEST_COMPILER_PROVIDERS}); });
+    beforeEach(() => {
+      TestBed.configureCompiler({providers: TEST_COMPILER_PROVIDERS});
+    });
 
     describe('normalizeDirective', () => {
       it('should throw if no template was specified',
@@ -152,7 +173,7 @@ export function main() {
                     ngModuleType: null,
                     componentType: SomeComp,
                     moduleUrl: SOME_MODULE_URL,
-                    template: <any>{}
+                    template: <any> {}
                   }))
                .toThrowError('The template specified for component SomeComp is not a string');
          }));
@@ -162,7 +183,7 @@ export function main() {
                     ngModuleType: null,
                     componentType: SomeComp,
                     moduleUrl: SOME_MODULE_URL,
-                    templateUrl: <any>{}
+                    templateUrl: <any> {}
                   }))
                .toThrowError('The templateUrl specified for component SomeComp is not a string');
          }));
@@ -348,7 +369,9 @@ export function main() {
 
     describe('normalizeExternalStylesheets', () => {
 
-      beforeEach(() => { TestBed.configureCompiler({providers: [SpyResourceLoader.PROVIDE]}); });
+      beforeEach(() => {
+        TestBed.configureCompiler({providers: [SpyResourceLoader.PROVIDE]});
+      });
 
       it('should load an external stylesheet',
          inject(

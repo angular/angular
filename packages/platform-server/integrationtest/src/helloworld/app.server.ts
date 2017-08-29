@@ -16,5 +16,4 @@ import {HelloWorldComponent} from './hello-world.component';
   bootstrap: [HelloWorldComponent],
   imports: [HelloWorldModule, ServerModule],
 })
-export class HelloWorldServerModule {
-}
+export class HelloWorldServerModule {}

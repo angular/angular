@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompiler, AotCompilerHost, AotCompilerOptions, GeneratedFile, NgAnalyzedModules, core, createAotCompiler, getParseErrors, isSyntaxError, toTypeScript} from '@angular/compiler';
+import {AotCompiler, AotCompilerHost, AotCompilerOptions, core, createAotCompiler, GeneratedFile, getParseErrors, isSyntaxError, NgAnalyzedModules, toTypeScript} from '@angular/compiler';
 import {createBundleIndexHost} from '@angular/tsc-wrapped';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -16,7 +16,7 @@ import {BaseAotCompilerHost} from '../compiler_host';
 import {TypeChecker} from '../diagnostics/check_types';
 
 import {CompilerHost, CompilerOptions, CustomTransformers, Diagnostic, EmitFlags, Program, TsEmitArguments, TsEmitCallback} from './api';
-import {LowerMetadataCache, getExpressionLoweringTransformFactory} from './lower_expressions';
+import {getExpressionLoweringTransformFactory, LowerMetadataCache} from './lower_expressions';
 import {getAngularEmitterTransformFactory} from './node_emitter_transform';
 
 const GENERATED_FILES = /(.*?)\.(ngfactory|shim\.ngstyle|ngstyle|ngsummary)\.(js|d\.ts|ts)$/;
@@ -27,11 +27,16 @@ const emptyModules: NgAnalyzedModules = {
   files: []
 };
 
-const defaultEmitCallback: TsEmitCallback =
-    ({program, targetSourceFile, writeFile, cancellationToken, emitOnlyDtsFiles,
-      customTransformers}) =>
-        program.emit(
-            targetSourceFile, writeFile, cancellationToken, emitOnlyDtsFiles, customTransformers);
+const defaultEmitCallback: TsEmitCallback = ({
+  program,
+  targetSourceFile,
+  writeFile,
+  cancellationToken,
+  emitOnlyDtsFiles,
+  customTransformers
+}) =>
+    program.emit(
+        targetSourceFile, writeFile, cancellationToken, emitOnlyDtsFiles, customTransformers);
 
 
 class AngularCompilerProgram implements Program {
@@ -64,7 +69,7 @@ class AngularCompilerProgram implements Program {
         this._optionsDiagnostics.push(
             ...errors.map(e => ({category: e.category, message: e.messageText as string})));
       } else {
-        rootNames.push(indexName !);
+        rootNames.push(indexName!);
         this.host = host = bundleHost;
       }
     }
@@ -84,7 +89,9 @@ class AngularCompilerProgram implements Program {
   }
 
   // Program implementation
-  getTsProgram(): ts.Program { return this.programWithStubs; }
+  getTsProgram(): ts.Program {
+    return this.programWithStubs;
+  }
 
   getTsOptionDiagnostics(cancellationToken?: ts.CancellationToken) {
     return this.tsProgram.getOptionsDiagnostics(cancellationToken);
@@ -130,10 +137,16 @@ class AngularCompilerProgram implements Program {
         });
   }
 
-  getLazyRoutes(cancellationToken?: ts.CancellationToken): {[route: string]: string} { return {}; }
+  getLazyRoutes(cancellationToken?: ts.CancellationToken): {[route: string]: string} {
+    return {};
+  }
 
-  emit({emitFlags = EmitFlags.Default, cancellationToken, customTransformers,
-        emitCallback = defaultEmitCallback}: {
+  emit({
+    emitFlags = EmitFlags.Default,
+    cancellationToken,
+    customTransformers,
+    emitCallback = defaultEmitCallback
+  }: {
     emitFlags?: EmitFlags,
     cancellationToken?: ts.CancellationToken,
     customTransformers?: CustomTransformers,
@@ -176,8 +189,9 @@ class AngularCompilerProgram implements Program {
   }
 
   private get programWithStubsHost(): ts.CompilerHost {
-    return this._programWithStubsHost || (this._programWithStubsHost = createProgramWithStubsHost(
-                                              this.stubs, this.tsProgram, this.host));
+    return this._programWithStubsHost ||
+        (this._programWithStubsHost =
+             createProgramWithStubsHost(this.stubs, this.tsProgram, this.host));
   }
 
   private get programWithStubs(): ts.Program {
@@ -195,7 +209,7 @@ class AngularCompilerProgram implements Program {
   }
 
   private get generatedFileDiagnostics(): Diagnostic[]|undefined {
-    return this.generatedFiles && this._generatedFileDiagnostics !;
+    return this.generatedFiles && this._generatedFileDiagnostics!;
   }
 
   private calculateTransforms(customTransformers?: CustomTransformers): ts.CustomTransformers {
@@ -333,7 +347,9 @@ function getAotCompilerOptions(options: CompilerOptions): AotCompilerOptions {
 
   return {
     locale: options.i18nInLocale,
-    i18nFormat: options.i18nInFormat || options.i18nOutFormat, translations, missingTranslation,
+    i18nFormat: options.i18nInFormat || options.i18nOutFormat,
+    translations,
+    missingTranslation,
     enableLegacyTemplate: options.enableLegacyTemplate,
     enableSummariesForJit: true,
     preserveWhitespaces: options.preserveWhitespaces,
@@ -376,7 +392,7 @@ function writeNgSummaryJson(
     const genFilePath = sourceFile.fileName.replace(/\.ngfactory\.ts$/, '.ngsummary.json');
     const genFile = generatedFilesByName.get(genFilePath);
     if (genFile) {
-      host.writeFile(emitPath, genFile.source !, false, onError, [sourceFile]);
+      host.writeFile(emitPath, genFile.source!, false, onError, [sourceFile]);
     }
   }
 }
@@ -447,19 +463,19 @@ function createProgramWithStubsHost(
                       .map<[string, FileData]>(g => [g.genFileUrl, {g}]));
       this.writeFile = originalHost.writeFile;
       if (originalHost.getDirectories) {
-        this.getDirectories = path => originalHost.getDirectories !(path);
+        this.getDirectories = path => originalHost.getDirectories!(path);
       }
       if (originalHost.directoryExists) {
-        this.directoryExists = directoryName => originalHost.directoryExists !(directoryName);
+        this.directoryExists = directoryName => originalHost.directoryExists!(directoryName);
       }
       if (originalHost.getCancellationToken) {
-        this.getCancellationToken = () => originalHost.getCancellationToken !();
+        this.getCancellationToken = () => originalHost.getCancellationToken!();
       }
       if (originalHost.getDefaultLibLocation) {
-        this.getDefaultLibLocation = () => originalHost.getDefaultLibLocation !();
+        this.getDefaultLibLocation = () => originalHost.getDefaultLibLocation!();
       }
       if (originalHost.trace) {
-        this.trace = s => originalHost.trace !(s);
+        this.trace = s => originalHost.trace!(s);
       }
     }
     getSourceFile(
@@ -467,8 +483,9 @@ function createProgramWithStubsHost(
         onError?: ((message: string) => void)|undefined): ts.SourceFile {
       const data = this.generatedFiles.get(fileName);
       if (data) {
-        return data.s || (data.s = ts.createSourceFile(
-                              fileName, data.g.source || toTypeScript(data.g), languageVersion));
+        return data.s ||
+            (data.s = ts.createSourceFile(
+                 fileName, data.g.source || toTypeScript(data.g), languageVersion));
       }
       return originalProgram.getSourceFile(fileName) ||
           originalHost.getSourceFile(fileName, languageVersion, onError);

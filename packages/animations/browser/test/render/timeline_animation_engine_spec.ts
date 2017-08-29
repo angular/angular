@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationMetadata, animate, style} from '@angular/animations';
+import {animate, AnimationMetadata, style} from '@angular/animations';
 
 import {AnimationStyleNormalizer, NoopAnimationStyleNormalizer} from '../../src/dsl/style_normalization/animation_style_normalizer';
 import {AnimationDriver} from '../../src/render/animation_driver';
@@ -47,7 +47,9 @@ export function main() {
 
       const log: string[] = [];
       function capture(value: string) {
-        return () => { log.push(value); };
+        return () => {
+          log.push(value);
+        };
       }
 
       const steps = [style({height: 0}), animate(1000, style({height: 500}))];
@@ -96,14 +98,16 @@ export function main() {
 }
 
 function invokeAnimation(
-    engine: TimelineAnimationEngine, element: any, steps: AnimationMetadata | AnimationMetadata[],
+    engine: TimelineAnimationEngine, element: any, steps: AnimationMetadata|AnimationMetadata[],
     id: string = 'id') {
   engine.register(id, steps);
   return engine.create(id, element);
 }
 
 class SuffixNormalizer extends AnimationStyleNormalizer {
-  constructor(private _suffix: string) { super(); }
+  constructor(private _suffix: string) {
+    super();
+  }
 
   normalizePropertyName(propertyName: string, errors: string[]): string {
     return propertyName + this._suffix;
@@ -117,5 +121,7 @@ class SuffixNormalizer extends AnimationStyleNormalizer {
 }
 
 class SuperMockDriver extends MockAnimationDriver {
-  computeStyle(element: any, prop: string, defaultValue?: string): string { return '*star*'; }
+  computeStyle(element: any, prop: string, defaultValue?: string): string {
+    return '*star*';
+  }
 }

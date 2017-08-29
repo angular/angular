@@ -22,7 +22,5 @@ import {Component} from '@angular/core';
     <p>myFood value: {{ myFood }}</p>  <!-- 'lamb' -->
   `,
 })
-export class RadioButtonComp {
-  myFood = 'lamb';
-}
+export class RadioButtonComp { myFood = 'lamb'; }
 // #enddocregion

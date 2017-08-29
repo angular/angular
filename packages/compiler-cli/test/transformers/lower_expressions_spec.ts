@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {LoweringRequest, RequestLocationMap, getExpressionLoweringTransformFactory} from '../../src/transformers/lower_expressions';
+import {getExpressionLoweringTransformFactory, LoweringRequest, RequestLocationMap} from '../../src/transformers/lower_expressions';
 import {Directory, MockAotContext, MockCompilerHost} from '../mocks';
 
 describe('Expression lowering', () => {
@@ -61,10 +61,12 @@ function convert(annotatedSource: string) {
   const moduleSourceFile = program.getSourceFile(fileName);
   const transformers: ts.CustomTransformers = {
     before: [getExpressionLoweringTransformFactory({
-      getRequests(sourceFile: ts.SourceFile): RequestLocationMap{
+      getRequests(sourceFile: ts.SourceFile): RequestLocationMap {
         if (sourceFile.fileName == moduleSourceFile.fileName) {
           return requests;
-        } else {return new Map();}
+        } else {
+          return new Map();
+        }
       }
     })]
   };

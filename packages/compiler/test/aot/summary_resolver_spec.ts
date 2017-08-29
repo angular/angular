@@ -22,7 +22,9 @@ export function main() {
     let symbolCache: StaticSymbolCache;
     let host: MockAotSummaryResolverHost;
 
-    beforeEach(() => { symbolCache = new StaticSymbolCache(); });
+    beforeEach(() => {
+      symbolCache = new StaticSymbolCache();
+    });
 
     function init(summaries: {[filePath: string]: string} = {}) {
       host = new MockAotSummaryResolverHost(summaries);
@@ -110,11 +112,17 @@ export class MockAotSummaryResolverHost implements AotSummaryResolverHost {
     return sourceFileName.replace(EXT, '') + '.d.ts';
   }
 
-  fromSummaryFileName(filePath: string): string { return filePath; }
+  fromSummaryFileName(filePath: string): string {
+    return filePath;
+  }
 
-  isSourceFile(filePath: string) { return !filePath.endsWith('.d.ts'); }
+  isSourceFile(filePath: string) {
+    return !filePath.endsWith('.d.ts');
+  }
 
-  loadSummary(filePath: string): string { return this.summaries[filePath]; }
+  loadSummary(filePath: string): string {
+    return this.summaries[filePath];
+  }
 }
 
 export function createMockOutputContext(): OutputContext {

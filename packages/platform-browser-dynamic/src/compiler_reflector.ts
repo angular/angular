@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileReflector, ExternalReference, Identifiers, getUrlScheme, syntaxError} from '@angular/compiler';
-import {ANALYZE_FOR_ENTRY_COMPONENTS, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactory, ComponentFactoryResolver, ComponentRef, ElementRef, Inject, InjectionToken, Injector, LOCALE_ID, NgModuleFactory, NgModuleRef, Optional, PACKAGE_ROOT_URL, PlatformRef, QueryList, Renderer, SecurityContext, StaticProvider, TRANSLATIONS, TRANSLATIONS_FORMAT, TemplateRef, Type, ViewContainerRef, ViewEncapsulation, createPlatformFactory, isDevMode, platformCore, ɵCodegenComponentFactoryResolver, ɵConsole as Console, ɵEMPTY_ARRAY, ɵEMPTY_MAP, ɵReflectionCapabilities as ReflectionCapabilities, ɵand, ɵccf, ɵcmf, ɵcrt, ɵdid, ɵeld, ɵinlineInterpolate, ɵinterpolate, ɵmod, ɵmpd, ɵncd, ɵnov, ɵpad, ɵpid, ɵpod, ɵppd, ɵprd, ɵqud, ɵregisterModuleFactory, ɵstringify as stringify, ɵted, ɵunv, ɵvid} from '@angular/core';
+import {CompileReflector, ExternalReference, getUrlScheme, Identifiers, syntaxError} from '@angular/compiler';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactory, ComponentFactoryResolver, ComponentRef, createPlatformFactory, ElementRef, Inject, InjectionToken, Injector, isDevMode, LOCALE_ID, NgModuleFactory, NgModuleRef, Optional, PACKAGE_ROOT_URL, platformCore, PlatformRef, QueryList, Renderer, SecurityContext, StaticProvider, TemplateRef, TRANSLATIONS, TRANSLATIONS_FORMAT, Type, ViewContainerRef, ViewEncapsulation, ɵand, ɵccf, ɵcmf, ɵCodegenComponentFactoryResolver, ɵConsole as Console, ɵcrt, ɵdid, ɵeld, ɵEMPTY_ARRAY, ɵEMPTY_MAP, ɵinlineInterpolate, ɵinterpolate, ɵmod, ɵmpd, ɵncd, ɵnov, ɵpad, ɵpid, ɵpod, ɵppd, ɵprd, ɵqud, ɵReflectionCapabilities as ReflectionCapabilities, ɵregisterModuleFactory, ɵstringify as stringify, ɵted, ɵunv, ɵvid} from '@angular/core';
 
 export const MODULE_SUFFIX = '';
 const builtinExternalReferences = createBuiltinExternalReferencesMap();
@@ -15,7 +15,9 @@ const builtinExternalReferences = createBuiltinExternalReferencesMap();
 export class JitReflector implements CompileReflector {
   private reflectionCapabilities: ReflectionCapabilities;
   private builtinExternalReferences = new Map<ExternalReference, any>();
-  constructor() { this.reflectionCapabilities = new ReflectionCapabilities(); }
+  constructor() {
+    this.reflectionCapabilities = new ReflectionCapabilities();
+  }
   componentModuleUrl(type: any, cmpMetadata: Component): string {
     const moduleId = cmpMetadata.moduleId;
 
@@ -24,7 +26,8 @@ export class JitReflector implements CompileReflector {
       return scheme ? moduleId : `package:${moduleId}${MODULE_SUFFIX}`;
     } else if (moduleId !== null && moduleId !== void 0) {
       throw syntaxError(
-          `moduleId should be a string in "${stringify(type)}". See https://goo.gl/wIDDiL for more information.\n` +
+          `moduleId should be a string in "${
+              stringify(type)}". See https://goo.gl/wIDDiL for more information.\n` +
           `If you're using Webpack you should inline the template and the styles, see https://goo.gl/X2J8zc.`);
     }
 
@@ -82,22 +85,26 @@ function createBuiltinExternalReferencesMap() {
       Identifiers.createModuleFactory,
 
 
-      ɵcmf, );
+      ɵcmf,
+  );
   map.set(
       Identifiers.moduleDef,
 
 
-      ɵmod, );
+      ɵmod,
+  );
   map.set(
       Identifiers.moduleProviderDef,
 
 
-      ɵmpd, );
+      ɵmpd,
+  );
   map.set(
       Identifiers.RegisterModuleFactoryFn,
 
 
-      ɵregisterModuleFactory, );
+      ɵregisterModuleFactory,
+  );
   map.set(Identifiers.Injector, Injector);
   map.set(
       Identifiers.ViewEncapsulation,
@@ -113,7 +120,8 @@ function createBuiltinExternalReferencesMap() {
       Identifiers.SecurityContext,
 
 
-      SecurityContext, );
+      SecurityContext,
+  );
   map.set(Identifiers.LOCALE_ID, LOCALE_ID);
   map.set(
       Identifiers.TRANSLATIONS_FORMAT,

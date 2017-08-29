@@ -8,18 +8,20 @@
 
 import {NgIf} from '@angular/common';
 import {ComponentFactory, ComponentFactoryResolver, ComponentRef, ErrorHandler, Injector, NgModuleRef, RendererFactory2, RootRenderer, Sanitizer, TemplateRef, ViewContainerRef} from '@angular/core';
-import {ArgumentType, BindingFlags, NodeFlags, ViewDefinition, ViewFlags, anchorDef, createComponentFactory, directiveDef, elementDef, initServicesIfNeeded, textDef, viewDef} from '@angular/core/src/view/index';
+import {anchorDef, ArgumentType, BindingFlags, createComponentFactory, directiveDef, elementDef, initServicesIfNeeded, NodeFlags, textDef, viewDef, ViewDefinition, ViewFlags} from '@angular/core/src/view/index';
 import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
 import {DomSanitizerImpl, SafeStyle} from '@angular/platform-browser/src/security/dom_sanitization_service';
 
-import {TreeNode, emptyTree} from '../util';
+import {emptyTree, TreeNode} from '../util';
 
 let trustedEmptyColor: SafeStyle;
 let trustedGreyColor: SafeStyle;
 
 export class TreeComponent {
   data: TreeNode = emptyTree;
-  get bgColor() { return this.data.depth % 2 ? trustedEmptyColor : trustedGreyColor; }
+  get bgColor() {
+    return this.data.depth % 2 ? trustedEmptyColor : trustedGreyColor;
+  }
 }
 
 let viewFlags = ViewFlags.None;
@@ -121,11 +123,19 @@ export class AppModule implements Injector, NgModuleRef<any> {
         this.componentFactory.create(Injector.NULL, [], this.componentFactory.selector, this);
   }
 
-  tick() { this.componentRef.changeDetectorRef.detectChanges(); }
+  tick() {
+    this.componentRef.changeDetectorRef.detectChanges();
+  }
 
-  get injector() { return this; }
-  get componentFactoryResolver(): ComponentFactoryResolver { return null; }
-  get instance() { return this; }
+  get injector() {
+    return this;
+  }
+  get componentFactoryResolver(): ComponentFactoryResolver {
+    return null;
+  }
+  get instance() {
+    return this;
+  }
   destroy() {}
   onDestroy(callback: () => void) {}
 }

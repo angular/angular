@@ -245,7 +245,7 @@ lignes</target>
 export function main(): void {
   const serializer = new Xliff2();
 
-  function toXliff(html: string, locale: string | null = null): string {
+  function toXliff(html: string, locale: string|null = null): string {
     const catalog = new MessageBundle(new HtmlParser, [], {}, locale);
     catalog.updateFromTemplate(html, 'file.ts', DEFAULT_INTERPOLATION_CONFIG);
     return catalog.write(serializer);
@@ -263,10 +263,12 @@ export function main(): void {
 
   describe('XLIFF 2.0 serializer', () => {
     describe('write', () => {
-      it('should write a valid xliff 2.0 file',
-         () => { expect(toXliff(HTML)).toEqual(WRITE_XLIFF); });
-      it('should write a valid xliff 2.0 file with a source language',
-         () => { expect(toXliff(HTML, 'fr')).toContain('srcLang="fr"'); });
+      it('should write a valid xliff 2.0 file', () => {
+        expect(toXliff(HTML)).toEqual(WRITE_XLIFF);
+      });
+      it('should write a valid xliff 2.0 file with a source language', () => {
+        expect(toXliff(HTML, 'fr')).toContain('srcLang="fr"');
+      });
     });
 
     describe('load', () => {
@@ -293,8 +295,9 @@ lignes`
         });
       });
 
-      it('should return the target locale',
-         () => { expect(serializer.load(LOAD_XLIFF, 'url').locale).toEqual('fr'); });
+      it('should return the target locale', () => {
+        expect(serializer.load(LOAD_XLIFF, 'url').locale).toEqual('fr');
+      });
     });
 
     describe('structure errors', () => {
@@ -347,7 +350,9 @@ lignes`
   </file>
 </xliff>`;
 
-        expect(() => { loadAsMap(XLIFF); }).toThrowError(/<unit> misses the "id" attribute/);
+        expect(() => {
+          loadAsMap(XLIFF);
+        }).toThrowError(/<unit> misses the "id" attribute/);
       });
 
       it('should throw on duplicate unit id', () => {
@@ -389,7 +394,9 @@ lignes`
   </file>
 </xliff>`;
 
-        expect(() => { loadAsMap(XLIFF); })
+        expect(() => {
+          loadAsMap(XLIFF);
+        })
             .toThrowError(new RegExp(
                 escapeRegExp(`[ERROR ->]<b>msg should contain only ph and pc tags</b>`)));
       });

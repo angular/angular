@@ -22,13 +22,15 @@ interface OtherMetadataType extends SomeMetadataType {
 class SomeMetadata implements SomeMetadataType {
   plainProp: string;
   private _getterProp: string;
-  get getterProp(): string { return this._getterProp; }
+  get getterProp(): string {
+    return this._getterProp;
+  }
   arrayProp: any[];
 
   constructor(options: SomeMetadataType) {
-    this.plainProp = options.plainProp !;
-    this._getterProp = options.getterProp !;
-    this.arrayProp = options.arrayProp !;
+    this.plainProp = options.plainProp!;
+    this._getterProp = options.getterProp!;
+    this.arrayProp = options.arrayProp!;
   }
 }
 
@@ -42,7 +44,7 @@ class OtherMetadata extends SomeMetadata implements OtherMetadataType {
       arrayProp: options.arrayProp
     });
 
-    this.otherPlainProp = options.otherPlainProp !;
+    this.otherPlainProp = options.otherPlainProp!;
   }
 }
 
@@ -50,7 +52,9 @@ export function main() {
   describe('metadata overrider', () => {
     let overrider: MetadataOverrider;
 
-    beforeEach(() => { overrider = new MetadataOverrider(); });
+    beforeEach(() => {
+      overrider = new MetadataOverrider();
+    });
 
     it('should return a new instance with the same values', () => {
       const oldInstance = new SomeMetadata({plainProp: 'somePlainProp', getterProp: 'someInput'});

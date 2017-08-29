@@ -16,5 +16,4 @@ import {SimpleFormControl} from './simple_form_control_example';
   declarations: [SimpleFormControl],
   bootstrap: [SimpleFormControl]
 })
-export class AppModule {
-}
+export class AppModule {}

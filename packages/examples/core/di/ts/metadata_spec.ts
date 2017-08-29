@@ -64,8 +64,7 @@ export function main() {
       it('works', () => {
         // #docregion Injectable
         @Injectable()
-        class UsefulService {
-        }
+        class UsefulService {}
 
         @Injectable()
         class NeedsService {
@@ -119,7 +118,9 @@ export function main() {
 
         @Injectable()
         class NeedsDependency {
-          constructor(@SkipSelf() public dependency: Dependency) { this.dependency = dependency; }
+          constructor(@SkipSelf() public dependency: Dependency) {
+            this.dependency = dependency;
+          }
         }
 
         const parent = ReflectiveInjector.resolveAndCreate([Dependency]);
@@ -155,23 +156,21 @@ export function main() {
           viewProviders: [HostService],
           template: '<child-directive></child-directive>',
         })
-        class ParentCmp {
-        }
+        class ParentCmp {}
 
         @Component({
           selector: 'app',
           viewProviders: [OtherService],
           template: '<parent-cmp></parent-cmp>',
         })
-        class App {
-        }
+        class App {}
         // #enddocregion
 
         TestBed.configureTestingModule({
           declarations: [App, ParentCmp, ChildDirective],
         });
 
-        let cmp: ComponentFixture<App> = undefined !;
+        let cmp: ComponentFixture<App> = undefined!;
         expect(() => cmp = TestBed.createComponent(App)).not.toThrow();
 
         expect(cmp.debugElement.children[0].children[0].injector.get(ChildDirective).logs).toEqual([

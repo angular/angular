@@ -63,7 +63,7 @@ export class Validators {
    * Validator that requires controls to have a value greater than a number.
    */
   static min(min: number): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
+    return (control: AbstractControl): ValidationErrors|null => {
       if (isEmptyInputValue(control.value) || isEmptyInputValue(min)) {
         return null;  // don't validate empty values to allow optional controls
       }
@@ -78,7 +78,7 @@ export class Validators {
    * Validator that requires controls to have a value less than a number.
    */
   static max(max: number): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
+    return (control: AbstractControl): ValidationErrors|null => {
       if (isEmptyInputValue(control.value) || isEmptyInputValue(max)) {
         return null;  // don't validate empty values to allow optional controls
       }
@@ -114,7 +114,7 @@ export class Validators {
    * Validator that requires controls to have a value of a minimum length.
    */
   static minLength(minLength: number): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
+    return (control: AbstractControl): ValidationErrors|null => {
       if (isEmptyInputValue(control.value)) {
         return null;  // don't validate empty values to allow optional controls
       }
@@ -129,7 +129,7 @@ export class Validators {
    * Validator that requires controls to have a value of a maximum length.
    */
   static maxLength(maxLength: number): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
+    return (control: AbstractControl): ValidationErrors|null => {
       const length: number = control.value ? control.value.length : 0;
       return length > maxLength ?
           {'maxlength': {'requiredLength': maxLength, 'actualLength': length}} :
@@ -151,7 +151,7 @@ export class Validators {
       regexStr = pattern.toString();
       regex = pattern;
     }
-    return (control: AbstractControl): ValidationErrors | null => {
+    return (control: AbstractControl): ValidationErrors|null => {
       if (isEmptyInputValue(control.value)) {
         return null;  // don't validate empty values to allow optional controls
       }
@@ -164,7 +164,9 @@ export class Validators {
   /**
    * No-op validator.
    */
-  static nullValidator(c: AbstractControl): ValidationErrors|null { return null; }
+  static nullValidator(c: AbstractControl): ValidationErrors|null {
+    return null;
+  }
 
   /**
    * Compose multiple validators into a single function that returns the union
@@ -216,8 +218,8 @@ function _executeAsyncValidators(control: AbstractControl, validators: AsyncVali
 
 function _mergeErrors(arrayOfErrors: ValidationErrors[]): ValidationErrors|null {
   const res: {[key: string]: any} =
-      arrayOfErrors.reduce((res: ValidationErrors | null, errors: ValidationErrors | null) => {
-        return errors != null ? {...res !, ...errors} : res !;
+      arrayOfErrors.reduce((res: ValidationErrors|null, errors: ValidationErrors|null) => {
+        return errors != null ? {...res!, ...errors} : res!;
       }, {});
   return Object.keys(res).length === 0 ? null : res;
 }

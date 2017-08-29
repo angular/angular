@@ -59,7 +59,13 @@ export class ApplicationInitStatus {
       }
     }
 
-    Promise.all(asyncInitPromises).then(() => { complete(); }).catch(e => { this.reject(e); });
+    Promise.all(asyncInitPromises)
+        .then(() => {
+          complete();
+        })
+        .catch(e => {
+          this.reject(e);
+        });
 
     if (asyncInitPromises.length === 0) {
       complete();
@@ -67,7 +73,11 @@ export class ApplicationInitStatus {
     this.initialized = true;
   }
 
-  get done(): boolean { return this._done; }
+  get done(): boolean {
+    return this._done;
+  }
 
-  get donePromise(): Promise<any> { return this._donePromise; }
+  get donePromise(): Promise<any> {
+    return this._donePromise;
+  }
 }

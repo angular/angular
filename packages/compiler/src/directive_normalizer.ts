@@ -16,7 +16,7 @@ import {ResourceLoader} from './resource_loader';
 import {extractStyleUrls, isStyleUrlResolvable} from './style_url_resolver';
 import {PreparsedElementType, preparseElement} from './template_parser/template_preparser';
 import {UrlResolver} from './url_resolver';
-import {SyncAsync, isDefined, stringify, syntaxError} from './util';
+import {isDefined, stringify, SyncAsync, syntaxError} from './util';
 
 export interface PrenormalizedTemplateMetadata {
   ngModuleType: any;
@@ -39,16 +39,19 @@ export class DirectiveNormalizer {
       private _resourceLoader: ResourceLoader, private _urlResolver: UrlResolver,
       private _htmlParser: HtmlParser, private _config: CompilerConfig) {}
 
-  clearCache(): void { this._resourceLoaderCache.clear(); }
+  clearCache(): void {
+    this._resourceLoaderCache.clear();
+  }
 
   clearCacheFor(normalizedDirective: CompileDirectiveMetadata): void {
     if (!normalizedDirective.isComponent) {
       return;
     }
     const template = normalizedDirective.template !;
-    this._resourceLoaderCache.delete(template.templateUrl !);
-    template.externalStylesheets.forEach(
-        (stylesheet) => { this._resourceLoaderCache.delete(stylesheet.moduleUrl !); });
+    this._resourceLoaderCache.delete(template.templateUrl!);
+    template.externalStylesheets.forEach((stylesheet) => {
+      this._resourceLoaderCache.delete(stylesheet.moduleUrl!);
+    });
   }
 
   private _fetch(url: string): SyncAsync<string> {
@@ -64,17 +67,18 @@ export class DirectiveNormalizer {
       SyncAsync<CompileTemplateMetadata> {
     if (isDefined(prenormData.template)) {
       if (isDefined(prenormData.templateUrl)) {
-        throw syntaxError(
-            `'${stringify(prenormData.componentType)}' component cannot define both template and templateUrl`);
+        throw syntaxError(`'${
+            stringify(prenormData
+                          .componentType)}' component cannot define both template and templateUrl`);
       }
       if (typeof prenormData.template !== 'string') {
-        throw syntaxError(
-            `The template specified for component ${stringify(prenormData.componentType)} is not a string`);
+        throw syntaxError(`The template specified for component ${
+            stringify(prenormData.componentType)} is not a string`);
       }
     } else if (isDefined(prenormData.templateUrl)) {
       if (typeof prenormData.templateUrl !== 'string') {
-        throw syntaxError(
-            `The templateUrl specified for component ${stringify(prenormData.componentType)} is not a string`);
+        throw syntaxError(`The templateUrl specified for component ${
+            stringify(prenormData.componentType)} is not a string`);
       }
     } else {
       throw syntaxError(
@@ -83,8 +87,8 @@ export class DirectiveNormalizer {
 
     if (isDefined(prenormData.preserveWhitespaces) &&
         typeof prenormData.preserveWhitespaces !== 'boolean') {
-      throw syntaxError(
-          `The preserveWhitespaces option for component ${stringify(prenormData.componentType)} must be a boolean`);
+      throw syntaxError(`The preserveWhitespaces option for component ${
+          stringify(prenormData.componentType)} must be a boolean`);
     }
 
     return SyncAsync.then(
@@ -100,7 +104,7 @@ export class DirectiveNormalizer {
       template = prenomData.template;
       templateUrl = prenomData.moduleUrl;
     } else {
-      templateUrl = this._urlResolver.resolve(prenomData.moduleUrl, prenomData.templateUrl !);
+      templateUrl = this._urlResolver.resolve(prenomData.moduleUrl, prenomData.templateUrl!);
       template = this._fetch(templateUrl);
     }
     return SyncAsync.then(
@@ -111,7 +115,7 @@ export class DirectiveNormalizer {
       prenormData: PrenormalizedTemplateMetadata, template: string,
       templateAbsUrl: string): CompileTemplateMetadata {
     const isInline = !!prenormData.template;
-    const interpolationConfig = InterpolationConfig.fromArray(prenormData.interpolation !);
+    const interpolationConfig = InterpolationConfig.fromArray(prenormData.interpolation!);
     const rootNodesAndErrors = this._htmlParser.parse(
         template,
         templateSourceUrl(
@@ -150,10 +154,13 @@ export class DirectiveNormalizer {
     return new CompileTemplateMetadata({
       encapsulation,
       template,
-      templateUrl: templateAbsUrl, styles, styleUrls,
+      templateUrl: templateAbsUrl,
+      styles,
+      styleUrls,
       ngContentSelectors: visitor.ngContentSelectors,
       animations: prenormData.animations,
-      interpolation: prenormData.interpolation, isInline,
+      interpolation: prenormData.interpolation,
+      isInline,
       externalStylesheets: [],
       preserveWhitespaces: preserveWhitespacesDefault(
           prenormData.preserveWhitespaces, this._config.preserveWhitespaces),
@@ -201,7 +208,7 @@ export class DirectiveNormalizer {
   }
 
   normalizeStylesheet(stylesheet: CompileStylesheetMetadata): CompileStylesheetMetadata {
-    const moduleUrl = stylesheet.moduleUrl !;
+    const moduleUrl = stylesheet.moduleUrl!;
     const allStyleUrls = stylesheet.styleUrls.filter(isStyleUrlResolvable)
                              .map(url => this._urlResolver.resolve(moduleUrl, url));
 
@@ -255,13 +262,21 @@ class TemplatePreparseVisitor implements html.Visitor {
     return null;
   }
 
-  visitExpansion(ast: html.Expansion, context: any): any { html.visitAll(this, ast.cases); }
+  visitExpansion(ast: html.Expansion, context: any): any {
+    html.visitAll(this, ast.cases);
+  }
 
   visitExpansionCase(ast: html.ExpansionCase, context: any): any {
     html.visitAll(this, ast.expression);
   }
 
-  visitComment(ast: html.Comment, context: any): any { return null; }
-  visitAttribute(ast: html.Attribute, context: any): any { return null; }
-  visitText(ast: html.Text, context: any): any { return null; }
+  visitComment(ast: html.Comment, context: any): any {
+    return null;
+  }
+  visitAttribute(ast: html.Attribute, context: any): any {
+    return null;
+  }
+  visitText(ast: html.Text, context: any): any {
+    return null;
+  }
 }

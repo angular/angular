@@ -14,13 +14,17 @@ import {iterableChangesAsString, iterableDifferToString} from '../../change_dete
 class ItemWithId {
   constructor(private id: string) {}
 
-  toString() { return `{id: ${this.id}}`; }
+  toString() {
+    return `{id: ${this.id}}`;
+  }
 }
 
 class ComplexItem {
   constructor(private id: string, private color: string) {}
 
-  toString() { return `{id: ${this.id}, color: ${this.color}}`; }
+  toString() {
+    return `{id: ${this.id}, color: ${this.color}}`;
+  }
 }
 
 // todo(vicb): UnmodifiableListView / frozen object when implemented
@@ -29,7 +33,9 @@ export function main() {
     describe('DefaultIterableDiffer', function() {
       let differ: DefaultIterableDiffer<any>;
 
-      beforeEach(() => { differ = new DefaultIterableDiffer(); });
+      beforeEach(() => {
+        differ = new DefaultIterableDiffer();
+      });
 
       it('should support list and iterables', () => {
         const f = new DefaultIterableDifferFactory();
@@ -47,10 +53,9 @@ export function main() {
 
         l.list = [1];
         differ.check(l);
-        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
-          collection: ['1[null->0]'],
-          additions: ['1[null->0]']
-        }));
+        expect(iterableDifferToString(differ))
+            .toEqual(
+                iterableChangesAsString({collection: ['1[null->0]'], additions: ['1[null->0]']}));
 
         l.list = [2, 1];
         differ.check(l);
@@ -69,10 +74,9 @@ export function main() {
 
         l.push('a');
         differ.check(l);
-        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
-          collection: ['a[null->0]'],
-          additions: ['a[null->0]']
-        }));
+        expect(iterableDifferToString(differ))
+            .toEqual(
+                iterableChangesAsString({collection: ['a[null->0]'], additions: ['a[null->0]']}));
 
         l.push('b');
         differ.check(l);
@@ -148,10 +152,9 @@ export function main() {
 
         l.push('a');
         differ.check(l);
-        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
-          collection: ['a[null->0]'],
-          additions: ['a[null->0]']
-        }));
+        expect(iterableDifferToString(differ))
+            .toEqual(
+                iterableChangesAsString({collection: ['a[null->0]'], additions: ['a[null->0]']}));
 
         l.push('b');
         differ.check(l);
@@ -312,7 +315,7 @@ export function main() {
 
         function modifyArrayUsingOperation(
             arr: number[], endData: any[], prev: number, next: number) {
-          let value: number = null !;
+          let value: number = null!;
           if (prev == null) {
             value = endData[next];
             arr.splice(next, 0, value);
@@ -332,8 +335,8 @@ export function main() {
              const startData = [0, 1, 2, 3, 4, 5];
              const endData = [6, 2, 7, 0, 4, 8];
 
-             differ = differ.diff(startData) !;
-             differ = differ.diff(endData) !;
+             differ = differ.diff(startData)!;
+             differ = differ.diff(endData)!;
 
              const operations: string[] = [];
              differ.forEachOperation((item: any, prev: number, next: number) => {
@@ -355,8 +358,8 @@ export function main() {
              const startData = [0, 1, 2, 3];
              const endData = [2, 1];
 
-             differ = differ.diff(startData) !;
-             differ = differ.diff(endData) !;
+             differ = differ.diff(startData)!;
+             differ = differ.diff(endData)!;
 
              const operations: string[] = [];
              differ.forEachOperation((item: any, prev: number, next: number) => {
@@ -375,8 +378,8 @@ export function main() {
           const startData = [1, 2, 3, 4, 5, 6];
           const endData = [3, 6, 4, 9, 1, 2];
 
-          differ = differ.diff(startData) !;
-          differ = differ.diff(endData) !;
+          differ = differ.diff(startData)!;
+          differ = differ.diff(endData)!;
 
           const operations: string[] = [];
           differ.forEachOperation((item: any, prev: number, next: number) => {
@@ -396,8 +399,8 @@ export function main() {
           const startData = [0, 1, 2, 3, 4];
           const endData = [4, 1, 2, 3, 0, 5];
 
-          differ = differ.diff(startData) !;
-          differ = differ.diff(endData) !;
+          differ = differ.diff(startData)!;
+          differ = differ.diff(endData)!;
 
           const operations: string[] = [];
           differ.forEachOperation((item: any, prev: number, next: number) => {
@@ -417,8 +420,8 @@ export function main() {
           const startData = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
           const endData = [10, 11, 1, 5, 7, 8, 0, 5, 3, 6];
 
-          differ = differ.diff(startData) !;
-          differ = differ.diff(endData) !;
+          differ = differ.diff(startData)!;
+          differ = differ.diff(endData)!;
 
           const operations: string[] = [];
           differ.forEachOperation((item: any, prev: number, next: number) => {
@@ -443,8 +446,8 @@ export function main() {
              const startData = [1, 2, 3, 4];
              const endData = [5, 6, 7, 8];
 
-             differ = differ.diff(startData) !;
-             differ = differ.diff(endData) !;
+             differ = differ.diff(startData)!;
+             differ = differ.diff(endData)!;
 
              const operations: string[] = [];
              differ.forEachOperation((item: any, prev: number, next: number) => {
@@ -468,7 +471,7 @@ export function main() {
 
         it('should treat null as an empty list', () => {
           differ.diff(['a', 'b']);
-          expect(iterableDifferToString(differ.diff(null !) !)).toEqual(iterableChangesAsString({
+          expect(iterableDifferToString(differ.diff(null!)!)).toEqual(iterableChangesAsString({
             previous: ['a[0->null]', 'b[1->null]'],
             removals: ['a[0->null]', 'b[1->null]']
           }));
@@ -487,7 +490,9 @@ export function main() {
 
       const buildItemList = (list: string[]) => list.map((val) => new ItemWithId(val));
 
-      beforeEach(() => { differ = new DefaultIterableDiffer(trackByItemId); });
+      beforeEach(() => {
+        differ = new DefaultIterableDiffer(trackByItemId);
+      });
 
       it('should treat the collection as dirty if identity changes', () => {
         differ.diff(buildItemList(['a']));
@@ -574,7 +579,9 @@ export function main() {
 
       const trackByIndex = (index: number, item: any): number => index;
 
-      beforeEach(() => { differ = new DefaultIterableDiffer(trackByIndex); });
+      beforeEach(() => {
+        differ = new DefaultIterableDiffer(trackByIndex);
+      });
 
       it('should track removals normally', () => {
         differ.check(['a', 'b', 'c', 'd']);

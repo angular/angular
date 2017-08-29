@@ -53,7 +53,9 @@ export function getPluralCategory(
  */
 @Injectable()
 export class NgLocaleLocalization extends NgLocalization {
-  constructor(@Inject(LOCALE_ID) protected locale: string) { super(); }
+  constructor(@Inject(LOCALE_ID) protected locale: string) {
+    super();
+  }
 
   getPluralCategory(value: any, locale?: string): string {
     const plural = getLocalePluralCase(locale || this.locale)(value);

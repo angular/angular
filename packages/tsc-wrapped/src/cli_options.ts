@@ -7,7 +7,9 @@
  */
 export class CliOptions {
   public basePath: string|null;
-  constructor({basePath = null}: {basePath?: string | null}) { this.basePath = basePath; }
+  constructor({basePath = null}: {basePath?: string|null}) {
+    this.basePath = basePath;
+  }
 }
 
 export class I18nExtractionCliOptions extends CliOptions {
@@ -33,9 +35,14 @@ export class NgcCliOptions extends CliOptions {
   public locale: string|null;
   public missingTranslation: string|null;
 
-  constructor({i18nFormat = null, i18nFile = null, locale = null, missingTranslation = null,
-               basePath = null}: {
-    i18nFormat?: string | null,
+  constructor({
+    i18nFormat = null,
+    i18nFile = null,
+    locale = null,
+    missingTranslation = null,
+    basePath = null
+  }: {
+    i18nFormat?: string|null,
     i18nFile?: string|null,
     locale?: string|null,
     missingTranslation?: string|null,

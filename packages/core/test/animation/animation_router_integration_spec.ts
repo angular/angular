@@ -9,7 +9,7 @@ import {animate, animateChild, query, style, transition, trigger, ɵAnimationGro
 import {AnimationDriver, ɵAnimationEngine} from '@angular/animations/browser';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {Component, HostBinding} from '@angular/core';
-import {TestBed, fakeAsync, tick} from '@angular/core/testing';
+import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {Router, RouterOutlet} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
@@ -122,7 +122,7 @@ export function main() {
          fixture.detectChanges();
          engine.flush();
 
-         const player = engine.players[0] !;
+         const player = engine.players[0]!;
          const groupPlayer = player.getRealPlayer() as AnimationGroupPlayer;
          const players = groupPlayer.players as MockAnimationPlayer[];
 
@@ -173,8 +173,7 @@ export function main() {
          }
 
          @Component({selector: 'page1', template: `page1`, animations: []})
-         class Page1Cmp {
-         }
+         class Page1Cmp {}
 
          @Component({
            selector: 'page2',
@@ -229,7 +228,7 @@ export function main() {
          fixture.detectChanges();
          engine.flush();
 
-         const player = engine.players[0] !;
+         const player = engine.players[0]!;
          const groupPlayer = player.getRealPlayer() as AnimationGroupPlayer;
          const players = groupPlayer.players as MockAnimationPlayer[];
 
@@ -304,8 +303,7 @@ export function main() {
          }
 
          @Component({selector: 'page2', template: `page2`, animations: []})
-         class Page2Cmp {
-         }
+         class Page2Cmp {}
 
          TestBed.configureTestingModule({
            declarations: [Page1Cmp, Page2Cmp, ContainerCmp],
@@ -333,7 +331,7 @@ export function main() {
          fixture.detectChanges();
          engine.flush();
 
-         const player = engine.players[0] !;
+         const player = engine.players[0]!;
          const groupPlayer = player.getRealPlayer() as AnimationGroupPlayer;
          const players = groupPlayer.players as MockAnimationPlayer[];
 
@@ -387,16 +385,16 @@ export function main() {
 
            constructor(public router: Router) {}
 
-           prepRoute(outlet: any) { return outlet.activatedRouteData['animation']; }
+           prepRoute(outlet: any) {
+             return outlet.activatedRouteData['animation'];
+           }
          }
 
          @Component({selector: 'page1', template: `page1`})
-         class Page1Cmp {
-         }
+         class Page1Cmp {}
 
          @Component({selector: 'page2', template: `page2`})
-         class Page2Cmp {
-         }
+         class Page2Cmp {}
 
          TestBed.configureTestingModule({
            declarations: [Page1Cmp, Page2Cmp, ContainerCmp],

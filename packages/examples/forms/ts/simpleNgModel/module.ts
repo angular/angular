@@ -16,5 +16,4 @@ import {SimpleNgModelComp} from './simple_ng_model_example';
   declarations: [SimpleNgModelComp],
   bootstrap: [SimpleNgModelComp]
 })
-export class AppModule {
-}
+export class AppModule {}

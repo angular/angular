@@ -37,13 +37,11 @@ class NgTemplateOutletExample {
   selector: 'example-app',
   template: `<ng-template-outlet-example></ng-template-outlet-example>`
 })
-class ExampleApp {
-}
+class ExampleApp {}
 
 @NgModule({
   imports: [BrowserModule],
   declarations: [ExampleApp, NgTemplateOutletExample],
   bootstrap: [ExampleApp]
 })
-export class AppModule {
-}
+export class AppModule {}

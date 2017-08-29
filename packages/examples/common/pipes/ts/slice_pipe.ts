@@ -20,9 +20,7 @@ import {Component} from '@angular/core';
     <p>{{str}}[100]: '{{str | slice:100}}' - output is expected to be ''</p>
   </div>`
 })
-export class SlicePipeStringComponent {
-  str: string = 'abcdefghij';
-}
+export class SlicePipeStringComponent { str: string = 'abcdefghij'; }
 // #enddocregion
 
 // #docregion SlicePipe_list
@@ -32,7 +30,5 @@ export class SlicePipeStringComponent {
     <li *ngFor="let i of collection | slice:1:3">{{i}}</li>
   </ul>`
 })
-export class SlicePipeListComponent {
-  collection: string[] = ['a', 'b', 'c', 'd'];
-}
+export class SlicePipeListComponent { collection: string[] = ['a', 'b', 'c', 'd']; }
 // #enddocregion

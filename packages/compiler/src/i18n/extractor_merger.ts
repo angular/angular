@@ -111,7 +111,7 @@ class _Visitor implements html.Visitor {
     this._translations = translations;
 
     // Construct a single fake root element
-    const wrapper = new html.Element('wrapper', [], nodes, undefined !, undefined, undefined);
+    const wrapper = new html.Element('wrapper', [], nodes, undefined!, undefined, undefined);
 
     const translatedNode = wrapper.visit(this, null);
 
@@ -180,7 +180,7 @@ class _Visitor implements html.Visitor {
           this._blockStartDepth = this._depth;
           this._blockChildren = [];
           this._blockMeaningAndDesc =
-              comment.value !.replace(_I18N_COMMENT_PREFIX_REGEXP, '').trim();
+              comment.value!.replace(_I18N_COMMENT_PREFIX_REGEXP, '').trim();
           this._openTranslatableSection(comment);
         }
       } else {
@@ -188,7 +188,7 @@ class _Visitor implements html.Visitor {
           if (this._depth == this._blockStartDepth) {
             this._closeTranslatableSection(comment, this._blockChildren);
             this._inI18nBlock = false;
-            const message = this._addMessage(this._blockChildren, this._blockMeaningAndDesc) !;
+            const message = this._addMessage(this._blockChildren, this._blockMeaningAndDesc)!;
             // merge attributes in sections
             const nodes = this._translateMessage(comment, message);
             return html.visitAll(this, nodes);
@@ -214,7 +214,7 @@ class _Visitor implements html.Visitor {
     const wasInI18nNode = this._inI18nNode;
     const wasInImplicitNode = this._inImplicitNode;
     let childNodes: html.Node[] = [];
-    let translatedChildNodes: html.Node[] = undefined !;
+    let translatedChildNodes: html.Node[] = undefined!;
 
     // Extract:
     // - top level nodes with the (implicit) "i18n" attribute if not already in a section
@@ -229,7 +229,7 @@ class _Visitor implements html.Visitor {
     if (!this._isInTranslatableSection && !this._inIcu) {
       if (i18nAttr || isTopLevelImplicit) {
         this._inI18nNode = true;
-        const message = this._addMessage(el.children, i18nMeta) !;
+        const message = this._addMessage(el.children, i18nMeta)!;
         translatedChildNodes = this._translateMessage(el, message);
       }
 
@@ -380,12 +380,14 @@ class _Visitor implements html.Visitor {
           } else {
             this._reportError(
                 el,
-                `Unexpected translation for attribute "${attr.name}" (id="${id || this._translations.digest(message)}")`);
+                `Unexpected translation for attribute "${attr.name}" (id="${
+                    id || this._translations.digest(message)}")`);
           }
         } else {
           this._reportError(
               el,
-              `Translation unavailable for attribute "${attr.name}" (id="${id || this._translations.digest(message)}")`);
+              `Translation unavailable for attribute "${attr.name}" (id="${
+                  id || this._translations.digest(message)}")`);
         }
       } else {
         translatedAttributes.push(attr);
@@ -456,7 +458,7 @@ class _Visitor implements html.Visitor {
         0);
 
     if (significantChildren == 1) {
-      for (let i = this._messages.length - 1; i >= startIndex !; i--) {
+      for (let i = this._messages.length - 1; i >= startIndex!; i--) {
         const ast = this._messages[i].nodes;
         if (!(ast.length == 1 && ast[0] instanceof i18n.Text)) {
           this._messages.splice(i, 1);
@@ -469,7 +471,7 @@ class _Visitor implements html.Visitor {
   }
 
   private _reportError(node: html.Node, msg: string): void {
-    this._errors.push(new I18nError(node.sourceSpan !, msg));
+    this._errors.push(new I18nError(node.sourceSpan!, msg));
   }
 }
 

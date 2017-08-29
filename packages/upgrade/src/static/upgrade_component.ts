@@ -135,8 +135,8 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     if (controllerType) {
       this.controllerInstance = this.helper.buildController(controllerType, this.$componentScope);
     } else if (bindToController) {
-      throw new Error(
-          `Upgraded directive '${this.directive.name}' specifies 'bindToController' but no controller.`);
+      throw new Error(`Upgraded directive '${
+          this.directive.name}' specifies 'bindToController' but no controller.`);
     }
 
     // Set up outputs
@@ -160,7 +160,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
 
     // Hook: $doCheck
     if (this.controllerInstance && isFunction(this.controllerInstance.$doCheck)) {
-      const callDoCheck = () => this.controllerInstance.$doCheck !();
+      const callDoCheck = () => this.controllerInstance.$doCheck!();
 
       this.unregisterDoCheckWatcher = this.$componentScope.$parent.$watch(callDoCheck);
       callDoCheck();
@@ -176,7 +176,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
       preLink(this.$componentScope, this.$element, attrs, requiredControllers, transcludeFn);
     }
 
-    linkFn(this.$componentScope, null !, {parentBoundTranscludeFn: attachChildNodes});
+    linkFn(this.$componentScope, null!, {parentBoundTranscludeFn: attachChildNodes});
 
     if (postLink) {
       postLink(this.$componentScope, this.$element, attrs, requiredControllers, transcludeFn);

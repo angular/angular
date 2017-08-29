@@ -36,7 +36,7 @@ export class Extractor {
     return promiseBundle.then(bundle => {
       const content = this.serialize(bundle, formatName);
       const dstFile = outFile || `messages.${ext}`;
-      const dstPath = path.join(this.options.genDir !, dstFile);
+      const dstPath = path.join(this.options.genDir!, dstFile);
       this.host.writeFile(dstPath, content, false);
       return [dstPath];
     });
@@ -67,9 +67,9 @@ export class Extractor {
         serializer = new compiler.Xliff();
     }
     return bundle.write(
-        serializer, (sourcePath: string) => this.options.basePath ?
-            path.relative(this.options.basePath, sourcePath) :
-            sourcePath);
+        serializer,
+        (sourcePath: string) =>
+            this.options.basePath ? path.relative(this.options.basePath, sourcePath) : sourcePath);
   }
 
   getExtension(formatName: string): string {

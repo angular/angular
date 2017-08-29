@@ -43,13 +43,12 @@ class CompilerHostMixin {
 
   constructor(private context: ts.CompilerHost, private options: CompilerOptions) {
     // normalize the path so that it never ends with '/'.
-    this.basePath = normalizePath(this.options.basePath !);
-    this.rootDirs = (this.options.rootDirs || [
-                      this.options.basePath !
+    this.basePath = normalizePath(this.options.basePath!);
+    this.rootDirs = (this.options.rootDirs || [this.options.basePath!
                     ]).map(p => path.resolve(this.basePath, normalizePath(p)));
     this.moduleResolutionHost = createModuleFilenameResolverHost(context);
     this.moduleResolutionCache = ts.createModuleResolutionCache(
-        this.context.getCurrentDirectory !(), this.context.getCanonicalFileName.bind(this.context));
+        this.context.getCurrentDirectory!(), this.context.getCanonicalFileName.bind(this.context));
   }
 
   moduleNameToFileName(m: string, containingFile: string): string|null {
@@ -121,8 +120,8 @@ class CompilerHostMixin {
     } else if (importedFilePackagName) {
       moduleName = stripNodeModulesPrefix(importedFile);
     } else {
-      throw new Error(
-          `Trying to import a source file from a node_modules package: import ${originalImportedFile} from ${containingFile}`);
+      throw new Error(`Trying to import a source file from a node_modules package: import ${
+          originalImportedFile} from ${containingFile}`);
     }
     return moduleName;
   }

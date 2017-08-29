@@ -13,9 +13,13 @@ import {KeyValueChangeRecord, KeyValueChanges, KeyValueDiffer, KeyValueDifferFac
 
 export class DefaultKeyValueDifferFactory<K, V> implements KeyValueDifferFactory {
   constructor() {}
-  supports(obj: any): boolean { return obj instanceof Map || isJsObject(obj); }
+  supports(obj: any): boolean {
+    return obj instanceof Map || isJsObject(obj);
+  }
 
-  create<K, V>(): KeyValueDiffer<K, V> { return new DefaultKeyValueDiffer<K, V>(); }
+  create<K, V>(): KeyValueDiffer<K, V> {
+    return new DefaultKeyValueDiffer<K, V>();
+  }
 }
 
 export class DefaultKeyValueDiffer<K, V> implements KeyValueDiffer<K, V>, KeyValueChanges<K, V> {
@@ -174,7 +178,7 @@ export class DefaultKeyValueDiffer<K, V> implements KeyValueDiffer<K, V>, KeyVal
 
   private _getOrCreateRecordForKey(key: K, value: V): KeyValueChangeRecord_<K, V> {
     if (this._records.has(key)) {
-      const record = this._records.get(key) !;
+      const record = this._records.get(key)!;
       this._maybeAddToChanges(record, value);
       const prev = record._prev;
       const next = record._next;
@@ -235,7 +239,7 @@ export class DefaultKeyValueDiffer<K, V> implements KeyValueDiffer<K, V>, KeyVal
     if (this._additionsHead === null) {
       this._additionsHead = this._additionsTail = record;
     } else {
-      this._additionsTail !._nextAdded = record;
+      this._additionsTail!._nextAdded = record;
       this._additionsTail = record;
     }
   }
@@ -244,7 +248,7 @@ export class DefaultKeyValueDiffer<K, V> implements KeyValueDiffer<K, V>, KeyVal
     if (this._changesHead === null) {
       this._changesHead = this._changesTail = record;
     } else {
-      this._changesTail !._nextChanged = record;
+      this._changesTail!._nextChanged = record;
       this._changesTail = record;
     }
   }

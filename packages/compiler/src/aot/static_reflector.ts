@@ -8,7 +8,7 @@
 
 import {CompileSummaryKind} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
-import {MetadataFactory, createAttribute, createComponent, createContentChild, createContentChildren, createDirective, createHost, createHostBinding, createHostListener, createInject, createInjectable, createInput, createNgModule, createOptional, createOutput, createPipe, createSelf, createSkipSelf, createViewChild, createViewChildren} from '../core';
+import {createAttribute, createComponent, createContentChild, createContentChildren, createDirective, createHost, createHostBinding, createHostListener, createInject, createInjectable, createInput, createNgModule, createOptional, createOutput, createPipe, createSelf, createSkipSelf, createViewChild, createViewChildren, MetadataFactory} from '../core';
 import * as o from '../output/output_ast';
 import {SummaryResolver} from '../summary_resolver';
 import {syntaxError} from '../util';
@@ -77,9 +77,9 @@ export class StaticReflector implements CompileReflector {
   }
 
   resolveExternalReference(ref: o.ExternalReference): StaticSymbol {
-    const refSymbol = this.symbolResolver.getSymbolByModule(ref.moduleName !, ref.name !);
+    const refSymbol = this.symbolResolver.getSymbolByModule(ref.moduleName!, ref.name!);
     const declarationSymbol = this.findSymbolDeclaration(refSymbol);
-    this.symbolResolver.recordModuleNameForFileName(refSymbol.filePath, ref.moduleName !);
+    this.symbolResolver.recordModuleNameForFileName(refSymbol.filePath, ref.moduleName!);
     this.symbolResolver.recordImportAs(declarationSymbol, refSymbol);
     return declarationSymbol;
   }
@@ -122,14 +122,18 @@ export class StaticReflector implements CompileReflector {
         const summary = this.summaryResolver.resolveSummary(parentType);
         if (summary && summary.type) {
           const requiredAnnotationTypes =
-              this.annotationForParentClassWithSummaryKind.get(summary.type.summaryKind !) !;
+              this.annotationForParentClassWithSummaryKind.get(summary.type.summaryKind!)!;
           const typeHasRequiredAnnotation = requiredAnnotationTypes.some(
               (requiredType) => ownAnnotations.some(ann => requiredType.isTypeOf(ann)));
           if (!typeHasRequiredAnnotation) {
             this.reportError(
                 syntaxError(
-                    `Class ${type.name} in ${type.filePath} extends from a ${CompileSummaryKind[summary.type.summaryKind!]} in another compilation unit without duplicating the decorator. ` +
-                    `Please add a ${requiredAnnotationTypes.map((type) => type.ngMetadataName).join(' or ')} decorator to the class.`),
+                    `Class ${type.name} in ${type.filePath} extends from a ${
+                        CompileSummaryKind[summary.type.summaryKind!
+            ]} in another compilation unit without duplicating the decorator. ` +
+                    `Please add a ${
+                        requiredAnnotationTypes.map((type) => type.ngMetadataName)
+                            .join(' or ')} decorator to the class.`),
                 type);
           }
         }
@@ -148,7 +152,7 @@ export class StaticReflector implements CompileReflector {
       if (parentType) {
         const parentPropMetadata = this.propMetadata(parentType);
         Object.keys(parentPropMetadata).forEach((parentProp) => {
-          propMetadata ![parentProp] = parentPropMetadata[parentProp];
+          propMetadata![parentProp] = parentPropMetadata[parentProp];
         });
       }
 
@@ -158,10 +162,10 @@ export class StaticReflector implements CompileReflector {
         const prop = (<any[]>propData)
                          .find(a => a['__symbolic'] == 'property' || a['__symbolic'] == 'method');
         const decorators: any[] = [];
-        if (propMetadata ![propName]) {
-          decorators.push(...propMetadata ![propName]);
+        if (propMetadata![propName]) {
+          decorators.push(...propMetadata![propName]);
         }
-        propMetadata ![propName] = decorators;
+        propMetadata![propName] = decorators;
         if (prop && prop['decorators']) {
           decorators.push(...this.simplify(type, prop['decorators']));
         }
@@ -198,7 +202,7 @@ export class StaticReflector implements CompileReflector {
             if (decorators) {
               nestedResult.push(...decorators);
             }
-            parameters !.push(nestedResult);
+            parameters!.push(nestedResult);
           });
         } else if (parentType) {
           parameters = this.parameters(parentType);
@@ -224,7 +228,7 @@ export class StaticReflector implements CompileReflector {
       if (parentType) {
         const parentMethodNames = this._methodNames(parentType);
         Object.keys(parentMethodNames).forEach((parentProp) => {
-          methodNames ![parentProp] = parentMethodNames[parentProp];
+          methodNames![parentProp] = parentMethodNames[parentProp];
         });
       }
 
@@ -232,7 +236,7 @@ export class StaticReflector implements CompileReflector {
       Object.keys(members).forEach((propName) => {
         const propData = members[propName];
         const isMethod = (<any[]>propData).some(a => a['__symbolic'] == 'method');
-        methodNames ![propName] = methodNames ![propName] || isMethod;
+        methodNames![propName] = methodNames![propName] || isMethod;
       });
       this.methodCache.set(type, methodNames);
     }
@@ -586,8 +590,8 @@ export class StaticReflector implements CompileReflector {
               case 'error':
                 let message = produceErrorMessage(expression);
                 if (expression['line']) {
-                  message =
-                      `${message} (position ${expression['line']+1}:${expression['character']+1} in the original .ts file)`;
+                  message = `${message} (position ${expression['line'] + 1}:${
+                      expression['character'] + 1} in the original .ts file)`;
                   self.reportError(
                       positionalError(
                           message, context.filePath, expression['line'], expression['character']),
@@ -659,7 +663,8 @@ function expandedMessage(error: any): string {
   switch (error.message) {
     case 'Reference to non-exported class':
       if (error.context && error.context.className) {
-        return `Reference to a non-exported class ${error.context.className}. Consider exporting the class`;
+        return `Reference to a non-exported class ${
+            error.context.className}. Consider exporting the class`;
       }
       break;
     case 'Variable not initialized':
@@ -678,7 +683,8 @@ function expandedMessage(error: any): string {
           'unction calls are not supported. Consider replacing the function or lambda with a reference to an exported function';
     case 'Reference to a local symbol':
       if (error.context && error.context.name) {
-        return `Reference to a local (non-exported) symbol '${error.context.name}'. Consider exporting the symbol`;
+        return `Reference to a local (non-exported) symbol '${
+            error.context.name}'. Consider exporting the symbol`;
       }
       break;
   }
@@ -735,7 +741,9 @@ abstract class BindingScope {
 }
 
 class PopulatedScope extends BindingScope {
-  constructor(private bindings: Map<string, any>) { super(); }
+  constructor(private bindings: Map<string, any>) {
+    super();
+  }
 
   resolve(name: string): any {
     return this.bindings.has(name) ? this.bindings.get(name) : BindingScope.missing;

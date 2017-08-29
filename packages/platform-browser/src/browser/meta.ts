@@ -18,13 +18,16 @@ import {DOCUMENT} from '../dom/dom_tokens';
  * @experimental
  */
 export type MetaDefinition = {
-  charset?: string; content?: string; httpEquiv?: string; id?: string; itemprop?: string;
+  charset?: string;
+  content?: string;
+  httpEquiv?: string;
+  id?: string;
+  itemprop?: string;
   name?: string;
   property?: string;
   scheme?: string;
   url?: string;
-} &
-{
+}&{
   // TODO(IgorMinar): this type looks wrong
   [prop: string]: string;
 };
@@ -37,7 +40,9 @@ export type MetaDefinition = {
 @Injectable()
 export class Meta {
   private _dom: DomAdapter;
-  constructor(@Inject(DOCUMENT) private _doc: any) { this._dom = getDOM(); }
+  constructor(@Inject(DOCUMENT) private _doc: any) {
+    this._dom = getDOM();
+  }
 
   addTag(tag: MetaDefinition, forceCreation: boolean = false): HTMLMetaElement|null {
     if (!tag) return null;
@@ -68,14 +73,16 @@ export class Meta {
   updateTag(tag: MetaDefinition, selector?: string): HTMLMetaElement|null {
     if (!tag) return null;
     selector = selector || this._parseSelector(tag);
-    const meta: HTMLMetaElement = this.getTag(selector) !;
+    const meta: HTMLMetaElement = this.getTag(selector)!;
     if (meta) {
       return this._setMetaElementAttributes(tag, meta);
     }
     return this._getOrCreateElement(tag, true);
   }
 
-  removeTag(attrSelector: string): void { this.removeTagElement(this.getTag(attrSelector) !); }
+  removeTag(attrSelector: string): void {
+    this.removeTagElement(this.getTag(attrSelector)!);
+  }
 
   removeTagElement(meta: HTMLMetaElement): void {
     if (meta) {
@@ -87,7 +94,7 @@ export class Meta {
       HTMLMetaElement {
     if (!forceCreation) {
       const selector: string = this._parseSelector(meta);
-      const elem: HTMLMetaElement = this.getTag(selector) !;
+      const elem: HTMLMetaElement = this.getTag(selector)!;
       // It's allowed to have multiple elements with the same name so it's not enough to
       // just check that element with the same name already present on the page. We also need to
       // check if element has tag attributes

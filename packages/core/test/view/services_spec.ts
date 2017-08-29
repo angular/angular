@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation, getDebugNode} from '@angular/core';
-import {DebugContext, NodeDef, NodeFlags, QueryValueType, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, asProviderData, asTextData, directiveDef, elementDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
+import {getDebugNode, Injector, RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation} from '@angular/core';
+import {anchorDef, asElementData, asProviderData, asTextData, DebugContext, directiveDef, elementDef, NodeDef, NodeFlags, QueryValueType, RootData, rootRenderNodes, Services, textDef, ViewData, viewDef, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn} from '@angular/core/src/view/index';
 import {inject} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
@@ -36,12 +36,12 @@ export function main() {
       function createViewWithData() {
         const {view} = createAndGetRootNodes(compViewDef([
           elementDef(
-              NodeFlags.None, null !, null !, 1, 'div', null !, null !, null !, null !,
+              NodeFlags.None, null!, null!, 1, 'div', null!, null!, null!, null!,
               () => compViewDef([
-                elementDef(NodeFlags.None, [['ref', QueryValueType.ElementRef]], null !, 2, 'span'),
-                directiveDef(NodeFlags.None, null !, 0, AService, []), textDef(null !, ['a'])
+                elementDef(NodeFlags.None, [['ref', QueryValueType.ElementRef]], null!, 2, 'span'),
+                directiveDef(NodeFlags.None, null!, 0, AService, []), textDef(null!, ['a'])
               ])),
-          directiveDef(NodeFlags.Component, null !, 0, AComp, []),
+          directiveDef(NodeFlags.Component, null!, 0, AComp, []),
         ]));
         return view;
       }

@@ -9,7 +9,7 @@
 import {Component, Input, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
-import {TreeNode, emptyTree} from '../util';
+import {emptyTree, TreeNode} from '../util';
 
 @Component({
   selector: 'tree',
@@ -28,5 +28,4 @@ export class TreeComponent {
   bootstrap: [TreeComponent],
   declarations: [TreeComponent],
 })
-export class AppModule {
-}
+export class AppModule {}

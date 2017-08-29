@@ -46,7 +46,9 @@ export class ExpansionResult {
 }
 
 export class ExpansionError extends ParseError {
-  constructor(span: ParseSourceSpan, errorMsg: string) { super(span, errorMsg); }
+  constructor(span: ParseSourceSpan, errorMsg: string) {
+    super(span, errorMsg);
+  }
 }
 
 /**
@@ -64,11 +66,17 @@ class _Expander implements html.Visitor {
         element.startSourceSpan, element.endSourceSpan);
   }
 
-  visitAttribute(attribute: html.Attribute, context: any): any { return attribute; }
+  visitAttribute(attribute: html.Attribute, context: any): any {
+    return attribute;
+  }
 
-  visitText(text: html.Text, context: any): any { return text; }
+  visitText(text: html.Text, context: any): any {
+    return text;
+  }
 
-  visitComment(comment: html.Comment, context: any): any { return comment; }
+  visitComment(comment: html.Comment, context: any): any {
+    return comment;
+  }
 
   visitExpansion(icu: html.Expansion, context: any): any {
     this.isExpanded = true;
@@ -87,7 +95,7 @@ function _expandPluralForm(ast: html.Expansion, errors: ParseError[]): html.Elem
     if (PLURAL_CASES.indexOf(c.value) == -1 && !c.value.match(/^=\d+$/)) {
       errors.push(new ExpansionError(
           c.valueSourceSpan,
-          `Plural cases should be "=<number>" or one of ${PLURAL_CASES.join(", ")}`));
+          `Plural cases should be "=<number>" or one of ${PLURAL_CASES.join(', ')}`));
     }
 
     const expansionResult = expandNodes(c.expression);

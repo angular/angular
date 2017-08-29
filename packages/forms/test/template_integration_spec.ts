@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, Type, ViewChild, forwardRef} from '@angular/core';
-import {ComponentFixture, TestBed, async, fakeAsync, tick} from '@angular/core/testing';
+import {Component, Directive, forwardRef, Type, ViewChild} from '@angular/core';
+import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {AbstractControl, AsyncValidator, COMPOSITION_BUFFER_MODE, FormControl, FormsModule, NG_ASYNC_VALIDATORS, NgForm, NgModel} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -110,9 +110,9 @@ export function main() {
            tick();
 
            const form = fixture.debugElement.children[0].injector.get(NgForm);
-           expect(form.control.get('name') !.value).toEqual({first: 'Nancy', last: 'Drew'});
-           expect(form.control.get('name.first') !.value).toEqual('Nancy');
-           expect(form.control.get('email') !.value).toEqual('some email');
+           expect(form.control.get('name')!.value).toEqual({first: 'Nancy', last: 'Drew'});
+           expect(form.control.get('name.first')!.value).toEqual('Nancy');
+           expect(form.control.get('email')!.value).toEqual('some email');
          }));
 
       it('should remove controls and control groups from form control model', fakeAsync(() => {
@@ -124,7 +124,7 @@ export function main() {
            tick();
 
            const form = fixture.debugElement.children[0].injector.get(NgForm);
-           expect(form.control.get('email') !.value).toEqual('some email');
+           expect(form.control.get('email')!.value).toEqual('some email');
            expect(form.value).toEqual({name: {first: 'Nancy'}, email: 'some email'});
 
            // should remove individual control successfully
@@ -135,8 +135,8 @@ export function main() {
            expect(form.control.get('email')).toBe(null);
            expect(form.value).toEqual({name: {first: 'Nancy'}});
 
-           expect(form.control.get('name') !.value).toEqual({first: 'Nancy'});
-           expect(form.control.get('name.first') !.value).toEqual('Nancy');
+           expect(form.control.get('name')!.value).toEqual({first: 'Nancy'});
+           expect(form.control.get('name.first')!.value).toEqual('Nancy');
 
            // should remove form group successfully
            fixture.componentInstance.groupShowing = false;
@@ -231,7 +231,7 @@ export function main() {
       it('should not create a template-driven form when ngNoForm is used', () => {
         const fixture = initTest(NgNoFormComp);
         fixture.detectChanges();
-        expect(fixture.debugElement.children[0].providerTokens !.length).toEqual(0);
+        expect(fixture.debugElement.children[0].providerTokens!.length).toEqual(0);
       });
 
       it('should not add novalidate when ngNoForm is used', () => {
@@ -463,8 +463,8 @@ export function main() {
              const values: string[] = [];
              const form = fixture.debugElement.children[0].injector.get(NgForm);
 
-             const sub = merge(form.valueChanges !, form.statusChanges !)
-                             .subscribe(val => values.push(val));
+             const sub =
+                 merge(form.valueChanges!, form.statusChanges!).subscribe(val => values.push(val));
 
              const input = fixture.debugElement.query(By.css('input')).nativeElement;
              input.value = 'Nancy Drew';
@@ -621,8 +621,8 @@ export function main() {
              tick();
 
              const form = fixture.debugElement.children[0].injector.get(NgForm);
-             form.control.get('name') !.setValidators(groupValidatorSpy);
-             form.control.get('name.last') !.setValidators(validatorSpy);
+             form.control.get('name')!.setValidators(groupValidatorSpy);
+             form.control.get('name.last')!.setValidators(validatorSpy);
 
              const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
              dispatchEvent(formEl, 'submit');
@@ -737,8 +737,8 @@ export function main() {
              const values: string[] = [];
              const form = fixture.debugElement.children[0].injector.get(NgForm);
 
-             const sub = merge(form.valueChanges !, form.statusChanges !)
-                             .subscribe(val => values.push(val));
+             const sub =
+                 merge(form.valueChanges!, form.statusChanges!).subscribe(val => values.push(val));
 
              const input = fixture.debugElement.query(By.css('input')).nativeElement;
              input.value = 'Nancy Drew';
@@ -776,12 +776,12 @@ export function main() {
              tick();
 
              const form = fixture.debugElement.children[0].injector.get(NgForm);
-             const controlOne = form.control.get('one') !as FormControl;
+             const controlOne = form.control.get('one')! as FormControl;
              expect(controlOne._updateOn).toBeUndefined();
              expect(controlOne.updateOn)
                  .toEqual('blur', 'Expected first control to inherit updateOn from parent form.');
 
-             const controlTwo = form.control.get('two') !as FormControl;
+             const controlTwo = form.control.get('two')! as FormControl;
              expect(controlTwo._updateOn).toBeUndefined();
              expect(controlTwo.updateOn)
                  .toEqual('blur', 'Expected last control to inherit updateOn from parent form.');
@@ -817,12 +817,12 @@ export function main() {
              tick();
 
              const form = fixture.debugElement.children[0].injector.get(NgForm);
-             const controlOne = form.control.get('one') !as FormControl;
+             const controlOne = form.control.get('one')! as FormControl;
              expect(controlOne._updateOn).toBeUndefined();
              expect(controlOne.updateOn)
                  .toEqual('change', 'Expected control updateOn to inherit form updateOn.');
 
-             const controlTwo = form.control.get('two') !as FormControl;
+             const controlTwo = form.control.get('two')! as FormControl;
              expect(controlTwo._updateOn).toEqual('blur', 'Expected control to set blur override.');
              expect(controlTwo.updateOn)
                  .toEqual('blur', 'Expected control updateOn to override form updateOn.');
@@ -888,7 +888,7 @@ export function main() {
     describe('submit and reset events', () => {
       it('should emit ngSubmit event with the original submit event on submit', fakeAsync(() => {
            const fixture = initTest(NgModelForm);
-           fixture.componentInstance.event = null !;
+           fixture.componentInstance.event = null!;
 
            const form = fixture.debugElement.query(By.css('form'));
            dispatchEvent(form.nativeElement, 'submit');
@@ -961,11 +961,11 @@ export function main() {
            expect(form.valid).toEqual(true);
            expect(form.value).toEqual({});
 
-           let formValidity: string = undefined !;
-           let formValue: Object = undefined !;
+           let formValidity: string = undefined!;
+           let formValue: Object = undefined!;
 
-           form.statusChanges !.subscribe((status: string) => formValidity = status);
-           form.valueChanges !.subscribe((value: string) => formValue = value);
+           form.statusChanges!.subscribe((status: string) => formValidity = status);
+           form.valueChanges!.subscribe((value: string) => formValue = value);
 
            tick();
 
@@ -980,8 +980,9 @@ export function main() {
            fixture.detectChanges();
            tick();
 
-           form.get('name') !.valueChanges.subscribe(
-               () => { expect(form.get('name') !.dirty).toBe(true); });
+           form.get('name')!.valueChanges.subscribe(() => {
+             expect(form.get('name')!.dirty).toBe(true);
+           });
 
            const inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
            inputEl.value = 'newValue';
@@ -1002,10 +1003,11 @@ export function main() {
            inputEl.value = 'newValue';
            dispatchEvent(inputEl, 'input');
 
-           expect(form.get('name') !.pristine).toBe(false);
+           expect(form.get('name')!.pristine).toBe(false);
 
-           form.get('name') !.valueChanges.subscribe(
-               () => { expect(form.get('name') !.pristine).toBe(true); });
+           form.get('name')!.valueChanges.subscribe(() => {
+             expect(form.get('name')!.pristine).toBe(true);
+           });
 
            dispatchEvent(formEl, 'reset');
          }));
@@ -1024,7 +1026,7 @@ export function main() {
            const form = fixture.debugElement.children[0].injector.get(NgForm);
            expect(form.value).toEqual({name: {first: '', last: 'Drew'}, email: 'some email'});
            expect(form.valid).toBe(false);
-           expect(form.control.get('name.first') !.disabled).toBe(false);
+           expect(form.control.get('name.first')!.disabled).toBe(false);
 
            fixture.componentInstance.isDisabled = true;
            fixture.detectChanges();
@@ -1032,7 +1034,7 @@ export function main() {
 
            expect(form.value).toEqual({name: {last: 'Drew'}, email: 'some email'});
            expect(form.valid).toBe(true);
-           expect(form.control.get('name.first') !.disabled).toBe(true);
+           expect(form.control.get('name.first')!.disabled).toBe(true);
          }));
 
       it('should add disabled attribute in the UI if disable() is called programmatically',
@@ -1044,7 +1046,7 @@ export function main() {
            tick();
 
            const form = fixture.debugElement.children[0].injector.get(NgForm);
-           form.control.get('name.first') !.disable();
+           form.control.get('name.first')!.disable();
            fixture.detectChanges();
            tick();
 
@@ -1061,7 +1063,7 @@ export function main() {
              fixture.detectChanges();
              fixture.whenStable().then(() => {
                const form = fixture.debugElement.children[0].injector.get(NgForm);
-               expect(form.control.get('name') !.disabled).toBe(true);
+               expect(form.control.get('name')!.disabled).toBe(true);
 
                const customInput = fixture.debugElement.query(By.css('[name="custom"]'));
                expect(customInput.nativeElement.disabled).toEqual(true);
@@ -1083,7 +1085,7 @@ export function main() {
            fixture.detectChanges();
            tick();
            const form = fixture.debugElement.children[0].injector.get(NgForm);
-           expect(form.control.get('name') !.disabled).toBe(true);
+           expect(form.control.get('name')!.disabled).toBe(true);
 
            const input = fixture.debugElement.query(By.css('input'));
            expect(input.nativeElement.disabled).toEqual(true);
@@ -1104,7 +1106,7 @@ export function main() {
            tick();
 
            const control =
-               fixture.debugElement.children[0].injector.get(NgForm).control.get('checkbox') !;
+               fixture.debugElement.children[0].injector.get(NgForm).control.get('checkbox')!;
 
            const input = fixture.debugElement.query(By.css('input'));
            expect(input.nativeElement.checked).toBe(false);
@@ -1140,7 +1142,7 @@ export function main() {
            tick();
 
            const control =
-               fixture.debugElement.children[0].injector.get(NgForm).control.get('email') !;
+               fixture.debugElement.children[0].injector.get(NgForm).control.get('email')!;
 
            const input = fixture.debugElement.query(By.css('input'));
            expect(control.hasError('email')).toBe(false);
@@ -1333,9 +1335,9 @@ export function main() {
                .toEqual(pattern.nativeElement.getAttribute('pattern'));
 
            fixture.componentInstance.required = false;
-           fixture.componentInstance.minLen = null !;
-           fixture.componentInstance.maxLen = null !;
-           fixture.componentInstance.pattern = null !;
+           fixture.componentInstance.minLen = null!;
+           fixture.componentInstance.maxLen = null!;
+           fixture.componentInstance.pattern = null!;
            fixture.detectChanges();
 
            expect(form.control.hasError('required', ['required'])).toEqual(false);
@@ -1508,8 +1510,7 @@ class NgModelForm {
 }
 
 @Component({selector: 'ng-model-native-validate-form', template: `<form ngNativeValidate></form>`})
-class NgModelNativeValidateForm {
-}
+class NgModelNativeValidateForm {}
 
 @Component({
   selector: 'ng-model-group-form',
@@ -1573,8 +1574,7 @@ class NgModelNgIfForm {
     </form>
   `
 })
-class NgNoFormComp {
-}
+class NgNoFormComp {}
 
 @Component({
   selector: 'invalid-ng-model-noname',
@@ -1584,8 +1584,7 @@ class NgNoFormComp {
     </form>
   `
 })
-class InvalidNgModelNoName {
-}
+class InvalidNgModelNoName {}
 
 @Component({
   selector: 'ng-model-options-standalone',
@@ -1660,15 +1659,16 @@ class NgModelEmailValidator {
   ]
 })
 class NgAsyncValidator implements AsyncValidator {
-  validate(c: AbstractControl) { return Promise.resolve(null); }
+  validate(c: AbstractControl) {
+    return Promise.resolve(null);
+  }
 }
 
 @Component({
   selector: 'ng-model-async-validation',
   template: `<input name="async" ngModel ng-async-validator>`
 })
-class NgModelAsyncValidation {
-}
+class NgModelAsyncValidation {}
 
 function sortedClassList(el: HTMLElement) {
   const l = getDOM().classList(el);

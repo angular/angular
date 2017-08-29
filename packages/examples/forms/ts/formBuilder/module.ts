@@ -16,5 +16,4 @@ import {FormBuilderComp} from './form_builder_example';
   declarations: [FormBuilderComp],
   bootstrap: [FormBuilderComp]
 })
-export class AppModule {
-}
+export class AppModule {}

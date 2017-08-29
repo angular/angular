@@ -58,7 +58,8 @@ describe('CompilerHost', () => {
     it('should import node_module from factory', () => {
       expect(hostNestedGenDir.fileNameToModuleName(
                  '/tmp/project/node_modules/@angular/core.d.ts',
-                 '/tmp/project/src/gen/my.ngfactory.ts', ))
+                 '/tmp/project/src/gen/my.ngfactory.ts',
+                 ))
           .toEqual('@angular/core');
     });
 

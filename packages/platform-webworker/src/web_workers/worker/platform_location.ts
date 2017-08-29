@@ -18,7 +18,7 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
   private _broker: ClientMessageBroker;
   private _popStateListeners: Array<Function> = [];
   private _hashChangeListeners: Array<Function> = [];
-  private _location: LocationType = null !;
+  private _location: LocationType = null!;
   private _channelSource: EventEmitter<Object>;
   public initialized: Promise<any>;
   private initializedResolve: () => void;
@@ -55,13 +55,15 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
   init(): Promise<boolean> {
     const args: UiArguments = new UiArguments('getLocation');
 
-    return this._broker.runOnService(args, LocationType) !.then(
+    return this._broker.runOnService(args, LocationType)!.then(
         (val: LocationType) => {
           this._location = val;
           this.initializedResolve();
           return true;
         },
-        err => { throw new Error(err); });
+        err => {
+          throw new Error(err);
+        });
   }
 
   getBaseHrefFromDOM(): string {
@@ -69,15 +71,25 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
         'Attempt to get base href from DOM from WebWorker. You must either provide a value for the APP_BASE_HREF token through DI or use the hash location strategy.');
   }
 
-  onPopState(fn: LocationChangeListener): void { this._popStateListeners.push(fn); }
+  onPopState(fn: LocationChangeListener): void {
+    this._popStateListeners.push(fn);
+  }
 
-  onHashChange(fn: LocationChangeListener): void { this._hashChangeListeners.push(fn); }
+  onHashChange(fn: LocationChangeListener): void {
+    this._hashChangeListeners.push(fn);
+  }
 
-  get pathname(): string { return this._location ? this._location.pathname ! : '<unknown>'; }
+  get pathname(): string {
+    return this._location ? this._location.pathname! : '<unknown>';
+  }
 
-  get search(): string { return this._location ? this._location.search : '<unknown>'; }
+  get search(): string {
+    return this._location ? this._location.search : '<unknown>';
+  }
 
-  get hash(): string { return this._location ? this._location.hash : '<unknown>'; }
+  get hash(): string {
+    return this._location ? this._location.hash : '<unknown>';
+  }
 
   set pathname(newPath: string) {
     if (this._location === null) {

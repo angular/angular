@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotSummaryResolver, CompileMetadataResolver, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, InterpolationConfig, JitSummaryResolver, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, SummaryResolver, analyzeNgModules, createOfflineCompileUrlResolver, extractProgramSymbols} from '@angular/compiler';
+import {analyzeNgModules, AotSummaryResolver, CompileMetadataResolver, CompilerConfig, createOfflineCompileUrlResolver, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, extractProgramSymbols, HtmlParser, InterpolationConfig, JitSummaryResolver, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, SummaryResolver} from '@angular/compiler';
 import {AngularCompilerOptions, getClassMembersFromDeclaration, getPipesTable, getSymbolQuery} from '@angular/compiler-cli/src/language_services';
 import {ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 import * as fs from 'fs';
@@ -48,7 +48,9 @@ export class DummyHtmlParser extends HtmlParser {
  * Avoid loading resources in the language servcie by using a dummy loader.
  */
 export class DummyResourceLoader extends ResourceLoader {
-  get(url: string): Promise<string> { return Promise.resolve(''); }
+  get(url: string): Promise<string> {
+    return Promise.resolve('');
+  }
 }
 
 /**
@@ -80,7 +82,9 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
 
   constructor(private host: ts.LanguageServiceHost, private tsService: ts.LanguageService) {}
 
-  setSite(service: LanguageService) { this.service = service; }
+  setSite(service: LanguageService) {
+    this.service = service;
+  }
 
   /**
    * Angular LanguageServiceHost implementation
@@ -128,7 +132,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     } else {
       this.ensureTemplateMap();
       // TODO: Cannocalize the file?
-      const componentType = this.fileToComponent !.get(fileName);
+      const componentType = this.fileToComponent!.get(fileName);
       if (componentType) {
         return this.getSourceFromType(
             fileName, this.host.getScriptVersion(fileName), componentType);
@@ -145,7 +149,11 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   private ensureAnalyzedModules(): NgAnalyzedModules {
     let analyzedModules = this.analyzedModules;
     if (!analyzedModules) {
-      const analyzeHost = {isSourceFile(filePath: string) { return true; }};
+      const analyzeHost = {
+        isSourceFile(filePath: string) {
+          return true;
+        }
+      };
       const programSymbols = extractProgramSymbols(
           this.staticSymbolResolver, this.program.getSourceFiles().map(sf => sf.fileName),
           analyzeHost);
@@ -158,7 +166,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
 
   getTemplates(fileName: string): TemplateSources {
     this.ensureTemplateMap();
-    const componentType = this.fileToComponent !.get(fileName);
+    const componentType = this.fileToComponent!.get(fileName);
     if (componentType) {
       const templateSource = this.getTemplateAt(fileName, 0);
       if (templateSource) {
@@ -220,7 +228,9 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     }
   }
 
-  private get program() { return this.tsService.getProgram(); }
+  private get program() {
+    return this.tsService.getProgram();
+  }
 
   private get checker() {
     let checker = this._checker;
@@ -274,7 +284,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       const urlResolver = createOfflineCompileUrlResolver();
       for (const module of ngModuleSummary.ngModules) {
         for (const directive of module.declaredDirectives) {
-          const {metadata} = this.resolver.getNonNormalizedDirectiveMetadata(directive.reference) !;
+          const {metadata} = this.resolver.getNonNormalizedDirectiveMetadata(directive.reference)!;
           if (metadata.isComponent && metadata.template && metadata.template.templateUrl) {
             const templateName = urlResolver.resolve(
                 this.reflector.componentModuleUrl(directive.reference),
@@ -403,15 +413,23 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     if (!result) {
       this._summaryResolver = new AotSummaryResolver(
           {
-            loadSummary(filePath: string) { return null; },
-            isSourceFile(sourceFilePath: string) { return true; },
-            toSummaryFileName(sourceFilePath: string) { return sourceFilePath; },
-            fromSummaryFileName(filePath: string): string{return filePath;},
+            loadSummary(filePath: string) {
+              return null;
+            },
+            isSourceFile(sourceFilePath: string) {
+              return true;
+            },
+            toSummaryFileName(sourceFilePath: string) {
+              return sourceFilePath;
+            },
+            fromSummaryFileName(filePath: string): string {
+              return filePath;
+            },
           },
           this._staticSymbolCache);
       result = this._staticSymbolResolver = new StaticSymbolResolver(
           this.reflectorHost as any, this._staticSymbolCache, this._summaryResolver,
-          (e, filePath) => this.collectError(e, filePath !));
+          (e, filePath) => this.collectError(e, filePath!));
     }
     return result;
   }
@@ -421,7 +439,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     if (!result) {
       const ssr = this.staticSymbolResolver;
       result = this._reflector = new StaticReflector(
-          this._summaryResolver, ssr, [], [], (e, filePath) => this.collectError(e, filePath !));
+          this._summaryResolver, ssr, [], [], (e, filePath) => this.collectError(e, filePath!));
     }
     return result;
   }
@@ -443,7 +461,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     return undefined;
   }
 
-  private static missingTemplate: [ts.ClassDeclaration | undefined, ts.Expression|undefined] =
+  private static missingTemplate: [ts.ClassDeclaration|undefined, ts.Expression|undefined] =
       [undefined, undefined];
 
   /**
@@ -451,7 +469,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
    * containing class.
    */
   private getTemplateClassDeclFromNode(currentToken: ts.Node):
-      [ts.ClassDeclaration | undefined, ts.Expression|undefined] {
+      [ts.ClassDeclaration|undefined, ts.Expression|undefined] {
     // Verify we are in a 'template' property assignment, in an object literal, which is an call
     // arg, in a decorator
     let parentNode = currentToken.parent;  // PropertyAssignment
@@ -513,7 +531,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
               try {
                 if (this.resolver.isDirective(staticSymbol as any)) {
                   const {metadata} =
-                      this.resolver.getNonNormalizedDirectiveMetadata(staticSymbol as any) !;
+                      this.resolver.getNonNormalizedDirectiveMetadata(staticSymbol as any)!;
                   const declarationSpan = spanOf(target);
                   return {
                     type: staticSymbol,
@@ -584,7 +602,7 @@ function shrink(span: Span, offset?: number) {
 function spanAt(sourceFile: ts.SourceFile, line: number, column: number): Span|undefined {
   if (line != null && column != null) {
     const position = ts.getPositionOfLineAndCharacter(sourceFile, line, column);
-    const findChild = function findChild(node: ts.Node): ts.Node | undefined {
+    const findChild = function findChild(node: ts.Node): ts.Node|undefined {
       if (node.kind > ts.SyntaxKind.LastToken && node.pos <= position && node.end > position) {
         const betterNode = ts.forEachChild(node, findChild);
         return betterNode || node;

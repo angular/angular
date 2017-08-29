@@ -44,12 +44,12 @@ export class DowngradeComponentAdapter {
     const projectableNodes: Node[][] = this.groupProjectableNodes();
     const linkFns = projectableNodes.map(nodes => this.$compile(nodes));
 
-    this.element.empty !();
+    this.element.empty!();
 
     linkFns.forEach(linkFn => {
       linkFn(this.scope, (clone: Node[]) => {
         compiledProjectableNodes.push(clone);
-        this.element.append !(clone);
+        this.element.append!(clone);
       });
     });
 
@@ -96,7 +96,7 @@ export class DowngradeComponentAdapter {
         // for `ngOnChanges()`. This is necessary if we are already in a `$digest`, which means that
         // `ngOnChanges()` (which is called by a watcher) will run before the `$observe()` callback.
         let unwatch: Function|null = this.componentScope.$watch(() => {
-          unwatch !();
+          unwatch!();
           unwatch = null;
           observeFn(attrs[input.attr]);
         });
@@ -128,7 +128,7 @@ export class DowngradeComponentAdapter {
       if (this.implementsOnChanges) {
         const inputChanges = this.inputChanges;
         this.inputChanges = {};
-        (<OnChanges>this.component).ngOnChanges(inputChanges !);
+        (<OnChanges>this.component).ngOnChanges(inputChanges!);
       }
 
       // If opted out of propagating digests, invoke change detection
@@ -182,19 +182,19 @@ export class DowngradeComponentAdapter {
         const emitter = this.component[output.prop] as EventEmitter<any>;
         if (emitter) {
           emitter.subscribe({
-            next: assignExpr ? (v: any) => setter !(this.scope, v) :
+            next: assignExpr ? (v: any) => setter!(this.scope, v) :
                                (v: any) => getter(this.scope, {'$event': v})
           });
         } else {
-          throw new Error(
-              `Missing emitter '${output.prop}' on component '${getComponentName(this.componentFactory.componentType)}'!`);
+          throw new Error(`Missing emitter '${output.prop}' on component '${
+              getComponentName(this.componentFactory.componentType)}'!`);
         }
       }
     }
   }
 
   registerCleanup(needsNgZone: boolean) {
-    this.element.on !('$destroy', () => {
+    this.element.on!('$destroy', () => {
       this.componentScope.$destroy();
       this.componentRef.destroy();
       if (needsNgZone) {
@@ -203,7 +203,9 @@ export class DowngradeComponentAdapter {
     });
   }
 
-  getInjector(): Injector { return this.componentRef.injector; }
+  getInjector(): Injector {
+    return this.componentRef.injector;
+  }
 
   private updateInput(prop: string, prevValue: any, currValue: any) {
     if (this.implementsOnChanges) {
@@ -216,7 +218,7 @@ export class DowngradeComponentAdapter {
 
   groupProjectableNodes() {
     let ngContentSelectors = this.componentFactory.ngContentSelectors;
-    return groupNodesBySelector(ngContentSelectors, this.element.contents !());
+    return groupNodesBySelector(ngContentSelectors, this.element.contents!());
   }
 }
 

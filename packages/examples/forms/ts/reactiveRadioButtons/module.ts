@@ -16,5 +16,4 @@ import {ReactiveRadioButtonComp} from './reactive_radio_button_example';
   declarations: [ReactiveRadioButtonComp],
   bootstrap: [ReactiveRadioButtonComp]
 })
-export class AppModule {
-}
+export class AppModule {}

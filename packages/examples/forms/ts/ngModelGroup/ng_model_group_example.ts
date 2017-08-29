@@ -37,6 +37,8 @@ export class NgModelGroupComp {
     console.log(f.valid);  // true
   }
 
-  setValue() { this.name = {first: 'Bess', last: 'Marvin'}; }
+  setValue() {
+    this.name = {first: 'Bess', last: 'Marvin'};
+  }
 }
 // #enddocregion

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PRIMARY_OUTLET, ParamMap, convertToParamMap} from './shared';
+import {convertToParamMap, ParamMap, PRIMARY_OUTLET} from './shared';
 import {forEach, shallowEqual} from './utils/collection';
 
 export function createEmptyUrlTree() {
@@ -123,7 +123,9 @@ export class UrlTree {
   }
 
   /** @docsNotRequired */
-  toString(): string { return DEFAULT_SERIALIZER.serialize(this); }
+  toString(): string {
+    return DEFAULT_SERIALIZER.serialize(this);
+  }
 }
 
 /**
@@ -150,13 +152,19 @@ export class UrlSegmentGroup {
   }
 
   /** Whether the segment has child segments */
-  hasChildren(): boolean { return this.numberOfChildren > 0; }
+  hasChildren(): boolean {
+    return this.numberOfChildren > 0;
+  }
 
   /** Number of child segments */
-  get numberOfChildren(): number { return Object.keys(this.children).length; }
+  get numberOfChildren(): number {
+    return Object.keys(this.children).length;
+  }
 
   /** @docsNotRequired */
-  toString(): string { return serializePaths(this); }
+  toString(): string {
+    return serializePaths(this);
+  }
 }
 
 
@@ -204,7 +212,9 @@ export class UrlSegment {
   }
 
   /** @docsNotRequired */
-  toString(): string { return serializePath(this); }
+  toString(): string {
+    return serializePath(this);
+  }
 }
 
 export function equalSegments(as: UrlSegment[], bs: UrlSegment[]): boolean {
@@ -280,7 +290,7 @@ export class DefaultUrlSerializer implements UrlSerializer {
   serialize(tree: UrlTree): string {
     const segment = `/${serializeSegment(tree.root, true)}`;
     const query = serializeQueryParams(tree.queryParams);
-    const fragment = typeof tree.fragment === `string` ? `#${encodeURI(tree.fragment !)}` : '';
+    const fragment = typeof tree.fragment === `string` ? `#${encodeURI(tree.fragment!)}` : '';
 
     return `${segment}${query}${fragment}`;
   }
@@ -364,7 +374,7 @@ function serializeQueryParams(params: {[key: string]: any}): string {
                                   `${encode(name)}=${encode(value)}`;
   });
 
-  return strParams.length ? `?${strParams.join("&")}` : '';
+  return strParams.length ? `?${strParams.join('&')}` : '';
 }
 
 const SEGMENT_RE = /^[^\/()?;=&#]+/;
@@ -390,7 +400,9 @@ function matchUrlQueryParamValue(str: string): string {
 class UrlParser {
   private remaining: string;
 
-  constructor(private url: string) { this.remaining = url; }
+  constructor(private url: string) {
+    this.remaining = url;
+  }
 
   parseRootSegment(): UrlSegmentGroup {
     this.consumeOptional('/');
@@ -539,7 +551,7 @@ class UrlParser {
         throw new Error(`Cannot parse url '${this.url}'`);
       }
 
-      let outletName: string = undefined !;
+      let outletName: string = undefined!;
       if (path.indexOf(':') > -1) {
         outletName = path.substr(0, path.indexOf(':'));
         this.capture(outletName);
@@ -557,7 +569,9 @@ class UrlParser {
     return segments;
   }
 
-  private peekStartsWith(str: string): boolean { return this.remaining.startsWith(str); }
+  private peekStartsWith(str: string): boolean {
+    return this.remaining.startsWith(str);
+  }
 
   // Consumes the prefix when it is present and returns whether it has been consumed
   private consumeOptional(str: string): boolean {

@@ -26,12 +26,13 @@ import {Zippy} from './app/zippy';
 class ZippyApp {
   logs: string[] = [];
 
-  pushLog(log: string) { this.logs.push(log); }
+  pushLog(log: string) {
+    this.logs.push(log);
+  }
 }
 
 @NgModule({declarations: [ZippyApp, Zippy], bootstrap: [ZippyApp], imports: [BrowserModule]})
-class ExampleModule {
-}
+class ExampleModule {}
 
 export function main() {
   platformBrowserDynamic().bootstrapModule(ExampleModule);

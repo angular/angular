@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BASE_HREF, HashLocationStrategy, LOCATION_INITIALIZED, Location, LocationStrategy, PathLocationStrategy, PlatformLocation} from '@angular/common';
+import {APP_BASE_HREF, HashLocationStrategy, Location, LOCATION_INITIALIZED, LocationStrategy, PathLocationStrategy, PlatformLocation} from '@angular/common';
 import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, Compiler, ComponentRef, Inject, Injectable, InjectionToken, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, NgProbeToken, Optional, Provider, SkipSelf, SystemJsNgModuleLoader} from '@angular/core';
 import {ɵgetDOM as getDOM} from '@angular/platform-browser';
+import {of} from 'rxjs/observable/of';
 import {Subject} from 'rxjs/Subject';
-import {of } from 'rxjs/observable/of';
 
 import {Route, Routes} from './config';
 import {RouterLink, RouterLinkWithHref} from './directives/router_link';
@@ -234,8 +234,7 @@ export function provideRoutes(routes: Routes): any {
  *
  * @experimental
  */
-export type InitialNavigation =
-    true | false | 'enabled' | 'disabled' | 'legacy_enabled' | 'legacy_disabled';
+export type InitialNavigation = true|false|'enabled'|'disabled'|'legacy_enabled'|'legacy_disabled';
 
 /**
  * @whatItDoes Represents options to configure the router.
@@ -327,7 +326,7 @@ export class RouterInitializer {
   appInitializer(): Promise<any> {
     const p: Promise<any> = this.injector.get(LOCATION_INITIALIZED, Promise.resolve(null));
     return p.then(() => {
-      let resolve: Function = null !;
+      let resolve: Function = null!;
       const res = new Promise(r => resolve = r);
       const router = this.injector.get(Router);
       const opts = this.injector.get(ROUTER_CONFIGURATION);
@@ -380,7 +379,7 @@ export class RouterInitializer {
 
     preloader.setUpPreloading();
     router.resetRootComponentType(ref.componentTypes[0]);
-    this.resultOfPreactivationDone.next(null !);
+    this.resultOfPreactivationDone.next(null!);
     this.resultOfPreactivationDone.complete();
   }
 

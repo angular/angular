@@ -36,7 +36,9 @@ class KeyEventsApp {
     event.preventDefault();
   }
 
-  resetShiftEnter(): void { this.shiftEnter = false; }
+  resetShiftEnter(): void {
+    this.shiftEnter = false;
+  }
 
   /**
    * Get a more readable version of current pressed keys.
@@ -71,8 +73,7 @@ class KeyEventsApp {
 }
 
 @NgModule({declarations: [KeyEventsApp], bootstrap: [KeyEventsApp], imports: [BrowserModule]})
-class ExampleModule {
-}
+class ExampleModule {}
 
 export function main() {
   platformBrowserDynamic().bootstrapModule(ExampleModule);

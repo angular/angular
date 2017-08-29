@@ -41,16 +41,26 @@ export class QueryList<T>/* implements Iterable<T> */ {
   private _results: Array<T> = [];
   private _emitter = new EventEmitter();
 
-  get changes(): Observable<any> { return this._emitter; }
-  get length(): number { return this._results.length; }
-  get first(): T { return this._results[0]; }
-  get last(): T { return this._results[this.length - 1]; }
+  get changes(): Observable<any> {
+    return this._emitter;
+  }
+  get length(): number {
+    return this._results.length;
+  }
+  get first(): T {
+    return this._results[0];
+  }
+  get last(): T {
+    return this._results[this.length - 1];
+  }
 
   /**
    * See
    * [Array.map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map)
    */
-  map<U>(fn: (item: T, index: number, array: T[]) => U): U[] { return this._results.map(fn); }
+  map<U>(fn: (item: T, index: number, array: T[]) => U): U[] {
+    return this._results.map(fn);
+  }
 
   /**
    * See
@@ -80,7 +90,9 @@ export class QueryList<T>/* implements Iterable<T> */ {
    * See
    * [Array.forEach](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach)
    */
-  forEach(fn: (item: T, index: number, array: T[]) => void): void { this._results.forEach(fn); }
+  forEach(fn: (item: T, index: number, array: T[]) => void): void {
+    this._results.forEach(fn);
+  }
 
   /**
    * See
@@ -90,28 +102,40 @@ export class QueryList<T>/* implements Iterable<T> */ {
     return this._results.some(fn);
   }
 
-  toArray(): T[] { return this._results.slice(); }
+  toArray(): T[] {
+    return this._results.slice();
+  }
 
-  [getSymbolIterator()](): Iterator<T> { return (this._results as any)[getSymbolIterator()](); }
+  [getSymbolIterator()](): Iterator<T> {
+    return (this._results as any)[getSymbolIterator()]();
+  }
 
-  toString(): string { return this._results.toString(); }
+  toString(): string {
+    return this._results.toString();
+  }
 
   reset(res: Array<T|any[]>): void {
     this._results = flatten(res);
     this._dirty = false;
   }
 
-  notifyOnChanges(): void { this._emitter.emit(this); }
+  notifyOnChanges(): void {
+    this._emitter.emit(this);
+  }
 
   /** internal */
-  setDirty() { this._dirty = true; }
+  setDirty() {
+    this._dirty = true;
+  }
 
   /** internal */
-  get dirty() { return this._dirty; }
+  get dirty() {
+    return this._dirty;
+  }
 }
 
 function flatten<T>(list: Array<T|T[]>): T[] {
-  return list.reduce((flat: any[], item: T | T[]): T[] => {
+  return list.reduce((flat: any[], item: T|T[]): T[] => {
     const flatItem = Array.isArray(item) ? flatten(item) : item;
     return (<T[]>flat).concat(flatItem);
   }, []);

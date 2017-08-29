@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, StaticSymbolResolverHost, core as compilerCore} from '@angular/compiler';
+import {core as compilerCore, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, StaticSymbolResolverHost} from '@angular/compiler';
 import {CollectorOptions} from '@angular/tsc-wrapped';
 
 import {MockStaticSymbolResolverHost, MockSummaryResolver} from './static_symbol_resolver_spec';
@@ -352,7 +352,7 @@ describe('StaticReflector', () => {
   it('should record data about the error in the exception', () => {
     let threw = false;
     try {
-      const metadata = host.getMetadataFor('/tmp/src/invalid-metadata.ts') !;
+      const metadata = host.getMetadataFor('/tmp/src/invalid-metadata.ts')!;
       expect(metadata).toBeDefined();
       const moduleMetadata: any = metadata[0]['metadata'];
       expect(moduleMetadata).toBeDefined();

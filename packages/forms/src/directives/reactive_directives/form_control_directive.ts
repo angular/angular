@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EventEmitter, Inject, Input, OnChanges, Optional, Output, Self, SimpleChanges, forwardRef} from '@angular/core';
+import {Directive, EventEmitter, forwardRef, Inject, Input, OnChanges, Optional, Output, Self, SimpleChanges} from '@angular/core';
 
 import {FormControl} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
@@ -73,7 +73,9 @@ export class FormControlDirective extends NgControl implements OnChanges {
   @Output('ngModelChange') update = new EventEmitter();
 
   @Input('disabled')
-  set isDisabled(isDisabled: boolean) { ReactiveErrors.disabledAttrWarning(); }
+  set isDisabled(isDisabled: boolean) {
+    ReactiveErrors.disabledAttrWarning();
+  }
 
   constructor(@Optional() @Self() @Inject(NG_VALIDATORS) validators: Array<Validator|ValidatorFn>,
               @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators: Array<AsyncValidator|AsyncValidatorFn>,
@@ -88,8 +90,8 @@ export class FormControlDirective extends NgControl implements OnChanges {
               ngOnChanges(changes: SimpleChanges): void {
                 if (this._isControlChanged(changes)) {
                   setUpControl(this.form, this);
-                  if (this.control.disabled && this.valueAccessor !.setDisabledState) {
-                    this.valueAccessor !.setDisabledState !(true);
+                  if (this.control.disabled && this.valueAccessor!.setDisabledState) {
+                    this.valueAccessor!.setDisabledState!(true);
                   }
                   this.form.updateValueAndValidity({emitEvent: false});
                 }
@@ -99,15 +101,21 @@ export class FormControlDirective extends NgControl implements OnChanges {
                 }
               }
 
-              get path(): string[] { return []; }
+              get path(): string[] {
+                return [];
+              }
 
-              get validator(): ValidatorFn|null { return composeValidators(this._rawValidators); }
+              get validator(): ValidatorFn|null {
+                return composeValidators(this._rawValidators);
+              }
 
               get asyncValidator(): AsyncValidatorFn|null {
                 return composeAsyncValidators(this._rawAsyncValidators);
               }
 
-              get control(): FormControl { return this.form; }
+              get control(): FormControl {
+                return this.form;
+              }
 
               viewToModelUpdate(newValue: any): void {
                 this.viewModel = newValue;

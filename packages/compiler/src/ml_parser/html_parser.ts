@@ -8,12 +8,14 @@
 
 import {getHtmlTagDefinition} from './html_tags';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './interpolation_config';
-import {ParseTreeResult, Parser} from './parser';
+import {Parser, ParseTreeResult} from './parser';
 
 export {ParseTreeResult, TreeError} from './parser';
 
 export class HtmlParser extends Parser {
-  constructor() { super(getHtmlTagDefinition); }
+  constructor() {
+    super(getHtmlTagDefinition);
+  }
 
   parse(
       source: string, url: string, parseExpansionForms: boolean = false,

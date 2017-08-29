@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Inject, Injector, Input, NgModule, NgZone, OnChanges, StaticProvider, destroyPlatform} from '@angular/core';
+import {Component, destroyPlatform, Inject, Injector, Input, NgModule, NgZone, OnChanges, StaticProvider} from '@angular/core';
 import {async, fakeAsync, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -88,7 +88,9 @@ export function main() {
            @Component({selector: 'ng2', template: '{{ value }}'})
            class Ng2Component {
              value: string;
-             constructor(ng2Service: Ng2Service) { this.value = ng2Service.getValue(); }
+             constructor(ng2Service: Ng2Service) {
+               this.value = ng2Service.getValue();
+             }
            }
 
            @NgModule({
@@ -140,7 +142,9 @@ export function main() {
            @Component({selector: 'ng2', template: 'In the zone: {{ inTheZone }}'})
            class Ng2Component {
              private inTheZone = false;
-             constructor() { this.inTheZone = NgZone.isInAngularZone(); }
+             constructor() {
+               this.inTheZone = NgZone.isInAngularZone();
+             }
            }
 
            @NgModule({
@@ -178,7 +182,9 @@ export function main() {
              @Input() attrInput = 'foo';
              @Input() propInput = 'foo';
 
-             constructor() { ng2Component = this; }
+             constructor() {
+               ng2Component = this;
+             }
              ngOnChanges() {}
            }
 
@@ -233,7 +239,9 @@ export function main() {
                {selector: 'ng2', template: '{{ count }}<button (click)="increment()"></button>'})
            class Ng2Component {
              private count = 0;
-             increment() { ++this.count; }
+             increment() {
+               ++this.count;
+             }
            }
 
            @NgModule({
@@ -258,7 +266,7 @@ export function main() {
 
            setTimeout(() => {    // Wait for the module to be bootstrapped.
              setTimeout(() => {  // Wait for `$evalAsync()` to propagate inputs.
-               const button = element.querySelector('button') !;
+               const button = element.querySelector('button')!;
                expect(element.textContent).toBe('0');
 
                button.click();
@@ -280,7 +288,9 @@ export function main() {
            class Ng2Component {
              private count = ++count;
              private inTheZone = false;
-             constructor() { this.inTheZone = NgZone.isInAngularZone(); }
+             constructor() {
+               this.inTheZone = NgZone.isInAngularZone();
+             }
            }
 
            @NgModule({
@@ -316,7 +326,7 @@ export function main() {
            tick(tickDelay);  // Wait for the module to be bootstrapped and `$evalAsync()` to
                              // propagate inputs.
 
-           const injector = ($injector.get(LAZY_MODULE_REF) as LazyModuleRef).injector !;
+           const injector = ($injector.get(LAZY_MODULE_REF) as LazyModuleRef).injector!;
            const injectorGet = injector.get;
            spyOn(injector, 'get').and.callFake((...args: any[]) => {
              expect(args[0]).not.toBe(NgZone);
@@ -339,8 +349,7 @@ export function main() {
            let $injectorFromNg2: angular.IInjectorService|null = null;
 
            @Component({selector: 'ng2', template: ''})
-           class Ng2Component {
-           }
+           class Ng2Component {}
 
            @NgModule({
              declarations: [Ng2Component],

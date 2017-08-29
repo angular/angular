@@ -20,7 +20,6 @@ export function main() {
     imports: [RouterModule.forRoot(ROUTER_CONFIG, {useHash: true}), BrowserModule],
     bootstrap: [InboxApp]
   })
-  class RoutingExampleModule {
-  }
+  class RoutingExampleModule {}
   platformBrowserDynamic().bootstrapModule(RoutingExampleModule);
 }

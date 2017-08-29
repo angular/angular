@@ -76,7 +76,7 @@ lines</msg>
   });
 }
 
-function toXmb(html: string, url: string, locale: string | null = null): string {
+function toXmb(html: string, url: string, locale: string|null = null): string {
   const catalog = new MessageBundle(new HtmlParser, [], {}, locale);
   const serializer = new Xmb();
 

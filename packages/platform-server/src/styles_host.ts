@@ -7,7 +7,7 @@
  */
 
 import {ApplicationRef, Inject, Injectable, Optional} from '@angular/core';
-import {DOCUMENT, ɵSharedStylesHost as SharedStylesHost, ɵTRANSITION_ID, ɵgetDOM as getDOM} from '@angular/platform-browser';
+import {DOCUMENT, ɵgetDOM as getDOM, ɵSharedStylesHost as SharedStylesHost, ɵTRANSITION_ID} from '@angular/platform-browser';
 
 import {Parse5DomAdapter} from './parse5_adapter';
 
@@ -32,5 +32,7 @@ export class ServerStylesHost extends SharedStylesHost {
     adapter.appendChild(this.head, el);
   }
 
-  onStylesAdded(additions: Set<string>) { additions.forEach(style => this._addStyle(style)); }
+  onStylesAdded(additions: Set<string>) {
+    additions.forEach(style => this._addStyle(style));
+  }
 }

@@ -22,16 +22,16 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   private _finished = false;
   private _started = false;
   private _destroyed = false;
-  private _finalKeyframe: {[key: string]: string | number};
+  private _finalKeyframe: {[key: string]: string|number};
   public time = 0;
 
   public parentPlayer: AnimationPlayer|null = null;
-  public previousStyles: {[styleName: string]: string | number} = {};
-  public currentSnapshot: {[styleName: string]: string | number} = {};
+  public previousStyles: {[styleName: string]: string|number} = {};
+  public currentSnapshot: {[styleName: string]: string|number} = {};
 
   constructor(
-      public element: any, public keyframes: {[key: string]: string | number}[],
-      public options: {[key: string]: string | number},
+      public element: any, public keyframes: {[key: string]: string|number}[],
+      public options: {[key: string]: string|number},
       private previousPlayers: WebAnimationsPlayer[] = []) {
     this._duration = <number>options['duration'];
     this._delay = <number>options['delay'] || 0;
@@ -107,13 +107,21 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     return element['animate'](keyframes, options) as DOMAnimation;
   }
 
-  get domPlayer() { return this._player; }
+  get domPlayer() {
+    return this._player;
+  }
 
-  onStart(fn: () => void): void { this._onStartFns.push(fn); }
+  onStart(fn: () => void): void {
+    this._onStartFns.push(fn);
+  }
 
-  onDone(fn: () => void): void { this._onDoneFns.push(fn); }
+  onDone(fn: () => void): void {
+    this._onDoneFns.push(fn);
+  }
 
-  onDestroy(fn: () => void): void { this._onDestroyFns.push(fn); }
+  onDestroy(fn: () => void): void {
+    this._onDestroyFns.push(fn);
+  }
 
   play(): void {
     this._buildPlayer();
@@ -154,7 +162,9 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     this.play();
   }
 
-  hasStarted(): boolean { return this._started; }
+  hasStarted(): boolean {
+    return this._started;
+  }
 
   destroy(): void {
     if (!this._destroyed) {
@@ -166,14 +176,20 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     }
   }
 
-  setPosition(p: number): void { this._player.currentTime = p * this.time; }
+  setPosition(p: number): void {
+    this._player.currentTime = p * this.time;
+  }
 
-  getPosition(): number { return this._player.currentTime / this.time; }
+  getPosition(): number {
+    return this._player.currentTime / this.time;
+  }
 
-  get totalTime(): number { return this._delay + this._duration; }
+  get totalTime(): number {
+    return this._delay + this._duration;
+  }
 
   beforeDestroy() {
-    const styles: {[key: string]: string | number} = {};
+    const styles: {[key: string]: string|number} = {};
     if (this.hasStarted()) {
       Object.keys(this._finalKeyframe).forEach(prop => {
         if (prop != 'offset') {

@@ -9,8 +9,7 @@
 import {Component, Directive, QueryList, ViewChild, ViewChildren} from '@angular/core';
 
 @Component({selector: 'comp-for-child-query', template: 'child'})
-export class CompForChildQuery {
-}
+export class CompForChildQuery {}
 
 @Component(
     {selector: 'comp-with-child-query', template: '<comp-for-child-query></comp-for-child-query>'})
@@ -20,8 +19,7 @@ export class CompWithChildQuery {
 }
 
 @Directive({selector: '[directive-for-query]'})
-export class DirectiveForQuery {
-}
+export class DirectiveForQuery {}
 
 @Component({
   selector: 'comp-with-directive-child',

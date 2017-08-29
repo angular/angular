@@ -10,9 +10,13 @@ export class Tree<T> {
   /** @internal */
   _root: TreeNode<T>;
 
-  constructor(root: TreeNode<T>) { this._root = root; }
+  constructor(root: TreeNode<T>) {
+    this._root = root;
+  }
 
-  get root(): T { return this._root.value; }
+  get root(): T {
+    return this._root.value;
+  }
 
   /**
    * @internal
@@ -52,7 +56,9 @@ export class Tree<T> {
   /**
    * @internal
    */
-  pathFromRoot(t: T): T[] { return findPath(t, this._root).map(s => s.value); }
+  pathFromRoot(t: T): T[] {
+    return findPath(t, this._root).map(s => s.value);
+  }
 }
 
 
@@ -86,11 +92,13 @@ function findPath<T>(value: T, node: TreeNode<T>): TreeNode<T>[] {
 export class TreeNode<T> {
   constructor(public value: T, public children: TreeNode<T>[]) {}
 
-  toString(): string { return `TreeNode(${this.value})`; }
+  toString(): string {
+    return `TreeNode(${this.value})`;
+  }
 }
 
 // Return the list of T indexed by outlet name
-export function nodeChildrenAsMap<T extends{outlet: string}>(node: TreeNode<T>| null) {
+export function nodeChildrenAsMap<T extends {outlet: string}>(node: TreeNode<T>|null) {
   const map: {[outlet: string]: TreeNode<T>} = {};
 
   if (node) {

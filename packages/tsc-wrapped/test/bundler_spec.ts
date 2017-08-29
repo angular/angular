@@ -29,7 +29,7 @@ describe('metadata bundler', () => {
     const originalTwo = './src/two/index';
     expect(Object.keys(result.metadata.origins)
                .sort()
-               .map(name => ({name, value: result.metadata.origins ![name]})))
+               .map(name => ({name, value: result.metadata.origins![name]})))
         .toEqual([
           {name: 'ONE_CLASSES', value: originalOne}, {name: 'One', value: originalOne},
           {name: 'OneMore', value: originalOne}, {name: 'TWO_CLASSES', value: originalTwo},
@@ -190,7 +190,7 @@ describe('metadata bundler', () => {
         from: 'external_one'
       }
     ]);
-    expect(result.metadata.origins !['E']).toBeUndefined();
+    expect(result.metadata.origins!['E']).toBeUndefined();
   });
 });
 

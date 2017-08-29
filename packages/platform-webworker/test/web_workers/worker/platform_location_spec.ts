@@ -12,14 +12,14 @@ import {MessageBus} from '@angular/platform-webworker/src/web_workers/shared/mes
 import {LocationType, SerializerTypes} from '@angular/platform-webworker/src/web_workers/shared/serializer';
 import {WebWorkerPlatformLocation} from '@angular/platform-webworker/src/web_workers/worker/platform_location';
 
-import {MockMessageBrokerFactory, createPairedMessageBuses, expectBrokerCall} from '../shared/web_worker_test_util';
+import {createPairedMessageBuses, expectBrokerCall, MockMessageBrokerFactory} from '../shared/web_worker_test_util';
 
 import {SpyMessageBroker} from './spies';
 
 export function main() {
   describe('WebWorkerPlatformLocation', () => {
-    let uiBus: MessageBus = null !;
-    let workerBus: MessageBus = null !;
+    let uiBus: MessageBus = null!;
+    let workerBus: MessageBus = null!;
     let broker: any = null;
 
     const TEST_LOCATION = new LocationType(
@@ -29,17 +29,17 @@ export function main() {
 
     function createWebWorkerPlatformLocation(loc: LocationType): WebWorkerPlatformLocation {
       broker.spy('runOnService')
-          .and.callFake((args: UiArguments, returnType: Type<any>| SerializerTypes) => {
+          .and.callFake((args: UiArguments, returnType: Type<any>|SerializerTypes) => {
             if (args.method === 'getLocation') {
               return Promise.resolve(loc);
             }
           });
       const factory = new MockMessageBrokerFactory(broker);
-      return new WebWorkerPlatformLocation(factory, workerBus, null !);
+      return new WebWorkerPlatformLocation(factory, workerBus, null!);
     }
 
     function testPushOrReplaceState(pushState: boolean) {
-      const platformLocation = createWebWorkerPlatformLocation(null !);
+      const platformLocation = createWebWorkerPlatformLocation(null!);
       const TITLE = 'foo';
       const URL = 'http://www.example.com/foo';
       expectBrokerCall(broker, pushState ? 'pushState' : 'replaceState', [null, TITLE, URL]);
@@ -60,18 +60,18 @@ export function main() {
     });
 
     it('should throw if getBaseHrefFromDOM is called', () => {
-      const platformLocation = createWebWorkerPlatformLocation(null !);
+      const platformLocation = createWebWorkerPlatformLocation(null!);
       expect(() => platformLocation.getBaseHrefFromDOM()).toThrowError();
     });
 
     it('should get location on init', () => {
-      const platformLocation = createWebWorkerPlatformLocation(null !);
+      const platformLocation = createWebWorkerPlatformLocation(null!);
       expectBrokerCall(broker, 'getLocation');
       platformLocation.init();
     });
 
     it('should throw if set pathname is called before init finishes', () => {
-      const platformLocation = createWebWorkerPlatformLocation(null !);
+      const platformLocation = createWebWorkerPlatformLocation(null!);
       platformLocation.init();
       expect(() => platformLocation.pathname = 'TEST').toThrowError();
     });
@@ -86,8 +86,12 @@ export function main() {
       });
     });
 
-    it('should send pushState to render thread', () => { testPushOrReplaceState(true); });
+    it('should send pushState to render thread', () => {
+      testPushOrReplaceState(true);
+    });
 
-    it('should send replaceState to render thread', () => { testPushOrReplaceState(false); });
+    it('should send replaceState to render thread', () => {
+      testPushOrReplaceState(false);
+    });
   });
 }

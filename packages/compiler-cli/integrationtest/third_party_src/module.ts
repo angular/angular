@@ -24,5 +24,4 @@ import {AnotherThirdPartyModule} from './other_module';
   ],
   imports: [AnotherThirdPartyModule]
 })
-export class ThirdpartyModule {
-}
+export class ThirdpartyModule {}

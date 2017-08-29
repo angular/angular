@@ -10,8 +10,7 @@ import {Component, NgModule} from '@angular/core';
 import {RouterModule} from '@angular/router';
 
 @Component({selector: 'feature-component', template: 'foo.html'})
-export class FeatureComponent {
-}
+export class FeatureComponent {}
 
 @NgModule({
   declarations: [FeatureComponent],
@@ -19,5 +18,4 @@ export class FeatureComponent {
     {path: '', component: FeatureComponent},
   ])]
 })
-export default class DefaultModule {
-}
+export default class DefaultModule {}

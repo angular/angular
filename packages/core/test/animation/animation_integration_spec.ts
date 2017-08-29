@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimationEvent, AnimationOptions, animate, animateChild, group, keyframes, query, state, style, transition, trigger, ɵPRE_STYLE as PRE_STYLE} from '@angular/animations';
+import {animate, animateChild, AnimationEvent, AnimationOptions, AUTO_STYLE, group, keyframes, query, state, style, transition, trigger, ɵPRE_STYLE as PRE_STYLE} from '@angular/animations';
 import {AnimationDriver, ɵAnimationEngine, ɵNoopAnimationDriver} from '@angular/animations/browser';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {ChangeDetectorRef, Component, HostBinding, HostListener, RendererFactory2, ViewChild} from '@angular/core';
@@ -13,7 +13,7 @@ import {ɵDomRendererFactory2} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
-import {TestBed, fakeAsync, flushMicrotasks} from '../../testing';
+import {fakeAsync, flushMicrotasks, TestBed} from '../../testing';
 
 const DEFAULT_NAMESPACE_ID = 'id';
 const DEFAULT_COMPONENT_ID = '1';
@@ -27,7 +27,9 @@ export function main() {
       return MockAnimationDriver.log as MockAnimationPlayer[];
     }
 
-    function resetLog() { MockAnimationDriver.log = []; }
+    function resetLog() {
+      MockAnimationDriver.log = [];
+    }
 
     beforeEach(() => {
       resetLog();
@@ -52,7 +54,9 @@ export function main() {
            class Cmp {
              exp: any = false;
              status: string = '';
-             cb(status: string) { this.status = status; }
+             cb(status: string) {
+               this.status = status;
+             }
            }
 
            TestBed.configureTestingModule({declarations: [Cmp]});
@@ -65,7 +69,7 @@ export function main() {
            flushMicrotasks();
            expect(cmp.status).toEqual('start');
 
-           let player = MockAnimationDriver.log.pop() !;
+           let player = MockAnimationDriver.log.pop()!;
            player.finish();
            expect(cmp.status).toEqual('done');
 
@@ -74,7 +78,7 @@ export function main() {
            fixture.detectChanges();
            expect(cmp.status).toEqual('');
 
-           player = MockAnimationDriver.log.pop() !;
+           player = MockAnimationDriver.log.pop()!;
            player.finish();
            expect(cmp.status).toEqual('');
            flushMicrotasks();
@@ -218,7 +222,7 @@ export function main() {
         engine.flush();
 
         expect(getLog().length).toEqual(1);
-        expect(getLog().pop() !.keyframes).toEqual([
+        expect(getLog().pop()!.keyframes).toEqual([
           {offset: 0, opacity: '0'}, {offset: 1, opacity: '1'}
         ]);
       });
@@ -257,7 +261,7 @@ export function main() {
         engine.flush();
 
         expect(getLog().length).toEqual(1);
-        const player = getLog().pop() !;
+        const player = getLog().pop()!;
         expect(player.duration).toEqual(1234);
       });
 
@@ -379,7 +383,7 @@ export function main() {
         fixture.detectChanges();
         engine.flush();
 
-        expect(getLog().pop() !.keyframes).toEqual([
+        expect(getLog().pop()!.keyframes).toEqual([
           {offset: 0, width: '0px'}, {offset: 1, width: '100px'}
         ]);
 
@@ -389,7 +393,7 @@ export function main() {
         fixture.detectChanges();
         engine.flush();
 
-        expect(getLog().pop() !.keyframes).toEqual([
+        expect(getLog().pop()!.keyframes).toEqual([
           {offset: 0, height: '0px'}, {offset: 1, height: '100px'}
         ]);
 
@@ -399,7 +403,7 @@ export function main() {
         fixture.detectChanges();
         engine.flush();
 
-        expect(getLog().pop() !.keyframes).toEqual([
+        expect(getLog().pop()!.keyframes).toEqual([
           {offset: 0, height: '0px'}, {offset: 1, height: '100px'}
         ]);
 
@@ -409,7 +413,7 @@ export function main() {
         fixture.detectChanges();
         engine.flush();
 
-        expect(getLog().pop() !.keyframes).toEqual([
+        expect(getLog().pop()!.keyframes).toEqual([
           {offset: 0, height: '0px'}, {offset: 1, height: '100px'}
         ]);
 
@@ -419,7 +423,7 @@ export function main() {
         fixture.detectChanges();
         engine.flush();
 
-        expect(getLog().pop() !.keyframes).toEqual([
+        expect(getLog().pop()!.keyframes).toEqual([
           {offset: 0, height: '0px'}, {offset: 1, height: '100px'}
         ]);
 
@@ -430,7 +434,7 @@ export function main() {
         fixture.detectChanges();
         engine.flush();
 
-        expect(getLog().pop() !.keyframes).toEqual([
+        expect(getLog().pop()!.keyframes).toEqual([
           {offset: 0, width: '0px'}, {offset: 1, width: '100px'}
         ]);
       });
@@ -462,7 +466,7 @@ export function main() {
         fixture.detectChanges();
         engine.flush();
 
-        expect(getLog().pop() !.keyframes).toEqual([
+        expect(getLog().pop()!.keyframes).toEqual([
           {offset: 0, opacity: '0'}, {offset: 1, opacity: '1'}
         ]);
 
@@ -470,7 +474,7 @@ export function main() {
         fixture.detectChanges();
         engine.flush();
 
-        expect(getLog().pop() !.keyframes).toEqual([
+        expect(getLog().pop()!.keyframes).toEqual([
           {offset: 0, opacity: '1'}, {offset: 1, opacity: '0'}
         ]);
       });
@@ -478,12 +482,10 @@ export function main() {
       it('should not throw an error if a trigger with the same name exists in separate components',
          () => {
            @Component({selector: 'cmp1', template: '...', animations: [trigger('trig', [])]})
-           class Cmp1 {
-           }
+           class Cmp1 {}
 
            @Component({selector: 'cmp2', template: '...', animations: [trigger('trig', [])]})
-           class Cmp2 {
-           }
+           class Cmp2 {}
 
            TestBed.configureTestingModule({declarations: [Cmp1, Cmp2]});
            const cmp1 = TestBed.createComponent(Cmp1);
@@ -521,7 +523,7 @@ export function main() {
              engine.flush();
              expect(getLog().length).toEqual(1);
 
-             const data = getLog().pop() !;
+             const data = getLog().pop()!;
              expect(data.element).toEqual(fixture.elementRef.nativeElement);
              expect(data.keyframes).toEqual([{offset: 0, opacity: '0'}, {offset: 1, opacity: '1'}]);
            }));
@@ -598,8 +600,7 @@ export function main() {
                selector: 'child-cmp',
                template: '...',
              })
-             class ChildCmp {
-             }
+             class ChildCmp {}
 
              TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
 
@@ -765,7 +766,7 @@ export function main() {
                     ]),
               ])],
         })
-        class Cmp {
+           class Cmp {
              exp: any = false;
            }
 
@@ -1126,8 +1127,8 @@ export function main() {
 
            expect(getLog().length).toEqual(2);
 
-           const player2 = getLog().pop() !;
-           const player1 = getLog().pop() !;
+           const player2 = getLog().pop()!;
+           const player1 = getLog().pop()!;
 
            expect(player2.keyframes).toEqual([
              {width: PRE_STYLE, offset: 0},
@@ -1558,7 +1559,7 @@ export function main() {
            cmp.exp = '1';
            cmp.color = 'red';
            fixture.detectChanges();
-           const player = getLog()[0] !;
+           const player = getLog()[0]!;
            const element = player.element;
            player.finish();
 
@@ -1613,7 +1614,7 @@ export function main() {
         cmp.exp = {value: 'b', params: {start: .3, end: .6}};
         fixture.detectChanges();
         engine.flush();
-        const player = getLog().pop() !;
+        const player = getLog().pop()!;
         expect(player.keyframes).toEqual([
           {opacity: '0.3', offset: 0}, {opacity: '0.6', offset: 1}
         ]);
@@ -1766,7 +1767,9 @@ export function main() {
           @ViewChild('inner') public inner: any;
           public exp: any = null;
 
-          update() { this.exp = 'go'; }
+          update() {
+            this.exp = 'go';
+          }
 
           ngDoCheck() {
             if (this.exp == 'go') {
@@ -1922,7 +1925,9 @@ export function main() {
              exp: any = false;
              event: AnimationEvent;
 
-             callback = (event: any) => { this.event = event; };
+             callback = (event: any) => {
+               this.event = event;
+             };
            }
 
            TestBed.configureTestingModule({declarations: [Cmp]});
@@ -1957,7 +1962,9 @@ export function main() {
              exp: any = false;
              event: AnimationEvent;
 
-             callback = (event: any) => { this.event = event; };
+             callback = (event: any) => {
+               this.event = event;
+             };
            }
 
            TestBed.configureTestingModule({declarations: [Cmp]});
@@ -2012,8 +2019,12 @@ export function main() {
              exp2: any = false;
              event1: AnimationEvent;
              event2: AnimationEvent;
-             callback1 = (event: any) => { this.event1 = event; };
-             callback2 = (event: any) => { this.event2 = event; };
+             callback1 = (event: any) => {
+               this.event1 = event;
+             };
+             callback2 = (event: any) => {
+               this.event2 = event;
+             };
            }
 
            TestBed.configureTestingModule({declarations: [Cmp]});
@@ -2072,8 +2083,12 @@ export function main() {
              exp2: any = false;
              event1: AnimationEvent;
              event2: AnimationEvent;
-             callback1 = (event: any) => { this.event1 = event; };
-             callback2 = (event: any) => { this.event2 = event; };
+             callback1 = (event: any) => {
+               this.event1 = event;
+             };
+             callback2 = (event: any) => {
+               this.event2 = event;
+             };
            }
 
            TestBed.configureTestingModule({declarations: [Cmp]});
@@ -2121,7 +2136,9 @@ export function main() {
              exp: any = false;
 
              @HostListener('@myAnimation2.start', ['$event'])
-             callback = (event: any) => { this.event = event; };
+             callback = (event: any) => {
+               this.event = event;
+             };
            }
 
            TestBed.configureTestingModule({declarations: [Cmp]});
@@ -2263,7 +2280,9 @@ export function main() {
              exp1: string;
              exp2: string;
 
-             cb(name: string, event: AnimationEvent) { this.log.push(name); }
+             cb(name: string, event: AnimationEvent) {
+               this.log.push(name);
+             }
            }
 
            TestBed.configureTestingModule({declarations: [Cmp]});
@@ -2335,7 +2354,7 @@ export function main() {
             ])
           ]
         })
-        class Cmp {
+               class Cmp {
                  log: string[] = [];
                  events: {[name: string]: any} = {};
                  exp: string;
@@ -2580,7 +2599,7 @@ export function main() {
           fixture.detectChanges();
           resetLog();
 
-          const parent = cmp.parentElm !.nativeElement;
+          const parent = cmp.parentElm!.nativeElement;
 
           cmp.exp = true;
           fixture.detectChanges();
@@ -2680,7 +2699,7 @@ export function main() {
              fixture.detectChanges();
              resetLog();
 
-             const child = cmp.child !;
+             const child = cmp.child!;
              child.exp = 'go';
              fixture.detectChanges();
 
@@ -2776,7 +2795,9 @@ export function main() {
                items: any[] = [];
                doneLog: any[] = [];
 
-               onDone(event: any) { this.doneLog.push(event); }
+               onDone(event: any) {
+                 this.doneLog.push(event);
+               }
              }
 
              TestBed.configureTestingModule({declarations: [Cmp]});
@@ -2897,7 +2918,9 @@ export function main() {
 
       TestBed.configureTestingModule({declarations: [Cmp]});
 
-      expect(() => { TestBed.createComponent(Cmp); })
+      expect(() => {
+        TestBed.createComponent(Cmp);
+      })
           .toThrowError(
               /only state\(\) and transition\(\) definitions can sit inside of a trigger\(\)/);
     });
@@ -2988,7 +3011,9 @@ export function main() {
 
       TestBed.configureTestingModule({declarations: [Cmp]});
 
-      expect(() => { TestBed.createComponent(Cmp); }).not.toThrowError();
+      expect(() => {
+        TestBed.createComponent(Cmp);
+      }).not.toThrowError();
     });
 
     describe('errors for not using the animation module', () => {
@@ -3000,8 +3025,7 @@ export function main() {
 
       it('should throw when using an @prop binding without the animation module', () => {
         @Component({template: `<div [@myAnimation]="true"></div>`})
-        class Cmp {
-        }
+        class Cmp {}
 
         TestBed.configureTestingModule({declarations: [Cmp]});
         const comp = TestBed.createComponent(Cmp);

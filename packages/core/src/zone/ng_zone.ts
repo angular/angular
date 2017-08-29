@@ -138,7 +138,9 @@ export class NgZone {
     forkInnerZoneWithAngularBehavior(self);
   }
 
-  static isInAngularZone(): boolean { return Zone.current.get('isAngularZone') === true; }
+  static isInAngularZone(): boolean {
+    return Zone.current.get('isAngularZone') === true;
+  }
 
   static assertInAngularZone(): void {
     if (!NgZone.isInAngularZone()) {
@@ -216,7 +218,7 @@ export class NgZone {
   }
 }
 
-function noop(){};
+function noop() {};
 const EMPTY_PAYLOAD = {};
 
 
@@ -252,26 +254,28 @@ function forkInnerZoneWithAngularBehavior(zone: NgZonePrivate) {
   zone._inner = zone._inner.fork({
     name: 'angular',
     properties: <any>{'isAngularZone': true},
-    onInvokeTask: (delegate: ZoneDelegate, current: Zone, target: Zone, task: Task, applyThis: any,
-                   applyArgs: any): any => {
-      try {
-        onEnter(zone);
-        return delegate.invokeTask(target, task, applyThis, applyArgs);
-      } finally {
-        onLeave(zone);
-      }
-    },
+    onInvokeTask:
+        (delegate: ZoneDelegate, current: Zone, target: Zone, task: Task, applyThis: any,
+         applyArgs: any): any => {
+          try {
+            onEnter(zone);
+            return delegate.invokeTask(target, task, applyThis, applyArgs);
+          } finally {
+            onLeave(zone);
+          }
+        },
 
 
-    onInvoke: (delegate: ZoneDelegate, current: Zone, target: Zone, callback: Function,
-               applyThis: any, applyArgs: any[], source: string): any => {
-      try {
-        onEnter(zone);
-        return delegate.invoke(target, callback, applyThis, applyArgs, source);
-      } finally {
-        onLeave(zone);
-      }
-    },
+    onInvoke:
+        (delegate: ZoneDelegate, current: Zone, target: Zone, callback: Function, applyThis: any,
+         applyArgs: any[], source: string): any => {
+          try {
+            onEnter(zone);
+            return delegate.invoke(target, callback, applyThis, applyArgs, source);
+          } finally {
+            onLeave(zone);
+          }
+        },
 
     onHasTask:
         (delegate: ZoneDelegate, current: Zone, target: Zone, hasTaskState: HasTaskState) => {

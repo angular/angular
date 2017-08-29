@@ -33,10 +33,12 @@ export class TscWatch {
   private runOnce: boolean = false;
 
   constructor({tsconfig, start, error, complete, onStartCmds = null, onChangeCmds = null}: {
-    tsconfig: string | string[],
+    tsconfig: string|string[],
     error: string|RegExp,
     start: string,
-    complete: string, onStartCmds?: Array<string[]|Command>, onChangeCmds?: Array<string[]|Command>
+    complete: string,
+    onStartCmds?: Array<string[]|Command>,
+    onChangeCmds?: Array<string[]|Command>
   }) {
     console.log('Watching:', tsconfig, 'in', process.cwd());
     this.tsconfig = Array.isArray(tsconfig) ? tsconfig : [tsconfig];
@@ -135,8 +137,7 @@ export class TscWatch {
   triggerCmds() {
     let cmdPromise: Promise<number> = Promise.resolve(0);
     this.onChangeCmds.forEach(
-        (cmd: string[] | Command) => cmdPromise =
-            cmdPromise.then(() => this.runCmd(<string[]>cmd)));
+        (cmd: string[]|Command) => cmdPromise = cmdPromise.then(() => this.runCmd(<string[]>cmd)));
     cmdPromise.then(() => this.triggered = null, (code) => {
       if (this.runOnce) {
         if (typeof code != 'number') {
@@ -160,7 +161,7 @@ function stdOut(data: Buffer, isStdError: boolean) {
   }
 }
 
-function contains(line: string, text: string | RegExp): boolean {
+function contains(line: string, text: string|RegExp): boolean {
   if (typeof text == 'string') {
     return line.indexOf(text as string) != -1;
   } else if (text instanceof RegExp) {

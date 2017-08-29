@@ -54,8 +54,7 @@ export function jsonpFactory(jsonpBackend: JSONPBackend, requestOptions: Request
     {provide: XSRFStrategy, useFactory: _createDefaultCookieXSRFStrategy},
   ],
 })
-export class HttpModule {
-}
+export class HttpModule {}
 
 /**
  * The module that includes jsonp's providers
@@ -73,5 +72,4 @@ export class HttpModule {
     {provide: JSONPBackend, useClass: JSONPBackend_},
   ],
 })
-export class JsonpModule {
-}
+export class JsonpModule {}

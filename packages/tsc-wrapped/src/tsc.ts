@@ -11,7 +11,7 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import AngularCompilerOptions from './options';
-import {VinylFile, isVinylFile} from './vinyl_file';
+import {isVinylFile, VinylFile} from './vinyl_file';
 
 /**
  * Our interface to the TypeScript standard compiler.
@@ -39,19 +39,27 @@ export class UserError extends Error {
     this._nativeError = nativeError;
   }
 
-  get message() { return this._nativeError.message; }
+  get message() {
+    return this._nativeError.message;
+  }
   set message(message) {
     if (this._nativeError) this._nativeError.message = message;
   }
-  get name() { return this._nativeError.name; }
+  get name() {
+    return this._nativeError.name;
+  }
   set name(name) {
     if (this._nativeError) this._nativeError.name = name;
   }
-  get stack() { return (this._nativeError as any).stack; }
+  get stack() {
+    return (this._nativeError as any).stack;
+  }
   set stack(value) {
     if (this._nativeError) (this._nativeError as any).stack = value;
   }
-  toString() { return this._nativeError.toString(); }
+  toString() {
+    return this._nativeError.toString();
+  }
 }
 
 const DEBUG = false;
@@ -76,7 +84,7 @@ export function formatDiagnostics(diags: ts.Diagnostic[]): string {
       .join('\n');
 }
 
-export function check(diags: ts.Diagnostic[] | undefined) {
+export function check(diags: ts.Diagnostic[]|undefined) {
   if (diags && diags.length && diags[0]) {
     throw new UserError(formatDiagnostics(diags));
   }
@@ -137,7 +145,7 @@ export class Tsc implements CompilerInterface {
         return ts.readConfigFile(project, this.readFile);
       }
     })();
-    check([error !]);
+    check([error!]);
 
     const parsed =
         ts.parseJsonConfigFileContent(config, this.parseConfigHost, basePath, existingOptions);

@@ -8,7 +8,7 @@
 
 import {DomElementSchemaRegistry} from '@angular/compiler';
 import {APP_ID, Inject, Injectable, NgZone, RenderComponentType, Renderer, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, RootRenderer, ViewEncapsulation, ɵstringify as stringify} from '@angular/core';
-import {DOCUMENT, ɵNAMESPACE_URIS as NAMESPACE_URIS, ɵSharedStylesHost as SharedStylesHost, ɵflattenStyles as flattenStyles, ɵgetDOM as getDOM, ɵshimContentAttribute as shimContentAttribute, ɵshimHostAttribute as shimHostAttribute} from '@angular/platform-browser';
+import {DOCUMENT, ɵflattenStyles as flattenStyles, ɵgetDOM as getDOM, ɵNAMESPACE_URIS as NAMESPACE_URIS, ɵSharedStylesHost as SharedStylesHost, ɵshimContentAttribute as shimContentAttribute, ɵshimHostAttribute as shimHostAttribute} from '@angular/platform-browser';
 
 const EMPTY_ARRAY: any[] = [];
 
@@ -75,11 +75,17 @@ class DefaultServerRenderer2 implements Renderer2 {
     return getDOM().createElement(name);
   }
 
-  createComment(value: string, debugInfo?: any): any { return getDOM().createComment(value); }
+  createComment(value: string, debugInfo?: any): any {
+    return getDOM().createComment(value);
+  }
 
-  createText(value: string, debugInfo?: any): any { return getDOM().createTextNode(value); }
+  createText(value: string, debugInfo?: any): any {
+    return getDOM().createTextNode(value);
+  }
 
-  appendChild(parent: any, newChild: any): void { getDOM().appendChild(parent, newChild); }
+  appendChild(parent: any, newChild: any): void {
+    getDOM().appendChild(parent, newChild);
+  }
 
   insertBefore(parent: any, newChild: any, refChild: any): void {
     if (parent) {
@@ -107,9 +113,13 @@ class DefaultServerRenderer2 implements Renderer2 {
     return el;
   }
 
-  parentNode(node: any): any { return getDOM().parentElement(node); }
+  parentNode(node: any): any {
+    return getDOM().parentElement(node);
+  }
 
-  nextSibling(node: any): any { return getDOM().nextSibling(node); }
+  nextSibling(node: any): any {
+    return getDOM().nextSibling(node);
+  }
 
   setAttribute(el: any, name: string, value: string, namespace?: string): void {
     if (namespace) {
@@ -127,9 +137,13 @@ class DefaultServerRenderer2 implements Renderer2 {
     }
   }
 
-  addClass(el: any, name: string): void { getDOM().addClass(el, name); }
+  addClass(el: any, name: string): void {
+    getDOM().addClass(el, name);
+  }
 
-  removeClass(el: any, name: string): void { getDOM().removeClass(el, name); }
+  removeClass(el: any, name: string): void {
+    getDOM().removeClass(el, name);
+  }
 
   setStyle(el: any, style: string, value: any, flags: RendererStyleFlags2): void {
     getDOM().setStyle(el, style, value);
@@ -161,7 +175,9 @@ class DefaultServerRenderer2 implements Renderer2 {
     }
   }
 
-  setValue(node: any, value: string): void { getDOM().setText(node, value); }
+  setValue(node: any, value: string): void {
+    getDOM().setText(node, value);
+  }
 
   listen(
       target: 'document'|'window'|'body'|any, eventName: string,
@@ -180,8 +196,8 @@ class DefaultServerRenderer2 implements Renderer2 {
 const AT_CHARCODE = '@'.charCodeAt(0);
 function checkNoSyntheticProp(name: string, nameKind: string) {
   if (name.charCodeAt(0) === AT_CHARCODE) {
-    throw new Error(
-        `Found the synthetic ${nameKind} ${name}. Please include either "BrowserAnimationsModule" or "NoopAnimationsModule" in your application.`);
+    throw new Error(`Found the synthetic ${nameKind} ${
+        name}. Please include either "BrowserAnimationsModule" or "NoopAnimationsModule" in your application.`);
   }
 }
 
@@ -200,7 +216,9 @@ class EmulatedEncapsulationServerRenderer2 extends DefaultServerRenderer2 {
     this.hostAttr = shimHostAttribute(component.id);
   }
 
-  applyToHost(element: any) { super.setAttribute(element, this.hostAttr, ''); }
+  applyToHost(element: any) {
+    super.setAttribute(element, this.hostAttr, '');
+  }
 
   createElement(parent: any, name: string): Element {
     const el = super.createElement(parent, name);

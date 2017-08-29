@@ -75,14 +75,14 @@ function checkEnvironment(reqs) {
 
       if (!semver.satisfies(foundNodeVersion, reqs.requiredNodeVersion)) {
         issues.push(
-            'You are running unsupported node version. Found: ' + foundNodeVersion + ' Expected: ' +
-            reqs.requiredNodeVersion + '. Use nvm to update your node version.');
+            'You are running unsupported node version. Found: ' + foundNodeVersion +
+            ' Expected: ' + reqs.requiredNodeVersion + '. Use nvm to update your node version.');
       }
 
       if (!semver.satisfies(foundNpmVersion, reqs.requiredNpmVersion)) {
         issues.push(
-            'You are running unsupported npm version. Found: ' + foundNpmVersion + ' Expected: ' +
-            reqs.requiredNpmVersion + '. Run: npm update -g npm');
+            'You are running unsupported npm version. Found: ' + foundNpmVersion +
+            ' Expected: ' + reqs.requiredNpmVersion + '. Run: npm update -g npm');
       }
 
       if (yarnErr) {
@@ -114,7 +114,9 @@ function printWarning(issues) {
   console.warn('');
   console.warn('!'.repeat(110));
   console.warn('!!!  Your environment is not in a good shape. Following issues were found:');
-  issues.forEach(function(issue) { console.warn('!!!   - ' + issue); });
+  issues.forEach(function(issue) {
+    console.warn('!!!   - ' + issue);
+  });
   console.warn('!'.repeat(110));
   console.warn('');
 

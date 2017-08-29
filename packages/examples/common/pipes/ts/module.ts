@@ -49,8 +49,7 @@ import {SlicePipeListComponent, SlicePipeStringComponent} from './slice_pipe';
     <i18n-select-pipe></i18n-select-pipe>
   `
 })
-export class ExampleAppComponent {
-}
+export class ExampleAppComponent {}
 
 @NgModule({
   declarations: [
@@ -62,5 +61,4 @@ export class ExampleAppComponent {
   imports: [BrowserModule],
   bootstrap: [ExampleAppComponent]
 })
-export class AppModule {
-}
+export class AppModule {}

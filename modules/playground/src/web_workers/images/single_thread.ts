@@ -13,8 +13,7 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {ImageDemo} from './index_common';
 
 @NgModule({bootstrap: [ImageDemo], imports: [BrowserModule]})
-class ExampleModule {
-}
+class ExampleModule {}
 
 export function main() {
   platformBrowserDynamic().bootstrapModule(ExampleModule);

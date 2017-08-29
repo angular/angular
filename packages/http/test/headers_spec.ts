@@ -165,8 +165,9 @@ export function main() {
         ref = {'Accept': values};
       });
 
-      it('should be serializable with toJSON',
-         () => { expect(JSON.stringify(headers)).toEqual(JSON.stringify(ref)); });
+      it('should be serializable with toJSON', () => {
+        expect(JSON.stringify(headers)).toEqual(JSON.stringify(ref));
+      });
 
       it('should be able to recreate serializedHeaders', () => {
         const parsedHeaders = JSON.parse(JSON.stringify(headers));

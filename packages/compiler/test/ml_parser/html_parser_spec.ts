@@ -17,7 +17,9 @@ export function main() {
   describe('HtmlParser', () => {
     let parser: HtmlParser;
 
-    beforeEach(() => { parser = new HtmlParser(); });
+    beforeEach(() => {
+      parser = new HtmlParser();
+    });
 
     describe('parse', () => {
       describe('text nodes', () => {
@@ -83,11 +85,20 @@ export function main() {
              // <meta> - it can be present in head only
              // <command> - obsolete
              // <keygen> - obsolete
-             ['<map><area></map>', '<div><br></div>', '<colgroup><col></colgroup>',
-              '<div><embed></div>', '<div><hr></div>', '<div><img></div>', '<div><input></div>',
-              '<object><param>/<object>', '<audio><source></audio>', '<audio><track></audio>',
+             ['<map><area></map>',
+              '<div><br></div>',
+              '<colgroup><col></colgroup>',
+              '<div><embed></div>',
+              '<div><hr></div>',
+              '<div><img></div>',
+              '<div><input></div>',
+              '<object><param>/<object>',
+              '<audio><source></audio>',
+              '<audio><track></audio>',
               '<p><wbr></p>',
-             ].forEach((html) => { expect(parser.parse(html, 'TestComp').errors).toEqual([]); });
+             ].forEach((html) => {
+               expect(parser.parse(html, 'TestComp').errors).toEqual([]);
+             });
            });
 
         it('should close void elements on text nodes', () => {
@@ -333,8 +344,9 @@ export function main() {
             [html.Text, ' messages', 0],
           ]);
 
-          expect(humanizeDom(new ParseTreeResult(cases[1].expression, [
-          ]))).toEqual([[html.Text, 'One {{message}}', 0]]);
+          expect(humanizeDom(new ParseTreeResult(cases[1].expression, []))).toEqual([
+            [html.Text, 'One {{message}}', 0]
+          ]);
         });
 
         it('should parse out expansion forms', () => {
@@ -410,11 +422,11 @@ export function main() {
         it('should set the start and end source spans', () => {
           const node = <html.Element>parser.parse('<div>a</div>', 'TestComp').rootNodes[0];
 
-          expect(node.startSourceSpan !.start.offset).toEqual(0);
-          expect(node.startSourceSpan !.end.offset).toEqual(5);
+          expect(node.startSourceSpan!.start.offset).toEqual(0);
+          expect(node.startSourceSpan!.end.offset).toEqual(5);
 
-          expect(node.endSourceSpan !.start.offset).toEqual(6);
-          expect(node.endSourceSpan !.end.offset).toEqual(12);
+          expect(node.endSourceSpan!.start.offset).toEqual(6);
+          expect(node.endSourceSpan!.end.offset).toEqual(12);
         });
 
         it('should support expansion form', () => {
@@ -435,8 +447,8 @@ export function main() {
         it('should report a value span for an attribute with a value', () => {
           const ast = parser.parse('<div bar="12"></div>', 'TestComp');
           const attr = (ast.rootNodes[0] as html.Element).attrs[0];
-          expect(attr.valueSpan !.start.offset).toEqual(9);
-          expect(attr.valueSpan !.end.offset).toEqual(13);
+          expect(attr.valueSpan!.start.offset).toEqual(9);
+          expect(attr.valueSpan!.end.offset).toEqual(13);
         });
       });
 
@@ -461,7 +473,9 @@ export function main() {
               parser.parse('<div id="foo"><span id="bar">a</span><span>b</span></div>', 'TestComp');
           const accumulator: html.Node[] = [];
           const visitor = new class {
-            visit(node: html.Node, context: any) { accumulator.push(node); }
+            visit(node: html.Node, context: any) {
+              accumulator.push(node);
+            }
             visitElement(element: html.Element, context: any): any {
               html.visitAll(this, element.attrs);
               html.visitAll(this, element.children);
@@ -484,13 +498,21 @@ export function main() {
 
         it('should skip typed visit if visit() returns a truthy value', () => {
           const visitor = new class {
-            visit(node: html.Node, context: any) { return true; }
-            visitElement(element: html.Element, context: any): any { throw Error('Unexpected'); }
+            visit(node: html.Node, context: any) {
+              return true;
+            }
+            visitElement(element: html.Element, context: any): any {
+              throw Error('Unexpected');
+            }
             visitAttribute(attribute: html.Attribute, context: any): any {
               throw Error('Unexpected');
             }
-            visitText(text: html.Text, context: any): any { throw Error('Unexpected'); }
-            visitComment(comment: html.Comment, context: any): any { throw Error('Unexpected'); }
+            visitText(text: html.Text, context: any): any {
+              throw Error('Unexpected');
+            }
+            visitComment(comment: html.Comment, context: any): any {
+              throw Error('Unexpected');
+            }
             visitExpansion(expansion: html.Expansion, context: any): any {
               throw Error('Unexpected');
             }

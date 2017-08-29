@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationOptions, animate, state, style, transition} from '@angular/animations';
+import {animate, AnimationOptions, state, style, transition} from '@angular/animations';
 import {AnimationTransitionInstruction} from '@angular/animations/browser/src/dsl/animation_transition_instruction';
 import {AnimationTrigger} from '@angular/animations/browser/src/dsl/animation_trigger';
 
@@ -24,7 +24,9 @@ export function main() {
       document.body.appendChild(element);
     });
 
-    afterEach(() => { document.body.removeChild(element); });
+    afterEach(() => {
+      document.body.removeChild(element);
+    });
 
     describe('trigger validation', () => {
       it('should group errors together for an animation trigger', () => {
@@ -35,8 +37,9 @@ export function main() {
 
       it('should throw an error when a transition within a trigger contains an invalid expression',
          () => {
-           expect(
-               () => { makeTrigger('name', [transition('somethingThatIsWrong', animate(3333))]); })
+           expect(() => {
+             makeTrigger('name', [transition('somethingThatIsWrong', animate(3333))]);
+           })
                .toThrowError(
                    /- The provided transition expression "somethingThatIsWrong" is not supported/);
          });
@@ -77,7 +80,7 @@ export function main() {
         const result = makeTrigger(
             'name', [transition('a => b', animate(1234)), transition('b => c', animate(5678))]);
 
-        const trans = buildTransition(result, element, 'b', 'c') !;
+        const trans = buildTransition(result, element, 'b', 'c')!;
         expect(trans.timelines.length).toEqual(1);
         const timeline = trans.timelines[0];
         expect(timeline.duration).toEqual(5678);
@@ -89,13 +92,13 @@ export function main() {
           transition('* => *', animate(9999))
         ]);
 
-        let trans = buildTransition(result, element, 'b', 'c') !;
+        let trans = buildTransition(result, element, 'b', 'c')!;
         expect(trans.timelines[0].duration).toEqual(5678);
 
-        trans = buildTransition(result, element, 'a', 'b') !;
+        trans = buildTransition(result, element, 'a', 'b')!;
         expect(trans.timelines[0].duration).toEqual(1234);
 
-        trans = buildTransition(result, element, 'c', 'c') !;
+        trans = buildTransition(result, element, 'c', 'c')!;
         expect(trans.timelines[0].duration).toEqual(9999);
       });
 
@@ -109,23 +112,23 @@ export function main() {
       it('should support bi-directional transition expressions', () => {
         const result = makeTrigger('name', [transition('a <=> b', animate(2222))]);
 
-        const t1 = buildTransition(result, element, 'a', 'b') !;
+        const t1 = buildTransition(result, element, 'a', 'b')!;
         expect(t1.timelines[0].duration).toEqual(2222);
 
-        const t2 = buildTransition(result, element, 'b', 'a') !;
+        const t2 = buildTransition(result, element, 'b', 'a')!;
         expect(t2.timelines[0].duration).toEqual(2222);
       });
 
       it('should support multiple transition statements in one string', () => {
         const result = makeTrigger('name', [transition('a => b, b => a, c => *', animate(1234))]);
 
-        const t1 = buildTransition(result, element, 'a', 'b') !;
+        const t1 = buildTransition(result, element, 'a', 'b')!;
         expect(t1.timelines[0].duration).toEqual(1234);
 
-        const t2 = buildTransition(result, element, 'b', 'a') !;
+        const t2 = buildTransition(result, element, 'b', 'a')!;
         expect(t2.timelines[0].duration).toEqual(1234);
 
-        const t3 = buildTransition(result, element, 'c', 'a') !;
+        const t3 = buildTransition(result, element, 'c', 'a')!;
         expect(t3.timelines[0].duration).toEqual(1234);
       });
 
@@ -137,7 +140,7 @@ export function main() {
                   'a => b', [style({height: '{{ a }}'}), animate(1000, style({height: '{{ b }}'}))],
                   buildParams({a: '100px', b: '200px'}))]);
 
-          const trans = buildTransition(result, element, 'a', 'b') !;
+          const trans = buildTransition(result, element, 'a', 'b')!;
           const keyframes = trans.timelines[0].keyframes;
           expect(keyframes).toEqual([{height: '100px', offset: 0}, {height: '200px', offset: 1}]);
         });
@@ -149,7 +152,7 @@ export function main() {
                   'a => b', [style({height: '{{ a }}'}), animate(1000, style({height: '{{ b }}'}))],
                   buildParams({a: '100px', b: '200px'}))]);
 
-          const trans = buildTransition(result, element, 'a', 'b', {}, buildParams({a: '300px'})) !;
+          const trans = buildTransition(result, element, 'a', 'b', {}, buildParams({a: '300px'}))!;
 
           const keyframes = trans.timelines[0].keyframes;
           expect(keyframes).toEqual([{height: '300px', offset: 0}, {height: '200px', offset: 1}]);
@@ -162,7 +165,7 @@ export function main() {
           transition('true <=> false', animate(1234))
         ]);
 
-        const trans = buildTransition(result, element, false, true) !;
+        const trans = buildTransition(result, element, false, true)!;
         expect(trans.timelines[0].duration).toEqual(1234);
       });
 
@@ -172,7 +175,7 @@ export function main() {
           transition('1 <=> 0', animate(4567))
         ]);
 
-        const trans = buildTransition(result, element, false, true) !;
+        const trans = buildTransition(result, element, false, true)!;
         expect(trans.timelines[0].duration).toEqual(4567);
       });
 
@@ -183,7 +186,7 @@ export function main() {
              transition('1 <=> 0', animate(4567))
            ]);
 
-           const trans = buildTransition(result, element, false, true) !;
+           const trans = buildTransition(result, element, false, true)!;
            expect(trans.timelines[0].keyframes).toEqual([
              {offset: 0, color: 'red'}, {offset: 1, color: 'green'}
            ]);
@@ -196,7 +199,7 @@ export function main() {
              transition('true <=> false', animate(4567))
            ]);
 
-           const trans = buildTransition(result, element, false, true) !;
+           const trans = buildTransition(result, element, false, true)!;
            expect(trans.timelines[0].keyframes).toEqual([
              {offset: 0, color: 'orange'}, {offset: 1, color: 'blue'}
            ]);
@@ -206,14 +209,14 @@ export function main() {
         it('should alias the :enter transition as void => *', () => {
           const result = makeTrigger('name', [transition(':enter', animate(3333))]);
 
-          const trans = buildTransition(result, element, 'void', 'something') !;
+          const trans = buildTransition(result, element, 'void', 'something')!;
           expect(trans.timelines[0].duration).toEqual(3333);
         });
 
         it('should alias the :leave transition as * => void', () => {
           const result = makeTrigger('name', [transition(':leave', animate(3333))]);
 
-          const trans = buildTransition(result, element, 'something', 'void') !;
+          const trans = buildTransition(result, element, 'something', 'void')!;
           expect(trans.timelines[0].duration).toEqual(3333);
         });
       });
@@ -225,10 +228,10 @@ function buildTransition(
     trigger: AnimationTrigger, element: any, fromState: any, toState: any,
     fromOptions?: AnimationOptions, toOptions?: AnimationOptions): AnimationTransitionInstruction|
     null {
-  const trans = trigger.matchTransition(fromState, toState) !;
+  const trans = trigger.matchTransition(fromState, toState)!;
   if (trans) {
     const driver = new MockAnimationDriver();
-    return trans.build(driver, element, fromState, toState, fromOptions, toOptions) !;
+    return trans.build(driver, element, fromState, toState, fromOptions, toOptions)!;
   }
   return null;
 }

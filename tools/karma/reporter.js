@@ -11,8 +11,12 @@ var DotsReporter = require('karma/lib/reporters/dots_color');
 
 var createErrorFormatter = function(basePath, emitter, SourceMapConsumer) {
   var lastServedFiles = [];
-  emitter.on('file_list_modified', function(files) { lastServedFiles = files.served });
-  function findFile(path) { return lastServedFiles.filter(_ => _.path === path)[0]; }
+  emitter.on('file_list_modified', function(files) {
+    lastServedFiles = files.served
+  });
+  function findFile(path) {
+    return lastServedFiles.filter(_ => _.path === path)[0];
+  }
 
   var URL_REGEXP = new RegExp(
       '(?:https?:\\/\\/[^\\/]*)?\\/?' +

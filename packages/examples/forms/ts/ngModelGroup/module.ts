@@ -16,5 +16,4 @@ import {NgModelGroupComp} from './ng_model_group_example';
   declarations: [NgModelGroupComp],
   bootstrap: [NgModelGroupComp]
 })
-export class AppModule {
-}
+export class AppModule {}

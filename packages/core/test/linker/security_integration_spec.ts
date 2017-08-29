@@ -7,14 +7,18 @@
  */
 
 import {Component, Directive, HostBinding, Input, NO_ERRORS_SCHEMA} from '@angular/core';
-import {ComponentFixture, TestBed, getTestBed} from '@angular/core/testing';
+import {ComponentFixture, getTestBed, TestBed} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DomSanitizer} from '@angular/platform-browser/src/security/dom_sanitization_service';
 
 export function main() {
-  describe('jit', () => { declareTests({useJit: true}); });
+  describe('jit', () => {
+    declareTests({useJit: true});
+  });
 
-  describe('no jit', () => { declareTests({useJit: false}); });
+  describe('no jit', () => {
+    declareTests({useJit: false});
+  });
 }
 
 @Component({selector: 'my-comp', template: ''})
@@ -45,7 +49,9 @@ function declareTests({useJit}: {useJit: boolean}) {
       originalLog = getDOM().log;
       getDOM().log = (msg) => { /* disable logging */ };
     });
-    afterEach(() => { getDOM().log = originalLog; });
+    afterEach(() => {
+      getDOM().log = originalLog;
+    });
 
     describe('events', () => {
       it('should disallow binding to attr.on*', () => {
@@ -75,7 +81,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         });
 
         // should not throw for inputs starting with "on"
-        let cmp: ComponentFixture<SecuredComponent> = undefined !;
+        let cmp: ComponentFixture<SecuredComponent> = undefined!;
         expect(() => cmp = TestBed.createComponent(SecuredComponent)).not.toThrow();
 
         // must bind to the directive not to the property of the div

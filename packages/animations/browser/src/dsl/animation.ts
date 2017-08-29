@@ -22,7 +22,7 @@ export class Animation {
     const errors: any[] = [];
     const ast = buildAnimationAst(_driver, input, errors);
     if (errors.length) {
-      const errorMessage = `animation validation failed:\n${errors.join("\n")}`;
+      const errorMessage = `animation validation failed:\n${errors.join('\n')}`;
       throw new Error(errorMessage);
     }
     this._animationAst = ast;
@@ -41,7 +41,7 @@ export class Animation {
     const result = buildAnimationTimelines(
         this._driver, element, this._animationAst, start, dest, options, subInstructions, errors);
     if (errors.length) {
-      const errorMessage = `animation building failed:\n${errors.join("\n")}`;
+      const errorMessage = `animation building failed:\n${errors.join('\n')}`;
       throw new Error(errorMessage);
     }
     return result;

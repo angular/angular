@@ -36,11 +36,17 @@ export class TodoApp {
     }
   }
 
-  editTodo(todo: Todo): void { this.todoEdit = todo; }
+  editTodo(todo: Todo): void {
+    this.todoEdit = todo;
+  }
 
-  addTodo(newTitle: string): void { this.todoStore.add(this.factory.create(newTitle, false)); }
+  addTodo(newTitle: string): void {
+    this.todoStore.add(this.factory.create(newTitle, false));
+  }
 
-  completeMe(todo: Todo): void { todo.completed = !todo.completed; }
+  completeMe(todo: Todo): void {
+    todo.completed = !todo.completed;
+  }
 
   toggleCompleted(): void {
     this.hideActive = !this.hideActive;
@@ -57,12 +63,18 @@ export class TodoApp {
     this.hideActive = false;
   }
 
-  deleteMe(todo: Todo): void { this.todoStore.remove(todo); }
+  deleteMe(todo: Todo): void {
+    this.todoStore.remove(todo);
+  }
 
   toggleAll($event: MouseEvent): void {
     this.isComplete = !this.isComplete;
-    this.todoStore.list.forEach((todo: Todo) => { todo.completed = this.isComplete; });
+    this.todoStore.list.forEach((todo: Todo) => {
+      todo.completed = this.isComplete;
+    });
   }
 
-  clearCompleted(): void { this.todoStore.removeBy((todo: Todo) => todo.completed); }
+  clearCompleted(): void {
+    this.todoStore.removeBy((todo: Todo) => todo.completed);
+  }
 }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {WtfScopeFn, createScope, detectWTF, endTimeRange, leave, startTimeRange} from './wtf_impl';
+import {createScope, detectWTF, endTimeRange, leave, startTimeRange, WtfScopeFn} from './wtf_impl';
 
 export {WtfScopeFn} from './wtf_impl';
 

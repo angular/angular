@@ -16,5 +16,4 @@ import {RadioButtonComp} from './radio_button_example';
   declarations: [RadioButtonComp],
   bootstrap: [RadioButtonComp]
 })
-export class AppModule {
-}
+export class AppModule {}

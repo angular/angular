@@ -16,7 +16,9 @@ describe('Zippy Component', function() {
   describe('zippy', function() {
     const URL = 'all/playground/src/zippy_component/index.html';
 
-    beforeEach(function() { browser.get(URL); });
+    beforeEach(function() {
+      browser.get(URL);
+    });
 
     it('should change the zippy title depending on it\'s state', function() {
       const zippyTitle = element(by.css('.zippy__title'));

@@ -13,9 +13,9 @@ import {invalidPipeArgumentError} from '../invalid_pipe_argument_error';
 import {NumberFormatter} from './intl';
 
 function formatNumber(
-    pipe: Type<any>, locale: string, value: number | string, style: NumberFormatStyle,
-    digits?: string | null, currency: string | null = null,
-    currencyAsSymbol: boolean = false): string|null {
+    pipe: Type<any>, locale: string, value: number|string, style: NumberFormatStyle,
+    digits?: string|null, currency: string|null = null, currencyAsSymbol: boolean = false): string|
+    null {
   if (value == null) return null;
 
   // Convert strings to numbers

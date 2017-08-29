@@ -8,7 +8,7 @@
 
 import {LIFECYCLE_HOOKS_VALUES, LifecycleHooks} from '@angular/compiler/src/lifecycle_reflector';
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, Component, Directive, DoCheck, Injectable, NgModule, OnChanges, OnDestroy, OnInit, Pipe, SimpleChanges, ViewEncapsulation, ɵstringify as stringify} from '@angular/core';
-import {TestBed, async, inject} from '@angular/core/testing';
+import {async, inject, TestBed} from '@angular/core/testing';
 
 import {identifierName} from '../src/compile_metadata';
 import {CompileMetadataResolver} from '../src/metadata_resolver';
@@ -20,17 +20,17 @@ import {TEST_COMPILER_PROVIDERS} from './test_bindings';
 
 export function main() {
   describe('CompileMetadataResolver', () => {
-    beforeEach(() => { TestBed.configureCompiler({providers: TEST_COMPILER_PROVIDERS}); });
+    beforeEach(() => {
+      TestBed.configureCompiler({providers: TEST_COMPILER_PROVIDERS});
+    });
 
     it('should throw on the getDirectiveMetadata/getPipeMetadata methods if the module has not been loaded yet',
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
          @NgModule({})
-         class SomeModule {
-         }
+         class SomeModule {}
 
          @Pipe({name: 'pipe'})
-         class SomePipe {
-         }
+         class SomePipe {}
 
          expect(() => resolver.getDirectiveMetadata(ComponentWithEverythingInline))
              .toThrowError(/Illegal state/);
@@ -40,8 +40,7 @@ export function main() {
     it('should read metadata in sync for components with inline resources',
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
          @NgModule({declarations: [ComponentWithEverythingInline]})
-         class SomeModule {
-         }
+         class SomeModule {}
          resolver.loadNgModuleDirectiveAndPipeMetadata(SomeModule, true);
 
          const meta = resolver.getDirectiveMetadata(ComponentWithEverythingInline);
@@ -66,12 +65,11 @@ export function main() {
     it('should throw when reading metadata for component with external resources when sync=true is passed',
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
          @NgModule({declarations: [ComponentWithExternalResources]})
-         class SomeModule {
-         }
+         class SomeModule {}
 
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(SomeModule, true))
-             .toThrowError(
-                 `Can't compile synchronously as ${stringify(ComponentWithExternalResources)} is still being loaded!`);
+             .toThrowError(`Can't compile synchronously as ${
+                 stringify(ComponentWithExternalResources)} is still being loaded!`);
        }));
 
     it('should read external metadata when sync=false',
@@ -79,8 +77,7 @@ export function main() {
            [CompileMetadataResolver, ResourceLoader],
            (resolver: CompileMetadataResolver, resourceLoader: MockResourceLoader) => {
              @NgModule({declarations: [ComponentWithExternalResources]})
-             class SomeModule {
-             }
+             class SomeModule {}
 
              resourceLoader.when('someTemplateUrl', 'someTemplate');
              resolver.loadNgModuleDirectiveAndPipeMetadata(SomeModule, false).then(() => {
@@ -96,17 +93,15 @@ export function main() {
     it('should use `./` as base url for templates during runtime compilation if no moduleId is given',
        async(inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
          @Component({selector: 'someComponent', templateUrl: 'someUrl'})
-         class ComponentWithoutModuleId {
-         }
+         class ComponentWithoutModuleId {}
 
 
          @NgModule({declarations: [ComponentWithoutModuleId]})
-         class SomeModule {
-         }
+         class SomeModule {}
 
          resolver.loadNgModuleDirectiveAndPipeMetadata(SomeModule, false).then(() => {
            const value: string =
-               resolver.getDirectiveMetadata(ComponentWithoutModuleId).template !.templateUrl !;
+               resolver.getDirectiveMetadata(ComponentWithoutModuleId).template !.templateUrl!;
            const expectedEndValue = './someUrl';
            expect(value.endsWith(expectedEndValue)).toBe(true);
          });
@@ -115,8 +110,7 @@ export function main() {
     it('should throw when the moduleId is not a string',
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
          @NgModule({declarations: [ComponentWithInvalidModuleId]})
-         class SomeModule {
-         }
+         class SomeModule {}
 
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(SomeModule, true))
              .toThrowError(
@@ -130,8 +124,7 @@ export function main() {
     it('should throw when metadata is incorrectly typed',
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
          @NgModule({declarations: [MalformedStylesComponent]})
-         class SomeModule {
-         }
+         class SomeModule {}
 
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(SomeModule, true))
              .toThrowError(`Expected 'styles' to be an array of strings.`);
@@ -140,8 +133,7 @@ export function main() {
     it('should throw with descriptive error message when a module imports itself',
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
          @NgModule({imports: [SomeModule]})
-         class SomeModule {
-         }
+         class SomeModule {}
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(SomeModule, true))
              .toThrowError(`'SomeModule' module can't import itself`);
        }));
@@ -149,8 +141,7 @@ export function main() {
     it('should throw with descriptive error message when provider token can not be resolved',
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
          @NgModule({declarations: [MyBrokenComp1]})
-         class SomeModule {
-         }
+         class SomeModule {}
 
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(SomeModule, true))
              .toThrowError(`Can't resolve all parameters for MyBrokenComp1: (?).`);
@@ -159,8 +150,7 @@ export function main() {
     it('should throw with descriptive error message when a directive is passed to imports',
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
          @NgModule({imports: [ComponentWithoutModuleId]})
-         class ModuleWithImportedComponent {
-         }
+         class ModuleWithImportedComponent {}
          expect(
              () => resolver.loadNgModuleDirectiveAndPipeMetadata(ModuleWithImportedComponent, true))
              .toThrowError(
@@ -170,11 +160,9 @@ export function main() {
     it('should throw with descriptive error message when a pipe is passed to imports',
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
          @Pipe({name: 'somePipe'})
-         class SomePipe {
-         }
+         class SomePipe {}
          @NgModule({imports: [SomePipe]})
-         class ModuleWithImportedPipe {
-         }
+         class ModuleWithImportedPipe {}
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(ModuleWithImportedPipe, true))
              .toThrowError(
                  `Unexpected pipe 'SomePipe' imported by the module 'ModuleWithImportedPipe'. Please add a @NgModule annotation.`);
@@ -183,11 +171,9 @@ export function main() {
     it('should throw with descriptive error message when a module is passed to declarations',
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
          @NgModule({})
-         class SomeModule {
-         }
+         class SomeModule {}
          @NgModule({declarations: [SomeModule]})
-         class ModuleWithDeclaredModule {
-         }
+         class ModuleWithDeclaredModule {}
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(ModuleWithDeclaredModule, true))
              .toThrowError(
                  `Unexpected module 'SomeModule' declared by the module 'ModuleWithDeclaredModule'. Please add a @Pipe/@Directive/@Component annotation.`);
@@ -197,8 +183,7 @@ export function main() {
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
          class SomePipe {}
          @NgModule({declarations: [SomePipe]})
-         class ModuleWithDeclaredModule {
-         }
+         class ModuleWithDeclaredModule {}
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(ModuleWithDeclaredModule, true))
              .toThrowError(
                  `Unexpected value 'SomePipe' declared by the module 'ModuleWithDeclaredModule'. Please add a @Pipe/@Directive/@Component annotation.`);
@@ -208,8 +193,7 @@ export function main() {
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
          class SomeModule {}
          @NgModule({imports: [SomeModule]})
-         class ModuleWithImportedModule {
-         }
+         class ModuleWithImportedModule {}
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(ModuleWithImportedModule, true))
              .toThrowError(
                  `Unexpected value 'SomeModule' imported by the module 'ModuleWithImportedModule'. Please add a @NgModule annotation.`);
@@ -217,9 +201,8 @@ export function main() {
 
     it('should throw with descriptive error message when null is passed to declarations',
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
-         @NgModule({declarations: [null !]})
-         class ModuleWithNullDeclared {
-         }
+         @NgModule({declarations: [null!]})
+         class ModuleWithNullDeclared {}
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(ModuleWithNullDeclared, true))
              .toThrowError(
                  `Unexpected value 'null' declared by the module 'ModuleWithNullDeclared'`);
@@ -227,9 +210,8 @@ export function main() {
 
     it('should throw with descriptive error message when null is passed to imports',
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
-         @NgModule({imports: [null !]})
-         class ModuleWithNullImported {
-         }
+         @NgModule({imports: [null!]})
+         class ModuleWithNullImported {}
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(ModuleWithNullImported, true))
              .toThrowError(
                  `Unexpected value 'null' imported by the module 'ModuleWithNullImported'`);
@@ -239,8 +221,7 @@ export function main() {
     it('should throw with descriptive error message when a param token of a dependency is undefined',
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
          @NgModule({declarations: [MyBrokenComp2]})
-         class SomeModule {
-         }
+         class SomeModule {}
 
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(SomeModule, true))
              .toThrowError(`Can't resolve all parameters for NonAnnotatedService: (?).`);
@@ -248,9 +229,8 @@ export function main() {
 
     it('should throw with descriptive error message when encounter invalid provider',
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
-         @NgModule({providers: [{provide: SimpleService, useClass: undefined !}]})
-         class SomeModule {
-         }
+         @NgModule({providers: [{provide: SimpleService, useClass: undefined!}]})
+         class SomeModule {}
 
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(SomeModule, true))
              .toThrowError(/Invalid provider for SimpleService. useClass cannot be undefined./);
@@ -258,9 +238,8 @@ export function main() {
 
     it('should throw with descriptive error message when provider is undefined',
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
-         @NgModule({providers: [undefined !]})
-         class SomeModule {
-         }
+         @NgModule({providers: [undefined!]})
+         class SomeModule {}
 
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(SomeModule, true))
              .toThrowError(/Encountered undefined provider!/);
@@ -269,8 +248,7 @@ export function main() {
     it('should throw with descriptive error message when one of providers is not present',
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
          @NgModule({declarations: [MyBrokenComp3]})
-         class SomeModule {
-         }
+         class SomeModule {}
 
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(SomeModule, true))
              .toThrowError(
@@ -280,8 +258,7 @@ export function main() {
     it('should throw with descriptive error message when one of viewProviders is not present',
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
          @NgModule({declarations: [MyBrokenComp4]})
-         class SomeModule {
-         }
+         class SomeModule {}
 
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(SomeModule, true))
              .toThrowError(
@@ -290,12 +267,10 @@ export function main() {
 
     it('should throw with descriptive error message when null or undefined is passed to module bootstrap',
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
-         @NgModule({bootstrap: [null !]})
-         class ModuleWithNullBootstrap {
-         }
-         @NgModule({bootstrap: [undefined !]})
-         class ModuleWithUndefinedBootstrap {
-         }
+         @NgModule({bootstrap: [null!]})
+         class ModuleWithNullBootstrap {}
+         @NgModule({bootstrap: [undefined!]})
+         class ModuleWithUndefinedBootstrap {}
 
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(ModuleWithNullBootstrap, true))
              .toThrowError(
@@ -310,36 +285,31 @@ export function main() {
     it('should throw an error when the interpolation config has invalid symbols',
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
          @NgModule({declarations: [ComponentWithInvalidInterpolation1]})
-         class Module1 {
-         }
+         class Module1 {}
 
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(Module1, true))
              .toThrowError(`[' ', ' '] contains unusable interpolation symbol.`);
 
          @NgModule({declarations: [ComponentWithInvalidInterpolation2]})
-         class Module2 {
-         }
+         class Module2 {}
 
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(Module2, true))
              .toThrowError(`['{', '}'] contains unusable interpolation symbol.`);
 
          @NgModule({declarations: [ComponentWithInvalidInterpolation3]})
-         class Module3 {
-         }
+         class Module3 {}
 
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(Module3, true))
              .toThrowError(`['<%', '%>'] contains unusable interpolation symbol.`);
 
          @NgModule({declarations: [ComponentWithInvalidInterpolation4]})
-         class Module4 {
-         }
+         class Module4 {}
 
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(Module4, true))
              .toThrowError(`['&#', '}}'] contains unusable interpolation symbol.`);
 
          @NgModule({declarations: [ComponentWithInvalidInterpolation5]})
-         class Module5 {
-         }
+         class Module5 {}
 
          expect(() => resolver.loadNgModuleDirectiveAndPipeMetadata(Module5, true))
              .toThrowError(`['&lbrace;', '}}'] contains unusable interpolation symbol.`);
@@ -349,12 +319,10 @@ export function main() {
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
 
          @Pipe({name: 'pipe'})
-         class MyPipe {
-         }
+         class MyPipe {}
 
          @NgModule({declarations: [MyPipe], bootstrap: [MyPipe]})
-         class ModuleWithPipeInBootstrap {
-         }
+         class ModuleWithPipeInBootstrap {}
 
          expect(() => resolver.getNgModuleMetadata(ModuleWithPipeInBootstrap))
              .toThrowError(`MyPipe cannot be used as an entry component.`);
@@ -364,8 +332,7 @@ export function main() {
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
 
          @NgModule({declarations: [], bootstrap: [SimpleService]})
-         class ModuleWithServiceInBootstrap {
-         }
+         class ModuleWithServiceInBootstrap {}
 
          expect(() => resolver.getNgModuleMetadata(ModuleWithServiceInBootstrap))
              .toThrowError(`SimpleService cannot be used as an entry component.`);
@@ -375,12 +342,10 @@ export function main() {
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
 
          @Directive({selector: 'directive'})
-         class MyDirective {
-         }
+         class MyDirective {}
 
          @NgModule({declarations: [], bootstrap: [MyDirective]})
-         class ModuleWithDirectiveInBootstrap {
-         }
+         class ModuleWithDirectiveInBootstrap {}
 
          expect(() => resolver.getNgModuleMetadata(ModuleWithDirectiveInBootstrap))
              .toThrowError(`MyDirective cannot be used as an entry component.`);
@@ -390,12 +355,10 @@ export function main() {
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
 
          @Component({template: ''})
-         class MyComp {
-         }
+         class MyComp {}
 
          @NgModule({declarations: [MyComp], bootstrap: [MyComp]})
-         class ModuleWithComponentInBootstrap {
-         }
+         class ModuleWithComponentInBootstrap {}
 
          expect(() => resolver.getNgModuleMetadata(ModuleWithComponentInBootstrap)).not.toThrow();
        }));
@@ -405,34 +368,29 @@ export function main() {
      inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
 
        @Component({template: ''})
-       class MyComp {
-       }
+       class MyComp {}
 
        @NgModule({declarations: [MyComp, MyComp]})
-       class MyModule {
-       }
+       class MyModule {}
 
-       const modMeta = resolver.getNgModuleMetadata(MyModule) !;
+       const modMeta = resolver.getNgModuleMetadata(MyModule)!;
        expect(modMeta.declaredDirectives.length).toBe(1);
        expect(modMeta.declaredDirectives[0].reference).toBe(MyComp);
      }));
 }
 
 @Component({selector: 'someComponent', template: ''})
-class ComponentWithoutModuleId {
-}
+class ComponentWithoutModuleId {}
 
 @Component({selector: 'someComponent', template: '', moduleId: <any>0})
-class ComponentWithInvalidModuleId {
-}
+class ComponentWithInvalidModuleId {}
 
 @Component({
   selector: 'someSelector',
   templateUrl: 'someTemplateUrl',
   styleUrls: ['someStyleUrl'],
 })
-class ComponentWithExternalResources {
-}
+class ComponentWithExternalResources {}
 
 @Component({
   selector: 'someSelector',
@@ -451,9 +409,9 @@ class ComponentWithExternalResources {
   styles: ['someStyle'],
   interpolation: ['{{', '}}']
 })
-class ComponentWithEverythingInline implements OnChanges,
-    OnInit, DoCheck, OnDestroy, AfterContentInit, AfterContentChecked, AfterViewInit,
-    AfterViewChecked {
+class ComponentWithEverythingInline implements OnChanges, OnInit, DoCheck, OnDestroy,
+                                               AfterContentInit, AfterContentChecked, AfterViewInit,
+                                               AfterViewChecked {
   ngOnChanges(changes: SimpleChanges): void {}
   ngOnInit(): void {}
   ngDoCheck(): void {}
@@ -479,34 +437,26 @@ class MyBrokenComp2 {
 }
 
 @Injectable()
-class SimpleService {
-}
+class SimpleService {}
 
-@Component({selector: 'my-broken-comp', template: '', providers: [SimpleService, null !, [null]]})
-class MyBrokenComp3 {
-}
+@Component({selector: 'my-broken-comp', template: '', providers: [SimpleService, null!, [null]]})
+class MyBrokenComp3 {}
 
 @Component(
-    {selector: 'my-broken-comp', template: '', viewProviders: [null !, SimpleService, [null]]})
-class MyBrokenComp4 {
-}
+    {selector: 'my-broken-comp', template: '', viewProviders: [null!, SimpleService, [null]]})
+class MyBrokenComp4 {}
 
 @Component({selector: 'someSelector', template: '', interpolation: [' ', ' ']})
-class ComponentWithInvalidInterpolation1 {
-}
+class ComponentWithInvalidInterpolation1 {}
 
 @Component({selector: 'someSelector', template: '', interpolation: ['{', '}']})
-class ComponentWithInvalidInterpolation2 {
-}
+class ComponentWithInvalidInterpolation2 {}
 
 @Component({selector: 'someSelector', template: '', interpolation: ['<%', '%>']})
-class ComponentWithInvalidInterpolation3 {
-}
+class ComponentWithInvalidInterpolation3 {}
 
 @Component({selector: 'someSelector', template: '', interpolation: ['&#', '}}']})
-class ComponentWithInvalidInterpolation4 {
-}
+class ComponentWithInvalidInterpolation4 {}
 
 @Component({selector: 'someSelector', template: '', interpolation: ['&lbrace;', '}}']})
-class ComponentWithInvalidInterpolation5 {
-}
+class ComponentWithInvalidInterpolation5 {}

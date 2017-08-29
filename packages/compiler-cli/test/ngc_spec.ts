@@ -91,7 +91,9 @@ describe('ngc transformer command-line', () => {
 
   describe('errors', () => {
 
-    beforeEach(() => { errorSpy.and.stub(); });
+    beforeEach(() => {
+      errorSpy.and.stub();
+    });
 
     it('should not print the stack trace if user input file does not exist', () => {
       writeConfig(`{

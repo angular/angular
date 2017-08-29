@@ -12,10 +12,10 @@ import * as ts from 'typescript';
 
 import {Diagnostic, Diagnostics, Span} from '../src/types';
 
-export type MockData = string | MockDirectory;
+export type MockData = string|MockDirectory;
 
 export type MockDirectory = {
-  [name: string]: MockData | undefined;
+  [name: string]: MockData|undefined;
 };
 
 const angularts = /@angular\/(\w|\/|-)+\.tsx?$/;
@@ -111,18 +111,26 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
     this.scriptNames.push(fileName);
   }
 
-  forgetAngular() { this.angularPath = undefined; }
+  forgetAngular() {
+    this.angularPath = undefined;
+  }
 
   overrideOptions(cb: (options: ts.CompilerOptions) => ts.CompilerOptions) {
     this.options = cb((Object as any).assign({}, this.options));
     this.projectVersion++;
   }
 
-  getCompilationSettings(): ts.CompilerOptions { return this.options; }
+  getCompilationSettings(): ts.CompilerOptions {
+    return this.options;
+  }
 
-  getProjectVersion(): string { return this.projectVersion.toString(); }
+  getProjectVersion(): string {
+    return this.projectVersion.toString();
+  }
 
-  getScriptFileNames(): string[] { return this.scriptNames; }
+  getScriptFileNames(): string[] {
+    return this.scriptNames;
+  }
 
   getScriptVersion(fileName: string): string {
     return (this.scriptVersion.get(fileName) || 0).toString();
@@ -134,9 +142,13 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
     return undefined;
   }
 
-  getCurrentDirectory(): string { return '/'; }
+  getCurrentDirectory(): string {
+    return '/';
+  }
 
-  getDefaultLibFileName(options: ts.CompilerOptions): string { return 'lib.d.ts'; }
+  getDefaultLibFileName(options: ts.CompilerOptions): string {
+    return 'lib.d.ts';
+  }
 
   directoryExists(directoryName: string): boolean {
     if (this.overrideDirectory.has(directoryName)) return true;
@@ -234,7 +246,7 @@ function find(fileName: string, data: MockData): MockData|undefined {
     if (typeof current === 'string')
       return undefined;
     else
-      current = (<MockDirectory>current)[name] !;
+      current = (<MockDirectory>current)[name]!;
     if (!current) return undefined;
   }
   return current;
@@ -291,8 +303,9 @@ function getReferenceMarkers(value: string): ReferenceResult {
 
   let adjustment = 0;
   const text = value.replace(
-      referenceMarker, (match: string, text: string, reference: string, _: string,
-                        definition: string, definitionName: string, index: number): string => {
+      referenceMarker,
+      (match: string, text: string, reference: string, _: string, definition: string,
+       definitionName: string, index: number): string => {
         const result = reference ? text : text.replace(/∆/g, '');
         const span: Span = {start: index - adjustment, end: index - adjustment + result.length};
         const markers = reference ? references : definitions;

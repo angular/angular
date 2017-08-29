@@ -14,18 +14,24 @@ export abstract class Metric {
   /**
    * Starts measuring
    */
-  beginMeasure(): Promise<any> { throw new Error('NYI'); }
+  beginMeasure(): Promise<any> {
+    throw new Error('NYI');
+  }
 
   /**
    * Ends measuring and reports the data
    * since the begin call.
    * @param restart: Whether to restart right after this.
    */
-  endMeasure(restart: boolean): Promise<{[key: string]: any}> { throw new Error('NYI'); }
+  endMeasure(restart: boolean): Promise<{[key: string]: any}> {
+    throw new Error('NYI');
+  }
 
   /**
    * Describes the metrics provided by this metric implementation.
    * (e.g. units, ...)
    */
-  describe(): {[key: string]: string} { throw new Error('NYI'); }
+  describe(): {[key: string]: string} {
+    throw new Error('NYI');
+  }
 }

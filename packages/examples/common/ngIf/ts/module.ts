@@ -69,7 +69,9 @@ class NgIfThenElse implements OnInit {
     this.thenBlock = this.thenBlock === this.primaryBlock ? this.secondaryBlock : this.primaryBlock;
   }
 
-  ngOnInit() { this.thenBlock = this.primaryBlock; }
+  ngOnInit() {
+    this.thenBlock = this.primaryBlock;
+  }
 }
 // #enddocregion
 
@@ -116,13 +118,11 @@ class NgIfAs {
     <hr>
 `
 })
-class ExampleApp {
-}
+class ExampleApp {}
 
 @NgModule({
   imports: [BrowserModule],
   declarations: [ExampleApp, NgIfSimple, NgIfElse, NgIfThenElse, NgIfAs],
   bootstrap: [ExampleApp]
 })
-export class AppModule {
-}
+export class AppModule {}

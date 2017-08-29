@@ -21,7 +21,9 @@ export function main() {
       log = '';
     });
 
-    function logAppend(item: any /** TODO #9100 */) { log += (log.length == 0 ? '' : ', ') + item; }
+    function logAppend(item: any /** TODO #9100 */) {
+      log += (log.length == 0 ? '' : ', ') + item;
+    }
 
     it('should support resetting and iterating over the new objects', () => {
       queryList.reset(['one']);
@@ -123,7 +125,11 @@ export function main() {
       describe('simple observable interface', () => {
         it('should fire callbacks on change', fakeAsync(() => {
              let fires = 0;
-             queryList.changes.subscribe({next: (_) => { fires += 1; }});
+             queryList.changes.subscribe({
+               next: (_) => {
+                 fires += 1;
+               }
+             });
 
              queryList.notifyOnChanges();
              tick();
@@ -138,7 +144,11 @@ export function main() {
 
         it('should provides query list as an argument', fakeAsync(() => {
              let recorded: any /** TODO #9100 */;
-             queryList.changes.subscribe({next: (v: any) => { recorded = v; }});
+             queryList.changes.subscribe({
+               next: (v: any) => {
+                 recorded = v;
+               }
+             });
 
              queryList.reset(['one']);
              queryList.notifyOnChanges();

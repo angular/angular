@@ -16,7 +16,9 @@ export class HasStyle {
 
   constructor() {}
 
-  set width(w: number) { this.cellWidth = w; }
+  set width(w: number) {
+    this.cellWidth = w;
+  }
 }
 
 @Component({
@@ -25,9 +27,7 @@ export class HasStyle {
   directives: [],
   template: `<div [style.width.px]="cellWidth">{{company.name}}</div>`
 })
-export class CompanyNameComponent extends HasStyle {
-  company: Company;
-}
+export class CompanyNameComponent extends HasStyle { company: Company; }
 
 @Component({
   selector: 'opportunity-name',
@@ -35,9 +35,7 @@ export class CompanyNameComponent extends HasStyle {
   directives: [],
   template: `<div [style.width.px]="cellWidth">{{opportunity.name}}</div>`
 })
-export class OpportunityNameComponent extends HasStyle {
-  opportunity: Opportunity;
-}
+export class OpportunityNameComponent extends HasStyle { opportunity: Opportunity; }
 
 @Component({
   selector: 'offering-name',
@@ -45,9 +43,7 @@ export class OpportunityNameComponent extends HasStyle {
   directives: [],
   template: `<div [style.width.px]="cellWidth">{{offering.name}}</div>`
 })
-export class OfferingNameComponent extends HasStyle {
-  offering: Offering;
-}
+export class OfferingNameComponent extends HasStyle { offering: Offering; }
 
 export class Stage {
   name: string;
@@ -74,7 +70,9 @@ export class StageButtonsComponent extends HasStyle {
   private _offering: Offering;
   stages: Stage[];
 
-  get offering(): Offering { return this._offering; }
+  get offering(): Offering {
+    return this._offering;
+  }
 
   set offering(offering: Offering) {
     this._offering = offering;
@@ -115,9 +113,7 @@ export class StageButtonsComponent extends HasStyle {
         </a>
       </div>`
 })
-export class AccountCellComponent extends HasStyle {
-  account: Account;
-}
+export class AccountCellComponent extends HasStyle { account: Account; }
 
 @Component({
   selector: 'formatted-cell',

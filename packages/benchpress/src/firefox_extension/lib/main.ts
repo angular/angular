@@ -15,7 +15,9 @@ class Profiler {
   private _markerEvents: any[];
   private _profilerStartTime: number;
 
-  constructor() { this._profiler = Cc['@mozilla.org/tools/profiler;1'].getService(Ci.nsIProfiler); }
+  constructor() {
+    this._profiler = Cc['@mozilla.org/tools/profiler;1'].getService(Ci.nsIProfiler);
+  }
 
   start(entries: any, interval: any, features: any, timeStarted: any) {
     this._profiler.StartProfiler(entries, interval, features, features.length);
@@ -23,7 +25,9 @@ class Profiler {
     this._markerEvents = [];
   }
 
-  stop() { this._profiler.StopProfiler(); }
+  stop() {
+    this._profiler.StopProfiler();
+  }
 
   getProfilePerfEvents() {
     const profileData = this._profiler.getProfileData();
@@ -37,7 +41,9 @@ class Profiler {
 
   /** @internal */
   private _mergeMarkerEvents(perfEvents: any[]): any[] {
-    this._markerEvents.forEach(function(markerEvent) { perfEvents.push(markerEvent); });
+    this._markerEvents.forEach(function(markerEvent) {
+      perfEvents.push(markerEvent);
+    });
     return perfEvents;
   }
 
