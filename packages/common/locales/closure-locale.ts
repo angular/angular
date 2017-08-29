@@ -4690,10 +4690,8 @@ switch (goog.LOCALE) {
   case 'zh_HK':
   case 'zh-Hant-HK':
   case 'zh_Hant_HK':
-  case 'zh-Hant':
-  case 'zh_Hant':
     l = [
-      'zh-Hant',
+      'zh-Hant-HK',
       [
         ['上午', '下午'],
         ,

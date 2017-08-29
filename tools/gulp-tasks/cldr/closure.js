@@ -8,7 +8,7 @@
 
 const fs = require('fs');
 const yargs = require('yargs').argv;
-const {I18N_FOLDER, I18N_DATA_FOLDER, RELATIVE_I18N_DATA_FOLDER, HEADER} = require('./extract');
+const {I18N_DATA_FOLDER, RELATIVE_I18N_DATA_FOLDER, HEADER} = require('./extract');
 const OUTPUT_NAME = `closure-locale.ts`;
 
 module.exports = (gulp, done) => {
@@ -43,9 +43,8 @@ module.exports = (gulp, done) => {
     'zh-CN': 'zh-Hans-CN',
     'zh-Hans-CN': 'zh-Hans',
     'zh-HK': 'zh-Hant-HK',
-    'zh-Hant-HK': 'zh-Hant',
     'zh-TW': 'zh-Hant-TW',
-    'zh-Hant-TW': 'zh-Hant'
+    'zh-Hant-TW': 'zh-Hant',
   };
 
   if (yargs.locales) {
