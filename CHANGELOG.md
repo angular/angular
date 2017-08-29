@@ -1,5 +1,5 @@
-<a name="2.0.0-beta.9"></a>
-# [2.0.0-beta.9 découpage-panjandrum](https://github.com/angular/material2/compare/2.0.0-beta.8...2.0.0-beta.9) (2017-08-29)
+<a name="2.0.0-beta.10"></a>
+# [2.0.0-beta.10 découpage-panjandrum](https://github.com/angular/material2/compare/2.0.0-beta.8...2.0.0-beta.10) (2017-08-29)
 
 ### Highlights
 * Over 140 bug fixes
@@ -43,6 +43,9 @@ still re-exported through `@angular/material`, but these re-exports will be remo
 subsequent release.
 * `cdkScrollable`, `ScrollDispatcher`, and `ViewportRuler` have been moved from overlay into its
 own `scrolling` subpackage in `@angular/cdk`. 
+* **input:** Inputs have a width of `200px` by default (similar to native input elements). The
+width can be overridden by via the `mat-form-field` css class.
+* **input:** CSS classes have changed from `mat-input-container-` to `mat-form-field-`. 
 * **input:** `md-prefix` and `md-suffix` are now `mdPrefix` and `mdSuffix`.
 * **portal:** `TemplatePortal` now requires a generic type (C) to align with `TemplateRef`.
 This will usually be `any`.
@@ -54,6 +57,8 @@ DOM element to `apply`.
 * **datepicker:** You must now use a date object (of whatever type your DateAdapter uses) rather
 than a string when setting the value of the datepicker programmatically (through value, ngModel,
 or formControl).
+* **datepicker:** `mdDatepickerToggle` is now an element `<md-datepicker-toggle>` with a `for`
+property that points to the `MdDatepicker` instance
 * **datepicker:** `NativeDateAdapter` will now use Angular's LOCALE_ID instead of the browser's
 locale.
 * **sidenav:** CSS classes have changed from `mat-sidenav-` to `mat-drawer-`
