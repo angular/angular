@@ -66,17 +66,10 @@ import {DateFormatter} from './intl';
  *
  * ### Examples
  *
- * Assuming `dateObj` is (year: 2015, month: 6, day: 15, hour: 21, minute: 43, second: 11)
+ * Assuming `dateObj` is (year: 2010, month: 9, day: 3, hour: 12 PM, minute: 05, second: 08)
  * in the _local_ time and locale is 'en-US':
  *
- * ```
- *     {{ dateObj | date }}               // output is 'Jun 15, 2015'
- *     {{ dateObj | date:'medium' }}      // output is 'Jun 15, 2015, 9:43:11 PM'
- *     {{ dateObj | date:'shortTime' }}   // output is '9:43 PM'
- *     {{ dateObj | date:'mmss' }}        // output is '43:11'
- * ```
- *
- * {@example common/pipes/ts/date_pipe.ts region='DatePipe'}
+ * {@example common/pipes/ts/date_pipe.ts region='DeprecatedDatePipe'}
  *
  * @stable
  */

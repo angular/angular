@@ -125,13 +125,6 @@ export const ISO8601_DATE_REGEX =
  * Assuming `dateObj` is (year: 2015, month: 6, day: 15, hour: 21, minute: 43, second: 11)
  * in the _local_ time and locale is 'en-US':
  *
- * ```
- *     {{ dateObj | date }}               // output is 'Jun 15, 2015'
- *     {{ dateObj | date:'medium' }}      // output is 'Jun 15, 2015, 9:43:11 PM'
- *     {{ dateObj | date:'shortTime' }}   // output is '9:43 PM'
- *     {{ dateObj | date:'hh:mm:ss a' }}  // output is '09:43:11 PM'
- * ```
- *
  * {@example common/pipes/ts/date_pipe.ts region='DatePipe'}
  *
  * @stable
