@@ -74,13 +74,17 @@ function generateAllLocalesFile(LOCALES, ALIASES) {
     let localeData;
     const equivalentLocales = [locale];
     if (locale.match(/-/)) {
-      equivalentLocales.push(locale.replace('-', '_'));
+      equivalentLocales.push(locale.replace(/-/g, '_'));
     }
 
     // check for aliases
     const alias = ALIASES[locale];
     if (alias) {
       equivalentLocales.push(alias);
+
+      if (alias.match(/-/)) {
+        equivalentLocales.push(alias.replace(/-/g, '_'));
+      }
 
       // to avoid duplicated "case" we regroup all locales in the same "case"
       // the simplest way to do that is to have alias aliases
@@ -91,6 +95,10 @@ function generateAllLocalesFile(LOCALES, ALIASES) {
         const aliasValue = ALIASES[alias];
         if (aliasKeys.indexOf(alias) !== -1 && equivalentLocales.indexOf(aliasValue) === -1) {
           equivalentLocales.push(aliasValue);
+
+          if (aliasValue.match(/-/)) {
+            equivalentLocales.push(aliasValue.replace(/-/g, '_'));
+          }
         }
       }
     }
@@ -114,7 +122,7 @@ import {registerLocaleData} from '../src/i18n/locale_data';
 
 let l: any;
 
-switch (goog.LOCALE.replace(/_/g, '-')) {
+switch (goog.LOCALE) {
 ${LOCALES.map(locale => generateCases(locale)).join('')}}
 
 if(l) {
